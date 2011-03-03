@@ -1,0 +1,157 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2010, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id: io.cpp 35818 2011-02-08 00:06:28Z rusu $
+ *
+ */
+#include "pcl_visualization/common/io.h"
+#include <Eigen/Geometry>
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief Obtain a list of corresponding indices, for a set of vtk points, 
+  * from a pcl::PointCloud
+  * \param src the set of vtk points
+  * \param tgt the target pcl::PointCloud that we need to obtain indices from
+  * \param indices the resultant list of indices
+  */
+void
+  pcl_visualization::getCorrespondingPointCloud (vtkPolyData *src, const pcl::PointCloud<pcl::PointXYZ> &tgt, 
+                                                 std::vector<int> &indices)
+{
+  // Iterate through the points and copy the data in a pcl::PointCloud
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  cloud.height = 1; cloud.width = src->GetNumberOfPoints ();
+  cloud.is_dense = false;
+  cloud.points.resize (cloud.width * cloud.height);
+  for (int i = 0; i < src->GetNumberOfPoints (); i++)
+  {
+    double p[3];
+    src->GetPoint (i, p);
+    cloud.points[i].x = p[0]; cloud.points[i].y = p[1]; cloud.points[i].z = p[2];
+  }
+
+  // Compute a kd-tree for tgt
+  pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
+  kdtree.setInputCloud (boost::make_shared<pcl::PointCloud<pcl::PointXYZ> > (tgt));
+
+  std::vector<int> nn_indices (1);
+  std::vector<float> nn_dists (1);
+  // For each point on screen, find its correspondent in the target
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+  {
+    kdtree.nearestKSearch (cloud.points[i], 1, nn_indices, nn_dists);
+    indices.push_back (nn_indices[0]);
+  }
+  // Sort and remove duplicate indices
+  sort (indices.begin (), indices.end ());
+  indices.erase (unique (indices.begin (), indices.end ()), indices.end ()); 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief Saves the vtk-formatted Point Cloud data into a set of files, based on whether
+  * the data comes from previously loaded PCD files. The PCD files are matched using the 
+  * a list of names for the actors on screen.
+  * \param data the vtk data
+  * \param out_file the output file (extra indices will be appended to it)
+  * \param actors the list of actors present on screen
+  */
+bool 
+  pcl_visualization::savePointData (vtkPolyData* data, const std::string &out_file, const boost::shared_ptr<CloudActorMap> &actors)
+{
+  // Clean the data (no duplicates!)
+  vtkSmartPointer<vtkCleanPolyData> cleaner = vtkSmartPointer<vtkCleanPolyData>::New ();
+  cleaner->SetTolerance (0.0);
+  cleaner->SetInput (data);
+  cleaner->ConvertLinesToPointsOff ();
+  cleaner->ConvertPolysToLinesOff ();
+  cleaner->ConvertStripsToPolysOff ();
+  cleaner->PointMergingOn ();
+  cleaner->Update ();
+
+  // If we pruned any points, print the number of points pruned to screen
+  if (cleaner->GetOutput ()->GetNumberOfPoints () != data->GetNumberOfPoints ())
+  {
+    int nr_pts_pruned = data->GetNumberOfPoints () - cleaner->GetOutput ()->GetNumberOfPoints ();
+    terminal_tools::print_highlight ("Number of points pruned: "); terminal_tools::print_value ("%d\n", nr_pts_pruned);
+  }
+
+  // Attempting to load all Point Cloud data input files (using the actor name)...
+  CloudActorMap::iterator it;
+  int i = 1;
+  for (it = actors->begin (); it != actors->end (); ++it)
+  {
+    std::string file_name = (*it).first;
+
+    // Is there a ".pcd" in the name? If no, then do not attempt to load this actor
+    std::string::size_type position;
+    if ((position = file_name.find (".pcd")) == std::string::npos)
+      continue;
+
+    // Strip the ".pcd-X"
+    file_name = file_name.substr (0, position) + ".pcd";
+
+    terminal_tools::print_debug ("  Load: %s ... ", file_name.c_str ());
+    // Assume the name of the actor is the name of the file
+    sensor_msgs::PointCloud2 cloud;
+    if (pcl::io::loadPCDFile (file_name, cloud) == -1)
+    {
+      terminal_tools::print_error (stdout, "[failed]\n");
+      return (false);
+    }
+    else
+      terminal_tools::print_debug ("[success]\n");
+ 
+    pcl::PointCloud<pcl::PointXYZ> cloud_xyz;
+    pcl::fromROSMsg (cloud, cloud_xyz);
+    // Get the corresponding indices that we need to save from this point cloud
+    std::vector<int> indices;
+    getCorrespondingPointCloud (cleaner->GetOutput (), cloud_xyz, indices);
+
+    // Copy the indices and save the file
+    sensor_msgs::PointCloud2 cloud_out;
+    pcl::copyPointCloud (cloud, indices, cloud_out);
+    std::stringstream ss;
+    ss << out_file << i++ << ".pcd";
+    terminal_tools::print_debug ("  Save: %s ... ", ss.str ().c_str ());
+    if (pcl::io::savePCDFile (ss.str (), cloud_out, Eigen::Vector4f::Zero (),
+                              Eigen::Quaternionf::Identity (), true) == -1)
+    {
+      terminal_tools::print_error (stdout, "[failed]\n");
+      return (false);
+    }
+    else
+      terminal_tools::print_debug ("[success]\n");
+  }
+
+  return (true);
+}

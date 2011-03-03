@@ -1,0 +1,101 @@
+#!/bin/bash
+
+TARBALL_NAME='pcl_visualization'
+
+PCP_DIR="`rospack find pcl_visualization`/../"
+VERSION="`cat ${PCP_DIR}/CMakeLists.txt | grep rosbuild_make_distribution | tr -d '_a-zA-Z()'`"
+
+function copy_files
+{
+    SOURCE="${1}"
+    DEST="${2}"
+    cp -r "${1}" "${2}"
+}
+
+function copy_all_files
+{
+    DEST="${1}"
+    # Copy source
+    mkdir "${DEST}/src"
+    #cp -r src/* "${DEST}/src/"
+    rsync -aC --exclude '*.py*' src/* "${DEST}/src/"
+    # Copy headers
+    mkdir "${DEST}/include"
+    #cp -r include/* "${DEST}/include/"
+    rsync -aC --exclude '*.py*' include/* "${DEST}/include/"
+    # Copy misc
+    cp vtk_*.cmake "${DEST}"
+    mkdir "${DEST}/data"
+}
+
+function copy_macro
+{
+    SRC="${1}"
+    TARGET="${2}"
+    MACRO="${3}"
+
+    cat "${1}" | sed -n "/macro(${MACRO}/,/endmacro(${MACRO}/p" >> "${TARGET}"
+    echo >> "${TARGET}"
+}
+
+function copy_cmake
+{
+    DEST="${1}"
+    ROSBUILD_DIR="$(rospack find rosbuild)"
+
+    mkdir -p "${DEST}/cmake"
+
+    cp cmake/rosbuild.cmake "${DEST}/cmake/"
+    copy_macro "${ROSBUILD_DIR}/public.cmake" "${DEST}/cmake/rosbuild.cmake" \
+        rosbuild_check_for_sse
+    copy_macro "${ROSBUILD_DIR}/public.cmake" "${DEST}/cmake/rosbuild.cmake" \
+        rosbuild_add_executable
+    copy_macro "${ROSBUILD_DIR}/public.cmake" "${DEST}/cmake/rosbuild.cmake" \
+        rosbuild_add_compile_flags
+    copy_macro "${ROSBUILD_DIR}/public.cmake" "${DEST}/cmake/rosbuild.cmake" \
+        rosbuild_add_link_flags
+    copy_macro "${ROSBUILD_DIR}/public.cmake" "${DEST}/cmake/rosbuild.cmake" \
+        rosbuild_download_data
+    copy_macro "${ROSBUILD_DIR}/private.cmake" "${DEST}/cmake/rosbuild.cmake" \
+        _rosbuild_list_to_string
+
+    cp cmake/find_pcl.cmake "${DEST}/cmake/"
+}
+
+function make_cmakelists
+{
+    DEST="${1}"
+    cat ./CMakeLists.txt | \
+        sed '/include/s/$ENV{ROS_ROOT}\/core\/rosbuild/cmake/' | \
+        sed 's/include_directories (src)/include_directories (src include)/g' | \
+        sed '17i include(cmake/find_pcl.cmake)\ninclude_directories(${PCL_PREFIX}/include)' | \
+        sed 's/cmake_minimum_required (VERSION 2.4.6)/cmake_minimum_required (VERSION 2.8)/g' \
+        > ${DEST}/CMakeLists.txt
+}
+
+if [ -n "${1}" ]
+then
+    VERSION="${1}"
+fi
+
+if [ -n "${2}" ]
+then
+    TARBALL_NAME="${2}"
+fi
+
+TEMP_DIR="${TARBALL_NAME}-${VERSION}"
+
+echo "Making temporary directory ${TEMP_DIR}"
+mkdir -p "${TEMP_DIR}"
+echo "Copying all files"
+copy_all_files "${TEMP_DIR}"
+echo "Copying CMake macros"
+copy_cmake ${TEMP_DIR}
+echo "Making CMakeLists.txt"
+make_cmakelists "${TEMP_DIR}"
+echo "Creating tarball"
+tar -czf ${TEMP_DIR}.tar.gz --exclude-vcs ${TEMP_DIR}
+echo "Deleting temporary directory"
+#rm -rf ${TEMP_DIR}
+echo "Done"
+
