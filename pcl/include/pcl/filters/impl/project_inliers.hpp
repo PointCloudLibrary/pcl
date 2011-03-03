@@ -1,0 +1,154 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2010, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id: project_inliers.hpp 35810 2011-02-08 00:03:46Z rusu $
+ *
+ */
+
+#ifndef PCL_FILTERS_IMPL_PROJECT_INLIERS_H_
+#define PCL_FILTERS_IMPL_PROJECT_INLIERS_H_
+
+#include "pcl/filters/project_inliers.h"
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::ProjectInliers<PointT>::applyFilter (PointCloud &output)
+{
+  if (indices_->empty ())
+  {
+    ROS_WARN ("[pcl::%s::applyFilter] No indices given or empty indices!", getClassName ().c_str ());
+    output.width = output.height = 0;
+    output.points.clear ();
+    return;
+  }
+
+  //Eigen::Map<Eigen::VectorXf, Eigen::Aligned> model_coefficients (&model_->values[0], model_->values.size ());
+  // More expensive than a map but safer (32bit architectures seem to complain)
+  Eigen::VectorXf model_coefficients (model_->values.size ());
+  for (size_t i = 0; i < model_->values.size (); ++i)
+    model_coefficients[i] = model_->values[i];
+
+  // Initialize the Sample Consensus model and set its parameters
+  if (!initSACModel (model_type_))
+  {
+    ROS_ERROR ("[pcl::%s::segment] Error initializing the SAC model!", getClassName ().c_str ());
+    output.width = output.height = 0;
+    output.points.clear ();
+    return;
+  }
+  if (copy_all_data_)
+    sacmodel_->projectPoints (*indices_, model_coefficients, output, true);
+  else
+    sacmodel_->projectPoints (*indices_, model_coefficients, output, false);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::ProjectInliers<PointT>::initSACModel (int model_type)
+{
+  // Build the model
+  switch (model_type)
+  {
+    case SACMODEL_PLANE:
+    {
+      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PLANE", getClassName ().c_str ());
+      sacmodel_.reset (new SampleConsensusModelPlane<PointT> (input_));
+      break;
+    }
+    case SACMODEL_LINE:
+    {
+      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_LINE", getClassName ().c_str ());
+      sacmodel_.reset (new SampleConsensusModelLine<PointT> (input_));
+      break;
+    }
+    case SACMODEL_CIRCLE2D:
+    {
+      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_CIRCLE2D", getClassName ().c_str ());
+      sacmodel_.reset (new SampleConsensusModelCircle2D<PointT> (input_));
+      break;
+    }
+    case SACMODEL_SPHERE:
+    {
+      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_SPHERE", getClassName ().c_str ());
+      sacmodel_.reset (new SampleConsensusModelSphere<PointT> (input_));
+      break;
+    }
+    case SACMODEL_PARALLEL_LINE:
+    {
+      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PARALLEL_LINE", getClassName ().c_str ());
+      sacmodel_.reset (new SampleConsensusModelParallelLine<PointT> (input_));
+      break;
+    }
+    case SACMODEL_PERPENDICULAR_PLANE:
+    {
+      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PERPENDICULAR_PLANE", getClassName ().c_str ());
+      sacmodel_.reset (new SampleConsensusModelPerpendicularPlane<PointT> (input_));
+      break;
+    }
+    case SACMODEL_CYLINDER:
+    {
+      //ROS_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_CYLINDER", getClassName ().c_str ());
+      sacmodel_.reset (new SampleConsensusModelCylinder<PointT, pcl::Normal> (input_));
+      break;
+    }
+    case SACMODEL_NORMAL_PLANE:
+    {
+      //ROS_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PLANE", getClassName ().c_str ());
+      sacmodel_.reset (new SampleConsensusModelNormalPlane<PointT, pcl::Normal> (input_));
+      break;
+    }
+    case SACMODEL_NORMAL_PARALLEL_PLANE:
+    {
+      //ROS_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PARALLEL_PLANE", getClassName ().c_str ());
+      sacmodel_.reset (new SampleConsensusModelNormalParallelPlane<PointT, pcl::Normal> (input_));
+      break;
+    }
+    case SACMODEL_PARALLEL_PLANE:
+    {
+      //ROS_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_PARALLEL_PLANE", getClassName ().c_str ());
+      sacmodel_.reset (new SampleConsensusModelParallelPlane<PointT> (input_));
+      break;
+    }
+    default:
+    {
+      ROS_ERROR ("[pcl::%s::initSACModel] No valid model given!", getClassName ().c_str ());
+      return (false);
+    }
+  }
+  return (true);
+}
+
+#define PCL_INSTANTIATE_ProjectInliers(T) template class pcl::ProjectInliers<T>;
+
+#endif    // PCL_FILTERS_IMPL_PROJECT_INLIERS_H_
+

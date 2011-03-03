@@ -1,0 +1,38 @@
+<package>
+  <description brief="PCL (Point Cloud Library)">
+
+<p>
+  <b>PCL</b> - <b>P</b>oint <b>C</b>loud <b>L</b>ibrary: a comprehensive open
+  source library for <b>n-D Point Clouds</b> and <b>3D geometry processing</b>.
+  The library contains numerous state-of-the art algorithms for: filtering,
+  feature estimation, surface reconstruction, registration, model fitting and
+  segmentation, etc.  
+</p>
+
+  </description>
+
+  <author>See http://pcl.ros.org/authors for the complete list of authors.</author>
+  <license>BSD</license>
+  <url>http://pointclouds.org</url>
+  <review status="experimental" notes="beta"/>
+
+  <!-- Message type dependencies -->
+  <depend package="std_msgs" />
+  <depend package="sensor_msgs" />
+
+  <!-- Extra libraries -->
+  <depend package="eigen" />
+  <depend package="cminpack" />
+  <depend package="flann" />
+
+  <!--rosdep name="libtbb" /-->
+  <rosdep name="libqhull" />
+  
+  <export>
+    <cpp cflags="-I${prefix}/include -I${prefix}/msg_gen/cpp/include -I${prefix}/src" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lpcl_base -lpcl_filters -lpcl_features -lpcl_io -lpcl_surface -lpcl_registration -lpcl_sample_consensus -lpcl_kdtree -lpcl_segmentation -lpcl_keypoints -lpcl_range_image -lpcl_range_image_border_extractor" />
+  </export>
+  <platform os="ubuntu" version="9.04"/>
+  <platform os="ubuntu" version="9.10"/>
+  <platform os="ubuntu" version="10.04"/>
+  <platform os="ubuntu" version="10.10"/>
+</package>

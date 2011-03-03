@@ -1,0 +1,11 @@
+if(WIN32)
+    set(flann_INCLUDE_DIR "/usr" CACHE PATH "Location of the FLANN includes.")
+else(WIN32)
+    include(FindPkgConfig)
+    if(PKG_CONFIG_FOUND)
+        pkg_check_modules(flann REQUIRED flann)
+    else(PKG_CONFIG_FOUND)
+        message(FATAL_ERROR "Could not find pkg-config to search for FLANN.")
+    endif(PKG_CONFIG_FOUND)
+endif(WIN32)
+

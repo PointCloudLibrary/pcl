@@ -1,0 +1,121 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2009, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+template <typename PointInT, typename PointOutT> inline void
+  pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
+{
+  if (!initCompute ())
+  {
+    ROS_ERROR ("[pcl::%s::compute] initCompute failed!", getClassName ().c_str ());
+    return;
+  }
+
+  // Check if a space search locator was given
+  if (!tree_)
+  {
+    ROS_ERROR ("[pcl::%s::compute] No spatial search method was given!", getClassName ().c_str ());
+    return;
+  }
+
+  // If no search surface has been defined, use the input dataset as the search surface itself
+  if (!surface_)
+  {
+    surface_ = input_;
+  }
+
+  // Send the surface dataset to the spatial locator
+  tree_->setInputCloud (surface_);
+
+  // Do a fast check to see if the search parameters are well defined
+  if (search_radius_ != 0.0)
+  {
+    if (k_ != 0)
+    {
+      ROS_ERROR ("[pcl::%s::compute] Both radius (%f) and K (%d) defined! Set one of them to zero first and then re-run compute ().", getClassName ().c_str (), search_radius_, k_);
+      return;
+    }
+    else                  // Use the radiusSearch () function
+    {
+      search_parameter_ = search_radius_;
+      if (surface_ == input_)       // if the two surfaces are the same
+      {
+        // Declare the search locator definition
+        int (KdTree::*radiusSearch)(int index, double radius, std::vector<int> &k_indices,
+                                     std::vector<float> &k_distances, int max_nn) const = &KdTree::radiusSearch;
+        search_method_ = boost::bind (radiusSearch, boost::ref (tree_), _1, _2, _3, _4, INT_MAX);
+      }
+      else
+      {
+        // Declare the search locator definition
+        int (KdTree::*radiusSearchSurface)(const PointCloudIn &cloud, int index, double radius, std::vector<int> &k_indices,
+                                            std::vector<float> &k_distances, int max_nn) const = &KdTree::radiusSearch;
+        search_method_surface_ = boost::bind (radiusSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5, INT_MAX);
+      }
+    }
+  }
+  else
+  {
+    if (k_ != 0)         // Use the nearestKSearch () function
+    {
+      search_parameter_ = k_;
+      if (surface_ == input_)       // if the two surfaces are the same
+      {
+        // Declare the search locator definition
+        int (KdTree::*nearestKSearch)(int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) = &KdTree::nearestKSearch;
+        search_method_ = boost::bind (nearestKSearch, boost::ref (tree_), _1, _2, _3, _4);
+      }
+      else
+      {
+        // Declare the search locator definition
+        int (KdTree::*nearestKSearchSurface)(const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) = &KdTree::nearestKSearch;
+        search_method_surface_ = boost::bind (nearestKSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5);
+      }
+    }
+    else
+    {
+      ROS_ERROR ("[pcl::%s::compute] Neither radius nor K defined! Set one of them to a positive number first and then re-run compute ().", getClassName ().c_str ());
+      return;
+    }
+  }
+
+  // Perform the actual computation
+  detectKeypoints(output);
+
+  deinitCompute ();
+
+  // Reset the surface
+  if (input_ == surface_)
+    surface_.reset ();
+}

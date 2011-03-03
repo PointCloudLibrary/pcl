@@ -1,0 +1,57 @@
+Compiling the Point Cloud Library
+=================================
+
+The Point Cloud Library (PCL) can be compiled and used separate from ROS. This
+is currently an unstable feature and requires a little patience.
+
+
+Compiling from the distribution tarball
+---------------------------------------
+
+The tarball is designed for compiling on systems that do not have ROS
+installed. A number of dependencies must be installed first.
+
+- Intel's TBB library.
+- The ANN library.
+- The FLANN library.
+- The cminpack library.
+
+1. Extract the tarball.
+
+tar -xvzf pcl-<version>.tar.gz /tmp
+
+2. Change to the extracted library directory.
+
+cd /tmp/pcl-<version>
+
+3. Make a build directory and enter it.
+
+mkdir build
+cd build/
+
+4. Run CMake. You must specify the locations in which ANN and cminpack are
+installed.
+
+cmake -DANN_PREFIX=/usr/local -DCMINPACK_PREFIX=/usr/local ../
+
+5. Run make install to compile and install PCL.
+
+make install
+
+
+Compiling from subversion trunk
+-------------------------------
+
+The trunk is oriented towards compiling within ROS. You will first need to make
+a dist tarball, then extract and build it.
+
+1. Change to the pcl directory.
+
+cd pcl/
+
+2. Make a distribution tarball.
+
+./make_tarball
+
+3. Continue with the instructions above for compiling from tarball.
+

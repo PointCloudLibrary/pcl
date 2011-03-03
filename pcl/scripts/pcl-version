@@ -1,0 +1,2 @@
+#!/bin/bash
+grep rosbuild_make_distribution `rospack find pcl`/../CMakeLists.txt | awk -F '[()]' {'print $2'}

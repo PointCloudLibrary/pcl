@@ -1,0 +1,90 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2009, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id: extract_indices.hpp 34688 2010-12-12 04:50:20Z rusu $
+ *
+ */
+
+#ifndef PCL_FILTERS_IMPL_EXTRACT_INDICES_H_
+#define PCL_FILTERS_IMPL_EXTRACT_INDICES_H_
+
+#include "pcl/io/io.h"
+#include "pcl/filters/extract_indices.h"
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
+{
+  if (indices_->empty ())
+  {
+    output.width = output.height = 0;
+    output.points.clear ();
+    // If negative, copy all the data
+    if (negative_)
+      output = *input_;
+    return;
+  }
+  if (indices_->size () == (input_->width * input_->height))
+  {
+    output = *input_;
+    return;
+  }
+
+  if (negative_)
+  {
+    // Prepare a vector holding all indices
+    std::vector<int> all_indices (input_->points.size ());
+    for (size_t i = 0; i < all_indices.size (); ++i)
+      all_indices[i] = i;
+
+    std::vector<int> indices = *indices_;
+    std::sort (indices.begin (), indices.end ());
+
+    // Get the diference
+    std::vector<int> remaining_indices;
+    set_difference (all_indices.begin (), all_indices.end (), indices.begin (), indices.end (),
+                    inserter (remaining_indices, remaining_indices.begin ()));
+
+    output.points.resize (remaining_indices.size ());
+    copyPointCloud (*input_, remaining_indices, output);
+  }
+  else
+  {
+    output.points.resize (indices_->size ());
+    copyPointCloud (*input_, *indices_, output);
+  }
+}
+
+#define PCL_INSTANTIATE_ExtractIndices(T) template class pcl::ExtractIndices<T>;
+
+#endif    // PCL_FILTERS_IMPL_EXTRACT_INDICES_H_

@@ -1,0 +1,211 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2010, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id: extract_polygonal_prism_data.hpp 35810 2011-02-08 00:03:46Z rusu $
+ *
+ */
+
+#ifndef PCL_SEGMENTATION_IMPL_EXTRACT_POLYGONAL_PRISM_DATA_H_
+#define PCL_SEGMENTATION_IMPL_EXTRACT_POLYGONAL_PRISM_DATA_H_
+
+#include "pcl/segmentation/extract_polygonal_prism_data.h"
+
+//////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::isPointIn2DPolygon (const PointT &point, const pcl::PointCloud<PointT> &polygon)
+{
+  // Compute the plane coefficients
+  Eigen::Vector4f model_coefficients;
+  float curvature;
+  pcl::computePointNormal<PointT> (polygon, model_coefficients, curvature);
+
+  float distance_to_plane = model_coefficients[0] * point.x + 
+                            model_coefficients[1] * point.y + 
+                            model_coefficients[2] * point.z + 
+                            model_coefficients[3];
+  PointT ppoint;
+  // Calculate the projection of the point on the plane
+  ppoint.x = point.x - distance_to_plane * model_coefficients[0];
+  ppoint.y = point.y - distance_to_plane * model_coefficients[1];
+  ppoint.z = point.z - distance_to_plane * model_coefficients[2];
+
+  // Create a X-Y projected representation for within bounds polygonal checking
+  int k0, k1, k2;
+  // Determine the best plane to project points onto
+  k0 = (fabs (model_coefficients[0] ) > fabs (model_coefficients[1])) ? 0  : 1;
+  k0 = (fabs (model_coefficients[k0]) > fabs (model_coefficients[2])) ? k0 : 2;
+  k1 = (k0 + 1) % 3;
+  k2 = (k0 + 2) % 3;
+  // Project the convex hull
+  pcl::PointCloud<PointT> xy_polygon;
+  xy_polygon.points.resize (polygon.points.size ());
+  for (size_t i = 0; i < polygon.points.size (); ++i)
+  {
+    Eigen::Vector4f pt (polygon.points[i].x, polygon.points[i].y, polygon.points[i].z, 0);
+    xy_polygon.points[i].x = pt[k1];
+    xy_polygon.points[i].y = pt[k2];
+    xy_polygon.points[i].z = 0;
+  }
+  PointT xy_point;
+  xy_point.z = 0;
+  Eigen::Vector4f pt (ppoint.x, ppoint.y, ppoint.z, 0);
+  xy_point.x = pt[k1];
+  xy_point.y = pt[k2];
+
+  return (pcl::isXYPointIn2DXYPolygon (xy_point, xy_polygon));
+}
+
+//////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::isXYPointIn2DXYPolygon (const PointT &point, const pcl::PointCloud<PointT> &polygon)
+{
+  bool in_poly = false;
+  double x1, x2, y1, y2;
+
+  int nr_poly_points = polygon.points.size ();
+  double xold = polygon.points[nr_poly_points - 1].x;
+  double yold = polygon.points[nr_poly_points - 1].y;
+  for (int i = 0; i < nr_poly_points; i++)
+  {
+    double xnew = polygon.points[i].x;
+    double ynew = polygon.points[i].y;
+    if (xnew > xold)
+    {
+      x1 = xold;
+      x2 = xnew;
+      y1 = yold;
+      y2 = ynew;
+    }
+    else
+    {
+      x1 = xnew;
+      x2 = xold;
+      y1 = ynew;
+      y2 = yold;
+    }
+
+    if ( (xnew < point.x) == (point.x <= xold) && (point.y - y1) * (x2 - x1) < (y2 - y1) * (point.x - x1) )
+    {
+      in_poly = !in_poly;
+    }
+    xold = xnew;
+    yold = ynew;
+  }
+  return (in_poly);
+}
+
+//////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
+{
+  output.header = input_->header;
+
+  if (!initCompute ()) 
+  {
+    output.indices.clear ();
+    return;
+  }
+
+  if ((int)planar_hull_->points.size () < min_pts_hull_)
+  {
+    ROS_ERROR ("[pcl::%s::segment] Not enough points (%zu) in the hull!", getClassName ().c_str (), planar_hull_->points.size ());
+    output.indices.clear ();
+    return;
+  }
+
+  // Compute the plane coefficients
+  Eigen::Vector4f model_coefficients;
+  float curvature;
+  pcl::computePointNormal<PointT> (*planar_hull_, model_coefficients, curvature);
+
+  // Need to flip the plane normal towards the viewpoint
+  pcl::flipNormalTowardsViewpoint (planar_hull_->points[0], vpx_, vpy_, vpz_, model_coefficients);
+
+  // Project all points
+  PointCloud projected_points;
+  SampleConsensusModelPlane<PointT> sacmodel  = SampleConsensusModelPlane<PointT> (input_);
+  sacmodel.projectPoints (*indices_, model_coefficients, projected_points, false);
+
+  // Create a X-Y projected representation for within bounds polygonal checking
+  int k0, k1, k2;
+  // Determine the best plane to project points onto
+  k0 = (fabs (model_coefficients[0] ) > fabs (model_coefficients[1])) ? 0  : 1;
+  k0 = (fabs (model_coefficients[k0]) > fabs (model_coefficients[2])) ? k0 : 2;
+  k1 = (k0 + 1) % 3;
+  k2 = (k0 + 2) % 3;
+  // Project the convex hull
+  pcl::PointCloud<PointT> polygon;
+  polygon.points.resize (planar_hull_->points.size ());
+  for (size_t i = 0; i < planar_hull_->points.size (); ++i)
+  {
+    Eigen::Vector4f pt (planar_hull_->points[i].x, planar_hull_->points[i].y, planar_hull_->points[i].z, 0);
+    polygon.points[i].x = pt[k1];
+    polygon.points[i].y = pt[k2];
+    polygon.points[i].z = 0;
+  }
+
+  PointT pt_xy;
+  pt_xy.z = 0;
+
+  output.indices.resize (indices_->size ());
+  int l = 0;
+  for (size_t i = 0; i < projected_points.points.size (); ++i)
+  {
+    // Check the distance to the user imposed limits from the table planar model
+    double distance = pointToPlaneDistanceSigned (input_->points[(*indices_)[i]], model_coefficients);
+    if (distance < height_limit_min_ || distance > height_limit_max_)
+      continue;
+
+    // Check what points are inside the hull
+    Eigen::Vector4f pt (projected_points.points[i].x,
+                         projected_points.points[i].y,
+                         projected_points.points[i].z, 0);
+    pt_xy.x = pt[k1];
+    pt_xy.y = pt[k2];
+
+    if (!pcl::isXYPointIn2DXYPolygon (pt_xy, polygon))
+      continue;
+
+    output.indices[l++] = (*indices_)[i];
+  }
+  output.indices.resize (l);
+
+  deinitCompute ();
+}
+
+#define PCL_INSTANTIATE_ExtractPolygonalPrismData(T) template class pcl::ExtractPolygonalPrismData<T>;
+#define PCL_INSTANTIATE_isPointIn2DPolygon(T) template bool pcl::isPointIn2DPolygon<T>(const T&, const pcl::PointCloud<T> &);
+#define PCL_INSTANTIATE_isXYPointIn2DXYPolygon(T) template bool pcl::isXYPointIn2DXYPolygon<T>(const T &, const pcl::PointCloud<T> &);
+
+#endif    // PCL_SEGMENTATION_IMPL_EXTRACT_POLYGONAL_PRISM_DATA_H_
+

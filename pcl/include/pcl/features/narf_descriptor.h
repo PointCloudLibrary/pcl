@@ -1,0 +1,99 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2010, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/**
+\author Bastian Steder
+**/
+
+
+#ifndef PCL_NARF_DESCRIPTOR_H_
+#define PCL_NARF_DESCRIPTOR_H_
+
+#include <pcl/point_types.h>
+#include <pcl/features/feature.h>
+
+namespace pcl
+{
+
+// Forward declarations
+class RangeImage;
+
+
+/** @b Computes NARF feature descriptors for points in a range image
+  * \author Bastian Steder
+  */
+class NarfDescriptor : public Feature<PointWithRange,Narf36>
+{
+  public:
+    // =====TYPEDEFS=====
+    typedef Feature<PointWithRange,Narf36> BaseClass;
+    
+    // =====STRUCTS/CLASSES=====
+    struct Parameters
+    {
+      Parameters() : support_size(-1.0f), rotation_invariant(true) {}
+      float support_size;
+      bool rotation_invariant;
+    };
+    
+    // =====CONSTRUCTOR & DESTRUCTOR=====
+    /** Constructor */
+    NarfDescriptor(const RangeImage* range_image=NULL, const std::vector<int>* indices=NULL);
+    /** Destructor */
+    ~NarfDescriptor();
+    
+    // =====METHODS=====
+    //! Set input data
+    void setRangeImage(const RangeImage* range_image, const std::vector<int>* indices=NULL);
+    
+    //! Overwrite the compute function of the base class
+    void compute(PointCloudOut& output);
+    
+    // =====GETTER=====
+    //! Get a reference to the parameters struct
+    Parameters& getParameters() { return parameters_;}
+    
+  protected:
+    // =====PROTECTED MEMBER VARIABLES=====
+    const RangeImage* range_image_;
+    Parameters parameters_;
+    
+    // =====PROTECTED METHODS=====
+    /** Implementation of abstract derived function */
+    virtual void computeFeature(PointCloudOut& output);
+};
+
+}  // namespace end
+
+#endif  //#ifndef PCL_NARF_DESCRIPTOR_H_

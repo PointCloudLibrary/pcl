@@ -1,0 +1,34 @@
+PCL is a large collaborative effort, and it would not exist without the
+contributions of several people. Though the community is larger, and we accept
+patches and improvements from many users, we would like to acknowledge the
+following persons for their core contributions to the development of the
+library. The authors in bold (*) are part of the maintainers team, taking the
+blame when things don't work.
+
+Authors (in alphabetical order):
+Aitor Aldoma (aldoma@acin.tuwien.ac.at)
+Geoffrey Biggs (geoffrey.biggs@aist.go.jp)
+Nico Blodow (blodow@cs.tum.edu)
+Michael Dixon (michael.s.dixon@gmail.com)
+Suat Gedikli (gedikli@willowgarage.com)
+Jared Glover (jglov@mit.edu)
+Dirk Holz (holz@ais.uni-bonn.de)
+Stefan Holzer (holzers@in.tum.de)
+Yohei Kakiuchi (youhei@jsk.t.u-tokyo.ac.jp)
+Rosie Li (ruosili@wustl.edu)
+Adam Leeper (adamleeper@gmail.com)
+Louis L. Legrand (louis.l.legrand@intel.com)
+Stéphane Magnenat (stephane@magnenat.net)
+Eitan Marder-Eppstein (eitan@willowgarage.com)
+Marius Muja (mariusm@cs.ubc.ca)
+Zoltan-Csaba Marton (marton@cs.tum.edu)
+Patrick Mihelich (mihelich@willowgarage.com)
+Vincent Rabaud (vrabaud@willowgarage.com)
+Ethan Rublee (erublee@willowgarage.com)
+*Radu Bogdan Rusu (rusu@willowgarage.com)
+Nizar Sallem (nksallem@laas.fr)
+Bastian Steder (steder@informatik.uni-freiburg.de)
+Troy Straszheim (straszheim@willowgarage.com)
+Ryohei Ueda (ueda@jsk.t.u-tokyo.ac.jp)
+Kai Wurm (wurm@informatik.uni-freiburg.de)
+

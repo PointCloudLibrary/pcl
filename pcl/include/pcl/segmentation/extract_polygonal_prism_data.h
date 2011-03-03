@@ -1,0 +1,189 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2010, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id: extract_polygonal_prism_data.h 36271 2011-02-28 18:29:30Z rusu $
+ *
+ */
+
+#ifndef PCL_EXTRACT_POLYGONAL_PRISM_DATA_H_
+#define PCL_EXTRACT_POLYGONAL_PRISM_DATA_H_
+
+#include <pcl/pcl_base.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/sample_consensus/sac_model_plane.h>
+
+namespace pcl
+{
+  /** \brief General purpose method for checking if a 3D point is inside or
+    * outside a given 2D polygon. 
+    * \note this method accepts any general 3D point that is projected onto the
+    * 2D polygon, but performs an internal XY projection of both the polygon and the point. 
+    * \param point a 3D point projected onto the same plane as the polygon
+    * \param polygon a polygon
+    */
+  template <typename PointT> bool isPointIn2DPolygon (const PointT &point, const pcl::PointCloud<PointT> &polygon);
+
+  /** \brief Check if a 2d point (X and Y coordinates considered only!) is
+    * inside or outside a given polygon. This method assumes that both the point
+    * and the polygon are projected onto the XY plane.
+    *
+    * \note (This is highly optimized code taken from http://www.visibone.com/inpoly/)
+    *       Copyright (c) 1995-1996 Galacticomm, Inc.  Freeware source code.
+    * \param point a 3D point projected onto the same plane as the polygon
+    * \param polygon a polygon
+    */
+  template <typename PointT> bool isXYPointIn2DXYPolygon (const PointT &point, const pcl::PointCloud<PointT> &polygon);
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief @b ExtractPolygonalPrismData uses a set of point indices that
+    * represent a planar model, and together with a given height, generates a 3D
+    * polygonal prism. The polygonal prism is then used to segment all points
+    * lying inside it.
+    *
+    * An example of its usage is to extract the data lying within a set of 3D
+    * boundaries (e.g., objects supported by a plane).
+    *
+    * \author Radu Bogdan Rusu
+    */
+  template <typename PointT>
+  class ExtractPolygonalPrismData : public PCLBase<PointT>
+  {
+    using PCLBase<PointT>::input_;
+    using PCLBase<PointT>::indices_;
+    using PCLBase<PointT>::initCompute;
+    using PCLBase<PointT>::deinitCompute;
+
+    public:
+      typedef pcl::PointCloud<PointT> PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      typedef PointIndices::Ptr PointIndicesPtr;
+      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+
+      /** \brief Empty constructor. */
+      ExtractPolygonalPrismData () : min_pts_hull_ (3), 
+                                     height_limit_min_ (0), height_limit_max_ (FLT_MAX),
+                                     vpx_ (0), vpy_ (0), vpz_ (0)
+      {};
+
+      /** \brief Provide a pointer to the input planar hull dataset.
+        * \param hull the input planar hull dataset
+        */
+      inline void 
+      setInputPlanarHull (const PointCloudConstPtr &hull) { planar_hull_ = hull; }
+
+      /** \brief Get a pointer the input planar hull dataset. */
+      inline PointCloudConstPtr 
+      getInputPlanarHull () { return (planar_hull_); }
+
+      /** \brief Set the height limits. All points having distances to the
+        * model outside this interval will be discarded.
+        *
+        * \param height_min the minimum allowed distance to the plane model value
+        * \param height_max the maximum allowed distance to the plane model value
+        */
+      inline void
+      setHeightLimits (double height_min, double height_max)
+      {
+        height_limit_min_ = height_min;
+        height_limit_max_ = height_max;
+      }
+
+      /** \brief Get the height limits (min/max) as set by the user. The
+        * default values are -FLT_MAX, FLT_MAX. 
+        * \param height_min the resultant min height limit
+        * \param height_max the resultant max height limit
+        */
+      inline void
+      getHeightLimits (double &height_min, double &height_max)
+      {
+        height_min = height_limit_min_;
+        height_max = height_limit_max_;
+      }
+
+      /** \brief Set the viewpoint.
+        * \param vpx the X coordinate of the viewpoint
+        * \param vpy the Y coordinate of the viewpoint
+        * \param vpz the Z coordinate of the viewpoint
+        */
+      inline void
+      setViewPoint (float vpx, float vpy, float vpz)
+      {
+        vpx_ = vpx;
+        vpy_ = vpy;
+        vpz_ = vpz;
+      }
+
+      /** \brief Get the viewpoint. */
+      inline void
+      getViewPoint (float &vpx, float &vpy, float &vpz)
+      {
+        vpx = vpx_;
+        vpy = vpy_;
+        vpz = vpz_;
+      }
+
+      /** \brief Cluster extraction in a PointCloud given by <setInputCloud (), setIndices ()>
+        * \param output the resultant point indices that support the model found (inliers)
+        */
+      void 
+      segment (PointIndices &output);
+
+    protected:
+      /** \brief A pointer to the input planar hull dataset. */
+      PointCloudConstPtr planar_hull_;
+
+      /** \brief The minimum number of points needed on the convex hull. */
+      int min_pts_hull_;
+
+      /** \brief The minimum allowed height (distance to the model) a point
+        * will be considered from. 
+        */
+      double height_limit_min_;
+
+      /** \brief The maximum allowed height (distance to the model) a point
+        * will be considered from. 
+        */
+      double height_limit_max_;
+
+      /** \brief Values describing the data acquisition viewpoint. Default: 0,0,0. */
+      float vpx_, vpy_, vpz_;
+
+      /** \brief Class getName method. */
+      virtual std::string 
+      getClassName () const { return ("ExtractPolygonalPrismData"); }
+  };
+}
+
+#endif  //#ifndef PCL_EXTRACT_POLYGONAL_PRISM_DATA_H_
