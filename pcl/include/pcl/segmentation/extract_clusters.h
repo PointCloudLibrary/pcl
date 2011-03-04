@@ -133,7 +133,7 @@ namespace pcl
           if (processed[nn_indices[j]])                         // Has this point been processed before ?
             continue;
 
-          processed[nn_indices[j]] = true;
+          //processed[nn_indices[j]] = true;
           // [-1;1]
           double dot_p = normals.points[i].normal[0] * normals.points[nn_indices[j]].normal[0] +
                          normals.points[i].normal[1] * normals.points[nn_indices[j]].normal[1] +
@@ -236,7 +236,7 @@ namespace pcl
           if (processed[nn_indices[j]])                             // Has this point been processed before ?
             continue;
 
-          processed[nn_indices[j]] = true;
+          //processed[nn_indices[j]] = true;
           // [-1;1]
           double dot_p =
             normals.points[indices[i]].normal[0] * normals.points[indices[nn_indices[j]]].normal[0] +
