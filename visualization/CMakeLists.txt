@@ -1,9 +1,9 @@
-set(LIB_NAME visualization)
-set(LIB_DESC "Point cloud visualization classes")
-set(LIB_DEPS pcl)
+set(SUBSYS_NAME visualization)
+set(SUBSYS_DESC "Point cloud visualization library")
+set(SUBSYS_DEPS pcl)
 
 set(build TRUE)
-PCL_LIB_OPTION(build LIB ${LIB_NAME} ON ${LIB_DEPS})
+PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON ${SUBSYS_DEPS})
 
 if(build)
     # Find wxWidgets
@@ -14,8 +14,6 @@ if(build)
     # Find VTK
     find_package (VTK REQUIRED)
     include (${VTK_USE_FILE})
-
-    set(VIS_COMPONENT visualization)
 
     set(viz_srcs src/interactor.cpp
         src/interactor_style.cpp
@@ -31,12 +29,13 @@ if(build)
         src/cloud_viewer.cpp
         )
 
-    PCL_ADD_LIBRARY(pcl_visualization ${viz_srcs} ${VIS_COMPONENT})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+    PCL_ADD_LIBRARY(pcl_visualization ${SUBSYS_NAME} ${viz_srcs})
     target_link_libraries(pcl_visualization ${wxWidgets_LIBRARIES}
         vtkCommon vtkWidgets vtkHybrid)
     # Link boost
-    PCL_MAKE_PKGCONFIG(pcl_visualization visualization
-        "Point cloud visualisation library" "" "" "" "")
+    PCL_MAKE_PKGCONFIG(pcl_visualization ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
+        "" "")
 
     add_subdirectory(examples)
     add_subdirectory(test)

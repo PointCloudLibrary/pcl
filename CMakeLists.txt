@@ -11,9 +11,9 @@ GET_OS_INFO()
 SET_INSTALL_DIRS()
 
 # Add an "uninstall" target
-CONFIGURE_FILE ("${PROJECT_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
+configure_file("${PROJECT_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
     "${PROJECT_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
-ADD_CUSTOM_TARGET (uninstall "${CMAKE_COMMAND}" -P
+add_custom_target(uninstall "${CMAKE_COMMAND}" -P
     "${PROJECT_BINARY_DIR}/uninstall_target.cmake")
 
 # Find universal dependencies
@@ -21,7 +21,7 @@ ADD_CUSTOM_TARGET (uninstall "${CMAKE_COMMAND}" -P
 
 # Add the library subdirectories
 include(${PROJECT_SOURCE_DIR}/cmake/pcl_targets.cmake)
-add_subdirectory(pcl)
+#add_subdirectory(pcl)
 add_subdirectory(visualization)
 
 # Package creation
