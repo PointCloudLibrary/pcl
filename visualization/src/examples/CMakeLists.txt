@@ -1,3 +1,0 @@
-rosbuild_add_executable (tutorial_range_image_visualization range_image_visualization.cpp)
-target_link_libraries (tutorial_range_image_visualization pcl_visualization pcl_range_image)
-

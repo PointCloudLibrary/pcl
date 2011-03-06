@@ -6,34 +6,42 @@ set(build TRUE)
 PCL_LIB_OPTION(build LIB ${LIB_NAME} ON ${LIB_DEPS})
 
 if(build)
-    # Find Boost
-    # find_package(wxWidgets REQUIRED)
-    # include(${wxWidgets_USE_FILE})
-    # include_directories(${wxWidgets_INCLUDE_DIRS})
-    # find_package (VTK REQUIRED)
-    # include (${VTK_USE_FILE})
+    # Find wxWidgets
+    find_package(wxWidgets REQUIRED)
+    include(${wxWidgets_USE_FILE})
+    include_directories(${wxWidgets_INCLUDE_DIRS})
 
-    set(viz_srcs src/libpcl_visualization/interactor.cpp
-        src/libpcl_visualization/interactor_style.cpp
-        src/libpcl_visualization/point_cloud_handlers.cpp
-        src/libpcl_visualization/pcl_visualizer.cpp
-        src/libpcl_visualization/histogram_visualizer.cpp
-        src/libpcl_visualization/common/common.cpp
-        src/libpcl_visualization/common/io.cpp
-        src/libpcl_visualization/common/shapes.cpp
-        src/libpcl_visualization/common/float_image_utils.cpp
-        src/libpcl_visualization/common/image_widget_wx.cpp
-        src/libpcl_visualization/range_image_visualizer.cpp
-        src/libpcl_visualization/cloud_viewer.cpp
+    # Find VTK
+    find_package (VTK REQUIRED)
+    include (${VTK_USE_FILE})
+
+    set(VIS_COMPONENT visualization)
+
+    set(viz_srcs src/interactor.cpp
+        src/interactor_style.cpp
+        src/point_cloud_handlers.cpp
+        src/pcl_visualizer.cpp
+        src/histogram_visualizer.cpp
+        src/common/common.cpp
+        src/common/io.cpp
+        src/common/shapes.cpp
+        src/common/float_image_utils.cpp
+        src/common/image_widget_wx.cpp
+        src/range_image_visualizer.cpp
+        src/cloud_viewer.cpp
         )
 
-    # link to vtkCommon, vtkWIdgets, vtkHybrid, ${wxWidgets_LIBRARIES}
+    PCL_ADD_LIBRARY(pcl_visualization ${viz_srcs} ${VIS_COMPONENT})
+    target_link_libraries(pcl_visualization ${wxWidgets_LIBRARIES}
+        vtkCommon vtkWidgets vtkHybrid)
+    # Link boost
+    PCL_MAKE_PKGCONFIG(pcl_visualization visualization
+        "Point cloud visualisation library" "" "" "" "")
 
-    # executable: test_pcl_vis src/test.cpp
-    # executable: test_geometry src/test_geometry.cpp
-    # executable: test_shapes src/test_shapes.cpp
+    add_subdirectory(examples)
+    add_subdirectory(test)
+    add_subdirectory(tools)
+
     # share data: http://pr.willowgarage.com/data/pcl/partial_cup_model_new.pcd
-    # subdir: src/examples
-    # subdir: src/tools
 endif(build)
 

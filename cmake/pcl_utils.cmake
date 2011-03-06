@@ -145,11 +145,60 @@ endmacro(GET_OS_INFO)
 # "registration/blorgle.h")
 macro(SET_INSTALL_DIRS)
     if(OS_IS_64BIT)
-        set(LIB_INSTALL_DIR "lib64")
+        if(NOT APPLE)
+            set(LIB_INSTALL_DIR "lib64")
+        else(NOT APPLE)
+            set(LIB_INSTALL_DIR "lib")
+        endif(NOT APPLE)
     else(OS_IS_64BIT)
         set(LIB_INSTALL_DIR "lib")
     endif(OS_IS_64BIT)
     set(INCLUDE_INSTALL_DIR
         "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+    set(BIN_INSTALL_DIR "bin")
+    set(PKGCFG_INSTALL_DIR "${LIB_INSTALL_DIR}/pkgconfig")
 endmacro(SET_INSTALL_DIRS)
+
+
+###############################################################################
+# This macro processes a list of arguments into separate lists based on
+# keywords found in the argument stream. For example:
+# BUILDBLAG (misc_arg INCLUDEDIRS /usr/include LIBDIRS /usr/local/lib
+#            LINKFLAGS -lthatawesomelib CFLAGS -DUSEAWESOMELIB SOURCES blag.c)
+# Any other args found at the start of the stream will go into the variable
+# specified in _other_args. Typically, you would take arguments to your macro
+# as normal, then pass ${ARGN} to this macro to parse the dynamic-length
+# arguments (so if ${_otherArgs} comes back non-empty, you've ignored something
+# or the user has passed in some arguments without a keyword).
+macro(PROCESS_ARGUMENTS _sources_args _include_dirs_args _lib_dirs_args
+        _link_libs_args _link_flags_args _cflags_args _idl_args _other_args)
+    set(${_sources_args})
+    set(${_include_dirs_args})
+    set(${_lib_dirs_args})
+    set(${_link_libs_args})
+    set(${_link_flags_args})
+    set(${_cflags_args})
+    set(${_idl_args})
+    set(${_other_args})
+    set(_current_dest ${_other_args})
+    foreach(_arg ${ARGN})
+        if(_arg STREQUAL "SOURCES")
+            set(_current_dest ${_sources_args})
+        elseif(_arg STREQUAL "INCLUDEDIRS")
+            set(_current_dest ${_include_dirs_args})
+        elseif(_arg STREQUAL "LIBDIRS")
+            set(_current_dest ${_lib_dirs_args})
+        elseif(_arg STREQUAL "LINKLIBS")
+            set(_current_dest ${_link_libs_args})
+        elseif(_arg STREQUAL "LINKFLAGS")
+            set(_current_dest ${_link_flags_args})
+        elseif(_arg STREQUAL "CFLAGS")
+            set(_current_dest ${_cflags_args})
+        elseif(_arg STREQUAL "IDL")
+            set(_current_dest ${_idl_args})
+        else(_arg STREQUAL "SOURCES")
+            list(APPEND ${_current_dest} ${_arg})
+        endif(_arg STREQUAL "SOURCES")
+    endforeach(_arg)
+endmacro(PROCESS_ARGUMENTS)
 

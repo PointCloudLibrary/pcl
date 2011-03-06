@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(PCL)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
+include(${PROJECT_SOURCE_DIR}/cmake/pcl_options.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/pcl_utils.cmake)
 set(PCL_VERSION 2.0.0 CACHE STRING "PCL version")
 DISSECT_VERSION()
@@ -15,7 +16,11 @@ CONFIGURE_FILE ("${PROJECT_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
 ADD_CUSTOM_TARGET (uninstall "${CMAKE_COMMAND}" -P
     "${PROJECT_BINARY_DIR}/uninstall_target.cmake")
 
+# Find universal dependencies
+# Boost
+
 # Add the library subdirectories
+include(${PROJECT_SOURCE_DIR}/cmake/pcl_targets.cmake)
 add_subdirectory(pcl)
 add_subdirectory(visualization)
 

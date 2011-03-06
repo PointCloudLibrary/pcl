@@ -1,8 +1,0 @@
-rosbuild_add_executable (pcd_viewer pcd_viewer.cpp)
-target_link_libraries (pcd_viewer pcl_visualization)
-
-rosbuild_add_executable ( pcd_viewer_simple pcd_viewer_simple.cpp)
-target_link_libraries (pcd_viewer_simple pcl_visualization)
-
-rosbuild_add_executable ( bag_viewer_simple bag_viewer_simple.cpp)
-target_link_libraries (bag_viewer_simple pcl_visualization)
