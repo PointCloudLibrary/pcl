@@ -36,7 +36,7 @@
  */
 #ifndef PCL_CLOUD_VIEWER_H_
 #define PCL_CLOUD_VIEWER_H_
-#include <pcl_visualization/pcl_visualizer.h> //pcl vis
+#include <visualization/pcl_visualizer.h> //pcl vis
 #include <pcl/point_cloud.h> //basic pcl includes
 #include <pcl/point_types.h>
 

@@ -18,10 +18,14 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P
 
 # Find universal dependencies
 # Boost
+include(${PROJECT_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
+# SSE flags
+include(${PROJECT_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
+PCL_CHECK_FOR_SSE()
 
 # Add the library subdirectories
 include(${PROJECT_SOURCE_DIR}/cmake/pcl_targets.cmake)
-#add_subdirectory(pcl)
+add_subdirectory(common)
 add_subdirectory(visualization)
 
 # Package creation
@@ -30,4 +34,8 @@ configure_file("${PROJECT_SOURCE_DIR}/cmake/cpack_options.cmake.in"
     "${PROJECT_BINARY_DIR}/cpack_options.cmake" @ONLY)
 set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/cpack_options.cmake")
 include(CPack)
+
+# Finish up
+PCL_WRITE_STATUS_REPORT()
+PCL_RESET_MAPS()
 

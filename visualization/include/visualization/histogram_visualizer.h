@@ -37,10 +37,10 @@
 #ifndef PCL_PCL_HISTOGRAM_VISUALIZER_H_
 #define PCL_PCL_HISTOGRAM_VISUALIZER_H_
 
-#include <pcl_visualization/interactor.h>
-#include <pcl_visualization/interactor_style.h>
-#include <pcl_visualization/common/common.h>
-#include <pcl_visualization/common/ren_win_interact_map.h>
+#include <visualization/interactor.h>
+#include <visualization/interactor_style.h>
+#include <visualization/common/common.h>
+#include <visualization/common/ren_win_interact_map.h>
 #include <vtkCommand.h>
 #include <vtkXYPlotActor.h>
 #include <vtkTextProperty.h>

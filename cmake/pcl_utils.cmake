@@ -202,3 +202,33 @@ macro(PROCESS_ARGUMENTS _sources_args _include_dirs_args _lib_dirs_args
     endforeach(_arg)
 endmacro(PROCESS_ARGUMENTS)
 
+
+###############################################################################
+# Set a value in a map.
+# _map The map name.
+# _key The key name.
+# _value The value.
+macro(SET_IN_MAP _map _key _value)
+    set("${_map}_${_key}" "${_value}")
+endmacro(SET_IN_MAP)
+
+
+###############################################################################
+# Set a value in a global, cached map.
+# _map The map name.
+# _key The key name.
+# _value The value.
+macro(SET_IN_GLOBAL_MAP _map _key _value)
+    set("${_map}_${_key}" "${_value}" CACHE INTERNAL "Map value" FORCE)
+endmacro(SET_IN_GLOBAL_MAP)
+
+
+###############################################################################
+# Get a value from a map.
+# _dest The name of the variable to store the value in.
+# _map The map name.
+# _key The key name.
+macro(GET_IN_MAP _dest _map _key)
+    set(${_dest} ${${_map}_${_key}})
+endmacro(GET_IN_MAP)
+

@@ -36,7 +36,7 @@
 \author Bastian Steder
 **/
 
-#include <pcl_visualization/common/float_image_utils.h>
+#include <visualization/common/float_image_utils.h>
 #include <cmath>
 #include <pcl/win32_macros.h>
 

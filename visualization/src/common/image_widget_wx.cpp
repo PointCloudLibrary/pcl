@@ -37,8 +37,8 @@
 **/
 
 
-#include <pcl_visualization/common/image_widget_wx.h>
-#include <pcl_visualization/common/float_image_utils.h>
+#include <visualization/common/image_widget_wx.h>
+#include <visualization/common/float_image_utils.h>
 
 #include <iostream>
 using std::cout;

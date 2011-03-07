@@ -31,44 +31,48 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: io.h 34656 2010-12-11 01:23:40Z rusu $
+ * $Id: actor_map.h 34848 2010-12-17 23:59:13Z rusu $
  *
  */
-#ifndef PCL_PCL_VISUALIZER_COMMON_IO_H_
-#define PCL_PCL_VISUALIZER_COMMON_IO_H_
+#ifndef PCL_PCL_VISUALIZER_ACTOR_MAP_H_
+#define PCL_PCL_VISUALIZER_ACTOR_MAP_H_
 
-#include "pcl_visualization/common/actor_map.h"
-
+#include <visualization/point_cloud_handlers.h>
+#include <vector>
+#include <map>
+#include <vtkLODActor.h>
 #include <vtkSmartPointer.h>
-#include <vtkAppendPolyData.h>
-#include <vtkPolyData.h>
-#include <vtkPolyDataWriter.h>
-#include <vtkCleanPolyData.h>
-
-#include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/kdtree_flann.h>
-#include <terminal_tools/print.h>
+#include <sensor_msgs/PointCloud2.h>
 
 namespace pcl_visualization
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief Obtain a list of corresponding indices, for a set of vtk points, 
-    * from a pcl::PointCloud
-    * \param src the set of vtk points
-    * \param tgt the target pcl::PointCloud that we need to obtain indices from
-    * \param indices the resultant list of indices
-    */
-  void getCorrespondingPointCloud (vtkPolyData *src, const pcl::PointCloud<pcl::PointXYZ> &tgt, std::vector<int> &indices);
+  class CloudActor
+  {
+    typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
+    typedef GeometryHandler::Ptr GeometryHandlerPtr;
+    typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief Saves the vtk-formatted Point Cloud data into a set of files, based on whether
-    * the data comes from previously loaded PCD files. The PCD files are matched using the 
-    * a list of names for the actors on screen.
-    * \param data the vtk data
-    * \param out_file the output file (extra indices will be appended to it)
-    * \param actors the list of actors present on screen
-    */
-  bool savePointData (vtkPolyData* data, const std::string &out_file, const boost::shared_ptr<CloudActorMap> &actors);
+    typedef PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
+    typedef ColorHandler::Ptr ColorHandlerPtr;
+    typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
+
+    public:
+
+      CloudActor () : color_handler_index_ (0), geometry_handler_index_ (0) {}
+
+      vtkSmartPointer<vtkLODActor> actor;
+      std::vector<GeometryHandlerConstPtr> geometry_handlers;
+      std::vector<ColorHandlerConstPtr> color_handlers;
+
+      /** \brief The active color handler. */
+      int color_handler_index_;
+
+      /** \brief The active geometry handler. */
+      int geometry_handler_index_;
+  };
+  typedef std::map<std::string, CloudActor> CloudActorMap;
+
+  typedef std::map<std::string, vtkSmartPointer<vtkProp> > ShapeActorMap;
 }
 
 #endif

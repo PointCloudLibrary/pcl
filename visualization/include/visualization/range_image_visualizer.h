@@ -38,7 +38,7 @@
 
 // PCL includes
 #include <pcl/range_image/range_image.h>
-#include <pcl_visualization/common/image_widget_wx.h>
+#include <visualization/common/image_widget_wx.h>
 
 namespace pcl_visualization
 {

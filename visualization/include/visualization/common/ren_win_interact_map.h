@@ -43,7 +43,7 @@
 #include <vtkRenderWindow.h>
 #include <vtkXRenderWindowInteractor.h>
 #include <vtkInteractorStyleTrackballCamera.h>
-#include "pcl_visualization/interactor.h"
+#include "visualization/interactor.h"
 #include <map>
 
 namespace pcl_visualization

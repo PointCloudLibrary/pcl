@@ -36,7 +36,7 @@
 \author Bastian Steder
 **/
 
-#include <pcl_visualization/range_image_visualizer.h>
+#include <visualization/range_image_visualizer.h>
 
 pcl_visualization::RangeImageVisualizer::RangeImageVisualizer (const std::string& name) : ImageWidgetWX (), name_ (name)
 {

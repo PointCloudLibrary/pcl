@@ -42,10 +42,10 @@
 #include <pcl/point_cloud.h>
 // 
 #include <terminal_tools/print.h>
-#include <pcl_visualization/interactor.h>
-#include <pcl_visualization/interactor_style.h>
-#include <pcl_visualization/common/common.h>
-#include <pcl_visualization/common/shapes.h>
+#include <visualization/interactor.h>
+#include <visualization/interactor_style.h>
+#include <visualization/common/common.h>
+#include <visualization/common/shapes.h>
 #include <boost/make_shared.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>

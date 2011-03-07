@@ -37,7 +37,7 @@
 #ifndef PCL_POINT_CLOUD_HANDLERS_H_
 #define PCL_POINT_CLOUD_HANDLERS_H_
 
-#include <pcl_visualization/common/common.h>
+#include <visualization/common/common.h>
 // PCL includes
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
