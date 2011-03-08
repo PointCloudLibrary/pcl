@@ -41,11 +41,7 @@
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include "pcl/ros_macros.h"
-#if ROS_VERSION_MINIMUM(1, 3, 0)
-#include <std_msgs/Header.h>
-#else
 #include <roslib/Header.h>
-#endif
 #include <pcl/exceptions.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
