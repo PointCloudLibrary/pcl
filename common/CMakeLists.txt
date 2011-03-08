@@ -26,8 +26,20 @@ if(build)
         include/pcl/point_cloud.h
         include/pcl/point_representation.h
         include/pcl/point_types.h
+        include/pcl/ros_macros.h
         include/pcl/view.h
         include/pcl/win32_macros.h
+        include/pcl/PointField.h
+        include/pcl/PointCloud2.h
+        include/pcl/CameraInfo.h
+        include/pcl/PolygonMesh.h
+        include/pcl/image_encodings.h
+        include/pcl/ModelCoefficients.h
+        include/pcl/Image.h
+        include/pcl/Vertices.h
+        include/pcl/RegionOfInterest.h
+        include/pcl/PointIndices.h
+        include/pcl/Header.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
     set(common_incs include/pcl/common/angles.h

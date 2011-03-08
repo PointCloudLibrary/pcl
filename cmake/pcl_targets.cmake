@@ -94,8 +94,12 @@ endmacro(PCL_ADD_EXECUTABLE)
 # _flags The new compile flags to be added.
 macro(PCL_ADD_CFLAGS _name _flags)
     get_target_property(_current_flags ${_name} COMPILE_FLAGS)
-    set(_cflags "${_current_flags} ${_flags}")
-    set_target_properties(${_name} PROPERTIES COMPILE_FLAGS ${_cflags})
+    if(_current_flags STREQUAL "_current_flags-NOTFOUND")
+        set_target_properties(${_name} PROPERTIES COMPILE_FLAGS ${_flags})
+    else(_current_flags STREQUAL "_current_flags-NOTFOUND")
+        set_target_properties(${_name} PROPERTIES
+            COMPILE_FLAGS "${_current_flags} ${_flags}")
+    endif(_current_flags STREQUAL "_current_flags-NOTFOUND")
 endmacro(PCL_ADD_CFLAGS)
 
 
