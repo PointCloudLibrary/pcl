@@ -29,19 +29,23 @@ if(build)
         include/pcl/ros_macros.h
         include/pcl/view.h
         include/pcl/win32_macros.h
-        include/pcl/PointField.h
-        include/pcl/PointCloud2.h
-        include/pcl/CameraInfo.h
-        include/pcl/PolygonMesh.h
-        include/pcl/image_encodings.h
         include/pcl/ModelCoefficients.h
-        include/pcl/Image.h
+        include/pcl/PolygonMesh.h
         include/pcl/Vertices.h
-        include/pcl/RegionOfInterest.h
         include/pcl/PointIndices.h
         include/pcl/Header.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
+    set(sensor_msg_incs include/pcl/sensor_msgs/PointField.h
+        include/pcl/sensor_msgs/PointCloud2.h
+        include/pcl/sensor_msgs/CameraInfo.h
+        include/pcl/sensor_msgs/image_encodings.h
+        include/pcl/sensor_msgs/Image.h
+        include/pcl/sensor_msgs/RegionOfInterest.h
+        )
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} sensor_msgs ${sensor_msg_incs})
+    set(std_msg_incs include/pcl/std_msgs/Header.h)
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} std_msgs ${std_msg_incs})
     set(common_incs include/pcl/common/angles.h
         include/pcl/common/angles.hpp
         include/pcl/common/bivariate_polynomial.h
