@@ -5,8 +5,8 @@
 #include <ostream>
 
 // Include the correct Header path here
-#include "Header.h"
-#include "PointField.h"
+#include "std_msgs/Header.h"
+#include "sensor_msgs/PointField.h"
 
 namespace sensor_msgs
 {

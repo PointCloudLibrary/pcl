@@ -6,9 +6,9 @@
 #include <ostream>
 
 // Include the correct Header path here
-#include "Header.h"
-#include "PointCloud2.h"
-#include "Vertices.h"
+#include "std_msgs/Header.h"
+#include "sensor_msgs/PointCloud2.h"
+#include "sensor_msgs/Vertices.h"
 
 namespace pcl
 {

@@ -6,8 +6,8 @@
 #include <boost/array.hpp>
 
 // Include the correct Header path here
-#include "Header.h"
-#include "RegionOfInterest.h"
+#include "std_msgs/Header.h"
+#include "sensor_msgs/RegionOfInterest.h"
 
 namespace sensor_msgs
 {
