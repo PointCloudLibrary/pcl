@@ -22,6 +22,10 @@ include(${PROJECT_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
 # SSE flags
 include(${PROJECT_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
 PCL_CHECK_FOR_SSE()
+# Eigen
+GET_PKG_CONFIG_INFO(eigen REQUIRED)
+# FLANN
+GET_PKG_CONFIG_INFO(flann REQUIRED)
 
 # Add the library subdirectories
 include(${PROJECT_SOURCE_DIR}/cmake/pcl_targets.cmake)
