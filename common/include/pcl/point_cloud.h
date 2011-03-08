@@ -41,7 +41,7 @@
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include "pcl/ros_macros.h"
-#include <roslib/Header.h>
+#include <std_msgs/Header.h>
 #include <pcl/exceptions.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
