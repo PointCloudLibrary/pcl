@@ -33,18 +33,17 @@ if(build)
         include/pcl/PolygonMesh.h
         include/pcl/Vertices.h
         include/pcl/PointIndices.h
-        include/pcl/Header.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
-    set(sensor_msg_incs include/pcl/sensor_msgs/PointField.h
-        include/pcl/sensor_msgs/PointCloud2.h
-        include/pcl/sensor_msgs/CameraInfo.h
-        include/pcl/sensor_msgs/image_encodings.h
-        include/pcl/sensor_msgs/Image.h
-        include/pcl/sensor_msgs/RegionOfInterest.h
+    set(sensor_msg_incs include/sensor_msgs/PointField.h
+        include/sensor_msgs/PointCloud2.h
+        include/sensor_msgs/CameraInfo.h
+        include/sensor_msgs/image_encodings.h
+        include/sensor_msgs/Image.h
+        include/sensor_msgs/RegionOfInterest.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} sensor_msgs ${sensor_msg_incs})
-    set(std_msg_incs include/pcl/std_msgs/Header.h)
+    set(std_msg_incs include/std_msgs/Header.h)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} std_msgs ${std_msg_incs})
     set(common_incs include/pcl/common/angles.h
         include/pcl/common/angles.hpp
