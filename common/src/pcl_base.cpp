@@ -52,14 +52,45 @@ void
 pcl::PCLBase<sensor_msgs::PointCloud2>::setInputCloud (const PointCloud2ConstPtr &cloud)
 {
   input_ = cloud;
-  x_idx_ = pcl::getFieldIndex (*input_, x_field_name_);
-  y_idx_ = pcl::getFieldIndex (*input_, y_field_name_);
-  z_idx_ = pcl::getFieldIndex (*input_, z_field_name_);
+
+  for (size_t d = 0; d < cloud->fields.size (); ++d)
+  {
+    if (cloud->fields[d].name == x_field_name_)
+      x_idx_ = d;
+    if (cloud->fields[d].name == y_field_name_)
+      y_idx_ = d;
+    if (cloud->fields[d].name == z_field_name_)
+      z_idx_ = d;
+  }
 
   // Obtain the size of all fields. Restrict to sizeof FLOAT32 for now
   field_sizes_.resize (input_->fields.size ());
   for (size_t d = 0; d < input_->fields.size (); ++d)
-    field_sizes_[d] = (std::min) (pcl::getFieldSize (input_->fields[d].datatype), (int)sizeof (float));
+  {
+    int fsize;
+    switch (input_->fields[d].datatype)
+    {
+      case sensor_msgs::PointField::INT8:
+      case sensor_msgs::PointField::UINT8:
+        fsize = 1;
+
+      case sensor_msgs::PointField::INT16:
+      case sensor_msgs::PointField::UINT16:
+        fsize = 2;
+
+      case sensor_msgs::PointField::INT32:
+      case sensor_msgs::PointField::UINT32:
+      case sensor_msgs::PointField::FLOAT32:
+        fsize = 4;
+
+      case sensor_msgs::PointField::FLOAT64:
+        fsize = 8;
+
+      default:
+        fsize = 0;
+    }
+    field_sizes_[d] = (std::min) (fsize, (int)sizeof (float));
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
