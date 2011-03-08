@@ -39,7 +39,7 @@
 #define PCL_COMMON_H_
 
 #include <pcl/pcl_base.h>
-#include <pcl/io/io.h>
+//#include <pcl/io/io.h>
 #include <cfloat>
 
 /*

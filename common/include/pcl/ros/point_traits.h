@@ -46,11 +46,7 @@ Point traits.
 #define PCL_ROS_POINT_TRAITS_H_
 
 #include <pcl/ros_macros.h>
-#if ROS_VERSION_MINIMUM(1, 3, 0)
 #include <std_msgs/Header.h>
-#else
-#include <roslib/Header.h>
-#endif
 #include <sensor_msgs/PointField.h>
 #include <boost/type_traits/remove_all_extents.hpp>
 #include <boost/type_traits/is_same.hpp>
