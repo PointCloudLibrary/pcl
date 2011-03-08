@@ -39,7 +39,6 @@
 #define PCL_COMMON_H_
 
 #include <pcl/pcl_base.h>
-//#include <pcl/io/io.h>
 #include <cfloat>
 
 /*
@@ -160,7 +159,11 @@ namespace pcl
     min_p = FLT_MAX;
     max_p = -FLT_MAX;
 
-    int field_idx = pcl::getFieldIndex (cloud, field_name);
+    int field_idx = -1;
+    for (size_t d = 0; d < cloud.fields.size (); ++d)
+      if (cloud.fields[d].name == field_name)
+        field_idx = d;
+
     if (field_idx == -1)
     {
       ROS_ERROR ("[getMinMax] Invalid field (%s) given!", field_name.c_str ());
