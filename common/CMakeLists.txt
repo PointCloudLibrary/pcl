@@ -20,45 +20,20 @@ if(build)
         "" "")
 
     # Install include files
-    set(incs include/exceptions.h
-        include/pcl_base.h
-        include/pcl_macros.h
-        include/point_cloud.h
-        include/point_representation.h
-        include/point_types.h
-        include/view.h
-        include/win32_macros.h
+    set(incs include/pcl/point_representation.h
+        include/pcl/point_types.h
+        include/pcl/win32_macros.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
-    set(common_incs include/common/angles.h
-        include/common/angles.hpp
-        include/common/bivariate_polynomial.h
-        include/common/bivariate_polynomial.hpp
-        include/common/common.h
-        include/common/common.hpp
-        include/common/common_headers.h
-        include/common/distances.h
-        include/common/eigen.h
-        include/common/file_io.h
-        include/common/file_io.hpp
-        include/common/intersections.h
-        include/common/norms.h
-        include/common/norms.hpp
-        include/common/piecewise_linear_function.h
-        include/common/piecewise_linear_function.hpp
-        include/common/point_correspondence.h
-        include/common/polynomial_calculations.h
-        include/common/polynomial_calculations.hpp
-        include/common/poses_from_matches.h
-        include/common/time.h
-        include/common/time.hpp
-        include/common/transform.h
-        include/common/transform.hpp
-        include/common/transformation_from_correspondences.h
-        include/common/transformation_from_correspondences.hpp
-        include/common/vector_average.h
-        include/common/vector_average.hpp
+    set(impl_incs include/common/pcl/impl/instantiate.hpp
+        include/common/pcl/impl/point_types.hpp
         )
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} impl ${impl_incs})
+    set(ros_incs include/common/ros/conversions.h
+        include/common/ros/for_each_type.h
+        include/common/ros/point_traits.h
+        include/common/ros/register_point_struct.h
+        )
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ros ${ros_incs})
 endif(build)
 
