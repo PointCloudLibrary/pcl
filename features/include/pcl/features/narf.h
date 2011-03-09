@@ -232,6 +232,6 @@ class Narf
 
 }  // end namespace pcl
 
-#include "pcl/features/narf.hpp"
+#include "pcl/features/impl/narf.hpp"
 
 #endif  //#ifndef PCL_NARF_H_
