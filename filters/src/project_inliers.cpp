@@ -84,9 +84,13 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     output.is_dense     = input_->is_dense;
 
     // Get the distance field index
-    int x_idx = pcl::getFieldIndex (output, "x");
-    int y_idx = pcl::getFieldIndex (output, "y");
-    int z_idx = pcl::getFieldIndex (output, "z");
+    int x_idx, y_idx, z_idx;
+    for (size_t d = 0; d < output.fields.size (); ++d)
+    {
+      if (output.fields[d].name == "x") x_idx = d;
+      if (output.fields[d].name == "y") y_idx = d;
+      if (output.fields[d].name == "z") z_idx = d;
+    }
 
     // Copy the projected points
     for (size_t i = 0; i < indices_->size (); ++i)
@@ -115,9 +119,13 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
       output.is_dense     = true;
 
       // Get the distance field index
-      int x_idx = pcl::getFieldIndex (output, "x");
-      int y_idx = pcl::getFieldIndex (output, "y");
-      int z_idx = pcl::getFieldIndex (output, "z");
+      int x_idx, y_idx, z_idx;
+      for (size_t d = 0; d < output.fields.size (); ++d)
+      {
+        if (output.fields[d].name == "x") x_idx = d;
+        if (output.fields[d].name == "y") y_idx = d;
+        if (output.fields[d].name == "z") z_idx = d;
+      }
       // Copy the projected points
       for (size_t i = 0; i < indices_->size (); ++i)
       {
