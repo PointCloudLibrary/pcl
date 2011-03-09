@@ -31,6 +31,7 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
+    APPLY_PKG_CONFIG_TO_TGTS(${LIB_NAME} cminpack)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
         "${SUBSYS_DEPS}" "" "" "")
 
