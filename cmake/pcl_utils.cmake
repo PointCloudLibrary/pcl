@@ -114,9 +114,9 @@ macro(DISSECT_VERSION)
     string(REGEX REPLACE "^[0-9]+\\.([0-9]+).*" "\\1"
         PCL_MINOR_VERSION "${PCL_VERSION}")
     string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+)" "\\1"
-        PCL_REVISION_VERSION ${PCL_VERSION})
+        PCL_REVISION_VERSION "${PCL_VERSION}")
     string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1"
-        PCL_CANDIDATE_VERSION ${PCL_VERSION})
+        PCL_CANDIDATE_VERSION "${PCL_VERSION}")
 endmacro(DISSECT_VERSION)
 
 ###############################################################################
