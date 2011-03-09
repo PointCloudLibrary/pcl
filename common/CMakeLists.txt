@@ -10,7 +10,9 @@ if(build)
     set(srcs src/pcl_base.cpp
         src/distances.cpp
         src/intersections.cpp
+        src/parse.cpp
         src/poses_from_matches.cpp
+        src/print.cpp
         )
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -85,5 +87,10 @@ if(build)
         include/pcl/ros/register_point_struct.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ros ${ros_incs})
+    set(ttools_incs include/pcl/terminal_tools/parse.h
+        include/pcl/terminal_tools/print.h
+        include/pcl/terminal_tools/time.h
+        )
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ttools ${ttools_incs})
 endif(build)
 
