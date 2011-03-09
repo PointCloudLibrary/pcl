@@ -61,7 +61,7 @@ add_subdirectory(registration)
 add_subdirectory(segmentation)
 add_subdirectory(surface)
 add_subdirectory(visualization)
-
+add_subdirectory(test)
 # Package creation
 include(InstallRequiredSystemLibraries)
 configure_file("${PROJECT_SOURCE_DIR}/cmake/cpack_options.cmake.in"
