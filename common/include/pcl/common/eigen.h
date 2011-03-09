@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: eigen.h 36193 2011-02-23 07:46:50Z gedikli $
+ * $Id$
  *
  */
 // This file is part of Eigen, a lightweight C++ template library

@@ -45,6 +45,7 @@
 // PCL includes
 #include "pcl/pcl_base.h"
 #include "pcl/common/eigen.h"
+#include "pcl/common/centroid.h"
 
 #include "pcl/kdtree/tree_types.h"
 #include "pcl/kdtree/kdtree.h"
@@ -55,31 +56,6 @@
 
 namespace pcl
 {
-  /** \brief Compute the 3D (X-Y-Z) centroid of a set of points and return it as a 3D vector.
-    * \param cloud the input point cloud
-    * \param centroid the output centroid
-    */
-  template <typename PointT> inline void 
-  compute3DCentroid (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &centroid);
-
-  /** \brief Compute the 3D (X-Y-Z) centroid of a set of points using their indices and return it as a 3D vector.
-    * \param cloud the input point cloud
-    * \param indices the point cloud indices that need to be used
-    * \param centroid the output centroid
-    */
-  template <typename PointT> inline void 
-  compute3DCentroid (const pcl::PointCloud<PointT> &cloud, 
-                     const std::vector<int> &indices, Eigen::Vector4f &centroid);
-
-  /** \brief Compute the 3D (X-Y-Z) centroid of a set of points using their indices and return it as a 3D vector.
-    * \param cloud the input point cloud
-    * \param indices the point cloud indices that need to be used
-    * \param centroid the output centroid
-    */
-  template <typename PointT> inline void 
-  compute3DCentroid (const pcl::PointCloud<PointT> &cloud, 
-                     const pcl::PointIndices &indices, Eigen::Vector4f &centroid);
-
   /** \brief Helper functor structure for n-D centroid estimation. */
   template<typename PointT>
   struct NdCentroidFunctor
@@ -113,14 +89,16 @@ namespace pcl
       const Pod &p_;
   };
 
-  /** \brief General, all purpose nD centroid estimation for a set of points using their indices.
+  /** \brief General, all purpose nD centroid estimation for a set of points using their 
+    * indices.
     * \param cloud the input point cloud
     * \param centroid the output centroid
     */
   template <typename PointT> inline void 
   computeNDCentroid (const pcl::PointCloud<PointT> &cloud, Eigen::VectorXf &centroid);
 
-  /** \brief General, all purpose nD centroid estimation for a set of points using their indices.
+  /** \brief General, all purpose nD centroid estimation for a set of points using their 
+    * indices.
     * \param cloud the input point cloud
     * \param indices the point cloud indices that need to be used
     * \param centroid the output centroid
@@ -129,7 +107,8 @@ namespace pcl
   computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
                      const std::vector<int> &indices, Eigen::VectorXf &centroid);
 
-  /** \brief General, all purpose nD centroid estimation for a set of points using their indices.
+  /** \brief General, all purpose nD centroid estimation for a set of points using their 
+    * indices.
     * \param cloud the input point cloud
     * \param indices the point cloud indices that need to be used
     * \param centroid the output centroid
@@ -137,92 +116,6 @@ namespace pcl
   template <typename PointT> inline void 
   computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
                      const pcl::PointIndices &indices, Eigen::VectorXf &centroid);
-
-  /** \brief Compute the 3x3 covariance matrix of a given set of points.
-    * The result is returned as a Eigen::Matrix3f.
-    * Note: the covariance matrix is not normalized with the number of
-    * points. For a normalized covariance, please use
-    * computeNormalizedCovarianceMatrix.
-    * \param cloud the input point cloud
-    * \param centroid the centroid of the set of points in the cloud
-    * \param covariance_matrix the resultant 3x3 covariance matrix
-    */
-  template <typename PointT> inline void 
-  computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud, 
-                           const Eigen::Vector4f &centroid, 
-                           Eigen::Matrix3f &covariance_matrix);
-
-  /** \brief Compute normalized the 3x3 covariance matrix of a given set of points.
-    * The result is returned as a Eigen::Matrix3f.
-    * Normalized means that every entry has been divided by the number of points in the point cloud.
-    * \param cloud the input point cloud
-    * \param centroid the centroid of the set of points in the cloud
-    * \param covariance_matrix the resultant 3x3 covariance matrix
-    */
-  template <typename PointT> inline void 
-  computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud, 
-                                     const Eigen::Vector4f &centroid, 
-                                     Eigen::Matrix3f &covariance_matrix);
-
-  /** \brief Compute the 3x3 covariance matrix of a given set of points using their indices.
-    * The result is returned as a Eigen::Matrix3f.
-    * Note: the covariance matrix is not normalized with the number of
-    * points. For a normalized covariance, please use
-    * computeNormalizedCovarianceMatrix.
-    * \param cloud the input point cloud
-    * \param indices the point cloud indices that need to be used
-    * \param centroid the centroid of the set of points in the cloud
-    * \param covariance_matrix the resultant 3x3 covariance matrix
-    */
-  template <typename PointT> inline void 
-  computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud, 
-                           const std::vector<int> &indices, 
-                           const Eigen::Vector4f &centroid, 
-                           Eigen::Matrix3f &covariance_matrix);
-
-  /** \brief Compute the 3x3 covariance matrix of a given set of points using their indices.
-    * The result is returned as a Eigen::Matrix3f.
-    * Note: the covariance matrix is not normalized with the number of
-    * points. For a normalized covariance, please use
-    * computeNormalizedCovarianceMatrix.
-    * \param cloud the input point cloud
-    * \param indices the point cloud indices that need to be used
-    * \param centroid the centroid of the set of points in the cloud
-    * \param covariance_matrix the resultant 3x3 covariance matrix
-    */
-  template <typename PointT> inline void 
-  computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud, 
-                           const pcl::PointIndices &indices, 
-                           const Eigen::Vector4f &centroid, 
-                           Eigen::Matrix3f &covariance_matrix);
-
-  /** \brief Compute the normalized 3x3 covariance matrix of a given set of points using their indices.
-    * The result is returned as a Eigen::Matrix3f.
-    * Normalized means that every entry has been divided by the number of entries in indices.
-    * \param cloud the input point cloud
-    * \param indices the point cloud indices that need to be used
-    * \param centroid the centroid of the set of points in the cloud
-    * \param covariance_matrix the resultant 3x3 covariance matrix
-    */
-  template <typename PointT> inline void 
-  computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud, 
-                                     const std::vector<int> &indices, 
-                                     const Eigen::Vector4f &centroid, 
-                                     Eigen::Matrix3f &covariance_matrix);
-
-  /** \brief Compute the normalized 3x3 covariance matrix of a given set of points using their indices.
-    * The result is returned as a Eigen::Matrix3f.
-    * Normalized means that every entry has been divided by the number of entries in indices.
-    * \param cloud the input point cloud
-    * \param indices the point cloud indices that need to be used
-    * \param centroid the centroid of the set of points in the cloud
-    * \param covariance_matrix the resultant 3x3 covariance matrix
-    */
-  template <typename PointT> inline void 
-  computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud, 
-                                     const pcl::PointIndices &indices, 
-                                     const Eigen::Vector4f &centroid, 
-                                     Eigen::Matrix3f &covariance_matrix);
 
   /** \brief Solve the eigenvalues and eigenvectors of a given 3x3 covariance matrix, and estimate the least-squares
     * plane normal and surface curvature.
