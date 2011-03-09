@@ -1,6 +1,6 @@
 set(SUBSYS_NAME surface)
 set(SUBSYS_DESC "Point cloud surface library")
-set(SUBSYS_DEPS common io features)
+set(SUBSYS_DEPS common io features kdtree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
