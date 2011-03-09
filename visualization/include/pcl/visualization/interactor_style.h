@@ -60,8 +60,8 @@
 #include <vtkPlanes.h>
 
 #include <terminal_tools/print.h>
-#include <visualization/common/actor_map.h>
-#include <visualization/common/ren_win_interact_map.h>
+#include <pcl/visualization/common/actor_map.h>
+#include <pcl/visualization/common/ren_win_interact_map.h>
 #include <boost/shared_ptr.hpp>
 
 namespace pcl_visualization

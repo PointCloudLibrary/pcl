@@ -48,6 +48,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/range_image_visualizer.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+
     set(common_incs include/pcl/${SUBSYS_NAME}/common/actor_map.h
         include/pcl/${SUBSYS_NAME}/common/common.h
         include/pcl/${SUBSYS_NAME}/common/float_image_utils.h
@@ -57,6 +58,13 @@ if(build)
         include/pcl/${SUBSYS_NAME}/common/shapes.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/common ${common_incs})
+
+    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/cloud_viewer.hpp
+        include/pcl/${SUBSYS_NAME}/impl/histogram_visualizer.hpp
+        include/pcl/${SUBSYS_NAME}/impl/pcl_visualizer.hpp
+        include/pcl/${SUBSYS_NAME}/impl/point_cloud_handlers.hpp
+        )
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
     add_subdirectory(examples)
     add_subdirectory(test)

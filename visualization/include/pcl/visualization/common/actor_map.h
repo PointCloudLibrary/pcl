@@ -31,48 +31,48 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: ren_win_interact_map.h 34608 2010-12-08 00:38:28Z rusu $
+ * $Id: actor_map.h 34848 2010-12-17 23:59:13Z rusu $
  *
  */
-#ifndef PCL_PCL_VISUALIZER_REN_WIN_INTERACT_MAP_H_
-#define PCL_PCL_VISUALIZER_REN_WIN_INTERACT_MAP_H_
+#ifndef PCL_PCL_VISUALIZER_ACTOR_MAP_H_
+#define PCL_PCL_VISUALIZER_ACTOR_MAP_H_
 
-#include <vtkSmartPointer.h>
-#include <vtkXYPlotActor.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindow.h>
-#include <vtkXRenderWindowInteractor.h>
-#include <vtkInteractorStyleTrackballCamera.h>
-#include "visualization/interactor.h"
+#include <pcl/visualization/point_cloud_handlers.h>
+#include <vector>
 #include <map>
+#include <vtkLODActor.h>
+#include <vtkSmartPointer.h>
+#include <sensor_msgs/PointCloud2.h>
 
 namespace pcl_visualization
 {
-  class RenWinInteract
+  class CloudActor
   {
+    typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
+    typedef GeometryHandler::Ptr GeometryHandlerPtr;
+    typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
+
+    typedef PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
+    typedef ColorHandler::Ptr ColorHandlerPtr;
+    typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
+
     public:
 
-      RenWinInteract () : xy_plot_ (vtkSmartPointer<vtkXYPlotActor>::New ()), 
-                          ren_ (vtkSmartPointer<vtkRenderer>::New ()), 
-                          win_ (vtkSmartPointer<vtkRenderWindow>::New ())
-      {}
+      CloudActor () : color_handler_index_ (0), geometry_handler_index_ (0) {}
 
-      /** \brief The XY plot actor holding the actual data. */
-      vtkSmartPointer<vtkXYPlotActor> xy_plot_;
+      vtkSmartPointer<vtkLODActor> actor;
+      std::vector<GeometryHandlerConstPtr> geometry_handlers;
+      std::vector<ColorHandlerConstPtr> color_handlers;
 
-      /** \brief The renderer used. */
-      vtkSmartPointer<vtkRenderer> ren_;
+      /** \brief The active color handler. */
+      int color_handler_index_;
 
-      /** \brief The render window. */
-      vtkSmartPointer<vtkRenderWindow> win_;
-
-      /** \brief The render window interactor. */
-      vtkSmartPointer<PCLVisualizerInteractor> interactor_;
-
-      /** \brief The render window interactor style. */
-      vtkSmartPointer<vtkInteractorStyleTrackballCamera> style_;
+      /** \brief The active geometry handler. */
+      int geometry_handler_index_;
   };
-  typedef std::map<std::string, RenWinInteract> RenWinInteractMap;
+  typedef std::map<std::string, CloudActor> CloudActorMap;
+
+  typedef std::map<std::string, vtkSmartPointer<vtkProp> > ShapeActorMap;
 }
 
 #endif

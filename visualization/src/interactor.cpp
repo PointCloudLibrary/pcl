@@ -35,7 +35,7 @@
  *
  */
 
-#include <visualization/interactor.h>
+#include <pcl/visualization/interactor.h>
 
 namespace pcl_visualization
 {

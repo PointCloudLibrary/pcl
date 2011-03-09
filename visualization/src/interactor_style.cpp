@@ -36,8 +36,8 @@
  */
 
 #include <list>
-#include <visualization/common/io.h>
-#include <visualization/interactor_style.h>
+#include <pcl/visualization/common/io.h>
+#include <pcl/visualization/interactor_style.h>
 #include <vtkPolyData.h>
 #include <vtkMapper.h>
 #include <vtkPolyDataMapper.h>
