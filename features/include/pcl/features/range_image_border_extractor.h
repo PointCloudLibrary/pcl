@@ -339,6 +339,6 @@ class RangeImageBorderExtractor : public Feature<PointWithRange,BorderDescriptio
 
 }  // namespace end
 
-#include "pcl/features/range_image_border_extractor.hpp"  // Definitions of templated and inline functions
+#include <pcl/features/impl/range_image_border_extractor.hpp>  // Definitions of templated and inline functions
 
 #endif  //#ifndef PCL_RANGE_IMAGE_BORDER_EXTRACTOR_H_
