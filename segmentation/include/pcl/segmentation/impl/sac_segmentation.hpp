@@ -40,8 +40,6 @@
 
 #include "pcl/segmentation/sac_segmentation.h"
 
-#include "pcl/io/io.h"
-
 // Sample Consensus methods
 #include "pcl/sample_consensus/method_types.h"
 #include "pcl/sample_consensus/sac.h"

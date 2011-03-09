@@ -39,7 +39,7 @@
 #define PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_
 
 #include "pcl/segmentation/segment_differences.h"
-#include "pcl/io/io.h"
+#include "pcl/common/concatenate.h"
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -70,7 +70,24 @@ pcl::getPointCloudDifference (
       src_indices.push_back (i);
   }
  
-  copyPointCloud (src, src_indices, output);
+  // Allocate enough space and copy the basics
+  output.points.resize (src_indices.size ());
+  output.header   = src.header;
+  output.width    = src_indices.size ();
+  output.height   = 1;
+  if (src.is_dense)
+    output.is_dense = true;
+  else
+    // It's not necessarily true that is_dense is false if cloud_in.is_dense is false
+    // To verify this, we would need to iterate over all points and check for NaNs
+    output.is_dense = false;
+
+  // Copy all the data fields from the input cloud to the output one
+  typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+  // Iterate over each point
+  for (size_t i = 0; i < src_indices.size (); ++i)
+    // Iterate over each dimension
+    pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (src.points[src_indices[i]], output.points[i]));
 }
 
 //////////////////////////////////////////////////////////////////////////
