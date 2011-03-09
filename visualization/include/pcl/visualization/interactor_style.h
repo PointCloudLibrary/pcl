@@ -59,7 +59,7 @@
 #include <vtkClipPolyData.h>
 #include <vtkPlanes.h>
 
-#include <terminal_tools/print.h>
+#include <pcl/terminal_tools/print.h>
 #include <pcl/visualization/common/actor_map.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
 #include <boost/shared_ptr.hpp>

@@ -35,8 +35,8 @@
  *
  */
 
-#include <visualization/point_cloud_handlers.h>
-#include <terminal_tools/time.h>
+#include <pcl/visualization/point_cloud_handlers.h>
+#include <pcl/terminal_tools/time.h>
 #include <pcl/win32_macros.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

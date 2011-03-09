@@ -38,7 +38,7 @@
 #define TERMINAL_TOOLS_TIME_H_
 
 #include <sys/time.h>
-#include "terminal_tools/print.h"
+#include <pcl/terminal_tools/print.h>
 
 namespace terminal_tools
 {
