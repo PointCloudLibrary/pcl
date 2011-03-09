@@ -189,6 +189,6 @@ namespace pcl
   };
 }
 
-#include "pcl/registration/ia_ransac.hpp"
+#include "pcl/registration/impl/ia_ransac.hpp"
 
 #endif  //#ifndef IA_RANSAC_H_
