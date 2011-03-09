@@ -1,6 +1,6 @@
 set(SUBSYS_NAME keypoints)
 set(SUBSYS_DESC "Point cloud keypoints library")
-set(SUBSYS_DEPS common features)
+set(SUBSYS_DEPS common features io kdtree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)

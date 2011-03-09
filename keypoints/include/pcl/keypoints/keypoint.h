@@ -181,6 +181,6 @@ namespace pcl
   };
 }
 
-#include "pcl/keypoints/keypoint.hpp"
+#include <pcl/keypoints/impl/keypoint.hpp>
 
 #endif  //#ifndef PCL_KEYPOINT_H_
