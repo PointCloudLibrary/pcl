@@ -1,0 +1,8 @@
+diff -r c40708b9088d Eigen/src/Eigen2Support/CMakeLists.txt
+--- a/Eigen/src/Eigen2Support/CMakeLists.txt	Mon Feb 28 00:55:52 2011 -0500
++++ b/Eigen/src/Eigen2Support/CMakeLists.txt	Wed Mar 09 14:37:26 2011 +0100
+@@ -4,3 +4,4 @@
+   ${Eigen_Eigen2Support_SRCS}
+   DESTINATION ${INCLUDE_INSTALL_DIR}/Eigen/src/Eigen2Support COMPONENT Devel
+   )
++add_subdirectory(Geometry)
