@@ -1,6 +1,6 @@
 set(SUBSYS_NAME segmentation)
 set(SUBSYS_DESC "Point cloud segmentation library")
-set(SUBSYS_DEPS common kdtree sample_consensus)
+set(SUBSYS_DEPS common features io kdtree sample_consensus)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
