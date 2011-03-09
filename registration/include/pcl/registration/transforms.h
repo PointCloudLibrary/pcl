@@ -140,6 +140,6 @@ namespace pcl
                                   const Eigen::Quaternionf &rotation);
 }
 
-#include "pcl/registration/transforms.hpp"
+#include "pcl/registration/impl/transforms.hpp"
 
 #endif // PCL_TRANSFORMS_H_
