@@ -273,6 +273,6 @@ namespace pcl
   getEigenAsPointCloud (Eigen::MatrixXf &in, sensor_msgs::PointCloud2 &out);
 }
 
-#include "pcl/io/io.hpp"
+#include "pcl/io/impl/io.hpp"
 
 #endif  //#ifndef PCL_IO_IO_H_

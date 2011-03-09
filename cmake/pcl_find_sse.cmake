@@ -84,3 +84,13 @@ macro(PCL_CHECK_FOR_SSE)
     endif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 endmacro(PCL_CHECK_FOR_SSE)
 
+
+###############################################################################
+# Add the SSE flags to a target.
+# _name The name of the target to add the flags to.
+macro(PCL_ADD_SSE_FLAGS _name)
+    if(SSE_FLAGS)
+        PCL_ADD_CFLAGS(${_name} ${SSE_FLAGS})
+    endif(SSE_FLAGS)
+endmacro(PCL_ADD_SSE_FLAGS)
+

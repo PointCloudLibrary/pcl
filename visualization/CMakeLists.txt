@@ -30,33 +30,33 @@ if(build)
         src/cloud_viewer.cpp
         )
 
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${PROJECT_SOURCE_DIR}/common/include)
-    PCL_ADD_LIBRARY(pcl_visualization ${SUBSYS_NAME} ${srcs})
-    target_link_libraries(pcl_visualization ${wxWidgets_LIBRARIES}
+    set(LIB_NAME pcl_${SUBSYS_NAME})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
+    target_link_libraries(${LIB_NAME} ${wxWidgets_LIBRARIES}
         vtkCommon vtkWidgets vtkHybrid ${Boost_LIBRARIES})
-    PCL_MAKE_PKGCONFIG(pcl_visualization ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
-        "" "")
+    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
+        "${SUBSYS_DEPS}" "" "" "")
 
     # Install include files
-    set(incs include/visualization/cloud_viewer.h
-        include/visualization/histogram_visualizer.h
-        include/visualization/interactor.h
-        include/visualization/interactor_style.h
-        include/visualization/pcl_visualizer.h
-        include/visualization/point_cloud_handlers.h
-        include/visualization/range_image_visualizer.h
+    set(incs include/pcl/${SUBSYS_NAME}/cloud_viewer.h
+        include/pcl/${SUBSYS_NAME}/histogram_visualizer.h
+        include/pcl/${SUBSYS_NAME}/interactor.h
+        include/pcl/${SUBSYS_NAME}/interactor_style.h
+        include/pcl/${SUBSYS_NAME}/pcl_visualizer.h
+        include/pcl/${SUBSYS_NAME}/point_cloud_handlers.h
+        include/pcl/${SUBSYS_NAME}/range_image_visualizer.h
         )
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} visualization ${incs})
-    set(common_incs include/visualization/common/actor_map.h
-        include/visualization/common/common.h
-        include/visualization/common/float_image_utils.h
-        include/visualization/common/image_widget_wx.h
-        include/visualization/common/io.h
-        include/visualization/common/ren_win_interact_map.h
-        include/visualization/common/shapes.h
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+    set(common_incs include/pcl/${SUBSYS_NAME}/common/actor_map.h
+        include/pcl/${SUBSYS_NAME}/common/common.h
+        include/pcl/${SUBSYS_NAME}/common/float_image_utils.h
+        include/pcl/${SUBSYS_NAME}/common/image_widget_wx.h
+        include/pcl/${SUBSYS_NAME}/common/io.h
+        include/pcl/${SUBSYS_NAME}/common/ren_win_interact_map.h
+        include/pcl/${SUBSYS_NAME}/common/shapes.h
         )
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} visualization/common ${common_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/common ${common_incs})
 
     add_subdirectory(examples)
     add_subdirectory(test)

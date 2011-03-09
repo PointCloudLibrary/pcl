@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+    "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 project(PCL)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
@@ -28,10 +30,23 @@ APPLY_PKG_CONFIG_DIRS(eigen3)
 # FLANN
 GET_PKG_CONFIG_INFO(flann REQUIRED)
 APPLY_PKG_CONFIG_DIRS(flann)
+# OpenMP
+include(${PROJECT_SOURCE_DIR}/cmake/pcl_openmp.cmake)
+PCL_FIND_OPENMP_FLAGS()
 
 # Add the library subdirectories
 include(${PROJECT_SOURCE_DIR}/cmake/pcl_targets.cmake)
 add_subdirectory(common)
+add_subdirectory(io)
+add_subdirectory(kdtree)
+add_subdirectory(sample_consensus)
+add_subdirectory(features)
+add_subdirectory(keypoints)
+add_subdirectory(range_image)
+add_subdirectory(filters)
+add_subdirectory(registration)
+add_subdirectory(segmentation)
+add_subdirectory(surface)
 add_subdirectory(visualization)
 
 # Package creation

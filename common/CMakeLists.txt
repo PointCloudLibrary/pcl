@@ -15,7 +15,7 @@ if(build)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(pcl_common ${SUBSYS_NAME} ${srcs})
-    PCL_ADD_CFLAGS(pcl_common ${SSE_FLAGS})
+    PCL_ADD_SSE_FLAGS(pcl_common)
     PCL_MAKE_PKGCONFIG(pcl_common ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
         "" "")
 

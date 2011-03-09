@@ -36,6 +36,8 @@ macro(PCL_SUBSYS_DEPEND _var _name)
             if(NOT ${_dep_opt})
                 set(${_var} FALSE)
                 PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires ${_dep}")
+            else(NOT ${_dep_opt})
+                include_directories(${PROJECT_SOURCE_DIR}/${_dep}/include)
             endif(NOT ${_dep_opt})
         endforeach(_dep)
     endif(${_var})
@@ -91,16 +93,32 @@ endmacro(PCL_ADD_EXECUTABLE)
 # Add compile flags to a target (because CMake doesn't provide something so
 # common itself).
 # _name The target name.
-# _flags The new compile flags to be added.
+# _flags The new compile flags to be added, as a string.
 macro(PCL_ADD_CFLAGS _name _flags)
     get_target_property(_current_flags ${_name} COMPILE_FLAGS)
-    if(_current_flags STREQUAL "_current_flags-NOTFOUND")
+    if(NOT _current_flags)
         set_target_properties(${_name} PROPERTIES COMPILE_FLAGS ${_flags})
-    else(_current_flags STREQUAL "_current_flags-NOTFOUND")
+    else(NOT _current_flags)
         set_target_properties(${_name} PROPERTIES
             COMPILE_FLAGS "${_current_flags} ${_flags}")
-    endif(_current_flags STREQUAL "_current_flags-NOTFOUND")
+    endif(NOT _current_flags)
 endmacro(PCL_ADD_CFLAGS)
+
+
+###############################################################################
+# Add link flags to a target (because CMake doesn't provide something so
+# common itself).
+# _name The target name.
+# _flags The new link flags to be added, as a string.
+macro(PCL_ADD_LINKFLAGS _name _flags)
+    get_target_property(_current_flags ${_name} LINK_FLAGS)
+    if(NOT _current_flags)
+        set_target_properties(${_name} PROPERTIES LINK_FLAGS ${_flags})
+    else(NOT _current_flags)
+        set_target_properties(${_name} PROPERTIES
+            LINK_FLAGS "${_current_flags} ${_flags}")
+    endif(NOT _current_flags)
+endmacro(PCL_ADD_LINKFLAGS)
 
 
 ###############################################################################
