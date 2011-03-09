@@ -41,8 +41,6 @@
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
 
-#include <pcl/features/normal_3d.h>
-
 namespace pcl
 {
   /** \brief Get the distance from a point to a plane (signed) defined by ax+by+cz+d=0
