@@ -71,7 +71,7 @@ if(build)
         ${common_impl_incs})
 
     #add_subdirectory(examples)
-    add_subdirectory(test)
+    #add_subdirectory(test)
     add_subdirectory(tools)
 
     # share data: http://pr.willowgarage.com/data/pcl/partial_cup_model_new.pcd

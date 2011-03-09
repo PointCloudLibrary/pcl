@@ -39,12 +39,12 @@
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
 #include <cfloat>
-#include "pcl_visualization/point_cloud_handlers.h"
-#include "pcl_visualization/pcl_visualizer.h"
-#include "pcl_visualization/histogram_visualizer.h"
-#include <terminal_tools/print.h>
-#include <terminal_tools/parse.h>
-#include <terminal_tools/time.h>
+#include <pcl/visualization/point_cloud_handlers.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/histogram_visualizer.h>
+#include <pcl/terminal_tools/print.h>
+#include <pcl/terminal_tools/parse.h>
+#include <pcl/terminal_tools/time.h>
 
 using terminal_tools::print_color;
 using terminal_tools::print_error;
