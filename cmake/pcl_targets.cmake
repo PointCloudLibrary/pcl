@@ -17,8 +17,7 @@ macro(PCL_SUBSYS_OPTION _var _name _desc _default)
         set(${_var} TRUE)
         PCL_SET_SUBSYS_STATUS(${_name} TRUE)
     endif(NOT ${_opt_name})
-    set(PCL_SUBSYSTEMS "${PCL_SUBSYSTEMS};${_name}" CACHE INTERNAL
-        "Internal list of subsystems" FORCE)
+    PCL_ADD_SUBSYSTEM(${_name})
 endmacro(PCL_SUBSYS_OPTION)
 
 
@@ -32,13 +31,13 @@ endmacro(PCL_SUBSYS_OPTION)
 macro(PCL_SUBSYS_DEPEND _var _name)
     if(${_var})
         foreach(_dep ${ARGN})
-            set(_dep_opt "BUILD_${_dep}")
-            if(NOT ${_dep_opt})
+            PCL_GET_SUBSYS_STATUS(_status ${_dep})
+            if(NOT _status)
                 set(${_var} FALSE)
                 PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires ${_dep}")
-            else(NOT ${_dep_opt})
+            else(NOT _status)
                 include_directories(${PROJECT_SOURCE_DIR}/${_dep}/include)
-            endif(NOT ${_dep_opt})
+            endif(NOT _status)
         endforeach(_dep)
     endif(${_var})
 endmacro(PCL_SUBSYS_DEPEND)
@@ -166,6 +165,15 @@ endmacro(PCL_RESET_MAPS)
 
 
 ###############################################################################
+# Register a subsystem.
+# _name Subsystem name.
+macro(PCL_ADD_SUBSYSTEM _name)
+    set(PCL_SUBSYSTEMS "${PCL_SUBSYSTEMS};${_name}" CACHE INTERNAL
+        "Internal list of subsystems" FORCE)
+endmacro(PCL_ADD_SUBSYSTEM)
+
+
+###############################################################################
 # Set the status of a subsystem.
 # _name Subsystem name.
 # _status TRUE if being built, FALSE otherwise.
@@ -182,11 +190,20 @@ endmacro(PCL_SET_SUBSYS_STATUS)
 
 
 ###############################################################################
+# Get the status of a subsystem
+# _var Destination variable.
+# _name Name of the subsystem.
+macro(PCL_GET_SUBSYS_STATUS _var _name)
+    GET_IN_MAP(${_var} PCL_SUBSYS_STATUS ${_name})
+endmacro(PCL_GET_SUBSYS_STATUS)
+
+
+###############################################################################
 # Write a report on the build/not-build status of the subsystems
 macro(PCL_WRITE_STATUS_REPORT)
     message(STATUS "The following subsystems will be built:")
     foreach(_ss ${PCL_SUBSYSTEMS})
-        GET_IN_MAP(_status PCL_SUBSYS_STATUS ${_ss})
+        PCL_GET_SUBSYS_STATUS(_status ${_ss})
         if(_status)
             message(STATUS "  ${_ss}")
         endif(_status)
@@ -194,7 +211,7 @@ macro(PCL_WRITE_STATUS_REPORT)
 
     message(STATUS "The following subsystems will not be built:")
     foreach(_ss ${PCL_SUBSYSTEMS})
-        GET_IN_MAP(_status PCL_SUBSYS_STATUS ${_ss})
+        PCL_GET_SUBSYS_STATUS(_status ${_ss})
         if(NOT _status)
             GET_IN_MAP(_reason PCL_SUBSYS_REASONS ${_ss})
             message(STATUS "  ${_ss}: ${_reason}")

@@ -1,6 +1,6 @@
 set(SUBSYS_NAME range_image)
 set(SUBSYS_DESC "Point cloud range image library")
-set(SUBSYS_DEPS common)
+set(SUBSYS_DEPS common features)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
