@@ -449,6 +449,6 @@ namespace pcl
    };
 }
 
-#include "pcl/registration/registration.hpp"
+#include "pcl/registration/impl/registration.hpp"
 
 #endif  //#ifndef PCL_REGISTRATION_H_
