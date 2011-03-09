@@ -38,14 +38,10 @@
 #ifndef PCL_ICP_H_
 #define PCL_ICP_H_
 
-#include "pcl/io/pcd_io.h"
 // PCL includes
 #include "pcl/registration/registration.h"
-#include "pcl/features/feature.h"
 #include "pcl/sample_consensus/ransac.h"
 #include "pcl/sample_consensus/sac_model_registration.h"
-
-#include <Eigen/SVD>
 
 namespace pcl
 {
@@ -101,6 +97,6 @@ namespace pcl
   };
 }
 
-#include <pcl/registration/impl/icp.hpp>
+#include "pcl/registration/impl/icp.hpp"
 
 #endif  //#ifndef PCL_ICP_H_
