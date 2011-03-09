@@ -39,6 +39,7 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_LINE_H_
 
 #include "pcl/sample_consensus/sac_model_line.h"
+#include "pcl/common/centroid.h"
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

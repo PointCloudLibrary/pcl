@@ -51,7 +51,7 @@ namespace pcl
     * \param d the normalized <i>d</i> coefficient of a plane
     */
   template <typename Point> inline double
-    pointToPlaneDistanceSigned (const Point &p, double a, double b, double c, double d)
+  pointToPlaneDistanceSigned (const Point &p, double a, double b, double c, double d)
   {
     return (a * p.x + b * p.y + c * p.z + d);
   }
@@ -61,7 +61,7 @@ namespace pcl
     * \param plane_coefficients the normalized coefficients (a, b, c, d) of a plane
     */
   template <typename Point> inline double
-    pointToPlaneDistanceSigned (const Point &p, const Eigen::Vector4f &plane_coefficients)
+  pointToPlaneDistanceSigned (const Point &p, const Eigen::Vector4f &plane_coefficients)
   {
     return ( plane_coefficients[0] * p.x + plane_coefficients[1] * p.y + plane_coefficients[2] * p.z + plane_coefficients[3] );
   }
@@ -74,7 +74,7 @@ namespace pcl
     * \param d the normalized <i>d</i> coefficient of a plane
     */
   template <typename Point> inline double
-    pointToPlaneDistance (const Point &p, double a, double b, double c, double d)
+  pointToPlaneDistance (const Point &p, double a, double b, double c, double d)
   {
     return (fabs (pointToPlaneDistanceSigned (p, a, b, c, d)) );
   }
@@ -84,7 +84,7 @@ namespace pcl
     * \param plane_coefficients the normalized coefficients (a, b, c, d) of a plane
     */
   template <typename Point> inline double
-    pointToPlaneDistance (const Point &p, const Eigen::Vector4f &plane_coefficients)
+  pointToPlaneDistance (const Point &p, const Eigen::Vector4f &plane_coefficients)
   {
     return ( fabs (pointToPlaneDistanceSigned (p, plane_coefficients)) );
   }

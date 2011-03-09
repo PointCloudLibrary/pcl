@@ -285,5 +285,82 @@ pcl::computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
   return (pcl::computeCovarianceMatrix (cloud, indices.indices, centroid, covariance_matrix));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
+                       const Eigen::Vector4f &centroid,
+                       pcl::PointCloud<PointT> &cloud_out)
+{
+  cloud_out = cloud_in;
+
+  // Subtract the centroid from cloud_in
+  for (size_t i = 0; i < cloud_in.points.size (); ++i)
+    cloud_out.points[i].getVector4fMap () -= centroid;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
+                       const std::vector<int> &indices,
+                       const Eigen::Vector4f &centroid, 
+                       pcl::PointCloud<PointT> &cloud_out)
+{
+  cloud_out.header = cloud_in.header;
+  cloud_out.is_dense = cloud_in.is_dense;
+  if (indices.size () == cloud_in.points.size ())
+  {
+    cloud_out.width    = cloud_in.width;
+    cloud_out.height   = cloud_in.height;
+  }
+  else
+  {
+    cloud_out.width    = indices.size ();
+    cloud_out.height   = 1;
+  }
+  cloud_out.points.resize (indices.size ());
+
+  // Subtract the centroid from cloud_in
+  for (size_t i = 0; i < indices.size (); ++i)
+    cloud_out.points[i].getVector4fMap () = cloud_in.points[indices[i]].getVector4fMap () - 
+                                            centroid;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
+                       const Eigen::Vector4f &centroid,
+                       Eigen::MatrixXf &cloud_out)
+{
+  size_t npts = cloud_in.points.size ();
+
+  cloud_out = Eigen::MatrixXf::Zero (4, npts);        // keep the data aligned
+
+  for (size_t i = 0; i < npts; ++i)
+    // One column at a time
+    cloud_out.block<4, 1> (0, i) = cloud_in.points[i].getVector4fMap () - centroid;
+  
+  // Make sure we zero the 4th dimension out (1 row, N columns)
+  cloud_out.block (3, 0, 1, npts).setZero ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
+                       const std::vector<int> &indices,
+                       const Eigen::Vector4f &centroid, 
+                       Eigen::MatrixXf &cloud_out)
+{
+  size_t npts = indices.size ();
+
+  cloud_out = Eigen::MatrixXf::Zero (4, npts);        // keep the data aligned
+
+  for (size_t i = 0; i < npts; ++i)
+    // One column at a time
+    cloud_out.block<4, 1> (0, i) = cloud_in.points[indices[i]].getVector4fMap () - centroid;
+
+  // Make sure we zero the 4th dimension out (1 row, N columns)
+  cloud_out.block (3, 0, 1, npts).setZero ();
+}
+
 #endif  //#ifndef PCL_COMMON_IMPL_CENTROID_H_
 

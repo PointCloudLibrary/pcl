@@ -39,6 +39,8 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PLANE_H_
 
 #include "pcl/sample_consensus/sac_model_plane.h"
+#include "pcl/common/centroid.h"
+#include "pcl/common/eigen.h"
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -249,8 +251,27 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
   float curvature;
 
   // Use Least-Squares to fit the plane through all the given sample points and find out its coefficients
-  computePointNormal (*input_, inliers, plane_parameters, curvature);
-  optimized_coefficients = plane_parameters;
+  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
+  Eigen::Vector4f xyz_centroid;
+
+  // Estimate the XYZ centroid
+  compute3DCentroid (*input_, inliers, xyz_centroid);
+
+  // Compute the 3x3 covariance matrix
+  computeCovarianceMatrix (*input_, inliers, xyz_centroid, covariance_matrix);
+
+  // Compute the model coefficients
+  EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
+  EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
+  pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+
+  optimized_coefficients[0] = eigen_vectors (0, 0);
+  optimized_coefficients[1] = eigen_vectors (1, 0);
+  optimized_coefficients[2] = eigen_vectors (2, 0);
+  optimized_coefficients[3] = 0;
+
+  // Hessian form (D = nc . p_plane (centroid here) + p)
+  optimized_coefficients[3] = -1 * optimized_coefficients.dot (xyz_centroid);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -39,9 +39,7 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_REGISTRATION_H_
 
 #include "pcl/sample_consensus/sac_model_registration.h"
-//#include <pcl/common/common_headers.h>
-//#include <pcl/features/feature.h>
-
+#include "pcl/common/rigid_transforms.h"
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

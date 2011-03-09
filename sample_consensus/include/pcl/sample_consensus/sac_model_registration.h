@@ -38,10 +38,10 @@
 #ifndef PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_H_
 #define PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_H_
 
-#include <pcl/sample_consensus/sac_model.h>
-#include <pcl/sample_consensus/model_types.h>
-#include <pcl/registration/registration.h>
-#include <pcl/features/feature.h>
+#include "pcl/sample_consensus/sac_model.h"
+#include "pcl/sample_consensus/model_types.h"
+#include "pcl/common/centroid.h"
+#include "pcl/common/eigen.h"
 
 namespace pcl
 {

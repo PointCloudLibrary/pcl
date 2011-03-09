@@ -38,59 +38,12 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include "pcl/common/centroid.h"
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
 namespace pcl
 {
-  /** \brief Subtract a centroid from a point cloud and return the de-meaned representation
-    * \param cloud_in the input point cloud
-    * \param centroid the centroid of the point cloud
-    * \param cloud_out the resultant output point cloud
-    */
-  template <typename PointT> void 
-  demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                    const Eigen::Vector4f &centroid, 
-                    pcl::PointCloud<PointT> &cloud_out);
-
-  /** \brief Subtract a centroid from a point cloud and return the de-meaned representation
-    * \param cloud_in the input point cloud
-    * \param indices the set of point indices to use from the input point cloud
-    * \param centroid the centroid of the point cloud
-    * \param cloud_out the resultant output point cloud
-    */
-  template <typename PointT> void 
-  demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                    const std::vector<int> &indices, 
-                    const Eigen::Vector4f &centroid, 
-                    pcl::PointCloud<PointT> &cloud_out);
-
-  /** \brief Subtract a centroid from a point cloud and return the de-meaned
-    * representation as an Eigen matrix
-    * \param cloud_in the input point cloud
-    * \param centroid the centroid of the point cloud
-    * \param cloud_out the resultant output XYZ0 dimensions of \a cloud_in as
-    * an Eigen matrix (4 rows, N pts columns)
-    */
-  template <typename PointT> void 
-  demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                    const Eigen::Vector4f &centroid, 
-                    Eigen::MatrixXf &cloud_out);
-
-  /** \brief Subtract a centroid from a point cloud and return the de-meaned
-    * representation as an Eigen matrix
-    * \param cloud_in the input point cloud
-    * \param indices the set of point indices to use from the input point cloud
-    * \param centroid the centroid of the point cloud
-    * \param cloud_out the resultant output XYZ0 dimensions of \a cloud_in as
-    * an Eigen matrix (4 rows, N pts columns)
-    */
-  template <typename PointT> void 
-  demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                    const std::vector<int> &indices, 
-                    const Eigen::Vector4f &centroid, 
-                    Eigen::MatrixXf &cloud_out);
-
   /** \brief Apply an affine transform defined by an Eigen Transform
     * \param cloud_in the input point cloud
     * \param cloud_out the resultant output point cloud

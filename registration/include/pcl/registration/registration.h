@@ -44,6 +44,7 @@
 // PCL includes
 #include <pcl/pcl_base.h>
 
+#include "pcl/common/rigid_transforms.h"
 #include "pcl/kdtree/kdtree.h"
 #include "pcl/kdtree/kdtree_flann.h"
 
@@ -55,42 +56,8 @@
 
 namespace pcl
 {
-  /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
-   * \param cloud_src the source point cloud dataset
-   * \param cloud_tgt the target point cloud dataset
-   * \param transformation_matrix the resultant transformation matrix
-   */
-  template <typename PointSource, typename PointTarget> inline void 
-  estimateRigidTransformationSVD (const pcl::PointCloud<PointSource> &cloud_src, 
-                                  const pcl::PointCloud<PointTarget> &cloud_tgt, 
-                                  Eigen::Matrix4f &transformation_matrix);
-
-  /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
-   * \param cloud_src the source point cloud dataset
-   * \param indices_src the vector of indices describing the points of interest in \a cloud_src
-   * \param cloud_tgt the target point cloud dataset
-   * \param transformation_matrix the resultant transformation matrix
-   */
-  template <typename PointSource, typename PointTarget> inline void 
-  estimateRigidTransformationSVD (const pcl::PointCloud<PointSource> &cloud_src, const std::vector<int> &indices_src, 
-                                  const pcl::PointCloud<PointTarget> &cloud_tgt, 
-                                  Eigen::Matrix4f &transformation_matrix);
-
-  /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
-   * \param cloud_src the source point cloud dataset
-   * \param indices_src the vector of indices describing the points of interest in \a cloud_src
-   * \param cloud_tgt the target point cloud dataset
-   * \param indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
-   * \param transformation_matrix the resultant transformation matrix
-   */
-  template <typename PointSource, typename PointTarget> inline void 
-  estimateRigidTransformationSVD (const pcl::PointCloud<PointSource> &cloud_src, const std::vector<int> &indices_src, 
-                                  const pcl::PointCloud<PointTarget> &cloud_tgt, const std::vector<int> &indices_tgt, 
-                                  Eigen::Matrix4f &transformation_matrix);
-
-
-  /** \brief @b Registration represents the base registration class. All 3D registration methods should inherit from
-    * this class.
+  /** \brief @b Registration represents the base registration class. 
+    * All 3D registration methods should inherit from this class.
     * \author Radu Bogdan Rusu, Michael Dixon
     */
   template <typename PointSource, typename PointTarget>

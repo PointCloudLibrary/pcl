@@ -41,7 +41,6 @@
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/eigen.h>
-#include <pcl/features/feature.h>
 
 namespace pcl
 {
