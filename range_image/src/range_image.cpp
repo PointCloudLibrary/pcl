@@ -44,9 +44,6 @@ using std::cerr;
 #include <cmath>
 
 #include <pcl/range_image/range_image.h>
-
-//#include <pcl_visualization/common/float_image_utils.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/common/transformation_from_correspondences.h>
 
 namespace pcl 
@@ -1422,13 +1419,18 @@ void
 RangeImage::extractFarRanges (const sensor_msgs::PointCloud2& point_cloud_data,
                               PointCloud<PointWithViewpoint>& far_ranges)
 {
-  int x_idx        = getFieldIndex (point_cloud_data, "x"),
-      y_idx        = getFieldIndex (point_cloud_data, "y"),
-      z_idx        = getFieldIndex (point_cloud_data, "z"),
-      vp_x_idx     = getFieldIndex (point_cloud_data, "vp_x"),
-      vp_y_idx     = getFieldIndex (point_cloud_data, "vp_y"),
-      vp_z_idx     = getFieldIndex (point_cloud_data, "vp_z"),
-      distance_idx = getFieldIndex (point_cloud_data, "distance");
+  int x_idx, y_idx, z_idx,
+      vp_x_idx, vp_y_idx, vp_z_idx, distance_idx;
+  for (size_t d = 0; d < point_cloud_data.fields.size (); ++d)
+  {
+    if (point_cloud_data.fields[d].name == "x") x_idx = d;
+    if (point_cloud_data.fields[d].name == "y") y_idx = d;
+    if (point_cloud_data.fields[d].name == "z") z_idx = d;
+    if (point_cloud_data.fields[d].name == "vp_x") vp_x_idx = d;
+    if (point_cloud_data.fields[d].name == "vp_y") vp_y_idx = d;
+    if (point_cloud_data.fields[d].name == "vp_z") vp_z_idx = d;
+    if (point_cloud_data.fields[d].name == "distance") distance_idx = d;
+  }
   
   if (x_idx<0 || y_idx<0 || z_idx<0 || vp_x_idx<0 || vp_y_idx<0 || vp_z_idx<0 || distance_idx<0)
   {
