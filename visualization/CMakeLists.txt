@@ -1,21 +1,24 @@
 set(SUBSYS_NAME visualization)
 set(SUBSYS_DESC "Point cloud visualization library")
 set(SUBSYS_DEPS common io kdtree range_image)
+# Find wxWidgets
+find_package(wxWidgets)
+# Find VTK
+find_package (VTK)
 
-set(build TRUE)
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
+if(VTK_FOUND AND wxWidgets_FOUND)
+  include(${wxWidgets_USE_FILE})
+  include_directories(${wxWidgets_INCLUDE_DIRS})
+  include (${VTK_USE_FILE})
+  set(build TRUE)
+  PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
+  PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
+else(VTK_FOUND AND wxWidgets_FOUND)
+  unset(build)
+  PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} OFF)
+endif(VTK_FOUND AND wxWidgets_FOUND)
 
 if(build)
-    # Find wxWidgets
-    find_package(wxWidgets REQUIRED)
-    include(${wxWidgets_USE_FILE})
-    include_directories(${wxWidgets_INCLUDE_DIRS})
-
-    # Find VTK
-    find_package (VTK REQUIRED)
-    include (${VTK_USE_FILE})
-
     set(srcs src/interactor.cpp
         src/interactor_style.cpp
         src/point_cloud_handlers.cpp
