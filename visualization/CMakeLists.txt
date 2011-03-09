@@ -1,6 +1,6 @@
 set(SUBSYS_NAME visualization)
 set(SUBSYS_DESC "Point cloud visualization library")
-set(SUBSYS_DEPS common io kdtree range_image)
+set(SUBSYS_DEPS common features filters io kdtree range_image)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -70,7 +70,7 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/common/impl
         ${common_impl_incs})
 
-    add_subdirectory(examples)
+    #add_subdirectory(examples)
     add_subdirectory(test)
     add_subdirectory(tools)
 

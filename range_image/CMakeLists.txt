@@ -27,8 +27,8 @@ if(build)
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
 
-    set(impl_incs include/pcl/${SUBSYS_NAME}/range_image.hpp
-        include/pcl/${SUBSYS_NAME}/range_image_planar.hpp
+    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/range_image.hpp
+        include/pcl/${SUBSYS_NAME}/impl/range_image_planar.hpp
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 endif(build)

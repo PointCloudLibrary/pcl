@@ -63,31 +63,31 @@ if(build)
         include/pcl/${SUBSYS_NAME}/normal_3d_omp.h
         include/pcl/${SUBSYS_NAME}/normal_3d_tbb.h
         include/pcl/${SUBSYS_NAME}/pfh.h
-        include/pcl/${SUBSYS_NAME}/principal_curvature.h
+        include/pcl/${SUBSYS_NAME}/principal_curvatures.h
         include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h
         include/pcl/${SUBSYS_NAME}/rift.h
         include/pcl/${SUBSYS_NAME}/rsd.h
         include/pcl/${SUBSYS_NAME}/vfh.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-    set(impl_incs include/pcl/${SUBSYS_NAME}/boundary.hpp
-        include/pcl/${SUBSYS_NAME}/feature.hpp
-        include/pcl/${SUBSYS_NAME}/fpfh.hpp
-        include/pcl/${SUBSYS_NAME}/fpfh_omp.hpp
-        include/pcl/${SUBSYS_NAME}/integral_image_2d.hpp
-        include/pcl/${SUBSYS_NAME}/intensity_gradient.hpp
-        include/pcl/${SUBSYS_NAME}/intensity_spin.hpp
-        include/pcl/${SUBSYS_NAME}/moment_invariants.hpp
-        include/pcl/${SUBSYS_NAME}/narf.hpp
-        include/pcl/${SUBSYS_NAME}/normal_3d.hpp
-        include/pcl/${SUBSYS_NAME}/normal_3d_omp.hpp
-        include/pcl/${SUBSYS_NAME}/normal_3d_tbb.hpp
-        include/pcl/${SUBSYS_NAME}/pfh.hpp
-        include/pcl/${SUBSYS_NAME}/principal_curvature.hpp
-        include/pcl/${SUBSYS_NAME}/range_image_border_extractor.hpp
-        include/pcl/${SUBSYS_NAME}/rift.hpp
-        include/pcl/${SUBSYS_NAME}/rsd.hpp
-        include/pcl/${SUBSYS_NAME}/vfh.hpp
+    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/boundary.hpp
+        include/pcl/${SUBSYS_NAME}/impl/feature.hpp
+        include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp
+        include/pcl/${SUBSYS_NAME}/impl/fpfh_omp.hpp
+        include/pcl/${SUBSYS_NAME}/impl/integral_image_2d.hpp
+        include/pcl/${SUBSYS_NAME}/impl/intensity_gradient.hpp
+        include/pcl/${SUBSYS_NAME}/impl/intensity_spin.hpp
+        include/pcl/${SUBSYS_NAME}/impl/moment_invariants.hpp
+        include/pcl/${SUBSYS_NAME}/impl/narf.hpp
+        include/pcl/${SUBSYS_NAME}/impl/normal_3d.hpp
+        include/pcl/${SUBSYS_NAME}/impl/normal_3d_omp.hpp
+        include/pcl/${SUBSYS_NAME}/impl/normal_3d_tbb.hpp
+        include/pcl/${SUBSYS_NAME}/impl/pfh.hpp
+        include/pcl/${SUBSYS_NAME}/impl/principal_curvatures.hpp
+        include/pcl/${SUBSYS_NAME}/impl/range_image_border_extractor.hpp
+        include/pcl/${SUBSYS_NAME}/impl/rift.hpp
+        include/pcl/${SUBSYS_NAME}/impl/rsd.hpp
+        include/pcl/${SUBSYS_NAME}/impl/vfh.hpp
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 endif(build)
