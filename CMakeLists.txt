@@ -19,6 +19,7 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P
     "${PROJECT_BINARY_DIR}/uninstall_target.cmake")
 
 # Find universal dependencies
+# TODO: Write proper Find___.cmake modules for these
 # Boost
 include(${PROJECT_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
 # SSE flags
