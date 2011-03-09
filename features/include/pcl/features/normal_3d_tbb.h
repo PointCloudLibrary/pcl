@@ -38,8 +38,8 @@
 #ifndef PCL_NORMAL_3D_TBB_H_
 #define PCL_NORMAL_3D_TBB_H_
 
-//#include "pcl/pcl_config.h"
-//#if defined(HAVE_TBB)
+#include <pcl/pcl_config.h>
+#if defined(HAVE_TBB)
 
 #include <pcl/features/normal_3d.h>
 
@@ -129,7 +129,7 @@ namespace pcl
   };
 }
 
-//#endif  // HAVE_TBB
+#endif  // HAVE_TBB
 
 #endif  //#ifndef PCL_NORMAL_3D_TBB_H_
 

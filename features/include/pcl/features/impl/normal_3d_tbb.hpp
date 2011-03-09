@@ -38,6 +38,9 @@
 #ifndef PCL_FEATURES_IMPL_NORMAL_3D_TBB_H_
 #define PCL_FEATURES_IMPL_NORMAL_3D_TBB_H_
 
+#include <pcl/pcl_config.h>
+#if defined(HAVE_TBB)
+
 #include "pcl/features/normal_3d_tbb.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,6 +78,8 @@ pcl::TBB_NormalEstimationTBB<PointInT, PointOutT>::operator () (const tbb::block
 
 #define PCL_INSTANTIATE_TBB_NormalEstimationTBB(T,NT) template class pcl::TBB_NormalEstimationTBB<T,NT>;
 #define PCL_INSTANTIATE_NormalEstimationTBB(T,NT) template class pcl::NormalEstimationTBB<T,NT>;
+
+#endif  // HAVE_TBB
 
 #endif    // PCL_FEATURES_IMPL_NORMAL_3D_TBB_H_
 

@@ -40,6 +40,13 @@ APPLY_PKG_CONFIG_DIRS(cminpack)
 include(${PROJECT_SOURCE_DIR}/cmake/pcl_openmp.cmake)
 PCL_FIND_OPENMP_FLAGS()
 
+# Create the config.h file
+set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
+set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
+configure_file(${pcl_config_h_in} ${pcl_config_h})
+PCL_ADD_INCLUDES(common "" ${pcl_config_h})
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
+
 # Add the library subdirectories
 include(${PROJECT_SOURCE_DIR}/cmake/pcl_targets.cmake)
 add_subdirectory(common)

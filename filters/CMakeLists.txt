@@ -38,14 +38,14 @@ if(build)
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
 
-    set(impl_incs include/pcl/${SUBSYS_NAME}/conditional_removal.hpp
-        include/pcl/${SUBSYS_NAME}/extract_indices.hpp
-        include/pcl/${SUBSYS_NAME}/filter.hpp
-        include/pcl/${SUBSYS_NAME}/passthrough.hpp
-        include/pcl/${SUBSYS_NAME}/project_inliers.hpp
-        include/pcl/${SUBSYS_NAME}/radius_outlier_removal.hpp
-        include/pcl/${SUBSYS_NAME}/statistical_outlier_removal.hpp
-        include/pcl/${SUBSYS_NAME}/voxel_grid.hpp
+    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/conditional_removal.hpp
+        include/pcl/${SUBSYS_NAME}/impl/extract_indices.hpp
+        include/pcl/${SUBSYS_NAME}/impl/filter.hpp
+        include/pcl/${SUBSYS_NAME}/impl/passthrough.hpp
+        include/pcl/${SUBSYS_NAME}/impl/project_inliers.hpp
+        include/pcl/${SUBSYS_NAME}/impl/radius_outlier_removal.hpp
+        include/pcl/${SUBSYS_NAME}/impl/statistical_outlier_removal.hpp
+        include/pcl/${SUBSYS_NAME}/impl/voxel_grid.hpp
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 endif(build)

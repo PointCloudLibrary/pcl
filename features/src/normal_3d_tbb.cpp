@@ -35,6 +35,9 @@
  *
  */
 
+#include <pcl/pcl_config.h>
+#if defined(HAVE_TBB)
+
 #include "pcl/point_types.h"
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/features/normal_3d_tbb.h"
@@ -43,4 +46,6 @@
 // Instantiations of specific point types
 PCL_INSTANTIATE_PRODUCT(TBB_NormalEstimationTBB, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
 PCL_INSTANTIATE_PRODUCT(NormalEstimationTBB, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
+
+#endif  // HAVE_TBB
 
