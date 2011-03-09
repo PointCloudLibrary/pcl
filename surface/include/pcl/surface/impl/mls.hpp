@@ -39,6 +39,7 @@
 #define PCL_SURFACE_IMPL_MLS_H_
 
 #include "pcl/surface/mls.h"
+#include "pcl/io/io.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename NormalOutT> void

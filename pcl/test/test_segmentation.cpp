@@ -42,6 +42,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
 
+#include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/segmentation/segment_differences.h>
 
 using namespace pcl;
@@ -51,8 +52,8 @@ PointCloud<PointXYZ>::Ptr cloud_;
 PointCloud<PointXYZ>::Ptr cloud_t_;
 KdTree<PointXYZ>::Ptr tree_;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (SegmentDifferences, Base)
+//////////////////////////////////////////////////////////////////////////////////////////////
+TEST (SegmentDifferences, Segmentation)
 {
   SegmentDifferences<PointXYZ> sd;
   sd.setInputCloud (cloud_);
@@ -78,6 +79,28 @@ TEST (SegmentDifferences, Base)
   sd.segment (output);
   EXPECT_EQ ((int)output.points.size (), 127);
   //savePCDFile ("./test/t-0.pcd", output);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+TEST (ExtractPolygonalPrism, Segmentation)
+{
+  PointCloud<PointXYZ>::Ptr hull (new PointCloud<PointXYZ>);
+  hull->points.resize (5);
+
+  for (size_t i = 0; i < hull->points.size (); ++i)
+  {
+    hull->points[i].x = hull->points[i].y = i;
+    hull->points[i].z = 0;
+  }
+
+  ExtractPolygonalPrismData<PointXYZ> ex;
+  ex.setInputCloud (cloud_);
+  ex.setInputPlanarHull (hull);
+
+  PointIndices output;
+  ex.segment (output);
+
+  EXPECT_EQ ((int)output.indices.size (), 0);
 }
 
 /* ---[ */

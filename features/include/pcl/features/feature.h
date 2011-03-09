@@ -52,8 +52,6 @@
 #include "pcl/kdtree/kdtree_flann.h"
 #include "pcl/kdtree/organized_data.h"
 
-#include "pcl/io/io.h"
-
 namespace pcl
 {
   /** \brief Solve the eigenvalues and eigenvectors of a given 3x3 covariance matrix, and estimate the least-squares
