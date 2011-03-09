@@ -122,20 +122,21 @@ namespace pcl
   flipNormalTowardsViewpoint (const PointT &point, float vp_x, float vp_y, float vp_z, 
                               Eigen::Vector4f &normal)
   {
+    Eigen::Vector4f vp (vp_x, vp_y, vp_z, 0);
     // See if we need to flip any plane normals
-    vp_x -= point.x;
-    vp_y -= point.y;
-    vp_z -= point.z;
+    vp -= point.getVector4fConstMap ();
+    vp[3] = 0;  // enforce the last coordinate
 
     // Dot product between the (viewpoint - point) and the plane normal
-    float cos_theta = (vp_x * normal[0] + vp_y * normal[1] + vp_z * normal[2]);
+    float cos_theta = vp.dot (normal);
 
     // Flip the plane normal
     if (cos_theta < 0)
     {
       normal *= -1;
+      normal[3] = 0;  // enforce the last coordinate;
       // Hessian form (D = nc . p_plane (centroid here) + p)
-      normal[3] = -1 * (normal[0] * point.x + normal[1] * point.y + normal[2] * point.z);
+      normal[3] = -1 * normal.dot (point.getVector4fConstMap ());
     }
   }
 

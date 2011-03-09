@@ -35,41 +35,12 @@
  *
  */
 
-namespace pcl
-{
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief Helper functor structure for concatenate. */
-  template<typename PointInT, typename PointOutT>
-    struct NdConcatenateFunctor
-  {
-    typedef typename traits::POD<PointInT>::type PodIn;
-    typedef typename traits::POD<PointOutT>::type PodOut;
-    
-    NdConcatenateFunctor (const PointInT &p1, PointOutT &p2)
-      : p1_ (reinterpret_cast<const PodIn&>(p1)), p2_ (reinterpret_cast<PodOut&>(p2)) { }
+#ifndef PCL_IO_IMPL_IO_H_
+#define PCL_IO_IMPL_IO_H_
 
-    template<typename Key> inline void operator() ()
-    {
-      // This sucks without Fusion :(
-      //boost::fusion::at_key<Key> (p2_) = boost::fusion::at_key<Key> (p1_);
-      typedef typename pcl::traits::datatype<PointInT, Key>::type InT;
-      typedef typename pcl::traits::datatype<PointOutT, Key>::type OutT;
-      // Note: don't currently support different types for the same field (e.g. converting double to float)
-      BOOST_MPL_ASSERT_MSG((boost::is_same<InT, OutT>::value),
-                           POINT_IN_AND_POINT_OUT_HAVE_DIFFERENT_TYPES_FOR_FIELD,
-                           (Key, PointInT, InT, PointOutT, OutT));
-      memcpy(reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value,
-             reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value,
-             sizeof(InT));
-    }
+#include "pcl/common/concatenate.h"
 
-    private:
-      const PodIn &p1_;
-      PodOut &p2_;
-  };
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::getFieldIndex (const pcl::PointCloud<PointT> &cloud, const std::string &field_name, std::vector<sensor_msgs::PointField> &fields)
 {
@@ -82,7 +53,7 @@ pcl::getFieldIndex (const pcl::PointCloud<PointT> &cloud, const std::string &fie
   return (-1);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::getFields (const pcl::PointCloud<PointT> &cloud, std::vector<sensor_msgs::PointField> &fields)
 {
@@ -91,7 +62,7 @@ pcl::getFields (const pcl::PointCloud<PointT> &cloud, std::vector<sensor_msgs::P
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> std::string
 pcl::getFieldsList (const pcl::PointCloud<PointT> &cloud)
 {
@@ -105,7 +76,7 @@ pcl::getFieldsList (const pcl::PointCloud<PointT> &cloud)
   return (result);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
 pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, pcl::PointCloud<PointOutT> &cloud_out)
 {
@@ -124,7 +95,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, pcl::PointCloud<
     pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (cloud_in.points[i], cloud_out.points[i]));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, const std::vector<int> &indices,
                      pcl::PointCloud<PointT> &cloud_out)
@@ -149,7 +120,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, const std::vector<
     pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (cloud_in.points[indices[i]], cloud_out.points[i]));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, const pcl::PointIndices &indices,
                      pcl::PointCloud<PointT> &cloud_out)
@@ -174,7 +145,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, const pcl::PointIn
     pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (cloud_in.points[indices.indices[i]], cloud_out.points[i]));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, const std::vector<pcl::PointIndices> &indices,
                      pcl::PointCloud<PointT> &cloud_out)
@@ -211,7 +182,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, const std::vector<
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointIn1T, typename PointIn2T, typename PointOutT> void
 pcl::concatenateFields (const pcl::PointCloud<PointIn1T> &cloud1_in,
                         const pcl::PointCloud<PointIn2T> &cloud2_in,
@@ -244,3 +215,6 @@ pcl::concatenateFields (const pcl::PointCloud<PointIn1T> &cloud1_in,
     pcl::for_each_type <FieldList2> (pcl::NdConcatenateFunctor <PointIn2T, PointOutT> (cloud2_in.points[i], cloud_out.points[i]));
   }
 }
+
+#endif // PCL_IO_IMPL_IO_H_
+

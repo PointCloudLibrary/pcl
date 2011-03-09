@@ -39,7 +39,8 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
 
 #include "pcl/sample_consensus/sac_model_cylinder.h"
-#include <pcl/common/distances.h>
+#include "pcl/common/distances.h"
+#include "pcl/common/concatenate.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Get 2 random points with their normals as data samples and return them as point indices.

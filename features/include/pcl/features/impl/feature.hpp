@@ -39,57 +39,6 @@
 #define PCL_FEATURES_IMPL_FEATURE_H_
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline void
-pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud, Eigen::VectorXf &centroid)
-{
-  typedef typename pcl::traits::fieldList<PointT>::type FieldList;
-
-  // Get the size of the fields
-  centroid.setZero (boost::mpl::size<FieldList>::value);
-
-  if (cloud.points.empty ())
-    return;
-  // Iterate over each point
-  int size = cloud.points.size ();
-  for (int i = 0; i < size; ++i)
-  {
-    // Iterate over each dimension
-    pcl::for_each_type <FieldList> (NdCentroidFunctor <PointT> (cloud.points[i], centroid));
-  }
-  centroid /= size;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline void
-pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
-                        Eigen::VectorXf &centroid)
-{
-  typedef typename pcl::traits::fieldList<PointT>::type FieldList;
-
-  // Get the size of the fields
-  centroid.setZero (boost::mpl::size<FieldList>::value);
-
-  if (indices.empty ()) 
-    return;
-  // Iterate over each point
-  int nr_points = indices.size ();
-  for (int i = 0; i < nr_points; ++i)
-  {
-    // Iterate over each dimension
-    pcl::for_each_type <FieldList> (NdCentroidFunctor <PointT> (cloud.points[indices[i]], centroid));
-  }
-  centroid /= nr_points;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline void
-pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
-                        const pcl::PointIndices &indices, Eigen::VectorXf &centroid)
-{
-  return (pcl::computeNDCentroid<PointT> (cloud, indices.indices, centroid));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 inline void
 pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix, 
                            const Eigen::Vector4f &point,

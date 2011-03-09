@@ -39,7 +39,6 @@
 #define PCL_EXTRACT_POLYGONAL_PRISM_DATA_H_
 
 #include <pcl/pcl_base.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 
 namespace pcl

@@ -201,6 +201,67 @@ namespace pcl
                     const Eigen::Vector4f &centroid, 
                     Eigen::MatrixXf &cloud_out);
 
+  /** \brief Helper functor structure for n-D centroid estimation. */
+  template<typename PointT>
+  struct NdCentroidFunctor
+  {
+    typedef typename traits::POD<PointT>::type Pod;
+    
+    NdCentroidFunctor (const PointT &p, Eigen::VectorXf &centroid)
+      : f_idx_ (0),
+        centroid_ (centroid),
+        p_ (reinterpret_cast<const Pod&>(p)) { }
+
+    template<typename Key> inline void operator() ()
+    {
+      typedef typename pcl::traits::datatype<PointT, Key>::type T;
+      const uint8_t* raw_ptr = reinterpret_cast<const uint8_t*>(&p_) + pcl::traits::offset<PointT, Key>::value;
+      const T* data_ptr = reinterpret_cast<const T*>(raw_ptr);
+
+      // Check if the value is invalid
+      if (!pcl_isfinite (*data_ptr))
+      {
+        f_idx_++;
+        return;
+      }
+
+      centroid_[f_idx_++] += *data_ptr;
+    }
+
+    private:
+      int f_idx_;
+      Eigen::VectorXf &centroid_;
+      const Pod &p_;
+  };
+
+  /** \brief General, all purpose nD centroid estimation for a set of points using their 
+    * indices.
+    * \param cloud the input point cloud
+    * \param centroid the output centroid
+    */
+  template <typename PointT> inline void 
+  computeNDCentroid (const pcl::PointCloud<PointT> &cloud, Eigen::VectorXf &centroid);
+
+  /** \brief General, all purpose nD centroid estimation for a set of points using their 
+    * indices.
+    * \param cloud the input point cloud
+    * \param indices the point cloud indices that need to be used
+    * \param centroid the output centroid
+    */
+  template <typename PointT> inline void 
+  computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
+                     const std::vector<int> &indices, Eigen::VectorXf &centroid);
+
+  /** \brief General, all purpose nD centroid estimation for a set of points using their 
+    * indices.
+    * \param cloud the input point cloud
+    * \param indices the point cloud indices that need to be used
+    * \param centroid the output centroid
+    */
+  template <typename PointT> inline void 
+  computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
+                     const pcl::PointIndices &indices, Eigen::VectorXf &centroid);
+
 }
 
 #include "pcl/common/impl/centroid.hpp"

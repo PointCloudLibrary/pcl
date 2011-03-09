@@ -40,6 +40,7 @@
 
 #include "pcl/sample_consensus/sac_model_line.h"
 #include "pcl/common/centroid.h"
+#include "pcl/common/concatenate.h"
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

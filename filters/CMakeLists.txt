@@ -1,6 +1,6 @@
 set(SUBSYS_NAME filters)
 set(SUBSYS_DESC "Point cloud filters library")
-set(SUBSYS_DEPS common io kdtree sample_consensus)
+set(SUBSYS_DEPS common sample_consensus io kdtree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)

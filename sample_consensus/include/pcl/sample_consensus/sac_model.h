@@ -44,8 +44,7 @@
 
 #include "pcl/pcl_base.h"
 #include "pcl/point_types.h"
-#include "pcl/io/io.h"
-
+#include "pcl/ros/conversions.h"
 #include "pcl/sample_consensus/model_types.h"
 
 namespace pcl

@@ -38,6 +38,8 @@
 #ifndef PCL_COMMON_IMPL_CENTROID_H_
 #define PCL_COMMON_IMPL_CENTROID_H_
 
+#include "pcl/ros/conversions.h"
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline void
 pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &centroid)
@@ -360,6 +362,57 @@ pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
   // Make sure we zero the 4th dimension out (1 row, N columns)
   cloud_out.block (3, 0, 1, npts).setZero ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> inline void
+pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud, Eigen::VectorXf &centroid)
+{
+  typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+
+  // Get the size of the fields
+  centroid.setZero (boost::mpl::size<FieldList>::value);
+
+  if (cloud.points.empty ())
+    return;
+  // Iterate over each point
+  int size = cloud.points.size ();
+  for (int i = 0; i < size; ++i)
+  {
+    // Iterate over each dimension
+    pcl::for_each_type <FieldList> (NdCentroidFunctor <PointT> (cloud.points[i], centroid));
+  }
+  centroid /= size;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> inline void
+pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
+                        Eigen::VectorXf &centroid)
+{
+  typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+
+  // Get the size of the fields
+  centroid.setZero (boost::mpl::size<FieldList>::value);
+
+  if (indices.empty ()) 
+    return;
+  // Iterate over each point
+  int nr_points = indices.size ();
+  for (int i = 0; i < nr_points; ++i)
+  {
+    // Iterate over each dimension
+    pcl::for_each_type <FieldList> (NdCentroidFunctor <PointT> (cloud.points[indices[i]], centroid));
+  }
+  centroid /= nr_points;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> inline void
+pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
+                        const pcl::PointIndices &indices, Eigen::VectorXf &centroid)
+{
+  return (pcl::computeNDCentroid<PointT> (cloud, indices.indices, centroid));
 }
 
 #endif  //#ifndef PCL_COMMON_IMPL_CENTROID_H_
