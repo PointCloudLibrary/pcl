@@ -225,6 +225,6 @@ namespace pcl
   };
 }
 
-#include "pcl/registration/icp_nl.hpp"
+#include <pcl/registration/impl/icp_nl.hpp>
 
 #endif  //#ifndef PCL_ICP_NL_H_

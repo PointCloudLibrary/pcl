@@ -101,6 +101,6 @@ namespace pcl
   };
 }
 
-#include "pcl/registration/icp.hpp"
+#include <pcl/registration/impl/icp.hpp>
 
 #endif  //#ifndef PCL_ICP_H_
