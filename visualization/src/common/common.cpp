@@ -35,7 +35,7 @@
  *
  */
 
-#include <visualization/common/common.h>
+#include <pcl/visualization/common/common.h>
 #include <stdlib.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

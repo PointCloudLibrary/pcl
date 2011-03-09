@@ -1,6 +1,6 @@
 set(SUBSYS_NAME visualization)
 set(SUBSYS_DESC "Point cloud visualization library")
-set(SUBSYS_DEPS common io kdtree)
+set(SUBSYS_DEPS common io kdtree range_image)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -65,6 +65,10 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/point_cloud_handlers.hpp
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+
+    set(commom_impl_incs include/pcl/${SUBSYS_NAME}/common/impl/shapes.hpp)
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/common/impl
+        ${common_impl_incs})
 
     add_subdirectory(examples)
     add_subdirectory(test)

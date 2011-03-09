@@ -34,7 +34,7 @@
  * $Id: io.cpp 35818 2011-02-08 00:06:28Z rusu $
  *
  */
-#include "pcl_visualization/common/io.h"
+#include <pcl/visualization/common/io.h>
 #include <Eigen/Geometry>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

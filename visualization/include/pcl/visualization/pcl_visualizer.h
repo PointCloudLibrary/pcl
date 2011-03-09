@@ -41,7 +41,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 // 
-#include <terminal_tools/print.h>
+#include <pcl/terminal_tools/print.h>
 #include <pcl/visualization/interactor.h>
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/common/common.h>
@@ -616,6 +616,6 @@ namespace pcl_visualization
   };
 }
 
-#include "libpcl_visualization/pcl_visualizer.hpp"
+#include <pcl/visualization/impl/pcl_visualizer.hpp>
 
 #endif

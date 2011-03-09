@@ -41,13 +41,13 @@
 #include <iostream>
 using namespace std;
 
-#include "pcl_visualization/range_image_visualizer.h"
+#include <pcl/visualization/range_image_visualizer.h>
 
 #include <Eigen/Geometry>
-#include "pcl/point_cloud.h"
-#include "pcl/point_types.h"
-#include "pcl/io/pcd_io.h"
-#include "pcl/range_image/range_image.h"
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/range_image/range_image.h>
 
 using namespace pcl;
 

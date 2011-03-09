@@ -34,7 +34,7 @@
  * $Id: shapes.cpp 36093 2011-02-19 21:54:55Z rusu $
  *
  */
-#include <visualization/common/shapes.h>
+#include <pcl/visualization/common/shapes.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Create a cylinder shape from a set of model coefficients.

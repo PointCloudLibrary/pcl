@@ -36,8 +36,8 @@
  */
 
 #include <pcl/common/common_headers.h>
-#include <visualization/common/common.h>
-#include <visualization/pcl_visualizer.h>
+#include <pcl/visualization/common/common.h>
+#include <pcl/visualization/pcl_visualizer.h>
 #include <vtkTextActor.h>
 #include <vtkTextProperty.h>
 #include <vtkCellData.h>

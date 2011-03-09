@@ -36,9 +36,9 @@
  */
 
 #include <pcl/common/common_headers.h>
-#include <visualization/common/common.h>
-#include <visualization/interactor.h>
-#include <visualization/histogram_visualizer.h>
+#include <pcl/visualization/common/common.h>
+#include <pcl/visualization/interactor.h>
+#include <pcl/visualization/histogram_visualizer.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl_visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () : exit_main_loop_timer_callback_ (vtkSmartPointer<ExitMainLoopTimerCallback>::New ()), exit_callback_ (vtkSmartPointer<ExitCallback>::New ())

@@ -115,5 +115,5 @@ namespace pcl_visualization
   };
 }
 
-#include "libpcl_visualization/cloud_viewer.hpp"
+#include <pcl/visualization/impl/cloud_viewer.hpp>
 #endif /* CLOUD_VIEWER_H_ */

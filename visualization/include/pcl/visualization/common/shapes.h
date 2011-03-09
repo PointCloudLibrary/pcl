@@ -112,6 +112,6 @@ namespace pcl_visualization
 
 }
 
-#include "libpcl_visualization/common/shapes.hpp"
+#include <pcl/visualization/common/impl/shapes.hpp>
 
 #endif

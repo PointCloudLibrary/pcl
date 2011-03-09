@@ -158,6 +158,6 @@ namespace pcl_visualization
   };
 }
 
-#include "libpcl_visualization/histogram_visualizer.hpp"
+#include <pcl/visualization/impl/histogram_visualizer.hpp>
 
 #endif
