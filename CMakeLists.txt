@@ -74,7 +74,7 @@ PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
 
 set(PROJECT_DEPENDENCY_GRAPHVIZ_FILE "${PROJECT_BINARY_DIR}/pcl.dot")
-set(pcl_subprojects common io kdtree range_image features sample_consensus keypoints filters registration segmentation surface visualization test)
+set(pcl_subprojects common io kdtree range_image features sample_consensus keypoints filters registration segmentation surface visualization)
 file(WRITE ${PROJECT_DEPENDENCY_GRAPHVIZ_FILE} "digraph pcl {\n")
 foreach(SUBDIR ${pcl_subprojects})
   set(BUILD_SUBDIR "BUILD_${SUBDIR}")
