@@ -30,6 +30,8 @@ endmacro(PCL_SUBSYS_OPTION)
 # ARGN The subsystems to depend on.
 macro(PCL_SUBSYS_DEPEND _var _name)
     if(${_var})
+			  string(TOUPPER "PCL_${_name}_DEPENDS" PCL_SUBPROJECT_DEPENDS)
+				set(${PCL_SUBPROJECT_DEPENDS} ${ARGN})
         foreach(_dep ${ARGN})
             PCL_GET_SUBSYS_STATUS(_status ${_dep})
             if(NOT _status)
