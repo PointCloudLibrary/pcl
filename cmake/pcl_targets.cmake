@@ -5,18 +5,25 @@ include(${PROJECT_SOURCE_DIR}/cmake/pcl_utils.cmake)
 # _var The name of the variable to store the option in.
 # _name The name of the option's target subsystem.
 # _desc The description of the subsystem.
-# _default The default value (ON or OFF)
-# ARGN Any dependencies that this subsystem has.
+# _default The default value (TRUE or FALSE)
+# ARGV5 The reason for disabling if the default is FALSE.
 macro(PCL_SUBSYS_OPTION _var _name _desc _default)
     set(_opt_name "BUILD_${_name}")
     option(${_opt_name} ${_desc} ${_default})
-    if(NOT ${_opt_name})
+    if(NOT ${_default} AND NOT ${_opt_name})
+        if(${ARGC} GREATER 4)
+            set(_reason ${ARGV4})
+        else(${ARGC} GREATER 4)
+            set(_reason "Disabled by default.")
+        endif(${ARGC} GREATER 4)
+        PCL_SET_SUBSYS_STATUS(${_name} FALSE ${_reason})
+    elseif(NOT ${_opt_name})
         set(${_var} FALSE)
         PCL_SET_SUBSYS_STATUS(${_name} FALSE "Disabled manually.")
-    else(NOT ${_opt_name})
+    else(NOT ${_default} AND NOT ${_opt_name})
         set(${_var} TRUE)
         PCL_SET_SUBSYS_STATUS(${_name} TRUE)
-    endif(NOT ${_opt_name})
+    endif(NOT ${_default} AND NOT ${_opt_name})
     PCL_ADD_SUBSYSTEM(${_name})
 endmacro(PCL_SUBSYS_OPTION)
 

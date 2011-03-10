@@ -1,24 +1,31 @@
 set(SUBSYS_NAME visualization)
 set(SUBSYS_DESC "Point cloud visualization library")
 set(SUBSYS_DEPS common io kdtree range_image)
+
 # Find wxWidgets
 find_package(wxWidgets)
 # Find VTK
 find_package (VTK)
 
-if(VTK_FOUND AND wxWidgets_FOUND)
-  include(${wxWidgets_USE_FILE})
-  include_directories(${wxWidgets_INCLUDE_DIRS})
-  include (${VTK_USE_FILE})
-  set(build TRUE)
-  PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
-  PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
-else(VTK_FOUND AND wxWidgets_FOUND)
-  unset(build)
-  PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} OFF)
-endif(VTK_FOUND AND wxWidgets_FOUND)
+if(NOT VTK_FOUND)
+    set(DEFAULT FALSE)
+    set(REASON "VTK was not found.")
+elseif(NOT wxWidgets_FOUND)
+    set(DEFAULT FALSE)
+    set(REASON "wxWidgets was not found.")
+else(NOT VTK_FOUND)
+    set(DEFAULT TRUE)
+    set(REASON)
+endif(NOT VTK_FOUND)
+PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
+    include(${wxWidgets_USE_FILE})
+    include_directories(${wxWidgets_INCLUDE_DIRS})
+    include (${VTK_USE_FILE})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
     set(srcs src/interactor.cpp
         src/interactor_style.cpp
         src/point_cloud_handlers.cpp
@@ -34,7 +41,6 @@ if(build)
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
     target_link_libraries(${LIB_NAME} ${wxWidgets_LIBRARIES}
         vtkCommon vtkWidgets vtkHybrid ${Boost_LIBRARIES})
