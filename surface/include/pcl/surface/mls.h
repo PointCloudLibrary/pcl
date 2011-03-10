@@ -40,7 +40,9 @@
 
 // PCL includes
 #include <pcl/pcl_base.h>
-#include "pcl/features/normal_3d.h"
+#include <boost/bind.hpp>
+#include <boost/function.hpp>
+#include "pcl/kdtree/kdtree.h"
 
 #include <Eigen/SVD>
 
