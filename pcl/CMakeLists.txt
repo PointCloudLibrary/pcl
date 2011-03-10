@@ -29,9 +29,9 @@ include_directories (include)
 #   COMPONENT headers)
 
 # ---[ Point Cloud Library
-add_subdirectory (src/pcl)
-add_subdirectory (src/tools)
-add_subdirectory (test)
+#add_subdirectory (src/pcl)
+#add_subdirectory (src/tools)
+#add_subdirectory (test)
 
 # Option to generate a standalone tarball
 add_custom_target (tarball ${PROJECT_SOURCE_DIR}/make_tarball WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} VERBATIM)
