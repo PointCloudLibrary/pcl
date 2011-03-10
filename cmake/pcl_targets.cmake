@@ -70,8 +70,8 @@ macro(PCL_ADD_LIBRARY _name _component)
     endif(PCL_SHARED_LIBS)
     add_library(${_name} ${_lib_type} ${ARGN})
     set_target_properties(${_name} PROPERTIES
-        VERSION ${PCL_VERSION}
-        SOVERSION ${PCL_MAJOR_VERSION})
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${PROJECT_MAJOR_VERSION})
     install(TARGETS ${_name} LIBRARY DESTINATION ${LIB_INSTALL_DIR}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
         COMPONENT ${_component})

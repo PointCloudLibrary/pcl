@@ -110,13 +110,13 @@ endmacro(APPLY_PKG_CONFIG_TO_SRCS)
 macro(DISSECT_VERSION)
     # Find version components
     string(REGEX REPLACE "^([0-9]+).*" "\\1"
-        PCL_MAJOR_VERSION "${PCL_VERSION}")
+        PROJECT_MAJOR_VERSION "${PROJECT_VERSION}")
     string(REGEX REPLACE "^[0-9]+\\.([0-9]+).*" "\\1"
-        PCL_MINOR_VERSION "${PCL_VERSION}")
+        PROJECT_MINOR_VERSION "${PROJECT_VERSION}")
     string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+)" "\\1"
-        PCL_REVISION_VERSION "${PCL_VERSION}")
+        PROJECT_REVISION_VERSION "${PROJECT_VERSION}")
     string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1"
-        PCL_CANDIDATE_VERSION "${PCL_VERSION}")
+        PROJECT_CANDIDATE_VERSION "${PROJECT_VERSION}")
 endmacro(DISSECT_VERSION)
 
 ###############################################################################
@@ -154,7 +154,7 @@ macro(SET_INSTALL_DIRS)
         set(LIB_INSTALL_DIR "lib")
     endif(OS_IS_64BIT)
     set(INCLUDE_INSTALL_DIR
-        "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+        "include/${PROJECT_NAME_LOWER}-${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}")
     set(BIN_INSTALL_DIR "bin")
     set(PKGCFG_INSTALL_DIR "${LIB_INSTALL_DIR}/pkgconfig")
 endmacro(SET_INSTALL_DIRS)
