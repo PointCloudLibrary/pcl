@@ -257,6 +257,7 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
 
   // Estimate the XYZ centroid
   compute3DCentroid (*input_, inliers, xyz_centroid);
+  xyz_centroid[3] = 0;
 
   // Compute the 3x3 covariance matrix
   computeCovarianceMatrix (*input_, inliers, xyz_centroid, covariance_matrix);
@@ -266,12 +267,10 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
   EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
   pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
 
+  // Hessian form (D = nc . p_plane (centroid here) + p)
   optimized_coefficients[0] = eigen_vectors (0, 0);
   optimized_coefficients[1] = eigen_vectors (1, 0);
   optimized_coefficients[2] = eigen_vectors (2, 0);
-  optimized_coefficients[3] = 0;
-
-  // Hessian form (D = nc . p_plane (centroid here) + p)
   optimized_coefficients[3] = -1 * optimized_coefficients.dot (xyz_centroid);
 }
 
