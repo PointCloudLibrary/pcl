@@ -40,6 +40,7 @@
 
 #include "pcl/surface/mls.h"
 #include "pcl/io/io.h"
+#include "pcl/features/normal_3d.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename NormalOutT> void
