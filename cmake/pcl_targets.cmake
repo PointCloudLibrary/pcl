@@ -29,9 +29,10 @@ endmacro(PCL_SUBSYS_OPTION)
 # _name The name of the subsystem.
 # ARGN The subsystems to depend on.
 macro(PCL_SUBSYS_DEPEND _var _name)
+    if(${ARGC} GREATER 2)
+        SET_IN_GLOBAL_MAP(PCL_SUBSYS_DEPS ${_name} "${ARGN}")
+    endif(${ARGC} GREATER 2)
     if(${_var})
-			  string(TOUPPER "PCL_${_name}_DEPENDS" PCL_SUBPROJECT_DEPENDS)
-				set(${PCL_SUBPROJECT_DEPENDS} ${ARGN} PARENT_SCOPE)
         foreach(_dep ${ARGN})
             PCL_GET_SUBSYS_STATUS(_status ${_dep})
             if(NOT _status)
@@ -162,6 +163,7 @@ macro(PCL_RESET_MAPS)
         "To build or not to build, that is the question." FORCE)
     set(PCL_SUBSYS_REASONS "" CACHE INTERNAL
         "But why?" FORCE)
+    set(PCL_SUBSYS_DEPS "" CACHE INTERNAL "A depends on B and C." FORCE)
     set(PCL_SUBSYSTEMS "" CACHE INTERNAL "Internal list of subsystems" FORCE)
 endmacro(PCL_RESET_MAPS)
 
@@ -170,8 +172,10 @@ endmacro(PCL_RESET_MAPS)
 # Register a subsystem.
 # _name Subsystem name.
 macro(PCL_ADD_SUBSYSTEM _name)
-    set(PCL_SUBSYSTEMS "${PCL_SUBSYSTEMS};${_name}" CACHE INTERNAL
-        "Internal list of subsystems" FORCE)
+    set(_temp ${PCL_SUBSYSTEMS})
+    list(APPEND _temp ${_name})
+    set(PCL_SUBSYSTEMS ${_temp} CACHE INTERNAL "Internal list of subsystems"
+        FORCE)
 endmacro(PCL_ADD_SUBSYSTEM)
 
 

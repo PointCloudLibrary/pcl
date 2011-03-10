@@ -62,6 +62,7 @@ add_subdirectory(segmentation)
 add_subdirectory(surface)
 add_subdirectory(visualization)
 add_subdirectory(test)
+
 # Package creation
 include(InstallRequiredSystemLibraries)
 configure_file("${PROJECT_SOURCE_DIR}/cmake/cpack_options.cmake.in"
@@ -69,25 +70,11 @@ configure_file("${PROJECT_SOURCE_DIR}/cmake/cpack_options.cmake.in"
 set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/cpack_options.cmake")
 include(CPack)
 
+# Make a pretty picture of the dependency graph
+include(${PROJECT_SOURCE_DIR}/cmake/dep_graph.cmake)
+MAKE_DEP_GRAPH()
+
 # Finish up
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
 
-set(PROJECT_DEPENDENCY_GRAPHVIZ_FILE "${PROJECT_BINARY_DIR}/pcl.dot")
-set(pcl_subprojects common io kdtree range_image features sample_consensus keypoints filters registration segmentation surface visualization)
-file(WRITE ${PROJECT_DEPENDENCY_GRAPHVIZ_FILE} "digraph pcl {\n")
-foreach(SUBDIR ${pcl_subprojects})
-  set(BUILD_SUBDIR "BUILD_${SUBDIR}")
-  if (${BUILD_SUBDIR})
-    file(APPEND ${PROJECT_DEPENDENCY_GRAPHVIZ_FILE} "  \"${SUBDIR}\" [style=\"filled\" fillcolor=\"#A3A27C\" shape=\"box\"];\n ")
-  endif (${BUILD_SUBDIR})
-  string(TOUPPER "PCL_${SUBDIR}_DEPENDS" DEPENDS_SUBDIR)
-  if(DEFINED ${DEPENDS_SUBDIR})
-    foreach(DEP ${${DEPENDS_SUBDIR}})
-      file(APPEND ${PROJECT_DEPENDENCY_GRAPHVIZ_FILE} 
-        "  \"${SUBDIR}\" -> \"${DEP}\";\n")
-    endforeach()
-  endif()
-endforeach()
-file(APPEND ${PROJECT_DEPENDENCY_GRAPHVIZ_FILE} "  \"test\" [style=\"filled\" fillcolor=\"#A3A27C\" shape=\"box\"];\n ")
-file(APPEND ${PROJECT_DEPENDENCY_GRAPHVIZ_FILE} "}\n")
