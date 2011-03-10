@@ -17,8 +17,10 @@ if(build)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} flann)
+    PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
+    list(APPEND EXT_DEPS flann)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-        "${SUBSYS_DEPS}" "" "" "")
+        "${EXT_DEPS}" "" "" "")
 
     # Install include files
     set(incs include/pcl/${SUBSYS_NAME}/kdtree.h

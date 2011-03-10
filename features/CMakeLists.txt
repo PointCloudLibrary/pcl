@@ -33,8 +33,9 @@ if(build)
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} pcl_range_image ${Boost_LIBRARIES})
+    PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-        "${SUBSYS_DEPS}" "" "" "")
+        "${EXT_DEPS}" "" "" "")
 
     set(srcs src/boundary.cpp
         src/range_image_border_extractor.cpp
@@ -44,8 +45,10 @@ if(build)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
     PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} pcl_range_image)
-    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-        "${SUBSYS_DEPS}" "" "" "")
+    PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
+    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME}
+        "Point cloud range image border extractor library"
+        "${EXT_DEPS}" "" "" "")
 
     # Install include files
     set(incs include/pcl/${SUBSYS_NAME}/boundary.h

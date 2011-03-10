@@ -1,8 +1,8 @@
 ###############################################################################
 # Turn a list into a string, with each item separated by spaces.
-# _list List to stringify.
 # _string Name of the destination variable.
-macro(LIST_TO_STRING _list _string)
+# _list List to stringify.
+macro(LIST_TO_STRING _string _list)
     set(${_string})
     foreach(_item ${_list})
         set(${_string} "${${_string}} ${_item}")
@@ -27,6 +27,19 @@ endmacro(FILTER_LIST)
 
 
 ###############################################################################
+# Prefix every item in a list.
+# _output The name of the destination variable.
+# _prefix The value to prepend.
+# _list List to prefix.
+macro(PREFIX_LIST _output _prefix _list)
+    set(${_output})
+    foreach(_item ${_list})
+        list(APPEND ${_output} "${_prefix}${_item}")
+    endforeach(_item)
+endmacro(PREFIX_LIST)
+
+
+###############################################################################
 # Find a pkg-config file and use it.
 # _pkg The name of the package to search for.
 # _required Set to "REQUIRED" to cause an error if the package is not found.
@@ -35,7 +48,7 @@ macro(GET_PKG_CONFIG_INFO _pkg _required)
     if(PKG_CONFIG_FOUND)
         pkg_check_modules(${_pkg}_PKG ${_required} ${_pkg})
         if(${_pkg}_PKG_CFLAGS_OTHER)
-            LIST_TO_STRING(${_pkg}_CFLAGS "${${_pkg}_PKG_CFLAGS_OTHER}")
+            LIST_TO_STRING("${${_pkg}_PKG_CFLAGS_OTHER}" ${_pkg}_CFLAGS)
         else(${_pkg}_PKG_CFLAGS_OTHER)
             set(${_pkg}_CFLAGS "")
         endif(${_pkg}_PKG_CFLAGS_OTHER)
@@ -43,7 +56,7 @@ macro(GET_PKG_CONFIG_INFO _pkg _required)
         set(${_pkg}_LINK_LIBS ${${_pkg}_PKG_LIBRARIES})
         set(${_pkg}_LIBRARY_DIRS ${${_pkg}_PKG_LIBRARY_DIRS})
         if(${_pkg}_PKG_LDFLAGS_OTHER)
-            LIST_TO_STRING(${_pkg}_LINK_FLAGS ${${_pkg}_PKG_LDFLAGS_OTHER})
+            LIST_TO_STRING("${${_pkg}_PKG_LDFLAGS_OTHER}" ${_pkg}_LINK_FLAGS)
         else(${_pkg}_PKG_LDFLAGS_OTHER)
             set(${_pkg}_LINK_FLAGS "")
         endif(${_pkg}_PKG_LDFLAGS_OTHER)

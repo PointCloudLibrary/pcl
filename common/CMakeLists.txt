@@ -15,10 +15,11 @@ if(build)
         src/print.cpp
         )
 
+    set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    PCL_ADD_LIBRARY(pcl_common ${SUBSYS_NAME} ${srcs})
-    PCL_ADD_SSE_FLAGS(pcl_common)
-    PCL_MAKE_PKGCONFIG(pcl_common ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
+    PCL_ADD_SSE_FLAGS(${LIB_NAME})
+    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
         "" "")
 
     # Install include files
