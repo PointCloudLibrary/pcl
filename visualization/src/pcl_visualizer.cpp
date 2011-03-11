@@ -1373,6 +1373,80 @@ pcl_visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &id
   return (true);
 }
 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl_visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_mesh, 
+                                                  const std::string &id,
+                                                  int viewport)
+{
+  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
+  if (am_it != shape_actor_map_.end ())
+  {
+    terminal_tools::print_warn (
+                                "[addPolygonMesh] A shape with id <%s> already exists! Please choose a different id and retry.\n",
+                                id.c_str ());
+    return (false);
+  }
+
+  // Create points from polyMesh.cloud
+  vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
+  pcl::PointCloud<pcl::PointXYZ> point_cloud;
+  pcl::fromROSMsg(poly_mesh.cloud, point_cloud);
+  poly_points->SetNumberOfPoints (point_cloud.points.size ());
+
+  size_t i;
+  for (i = 0; i < point_cloud.points.size (); ++i)
+    poly_points->InsertPoint (i, point_cloud.points[i].x, point_cloud.points[i].y, point_cloud.points[i].z);
+
+  vtkSmartPointer<vtkLODActor> actor;
+  if (poly_mesh.polygons.size() > 1) 
+  {
+    //create polys from polyMesh.polygons
+    vtkSmartPointer<vtkCellArray> cell_array = vtkSmartPointer<vtkCellArray>::New ();
+
+    for (i = 0; i < poly_mesh.polygons.size (); i++) 
+    {
+      size_t n_points = poly_mesh.polygons[i].vertices.size ();
+      cell_array->InsertNextCell (n_points);
+      for (size_t j = 0; j < n_points; j++) 
+        cell_array->InsertCellPoint (poly_mesh.polygons[i].vertices[j]);
+    }
+
+    vtkPolyData* polydata = vtkPolyData::New ();
+    polydata->SetStrips (cell_array);
+    polydata->SetPoints (poly_points);
+
+    createActorFromVTKDataSet (polydata, actor);
+  } 
+  else 
+  {
+    vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New ();
+    size_t n_points = poly_mesh.polygons[0].vertices.size ();
+    polygon->GetPointIds ()->SetNumberOfIds (n_points - 1);
+
+    for (size_t j=0; j < (n_points - 1); j++) 
+      polygon->GetPointIds ()->SetId (j, poly_mesh.polygons[0].vertices[j]);
+
+    vtkSmartPointer<vtkUnstructuredGrid> poly_grid = vtkSmartPointer<vtkUnstructuredGrid>::New ();
+    poly_grid->Allocate (1, 1);
+    poly_grid->InsertNextCell (polygon->GetCellType (), polygon->GetPointIds ());
+    poly_grid->SetPoints (poly_points);
+    poly_grid->Update ();
+
+    createActorFromVTKDataSet (poly_grid, actor);
+    actor->GetProperty ()->SetRepresentationToWireframe ();
+  }
+
+  actor->GetProperty ()->SetRepresentationToSurface ();
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  shape_actor_map_[id] = actor;
+  return (true);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
