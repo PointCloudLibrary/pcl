@@ -9,34 +9,12 @@ include(${PROJECT_SOURCE_DIR}/cmake/pcl_targets.cmake)
 # found.
 # The flags are stored in OPENMP_FLAGS.
 macro(PCL_FIND_OPENMP_FLAGS)
-    include(CheckFunctionExists)
-    set(_possible_flags "-fopenmp" # GCC
-        "-openmp" # ICC
-        "-mp" #SGI and PGI
-        "-xopenmp" # Sun
-        "-omp" # Tru64
-        "-qsmp=omp" #AIX
-        )
-
-    # Have not found the flag yet
-    set(OPENMP_FLAGS_FOUND FALSE)
-    set(OPENMP_FLAGS)
-
-    foreach(_flag ${_possible_flags})
-        if(NOT OPENMP_FLAGS_FOUND)
-            set(CMAKE_REQUIRED_FLAGS ${_flag})
-            check_function_exists(omp_set_num_threads OPENMP_FLAGS_${_flag})
-            if(OPENMP_FLAGS_${_flag})
-                set(OPENMP_FLAGS ${_flag})
-                message(STATUS "Found OpenMP flags: ${OPENMP_FLAGS}")
-                set(OPENMP_FLAGS_FOUND true)
-            endif(OPENMP_FLAGS_${_flag})
-        endif(NOT OPENMP_FLAGS_FOUND)
-    endforeach(_flag)
-
-    if(NOT OPENMP_FLAGS_FOUND)
-        message(STATUS "OpenMP flags were not found.")
-    endif(NOT OPENMP_FLAGS_FOUND)
+	include(FindOpenMP)
+	if(OPENMP_FOUND)
+		set(OPENMP_FLAGS_FOUND FALSE)
+	else(OPENMP_FOUND)
+		set(OPENMP_FLAGS_FOUND true)
+	endif(OPENMP_FOUND)
 endmacro(PCL_FIND_OPENMP_FLAGS)
 
 
