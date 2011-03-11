@@ -10,8 +10,6 @@ if(build)
 	include(FindGTest)
 	enable_testing()
 	find_package(GTest REQUIRED)
-	message(STATUS ${GTEST_BOTH_LIBRARIES})
-	message(STATUS ${GTEST_INCLUDE_DIRS})
 	include_directories(${GTEST_INCLUDE_DIRS})
 
 	add_executable (test_narf test_narf.cpp)
