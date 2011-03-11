@@ -1,0 +1,16 @@
+--- cmake/cminpack.pc.in	2011-03-12 00:19:03.000000000 +0100
++++ cmake/cminpack.pc.in.mine	2011-03-12 00:15:59.000000000 +0100
+@@ -2,11 +2,11 @@
+ prefix=@CMAKE_INSTALL_PREFIX@
+ exec_prefix=${prefix}
+ libdir=${prefix}/@CMINPACK_LIB_INSTALL_DIR@
+-includedir=${prefix}
++includedir=${prefix}/@CMINPACK_INCLUDE_INSTALL_DIR@
+ 
+ Name: @PROJECT_NAME@
+ Description: @PKG_DESC@
+-Version: @RTC_VERSION@
++Version: @CMINPACK_VERSION@
+ Requires: @PKG_EXTERNAL_DEPS@
+ Libs: -L${libdir} -lcminpack -lm
+ Cflags: -I${includedir}
