@@ -7,9 +7,37 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
+    GET_PKG_CONFIG_INFO(openni-dev REQUIRED openni-dev)
+    if(openni-dev_LINK_LIBS)
+      message(STATUS "Found OpenNI.")
+      set(KINECT_GRABBER_INCLUDES include/pcl/io/openni_depth_image.h
+                                  include/pcl/io/openni_device_kinect.h
+                                  include/pcl/io/openni_driver.h
+                                  include/pcl/io/openni_image_bayer_grbg.h
+                                  include/pcl/io/openni_image_yuv_422.h
+                                  include/pcl/io/openni_device.h
+                                  include/pcl/io/openni_device_primesense.h
+                                  include/pcl/io/openni_exception.h
+                                  include/pcl/io/openni_image.h
+                                  include/pcl/io/kinect_grabber.h)
+      set(KINECT_GRABBER_SOURCES  src/openni_camera/openni_device.cpp
+                                  src/openni_camera/openni_device_primesense.cpp
+                                  src/openni_camera/openni_image_bayer_grbg.cpp
+                                  src/openni_camera/openni_depth_image.cpp
+                                  src/openni_camera/openni_device_kinect.cpp
+                                  src/openni_camera/openni_driver.cpp
+                                  src/openni_camera/openni_exception.cpp
+                                  src/openni_camera/openni_image_yuv_422.cpp
+                                  src/kinect_grabber.cpp)
+      APPLY_PKG_CONFIG_DIRS(openni-dev)
+    else(openni-dev_LINK_LIBS)
+      message(STATUS "Could not find OpenNI.")
+    endif(openni-dev_LINK_LIBS)
+
     set(srcs src/io.cpp
         src/pcd_io.cpp
         src/vtk_io.cpp
+        ${KINECT_GRABBER_SOURCES}
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
@@ -25,6 +53,7 @@ if(build)
     set(incs include/pcl/${SUBSYS_NAME}/io.h
         include/pcl/${SUBSYS_NAME}/pcd_io.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
+        ${KINECT_GRABBER_INCLUDES}
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
 
