@@ -18,6 +18,8 @@ configure_file("${PROJECT_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
 add_custom_target(uninstall "${CMAKE_COMMAND}" -P
     "${PROJECT_BINARY_DIR}/uninstall_target.cmake")
 
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PCL_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PCL_BINARY_DIR}/bin)
 # Find universal dependencies
 # TODO: Write proper Find___.cmake modules for these
 # Boost

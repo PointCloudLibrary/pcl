@@ -76,6 +76,10 @@ macro(PCL_ADD_LIBRARY _name _component)
         set(_lib_type "STATIC")
     endif(PCL_SHARED_LIBS)
     add_library(${_name} ${_lib_type} ${ARGN})
+    add_custom_command(TARGET ${_name}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND}
+      ARGS -E copy_directory ${PCL_SOURCE_DIR}/${_component}/include ${PCL_BINARY_DIR}/include)
     set_target_properties(${_name} PROPERTIES
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_MAJOR_VERSION})
