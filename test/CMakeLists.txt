@@ -21,7 +21,6 @@ if(build)
 
 	add_executable (test_kdtree test_kdtree.cpp)
 	target_link_libraries (test_kdtree pcl_kdtree ${GTEST_BOTH_LIBRARIES})
-        target_link_libraries (test_kdtree pcl_kdtree ${Boost_THREAD_LIBRARY})
 	PCL_ADD_OPENMP_FLAGS(test_kdtree)
 
 	add_executable (test_common test_common.cpp)
