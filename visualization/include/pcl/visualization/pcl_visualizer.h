@@ -87,7 +87,7 @@ namespace pcl_visualization
         * \param argc
         * \param argv
         * \param name the window name (empty by default)
-        * \param interactor style (defaults to PCLVisualizerInteractorStyle)
+        * \param style interactor style (defaults to PCLVisualizerInteractorStyle)
         */
       PCLVisualizer (int &argc, char **argv, const std::string &name = "", 
           PCLVisualizerInteractorStyle* style = PCLVisualizerInteractorStyle::New ());
@@ -310,7 +310,7 @@ namespace pcl_visualization
         * \param viewport the view port where the PolygonMesh should be added (default: all)
         */
       bool
-      addPolygonMesh (const pcl::PolygonMesh &poly_mesh, const std::string &id = "polygon", 
+      addPolygonMesh (const pcl::PolygonMesh &polymesh, const std::string &id = "polygon", 
                       int viewport = 0);
 
       /** \brief Get the color handler index of a rendered PointCloud based on its ID
@@ -350,7 +350,7 @@ namespace pcl_visualization
         * \param property the property type
         * \param val1 the first value to be set
         * \param val2 the second value to be set
-        * \param val2 the third value to be set
+        * \param val3 the third value to be set
         * \param id the point cloud object id (default: cloud)
         * \param viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
         */
@@ -450,14 +450,15 @@ namespace pcl_visualization
       addLine (const P1 &pt1, const P2 &pt2, double r, double g, double b, 
                const std::string &id = "line", int viewport = 0);
 
-      /** \brief Add a line segment from two points to a group of lines. If the group doesn't 
+/*      /** \brief Add a line segment from two points to a group of lines. If the group doesn't 
         * exist, it will get created.
         * \param pt1 the first (start) point on the line
         * \param pt2 the second (end) point on the line
         * \param group_id the line group id/name (default: "line_group")
         * \param viewport (optional) the id of the new viewport (default: 0)
         */
-/*      template <typename P1, typename P2> inline bool addLineToGroup (const P1 &pt1, const P2 &pt2, const std::string &group_id = "line_group", int viewport = 0);*/
+/*      template <typename P1, typename P2> inline bool addLineToGroup (const P1 &pt1, const P2 &pt2, const std::string &group_id = "line_group", int viewport = 0);
+ */
       
       /** \brief Add a sphere shape from a point and a radius
         * \param center the center of the sphere
