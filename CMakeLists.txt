@@ -5,27 +5,27 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 project(PCL)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
-include(${PROJECT_SOURCE_DIR}/cmake/pcl_options.cmake)
-include(${PROJECT_SOURCE_DIR}/cmake/pcl_utils.cmake)
-set(PROJECT_VERSION 2.0.0 CACHE STRING "PROJECT version")
+include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
+include(${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake)
+set(PCL_VERSION 2.0.0 CACHE STRING "PCL version")
 DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()
 
 # Add an "uninstall" target
-configure_file("${PROJECT_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
-    "${PROJECT_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
+configure_file("${PCL_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
+    "${PCL_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
 add_custom_target(uninstall "${CMAKE_COMMAND}" -P
-    "${PROJECT_BINARY_DIR}/uninstall_target.cmake")
+    "${PCL_BINARY_DIR}/uninstall_target.cmake")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PCL_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PCL_BINARY_DIR}/bin)
 # Find universal dependencies
 # TODO: Write proper Find___.cmake modules for these
 # Boost
-include(${PROJECT_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
+include(${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
 # SSE flags
-include(${PROJECT_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
+include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
 PCL_CHECK_FOR_SSE()
 # Eigen
 GET_PKG_CONFIG_INFO(eigen3 REQUIRED)
@@ -39,7 +39,7 @@ APPLY_PKG_CONFIG_DIRS(flann)
 GET_PKG_CONFIG_INFO(cminpack REQUIRED)
 APPLY_PKG_CONFIG_DIRS(cminpack)
 # OpenMP
-include(${PROJECT_SOURCE_DIR}/cmake/pcl_openmp.cmake)
+include(${PCL_SOURCE_DIR}/cmake/pcl_openmp.cmake)
 PCL_FIND_OPENMP_FLAGS()
 
 # Create the config.h file
@@ -50,7 +50,7 @@ PCL_ADD_INCLUDES(common "" ${pcl_config_h})
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
 # Add the library subdirectories
-include(${PROJECT_SOURCE_DIR}/cmake/pcl_targets.cmake)
+include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
 add_subdirectory(common)
 add_subdirectory(io)
 add_subdirectory(kdtree)
@@ -67,16 +67,26 @@ add_subdirectory(test)
 
 # Package creation
 include(InstallRequiredSystemLibraries)
-configure_file("${PROJECT_SOURCE_DIR}/cmake/cpack_options.cmake.in"
-    "${PROJECT_BINARY_DIR}/cpack_options.cmake" @ONLY)
-set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/cpack_options.cmake")
+configure_file("${PCL_SOURCE_DIR}/cmake/cpack_options.cmake.in"
+    "${PCL_BINARY_DIR}/cpack_options.cmake" @ONLY)
+set(CPACK_PROJECT_CONFIG_FILE "${PCL_BINARY_DIR}/cpack_options.cmake")
 include(CPack)
 
 # Make a pretty picture of the dependency graph
-include(${PROJECT_SOURCE_DIR}/cmake/dep_graph.cmake)
+include(${PCL_SOURCE_DIR}/cmake/dep_graph.cmake)
 MAKE_DEP_GRAPH()
 
 # Finish up
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
 
+#Generate doc
+find_package(Doxygen)
+
+if(DOXYGEN_FOUND)
+  configure_file(${PCL_SOURCE_DIR}/doxyfile.in
+    ${PCL_BINARY_DIR}/doc/doxyfile)
+  
+  add_custom_target(doc
+    ${DOXYGEN_EXECUTABLE} ${PCL_BINARY_DIR}/doc/doxyfile)
+endif(DOXYGEN_FOUND)
