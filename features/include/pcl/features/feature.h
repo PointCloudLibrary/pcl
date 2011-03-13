@@ -120,7 +120,7 @@ namespace pcl
       Feature () : surface_(), tree_(), search_parameter_(0), search_radius_(0), k_(0), fake_surface_(false)
       {};
 
-      /** \brief Provide a pointer to the input dataset that we need to estimate features at every point for.
+      /** \brief Provide a pointer to a dataset to add additional information to estimate the features for every point in the input dataset.  This is optional, if this is not set, it will only use the data in the input cloud to estimate the features.  This is useful when you only need to compute the features for a downsampled cloud. 
         * \param cloud the const boost shared pointer to a PointCloud message
         */
       inline void
