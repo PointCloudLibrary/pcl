@@ -16,15 +16,15 @@ if(build)
 	target_link_libraries (test_narf pcl_features ${GTEST_BOTH_LIBRARIES} flann)
 
 	add_executable (test_vector_average test_vector_average.cpp)
-	target_link_libraries (test_vector_average ${GTEST_BOTH_LIBRARIES})
+	target_link_libraries (test_vector_average ${GTEST_BOTH_LIBRARIES} ${Boost_SYSTEM_LIBRARY})
 	PCL_ADD_OPENMP_FLAGS(test_vector_average)
 
 	add_executable (test_kdtree test_kdtree.cpp)
-	target_link_libraries (test_kdtree pcl_kdtree ${GTEST_BOTH_LIBRARIES})
+	target_link_libraries (test_kdtree pcl_kdtree ${GTEST_BOTH_LIBRARIES} ${Boost_SYSTEM_LIBRARY})
 	PCL_ADD_OPENMP_FLAGS(test_kdtree)
 
 	add_executable (test_common test_common.cpp)
-	target_link_libraries(test_common  ${GTEST_BOTH_LIBRARIES})
+	target_link_libraries(test_common ${GTEST_BOTH_LIBRARIES} ${Boost_THREAD_LIBRARY})
 	PCL_ADD_OPENMP_FLAGS(test_common)
 
 	add_executable (test_io test_io.cpp)
