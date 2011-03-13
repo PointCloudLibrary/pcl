@@ -103,6 +103,7 @@ namespace terminal_tools
     * \param str the command line argument to search for
     * \param f the first output value
     * \param s the second output value
+		* \param debug whether to print debug info or not
     */
   int parse_2x_arguments (int argc, char** argv, const char* str, double &f, double &s, bool debug = true);
 
@@ -114,6 +115,7 @@ namespace terminal_tools
     * \param str the command line argument to search for
     * \param f the first output value
     * \param s the second output value
+		* \param debug whether to print debug info or not
     */
   int parse_2x_arguments (int argc, char** argv, const char* str, int &f, int &s, bool debug = true);
 
@@ -126,6 +128,7 @@ namespace terminal_tools
     * \param f the first output value
     * \param s the second output value
     * \param t the third output value
+		* \param debug whether to print debug info or not
     */
   int parse_3x_arguments (int argc, char** argv, const char* str, double &f, double &s, double &t, bool debug = true);
 
@@ -138,6 +141,7 @@ namespace terminal_tools
     * \param f the first output value
     * \param s the second output value
     * \param t the third output value
+		* \param debug whether to print debug info or not
     */
   int parse_3x_arguments (int argc, char** argv, const char* str, int &f, int &s, int &t, bool debug = true);
 
@@ -191,7 +195,7 @@ namespace terminal_tools
     * file names indices.
     * \param argc the number of command line arguments
     * \param argv the command line arguments
-    * \param extension to search for
+    * \param ext the extension to search for
     */
   std::vector<int> parse_file_extension_argument (int argc, char** argv, const std::string &ext);
 } 

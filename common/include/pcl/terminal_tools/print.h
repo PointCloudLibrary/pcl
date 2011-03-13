@@ -91,7 +91,7 @@ namespace terminal_tools
   ////////////////////////////////////////////////////////////////////////////////
   /** \brief Print a message on stream with colors
     * \param stream the output stream (stdout, stderr, etc)
-    * \param attribute the text attribute
+    * \param attr the text attribute
     * \param fg the foreground color
     * \param format the message
     */
