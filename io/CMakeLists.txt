@@ -7,7 +7,7 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
-    GET_PKG_CONFIG_INFO(openni-dev REQUIRED openni-dev)
+    GET_PKG_CONFIG_INFO(openni-dev "")
     if(openni-dev_FOUND)
         set(KINECT_GRABBER_INCLUDES include/pcl/io/openni_depth_image.h
             include/pcl/io/openni_device_kinect.h
@@ -29,7 +29,7 @@ if(build)
             src/openni_camera/openni_image_yuv_422.cpp
             src/kinect_grabber.cpp)
         APPLY_PKG_CONFIG_DIRS(openni-dev)
-    endif(openni-dev_LINK_LIBS)
+    endif(openni-dev_FOUND)
 
     set(srcs src/io.cpp
         src/pcd_io.cpp

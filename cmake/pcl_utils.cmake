@@ -60,13 +60,11 @@ macro(GET_PKG_CONFIG_INFO _pkg _required)
         else(${_pkg}_PKG_LDFLAGS_OTHER)
             set(${_pkg}_LINK_FLAGS "")
         endif(${_pkg}_PKG_LDFLAGS_OTHER)
-        set(${_pkg_FOUND TRUE)
     else(PKG_CONFIG_FOUND)
         message(STATUS "Could not find pkg-config.")
         message(STATUS
             "You will need to set the following variables manually:")
         message(STATUS "${_pkg}_INCLUDE_DIRS ${_pkg}_CFLAGS_OTHER ${_pkg}_LINK_LIBS ${_pkg}_LIBRARY_DIRS ${_pkg}_LINK_FLAGS")
-        set(${_pkg_FOUND FALSE)
     endif(PKG_CONFIG_FOUND)
 endmacro(GET_PKG_CONFIG_INFO)
 
