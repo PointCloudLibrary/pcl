@@ -6,7 +6,7 @@ includedir=${prefix}/@INCLUDE_INSTALL_DIR@
 
 Name: @PKG_NAME@
 Description: @PKG_DESC@
-Version: @PROJECT_VERSION@
+Version: @PCL_VERSION@
 Requires: @PKG_EXTERNAL_DEPS@
 Libs: -L${libdir} -l@PKG_NAME@ @PKG_LIBFLAGS@ @PKG_INTERNAL_DEPS@
 Cflags: -I${includedir} @PKG_CFLAGS@
