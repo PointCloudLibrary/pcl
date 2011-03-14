@@ -38,7 +38,6 @@ GET_PKG_CONFIG_INFO(cminpack REQUIRED)
 APPLY_PKG_CONFIG_DIRS(cminpack)
 # OpenMP
 include(${PCL_SOURCE_DIR}/cmake/pcl_openmp.cmake)
-PCL_FIND_OPENMP_FLAGS()
 
 # Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
@@ -63,6 +62,9 @@ add_subdirectory(surface)
 add_subdirectory(visualization)
 add_subdirectory(test)
 
+# Documentation
+add_subdirectory(doc)
+
 # Package creation
 include(InstallRequiredSystemLibraries)
 configure_file("${PCL_SOURCE_DIR}/cmake/cpack_options.cmake.in"
@@ -78,13 +80,3 @@ MAKE_DEP_GRAPH()
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
 
-#Generate doc
-find_package(Doxygen)
-
-if(DOXYGEN_FOUND)
-  configure_file(${PCL_SOURCE_DIR}/doxyfile.in
-    ${PCL_BINARY_DIR}/doc/doxyfile)
-  
-  add_custom_target(doc
-    ${DOXYGEN_EXECUTABLE} ${PCL_BINARY_DIR}/doc/doxyfile)
-endif(DOXYGEN_FOUND)
