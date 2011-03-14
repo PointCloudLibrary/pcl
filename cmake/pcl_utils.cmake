@@ -123,13 +123,13 @@ endmacro(APPLY_PKG_CONFIG_TO_SRCS)
 macro(DISSECT_VERSION)
     # Find version components
     string(REGEX REPLACE "^([0-9]+).*" "\\1"
-        PROJECT_MAJOR_VERSION "${PROJECT_VERSION}")
+        PCL_MAJOR_VERSION "${PCL_VERSION}")
     string(REGEX REPLACE "^[0-9]+\\.([0-9]+).*" "\\1"
-        PROJECT_MINOR_VERSION "${PROJECT_VERSION}")
+        PCL_MINOR_VERSION "${PCL_VERSION}")
     string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+)" "\\1"
-        PROJECT_REVISION_VERSION "${PROJECT_VERSION}")
+        PCL_REVISION_VERSION "${PCL_VERSION}")
     string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1"
-        PROJECT_CANDIDATE_VERSION "${PROJECT_VERSION}")
+        PCL_CANDIDATE_VERSION "${PCL_VERSION}")
 endmacro(DISSECT_VERSION)
 
 ###############################################################################
