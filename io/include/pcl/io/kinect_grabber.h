@@ -79,12 +79,20 @@ namespace pcl
     
     typedef boost::function<void(T1, T2) > CallbackFunction;
 
-    CallbackFunction cb_;
-
+    std::map<int, CallbackFunction> cb_;
+    int callback_counter;
     public:
-  		template <typename T> void setCallback (T callback)
+      Synchronizer () : callback_counter (0) {};
+
+  		template <typename T> int addCallback (T callback)
       {
-        cb_ = callback;
+        cb_[callback_counter] = callback;
+        callback_counter++;
+      }
+
+  		template <typename T> void removeCallback (int i)
+      {
+        cb_.erase (i);
       }
 
       void add0 (T1 t, unsigned long time)
@@ -156,8 +164,9 @@ namespace pcl
             q1.erase (q1.begin(), best1);
 
           // call callback
-          if (!cb_.empty ())
-            cb_.operator()(q1.front ().second, q2.front().second);
+          for (typename std::map<int, CallbackFunction>::iterator cb = cb_.begin(); cb != cb_.end(); cb++)
+            if (!cb->second.empty ())
+              cb->second.operator()(q1.front ().second, q2.front().second);
 
           q1.pop_front ();
           q2.pop_front ();
@@ -218,8 +227,9 @@ namespace pcl
 
       // helper methods
       std::string getName ();
-      inline bool isImageStreamRequired() const;
-      inline bool isDepthStreamRequired() const;
+      virtual inline void checkImageAndDepthSynchronizationRequired();
+      virtual inline void checkImageStreamRequired();
+      virtual inline void checkDepthStreamRequired();
       pcl::PointCloud<pcl::PointXYZ>::Ptr convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage> depth) const;
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> image, 
                                                                         const boost::shared_ptr<openni_wrapper::DepthImage> depth_image) const;
@@ -235,6 +245,10 @@ namespace pcl
       unsigned image_height_;
       unsigned depth_width_;
       unsigned depth_height_;
+
+      bool image_required_;
+      bool depth_required_;
+      bool sync_required_;
 
       struct modeComp
       {

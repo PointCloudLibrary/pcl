@@ -42,6 +42,9 @@ namespace pcl
   OpenNIGrabber::OpenNIGrabber ()
     : image_callback_registered_(false)
     , depth_image_callback_registered_(false)
+    , image_required_(false)
+    , depth_required_(false)
+    , sync_required_(false)
     , started_(false)
   {
     // create callback signals
@@ -53,31 +56,40 @@ namespace pcl
     onInit ();
   }
 
-  bool OpenNIGrabber::isImageStreamRequired() const
+  void OpenNIGrabber::checkImageAndDepthSynchronizationRequired()
+  {
+    // do we have anyone listening to images or color point clouds?
+    if (num_slots<sig_cb_openni_point_cloud_rgb> () > 0)
+      sync_required_ = true;
+    else
+      sync_required_ = false;
+  }
+
+  void OpenNIGrabber::checkImageStreamRequired()
   {
     // do we have anyone listening to images or color point clouds?
     if (num_slots<sig_cb_openni_image> () > 0 || 
         num_slots<sig_cb_openni_point_cloud_rgb> () > 0)
-      return true;
-
-    return false;
+      image_required_ = true;
+    else
+      image_required_ = false;
   }
 
-  bool OpenNIGrabber::isDepthStreamRequired() const
+  void OpenNIGrabber::checkDepthStreamRequired()
   {
     // do we have anyone listening to depth images or (color) point clouds?
     if (num_slots<sig_cb_openni_depth_image> () > 0 ||
         num_slots<sig_cb_openni_point_cloud_rgb> () > 0 ||
         num_slots<sig_cb_openni_point_cloud> () > 0)
-      return true;
-
-    return false;
+      depth_required_ = true;
+    else
+      depth_required_ = false;
   }
 
   unsigned OpenNIGrabber::start ()
   {
     // check if we need to start/stop any stream
-    if (isImageStreamRequired () && !device_->isImageStreamRunning ())
+    if (image_required_ && !device_->isImageStreamRunning ())
     {
       if (!image_callback_registered_)
       {
@@ -87,13 +99,13 @@ namespace pcl
       device_->startImageStream ();
       startSynchronization ();
     }
-    else if (!isImageStreamRequired () && device_->isImageStreamRunning ())
+    else if (!image_required_ && device_->isImageStreamRunning ())
     {
       stopSynchronization ();
       device_->stopImageStream ();
     }
 
-    if (isDepthStreamRequired () && !device_->isDepthStreamRunning ())
+    if (depth_required_ && !device_->isDepthStreamRunning ())
     {
       if (!depth_image_callback_registered_)
       {
@@ -109,7 +121,7 @@ namespace pcl
       device_->startDepthStream ();
       startSynchronization ();
     }
-    else if ( !isDepthStreamRequired () && device_->isDepthStreamRunning ())
+    else if ( !depth_required_ && device_->isDepthStreamRunning ())
     {
       stopSynchronization ();
       device_->stopDepthStream ();
@@ -146,7 +158,7 @@ namespace pcl
 
   void OpenNIGrabber::onInit ()
   {
-    sync.setCallback (boost::bind(&OpenNIGrabber::imageDepthImageCallback, this, _1, _2));
+    sync.addCallback (boost::bind(&OpenNIGrabber::imageDepthImageCallback, this, _1, _2));
 
     updateModeMaps ();      // registering mapping from config modes to XnModes and vice versa
     setupDevice (); // will change config_ to default values or user given values from param server
@@ -158,7 +170,10 @@ namespace pcl
   
   void OpenNIGrabber::signalsChanged ()
   {
-    // this only reevaluates which streams are required
+    // reevaluate which streams are required
+    checkImageStreamRequired ();
+    checkDepthStreamRequired ();
+    checkImageAndDepthSynchronizationRequired ();
     if (started_)
       start ();
   }
