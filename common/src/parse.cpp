@@ -380,6 +380,31 @@ bool
 
 ////////////////////////////////////////////////////////////////////////////////
 /** \brief Parse for specific given command line arguments (multiple occurances 
+  * of the same command line parameter). Returns the values sent as a vector.
+  * \param argc the number of command line arguments
+  * \param argv the command line arguments
+  * \param str the command line argument to search for
+  * \param values the resultant output values
+  */
+bool
+  terminal_tools::parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<std::string> &values)
+{
+  for (int i = 1; i < argc; ++i)
+  {
+    // Search for the string
+    if ((strcmp (argv[i], str) == 0) && (++i < argc))
+    {
+      values.push_back (std::string(argv[i]));
+    }
+  }
+  if (values.size () == 0)
+    return (false);
+  else
+    return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/** \brief Parse for specific given command line arguments (multiple occurances 
   * of 2x argument groups, separated by commas). Returns 2 vectors holding the 
   * given values.
   * \param argc the number of command line arguments

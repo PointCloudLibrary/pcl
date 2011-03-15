@@ -166,6 +166,16 @@ namespace terminal_tools
   bool parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<double> &values);
 
   ////////////////////////////////////////////////////////////////////////////////
+  /** \brief Parse for a specific given command line argument (multiple occurences
+    * of the same command line parameter). Returns the value sent as a vector.
+    * \param argc the number of command line arguments
+    * \param argv the command line arguments
+    * \param str the string value to search for
+    * \param val the resultant output value
+    */
+  bool parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<std::string> &values);
+
+  ////////////////////////////////////////////////////////////////////////////////
   /** \brief Parse for specific given command line arguments (multiple occurances 
     * of 2x argument groups, separated by commas). Returns 2 vectors holding the 
     * given values.
