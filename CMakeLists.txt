@@ -70,9 +70,9 @@ add_subdirectory(doc)
 
 # Package creation
 include(InstallRequiredSystemLibraries)
-configure_file("${PCL_SOURCE_DIR}/cmake/cpack_options.cmake.in"
-    "${PCL_BINARY_DIR}/cpack_options.cmake" @ONLY)
-set(CPACK_PROJECT_CONFIG_FILE "${PCL_BINARY_DIR}/cpack_options.cmake")
+include(${PCL_SOURCE_DIR}/cmake/pcl_cpack.cmake)
+PCL_MAKE_CPACK_INPUT()
+set(CPACK_PROJECT_CONFIG_FILE "${PCL_CPACK_CFG_FILE}")
 include(CPack)
 
 # Make a pretty picture of the dependency graph

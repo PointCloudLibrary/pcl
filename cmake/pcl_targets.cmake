@@ -25,7 +25,7 @@ macro(PCL_SUBSYS_OPTION _var _name _desc _default)
         set(${_var} TRUE)
         PCL_SET_SUBSYS_STATUS(${_name} TRUE)
     endif(NOT ${_default} AND NOT ${_opt_name})
-    PCL_ADD_SUBSYSTEM(${_name})
+    PCL_ADD_SUBSYSTEM(${_name} ${_desc})
 endmacro(PCL_SUBSYS_OPTION)
 
 
@@ -174,17 +174,20 @@ macro(PCL_RESET_MAPS)
         "But why?" FORCE)
     set(PCL_SUBSYS_DEPS "" CACHE INTERNAL "A depends on B and C." FORCE)
     set(PCL_SUBSYSTEMS "" CACHE INTERNAL "Internal list of subsystems" FORCE)
+    set(PCL_SUBSYS_DESC "" CACHE INTERNAL "Subsystem descriptions" FORCE)
 endmacro(PCL_RESET_MAPS)
 
 
 ###############################################################################
 # Register a subsystem.
 # _name Subsystem name.
-macro(PCL_ADD_SUBSYSTEM _name)
+# _desc Description of the subsystem
+macro(PCL_ADD_SUBSYSTEM _name _desc)
     set(_temp ${PCL_SUBSYSTEMS})
     list(APPEND _temp ${_name})
     set(PCL_SUBSYSTEMS ${_temp} CACHE INTERNAL "Internal list of subsystems"
         FORCE)
+    SET_IN_GLOBAL_MAP(PCL_SUBSYS_DESC ${_name} ${_desc})
 endmacro(PCL_ADD_SUBSYSTEM)
 
 
