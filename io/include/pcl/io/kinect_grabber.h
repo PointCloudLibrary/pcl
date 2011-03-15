@@ -34,8 +34,8 @@
  * Author: Nico Blodow (blodow@cs.tum.edu)
  */
 
-#ifndef __KINECT_GRABBER__
-#define __KINECT_GRABBER__
+#ifndef __PCL_IO_KINECT_GRABBER__
+#define __PCL_IO_KINECT_GRABBER__
 
 #include <pcl/io/grabber.h>
 #include "openni_camera/openni_driver.h"

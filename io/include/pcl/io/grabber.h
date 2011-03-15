@@ -34,8 +34,8 @@
  * Author: Suat Gedikli (gedikli@willowgarage.com), Nico Blodow (blodow@cs.tum.edu)
  */
 
-#ifndef __GRABBER__
-#define __GRABBER__
+#ifndef __PCL_IO_GRABBER__
+#define __PCL_IO_GRABBER__
 
 // needed for the grabber interface / observers
 #include <map>
