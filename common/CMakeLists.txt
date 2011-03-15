@@ -93,5 +93,7 @@ if(build)
         include/pcl/terminal_tools/time.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ttools ${ttools_incs})
+
+    add_subdirectory(test)
 endif(build)
 

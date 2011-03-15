@@ -93,5 +93,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/vfh.hpp
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+
+    add_subdirectory(test)
 endif(build)
 

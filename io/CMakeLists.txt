@@ -59,5 +59,7 @@ if(build)
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/io.hpp)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+
+    add_subdirectory(test)
 endif(build)
 

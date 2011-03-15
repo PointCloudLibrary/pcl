@@ -49,6 +49,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/voxel_grid.hpp
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-endif(build)
 
+    add_subdirectory(test)
+endif(build)
 
