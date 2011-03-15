@@ -1,4 +1,4 @@
-set(SUBSYS_NAME test)
+set(SUBSYS_NAME all_test)
 set(SUBSYS_DESC "Point cloud library tests")
 set(SUBSYS_DEPS common sample_consensus io kdtree features range_image filters
     keypoints surface registration segmentation)
@@ -21,29 +21,38 @@ if(build)
     include_directories(${GTEST_INCLUDE_DIRS})
 
     add_executable (test_narf test_narf.cpp)
+    PCL_ADD_OPENMP_FLAGS(test_narf)
     target_link_libraries (test_narf pcl_features ${GTEST_BOTH_LIBRARIES} flann)
+    PCL_LINK_OPENMP(test_narf)
 
     add_executable (test_vector_average test_vector_average.cpp)
-    target_link_libraries (test_vector_average ${GTEST_BOTH_LIBRARIES} ${Boost_SYSTEM_LIBRARY})
     PCL_ADD_OPENMP_FLAGS(test_vector_average)
+    target_link_libraries (test_vector_average ${GTEST_BOTH_LIBRARIES} ${Boost_SYSTEM_LIBRARY})
+    PCL_LINK_OPENMP(test_vector_average)
 
     add_executable (test_kdtree test_kdtree.cpp)
-    target_link_libraries (test_kdtree pcl_kdtree ${GTEST_BOTH_LIBRARIES} ${Boost_SYSTEM_LIBRARY})
     PCL_ADD_OPENMP_FLAGS(test_kdtree)
+    target_link_libraries (test_kdtree pcl_kdtree ${GTEST_BOTH_LIBRARIES} ${Boost_SYSTEM_LIBRARY})
+    PCL_LINK_OPENMP(test_kdtree)
 
     add_executable (test_common test_common.cpp)
-    target_link_libraries(test_common ${GTEST_BOTH_LIBRARIES} ${Boost_THREAD_LIBRARY})
     PCL_ADD_OPENMP_FLAGS(test_common)
+    target_link_libraries(test_common ${GTEST_BOTH_LIBRARIES} ${Boost_THREAD_LIBRARY})
+    PCL_LINK_OPENMP(test_common)
 
     add_executable (test_io test_io.cpp)
     target_link_libraries (test_io pcl_io ${GTEST_BOTH_LIBRARIES})
 
     add_executable (test_feature test_feature.cpp)
     PCL_ADD_OPENMP_FLAGS(test_feature)
-    target_link_libraries (test_feature pcl_features pcl_kdtree pcl_io ${GTEST_BOTH_LIBRARIES})
+    target_link_libraries (test_feature pcl_features pcl_kdtree pcl_io
+        ${GTEST_BOTH_LIBRARIES} gomp)
+    PCL_LINK_OPENMP(test_feature)
 
     add_executable (test_sample_consensus test_sample_consensus.cpp)
+    PCL_ADD_OPENMP_FLAGS(test_sample_consensus)
     target_link_libraries (test_sample_consensus pcl_io pcl_sample_consensus pcl_kdtree pcl_features ${GTEST_BOTH_LIBRARIES})
+    PCL_LINK_OPENMP(test_sample_consensus)
 
     add_executable (test_filters test_filters.cpp)
     target_link_libraries (test_filters pcl_filters pcl_io pcl_sample_consensus pcl_kdtree ${GTEST_BOTH_LIBRARIES})
@@ -58,17 +67,23 @@ if(build)
     target_link_libraries (test_iterators pcl_io ${GTEST_BOTH_LIBRARIES})
 
     add_executable (test_registration test_registration.cpp)
+    PCL_ADD_OPENMP_FLAGS(test_registration)
     target_link_libraries (test_registration pcl_io pcl_registration pcl_features ${GTEST_BOTH_LIBRARIES})
     target_link_libraries (test_registration ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
+    PCL_LINK_OPENMP(test_registration)
 
     add_executable (test_keypoints test_keypoints.cpp)
     target_link_libraries (test_keypoints pcl_io pcl_kdtree pcl_filters ${GTEST_BOTH_LIBRARIES})
 
     add_executable (test_surface test_surface.cpp)
+    PCL_ADD_OPENMP_FLAGS(test_surface)
     target_link_libraries (test_surface pcl_io pcl_kdtree pcl_surface pcl_features ${GTEST_BOTH_LIBRARIES})
+    PCL_LINK_OPENMP(test_surface)
 
     add_executable (test_ii_normals test_ii_normals.cpp)
+    PCL_ADD_OPENMP_FLAGS(test_ii_normals)
     target_link_libraries (test_ii_normals pcl_io pcl_features ${GTEST_BOTH_LIBRARIES})
+    PCL_LINK_OPENMP(test_ii_normals)
 
     add_executable (test_mls test_mls.cpp)
     target_link_libraries (test_mls pcl_io pcl_kdtree pcl_surface pcl_filters ${GTEST_BOTH_LIBRARIES})

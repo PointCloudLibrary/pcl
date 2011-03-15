@@ -14,3 +14,13 @@ macro(PCL_ADD_OPENMP_FLAGS _name)
     endif(OPENMP_FOUND)
 endmacro(PCL_ADD_OPENMP_FLAGS)
 
+###############################################################################
+# Link to the appropriate OpenMP implementation for the compiler.
+# _name The name of the target to link OpenMP into.
+macro(PCL_LINK_OPENMP _name)
+    if(OPENMP_FOUND AND CMAKE_COMPILER_IS_GNUCC)
+        # For GCC, link to libgomp
+        target_link_libraries(${_name} gomp)
+    endif(OPENMP_FOUND AND CMAKE_COMPILER_IS_GNUCC)
+endmacro(PCL_LINK_OPENMP)
+
