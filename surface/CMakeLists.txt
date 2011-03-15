@@ -8,7 +8,7 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
     find_package(Qhull REQUIRED)
-    include_directories(${Qhull_INCLUDE_DIRS})
+    include_directories(${QHULL_INCLUDE_DIRS})
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -22,7 +22,7 @@ if(build)
     set(LIB_NAME pcl_${SUBSYS_NAME})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} ${Qhull_LIBRARIES} ${Boost_LIBRARIES})
+    target_link_libraries(${LIB_NAME} ${QHULL_LIBRARIES} ${Boost_LIBRARIES})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
         "${EXT_DEPS}" "" "" "")

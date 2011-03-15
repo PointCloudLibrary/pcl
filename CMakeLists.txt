@@ -19,23 +19,22 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P
     "${PCL_BINARY_DIR}/uninstall_target.cmake")
 
 # Find universal dependencies
-# TODO: Write proper Find___.cmake modules for these
 # Boost
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
 # SSE flags
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
 PCL_CHECK_FOR_SSE()
 # Eigen
-GET_PKG_CONFIG_INFO(eigen3 REQUIRED)
-APPLY_PKG_CONFIG_DIRS(eigen3)
+find_package(Eigen REQUIRED)
+include_directories(${EIGEN_INCLUDE_DIRS})
 add_definitions(-DEIGEN_NO_DEBUG -DEIGEN_USE_NEW_STDVECTOR
     -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
 # FLANN
-GET_PKG_CONFIG_INFO(flann REQUIRED)
-APPLY_PKG_CONFIG_DIRS(flann)
+find_package(Flann REQUIRED)
+include_directories(${FLANN_INCLUDE_DIRS})
 # CMinpack
-GET_PKG_CONFIG_INFO(cminpack REQUIRED)
-APPLY_PKG_CONFIG_DIRS(cminpack)
+find_package(CMinpack REQUIRED)
+include_directories(${CMINPACK_INCLUDE_DIRS})
 # OpenMP
 include(${PCL_SOURCE_DIR}/cmake/pcl_openmp.cmake)
 
