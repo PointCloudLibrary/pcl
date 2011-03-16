@@ -81,19 +81,6 @@ namespace pcl
       {}
       
       ////////////////////////////////////////////////////////////////////////////////////////
-      inline PointCloud& operator = (const PointCloud& rhs)
-      {
-        header   = rhs.header;
-        points   = rhs.points;
-        width    = rhs.width;
-        height   = rhs.height;
-        sensor_origin_ = rhs.sensor_origin_;
-        sensor_orientation_ = rhs.sensor_orientation_;
-        is_dense = rhs.is_dense;
-        return (*this);
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////////
       inline PointCloud& operator += (const PointCloud& rhs)
       {
         if (rhs.header.frame_id != header.frame_id)
