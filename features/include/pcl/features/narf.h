@@ -71,6 +71,9 @@ class Narf
     const Narf& operator=(const Narf& other);
 
     // =====STATIC=====
+    /** The maximum number of openmp threads that can be used in this class */
+    static int max_no_of_threads;
+
     /** Add features extracted at the given interest point and add them to the list */
     static void extractFromRangeImageAndAddToList(const RangeImage& range_image, const Eigen::Vector3f& interest_point, int descriptor_size,
                                                   float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list);
@@ -176,6 +179,8 @@ class Narf
     inline const float* getSurfacePatch() const { return surface_patch_;}
     //! Getter for the surface patch
     inline float* getSurfacePatch() { return surface_patch_;}
+    //! Method to erase the surface patch and free the memory
+    inline void freeSurfacePatch() { delete[] surface_patch_; surface_patch_=NULL; surface_patch_pixel_size_=0; }
     
     // =====SETTERS=====
     //! Setter for the descriptor

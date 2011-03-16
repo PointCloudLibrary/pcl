@@ -51,9 +51,8 @@ using Eigen::Vector3f;
 #include <pcl/common/vector_average.h>
 #include <pcl/common/common_headers.h>
 
-#define USE_OMP 1
-
 namespace pcl {
+int Narf::max_no_of_threads = 1;
 
 Narf::Narf() : surface_patch_(NULL), descriptor_(NULL)
 {
@@ -357,10 +356,7 @@ void
 Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<InterestPoint>& interest_points,
                                 int descriptor_size, float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list)
 {
-
-#if USE_OMP
-//# pragma omp parallel for default(shared) schedule(dynamic, 10)
-#endif
+  # pragma omp parallel for num_threads(max_no_of_threads) default(shared) schedule(dynamic, 10)
   for (unsigned int interest_point_idx=0; interest_point_idx<interest_points.points.size(); ++interest_point_idx)
   {
     Vector3fMapConst point = interest_points.points[interest_point_idx].getVector3fMap ();
@@ -381,9 +377,24 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
     }
     vector<float> rotations, strengths;
     feature->getRotations(rotations, strengths);
-#   pragma omp critical
     {
-      feature->getRotatedVersions(range_image, rotations, feature_list);
+      //feature->getRotatedVersions(range_image, rotations, feature_list);
+      for (unsigned int i=0; i<rotations.size(); ++i)
+      {
+        float rotation = rotations[i];
+        Narf* feature2 = new Narf(*feature);  // Call copy constructor
+        feature2->transformation_ = Eigen::AngleAxisf(-rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f))*feature2->transformation_;
+        feature2->surface_patch_rotation_ = rotation;
+        if (!feature2->extractDescriptor(feature2->descriptor_size_))
+        {
+          delete feature2;
+          continue;
+        }
+#       pragma omp critical
+        {
+          feature_list.push_back(feature2);
+        }
+      }
     }
     delete feature;
   }
