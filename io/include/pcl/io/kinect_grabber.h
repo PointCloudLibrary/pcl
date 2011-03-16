@@ -38,20 +38,16 @@
 #define __PCL_IO_KINECT_GRABBER__
 
 #include <pcl/io/grabber.h>
-#include "openni_camera/openni_driver.h"
-#include "openni_camera/openni_device_kinect.h"
-#include "openni_camera/openni_image.h"
-#include "openni_camera/openni_depth_image.h"
+#include <pcl/io/openni_camera/openni_driver.h>
+#include <pcl/io/openni_camera/openni_device_kinect.h>
+#include <pcl/io/openni_camera/openni_image.h>
+#include <pcl/io/openni_camera/openni_depth_image.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <string>
 #include <deque>
 #include <Eigen/Core>
 #include <boost/thread/mutex.hpp> 
-
-// stuff for the openni backend
-#include "openni_camera/openni_driver.h"
-#include <boost/shared_ptr.hpp>
 
 namespace pcl
 {
@@ -198,14 +194,15 @@ namespace pcl
       typedef void (sig_cb_openni_point_cloud_rgb) (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >);
 
     public:
-      OpenNIGrabber ();
+      OpenNIGrabber (const std::string& device_id = "");
       virtual ~OpenNIGrabber () {}
       virtual unsigned start ();  
       virtual void stop ();  
+      virtual std::string getName () const;
 
     private:
-      void onInit ();
-      void setupDevice ();
+      void onInit (const std::string& device_id);
+      void setupDevice (const std::string& device_id);
       void updateModeMaps ();
       void startSynchronization ();
       void stopSynchronization ();
@@ -226,7 +223,7 @@ namespace pcl
       void signalsChanged ();
 
       // helper methods
-      std::string getName ();
+      
       virtual inline void checkImageAndDepthSynchronizationRequired();
       virtual inline void checkImageStreamRequired();
       virtual inline void checkDepthStreamRequired();

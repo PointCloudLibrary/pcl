@@ -56,7 +56,7 @@ class Grabber
 		virtual unsigned start () = 0;
     virtual void stop () = 0;  
     virtual void signalsChanged () = 0;
-    
+    virtual std::string getName () const = 0;
     // TODO: implement me!
 		//virtual bool isRunning () const = 0;
 		//virtual bool trigger () = 0;

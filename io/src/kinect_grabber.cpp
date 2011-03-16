@@ -39,7 +39,7 @@
 namespace pcl
 {
 
-  OpenNIGrabber::OpenNIGrabber ()
+  OpenNIGrabber::OpenNIGrabber (const std::string& device_id)
     : image_callback_registered_(false)
     , depth_image_callback_registered_(false)
     , image_required_(false)
@@ -53,7 +53,7 @@ namespace pcl
     createCallback <sig_cb_openni_point_cloud> ();
     createCallback <sig_cb_openni_point_cloud_rgb> ();
     // initialize driver
-    onInit ();
+    onInit (device_id);
   }
 
   void OpenNIGrabber::checkImageAndDepthSynchronizationRequired()
@@ -156,12 +156,12 @@ namespace pcl
     started_ = false;
   }
 
-  void OpenNIGrabber::onInit ()
+  void OpenNIGrabber::onInit (const std::string& device_id)
   {
     sync.addCallback (boost::bind(&OpenNIGrabber::imageDepthImageCallback, this, _1, _2));
 
     updateModeMaps ();      // registering mapping from config modes to XnModes and vice versa
-    setupDevice (); // will change config_ to default values or user given values from param server
+    setupDevice (device_id); // will change config_ to default values or user given values from param server
 
     rgb_frame_id_ = "/openni_rgb_optical_frame";
 
@@ -178,12 +178,12 @@ namespace pcl
       start ();
   }
 
-  std::string OpenNIGrabber::getName ()
+  std::string OpenNIGrabber::getName () const
   {
     return std::string ("OpenNIGrabber");
   }
 
-  void OpenNIGrabber::setupDevice ()
+  void OpenNIGrabber::setupDevice (const std::string& device_id)
   {
     // Initialize the openni device
     openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
@@ -202,8 +202,6 @@ namespace pcl
                 , driver.getProductName (deviceIdx), driver.getProductID (deviceIdx), driver.getVendorName (deviceIdx)
                 , driver.getVendorID (deviceIdx), driver.getSerialNumber (deviceIdx));
     }
-
-    std::string device_id;
 
     try {
       if (device_id.empty ())
@@ -244,7 +242,11 @@ namespace pcl
         exit (-1);
       }
     }
-
+    catch(...)
+    {
+      printf ("[%s] unknown error occured\n", getName ().c_str ());
+      exit (-1);
+    }
     printf ("[%s] Opened '%s' on bus %d:%d with serial number '%s'\n", getName ().c_str (),
               device_->getProductName (), device_->getBus (), device_->getAddress (), device_->getSerialNumber ());
 
