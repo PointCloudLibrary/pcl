@@ -455,14 +455,13 @@ void NarfKeypoint::calculateInterestImage ()
         interest_value *= angle_change_value;  // interest_value already contains a punishment according
                                                // to how much the immediate neighborhood changes
         
-        //TODO: reenable
-        //if (parameters_.add_points_on_straight_edges)
-        //{
-          //float max_histogram_cell_value = 0.0f;
-          //for (int histogram_cell=0; histogram_cell<angle_histogram_size; ++histogram_cell)
-            //max_histogram_cell_value = (std::max) (max_histogram_cell_value, angle_histogram[histogram_cell]);
-          //interest_value = (std::min) (interest_value+max_histogram_cell_value, 1.0f);
-        //}
+        if (parameters_.add_points_on_straight_edges)
+        {
+          float max_histogram_cell_value = 0.0f;
+          for (int histogram_cell=0; histogram_cell<angle_histogram_size; ++histogram_cell)
+            max_histogram_cell_value = (std::max) (max_histogram_cell_value, angle_histogram[histogram_cell]);
+          interest_value = (std::min) (interest_value+max_histogram_cell_value, 1.0f);
+        }
         
         //cout << PVARN (overall_negative_score);
         //overall_negative_score = -powf (-overall_negative_score, 2);  // Some scaling
