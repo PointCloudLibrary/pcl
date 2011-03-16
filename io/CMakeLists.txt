@@ -9,17 +9,10 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 if(build)
     GET_PKG_CONFIG_INFO(openni-dev "")
     if(openni-dev_PKG_FOUND)
-        set(KINECT_GRABBER_INCLUDES include/openni_depth_image.h
-            include/openni_camera/openni_device_kinect.h
-            include/openni_camera/openni_driver.h
-            include/openni_camera/openni_image_bayer_grbg.h
-            include/openni_camera/openni_image_yuv_422.h
-            include/openni_camera/openni_device.h
-            include/openni_camera/openni_device_primesense.h
-            include/openni_camera/openni_exception.h
-            include/openni_camera/openni_image.h
+        set(KINECT_GRABBER_INCLUDES
             include/pcl/io/grabber.h
-            include/pcl/io/kinect_grabber.h)
+            include/pcl/io/kinect_grabber.h
+            )
         set(KINECT_GRABBER_SOURCES src/openni_camera/openni_device.cpp
             src/openni_camera/openni_device_primesense.cpp
             src/openni_camera/openni_image_bayer_grbg.cpp
@@ -27,8 +20,7 @@ if(build)
             src/openni_camera/openni_device_kinect.cpp
             src/openni_camera/openni_driver.cpp
             src/openni_camera/openni_exception.cpp
-            src/openni_camera/openni_image_yuv_422.cpp
-            src/kinect_grabber.cpp)
+            src/openni_camera/openni_image_yuv_422.cpp)
         APPLY_PKG_CONFIG_DIRS(openni-dev)
     endif(openni-dev_PKG_FOUND)
 
@@ -36,6 +28,7 @@ if(build)
         src/pcd_io.cpp
         src/vtk_io.cpp
         ${KINECT_GRABBER_SOURCES}
+        src/kinect_grabber.cpp
         )
     APPLY_PKG_CONFIG_TO_SRCS(openni-dev ${srcs})
 
