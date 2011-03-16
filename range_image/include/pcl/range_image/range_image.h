@@ -638,6 +638,28 @@ namespace pcl
         doZBuffer (const PointCloudType& point_cloud, float noise_level,
                   float min_range, int& top, int& right, int& bottom, int& left);
 
+      // =====STATIC PROTECTED=====
+      static const int lookup_table_size;
+      static std::vector<float> asin_lookup_table;
+      static std::vector<float> atan_lookup_table;
+      static std::vector<float> cos_lookup_table;
+      /** Create lookup tables for trigonometric functions */
+      static void
+        createLookupTables ();
+
+      /** Query the asin lookup table */
+      static inline float
+        asinLookUp (float value);
+      
+      /** Query the atan2 lookup table */
+      static inline float
+        atan2LookUp (float y, float x);
+     
+      /** Query the cos lookup table */
+      static inline float
+        cosLookUp (float value);
+
+
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };

@@ -42,6 +42,55 @@ namespace pcl
 {
 
 /////////////////////////////////////////////////////////////////////////
+inline float
+RangeImage::asinLookUp (float value)
+{
+  float ret = asin_lookup_table[lrintf ((lookup_table_size/2)*value) + lookup_table_size/2];
+  //std::cout << ret << "==" << asinf(value)<<"\n";
+  return ret;
+}
+
+/////////////////////////////////////////////////////////////////////////
+inline float
+RangeImage::atan2LookUp (float y, float x)
+{
+  //float ret = asin_lookup_table[lrintf((lookup_table_size/2)*value) + lookup_table_size/2];
+  
+  float ret;
+  if(fabsf(x) < fabsf(y)) {
+    ret = atan_lookup_table[lrintf ((lookup_table_size/2)*(x/y)) + lookup_table_size/2];
+    ret = (x*y > 0 ? M_PI/2-ret : -M_PI/2-ret);
+    //if (fabsf(ret-atanf(y/x)) > 1e-3)
+      //std::cout << "atanf("<<y<<"/"<<x<<")"<<" = "<<ret<<" = "<<atanf(y/x)<<"\n";
+  }
+  else {
+    ret = atan_lookup_table[lrintf ((lookup_table_size/2)*(y/x)) + lookup_table_size/2];
+  }
+  if (x < 0)
+    ret = (y < 0 ? ret-M_PI : ret+M_PI);
+  
+  //if (fabsf(ret-atan2f(y,x)) > 1e-3)
+    //std::cout << "atan2f("<<y<<","<<x<<")"<<" = "<<ret<<" = "<<atan2f(y,x)<<"\n";
+  
+  return ret;
+}
+
+/////////////////////////////////////////////////////////////////////////
+inline float
+RangeImage::cosLookUp (float value)
+{
+  int cell_idx = lrintf ((lookup_table_size-1)*fabsf(value)/(2.0f*M_PI));
+  //if (cell_idx<0 || cell_idx>=int(cos_lookup_table.size()))
+  //{
+    //std::cout << PVARC(value)<<PVARN(cell_idx);
+    //return 0.0f;
+  //}
+  float ret = cos_lookup_table[cell_idx];
+  //std::cout << ret << "==" << cos(value)<<"\n";
+  return ret;
+}
+
+/////////////////////////////////////////////////////////////////////////
 template <typename PointCloudType> void 
 RangeImage::createFromPointCloud(const PointCloudType& point_cloud, float angular_resolution, float max_angle_width, float max_angle_height,
                                  const Eigen::Affine3f& sensor_pose, RangeImage::CoordinateFrame coordinate_frame,
@@ -264,8 +313,8 @@ RangeImage::getImagePoint(const Eigen::Vector3f& point, float& image_x, float& i
 {
   Eigen::Vector3f transformedPoint = to_range_image_system_ * point;
   range = transformedPoint.norm();
-  float angle_x = atan2f(transformedPoint[0], transformedPoint[2]),
-        angle_y = asinf(transformedPoint[1]/range);
+  float angle_x = atan2LookUp(transformedPoint[0], transformedPoint[2]),
+        angle_y = asinLookUp(transformedPoint[1]/range);
   getImagePointFromAngles(angle_x, angle_y, image_x, image_y);
   //std::cout << "("<<point[0]<<","<<point[1]<<","<<point[2]<<")"
             //<< " => ("<<transformedPoint[0]<<","<<transformedPoint[1]<<","<<transformedPoint[2]<<")"
@@ -335,7 +384,7 @@ RangeImage::getRangeDifference(const Eigen::Vector3f& point) const
 void 
 RangeImage::getImagePointFromAngles(float angle_x, float angle_y, float& image_x, float& image_y) const
 {
-  image_x = (angle_x*cosf(angle_y) + float(M_PI))*angular_resolution_reciprocal_ - image_offset_x_;
+  image_x = (angle_x*cosLookUp(angle_y) + float(M_PI))*angular_resolution_reciprocal_ - image_offset_x_;
   image_y = (angle_y + 0.5f*float(M_PI))*angular_resolution_reciprocal_ - image_offset_y_;
 }
 

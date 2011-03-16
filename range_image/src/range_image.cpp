@@ -50,6 +50,43 @@ namespace pcl
 {
 
 bool RangeImage::debug = false;
+const int RangeImage::lookup_table_size = 20001;
+std::vector<float> RangeImage::asin_lookup_table;
+std::vector<float> RangeImage::atan_lookup_table;
+std::vector<float> RangeImage::cos_lookup_table;
+
+/////////////////////////////////////////////////////////////////////////
+void 
+RangeImage::createLookupTables ()
+{
+  if (!asin_lookup_table.empty())
+    return;
+  
+  //MEASURE_FUNCTION_TIME;
+  
+  asin_lookup_table.resize(lookup_table_size);
+  for (int i=0; i<lookup_table_size; ++i) {
+    float value = float(i-lookup_table_size/2)/float(lookup_table_size/2);
+    asin_lookup_table[i] = asinf(value);
+    //std::cout << "asinf("<<value<<") = "<<asin_lookup_table[i]<<"\n";
+  }
+  
+  atan_lookup_table.resize(lookup_table_size);
+  for (int i=0; i<lookup_table_size; ++i) {
+    float value = float(i-lookup_table_size/2)/float(lookup_table_size/2);
+    atan_lookup_table[i] = atanf(value);
+    //std::cout << "atanf("<<value<<") = "<<atan_lookup_table[i]<<"\n";
+  }
+  
+  cos_lookup_table.resize(lookup_table_size);
+  for (int i=0; i<lookup_table_size; ++i) {
+    float value = float(i)*2.0f*M_PI/float(lookup_table_size-1);
+    cos_lookup_table[i] = cosf(value);
+    //std::cout << "cosf("<<value<<") = "<<cos_lookup_table[i]<<"\n";
+  }
+}
+
+
 
 /////////////////////////////////////////////////////////////////////////
 void 
@@ -75,6 +112,7 @@ RangeImage::getCoordinateFrameTransformation (RangeImage::CoordinateFrame coordi
 /////////////////////////////////////////////////////////////////////////
 RangeImage::RangeImage () : RangeImage::BaseClass ()
 {
+  createLookupTables();
   reset ();
   unobserved_point.x = unobserved_point.y = unobserved_point.z = std::numeric_limits<float>::quiet_NaN ();
   unobserved_point.range = -std::numeric_limits<float>::infinity ();
