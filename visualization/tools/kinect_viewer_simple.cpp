@@ -35,8 +35,6 @@
  */
 
 #include <pcl/io/kinect_grabber.h>
-#include "openni_camera/openni_image.h"
-#include "openni_camera/openni_depth_image.h"
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <boost/shared_ptr.hpp>
