@@ -88,11 +88,11 @@ if(build)
         include/pcl/ros/register_point_struct.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ros ${ros_incs})
-    set(ttools_incs include/pcl/terminal_tools/parse.h
+    set(tools_incs include/pcl/terminal_tools/parse.h
         include/pcl/terminal_tools/print.h
         include/pcl/terminal_tools/time.h
         )
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ttools ${ttools_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} tools ${tools_incs})
 
     add_subdirectory(test)
 endif(build)
