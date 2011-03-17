@@ -115,7 +115,6 @@ namespace pcl
       // TODO: turn this only on if needed ...
       if (!device_->isDepthRegistered ())
       {
-        printf ("turning on depth registration, since PointCloudXYZRGB has subscribers.\n");
         device_->setDepthRegistration (true);
       }
       device_->startDepthStream ();
@@ -128,7 +127,7 @@ namespace pcl
     }
     std::cerr << "streams alive: ";
     if (image_callback_registered_) std::cerr << " image, ";
-    if (depth_image_callback_registered_) std::cerr << " depth image";
+    if (depth_image_callback_registered_) std::cerr << " depth_image";
     std::cerr << std::endl;
 
     started_ = true;
@@ -306,7 +305,7 @@ namespace pcl
 
     boost::signals2::signal<sig_cb_openni_point_cloud>* signalXYZ = find_signal <sig_cb_openni_point_cloud> ();
     if (signalXYZ && signalXYZ->num_slots () > 0)
-        signalXYZ->operator()(convertToXYZPointCloud (depth_image));
+      signalXYZ->operator()(convertToXYZPointCloud (depth_image));
 
     return;
   }
@@ -319,11 +318,11 @@ namespace pcl
         signal->operator()(convertToXYZRGBPointCloud (image, depth_image));
   }
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage> depth) const
+  pcl::PointCloud<pcl::PointXYZ>::Ptr OpenNIGrabber::convertToXYZPointCloud (boost::shared_ptr<openni_wrapper::DepthImage> depth) const
   {
     const xn::DepthMetaData& depth_md = depth->getDepthMetaData ();
-
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>() );
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud <pcl::PointXYZ>);
+    
     // TODO cloud->header.stamp = time;
     cloud->height       = depth_height_;
     cloud->width        = depth_width_;
@@ -370,13 +369,13 @@ namespace pcl
       }
     }
 
-    return (cloud);
+    return cloud;
   }
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> image, 
-                                                                        const boost::shared_ptr<openni_wrapper::DepthImage> depth_image) const
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr OpenNIGrabber::convertToXYZRGBPointCloud (boost::shared_ptr<openni_wrapper::Image> image, 
+                                                                        boost::shared_ptr<openni_wrapper::DepthImage> depth_image) const
   {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>() );
+    boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > cloud (new pcl::PointCloud<pcl::PointXYZRGB>() );
 
     // do not publish if rgb image is smaller than color image -> seg fault
     if (image->getHeight () < depth_image->getHeight () || image->getWidth () < depth_image->getWidth ())
@@ -440,7 +439,8 @@ namespace pcl
         pt.rgb = color.float_value;
       }
     }
-
+    delete (depth_buffer);
+    delete (rgb_buffer);
     return (cloud);
   }
   // TODO: delete me?

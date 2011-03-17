@@ -60,13 +60,14 @@ using terminal_tools::TT_RED;
 using terminal_tools::TT_GREEN;
 using terminal_tools::TT_BLUE;
 
-typedef pcl_visualization::PointCloudColorHandler<pcl::PointCloud<pcl::PointXYZRGB> > ColorHandler;
+typedef pcl_visualization::PointCloudColorHandler<pcl::PointCloud<pcl::PointXYZ> > ColorHandler;
 typedef ColorHandler::Ptr ColorHandlerPtr;
 typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
-typedef pcl_visualization::PointCloudGeometryHandler<pcl::PointCloud<pcl::PointXYZRGB> > GeometryHandler;
+typedef pcl_visualization::PointCloudGeometryHandler<pcl::PointCloud<pcl::PointXYZ> > GeometryHandler;
 typedef GeometryHandler::Ptr GeometryHandlerPtr;
 typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
+boost::mutex mutex_;
 
 #define NORMALS_SCALE 0.01
 #define PC_SCALE 0.001
@@ -112,11 +113,11 @@ GeometryHandlerPtr geometry_handler;
 std::vector<double> fcolor_r, fcolor_b, fcolor_g;
 bool fcolorparam = false;
 
-void cloud_cb (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > cloud)
+void cloud_cb (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud)
 {
     std::cout << __PRETTY_FUNCTION__ << " " << cloud->width << std::endl;
   // Add the dataset with a XYZ and a random handler 
-  //geometry_handler.reset (new pcl_visualization::PointCloudGeometryHandlerXYZ<pcl::PointCloud<pcl::PointXYZRGB> > (*cloud));
+//  geometry_handler.reset (new pcl_visualization::PointCloudGeometryHandlerXYZ<pcl::PointCloud<pcl::PointXYZRGB> > (*cloud));
 
   //// If color was given, ues that
   //if (fcolorparam)
@@ -125,7 +126,12 @@ void cloud_cb (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > cloud)
   //  color_handler.reset (new pcl_visualization::PointCloudColorHandlerRandom<pcl::PointCloud<pcl::PointXYZRGB> > (cloud));
 
   // Add the cloud to the renderer
-  p->addPointCloud (*cloud, std::string("KinectCloud"));
+
+  boost::mutex::scoped_lock (mutex_);
+  if (!cloud)
+    return;
+  p->removePointCloud ("KinectCloud");
+  p->addPointCloud (*cloud, "KinectCloud");
 }
 
 /* ---[ */
@@ -156,13 +162,13 @@ int
 
   p.reset (new pcl_visualization::PCLVisualizer (argc, argv, "PCD viewer"));
 
-  // Change the cloud rendered point size
-  if (psize > 0)
-    p->setPointCloudRenderingProperties (pcl_visualization::PCL_VISUALIZER_POINT_SIZE, psize, "KinectCloud");
-
-  // Change the cloud rendered opacity
-  if (opaque >= 0)
-    p->setPointCloudRenderingProperties (pcl_visualization::PCL_VISUALIZER_OPACITY, opaque, "KinectCloud");
+//  // Change the cloud rendered point size
+//  if (psize > 0)
+//    p->setPointCloudRenderingProperties (pcl_visualization::PCL_VISUALIZER_POINT_SIZE, psize, "KinectCloud");
+//
+//  // Change the cloud rendered opacity
+//  if (opaque >= 0)
+//    p->setPointCloudRenderingProperties (pcl_visualization::PCL_VISUALIZER_OPACITY, opaque, "KinectCloud");
 
   p->setBackgroundColor (bcolor[0], bcolor[1], bcolor[2]);
 
@@ -187,10 +193,16 @@ int
   boost::signals2::connection c1 = interface->registerCallback (cloud_cb);
   
   interface->start ();
-  while (!p->wasStopped ())
+  while (true)
   {
-    p->spinOnce ();
     usleep (10000);
+    {
+      boost::mutex::scoped_lock (mutex_);
+      p->spinOnce ();
+      if (p->wasStopped ())
+        break;
+    }
+
   }
 
   interface->stop ();

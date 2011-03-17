@@ -98,8 +98,8 @@ struct pcl_visualization::CloudViewer::CloudViewer_impl
     while (!quit_)
     {
       viewer_thread_.yield ();
-      if (!has_cloud_)
-        continue;
+//      if (!has_cloud_)
+//        continue;
       {
         {
           boost::mutex::scoped_lock (mtx_);
@@ -123,6 +123,7 @@ struct pcl_visualization::CloudViewer::CloudViewer_impl
           boost::mutex::scoped_lock (c_mtx);
           BOOST_FOREACH(CallableMap::value_type& x, callables)
                 {
+                  std::cerr << "calling " << x.first << std::endl;
                   (x.second) (*viewer_);
                 }
         }

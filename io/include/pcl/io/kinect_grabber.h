@@ -112,8 +112,11 @@ namespace pcl
     private:
       void publish ()
       {
-        if (q1.size () < 2 || q2.size () < 2)
-          return;
+        {
+          boost::mutex::scoped_lock lock(mutex_);
+          if (q1.size () < 2 || q2.size () < 2)
+            return;
+        }
         
         // this tries to find pairs of T1, T2 that are close in time. It kindof assumes
         // that the entries in the queue come in monotonically in time (sorted)
@@ -190,8 +193,8 @@ namespace pcl
       //define callback signature typedefs
       typedef void (sig_cb_openni_image) (boost::shared_ptr<openni_wrapper::Image>);
       typedef void (sig_cb_openni_depth_image) (boost::shared_ptr<openni_wrapper::DepthImage>);
-      typedef void (sig_cb_openni_point_cloud) (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> >);
-      typedef void (sig_cb_openni_point_cloud_rgb) (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >);
+      typedef void (sig_cb_openni_point_cloud) (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &);
+      typedef void (sig_cb_openni_point_cloud_rgb) (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &);
 
     public:
       OpenNIGrabber (const std::string& device_id = "");
@@ -227,9 +230,9 @@ namespace pcl
       virtual inline void checkImageAndDepthSynchronizationRequired();
       virtual inline void checkImageStreamRequired();
       virtual inline void checkDepthStreamRequired();
-      pcl::PointCloud<pcl::PointXYZ>::Ptr convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage> depth) const;
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> image, 
-                                                                        const boost::shared_ptr<openni_wrapper::DepthImage> depth_image) const;
+      pcl::PointCloud<pcl::PointXYZ>::Ptr convertToXYZPointCloud (boost::shared_ptr<openni_wrapper::DepthImage> depth) const;
+      pcl::PointCloud<pcl::PointXYZRGB>::Ptr convertToXYZRGBPointCloud (boost::shared_ptr<openni_wrapper::Image> image, 
+                                                                        boost::shared_ptr<openni_wrapper::DepthImage> depth_image) const;
 
       Synchronizer<boost::shared_ptr<openni_wrapper::Image>, boost::shared_ptr<openni_wrapper::DepthImage> > sync;
 

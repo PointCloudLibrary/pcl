@@ -36,10 +36,10 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} ${Boost_LIBRARIES})
+    target_link_libraries(${LIB_NAME} ${Boost_FILESYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
     APPLY_PKG_CONFIG_TO_TGTS(openni-dev ${LIB_NAME})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-    list(APPEND EXT_DEPS ${Boost_LIBRARIES})
+    list(APPEND EXT_DEPS ${Boost_FILESYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
         "${EXT_DEPS}" "" "" "")
 
