@@ -113,26 +113,29 @@ GeometryHandlerPtr geometry_handler;
 std::vector<double> fcolor_r, fcolor_b, fcolor_g;
 bool fcolorparam = false;
 
-void cloud_cb (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud)
+struct EventHelper
 {
-    std::cout << __PRETTY_FUNCTION__ << " " << cloud->width << std::endl;
-  // Add the dataset with a XYZ and a random handler 
-//  geometry_handler.reset (new pcl_visualization::PointCloudGeometryHandlerXYZ<pcl::PointCloud<pcl::PointXYZRGB> > (*cloud));
+  void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+  {
+      std::cout << __PRETTY_FUNCTION__ << " " << cloud->width << std::endl;
+    // Add the dataset with a XYZ and a random handler 
+  //  geometry_handler.reset (new pcl_visualization::PointCloudGeometryHandlerXYZ<pcl::PointCloud<pcl::PointXYZRGB> > (*cloud));
 
-  //// If color was given, ues that
-  //if (fcolorparam)
-  //  color_handler.reset (new pcl_visualization::PointCloudColorHandlerCustom<pcl::PointCloud<pcl::PointXYZRGB> > (cloud, fcolor_r, fcolor_g, fcolor_b));
-  //else
-  //  color_handler.reset (new pcl_visualization::PointCloudColorHandlerRandom<pcl::PointCloud<pcl::PointXYZRGB> > (cloud));
+    //// If color was given, ues that
+    //if (fcolorparam)
+    //  color_handler.reset (new pcl_visualization::PointCloudColorHandlerCustom<pcl::PointCloud<pcl::PointXYZRGB> > (cloud, fcolor_r, fcolor_g, fcolor_b));
+    //else
+    //  color_handler.reset (new pcl_visualization::PointCloudColorHandlerRandom<pcl::PointCloud<pcl::PointXYZRGB> > (cloud));
 
-  // Add the cloud to the renderer
+    // Add the cloud to the renderer
 
-  boost::mutex::scoped_lock (mutex_);
-  if (!cloud)
-    return;
-  p->removePointCloud ("KinectCloud");
-  p->addPointCloud (*cloud, "KinectCloud");
-}
+    boost::mutex::scoped_lock (mutex_);
+    if (!cloud)
+      return;
+    p->removePointCloud ("KinectCloud");
+    p->addPointCloud (*cloud, "KinectCloud");
+  }
+};
 
 /* ---[ */
 int
@@ -190,7 +193,10 @@ int
     p->addCoordinateSystem (axes, ax_x, ax_y, ax_z);
   }
 
-  boost::signals2::connection c1 = interface->registerCallback (cloud_cb);
+
+  EventHelper h;
+  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind(&EventHelper::cloud_cb, &h, _1);
+  boost::signals2::connection c1 = interface->registerCallback (f);
   
   interface->start ();
   while (true)

@@ -41,78 +41,61 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <iostream>
 
-pcl_visualization::CloudViewer viewer ("Simple Kinect Viewer");
-boost::mutex mutex_;
-pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud_;
-bool init = false;
-
-struct EventHelper 
-{
-  void viz_cb (pcl_visualization::PCLVisualizer& viz)
-  {
-    std::cerr << "viz_cb" << std::endl;
-    if (!init)
-    {
-      std::cerr << "init" << std::endl;
-      viz.setBackgroundColor (1,1,1);
-      init = true;
-    }
-    else
-      viz.removePointCloud ("KinectCloud");
-    boost::mutex::scoped_lock (mutex_);
-    if (cloud_)
-      viz.addPointCloud (*cloud_, "KinectCloud");
-  }
-};
-
-void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr & cloud)
-{
-  //std::cerr << "cloud_cb" << std::endl;
-  //boost::mutex::scoped_lock (mutex_);
-  //cloud_ = cloud;
-  viewer.showCloud(*cloud);
-}
-
+//pcl_visualization::CloudViewer viewer ("Simple Kinect Viewer");
 class SimpleKinectViewer
 {
   public:
-    //SimpleKinectViewer () : viewer ("KinectGrabber") {}
+    SimpleKinectViewer () : viewer ("KinectGrabber"), init_(false) {}
 
-    //void cloud_cb_ (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > cloud)
-    //{
-    //    viewer.showCloud (*cloud);
-    //}
-    //
-    //pcl_visualization::CloudViewer viewer;
+
+
+    void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+    {
+      //boost::mutex::scoped_lock (mutex_);
+      //cloud_ = cloud;
+
+      if (!viewer.wasStopped())
+        viewer.showCloud (*cloud);
+    }
+    
+    void viz_cb (pcl_visualization::PCLVisualizer& viz)
+    {
+      if (!init_)
+      {
+        viz.setBackgroundColor (1,1,1);
+        init_ = true;
+      }
+      else
+        viz.removePointCloud ("KinectCloud");
+      boost::mutex::scoped_lock (mutex_);
+      if (cloud_)
+        viz.addPointCloud (*cloud_, "KinectCloud");
+    }
 
     void run ()
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-      //boost::signals2::connection c = interface->registerCallback (boost::bind (&SimpleKinectViewer::blatestpointcloudrgb, *this, _1));
-      //boost::function<void (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >)> f = boost::bind (&SimpleKinectViewer::blatestpointcloudrgb, this, _1);
-      //boost::signals2::connection c =
-      //  interface->registerCallback <void(boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >)> (boost::bind (&SimpleKinectViewer::cloud_cb_, this, _1));
+      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&SimpleKinectViewer::cloud_cb_, this, _1);
 
-      boost::signals2::connection c1 = interface->registerCallback (cloud_cb);
+      boost::signals2::connection c = interface->registerCallback (f);
       
-      EventHelper h;
-      boost::function1<void, pcl_visualization::PCLVisualizer&> fn = boost::bind (&EventHelper::viz_cb, &h, _1);
-      std::cerr << "--- " << (fn.empty()?"empty!":"not empty") << std::endl;
+      boost::function1<void, pcl_visualization::PCLVisualizer&> fn = boost::bind (&SimpleKinectViewer::viz_cb, this, _1);
 
       //viewer.runOnVisualizationThread (fn, "viz_cb");
       interface->start ();
       
-      //
-      //if (c1.connected ())
-      //  c1.disconnect ();
       while (!viewer.wasStopped())
       {
       }
 
       interface->stop ();
     }
-    
+
+    pcl_visualization::CloudViewer viewer;
+    boost::mutex mutex_;
+    pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud_;
+    bool init_;
 };
 
 int main ()
