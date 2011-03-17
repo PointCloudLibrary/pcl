@@ -50,16 +50,31 @@ namespace pcl
     // create callback signals
     createCallback <sig_cb_openni_image> (); 
     createCallback <sig_cb_openni_depth_image> (); 
+    createCallback <sig_cb_openni_image_depth_image> (); 
     createCallback <sig_cb_openni_point_cloud> ();
     createCallback <sig_cb_openni_point_cloud_rgb> ();
     // initialize driver
     onInit (device_id);
   }
 
+  OpenNIGrabber::~OpenNIGrabber ()
+  {
+    stop ();
+    try
+    {
+      openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
+      driver.stopAll ();
+    }
+    catch (...)
+    {
+    }
+  }
+
   void OpenNIGrabber::checkImageAndDepthSynchronizationRequired()
   {
     // do we have anyone listening to images or color point clouds?
-    if (num_slots<sig_cb_openni_point_cloud_rgb> () > 0)
+    if (num_slots<sig_cb_openni_point_cloud_rgb> () > 0 ||
+        num_slots<sig_cb_openni_image_depth_image> () > 0)
       sync_required_ = true;
     else
       sync_required_ = false;
@@ -69,6 +84,7 @@ namespace pcl
   {
     // do we have anyone listening to images or color point clouds?
     if (num_slots<sig_cb_openni_image> () > 0 || 
+        num_slots<sig_cb_openni_image_depth_image> () > 0||
         num_slots<sig_cb_openni_point_cloud_rgb> () > 0)
       image_required_ = true;
     else
@@ -79,6 +95,7 @@ namespace pcl
   {
     // do we have anyone listening to depth images or (color) point clouds?
     if (num_slots<sig_cb_openni_depth_image> () > 0 ||
+        num_slots<sig_cb_openni_image_depth_image> () > 0 ||
         num_slots<sig_cb_openni_point_cloud_rgb> () > 0 ||
         num_slots<sig_cb_openni_point_cloud> () > 0)
       depth_required_ = true;
@@ -137,11 +154,6 @@ namespace pcl
 
   void OpenNIGrabber::stop ()
   {
-    disconnect_all_slots <sig_cb_openni_image> ();
-    disconnect_all_slots <sig_cb_openni_depth_image> ();
-    disconnect_all_slots <sig_cb_openni_point_cloud> ();
-    disconnect_all_slots <sig_cb_openni_point_cloud_rgb> ();
-
     std::vector<openni_wrapper::OpenNIDevice::CallbackHandle>::iterator it;
     for (it = image_callback_handles.begin (); it != image_callback_handles.end (); it++)
       device_->unregisterImageCallback (*it);
@@ -151,6 +163,12 @@ namespace pcl
     for (jt = depth_callback_handles.begin (); jt != depth_callback_handles.end (); jt++)
       device_->unregisterDepthCallback (*jt);
     depth_image_callback_registered_ = false;
+
+    disconnect_all_slots <sig_cb_openni_image> ();
+    disconnect_all_slots <sig_cb_openni_depth_image> ();
+    disconnect_all_slots <sig_cb_openni_image_depth_image> ();
+    disconnect_all_slots <sig_cb_openni_point_cloud> ();
+    disconnect_all_slots <sig_cb_openni_point_cloud_rgb> ();
 
     started_ = false;
   }
@@ -282,8 +300,8 @@ namespace pcl
 
   void OpenNIGrabber::imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie)
   {
-    boost::signals2::signal<sig_cb_openni_point_cloud_rgb>* signalXYZRGB = find_signal <sig_cb_openni_point_cloud_rgb> ();
-    if (signalXYZRGB && signalXYZRGB->num_slots () > 0) // TODO: should we leave out this check, so as to always fill the synchronizer?
+    if (num_slots<sig_cb_openni_point_cloud_rgb> () > 0 ||
+        num_slots<sig_cb_openni_image_depth_image> () > 0)
         sync.add0 (image, image->getTimeStamp());
 
     boost::signals2::signal<sig_cb_openni_image>* signal = find_signal <sig_cb_openni_image> ();
@@ -295,8 +313,8 @@ namespace pcl
 
   void OpenNIGrabber::depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie)
   {
-    boost::signals2::signal<sig_cb_openni_point_cloud_rgb>* signalXYZRGB = find_signal <sig_cb_openni_point_cloud_rgb> ();
-    if (signalXYZRGB && signalXYZRGB->num_slots () > 0) // TODO: should we leave out this check, so as to always fill the synchronizer?
+    if (num_slots<sig_cb_openni_point_cloud_rgb> () > 0 ||
+        num_slots<sig_cb_openni_image_depth_image> () > 0)
         sync.add1 (depth_image, depth_image->getTimeStamp());
 
     boost::signals2::signal<sig_cb_openni_depth_image>* signal = find_signal <sig_cb_openni_depth_image> ();
@@ -310,15 +328,19 @@ namespace pcl
     return;
   }
 
-  void OpenNIGrabber::imageDepthImageCallback (boost::shared_ptr<openni_wrapper::Image> image, boost::shared_ptr<openni_wrapper::DepthImage> depth_image)
+  void OpenNIGrabber::imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image> &image, const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image)
   {
     // check if we have color point cloud slots
     boost::signals2::signal<sig_cb_openni_point_cloud_rgb>* signal = find_signal <sig_cb_openni_point_cloud_rgb> ();
     if (signal && signal->num_slots () > 0)
         signal->operator()(convertToXYZRGBPointCloud (image, depth_image));
+
+    boost::signals2::signal<sig_cb_openni_image_depth_image>* signalImageDepth = find_signal <sig_cb_openni_image_depth_image> ();
+    if (signalImageDepth && signalImageDepth->num_slots () > 0)
+        signalImageDepth->operator()(image, depth_image);
   }
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr OpenNIGrabber::convertToXYZPointCloud (boost::shared_ptr<openni_wrapper::DepthImage> depth) const
+  pcl::PointCloud<pcl::PointXYZ>::Ptr OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage>& depth) const
   {
     const xn::DepthMetaData& depth_md = depth->getDepthMetaData ();
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud <pcl::PointXYZ>);
@@ -372,8 +394,8 @@ namespace pcl
     return cloud;
   }
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr OpenNIGrabber::convertToXYZRGBPointCloud (boost::shared_ptr<openni_wrapper::Image> image, 
-                                                                        boost::shared_ptr<openni_wrapper::DepthImage> depth_image) const
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image, 
+                                                                        const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
   {
     boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > cloud (new pcl::PointCloud<pcl::PointXYZRGB>() );
 

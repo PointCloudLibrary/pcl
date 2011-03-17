@@ -116,12 +116,9 @@ namespace pcl
           boost::mutex::scoped_lock lock(mutex_);
           if (q1.size () < 2 || q2.size () < 2)
             return;
-        }
         
         // this tries to find pairs of T1, T2 that are close in time. It kindof assumes
         // that the entries in the queue come in monotonically in time (sorted)
-        {
-          boost::mutex::scoped_lock lock(mutex_);
 
           // d1 is the time difference between the first elements in the 2 queues
           unsigned long d1 = fabs (q1.front().first - q2.front().first);
@@ -191,14 +188,15 @@ namespace pcl
                               OpenNI_QQVGA_60Hz = 9};
 
       //define callback signature typedefs
-      typedef void (sig_cb_openni_image) (boost::shared_ptr<openni_wrapper::Image>);
-      typedef void (sig_cb_openni_depth_image) (boost::shared_ptr<openni_wrapper::DepthImage>);
-      typedef void (sig_cb_openni_point_cloud) (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &);
-      typedef void (sig_cb_openni_point_cloud_rgb) (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &);
+      typedef void (sig_cb_openni_image) (const boost::shared_ptr<openni_wrapper::Image>&);
+      typedef void (sig_cb_openni_depth_image) (const boost::shared_ptr<openni_wrapper::DepthImage>&);
+      typedef void (sig_cb_openni_image_depth_image) (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&);
+      typedef void (sig_cb_openni_point_cloud) (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+      typedef void (sig_cb_openni_point_cloud_rgb) (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&);
 
     public:
       OpenNIGrabber (const std::string& device_id = "");
-      virtual ~OpenNIGrabber () {}
+      virtual ~OpenNIGrabber ();
       virtual unsigned start ();  
       virtual void stop ();  
       virtual std::string getName () const;
@@ -221,7 +219,7 @@ namespace pcl
       // callback methods
       void imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie);
       void depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie);
-      void imageDepthImageCallback (boost::shared_ptr<openni_wrapper::Image> image, boost::shared_ptr<openni_wrapper::DepthImage> depth_image);
+      void imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image> &image, const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image);
     
       void signalsChanged ();
 
@@ -230,9 +228,9 @@ namespace pcl
       virtual inline void checkImageAndDepthSynchronizationRequired();
       virtual inline void checkImageStreamRequired();
       virtual inline void checkDepthStreamRequired();
-      pcl::PointCloud<pcl::PointXYZ>::Ptr convertToXYZPointCloud (boost::shared_ptr<openni_wrapper::DepthImage> depth) const;
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr convertToXYZRGBPointCloud (boost::shared_ptr<openni_wrapper::Image> image, 
-                                                                        boost::shared_ptr<openni_wrapper::DepthImage> depth_image) const;
+      pcl::PointCloud<pcl::PointXYZ>::Ptr convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage> &depth) const;
+      pcl::PointCloud<pcl::PointXYZRGB>::Ptr convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image, 
+                                                                        const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
 
       Synchronizer<boost::shared_ptr<openni_wrapper::Image>, boost::shared_ptr<openni_wrapper::DepthImage> > sync;
 
