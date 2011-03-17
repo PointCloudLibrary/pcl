@@ -77,7 +77,7 @@ if(build)
         include/pcl/common/vector_average.h
         include/pcl/common/vector_average.hpp
         )
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} commoin ${common_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
     set(impl_incs include/pcl/impl/instantiate.hpp
         include/pcl/impl/point_types.hpp
         )
