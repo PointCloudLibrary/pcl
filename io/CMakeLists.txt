@@ -12,6 +12,15 @@ if(build)
         set(KINECT_GRABBER_INCLUDES
             include/pcl/io/grabber.h
             include/pcl/io/kinect_grabber.h
+            include/pcl/io/openni_camera/openni_depth_image.h
+            include/pcl/io/openni_camera/openni_device.h
+            include/pcl/io/openni_camera/openni_device_kinect.h
+            include/pcl/io/openni_camera/openni_device_primesense.h
+            include/pcl/io/openni_camera/openni_driver.h
+            include/pcl/io/openni_camera/openni_exception.h
+            include/pcl/io/openni_camera/openni_image.h
+            include/pcl/io/openni_camera/openni_image_bayer_grbg.h
+            include/pcl/io/openni_camera/openni_image_yuv_422.h
             )
         set(KINECT_GRABBER_SOURCES src/openni_camera/openni_device.cpp
             src/openni_camera/openni_device_primesense.cpp
