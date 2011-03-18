@@ -43,6 +43,7 @@
 #include <boost/signals2.hpp>
 #include <boost/signals2/slot.hpp>
 #include <typeinfo>
+#include <vector>
 
 namespace pcl
 {
@@ -53,6 +54,7 @@ class Grabber
 		virtual ~Grabber () {}
 		template<typename T> boost::signals2::connection registerCallback (const boost::function<T>& callback);
 		//template<typename T> boost::signals2::connection registerCallback (const T& callback);
+//    template<typename T> boost::signals2::connection registerCallback2 (const boost::function<T>& callback);
 		virtual unsigned start () = 0;
     virtual void stop () = 0;  
     virtual void signalsChanged () = 0;
@@ -65,7 +67,7 @@ class Grabber
     template<typename T> int num_slots () const;
     template<typename T> void disconnect_all_slots ();
 
-		template<typename T> bool createCallback ();
+		template<typename T> bool createSignal ();
 		std::map<const std::type_info*, boost::signals2::signal_base*> signals_;
 };
 
@@ -105,7 +107,7 @@ template<typename T> int Grabber::num_slots () const
   return 0;
 }
 
-template<typename T> bool Grabber::createCallback ()
+template<typename T> bool Grabber::createSignal ()
 {
 	typedef boost::signals2::signal<T> Signal;
 

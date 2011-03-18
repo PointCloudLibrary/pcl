@@ -49,12 +49,13 @@ namespace pcl
     , sync_required_(false)
     , started_(false)
   {
+
     // create callback signals
-    createCallback <sig_cb_openni_image> (); 
-    createCallback <sig_cb_openni_depth_image> (); 
-    createCallback <sig_cb_openni_image_depth_image> (); 
-    createCallback <sig_cb_openni_point_cloud> ();
-    createCallback <sig_cb_openni_point_cloud_rgb> ();
+    createSignal <sig_cb_openni_image> (); 
+    createSignal <sig_cb_openni_depth_image> (); 
+    createSignal <sig_cb_openni_image_depth_image> (); 
+    createSignal <sig_cb_openni_point_cloud> ();
+    createSignal <sig_cb_openni_point_cloud_rgb> ();
     // initialize driver
     onInit (device_id);
   }
