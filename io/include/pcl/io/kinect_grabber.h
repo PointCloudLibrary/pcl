@@ -42,15 +42,19 @@
 #include <pcl/io/openni_camera/openni_device_kinect.h>
 #include <pcl/io/openni_camera/openni_image.h>
 #include <pcl/io/openni_camera/openni_depth_image.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+//#include <pcl/point_cloud.h>
+//#include <pcl/point_types.h>
 #include <string>
 #include <deque>
-#include <Eigen/Core>
+//#include <Eigen/Core>
 #include <boost/thread/mutex.hpp> 
 
 namespace pcl
 {
+  class PointXYZ;
+  class PointXYZRGB;
+  template <typename T> class PointCloud;
+
   typedef union
   {
     struct /*anonymous*/
@@ -190,9 +194,9 @@ namespace pcl
       //define callback signature typedefs
       typedef void (sig_cb_openni_image) (const boost::shared_ptr<openni_wrapper::Image>&);
       typedef void (sig_cb_openni_depth_image) (const boost::shared_ptr<openni_wrapper::DepthImage>&);
-      typedef void (sig_cb_openni_image_depth_image) (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&);
-      typedef void (sig_cb_openni_point_cloud) (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
-      typedef void (sig_cb_openni_point_cloud_rgb) (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&);
+      typedef void (sig_cb_openni_image_depth_image) (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant);
+      typedef void (sig_cb_openni_point_cloud) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&);
+      typedef void (sig_cb_openni_point_cloud_rgb) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&);
 
     public:
       OpenNIGrabber (const std::string& device_id = "");
@@ -228,8 +232,8 @@ namespace pcl
       virtual inline void checkImageAndDepthSynchronizationRequired();
       virtual inline void checkImageStreamRequired();
       virtual inline void checkDepthStreamRequired();
-      pcl::PointCloud<pcl::PointXYZ>::Ptr convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage> &depth) const;
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image, 
+      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> > convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage> &depth) const;
+      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image, 
                                                                         const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
 
       Synchronizer<boost::shared_ptr<openni_wrapper::Image>, boost::shared_ptr<openni_wrapper::DepthImage> > sync;
@@ -277,7 +281,7 @@ namespace pcl
       bool depth_image_callback_registered_;
       bool started_;
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+//      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
   };
 }
 #endif

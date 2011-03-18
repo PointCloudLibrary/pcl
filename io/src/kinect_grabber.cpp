@@ -35,6 +35,8 @@
  */
 
 #include <pcl/io/kinect_grabber.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 namespace pcl
 {
@@ -337,7 +339,10 @@ namespace pcl
 
     boost::signals2::signal<sig_cb_openni_image_depth_image>* signalImageDepth = find_signal <sig_cb_openni_image_depth_image> ();
     if (signalImageDepth && signalImageDepth->num_slots () > 0)
-        signalImageDepth->operator()(image, depth_image);
+    {
+      float constant = 0.001 / device_->getDepthFocalLength (depth_width_);
+      signalImageDepth->operator()(image, depth_image, constant);
+    }
   }
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage>& depth) const
