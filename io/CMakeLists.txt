@@ -7,8 +7,7 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
-    GET_PKG_CONFIG_INFO(openni-dev "")
-    if(openni-dev_PKG_FOUND)
+    if(OPENNI_FOUND)
         set(KINECT_GRABBER_INCLUDES
             include/pcl/io/grabber.h
             include/pcl/io/kinect_grabber.h
@@ -30,8 +29,7 @@ if(build)
             src/openni_camera/openni_driver.cpp
             src/openni_camera/openni_exception.cpp
             src/openni_camera/openni_image_yuv_422.cpp)
-        APPLY_PKG_CONFIG_DIRS(openni-dev)
-    endif(openni-dev_PKG_FOUND)
+    endif(OPENNI_FOUND)
 
     set(srcs src/io.cpp
         src/pcd_io.cpp
@@ -39,14 +37,15 @@ if(build)
         ${KINECT_GRABBER_SOURCES}
         src/kinect_grabber.cpp
         )
-    APPLY_PKG_CONFIG_TO_SRCS(openni-dev ${srcs})
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} ${Boost_FILESYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
-    APPLY_PKG_CONFIG_TO_TGTS(openni-dev ${LIB_NAME})
+    if(OPENNI_FOUND)
+      target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
+    endif(OPENNI_FOUND)
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     list(APPEND EXT_DEPS ${Boost_FILESYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
