@@ -42,7 +42,9 @@ include_directories(${CMINPACK_INCLUDE_DIRS})
 include(${PCL_SOURCE_DIR}/cmake/pcl_openmp.cmake)
 #OpenNI
 find_package(OpenNI)
-include_directories(${OPENNI_INCLUDE_DIRS})
+if(OPENNI_FOUND)
+    include_directories(${OPENNI_INCLUDE_DIRS})
+endif(OPENNI_FOUND)
 
 # Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
