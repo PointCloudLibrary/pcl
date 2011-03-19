@@ -88,6 +88,7 @@ namespace pcl
       {
         cb_[callback_counter] = callback;
         callback_counter++;
+        return callback_counter;
       }
 
   		template <typename T> void removeCallback (int i)
