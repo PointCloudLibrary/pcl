@@ -341,7 +341,7 @@ namespace pcl
     boost::signals2::signal<sig_cb_openni_image_depth_image>* signalImageDepth = find_signal <sig_cb_openni_image_depth_image> ();
     if (signalImageDepth && signalImageDepth->num_slots () > 0)
     {
-      float constant = 0.001 / device_->getDepthFocalLength (depth_width_);
+      float constant = 1.0f / device_->getDepthFocalLength (depth_width_);
       signalImageDepth->operator()(image, depth_image, constant);
     }
   }
@@ -358,7 +358,7 @@ namespace pcl
 
     cloud->points.resize (cloud->height * cloud->width);
 
-    float constant = 0.001 / device_->getDepthFocalLength (depth_width_);
+    float constant = 1.0f / device_->getDepthFocalLength (depth_width_);
 
     if (device_->isDepthRegistered ())
       cloud->header.frame_id = rgb_frame_id_;
