@@ -37,7 +37,7 @@ if(build)
         include/pcl/Vertices.h
         include/pcl/PointIndices.h
         )
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} "pcl" ${incs})
     set(sensor_msg_incs include/sensor_msgs/PointField.h
         include/sensor_msgs/PointCloud2.h
         include/sensor_msgs/CameraInfo.h
