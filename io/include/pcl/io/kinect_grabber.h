@@ -252,6 +252,12 @@ namespace pcl
       bool depth_required_;
       bool sync_required_;
 
+      boost::signals2::signal<sig_cb_openni_image            >* image_signal_;
+      boost::signals2::signal<sig_cb_openni_depth_image      >* depth_image_signal_;
+      boost::signals2::signal<sig_cb_openni_image_depth_image>* image_depth_image_signal_;
+      boost::signals2::signal<sig_cb_openni_point_cloud      >* point_cloud_signal_;
+      boost::signals2::signal<sig_cb_openni_point_cloud_rgb  >* point_cloud_rgb_signal_;
+
       struct modeComp
       {
         bool operator () (const XnMapOutputMode& mode1, const XnMapOutputMode& mode2) const

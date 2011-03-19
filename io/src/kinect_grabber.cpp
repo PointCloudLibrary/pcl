@@ -52,10 +52,15 @@ namespace pcl
 
     // create callback signals
     createSignal <sig_cb_openni_image> (); 
+    image_signal_ = find_signal<sig_cb_openni_image> ();
     createSignal <sig_cb_openni_depth_image> (); 
+    depth_image_signal_ = find_signal<sig_cb_openni_depth_image> ();
     createSignal <sig_cb_openni_image_depth_image> (); 
+    image_depth_image_signal_ = find_signal<sig_cb_openni_image_depth_image> ();
     createSignal <sig_cb_openni_point_cloud> ();
+    point_cloud_signal_ = find_signal<sig_cb_openni_point_cloud> ();
     createSignal <sig_cb_openni_point_cloud_rgb> ();
+    point_cloud_rgb_signal_ = find_signal<sig_cb_openni_point_cloud_rgb> ();
     // initialize driver
     onInit (device_id);
   }
@@ -307,9 +312,8 @@ namespace pcl
         num_slots<sig_cb_openni_image_depth_image> () > 0)
         sync.add0 (image, image->getTimeStamp());
 
-    boost::signals2::signal<sig_cb_openni_image>* signal = find_signal <sig_cb_openni_image> ();
-    if (signal && signal->num_slots () > 0)
-        signal->operator()(image);
+    if (image_signal_->num_slots () > 0)
+        image_signal_->operator()(image);
 
     return;
   }
@@ -320,13 +324,11 @@ namespace pcl
         num_slots<sig_cb_openni_image_depth_image> () > 0)
         sync.add1 (depth_image, depth_image->getTimeStamp());
 
-    boost::signals2::signal<sig_cb_openni_depth_image>* signal = find_signal <sig_cb_openni_depth_image> ();
-    if (signal && signal->num_slots () > 0)
-        signal->operator()(depth_image);
+    if (depth_image_signal_->num_slots () > 0)
+        depth_image_signal_->operator()(depth_image);
 
-    boost::signals2::signal<sig_cb_openni_point_cloud>* signalXYZ = find_signal <sig_cb_openni_point_cloud> ();
-    if (signalXYZ && signalXYZ->num_slots () > 0)
-      signalXYZ->operator()(convertToXYZPointCloud (depth_image));
+    if (point_cloud_signal_->num_slots () > 0)
+      point_cloud_signal_->operator()(convertToXYZPointCloud (depth_image));
 
     return;
   }
@@ -334,15 +336,13 @@ namespace pcl
   void OpenNIGrabber::imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image> &image, const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image)
   {
     // check if we have color point cloud slots
-    boost::signals2::signal<sig_cb_openni_point_cloud_rgb>* signal = find_signal <sig_cb_openni_point_cloud_rgb> ();
-    if (signal && signal->num_slots () > 0)
-        signal->operator()(convertToXYZRGBPointCloud (image, depth_image));
+    if (point_cloud_rgb_signal_->num_slots () > 0)
+        point_cloud_rgb_signal_->operator()(convertToXYZRGBPointCloud (image, depth_image));
 
-    boost::signals2::signal<sig_cb_openni_image_depth_image>* signalImageDepth = find_signal <sig_cb_openni_image_depth_image> ();
-    if (signalImageDepth && signalImageDepth->num_slots () > 0)
+    if (image_depth_image_signal_->num_slots () > 0)
     {
       float constant = 1.0f / device_->getDepthFocalLength (depth_width_);
-      signalImageDepth->operator()(image, depth_image, constant);
+      image_depth_image_signal_->operator()(image, depth_image, constant);
     }
   }
 
