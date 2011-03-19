@@ -12,8 +12,6 @@ DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()
 
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
 # Add an "uninstall" target
 configure_file("${PCL_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
     "${PCL_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
@@ -23,6 +21,9 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P
 # Find universal dependencies
 # Boost
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_definitions(-DBOOST_DISABLE_ASSERTS)
+endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 # SSE flags
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
 PCL_CHECK_FOR_SSE()
