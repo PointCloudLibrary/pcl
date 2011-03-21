@@ -54,7 +54,9 @@ namespace openni_wrapper
 class Image
 {
 public:
-  //typedef boost::shared_ptr<Image> Ptr;
+  typedef boost::shared_ptr<Image> Ptr;
+  typedef boost::shared_ptr<const Image> ConstPtr;
+
   typedef enum
   {
     BAYER_GRBG,

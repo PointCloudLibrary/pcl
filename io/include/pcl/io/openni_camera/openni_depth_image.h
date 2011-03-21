@@ -52,7 +52,9 @@ namespace openni_wrapper
 class DepthImage
 {
 public:
-  //typedef boost::shared_ptr<DepthImage> Ptr;
+  typedef boost::shared_ptr<DepthImage> Ptr;
+  typedef boost::shared_ptr<const DepthImage> ConstPtr;
+
   inline DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ();
   inline virtual ~DepthImage () throw ();
 
