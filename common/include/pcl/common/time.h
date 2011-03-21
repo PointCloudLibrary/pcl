@@ -37,6 +37,7 @@
 #define PCL_TIME_H_
 
 #include <cmath>
+#include <string>
 #include "pcl/win32_macros.h"
 
 #ifdef _WIN32
