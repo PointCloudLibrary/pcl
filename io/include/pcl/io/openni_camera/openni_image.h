@@ -85,7 +85,8 @@ public:
   inline unsigned getHeight () const throw ();
   inline unsigned getFrameID () const throw ();
   inline unsigned long getTimeStamp () const throw ();
-
+	inline const xn::ImageMetaData& getMetaData () const throw ();
+	
 protected:
   boost::shared_ptr<xn::ImageMetaData> image_md_;
 };
@@ -117,6 +118,11 @@ unsigned Image::getFrameID () const throw ()
 unsigned long Image::getTimeStamp () const throw ()
 {
   return image_md_->Timestamp ();
+}
+
+const xn::ImageMetaData& Image::getMetaData () const throw ()
+{
+	return *image_md_;
 }
 } // namespace
 #endif //__OPENNI_IMAGE__
