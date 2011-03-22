@@ -200,15 +200,15 @@ namespace pcl
       typedef void (sig_cb_openni_point_cloud_rgb) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&);
 
     public:
-      OpenNIGrabber (const std::string& device_id = "");
+      OpenNIGrabber (const std::string& device_id = "") throw (openni_wrapper::OpenNIException);
       virtual ~OpenNIGrabber ();
       virtual unsigned start ();  
       virtual void stop ();  
       virtual std::string getName () const;
 
     private:
-      void onInit (const std::string& device_id);
-      void setupDevice (const std::string& device_id);
+      bool onInit (const std::string& device_id);
+      bool setupDevice (const std::string& device_id);
       void updateModeMaps ();
       void startSynchronization ();
       void stopSynchronization ();
@@ -219,7 +219,7 @@ namespace pcl
       bool isDepthModeSupported (int depth_mode) const;
 
       int mapXnMode2ConfigMode (const XnMapOutputMode& output_mode) const;
-      XnMapOutputMode mapConfigMode2XnMode (int mode) const;
+      bool mapConfigMode2XnMode (int mode, XnMapOutputMode &xnmode) const;
 
       // callback methods
       void imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie);

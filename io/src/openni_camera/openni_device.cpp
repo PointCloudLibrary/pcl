@@ -36,6 +36,7 @@
  */
 #include <pcl/io/openni_camera/openni_device.h>
 #include <pcl/io/openni_camera/openni_depth_image.h>
+#include <pcl/io/openni_camera/openni_exception.h>
 #include <iostream>
 #include <limits>
 #include <sstream>

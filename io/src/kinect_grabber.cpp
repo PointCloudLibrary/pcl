@@ -41,7 +41,7 @@
 namespace pcl
 {
 
-  OpenNIGrabber::OpenNIGrabber (const std::string& device_id)
+  OpenNIGrabber::OpenNIGrabber (const std::string& device_id) throw (openni_wrapper::OpenNIException)
     : image_callback_registered_(false)
     , depth_image_callback_registered_(false)
     , image_required_(false)
@@ -62,7 +62,8 @@ namespace pcl
     createSignal <sig_cb_openni_point_cloud_rgb> ();
     point_cloud_rgb_signal_ = find_signal<sig_cb_openni_point_cloud_rgb> ();
     // initialize driver
-    onInit (device_id);
+    if (!onInit (device_id))
+      openni_wrapper::THROW_OPENNI_EXCEPTION ("Device could not be initialized or no devices found.");
   }
 
   OpenNIGrabber::~OpenNIGrabber ()
@@ -181,16 +182,19 @@ namespace pcl
     started_ = false;
   }
 
-  void OpenNIGrabber::onInit (const std::string& device_id)
+  bool
+  OpenNIGrabber::onInit (const std::string& device_id)
   {
     sync.addCallback (boost::bind(&OpenNIGrabber::imageDepthImageCallback, this, _1, _2));
 
     updateModeMaps ();      // registering mapping from config modes to XnModes and vice versa
-    setupDevice (device_id); // will change config_ to default values or user given values from param server
+    if (!setupDevice (device_id))
+      return (false);
 
     rgb_frame_id_ = "/openni_rgb_optical_frame";
 
     depth_frame_id_ = "/openni_depth_optical_frame";
+    return (true);
   }
   
   void OpenNIGrabber::signalsChanged ()
@@ -208,7 +212,8 @@ namespace pcl
     return std::string ("OpenNIGrabber");
   }
 
-  void OpenNIGrabber::setupDevice (const std::string& device_id)
+  bool
+  OpenNIGrabber::setupDevice (const std::string& device_id)
   {
     // Initialize the openni device
     openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
@@ -216,7 +221,7 @@ namespace pcl
     if (driver.getNumberDevices () == 0)
     {
       printf ("[%s] No devices connected.\n", getName ().c_str ());
-      exit (-1);
+      return (false);
     }
 
     printf ("[%s] Number devices connected: %d\n", getName ().c_str (), driver.getNumberDevices ());
@@ -259,18 +264,18 @@ namespace pcl
       if (!device_)
       {
         printf ("[%s] No matching device found.\n", getName ().c_str ());
-        exit (-1);
+        return (false);
       }
       else
       {
         printf ("[%s] could not retrieve device. Reason %s\n", getName ().c_str (), exception.what ());
-        exit (-1);
+        return (false);
       }
     }
     catch(...)
     {
       printf ("[%s] unknown error occured\n", getName ().c_str ());
-      exit (-1);
+      return (false);
     }
     printf ("[%s] Opened '%s' on bus %d:%d with serial number '%s'\n", getName ().c_str (),
               device_->getProductName (), device_->getBus (), device_->getAddress (), device_->getSerialNumber ());
@@ -280,16 +285,26 @@ namespace pcl
     int debayering_method = 0;
 
     int image_mode = mapXnMode2ConfigMode (device_->getDefaultImageMode ());
+    if (image_mode == -1)
+      return (false);
 
     int depth_mode = mapXnMode2ConfigMode (device_->getDefaultDepthMode ());
+    if (depth_mode == -1)
+      return (false);
 
-    XnMapOutputMode image_md = mapConfigMode2XnMode ( image_mode);
+    XnMapOutputMode image_md;
+    if (!mapConfigMode2XnMode (image_mode, image_md))
+      return (false);
     image_width_  = image_md.nXRes;
     image_height_ = image_md.nYRes;
 
-    XnMapOutputMode depth_md = mapConfigMode2XnMode ( depth_mode);
+    XnMapOutputMode depth_md;
+    if (!mapConfigMode2XnMode (depth_mode, depth_md))
+      return (false);
     depth_width_  = depth_md.nXRes;
     depth_height_ = depth_md.nYRes;
+
+    return (true);
   }
 
   void OpenNIGrabber::startSynchronization ()
@@ -517,50 +532,61 @@ namespace pcl
   }
 
   // TODO
-  bool OpenNIGrabber::isImageModeSupported (int image_mode) const
+  bool 
+  OpenNIGrabber::isImageModeSupported (int image_mode) const
   {
-    XnMapOutputMode image_md = mapConfigMode2XnMode (image_mode);
+    XnMapOutputMode image_md;
+    if (!mapConfigMode2XnMode (image_mode, image_md))
+      return (false);
     XnMapOutputMode compatible_mode;
     if (device_->findCompatibleImageMode (image_md, compatible_mode))
-      return true;
-    return false;
+      return (true);
+    return (false);
   }
 
   // TODO
-  bool OpenNIGrabber::isDepthModeSupported (int depth_mode) const
+  bool 
+  OpenNIGrabber::isDepthModeSupported (int depth_mode) const
   {
-    XnMapOutputMode depth_md = mapConfigMode2XnMode (depth_mode);
+    XnMapOutputMode depth_md;
+    if (!mapConfigMode2XnMode (depth_mode, depth_md))
+      return (false);
     XnMapOutputMode compatible_mode;
     if (device_->findCompatibleDepthMode (depth_md, compatible_mode))
-      return true;
-    return false;
+      return (true);
+    return (false);
   }
 
   // TODO: delete me?
-  int OpenNIGrabber::mapXnMode2ConfigMode (const XnMapOutputMode& output_mode) const
+  int 
+  OpenNIGrabber::mapXnMode2ConfigMode (const XnMapOutputMode& output_mode) const
   {
     std::map<XnMapOutputMode, int, modeComp>::const_iterator it = xn2config_map_.find (output_mode);
 
     if (it == xn2config_map_.end ())
     {
       printf ("mode %dx%d@%d could not be found\n", output_mode.nXRes, output_mode.nYRes, output_mode.nFPS);
-      exit (-1);
+      return (-1);
     }
     else
       return it->second;
   }
 
   // TODO: delete me?
-  XnMapOutputMode OpenNIGrabber::mapConfigMode2XnMode (int mode) const
+  bool 
+  OpenNIGrabber::mapConfigMode2XnMode (int mode, XnMapOutputMode &xnmode) const
   {
     std::map<int, XnMapOutputMode>::const_iterator it = config2xn_map_.find (mode);
-    if (it == config2xn_map_.end ())
+    if (it != config2xn_map_.end ())
     {
-      printf ("mode %d could not be found\n", mode);
-      exit (-1);
+      xnmode = it->second;
+      return (true);
     }
     else
-      return it->second;
+    {
+      printf ("mode %d could not be found\n", mode);
+      return (false);
+    }
   }
 
 } // namespace
