@@ -50,7 +50,6 @@
 
 namespace pcl_visualization
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief PCL histogram visualizer main class. 
     * \author Radu Bogdan Rusu
     */
@@ -65,10 +64,12 @@ namespace pcl_visualization
        *  \param force_redraw - if false it might return without doing anything if the interactor's
        *                        framerate does not require a redraw yet.
        */
-      void spinOnce (int time = 1, bool force_redraw = false);
+      void 
+      spinOnce (int time = 1, bool force_redraw = false);
       
       /** \brief Spin method. Calls the interactor and runs an internal loop. */
-      void spin ();
+      void 
+      spin ();
       
       /** \brief Set the viewport's background color.
         * \param r the red component of the RGB color
@@ -76,7 +77,8 @@ namespace pcl_visualization
         * \param b the blue component of the RGB color
         * \param viewport the view port (default: all)
         */
-      void setBackgroundColor (const double &r, const double &g, const double &b, int viewport = 0);
+      void 
+      setBackgroundColor (const double &r, const double &g, const double &b, int viewport = 0);
 
       /** \brief Add a histogram feature to screen as a separate window.
         * \param cloud the PointCloud dataset containing the histogram
@@ -85,7 +87,8 @@ namespace pcl_visualization
         * \param win_width the size of the window (width)
         * \param win_height the size of the window (width)
         */
-      template <typename PointT> bool addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, int hsize, const std::string &id = "cloud", int win_width = 640, int win_height = 200);
+      template <typename PointT> bool 
+      addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, int hsize, const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
       /** \brief Add a histogram feature to screen as a separate window.
         * \param cloud the PointCloud dataset containing the histogram
@@ -94,21 +97,27 @@ namespace pcl_visualization
         * \param win_width the size of the window (width)
         * \param win_height the size of the window (width)
         */
-      bool addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, const std::string &field_name, const std::string &id = "cloud", int win_width = 640, int win_height = 200);
+      bool 
+      addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, const std::string &field_name, const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
       /** \brief Set the Y range to minp-maxp for all histograms.
         * \param minp the minimum Y range
         * \param maxp the maximum Y range
         */
-      void setGlobalYRange (float minp, float maxp);
+      void 
+      setGlobalYRange (float minp, float maxp);
 
       /** \brief Update all window positions on screen so that they fit. */
-      void updateWindowPositions ();
+      void 
+      updateWindowPositions ();
 
       /** \brief Returns true when the user tried to close the window */
-      bool wasStopped ();
+      bool 
+      wasStopped ();
+      
       /** \brief Set the stopped flag back to false */
-      void resetStoppedFlag ();
+      void 
+      resetStoppedFlag ();
 
     private:
       /** \brief A map of all windows on screen (with their renderers and interactors). */
@@ -135,6 +144,7 @@ namespace pcl_visualization
         int right_timer_id;
         PCLVisualizerInteractor *interact;
       };
+      
       struct ExitCallback : public vtkCommand
       {
         static ExitCallback* New ()
