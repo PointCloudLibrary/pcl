@@ -12,6 +12,9 @@ DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()
 
+# Configure FindPCL.cmake
+configure_file("${PCL_SOURCE_DIR}/FindPCL.cmake.in"
+    "${PCL_BINARY_DIR}/FindPCL.cmake" @ONLY)
 # Add an "uninstall" target
 configure_file("${PCL_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
     "${PCL_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
