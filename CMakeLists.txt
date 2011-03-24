@@ -21,6 +21,9 @@ configure_file("${PCL_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
 add_custom_target(uninstall "${CMAKE_COMMAND}" -P
     "${PCL_BINARY_DIR}/uninstall_target.cmake")
 
+#TODO verify that this is the right place to put some extra flags...
+add_definitions("-Wall -Wl,--no-undefined")
+
 # Find universal dependencies
 # Find ROS
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
