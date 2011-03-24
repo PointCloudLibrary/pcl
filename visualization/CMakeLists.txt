@@ -85,7 +85,7 @@ if(build)
     #add_subdirectory(examples)
     add_subdirectory(test)
 # Disabled until find_flann works
-#    add_subdirectory(tools)
+   add_subdirectory(tools)
 
     # share data: http://pr.willowgarage.com/data/pcl/partial_cup_model_new.pcd
 endif(build)
