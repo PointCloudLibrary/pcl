@@ -20,7 +20,6 @@ if(build)
         src/narf_descriptor.cpp
         src/normal_3d.cpp
         src/normal_3d_omp.cpp
-        src/normal_3d_tbb.cpp
         src/pfh.cpp
         src/principal_curvatures.cpp
         src/rift.cpp
@@ -65,7 +64,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/narf_descriptor.h
         include/pcl/${SUBSYS_NAME}/normal_3d.h
         include/pcl/${SUBSYS_NAME}/normal_3d_omp.h
-        include/pcl/${SUBSYS_NAME}/normal_3d_tbb.h
         include/pcl/${SUBSYS_NAME}/pfh.h
         include/pcl/${SUBSYS_NAME}/principal_curvatures.h
         include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h
@@ -85,7 +83,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/narf.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d_omp.hpp
-        include/pcl/${SUBSYS_NAME}/impl/normal_3d_tbb.hpp
         include/pcl/${SUBSYS_NAME}/impl/pfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/principal_curvatures.hpp
         include/pcl/${SUBSYS_NAME}/impl/range_image_border_extractor.hpp
