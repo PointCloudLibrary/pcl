@@ -1,6 +1,16 @@
 # Look for ROS.
 # This is a temporary and ugly hack.
 
+macro(link_ros_libs _target)
+    if(USE_ROS)
+        target_link_libraries(${_target} sensor_msgs rosbag topic_tools ros
+            boost_thread-mt boost_signals-mt roscpp_serialization XmlRpc
+            rosconsole boost_thread-mt log4cxx rostime cpp_common roslib
+            rospack rosstack)
+    endif(USE_ROS)
+endmacro(link_ros_libs)
+
+
 macro(get_ros_inc_path _dest _pkg)
     execute_process(COMMAND rospack find ${_pkg}
         RESULT_VARIABLE _res
@@ -10,6 +20,7 @@ macro(get_ros_inc_path _dest _pkg)
         message(STATUS "Found ROS package ${_pkg} path: ${${_dest}}")
     endif(RESULT_VARIABLE)
 endmacro(get_ros_inc_path)
+
 
 if(ENV{ROS_ROOT})
     option(USE_ROS "Integrate with ROS rather than using native files" ON)
