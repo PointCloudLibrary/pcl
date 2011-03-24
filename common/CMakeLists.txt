@@ -45,9 +45,9 @@ if(build)
         include/sensor_msgs/Image.h
         include/sensor_msgs/RegionOfInterest.h
         )
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} sensor_msgs ${sensor_msg_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} "../sensor_msgs" ${sensor_msg_incs})
     set(std_msg_incs include/std_msgs/Header.h)
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} std_msgs ${std_msg_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} "../std_msgs" ${std_msg_incs})
     set(common_incs include/pcl/common/angles.h
         include/pcl/common/angles.hpp
         include/pcl/common/bivariate_polynomial.h
