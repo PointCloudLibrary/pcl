@@ -63,7 +63,7 @@ struct pcl_visualization::CloudViewer::CloudViewer_impl
   block_post_cloud (const CloudViewer::ColorCloud* cloud, const std::string& name)
   {
     {
-      boost::mutex::scoped_lock (mtx_);
+      boost::mutex::scoped_lock lock(mtx_);
       cloud_ = cloud;
       color_name_ = name;
       has_cloud_ = true;
@@ -77,7 +77,7 @@ struct pcl_visualization::CloudViewer::CloudViewer_impl
   block_post_cloud (const CloudViewer::GrayCloud* cloud, const std::string& name)
   {
     {
-      boost::mutex::scoped_lock (mtx_);
+      boost::mutex::scoped_lock lock(mtx_);
       gray_cloud_ = cloud;
       gray_name_ = name;
       has_cloud_ = true;
@@ -102,7 +102,7 @@ struct pcl_visualization::CloudViewer::CloudViewer_impl
 //        continue;
       {
         {
-          boost::mutex::scoped_lock (mtx_);
+          boost::mutex::scoped_lock lock(mtx_);
           if (gray_cloud_ != NULL)
           {
             pcl_visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> handler (*gray_cloud_, 255, 0, 255);
@@ -120,7 +120,7 @@ struct pcl_visualization::CloudViewer::CloudViewer_impl
         }
 
         {
-          boost::mutex::scoped_lock (c_mtx);
+          boost::mutex::scoped_lock lock(c_mtx);
           BOOST_FOREACH(CallableMap::value_type& x, callables)
                 {
                   std::cerr << "calling " << x.first << std::endl;
@@ -132,7 +132,7 @@ struct pcl_visualization::CloudViewer::CloudViewer_impl
           return; //todo handle this better
         }
         {
-          boost::mutex::scoped_lock (spin_mtx_);
+          boost::mutex::scoped_lock lock(spin_mtx_);
           //TODO some smart waitkey like stuff here, so that wasStoped() can hold for a long time
           //maybe a counter
           viewer_->spinOnce (); // Give the GUI millis to handle events, then return
@@ -143,13 +143,13 @@ struct pcl_visualization::CloudViewer::CloudViewer_impl
   void
   post (VizCallable x, const std::string& key)
   {
-    boost::mutex::scoped_lock (c_mtx);
+    boost::mutex::scoped_lock lock(c_mtx);
     callables[key] = x;
   }
   void
   remove (const std::string& key)
   {
-    boost::mutex::scoped_lock (c_mtx);
+    boost::mutex::scoped_lock lock(c_mtx);
     if (callables.find (key) != callables.end ())
     {
       callables.erase (key);
