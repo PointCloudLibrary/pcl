@@ -13,7 +13,6 @@ target_link_libraries (test_io pcl_io)
 
 rosbuild_add_gtest (test_feature test_feature.cpp)
 rosbuild_add_openmp_flags (test_feature)
-#target_link_libraries (test_feature pcl_io tbb pcl_kdtree pcl_features)
 target_link_libraries (test_feature pcl_io pcl_kdtree pcl_features)
 
 rosbuild_add_gtest (test_sample_consensus test_sample_consensus.cpp)

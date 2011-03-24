@@ -28,9 +28,6 @@ include(cmake/find_flann.cmake)
 include_directories(${flann_INCLUDE_DIR})
 include(cmake/find_eigen3.cmake)
 include_directories(${eigen3_INCLUDE_DIR})
-#include(cmake/find_tbb.cmake)
-#include_directories(${TBB_INCLUDE_DIR})
-#link_directories(${TBB_LIB_DIR})
 
 # ---[ Point Cloud Library
   rosbuild_add_library (pcl_base
@@ -49,7 +46,6 @@ include_directories(${eigen3_INCLUDE_DIR})
                         src/pcl/features/moment_invariants.cpp
                         src/pcl/features/normal_3d.cpp
                         src/pcl/features/normal_3d_omp.cpp
-                        #src/pcl/features/normal_3d_tbb.cpp
                         src/pcl/features/principal_curvatures.cpp
                         src/pcl/features/fpfh.cpp
                         src/pcl/features/fpfh_omp.cpp
@@ -64,7 +60,6 @@ include_directories(${eigen3_INCLUDE_DIR})
   rosbuild_add_compile_flags (pcl_features ${SSE_FLAGS})
   rosbuild_add_openmp_flags (pcl_features)
   rosbuild_link_boost (pcl_features system filesystem)
-  #  target_link_libraries (pcl_features tbb)
   target_link_libraries (pcl_features pcl_range_image)
 
 # ---[ Point Cloud Library - Features
@@ -83,7 +78,6 @@ include_directories(${eigen3_INCLUDE_DIR})
                      )
   rosbuild_add_compile_flags (pcl_io ${SSE_FLAGS})
   rosbuild_link_boost (pcl_io system filesystem)
-  #  target_link_libraries (pcl_io tbb)
 
 # ---[ Point Cloud Library - Surface
   rosbuild_add_library (pcl_surface

@@ -20,14 +20,6 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 include_directories (src)
 include_directories (include)
 
-#include (cmake/find_tbb.cmake)
-# Write the pcl_config.h file
-#set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
-#set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/pcl/pcl_config.h")
-#configure_file(${pcl_config_h_in} ${pcl_config_h})
-#install(FILES ${pcl_config_h} DESTINATION ${include}
-#   COMPONENT headers)
-
 # ---[ Point Cloud Library
 #add_subdirectory (src/pcl)
 #add_subdirectory (src/tools)
