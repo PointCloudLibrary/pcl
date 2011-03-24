@@ -51,7 +51,7 @@ class SimpleKinectViewer
 
     void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
-      //boost::mutex::scoped_lock (mutex_);
+      //boost::mutex::scoped_lock lock(mutex_);
       //cloud_ = cloud;
 
       if (!viewer.wasStopped())
@@ -67,7 +67,7 @@ class SimpleKinectViewer
       }
       else
         viz.removePointCloud ("KinectCloud");
-      boost::mutex::scoped_lock (mutex_);
+      boost::mutex::scoped_lock lock(mutex_);
       if (cloud_)
         viz.addPointCloud (*cloud_, "KinectCloud");
     }
