@@ -52,6 +52,7 @@ if(build)
         include/pcl/common/angles.hpp
         include/pcl/common/bivariate_polynomial.h
         include/pcl/common/bivariate_polynomial.hpp
+        include/pcl/common/centroid.h
         include/pcl/common/common.h
         include/pcl/common/common.hpp
         include/pcl/common/common_headers.h
@@ -68,6 +69,7 @@ if(build)
         include/pcl/common/polynomial_calculations.h
         include/pcl/common/polynomial_calculations.hpp
         include/pcl/common/poses_from_matches.h
+        include/pcl/common/rigid_transformations.h
         include/pcl/common/time.h
         include/pcl/common/time.hpp
         include/pcl/common/transform.h
@@ -78,6 +80,11 @@ if(build)
         include/pcl/common/vector_average.hpp
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
+    set(common_incs_impl
+        include/pcl/common/impl/centroid.hpp
+        include/pcl/common/impl/rigid_transformations.hpp
+       )
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} common/impl ${common_incs_impl})
     set(impl_incs include/pcl/impl/instantiate.hpp
         include/pcl/impl/point_types.hpp
         )
