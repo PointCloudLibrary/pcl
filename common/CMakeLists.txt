@@ -53,6 +53,7 @@ if(build)
         include/pcl/common/bivariate_polynomial.h
         include/pcl/common/bivariate_polynomial.hpp
         include/pcl/common/centroid.h
+        include/pcl/common/concatenate.h
         include/pcl/common/common.h
         include/pcl/common/common.hpp
         include/pcl/common/common_headers.h

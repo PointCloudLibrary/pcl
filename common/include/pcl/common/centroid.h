@@ -36,6 +36,9 @@
 #ifndef PCL_COMMON_CENTROID_H_
 #define PCL_COMMON_CENTROID_H_
 
+#include <pcl/point_cloud.h>
+#include <pcl/ros/point_traits.h>
+
 namespace pcl
 {
   /** \brief Compute the 3D (X-Y-Z) centroid of a set of points and return it as a 3D vector.
