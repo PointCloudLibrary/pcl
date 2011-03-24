@@ -130,7 +130,7 @@ namespace pcl
 
       /** \brief The point cloud header. It contains information about the acquisition time, as well as a transform 
         * frame (see \a tf). */
-      roslib::Header header;
+      std_msgs::Header header;
 
       /** \brief The point data. */
       std::vector<PointT, Eigen::aligned_allocator<PointT> > points;
