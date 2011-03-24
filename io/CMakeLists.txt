@@ -28,14 +28,15 @@ if(build)
             src/openni_camera/openni_device_kinect.cpp
             src/openni_camera/openni_driver.cpp
             src/openni_camera/openni_exception.cpp
-            src/openni_camera/openni_image_yuv_422.cpp)
+            src/openni_camera/openni_image_yuv_422.cpp
+            src/kinect_grabber.cpp
+            )
     endif(OPENNI_FOUND)
 
     set(srcs src/io.cpp
         src/pcd_io.cpp
         src/vtk_io.cpp
         ${KINECT_GRABBER_SOURCES}
-        src/kinect_grabber.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
