@@ -23,7 +23,7 @@ endmacro(get_ros_inc_path)
 
 
 if(ENV{ROS_ROOT})
-    option(USE_ROS "Integrate with ROS rather than using native files" ON)
+    option(USE_ROS "Integrate with ROS rather than using native files" OFF)
     message(STATUS "Found ROS; USE_ROS is ${USE_ROS}")
     if(USE_ROS)
         set(_ros_pkgs std_msgs sensor_msgs roscpp_serialization cpp_common rostime
