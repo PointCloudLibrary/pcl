@@ -129,7 +129,7 @@ struct EventHelper
 
     // Add the cloud to the renderer
 
-    boost::mutex::scoped_lock (mutex_);
+    boost::mutex::scoped_lock lock(mutex_);
     if (!cloud)
       return;
     p->removePointCloud ("KinectCloud");
@@ -203,7 +203,7 @@ int
   {
     usleep (10000);
     {
-      boost::mutex::scoped_lock (mutex_);
+      boost::mutex::scoped_lock lock(mutex_);
       p->spinOnce ();
       if (p->wasStopped ())
         break;
