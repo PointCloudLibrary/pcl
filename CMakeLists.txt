@@ -22,6 +22,8 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P
     "${PCL_BINARY_DIR}/uninstall_target.cmake")
 
 # Find universal dependencies
+# Find ROS
+include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
 # Boost
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
