@@ -69,7 +69,7 @@ if(build)
         include/pcl/common/polynomial_calculations.h
         include/pcl/common/polynomial_calculations.hpp
         include/pcl/common/poses_from_matches.h
-        include/pcl/common/rigid_transformations.h
+        include/pcl/common/rigid_transforms.h
         include/pcl/common/time.h
         include/pcl/common/time.hpp
         include/pcl/common/transform.h
@@ -82,7 +82,7 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
     set(common_incs_impl
         include/pcl/common/impl/centroid.hpp
-        include/pcl/common/impl/rigid_transformations.hpp
+        include/pcl/common/impl/rigid_transforms.hpp
        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common/impl ${common_incs_impl})
     set(impl_incs include/pcl/impl/instantiate.hpp
