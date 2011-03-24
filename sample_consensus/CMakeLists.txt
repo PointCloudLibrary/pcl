@@ -33,7 +33,7 @@ if(build)
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} ${Boost_LIBRARIES} ${CMINPACK_LIBRARIES})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-    list(APPEND EXT_DEPS ${Boost_LIBRARIES} cminpack)
+    list(APPEND EXT_DEPS ${boost_components} cminpack)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
         "${EXT_DEPS}" "" "" "")
 

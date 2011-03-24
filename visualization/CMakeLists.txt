@@ -45,8 +45,15 @@ if(build)
     target_link_libraries(${LIB_NAME} ${wxWidgets_LIBRARIES}
         vtkCommon vtkWidgets vtkHybrid ${Boost_LIBRARIES})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-    list(APPEND EXT_DEPS ${wxWidgets_LIBRARIES} vtkCommon vtkWidgets
-        vtkHybrid ${Boost_LIBRARIES})
+    foreach(wx_component ${wxWidgets_LIBRARIES})
+      string(REGEX MATCH "wx.*" component "${wx_component}")
+      if(NOT "${component}" EQUAL "")
+        string(REGEX REPLACE "(wx.*)-[0-9\\.]+" "\\1" component "${component}")
+        list(APPEND wx_components ${component})
+      endif(NOT "${component}" EQUAL "")
+    endforeach(wx_component)
+    list(APPEND EXT_DEPS ${wx_components} vtkCommon vtkWidgets
+        vtkHybrid ${boost_components})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
         "${EXT_DEPS}" "" "" "")
 

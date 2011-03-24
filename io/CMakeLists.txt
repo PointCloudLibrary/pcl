@@ -48,7 +48,7 @@ if(build)
         target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
     endif(OPENNI_FOUND)
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-    list(APPEND EXT_DEPS ${Boost_FILESYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+    list(APPEND EXT_DEPS boost_filesystem boost_thread)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
         "${EXT_DEPS}" "" "" "")
 
