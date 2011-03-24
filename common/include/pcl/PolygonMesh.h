@@ -31,8 +31,8 @@ namespace pcl
     {
     }
 
-    typedef ::roslib::Header_<ContainerAllocator>  _header_type;
-    ::roslib::Header_<ContainerAllocator>  header;
+    typedef ::std_msgs::Header_<ContainerAllocator>  _header_type;
+    ::std_msgs::Header_<ContainerAllocator>  header;
 
     typedef ::sensor_msgs::PointCloud2_<ContainerAllocator>  _cloud_type;
     ::sensor_msgs::PointCloud2_<ContainerAllocator>  cloud;

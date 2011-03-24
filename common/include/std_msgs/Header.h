@@ -40,7 +40,7 @@
 #  endif
 #endif
 
-namespace roslib
+namespace std_msgs
 {
   template <class ContainerAllocator>
   struct Header_ 

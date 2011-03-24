@@ -48,8 +48,8 @@ namespace sensor_msgs
       P.assign(0.0);
     }
 
-    typedef  ::roslib::Header_<ContainerAllocator>  _header_type;
-     ::roslib::Header_<ContainerAllocator>  header;
+    typedef  ::std_msgs::Header_<ContainerAllocator>  _header_type;
+     ::std_msgs::Header_<ContainerAllocator>  header;
 
     typedef uint32_t _height_type;
     uint32_t height;

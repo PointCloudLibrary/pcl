@@ -26,8 +26,8 @@ namespace pcl
     {
     }
 
-    typedef ::roslib::Header_<ContainerAllocator>  _header_type;
-    ::roslib::Header_<ContainerAllocator>  header;
+    typedef ::std_msgs::Header_<ContainerAllocator>  _header_type;
+    ::std_msgs::Header_<ContainerAllocator>  header;
 
     typedef std::vector<int32_t, typename ContainerAllocator::template rebind<int32_t>::other >  _indices_type;
     std::vector<int32_t, typename ContainerAllocator::template rebind<int32_t>::other >  indices;
