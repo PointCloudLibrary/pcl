@@ -167,7 +167,7 @@ macro(SET_INSTALL_DIRS)
         set(LIB_INSTALL_DIR "lib")
     endif(OS_IS_64BIT)
     set(INCLUDE_INSTALL_DIR
-        "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+        "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}/pcl")
     set(BIN_INSTALL_DIR "bin")
     set(PKGCFG_INSTALL_DIR "${LIB_INSTALL_DIR}/pkgconfig")
 endmacro(SET_INSTALL_DIRS)
