@@ -337,7 +337,7 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
     s_ = (i == 0) ? 0 : 255 - (m*255)/i; // saturation 0 to 255
   }
 
-  float my_val;
+  float my_val = 0;
 
   switch (component_id_) 
   {
