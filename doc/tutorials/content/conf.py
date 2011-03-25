@@ -128,5 +128,6 @@ html_sidebars = {
 }
 html_show_copyright = False
 html_show_sphinx = False
+html_add_permalinks = False
 needs_sphinx = 1.0
 
