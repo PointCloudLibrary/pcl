@@ -40,7 +40,7 @@ namespace pcl
 
 void getTransFromUnitVectorsZY(const Eigen::Vector3f& z_axis, const Eigen::Vector3f& y_direction, Eigen::Affine3f& transformation)
 {
-  Eigen::Vector3f tmp0 = (z_axis.cross(y_direction)).normalized();
+  Eigen::Vector3f tmp0 = (y_direction.cross(z_axis)).normalized();
   Eigen::Vector3f tmp1 = (z_axis.cross(tmp0)).normalized();
   Eigen::Vector3f tmp2 = z_axis.normalized();
   
@@ -60,7 +60,7 @@ Eigen::Affine3f getTransFromUnitVectorsZY(const Eigen::Vector3f& z_axis, const E
 void getTransFromUnitVectorsXY(const Eigen::Vector3f& x_axis, const Eigen::Vector3f& y_direction, Eigen::Affine3f& transformation)
 {
   Eigen::Vector3f tmp2 = (x_axis.cross(y_direction)).normalized();
-  Eigen::Vector3f tmp1 = (x_axis.cross(tmp2)).normalized();
+  Eigen::Vector3f tmp1 = (tmp2.cross(x_axis)).normalized();
   Eigen::Vector3f tmp0 = x_axis.normalized();
   
   transformation(0,0)=tmp0[0]; transformation(0,1)=tmp0[1]; transformation(0,2)=tmp0[2]; transformation(0,3)=0.0f;

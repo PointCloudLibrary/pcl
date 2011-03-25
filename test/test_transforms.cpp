@@ -42,6 +42,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include "pcl/io/pcd_io.h"
 #include "pcl/features/feature.h"
+#include "pcl/common/transform.h"
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/registration/transforms.h>
@@ -202,6 +203,24 @@ TEST (PCL, Transform)
   EXPECT_EQ (1, points2[3].z);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, commonTransform)
+{
+  Eigen::Vector3f xaxis (1,0,0), yaxis (0,1,0), zaxis (0,0,1);
+  Eigen::Affine3f trans = pcl::getTransFromUnitVectorsZY (zaxis, yaxis);
+  Eigen::Vector3f xaxistrans=trans*xaxis, yaxistrans=trans*yaxis, zaxistrans=trans*zaxis;
+  //std::cout << xaxistrans<<"\n"<<yaxistrans<<"\n"<<zaxistrans<<"\n";
+  EXPECT_NEAR ((xaxistrans-xaxis).norm(), 0.0f,  1e-6);
+  EXPECT_NEAR ((yaxistrans-yaxis).norm(), 0.0f,  1e-6);
+  EXPECT_NEAR ((zaxistrans-zaxis).norm(), 0.0f,  1e-6);
+  
+  trans = pcl::getTransFromUnitVectorsXY (xaxis, yaxis);
+  xaxistrans=trans*xaxis, yaxistrans=trans*yaxis, zaxistrans=trans*zaxis;
+  //std::cout << xaxistrans<<"\n"<<yaxistrans<<"\n"<<zaxistrans<<"\n";
+  EXPECT_NEAR ((xaxistrans-xaxis).norm(), 0.0f,  1e-6);
+  EXPECT_NEAR ((yaxistrans-yaxis).norm(), 0.0f,  1e-6);
+  EXPECT_NEAR ((zaxistrans-zaxis).norm(), 0.0f,  1e-6);
+}
 
 /* ---[ */
 int
