@@ -53,7 +53,7 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::Poin
   }
   // Reserve enough space for the indices
   index.resize (cloud_in.points.size ());
-  int j = 0;
+  size_t j = 0;
 
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
