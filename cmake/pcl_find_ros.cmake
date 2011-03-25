@@ -48,7 +48,7 @@ if(ROS_ROOT)
         SET(CMAKE_INSTALL_RPATH "${CMAKE_SOURCE_DIR}/../../lib64")
         # don't add the automatically determined parts of the RPATH
         # which point to directories outside the build tree to the install RPATH
-        SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
+        SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
     endif(USE_ROS)
 endif(ROS_ROOT)
