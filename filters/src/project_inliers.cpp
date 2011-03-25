@@ -84,12 +84,19 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     output.is_dense     = input_->is_dense;
 
     // Get the distance field index
-    int x_idx, y_idx, z_idx;
+    int x_idx = -1, y_idx = -1, z_idx = -1;
     for (size_t d = 0; d < output.fields.size (); ++d)
     {
       if (output.fields[d].name == "x") x_idx = d;
       if (output.fields[d].name == "y") y_idx = d;
       if (output.fields[d].name == "z") z_idx = d;
+    }
+    if (x_idx == -1 || y_idx == -1 || z_idx == -1)
+    {
+      ROS_ERROR ("[pcl::%s::segment] X (%d) Y (%d) Z (%d) field dimensions not found!", getClassName ().c_str (), x_idx, y_idx, z_idx);
+      output.width = output.height = 0;
+      output.data.clear ();
+      return;
     }
 
     // Copy the projected points
@@ -119,13 +126,22 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
       output.is_dense     = true;
 
       // Get the distance field index
-      int x_idx, y_idx, z_idx;
+      int x_idx = -1, y_idx = -1, z_idx = -1;
       for (size_t d = 0; d < output.fields.size (); ++d)
       {
         if (output.fields[d].name == "x") x_idx = d;
         if (output.fields[d].name == "y") y_idx = d;
         if (output.fields[d].name == "z") z_idx = d;
       }
+
+      if (x_idx == -1 || y_idx == -1 || z_idx == -1)
+      {
+        ROS_ERROR ("[pcl::%s::segment] X (%d) Y (%d) Z (%d) field dimensions not found!", getClassName ().c_str (), x_idx, y_idx, z_idx);
+        output.width = output.height = 0;
+        output.data.clear ();
+        return;
+      }
+
       // Copy the projected points
       for (size_t i = 0; i < indices_->size (); ++i)
       {
