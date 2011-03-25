@@ -45,7 +45,6 @@ template <typename PointT> void
 pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT> &cloud_out,
                               std::vector<int> &index)
 {
-  cloud_out.is_dense = true;      // Removing bad points => dense (note: 'dense' doesn't mean 'organized')
   // If the clouds are not the same, prepare the output
   if (&cloud_in != &cloud_out)
   {
@@ -59,16 +58,16 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::Poin
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
   {
-    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+    cloud_out.points = cloud_in.points;
+    for (j = 0; j < cloud_out.points.size (); ++j)
     {
-      cloud_out.points[j] = cloud_in.points[i];
-      index[j] = i;
-      j++;
+      index[j] = j;
     }
+    --j;
   }
   else
   {
-    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (size_t i = 0; i < cloud_in.points.size (); ++i)
     {
       if (!pcl_isfinite (cloud_in.points[i].x) || 
           !pcl_isfinite (cloud_in.points[i].y) || 
@@ -80,6 +79,7 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::Poin
     }
   }
   // Resize to the correct size
+  cloud_out.is_dense = true;      // Removing bad points => dense (note: 'dense' doesn't mean 'organized')
   cloud_out.points.resize (j);
   index.resize (j);
   cloud_out.height = 1;
