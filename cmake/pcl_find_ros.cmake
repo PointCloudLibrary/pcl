@@ -3,7 +3,7 @@
 
 macro(link_ros_libs _target)
     if(USE_ROS)
-        target_link_libraries(${_target} sensor_msgs)
+        target_link_libraries(${_target} sensor_msgs roscpp_serialization rosconsole)
     endif(USE_ROS)
 endmacro(link_ros_libs)
 
