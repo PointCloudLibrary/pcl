@@ -1457,8 +1457,8 @@ void
 RangeImage::extractFarRanges (const sensor_msgs::PointCloud2& point_cloud_data,
                               PointCloud<PointWithViewpoint>& far_ranges)
 {
-  int x_idx, y_idx, z_idx,
-      vp_x_idx, vp_y_idx, vp_z_idx, distance_idx;
+  int x_idx = -1, y_idx = -1, z_idx = -1,
+      vp_x_idx = -1, vp_y_idx = -1, vp_z_idx = -1, distance_idx = -1;
   for (size_t d = 0; d < point_cloud_data.fields.size (); ++d)
   {
     if (point_cloud_data.fields[d].name == "x") x_idx = d;
