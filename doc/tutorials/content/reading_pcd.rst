@@ -14,6 +14,7 @@ editor, and place the following inside it:
 .. code-block:: cpp
    :linenos:
 
+    #include <iostream>
     #include "pcl/io/pcd_io.h"
     #include "pcl/point_types.h"
 
@@ -25,10 +26,10 @@ editor, and place the following inside it:
 
       if (pcl::io::loadPCDFile ("test_pcd.pcd", cloud_blob) == -1)
       {
-        ROS_ERROR ("Couldn't read file test_pcd.pcd");
+        std::cerr << "Couldn't read file test_pcd.pcd" << std::endl;
         return (-1);
       }
-      ROS_INFO ("Loaded %d data points from test_pcd.pcd with the following fields: %s", (int)(cloud_blob.width * cloud_blob.height), pcl::getFieldsList (cloud_blob).c_str ());
+      std::cerr << "Loaded " << cloud_blob.width * cloud_blob.height << " data points from test_pcd.pcd with the following fields: " << pcl::getFieldsList (cloud_blob) << std::endl;
 
       // Convert to the templated message type
       pcl::fromROSMsg (cloud_blob, cloud);
@@ -48,7 +49,9 @@ Now, let's break down the code piece by piece.
 
    sensor_msgs::PointCloud2 cloud_blob;
 
-creates a binary blob sensor_msgs/PointCloud2 message. Note that due to the dynamic nature of point clouds, we prefer to read them as binary blobs, and then convert to the actual representation that we want to use.
+creates a binary blob sensor_msgs/PointCloud2 message. Note that due to the
+dynamic nature of point clouds, we prefer to read them as binary blobs, and
+then convert to the actual representation that we want to use.
 
 
 .. code-block:: cpp
@@ -59,14 +62,16 @@ creates a binary blob sensor_msgs/PointCloud2 message. Note that due to the dyna
      return (-1);
    }
 
-loads the PointCloud data from disk (we assume that test_pcd.pcd has already been created from the previous tutorial) into the binary blob.
+loads the PointCloud data from disk (we assume that test_pcd.pcd has already
+been created from the previous tutorial) into the binary blob.
 
 
 .. code-block:: cpp
 
    pcl::fromROSMsg (cloud_blob, cloud);
 
-converts the binary blob into the templated PointCloud format, here using pcl::PointXYZ as the underlying point type.
+converts the binary blob into the templated PointCloud format, here using
+pcl::PointXYZ as the underlying point type.
 
 Finally:
 
@@ -87,8 +92,7 @@ Add the following lines to your CMakeLists.txt file:
    add_executable (pcd_read src/examples/pcd_read.cpp)
    target_link_libraries (pcd_read pcl_io)
 
-After you have made the executable, you can run it. Note that you don't need a
-roscore started for this, as we are not creating any NodeHandle objects. Simply do::
+After you have made the executable, you can run it. Simply do::
 
   $ ./pcd_read 
 
