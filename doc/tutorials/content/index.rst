@@ -1,11 +1,7 @@
 .. toctree::
-  :maxdepth: 2
-
-===================================
-
-The following links describe a set of basic PCL tutorials. Please note that their source codes may already be provided as part of the PCL tutorials. 
-
-===================================
+  
+The following links describe a set of basic PCL tutorials. Please note that
+their source codes may already be provided as part of the PCL tutorials. 
 
 * I/O
 

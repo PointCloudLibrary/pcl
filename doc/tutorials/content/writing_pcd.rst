@@ -123,7 +123,7 @@ Add the following lines to your CMakeLists.txt file:
 
 .. code-block:: cmake
 
-   add_executable (pcd_write src/examples/pcd_write.cpp)
+   add_executable (pcd_write pcd_write.cpp)
    target_link_libraries (pcd_write pcl_io)
 
 After you have made the executable, you can run it. Simply do::

@@ -89,7 +89,7 @@ Add the following lines to your CMakeLists.txt file:
 
 .. code-block:: cmake
 
-   add_executable (pcd_read src/examples/pcd_read.cpp)
+   add_executable (pcd_read pcd_read.cpp)
    target_link_libraries (pcd_read pcl_io)
 
 After you have made the executable, you can run it. Simply do::
