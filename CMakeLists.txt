@@ -22,7 +22,7 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P
     "${PCL_BINARY_DIR}/uninstall_target.cmake")
 
 #TODO verify that this is the right place to put some extra flags...
-add_definitions("-Wall -Wl,--no-undefined")
+add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing")
 
 # Find universal dependencies
 # Find ROS
