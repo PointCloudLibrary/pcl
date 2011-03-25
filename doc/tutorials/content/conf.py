@@ -120,7 +120,7 @@ html_show_sourcelink = False
 #html_use_opensearch = ''
 
 # If nonempty, this is the file name suffix for HTML files (e.g. ".xhtml").
-#html_file_suffix = ''
+html_file_suffix = '.html'
 
 html_sidebars = {
     '**': [],
