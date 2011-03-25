@@ -126,7 +126,7 @@ pcl_visualization::PCLHistogramVisualizer::addFeatureHistogram (
   renwinint.interactor_->SetInteractorStyle (renwinint.style_);
   // Initialize and create timer
   renwinint.interactor_->Initialize ();
-  renwinint.interactor_->CreateRepeatingTimer (5000L);
+  renwinint.interactor_->timer_id_ = renwinint.interactor_->CreateRepeatingTimer (5000L);
 
   exit_main_loop_timer_callback_->right_timer_id = -1;
   renwinint.interactor_->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);

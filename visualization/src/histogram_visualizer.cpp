@@ -339,4 +339,12 @@ pcl_visualization::PCLHistogramVisualizer::addFeatureHistogram (
   return (true);
 }
 
+pcl_visualization::PCLHistogramVisualizer::~PCLHistogramVisualizer ()
+{
+  for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
+     {
+       (*am_it).second.interactor_->DestroyTimer ( (*am_it).second.interactor_->timer_id_);
+     }
+  }
+
 

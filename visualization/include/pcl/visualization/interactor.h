@@ -63,6 +63,7 @@ namespace pcl_visualization
       //void TerminateApp (void);
       void stopLoop ();
       bool stopped;
+      int timer_id_;
   };
 }
 

@@ -59,6 +59,7 @@ namespace pcl_visualization
       /** \brief PCL histogram visualizer constructor. */
       PCLHistogramVisualizer ();
 
+      ~PCLHistogramVisualizer ();
       /** \brief Spin once method. Calls the interactor and updates the screen once. 
        *  \param time - How long (in ms) should the visualization loop be allowed to run.
        *  \param force_redraw - if false it might return without doing anything if the interactor's
