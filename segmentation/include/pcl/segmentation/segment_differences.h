@@ -45,7 +45,7 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Obtain the difference between two aligned point clouds as another point cloud, given a distance threshold.
     * \param src the input point cloud source
     * \param tgt the input point cloud target we need to obtain the difference against
@@ -60,11 +60,12 @@ namespace pcl
       double threshold, const boost::shared_ptr<pcl::KdTree<PointT> > &tree, 
       pcl::PointCloud<PointT> &output);
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief @b SegmentDifferences obtains the difference between two spatially aligned point clouds and returns the
-    * difference between them for a maximum given distance threshold.
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief @b SegmentDifferences obtains the difference between two spatially
+    * aligned point clouds and returns the difference between them for a maximum
+    * given distance threshold.
     * \author Radu Bogdan Rusu
     */
   template <typename PointT>
@@ -83,46 +84,52 @@ namespace pcl
       typedef PointIndices::Ptr PointIndicesPtr;
       typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
-      SegmentDifferences () : tree_ (), target_ (), spatial_locator_ (0), distance_threshold_ (0)
+      SegmentDifferences () : 
+        tree_ (), target_ (), spatial_locator_ (0), distance_threshold_ (0)
       {};
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      /** \brief Provide a pointer to the target dataset against which we compare the input cloud given in setInputCloud
+      /** \brief Provide a pointer to the target dataset against which we
+        * compare the input cloud given in setInputCloud
+        *
         * \param cloud the target PointCloud dataset
         */
-      inline void setTargetCloud (const PointCloudConstPtr &cloud) { target_ = cloud; }
+      inline void 
+      setTargetCloud (const PointCloudConstPtr &cloud) { target_ = cloud; }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get a pointer to the input target point cloud dataset. */
-      inline PointCloudConstPtr const getTargetCloud () { return (target_); }
+      inline PointCloudConstPtr const 
+      getTargetCloud () { return (target_); }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Provide a pointer to the search object.
         * \param tree a pointer to the spatial search object.
         */
-      inline void setSearchMethod (const KdTreePtr &tree) { tree_ = tree; }
+      inline void 
+      setSearchMethod (const KdTreePtr &tree) { tree_ = tree; }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get a pointer to the search method used. */
-      inline KdTreePtr getSearchMethod () { return (tree_); }
+      inline KdTreePtr 
+      getSearchMethod () { return (tree_); }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      /** \brief Set the maximum distance tolerance between corresponding points in the two input datasets.
-        * \param threshold the distance tolerance as a measure in the L2 Euclidean space
+      /** \brief Set the maximum distance tolerance (squared) between corresponding
+        * points in the two input datasets.
+        *
+        * \param threshold the squared distance tolerance as a measure in L2 Euclidean space
         */
-      inline void setDistanceThreshold (double threshold) { distance_threshold_ = threshold; }
+      inline void 
+      setDistanceThreshold (double sqr_threshold) { distance_threshold_ = sqr_threshold; }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      /** \brief Get the distance tolerance between corresponding points as a measure in the L2 Euclidean space. */
-      inline double getDistanceThreshold () { return (distance_threshold_); }
+      /** \brief Get the squared distance tolerance between corresponding points as a
+        * measure in the L2 Euclidean space.
+        */
+      inline double 
+      getDistanceThreshold () { return (distance_threshold_); }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Segment differences between two input point clouds.
         * \param output the resultant difference between the two point clouds as a PointCloud
         */
-      void segment (PointCloud &output);
+      void 
+      segment (PointCloud &output);
 
     protected:
       // Members derived from the base class
@@ -144,12 +151,14 @@ namespace pcl
         */
       int spatial_locator_;
 
-      /** \brief The distance tolerance as a measure in the L2 Euclidean space between corresponding points. */
+      /** \brief The distance tolerance (squared) as a measure in the L2
+        * Euclidean space between corresponding points. 
+        */
       double distance_threshold_;
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Class getName method. */
-      virtual std::string getClassName () const { return ("SegmentDifferences"); }
+      virtual std::string 
+      getClassName () const { return ("SegmentDifferences"); }
   };
 }
 
