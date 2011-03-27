@@ -67,10 +67,25 @@ their source codes may already be provided as part of the PCL tutorials.
 
 * Filtering
 
+  * :ref:`passthrough`
+    
+     ======  ======
+     |fi_1|  Title: **Filtering a PointCloud using a PassThrough filter**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to remove points whose values fall inside/outside a user given interval along a specified dimension.
+     ======  ======
+     
+     .. |fi_1| image:: images/passthrough.jpg
+               :height: 100px
+
   * :ref:`voxel_grid`
     
      ======  ======
-     |fi_1|  Title: **Downsampling a PointCloud using a VoxelGrid filter**
+     |fi_2|  Title: **Downsampling a PointCloud using a VoxelGrid filter**
 
              Author: *Radu B. Rusu*
 
@@ -79,14 +94,14 @@ their source codes may already be provided as part of the PCL tutorials.
              In this tutorial, we will learn how to downsample (i.e., reduce the number of points) a Point Cloud.
      ======  ======
      
-     .. |fi_1| image:: images/voxel_grid.jpg
+     .. |fi_2| image:: images/voxel_grid.jpg
                :height: 100px
     
 
   * :ref:`statistical_outlier_removal` 
     
      ======  ======
-     |fi_2|  Title: **Removing outliers using a StatisticalOutlierRemoval filter**
+     |fi_3|  Title: **Removing outliers using a StatisticalOutlierRemoval filter**
 
              Author: *Radu B. Rusu*
 
@@ -95,12 +110,8 @@ their source codes may already be provided as part of the PCL tutorials.
              In this tutorial, we will learn how to remove sparse outliers from noisy data, using statistical analysis.
      ======  ======
      
-     .. |fi_2| image:: images/statistical_removal.jpg
+     .. |fi_3| image:: images/statistical_removal.jpg
                :height: 100px
-
-  * :ref:`passthrough`
-
-    Filtering a PointCloud using a PassThrough filter
 
   * :ref:`project_inliers`
 
