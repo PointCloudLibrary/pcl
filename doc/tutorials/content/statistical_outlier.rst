@@ -7,7 +7,7 @@ In this tutorial we will learn how to remove noisy measurements, e.g. outliers, 
 
 .. raw:: html
   
-  <iframe title="Removing outliers using a StatisticalOutlierRemoval filter" width="480" height="390" src="http://www.youtube.com/embed/RjQPp2_GRnI" frameborder="0" allowfullscreen></iframe>
+  <iframe title="Removing outliers using a StatisticalOutlierRemoval filter" width="480" height="390" src="http://www.youtube.com/embed/RjQPp2_GRnI?rel=0" frameborder="0" allowfullscreen></iframe>
 
 Background
 ----------

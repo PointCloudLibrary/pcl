@@ -8,7 +8,7 @@ of points -- a point cloud dataset, using a voxelized grid approach.
 
 .. raw:: html
   
-  <iframe title="Downsampling a PointCloud using a VoxelGrid filter" width="480" height="390" src="http://www.youtube.com/embed/YHR6_OIxtFI" frameborder="0" allowfullscreen></iframe>
+  <iframe title="Downsampling a PointCloud using a VoxelGrid filter" width="480" height="390" src="http://www.youtube.com/embed/YHR6_OIxtFI?rel=0" frameborder="0" allowfullscreen></iframe>
 
 The code
 --------
