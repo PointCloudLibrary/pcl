@@ -1,0 +1,8 @@
+Package: Eigen3
+Version: __VERSION__
+Section: devel
+Priority: optional
+Architecture: __ARCHITECTURE__
+Depends:
+Maintainer: Eigen team. debian package: Suat Gedikli (gedikli@willowgarage.com)
+Description: A C++ template library for linear algebra: vectors, matrices, and related algorithms
