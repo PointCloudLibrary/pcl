@@ -8,8 +8,8 @@ In this tutorial we will learn how to read point cloud data from a PCD file.
 The code
 --------
 
-First, create a file called, let's say ``pcd_read.cpp`` in your favorite
-editor, and place the following inside it:
+First, create a file called, let's say, ``pcd_read.cpp`` in your favorite
+editor, and place the following code inside it:
 
 .. code-block:: cpp
    :linenos:

@@ -8,7 +8,7 @@ their source codes may already be provided as part of the PCL tutorials.
   * :ref:`reading_pcd`
 
      ======  ======
-     |tut1|  Title: **Reading Point Cloud data from PCD files**
+     |i_o1|  Title: **Reading Point Cloud data from PCD files**
 
              Author: *Radu B. Rusu*
 
@@ -17,13 +17,13 @@ their source codes may already be provided as part of the PCL tutorials.
              In this tutorial, we will learn how to read a Point Cloud from a PCD file.
      ======  ======
      
-     .. |tut1| image:: images/read_pcd.jpg
+     .. |i_o1| image:: images/read_pcd.jpg
                :height: 100px
 
   * :ref:`writing_pcd`
 
      ======  ======
-     |tut2|  Title: **Writing Point Cloud data to PCD files**
+     |i_o2|  Title: **Writing Point Cloud data to PCD files**
 
              Author: *Radu B. Rusu*
 
@@ -32,13 +32,13 @@ their source codes may already be provided as part of the PCL tutorials.
              In this tutorial, we will learn how to write a Point Cloud to a PCD file.
      ======  ======
      
-     .. |tut2| image:: images/write_pcd.jpg
+     .. |i_o2| image:: images/write_pcd.jpg
                :height: 100px
 
   * :ref:`concatenate_fields`
 
      ======  ======
-     |tut3|  Title: **Concatenate the fields of two Point Clouds**
+     |i_o3|  Title: **Concatenate the fields of two Point Clouds**
 
              Author: *Radu B. Rusu*
 
@@ -47,13 +47,13 @@ their source codes may already be provided as part of the PCL tutorials.
              In this tutorial, we will learn how to concatenate the fields of two Point Clouds, one containing only *XYZ* data, and one containing *Surface Normal* information.
      ======  ======
 
-     .. |tut3| image:: images/concatenate_fields.jpg
+     .. |i_o3| image:: images/concatenate_fields.jpg
                :height: 100px
 
   * :ref:`concatenate_points`
 
      ======  ======
-     |tut4|  Title: **Concatenate the points of two Point Clouds**
+     |i_o4|  Title: **Concatenate the points of two Point Clouds**
 
              Author: *Radu B. Rusu*
 
@@ -62,14 +62,26 @@ their source codes may already be provided as part of the PCL tutorials.
              In this tutorial, we will learn how to concatenate the point data of two Point Clouds with the same fields.
      ======  ======
 
-     .. |tut4| image:: images/concatenate_data.jpg
+     .. |i_o4| image:: images/concatenate_data.jpg
                :height: 100px
 
 * Filtering
 
-  * :ref:`voxelgrid`
+  * :ref:`voxel_grid`
     
-    Downsampling a PointCloud using a VoxelGrid filter
+     ======  ======
+     |fi_1|  Title: **Downsampling a PointCloud using a VoxelGrid filter**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to downsample (i.e., reduce the number of points) a Point Cloud.
+     ======  ======
+     
+     .. |fi_1| image:: images/voxel_grid.jpg
+               :height: 100px
+    
 
   * :ref:`statistical_outlier_removal` 
     

@@ -10,8 +10,8 @@ the number of points in the two datasets has to be equal.
 The code
 --------
 
-First, create a file, let's say ``concatenate_fields.cpp`` in your favorite
-editor, and place the following inside it:
+First, create a file, let's say, ``concatenate_fields.cpp`` in your favorite
+editor, and place the following code inside it:
 
 .. code-block:: cpp
    :linenos:

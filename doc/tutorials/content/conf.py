@@ -130,4 +130,6 @@ html_show_copyright = False
 html_show_sphinx = False
 html_add_permalinks = None
 needs_sphinx = 1.0
+file_insertion_enabled = True
+raw_enabled = True
 
