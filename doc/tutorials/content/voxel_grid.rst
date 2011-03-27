@@ -1,4 +1,4 @@
-.. _voxel_grid:
+.. _voxelgrid:
 
 Downsampling a PointCloud using a VoxelGrid filter
 --------------------------------------------------

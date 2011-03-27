@@ -101,7 +101,7 @@ contributions on any tutorials.
      .. |fi_1| image:: images/passthrough.jpg
                :height: 100px
 
-  * :ref:`voxel_grid`
+  * :ref:`voxelgrid`
     
      ======  ======
      |fi_2|  Title: **Downsampling a PointCloud using a VoxelGrid filter**
@@ -211,13 +211,26 @@ contributions on any tutorials.
      .. |su_1| image:: images/resampling.jpg
                :height: 100px
 
+  * :ref:`convex_hull_2d`
+
+     ======  ======
+     |su_2|  Title: **Construct a convex hull polygon for a planar model**
+
+             Author: *Zoltan-Csaba Marton*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial we will learn how to calculate a simple 2D convex hull polygon for a set of points supported by a plane.
+     ======  ======
+     
+     .. |su_2| image:: images/convex_hull_2d.jpg
+               :height: 100px
+
 ..
   * :ref:`normal_estimation_integral_images`
     Surface normal estimation
   * :ref:`greedy_triangulation`
     Run a greedy algorithm on a PointCloud with normals to obtain a triangle mesh based on projections of the local neighborhood
-  * :ref:`convex_hull` 
-    Construct a convex hull polygon for a planar model
   * Range Image
     * :ref:`range_image_visualization`
       How to visualize a range image

@@ -209,7 +209,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
    
    add_executable (planar_segmentation planar_segmentation.cpp)
-   target_link_libraries (planar_segmentation pcl_io pcl_filters)
+   target_link_libraries (planar_segmentation pcl_io pcl_filters pcl_segmentation)
 
 After you have made the executable, you can run it. Simply do::
 
