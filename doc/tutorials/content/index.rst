@@ -216,7 +216,7 @@ contributions on any tutorials.
      ======  ======
      |su_2|  Title: **Construct a convex hull polygon for a planar model**
 
-             Author: *Zoltan-Csaba Marton*
+             Author: *Radu B. Rusu*
 
              Compatibility: > PCL 0.5
 
@@ -226,11 +226,24 @@ contributions on any tutorials.
      .. |su_2| image:: images/convex_hull_2d.jpg
                :height: 100px
 
+  * :ref:`greedy_triangulation`
+
+     ======  ======
+     |su_3|  Title: **Fast triangulation of unordered point clouds**
+
+             Author: *Zoltan-Csaba Marton*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial we will learn how to run a greedy triangulation algorithm on a PointCloud with normals to obtain a triangle mesh based on projections of the local neighborhood.
+     ======  ======
+     
+     .. |su_3| image:: images/greedy_triangulation.png
+               :height: 100px
+
 ..
   * :ref:`normal_estimation_integral_images`
     Surface normal estimation
-  * :ref:`greedy_triangulation`
-    Run a greedy algorithm on a PointCloud with normals to obtain a triangle mesh based on projections of the local neighborhood
   * Range Image
     * :ref:`range_image_visualization`
       How to visualize a range image
