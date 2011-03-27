@@ -4,13 +4,43 @@ Smoothing and normal estimation based on polynomial reconstruction
 ------------------------------------------------------------------
 
 This tutorial explains how a Moving Least Squares (MLS) surface reconstruction
-method can be used to smooth and resample noisy data.
+method can be used to smooth and resample noisy data. Please see an example in
+the video below:
 
 .. raw:: html
 
   <iframe title="Smoothing and normal estimation based on polynomial reconstruction" width="480" height="390" src="http://www.youtube.com/embed/FqHroDuo_I8?rel=0" frameborder="0" allowfullscreen></iframe>
 
-The above video presents an example of resampling/smoothing.
+
+Some of the data irregularities (caused by small distance measurement errors)
+are very hard to remove using statistical analysis. To create complete models,
+glossy surfaces as well as occlusions in the data must be accounted for. In
+situations where additional scans are impossible to acquire, a solution is to
+use a resampling algorithm, which attempts to recreate the missing parts of the
+surface by higher order polynomial interpolations between the surrounding data
+points. By performing resampling, these small errors can be corrected and the
+"double walls" artifacts resulted from registering multiple scans together can
+be smoothed. 
+
+.. image:: images/resampling_1.png
+
+On the left side of the figure above, we see the effect or estimating surface
+normals in a dataset comprised of two registered point clouds together. Due to
+alignment errors, the resultant normals are noisy. On the right side we see the
+effects of surface normal estimation in the same dataset after it has been
+smoothed with a Moving Least Squares algorithm. Plotting the curvatures at each
+point as a measure of the eigenvalue relationship before and after resampling,
+we obtain:
+
+.. image:: images/resampling_2.png
+
+To approximate the surface defined by a local neighborhood of points **p1, p2
+...  pk** at a point **q** we use a bivariate polynomial height function
+defined on a on a robustly computed reference plane. 
+
+.. raw:: html
+
+  <iframe title="Removing noisy data through resampling" width="480" height="390" src="http://www.youtube.com/embed/N5AgC0KEcw0?rel=0" frameborder="0" allowfullscreen></iframe>
 
 The code
 --------
