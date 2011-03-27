@@ -177,7 +177,18 @@ their source codes may already be provided as part of the PCL tutorials.
 
   * :ref:`cylinder_segmentation`
 
-    Cylinder model segmentation
+     ======  ======
+     |se_2|  Title: **Cylinder model segmentation**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to segment arbitrary cylindrical models from a given point cloud dataset.
+     ======  ======
+     
+     .. |se_2| image:: images/cylinder_segmentation.jpg
+               :height: 100px
 
 * Surface
 
