@@ -192,6 +192,20 @@ their source codes may already be provided as part of the PCL tutorials.
 
 * Surface
 
+  * :ref:`moving_least_squares`
+
+     ======  ======
+     |su_1|  Title: **Smoothing and normal estimation based on polynomial reconstruction**
+
+             Author: *Zoltan-Csaba Marton*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to construct and run a Moving Least Squares (MLS) algorithm to obtain smoothed XYZ coordinates and normals.
+     ======  ======
+     
+     .. |su_1| image:: images/resampling.jpg
+               :height: 100px
   * :ref:`normal_estimation_integral_images`
 
     Surface normal estimation
@@ -204,9 +218,6 @@ their source codes may already be provided as part of the PCL tutorials.
 
     Construct a convex hull polygon for a planar model
 
-  * :ref:`moving_least_squares`
-
-    Run MLS to obtain smoothed XYZ coordinates and normals
 
 * Range Image
 

@@ -3,7 +3,8 @@
 Removing outliers using a StatisticalOutlierRemoval filter
 ----------------------------------------------------------
 
-In this tutorial we will learn how to remove noisy measurements, e.g. outliers, from a point cloud dataset using statistical analysis techniques.
+In this tutorial we will learn how to remove noisy measurements, e.g. outliers,
+from a point cloud dataset using statistical analysis techniques.
 
 .. raw:: html
   
@@ -27,7 +28,10 @@ deviation, all points whose mean distances are outside an interval defined by
 the global distances mean and standard deviation can be considered as outliers
 and trimmed from the dataset.
 
-The following picture show the effects of the sparse outlier analysis and removal: the original dataset is shown on the left, while the resultant one on the right. The graphic shows the mean k-nearest neighbor distances in a point neighborhood before and after filtering.
+The following picture show the effects of the sparse outlier analysis and
+removal: the original dataset is shown on the left, while the resultant one on
+the right. The graphic shows the mean k-nearest neighbor distances in a point
+neighborhood before and after filtering.
 
 .. image:: images/statistical_removal_2.png
 
