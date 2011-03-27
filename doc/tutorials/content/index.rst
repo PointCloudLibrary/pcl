@@ -1,7 +1,11 @@
 .. toctree::
   
 The following links describe a set of basic PCL tutorials. Please note that
-their source codes may already be provided as part of the PCL tutorials. 
+their source codes may already be provided as part of the PCL regular releases,
+so check there before you start copy & pasting the code.
+
+As always, we would be happy to hear your comments and receive your
+contributions on any tutorials.
 
 * I/O
 
@@ -206,42 +210,25 @@ their source codes may already be provided as part of the PCL tutorials.
      
      .. |su_1| image:: images/resampling.jpg
                :height: 100px
+
+..
   * :ref:`normal_estimation_integral_images`
-
     Surface normal estimation
-
   * :ref:`greedy_triangulation`
-
     Run a greedy algorithm on a PointCloud with normals to obtain a triangle mesh based on projections of the local neighborhood
-
   * :ref:`convex_hull` 
-
     Construct a convex hull polygon for a planar model
-
-
-* Range Image
-
-  * :ref:`range_image_visualization`
-
-    How to visualize a range image
-
-  * :ref:`range_image_creation`
-
-    How to create a range image from a point cloud
-
-  * :ref:`range_image_border_extraction`
-
-    How to extract borders from range images
-
-  * :ref:`narf_keypoint`
-
-    How to extract NARF keypoints from a range image
-
-  * :ref:`narf_descriptor`
-
-    How to extract NARF descriptors from points in a range images
-
-  * :ref:`narf_descriptor_visualization`
-
-    Visualization of how the NARF descriptor is calculated and of the descriptor distances to a marked point.
+  * Range Image
+    * :ref:`range_image_visualization`
+      How to visualize a range image
+    * :ref:`range_image_creation`
+      How to create a range image from a point cloud
+    * :ref:`range_image_border_extraction`
+      How to extract borders from range images
+    * :ref:`narf_keypoint`
+      How to extract NARF keypoints from a range image
+    * :ref:`narf_descriptor`
+      How to extract NARF descriptors from points in a range images
+    * :ref:`narf_descriptor_visualization`
+      Visualization of how the NARF descriptor is calculated and of the descriptor distances to a marked point.
 
