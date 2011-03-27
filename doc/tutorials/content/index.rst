@@ -115,7 +115,18 @@ their source codes may already be provided as part of the PCL tutorials.
 
   * :ref:`project_inliers`
 
-    Projecting points using a parametric model
+     ======  ======
+     |fi_4|  Title: **Projecting points using a parametric model**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to project points to a parametric model (i.e., plane).
+     ======  ======
+     
+     .. |fi_4| image:: images/project_inliers.jpg
+               :height: 100px
 
   * :ref:`extract_indices`
 
