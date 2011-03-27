@@ -160,16 +160,24 @@ their source codes may already be provided as part of the PCL tutorials.
 
 * Segmentation
 
+  * :ref:`planar_segmentation`
+    
+     ======  ======
+     |se_1|  Title: **Planar model segmentation**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to segment arbitrary planar models from a given point cloud dataset.
+     ======  ======
+     
+     .. |se_1| image:: images/planar_segmentation.jpg
+               :height: 100px
+
   * :ref:`cylinder_segmentation`
 
     Cylinder model segmentation
-
-  * :ref:`planar_segmentation`
-
-    This tutorial walks you through writing planar model segmentation code.
-
-  * SAC Model Coefficients
-    Shows the model_coefficients used in SAC Segmentation.
 
 * Surface
 

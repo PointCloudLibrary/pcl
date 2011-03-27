@@ -142,7 +142,7 @@ You will see something similar to::
 
 A graphical display of the filtering process is shown below. 
 
-.. image:: images/passthrough_2.jpg
+.. image:: images/passthrough_2.png
 
 Note that the coordinate axis are represented as red (x), green (y), and blue
 (z). The five points are represented with green as the points remaining after

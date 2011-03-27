@@ -1,6 +1,5 @@
 .. _extract_indices:
 
-     
 Extracting indices from a PointCloud
 ------------------------------------
 

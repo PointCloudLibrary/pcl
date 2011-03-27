@@ -168,7 +168,7 @@ You will see something similar to::
 
 A graphical display of the projection process is shown below.
 
-.. image:: images/project_inliers_2.jpg
+.. image:: images/project_inliers_2.png
 
 Note that the coordinate axis are represented as red (x), green (y), and blue
 (z). The five points are represented with red as the points before projection
