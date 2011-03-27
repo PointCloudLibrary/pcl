@@ -65,6 +65,21 @@ their source codes may already be provided as part of the PCL tutorials.
      .. |i_o4| image:: images/concatenate_data.jpg
                :height: 100px
 
+  * :ref:`kinect_grabber`
+
+     ======  ======
+     |i_o5|  Title: **Grabbing Point Clouds from a Kinect camera**
+
+             Author: *Nico Blodow*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial, we will learn how to acquire point cloud data from a Kinect camera.
+     ======  ======
+
+     .. |i_o5| image:: images/kinect_grabber.png
+               :height: 100px
+
 * Filtering
 
   * :ref:`passthrough`
@@ -130,7 +145,18 @@ their source codes may already be provided as part of the PCL tutorials.
 
   * :ref:`extract_indices`
 
-    Extracting indices from a PointCloud
+     ======  ======
+     |fi_5|  Title: **Extracting indices from a PointCloud**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to extract a set of indices given by a segmentation algorithm.
+     ======  ======
+     
+     .. |fi_5| image:: images/extract_indices.jpg
+               :height: 100px
 
 * Segmentation
 

@@ -1,0 +1,141 @@
+.. _kinect_grabber:
+
+The OpenNI Kinect Grabber Framework in PCL
+------------------------------------------
+
+As of PCL 1.0, we offer a new generic grabber interface to provide a smooth and
+convenient access to different devices and their drivers, file formats and
+other sources of data. 
+
+The first driver that we incorporated is the new Kinect Grabber, which makes it
+a breeze to request data streams from the Kinect cameras. This tutorial
+presents how to set up and use the grabber, and since it's so simple, we can
+keep it short :).
+
+Simple Example
+--------------
+
+In *visualization*, there is a very short piece of code which contains all that
+is required to set up a *pcl::PointCloud<XYZ>* or *pcl::PointCloud<XYZRGB>*
+cloud callback:
+
+
+From *visualization/tools/kinect_viewer_simple.cpp*
+
+.. code-block:: cpp
+   :linenos:
+
+    class SimpleKinectViewer
+    {
+      public:
+        SimpleKinectViewer () : viewer ("PCL Kinect Viewer") {}
+
+        void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud)
+        {   
+          if (!viewer.wasStopped())
+            viewer.showCloud (*cloud);
+        }   
+
+        void run ()
+        {   
+          pcl::Grabber* interface = new pcl::OpenNIGrabber();
+
+          boost::function<void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f = 
+            boost::bind (&SimpleKinectViewer::cloud_cb_, this, _1);
+
+          interface->registerCallback (f);
+              
+          interface->start (); 
+              
+          while (!viewer.wasStopped())
+          {   
+            sleep (1);
+          }   
+
+          interface->stop (); 
+        }   
+
+        pcl_visualization::CloudViewer viewer;
+    };
+
+    int main ()
+    {
+      SimpleKinectViewer v;
+      v.run (); 
+      return 0;
+    }
+
+
+As you can see, the *run ()* function of *SimpleKinectViewer* first creates a
+new *OpenNIGrabber* interface. The next line might seem a bit intimidating at
+first, but it's not that bad. We create a *boost::bind* object with the address
+of the callback *cloud_cb_*, we pass a reference to our *SimpleKinectViewer*
+and the argument palce holder *_1*.
+
+The *bind* then gets casted to a *boost::function* object which is templated on
+the callback function type, in this case *void (const
+pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)*. The resulting function object can
+the be registered with the *OpenNIGrabber* and subsequently started.  Note that
+the *stop ()* method does not necessarily need to be called, as the destructor
+takes care of that.
+
+Additional Details
+------------------
+
+The *OpenNIGrabber* offers more than one datatype, which is the reason we made
+the *Grabber* interface so generic, leading to the relatively complicated
+*boost::bind* line. In fact, we can register the following callback types as of
+this writing:
+
+* void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&)
+* void (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&)
+* void (const boost::shared_ptr<openni_wrapper::Image>&)
+
+  This provides just the RGB image from the built-in camera.
+
+* void (const boost::shared_ptr<openni_wrapper::DepthImage>&)
+
+  This provides the depth image, without any color or intensity information
+
+* void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)
+    
+  When a callback of this type is registered, the grabber sends both RGB
+  image and depth image and the constant (*1 / focal length*), which you need
+  if you want to do your own disparity conversion. 
+
+.. note::
+  All callback types that need a depth _and_ image stream have a
+  synchronization mechanism enabled which ensures consistent depth and image
+  data. This introduces a small lag, since the synchronizer needs to wait at
+  least for one more set of images before sending the first ones. 
+
+Starting and stopping streams
+-----------------------------
+
+The *registerCallback* call returns a *boost::signals2::connection* object,
+which we ignore in the above example. However, if you want to interrupt or
+cancel one or more of the registered data streams, you can call disconnect the
+callback without stopping the whole grabber:
+
+.. code-block:: cpp
+
+   boost::signals2::connection = interface (registerCallback (f));
+
+   // ...
+
+   if (c.connected ())
+     c.disconnect ();
+
+Conclusion
+----------
+
+The Grabber interface is very powerful and general and makes it a breeze to
+connect to OpenNI cameras (i.e. Kinect and Primesense) in your code. We are
+in the process of writing a FileGrabber which can be used using the same
+interface, and can e.g. load all Point Cloud files from a directory and
+provide them to the callback at a certain rate. The only change required is
+the allocation of the Grabber Object (*pcl::Grabber *g = new ...;*).
+
+If you have a sensor which you would like to have available within PCL, just
+let us know at *pcl-developers@pointclouds.org*, and we will figure something
+out.
