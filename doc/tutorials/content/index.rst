@@ -85,7 +85,18 @@ their source codes may already be provided as part of the PCL tutorials.
 
   * :ref:`statistical_outlier_removal` 
     
-    Removing outliers using a StatisticalOutlierRemoval filter
+     ======  ======
+     |fi_2|  Title: **Removing outliers using a StatisticalOutlierRemoval filter**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to remove sparse outliers from noisy data, using statistical analysis.
+     ======  ======
+     
+     .. |fi_2| image:: images/statistical_removal.jpg
+               :height: 100px
 
   * :ref:`passthrough`
 
