@@ -20,11 +20,16 @@ We usually like to combine `ccache` with another tool, called `colorgcc
 <https://github.com/johannes/colorgcc>`_. ``colorgcc`` is a colorizer for the
 output of GCC, and allows you to better interpret the compiler warnings/errors.
 
-To enable both colorgcc and ccache, perform the following steps::
+To enable both colorgcc and ccache, perform the following steps:
+
+.. code-block:: cmake
 
   cp /etc/colorgcc/colorgccrc $HOME/.colorgccrc
 
-* edit the $HOME/.colorgccrc file, search for the following lines::
+
+* edit the $HOME/.colorgccrc file, search for the following lines:
+
+.. code-block:: cmake
 
     g++: /usr/bin/g++
     gcc: /usr/bin/gcc
@@ -42,7 +47,9 @@ To enable both colorgcc and ccache, perform the following steps::
     f77: ccache /usr/bin/g77
     gcj: ccache /usr/bin/gcj
 
-* create a $HOME/bin or $HOME/sbin directory, and create the following softlinks in it::
+* create a $HOME/bin or $HOME/sbin directory, and create the following softlinks in it
+
+.. code-block:: cmake
 
     ln -s /usr/bin/colorgcc c++
     ln -s /usr/bin/colorgcc cc
