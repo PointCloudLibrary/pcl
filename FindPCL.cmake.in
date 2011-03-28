@@ -126,25 +126,23 @@ foreach(component ${PCL_FIND_COMPONENTS})
     HINTS @CMAKE_INSTALL_PREFIX@
 		      ${${PC_PCL_COMPONENT}_INCLUDEDIR} ${${PC_PCL_COMPONENT}_INCLUDE_DIRS} 
           ${PCL_ROOT} ENV PCL_ROOT
-    PATH_SUFFIXES pcl/${component} ${PCL_SUFFIX}/${component}
+    PATH_SUFFIXES pcl/${component} ${PCL_SUFFIX}/pcl/${component}
     DOC "path to ${pcl_component} headers")
-  
-  find_library(${PCL_COMPONENT_LIBRARY} ${pcl_component}
-    HINTS @CMAKE_INSTALL_PREFIX@ 
-		      ${${PC_PCL_COMPONENT}_LIBDIR} ${${PC_PCL_COMPONENT}_LIBRARY_DIRS}
-          ${PCL_ROOT} ENV PCL_ROOT
-    DOC "path to ${pcl_component} library")
-  
   get_filename_component(component_header_path 
     ${${PCL_COMPONENT_INCLUDE_DIR}}/${${pcl_component}_header}
     PATH)
   file(TO_CMAKE_PATH ${component_header_path} component_header_path)
-  string(REGEX REPLACE "(.*)/${component}" "\\1" 
+  string(REGEX REPLACE "(.*)/pcl/${component}" "\\1" 
     component_header_path "${component_header_path}")
-	if(NOT EXISTS ${component_header_path}/pcl_config.h)
-		message(FATAL_ERROR "${component_header_path} is not a valid include directory")
-	endif(NOT EXISTS ${component_header_path}/pcl_config.h)
-
+  if(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
+    message(FATAL_ERROR "${component_header_path} is not a valid include directory")
+  endif(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
+  
+  find_library(${PCL_COMPONENT_LIBRARY} ${pcl_component}
+    HINTS /usr/local 
+          ${${PC_PCL_COMPONENT}_LIBDIR} ${${PC_PCL_COMPONENT}_LIBRARY_DIRS}
+          ${PCL_ROOT} ENV PCL_ROOT
+    DOC "path to ${pcl_component} library")  
   get_filename_component(component_library_path 
 		${${PCL_COMPONENT_LIBRARY}}
     PATH)
@@ -153,7 +151,10 @@ foreach(component ${PCL_FIND_COMPONENTS})
     ${PCL_COMPONENT_LIBRARY} ${PCL_COMPONENT_INCLUDE_DIR})
 
 	if(${PCL_COMPONENT}_FOUND)
-		list(APPEND PCL_INCLUDE_DIRS ${component_header_path})	
+		list(APPEND PCL_INCLUDE_DIRS ${component_header_path})
+		if(${PC_PCL_COMPONENT}_INCLUDE_DIRS)
+			list(APPEND PCL_INCLUDE_DIRS ${${PC_PCL_COMPONENT}_INCLUDE_DIRS})
+		endif(${PC_PCL_COMPONENT}_INCLUDE_DIRS)
 		mark_as_advanced(${PCL_COMPONENT_INCLUDE_DIR})
 		list(APPEND PCL_LIBRARIES ${${PCL_COMPONENT_LIBRARY}})
 		list(APPEND PCL_LINK_DIRECTORIES ${component_library_path})
