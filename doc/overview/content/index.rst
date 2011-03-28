@@ -28,5 +28,5 @@ November 2010.
 
 .. raw:: html
 
-   <p align="center"><iframe src="http://dev.pointclouds.org/attachments/download/16/PCL_November_2010.pdf" width="50%"></p>
+   <a href="http://dev.pointclouds.org/attachments/download/16/PCL_November_2010.pdf">PCL presentation</a>
 
