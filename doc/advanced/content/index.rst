@@ -14,9 +14,9 @@ compilation of your project.
 
 Some useful references:
 
-  * http://developers.sun.com/solaris/articles/CC_perf/content.html
-  * http://www.drdobbs.com/blog/archives/2010/08/c_compilation_s.html
-  * http://gamesfromwithin.com/physical-structure-and-c-part-2-build-times
+* http://developers.sun.com/solaris/articles/CC_perf/content.html
+* http://www.drdobbs.com/blog/archives/2010/08/c_compilation_s.html
+* http://gamesfromwithin.com/physical-structure-and-c-part-2-build-times
 
 :ref:`c_cache`
 
