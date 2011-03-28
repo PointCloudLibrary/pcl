@@ -1,0 +1,8 @@
+Package: cminpack
+Version: __VERSION__
+Section: devel
+Priority: optional
+Architecture: __ARCHITECTURE__
+Depends:
+Maintainer: CMinPack team. debian package: Suat Gedikli (gedikli@willowgarage.com)
+Description: Library for solving nonlinear equations and nonlinear least squares problems.
