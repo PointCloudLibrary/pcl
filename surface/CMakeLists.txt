@@ -24,7 +24,6 @@ if(build)
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} ${QHULL_LIBRARIES} ${Boost_LIBRARIES})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-    list(APPEND EXT_DEPS qhull ${boost_components})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
         "${EXT_DEPS}" "" "" "")
 

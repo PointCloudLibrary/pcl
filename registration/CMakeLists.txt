@@ -16,7 +16,6 @@ if(build)
     target_link_libraries(${LIB_NAME} pcl_kdtree pcl_sample_consensus
         ${Boost_LIBRARIES})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-    list(APPEND EXT_DEPS ${boost_components})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
         "${EXT_DEPS}" "" "" "")
 

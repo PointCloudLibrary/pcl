@@ -33,7 +33,6 @@ if(build)
     PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} pcl_range_image ${Boost_LIBRARIES})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-    list(APPEND EXT_DEPS ${boost_components})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
         "${EXT_DEPS}" "" "" "")
 

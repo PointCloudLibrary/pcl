@@ -48,9 +48,8 @@ if(build)
         target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
     endif(OPENNI_FOUND)
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-    list(APPEND EXT_DEPS boost_filesystem boost_thread)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-        "${EXT_DEPS}" "" "" "")
+        "${EXT_DEPS}" "" "-I${EIGEN_INCLUDE_DIRS}" "")
 
     # Install include files
     set(incs include/pcl/${SUBSYS_NAME}/io.h
