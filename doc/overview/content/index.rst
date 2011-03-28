@@ -20,7 +20,13 @@ The project is supported by an international community of robotics and perceptio
 researchers, and would not exist without the contributions of many people and
 companies. We thank everyone for their support!
 
-Architecture
+Presentation
 ------------
 
+The following overview presentation was given at the ROS Fall School at TUM in
+November 2010.
+
+.. raw:: html
+
+   <div align="center"><embed src="http://dev.pointclouds.org/attachments/download/16/PCL_November_2010.pdf" width="500" height="375"></div>
 
