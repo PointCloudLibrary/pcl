@@ -259,15 +259,17 @@ contributions on any tutorial.
     * :ref:`narf_descriptor_visualization`
       Visualization of how the NARF descriptor is calculated and of the descriptor distances to a marked point.
 
-* Miscellinous
+* Miscellaneous
 
   * :ref:`using_pcl`
 
      ======  ======
-     |mi_1|  Title: **Using PCL in own project**
+             Title: **Using PCL in own project**
 
              Author: *Nizar Sallem*
 
              Compatibility: > PCL 0.9
-
+             
              In this tutorial, we will learn how to link your own project to PCL using cmake.
+     ======  ======
+
