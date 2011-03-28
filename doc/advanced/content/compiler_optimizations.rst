@@ -9,7 +9,7 @@ everytime you recompile to prototype something new, or whether you can live
 with a less optimal binary for testing things. Obviously once your tests
 succeed and you want to deploy your project, you can simply re-enable the
 compiler optimizations. Here's a few tests that we did a while back with
-`pcl_ros <http://pcl.ros.org/`_::
+`pcl_ros <http://pcl.ros.org/>`_::
 
   -j1, RelWithDebInfo + O3 : 3m20.376s -j1, RelWithDebInfo : 2m48.064s
   -j1, Debug : 2m0.452s
