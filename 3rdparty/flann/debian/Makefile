@@ -37,10 +37,12 @@ $(FLANN_PACKAGE_NAME).deb: FLANN_lib ./CONTROL/flann_control ./CONTROL/flann.pc
 	mkdir -p $(FLANN_PACKAGE_NAME)/usr/include/flann/nn
 	mkdir -p $(FLANN_PACKAGE_NAME)/usr/lib/pkgconfig
 	cp -r ./flann/src/cpp/flann/*.h $(FLANN_PACKAGE_NAME)/usr/include/flann/
+	cp -r ./flann/src/cpp/flann/*.hpp $(FLANN_PACKAGE_NAME)/usr/include/flann/
 	cp -r ./flann/src/cpp/flann/algorithms $(FLANN_PACKAGE_NAME)/usr/include/flann/
 	cp -r ./flann/src/cpp/flann/io $(FLANN_PACKAGE_NAME)/usr/include/flann/
 	cp -r ./flann/src/cpp/flann/nn/*.h $(FLANN_PACKAGE_NAME)/usr/include/flann/nn/
 	cp -r ./flann/src/cpp/flann/util/*.h $(FLANN_PACKAGE_NAME)/usr/include/flann/util/
+	cp -r ./flann/src/cpp/flann/util/*.hpp $(FLANN_PACKAGE_NAME)/usr/include/flann/util/
 	cp -r ./flann/lib/* $(FLANN_PACKAGE_NAME)/usr/lib/
 	@sed s/__VERSION__/${VERSION}~${DISTRO}/ ./CONTROL/flann_control | sed s/__ARCHITECTURE__/$(ARCH)/ > $(FLANN_PACKAGE_NAME)/DEBIAN/control
 	@sed s/__VERSION__/${VERSION}~${DISTRO}/ ./CONTROL/flann.pc > $(FLANN_PACKAGE_NAME)/usr/lib/pkgconfig/flann.pc
