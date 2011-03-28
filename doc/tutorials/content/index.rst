@@ -6,7 +6,7 @@ so check there before you start copy & pasting the code. The list of tutorials
 below is automatically generated from reST files located in our SVN repository.
 
 As always, we would be happy to hear your comments and receive your
-contributions on any tutorials.
+contributions on any tutorial.
 
 * I/O
 
