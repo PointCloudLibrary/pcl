@@ -39,7 +39,7 @@
 #define PCL_VISUALIZATION_IMAGE_WIDGET_WX_H_
 
 #include <wx/wx.h>
-
+#include <string>
 #include <vector>
 
 namespace pcl_visualization
