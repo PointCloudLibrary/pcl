@@ -129,6 +129,8 @@ namespace pcl
     int neighbors_in_radius = 0;
     if (k_indices.size () == size && k_squared_distances.size () == size)  // preallocated vectors
     {
+      // if using preallocated vectors we ignore max_nn as we are sure to have enought space
+      // to store all neighbors found in radius
       flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k_indices.size());
       flann::Matrix<float> k_distances_mat (&k_squared_distances[0], 1, k_squared_distances.size());
       neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float>(&tmp[0], 1, dim_),
@@ -138,13 +140,17 @@ namespace pcl
     {
       neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float>(&tmp[0], 1, dim_),
           indices_empty, dists_empty, radius, flann::SearchParams (-1, epsilon_, sorted_));
+      if (max_nn > 0) 
+      {
+        neighbors_in_radius = std::min(neighbors_in_radius, max_nn); 
+      }
       k_indices.resize (neighbors_in_radius);
       k_squared_distances.resize (neighbors_in_radius);
-
       if (neighbors_in_radius == 0)
       {
         return (0);
       }
+
       flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k_indices.size());
       flann::Matrix<float> k_distances_mat (&k_squared_distances[0], 1, k_squared_distances.size());
       flann_index_->radiusSearch (flann::Matrix<float>(&tmp[0], 1, dim_),
