@@ -34,7 +34,7 @@ $(CMINPACK_PACKAGE_NAME).deb: cminpack_lib ./CONTROL/cminpack_control ./CONTROL/
 	mkdir -p $(CMINPACK_PACKAGE_NAME)/usr/include/cminpack
 	mkdir -p $(CMINPACK_PACKAGE_NAME)/usr/lib/pkgconfig
 	cp -r ./cminpack/*.h $(CMINPACK_PACKAGE_NAME)/usr/include/cminpack/
-	cp -r ./cminpack/build/*.so $(CMINPACK_PACKAGE_NAME)/usr/lib/
+	cp -r ./cminpack/build/libcminpack* $(CMINPACK_PACKAGE_NAME)/usr/lib/
 	@sed s/__VERSION__/${VERSION}~${DISTRO}/ ./CONTROL/cminpack_control | sed s/__ARCHITECTURE__/$(ARCH)/ > $(CMINPACK_PACKAGE_NAME)/DEBIAN/control
 	@sed s/__VERSION__/${VERSION}~${DISTRO}/ ./CONTROL/cminpack.pc > $(CMINPACK_PACKAGE_NAME)/usr/lib/pkgconfig/cminpack.pc
 	@dpkg-deb -b $(CMINPACK_PACKAGE_NAME)
