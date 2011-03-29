@@ -1,0 +1,23 @@
+/**\mainpage PCL API Documentation
+
+PCL is a large scale, open project for point cloud processing. The
+PCL framework contains numerous state-of-the art algorithms including
+filtering, feature estimation, surface reconstruction, registration,
+model fitting and segmentation. These algorithms can be used, for
+example, to filter outliers from noisy data, stitch 3D point clouds
+together, segment relevant parts of a scene, extract keypoints and
+compute descriptors to recognize objects in the world based on their
+geometric appearance, and create surfaces from point clouds and
+visualize them -- to name a few.
+
+PCL is released under the terms of the BSD license and is open source
+software. It is free for commercial and research use.
+
+PCL is cross-platform, and has been successfully compiled and deployed
+on Linux, MacOS, Windows, and Android. To simplify development, PCL is
+split into a series of smaller code libraries, that can be compiled
+separately. This modularity is important for distributing PCL on
+platforms with reduced computational or size constraints. For more
+information see the documentation page.  
+
+*/

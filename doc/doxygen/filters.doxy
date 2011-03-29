@@ -1,0 +1,13 @@
+/**
+  \addtogroup filters Module filters
+
+  \section secFiltersPresentation Presentation
+	Filters data structures.
+	
+	\section secFiltersHistory History
+	- 1.0 current version
+	
+	\section secFiltersRequirements Requirements
+	- common
+
+*/

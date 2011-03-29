@@ -1,0 +1,13 @@
+/**
+  \addtogroup range_image Module range_image
+
+  \section secRangeImagePresentation Presentation
+	range_image data structures.
+	
+	\section secRangeImageHistory History
+	- 1.0 current version
+	
+	\section secRangeImageRequirements Requirements
+	- common
+
+*/

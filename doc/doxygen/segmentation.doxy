@@ -1,0 +1,13 @@
+/**
+  \addtogroup segmentation Module segmentation
+
+  \section secSegmentationPresentation Presentation
+	segmentation data structures.
+	
+	\section secSegmentationHistory History
+	- 1.0 current version
+	
+	\section secSegmentationRequirements Requirements
+	- common
+
+*/

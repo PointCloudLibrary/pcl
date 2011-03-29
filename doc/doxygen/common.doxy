@@ -1,0 +1,12 @@
+/**
+  \addtogroup common Module common
+
+  \section secCommonPresentation Presentation
+	Common data structures used by all the PCL components.
+	
+	\section secCommonHistory History
+	- 1.0 current version
+	
+	\section secCommonRequirements Requirements
+
+*/

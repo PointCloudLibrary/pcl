@@ -1,0 +1,13 @@
+/**
+  \addtogroup sample_consensus Module sample_consensus
+
+  \section secSampleConsensusPresentation Presentation
+	sample_consensus data structures.
+	
+	\section secSampleConsensusHistory History
+	- 1.0 current version
+	
+	\section secSampleConsensusRequirements Requirements
+	- common
+
+*/

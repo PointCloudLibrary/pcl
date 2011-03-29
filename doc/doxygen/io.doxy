@@ -1,0 +1,14 @@
+/*!
+  \addtogroup io Module io
+
+  \section secIoPresentation Presentation
+	Io is the place for the input/output operations.
+	
+	\section secIoHistory History
+	- 1.0 current version
+	
+	\section secIoRequirements Requirements
+	- common
+	- OpenNi for kinect handling
+
+*/

@@ -1,0 +1,13 @@
+/**
+  \addtogroup surface Module surface
+
+  \section secSurfacePresentation Presentation
+	Surface data structures.
+	
+	\section secSurfaceHistory History
+	- 1.0 current version
+	
+	\section secSurfaceRequirements Requirements
+	- common
+
+*/

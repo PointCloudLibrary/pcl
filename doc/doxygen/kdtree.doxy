@@ -1,0 +1,13 @@
+/**
+  \addtogroup kdtree Module kdtree
+
+  \section secKDtreePresentation Presentation
+	kdtree data structures.
+	
+	\section secKDtreeHistory History
+	- 1.0 current version
+	
+	\section secKDtreeRequirements Requirements
+	- common
+
+*/

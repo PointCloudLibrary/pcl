@@ -1,0 +1,13 @@
+/**
+  \addtogroup visualization Module visualization
+
+  \section secVisualizationPresentation Presentation
+	visualization data structures.
+	
+	\section secVisualizationHistory History
+	- 1.0 current version
+	
+	\section secVisualizationRequirements Requirements
+	- common
+	- VTK
+*/

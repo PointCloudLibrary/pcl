@@ -79,11 +79,11 @@ GENERATE_DEPRECATEDLIST= YES
 ENABLED_SECTIONS       = 
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = YES
-SHOW_DIRECTORIES       = NO
+SHOW_DIRECTORIES       = YES
 SHOW_FILES             = YES
 SHOW_NAMESPACES        = YES
 FILE_VERSION_FILTER    = 
-LAYOUT_FILE            = 
+LAYOUT_FILE            = @PCL_SOURCE_DIR@/doc/doxygen/doxygen_layout.xml
 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
@@ -99,10 +99,12 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = @PCL_SOURCE_DIR@
+INPUT                  = @PCL_SOURCE_DIR@ \
+ 												 @PCL_SOURCE_DIR@/doc/doxygen
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \
-                         *.hpp
+                         *.hpp \
+												 *.doxy
 RECURSIVE              = YES
 EXCLUDE                = */.svn \
                          @PCL_BINARY_DIR@ \
@@ -121,7 +123,7 @@ FILTER_SOURCE_FILES    = NO
 #---------------------------------------------------------------------------
 # configuration options related to source browsing
 #---------------------------------------------------------------------------
-SOURCE_BROWSER         = NO
+SOURCE_BROWSER         = YES
 INLINE_SOURCES         = NO
 STRIP_CODE_COMMENTS    = YES
 REFERENCED_BY_RELATION = NO

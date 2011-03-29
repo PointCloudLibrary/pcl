@@ -1,0 +1,13 @@
+/**
+  \addtogroup keypoints Module keypoints
+
+  \section secKeypointsPresentation Presentation
+	keypoints data structures.
+	
+	\section secKeypointsHistory History
+	- 1.0 current version
+	
+	\section secKeypointsRequirements Requirements
+	- common
+
+*/

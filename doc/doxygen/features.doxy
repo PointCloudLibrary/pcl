@@ -1,0 +1,13 @@
+/**
+  \addtogroup features Module features
+
+  \section secFeaturesPresentation Presentation
+	Features data structures.
+	
+	\section secFeaturesHistory History
+	- 1.0 current version
+	
+	\section secFeaturesRequirements Requirements
+	- common
+
+*/

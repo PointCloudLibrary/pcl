@@ -1,0 +1,13 @@
+/**
+  \addtogroup registration Module registration
+
+  \section secRegistrationPresentation Presentation
+	registration data structures.
+	
+	\section secRegistrationHistory History
+	- 1.0 current version
+	
+	\section secRegistrationRequirements Requirements
+	- common
+
+*/
