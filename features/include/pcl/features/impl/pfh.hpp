@@ -190,7 +190,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
-    searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
     // Estimate the PFH signature at each patch
     computePointPFHSignature (*surface_, *normals_, nn_indices, nr_subdiv_, pfh_histogram_);

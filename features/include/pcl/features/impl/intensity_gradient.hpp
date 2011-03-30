@@ -53,7 +53,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT>::computeFeature (
   {
     PointOutT &p_out = output.points[idx];
 
-    if (!searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists))
+    if (!this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists))
     {
       p_out.gradient[0] = p_out.gradient[1] = p_out.gradient[2] = std::numeric_limits<float>::quiet_NaN ();
       continue;

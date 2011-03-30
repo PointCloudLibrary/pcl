@@ -77,10 +77,10 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     std::vector<int> nn_indices (k_);
     std::vector<float> nn_dists (k_);
 
-    searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
     // Estimate the FPFH signature at each patch
-    computePointSPFHSignature (*surface_, *normals_, (*indices_)[idx], nn_indices,
+    this->computePointSPFHSignature (*surface_, *normals_, (*indices_)[idx], nn_indices,
                                hist_f1_, hist_f2_, hist_f3_);
   }
 
@@ -95,7 +95,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
     Eigen::VectorXf fpfh_histogram = Eigen::VectorXf::Zero (nr_bins);
 
-    searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
     weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram);
 

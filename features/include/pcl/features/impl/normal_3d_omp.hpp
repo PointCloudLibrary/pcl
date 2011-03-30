@@ -55,7 +55,7 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
     std::vector<int> nn_indices (k_);
     std::vector<float> nn_dists (k_);
 
-    searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
     // 16-bytes aligned placeholder for the XYZ centroid of a surface patch
     Eigen::Vector4f xyz_centroid;

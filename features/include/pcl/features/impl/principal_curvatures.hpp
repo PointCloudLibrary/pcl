@@ -136,7 +136,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
-    searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
     // Estimate the principal curvatures at each patch
     computePointPrincipalCurvatures (*normals_, (*indices_)[idx], nn_indices,

@@ -253,7 +253,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   for (size_t idx = 0; idx < data_size; ++idx)
   {
     int p_idx = (*indices_)[idx];
-    searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists);
+    this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists);
 
     // Estimate the FPFH signature at each patch
     computePointSPFHSignature (*surface_, *normals_, p_idx, nn_indices,
@@ -264,7 +264,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < data_size; ++idx)
   {
-    searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
     weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram_);
 

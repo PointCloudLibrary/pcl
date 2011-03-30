@@ -133,7 +133,7 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
-    searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
     // Obtain a coordinate system on the least-squares plane
     getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);

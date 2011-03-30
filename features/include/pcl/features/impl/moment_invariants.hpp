@@ -119,7 +119,7 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computeFeature (PointCloud
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
-    searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
     computePointMomentInvariants (*surface_, nn_indices,
                                   output.points[idx].j1, output.points[idx].j2, output.points[idx].j3);

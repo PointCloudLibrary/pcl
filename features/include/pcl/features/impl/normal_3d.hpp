@@ -52,7 +52,7 @@ pcl::NormalEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &outpu
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
-    if (!searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists))
+    if (!this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists))
     {
       output.points[idx].normal[0] = output.points[idx].normal[1] = output.points[idx].normal[2] = output.points[idx].curvature = std::numeric_limits<float>::quiet_NaN ();
       continue;
