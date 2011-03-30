@@ -83,7 +83,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
 
     // RMSAC addon: verify a random fraction of the data
     // Get X random samples which satisfy the model criterion
-    getRandomSamples (sac_model_->getIndices (), fraction_nr_points, indices_subset);
+    this->getRandomSamples (sac_model_->getIndices (), fraction_nr_points, indices_subset);
 
     if (!sac_model_->doSamplesVerifyModel (indices_subset, model_coefficients, threshold_))
     {

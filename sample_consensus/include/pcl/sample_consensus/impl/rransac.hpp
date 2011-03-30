@@ -83,7 +83,7 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
 
     // RRANSAC addon: verify a random fraction of the data
     // Get X random samples which satisfy the model criterion
-    getRandomSamples (sac_model_->getIndices (), fraction_nr_points, indices_subset);
+    this->getRandomSamples (sac_model_->getIndices (), fraction_nr_points, indices_subset);
     if (!sac_model_->doSamplesVerifyModel (indices_subset, model_coefficients, threshold_))
     {
       // Unfortunately we cannot "continue" after the first iteration, because k might not be set, while iterations gets incremented
