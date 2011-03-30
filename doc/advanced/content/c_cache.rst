@@ -19,6 +19,9 @@ is triggering a recompile.
 We usually like to combine `ccache` with another tool, called `colorgcc
 <https://github.com/johannes/colorgcc>`_. ``colorgcc`` is a colorizer for the
 output of GCC, and allows you to better interpret the compiler warnings/errors.
+To install ``colorgcc`` on an Ubuntu system, do::
+
+  sudo apt-get install colorgcc
 
 To enable both colorgcc and ccache, perform the following steps:
 
@@ -38,7 +41,11 @@ To enable both colorgcc and ccache, perform the following steps:
     g77: /usr/bin/g77
     f77: /usr/bin/g77
     gcj: /usr/bin/gcj
-    and replace them with:
+    
+and replace them with:
+
+.. code-block:: cmake
+
     g++: ccache /usr/bin/g++
     gcc: ccache /usr/bin/gcc
     c++: ccache /usr/bin/g++
@@ -56,7 +63,15 @@ To enable both colorgcc and ccache, perform the following steps:
     ln -s /usr/bin/colorgcc g++
     ln -s /usr/bin/colorgcc gcc
 
-make sure that $HOME/bin or $HOME/sbin is the first directory in your $PATH so
-that when cc/gcc/g++/c++ is invoked the freshly created softlinks get activated
-first and not the global /usr/bin/{cc,gcc,g++,c++}.
+make sure that $HOME/bin or $HOME/sbin is the first directory in your $PATH, e.g.::
+
+    export PATH=$HOME/bin:$PATH
+
+or::
+
+    export PATH=$HOME/sbin:$PATH
+
+depending on where you stored the ``colorgcc`` softlinks, so that when
+cc/gcc/g++/c++ is invoked the freshly created softlinks get activated first and
+not the global /usr/bin/{cc,gcc,g++,c++}.
 
