@@ -408,7 +408,7 @@ namespace pcl
         // Fill in XYZ
         pt.x = (u - centerX) * depth_md[depth_idx] * constant;
         pt.y = (v - centerY) * depth_md[depth_idx] * constant;
-        pt.z = depth_md[depth_idx] * 0.001;
+        pt.z = depth_md[depth_idx];
       }
     }
 

@@ -39,71 +39,46 @@
 #include "openni_camera/openni_depth_image.h"
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <boost/shared_ptr.hpp>
 #include <pcl/visualization/cloud_viewer.h>
 
-pcl_visualization::CloudViewer viewer ("blablabla");
-
-void testimage (boost::shared_ptr<openni_wrapper::Image> image)
-{
-    std::cout << __PRETTY_FUNCTION__ << " " << image->getWidth () << std::endl;
-}
-
-void testdepthimage (boost::shared_ptr<openni_wrapper::DepthImage> depth_image)
-{
-    std::cout << __PRETTY_FUNCTION__ << " " << depth_image->getWidth () << std::endl;
-}
-
-void testpointcloud (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> > cloud)
-{
-    std::cout << __PRETTY_FUNCTION__ << " " << cloud->width << std::endl;
-}
-
-void testpointcloudrgb (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > cloud)
-{
-    std::cout << __PRETTY_FUNCTION__ << " " << cloud->width << std::endl;
-    viewer.showCloud (*cloud);
-}
-
-class bla
+class KinectViewer
 {
   public:
-    //bla () : viewer ("KinectGrabber") {}
+    KinectViewer () : viewer ("PCL Kinect Viewer") {}
 
-    void blatestpointcloudrgb (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > cloud)
+    void cloud_rgb_cb (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > cloud)
     {
-        std::cout << __PRETTY_FUNCTION__ << " " << cloud->width << std::endl;
-    //    viewer.showCloud (cloud);
+        viewer.showCloud (cloud);
     }
 
     void run ()
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-      //boost::signals2::connection c = interface->registerCallback (boost::bind (&bla::blatestpointcloudrgb, *this, _1));
-      //boost::function<void (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >)> f = boost::bind (&bla::blatestpointcloudrgb, this, _1);
-      //boost::signals2::connection c =
-      //  interface->registerCallback <void(boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >)> (boost::bind (&bla::blatestpointcloudrgb, *this, _1).);
+      boost::signals2::connection c =
+        interface->registerCallback <void(boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >)> 
+        (boost::bind (&KinectGrabber::cloud_rgb_cb, *this, _1).);
 
       boost::signals2::connection c1 = interface->registerCallback (testpointcloudrgb);
       
       interface->start ();
 
-      //if (c1.connected ())
-      //  c1.disconnect ();
-      sleep (10);
+      while (!viewer.wasStopped ())
+      {
+        sleep (1);
+      }
       
       interface->stop ();
     }
     
-    //pcl_visualization::CloudViewer viewer;
+    pcl_visualization::CloudViewer viewer;
 };
 
 
 int main ()
 {
-  bla b;
-  b.run ();
+  KinectViewer v;
+  v.run ();
   return 0;
 }
 

@@ -34,68 +34,42 @@
  * Author: Nico Blodow (blodow@cs.tum.edu)
  */
 
-#include <pcl/io/kinect_grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <boost/shared_ptr.hpp>
+#include <pcl/io/kinect_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <iostream>
 
-//pcl_visualization::CloudViewer viewer ("Simple Kinect Viewer");
 class SimpleKinectViewer
 {
   public:
-    SimpleKinectViewer () : viewer ("KinectGrabber"), init_(false) {}
-
-
+    SimpleKinectViewer () : viewer ("PCL Kinect Viewer") {}
 
     void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
-      //boost::mutex::scoped_lock lock(mutex_);
-      //cloud_ = cloud;
-
       if (!viewer.wasStopped())
         viewer.showCloud (*cloud);
     }
     
-    void viz_cb (pcl_visualization::PCLVisualizer& viz)
-    {
-      if (!init_)
-      {
-        viz.setBackgroundColor (1,1,1);
-        init_ = true;
-      }
-      else
-        viz.removePointCloud ("KinectCloud");
-      boost::mutex::scoped_lock lock(mutex_);
-      if (cloud_)
-        viz.addPointCloud (*cloud_, "KinectCloud");
-    }
-
     void run ()
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&SimpleKinectViewer::cloud_cb_, this, _1);
+      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = 
+        boost::bind (&SimpleKinectViewer::cloud_cb_, this, _1);
 
       boost::signals2::connection c = interface->registerCallback (f);
       
-      boost::function1<void, pcl_visualization::PCLVisualizer&> fn = boost::bind (&SimpleKinectViewer::viz_cb, this, _1);
-
-      //viewer.runOnVisualizationThread (fn, "viz_cb");
       interface->start ();
       
       while (!viewer.wasStopped())
       {
+        sleep (1);
       }
 
       interface->stop ();
     }
 
     pcl_visualization::CloudViewer viewer;
-    boost::mutex mutex_;
-    pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud_;
-    bool init_;
 };
 
 int main ()
