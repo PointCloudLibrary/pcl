@@ -12,6 +12,9 @@ DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()
 
+set(PCL_RESOURCES_DIR ${PCL_SOURCE_DIR}/resources)
+set(PCL_POINTCLOUDS_DIR ${PCL_RESOURCES_DIR}/pointclouds)
+
 # Configure FindPCL.cmake
 configure_file("${PCL_SOURCE_DIR}/FindPCL.cmake.in"
     "${PCL_BINARY_DIR}/FindPCL.cmake" @ONLY)
