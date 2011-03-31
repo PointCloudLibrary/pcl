@@ -13,6 +13,7 @@ if(build)
         src/parse.cpp
         src/poses_from_matches.cpp
         src/print.cpp
+        src/time_trigger.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
@@ -85,6 +86,7 @@ if(build)
         include/pcl/common/rigid_transforms.h
         include/pcl/common/time.h
         include/pcl/common/time.hpp
+        include/pcl/common/time_trigger.h
         include/pcl/common/transform.h
         include/pcl/common/transform.hpp
         include/pcl/common/transformation_from_correspondences.h
