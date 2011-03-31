@@ -30,3 +30,10 @@ November 2010.
 
    <a href="http://dev.pointclouds.org/attachments/download/16/PCL_November_2010.pdf">PCL presentation</a>
 
+Visualization
+-------------
+
+PCL includes an extensive visualization library based on VTK. See
+:ref:`visualization` for more information.
+
+
