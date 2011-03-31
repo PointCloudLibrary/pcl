@@ -10,8 +10,8 @@ do so. Changes to these rules are always possible, but the person proposing and
 changing a rule will have the unfortunate task to go and apply the rule change
 to all the existing code.
 
-1. Chapter 1 -- Naming
-======================
+Chapter 1 -- Naming
+===================
 
 1.1 Files
 ^^^^^^^^^
@@ -24,7 +24,7 @@ All files should be **under_scored**.
 
 
 1.2 Directories
-"""""""""""""""
+^^^^^^^^^^^^^^^
 
 All directories and subdirectories should be **under_scored**.
 
@@ -34,7 +34,7 @@ All directories and subdirectories should be **under_scored**.
 
 
 1.3 Classes / Structs
-"""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^
 
 Class names (and other type names) should be **CamelCased**, e.g.:
 
@@ -51,7 +51,7 @@ should be all capitals, e.g.:
 
 
 1.4 Functions / Methods
-"""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Functions and class method names should be **camelCased**, and arguments are
 **under_scored**, e.g.:
@@ -68,7 +68,7 @@ and following other naming conventions programs can be read more naturally.
 
 
 1.5 Variables
-"""""""""""""
+^^^^^^^^^^^^^
 
 Variable names should be **under_scored**.
 
@@ -77,6 +77,7 @@ Variable names should be **under_scored**.
   int my_variable;
 
 1.5.1 Iterators
+"""""""""""""""
 
 Iterator variables should indicate what they're iterating over, e.g.:
 
@@ -86,6 +87,7 @@ Iterator variables should indicate what they're iterating over, e.g.:
   std::list<int>::iterator pid_it;
 
 1.5.2 Constants
+"""""""""""""""
 
 Constants should be **ALL_CAPITALS**, e.g.:
 
@@ -94,6 +96,7 @@ Constants should be **ALL_CAPITALS**, e.g.:
   const static int MY_CONSTANT = 1000;
 
 1.5.3 Member variables
+""""""""""""""""""""""
 
 Variables that are members of a class are **under_scored**, with a trailing
 underscore added, e.g.:
@@ -104,6 +107,7 @@ underscore added, e.g.:
 
 
 1.6 Namespaces
+^^^^^^^^^^^^^^
 
 Namespaces should be **under_scored**, e.g.:
 
@@ -117,13 +121,14 @@ Namespaces should be **under_scored**, e.g.:
 
 
 2. Chapter 2 - Indentation and Formatting
------------------------------------------
+=========================================
 
 The standard indentation for each block in PCL is **2 spaces**. Under no
 circumstances, tabs or other spacing measures should be used. PCL uses a
 variant of the GNU style formatting. 
 
 2.1 Namespaces
+^^^^^^^^^^^^^^
 
 In a header file, the contets of a namespace should be indented, e.g.:
 
@@ -149,6 +154,7 @@ In an implementation file, the namespace must be added to each individual method
 
 
 2.2 Classes
+^^^^^^^^^^^
 
 The template parameters of a class should be declared on a different line,
 e.g.:
@@ -162,6 +168,7 @@ e.g.:
    }
 
 2.3 Functions / Methods
+^^^^^^^^^^^^^^^^^^^^^^^
 
 The return type of each function or a method must be stored on a different
 line, e.g.:
@@ -202,6 +209,7 @@ or
    }
 
 2.4 Braces
+^^^^^^^^^^
 
 Braces, both open and close, go on their own lines, e.g.:
 
@@ -224,6 +232,7 @@ Braces can be omitted if the enclosed block is a single-line statement, e.g.:
      x = 2 * a;
 
 2.5 Spacing
+^^^^^^^^^^^
 
 We'll say it again: the standard indentation for each block in PCL is **2
 spaces**. We also include a space before the bracketed list of arguments to a
@@ -251,11 +260,13 @@ spaces** to indent them, e.g.:
 
 
 2.6 Automatic code indentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following set of rules can be automatically used by various different IDEs,
 editors, etc.
 
 2.6.1 Eclipse
+"""""""""""""
 
 Please us the following `formatting XML file
 <http://dev.pointclouds.org/attachments/download/25/pcl_eclipse_formatting.xml>`_,
@@ -272,6 +283,7 @@ following the PCL conventions. To reformat an entire file, select **Edit ->
 Format**.
 
 2.6.2 UniversalIndent
+"""""""""""""""""""""
 
 TBD...
 
