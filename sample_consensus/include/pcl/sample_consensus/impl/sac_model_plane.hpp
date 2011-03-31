@@ -267,6 +267,7 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
   pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
 
   // Hessian form (D = nc . p_plane (centroid here) + p)
+  optimized_coefficients.resize (4);
   optimized_coefficients[0] = eigen_vectors (0, 0);
   optimized_coefficients[1] = eigen_vectors (1, 0);
   optimized_coefficients[2] = eigen_vectors (2, 0);
