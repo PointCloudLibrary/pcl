@@ -105,6 +105,7 @@
     <includegraph visible="$INCLUDE_GRAPH"/>
     <includedbygraph visible="$INCLUDED_BY_GRAPH"/>
     <sourcelink visible="yes"/>
+    <detaileddescription title=""/>
     <memberdecl>
       <classes visible="yes" title=""/>
       <namespaces visible="yes" title=""/>
@@ -115,7 +116,6 @@
       <variables title=""/>
       <membergroups visible="yes"/>
     </memberdecl>
-    <detaileddescription title=""/>
     <memberdef>
       <defines title=""/>
       <typedefs title=""/>
