@@ -470,7 +470,10 @@ void NarfKeypoint::calculateInterestImage ()
     delete[] angle_histograms;
   }
   
-  interest_image_ = interest_image_scale_space_[0];
+  if (interest_image_scale_space_.empty())
+    interest_image_ = NULL;
+  else
+    interest_image_ = interest_image_scale_space_[0];
   
 # if USE_OMP
 //#   pragma omp parallel for default (shared)
