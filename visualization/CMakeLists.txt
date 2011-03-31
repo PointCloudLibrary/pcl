@@ -45,9 +45,12 @@ if(build)
     target_link_libraries(${LIB_NAME} ${wxWidgets_LIBRARIES}
         vtkCommon vtkWidgets vtkHybrid ${Boost_LIBRARIES})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-    list(APPEND EXT_DEPS vtkCommon vtkWidgets vtkHybrid)
+    #list(APPEND EXT_DEPS openni-dev)
+    #PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
+    #    "${EXT_DEPS}" "" "" "")
+        
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-        "${EXT_DEPS}" "" "" "")
+        "" "" "" "")
 
     # Install include files
     set(incs include/pcl/${SUBSYS_NAME}/cloud_viewer.h

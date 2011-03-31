@@ -8,7 +8,8 @@
 # OPENNI_DEFINITIONS - Compiler flags for OPENNI.
 
 find_package(PkgConfig)
-pkg_check_modules(PC_OPENNI QUIET openni-dev)
+#don't use QUIET
+pkg_check_modules(PC_OPENNI openni-dev)
 set(OPENNI_DEFINITIONS ${PC_OPENNI_CFLAGS_OTHER})
 
 find_path(OPENNI_INCLUDE_DIR XnStatus.h

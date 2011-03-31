@@ -114,7 +114,7 @@ if(build)
         include/pcl/terminal_tools/print.h
         include/pcl/terminal_tools/time.h
         )
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} tools ${tools_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} terminal_tools ${tools_incs})
 
     add_subdirectory(test)
 endif(build)
