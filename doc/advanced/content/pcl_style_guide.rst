@@ -11,9 +11,10 @@ changing a rule will have the unfortunate task to go and apply the rule change
 to all the existing code.
 
 1. Chapter 1 -- Naming
-----------------------
+======================
 
 1.1 Files
+^^^^^^^^^
 
 All files should be **under_scored**.
 
@@ -23,6 +24,7 @@ All files should be **under_scored**.
 
 
 1.2 Directories
+"""""""""""""""
 
 All directories and subdirectories should be **under_scored**.
 
@@ -32,6 +34,7 @@ All directories and subdirectories should be **under_scored**.
 
 
 1.3 Classes / Structs
+"""""""""""""""""""""
 
 Class names (and other type names) should be **CamelCased**, e.g.:
 
@@ -48,6 +51,7 @@ should be all capitals, e.g.:
 
 
 1.4 Functions / Methods
+"""""""""""""""""""""""
 
 Functions and class method names should be **camelCased**, and arguments are
 **under_scored**, e.g.:
@@ -64,6 +68,7 @@ and following other naming conventions programs can be read more naturally.
 
 
 1.5 Variables
+"""""""""""""
 
 Variable names should be **under_scored**.
 
