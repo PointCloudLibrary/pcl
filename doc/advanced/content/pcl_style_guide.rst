@@ -120,8 +120,8 @@ Namespaces should be **under_scored**, e.g.:
 
 
 
-2. Chapter 2 - Indentation and Formatting
-=========================================
+Chapter 2 - Indentation and Formatting
+======================================
 
 The standard indentation for each block in PCL is **2 spaces**. Under no
 circumstances, tabs or other spacing measures should be used. PCL uses a
