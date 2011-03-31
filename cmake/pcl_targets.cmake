@@ -77,6 +77,8 @@ macro(PCL_ADD_LIBRARY _name _component)
         set(_lib_type "STATIC")
     endif(PCL_SHARED_LIBS)
     add_library(${_name} ${_lib_type} ${ARGN})
+    #must link explicitly against boost.
+    target_link_libraries(${_name} ${Boost_LIBRARIES})
     set_target_properties(${_name} PROPERTIES
         VERSION ${PCL_VERSION}
         SOVERSION ${PCL_MAJOR_VERSION})
