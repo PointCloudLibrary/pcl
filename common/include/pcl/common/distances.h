@@ -39,6 +39,13 @@
 
 #include <pcl/common/common.h>
 
+/**
+ * \file distances.h
+ *  Define standard C methods to do distance calculations
+ * \ingroup common
+ */
+
+/*@{*/
 namespace pcl
 {
   /** \brief Get the shortest 3D segment between two 3D lines
@@ -79,6 +86,6 @@ namespace pcl
     return (line_dir.cross3 (line_pt - pt)).squaredNorm () / sqr_length;
   }
 }
-
+/*@*/
 #endif  //#ifndef PCL_DISTANCES_H_
 

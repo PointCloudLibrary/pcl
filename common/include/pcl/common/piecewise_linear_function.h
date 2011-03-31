@@ -44,6 +44,7 @@ namespace pcl {
 
 /**
  * \brief This provides functionalities to efficiently return values for piecewise linear function
+ * \ingroup common
  */
 class PiecewiseLinearFunction
 {

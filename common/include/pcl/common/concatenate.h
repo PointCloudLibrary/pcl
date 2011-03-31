@@ -41,7 +41,10 @@
 namespace pcl
 {
   ////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief Helper functor structure for concatenate. */
+  /** 
+   * \brief Helper functor structure for concatenate. 
+   * \ingroup common
+   */
   template<typename PointInT, typename PointOutT>
     struct NdConcatenateFunctor
   {

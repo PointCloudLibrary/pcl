@@ -33,7 +33,7 @@
  *
  */
 
-/* \author Bastian Steder */
+
 
 #ifndef PCL_POSES_FROM_MATCHES_H_
 #define PCL_POSES_FROM_MATCHES_H_
@@ -45,6 +45,8 @@ namespace pcl
 
 /**
  * \brief calculate 3D transformation based on point correspondencdes
+ * \author Bastian Steder
+ * \ingroup common
  */
 class PosesFromMatches
 {
@@ -104,7 +106,7 @@ class PosesFromMatches
         int max_no_of_tested_combinations, int max_no_of_results,
         PoseEstimatesVector& pose_estimates) const;
 
-    // Get a reference to the parameters struct
+    /// Get a reference to the parameters struct
     Parameters& getParameters() { return parameters_; }
 
   protected:

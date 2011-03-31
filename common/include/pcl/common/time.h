@@ -58,6 +58,7 @@ namespace pcl
    *
    * To use this class, e.g. to measure the time spent in a function,
    * just create an instance at the beginning of the function.
+   * \ingroup common
    */
   class ScopeTime 
   {

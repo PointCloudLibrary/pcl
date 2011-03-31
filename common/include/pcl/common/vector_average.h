@@ -46,6 +46,7 @@ namespace pcl
    * A class to calculate the weighted average and the covariance matrix of a set of vectors with given weights.
    * The original data is not saved. Mean and covariance are calculated iteratively.
    * \author Bastian Steder
+   * \ingroup common
    */
   template <typename real, int dimension>
   class VectorAverage 

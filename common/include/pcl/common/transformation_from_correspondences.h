@@ -32,10 +32,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
-\author Bastian Steder
-**/
-
 #ifndef PCL_TRANSFORMATION_FROM_CORRESPONDENCES_H
 #define PCL_TRANSFORMATION_FROM_CORRESPONDENCES_H
 
@@ -45,6 +41,8 @@ namespace pcl {
 
 /**
  * \brief Calculates a transformation based on corresponding 3D points
+ * \author Bastian Steder
+ * \ingroup common
  */
 class TransformationFromCorrespondences 
 {

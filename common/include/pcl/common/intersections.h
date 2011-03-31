@@ -41,6 +41,13 @@
 #include <pcl/common/common.h>
 #include <pcl/common/distances.h>
 
+/** 
+ *  \file intersections.h
+ *  Define line with line intersection functions
+ *  \ingroup common
+ */
+
+/*@{*/
 namespace pcl
 {
   /** \brief Get the intersection of a two 3D lines in space as a 3D point
@@ -65,5 +72,6 @@ namespace pcl
                             const pcl::ModelCoefficients &line_b, 
                             Eigen::Vector4f &point, double sqr_eps = 1e-4);
 }
+/*@}*/
 #endif  //#ifndef PCL_INTERSECTIONS_H_
 

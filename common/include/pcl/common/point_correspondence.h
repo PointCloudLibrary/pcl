@@ -46,6 +46,7 @@ namespace pcl {
 /**
  * \brief Representation of a (possible) correspondence between two points in two different coordinate frames
  *        (e.g. from feature matching)
+ * \ingroup common
  */
 struct PointCorrespondence
 {
@@ -60,6 +61,7 @@ struct PointCorrespondence
 /**
  * \brief Representation of a (possible) correspondence between two 3D points in two different coordinate frames
  *        (e.g. from feature matching)
+ * \ingroup common
  */
 struct PointCorrespondence3D : public PointCorrespondence
 {
@@ -75,6 +77,7 @@ typedef std::vector<PointCorrespondence3D, Eigen::aligned_allocator<PointCorresp
 /**
  * \brief Representation of a (possible) correspondence between two points (e.g. from feature matching),
  *        that encode complete 6DOF transoformations.
+ * \ingroup common
  */
 struct PointCorrespondence6D : public PointCorrespondence3D
 {
@@ -88,6 +91,7 @@ typedef std::vector<PointCorrespondence6D, Eigen::aligned_allocator<PointCorresp
 /**
  * \brief Comparator to enable us to sort a vector of PointCorrespondences according to their scores using
  *        std::sort(begin(), end(), isBetterCorrespondence);
+ * \ingroup common
  */
 inline bool
 isBetterCorrespondence (const PointCorrespondence& pc1, const PointCorrespondence& pc2)

@@ -36,10 +36,13 @@
 #ifndef PCL_NORMS_H_
 #define PCL_NORMS_H_
 
-/* 
+/**
+ *  \file norms.h
  *  Define standard C methods to calculate different norms
+ *  \ingroup common
  */
 
+/*@{*/
 namespace pcl
 {
   /** \brief Compute the L1 norm of the vector between two points
@@ -137,7 +140,7 @@ namespace pcl
     */
   inline float HIK_Norm (float *A, float *B, int dim);
 }
-
+/*@}*/
 #include "pcl/common/norms.hpp"
 
 #endif  //#ifndef PCL_NORMS_H_

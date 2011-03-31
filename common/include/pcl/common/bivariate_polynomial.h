@@ -6,8 +6,10 @@
 
 namespace pcl {
 
-/** \brief @b This represents a bivariate polynomial and provides some functionality for it
-  * \author Bastian Steder */
+/** \brief This represents a bivariate polynomial and provides some functionality for it
+ * \author Bastian Steder 
+ * \ingroup common
+ */
 template<typename real>
 class BivariatePolynomialT {
 

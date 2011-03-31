@@ -10,9 +10,11 @@
 
 namespace pcl {
 
-/** \brief @b This provides some functionality for polynomials,
- *            like finding roots or approximating bivariate polynomials
- *  \author Bastian Steder */
+/** \brief This provides some functionality for polynomials,
+ *         like finding roots or approximating bivariate polynomials
+ *  \author Bastian Steder 
+ *  \ingroup common
+ */
 template <typename real>
 class PolynomialCalculationsT {
   public:

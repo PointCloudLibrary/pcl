@@ -41,10 +41,12 @@
 
 namespace pcl
 {
-  /** \brief Compute the 3D (X-Y-Z) centroid of a set of points and return it as a 3D vector.
-    * \param cloud the input point cloud
-    * \param centroid the output centroid
-    */
+  /** 
+   * \brief Compute the 3D (X-Y-Z) centroid of a set of points and return it as a 3D vector.
+   * \param cloud the input point cloud
+   * \param centroid the output centroid
+   * \ingroup common
+   */
   template <typename PointT> inline void 
   compute3DCentroid (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &centroid);
 

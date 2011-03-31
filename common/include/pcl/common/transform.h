@@ -38,10 +38,13 @@
 
 #include <Eigen/Geometry>
 
-/*
+/** 
+ *  \file tranform.h
  *  Define some libeigen based transformation methods
+ *  \ingroup common
  */
 
+/*@{*/
 namespace pcl
 {
   /** \brief Get the unique 3D rotation that will rotate \a z_axis into (0,0,1) and \a y_direction into a vector 
@@ -221,7 +224,7 @@ namespace pcl
   loadBinary (Eigen::MatrixBase<Derived>& matrix, std::istream& file);
   
 }  // namespasce end
-
+/*@}*/
 #include "pcl/common/transform.hpp"
 
 #endif  //#ifndef PCL_NORMS_H_

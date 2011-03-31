@@ -46,6 +46,7 @@ namespace pcl
     * \param cloud_src the source point cloud dataset
     * \param cloud_tgt the target point cloud dataset
     * \param transformation_matrix the resultant transformation matrix
+    * \ingroup common
     */
   template <typename PointSource, typename PointTarget> inline void 
   estimateRigidTransformationSVD (const pcl::PointCloud<PointSource> &cloud_src, 
@@ -58,6 +59,7 @@ namespace pcl
     * \param indices_src the vector of indices describing the points of interest in cloud_src
     * \param cloud_tgt the target point cloud dataset
     * \param transformation_matrix the resultant transformation matrix
+    * \ingroup common
     */
   template <typename PointSource, typename PointTarget> inline void 
   estimateRigidTransformationSVD (const pcl::PointCloud<PointSource> &cloud_src, 
@@ -73,6 +75,7 @@ namespace pcl
     * \param indices_tgt the vector of indices describing the correspondences of the 
     * interest points from indices_src
     * \param transformation_matrix the resultant transformation matrix
+    * \ingroup common
     */
   template <typename PointSource, typename PointTarget> inline void 
   estimateRigidTransformationSVD (const pcl::PointCloud<PointSource> &cloud_src, 

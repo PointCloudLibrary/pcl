@@ -36,10 +36,13 @@
 #ifndef PCL_ANGLES_H_
 #define PCL_ANGLES_H_
 
-/*
+/**
+ * \file angles.h
  *  Define standard C methods to do angle calculations
+ * \ingroup common
  */
 
+/*@{*/
 namespace pcl
 {
   /** \brief Convert an angle from radians to degrees
@@ -68,7 +71,7 @@ namespace pcl
   template <typename real>
   inline real normAngle(real alpha);
 }
-
+/*@}*/
 #include "pcl/common/angles.hpp"
 
 #endif  //#ifndef PCL_NORMS_H_

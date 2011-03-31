@@ -41,10 +41,13 @@
 #include <pcl/pcl_base.h>
 #include <cfloat>
 
-/*
+/**
+ * \file common.h
  * Define standard C methods and C++ classes that are common to all methods
+ * \ingroup common
  */
 
+/*@{*/
 namespace pcl
 {
   /** \brief Compute the smallest angle between two vectors in the [ 0, PI ) interval in 3D.
@@ -201,7 +204,7 @@ namespace pcl
   }
 
 }
-
+/*@}*/
 #include "pcl/common/common.hpp"
 
 #endif  //#ifndef PCL_COMMON_H_
