@@ -56,9 +56,9 @@ if(build)
     set(incs include/pcl/${SUBSYS_NAME}/io.h
         include/pcl/${SUBSYS_NAME}/pcd_io.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
-        ${KINECT_GRABBER_INCLUDES}
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openni_camera ${KINECT_GRABBER_INCLUDES})
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/io.hpp)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})

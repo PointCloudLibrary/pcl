@@ -80,14 +80,14 @@ if(build)
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
-    set(commom_impl_incs include/pcl/${SUBSYS_NAME}/common/impl/shapes.hpp)
+    set(common_impl_incs include/pcl/${SUBSYS_NAME}/common/impl/shapes.hpp)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/common/impl
         ${common_impl_incs})
 
     #add_subdirectory(examples)
     add_subdirectory(test)
 # Disabled until find_flann works
-   add_subdirectory(tools)
+    add_subdirectory(tools)
 
     # share data: http://pr.willowgarage.com/data/pcl/partial_cup_model_new.pcd
 endif(build)
