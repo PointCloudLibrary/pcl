@@ -42,11 +42,11 @@ namespace pcl
 {
 
   OpenNIGrabber::OpenNIGrabber (const std::string& device_id) throw (openni_wrapper::OpenNIException)
-    : image_callback_registered_(false)
-    , depth_image_callback_registered_(false)
-    , image_required_(false)
+    : image_required_(false)
     , depth_required_(false)
     , sync_required_(false)
+    , image_callback_registered_(false)
+    , depth_image_callback_registered_(false)
     , started_(false)
   {
 
@@ -280,9 +280,9 @@ namespace pcl
     printf ("[%s] Opened '%s' on bus %d:%d with serial number '%s'\n", getName ().c_str (),
               device_->getProductName (), device_->getBus (), device_->getAddress (), device_->getSerialNumber ());
 
-    bool registration = false;
+//    bool registration = false;
 
-    int debayering_method = 0;
+//    int debayering_method = 0;
 
     int image_mode = mapXnMode2ConfigMode (device_->getDefaultImageMode ());
     if (image_mode == -1)
