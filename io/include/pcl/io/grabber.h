@@ -53,21 +53,17 @@ class Grabber
 	public:
 		virtual ~Grabber () {}
 		template<typename T> boost::signals2::connection registerCallback (const boost::function<T>& callback);
-		//template<typename T> boost::signals2::connection registerCallback (const T& callback);
-//    template<typename T> boost::signals2::connection registerCallback2 (const boost::function<T>& callback);
-		virtual unsigned start () = 0;
+		virtual void start () = 0;
     virtual void stop () = 0;  
-    virtual void signalsChanged () = 0;
     virtual std::string getName () const = 0;
-    // TODO: implement me!
-		//virtual bool isRunning () const = 0;
-		//virtual bool trigger () = 0;
+    virtual bool isRunning () const = 0;
 	protected:
+    virtual void signalsChanged () {}
     template<typename T> boost::signals2::signal<T>* find_signal () const;
     template<typename T> int num_slots () const;
     template<typename T> void disconnect_all_slots ();
 
-		template<typename T> bool createSignal ();
+		template<typename T> boost::signals2::signal<T>* createSignal ();
 		std::map<const std::type_info*, boost::signals2::signal_base*> signals_;
 };
 
@@ -107,17 +103,18 @@ template<typename T> int Grabber::num_slots () const
   return 0;
 }
 
-template<typename T> bool Grabber::createSignal ()
+template<typename T> boost::signals2::signal<T>* Grabber::createSignal ()
 {
 	typedef boost::signals2::signal<T> Signal;
 
 	if (signals_.find (&typeid(T)) == signals_.end ())
 	{
     std::cout << "registering Callback type: " << typeid(T).name() << std::endl;
-		signals_[&typeid(T)] = new Signal ();
-		return true;
+    Signal* signal = new Signal ();
+		signals_[&typeid(T)] = signal;
+		return signal;
 	}
-	return false;
+	return 0;
 }
 
 template<typename T> boost::signals2::connection Grabber::registerCallback (const boost::function<T> & callback)
@@ -140,25 +137,6 @@ template<typename T> boost::signals2::connection Grabber::registerCallback (cons
   return ret;
 }
 
-//template<typename T> boost::signals2::connection Grabber::registerCallback (const T& callback)
-//{
-//	typedef boost::signals2::signal<T> Signal;
-//	if (signals_.find (&typeid(T)) == signals_.end ())
-//	{
-//    std::cout << "no callback for type: void (" << typeid(T).name() << ")" << std::endl;
-//    std::cout << "registered Callbacks are:" << std::endl;
-//    for( std::map<const std::type_info*, boost::signals2::signal_base*>::const_iterator cIt = signals_.begin (); cIt != signals_.end (); ++cIt)
-//    {
-//      std::cout << "void (" << cIt->first->name() << ")" << std::endl;
-//    }
-//		return boost::signals2::connection ();
-//	}
-//	Signal* signal = dynamic_cast<Signal*> (signals_[&typeid(T)]);
-//  boost::signals2::connection ret = signal->connect (callback);
-//
-//  signalsChanged ();
-//  return ret;
-//}
 
 } // namespace
 

@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *	
- * Author: Nico Blodow (blodow@cs.tum.edu)
+ * Author: Nico Blodow (blodow@cs.tum.edu), Suat Gedikli (gedikli@willowgarage.com)
  */
 
 #ifndef __PCL_IO_KINECT_GRABBER__
@@ -42,11 +42,8 @@
 #include <pcl/io/openni_camera/openni_device_kinect.h>
 #include <pcl/io/openni_camera/openni_image.h>
 #include <pcl/io/openni_camera/openni_depth_image.h>
-//#include <pcl/point_cloud.h>
-//#include <pcl/point_types.h>
 #include <string>
 #include <deque>
-//#include <Eigen/Core>
 #include <boost/thread/mutex.hpp> 
 
 namespace pcl
@@ -202,8 +199,9 @@ namespace pcl
     public:
       OpenNIGrabber (const std::string& device_id = "") throw (openni_wrapper::OpenNIException);
       virtual ~OpenNIGrabber ();
-      virtual unsigned start ();  
-      virtual void stop ();  
+      virtual void start ();
+      virtual void stop ();
+      virtual bool isRunning () const;
       virtual std::string getName () const;
 
     private:
@@ -226,7 +224,7 @@ namespace pcl
       void depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie);
       void imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image> &image, const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image);
     
-      void signalsChanged ();
+      virtual void signalsChanged ();
 
       // helper methods
       

@@ -11,6 +11,7 @@ if(build)
         set(KINECT_GRABBER_INCLUDES
             include/pcl/io/grabber.h
             include/pcl/io/kinect_grabber.h
+            include/pcl/io/pcd_grabber.h
             )
         #these should be private and only in the source path...
         set(OPENNI_INCLUDES
@@ -33,6 +34,7 @@ if(build)
             src/openni_camera/openni_exception.cpp
             src/openni_camera/openni_image_yuv_422.cpp
             src/kinect_grabber.cpp
+            src/pcd_grabber.cpp
             )
     endif(OPENNI_FOUND)
 
@@ -46,7 +48,7 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+    target_link_libraries(${LIB_NAME} pcl_common ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
     if(OPENNI_FOUND)
         target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
     endif(OPENNI_FOUND)

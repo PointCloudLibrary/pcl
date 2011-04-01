@@ -31,12 +31,14 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *	
- * Author: Nico Blodow (blodow@cs.tum.edu)
+ * Author: Nico Blodow (blodow@cs.tum.edu), Suat Gedikli (gedikli@willowgarage.com)
  */
 
 #include <pcl/io/kinect_grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+
+#include <pcl/io/pcl_io_exception.h>
 
 namespace pcl
 {
@@ -51,19 +53,15 @@ namespace pcl
   {
 
     // create callback signals
-    createSignal <sig_cb_openni_image> (); 
-    image_signal_ = find_signal<sig_cb_openni_image> ();
-    createSignal <sig_cb_openni_depth_image> (); 
-    depth_image_signal_ = find_signal<sig_cb_openni_depth_image> ();
-    createSignal <sig_cb_openni_image_depth_image> (); 
-    image_depth_image_signal_ = find_signal<sig_cb_openni_image_depth_image> ();
-    createSignal <sig_cb_openni_point_cloud> ();
-    point_cloud_signal_ = find_signal<sig_cb_openni_point_cloud> ();
-    createSignal <sig_cb_openni_point_cloud_rgb> ();
-    point_cloud_rgb_signal_ = find_signal<sig_cb_openni_point_cloud_rgb> ();
+    image_signal_             = createSignal <sig_cb_openni_image> ();
+    depth_image_signal_       = createSignal <sig_cb_openni_depth_image> ();
+    image_depth_image_signal_ = createSignal <sig_cb_openni_image_depth_image> ();
+    point_cloud_signal_       = createSignal <sig_cb_openni_point_cloud> ();
+    point_cloud_rgb_signal_   = createSignal <sig_cb_openni_point_cloud_rgb> ();
+
     // initialize driver
     if (!onInit (device_id))
-      openni_wrapper::THROW_OPENNI_EXCEPTION ("Device could not be initialized or no devices found.");
+      THROW_PCL_IO_EXCEPTION("Device could not be initialized or no devices found.");
   }
 
   OpenNIGrabber::~OpenNIGrabber ()
@@ -93,7 +91,7 @@ namespace pcl
   {
     // do we have anyone listening to images or color point clouds?
     if (num_slots<sig_cb_openni_image> () > 0 || 
-        num_slots<sig_cb_openni_image_depth_image> () > 0||
+        num_slots<sig_cb_openni_image_depth_image> () > 0 ||
         num_slots<sig_cb_openni_point_cloud_rgb> () > 0)
       image_required_ = true;
     else
@@ -112,7 +110,7 @@ namespace pcl
       depth_required_ = false;
   }
 
-  unsigned OpenNIGrabber::start ()
+  void OpenNIGrabber::start ()
   {
     // check if we need to start/stop any stream
     if (image_required_ && !device_->isImageStreamRunning ())
@@ -157,8 +155,6 @@ namespace pcl
     std::cerr << std::endl;
 
     started_ = true;
-
-    return 0;
   }
 
   void OpenNIGrabber::stop ()
@@ -182,8 +178,12 @@ namespace pcl
     started_ = false;
   }
 
-  bool
-  OpenNIGrabber::onInit (const std::string& device_id)
+  bool OpenNIGrabber::isRunning () const
+  {
+    return started_;
+  }
+
+  bool OpenNIGrabber::onInit (const std::string& device_id)
   {
     sync.addCallback (boost::bind(&OpenNIGrabber::imageDepthImageCallback, this, _1, _2));
 
@@ -212,8 +212,7 @@ namespace pcl
     return std::string ("OpenNIGrabber");
   }
 
-  bool
-  OpenNIGrabber::setupDevice (const std::string& device_id)
+  bool OpenNIGrabber::setupDevice (const std::string& device_id)
   {
     // Initialize the openni device
     openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
@@ -279,10 +278,6 @@ namespace pcl
     }
     printf ("[%s] Opened '%s' on bus %d:%d with serial number '%s'\n", getName ().c_str (),
               device_->getProductName (), device_->getBus (), device_->getAddress (), device_->getSerialNumber ());
-
-//    bool registration = false;
-
-//    int debayering_method = 0;
 
     int image_mode = mapXnMode2ConfigMode (device_->getDefaultImageMode ());
     if (image_mode == -1)
