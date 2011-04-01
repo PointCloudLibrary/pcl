@@ -8,8 +8,12 @@
 # OPENNI_DEFINITIONS - Compiler flags for OPENNI.
 
 find_package(PkgConfig)
-#don't use QUIET
-pkg_check_modules(PC_OPENNI openni-dev)
+if(${CMAKE_VERSION} VERSION_LESS 2.8.3)
+	pkg_check_modules(PC_OPENNI openni-dev)
+else(${CMAKE_VERSION} VERSION_LESS 2.8.3)
+	pkg_check_modules(PC_OPENNI QUIET openni-dev)
+endif(${CMAKE_VERSION} VERSION_LESS 2.8.3)
+
 set(OPENNI_DEFINITIONS ${PC_OPENNI_CFLAGS_OTHER})
 
 find_path(OPENNI_INCLUDE_DIR XnStatus.h
