@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2011, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,14 +31,14 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pcd_viewer.cpp 35932 2011-02-10 03:55:03Z rusu $
+ * Author: Radu Bogdan rusu, Suat Gedikli
  *
  */
 // PCL
 #include <Eigen/Geometry>
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/io/kinect_grabber.h>
+#include <pcl/io/pcd_grabber.h>
 #include <cfloat>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -137,8 +137,8 @@ struct EventHelper
     boost::mutex::scoped_lock lock(mutex_);
     if (!cloud)
       return;
-    p->removePointCloud ("KinectCloud");
-    p->addPointCloud (*cloud, "KinectCloud");
+    p->removePointCloud ("PCDCloud");
+    p->addPointCloud (*cloud, "PCDCloud");
   }
 };
 
@@ -203,10 +203,10 @@ int
   }
 
 
-  std::string device_id = "";
-  terminal_tools::parse_argument (argc, argv, "-dev", device_id);
+  std::string pcd_file = "";
+  terminal_tools::parse_argument (argc, argv, "-file", pcd_file);
 
-  pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
+  pcl::Grabber* interface = new pcl::PCDGrabber<pcl::PointXYZRGB>(pcd_file);
   
   EventHelper h;
   boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind(&EventHelper::cloud_cb, &h, _1);
@@ -222,7 +222,6 @@ int
       if (p->wasStopped ())
         break;
     }
-
   }
 
   interface->stop ();
