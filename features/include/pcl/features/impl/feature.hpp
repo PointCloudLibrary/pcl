@@ -151,6 +151,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   // If the dataset is empty, just return
   if (input_->points.empty ())
   {
+    ROS_ERROR ("[pcl::%s::compute] input_ is empty!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     deinitCompute ();

@@ -10,6 +10,7 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
     set(srcs src/feature.cpp
+    	  src/cvfh.cpp
         src/fpfh.cpp
         src/fpfh_omp.cpp
         src/integral_image_normal.cpp
@@ -52,6 +53,7 @@ if(build)
 
     # Install include files
     set(incs include/pcl/${SUBSYS_NAME}/boundary.h
+    	  include/pcl/${SUBSYS_NAME}/cvfh.h
         include/pcl/${SUBSYS_NAME}/feature.h
         include/pcl/${SUBSYS_NAME}/fpfh.h
         include/pcl/${SUBSYS_NAME}/fpfh_omp.h
@@ -73,6 +75,7 @@ if(build)
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/boundary.hpp
+    	  include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/feature.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh_omp.hpp

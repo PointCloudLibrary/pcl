@@ -44,144 +44,249 @@ namespace pcl
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b VFHEstimation estimates the <b>Viewpoint Feature Histogram (VFH)</b> descriptor for a given point cloud
-    * dataset containing points and normals.
-    *
-    * @note If you use this code in any academic work, please cite:
-    *
-    * <ul>
-    * <li> R.B. Rusu, G. Bradski, R. Thibaux, J. Hsu.
-    *      Fast 3D Recognition and Pose Using the Viewpoint Feature Histogram.
-    *      In Proceedings of International Conference on Intelligent Robots and Systems (IROS)
-    *      Taipei, Taiwan, October 18-22 2010.
-    * </li>
-    * </ul>
-    *
-    * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
-    * \ref FPFHEstimationOMP for examples on parallel implementations of the FPFH (Fast Point Feature Histogram).
-    * \author Radu Bogdan Rusu
-    */
-  template <typename PointInT, typename PointNT, typename PointOutT>
+   * dataset containing points and normals.
+   *
+   * @note If you use this code in any academic work, please cite:
+   *
+   * <ul>
+   * <li> R.B. Rusu, G. Bradski, R. Thibaux, J. Hsu.
+   *      Fast 3D Recognition and Pose Using the Viewpoint Feature Histogram.
+   *      In Proceedings of International Conference on Intelligent Robots and Systems (IROS)
+   *      Taipei, Taiwan, October 18-22 2010.
+   * </li>
+   * </ul>
+   *
+   * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
+   * \ref FPFHEstimationOMP for examples on parallel implementations of the FPFH (Fast Point Feature Histogram).
+   * \author Radu Bogdan Rusu
+   */
+  template<typename PointInT, typename PointNT, typename PointOutT>
   class VFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
-    public:
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::k_;
-      using Feature<PointInT, PointOutT>::search_radius_;
-      using Feature<PointInT, PointOutT>::surface_;
-      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+  public:
+    using Feature<PointInT, PointOutT>::feature_name_;
+    using Feature<PointInT, PointOutT>::getClassName;
+    using Feature<PointInT, PointOutT>::indices_;
+    using Feature<PointInT, PointOutT>::k_;
+    using Feature<PointInT, PointOutT>::search_radius_;
+    using Feature<PointInT, PointOutT>::surface_;
+    using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+    typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
-      /** \brief Empty constructor. */
-      VFHEstimation () : nr_bins_f1_ (45), nr_bins_f2_ (45), nr_bins_f3_ (45), nr_bins_f4_ (45), nr_bins_vp_ (128), vpx_ (0), vpy_ (0), vpz_ (0), d_pi_ (1.0 / (2.0 * M_PI))
-      {
-        hist_f1_.setZero (nr_bins_f1_);
-        hist_f2_.setZero (nr_bins_f2_);
-        hist_f3_.setZero (nr_bins_f3_);
-        hist_f4_.setZero (nr_bins_f4_);
-        search_radius_ = 0;
-        k_ = 1;
-        feature_name_ = "VFHEstimation";
-      };
+    /** \brief Empty constructor. */
+    VFHEstimation () :
+      nr_bins_f1_ (45), nr_bins_f2_ (45), nr_bins_f3_ (45), nr_bins_f4_ (45), nr_bins_vp_ (128), vpx_ (0), vpy_ (0),
+          vpz_ (0), d_pi_ (1.0 / (2.0 * M_PI))
+    {
+      hist_f1_.setZero (nr_bins_f1_);
+      hist_f2_.setZero (nr_bins_f2_);
+      hist_f3_.setZero (nr_bins_f3_);
+      hist_f4_.setZero (nr_bins_f4_);
+      search_radius_ = 0;
+      k_ = 1;
+      feature_name_ = "VFHEstimation";
 
-      /** \brief Estimate the SPFH (Simple Point Feature Histograms) signatures of the angular
-        * (f1, f2, f3) and distance (f4) features for a given point from its neighborhood 
-        * \param centroid_p the centroid point
-        * \param centroid_n the centroid normal
-        * \param cloud the dataset containing the XYZ Cartesian coordinates of the two points
-        * \param normals the dataset containing the surface normals at each point in \a cloud
-        * \param indices the k-neighborhood point indices in the dataset
-        */
-      void computePointSPFHSignature (const Eigen::Vector4f &centroid_p, const Eigen::Vector4f &centroid_n, const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals, const std::vector<int> &indices);
+      //default parameters to compute VFH
+      use_given_normal_ = false;
+      use_given_centroid_ = false;
+      normalize_bins_ = true;
+      normalize_distances_ = false;
+      size_component_ = false;
+    }
+    ;
 
-      /** \brief Set the number of subdivisions for each feature interval.
-        * \param nr_bins_f1 number of subdivisions for the first angular feature
-        * \param nr_bins_f2 number of subdivisions for the second angular feature
-        * \param nr_bins_f3 number of subdivisions for the third angular feature
-        * \param nr_bins_f4 number of subdivisions for the fourth distance feature
-        */
-      void
-      setNrSubdivisions (int nr_bins_f1, int nr_bins_f2, int nr_bins_f3, int nr_bins_f4)
-      {
-        nr_bins_f1_ = nr_bins_f1;
-        nr_bins_f2_ = nr_bins_f2;
-        nr_bins_f3_ = nr_bins_f3;
-        nr_bins_f4_ = nr_bins_f4;
-      }
+    /** \brief Estimate the SPFH (Simple Point Feature Histograms) signatures of the angular
+     * (f1, f2, f3) and distance (f4) features for a given point from its neighborhood
+     * \param centroid_p the centroid point
+     * \param centroid_n the centroid normal
+     * \param cloud the dataset containing the XYZ Cartesian coordinates of the two points
+     * \param normals the dataset containing the surface normals at each point in \a cloud
+     * \param indices the k-neighborhood point indices in the dataset
+     */
+    void
+    computePointSPFHSignature (const Eigen::Vector4f &centroid_p, const Eigen::Vector4f &centroid_n,
+                               const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
+                               const std::vector<int> &indices);
 
-      /** \brief Get the number of subdivisions for each feature interval. */
-      void
-      getNrSubdivisions (int &nr_bins_f1, int &nr_bins_f2, int &nr_bins_f3, int &nr_bins_f4)
-      {
-        nr_bins_f1 = nr_bins_f1_;
-        nr_bins_f2 = nr_bins_f2_;
-        nr_bins_f3 = nr_bins_f3_;
-        nr_bins_f4 = nr_bins_f4_;
-      }
+    /** \brief Set the number of subdivisions for each feature interval.
+     * \param nr_bins_f1 number of subdivisions for the first angular feature
+     * \param nr_bins_f2 number of subdivisions for the second angular feature
+     * \param nr_bins_f3 number of subdivisions for the third angular feature
+     * \param nr_bins_f4 number of subdivisions for the fourth distance feature
+     */
+    void
+    setNrSubdivisions (int nr_bins_f1, int nr_bins_f2, int nr_bins_f3, int nr_bins_f4)
+    {
+      nr_bins_f1_ = nr_bins_f1;
+      nr_bins_f2_ = nr_bins_f2;
+      nr_bins_f3_ = nr_bins_f3;
+      nr_bins_f4_ = nr_bins_f4;
+    }
 
-      /** \brief Set the number of subdivisions for the viewpoint feature interval.
-        * \param nr_bins number of subdivisions for the viewpoint feature interval.
-        */
-      void setNrViewpointSubdivisions (int nr_bins) { nr_bins_vp_ = nr_bins; }
+    /** \brief Get the number of subdivisions for each feature interval. */
+    void
+    getNrSubdivisions (int &nr_bins_f1, int &nr_bins_f2, int &nr_bins_f3, int &nr_bins_f4)
+    {
+      nr_bins_f1 = nr_bins_f1_;
+      nr_bins_f2 = nr_bins_f2_;
+      nr_bins_f3 = nr_bins_f3_;
+      nr_bins_f4 = nr_bins_f4_;
+    }
 
-      /** \brief Get the number of subdivisions for the viewpoint feature interval. */
-      void getNrViewpointSubdivisions (int &nr_bins) { nr_bins = nr_bins_vp_; }
+    /** \brief Set the number of subdivisions for the viewpoint feature interval.
+     * \param nr_bins number of subdivisions for the viewpoint feature interval.
+     */
+    void
+    setNrViewpointSubdivisions (int nr_bins)
+    {
+      nr_bins_vp_ = nr_bins;
+    }
 
-      /** \brief Set the viewpoint.
-        * \param vpx the X coordinate of the viewpoint
-        * \param vpy the Y coordinate of the viewpoint
-        * \param vpz the Z coordinate of the viewpoint
-        */
-      inline void
-      setViewPoint (float vpx, float vpy, float vpz)
-      {
-        vpx_ = vpx;
-        vpy_ = vpy;
-        vpz_ = vpz;
-      }
+    /** \brief Get the number of subdivisions for the viewpoint feature interval. */
+    void
+    getNrViewpointSubdivisions (int &nr_bins)
+    {
+      nr_bins = nr_bins_vp_;
+    }
 
-      /** \brief Get the viewpoint. */
-      inline void
-      getViewPoint (float &vpx, float &vpy, float &vpz)
-      {
-        vpx = vpx_;
-        vpy = vpy_;
-        vpz = vpz_;
-      }
+    /** \brief Set the viewpoint.
+     * \param vpx the X coordinate of the viewpoint
+     * \param vpy the Y coordinate of the viewpoint
+     * \param vpz the Z coordinate of the viewpoint
+     */
+    inline void
+    setViewPoint (float vpx, float vpy, float vpz)
+    {
+      vpx_ = vpx;
+      vpy_ = vpy;
+      vpz_ = vpz;
+    }
 
-    private:
+    /** \brief Get the viewpoint. */
+    inline void
+    getViewPoint (float &vpx, float &vpy, float &vpz)
+    {
+      vpx = vpx_;
+      vpy = vpy_;
+      vpz = vpz_;
+    }
 
-      /** \brief The number of subdivisions for each feature interval. */
-      int nr_bins_f1_, nr_bins_f2_, nr_bins_f3_, nr_bins_f4_, nr_bins_vp_;
+    /** \brief Set use_given_normal_
+     * param normal Sets the normal to be used
+     */
+    inline void
+    setUseGivenNormal (bool use)
+    {
+      use_given_normal_ = use;
+    }
 
-      /** \brief Values describing the viewpoint ("pinhole" camera model assumed). For per point viewpoints, inherit
-        * from VFHEstimation and provide your own computeFeature (). By default, the viewpoint is set to 0,0,0. */
-      float vpx_, vpy_, vpz_;
+    /** \brief set normal_to_use_
+     * param normal Sets the normal to be used
+     * */
+    inline void
+    setNormalToUse (Eigen::Vector3f normal)
+    {
+      normal_to_use_ = Eigen::Vector4f (normal[0], normal[1], normal[2], 0);
+    }
 
-      /** \brief Estimate the Viewpoint Feature Histograms (VFH) descriptors at a set of points given by
-        * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
-        * setSearchMethod ()
-        * \param output the resultant point cloud model dataset that contains the VFH feature estimates
-        */
-      void computeFeature (PointCloudOut &output);
+    /** \brief set use_given_centroid_
+     * param use
+     * */
+    inline void
+    setUseGivenCentroid (bool use)
+    {
+      use_given_centroid_ = use;
+    }
 
-    protected:
-      /** \brief Placeholder for the f1 histogram. */
-      Eigen::VectorXf hist_f1_;
-      /** \brief Placeholder for the f2 histogram. */
-      Eigen::VectorXf hist_f2_;
-      /** \brief Placeholder for the f3 histogram. */
-      Eigen::VectorXf hist_f3_;
-      /** \brief Placeholder for the f4 histogram. */
-      Eigen::VectorXf hist_f4_;
-      /** \brief Placeholder for the vp histogram. */
-      Eigen::VectorXf hist_vp_;
+    /** \brief Set centroid_to_use_
+      * param centroid Centroid to be used
+      */
+    inline void
+    setCentroidToUse (Eigen::Vector3f centroid)
+    {
+      centroid_to_use_ = Eigen::Vector4f (centroid[0], centroid[1], centroid[2], 0);
+    }
 
-    private:
-      /** \brief Float constant = 1.0 / (2.0 * M_PI) */
-      float d_pi_; 
+    /** \brief set normalize_bins_
+     * param normalize
+     * */
+    inline void
+    setNormalizeBins (bool normalize)
+    {
+      normalize_bins_ = normalize;
+    }
+
+    /** \brief set normalize_distances_
+     * param normalize
+     * */
+    inline void
+    setNormalizeDistance (bool normalize)
+    {
+      normalize_distances_ = normalize;
+    }
+
+    /** \brief set size_component_
+     * param fill_size
+     * */
+    inline void
+    setFillSizeComponent (bool fill_size)
+    {
+      size_component_ = fill_size;
+    }
+
+  private:
+
+    /** \brief The number of subdivisions for each feature interval. */
+    int nr_bins_f1_, nr_bins_f2_, nr_bins_f3_, nr_bins_f4_, nr_bins_vp_;
+
+    /** \brief Values describing the viewpoint ("pinhole" camera model assumed). For per point viewpoints, inherit
+     * from VFHEstimation and provide your own computeFeature (). By default, the viewpoint is set to 0,0,0. */
+    float vpx_, vpy_, vpz_;
+
+    /** \brief Estimate the Viewpoint Feature Histograms (VFH) descriptors at a set of points given by
+     * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
+     * setSearchMethod ()
+     * \param output the resultant point cloud model dataset that contains the VFH feature estimates
+     */
+    void
+    computeFeature (PointCloudOut &output);
+
+  protected:
+    /** \brief Placeholder for the f1 histogram. */
+    Eigen::VectorXf hist_f1_;
+    /** \brief Placeholder for the f2 histogram. */
+    Eigen::VectorXf hist_f2_;
+    /** \brief Placeholder for the f3 histogram. */
+    Eigen::VectorXf hist_f3_;
+    /** \brief Placeholder for the f4 histogram. */
+    Eigen::VectorXf hist_f4_;
+    /** \brief Placeholder for the vp histogram. */
+    Eigen::VectorXf hist_vp_;
+
+    /** \brief Normal to be used to computed VFH. Default, the average normal of the whole point cloud */
+    Eigen::Vector4f normal_to_use_;
+    /** \brief Centroid to be used to computed VFH. Default, the centroid of the whole point cloud */
+    Eigen::Vector4f centroid_to_use_;
+
+    /** VFH configuration parameters because CVFH instantiates it
+     *  See constructor for default values.
+     **/
+
+    /** \brief Use the normal_to_use_ */
+    bool use_given_normal_;
+    /** \brief Use the centroid_to_use_ */
+    bool use_given_centroid_;
+    /** \brief Normalize bins by the number the total number of points. */
+    bool normalize_bins_;
+    /** \brief Normalize the shape distribution component of VFH */
+    bool normalize_distances_;
+    /** \brief Activate or deactivate the size component of VFH */
+    bool size_component_;
+
+  private:
+    /** \brief Float constant = 1.0 / (2.0 * M_PI) */
+    float d_pi_;
   };
 }
 

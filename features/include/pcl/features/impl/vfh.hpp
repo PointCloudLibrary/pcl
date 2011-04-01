@@ -66,12 +66,26 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
   //from any point to centroid. VFH is invariant to rotation about the roll axis but the bounding box is not,
   //resulting in different normalization factors for point clouds that are just rotated about that axis.
 
-  /*Eigen::Vector4f max_pt;
-  pcl::getMaxDistance (cloud, indices, centroid_p, max_pt);
-  double distance_normalization_factor = (centroid_p - max_pt).norm ();*/
+  double distance_normalization_factor = 1.0;
+  if ( normalize_distances_ ) {
+    Eigen::Vector4f max_pt;
+    pcl::getMaxDistance (cloud, indices, centroid_p, max_pt);
+    distance_normalization_factor = (centroid_p - max_pt).norm ();
+  }
 
   // Factorization constant
-  float hist_incr = 100.0 / (float)(indices.size () - 1);
+  float hist_incr;
+  if (normalize_bins_) {
+    hist_incr = 100.0 / (float)(indices.size () - 1);
+  } else {
+    hist_incr = 1.0;
+  }
+
+  float hist_incr_size_component;
+  if (size_component_)
+    hist_incr_size_component = hist_incr;
+  else
+    hist_incr_size_component = 0.0;
 
   // Iterate over all the points in the neighborhood
   for (size_t idx = 0; idx < indices.size (); ++idx)
@@ -104,13 +118,18 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
       h_index = nr_bins_f3_ - 1;
     hist_f3_ (h_index) += hist_incr;
 
-    //h_index = floor (nr_bins_f4_ * (pfh_tuple[3] / distance_normalization_factor));
-    h_index = round (pfh_tuple[3] * 100);
+    if ( normalize_distances_ ) {
+      h_index = floor (nr_bins_f4_ * (pfh_tuple[3] / distance_normalization_factor));
+    } else {
+      h_index = round (pfh_tuple[3] * 100);
+    }
+
     if (h_index < 0)
       h_index = 0;
     if (h_index >= nr_bins_f4_)
       h_index = nr_bins_f4_ - 1;
-    hist_f4_ (h_index) += hist_incr;
+
+    hist_f4_ (h_index) += hist_incr_size_component;
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,35 +154,50 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   // ---[ Step 1a : compute the centroid in XYZ space
   Eigen::Vector4f xyz_centroid;
-  compute3DCentroid (*surface_, *indices_, xyz_centroid);          // Estimate the XYZ centroid
+
+  if (use_given_centroid_) {
+    xyz_centroid = centroid_to_use_;
+  } else {
+    compute3DCentroid (*surface_, *indices_, xyz_centroid);          // Estimate the XYZ centroid
+  }
 
   // ---[ Step 1b : compute the centroid in normal space
   Eigen::Vector4f normal_centroid = Eigen::Vector4f::Zero ();
   int cp = 0;
 
   // If the data is dense, we don't need to check for NaN
-  if (normals_->is_dense)
+
+  if (use_given_normal_)
   {
-    for (size_t i = 0; i < indices_->size (); ++i)
-    {
-      normal_centroid += normals_->points[(*indices_)[i]].getNormalVector4fMap ();
-      cp++;
-    }
+    normal_centroid = normal_to_use_;
   }
-  // NaN or Inf values could exist => check for them
   else
   {
-    for (size_t i = 0; i < indices_->size (); ++i)
+    if (normals_->is_dense)
     {
-      if (!pcl_isfinite (normals_->points[(*indices_)[i]].normal[0]) || 
-          !pcl_isfinite (normals_->points[(*indices_)[i]].normal[1]) || 
-          !pcl_isfinite (normals_->points[(*indices_)[i]].normal[2]))
-        continue;
-      normal_centroid += normals_->points[(*indices_)[i]].getNormalVector4fMap ();
-      cp++;
+      for (size_t i = 0; i < indices_->size (); ++i)
+      {
+        normal_centroid += normals_->points[(*indices_)[i]].getNormalVector4fMap ();
+        cp++;
+      }
     }
+    // NaN or Inf values could exist => check for them
+    else
+    {
+      for (size_t i = 0; i < indices_->size (); ++i)
+      {
+        if (!pcl_isfinite (normals_->points[(*indices_)[i]].normal[0])
+            ||
+            !pcl_isfinite (normals_->points[(*indices_)[i]].normal[1])
+            ||
+            !pcl_isfinite (normals_->points[(*indices_)[i]].normal[2]))
+          continue;
+        normal_centroid += normals_->points[(*indices_)[i]].getNormalVector4fMap ();
+        cp++;
+      }
+    }
+    normal_centroid /= cp;
   }
-  normal_centroid /= cp;
 
   // Compute the direction of view from the viewpoint to the centroid
   Eigen::Vector4f viewpoint (vpx_, vpy_, vpz_, 0);
@@ -196,7 +230,14 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   // ---[ Step 2 : obtain the viewpoint component
   hist_vp_.setZero (nr_bins_vp_);
-  double hist_incr = 100.0 / (double)(indices_->size ());
+
+  double hist_incr;
+  if (normalize_bins_) {
+    hist_incr = 100.0 / (double)(indices_->size ());
+  } else {
+    hist_incr = 1.0;
+  }
+
   for (size_t i = 0; i < indices_->size (); ++i)
   {
     Eigen::Vector4f normal (normals_->points[(*indices_)[i]].normal[0],
@@ -220,4 +261,4 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
 #define PCL_INSTANTIATE_VFHEstimation(T,NT,OutT) template class pcl::VFHEstimation<T,NT,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_VFH_H_ 
+#endif    // PCL_FEATURES_IMPL_VFH_H_
