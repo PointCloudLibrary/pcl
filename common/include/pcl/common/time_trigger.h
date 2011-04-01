@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Copyright (c) 2011, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * Date: 31. March 2011
  * Author: Suat Gedikli (gedikli@willowgarage.com)
  *
  */
@@ -48,7 +49,7 @@ namespace pcl
 {
 
 /**
- * @brief timer class that calls a callback method periodically.
+ * @brief timer class that invokes registered callback methods periodically.
  * @param interval_seconds interval in seconds
  * @param callback callback to be invoked periodically
  */
@@ -66,7 +67,7 @@ public:
    * @brief timer class that calls a callback method periodically. Due to possible blocking calls, only one callback method can be registered per instance.
    * @param interval_seconds interval in seconds
    */
-  TimeTrigger (double interval_seconds);
+  TimeTrigger (double interval_seconds = 1.0);
   /**
    * @brief desctructor
    */
@@ -99,8 +100,8 @@ private:
 
   bool quit_;
   bool running_;
-  boost::thread timer_thread_;
 
+  boost::thread timer_thread_;
   boost::condition_variable condition_;
   boost::mutex condition_mutex_;
 };
