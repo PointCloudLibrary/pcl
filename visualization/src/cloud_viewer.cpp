@@ -123,7 +123,7 @@ struct pcl_visualization::CloudViewer::CloudViewer_impl
           boost::mutex::scoped_lock lock(c_mtx);
           BOOST_FOREACH(CallableMap::value_type& x, callables)
                 {
-                  std::cerr << "calling " << x.first << std::endl;
+                  //std::cerr << "calling " << x.first << std::endl;
                   (x.second) (*viewer_);
                 }
         }
