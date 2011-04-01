@@ -287,7 +287,7 @@ contributions on any tutorial.
   * :ref:`using_pcl`
 
      ======  ======
-             Title: **Using PCL in own project**
+     |mi_1|  Title: **Using PCL in own project**
 
              Author: *Nizar Sallem*
 
@@ -295,4 +295,8 @@ contributions on any tutorial.
              
              In this tutorial, we will learn how to link your own project to PCL using cmake.
      ======  ======
+
+     .. |mi_1| image:: images/pcl_logo.png
+               :height: 75px
+
 
