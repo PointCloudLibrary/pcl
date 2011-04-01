@@ -173,7 +173,7 @@ namespace pcl
     }
 
     /** \brief Set use_given_normal_
-     * param normal Sets the normal to be used
+     * param use Set to true if you want to use the normal passed to setNormalUse(normal)
      */
     inline void
     setUseGivenNormal (bool use)
@@ -181,8 +181,9 @@ namespace pcl
       use_given_normal_ = use;
     }
 
-    /** \brief set normal_to_use_
-     * param normal Sets the normal to be used
+    /** \brief Set normal_to_use_
+     * param normal Sets the normal to be used in the VFH computation. It is is used
+     * to build the Darboux Coordinate system.
      * */
     inline void
     setNormalToUse (Eigen::Vector3f normal)
@@ -190,8 +191,8 @@ namespace pcl
       normal_to_use_ = Eigen::Vector4f (normal[0], normal[1], normal[2], 0);
     }
 
-    /** \brief set use_given_centroid_
-     * param use
+    /** \brief Set use_given_centroid_
+     * param use Set to true if you want to use the centroid passed through setCentroidToUse(centroid)
      * */
     inline void
     setUseGivenCentroid (bool use)
@@ -200,7 +201,8 @@ namespace pcl
     }
 
     /** \brief Set centroid_to_use_
-      * param centroid Centroid to be used
+      * param centroid Centroid to be used in the VFH computation. It is used to compute the distances
+      * from all points to this centroid.
       */
     inline void
     setCentroidToUse (Eigen::Vector3f centroid)
@@ -209,7 +211,7 @@ namespace pcl
     }
 
     /** \brief set normalize_bins_
-     * param normalize
+     * param normalize If true, the VFH bins are normalized using the total number of points
      * */
     inline void
     setNormalizeBins (bool normalize)
@@ -218,7 +220,8 @@ namespace pcl
     }
 
     /** \brief set normalize_distances_
-     * param normalize
+     * param normalize If true, the 4th component of VFH (shape distribution component) get normalized
+     * by the maximum size between the centroid and the point cloud
      * */
     inline void
     setNormalizeDistance (bool normalize)
@@ -227,7 +230,8 @@ namespace pcl
     }
 
     /** \brief set size_component_
-     * param fill_size
+     * param fill_size True if the 4th component of VFH (shape distribution component) needs to be filled.
+     * Otherwise, it is set to zero.
      * */
     inline void
     setFillSizeComponent (bool fill_size)
