@@ -1,0 +1,13 @@
+/**
+  \addtogroup octree Module octree
+
+  \section secOctreePresentation Presentation
+	octree data structures.
+	
+	\section secOctreeHistory History
+	- 1.0 current version
+	
+	\section secOctreeRequirements Requirements
+	- common
+
+*/

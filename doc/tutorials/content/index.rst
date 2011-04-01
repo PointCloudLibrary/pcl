@@ -242,6 +242,23 @@ contributions on any tutorial.
      .. |su_3| image:: images/greedy_triangulation.png
                :height: 100px
 
+* Octree
+
+  * :ref:`octree_search`
+  
+     ======  ======
+     |oc_1|  Title: **Octrees for spatial partitioning and neighbor search**
+
+             Author: *Julius Kammerl*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to use octrees for spatial partitioning and nearest neighbor search.
+     ======  ======
+     
+     .. |oc_1| image:: images/octree_img.png
+               :height: 100px
+
 ..
   * :ref:`normal_estimation_integral_images`
     Surface normal estimation
@@ -258,6 +275,12 @@ contributions on any tutorial.
       How to extract NARF descriptors from points in a range images
     * :ref:`narf_descriptor_visualization`
       Visualization of how the NARF descriptor is calculated and of the descriptor distances to a marked point.
+    * :ref:`octree_search`
+      Octrees for spatial partitioning and neighbor search.     
+
+
+
+
 
 * Miscellaneous
 

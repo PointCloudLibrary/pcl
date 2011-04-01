@@ -1,0 +1,1036 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2011, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Author: Julius Kammerl (julius@kammerl.de)
+ */
+
+#ifndef OCTREE_POINTCLOUD_HPP_
+#define OCTREE_POINTCLOUD_HPP_
+
+#include <list>
+#include <vector>
+#include <queue>
+#include <assert.h>
+
+#include "pcl/common/common.h"
+
+namespace pcl
+{
+  namespace octree
+  {
+
+    using namespace std;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      OctreePointCloud<PointT, LeafT, OctreeT>::OctreePointCloud (const double resolution) :
+        OctreeT (), epsilon_ (0), resolution_ (resolution), minX_ (0.0f), maxX_ (resolution), minY_ (0.0f),
+            maxY_ (resolution), minZ_ (0.0f), maxZ_ (resolution), maxKeys_ (1), octreeDepth_ (0)
+      {
+        assert ( resolution > 0.0f );
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      OctreePointCloud<PointT, LeafT, OctreeT>::~OctreePointCloud ()
+      {
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::addPointsFromInputCloud ()
+      {
+        size_t i;
+
+        if (this->leafCount_)
+          this->deleteTree ();
+
+        if (indices_)
+        {
+          std::vector<int>::const_iterator current = indices_->begin ();
+          while (current != indices_->end ())
+          {
+            if (pcl_isfinite(input_->points[*current].x) && pcl_isfinite(input_->points[*current].y)
+                && pcl_isfinite(input_->points[*current].z))
+              // add points to octree
+              this->addPointIdx (*current);
+            ++current;
+          }
+        }
+        else
+        {
+          for (i = 0; i < input_->points.size (); i++)
+          {
+            if (pcl_isfinite(input_->points[i].x) && pcl_isfinite(input_->points[i].y)
+                && pcl_isfinite(input_->points[i].z))
+              // add points to octree
+              this->addPointIdx ((unsigned int)i);
+          }
+        }
+
+      }
+
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::addPointFromCloud (const int pointIdx_arg, IndicesPtr indices_arg)
+      {
+
+        this->addPointIdx (pointIdx_arg);
+
+        if (indices_arg)
+        {
+          indices_arg->push_back (pointIdx_arg);
+        }
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::addPointToCloud (const PointT& point_arg, PointCloudPtr cloud_arg)
+      {
+        assert (cloud_arg==input_);
+
+        cloud_arg->points.push_back (point_arg);
+
+        this->addPointIdx (cloud_arg->points.size () - 1);
+
+      }
+
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::addPointToCloud (const PointT& point_arg, PointCloudPtr cloud_arg,
+                                                                 IndicesPtr indices_arg)
+      {
+
+        assert (cloud_arg==input_);
+        assert (indices_arg==indices_);
+
+        cloud_arg->points.push_back (point_arg);
+
+        this->addPointFromCloud (cloud_arg->points.size () - 1, indices_arg);
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      bool
+      OctreePointCloud<PointT, LeafT, OctreeT>::isVoxelOccupiedAtPoint (const PointT& point_arg) const
+      {
+        OctreeKey key;
+
+        // generate key for point
+        this->genOctreeKeyforPoint (point_arg, key);
+
+        // search for key in octree
+        return this->existLeaf (key);
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      bool
+      OctreePointCloud<PointT, LeafT, OctreeT>::isVoxelOccupiedAtPoint (const double pointX_arg,
+                                                                        const double pointY_arg,
+                                                                        const double pointZ_arg) const
+      {
+        OctreeKey key;
+
+        // generate key for point
+        this->genOctreeKeyforPoint (pointX_arg, pointY_arg, pointZ_arg, key);
+
+        return this->existLeaf (key);
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      bool
+      OctreePointCloud<PointT, LeafT, OctreeT>::voxelSearch (const PointT& point_arg,
+                                                                     std::vector<int>& pointIdx_data_arg)
+      {
+        OctreeKey key;
+        bool bSuccess = false;
+
+        // generate key
+        genOctreeKeyforPoint (point_arg, key);
+
+        LeafT* leaf = getLeaf (key);
+
+        if (leaf)
+        {
+          leaf->getData (pointIdx_data_arg);
+          bSuccess = true;
+        }
+
+        return bSuccess;
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      bool
+      OctreePointCloud<PointT, LeafT, OctreeT>::voxelSearch (const int index_arg, std::vector<int>& pointIdx_data_arg)
+      {
+
+        const PointT searchPoint = getPointByIndex (index_arg);
+
+        return this->voxelSearch (searchPoint, pointIdx_data_arg);
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::deleteVoxelAtPoint (const PointT& point_arg)
+      {
+        OctreeKey key;
+
+        // generate key for point
+        this->genOctreeKeyforPoint (point_arg, key);
+
+        return this->removeLeaf (key);
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      int
+      OctreePointCloud<PointT, LeafT, OctreeT>::nearestKSearch (const PointCloud &cloud_arg, int index_arg, int k_arg,
+                                                                std::vector<int> &k_indices_arg,
+                                                                std::vector<float> &k_sqr_distances_arg)
+      {
+        this->setInputCloud (cloud_arg.makeShared ());
+        this->addPointsFromInputCloud ();
+
+        return nearestKSearch (index_arg, k_arg, k_indices_arg, k_sqr_distances_arg);
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      int
+      OctreePointCloud<PointT, LeafT, OctreeT>::nearestKSearch (const PointT &p_q_arg, int k_arg,
+                                                                std::vector<int> &k_indices_arg,
+                                                                std::vector<float> &k_sqr_distances_arg)
+      {
+
+        unsigned int i;
+        unsigned int resultCount;
+
+        prioPointQueueEntry pointEntry;
+        std::priority_queue<prioPointQueueEntry> pointCandidates;
+
+        assert (this->leafCount_>0);
+
+        OctreeKey key;
+        key.x = key.y = key.z = 0;
+
+        // initalize smallest point distance in search with high value
+        double smallestDist = numeric_limits<double>::max ();
+
+        k_indices_arg.clear ();
+        k_sqr_distances_arg.clear ();
+
+        getKNearestNeighborRecursive (p_q_arg, k_arg, this->rootNode_, key, 1, smallestDist, pointCandidates);
+
+        resultCount = pointCandidates.size();
+
+        for (i = 0; i < resultCount; i++)
+        {
+          pointEntry = pointCandidates.top ();
+
+          k_indices_arg.push_back (pointEntry.pointIdx_);
+          k_sqr_distances_arg.push_back (pointEntry.pointDistance_);
+
+          pointCandidates.pop ();
+        }
+
+        return k_indices_arg.size ();
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      int
+      OctreePointCloud<PointT, LeafT, OctreeT>::nearestKSearch (int index_arg, int k_arg,
+                                                                std::vector<int> &k_indices_arg,
+                                                                std::vector<float> &k_sqr_distances_arg)
+      {
+
+        const PointT searchPoint = getPointByIndex (index_arg);
+
+        return nearestKSearch (searchPoint, k_arg, k_indices_arg, k_sqr_distances_arg);
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      int
+      OctreePointCloud<PointT, LeafT, OctreeT>::radiusSearch (const PointCloud &cloud_arg, int index_arg,
+                                                              double radius_arg, std::vector<int> &k_indices_arg,
+                                                              std::vector<float> &k_sqr_distances_arg, int max_nn_arg)
+      {
+        this->setInputCloud (cloud_arg.makeShared ());
+        this->addPointsFromInputCloud ();
+
+        return radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      int
+      OctreePointCloud<PointT, LeafT, OctreeT>::radiusSearch (const PointT &p_q_arg, const double radius_arg,
+                                                              std::vector<int> &k_indices_arg,
+                                                              std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const
+      {
+
+        OctreeKey key;
+        key.x = key.y = key.z = 0;
+
+        k_indices_arg.clear ();
+        k_sqr_distances_arg.clear ();
+
+        getNeighborsWithinRadiusRecursive (p_q_arg, radius_arg * radius_arg, this->rootNode_, key, 1, k_indices_arg,
+                                           k_sqr_distances_arg, max_nn_arg);
+
+        return k_indices_arg.size ();
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      int
+      OctreePointCloud<PointT, LeafT, OctreeT>::radiusSearch (int index_arg, const double radius_arg,
+                                                              std::vector<int> &k_indices_arg,
+                                                              std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const
+      {
+
+        const PointT searchPoint = getPointByIndex (index_arg);
+
+        return radiusSearch (searchPoint, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox ()
+      {
+
+        double minX, minY, minZ, maxX, maxY, maxZ;
+
+        PointT min_pt;
+        PointT max_pt;
+
+        // bounding box cannot be changed once the octree contains elements
+        assert ( this->leafCount_ == 0 );
+
+        pcl::getMinMax3D (*input_, min_pt, max_pt);
+
+        minX = min_pt.x;
+        minY = min_pt.y;
+        minZ = min_pt.z;
+
+        maxX = max_pt.x;
+        maxY = max_pt.y;
+        maxZ = max_pt.z;
+
+        minX -= this->resolution_ * 0.5f;
+        minY -= this->resolution_ * 0.5f;
+        minZ -= this->resolution_ * 0.5f;
+
+        maxX += this->resolution_ * 0.5f;
+        maxY += this->resolution_ * 0.5f;
+        maxZ += this->resolution_ * 0.5f;
+
+        // generate bit masks for octree
+        defineBoundingBox (minX, minY, minZ, maxX, maxY, maxZ);
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox (const double minX_arg, const double minY_arg,
+                                                                   const double minZ_arg, const double maxX_arg,
+                                                                   const double maxY_arg, const double maxZ_arg)
+      {
+
+        // bounding box cannot be changed once the octree contains elements
+        assert ( this->leafCount_ == 0 );
+
+        assert ( maxX_arg >= minX_arg );
+        assert ( maxY_arg >= minY_arg );
+        assert ( maxZ_arg >= minZ_arg );
+
+        minX_ = minX_arg;
+        maxX_ = maxX_arg;
+
+        minY_ = minY_arg;
+        maxY_ = maxY_arg;
+
+        minZ_ = minZ_arg;
+        maxZ_ = maxZ_arg;
+
+        minX_ = min (minX_, maxX_);
+        minY_ = min (minY_, maxY_);
+        minZ_ = min (minZ_, maxZ_);
+
+        maxX_ = max (minX_, maxX_);
+        maxY_ = max (minY_, maxY_);
+        maxZ_ = max (minZ_, maxZ_);
+
+        // generate bit masks for octree
+        getKeyBitSize ();
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox (const double maxX_arg, const double maxY_arg,
+                                                                   const double maxZ_arg)
+      {
+
+        // bounding box cannot be changed once the octree contains elements
+        assert ( this->leafCount_ == 0 );
+
+        assert ( maxX_arg >= 0.0f );
+        assert ( maxY_arg >= 0.0f );
+        assert ( maxZ_arg >= 0.0f );
+
+        minX_ = 0.0f;
+        maxX_ = maxX_arg;
+
+        minY_ = 0.0f;
+        maxY_ = maxY_arg;
+
+        minZ_ = 0.0f;
+        maxZ_ = maxZ_arg;
+
+        minX_ = min (minX_, maxX_);
+        minY_ = min (minY_, maxY_);
+        minZ_ = min (minZ_, maxZ_);
+
+        maxX_ = max (minX_, maxX_);
+        maxY_ = max (minY_, maxY_);
+        maxZ_ = max (minZ_, maxZ_);
+
+        // generate bit masks for octree
+        getKeyBitSize ();
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox (const double cubeLen_arg)
+      {
+
+        // bounding box cannot be changed once the octree contains elements
+        assert ( this->leafCount_ == 0 );
+
+        assert ( cubeLen_arg >= 0.0f );
+
+        minX_ = 0.0f;
+        maxX_ = cubeLen_arg;
+
+        minY_ = 0.0f;
+        maxY_ = cubeLen_arg;
+
+        minZ_ = 0.0f;
+        maxZ_ = cubeLen_arg;
+
+        minX_ = min (minX_, maxX_);
+        minY_ = min (minY_, maxY_);
+        minZ_ = min (minZ_, maxZ_);
+
+        maxX_ = max (minX_, maxX_);
+        maxY_ = max (minY_, maxY_);
+        maxZ_ = max (minZ_, maxZ_);
+
+        // generate bit masks for octree
+        getKeyBitSize ();
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::getBoundingBox (double& minX_arg, double& minY_arg, double& minZ_arg,
+                                                                double& maxX_arg, double& maxY_arg, double& maxZ_arg) const
+      {
+        minX_arg = minX_;
+        minY_arg = minY_;
+        minZ_arg = minZ_;
+
+        maxX_arg = maxX_;
+        maxY_arg = maxY_;
+        maxZ_arg = maxZ_;
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::addPointIdx (const int pointIdx_arg)
+      {
+        OctreeKey key;
+
+        const double minValue = 1e-10;
+
+        assert (pointIdx_arg < (int) input_->points.size());
+
+        const PointT& point = input_->points[pointIdx_arg];
+
+        while (this->octreeCanResize ())
+        {
+
+          bool bLowerBoundViolationX = (point.x < minX_);
+          bool bLowerBoundViolationY = (point.y < minY_);
+          bool bLowerBoundViolationZ = (point.z < minZ_);
+
+          bool bUpperBoundViolationX = (point.x >= maxX_);
+          bool bUpperBoundViolationY = (point.y >= maxY_);
+          bool bUpperBoundViolationZ = (point.z >= maxZ_);
+
+          // do we violate any bounds?
+          if (bLowerBoundViolationX || bLowerBoundViolationY || bLowerBoundViolationZ || bUpperBoundViolationX
+              || bUpperBoundViolationY || bUpperBoundViolationZ)
+          {
+
+            double octreeSideLen;
+            unsigned char childIdx;
+
+            if (this->leafCount_ > 0)
+            {
+
+              // octree not empty - we add another tree level and thus increase its size by a factor of 2*2*2
+              childIdx = ((!bUpperBoundViolationX) << 2) | ((!bUpperBoundViolationY) << 1) | ((!bUpperBoundViolationZ));
+
+              OctreeBranch* newRootBranch;
+
+              this->createBranch (newRootBranch);
+
+              this->setBranchChild (*newRootBranch, childIdx, this->rootNode_);
+
+              this->rootNode_ = newRootBranch;
+
+              octreeSideLen = maxX_ - minX_ - minValue;
+
+              if (bUpperBoundViolationX)
+              {
+                maxX_ += octreeSideLen;
+              }
+              else
+              {
+                minX_ -= octreeSideLen;
+              }
+
+              if (bUpperBoundViolationY)
+              {
+                maxY_ += octreeSideLen;
+              }
+              else
+              {
+                minY_ -= octreeSideLen;
+              }
+
+              if (bUpperBoundViolationZ)
+              {
+                maxZ_ += octreeSideLen;
+              }
+              else
+              {
+                minZ_ -= octreeSideLen;
+              }
+
+            }
+            else
+            {
+
+              // octree is empty - we set the center of the bounding box to our first pixel
+              minX_ = point.x - resolution_ / 2 + minValue;
+              minY_ = point.y - resolution_ / 2 + minValue;
+              minZ_ = point.z - resolution_ / 2 + minValue;
+
+              maxX_ = point.x + resolution_ / 2 - minValue;
+              maxY_ = point.y + resolution_ / 2 - minValue;
+              maxZ_ = point.z + resolution_ / 2 - minValue;
+
+            }
+
+            //
+
+            getKeyBitSize ();
+
+          }
+          else
+          {
+            break;
+          }
+        }
+
+        // generate key
+        genOctreeKeyforPoint (point, key);
+
+        // add point to octree at key
+        this->add (key, pointIdx_arg);
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      const PointT&
+      OctreePointCloud<PointT, LeafT, OctreeT>::getPointByIndex (const unsigned int index_arg) const
+      {
+        return input_->points[index_arg];
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      LeafT*
+      OctreePointCloud<PointT, LeafT, OctreeT>::findLeafAtPoint (const PointT& point) const
+      {
+        OctreeKey key;
+
+        // generate key for point
+        this->genOctreeKeyforPoint (point, key);
+
+        return this->findLeaf (key);
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::getKeyBitSize ()
+      {
+        unsigned int maxVoxels;
+
+        unsigned int maxKeyX;
+        unsigned int maxKeyY;
+        unsigned int maxKeyZ;
+
+        double octreeSideLen;
+
+        const double minValue = 1e-10;
+
+        // find maximum key values for x, y, z
+        maxKeyX = ceil ((maxX_ - minX_) / resolution_);
+        maxKeyY = ceil ((maxY_ - minY_) / resolution_);
+        maxKeyZ = ceil ((maxZ_ - minZ_) / resolution_);
+
+        // find maximum amount of keys
+        maxVoxels = max (max (max (maxKeyX, maxKeyY), maxKeyZ), (unsigned int)2);
+
+        // tree depth == amount of bits of maxVoxels
+        octreeDepth_ = max ((min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)ceil (log2 (maxVoxels)))),
+                            (unsigned int)0);
+
+        maxKeys_ = (1 << octreeDepth_);
+
+        octreeSideLen = (double)maxKeys_ * resolution_ - minValue;
+
+        if (this->leafCount_ == 0)
+        {
+
+          double octreeOversizeX;
+          double octreeOversizeY;
+          double octreeOversizeZ;
+
+          octreeOversizeX = (octreeSideLen - (maxX_ - minX_)) / 2.0;
+          octreeOversizeY = (octreeSideLen - (maxY_ - minY_)) / 2.0;
+          octreeOversizeZ = (octreeSideLen - (maxZ_ - minZ_)) / 2.0;
+
+          minX_ -= octreeOversizeX;
+          minY_ -= octreeOversizeY;
+          minZ_ -= octreeOversizeZ;
+
+          maxX_ += octreeOversizeX;
+          maxY_ += octreeOversizeY;
+          maxZ_ += octreeOversizeZ;
+
+        }
+        else
+        {
+
+          maxX_ = minX_ + octreeSideLen;
+          maxY_ = minY_ + octreeSideLen;
+          maxZ_ = minZ_ + octreeSideLen;
+
+        }
+
+        // configure tree depth of octree
+        this->setTreeDepth (octreeDepth_);
+
+        return;
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::genOctreeKeyforPoint (const PointT& point_arg, OctreeKey & key_arg) const
+      {
+
+        // calculate integer key for point coordinates
+        key_arg.x = (unsigned int)floor ((point_arg.x - this->minX_) / this->resolution_);
+        key_arg.y = (unsigned int)floor ((point_arg.y - this->minY_) / this->resolution_);
+        key_arg.z = (unsigned int)floor ((point_arg.z - this->minZ_) / this->resolution_);
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::genOctreeKeyforPoint (const double pointX_arg, const double pointY_arg,
+                                                                      const double pointZ_arg, OctreeKey & key_arg) const
+      {
+        PointT tempPoint;
+
+        tempPoint.x = pointX_arg;
+        tempPoint.y = pointY_arg;
+        tempPoint.z = pointZ_arg;
+
+        // generate key for point
+        genOctreeKeyforPoint (tempPoint, key_arg);
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      bool
+      OctreePointCloud<PointT, LeafT, OctreeT>::genOctreeKey (const int& data_arg, OctreeKey & key_arg) const
+      {
+
+        const PointT tempPoint = getPointByIndex (data_arg);
+
+        // generate key for point
+        genOctreeKeyforPoint (tempPoint, key_arg);
+
+        return true;
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::genLeafNodeCenterFromOctreeKey (const OctreeKey & key, PointT & point) const
+      {
+
+        // define point to leaf node voxel center
+        point.x = ((double)key.x + 0.5f) * this->resolution_ + this->minX_;
+        point.y = ((double)key.y + 0.5f) * this->resolution_ + this->minY_;
+        point.z = ((double)key.z + 0.5f) * this->resolution_ + this->minZ_;
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::genVoxelCenterFromOctreeKey (const OctreeKey & key_arg,
+                                                                             unsigned int treeDepth_arg,
+                                                                             PointT& point_arg) const
+      {
+
+        // generate point for voxel center defined by treedepth (bitLen) and key
+        point_arg.x = ((double)(key_arg.x) + 0.5f) * (this->resolution_ * (double)(1 << (this->octreeDepth_
+            - treeDepth_arg))) + this->minX_;
+        point_arg.y = ((double)(key_arg.y) + 0.5f) * (this->resolution_ * (double)(1 << (this->octreeDepth_
+            - treeDepth_arg))) + this->minY_;
+        point_arg.z = ((double)(key_arg.z) + 0.5f) * (this->resolution_ * (double)(1 << (this->octreeDepth_
+            - treeDepth_arg))) + this->minZ_;
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      double
+      OctreePointCloud<PointT, LeafT, OctreeT>::getVoxelSquaredSideLen (unsigned int treeDepth_arg) const
+      {
+        double sideLen;
+
+        // side length of the voxel cube increases exponentially with the octree depth
+        sideLen = this->resolution_ * (double)(1 << (this->octreeDepth_ - treeDepth_arg));
+
+        // squared voxel side length
+        sideLen *= sideLen;
+
+        return sideLen;
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      double
+      OctreePointCloud<PointT, LeafT, OctreeT>::getVoxelSquaredDiameter (unsigned int treeDepth_arg) const
+      {
+        // return the squared side length of the voxel cube as a function of the octree depth
+        return getVoxelSquaredSideLen (treeDepth_arg) * 3;
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      double
+      OctreePointCloud<PointT, LeafT, OctreeT>::pointSquaredDist (const PointT & pointA_arg, const PointT & pointB_arg) const
+      {
+        double distX, distY, distZ;
+
+        // distance between pointA_arg and pointB_arg for each axis
+        distX = pointA_arg.x - pointB_arg.x;
+        distY = pointA_arg.y - pointB_arg.y;
+        distZ = pointA_arg.z - pointB_arg.z;
+
+        // return squared absolute distance between pointA_arg and pointB_arg
+        return (distX * distX + distY * distY + distZ * distZ);
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      double
+      OctreePointCloud<PointT, LeafT, OctreeT>::getKNearestNeighborRecursive (
+                                                                              const PointT & point_arg,
+                                                                              unsigned int K_arg,
+                                                                              const OctreeBranch* node_arg,
+                                                                              const OctreeKey& key_arg,
+                                                                              unsigned int treeDepth_arg,
+                                                                              const double squaredSearchRadius_arg,
+                                                                              std::priority_queue<prioPointQueueEntry>& pointCandidates_arg) const
+      {
+        unsigned char childIdx;
+
+        prioBranchQueueEntry newEntry;
+        OctreeKey newKey;
+
+        double smallestSquaredDist = squaredSearchRadius_arg;
+
+        // get spatial voxel information
+        double voxelSquaredDiameter = getVoxelSquaredDiameter (treeDepth_arg);
+
+        std::priority_queue<prioBranchQueueEntry> branchPrioQueue;
+
+        // iterate over all children
+        for (childIdx = 0; childIdx < 8; childIdx++)
+        {
+          if (branchHasChild (*node_arg, childIdx))
+          {
+
+            PointT voxelCenter;
+
+            newKey.x = (key_arg.x << 1) + (!!(childIdx & (1 << 2)));
+            newKey.y = (key_arg.y << 1) + (!!(childIdx & (1 << 1)));
+            newKey.z = (key_arg.z << 1) + (!!(childIdx & (1 << 0)));
+
+            // generate voxel center point for voxel at key
+            genVoxelCenterFromOctreeKey (newKey, treeDepth_arg, voxelCenter);
+
+            // generate new priority queue element
+            newEntry.node = getBranchChild (*node_arg, childIdx);
+            newEntry.pointDistance = pointSquaredDist (voxelCenter, point_arg);
+            newEntry.key = newKey;
+
+            // add to priority queue
+            branchPrioQueue.push (newEntry);
+
+          }
+        }
+
+        // iterate over all children in priority queue
+        // check if the distance to seach candidate is smaller than the best point distance (smallestSquaredDist)
+        while ((!branchPrioQueue.empty ()) &&
+               (branchPrioQueue.top ().pointDistance + epsilon_ < smallestSquaredDist
+               + voxelSquaredDiameter / 4.0 + sqrt (smallestSquaredDist * voxelSquaredDiameter)))
+        {
+
+          const OctreeNode* childNode;
+
+          // read from priority queue element
+          childNode = branchPrioQueue.top ().node;
+          newKey = branchPrioQueue.top ().key;
+
+          if (treeDepth_arg < octreeDepth_)
+          {
+            // we have not reached maximum tree depth
+            smallestSquaredDist = getKNearestNeighborRecursive (point_arg, K_arg, (OctreeBranch*)childNode, newKey,
+                                                                treeDepth_arg + 1, smallestSquaredDist,
+                                                                pointCandidates_arg);
+
+          }
+          else
+          {
+            // we reached leaf node level
+
+            double squaredDist;
+            size_t i;
+            vector<int> decodedPointVector;
+
+            OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
+
+            // decode leaf node into decodedPointVector
+            childLeaf->getData (decodedPointVector);
+
+            // Linearly iterate over all decoded (unsorted) points
+            for (i = 0; i < decodedPointVector.size (); i++)
+            {
+
+              const PointT& candidatePoint = getPointByIndex (decodedPointVector[i]);
+
+              // calculate point distance to search point
+              squaredDist = pointSquaredDist (candidatePoint, point_arg);
+
+              // check if a closer match is found
+              if (squaredDist < smallestSquaredDist)
+              {
+                prioPointQueueEntry pointEntry;
+
+                pointEntry.pointDistance_ = squaredDist;
+                pointEntry.pointIdx_ = decodedPointVector[i];
+                pointCandidates_arg.push (pointEntry);
+              }
+            }
+
+            while (pointCandidates_arg.size () > K_arg)
+              pointCandidates_arg.pop ();
+
+            if (pointCandidates_arg.size () == K_arg)
+            {
+              smallestSquaredDist = pointCandidates_arg.top ().pointDistance_;
+            }
+
+          }
+
+          // pop element from priority queue
+          branchPrioQueue.pop ();
+        }
+
+        return smallestSquaredDist;
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::getNeighborsWithinRadiusRecursive (
+                                                                                   const PointT & point_arg,
+                                                                                   const double radiusSquared_arg,
+                                                                                   const OctreeBranch* node_arg,
+                                                                                   const OctreeKey& key_arg,
+                                                                                   unsigned int treeDepth_arg,
+                                                                                   std::vector<int>& k_indices_arg,
+                                                                                   std::vector<float>& k_sqr_distances_arg,
+                                                                                   int max_nn_arg) const
+      {
+        // child iterator
+        unsigned char childIdx;
+
+        // get spatial voxel information
+        double voxelSquaredDiameter = getVoxelSquaredDiameter (treeDepth_arg);
+
+        // iterate over all children
+        for (childIdx = 0; childIdx < 8; childIdx++)
+        {
+          if (branchHasChild (*node_arg, childIdx))
+          {
+            const OctreeNode* childNode;
+            childNode = getBranchChild (*node_arg, childIdx);
+
+            OctreeKey newKey;
+            PointT voxelCenter;
+            double squaredDist;
+
+            // generate new key for current branch voxel
+            newKey.x = (key_arg.x << 1) + (!!(childIdx & (1 << 2)));
+            newKey.y = (key_arg.y << 1) + (!!(childIdx & (1 << 1)));
+            newKey.z = (key_arg.z << 1) + (!!(childIdx & (1 << 0)));
+
+            // generate voxel center point for voxel at key
+            genVoxelCenterFromOctreeKey (newKey, treeDepth_arg, voxelCenter);
+
+            // calculate distance to search point
+            squaredDist = pointSquaredDist ((const PointT &)voxelCenter, point_arg);
+
+            // if distance is smaller than search radius
+            if (squaredDist + epsilon_ <= voxelSquaredDiameter / 4.0 + radiusSquared_arg
+                + sqrt (voxelSquaredDiameter * radiusSquared_arg))
+            {
+
+              if (treeDepth_arg < this->octreeDepth_)
+              {
+                // we have not reached maximum tree depth
+                getNeighborsWithinRadiusRecursive (point_arg, radiusSquared_arg, (OctreeBranch*)childNode, newKey,
+                                                   treeDepth_arg + 1, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
+                if (k_indices_arg.size () == (unsigned int)max_nn_arg)
+                  return;
+              }
+              else
+              {
+                // we reached leaf node level
+
+                size_t i;
+                OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
+                vector<int> decodedPointVector;
+
+                // decode leaf node into decodedPointVector
+                childLeaf->getData (decodedPointVector);
+
+                // Linearly iterate over all decoded (unsorted) points
+                for (i = 0; i < decodedPointVector.size (); i++)
+                {
+
+                  const PointT& candidatePoint = getPointByIndex (decodedPointVector[i]);
+
+                  // calculate point distance to search point
+                  squaredDist = pointSquaredDist (candidatePoint, point_arg);
+
+                  // check if a match is found
+                  if (squaredDist <= radiusSquared_arg)
+                  {
+
+                    // add point to result vector
+                    k_indices_arg.push_back (decodedPointVector[i]);
+                    k_sqr_distances_arg.push_back (squaredDist);
+
+                    if (k_indices_arg.size () == (unsigned int)max_nn_arg)
+                      return;
+                  }
+                }
+
+              }
+
+            }
+
+          }
+
+        }
+      }
+
+  }
+}
+
+#define PCL_INSTANTIATE_OctreePointCloud(T) template class pcl::octree::OctreePointCloud<T>;
+
+#endif /* OCTREE_POINTCLOUD_HPP_ */

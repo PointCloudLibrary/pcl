@@ -1,7 +1,7 @@
 set(SUBSYS_NAME global_tests)
 set(SUBSYS_DESC "Point cloud library global tests")
 set(SUBSYS_DEPS common sample_consensus io kdtree features range_image filters
-    keypoints surface registration segmentation)
+    keypoints surface registration segmentation octree)
 
 find_package(GTest)
 if(GTEST_FOUND)
@@ -50,6 +50,10 @@ if(build)
     PCL_ADD_OPENMP_FLAGS(test_ii_normals)
     target_link_libraries (test_ii_normals pcl_io pcl_features ${GTEST_BOTH_LIBRARIES})
     PCL_LINK_OPENMP(test_ii_normals)
+
+    add_executable (test_octree test_octree.cpp)
+    target_link_libraries (test_octree pcl_octree ${GTEST_BOTH_LIBRARIES})
+    PCL_ADD_OPENMP_FLAGS(test_octree)
 
     add_test(a_keypoints_test test_keypoints)
     add_test(a_sample_consensus_test test_sample_consensus)
