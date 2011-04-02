@@ -55,6 +55,9 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_openmp.cmake)
 find_package(OpenNI)
 if(OPENNI_FOUND)
     include_directories(${OPENNI_INCLUDE_DIRS})
+    message(STATUS "Did find OpenNI after all.")
+    #message(STATUS "OpenNI include ${OPENNI_INCLUDE_DIR}")
+    #message(STATUS "OpenNI libs ${OPENNI_LIBRARY}")
 endif(OPENNI_FOUND)
 
 # Create the config.h file
