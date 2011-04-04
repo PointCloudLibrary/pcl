@@ -72,7 +72,7 @@ namespace ros
 
       // Command is the control command to the terminal
       sprintf (command, "%c[0;m", 0x1B);
-      fprintf (stream, "%s", command);
+      fprintf (stream, "%s\n", command);
     }
 
   }
