@@ -342,15 +342,12 @@ pcl_visualization::PCLVisualizer::removePointCloud (const std::string &id, int v
     return (false);
   }
 
-  // Get the actor pointer
-  CloudActor act = am_it->second;
-  vtkSmartPointer<vtkLODActor> actor = act.actor;
+  // Clear the handlers
   am_it->second.geometry_handlers.clear ();
   am_it->second.color_handlers.clear ();
-  //vtkSmartPointer<vtkLODActor> actor = am_it->second;
 
   // Remove it from all renderers
-  removeActorFromRenderer (actor, viewport);
+  removeActorFromRenderer (am_it->second.actor, viewport);
 
   // Remove the pointer/ID pair to the global actor map
   cloud_actor_map_.erase (am_it);

@@ -109,7 +109,6 @@ template<typename T> boost::signals2::signal<T>* Grabber::createSignal ()
 
 	if (signals_.find (&typeid(T)) == signals_.end ())
 	{
-    std::cout << "registering Callback type: " << typeid(T).name() << std::endl;
     Signal* signal = new Signal ();
 		signals_[&typeid(T)] = signal;
 		return signal;
