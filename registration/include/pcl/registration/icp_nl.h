@@ -43,7 +43,7 @@
 #include "pcl/sample_consensus/ransac.h"
 #include "pcl/sample_consensus/sac_model_registration.h"
 
-#include <cminpack/cminpack.h>
+#include <cminpack.h>
 
 namespace pcl
 {
