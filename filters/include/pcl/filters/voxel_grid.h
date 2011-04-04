@@ -69,7 +69,7 @@ namespace pcl
                const std::string &distance_field_name, float min_distance, float max_distance,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Helper functor structure for copying data between an Eigen::VectorXf and a PointT. */
   template <typename PointT>
     struct NdCopyEigenPointFunctor
@@ -174,8 +174,9 @@ namespace pcl
       inline void 
       setDownsampleAllData (bool downsample) { downsample_all_data_ = downsample; }
 
-      /** \brief Get the state of the internal downsampling parameter (true if all fields need to be downsampled, false
-       * if just XYZ). */
+      /** \brief Get the state of the internal downsampling parameter (true if
+        * all fields need to be downsampled, false if just XYZ). 
+        */
       inline bool 
       getDownsampleAllData () { return (downsample_all_data_); }
 
@@ -189,19 +190,27 @@ namespace pcl
       inline bool 
       getSaveLeafLayout () { return (save_leaf_layout_); }
 
-      /** \brief Get the minimum coordinates of the bounding box (after filtering is performed). */
+      /** \brief Get the minimum coordinates of the bounding box (after
+        * filtering is performed). 
+        */
       inline Eigen::Vector3i 
       getMinBoxCoordinates () { return (min_b_.head<3> ()); }
 
-      /** \brief Get the minimum coordinates of the bounding box (after filtering is performed). */
+      /** \brief Get the minimum coordinates of the bounding box (after
+        * filtering is performed). 
+        */
       inline Eigen::Vector3i 
       getMaxBoxCoordinates () { return (max_b_.head<3> ()); }
 
-      /** \brief Get the number of divisions along all 3 axes (after filtering is performed). */
+      /** \brief Get the number of divisions along all 3 axes (after filtering
+        * is performed). 
+        */
       inline Eigen::Vector3i 
       getNrDivisions () { return (div_b_.head<3> ()); }
 
-      /** \brief Get the multipliers to be applied to the grid coordinates in order to find the centroid index (after filtering is performed). */
+      /** \brief Get the multipliers to be applied to the grid coordinates in
+        * order to find the centroid index (after filtering is performed). 
+        */
       inline Eigen::Vector3i 
       getDivisionMultiplier () { return (divb_mul_.head<3> ()); }
 
@@ -268,7 +277,8 @@ namespace pcl
       }
 
     protected:
-      /** \brief Simple structure to hold an nD centroid and the number of points in a leaf. */
+      /** \brief Simple structure to hold an nD centroid and the number of points in a leaf. 
+        */
       struct Leaf
       {
         Leaf () : nr_points(0) {}
@@ -353,8 +363,9 @@ namespace pcl
       inline void 
       setDownsampleAllData (bool downsample) { downsample_all_data_ = downsample; }
 
-      /** \brief Get the state of the internal downsampling parameter (true if all fields need to be downsampled, false
-       * if just XYZ). */
+      /** \brief Get the state of the internal downsampling parameter (true if
+        * all fields need to be downsampled, false if just XYZ). 
+        */
       inline bool 
       getDownsampleAllData () { return (downsample_all_data_); }
 
@@ -368,19 +379,27 @@ namespace pcl
       inline bool 
       getSaveLeafLayout () { return (save_leaf_layout_); }
 
-      /** \brief Get the minimum coordinates of the bounding box (after filtering is performed). */
+      /** \brief Get the minimum coordinates of the bounding box (after
+        * filtering is performed). 
+        */
       inline Eigen::Vector3i 
       getMinBoxCoordinates () { return (min_b_.head<3> ()); }
 
-      /** \brief Get the minimum coordinates of the bounding box (after filtering is performed). */
+      /** \brief Get the minimum coordinates of the bounding box (after
+        * filtering is performed). 
+        */
       inline Eigen::Vector3i 
       getMaxBoxCoordinates () { return (max_b_.head<3> ()); }
 
-      /** \brief Get the number of divisions along all 3 axes (after filtering is performed). */
+      /** \brief Get the number of divisions along all 3 axes (after filtering
+        * is performed). 
+        */
       inline Eigen::Vector3i 
       getNrDivisions () { return (div_b_.head<3> ()); }
 
-      /** \brief Get the multipliers to be applied to the grid coordinates in order to find the centroid index (after filtering is performed). */
+      /** \brief Get the multipliers to be applied to the grid coordinates in
+        * order to find the centroid index (after filtering is performed). 
+        */
       inline Eigen::Vector3i 
       getDivisionMultiplier () { return (divb_mul_.head<3> ()); }
 
@@ -460,7 +479,8 @@ namespace pcl
       }
 
     protected:
-      /** \brief Simple structure to hold an nD centroid and the number of points in a leaf. */
+      /** \brief Simple structure to hold an nD centroid and the number of points in a leaf. 
+        */
       struct Leaf
       {
         Leaf () : nr_points(0) { }
@@ -477,13 +497,19 @@ namespace pcl
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
       bool downsample_all_data_;
 
-      /** \brief Set to true if leaf layout information needs to be saved in \a leaf_layout_. */
+      /** \brief Set to true if leaf layout information needs to be saved in \a
+        * leaf_layout. 
+        */
       bool save_leaf_layout_;
 
-      /** \brief The leaf layout information for fast access to cells relative to current position **/
+      /** \brief The leaf layout information for fast access to cells relative
+        * to current position 
+        */
       std::vector<int> leaf_layout_;
 
-      /** \brief The minimum and maximum bin coordinates, the number of divisions, and the division multiplier. */
+      /** \brief The minimum and maximum bin coordinates, the number of
+        * divisions, and the division multiplier. 
+        */
       Eigen::Vector4i min_b_, max_b_, div_b_, divb_mul_;
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
