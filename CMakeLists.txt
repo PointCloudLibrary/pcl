@@ -24,8 +24,12 @@ configure_file("${PCL_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
 add_custom_target(uninstall "${CMAKE_COMMAND}" -P
     "${PCL_BINARY_DIR}/uninstall_target.cmake")
 
-#TODO verify that this is the right place to put some extra flags...
+#This is definitely not where it should, just for test before moving
+if(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing")
+else(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+add_definitions ("-W0 -DEIGEN_USE_NEW_STDVECTOR -DEIGEN2_SUPPORT")
+endif(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
 # Find universal dependencies
 # Find ROS
