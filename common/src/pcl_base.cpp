@@ -43,10 +43,7 @@
 
 #include "pcl/pcl_base.h"
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Provide a pointer to the input dataset
-  * \param cloud the const boost shared pointer to a PointCloud message
-  */
+//////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::PCLBase<sensor_msgs::PointCloud2>::setInputCloud (const PointCloud2ConstPtr &cloud)
 {
@@ -71,29 +68,44 @@ pcl::PCLBase<sensor_msgs::PointCloud2>::setInputCloud (const PointCloud2ConstPtr
     {
       case sensor_msgs::PointField::INT8:
       case sensor_msgs::PointField::UINT8:
+      {
         fsize = 1;
+        break;
+      }
 
       case sensor_msgs::PointField::INT16:
       case sensor_msgs::PointField::UINT16:
+      {
         fsize = 2;
+        break;
+      }
 
       case sensor_msgs::PointField::INT32:
       case sensor_msgs::PointField::UINT32:
       case sensor_msgs::PointField::FLOAT32:
+      {
         fsize = 4;
+        break;
+      }
 
       case sensor_msgs::PointField::FLOAT64:
+      {
         fsize = 8;
+        break;
+      }
 
       default:
+      {
+        ROS_ERROR ("[PCLBase::setInputCloud] Invalid field type (%d)!", input_->fields[d].datatype);
         fsize = 0;
+        break;
+      }
     }
     field_sizes_[d] = (std::min) (fsize, (int)sizeof (float));
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief This method should get called after finishing the actual computation. */
+//////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::PCLBase<sensor_msgs::PointCloud2>::deinitCompute ()
 {
@@ -106,8 +118,7 @@ pcl::PCLBase<sensor_msgs::PointCloud2>::deinitCompute ()
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief This method should get called before starting the actual computation. */
+//////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::PCLBase<sensor_msgs::PointCloud2>::initCompute ()
 {
