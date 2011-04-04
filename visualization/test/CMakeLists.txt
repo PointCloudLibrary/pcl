@@ -2,7 +2,7 @@ if(BUILD_TESTS)
     add_executable(test_pcl_vis test.cpp)
     target_link_libraries(test_pcl_vis pcl_common pcl_io
         pcl_kdtree pcl_range_image pcl_visualization)
-    add_test(vis_test test_pcl_vis)
+    add_test(vis_test test_pcl_vis ${PCL_SOURCE_DIR}/test/bun0.pcd)
 
     # Depends on filters
     #add_executable(test_geometry test_geometry.cpp)

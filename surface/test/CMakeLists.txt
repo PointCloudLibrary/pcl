@@ -4,11 +4,11 @@ if(BUILD_TESTS)
     target_link_libraries(test_surface pcl_io pcl_kdtree pcl_surface
         pcl_features ${GTEST_BOTH_LIBRARIES})
     PCL_LINK_OPENMP(test_surface)
-    add_test(surface_surface test_surface)
+    add_test(surface_surface test_surface ${PCL_SOURCE_DIR}/test/bun0.pcd)
 
     add_executable(test_mls test_mls.cpp)
     target_link_libraries(test_mls pcl_io pcl_kdtree pcl_surface
         ${GTEST_BOTH_LIBRARIES})
-    add_test(surface_mls test_mls)
+    add_test(surface_mls test_mls ${PCL_SOURCE_DIR}/test/bun0.pcd)
 endif(BUILD_TESTS)
 

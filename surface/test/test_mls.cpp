@@ -59,8 +59,10 @@ int
   main (int argc, char** argv)
 {
   // Input
+  assert(argc > 1);
+  char* file_name = argv[1];
   sensor_msgs::PointCloud2 cloud_blob;
-  loadPCDFile ("./test/bun0.pcd", cloud_blob);
+  loadPCDFile (file_name, cloud_blob);
   fromROSMsg (cloud_blob, *cloud);
 
   // Indices

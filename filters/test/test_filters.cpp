@@ -756,7 +756,10 @@ int
   main (int argc, char** argv)
 {
   // Load a standard PCD file from disk
-  loadPCDFile ("./test/bun0.pcd", cloud_blob_);
+  assert(argc > 1);
+  char* file_name = argv[1];
+  // Load a standard PCD file from disk
+  loadPCDFile (file_name, cloud_blob_);
   cloud_blob_ptr_.reset (new sensor_msgs::PointCloud2 (cloud_blob_));
   fromROSMsg (cloud_blob_, cloud_);
   cloud_ptr_.reset (new PointCloud<PointXYZ> (cloud_));
