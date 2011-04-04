@@ -41,7 +41,7 @@
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <boost/thread/mutex.hpp>
-#include <cminpack.h>
+#include <cminpack/cminpack.h>
 #include <pcl/common/common.h>
 
 namespace pcl
