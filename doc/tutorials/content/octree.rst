@@ -31,7 +31,7 @@ First, create a file, let's say, ``octree_search.cpp`` and place the following i
 	
 	  srand (time (NULL));
 	
-	  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
+	  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 	
 	  // Generate pointcloud data
 	  cloud->width = 1000;
@@ -130,7 +130,7 @@ We fist define and instantiate a shared PointCloud structure and fill it with ra
 
 .. code-block:: cpp
 
-	  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
+	  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 	
 	  // Generate pointcloud data
 	  cloud->width = 1000;
