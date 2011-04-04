@@ -35,6 +35,7 @@
  *
  */
 
+#include <iostream>
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
 #include "pcl/io/io.h"
@@ -243,7 +244,7 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   div_b_[3] = 0;
 
   // Clear the leaves
-  leaves_.clear();
+  leaves_.clear ();
 
   // Create the first xyz_offset, and set up the division multiplier
   Eigen::Array4i xyz_offset (input_->fields[x_idx_].offset,
@@ -401,7 +402,6 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
       // Compute the centroid leaf index
       int idx = (ijk - min_b_).dot (divb_mul_);
 
-
       Leaf& leaf = leaves_[idx];
 
       if (leaf.nr_points == 0)
@@ -412,9 +412,7 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 
       // Do we need to process all the fields?
       if (!downsample_all_data_)
-      {
         leaf.centroid.head<4> () += pt;
-      }
       else
       {
         Eigen::VectorXf centroid = Eigen::VectorXf::Zero (centroid_size);
@@ -431,7 +429,9 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
         }
         // Copy all the fields
         for (unsigned int d = 0; d < input_->fields.size(); ++d)
-          memcpy (&centroid[d], &input_->data[point_offset + input_->fields[d].offset], field_sizes_[d]);
+          memcpy (&centroid[d], &input_->data[point_offset + input_->fields[d].offset], 
+                  field_sizes_[d]);
+
         leaf.centroid += centroid;
       }
       ++leaf.nr_points;
@@ -459,7 +459,7 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 
   leaf_layout_.clear ();
   if (save_leaf_layout_)
-    leaf_layout_.resize (div_b_[0]*div_b_[1]*div_b_[2], -1);
+    leaf_layout_.resize (div_b_[0] * div_b_[1] * div_b_[2], -1);
 
   int cp = 0;
   for (std::map<size_t, Leaf>::const_iterator it = leaves_.begin (); it != leaves_.end (); ++it)
