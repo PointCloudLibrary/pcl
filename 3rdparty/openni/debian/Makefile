@@ -9,7 +9,7 @@ openni_lib: ../openni_drivers
 	cd ../openni_drivers && make && cd -
 	
 ../openni_drivers:
-	hg clone https://kforge.ros.org/openni/drivers ../openni_drivers
+	hg clone https://kforge.ros.org/openni/drivers ../openni_drivers -r 249
 	
 clean:
 	rm -rf *.deb
