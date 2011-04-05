@@ -108,7 +108,7 @@ editor, and place the following code inside it:
 
       // Create search tree
       KdTree<PointNormal>::Ptr tree2 = boost::make_shared<KdTreeFLANN<PointNormal> > ();
-      tree2->setInputCloud (*cloud_with_normals);
+      tree2->setInputCloud (cloud_with_normals);
 
       // Initialize objects
       GreedyProjectionTriangulation<PointNormal> gp3;
@@ -126,7 +126,7 @@ editor, and place the following code inside it:
       gp3.setNormalConsistency(false);
 
       // Get result
-      gp3.setInputCloud (cloud_with_normals.makeShared ());
+      gp3.setInputCloud (cloud_with_normals);
       gp3.setSearchMethod (tree2);
       gp3.reconstruct (triangles);
 
@@ -173,8 +173,8 @@ from PCL.
 .. code-block:: cpp
 
     // Concatenate the XYZ and normal fields
-    PointCloud<PointNormal> cloud_with_normals;
-    pcl::concatenateFields (*cloud, *normals, cloud_with_normals);
+    PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
+    pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
 
 Since coordinates and normals need to be in the same PointCloud, we create a PointNormal type point cloud.
 
@@ -182,7 +182,7 @@ Since coordinates and normals need to be in the same PointCloud, we create a Poi
 
     // Create search tree
     KdTree<PointNormal>::Ptr tree2 = boost::make_shared<KdTreeFLANN<PointNormal> > ();
-    tree2->setInputCloud (cloud_with_normals.makeShared ());
+    tree2->setInputCloud (cloud_with_normals);
 
     // Initialize objects
     GreedyProjectionTriangulation<PointNormal> gp3;
@@ -208,7 +208,7 @@ The above lines set the parameters, as explained above.
 .. code-block:: cpp
 
     // Get result
-    gp3.setInputCloud (cloud_with_normals.makeShared ());
+    gp3.setInputCloud (cloud_with_normals);
     gp3.setSearchMethod (tree2);
     gp3.reconstruct (triangles);
 
