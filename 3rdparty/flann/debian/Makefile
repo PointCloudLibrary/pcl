@@ -15,7 +15,7 @@ FLANN_PACKAGE_NAME=flann-$(VERSION)~$(DISTRO)_$(ARCH)
 all : $(FLANN_PACKAGE_NAME).deb
 
 FLANN_lib: flann/build/cmake/flann.pc
-	cd flann && mkdir -p build && cd build && cmake .. && BUILD_C_BINDINGS=true BUILD_MATLAB_BINDINGS=false make
+	cd flann && mkdir -p build && cd build && cmake -DBUILD_C_BINDINGS=false -DBUILD_PYTHON_BINDINGS=false -DBUILD_MATLAB_BINDINGS=false -DCMAKE_BUILD_TYPE=RELEASE .. && BUILD_C_BINDINGS=true BUILD_MATLAB_BINDINGS=false make
 	
 flann/build/cmake/flann.pc: flann
 	mkdir -p flann/build
