@@ -42,7 +42,7 @@
 #include <cfloat>
 
 /**
- * \file common.h
+ * \file pcl/common/common.h
  * Define standard C methods and C++ classes that are common to all methods
  * \ingroup common
  */
