@@ -39,7 +39,7 @@
 #include <Eigen/Geometry>
 
 /** 
- *  \file tranform.h
+ *  \file pcl/common/tranform.h
  *  Define some libeigen based transformation methods
  *  \ingroup common
  */
