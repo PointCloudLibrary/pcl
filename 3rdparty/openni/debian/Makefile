@@ -3,7 +3,8 @@
 
 debian : openni_lib 
 	cd ../openni_drivers && make debian && cd -
-	cp ../openni_drivers/*.deb .
+	cp ../openni_drivers/*openni*.deb .
+	cp ../openni_drivers/*ps_engine*.deb .
 
 openni_lib: ../openni_drivers
 	cd ../openni_drivers && make && cd -
