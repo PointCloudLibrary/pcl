@@ -3,5 +3,5 @@ Name: FLANN
 Description: Library for Fast Approximate Nearest Neighbors Search.
 Version: __VERSION__
 Requires: 
-Libs: -L/usr/lib -lflann
+Libs: -L/usr/lib -lflann_cpp
 Cflags: -I/usr/include
