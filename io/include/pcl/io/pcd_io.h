@@ -42,9 +42,6 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Point Cloud Data (PCD) file format reader.
     * \author Radu Bogdan Rusu
     */
@@ -53,8 +50,8 @@ namespace pcl
     public:
       /** \brief Various PCD file versions.
         *
-        * PCD_V6 is the entry point for PCL in ROS. It represents PCD files with version .6, which contain the following
-        * fields:
+        * PCD_V6 is the entry point for PCL in ROS. It represents PCD files
+        * with version .6, which contain the following fields:
         * <ul>
         *  <li> lines beginning with # are treated as comments</li>
         *  <li> FIELDS ...</li>
@@ -66,10 +63,12 @@ namespace pcl
         *  <li> POINTS ...</li>
         *  <li> DATA ascii/binary</li>
         * </ul>
-        * Everything that follows <b>DATA</b> is intepreted as data points and will be read accordingly.
+        * Everything that follows <b>DATA</b> is intepreted as data points and
+        * will be read accordingly.
         *
-        * PCD_V7 represents PCD files with version .7 and has an important addon: it adds sensor origin/orientation 
-        * (aka viewpoint) information to a dataset through the use of a new header field:
+        * PCD_V7 represents PCD files with version .7 and has an important
+        * addon: it adds sensor origin/orientation (aka viewpoint) information
+        * to a dataset through the use of a new header field:
         * <ul>
         *  <li> VIEWPOINT tx ty tz qw qx qy qz</li>
         * </ul>
@@ -82,8 +81,9 @@ namespace pcl
 
       /** \brief Read a point cloud data header from a PCD file. 
         *
-        * Load only the meta information (number of points, their types, etc), and not the points themselves, from a
-        * given PCD file. Useful for fast evaluation of the underlying data structure.
+        * Load only the meta information (number of points, their types, etc),
+        * and not the points themselves, from a given PCD file. Useful for fast
+        * evaluation of the underlying data structure.
         *
         * Returns:
         *  * < 0 (-1) on error
@@ -109,8 +109,9 @@ namespace pcl
 
       /** \brief Read a point cloud data from a PCD file (PCD_V6 only!) and store it into a sensor_msgs/PointCloud2.
         * 
-        * \note This function is provided for backwards compatibility only and it can only read PCD_V6 files 
-        * correctly, as sensor_msgs::PointCloud2 does not contain a sensor origin/orientation. Reading any file 
+        * \note This function is provided for backwards compatibility only and
+        * it can only read PCD_V6 files correctly, as sensor_msgs::PointCloud2
+        * does not contain a sensor origin/orientation. Reading any file 
         * > PCD_V6 will generate a warning. 
         *
         * \param file_name the name of the file containing the actual PointCloud data
@@ -127,7 +128,8 @@ namespace pcl
       {
         sensor_msgs::PointCloud2 blob;
         int pcd_version;
-        int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_, pcd_version);
+        int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_, 
+                        pcd_version);
 
         // Exit in case of error
         if (res < 0)
@@ -137,9 +139,6 @@ namespace pcl
       }
   };
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Point Cloud Data (PCD) file format writer.
     * \author Radu Bogdan Rusu
     */
@@ -152,7 +151,8 @@ namespace pcl
         * \param orientation the sensor acquisition orientation
         */
       std::string
-      generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud, const Eigen::Vector4f &origin, 
+      generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud, 
+                            const Eigen::Vector4f &origin, 
                             const Eigen::Quaternionf &orientation);
       /** \brief Generate the header of a PCD v.7 file format
         * \param cloud the point cloud data message
@@ -160,7 +160,8 @@ namespace pcl
         * \param orientation the sensor acquisition orientation
         */
       std::string
-      generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud, const Eigen::Vector4f &origin, 
+      generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud, 
+                           const Eigen::Vector4f &origin, 
                            const Eigen::Quaternionf &orientation);
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
@@ -197,7 +198,8 @@ namespace pcl
         * \param cloud the point cloud data message
         * \param origin the sensor acquisition origin
         * \param orientation the sensor acquisition orientation
-        * \param binary set to true if the file is to be written in a binary PCD format, false (default) for ASCII
+        * \param binary set to true if the file is to be written in a binary
+        * PCD format, false (default) for ASCII
         *
         * Caution: PointCloud structures containing an RGB field have
         * traditionally used packed float values to store RGB data. Storing a
@@ -221,7 +223,8 @@ namespace pcl
       /** \brief Save point cloud data to a PCD file containing n-D points
         * \param file_name the output file name
         * \param cloud the point cloud data message (boost shared pointer)
-        * \param binary set to true if the file is to be written in a binary PCD format, false (default) for ASCII
+        * \param binary set to true if the file is to be written in a binary
+        * PCD format, false (default) for ASCII
         * \param origin the sensor acquisition origin
         * \param orientation the sensor acquisition orientation
         *
@@ -244,7 +247,8 @@ namespace pcl
       /** \brief Save point cloud data to a PCD file containing n-D points
         * \param file_name the output file name
         * \param cloud the pcl::PointCloud data
-        * \param binary set to true if the file is to be written in a binary PCD format, false (default) for ASCII
+        * \param binary set to true if the file is to be written in a binary
+        * PCD format, false (default) for ASCII
         *
         * Caution: PointCloud structures containing an RGB field have
         * traditionally used packed float values to store RGB data. Storing a
@@ -254,7 +258,9 @@ namespace pcl
         * future versions of PCL.
         */
       template<typename PointT> inline int
-      write (const std::string &file_name, const pcl::PointCloud<PointT> &cloud, bool binary = false)
+      write (const std::string &file_name, 
+             const pcl::PointCloud<PointT> &cloud, 
+             bool binary = false)
       {
         Eigen::Vector4f origin = cloud.sensor_origin_;
         Eigen::Quaternionf orientation = cloud.sensor_orientation_;
@@ -269,9 +275,11 @@ namespace pcl
 
   namespace io
   {
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief Load a PCD v.6 file into a templated PointCloud type.
-      * Any PCD files > v.6 will generate a warning as a sensor_msgs/PointCloud2 message cannot hold the sensor origin.
+      * 
+      * Any PCD files > v.6 will generate a warning as a
+      * sensor_msgs/PointCloud2 message cannot hold the sensor origin.
+      *
       * \param file_name the name of the file to load
       * \param cloud the resultant templated point cloud
       */
@@ -282,12 +290,13 @@ namespace pcl
       return (p.read (file_name, cloud));
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief Load any PCD file into a templated PointCloud type.
       * \param file_name the name of the file to load
       * \param cloud the resultant templated point cloud
       * \param origin the sensor acquisition origin (only for > PCD_V7 - null if not present)
-      * \param orientation the sensor acquisition orientation (only for > PCD_V7 - identity if not present)
+      * \param orientation the sensor acquisition orientation (only for >
+      * PCD_V7 - identity if not present)
+      *
       */
     inline int 
     loadPCDFile (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
@@ -298,7 +307,6 @@ namespace pcl
       return (p.read (file_name, cloud, origin, orientation, pcd_version));
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief Load any PCD file into a templated PointCloud type
       * \param file_name the name of the file to load
       * \param cloud the resultant templated point cloud
@@ -310,7 +318,6 @@ namespace pcl
       return (p.read (file_name, cloud));
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief Save point cloud data to a PCD file containing n-D points
       * \param file_name the output file name
       * \param cloud the point cloud data message
@@ -335,8 +342,8 @@ namespace pcl
       return (w.write (file_name, cloud, origin, orientation, binary_mode));
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Templated version for saving point cloud data to a PCD file containing a specific given cloud format
+    /** \brief Templated version for saving point cloud data to a PCD file
+      * containing a specific given cloud format
       * \param file_name the output file name
       * \param cloud the point cloud data message
       * \param binary_mode true for binary mode, false (default) for ASCII
@@ -355,9 +362,10 @@ namespace pcl
       return (w.write<PointT> (file_name, cloud, binary_mode));
     }
 
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Templated version for saving point cloud data to a PCD file containing a specific given cloud format.
+    /** 
+      * \brief Templated version for saving point cloud data to a PCD file
+      * containing a specific given cloud format.
+      *
       *      This version is to retain backwards compatibility.
       * \param file_name the output file name
       * \param cloud the point cloud data message
@@ -376,9 +384,10 @@ namespace pcl
       return (w.write<PointT> (file_name, cloud, false));
     }
 
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Templated version for saving point cloud data to a PCD file containing a specific given cloud format.
+    /** 
+      * \brief Templated version for saving point cloud data to a PCD file
+      * containing a specific given cloud format.
+      *
       *      This version is to retain backwards compatibility.
       * \param file_name the output file name
       * \param cloud the point cloud data message
@@ -391,8 +400,10 @@ namespace pcl
     }
 
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Templated version for saving point cloud data to a PCD file containing a specific given cloud format
+    /** 
+      * \brief Templated version for saving point cloud data to a PCD file
+      * containing a specific given cloud format
+      *
       * \param file_name the output file name
       * \param cloud the point cloud data message
       * \param indices the set of indices to save
