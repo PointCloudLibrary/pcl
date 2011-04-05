@@ -1,16 +1,14 @@
 # Author: Suat Gedikli
 # Date:   4. April 2011
 
-debian : openni_lib 
-	cd ../openni_drivers && make debian && cd -
+debian : ../openni_drivers
+	cd ../openni_drivers && make debian_openni && make debian_engine && cd -
 	cp ../openni_drivers/*openni*.deb .
 	cp ../openni_drivers/*ps_engine*.deb .
+	rename "s|ros-||" ros-*
 
-openni_lib: ../openni_drivers
-	cd ../openni_drivers && make && cd -
-	
 ../openni_drivers:
-	hg clone https://kforge.ros.org/openni/drivers ../openni_drivers -r 249
+	hg clone https://kforge.ros.org/openni/drivers ../openni_drivers -r 251
 	
 clean:
 	rm -rf *.deb
