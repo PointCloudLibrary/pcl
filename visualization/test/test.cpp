@@ -6,6 +6,12 @@ typedef pcl::PointXYZRGB Point;
 int 
   main (int argc, char **argv)
 {
+  if (argc < 2)
+  {
+    std::cerr << "Needs a PCD file as input." << std::endl;
+    return (-1);
+  }
+
   srand (time (0));
 
   pcl::PointCloud<Point> cloud;
