@@ -51,19 +51,18 @@ struct KeypointT
 {
   float x, y, z, scale;
 };
+  
+PointCloud<PointXYZI>::Ptr cloud_xyzi (new PointCloud<PointXYZI>);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, SIFTKeypoint)
 {
-  PointCloud<PointXYZI>::Ptr cloud_xyzi (new PointCloud<PointXYZI> ());
   PointCloud<KeypointT> keypoints;
-
-  // Load a sample point cloud
-  io::loadPCDFile ("./test/cturtle.pcd", *cloud_xyzi);
 
   // Compute the SIFT keypoints
   SIFTKeypoint<PointXYZI, KeypointT> sift_detector;
-  sift_detector.setSearchMethod (boost::make_shared<KdTreeFLANN<PointXYZI> > ());
+  KdTreeFLANN<PointXYZI>::Ptr tree (new KdTreeFLANN<PointXYZI>);
+  sift_detector.setSearchMethod (tree);
   sift_detector.setScales (0.02, 5, 3);
   sift_detector.setMinimumContrast (0.03);
 
@@ -104,6 +103,19 @@ TEST (PCL, SIFTKeypoint)
 int
   main (int argc, char** argv)
 {
+  if (argc < 2)
+  {
+    std::cerr << "No test file given. Please download `cturtle.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+
+  // Load a sample point cloud
+  if (io::loadPCDFile (argv[1], *cloud_xyzi) < 0)
+  {
+    std::cerr << "Failed to read test file. Please download `cturtle.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }

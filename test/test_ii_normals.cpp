@@ -68,8 +68,19 @@ TEST (PCL, IINormalEstimation)
 int
   main (int argc, char** argv)
 {
+  if (argc < 2)
+  {
+    std::cerr << "No test file given. Please download `table_scene_mug_stereo_textured.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+
   sensor_msgs::PointCloud2 cloud_blob;
-  loadPCDFile ("./test/table_scene_mug_stereo_textured.pcd", cloud_blob);
+  if (loadPCDFile (argv[1], cloud_blob) < 0)
+  {
+    std::cerr << "Failed to read test file. Please download `table_scene_mug_stereo_textured.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+
   fromROSMsg (cloud_blob, cloud);
   
   normalEstimator.setInputData(

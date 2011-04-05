@@ -1152,7 +1152,7 @@ int
   sensor_msgs::PointCloud2 cloud_blob;
   if (loadPCDFile (argv[1], cloud_blob) < 0)
   {
-    std::cerr << "Failed to read teset file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
 

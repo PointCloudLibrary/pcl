@@ -107,9 +107,19 @@ TEST (ExtractPolygonalPrism, Segmentation)
 int
   main (int argc, char** argv)
 {
+  if (argc < 2)
+  {
+    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+
   // Load a standard PCD file from disk
   PointCloud<PointXYZ> cloud, cloud_t;
-  loadPCDFile ("./test/bun0.pcd", cloud);
+  if (loadPCDFile (argv[1], cloud) < 0)
+  {
+    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
 
   // Tranpose the cloud
   cloud_t = cloud;

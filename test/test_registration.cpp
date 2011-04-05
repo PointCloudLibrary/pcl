@@ -276,12 +276,23 @@ TEST (PCL, SampleConsensusInitialAlignment)
 int
   main (int argc, char** argv)
 {
-  // Input
-  loadPCDFile ("test/bun0.pcd", cloud_source);
-  loadPCDFile ("test/bun4.pcd", cloud_target);
+  if (argc < 3)
+  {
+    std::cerr << "No test files given. Please download `bun0.pcd` and `bun4.pcd` and pass their path to the test." << std::endl;
+    return (-1);
+  }
 
-  //loadPCDFile ("test/bun045.pcd", cloud_source);
-  //loadPCDFile ("test/bun000.pcd", cloud_target);
+  // Input
+  if (loadPCDFile (argv[1], cloud_source) < 0)
+  {
+    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+  if (loadPCDFile (argv[2], cloud_target) < 0)
+  {
+    std::cerr << "Failed to read test file. Please download `bun4.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

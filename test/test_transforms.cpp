@@ -66,6 +66,7 @@ class MyPointXYZ : public PointXYZ
 };
 
 PointCloud<PointXYZ> cloud;
+sensor_msgs::PointCloud2 cloud_blob;
 
 void 
   init ()
@@ -80,12 +81,10 @@ void
   cloud.points.push_back (p3);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, DeMean)
 {
   PointCloud<PointXYZ> cloud, cloud_demean;
-  sensor_msgs::PointCloud2 cloud_blob;
-  loadPCDFile ("./test/bun0.pcd", cloud_blob);
   fromROSMsg (cloud_blob, cloud);
 
   Eigen::Vector4f centroid;
@@ -156,7 +155,7 @@ TEST (PCL, DeMean)
   EXPECT_NEAR (mat_demean (2, cloud_demean.points.size () - 1), -0.071702, 1e-4);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Transform)
 {
   Eigen::Vector3f offset (100, 0, 0);
@@ -203,7 +202,7 @@ TEST (PCL, Transform)
   EXPECT_EQ (1, points2[3].z);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, commonTransform)
 {
   Eigen::Vector3f xaxis (1,0,0), yaxis (0,1,0), zaxis (0,0,1);
@@ -226,6 +225,17 @@ TEST (PCL, commonTransform)
 int
   main (int argc, char** argv)
 {
+  if (argc < 2)
+  {
+    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+  if (loadPCDFile (argv[1], cloud_blob) < 0)
+  {
+    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+
   testing::InitGoogleTest (&argc, argv);
   init();
   return (RUN_ALL_TESTS ());

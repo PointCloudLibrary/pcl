@@ -815,9 +815,19 @@ TEST (RANSAC, SampleConsensusModelNormalPlane)
 int
   main (int argc, char** argv)
 {
+  if (argc < 2)
+  {
+    std::cerr << "No test file given. Please download `sac_plane_test.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+
   // Load a standard PCD file from disk
   sensor_msgs::PointCloud2 cloud_blob;
-  loadPCDFile ("./test/sac_plane_test.pcd", cloud_blob);
+  if (loadPCDFile (argv[1], cloud_blob) < 0)
+  {
+    std::cerr << "Failed to read test file. Please download `sac_plane_test.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
   fromROSMsg (cloud_blob, *cloud_);
 
   indices_.resize (cloud_->points.size ());
