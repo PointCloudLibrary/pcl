@@ -19,6 +19,8 @@ else(NOT VTK_FOUND)
 endif(NOT VTK_FOUND)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
+message(STATUS "VTK_LIBRARY_DIRS ${VTK_LIBRARY_DIRS}")
+message(STATUS "VTK_LIBRARIES ${VTK_LIBRARY_DIRS}")
 
 if(build)
     include(${wxWidgets_USE_FILE})
@@ -45,12 +47,8 @@ if(build)
     target_link_libraries(${LIB_NAME} ${wxWidgets_LIBRARIES}
         vtkCommon vtkWidgets vtkHybrid ${Boost_LIBRARIES})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-    #list(APPEND EXT_DEPS openni-dev)
-    #PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-    #    "${EXT_DEPS}" "" "" "")
-        
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-        "" "" "" "")
+      "${EXT_DEPS}" "" "" "-L${VTK_LIBRARY_DIRS} -lvtkCommon -lvtkWidgets -lvtkHybrid")
 
     # Install include files
     set(incs include/pcl/${SUBSYS_NAME}/cloud_viewer.h
