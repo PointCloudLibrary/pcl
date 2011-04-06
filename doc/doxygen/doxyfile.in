@@ -107,7 +107,6 @@ FILE_PATTERNS          = *.h \
 												 *.doxy
 RECURSIVE              = YES
 EXCLUDE                = */.svn \
-                         @PCL_BINARY_DIR@ \
                          @PCL_SOURCE_DIR@/cmake
 EXCLUDE_SYMLINKS       = YES
 EXCLUDE_PATTERNS       = 
