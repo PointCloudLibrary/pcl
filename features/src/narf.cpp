@@ -365,38 +365,40 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
     if (!feature->extractFromRangeImage(range_image, point, descriptor_size, support_size))
     {
       delete feature;
-      continue;
     }
-    if (!rotation_invariant)
-    {
-#     pragma omp critical
+    else {
+      if (!rotation_invariant)
       {
-        feature_list.push_back(feature);
-      }
-      continue;
-    }
-    vector<float> rotations, strengths;
-    feature->getRotations(rotations, strengths);
-    {
-      //feature->getRotatedVersions(range_image, rotations, feature_list);
-      for (unsigned int i=0; i<rotations.size(); ++i)
-      {
-        float rotation = rotations[i];
-        Narf* feature2 = new Narf(*feature);  // Call copy constructor
-        feature2->transformation_ = Eigen::AngleAxisf(-rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f))*feature2->transformation_;
-        feature2->surface_patch_rotation_ = rotation;
-        if (!feature2->extractDescriptor(feature2->descriptor_size_))
-        {
-          delete feature2;
-          continue;
-        }
 #       pragma omp critical
         {
-          feature_list.push_back(feature2);
+          feature_list.push_back(feature);
         }
       }
+      else {
+        vector<float> rotations, strengths;
+        feature->getRotations(rotations, strengths);
+        {
+          //feature->getRotatedVersions(range_image, rotations, feature_list);
+          for (unsigned int i=0; i<rotations.size(); ++i)
+          {
+            float rotation = rotations[i];
+            Narf* feature2 = new Narf(*feature);  // Call copy constructor
+            feature2->transformation_ = Eigen::AngleAxisf(-rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f))*feature2->transformation_;
+            feature2->surface_patch_rotation_ = rotation;
+            if (!feature2->extractDescriptor(feature2->descriptor_size_))
+            {
+              delete feature2;
+              continue;
+            }
+#           pragma omp critical
+            {
+              feature_list.push_back(feature2);
+            }
+          }
+        }
+        delete feature;
+      }
     }
-    delete feature;
   }
 }
 
