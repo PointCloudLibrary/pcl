@@ -30,6 +30,7 @@ add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing")
 else(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 add_definitions ("-W0 -DEIGEN_USE_NEW_STDVECTOR -DEIGEN2_SUPPORT")
 endif(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH true)
 
 # Find universal dependencies
 # Find ROS
