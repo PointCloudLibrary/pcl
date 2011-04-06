@@ -63,6 +63,7 @@ namespace pcl
       {
 
       public:
+
         /** \brief Constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */

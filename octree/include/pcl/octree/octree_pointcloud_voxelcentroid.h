@@ -61,6 +61,9 @@ namespace pcl
       {
 
       public:
+        // public typedefs for single/double buffering
+        typedef OctreePointCloudVoxelCentroids<PointT, LeafT, OctreeBase<int, LeafT> > SingleBuffer;
+        typedef OctreePointCloudVoxelCentroids<PointT, LeafT, Octree2BufBase<int, LeafT> > DoubleBuffer;
 
         /** \brief OctreePointCloudVoxelCentroids class constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level

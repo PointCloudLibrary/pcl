@@ -130,6 +130,9 @@ namespace pcl
       {
 
       public:
+        // public typedefs for single/double buffering
+        typedef OctreePointCloudDensity<PointT, LeafT, OctreeBase<int, LeafT> > SingleBuffer;
+        typedef OctreePointCloudDensity<PointT, LeafT, Octree2BufBase<int, LeafT> > DoubleBuffer;
 
         /** \brief OctreePointCloudDensity class constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
