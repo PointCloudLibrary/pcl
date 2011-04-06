@@ -102,8 +102,7 @@ lrintf (float flt)
   };
   return (intgr);
 }
-#else
-
+#endif
 
 // Generic helper definitions for shared library support
 // see http://gcc.gnu.org/wiki/Visibility for more information
