@@ -35,6 +35,8 @@
 
 /* \author Stefan Holzer */
 
+#include <cstddef>
+
 template <class DataType, class IIDataType>
 pcl::IntegralImage2D<DataType, IIDataType>::IntegralImage2D (
     DataType * data, const int width, const int height,
