@@ -17,10 +17,20 @@ Simple Example
 
 In *visualization*, there is a very short piece of code which contains all that
 is required to set up a *pcl::PointCloud<XYZ>* or *pcl::PointCloud<XYZRGB>*
-cloud callback:
+cloud callback.
 
+Here is a screenshot and a video of the PCL Kinect Viewer in action, which uses
+the Kinect Grabber.
 
-From *visualization/tools/kinect_viewer_simple.cpp*
+.. image:: images/pcl_kinect_viewer.png
+   :height: 390px
+   :target: _images/pcl_kinect_viewer.png
+
+.. raw:: html
+  
+  <iframe title="PCL Kinect Viewer example" width="480" height="390" src="http://www.youtube.com/embed/x3SaWQkPsPI?rel=0" frameborder="0" allowfullscreen></iframe>
+
+So let's look at the code. From *visualization/tools/kinect_viewer_simple.cpp*
 
 .. code-block:: cpp
    :linenos:
