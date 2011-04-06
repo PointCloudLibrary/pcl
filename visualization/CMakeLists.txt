@@ -44,11 +44,11 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
-    target_link_libraries(${LIB_NAME} ${wxWidgets_LIBRARIES}
+    target_link_libraries(${LIB_NAME} pcl_io pcl_range_image ${wxWidgets_LIBRARIES}
         vtkCommon vtkWidgets vtkHybrid ${Boost_LIBRARIES})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-      "${EXT_DEPS}" "" "" "-L${VTK_LIBRARY_DIRS} -lvtkCommon -lvtkWidgets -lvtkHybrid")
+      "${EXT_DEPS}" "" "" "")
 
     # Install include files
     set(incs include/pcl/${SUBSYS_NAME}/cloud_viewer.h
