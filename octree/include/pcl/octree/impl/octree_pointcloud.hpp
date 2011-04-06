@@ -529,7 +529,8 @@ namespace pcl
 
         const PointT& point = input_->points[pointIdx_arg];
 
-        while (this->octreeCanResize ())
+        // increase octree size until point fits into bounding box
+        while ( true )
         {
 
           bool bLowerBoundViolationX = (point.x < minX_);
@@ -606,13 +607,12 @@ namespace pcl
 
             }
 
-            //
-
             getKeyBitSize ();
 
           }
           else
           {
+            // no bound violations anymore - leave while loop
             break;
           }
         }

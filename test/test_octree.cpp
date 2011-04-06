@@ -686,6 +686,71 @@ TEST (PCL, Octree_Pointcloud_Occupancy_Test)
 
 }
 
+TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
+{
+  const unsigned int test_runs = 100;
+  unsigned int test_id;
+
+  // instantiate point cloud
+
+  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+
+  OctreePointCloudChangeDetector<PointXYZ> octree (0.01f);
+
+  size_t i;
+
+  srand (time (NULL));
+
+  cloudIn->width = 1000;
+  cloudIn->height = 1;
+  cloudIn->points.resize (cloudIn->width * cloudIn->height);
+
+  // generate point data for point cloud
+  for (i = 0; i < 1000; i++)
+  {
+    cloudIn->points[i] = PointXYZ (5.0 * ((double)rand () / (double)RAND_MAX),
+                                   10.0 * ((double)rand () / (double)RAND_MAX),
+                                   10.0 * ((double)rand () / (double)RAND_MAX));
+  }
+
+  // create octree based on pointcloud data
+  octree.setInputCloud (cloudIn);
+
+  // add points from cloud to octree
+  octree.addPointsFromInputCloud ();
+
+  // switch buffers - reset tree
+  octree.switchBuffers ();
+
+  // add points from cloud to new octree buffer
+  octree.addPointsFromInputCloud();
+
+  // add 1000 additional points
+  for (i = 0; i < 1000; i++)
+  {
+    octree.addPointToCloud (
+                            PointXYZ (100 + 5.0 * ((double)rand () / (double)RAND_MAX),
+                                      100 + 10.0 * ((double)rand () / (double)RAND_MAX),
+                                      100 + 10.0 * ((double)rand () / (double)RAND_MAX)), cloudIn);
+  }
+
+
+  vector<int> newPointIdxVector;
+
+  // get a vector of new points, which did not exist in previous buffer
+  octree.getPointIndicesFromNewVoxels (newPointIdxVector);
+
+  // should be 1000
+  ASSERT_EQ ( newPointIdxVector.size() , 1000 );
+
+  // all point indices found should have an index of >= 1000
+  for (i = 0; i < 1000; i++)
+  {
+    ASSERT_EQ( ( newPointIdxVector [i] >= 1000 ), true);
+  }
+
+}
+
 // helper class for priority queue
 class prioPointQueueEntry
 {

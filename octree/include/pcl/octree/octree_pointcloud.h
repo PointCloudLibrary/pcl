@@ -638,6 +638,7 @@ namespace pcl
         unsigned int octreeDepth_;
 
       };
+
   }
 }
 

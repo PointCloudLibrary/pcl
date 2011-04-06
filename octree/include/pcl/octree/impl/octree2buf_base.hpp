@@ -767,7 +767,7 @@ namespace pcl
               case BRANCH_NODE:
 
                 // recursively proceed with indexed child branch
-                serializeLeafsRecursive ((OctreeBranch*)childNode, newKey, dataVector_arg);
+                serializeNewLeafsRecursive ((OctreeBranch*)childNode, newKey, dataVector_arg);
                 break;
               case LEAVE_NODE:
                 // check if leaf existed already in previous buffer
