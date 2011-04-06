@@ -45,8 +45,6 @@
 # define pcl_isfinite(x) _finite(x)
 # define pcl_isinf(x)    (!_finite(x))
 
-# define lrint(x) (floor(x+(x>0) ? 0.5 : -0.5))
-
 # define __PRETTY_FUNCTION__ __FUNCTION__
 # define __func__ __FUNCTION__
 
@@ -78,6 +76,7 @@
   * Therefore implement inline versions of these functions here.
   */
 #if (defined (WIN32) || defined (_WIN32))
+//# define lrint(x) (floor(x+(x>0) ? 0.5 : -0.5))
 #include <math.h>
 __inline long int
 lrint (double flt)
