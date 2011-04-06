@@ -32,6 +32,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/octree_pointcloud_singlepoint.h
         include/pcl/${SUBSYS_NAME}/octree_pointcloud_pointvector.h
         include/pcl/${SUBSYS_NAME}/octree_pointcloud_changedetector.h
+        include/pcl/${SUBSYS_NAME}/octree_pointcloud_voxelcentroid.h
         include/pcl/${SUBSYS_NAME}/octree_pointcloud.h
         include/pcl/${SUBSYS_NAME}/octree.h
         include/pcl/${SUBSYS_NAME}/octree2buf_base.h

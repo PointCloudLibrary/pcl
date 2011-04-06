@@ -49,5 +49,6 @@
 #include <pcl/octree/octree_pointcloud_singlepoint.h>
 #include <pcl/octree/octree_pointcloud_pointvector.h>
 #include <pcl/octree/octree_pointcloud_changedetector.h>
+#include <pcl/octree/octree_pointcloud_voxelcentroid.h>
 
 #endif

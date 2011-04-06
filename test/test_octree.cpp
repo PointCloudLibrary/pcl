@@ -670,7 +670,7 @@ TEST (PCL, Octree_Pointcloud_Occupancy_Test)
                                      10.0 * ((double)rand () / (double)RAND_MAX));
     }
 
-    // create octree based on pointcloud data
+    // create octree
     octree.setInputCloud (cloudIn);
     octree.addPointsFromInputCloud();
 
@@ -713,7 +713,7 @@ TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
                                    10.0 * ((double)rand () / (double)RAND_MAX));
   }
 
-  // create octree based on pointcloud data
+  // assign point cloud to octree
   octree.setInputCloud (cloudIn);
 
   // add points from cloud to octree
@@ -747,6 +747,55 @@ TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
   for (i = 0; i < 1000; i++)
   {
     ASSERT_EQ( ( newPointIdxVector [i] >= 1000 ), true);
+  }
+
+}
+
+TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
+{
+
+  // instantiate point cloud
+
+  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+
+  OctreePointCloudVoxelCentroids<PointXYZ> octree (1.0f);
+  octree.defineBoundingBox(10.0, 10.0, 10.0);
+
+  size_t i;
+
+  srand (time (NULL));
+
+  cloudIn->width = 10*3;
+  cloudIn->height = 1;
+  cloudIn->points.resize (cloudIn->width * cloudIn->height);
+
+  // generate point data for point cloud
+  for (i = 0; i < 10; i++)
+  {
+    // these three points should always be assigned to the same voxel in the octree
+    cloudIn->points[i*3+0] = PointXYZ ( (float)i+0.2, (float)i+0.2, (float)i+0.2 );
+    cloudIn->points[i*3+1] = PointXYZ ( (float)i+0.4, (float)i+0.4, (float)i+0.4 );
+    cloudIn->points[i*3+2] = PointXYZ ( (float)i+0.6, (float)i+0.6, (float)i+0.6 );
+  }
+
+  // assign point cloud to octree
+  octree.setInputCloud (cloudIn);
+
+  // add points from cloud to octree
+  octree.addPointsFromInputCloud ();
+
+  std::vector<PointXYZ> voxelCentroids;
+  octree.getVoxelCentroids (voxelCentroids);
+
+  // we expect 10 voxel centroids
+  ASSERT_EQ ( voxelCentroids.size() , 10 );
+
+  // check centroid calculation
+  for (i = 0; i < 10; i++)
+  {
+    EXPECT_NEAR (voxelCentroids[i].x, (float)i+0.4, 1e-4);
+    EXPECT_NEAR (voxelCentroids[i].y, (float)i+0.4, 1e-4);
+    EXPECT_NEAR (voxelCentroids[i].z, (float)i+0.4, 1e-4);
   }
 
 }
@@ -793,7 +842,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 
   std::priority_queue<prioPointQueueEntry> pointCandidates;
 
-  // create octree based on pointcloud data
+  // create octree
   OctreePointCloud<PointXYZ> octree (0.1);
   octree.setInputCloud (cloudIn);
 
@@ -917,6 +966,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
 
     OctreePointCloud<PointXYZ> octree (0.001);
 
+    // build octree
     octree.setInputCloud (cloudIn);
     octree.addPointsFromInputCloud();
 

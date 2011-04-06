@@ -53,7 +53,6 @@
 
 
 // Instantiations of specific point types
-//
 
 
 template class pcl::octree::OctreeBase<int> ;
@@ -70,5 +69,8 @@ PCL_INSTANTIATE(OctreePointCloudSinglePoint, PCL_XYZ_POINT_TYPES);
 PCL_INSTANTIATE(OctreePointCloudPointVector, PCL_XYZ_POINT_TYPES);
 
 PCL_INSTANTIATE(OctreePointCloudChangeDetector, PCL_XYZ_POINT_TYPES);
+
+PCL_INSTANTIATE(OctreePointCloudVoxelCentroids, PCL_XYZ_POINT_TYPES);
+
 
 
