@@ -164,6 +164,20 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
       bool
+      OctreePointCloud<PointT, LeafT, OctreeT>::isVoxelOccupiedAtPoint (const int& pointIdx_arg) const
+      {
+
+        // retrieve point from input cloud
+        const PointT& point = this->input_->points[pointIdx_arg];
+
+        // search for voxel at point in octree
+        return this->isVoxelOccupiedAtPoint (point);
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      bool
       OctreePointCloud<PointT, LeafT, OctreeT>::isVoxelOccupiedAtPoint (const double pointX_arg,
                                                                         const double pointY_arg,
                                                                         const double pointZ_arg) const
@@ -220,7 +234,20 @@ namespace pcl
         // generate key for point
         this->genOctreeKeyforPoint (point_arg, key);
 
-        return this->removeLeaf (key);
+        this->removeLeaf (key);
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::deleteVoxelAtPoint (const int& pointIdx_arg)
+      {
+        // retrieve point from input cloud
+        const PointT& point = this->input_->points[pointIdx_arg];
+
+        // delete leaf at point
+        this->deleteVoxelAtPoint (point);
+
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1112,6 +1139,7 @@ namespace pcl
   }
 }
 
-#define PCL_INSTANTIATE_OctreePointCloud(T) template class pcl::octree::OctreePointCloud<T>;
+#define PCL_INSTANTIATE_OctreePointCloudSingleBuffer(T) template class pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafDataTVector<int> , pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafDataTVector<int> > >;
+#define PCL_INSTANTIATE_OctreePointCloudDoubleBuffer(T) template class pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafDataTVector<int> , pcl::octree::Octree2BufBase<int, pcl::octree::OctreeLeafDataTVector<int> > >;
 
 #endif /* OCTREE_POINTCLOUD_HPP_ */

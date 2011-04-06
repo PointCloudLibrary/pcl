@@ -758,7 +758,7 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
 
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-  OctreePointCloudVoxelCentroids<PointXYZ> octree (1.0f);
+  OctreePointCloudVoxelCentroid<PointXYZ> octree (1.0f);
   octree.defineBoundingBox(10.0, 10.0, 10.0);
 
   size_t i;

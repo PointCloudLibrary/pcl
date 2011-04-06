@@ -103,8 +103,11 @@ namespace pcl
         inline void
         setInputCloud (const PointCloudConstPtr &cloud_arg, const IndicesConstPtr &indices_arg = IndicesConstPtr ())
         {
-          input_ = cloud_arg;
-          indices_ = indices_arg;
+          if (input_ != cloud_arg)
+          {
+            input_ = cloud_arg;
+            indices_ = indices_arg;
+          }
         }
 
         /** \brief Get a pointer to the vector of indices used.
@@ -183,6 +186,13 @@ namespace pcl
         bool
         isVoxelOccupiedAtPoint (const double pointX_arg, const double pointY_arg, const double pointZ_arg) const;
 
+        /** \brief Check if voxel at given point from input cloud exist.
+         *  \param pointIdx_arg: point to be checked
+         *  \return "true" if voxel exist; "false" otherwise
+         * */
+        bool
+        isVoxelOccupiedAtPoint (const int& pointIdx_arg) const;
+
         /** \brief Search for neighbors within a voxel at given point
          *  \param point_arg: point addressing a leaf node voxel
          *  \param pointIdx_data_arg: the resultant indices of the neighboring voxel points
@@ -198,12 +208,6 @@ namespace pcl
          * */
         bool
         voxelSearch (const int index_arg, std::vector<int>& pointIdx_data_arg);
-
-        /** \brief Delete leaf node / voxel at given point
-         *  \param point_arg: point addressing the voxel to be deleted.
-         * */
-        void
-        deleteVoxelAtPoint (const PointT& point_arg);
 
         /** \brief Search for k-nearest neighbors at the query point.
          * \param cloud_arg: the point cloud data
@@ -286,7 +290,19 @@ namespace pcl
          * \return number of occupied voxels
          */
         int
-        getOccupiedVoxelCenters ( std::vector<PointT> &voxelCenterList_arg ) const;
+        getOccupiedVoxelCenters (std::vector<PointT> &voxelCenterList_arg) const;
+
+        /** \brief Delete leaf node / voxel at given point
+         *  \param point_arg: point addressing the voxel to be deleted.
+         * */
+        void
+        deleteVoxelAtPoint (const PointT& point_arg);
+
+        /** \brief Delete leaf node / voxel at given point from input cloud
+         *  \param pointIdx_arg: index of point addressing the voxel to be deleted.
+         * */
+        void
+        deleteVoxelAtPoint (const int& pointIdx_arg);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Bounding box methods

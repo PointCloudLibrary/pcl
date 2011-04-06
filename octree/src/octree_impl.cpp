@@ -58,7 +58,11 @@
 template class pcl::octree::OctreeBase<int> ;
 template class pcl::octree::Octree2BufBase<int> ;
 
-PCL_INSTANTIATE(OctreePointCloud, PCL_XYZ_POINT_TYPES);
+template class pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafDataTVector<int> > ;
+template class pcl::octree::Octree2BufBase<int, pcl::octree::OctreeLeafDataTVector<int> > ;
+
+PCL_INSTANTIATE(OctreePointCloudSingleBuffer, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(OctreePointCloudDoubleBuffer, PCL_XYZ_POINT_TYPES);
 
 PCL_INSTANTIATE(OctreePointCloudDensity, PCL_XYZ_POINT_TYPES);
 
@@ -70,7 +74,7 @@ PCL_INSTANTIATE(OctreePointCloudPointVector, PCL_XYZ_POINT_TYPES);
 
 PCL_INSTANTIATE(OctreePointCloudChangeDetector, PCL_XYZ_POINT_TYPES);
 
-PCL_INSTANTIATE(OctreePointCloudVoxelCentroids, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(OctreePointCloudVoxelCentroid, PCL_XYZ_POINT_TYPES);
 
 
 
