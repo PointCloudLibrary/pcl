@@ -73,6 +73,38 @@
 #define M_E 2.7182818284590452354
 #endif
 
+
+/** Win32 doesn't seem to have these functions.
+  * Therefore implement inline versions of these functions here.
+  */
+#if (defined (WIN32) || defined (_WIN32))
+#include <math.h>
+__inline long int
+lrint (double flt)
+{
+  int intgr;
+  _asm
+  {
+      fld flt
+      fistp intgr
+  };
+  return (intgr);
+}
+
+__inline long int
+lrintf (float flt)
+{
+   int intgr;
+   _asm
+  {
+    fld flt
+    fistp intgr
+  };
+  return (intgr);
+}
+#else
+
+
 // Generic helper definitions for shared library support
 // see http://gcc.gnu.org/wiki/Visibility for more information
 #if defined _WIN32 || defined __CYGWIN__
