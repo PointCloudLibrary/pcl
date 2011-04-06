@@ -37,7 +37,13 @@
 #ifndef TERMINAL_TOOLS_TIME_H_
 #define TERMINAL_TOOLS_TIME_H_
 
-#include <sys/time.h>
+#ifdef _WIN32
+  #include <time.h>
+  #include <windows.h>
+#else
+  #include <sys/time.h>
+#endif
+
 #include <pcl/terminal_tools/print.h>
 
 namespace terminal_tools
