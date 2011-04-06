@@ -210,7 +210,7 @@ namespace pcl
           /** \brief Constructor for initializing child node pointer array. */
           OctreeBranch ()
           {
-            memset (subNodes_, 0, sizeof(subNodes_));
+            memset (this->subNodes_, 0, sizeof(this->subNodes_));
           }
 
           /** \brief Empty deconstructor. */
@@ -248,6 +248,18 @@ namespace pcl
          * */
         virtual bool
         genOctreeKey (const DataT& data_arg, OctreeKey & key_arg) const
+        {
+          // this class cannot relate DataT objects to octree keys
+          return false;
+        }
+
+        /** \brief Virtual method for initializing new leaf node during deserialization (in case no DataT information is provided)
+         *  \param key_arg: write generated octree key to this octree key reference
+         *  \param data_arg: generated DataT object
+         *  \return "true" if DataT object could be generated; "false" otherwise
+         *  */
+        virtual bool
+        getDataTByKey (const OctreeKey & key_arg, DataT& data_arg) const
         {
           // this class cannot relate DataT objects to octree keys
           return false;
@@ -759,7 +771,7 @@ namespace pcl
          **/
         void
         deserializeTreeRecursive (std::istream& binaryTreeIn_arg, OctreeBranch* branch_arg,
-                                  const unsigned int depthMask_arg);
+                                  const unsigned int depthMask_arg, const OctreeKey& key_arg);
 
         /** \brief Rebuild an octree based on binary XOR octree description and DataT objects for leaf node initialization.
          *  \param binaryTreeIn_arg: reference to input stream
@@ -770,7 +782,7 @@ namespace pcl
          **/
         void
         deserializeTreeRecursive (std::istream& binaryTreeIn_arg, OctreeBranch* branch_arg,
-                                  const unsigned int depthMask_arg, OctreeKey& key,
+                                  const unsigned int depthMask_arg, const OctreeKey& key,
                                   typename std::vector<DataT>::iterator& dataVectorIterator_arg,
                                   typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg);
 

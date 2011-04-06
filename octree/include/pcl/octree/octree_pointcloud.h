@@ -93,7 +93,6 @@ namespace pcl
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
         /** \brief Provide a pointer to the input data set.
-         *  \note This method deletes also the current tree structure and leaf nodes
          *  \param cloud_arg: the const boost shared pointer to a PointCloud message
          *  \param indices_arg: the point indices subset that is to be used from \a cloud - if NULL the whole point cloud is used
          */
@@ -102,8 +101,6 @@ namespace pcl
         {
           input_ = cloud_arg;
           indices_ = indices_arg;
-
-          this->deleteTree();
         }
 
         /** \brief Get a pointer to the vector of indices used.
@@ -213,7 +210,7 @@ namespace pcl
          * a priori!)
          * \return number of neighbors found
          */
-        virtual int
+        int
         nearestKSearch (const PointCloud &cloud_arg, int index_arg, int k, std::vector<int> &k_indices_arg,
                         std::vector<float> &k_sqr_distances_arg);
 
@@ -225,7 +222,7 @@ namespace pcl
          * a priori!)
          * \return number of neighbors found
          */
-        virtual int
+        int
         nearestKSearch (const PointT &p_q_arg, int k_arg, std::vector<int> &k_indices_arg,
                         std::vector<float> &k_sqr_distances_arg);
 
@@ -238,7 +235,7 @@ namespace pcl
          * a priori!)
          * \return number of neighbors found
          */
-        virtual int
+        int
         nearestKSearch (int index_arg, int k_arg, std::vector<int> &k_indices_arg,
                         std::vector<float> &k_sqr_distances_arg);
 
@@ -251,7 +248,7 @@ namespace pcl
          * \param max_nn_arg: if given, bounds the maximum returned neighbors to this value
          * \return number of neighbors found in radius
          */
-        virtual int
+        int
         radiusSearch (const PointCloud &cloud_arg, int index_arg, double radius, std::vector<int> &k_indices_arg,
                       std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX);
 
@@ -263,7 +260,7 @@ namespace pcl
          * \param max_nn_arg: if given, bounds the maximum returned neighbors to this value
          * \return number of neighbors found in radius
          */
-        virtual int
+        int
         radiusSearch (const PointT &p_q_arg, const double radius_arg, std::vector<int> &k_indices_arg,
                       std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX) const;
 
@@ -276,9 +273,16 @@ namespace pcl
          * \param max_nn_arg: if given, bounds the maximum returned neighbors to this value
          * \return number of neighbors found in radius
          */
-        virtual int
+        int
         radiusSearch (int index_arg, const double radius_arg, std::vector<int> &k_indices_arg,
                       std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX) const;
+
+        /** \brief Get a PointT vector of centers of all occupied voxels.
+         * \param voxelCenterList_arg: results are written to this vector of PointT elements
+         * \return number of occupied voxels
+         */
+        int
+        getOccupiedVoxelCenters ( std::vector<PointT> &voxelCenterList_arg ) const;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Bounding box methods
@@ -333,6 +337,39 @@ namespace pcl
         void
         getBoundingBox (double& minX_arg, double& minY_arg, double& minZ_arg, double& maxX_arg, double& maxY_arg,
                         double& maxZ_arg) const ;
+
+        /** \brief Calculates the squared diameter of a voxel at given tree depth
+         * \param treeDepth_arg: depth/level in octree
+         * \return squared diameter
+         */
+        double
+        getVoxelSquaredDiameter (unsigned int treeDepth_arg) const ;
+
+        /** \brief Calculates the squared diameter of a voxel at leaf depth
+         * \return squared diameter
+         */
+        inline double
+        getVoxelSquaredDiameter ( ) const
+        {
+          return getVoxelSquaredDiameter( this->octreeDepth_ );
+        }
+
+        /** \brief Calculates the squared voxel cube side length at given tree depth
+         * \param treeDepth_arg: depth/level in octree
+         * \return squared voxel cube side length
+         */
+        double
+        getVoxelSquaredSideLen (unsigned int treeDepth_arg) const ;
+
+        /** \brief Calculates the squared voxel cube side length at leaf level
+         * \return squared voxel cube side length
+         */
+        inline double
+        getVoxelSquaredSideLen () const
+        {
+          return getVoxelSquaredSideLen( this->octreeDepth_ );
+        }
+
 
         typedef typename OctreeT::OctreeLeaf OctreeLeaf;
 
@@ -501,20 +538,6 @@ namespace pcl
 
         };
 
-        /** \brief Calculates the squared diameter of a voxel at given tree depth
-         * \param treeDepth_arg: depth/level in octree
-         * \return squared diameter
-         */
-        double
-        getVoxelSquaredDiameter (unsigned int treeDepth_arg) const ;
-
-        /** \brief Calculates the squared voxel cube side length at given tree depth
-         * \param treeDepth_arg: depth/level in octree
-         * \return squared voxel cube side length
-         */
-        double
-        getVoxelSquaredSideLen (unsigned int treeDepth_arg) const ;
-
         /** \brief Helper function to calculate the squared distance between two points
          * \param pointA_arg: point A
          * \param pointA_arg: point B
@@ -522,6 +545,18 @@ namespace pcl
          */
         double
         pointSquaredDist (const PointT & pointA_arg, const PointT & pointB_arg) const;
+
+
+        /** \brief Helper function to calculate the binary logarithm
+         * \param n_arg: some value
+         * \return binary logarithm (log2) of argument n_arg
+         */
+        inline double Log2( double n_arg )
+        {
+           return log( n_arg ) / log( 2.0 );
+        }
+
+
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Recursive search routine methods
@@ -559,6 +594,16 @@ namespace pcl
                                       const OctreeKey& key_arg, unsigned int treeDepth_arg,
                                       const double squaredSearchRadius_arg,
                                       std::priority_queue<prioPointQueueEntry>& pointCandidates_arg) const;
+
+
+        /** \brief Recursively search the tree for all leaf nodes and return a vector of voxel centers.
+         * \param node_arg: current octree node to be explored
+         * \param key_arg: octree key addressing a leaf node.
+         * \param voxelCenterList_arg: results are written to this vector of PointT elements
+         * \return number of voxels found
+         */
+        int
+        getOccupiedVoxelCentersRecursive ( const OctreeBranch* node_arg, const OctreeKey& key_arg, std::vector<PointT> &voxelCenterList_arg ) const;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Globals

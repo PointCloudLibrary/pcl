@@ -82,8 +82,9 @@ namespace pcl
           std::vector<int>::const_iterator current = indices_->begin ();
           while (current != indices_->end ())
           {
-            if (pcl_isfinite(input_->points[*current].x) && pcl_isfinite(input_->points[*current].y)
-                && pcl_isfinite(input_->points[*current].z))
+            if ((input_->points[*current].x==input_->points[*current].x) &&
+                (input_->points[*current].y==input_->points[*current].y) &&
+                (input_->points[*current].z==input_->points[*current].z))
               // add points to octree
               this->addPointIdx (*current);
             ++current;
@@ -93,8 +94,9 @@ namespace pcl
         {
           for (i = 0; i < input_->points.size (); i++)
           {
-            if (pcl_isfinite(input_->points[i].x) && pcl_isfinite(input_->points[i].y)
-                && pcl_isfinite(input_->points[i].z))
+            if ((input_->points[i].x==input_->points[i].x) &&
+                (input_->points[i].y==input_->points[i].y) &&
+                (input_->points[i].z==input_->points[i].z))
               // add points to octree
               this->addPointIdx ((unsigned int)i);
           }
@@ -259,6 +261,9 @@ namespace pcl
         k_indices_arg.clear ();
         k_sqr_distances_arg.clear ();
 
+    //    k_indices_arg.reserve (k_arg) ;
+    //    k_sqr_distances_arg.reserve (k_arg) ;
+
         getKNearestNeighborRecursive (p_q_arg, k_arg, this->rootNode_, key, 1, smallestDist, pointCandidates);
 
         resultCount = pointCandidates.size();
@@ -335,6 +340,21 @@ namespace pcl
         const PointT searchPoint = getPointByIndex (index_arg);
 
         return radiusSearch (searchPoint, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      int
+      OctreePointCloud<PointT, LeafT, OctreeT>::getOccupiedVoxelCenters (std::vector<PointT> &voxelCenterList_arg) const
+      {
+        OctreeKey key;
+        key.x = key.y = key.z = 0;
+
+        voxelCenterList_arg.clear ();
+        voxelCenterList_arg.reserve (this->leafCount_);
+
+        return getOccupiedVoxelCentersRecursive (this->rootNode_, key, voxelCenterList_arg);
 
       }
 
@@ -650,7 +670,7 @@ namespace pcl
         maxVoxels = max (max (max (maxKeyX, maxKeyY), maxKeyZ), (unsigned int)2);
 
         // tree depth == amount of bits of maxVoxels
-        octreeDepth_ = max ((min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)ceil (log2 (maxVoxels)))),
+        octreeDepth_ = max ((min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)ceil (Log2 (maxVoxels)))),
                             (unsigned int)0);
 
         maxKeys_ = (1 << octreeDepth_);
@@ -809,6 +829,11 @@ namespace pcl
 
       }
 
+
+
+
+
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
       double
@@ -931,6 +956,8 @@ namespace pcl
 
       }
 
+
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
       void
@@ -1026,6 +1053,60 @@ namespace pcl
           }
 
         }
+      }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      int
+      OctreePointCloud<PointT, LeafT, OctreeT>::getOccupiedVoxelCentersRecursive (
+                                                                                  const OctreeBranch* node_arg,
+                                                                                  const OctreeKey& key_arg,
+                                                                                  std::vector<PointT> &voxelCenterList_arg) const
+      {
+        // child iterator
+        unsigned char childIdx;
+
+        int voxelCount = 0;
+
+        // iterate over all children
+        for (childIdx = 0; childIdx < 8; childIdx++)
+        {
+          if (branchHasChild (*node_arg, childIdx))
+          {
+            const OctreeNode * childNode;
+            childNode = getBranchChild (*node_arg, childIdx);
+
+            // generate new key for current branch voxel
+            OctreeKey newKey;
+            newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
+            newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
+            newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+
+            switch (childNode->getNodeType ())
+            {
+              case BRANCH_NODE:
+
+                // recursively proceed with indexed child branch
+                voxelCount += getOccupiedVoxelCentersRecursive ((OctreeBranch*)childNode, newKey, voxelCenterList_arg);
+                break;
+
+              case LEAVE_NODE:
+                PointT newPoint;
+
+                genLeafNodeCenterFromOctreeKey (newKey, newPoint);
+
+                voxelCenterList_arg.push_back(newPoint);
+
+                voxelCount ++;
+                break;
+            }
+
+          }
+
+        }
+
+        return voxelCount;
       }
 
   }

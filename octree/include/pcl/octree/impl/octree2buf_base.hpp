@@ -250,9 +250,12 @@ namespace pcl
       void
       Octree2BufBase<DataT, LeafT>::deserializeTree (std::istream& binaryTreeIn_arg)
       {
+        OctreeKey newKey;
+        newKey.x = newKey.y = newKey.z = 0;
+
         // we will rebuild an octree -> reset leafCount
         leafCount_ = 0;
-        deserializeTreeRecursive (binaryTreeIn_arg, rootNode_, depthMask_);
+        deserializeTreeRecursive (binaryTreeIn_arg, rootNode_, depthMask_, newKey);
 
         // deserializeTreeRecursive cleans-up unused octree nodes in previous octree
         treeDirtyFlag_ = false;
@@ -794,7 +797,7 @@ namespace pcl
     template<typename DataT, typename LeafT>
       void
       Octree2BufBase<DataT, LeafT>::deserializeTreeRecursive (std::istream& binaryTreeIn_arg, OctreeBranch* branch_arg,
-                                                              const unsigned int depthMask_arg)
+                                                              const unsigned int depthMask_arg, const OctreeKey& key_arg)
       {
         // child iterator
         unsigned char childIdx;
@@ -815,6 +818,13 @@ namespace pcl
           // if occupancy bit for childIdx is set..
           if (recoveredNodeBits & (1 << childIdx))
           {
+
+            // generate new key for current branch voxel
+            OctreeKey newKey;
+            newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
+            newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
+            newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+
             if (depthMask_arg > 1)
             {
               // we have not reached maximum tree depth
@@ -845,7 +855,7 @@ namespace pcl
               }
 
               // recursively proceed with indexed child branch
-              deserializeTreeRecursive (binaryTreeIn_arg, childBranch, depthMask_arg / 2);
+              deserializeTreeRecursive (binaryTreeIn_arg, childBranch, depthMask_arg / 2, newKey);
 
             }
             else
@@ -853,6 +863,7 @@ namespace pcl
               // branch childs are leaf nodes
 
               OctreeLeaf* childLeaf;
+              DataT newDataT;
 
               // check if we can take copy a reference from previous buffer
               if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
@@ -871,6 +882,10 @@ namespace pcl
                 createLeafChild (*branch_arg, childIdx, childLeaf);
 
               }
+
+              // initialize new leaf child
+              if (getDataTByKey (newKey, newDataT) )
+                childLeaf->setData (newDataT);
 
               leafCount_++;
 
@@ -896,7 +911,7 @@ namespace pcl
                                                               std::istream& binaryTreeIn_arg,
                                                               OctreeBranch* branch_arg,
                                                               const unsigned int depthMask_arg,
-                                                              OctreeKey& key_arg,
+                                                              const OctreeKey& key_arg,
                                                               typename std::vector<DataT>::iterator& dataVectorIterator_arg,
                                                               typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg)
       {
