@@ -57,6 +57,7 @@ if(build)
 
     add_test(a_keypoints_test test_keypoints ${PCL_SOURCE_DIR}/test/cturtle.pcd)
     add_test(a_sample_consensus_test test_sample_consensus ${PCL_SOURCE_DIR}/test/sac_plane_test.pcd)
+    add_test(a_octree_test test_octree)
     add_test(a_transforms_test test_transforms ${PCL_SOURCE_DIR}/test/bun0.pcd)
     add_test(a_registration_test test_registration ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd)
     add_test(a_feature_test test_feature ${PCL_SOURCE_DIR}/test/bun0.pcd)

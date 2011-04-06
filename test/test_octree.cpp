@@ -429,6 +429,7 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_Test)
       voxels[i].z = rand () % 4096;
 
       // add data to octree
+
       octreeA.add (voxels[i].x, voxels[i].y, voxels[i].z, data[i]);
     }
 
@@ -746,7 +747,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 
     K = rand () % 10;
 
-    // feed point data into pointcloud
+    // generate point cloud
     cloudIn->width = 1000;
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
@@ -841,7 +842,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
 
-    // feed point data into pointcloud
+    // generate point cloud data
     for (i = 0; i < 1000; i++)
     {
       cloudIn->points[i] = PointXYZ (10.0 * ((double)rand () / (double)RAND_MAX),
@@ -901,7 +902,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
       ++current;
     }
 
-    // check if result point limitation works
+    // check if result limitation works
     octree.radiusSearch(searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
 
     ASSERT_EQ ( cloudNWRRadius.size() <= 5, true);
