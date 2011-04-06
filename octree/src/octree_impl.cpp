@@ -69,4 +69,6 @@ PCL_INSTANTIATE(OctreePointCloudSinglePoint, PCL_XYZ_POINT_TYPES);
 
 PCL_INSTANTIATE(OctreePointCloudPointVector, PCL_XYZ_POINT_TYPES);
 
+PCL_INSTANTIATE(OctreePointCloudChangeDetector, PCL_XYZ_POINT_TYPES);
+
 
