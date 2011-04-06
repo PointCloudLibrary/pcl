@@ -35,6 +35,7 @@
 
 /* \author Bastian Steder */
 
+#include <Eigen/StdVector>
 #include <iostream>
 #include <pcl/common/poses_from_matches.h>
 #include <pcl/common/transformation_from_correspondences.h>
