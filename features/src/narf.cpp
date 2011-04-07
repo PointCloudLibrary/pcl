@@ -357,7 +357,7 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
                                 int descriptor_size, float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list)
 {
   # pragma omp parallel for num_threads(max_no_of_threads) default(shared) schedule(dynamic, 10)
-  for (int interest_point_idx = 0; interest_point_idx < interest_points.points.size (); ++interest_point_idx)
+  for (size_t interest_point_idx = 0; interest_point_idx < interest_points.points.size (); ++interest_point_idx)
   {
     Vector3fMapConst point = interest_points.points[interest_point_idx].getVector3fMap ();
     
