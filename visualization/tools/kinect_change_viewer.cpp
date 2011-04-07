@@ -48,39 +48,50 @@ class KinectChangeViewer
     KinectChangeViewer (double resolution) 
       : viewer ("PCL Kinect Viewer")
     {
-      octree = new pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZ>(resolution);
+      octree = new pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZRGB>(resolution);
     }
 
-    void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud)
+    void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
-      pcl::PointCloud<pcl::PointXYZ> filtered_cloud;
-      pcl::ExtractIndices<pcl::PointXYZ> ei;
-      ei.setInputCloud (cloud);
-      ei.filter (filtered_cloud);
-//      // assign point cloud to octree
-//      octree->setInputCloud (cloud);
-//
-//      // add points from cloud to octree
-//      octree->addPointsFromInputCloud ();
-//
-      std::vector<int> newPointIdxVector;
-//
-//      // get a vector of new points, which did not exist in previous buffer
-//      octree->getPointIndicesFromNewVoxels (newPointIdxVector);
-//
-      std::cerr << newPointIdxVector.size() << std::endl;
+      std::cerr << cloud->points.size() << " -- ";
+     
+
+      // assign point cloud to octree
+      octree->setInputCloud (cloud);
+
+      // add points from cloud to octree
+      octree->addPointsFromInputCloud ();
+
+      std::cerr << octree->getLeafCount() << " -- ";
+      boost::shared_ptr<std::vector<int> > newPointIdxVector (new std::vector<int>);
+
+      // get a vector of new points, which did not exist in previous buffer
+      octree->getPointIndicesFromNewVoxels (*newPointIdxVector);
+
+      std::cerr << newPointIdxVector->size() << std::endl;
+
+      //// extract points from pointcloud
+      pcl::PointCloud<pcl::PointXYZRGB> filtered_cloud (*cloud);
+      //pcl::ExtractIndices<pcl::PointXYZRGB> ei;
+      //ei.setInputCloud (cloud);
+      //ei.setIndices (newPointIdxVector);
+      //ei.filter (filtered_cloud);
+
+      for (std::vector<int>::iterator it = newPointIdxVector->begin(); it != newPointIdxVector->end(); it++)
+        filtered_cloud.points[*it].rgb = 255<<16; 
+      
       if (!viewer.wasStopped())
         viewer.showCloud (filtered_cloud);
-//      // switch buffers - reset tree
-//      octree->switchBuffers ();
-
+      
+      // switch buffers - reset tree
+      octree->switchBuffers ();
     }
     
     void run ()
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f = 
+      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = 
         boost::bind (&KinectChangeViewer::cloud_cb_, this, _1);
 
       boost::signals2::connection c = interface->registerCallback (f);
@@ -95,7 +106,7 @@ class KinectChangeViewer
       interface->stop ();
     }
 
-    pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZ> *octree;
+    pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZRGB> *octree;
     pcl_visualization::CloudViewer viewer;
 };
 
