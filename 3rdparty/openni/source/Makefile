@@ -8,7 +8,7 @@ uninstall:
 	cd ../openni_drivers && make uninstall && cd -
 
 ../openni_drivers:
-	hg clone https://kforge.ros.org/openni/drivers ../openni_drivers -r 251
+	hg clone https://kforge.ros.org/openni/drivers ../openni_drivers -r 252
 		
 clean:
 	rm -rf ../openni_drivers
