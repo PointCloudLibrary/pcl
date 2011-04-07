@@ -55,6 +55,8 @@ namespace pcl
     public:
       // =====TYPEDEFS=====
       typedef RangeImage BaseClass;
+      typedef boost::shared_ptr<RangeImagePlanar> Ptr;
+      typedef boost::shared_ptr<const RangeImagePlanar> ConstPtr;
       
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */
@@ -67,6 +69,9 @@ namespace pcl
       virtual RangeImage* getNew() const { return new RangeImagePlanar; }
       
       // =====PUBLIC METHODS=====
+      /** \brief Get a boost shared pointer of a copy of this */
+      inline Ptr makeShared () const { return Ptr (new RangeImagePlanar (*this)); } 
+      
       /** \brief Create the image from an existing disparity image.
         * \param disparity_image the input disparity image data
         * \param di_width the disparity image width

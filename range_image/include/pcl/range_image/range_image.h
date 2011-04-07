@@ -63,6 +63,8 @@ namespace pcl
       // =====TYPEDEFS=====
       typedef pcl::PointCloud<PointWithRange> BaseClass;
       typedef std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > VectorOfEigenVector3f;
+      typedef boost::shared_ptr<RangeImage> Ptr;
+      typedef boost::shared_ptr<const RangeImage> ConstPtr;
       
       enum CoordinateFrame
       {
@@ -70,6 +72,7 @@ namespace pcl
         LASER_FRAME  = 1
       };
 
+      
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */
       RangeImage ();
@@ -86,7 +89,7 @@ namespace pcl
       static inline float
       getMaxAngleSize (const Eigen::Affine3f& viewer_pose, const Eigen::Vector3f& center, 
                        float radius);
-    
+      
       /** \brief Get Eigen::Vector3f from PointWithRange
         * \param point the input point
         * \return an Eigen::Vector3f representation of the input point
@@ -119,6 +122,9 @@ namespace pcl
         extractFarRanges (const sensor_msgs::PointCloud2& point_cloud_data, PointCloud<PointWithViewpoint>& far_ranges);
       
       // =====METHODS=====
+      /** \brief Get a boost shared pointer of a copy of this */
+      inline Ptr makeShared () const { return Ptr (new RangeImage (*this)); } 
+      
       /** \brief Reset all values to an empty range image */
       void reset ();
       
