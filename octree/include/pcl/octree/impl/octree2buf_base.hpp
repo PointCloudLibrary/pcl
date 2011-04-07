@@ -783,7 +783,7 @@ namespace pcl
                     childLeaf->getData (newPointIdx);
 
                     // check for minimum amount of leaf point indices
-                    if (newPointIdx.size () >= minPointsPerLeaf_arg)
+                    if (newPointIdx.size () >= (size_t)minPointsPerLeaf_arg)
                     {
                       dataVector_arg.insert (dataVector_arg.end (), newPointIdx.begin (), newPointIdx.end ());
                     }
