@@ -22,5 +22,9 @@ if(OPENNI_FOUND)
     PCL_ADD_EXECUTABLE(kinect_viewer ${SUBSYS_NAME} kinect_viewer.cpp)
     target_link_libraries(kinect_viewer pcl_common pcl_io pcl_kdtree
         pcl_range_image pcl_visualization ${Boost_LIBRARIES})
+
+    PCL_ADD_EXECUTABLE(kinect_change_viewer ${SUBSYS_NAME} kinect_change_viewer.cpp)
+    target_link_libraries(kinect_change_viewer pcl_common pcl_io pcl_kdtree pcl_octree
+        pcl_range_image pcl_visualization pcl_filters ${Boost_LIBRARIES})
 endif(OPENNI_FOUND)
 
