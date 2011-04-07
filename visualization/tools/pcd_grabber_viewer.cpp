@@ -35,20 +35,13 @@
  *
  */
 // PCL
-#include <Eigen/Geometry>
-#include <pcl/common/common.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/io/pcd_grabber.h>
-#include <cfloat>
-#include <pcl/visualization/point_cloud_handlers.h>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/histogram_visualizer.h>
-#include <pcl/terminal_tools/print.h>
 #include <pcl/terminal_tools/parse.h>
-#include <pcl/terminal_tools/time.h>
 #define BOOST_FILESYSTEM_VERSION 2
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+#include <pcl/terminal_tools/print.h>
+#include <pcl/visualization/cloud_viewer.h>
 
 using terminal_tools::print_color;
 using terminal_tools::print_error;
