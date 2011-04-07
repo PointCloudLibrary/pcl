@@ -55,7 +55,7 @@ TEST (PCL, Common)
 
   Eigen::Vector4f pt (1,0,0,0), line_pt (0,0,0,0), line_dir (1,1,0,0);
   double point2line_disance = sqrt (pcl::sqrPointToLineDistance (pt, line_pt, line_dir));
-  EXPECT_NEAR (point2line_disance, sqrt(2)/2, 1e-4);
+  EXPECT_NEAR (point2line_disance, sqrt(2.0)/2, 1e-4);
 }
 
 TEST (PCL, Eigen)
