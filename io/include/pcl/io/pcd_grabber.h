@@ -51,13 +51,45 @@ namespace pcl
   class PCDGrabberBase : public Grabber
   {
     public:
-      PCDGrabberBase (const std::string& pcd_file, unsigned frames_per_second, bool repeat);
-      PCDGrabberBase (const std::vector<std::string>& pcd_files, unsigned frames_per_second, bool repeat);
+      /**
+       * @brief Constuctor taking just one PCD file.
+       * @param pcd_file path to the PCD file
+       * @param frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.
+       * @param repeat wheter to play PCD file in an endless lopp or not.
+       */
+      PCDGrabberBase (const std::string& pcd_file, float frames_per_second, bool repeat);
+      /**
+       * @brief Constuctor taking a list of paths to PCD files, that are played in the order the appear in the list.
+       * @param pcd_files vector of paths to PCD files.
+       * @param frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.
+       * @param repeat wheter to play PCD file in an endless lopp or not.
+       */
+      PCDGrabberBase (const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat);
+      /**
+       * @brief virtual destructor
+       */
       virtual ~PCDGrabberBase ();
+      /**
+       * @brief starts playing the list of PCD files if frames_per_second is > 0. Otherwise it works as a trigger: publishes only the next PCD file in the list.
+       */
       virtual void start ();
+      /**
+       * @brief stops playing the list of PCD files if frames_per_second is > 0. Otherwise the method has no effect.
+       */
       virtual void stop ();
+      /**
+       * @brief wheter the grabber is started (publishing) or not.
+       * @return true only if publishing.
+       */
       virtual bool isRunning () const;
+      /**
+       *
+       * @return name of the grabber
+       */
       virtual std::string getName () const;
+      /**
+       * @brief rewinds to the first PCD file in the list.
+       */
       virtual void rewind ();
     private:
       virtual void publish (const sensor_msgs::PointCloud2& blob) const = 0;
@@ -72,22 +104,22 @@ namespace pcl
   template <typename PointT> class PCDGrabber : public PCDGrabberBase
   {
     public:
-      PCDGrabber (const std::string& pcd_path, unsigned frames_per_second = 0, bool repeat = false);
-      PCDGrabber (const std::vector<std::string>& pcd_files, unsigned frames_per_second = 0, bool repeat = false);
+      PCDGrabber (const std::string& pcd_path, float frames_per_second = 0, bool repeat = false);
+      PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second = 0, bool repeat = false);
     protected:
       virtual void publish (const sensor_msgs::PointCloud2& blob) const;
       boost::signals2::signal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>* signal_;
   };
 
   template<typename PointT>
-  PCDGrabber<PointT>::PCDGrabber (const std::string& pcd_path, unsigned frames_per_second, bool repeat)
+  PCDGrabber<PointT>::PCDGrabber (const std::string& pcd_path, float frames_per_second, bool repeat)
   : PCDGrabberBase ( pcd_path, frames_per_second, repeat)
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
   }
 
   template<typename PointT>
-  PCDGrabber<PointT>::PCDGrabber (const std::vector<std::string>& pcd_files, unsigned frames_per_second, bool repeat)
+  PCDGrabber<PointT>::PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat)
   : PCDGrabberBase ( pcd_files, frames_per_second, repeat)
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();

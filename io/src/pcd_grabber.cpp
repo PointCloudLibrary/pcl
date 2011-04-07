@@ -42,11 +42,11 @@
 //////////////////////// GrabberImplementation //////////////////////
 struct pcl::PCDGrabberBase::PCDGrabberImpl
 {
-  PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::string& pcd_path, unsigned frames_per_second, bool repeat);
-  PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::vector<std::string>& pcd_files, unsigned frames_per_second, bool repeat);
+  PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::string& pcd_path, float frames_per_second, bool repeat);
+  PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat);
   void trigger ();
   pcl::PCDGrabberBase& grabber_;
-  unsigned frames_per_second_;
+  float frames_per_second_;
   bool repeat_;
   bool running_;
   std::vector<std::string> pcd_files_;
@@ -54,23 +54,23 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   TimeTrigger time_trigger_;
 };
 
-pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::string& pcd_path, unsigned frames_per_second, bool repeat)
+pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::string& pcd_path, float frames_per_second, bool repeat)
 : grabber_ (grabber)
 , frames_per_second_ (frames_per_second)
 , repeat_ (repeat)
 , running_ (false)
-, time_trigger_ (1.0 / (double) std::max(frames_per_second, 1u), boost::bind (&PCDGrabberImpl::trigger, this))
+, time_trigger_ (1.0 / (double) std::max(frames_per_second, 0.001f), boost::bind (&PCDGrabberImpl::trigger, this))
 {
   pcd_files_.push_back (pcd_path);
   pcd_iterator_ = pcd_files_.begin ();
 }
 
-pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::vector<std::string>& pcd_files, unsigned frames_per_second, bool repeat)
+pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat)
 : grabber_ (grabber)
 , frames_per_second_ (frames_per_second)
 , repeat_ (repeat)
 , running_ (false)
-, time_trigger_ (1.0 / (double) std::max(frames_per_second, 1u), boost::bind (&PCDGrabberImpl::trigger, this))
+, time_trigger_ (1.0 / (double) std::max(frames_per_second, 0.001f), boost::bind (&PCDGrabberImpl::trigger, this))
 {
   pcd_files_ = pcd_files;
   pcd_iterator_ = pcd_files_.begin ();
@@ -78,6 +78,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
 
 void pcl::PCDGrabberBase::PCDGrabberImpl::trigger ()
 {
+  std::cout << "trigger: " << std::endl;
   if (pcd_iterator_ != pcd_files_.end ())
   {
     PCDReader reader;
@@ -87,20 +88,22 @@ void pcl::PCDGrabberBase::PCDGrabberImpl::trigger ()
     Eigen::Quaternionf orientation;
     int res = reader.read (*pcd_iterator_, blob, origin, orientation, pcd_version);
     if (res == 0)
+    {
+      std::cout << "trigger: " << *pcd_iterator_ << std::endl;
       grabber_.publish (blob);
-
+    }
     if (++pcd_iterator_ == pcd_files_.end () && repeat_)
       pcd_iterator_ = pcd_files_.begin ();
   }
 }
 
 //////////////////////// GrabberBase //////////////////////
-pcl::PCDGrabberBase::PCDGrabberBase (const std::string& pcd_path, unsigned frames_per_second, bool repeat)
+pcl::PCDGrabberBase::PCDGrabberBase (const std::string& pcd_path, float frames_per_second, bool repeat)
 : impl_( new PCDGrabberImpl (*this, pcd_path, frames_per_second, repeat ) )
 {
 }
 
-pcl::PCDGrabberBase::PCDGrabberBase (const std::vector<std::string>& pcd_files, unsigned frames_per_second, bool repeat)
+pcl::PCDGrabberBase::PCDGrabberBase (const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat)
 : impl_( new PCDGrabberImpl (*this, pcd_files, frames_per_second, repeat) )
 {
 }
