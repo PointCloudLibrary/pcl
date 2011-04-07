@@ -8,6 +8,22 @@ below is automatically generated from reST files located in our SVN repository.
 As always, we would be happy to hear your comments and receive your
 contributions on any tutorial.
 
+* Basic Usage
+  * :ref:`using_pcl`
+
+     ======  ======
+     |mi_1|  Title: **Using PCL in own project**
+
+             Author: *Nizar Sallem*
+
+             Compatibility: > PCL 0.9
+             
+             In this tutorial, we will learn how to link your own project to PCL using cmake.
+     ======  ======
+
+     .. |mi_1| image:: images/pcl_logo.png
+               :height: 75px
+
 * I/O
 
   * :ref:`reading_pcd`
@@ -277,26 +293,4 @@ contributions on any tutorial.
       Visualization of how the NARF descriptor is calculated and of the descriptor distances to a marked point.
     * :ref:`octree_search`
       Octrees for spatial partitioning and neighbor search.     
-
-
-
-
-
-* Miscellaneous
-
-  * :ref:`using_pcl`
-
-     ======  ======
-     |mi_1|  Title: **Using PCL in own project**
-
-             Author: *Nizar Sallem*
-
-             Compatibility: > PCL 0.9
-             
-             In this tutorial, we will learn how to link your own project to PCL using cmake.
-     ======  ======
-
-     .. |mi_1| image:: images/pcl_logo.png
-               :height: 75px
-
 
