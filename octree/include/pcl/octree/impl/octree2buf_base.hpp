@@ -289,7 +289,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      Octree2BufBase<DataT, LeafT>::serializeNewLeafs (std::vector<DataT>& dataVector_arg)
+      Octree2BufBase<DataT, LeafT>::serializeNewLeafs (std::vector<DataT>& dataVector_arg, const int minPointsPerLeaf_arg)
       {
         OctreeKey newKey;
         newKey.x = newKey.y = newKey.z = 0;
@@ -299,7 +299,7 @@ namespace pcl
 
         dataVector_arg.reserve (leafCount_);
 
-        serializeNewLeafsRecursive (rootNode_, newKey, dataVector_arg);
+        serializeNewLeafsRecursive (rootNode_, newKey, dataVector_arg, minPointsPerLeaf_arg);
 
         // serializeLeafsRecursive cleans-up unused octree nodes in previous octree
         treeDirtyFlag_ = false;
@@ -729,7 +729,7 @@ namespace pcl
     template<typename DataT, typename LeafT>
       void
       Octree2BufBase<DataT, LeafT>::serializeNewLeafsRecursive (OctreeBranch* branch_arg, const OctreeKey& key_arg,
-                                                                std::vector<DataT>& dataVector_arg)
+                                                                std::vector<DataT>& dataVector_arg, const int minPointsPerLeaf_arg)
       {
         // child iterator
         unsigned char childIdx;
@@ -767,16 +767,30 @@ namespace pcl
               case BRANCH_NODE:
 
                 // recursively proceed with indexed child branch
-                serializeNewLeafsRecursive ((OctreeBranch*)childNode, newKey, dataVector_arg);
+                serializeNewLeafsRecursive ((OctreeBranch*)childNode, newKey, dataVector_arg, minPointsPerLeaf_arg);
                 break;
               case LEAVE_NODE:
                 // check if leaf existed already in previous buffer
                 if (!(nodeBitPatternLastBuffer & (1 << childIdx)))
                 {
+                  // we reached a leaf node
+                  std::vector<int> newPointIdx;
                   OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
 
-                  // we reached a leaf node -> decode to dataVector_arg
-                  childLeaf->getData (dataVector_arg);
+                  if (minPointsPerLeaf_arg != 0)
+                  {
+                    // push to newPointIdx
+                    childLeaf->getData (newPointIdx);
+
+                    // check for minimum amount of leaf point indices
+                    if (newPointIdx.size () >= minPointsPerLeaf_arg)
+                    {
+                      dataVector_arg.insert (dataVector_arg.end (), newPointIdx.begin (), newPointIdx.end ());
+                    }
+                  } else {
+                    // push to dataVector_arg directely
+                    childLeaf->getData (dataVector_arg);
+                  }
                 }
                 break;
             }

@@ -66,7 +66,7 @@ class KinectChangeViewer
       boost::shared_ptr<std::vector<int> > newPointIdxVector (new std::vector<int>);
 
       // get a vector of new points, which did not exist in previous buffer
-      octree->getPointIndicesFromNewVoxels (*newPointIdxVector);
+      octree->getPointIndicesFromNewVoxels (*newPointIdxVector, 10);
 
       std::cerr << newPointIdxVector->size() << std::endl;
 

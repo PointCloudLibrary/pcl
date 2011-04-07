@@ -151,9 +151,10 @@ namespace pcl
 
         /** \brief Outputs a vector of all DataT elements from leaf nodes, that do not exist in the previous octree buffer.
          *  \param dataVector_arg: reference to DataT vector that receives a copy of all DataT objects in the octree.
+         *  \param minPointsPerLeaf_arg: minimum amount of points required within leaf node to become serialized.
          * */
         void
-        serializeNewLeafs (std::vector<DataT>& dataVector_arg);
+        serializeNewLeafs (std::vector<DataT>& dataVector_arg, const int minPointsPerLeaf_arg = 0);
 
         /** \brief Deserialize a binary octree description stream and create a corresponding octree structure. Leaf nodes are kept empty and are not initialized with DataT elements.
          *  \param binaryTreeIn_arg: reference to input stream for reading binary tree structure.
@@ -759,10 +760,11 @@ namespace pcl
          *  \param branch_arg: current branch node
          *  \param key_arg: reference to an octree key
          *  \param dataVector_arg: DataT objects from leaf nodes are written to this DataT vector reference.
+         *  \param minPointsPerLeaf_arg: minimum amount of points required within leaf node to become serialized.
          **/
         void
         serializeNewLeafsRecursive (OctreeBranch* branch_arg, const OctreeKey& key_arg,
-                                    std::vector<DataT>& dataVector_arg);
+                                    std::vector<DataT>& dataVector_arg, const int minPointsPerLeaf_arg = 0);
 
         /** \brief Rebuild an octree based on binary XOR octree description.
          *  \param binaryTreeIn_arg: reference to input stream

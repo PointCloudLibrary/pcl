@@ -80,13 +80,14 @@ namespace pcl
 
         /** \brief Get a indices from all leaf nodes that did not exist in previous buffer.
          * \param indicesVector_arg: results are written to this vector of int indices
+         *  \param minPointsPerLeaf_arg: minimum amount of points required within leaf node to become serialized.
          * \return number of point indices
          */
         int
-        getPointIndicesFromNewVoxels ( std::vector<int> &indicesVector_arg )
+        getPointIndicesFromNewVoxels ( std::vector<int> &indicesVector_arg, const int minPointsPerLeaf_arg = 0 )
         {
           indicesVector_arg.clear();
-          this->serializeNewLeafs (indicesVector_arg);
+          this->serializeNewLeafs (indicesVector_arg, minPointsPerLeaf_arg);
 
           return indicesVector_arg.size();
         }
