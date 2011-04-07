@@ -688,8 +688,8 @@ TEST (PCL, Octree_Pointcloud_Occupancy_Test)
 
 TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
 {
-  const unsigned int test_runs = 100;
-  unsigned int test_id;
+//  const unsigned int test_runs = 100;
+//  unsigned int test_id;
 
   // instantiate point cloud
 
