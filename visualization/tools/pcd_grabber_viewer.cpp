@@ -46,6 +46,7 @@
 #include <pcl/terminal_tools/print.h>
 #include <pcl/terminal_tools/parse.h>
 #include <pcl/terminal_tools/time.h>
+#define BOOST_FILESYSTEM_VERSION 2
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
