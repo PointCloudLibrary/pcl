@@ -42,9 +42,44 @@
 #include <string.h>
 #include <stdlib.h>
 #include <boost/algorithm/string.hpp>
+#include <sstream>
 
 namespace terminal_tools
 {
+
+  ////////////////////////////////////////////////////////////////////////////////
+/**
+ * @brief finds the position of the argument with name "argument_name" in the argument list "argv"
+ * \param argc the number of command line arguments
+ * \param argv the command line arguments
+ * \param str the string value to search for
+  * @return index of found argument or -1 of arguments does not appear in list
+ */
+  int find_argument (int argc, char** argv, const char* argument_name);
+
+  /**
+   * @brief template version for parsing arguments. Template parameter needs to have input stream operator overloaded!
+   * \param argc the number of command line arguments
+   * \param argv the command line arguments
+   * \param argument_name the name of the argument to search for
+   * @return index of found argument or -1 of arguments does not appear in list
+   * @param value The value of the argument
+   * @return
+   */
+  template<typename Type> int parse (int argc, char** argv, const char* argument_name, Type& value)
+  {
+    int index = find_argument (argc, argv, argument_name) + 1;
+
+    if (index > 0 && index < argc)
+    {
+      std::istringstream stream;
+      stream.clear ();
+      stream.str (argv[index]);
+      stream >> value;
+    }
+
+    return (index - 1);
+  }
   ////////////////////////////////////////////////////////////////////////////////
   /** \brief Parse for a specific given command line argument. Returns the value 
     * sent as a string.
