@@ -86,7 +86,11 @@ namespace pcl_visualization
 
       // =====PUBLIC METHODS=====
       //! Visualize a range image
-      void setRangeImage (const pcl::RangeImage& range_image, float min_value=-INFINITY, float max_value=INFINITY, bool grayscale=false);
+      void 
+      setRangeImage (const pcl::RangeImage& range_image, 
+                     float min_value = -std::numeric_limits<float>::max (), 
+                     float max_value =  std::numeric_limits<float>::max (), 
+                     bool grayscale  = false);
       
     protected:
       // =====PROTECTED MEMBER VARIABLES=====

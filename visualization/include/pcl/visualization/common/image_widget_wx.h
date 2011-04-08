@@ -41,6 +41,7 @@
 #include <wx/wx.h>
 #include <string>
 #include <vector>
+#include <limits>
 
 namespace pcl_visualization
 {
@@ -79,8 +80,12 @@ namespace pcl_visualization
       void setRGBImage (const unsigned char* data, unsigned int width, unsigned int height, const char* name="RGB image");
       
       //! Visualize a float image
-      void setFloatImage (const float* float_image, unsigned int width, unsigned int height, const char* name="float image",
-                         float min_value=-INFINITY, float max_value=INFINITY, bool grayscale=false);
+      void 
+      setFloatImage (const float* float_image, 
+                     unsigned int width, unsigned int height, 
+                     const char* name="float image", 
+                     float min_value = -std::numeric_limits<float>::max (), 
+                     float max_value =  std::numeric_limits<float>::max (), bool grayscale=false);
       
       //! Visualize an angle image (values in rad!)
       void setAngleImage (const float* angle_image, unsigned int width, unsigned int height, const char* name="angle image");
