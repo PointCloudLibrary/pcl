@@ -88,8 +88,8 @@ add_subdirectory(filters)
 add_subdirectory(registration)
 add_subdirectory(segmentation)
 add_subdirectory(surface)
-add_subdirectory(visualization)
 add_subdirectory(octree)
+add_subdirectory(visualization)
 add_subdirectory(test)
 
 # Documentation
