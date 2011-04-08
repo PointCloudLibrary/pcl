@@ -37,12 +37,7 @@
 #ifndef TERMINAL_TOOLS_TIME_H_
 #define TERMINAL_TOOLS_TIME_H_
 
-#ifdef _WIN32
-  #include <time.h>
-  #include <windows.h>
-#else
-  #include <sys/time.h>
-#endif
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <pcl/terminal_tools/print.h>
 
@@ -53,14 +48,13 @@ namespace terminal_tools
     public:
       void tic ()
       {
-        gettimeofday (&tictic,NULL);
+        tictic = boost::posix_time::microsec_clock::local_time();
       };
 
       inline double toc ()
       {
-        gettimeofday (&toctoc,NULL);
-        return (toctoc.tv_sec + ((double)toctoc.tv_usec / 1000000.0))
-             - (tictic.tv_sec + ((double)tictic.tv_usec / 1000000.0));
+        toctoc = boost::posix_time::microsec_clock::local_time();
+        return (toctoc - tictic).total_seconds();
       };
       
       inline void toc_print ()
@@ -78,8 +72,8 @@ namespace terminal_tools
       };
     
     private:
-      timeval tictic;
-      timeval toctoc;
+      boost::posix_time::ptime tictic;
+      boost::posix_time::ptime toctoc;
   };
 } 
 
