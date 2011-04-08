@@ -136,7 +136,7 @@ public:
    *  \attention This might be an empty string!!!
    */
   const char* getSerialNumber () const throw ();
-  /** \brief returns the connectionstring for current device, which has following format vendorID/productID@BusID/DeviceID */
+  /** \brief returns the connectionstring for current device, which has following format vendorID/productID\@BusID/DeviceID */
   const char* getConnectionString () const throw ();
 
   const char* getVendorName () const throw ();

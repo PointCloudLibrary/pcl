@@ -69,7 +69,7 @@ public:
   boost::shared_ptr<OpenNIDevice> getDeviceByAddress (unsigned char bus, unsigned char address) const throw (OpenNIException);
 
   const char* getSerialNumber (unsigned index) const throw ();
-  /** \brief returns the connectionstring for current device, which has following format vendorID/productID@BusID/DeviceID */
+  /** \brief returns the connectionstring for current device, which has following format vendorID/productID\@BusID/DeviceID */
   const char* getConnectionString (unsigned index) const throw ();
 
   const char* getVendorName (unsigned index) const throw ();
