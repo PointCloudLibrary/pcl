@@ -39,7 +39,7 @@ include(FindPackageHandleStandardArgs)
 set(PCL_SUFFIX @PROJECT_NAME_LOWER@-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@)
 
 #set all pcl component and their account into variables
-set(pcl_all_components io common kdtree keypoints filters range_image registration sample_consensus segmentation features surface visualization )
+set(pcl_all_components io common kdtree keypoints filters range_image registration sample_consensus segmentation features surface octree visualization )
 list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
 
 #list each component dependencies IN PCL
@@ -54,6 +54,7 @@ set(pcl_registration_dependencies common io kdtree sample_consensus)
 set(pcl_sample_consensus_dependencies common)
 set(pcl_segmentation_dependencies common kdtree sample_consensus)
 set(pcl_surface_dependencies common io features kdtree registration)
+set(pcl_octree_dependencies common)
 set(pcl_visualization_dependencies common io kdtree range_image)
 
 #list a MUST FIND header per component since not all components provide component.h
@@ -68,6 +69,7 @@ set(pcl_registration_header registration.h)
 set(pcl_sample_consensus_header sac.h)
 set(pcl_segmentation_header sac_segmentation.h)
 set(pcl_surface_header convex_hull.h)
+set(pcl_octree_header octree.h)
 set(pcl_visualization_header pcl_visualizer.h)
 
 #check if user provided a list of components
