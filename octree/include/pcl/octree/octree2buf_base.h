@@ -70,6 +70,12 @@ namespace pcl
         virtual
         ~Octree2BufBase ();
 
+        /** \brief Set the maximum amount of voxels per dimension.
+         *  \param maxVoxelIndex_arg: maximum amount of voxels per dimension
+         * */
+        void
+        setMaxVoxelIndex (unsigned int maxVoxelIndex_arg);
+
         /** \brief Set the maximum depth of the octree.
          *  \param depth_arg: maximum depth of octree
          * */
@@ -156,7 +162,7 @@ namespace pcl
         void
         serializeNewLeafs (std::vector<DataT>& dataVector_arg, const int minPointsPerLeaf_arg = 0);
 
-        /** \brief Deserialize a binary octree description stream and create a corresponding octree structure. Leaf nodes are kept empty and are not initialized with DataT elements.
+        /** \brief Deserialize a binary octree description stream and create a corresponding octree structure. Leaf nodes are initialized with getDataTByKey(..).
          *  \param binaryTreeIn_arg: reference to input stream for reading binary tree structure.
          * */
         void
@@ -168,6 +174,13 @@ namespace pcl
          * */
         void
         deserializeTree (std::istream& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg);
+
+        /** \brief Deserialize a binary octree description stream and create a corresponding octree structure. Leaf nodes are initialized with Leaf nodes are initialized with getDataTByKey(..). Generated DataT objects are copied to output vector.
+         *  \param binaryTreeIn_arg: reference to input stream for reading binary tree structure.
+         *  \param dataVector_arg: reference to DataT vector that receives a copy of generated DataT objects.
+         * */
+        void
+        deserializeTreeAndOutputLeafData (std::istream& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg);
 
       protected:
 
@@ -788,11 +801,31 @@ namespace pcl
                                   typename std::vector<DataT>::iterator& dataVectorIterator_arg,
                                   typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg);
 
+        /** \brief Rebuild an octree based on binary octree description and output generated DataT objects.
+         *  \param binaryTreeIn_arg: reference to input stream
+         *  \param branch_arg: current branch node
+         *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
+         *  \param dataVector_arg: reference to DataT vector that receives a copy of generated DataT objects.
+         **/
+        void
+        deserializeTreeAndOutputLeafDataRecursive (std::istream& binaryTreeIn_arg, OctreeBranch* branch_arg,
+                                                   const unsigned int depthMask_arg, const OctreeKey& key_arg,
+                                                   std::vector<DataT>& dataVector_arg);
+
         /** \brief Recursivly explore the octree and remove unused branch and leaf nodes
          *  \param branch_arg: current branch node
          **/
         void
         treeCleanUpRecursive (OctreeBranch* branch_arg);
+
+        /** \brief Helper function to calculate the binary logarithm
+         * \param n_arg: some value
+         * \return binary logarithm (log2) of argument n_arg
+         */
+        inline double Log2( double n_arg )
+        {
+           return log( n_arg ) / log( 2.0 );
+        }
 
         /** \brief Test if octree is able to dynamically change its depth. This is required for adaptive bounding box adjustment.
          *  \return "false" - not resizeable due to XOR serialization

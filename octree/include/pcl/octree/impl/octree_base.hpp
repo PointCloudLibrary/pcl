@@ -78,6 +78,24 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
+      OctreeBase<DataT, LeafT>::setMaxVoxelIndex (unsigned int maxVoxelIndex_arg)
+      {
+        unsigned int treeDepth;
+
+        assert (maxVoxelIndex_arg>0);
+
+        // tree depth == amount of bits of maxVoxels
+        treeDepth = max ((min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)ceil (Log2 (maxVoxelIndex_arg)))),
+                         (unsigned int)0);
+
+        // define depthMask_ by setting a single bit to 1 at bit position == tree depth
+        depthMask_ = (1 << (treeDepth - 1));
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename DataT, typename LeafT>
+      void
       OctreeBase<DataT, LeafT>::setTreeDepth (unsigned int depth_arg)
       {
 
@@ -255,6 +273,21 @@ namespace pcl
 
         deserializeTreeRecursive (binaryTreeIn_arg, rootNode_, depthMask_, newKey, dataVectorIterator,
                                   dataVectorEndIterator);
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename DataT, typename LeafT>
+      void
+      OctreeBase<DataT, LeafT>::deserializeTreeAndOutputLeafData (std::istream& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg)
+      {
+
+        OctreeKey newKey;
+        newKey.x = newKey.y = newKey.z = 0;
+
+        // free existing tree before tree rebuild
+        deleteTree ();
+
+        deserializeTreeAndOutputLeafDataRecursive (binaryTreeIn_arg, rootNode_, depthMask_, newKey, dataVector_arg);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -714,6 +747,71 @@ namespace pcl
           }
         }
       }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename DataT, typename LeafT>
+      void
+      OctreeBase<DataT, LeafT>::deserializeTreeAndOutputLeafDataRecursive (std::istream& binaryTreeIn_arg,
+                                                                           OctreeBranch* branch_arg,
+                                                                           const unsigned int depthMask_arg,
+                                                                           const OctreeKey& key_arg,
+                                                                           std::vector<DataT>& dataVector_arg)
+      {
+        // child iterator
+        unsigned char childIdx;
+        char nodeBits;
+
+        // read branch occupancy bit pattern from stream
+        binaryTreeIn_arg.read (&nodeBits, 1);
+
+         // iterate over all children
+         for (childIdx = 0; childIdx < 8; childIdx++)
+         {
+           // if occupancy bit for childIdx is set..
+           if (nodeBits & (1 << childIdx))
+           {
+
+             // generate new key for current branch voxel
+             OctreeKey newKey;
+             newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
+             newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
+             newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+
+             if (depthMask_arg > 1)
+             {
+               // we have not reached maximum tree depth
+               OctreeBranch * newBranch;
+
+               // create new child branch
+               createBranchChild (*branch_arg, childIdx, newBranch);
+
+               // recursively proceed with new child branch
+               deserializeTreeAndOutputLeafDataRecursive (binaryTreeIn_arg, newBranch, depthMask_arg / 2, newKey, dataVector_arg);
+
+             }
+             else
+             {
+               // we reached leaf node level
+               OctreeLeaf* childLeaf;
+
+               DataT newDataT;
+
+               // create leaf node
+               createLeafChild (*branch_arg, childIdx, childLeaf);
+
+               // initialize new leaf child
+               if (getDataTByKey (newKey, newDataT) ) {
+                 childLeaf->setData (newDataT);
+                 dataVector_arg.push_back(newDataT);
+               }
+
+               leafCount_++;
+             }
+           }
+         }
+
+       }
+
 
   }
 }

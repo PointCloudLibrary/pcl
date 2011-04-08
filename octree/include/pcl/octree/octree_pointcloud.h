@@ -304,6 +304,7 @@ namespace pcl
         void
         deleteVoxelAtPoint (const int& pointIdx_arg);
 
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Bounding box methods
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -502,9 +503,9 @@ namespace pcl
 
           /** \brief Operator< for comparing priority queue entries with each other.  */
           bool
-          operator< (const prioBranchQueueEntry& rhs_arg) const
+          operator< (const prioBranchQueueEntry rhs_arg) const
           {
-            return (pointDistance > rhs_arg.pointDistance);
+            return (this->pointDistance > rhs_arg.pointDistance);
           }
 
           // pointer to octree node
@@ -566,18 +567,6 @@ namespace pcl
         double
         pointSquaredDist (const PointT & pointA_arg, const PointT & pointB_arg) const;
 
-
-        /** \brief Helper function to calculate the binary logarithm
-         * \param n_arg: some value
-         * \return binary logarithm (log2) of argument n_arg
-         */
-        inline double Log2( double n_arg )
-        {
-           return log( n_arg ) / log( 2.0 );
-        }
-
-
-
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Recursive search routine methods
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -613,7 +602,7 @@ namespace pcl
         getKNearestNeighborRecursive (const PointT & point_arg, unsigned int K_arg, const OctreeBranch* node_arg,
                                       const OctreeKey& key_arg, unsigned int treeDepth_arg,
                                       const double squaredSearchRadius_arg,
-                                      std::priority_queue<prioPointQueueEntry>& pointCandidates_arg) const;
+                                      std::vector<prioPointQueueEntry>& pointCandidates_arg) const;
 
 
         /** \brief Recursively search the tree for all leaf nodes and return a vector of voxel centers.

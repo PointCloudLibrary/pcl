@@ -275,7 +275,7 @@ namespace pcl
         unsigned int resultCount;
 
         prioPointQueueEntry pointEntry;
-        std::priority_queue<prioPointQueueEntry> pointCandidates;
+        std::vector<prioPointQueueEntry> pointCandidates;
 
         assert (this->leafCount_>0);
 
@@ -288,21 +288,18 @@ namespace pcl
         k_indices_arg.clear ();
         k_sqr_distances_arg.clear ();
 
-    //    k_indices_arg.reserve (k_arg) ;
-    //    k_sqr_distances_arg.reserve (k_arg) ;
-
         getKNearestNeighborRecursive (p_q_arg, k_arg, this->rootNode_, key, 1, smallestDist, pointCandidates);
 
         resultCount = pointCandidates.size();
 
         for (i = 0; i < resultCount; i++)
         {
-          pointEntry = pointCandidates.top ();
+          pointEntry = pointCandidates.back ();
 
           k_indices_arg.push_back (pointEntry.pointIdx_);
           k_sqr_distances_arg.push_back (pointEntry.pointDistance_);
 
-          pointCandidates.pop ();
+          pointCandidates.pop_back ();
         }
 
         return k_indices_arg.size ();
@@ -697,7 +694,7 @@ namespace pcl
         maxVoxels = max (max (max (maxKeyX, maxKeyY), maxKeyZ), (unsigned int)2);
 
         // tree depth == amount of bits of maxVoxels
-        octreeDepth_ = max ((min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)ceil (Log2 (maxVoxels)))),
+        octreeDepth_ = max ((min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)ceil (this->Log2 (maxVoxels)))),
                             (unsigned int)0);
 
         maxKeys_ = (1 << octreeDepth_);
@@ -871,115 +868,120 @@ namespace pcl
                                                                               const OctreeKey& key_arg,
                                                                               unsigned int treeDepth_arg,
                                                                               const double squaredSearchRadius_arg,
-                                                                              std::priority_queue<prioPointQueueEntry>& pointCandidates_arg) const
+                                                                              std::vector<prioPointQueueEntry>& pointCandidates_arg) const
       {
+
+
+        std::vector<prioBranchQueueEntry> searchEntryHeap;
+        searchEntryHeap.resize(8);
+
         unsigned char childIdx;
 
-        prioBranchQueueEntry newEntry;
-        OctreeKey newKey;
+         OctreeKey newKey;
 
-        double smallestSquaredDist = squaredSearchRadius_arg;
+         double smallestSquaredDist = squaredSearchRadius_arg;
 
-        // get spatial voxel information
-        double voxelSquaredDiameter = getVoxelSquaredDiameter (treeDepth_arg);
+         // get spatial voxel information
+         double voxelSquaredDiameter = getVoxelSquaredDiameter (treeDepth_arg);
 
-        std::priority_queue<prioBranchQueueEntry> branchPrioQueue;
+         // iterate over all children
+         for (childIdx = 0; childIdx < 8; childIdx++)
+         {
+           if (branchHasChild (*node_arg, childIdx))
+           {
 
-        // iterate over all children
-        for (childIdx = 0; childIdx < 8; childIdx++)
-        {
-          if (branchHasChild (*node_arg, childIdx))
-          {
+             PointT voxelCenter;
 
-            PointT voxelCenter;
+             searchEntryHeap[childIdx].key.x = (key_arg.x << 1) + (!!(childIdx & (1 << 2)));
+             searchEntryHeap[childIdx].key.y = (key_arg.y << 1) + (!!(childIdx & (1 << 1)));
+             searchEntryHeap[childIdx].key.z = (key_arg.z << 1) + (!!(childIdx & (1 << 0)));
 
-            newKey.x = (key_arg.x << 1) + (!!(childIdx & (1 << 2)));
-            newKey.y = (key_arg.y << 1) + (!!(childIdx & (1 << 1)));
-            newKey.z = (key_arg.z << 1) + (!!(childIdx & (1 << 0)));
+             // generate voxel center point for voxel at key
+             genVoxelCenterFromOctreeKey ( searchEntryHeap[childIdx].key, treeDepth_arg, voxelCenter);
 
-            // generate voxel center point for voxel at key
-            genVoxelCenterFromOctreeKey (newKey, treeDepth_arg, voxelCenter);
+             // generate new priority queue element
+             searchEntryHeap[childIdx].node = getBranchChild (*node_arg, childIdx);
+             searchEntryHeap[childIdx].pointDistance = pointSquaredDist (voxelCenter, point_arg);
 
-            // generate new priority queue element
-            newEntry.node = getBranchChild (*node_arg, childIdx);
-            newEntry.pointDistance = pointSquaredDist (voxelCenter, point_arg);
-            newEntry.key = newKey;
+           } else
+           {
+             searchEntryHeap[childIdx].pointDistance = numeric_limits<double>::infinity();
+           }
+         }
 
-            // add to priority queue
-            branchPrioQueue.push (newEntry);
+         std::sort(searchEntryHeap.begin(), searchEntryHeap.end());
 
-          }
-        }
+         // iterate over all children in priority queue
+         // check if the distance to seach candidate is smaller than the best point distance (smallestSquaredDist)
+         while ((!searchEntryHeap.empty ()) &&
+                (searchEntryHeap.back ().pointDistance < smallestSquaredDist
+                + voxelSquaredDiameter / 4.0 + sqrt (smallestSquaredDist * voxelSquaredDiameter) - epsilon_ ))
+         {
 
-        // iterate over all children in priority queue
-        // check if the distance to seach candidate is smaller than the best point distance (smallestSquaredDist)
-        while ((!branchPrioQueue.empty ()) &&
-               (branchPrioQueue.top ().pointDistance + epsilon_ < smallestSquaredDist
-               + voxelSquaredDiameter / 4.0 + sqrt (smallestSquaredDist * voxelSquaredDiameter)))
-        {
+           const OctreeNode* childNode;
 
-          const OctreeNode* childNode;
+           // read from priority queue element
+           childNode = searchEntryHeap.back ().node;
+           newKey = searchEntryHeap.back ().key;
 
-          // read from priority queue element
-          childNode = branchPrioQueue.top ().node;
-          newKey = branchPrioQueue.top ().key;
+           if (treeDepth_arg < octreeDepth_)
+           {
+             // we have not reached maximum tree depth
+             smallestSquaredDist = getKNearestNeighborRecursive (point_arg, K_arg, (OctreeBranch*)childNode, newKey,
+                                                                 treeDepth_arg + 1, smallestSquaredDist,
+                                                                 pointCandidates_arg);
 
-          if (treeDepth_arg < octreeDepth_)
-          {
-            // we have not reached maximum tree depth
-            smallestSquaredDist = getKNearestNeighborRecursive (point_arg, K_arg, (OctreeBranch*)childNode, newKey,
-                                                                treeDepth_arg + 1, smallestSquaredDist,
-                                                                pointCandidates_arg);
+           }
+           else
+           {
+             // we reached leaf node level
 
-          }
-          else
-          {
-            // we reached leaf node level
+             double squaredDist;
+             size_t i;
+             vector<int> decodedPointVector;
 
-            double squaredDist;
-            size_t i;
-            vector<int> decodedPointVector;
+             OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
 
-            OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
+             // decode leaf node into decodedPointVector
+             childLeaf->getData (decodedPointVector);
 
-            // decode leaf node into decodedPointVector
-            childLeaf->getData (decodedPointVector);
+             // Linearly iterate over all decoded (unsorted) points
+             for (i = 0; i < decodedPointVector.size (); i++)
+             {
 
-            // Linearly iterate over all decoded (unsorted) points
-            for (i = 0; i < decodedPointVector.size (); i++)
-            {
+               const PointT& candidatePoint = getPointByIndex (decodedPointVector[i]);
 
-              const PointT& candidatePoint = getPointByIndex (decodedPointVector[i]);
+               // calculate point distance to search point
+               squaredDist = pointSquaredDist (candidatePoint, point_arg);
 
-              // calculate point distance to search point
-              squaredDist = pointSquaredDist (candidatePoint, point_arg);
+               // check if a closer match is found
+               if (squaredDist < smallestSquaredDist)
+               {
+                 prioPointQueueEntry pointEntry;
 
-              // check if a closer match is found
-              if (squaredDist < smallestSquaredDist)
-              {
-                prioPointQueueEntry pointEntry;
+                 pointEntry.pointDistance_ = squaredDist;
+                 pointEntry.pointIdx_ = decodedPointVector[i];
+                 pointCandidates_arg.push_back (pointEntry);
+               }
+             }
 
-                pointEntry.pointDistance_ = squaredDist;
-                pointEntry.pointIdx_ = decodedPointVector[i];
-                pointCandidates_arg.push (pointEntry);
-              }
-            }
+             std::sort(pointCandidates_arg.begin(), pointCandidates_arg.end());
 
-            while (pointCandidates_arg.size () > K_arg)
-              pointCandidates_arg.pop ();
+             if (pointCandidates_arg.size () > K_arg)
+               pointCandidates_arg.resize (K_arg);
 
-            if (pointCandidates_arg.size () == K_arg)
-            {
-              smallestSquaredDist = pointCandidates_arg.top ().pointDistance_;
-            }
+             if (pointCandidates_arg.size () == K_arg)
+             {
+               smallestSquaredDist = pointCandidates_arg.back ().pointDistance_;
+             }
 
-          }
+           }
 
-          // pop element from priority queue
-          branchPrioQueue.pop ();
-        }
+           // pop element from priority queue
+           searchEntryHeap.pop_back();
+         }
 
-        return smallestSquaredDist;
+         return smallestSquaredDist;
 
       }
 
