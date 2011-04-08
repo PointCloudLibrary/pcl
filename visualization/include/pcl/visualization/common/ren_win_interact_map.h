@@ -41,7 +41,6 @@
 #include <vtkXYPlotActor.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
-#include <vtkXRenderWindowInteractor.h>
 #include <vtkInteractorStyleTrackballCamera.h>
 #include "pcl/visualization/interactor.h"
 #include <map>
