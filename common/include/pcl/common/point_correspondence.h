@@ -40,64 +40,65 @@
 
 #include <vector>
 #include <Eigen/Geometry>
+#include <Eigen/StdVector>
 
-namespace pcl {
-
-/**
- * \brief Representation of a (possible) correspondence between two points in two different coordinate frames
- *        (e.g. from feature matching)
- * \ingroup common
- */
-struct PointCorrespondence
+namespace pcl 
 {
-  int index1;   //!< The index of point1
-  int index2;   //!< The index of point2 
-  float score;  /**< The score of this correspondence
-                  *  (e.g. from the descriptor distance of the feature matching process) */
-  //inline bool operator<(const PointCorrespondence& other) const { return score<other.score;}
-};
+  /**
+   * \brief Representation of a (possible) correspondence between two points in two different coordinate frames
+   *        (e.g. from feature matching)
+   * \ingroup common
+   */
+  struct PointCorrespondence
+  {
+    int index1;   //!< The index of point1
+    int index2;   //!< The index of point2 
+    float score;  /**< The score of this correspondence
+                    *  (e.g. from the descriptor distance of the feature matching process) */
+    //inline bool operator<(const PointCorrespondence& other) const { return score<other.score;}
+  };
 
 
-/**
- * \brief Representation of a (possible) correspondence between two 3D points in two different coordinate frames
- *        (e.g. from feature matching)
- * \ingroup common
- */
-struct PointCorrespondence3D : public PointCorrespondence
-{
-  Eigen::Vector3f point1;  //!< The 3D position of the point in the first coordinate frame
-  Eigen::Vector3f point2;  //!< The 3D position of the point in the second coordinate frame
+  /**
+   * \brief Representation of a (possible) correspondence between two 3D points in two different coordinate frames
+   *        (e.g. from feature matching)
+   * \ingroup common
+   */
+  struct PointCorrespondence3D : public PointCorrespondence
+  {
+    Eigen::Vector3f point1;  //!< The 3D position of the point in the first coordinate frame
+    Eigen::Vector3f point2;  //!< The 3D position of the point in the second coordinate frame
 
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-};
-typedef std::vector<PointCorrespondence3D, Eigen::aligned_allocator<PointCorrespondence3D> >
-        PointCorrespondences3DVector;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+  typedef std::vector<PointCorrespondence3D, Eigen::aligned_allocator<PointCorrespondence3D> >
+          PointCorrespondences3DVector;
 
 
-/**
- * \brief Representation of a (possible) correspondence between two points (e.g. from feature matching),
- *        that encode complete 6DOF transoformations.
- * \ingroup common
- */
-struct PointCorrespondence6D : public PointCorrespondence3D
-{
-  Eigen::Affine3f transformation;  //!< The transformation to go from the coordinate system
-                                      //!< of point2 to the coordinate system of point1
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-};
-typedef std::vector<PointCorrespondence6D, Eigen::aligned_allocator<PointCorrespondence6D> >
-        PointCorrespondences6DVector;
+  /**
+   * \brief Representation of a (possible) correspondence between two points (e.g. from feature matching),
+   *        that encode complete 6DOF transoformations.
+   * \ingroup common
+   */
+  struct PointCorrespondence6D : public PointCorrespondence3D
+  {
+    Eigen::Affine3f transformation;  //!< The transformation to go from the coordinate system
+                                        //!< of point2 to the coordinate system of point1
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+  typedef std::vector<PointCorrespondence6D, Eigen::aligned_allocator<PointCorrespondence6D> >
+          PointCorrespondences6DVector;
 
-/**
- * \brief Comparator to enable us to sort a vector of PointCorrespondences according to their scores using
- *        std::sort(begin(), end(), isBetterCorrespondence);
- * \ingroup common
- */
-inline bool
-isBetterCorrespondence (const PointCorrespondence& pc1, const PointCorrespondence& pc2)
-{
-  return pc1.score > pc2.score;
-}
+  /**
+   * \brief Comparator to enable us to sort a vector of PointCorrespondences according to their scores using
+   *        std::sort(begin(), end(), isBetterCorrespondence);
+   * \ingroup common
+   */
+  inline bool
+  isBetterCorrespondence (const PointCorrespondence& pc1, const PointCorrespondence& pc2)
+  {
+    return pc1.score > pc2.score;
+  }
 
 }  // end namespace pcl
 
