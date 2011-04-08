@@ -74,7 +74,21 @@ namespace std_msgs
 
   typedef boost::shared_ptr<Header> HeaderPtr;
   typedef boost::shared_ptr<Header const> HeaderConstPtr;
-} // namespace pcl
+
+  template<typename ContainerAllocator>
+  std::ostream& stream_with_indentation (std::ostream& s, const std::string& indent, 
+                                         const Header_<ContainerAllocator> & v)
+  {
+    s << indent << "seq: ";
+    s << indent << "  " << v.seq << std::endl;
+    s << indent << "stamp: ";
+    s << indent << "  " << v.stamp << std::endl;
+    s << indent << "frame_id: ";
+    s << indent << "  " << v.frame_id << std::endl;
+    return (s);
+  }
+
+} // namespace std_msgs
 
 #endif // PCL_ROSLIB_MESSAGE_HEADER_H
 

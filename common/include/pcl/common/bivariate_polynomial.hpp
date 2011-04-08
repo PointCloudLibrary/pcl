@@ -189,7 +189,7 @@ void
 
 template<typename real>
 std::ostream&
-  operator<< (std::ostream& os, const pcl::BivariatePolynomialT<real>& p)
+  pcl::operator<< (std::ostream& os, const pcl::BivariatePolynomialT<real>& p)
 {
   real* tmpParameter = p.parameters;
   bool first = true;

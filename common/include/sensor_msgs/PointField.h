@@ -59,6 +59,28 @@ namespace sensor_msgs
   typedef boost::shared_ptr< ::sensor_msgs::PointField> PointFieldPtr;
   typedef boost::shared_ptr< ::sensor_msgs::PointField const> PointFieldConstPtr;
 
+  template<typename ContainerAllocator>
+  std::ostream& stream_with_indentation (std::ostream& s, const std::string& indent, 
+                                         const ::sensor_msgs::PointField_<ContainerAllocator> & v)
+  {
+    s << indent << "name: ";
+    s << indent << "  " << v.name << std::endl;
+    s << indent << "offset: ";
+    s << indent << "  " << v.offset << std::endl;
+    s << indent << "datatype: ";
+    s << indent << "  " << v.datatype << std::endl;
+    s << indent << "count: ";
+    s << indent << "  " << v.count << std::endl;
+    return (s);
+  }
+
+  template<typename ContainerAllocator>
+  std::ostream& operator<<(std::ostream& s, const  ::sensor_msgs::PointField_<ContainerAllocator> & v)
+  {
+    stream_with_indentation (s, "", v);
+    return (s);
+  }
+
 } // namespace sensor_msgs
 
 #endif // PCL_SENSOR_MSGS_MESSAGE_POINTFIELD_H

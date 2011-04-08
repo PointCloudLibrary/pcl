@@ -41,6 +41,28 @@ namespace pcl
   typedef boost::shared_ptr< ::pcl::ModelCoefficients> ModelCoefficientsPtr;
   typedef boost::shared_ptr< ::pcl::ModelCoefficients const> ModelCoefficientsConstPtr;
 
+  template<typename ContainerAllocator>
+  std::ostream& stream_with_indentation (std::ostream& s, const std::string& indent, 
+                                         const ::pcl::ModelCoefficients_<ContainerAllocator> & v)
+  {
+    s << indent << "header: " << std::endl;
+    stream_with_indentation (s, indent + "  ", v.header);
+    s << indent << "values[]" << std::endl;
+    for (size_t i = 0; i < v.values.size (); ++i)
+    {
+      s << indent << "  values[" << i << "]: ";
+      s << indent << "  " << v.values[i] << std::endl;
+    }
+    return (s);
+  }
+
+  template<typename ContainerAllocator>
+  std::ostream& operator<<(std::ostream& s, const  ::pcl::ModelCoefficients_<ContainerAllocator> & v)
+  {
+    stream_with_indentation (s, "", v);
+    return (s);
+  }
+
 } // namespace pcl
 
 #endif // PCL_MESSAGE_MODELCOEFFICIENTS_H

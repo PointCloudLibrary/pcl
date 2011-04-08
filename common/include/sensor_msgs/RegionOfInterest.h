@@ -46,6 +46,31 @@ namespace sensor_msgs
 
   typedef boost::shared_ptr< ::sensor_msgs::RegionOfInterest> RegionOfInterestPtr;
   typedef boost::shared_ptr< ::sensor_msgs::RegionOfInterest const> RegionOfInterestConstPtr;
+
+  template<typename ContainerAllocator>
+  std::ostream& stream_with_indentation (std::ostream& s, const std::string& indent, 
+                                         const RegionOfInterest_<ContainerAllocator> & v)
+  {
+    s << indent << "x_offset: ";
+    s << indent << "  " << v.x_offset << std::endl;
+    s << indent << "y_offset: ";
+    s << indent << "  " << v.y_offset << std::endl;
+    s << indent << "height: ";
+    s << indent << "  " << v.height << std::endl;
+    s << indent << "width: ";
+    s << indent << "  " << v.width << std::endl;
+    //s << indent << "do_rectify: ";
+    //s << indent << "  " << v.do_rectify << std::endl;
+    return (s);
+  }
+
+  template<typename ContainerAllocator>
+  std::ostream& operator<<(std::ostream& s, const  ::sensor_msgs::RegionOfInterest_<ContainerAllocator> & v)
+  {
+    stream_with_indentation (s, "", v);
+    return (s);
+  }
+
 } // namespace sensor_msgs
 
 #endif // PCL_MESSAGE_REGIONOFINTEREST_H

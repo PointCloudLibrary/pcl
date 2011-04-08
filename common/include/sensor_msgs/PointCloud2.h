@@ -77,6 +77,50 @@ namespace sensor_msgs
   typedef boost::shared_ptr< ::sensor_msgs::PointCloud2> PointCloud2Ptr;
   typedef boost::shared_ptr< ::sensor_msgs::PointCloud2 const> PointCloud2ConstPtr;
 
+  template<typename ContainerAllocator>
+  std::ostream& stream_with_indentation (std::ostream& s, const std::string& indent, 
+                                         const ::sensor_msgs::PointCloud2_<ContainerAllocator> & v)
+  {
+    s << indent << "header: " << std::endl;
+    stream_with_indentation (s, indent + "  ", v.header);
+    s << indent << "height: ";
+    s << indent << "  " << v.height << std::endl;
+    s << indent << "width: ";
+    s << indent << "  " << v.width << std::endl;
+    s << indent << "fields[]" << std::endl;
+    for (size_t i = 0; i < v.fields.size (); ++i)
+    {
+      s << indent << "  fields[" << i << "]: ";
+      s << std::endl;
+      s << indent;
+      s << indent << "    " << v.fields[i] << std::endl;
+    }
+    s << indent << "is_bigendian: ";
+    s << indent << "  " << v.is_bigendian << std::endl;
+    s << indent << "point_step: ";
+    s << indent << "  " << v.point_step << std::endl;
+    s << indent << "row_step: ";
+    s << indent << "  " << v.row_step << std::endl;
+    s << indent << "data[]" << std::endl;
+    for (size_t i = 0; i < v.data.size (); ++i)
+    {
+      s << indent << "  data[" << i << "]: ";
+      s << indent << "  " << v.data[i] << std::endl;
+    }
+    s << indent << "is_dense: ";
+    s << indent << "  " << v.is_dense << std::endl;
+    
+    return (s);
+  }
+
+
+  template<typename ContainerAllocator>
+  std::ostream& operator<<(std::ostream& s, const  ::sensor_msgs::PointCloud2_<ContainerAllocator> & v)
+  {
+    stream_with_indentation (s, "", v);
+    return (s);
+  }
+
 } // namespace sensor_msgs
 
 #endif // PCL_SENSOR_MSGS_MESSAGE_POINTCLOUD2_H

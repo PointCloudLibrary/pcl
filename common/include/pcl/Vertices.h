@@ -33,6 +33,26 @@ namespace pcl
   typedef boost::shared_ptr< ::pcl::Vertices> VerticesPtr;
   typedef boost::shared_ptr< ::pcl::Vertices const> VerticesConstPtr;
 
+  template<typename ContainerAllocator>
+  std::ostream& stream_with_indentation (std::ostream& s, const std::string& indent, 
+                                         const ::pcl::Vertices_<ContainerAllocator> & v)
+  {
+    s << indent << "vertices[]" << std::endl;
+    for (size_t i = 0; i < v.vertices.size (); ++i)
+    {
+      s << indent << "  vertices[" << i << "]: ";
+      s << indent << "  " << v.vertices[i] << std::endl;
+    }
+    return (s);
+  }
+
+  template<typename ContainerAllocator>
+  std::ostream& operator<<(std::ostream& s, const  ::pcl::Vertices_<ContainerAllocator> & v)
+  {
+    stream_with_indentation (s, "", v);
+    return (s);
+  }
+
 } // namespace pcl
 
 #endif // PCL_MESSAGE_VERTICES_H

@@ -50,6 +50,31 @@ namespace pcl
   typedef boost::shared_ptr< ::pcl::PolygonMesh> PolygonMeshPtr;
   typedef boost::shared_ptr< ::pcl::PolygonMesh const> PolygonMeshConstPtr;
 
+  template<typename ContainerAllocator>
+  std::ostream& stream_with_indentation (std::ostream& s, const std::string& indent, 
+                                         const ::pcl::PolygonMesh_<ContainerAllocator> & v)
+  {
+    s << indent << "header: " << std::endl;
+    stream_with_indentation (s, indent + "  ", v.header);
+    s << indent << "cloud: " << std::endl;
+    stream_with_indentation (s, indent + "  ", v.cloud);
+    s << indent << "polygons[]" << std::endl;
+    for (size_t i = 0; i < v.polygons.size (); ++i)
+    {
+      s << indent << "  polygons[" << i << "]: " << std::endl;
+      s << indent;
+      stream_with_indentation (s, indent + "    ", v.polygons[i]);
+    }
+    return (s);
+  }
+
+  template<typename ContainerAllocator>
+  std::ostream& operator<<(std::ostream& s, const  ::pcl::PolygonMesh_<ContainerAllocator> & v)
+  {
+    stream_with_indentation(s, "", v);
+    return (s);
+  }
+
 } // namespace pcl
 
 #endif // PCL_MESSAGE_POLYGONMESH_H

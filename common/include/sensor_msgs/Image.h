@@ -64,6 +64,39 @@ namespace sensor_msgs
 
   typedef boost::shared_ptr< ::sensor_msgs::Image> ImagePtr;
   typedef boost::shared_ptr< ::sensor_msgs::Image const> ImageConstPtr;
+
+  template<typename ContainerAllocator>
+  std::ostream& stream_with_indentation (std::ostream& s, const std::string& indent, 
+                                         const ::sensor_msgs::Image_<ContainerAllocator> & v)
+  {
+    s << indent << "header: " << std::endl;
+    stream_with_indentation (s, indent + "  ", v.header);
+    s << indent << "height: ";
+    s << indent << "  " << v.height << std::endl;
+    s << indent << "width: ";
+    s << indent << "  " << v.width << std::endl;
+    s << indent << "encoding: ";
+    s << indent << "  " << v.encoding << std::endl;
+    s << indent << "is_bigendian: ";
+    s << indent << "  " << v.is_bigendian << std::endl;
+    s << indent << "step: ";
+    s << indent << "  " << v.step << std::endl;
+    s << indent << "data[]" << std::endl;
+    for (size_t i = 0; i < v.data.size (); ++i)
+    {
+      s << indent << "  data[" << i << "]: ";
+      s << indent << "  " << v.data[i] << std::endl;
+    }
+    return (s);
+  }
+
+  template<typename ContainerAllocator>
+  std::ostream& operator<<(std::ostream& s, const  ::sensor_msgs::Image_<ContainerAllocator> & v)
+  {
+    stream_with_indentation (s, "", v);
+    return (s);
+  }
+
 } // namespace sensor_msgs
 
 #endif // PCL_MESSAGE_IMAGE_H
