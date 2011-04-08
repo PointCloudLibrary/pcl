@@ -40,6 +40,7 @@
 #include <ostream>
 #include <istream>
 #include <vector>
+#include <math.h>
 
 #include "octree_nodes.h"
 
@@ -175,7 +176,7 @@ namespace pcl
         void
         deserializeTree (std::istream& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg);
 
-        /** \brief Deserialize a binary octree description stream and create a corresponding octree structure. Leaf nodes are initialized with Leaf nodes are initialized with getDataTByKey(..). Generated DataT objects are copied to output vector.
+        /** \brief Deserialize a binary octree description stream and create a corresponding octree structure. Leaf nodes are initialized with getDataTByKey(..). Generated DataT objects are copied to output vector.
          *  \param binaryTreeIn_arg: reference to input stream for reading binary tree structure.
          *  \param dataVector_arg: reference to DataT vector that receives a copy of generated DataT objects.
          * */

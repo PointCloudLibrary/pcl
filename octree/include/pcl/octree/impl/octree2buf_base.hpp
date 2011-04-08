@@ -80,7 +80,7 @@ namespace pcl
       {
         unsigned int treeDepth;
 
-        assert (maxVoxelIndex_arg>0);
+        assert (maxVoxelIndex_arg > 0);
 
         // tree depth == amount of bits of maxVoxels
         treeDepth = max ((min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)ceil (Log2 (maxVoxelIndex_arg)))),
