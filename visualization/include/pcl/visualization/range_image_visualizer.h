@@ -88,8 +88,8 @@ namespace pcl_visualization
       //! Visualize a range image
       void 
       setRangeImage (const pcl::RangeImage& range_image, 
-                     float min_value = -std::numeric_limits<float>::max (), 
-                     float max_value =  std::numeric_limits<float>::max (), 
+                     float min_value = -std::numeric_limits<float>::infinity (), 
+                     float max_value =  std::numeric_limits<float>::infinity (), 
                      bool grayscale  = false);
       
     protected:
