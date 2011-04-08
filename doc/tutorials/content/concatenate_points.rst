@@ -141,7 +141,7 @@ Add the following lines to your CMakeLists.txt file:
 
 .. code-block:: cmake
 
-   add_executable (concatenate_points src/examples/concatenate_points.cpp)
+   add_executable (concatenate_points concatenate_points.cpp)
    target_link_libraries (concatenate_points pcl_io)
 
 After you have made the executable, you can run it. Simply do::

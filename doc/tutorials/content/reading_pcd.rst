@@ -14,31 +14,31 @@ editor, and place the following code inside it:
 .. code-block:: cpp
    :linenos:
 
-    #include <iostream>
-    #include "pcl/io/pcd_io.h"
-    #include "pcl/point_types.h"
+   #include <iostream>
+   #include "pcl/io/pcd_io.h"
+   #include "pcl/point_types.h"
 
-    int
-      main (int argc, char** argv)
-    {
-      sensor_msgs::PointCloud2 cloud_blob;
-      pcl::PointCloud<pcl::PointXYZ> cloud;
+   int
+     main (int argc, char** argv)
+   {
+     sensor_msgs::PointCloud2 cloud_blob;
+     pcl::PointCloud<pcl::PointXYZ> cloud;
 
-      if (pcl::io::loadPCDFile ("test_pcd.pcd", cloud_blob) == -1)
-      {
-        std::cerr << "Couldn't read file test_pcd.pcd" << std::endl;
-        return (-1);
-      }
-      std::cerr << "Loaded " << cloud_blob.width * cloud_blob.height << " data points from test_pcd.pcd with the following fields: " << pcl::getFieldsList (cloud_blob) << std::endl;
+     if (pcl::io::loadPCDFile ("test_pcd.pcd", cloud_blob) == -1)
+     {
+       std::cerr << "Couldn't read file test_pcd.pcd" << std::endl;
+       return (-1);
+     }
+     std::cerr << "Loaded " << cloud_blob.width * cloud_blob.height << " data points from test_pcd.pcd with the following fields: " << pcl::getFieldsList (cloud_blob) << std::endl;
 
-      // Convert to the templated message type
-      pcl::fromROSMsg (cloud_blob, cloud);
+     // Convert to the templated message type
+     pcl::fromROSMsg (cloud_blob, cloud);
 
-      for (size_t i = 0; i < cloud.points.size (); ++i)
-        std::cerr << "    " << cloud.points[i].x << " " << cloud.points[i].y << " " << cloud.points[i].z << std::endl;
+     for (size_t i = 0; i < cloud.points.size (); ++i)
+       std::cerr << "    " << cloud.points[i].x << " " << cloud.points[i].y << " " << cloud.points[i].z << std::endl;
 
-      return (0);
-    }
+     return (0);
+   }
 
 The explanation
 ---------------

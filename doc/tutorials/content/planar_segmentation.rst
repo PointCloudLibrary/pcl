@@ -21,6 +21,7 @@ editor, and place the following inside it:
 .. code-block:: cpp
    :linenos:
 
+   #include <iostream>
    #include "pcl/ModelCoefficients.h"
    #include "pcl/io/pcd_io.h"
    #include "pcl/point_types.h"
