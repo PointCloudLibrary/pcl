@@ -43,6 +43,7 @@
 #include "openni_exception.h"
 #include "openni_device.h"
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <XnCppWrapper.h>
 
 namespace openni_wrapper
