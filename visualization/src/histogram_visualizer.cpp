@@ -35,6 +35,7 @@
  *
  */
 
+#include <boost/thread/thread.hpp>
 #include <pcl/common/common_headers.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/visualization/interactor.h>
@@ -129,11 +130,7 @@ pcl_visualization::PCLHistogramVisualizer::spin ()
       if ((*am_it).second.interactor_->stopped)
         return;
     }
-#ifdef _WIN32
-    Sleep (1);
-#else
-    usleep (1000);
-#endif
+    boost::this_thread::sleep(boost::posix_time::seconds(1));
   }
   while (true);
 }

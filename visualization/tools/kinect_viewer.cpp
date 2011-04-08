@@ -35,6 +35,7 @@
  *
  */
 // PCL
+#include <boost/thread/thread.hpp>
 #include <Eigen/Geometry>
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
@@ -215,14 +216,13 @@ int
   interface->start ();
   while (true)
   {
-    usleep (10000);
+    boost::this_thread::sleep(boost::posix_time::microseconds(10000));
     {
       boost::mutex::scoped_lock lock(mutex_);
       p->spinOnce ();
       if (p->wasStopped ())
         break;
     }
-
   }
 
   interface->stop ();

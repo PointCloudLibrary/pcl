@@ -1,4 +1,5 @@
 #include <iostream>
+#include <boost/thread/thread.hpp>
 #include <pcl/common/time_trigger.h>
 #include <pcl/common/time.h>
 
@@ -13,7 +14,7 @@ void callback ()
   double elapsed = pcl::getTime () - last_time;
   last_time = pcl::getTime ();
   cout << "global fn: " << pcl::getTime () - global_time << " :: " << elapsed << endl;
-  usleep (1000);
+  boost::this_thread::sleep(boost::posix_time::millisec(1000));
 }
 
 class Dummy
@@ -34,10 +35,10 @@ int main ()
   Dummy dummy;
   global_time = pcl::getTime ();
   trigger.start ();
-  sleep (2);
+  boost::this_thread::sleep(boost::posix_time::seconds(2));
   trigger.registerCallback ( boost::bind(&Dummy::myTimer, dummy));
-  sleep (3);
+  boost::this_thread::sleep(boost::posix_time::seconds(3));
   trigger.setInterval (0.2);
-  sleep (2);
+  boost::this_thread::sleep(boost::posix_time::seconds(2));
   return 0;
 }

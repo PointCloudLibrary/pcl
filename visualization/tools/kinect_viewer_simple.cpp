@@ -34,6 +34,8 @@
  * Author: Nico Blodow (blodow@cs.tum.edu)
  */
 
+#include <boost/thread/thread.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/kinect_grabber.h>
@@ -63,7 +65,7 @@ class SimpleKinectViewer
       
       while (!viewer.wasStopped())
       {
-        sleep (1);
+        boost::this_thread::sleep(boost::posix_time::seconds(1));
       }
 
       interface->stop ();
@@ -78,5 +80,3 @@ int main ()
   v.run ();
   return 0;
 }
-
-

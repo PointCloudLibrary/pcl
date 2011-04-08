@@ -129,7 +129,7 @@ int
   // OR, if you want your own main loop instead:
   //while(range_imageWidget.isShown()) {
     //RangeImageVisualizer::spinOnce();  // process GUI events
-    //usleep(10000);
+    //boost::this_thread::sleep(boost::posix_time::microseconds(1000));
   //}
   
   wxEntryCleanup();  // Free memory allocated by wxEntryStart

@@ -40,6 +40,8 @@
 #define BOOST_FILESYSTEM_VERSION 2
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <pcl/terminal_tools/print.h>
 #include <pcl/visualization/cloud_viewer.h>
 
@@ -270,7 +272,7 @@ main (int argc, char** argv)
   interface->start ();
   while (true)
   {
-    usleep (10000);
+    boost::this_thread::sleep(boost::posix_time::microseconds(10000));
     {
       boost::mutex::scoped_lock lock (mutex_);
       p->spinOnce ();
