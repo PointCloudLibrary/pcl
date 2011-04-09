@@ -14,7 +14,7 @@ void callback ()
   double elapsed = pcl::getTime () - last_time;
   last_time = pcl::getTime ();
   cout << "global fn: " << pcl::getTime () - global_time << " :: " << elapsed << endl;
-  boost::this_thread::sleep(boost::posix_time::millisec(1000));
+  boost::this_thread::sleep(boost::posix_time::microseconds(1000));
 }
 
 class Dummy
