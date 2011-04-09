@@ -83,6 +83,15 @@ namespace pcl
         void
         setTreeDepth (unsigned int depth_arg);
 
+        /** \brief Get the maximum depth of the octree.
+         *  \return depth_arg: maximum depth of octree
+         * */
+        inline unsigned int
+        getTreeDepth ()
+        {
+          return this->octreeDepth_;
+        }
+
         /** \brief Add a const DataT element to leaf node at (idxX, idxY, idxZ). If leaf node does not exist, it is added to the octree.
          *  \param idxX_arg: index of leaf node in the X axis.
          *  \param idxY_arg: index of leaf node in the Y axis.
@@ -132,6 +141,13 @@ namespace pcl
         /** \brief Delete the octree structure and its leaf nodes. */
         void
         deleteTree ();
+
+        /** \brief Delete octree structure of previous buffer. */
+        inline void
+        deletePreviousBuffer ()
+        {
+          treeCleanUpRecursive (rootNode_);
+        }
 
         /** \brief Switch buffers and reset current octree structure. */
         void
@@ -863,6 +879,9 @@ namespace pcl
         // flags indicating if unused branches and leafs might exist in previous buffer
         bool resetTree_;
         bool treeDirtyFlag_;
+
+        /** \brief Octree depth */
+        unsigned int octreeDepth_;
 
       };
   }

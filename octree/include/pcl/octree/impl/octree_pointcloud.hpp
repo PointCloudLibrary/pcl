@@ -55,9 +55,10 @@ namespace pcl
     template<typename PointT, typename LeafT, typename OctreeT>
       OctreePointCloud<PointT, LeafT, OctreeT>::OctreePointCloud (const double resolution) :
         OctreeT (), epsilon_ (0), resolution_ (resolution), minX_ (0.0f), maxX_ (resolution), minY_ (0.0f),
-            maxY_ (resolution), minZ_ (0.0f), maxZ_ (resolution), maxKeys_ (1), octreeDepth_ (0)
+            maxY_ (resolution), minZ_ (0.0f), maxZ_ (resolution), maxKeys_ (1)
       {
         assert ( resolution > 0.0f );
+        input_ = PointCloudConstPtr();
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,9 +83,8 @@ namespace pcl
           std::vector<int>::const_iterator current = indices_->begin ();
           while (current != indices_->end ())
           {
-            if ((input_->points[*current].x==input_->points[*current].x) &&
-                (input_->points[*current].y==input_->points[*current].y) &&
-                (input_->points[*current].z==input_->points[*current].z))
+            if ((input_->points[*current].x == input_->points[*current].x) && (input_->points[*current].y
+                == input_->points[*current].y) && (input_->points[*current].z == input_->points[*current].z))
               // add points to octree
               this->addPointIdx (*current);
             ++current;
@@ -94,9 +94,8 @@ namespace pcl
         {
           for (i = 0; i < input_->points.size (); i++)
           {
-            if ((input_->points[i].x==input_->points[i].x) &&
-                (input_->points[i].y==input_->points[i].y) &&
-                (input_->points[i].z==input_->points[i].z))
+            if ((input_->points[i].x == input_->points[i].x) && (input_->points[i].y == input_->points[i].y)
+                && (input_->points[i].z == input_->points[i].z))
               // add points to octree
               this->addPointIdx ((unsigned int)i);
           }
@@ -194,7 +193,7 @@ namespace pcl
     template<typename PointT, typename LeafT, typename OctreeT>
       bool
       OctreePointCloud<PointT, LeafT, OctreeT>::voxelSearch (const PointT& point_arg,
-                                                                     std::vector<int>& pointIdx_data_arg)
+                                                             std::vector<int>& pointIdx_data_arg)
       {
         OctreeKey key;
         bool bSuccess = false;
@@ -290,7 +289,7 @@ namespace pcl
 
         getKNearestNeighborRecursive (p_q_arg, k_arg, this->rootNode_, key, 1, smallestDist, pointCandidates);
 
-        resultCount = pointCandidates.size();
+        resultCount = pointCandidates.size ();
 
         for (i = 0; i < resultCount; i++)
         {
@@ -543,27 +542,22 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
       void
-      OctreePointCloud<PointT, LeafT, OctreeT>::addPointIdx (const int pointIdx_arg)
+      OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (const PointT& pointIdx_arg)
       {
-        OctreeKey key;
 
         const double minValue = 1e-10;
 
-        assert (pointIdx_arg < (int) input_->points.size());
-
-        const PointT& point = input_->points[pointIdx_arg];
-
         // increase octree size until point fits into bounding box
-        while ( true )
+        while (true)
         {
 
-          bool bLowerBoundViolationX = (point.x < minX_);
-          bool bLowerBoundViolationY = (point.y < minY_);
-          bool bLowerBoundViolationZ = (point.z < minZ_);
+          bool bLowerBoundViolationX = (pointIdx_arg.x < minX_);
+          bool bLowerBoundViolationY = (pointIdx_arg.y < minY_);
+          bool bLowerBoundViolationZ = (pointIdx_arg.z < minZ_);
 
-          bool bUpperBoundViolationX = (point.x >= maxX_);
-          bool bUpperBoundViolationY = (point.y >= maxY_);
-          bool bUpperBoundViolationZ = (point.z >= maxZ_);
+          bool bUpperBoundViolationX = (pointIdx_arg.x >= maxX_);
+          bool bUpperBoundViolationY = (pointIdx_arg.y >= maxY_);
+          bool bUpperBoundViolationZ = (pointIdx_arg.z >= maxZ_);
 
           // do we violate any bounds?
           if (bLowerBoundViolationX || bLowerBoundViolationY || bLowerBoundViolationZ || bUpperBoundViolationX
@@ -621,13 +615,13 @@ namespace pcl
             {
 
               // octree is empty - we set the center of the bounding box to our first pixel
-              minX_ = point.x - resolution_ / 2 + minValue;
-              minY_ = point.y - resolution_ / 2 + minValue;
-              minZ_ = point.z - resolution_ / 2 + minValue;
+              this->minX_ = pointIdx_arg.x - this->resolution_ / 2 + minValue;
+              this->minY_ = pointIdx_arg.y - this->resolution_ / 2 + minValue;
+              this->minZ_ = pointIdx_arg.z - this->resolution_ / 2 + minValue;
 
-              maxX_ = point.x + resolution_ / 2 - minValue;
-              maxY_ = point.y + resolution_ / 2 - minValue;
-              maxZ_ = point.z + resolution_ / 2 - minValue;
+              this->maxX_ = pointIdx_arg.x + this->resolution_ / 2 - minValue;
+              this->maxY_ = pointIdx_arg.y + this->resolution_ / 2 - minValue;
+              this->maxZ_ = pointIdx_arg.z + this->resolution_ / 2 - minValue;
 
             }
 
@@ -640,6 +634,22 @@ namespace pcl
             break;
           }
         }
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::addPointIdx (const int pointIdx_arg)
+      {
+        OctreeKey key;
+
+        assert (pointIdx_arg < (int) input_->points.size());
+
+        const PointT& point = input_->points[pointIdx_arg];
+
+        // make sure bounding box is big enough
+        adoptBoundingBoxToPoint (point);
 
         // generate key
         genOctreeKeyforPoint (point, key);
@@ -694,10 +704,10 @@ namespace pcl
         maxVoxels = max (max (max (maxKeyX, maxKeyY), maxKeyZ), (unsigned int)2);
 
         // tree depth == amount of bits of maxVoxels
-        octreeDepth_ = max ((min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)ceil (this->Log2 (maxVoxels)))),
-                            (unsigned int)0);
+        this->octreeDepth_ = max ((min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)ceil (this->Log2 (maxVoxels)))),
+                                  (unsigned int)0);
 
-        maxKeys_ = (1 << octreeDepth_);
+        maxKeys_ = (1 << this->octreeDepth_);
 
         octreeSideLen = (double)maxKeys_ * resolution_ - minValue;
 
@@ -731,7 +741,7 @@ namespace pcl
         }
 
         // configure tree depth of octree
-        this->setTreeDepth (octreeDepth_);
+        this->setTreeDepth (this->octreeDepth_);
 
         return;
 
@@ -853,11 +863,6 @@ namespace pcl
 
       }
 
-
-
-
-
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
       double
@@ -871,121 +876,118 @@ namespace pcl
                                                                               std::vector<prioPointQueueEntry>& pointCandidates_arg) const
       {
 
-
         std::vector<prioBranchQueueEntry> searchEntryHeap;
-        searchEntryHeap.resize(8);
+        searchEntryHeap.resize (8);
 
         unsigned char childIdx;
 
-         OctreeKey newKey;
+        OctreeKey newKey;
 
-         double smallestSquaredDist = squaredSearchRadius_arg;
+        double smallestSquaredDist = squaredSearchRadius_arg;
 
-         // get spatial voxel information
-         double voxelSquaredDiameter = getVoxelSquaredDiameter (treeDepth_arg);
+        // get spatial voxel information
+        double voxelSquaredDiameter = getVoxelSquaredDiameter (treeDepth_arg);
 
-         // iterate over all children
-         for (childIdx = 0; childIdx < 8; childIdx++)
-         {
-           if (branchHasChild (*node_arg, childIdx))
-           {
+        // iterate over all children
+        for (childIdx = 0; childIdx < 8; childIdx++)
+        {
+          if (branchHasChild (*node_arg, childIdx))
+          {
 
-             PointT voxelCenter;
+            PointT voxelCenter;
 
-             searchEntryHeap[childIdx].key.x = (key_arg.x << 1) + (!!(childIdx & (1 << 2)));
-             searchEntryHeap[childIdx].key.y = (key_arg.y << 1) + (!!(childIdx & (1 << 1)));
-             searchEntryHeap[childIdx].key.z = (key_arg.z << 1) + (!!(childIdx & (1 << 0)));
+            searchEntryHeap[childIdx].key.x = (key_arg.x << 1) + (!!(childIdx & (1 << 2)));
+            searchEntryHeap[childIdx].key.y = (key_arg.y << 1) + (!!(childIdx & (1 << 1)));
+            searchEntryHeap[childIdx].key.z = (key_arg.z << 1) + (!!(childIdx & (1 << 0)));
 
-             // generate voxel center point for voxel at key
-             genVoxelCenterFromOctreeKey ( searchEntryHeap[childIdx].key, treeDepth_arg, voxelCenter);
+            // generate voxel center point for voxel at key
+            genVoxelCenterFromOctreeKey (searchEntryHeap[childIdx].key, treeDepth_arg, voxelCenter);
 
-             // generate new priority queue element
-             searchEntryHeap[childIdx].node = getBranchChild (*node_arg, childIdx);
-             searchEntryHeap[childIdx].pointDistance = pointSquaredDist (voxelCenter, point_arg);
+            // generate new priority queue element
+            searchEntryHeap[childIdx].node = getBranchChild (*node_arg, childIdx);
+            searchEntryHeap[childIdx].pointDistance = pointSquaredDist (voxelCenter, point_arg);
 
-           } else
-           {
-             searchEntryHeap[childIdx].pointDistance = numeric_limits<double>::infinity();
-           }
-         }
+          }
+          else
+          {
+            searchEntryHeap[childIdx].pointDistance = numeric_limits<double>::infinity ();
+          }
+        }
 
-         std::sort(searchEntryHeap.begin(), searchEntryHeap.end());
+        std::sort (searchEntryHeap.begin (), searchEntryHeap.end ());
 
-         // iterate over all children in priority queue
-         // check if the distance to seach candidate is smaller than the best point distance (smallestSquaredDist)
-         while ((!searchEntryHeap.empty ()) &&
-                (searchEntryHeap.back ().pointDistance < smallestSquaredDist
-                + voxelSquaredDiameter / 4.0 + sqrt (smallestSquaredDist * voxelSquaredDiameter) - epsilon_ ))
-         {
+        // iterate over all children in priority queue
+        // check if the distance to seach candidate is smaller than the best point distance (smallestSquaredDist)
+        while ((!searchEntryHeap.empty ()) && (searchEntryHeap.back ().pointDistance < smallestSquaredDist
+            + voxelSquaredDiameter / 4.0 + sqrt (smallestSquaredDist * voxelSquaredDiameter) - epsilon_))
+        {
 
-           const OctreeNode* childNode;
+          const OctreeNode* childNode;
 
-           // read from priority queue element
-           childNode = searchEntryHeap.back ().node;
-           newKey = searchEntryHeap.back ().key;
+          // read from priority queue element
+          childNode = searchEntryHeap.back ().node;
+          newKey = searchEntryHeap.back ().key;
 
-           if (treeDepth_arg < octreeDepth_)
-           {
-             // we have not reached maximum tree depth
-             smallestSquaredDist = getKNearestNeighborRecursive (point_arg, K_arg, (OctreeBranch*)childNode, newKey,
-                                                                 treeDepth_arg + 1, smallestSquaredDist,
-                                                                 pointCandidates_arg);
+          if (treeDepth_arg < this->octreeDepth_)
+          {
+            // we have not reached maximum tree depth
+            smallestSquaredDist = getKNearestNeighborRecursive (point_arg, K_arg, (OctreeBranch*)childNode, newKey,
+                                                                treeDepth_arg + 1, smallestSquaredDist,
+                                                                pointCandidates_arg);
 
-           }
-           else
-           {
-             // we reached leaf node level
+          }
+          else
+          {
+            // we reached leaf node level
 
-             double squaredDist;
-             size_t i;
-             vector<int> decodedPointVector;
+            double squaredDist;
+            size_t i;
+            vector<int> decodedPointVector;
 
-             OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
+            OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
 
-             // decode leaf node into decodedPointVector
-             childLeaf->getData (decodedPointVector);
+            // decode leaf node into decodedPointVector
+            childLeaf->getData (decodedPointVector);
 
-             // Linearly iterate over all decoded (unsorted) points
-             for (i = 0; i < decodedPointVector.size (); i++)
-             {
+            // Linearly iterate over all decoded (unsorted) points
+            for (i = 0; i < decodedPointVector.size (); i++)
+            {
 
-               const PointT& candidatePoint = getPointByIndex (decodedPointVector[i]);
+              const PointT& candidatePoint = getPointByIndex (decodedPointVector[i]);
 
-               // calculate point distance to search point
-               squaredDist = pointSquaredDist (candidatePoint, point_arg);
+              // calculate point distance to search point
+              squaredDist = pointSquaredDist (candidatePoint, point_arg);
 
-               // check if a closer match is found
-               if (squaredDist < smallestSquaredDist)
-               {
-                 prioPointQueueEntry pointEntry;
+              // check if a closer match is found
+              if (squaredDist < smallestSquaredDist)
+              {
+                prioPointQueueEntry pointEntry;
 
-                 pointEntry.pointDistance_ = squaredDist;
-                 pointEntry.pointIdx_ = decodedPointVector[i];
-                 pointCandidates_arg.push_back (pointEntry);
-               }
-             }
+                pointEntry.pointDistance_ = squaredDist;
+                pointEntry.pointIdx_ = decodedPointVector[i];
+                pointCandidates_arg.push_back (pointEntry);
+              }
+            }
 
-             std::sort(pointCandidates_arg.begin(), pointCandidates_arg.end());
+            std::sort (pointCandidates_arg.begin (), pointCandidates_arg.end ());
 
-             if (pointCandidates_arg.size () > K_arg)
-               pointCandidates_arg.resize (K_arg);
+            if (pointCandidates_arg.size () > K_arg)
+              pointCandidates_arg.resize (K_arg);
 
-             if (pointCandidates_arg.size () == K_arg)
-             {
-               smallestSquaredDist = pointCandidates_arg.back ().pointDistance_;
-             }
+            if (pointCandidates_arg.size () == K_arg)
+            {
+              smallestSquaredDist = pointCandidates_arg.back ().pointDistance_;
+            }
 
-           }
+          }
 
-           // pop element from priority queue
-           searchEntryHeap.pop_back();
-         }
+          // pop element from priority queue
+          searchEntryHeap.pop_back ();
+        }
 
-         return smallestSquaredDist;
+        return smallestSquaredDist;
 
       }
-
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
@@ -1084,7 +1086,6 @@ namespace pcl
         }
       }
 
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
       int
@@ -1125,9 +1126,9 @@ namespace pcl
 
                 genLeafNodeCenterFromOctreeKey (newKey, newPoint);
 
-                voxelCenterList_arg.push_back(newPoint);
+                voxelCenterList_arg.push_back (newPoint);
 
-                voxelCount ++;
+                voxelCount++;
                 break;
             }
 

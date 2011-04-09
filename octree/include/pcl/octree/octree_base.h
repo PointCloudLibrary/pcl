@@ -81,6 +81,15 @@ namespace pcl
         void
         setTreeDepth (unsigned int depth_arg);
 
+        /** \brief Get the maximum depth of the octree.
+         *  \return depth_arg: maximum depth of octree
+         * */
+        inline unsigned int
+        getTreeDepth ()
+        {
+          return this->octreeDepth_;
+        }
+
         /** \brief Add a const DataT element to leaf node at (idxX, idxY, idxZ). If leaf node does not exist, it is created and added to the octree.
          *  \param idxX_arg: index of leaf node in the X axis.
          *  \param idxY_arg: index of leaf node in the Y axis.
@@ -597,6 +606,9 @@ namespace pcl
 
         /** \brief Depth mask based on octree depth   **/
         unsigned int depthMask_;
+
+        /** \brief Octree depth */
+        unsigned int octreeDepth_;
 
       };
   }

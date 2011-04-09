@@ -428,6 +428,12 @@ namespace pcl
         void
         getKeyBitSize ();
 
+        /** \brief Grow the bounding box/octree until point fits
+         * \param pointIdx_arg: point that should be within bounding box;
+         */
+        void
+        adoptBoundingBoxToPoint (const PointT& pointIdx_arg);
+
         /** \brief Generate octree key for voxel at a given point
          * \param point_arg: the point addressing a voxel
          * \param key_arg: write octree key to this reference
@@ -642,9 +648,6 @@ namespace pcl
 
         /** \brief Maximum amount of keys available in octree. */
         unsigned int maxKeys_;
-
-        /** \brief Octree depth */
-        unsigned int octreeDepth_;
 
       };
 

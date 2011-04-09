@@ -57,6 +57,7 @@ namespace pcl
         rootNode_ = new OctreeBranch ();
         leafCount_ = 0;
         depthMask_ = 0;
+        octreeDepth_ = 0;
         bufferSelector_ = 0;
         resetTree_ = false;
         treeDirtyFlag_ = false;
@@ -98,6 +99,9 @@ namespace pcl
       {
 
         assert (depth_arg > 0);
+
+        // set octree depth
+        octreeDepth_ = depth_arg;
 
         // define depthMask_ by setting a single bit to 1 at bit position == tree depth
         depthMask_ = (1 << (depth_arg - 1));
