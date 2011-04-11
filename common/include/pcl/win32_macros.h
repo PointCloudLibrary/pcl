@@ -72,36 +72,22 @@
 #endif
 
 
-/** Win32 doesn't seem to have these functions.
-  * Therefore implement inline versions of these functions here.
+/** Win32 doesn't seem to have rounding functions.
+  * Therefore implement our own versions of these functions here.
   */
-#if (defined (WIN32) || defined (_WIN32))
-//# define lrint(x) (floor(x+(x>0) ? 0.5 : -0.5))
 #include <math.h>
-__inline long int
-lrint (double flt)
+__inline double pcl_round(double number)
 {
-  int intgr;
-  _asm
-  {
-      fld flt
-      fistp intgr
-  };
-  return (intgr);
+  return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
+}
+__inline float pcl_round(float number)
+{
+  return number < 0.0f ? ceil(number - 0.5f) : floor(number + 0.5f);
 }
 
-__inline long int
-lrintf (float flt)
-{
-   int intgr;
-   _asm
-  {
-    fld flt
-    fistp intgr
-  };
-  return (intgr);
-}
-#endif
+#define pcl_lrint(x) ((long int) pcl_round(x))
+#define pcl_lrintf(x) ((long int) pcl_round(x))
+
 
 // Generic helper definitions for shared library support
 // see http://gcc.gnu.org/wiki/Visibility for more information
