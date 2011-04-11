@@ -35,7 +35,7 @@
 #ifndef PCL_WIN32_MACROS_H_
 #define PCL_WIN32_MACROS_H_
 
-// Windowz doesn't have std::{isnan,isfinite}
+// Windows doesn't have std::{isnan,isfinite}
 #ifdef _WIN32
 
 // Stupid. This should be removed when all the PCL dependencies have min/max fixed.
