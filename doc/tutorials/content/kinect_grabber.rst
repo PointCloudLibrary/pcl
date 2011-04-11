@@ -12,6 +12,11 @@ a breeze to request data streams from the Kinect cameras. This tutorial
 presents how to set up and use the grabber, and since it's so simple, we can
 keep it short :).
 
+The cameras that we have tested so far are the Primesense Reference Design, Microsoft Kinect and Asus Xtion cameras:
+
+.. image:: images/openni_cams.png
+   :height: 390px
+
 Simple Example
 --------------
 
