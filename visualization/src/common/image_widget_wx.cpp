@@ -39,6 +39,7 @@
 
 #include <pcl/visualization/common/image_widget_wx.h>
 #include <pcl/visualization/common/float_image_utils.h>
+#include <pcl/win32_macros.h>
 
 #include <iostream>
 using std::cout;
