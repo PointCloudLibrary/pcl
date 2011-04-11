@@ -64,7 +64,7 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
   int n_inliers_count = 0;
 
   // Number of samples to try randomly
-  size_t fraction_nr_points = lrint (sac_model_->getIndices ()->size () * fraction_nr_pretest_ / 100.0);
+  size_t fraction_nr_points = pcl_lrint (sac_model_->getIndices ()->size () * fraction_nr_pretest_ / 100.0);
 
   // Iterate
   while (iterations_ < k)

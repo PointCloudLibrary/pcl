@@ -212,7 +212,7 @@ namespace {  // Some helper functions in an anonymous namespace - only available
       {
         if (old_beams[old_idx])
         {
-          int middle_idx = lrint (mapping_factor*old_idx);
+          int middle_idx = pcl_lrint (mapping_factor*old_idx);
           //cout << "Radius "<<new_radius-1<<", beam "<<old_idx<<" is invalid =>"<<PVAR (middle_idx)<<"\n";
           for (int idx_offset=-1; idx_offset<=1; ++idx_offset)
           {
@@ -391,7 +391,7 @@ void NarfKeypoint::calculateInterestImage ()
                                                            rotation_to_viewer_coordinate_system);
             float angle = nkdGetDirectionAngle (surface_change_direction, rotation_to_viewer_coordinate_system);
             int histogram_cell = (std::min) (angle_histogram_size-1,
-                                    (int)lrint (floorf ( (angle+deg2rad (90.0f))/deg2rad (180.0f) * angle_histogram_size)));
+                                    (int)pcl_lrint (floorf ( (angle+deg2rad (90.0f))/deg2rad (180.0f) * angle_histogram_size)));
             float& histogram_value = angle_histogram[histogram_cell];
             float& negative_score = interest_image[neighbor_index];
             
@@ -611,8 +611,8 @@ void NarfKeypoint::calculateInterestPoints ()
                 keypoint_y = y_values[0]+keypoint_y_int;
           //cout << PVARC(poly_step) << PVARC(keypoint_x)<<PVARN(keypoint_y);
           
-          keypoint_x_int = lrint (keypoint_x);
-          keypoint_y_int = lrint (keypoint_y);
+          keypoint_x_int = pcl_lrint (keypoint_x);
+          keypoint_y_int = pcl_lrint (keypoint_y);
           //float keypoint_score = polynomial.getValue (x_values[0], y_values[0]);
           
           range_image.calculate3DPoint (keypoint_x, keypoint_y, keypoint_3d);

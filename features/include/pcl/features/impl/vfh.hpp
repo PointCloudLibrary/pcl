@@ -121,7 +121,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
     if ( normalize_distances_ ) {
       h_index = floor (nr_bins_f4_ * (pfh_tuple[3] / distance_normalization_factor));
     } else {
-      h_index = round (pfh_tuple[3] * 100);
+      h_index = pcl_round (pfh_tuple[3] * 100);
     }
 
     if (h_index < 0)

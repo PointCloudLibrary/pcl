@@ -69,45 +69,45 @@ pcl_visualization::FloatImageUtils::getColorForFloat (float value, unsigned char
   value *= 10;
   if (value <= 1.0) 
   {  // black -> purple
-    b = lrint(value*200);
-    r = lrint(value*120);
+    b = pcl_lrint(value*200);
+    r = pcl_lrint(value*120);
   }
   else if (value <= 2.0) 
   {  // purple -> blue
-    b = 200 + lrint((value-1.0)*55);
-    r = 120 - lrint((value-1.0)*120);
+    b = 200 + pcl_lrint((value-1.0)*55);
+    r = 120 - pcl_lrint((value-1.0)*120);
   }
   else if (value <= 3.0) 
   {  // blue -> turquoise
-    b = 255 - lrint((value-2.0)*55);
-    g = lrint((value-2.0)*200);
+    b = 255 - pcl_lrint((value-2.0)*55);
+    g = pcl_lrint((value-2.0)*200);
   }
   else if (value <= 4.0) 
   {  // turquoise -> green
-    b = 200 - lrint((value-3.0)*200);
-    g = 200 + lrint((value-3.0)*55);
+    b = 200 - pcl_lrint((value-3.0)*200);
+    g = 200 + pcl_lrint((value-3.0)*55);
   }
   else if (value <= 5.0) 
   {  // green -> greyish green
-    g = 255 - lrint((value-4.0)*100);
-    r = lrint((value-4.0)*120);
+    g = 255 - pcl_lrint((value-4.0)*100);
+    r = pcl_lrint((value-4.0)*120);
   }
   else if (value <= 6.0) 
   { // greyish green -> red
-    r = 100 + lrint((value-5.0)*155);
-    g = 120 - lrint((value-5.0)*120);
-    b = 120 - lrint((value-5.0)*120);
+    r = 100 + pcl_lrint((value-5.0)*155);
+    g = 120 - pcl_lrint((value-5.0)*120);
+    b = 120 - pcl_lrint((value-5.0)*120);
   }
   else if (value <= 7.0) 
   {  // red -> yellow
     r = 255;
-    g = lrint((value-6.0)*255);
+    g = pcl_lrint((value-6.0)*255);
   }
   else 
   {  // yellow -> white
     r = 255;
     g = 255;
-    b = lrint((value-7.0)*255.0/3.0);
+    b = pcl_lrint((value-7.0)*255.0/3.0);
   }
 }
 
@@ -133,21 +133,21 @@ pcl_visualization::FloatImageUtils::getColorForAngle (float value, unsigned char
   r = g = b = 0;
   if (value < -M_PI/2.0f) 
   {  // black -> blue
-    b = lrint(lrint(255*(value+float(M_PI))/(float(M_PI)/2.0f)));
+    b = (pcl_lrint(255*(value+float(M_PI))/(float(M_PI)/2.0f)));
   }
   else if (value <= 0.0f) 
   {  // blue -> white
     b = 255;
-    r = g = lrint(lrint(255*(value+float(M_PI/2))/(float(M_PI)/2.0f)));
+    r = g = (pcl_lrint(255*(value+float(M_PI/2))/(float(M_PI)/2.0f)));
   }
   else if (value <= M_PI/2.0f) 
   {  // white -> green
     g = 255;
-    r = b = lrint(255-lrint(255*(value)/(float(M_PI)/2.0f)));
+    r = b = (255-pcl_lrint(255*(value)/(float(M_PI)/2.0f)));
   }
   else 
   {  // green -> black
-    g = lrint(255-lrint(255*(value-M_PI/2.0f)/(float(M_PI)/2.0f)));
+    g = (255-pcl_lrint(255*(value-M_PI/2.0f)/(float(M_PI)/2.0f)));
   }
   //cout << 180.0f*value/M_PI<<"deg => "<<(int)r<<", "<<(int)g<<", "<<(int)b<<"\n";
 }
@@ -206,7 +206,7 @@ unsigned char*
     // Get a color from the value in [0, 1]
     if (grayScale) 
     {
-      r = g = b = lrint(value*255);
+      r = g = b = pcl_lrint(value*255);
     }
     else 
     {

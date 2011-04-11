@@ -164,7 +164,7 @@ bool Narf::extractDescriptor(int descriptor_size)
       float beam_point_cell_x = cell_factor * (beam_point_x+cell_offset),
             beam_point_cell_y = cell_factor * (beam_point_y+cell_offset);
       //cout << PVARC(beam_point_idx)<<PVARC(beam_point_x)<<PVARC(beam_point_y)<<PVARC(beam_point_cell_x)<<PVARN(beam_point_cell_y);
-      int cell_x=lrint(beam_point_cell_x), cell_y=lrint(beam_point_cell_y);
+      int cell_x=pcl_lrint(beam_point_cell_x), cell_y=pcl_lrint(beam_point_cell_y);
       beam_value = surface_patch_[cell_y*surface_patch_pixel_size_ + cell_x];
       if (!pcl_isfinite(beam_value))
       {
@@ -218,7 +218,7 @@ bool Narf::extractFromRangeImage(const RangeImage& range_image, const Eigen::Aff
 
 bool Narf::extractFromRangeImage(const RangeImage& range_image, float x, float y, int descriptor_size, float support_size)
 {
-  if (!range_image.isValid(lrint(x), lrint(y)))
+  if (!range_image.isValid(pcl_lrint(x), pcl_lrint(y)))
     return false;
   Eigen::Vector3f feature_pos;
   range_image.calculate3DPoint(x, y, feature_pos);
@@ -273,8 +273,8 @@ float* Narf::getBlurredSurfacePatch(int new_pixel_size, int blur_radius) const
     for (int x=0; x<new_pixel_size; ++x)
     {
       float& integral_pixel = *(integral_image_ptr++);
-      int old_x = lrint(floor(new_to_old_factor * float(x))),
-          old_y = lrint(floor(new_to_old_factor * float(y)));
+      int old_x = pcl_lrint(floor(new_to_old_factor * float(x))),
+          old_y = pcl_lrint(floor(new_to_old_factor * float(y)));
       //cout << "Old: "<<surface_patch_pixel_size_<<", new: "<<new_pixel_size<<". "<<x<<","<<y<<" -> "<<old_x<<","<<old_y<<"\n";
       integral_pixel = surface_patch_[old_y*surface_patch_pixel_size_ + old_x];
       if (pcl_isinf(integral_pixel))
@@ -345,7 +345,7 @@ void Narf::extractFromRangeImageAndAddToList(const RangeImage& range_image, cons
 void Narf::extractFromRangeImageAndAddToList(const RangeImage& range_image, float image_x, float image_y, int descriptor_size,
                                             float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list)
 {
-  if (!range_image.isValid(lrint(image_x), lrint(image_y)))
+  if (!range_image.isValid(pcl_lrint(image_x), pcl_lrint(image_y)))
     return;
   Eigen::Vector3f feature_pos;
   range_image.calculate3DPoint(image_x, image_y, feature_pos);

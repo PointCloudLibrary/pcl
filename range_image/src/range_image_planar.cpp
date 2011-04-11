@@ -69,7 +69,7 @@ RangeImagePlanar::setDisparityImage (const float* disparity_image, int di_width,
   int skip = 1;
   if (desired_angular_resolution >= 2.0f*original_angular_resolution)
   {
-    skip = lrint (floor (desired_angular_resolution/original_angular_resolution));
+    skip = pcl_lrint (floor (desired_angular_resolution/original_angular_resolution));
   }
   //std::cout << PVARN (skip);
   setAngularResolution (original_angular_resolution * skip);
@@ -131,7 +131,7 @@ RangeImagePlanar::setDepthImage (const float* depth_image, int di_width, int di_
   int skip = 1;
   if (desired_angular_resolution >= 2.0f*original_angular_resolution)
   {
-    skip = lrint (floor (desired_angular_resolution/original_angular_resolution));
+    skip = pcl_lrint (floor (desired_angular_resolution/original_angular_resolution));
   }
   //std::cout << PVARN (skip);
   setAngularResolution (original_angular_resolution * skip);

@@ -124,11 +124,11 @@ void
   }
   else if (width <= 0)
   {
-    width = lrint(float(original_width) * float(height)/float(original_height));
+    width = pcl_lrint(float(original_width) * float(height)/float(original_height));
   }
   else if (height <= 0)
   {
-    height = lrint(float(original_height) * float(width)/float(original_width));
+    height = pcl_lrint(float(original_height) * float(width)/float(original_width));
   }
   
   image_frame->SetSize (wxSize (width, height));
@@ -412,18 +412,18 @@ void
     const ImagePoint& point = markedPoints.at (i);
     dc.SetPen (*point.color);
     dc.SetBrush (*point.background);
-    dc.DrawEllipse (lrint ((point.x+0.5f)*scaledWidth / image->GetWidth ())-0.5f*circleSize,
-                    lrint ((point.y+0.5f)*scaledHeight / image->GetHeight ())-0.5f*circleSize, circleSize, circleSize);
+    dc.DrawEllipse (pcl_lrint ((point.x+0.5f)*scaledWidth / image->GetWidth ())-0.5f*circleSize,
+                    pcl_lrint ((point.y+0.5f)*scaledHeight / image->GetHeight ())-0.5f*circleSize, circleSize, circleSize);
   }
   
   for (unsigned int i = 0; i < lines.size (); ++i) 
   {
     const ImageLine& line = lines.at (i);
     wxPoint points_array[2];
-    points_array[0].x = lrint ((line.x1+0.5f)*scaledWidth / image->GetWidth ());
-    points_array[0].y = lrint ((line.y1+0.5f)*scaledHeight / image->GetHeight ());
-    points_array[1].x = lrint((line.x2+0.5f)*scaledWidth / image->GetWidth ());
-    points_array[1].y = lrint((line.y2+0.5f)*scaledHeight / image->GetHeight ());
+    points_array[0].x = pcl_lrint ((line.x1+0.5f)*scaledWidth / image->GetWidth ());
+    points_array[0].y = pcl_lrint ((line.y1+0.5f)*scaledHeight / image->GetHeight ());
+    points_array[1].x = pcl_lrint((line.x2+0.5f)*scaledWidth / image->GetWidth ());
+    points_array[1].y = pcl_lrint((line.y2+0.5f)*scaledHeight / image->GetHeight ());
     wxPen pen(*line.color);
     pen.SetWidth(3);
     dc.SetPen(pen);
@@ -438,8 +438,8 @@ void
     {
       wxPen pen(*wxGREEN, 2);	 
       dc.SetPen (pen);
-      dc.CrossHair (lrint((selected_x+0.5f)*scaledWidth / image->GetWidth ()),
-                    lrint((selected_y+0.5f)*scaledHeight / image->GetHeight ()));
+      dc.CrossHair (pcl_lrint((selected_x+0.5f)*scaledWidth / image->GetWidth ()),
+                    pcl_lrint((selected_y+0.5f)*scaledHeight / image->GetHeight ()));
     }
   }
 }
@@ -456,7 +456,7 @@ void
   {
     float aspectRatio = (float)image->GetWidth () / (float)image->GetHeight ();
     SetSize (wxDefaultCoord, wxDefaultCoord, event.GetSize ().GetWidth (),
-             lrint((float)event.GetSize ().GetWidth () / aspectRatio));
+             pcl_lrint((float)event.GetSize ().GetWidth () / aspectRatio));
   }
   Refresh ();
 }

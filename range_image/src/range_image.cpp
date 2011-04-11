@@ -150,8 +150,8 @@ RangeImage::integrateFarRanges (const PointCloud<PointWithViewpoint>& far_ranges
     
     this->getImagePoint (current_point, x_real, y_real, range_of_current_point);
     
-    int floor_x = lrint (floor (x_real)), floor_y = lrint (floor (y_real)),
-        ceil_x  = lrint (ceil (x_real)),  ceil_y  = lrint (ceil (y_real));
+    int floor_x = pcl_lrint (floor (x_real)), floor_y = pcl_lrint (floor (y_real)),
+        ceil_x  = pcl_lrint (ceil (x_real)),  ceil_y  = pcl_lrint (ceil (y_real));
     
     int neighbor_x[4], neighbor_y[4];
     neighbor_x[0]=floor_x; neighbor_y[0]=floor_y;
@@ -597,10 +597,10 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
       //}
     //}
   //}
-  //int min_x = max (0, int (lrint (floor (min_x_f))-1)), max_x = (std::min) (int (width)-1,
-  //                                                                          int (lrint (ceil (max_x_f))+1)),
-      //min_y = max (0, int (lrint (floor (min_y_f))-1)), max_y = (std::min) (int (height)-1,
-      //                                                                      int (lrint (ceil (max_y_f))+1));
+  //int min_x = max (0, int (pcl_lrint (floor (min_x_f))-1)), max_x = (std::min) (int (width)-1,
+  //                                                                          int (pcl_lrint (ceil (max_x_f))+1)),
+      //min_y = max (0, int (pcl_lrint (floor (min_y_f))-1)), max_y = (std::min) (int (height)-1,
+      //                                                                      int (pcl_lrint (ceil (max_y_f))+1));
   //cout << "Searching through range image area of size "<<max_x-min_x<<"x"<<max_y-min_y<<".\n";
   
   Eigen::Vector3f position = getTranslation (inverse_pose);
@@ -672,11 +672,11 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
               cell3_y = world2cell_factor*point3[1] + world2cell_offset,
               cell3_z = point3[2];
         
-        int min_cell_x = (std::max) (0, int (lrint (ceil ( (std::min) (cell1_x, (std::min) (cell2_x, cell3_x)))))),
-            max_cell_x = (std::min) (pixel_size-1, int (lrint (floor ( (std::max) (cell1_x,
+        int min_cell_x = (std::max) (0, int (pcl_lrint (ceil ( (std::min) (cell1_x, (std::min) (cell2_x, cell3_x)))))),
+            max_cell_x = (std::min) (pixel_size-1, int (pcl_lrint (floor ( (std::max) (cell1_x,
                                                                        (std::max) (cell2_x, cell3_x)))))),
-            min_cell_y = (std::max) (0, int (lrint (ceil ( (std::min) (cell1_y, (std::min) (cell2_y, cell3_y)))))),
-            max_cell_y = (std::min) (pixel_size-1, int (lrint (floor ( (std::max) (cell1_y,
+            min_cell_y = (std::max) (0, int (pcl_lrint (ceil ( (std::min) (cell1_y, (std::min) (cell2_y, cell3_y)))))),
+            max_cell_y = (std::min) (pixel_size-1, int (pcl_lrint (floor ( (std::max) (cell1_y,
                                                                        (std::max) (cell2_y, cell3_y))))));
         if (max_cell_x<min_cell_x || max_cell_y<min_cell_y)
           continue;
@@ -845,14 +845,14 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
       ////calculate3DPoint (x2, y2, max_range, point);
       
       //float pixel_radius = pixel_radius_factor*point.range;
-      //int interpolation_radius = lrint (pixel_radius/cell_size);
+      //int interpolation_radius = pcl_lrint (pixel_radius/cell_size);
       ////cout << PVARN (interpolation_radius);
       
       //Eigen::Vector3f transformed_point = pose*Eigen::Vector3f (point.x, point.y, point.z);
       //float cell_x = cell_factor * (transformed_point[0]+cell_offset),
             //cell_y = cell_factor * (transformed_point[1]+cell_offset),
             //value = transformed_point[2];
-      //int cell_x_int=lrint (cell_x), cell_y_int=lrint (cell_y);
+      //int cell_x_int=pcl_lrint (cell_x), cell_y_int=pcl_lrint (cell_y);
       //for (int cell_to_update_y=cell_y_int-interpolation_radius; cell_to_update_y<=cell_y_int+interpolation_radius; ++cell_to_update_y)
       //{
         //for (int cell_to_update_x=cell_x_int-interpolation_radius; cell_to_update_x<=cell_x_int+interpolation_radius; ++cell_to_update_x)
@@ -932,8 +932,8 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
               //else if (new_value > max_dist)
                 //value = std::numeric_limits<float>::infinity ();
               //else {
-                //int new_cell_x = lrint (cell_factor * (transformed_point[0]+cell_offset)),
-                    //new_cell_y = lrint (cell_factor * (transformed_point[1]+cell_offset));
+                //int new_cell_x = pcl_lrint (cell_factor * (transformed_point[0]+cell_offset)),
+                    //new_cell_y = pcl_lrint (cell_factor * (transformed_point[1]+cell_offset));
                 //if (fabs (new_cell_x-x)<=1 && fabs (new_cell_y-y)<=1)
                   //value = new_value;
                 //else
@@ -984,7 +984,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
       //raytracing_point_tranformed = inverse_pose * raytracing_point;
       //int raytracing_start_x, raytracing_start_y;
       //getImagePoint (raytracing_point_tranformed, raytracing_start_x, raytracing_start_y);
-      //int raytracing_steps = (std::min) (raytracing_steps_max, 1+int (lrint (hypot (raytracing_end_x-raytracing_start_x, raytracing_end_y-raytracing_start_y))));
+      //int raytracing_steps = (std::min) (raytracing_steps_max, 1+int (pcl_lrint (hypot (raytracing_end_x-raytracing_start_x, raytracing_end_y-raytracing_start_y))));
       ////cout << " ("<<raytracing_start_x<<","<<raytracing_start_y<<") -> ("<<raytracing_end_x<<","<<raytracing_end_y<<") => " << PVARN (raytracing_steps);
       
       //float raytracing_step_size = world_size/ (raytracing_steps-1);
@@ -1012,8 +1012,8 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
         //Eigen::Vector3f image_point_transformed = pose*Eigen::Vector3f (image_point.x, image_point.y, image_point.z);
         //float image_point_value = image_point_transformed[2];
         
-        //int image_point_cell_x = lrint (world2cell_factor*image_point_transformed[0] + world2cell_offset),
-            //image_point_cell_y = lrint (world2cell_factor*image_point_transformed[1] + world2cell_offset);
+        //int image_point_cell_x = pcl_lrint (world2cell_factor*image_point_transformed[0] + world2cell_offset),
+            //image_point_cell_y = pcl_lrint (world2cell_factor*image_point_transformed[1] + world2cell_offset);
         
         //if (image_point_cell_x!=x && image_point_cell_y!=y && fabs (current_value-image_point_value) > 0.5f*raytracing_step_size)
         //{

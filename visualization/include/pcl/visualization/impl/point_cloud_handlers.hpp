@@ -90,7 +90,7 @@ pcl_visualization::PointCloudColorHandlerRandom<PointT>::getColor (vtkSmartPoint
   double r, g, b;
   pcl_visualization::getRandomColors (r, g, b);
 
-  int r_ = lrint (r * 255.0), g_ = lrint (g * 255.0), b_ = lrint (b * 255.0);
+  int r_ = pcl_lrint (r * 255.0), g_ = pcl_lrint (g * 255.0), b_ = pcl_lrint (b * 255.0);
 
   // Color every point
   for (vtkIdType cp = 0; cp < nr_points; ++cp)

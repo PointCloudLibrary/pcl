@@ -693,7 +693,7 @@ void RangeImageBorderExtractor::calculateBorderDirections()
           weight_sum += 1.0f;
         }
       }
-      if (lrint (weight_sum) < minimum_weight)
+      if (pcl_lrint (weight_sum) < minimum_weight)
       {
         delete average_border_direction;
         average_border_direction=NULL;
@@ -1243,7 +1243,7 @@ void RangeImageBorderExtractor::compute(PointCloudOut& output)
         //if ((int)vector_average_surface.getNoOfSamples() >= max_no_of_points_for_normal_estimation)
           //break;
         
-        ////if ((int)vector_average_surface.getNoOfSamples() + (int)unchecked_points.size() > lrint(1.5f*max_no_of_points_for_normal_estimation))
+        ////if ((int)vector_average_surface.getNoOfSamples() + (int)unchecked_points.size() > pcl_lrint(1.5f*max_no_of_points_for_normal_estimation))
           ////continue;
         
         //int y2=neighbor_index/width, x2=neighbor_index - y2*width;

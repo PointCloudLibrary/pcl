@@ -45,7 +45,7 @@ namespace pcl
 inline float
 RangeImage::asinLookUp (float value)
 {
-  float ret = asin_lookup_table[lrintf ((lookup_table_size/2)*value) + lookup_table_size/2];
+  float ret = asin_lookup_table[pcl_lrintf ((lookup_table_size/2)*value) + lookup_table_size/2];
   //std::cout << ret << "==" << asinf(value)<<"\n";
   return ret;
 }
@@ -54,17 +54,17 @@ RangeImage::asinLookUp (float value)
 inline float
 RangeImage::atan2LookUp (float y, float x)
 {
-  //float ret = asin_lookup_table[lrintf((lookup_table_size/2)*value) + lookup_table_size/2];
+  //float ret = asin_lookup_table[pcl_lrintf((lookup_table_size/2)*value) + lookup_table_size/2];
   
   float ret;
   if(fabsf(x) < fabsf(y)) {
-    ret = atan_lookup_table[lrintf ((lookup_table_size/2)*(x/y)) + lookup_table_size/2];
+    ret = atan_lookup_table[pcl_lrintf ((lookup_table_size/2)*(x/y)) + lookup_table_size/2];
     ret = (x*y > 0 ? M_PI/2-ret : -M_PI/2-ret);
     //if (fabsf(ret-atanf(y/x)) > 1e-3)
       //std::cout << "atanf("<<y<<"/"<<x<<")"<<" = "<<ret<<" = "<<atanf(y/x)<<"\n";
   }
   else {
-    ret = atan_lookup_table[lrintf ((lookup_table_size/2)*(y/x)) + lookup_table_size/2];
+    ret = atan_lookup_table[pcl_lrintf ((lookup_table_size/2)*(y/x)) + lookup_table_size/2];
   }
   if (x < 0)
     ret = (y < 0 ? ret-M_PI : ret+M_PI);
@@ -79,7 +79,7 @@ RangeImage::atan2LookUp (float y, float x)
 inline float
 RangeImage::cosLookUp (float value)
 {
-  int cell_idx = lrintf ((lookup_table_size-1)*fabsf(value)/(2.0f*M_PI));
+  int cell_idx = pcl_lrintf ((lookup_table_size-1)*fabsf(value)/(2.0f*M_PI));
   //if (cell_idx<0 || cell_idx>=int(cos_lookup_table.size()))
   //{
     //std::cout << PVARC(value)<<PVARN(cell_idx);
@@ -104,8 +104,8 @@ RangeImage::createFromPointCloud(const PointCloudType& point_cloud, float angula
   angular_resolution_ = angular_resolution;
   angular_resolution_reciprocal_ = 1.0f / angular_resolution_;
   
-  width = lrint(floor(max_angle_width*angular_resolution_reciprocal_));
-  height = lrint(floor(max_angle_height*angular_resolution_reciprocal_));
+  width = pcl_lrint(floor(max_angle_width*angular_resolution_reciprocal_));
+  height = pcl_lrint(floor(max_angle_height*angular_resolution_reciprocal_));
   image_offset_x_ = image_offset_y_ = 0;  // TODO: FIX THIS
   is_dense = false;
   
@@ -161,7 +161,7 @@ RangeImage::createFromPointCloudWithKnownSize(const PointCloudType& point_cloud,
   getInverse(to_world_system_, to_range_image_system_);
   
   float max_angle_size = getMaxAngleSize(sensor_pose, point_cloud_center, point_cloud_radius);
-  int pixel_radius = lrint(ceil(0.5f*max_angle_size*angular_resolution_reciprocal_));
+  int pixel_radius = pcl_lrint(ceil(0.5f*max_angle_size*angular_resolution_reciprocal_));
   width = height = 2*pixel_radius;
   is_dense = false;
   
@@ -214,8 +214,8 @@ RangeImage::doZBuffer(const PointCloudType& point_cloud, float noise_level, floa
     //std::cout << "("<<current_point[0]<<", "<<current_point[1]<<", "<<current_point[2]<<") falls into pixel "<<x<<","<<y<<".\n";
     
     // Do some minor interpolation by checking the three closest neighbors to the point, that are not filled yet.
-    int floor_x = lrint (floor (x_real)), floor_y = lrint (floor (y_real)),
-        ceil_x  = lrint (ceil (x_real)),  ceil_y  = lrint (ceil (y_real));
+    int floor_x = pcl_lrint (floor (x_real)), floor_y = pcl_lrint (floor (y_real)),
+        ceil_x  = pcl_lrint (ceil (x_real)),  ceil_y  = pcl_lrint (ceil (y_real));
     
     int neighbor_x[4], neighbor_y[4];
     neighbor_x[0]=floor_x; neighbor_y[0]=floor_y;
@@ -392,7 +392,7 @@ RangeImage::getImagePointFromAngles(float angle_x, float angle_y, float& image_x
 void 
 RangeImage::real2DToInt2D(float x, float y, int& xInt, int& yInt) const
 {
-  xInt = lrint(x); yInt = lrint(y);
+  xInt = pcl_lrint(x); yInt = pcl_lrint(y);
 }
 
 /////////////////////////////////////////////////////////////////////////
