@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef __OPENNI_IMAGE_BAYER_GRBG__
-#define __OPENNI_IMAGE_BAYER_GRBG__
+#ifndef __OPENNI_IMAGE_YUV422__
+#define __OPENNI_IMAGE_YUV422__
 #include "openni_image.h"
 
 namespace openni_wrapper
