@@ -12,7 +12,8 @@ a breeze to request data streams from the Kinect cameras. This tutorial
 presents how to set up and use the grabber, and since it's so simple, we can
 keep it short :).
 
-The cameras that we have tested so far are the Primesense Reference Design, Microsoft Kinect and Asus Xtion cameras:
+The cameras that we have tested so far are the `Primesense Reference Design <http://www.primesense.com/?p=514>`_, `Microsoft Kinect <http://www.xbox.com/kinect/>`_ and `Asus Xtion Pro <http://event.asus.com/wavi/product/WAVI_Pro.aspx>`_ cameras:
+
 
 .. image:: images/openni_cams.png
    :height: 390px
@@ -145,7 +146,7 @@ Conclusion
 ----------
 
 The Grabber interface is very powerful and general and makes it a breeze to
-connect to OpenNI cameras (i.e. Kinect and Primesense) in your code. We are
+connect to OpenNI cameras (i.e. Kinect, Asus Xtion Pro and Primesense) in your code. We are
 in the process of writing a FileGrabber which can be used using the same
 interface, and can e.g. load all Point Cloud files from a directory and
 provide them to the callback at a certain rate. The only change required is
