@@ -40,7 +40,7 @@
 #define __PCL_IO_EXCEPTION__
 #include <pcl/exceptions.h>
 
-#define THROW_PCL_IO_EXCEPTION(format, args...) throwPCLIOException( __PRETTY_FUNCTION__, __FILE__, __LINE__, format , ##args )
+#define THROW_PCL_IO_EXCEPTION(format,...) throwPCLIOException( __PRETTY_FUNCTION__, __FILE__, __LINE__, format , ##__VA_ARGS__ )
 namespace pcl
 {
 class PCLIOException : public PCLException
@@ -57,7 +57,7 @@ inline void throwPCLIOException (const char* function, const char* file, unsigne
   va_start (args, format);
   vsprintf (temp, format, args);
 
-  sprintf(temp,"%s in %s @ %d: %s", function, file, line, temp);
+  sprintf(msg,"%s in %s @ %d: %s", function, file, line, temp);
   throw PCLIOException (msg);
 }
 }
