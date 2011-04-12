@@ -42,7 +42,7 @@
 #include <exception>
 #include <string>
 
-#define THROW_OPENNI_EXCEPTION(format, args...) throwOpenNIException( __PRETTY_FUNCTION__, __FILE__, __LINE__, format , ##args )
+#define THROW_OPENNI_EXCEPTION(format,...) throwOpenNIException( __PRETTY_FUNCTION__, __FILE__, __LINE__, format , ##__VA_ARGS__ )
 
 
 namespace openni_wrapper
