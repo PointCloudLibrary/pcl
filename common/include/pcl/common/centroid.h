@@ -38,6 +38,7 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/ros/point_traits.h>
+#include <pcl/PointIndices.h>
 
 namespace pcl
 {
