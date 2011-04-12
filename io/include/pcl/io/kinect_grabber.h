@@ -68,8 +68,8 @@ namespace pcl
   template <typename T1, typename T2>
   class Synchronizer
   {
-    typedef std::pair<unsigned long, T1> T1Stamped;
-    typedef std::pair<unsigned long, T2> T2Stamped;
+    typedef std::pair<long, T1> T1Stamped;
+    typedef std::pair<long, T2> T2Stamped;
     boost::mutex mutex_;
     std::deque<T1Stamped> q1; 
     std::deque<T2Stamped> q2;
@@ -114,10 +114,10 @@ namespace pcl
     private:
       void publish ()
       {
-        {
+        do {
           boost::mutex::scoped_lock lock(mutex_);
           if (q1.size () < 2 || q2.size () < 2)
-            return;
+            break;
         
         // this tries to find pairs of T1, T2 that are close in time. It kindof assumes
         // that the entries in the queue come in monotonically in time (sorted)
@@ -127,14 +127,15 @@ namespace pcl
 
           // d2 is the smallest time difference between the first element from queue 1 and
           // a not-first element from queue 2
-          typename std::deque<T2Stamped>::iterator best2 = q2.begin() + 1;
-          unsigned long d2 = fabs (q1.front().first - best2->first);
+          typename std::deque<T2Stamped>::iterator best2 = q2.begin();
+          unsigned long d2 = d1;
           for (typename std::deque<T2Stamped>::iterator it2 = best2 + 1; it2 != q2.end (); it2++)
           {
-            if (fabs (q1.front().first - it2->first) < d2)
+            double distance = fabs (q1.front().first - it2->first);
+            if (distance < d2)
             {
               best2 = it2;
-              d2 = fabs (q1.front().first - best2->first);
+              d2 = distance;
             }
             else 
               break;
@@ -142,24 +143,26 @@ namespace pcl
 
           // d3 is the smallest time difference between the first element from queue 2 and
           // a not-first element from queue 1
-          typename std::deque<T1Stamped>::iterator best1 = q1.begin() + 1;
-          unsigned long d3 = fabs (q2.front().first - best1->first);
+          typename std::deque<T1Stamped>::iterator best1 = q1.begin();
+          unsigned long d3 = d1;
           for (typename std::deque<T1Stamped>::iterator it1 = best1 + 1; it1 != q1.end (); it1++)
           {
-            if (fabs (q2.front().first - it1->first) < d3)
+            double distance = fabs (q2.front().first - it1->first);
+            if (distance < d3)
             {
               best1 = it1;
-              d3 = fabs (q2.front().first - best1->first);
+              d3 = distance;
             }
             else 
               break;
           }
-         
+
           if (d2 < d1 && d2 < d3)
             q2.erase (q2.begin(), best2);
 
           else if (d3 < d1 && d3 < d2)
             q1.erase (q1.begin(), best1);
+
 
           // call callback
           for (typename std::map<int, CallbackFunction>::iterator cb = cb_.begin(); cb != cb_.end(); cb++)
@@ -168,9 +171,7 @@ namespace pcl
 
           q1.pop_front ();
           q2.pop_front ();
-        }
-        // see if there are more pairs in the queue that can be published
-        publish ();
+        } while (true);
       }
   };
 

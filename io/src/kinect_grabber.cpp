@@ -357,10 +357,9 @@ namespace pcl
   }
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage>& depth) const
-  {
-    const xn::DepthMetaData& depth_md = depth->getDepthMetaData ();
+  {   
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud <pcl::PointXYZ>);
-    
+
     // TODO cloud->header.stamp = time;
     cloud->height       = depth_height_;
     cloud->width        = depth_width_;
@@ -368,45 +367,45 @@ namespace pcl
 
     cloud->points.resize (cloud->height * cloud->width);
 
-    float constant = 1.0f / device_->getDepthFocalLength (depth_width_);
+    register float constant = 1.0f / device_->getDepthFocalLength (depth_width_);
 
     if (device_->isDepthRegistered ())
       cloud->header.frame_id = rgb_frame_id_;
     else
       cloud->header.frame_id = depth_frame_id_;
 
-    float centerX = (cloud->width >> 1 ) - 0.5f;
-    float centerY = (cloud->height >> 1) - 0.5f;
+    register float centerX = (cloud->width >> 1 );
+    float centerY = (cloud->height >> 1);
 
     float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-    unsigned depthStep = depth_md.XRes () / cloud->width;
-    unsigned depthSkip = (depth_md.YRes () / cloud->height - 1) * depth_md.XRes ();
-    int depth_idx = 0;
-    pcl::PointCloud<pcl::PointXYZ>::iterator pt_iter = cloud->begin ();
-    for (int v = 0; v < (int)cloud->height; ++v, depth_idx += depthSkip)
-    {
-      for (int u = 0; u < (int)cloud->width; ++u, depth_idx += depthStep, ++pt_iter)
-      {
-        pcl::PointXYZ& pt = *pt_iter;
+    // we have to use Data, since operator[] uses assert -> Debug-mode very slow!
+    register const XnDepthPixel* depth_map = depth->getDepthMetaData ().Data();
 
+    register int depth_idx = 0;
+    for (float v = -centerY; v < centerY; v += 1.0)
+    {
+      for (register float u = -centerX; u < centerX; u += 1.0, ++depth_idx)
+      {
+        register double z = depth_map[depth_idx];
+        pcl::PointXYZ& pt = cloud->points[depth_idx];
         // Check for invalid measurements
-        if (depth_md[depth_idx] == 0 ||
-            depth_md[depth_idx] == depth->getNoSampleValue () ||
-            depth_md[depth_idx] == depth->getShadowValue ())
+        if (z == 0 ||
+            z == depth->getNoSampleValue () ||
+            z == depth->getShadowValue ())
         {
           // not valid
           pt.x = pt.y = pt.z = bad_point;
           continue;
         }
 
+        register double z_d = z * constant;
         // Fill in XYZ
-        pt.x = (u - centerX) * depth_md[depth_idx] * constant;
-        pt.y = (v - centerY) * depth_md[depth_idx] * constant;
-        pt.z = depth_md[depth_idx];
+        pt.x = u * z_d;
+        pt.y = v * z_d;
+        pt.z = z;
       }
     }
-
     return cloud;
   }
 
@@ -435,8 +434,9 @@ namespace pcl
     cloud->points.resize (cloud->height * cloud->width);
 
     float constant = 1.0f / device_->getImageFocalLength (cloud->width);
-    float centerX = (cloud->width >> 1) - 0.5f;
-    float centerY = (cloud->height >> 1) - 0.5f;
+    float centerX = (cloud->width >> 1);
+    float centerY = (cloud->height >> 1);
+
     float* depth_buffer = new float [depth_width_ * depth_height_];
     depth_image->fillDepthImage (depth_width_, depth_height_, depth_buffer, depth_width_ * sizeof (float));
 
@@ -444,15 +444,14 @@ namespace pcl
     image->fillRGB (image_width_, image_height_, rgb_buffer, image_width_ * 3);
 
     // depth_image already has the desired dimensions, but rgb_msg may be higher res.
-    unsigned color_step = 3 * image_width_ / cloud->width;
-    unsigned color_skip = 3 * (image_height_ / cloud->height - 1) * image_height_;
     int color_idx = 0, depth_idx = 0;
-    pcl::PointCloud<pcl::PointXYZRGB>::iterator pt_iter = cloud->begin ();
-    for (int v = 0; v < (int)cloud->height; ++v, color_idx += color_skip)
+    RGBValue color;
+    color.Alpha = 0;
+    for (float v = -centerY; v < centerY; v += 1.0)
     {
-      for (int u = 0; u < (int)cloud->width; ++u, color_idx += color_step, ++depth_idx, ++pt_iter)
+      for (int u = -centerX; u < centerX; u += 1.0, color_idx += 3, ++depth_idx)
       {
-        pcl::PointXYZRGB& pt = *pt_iter;
+        pcl::PointXYZRGB& pt = cloud->points[depth_idx];
         float Z = depth_buffer[depth_idx];
 
         // Check for invalid measurements
@@ -463,17 +462,16 @@ namespace pcl
         else
         {
           // Fill in XYZ
-          pt.x = (u - centerX) * Z * constant;
-          pt.y = (v - centerY) * Z * constant;
+          double z_d = Z * constant;
+          pt.x = u * z_d;
+          pt.y = v * z_d;
           pt.z = Z;
         }
 
         // Fill in color
-        RGBValue color;
         color.Red   = rgb_buffer[color_idx];
         color.Green = rgb_buffer[color_idx + 1];
         color.Blue  = rgb_buffer[color_idx + 2];
-        color.Alpha = 0;
         pt.rgb = color.float_value;
       }
     }
