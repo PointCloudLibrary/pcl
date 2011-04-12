@@ -96,6 +96,7 @@ add_subdirectory(test)
 add_subdirectory(doc)
 
 # Package creation
+set(CPACK_GENERATOR "DEB;RPM;NSIS;")
 include(InstallRequiredSystemLibraries)
 include(${PCL_SOURCE_DIR}/cmake/pcl_cpack.cmake)
 PCL_MAKE_CPACK_INPUT()
