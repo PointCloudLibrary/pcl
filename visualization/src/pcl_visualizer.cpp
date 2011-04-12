@@ -1294,7 +1294,7 @@ pcl_visualization::PCLVisualizer::addText (const std::string &text, int xpos, in
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-pcl_visualization::PCLVisualizer::addText (const std::string &text, int xpos, int ypos, int r, int g, int b, const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addText (const std::string &text, int xpos, int ypos, double r, double g, double b, const std::string &id, int viewport)
 {
   std::string tid;
   if (id.empty ())

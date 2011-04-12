@@ -174,7 +174,7 @@ namespace pcl_visualization
         * \param viewport the view port (default: all)
         */
       bool 
-      addText (const std::string &text, int xpos, int ypos, int r, int g, int b, const std::string &id = "", int viewport = 0);
+      addText (const std::string &text, int xpos, int ypos, double r, double g, double b, const std::string &id = "", int viewport = 0);
 
       /** \brief Add the estimated surface normals of a Point Cloud to screen. 
         * \param cloud the input point cloud dataset containing XYZ data and normals
