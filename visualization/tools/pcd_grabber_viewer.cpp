@@ -223,7 +223,7 @@ main (int argc, char** argv)
     p->addCoordinateSystem (axes, ax_x, ax_y, ax_z);
   }
 
-  pcl::Grabber* interface = 0;
+  pcl::Grabber* grabber = 0;
 
   float frames_per_second = 0; // 0 means only if triggered!
   terminal_tools::parse (argc, argv, "-fps", frames_per_second);
@@ -239,7 +239,7 @@ main (int argc, char** argv)
   std::cout << "path: " << path << std::endl;
   if (path != "" && exists (path))
   {
-    interface = new pcl::PCDGrabber<pcl::PointXYZ > (path, frames_per_second, repeat);
+    grabber = new pcl::PCDGrabber<pcl::PointXYZ > (path, frames_per_second, repeat);
   }
   else
   {
@@ -262,14 +262,14 @@ main (int argc, char** argv)
     {
       std::cout << "Neither a pcd file given using the \"-file\" option, nor given a directory containing pcd files using the \"-dir\" option." << std::endl;
     }
-    interface = new pcl::PCDGrabber<pcl::PointXYZ > (pcd_files, frames_per_second, repeat);
+    grabber = new pcl::PCDGrabber<pcl::PointXYZ > (pcd_files, frames_per_second, repeat);
   }
 
   EventHelper h;
   boost::function<void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
-  boost::signals2::connection c1 = interface->registerCallback (f);
+  boost::signals2::connection c1 = grabber->registerCallback (f);
 
-  interface->start ();
+  grabber->start ();
   while (true)
   {
     boost::this_thread::sleep(boost::posix_time::microseconds(10000));
@@ -281,6 +281,6 @@ main (int argc, char** argv)
     }
   }
 
-  interface->stop ();
+  grabber->stop ();
 }
 /* ]--- */
