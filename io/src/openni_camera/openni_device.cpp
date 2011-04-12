@@ -143,11 +143,11 @@ void OpenNIDevice::Init () throw (OpenNIException)
   depth_focal_length_SXGA_ = (float)depth_focal_length_SXGA / pixel_size;
 
   //register callback functions
-  depth_generator_.RegisterToNewDataAvailable (OpenNIDevice::NewDepthDataAvailable, this, depth_callback_handle_);
+  depth_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewDepthDataAvailable, this, depth_callback_handle_);
   depth_lock.unlock ();
 
   lock_guard<mutex> image_lock (image_mutex_);
-  image_generator_.RegisterToNewDataAvailable (OpenNIDevice::NewImageDataAvailable, this, image_callback_handle_);
+  image_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewImageDataAvailable, this, image_callback_handle_);
 }
 
 void OpenNIDevice::startImageStream () throw (OpenNIException)

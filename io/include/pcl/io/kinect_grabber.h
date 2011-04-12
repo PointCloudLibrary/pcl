@@ -123,7 +123,7 @@ namespace pcl
         // that the entries in the queue come in monotonically in time (sorted)
 
           // d1 is the time difference between the first elements in the 2 queues
-          unsigned long d1 = fabs (q1.front().first - q2.front().first);
+          unsigned long d1 = abs ( (long)q1.front().first - (long)q2.front().first);
 
           // d2 is the smallest time difference between the first element from queue 1 and
           // a not-first element from queue 2
@@ -131,7 +131,7 @@ namespace pcl
           unsigned long d2 = d1;
           for (typename std::deque<T2Stamped>::iterator it2 = best2 + 1; it2 != q2.end (); it2++)
           {
-            double distance = fabs (q1.front().first - it2->first);
+            double distance = abs ((long)q1.front().first - (long)it2->first);
             if (distance < d2)
             {
               best2 = it2;
@@ -147,7 +147,7 @@ namespace pcl
           unsigned long d3 = d1;
           for (typename std::deque<T1Stamped>::iterator it1 = best1 + 1; it1 != q1.end (); it1++)
           {
-            double distance = fabs (q2.front().first - it1->first);
+            double distance = abs ((long)q2.front().first - (long)it1->first);
             if (distance < d3)
             {
               best1 = it1;

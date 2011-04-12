@@ -455,7 +455,7 @@ namespace pcl
         float Z = depth_buffer[depth_idx];
 
         // Check for invalid measurements
-        if (std::isnan (Z))
+        if (pcl_isnan (Z))
         {
           pt.x = pt.y = pt.z = Z;
         }
