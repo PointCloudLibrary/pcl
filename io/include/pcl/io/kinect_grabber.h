@@ -48,8 +48,8 @@
 
 namespace pcl
 {
-  class PointXYZ;
-  class PointXYZRGB;
+  struct PointXYZ;
+  struct PointXYZRGB;
   template <typename T> class PointCloud;
 
   typedef union
