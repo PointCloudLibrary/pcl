@@ -24,6 +24,22 @@ contributions on any tutorial.
 
      .. |mi_1| image:: images/pcl_logo.png
                :height: 75px
+* Advanced Usage
+
+  * :ref:`building_pcl`
+
+     ======  ======
+     |mi_2|  Title: **Deeper in PCL building**
+
+             Author: *Nizar Sallem*
+
+             Compatibility: > PCL 0.9
+             
+             In this tutorial, we will learn how to tweak PCL build process to fit your needs using cmake. 
+     ======  ======
+
+     .. |mi_2| image:: images/pcl_ccmake.png
+               :height: 100px
 
 * I/O
 
