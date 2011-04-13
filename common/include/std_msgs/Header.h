@@ -88,6 +88,15 @@ namespace std_msgs
     return (s);
   }
 
+  template<typename ContainerAllocator>
+  std::ostream& operator << (std::ostream& out, const Header_<ContainerAllocator> & h)
+  {
+    out << "seq: " << h.seq;
+    out << " stamp: " << h.stamp;
+    out << " frame_id: " << h.frame_id << std::endl;
+    return (out);
+  }
+
 } // namespace std_msgs
 
 #endif // PCL_ROSLIB_MESSAGE_HEADER_H
