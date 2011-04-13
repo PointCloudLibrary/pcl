@@ -165,9 +165,8 @@ OpenNIDriver::~OpenNIDriver () throw ()
 
 shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) const throw (OpenNIException)
 {
-  if (index > device_context_.size ())
+  if (index >= device_context_.size ())
     THROW_OPENNI_EXCEPTION ("device index out of range. only %d devices connected but device %d requested.", device_context_.size (), index);
-
   shared_ptr<OpenNIDevice> device = device_context_[index].device.lock ();
   if (!device)
   {
