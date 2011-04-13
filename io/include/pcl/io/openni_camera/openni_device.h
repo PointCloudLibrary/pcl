@@ -45,6 +45,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
 #include <boost/thread.hpp>
+#include <boost/thread/condition.hpp>
 
 /// @todo Get rid of all exception-specifications, these are useless and soon to be deprecated
 
