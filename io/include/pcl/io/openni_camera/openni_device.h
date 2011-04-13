@@ -65,8 +65,6 @@ class DepthImage;
 class OpenNIDevice : public boost::noncopyable
 {
 public:
-  //typedef boost::function<void(const Image&, void* cookie) > ImageCallbackFunction;
-  //typedef boost::function<void(const DepthImage&, void* cookie) > DepthImageCallbackFunction;
   typedef boost::function<void(boost::shared_ptr<Image>, void* cookie) > ImageCallbackFunction;
   typedef boost::function<void(boost::shared_ptr<DepthImage>, void* cookie) > DepthImageCallbackFunction;
   typedef unsigned CallbackHandle;
@@ -121,17 +119,9 @@ public:
   bool isImageStreamRunning () const throw (OpenNIException);
   bool isDepthStreamRunning () const throw (OpenNIException);
 
-//  CallbackHandle registerImageCallback (const ImageCallbackFunction& callback, void* cookie = NULL) throw ();
-//  template<typename T> CallbackHandle registerImageCallback (void (T::*callback)(const Image&, void* cookie), T& instance, void* cookie = NULL) throw ();
-//  bool unregisterImageCallback (const CallbackHandle& callbackHandle) throw ();
-
   CallbackHandle registerImageCallback (const ImageCallbackFunction& callback, void* cookie = NULL) throw ();
   template<typename T> CallbackHandle registerImageCallback (void (T::*callback)(boost::shared_ptr<Image>, void* cookie), T& instance, void* cookie = NULL) throw ();
   bool unregisterImageCallback (const CallbackHandle& callbackHandle) throw ();
-
-//  CallbackHandle registerDepthCallback (const DepthImageCallbackFunction& callback, void* cookie = NULL) throw ();
-//  template<typename T> CallbackHandle registerDepthCallback (void (T::*callback)(const DepthImage&, void* cookie), T& instance, void* cookie = NULL) throw ();
-//  bool unregisterDepthCallback (const CallbackHandle& callbackHandle) throw ();
 
   CallbackHandle registerDepthCallback (const DepthImageCallbackFunction& callback, void* cookie = NULL) throw ();
   template<typename T> CallbackHandle registerDepthCallback (void (T::*callback)(boost::shared_ptr<DepthImage>, void* cookie), T& instance, void* cookie = NULL) throw ();
@@ -240,18 +230,6 @@ float OpenNIDevice::getBaseline () const throw ()
 {
   return baseline_;
 }
-
-//template<typename T> OpenNIDevice::CallbackHandle OpenNIDevice::registerImageCallback (void (T::*callback)(const Image&, void* cookie), T& instance, void* custom_data) throw ()
-//{
-//  image_callback_[image_callback_handle_counter_] = boost::bind (callback, boost::ref (instance), _1, custom_data);
-//  return image_callback_handle_counter_++;
-//}
-//
-//template<typename T> OpenNIDevice::CallbackHandle OpenNIDevice::registerDepthCallback (void (T::*callback)(const DepthImage&, void* cookie), T& instance, void* custom_data) throw ()
-//{
-//  depth_callback_[depth_callback_handle_counter_] = boost::bind ( callback,  boost::ref (instance), _1, custom_data);
-//  return depth_callback_handle_counter_++;
-//}
 
 template<typename T> OpenNIDevice::CallbackHandle OpenNIDevice::registerImageCallback (void (T::*callback)(boost::shared_ptr<Image>, void* cookie), T& instance, void* custom_data) throw ()
 {
