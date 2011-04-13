@@ -49,6 +49,10 @@
 
 /// @todo Get rid of all exception-specifications, these are useless and soon to be deprecated
 
+#ifndef _WIN32
+#define __stdcall
+#endif
+
 namespace openni_wrapper
 {
 class Image;
@@ -151,8 +155,8 @@ protected:
   typedef boost::function<void(boost::shared_ptr<DepthImage>) > ActualDepthImageCallbackFunction;
 
   OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node) throw (OpenNIException);
-  static void NewDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
-  static void NewImageDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
+  static void __stdcall NewDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
+  static void __stdcall NewImageDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
 
   // This is a workaround, since in the NewDepthDataAvailable function WaitAndUpdateData leads to a dead-lock behaviour
   // and retrieving image data without WaitAndUpdateData leads to incomplete images!!!

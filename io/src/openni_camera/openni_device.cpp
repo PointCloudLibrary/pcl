@@ -364,14 +364,14 @@ void OpenNIDevice::DepthDataThreadFunction () throw (OpenNIException)
   }
 }
 
-void OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
+void __stdcall OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
 {
   //cout << "NewDepthDataAvailable" << endl;
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
   device->depth_condition_.notify_all ();
 }
 
-void OpenNIDevice::NewImageDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
+void __stdcall OpenNIDevice::NewImageDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
 {
   //cout << "NewImageDataAvailable" << endl;
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
