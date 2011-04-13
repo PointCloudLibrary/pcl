@@ -1,4 +1,15 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
+# In case of Makefiles if the user does not setup CMAKE_BUILD_TYPE, assume it's Debug
+if (${CMAKE_GENERATOR} MATCHES ".*Makefiles")
+  if("${CMAKE_BUILD_TYPE}" STREQUAL "")
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "build type default to Debug, set to Release to improve performance" FORCE)
+  endif("${CMAKE_BUILD_TYPE}" STREQUAL "")
+#if the generator is different for *Makefiles assume it is Release
+else(${CMAKE_GENERATOR} MATCHES ".*Makefiles")
+	set(CMAKE_BUILD_TYPE Release CACHE STRING "build type default to Release, set to Debug if you are developing PCL" FORCE)
+endif(${CMAKE_GENERATOR} MATCHES ".*Makefiles")
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
     "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -30,7 +41,20 @@ add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing")
 else(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 add_definitions ("-W0 -DEIGEN_USE_NEW_STDVECTOR -DEIGEN2_SUPPORT")
 endif(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH true)
+#set(CMAKE_INSTALL_RPATH_USE_LINK_PATH true)
+
+###
+# this is copy paste form http://www.itk.org/Wiki/CMake_RPATH_handling
+# in order to always make a full statement RPATH
+###
+SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" is_system_dir)
+IF("${is_system_dir}" STREQUAL "-1")
+   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+ENDIF("${is_system_dir}" STREQUAL "-1")
 
 # Find universal dependencies
 # Find ROS
