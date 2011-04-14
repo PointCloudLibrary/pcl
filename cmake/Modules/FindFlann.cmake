@@ -26,3 +26,7 @@ find_package_handle_standard_args(Flann DEFAULT_MSG
 
 mark_as_advanced(FLANN_LIBRARY FLANN_INCLUDE_DIR)
 
+if(FLANN_FOUND)
+  message(STATUS "FLANN found (include: ${FLANN_INCLUDE_DIRS}, lib: ${FLANN_LIBRARY})")
+endif(FLANN_FOUND)
+

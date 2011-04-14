@@ -26,3 +26,7 @@ find_package_handle_standard_args(CMinpack DEFAULT_MSG
 
 mark_as_advanced(CMINPACK_LIBRARY CMINPACK_INCLUDE_DIR)
 
+if(CMINPACK_FOUND)
+  message(STATUS "CMinPack found (include: ${CMINPACK_INCLUDE_DIRS}, lib: ${CMINPACK_LIBRARY})")
+endif(CMINPACK_FOUND)
+
