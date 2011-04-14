@@ -45,12 +45,8 @@
 #include <libusb-1.0/libusb.h>
 #include <map>
 
-using namespace std;
-using namespace boost;
-
 namespace openni_wrapper
 {
-
 OpenNIDriver::OpenNIDriver () throw (OpenNIException)
 {
   // Initialize the Engine
@@ -61,7 +57,8 @@ OpenNIDriver::OpenNIDriver () throw (OpenNIException)
   updateDeviceList ();
 }
 
-unsigned OpenNIDriver::updateDeviceList () throw ()
+unsigned 
+OpenNIDriver::updateDeviceList () throw ()
 {
   // clear current list of devices
   device_context_.clear ();
@@ -78,7 +75,7 @@ unsigned OpenNIDriver::updateDeviceList () throw ()
     return 0; // no exception
   //THROW_OPENNI_EXCEPTION ("no compatible device found");
 
-  vector<xn::NodeInfo> device_info;
+  std::vector<xn::NodeInfo> device_info;
   for (xn::NodeInfoList::Iterator nodeIt = node_info_list.Begin (); nodeIt != node_info_list.End (); ++nodeIt)
   {
     device_info.push_back (*nodeIt);
@@ -90,7 +87,7 @@ unsigned OpenNIDriver::updateDeviceList () throw ()
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("enumerating depth generators failed. Reason: %s", xnGetStatusString (status));
 
-  vector<xn::NodeInfo> depth_info;
+  std::vector<xn::NodeInfo> depth_info;
   for (xn::NodeInfoList::Iterator nodeIt = depth_nodes.Begin (); nodeIt != depth_nodes.End (); ++nodeIt)
   {
     depth_info.push_back (*nodeIt);
@@ -102,7 +99,7 @@ unsigned OpenNIDriver::updateDeviceList () throw ()
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("enumerating image generators failed. Reason: %s", xnGetStatusString (status));
 
-  vector<xn::NodeInfo> image_info;
+  std::vector<xn::NodeInfo> image_info;
   for (xn::NodeInfoList::Iterator nodeIt = image_nodes.Begin (); nodeIt != image_nodes.End (); ++nodeIt)
   {
     image_info.push_back (*nodeIt);
@@ -134,15 +131,16 @@ unsigned OpenNIDriver::updateDeviceList () throw ()
   // build serial number -> device index map
   for (unsigned deviceIdx = 0; deviceIdx < device_info.size (); ++deviceIdx)
   {
-    string serial_number = getSerialNumber (deviceIdx);
+    std::string serial_number = getSerialNumber (deviceIdx);
     if (!serial_number.empty ())
       serial_map_[serial_number] = deviceIdx;
   }
 
-  return device_info.size ();
+  return (device_info.size ());
 }
 
-void OpenNIDriver::stopAll () throw (OpenNIException)
+void 
+OpenNIDriver::stopAll () throw (OpenNIException)
 {
   XnStatus status = context_.StopGeneratingAll ();
   if (status != XN_STATUS_OK)
@@ -163,15 +161,18 @@ OpenNIDriver::~OpenNIDriver () throw ()
   context_.Shutdown ();
 }
 
-shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) const throw (OpenNIException)
+boost::shared_ptr<OpenNIDevice> 
+OpenNIDriver::getDeviceByIndex (unsigned index) const throw (OpenNIException)
 {
+  using namespace std;
+
   if (index >= device_context_.size ())
     THROW_OPENNI_EXCEPTION ("device index out of range. only %d devices connected but device %d requested.", device_context_.size (), index);
-  shared_ptr<OpenNIDevice> device = device_context_[index].device.lock ();
+  boost::shared_ptr<OpenNIDevice> device = device_context_[index].device.lock ();
   if (!device)
   {
     string connection_string = device_context_[index].device_node.GetCreationInfo ();
-    transform (connection_string.begin (), connection_string.end (), connection_string.begin (), std::towlower);
+    transform (connection_string.begin (), connection_string.end (), connection_string.begin (), towlower);
     if (connection_string.substr (0, 4) == "045e")
     {
       device = boost::shared_ptr<OpenNIDevice > (new DeviceKinect (context_, device_context_[index].device_node,
@@ -190,12 +191,13 @@ shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) const t
                               getVendorName (index), connection_string.substr (0, 4).c_str ());
     }
   }
-  return device;
+  return (device);
 }
 
-shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceBySerialNumber (const string& serial_number) const throw (OpenNIException)
+boost::shared_ptr<OpenNIDevice> 
+OpenNIDriver::getDeviceBySerialNumber (const std::string& serial_number) const throw (OpenNIException)
 {
-  map<string, unsigned>::const_iterator it = serial_map_.find (serial_number);
+  std::map<std::string, unsigned>::const_iterator it = serial_map_.find (serial_number);
 
   if (it != serial_map_.end ())
   {
@@ -205,15 +207,16 @@ shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceBySerialNumber (const string& se
   THROW_OPENNI_EXCEPTION ("No device with serial number \'%s\' found", serial_number.c_str ());
 
   // because of warnings!!!
-  return shared_ptr<OpenNIDevice > ((OpenNIDevice*)NULL);
+  return (boost::shared_ptr<OpenNIDevice > ((OpenNIDevice*)NULL));
 }
 
-shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByAddress (unsigned char bus, unsigned char address) const throw (OpenNIException)
+boost::shared_ptr<OpenNIDevice> 
+OpenNIDriver::getDeviceByAddress (unsigned char bus, unsigned char address) const throw (OpenNIException)
 {
-  map<unsigned char, map<unsigned char, unsigned> >::const_iterator busIt = bus_map_.find (bus);
+  std::map<unsigned char, std::map<unsigned char, unsigned> >::const_iterator busIt = bus_map_.find (bus);
   if (busIt != bus_map_.end ())
   {
-    map<unsigned char, unsigned>::const_iterator devIt = busIt->second.find (address);
+    std::map<unsigned char, unsigned>::const_iterator devIt = busIt->second.find (address);
     if (devIt != busIt->second.end ())
     {
       return getDeviceByIndex (devIt->second);
@@ -223,10 +226,11 @@ shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByAddress (unsigned char bus, un
   THROW_OPENNI_EXCEPTION ("No device on bus: %d @ %d found", (int)bus, (int)address);
 
   // because of warnings!!!
-  return shared_ptr<OpenNIDevice > ((OpenNIDevice*)NULL);
+  return (boost::shared_ptr<OpenNIDevice > ((OpenNIDevice*)NULL));
 }
 
-void OpenNIDriver::getDeviceInfos () throw ()
+void 
+OpenNIDriver::getDeviceInfos () throw ()
 {
   libusb_context *context = NULL;
   int result;
@@ -244,12 +248,12 @@ void OpenNIDriver::getDeviceInfos () throw ()
   {
     libusb_device* device = devices[devIdx];
     uint8_t busId = libusb_get_bus_number (device);
-    map<unsigned char, map<unsigned char, unsigned> >::const_iterator busIt = bus_map_.find (busId);
+    std::map<unsigned char, std::map<unsigned char, unsigned> >::const_iterator busIt = bus_map_.find (busId);
     if (busIt == bus_map_.end ())
       continue;
 
     uint8_t address = libusb_get_device_address (device);
-    map<unsigned char, unsigned>::const_iterator addressIt = busIt->second.find (address);
+    std::map<unsigned char, unsigned>::const_iterator addressIt = busIt->second.find (address);
     if (addressIt == busIt->second.end ())
       continue;
 
