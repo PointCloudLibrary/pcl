@@ -358,7 +358,11 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
 {
   # pragma omp parallel for num_threads(max_no_of_threads) default(shared) schedule(dynamic, 10)
   //!!! nizar 20110408 : for OpenMP sake on MSVC this must be kept signed
+#ifdef _WIN32
   for (int interest_point_idx = 0; interest_point_idx < interest_points.points.size (); ++interest_point_idx)
+#else
+  for (size_t interest_point_idx = 0; interest_point_idx < interest_points.points.size (); ++interest_point_idx)
+#endif
   {
     Vector3fMapConst point = interest_points.points[interest_point_idx].getVector3fMap ();
     
