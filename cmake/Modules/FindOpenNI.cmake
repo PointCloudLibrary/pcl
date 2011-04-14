@@ -33,6 +33,7 @@ find_package_handle_standard_args(OpenNI DEFAULT_MSG
     
 mark_as_advanced(OPENNI_LIBRARY OPENNI_INCLUDE_DIR)
 if(OPENNI_FOUND)
-    message(STATUS "OpenNI found (include: ${OPENNI_INCLUDE_DIR}, lib: ${OPENNI_LIBRARY})")
+  include_directories(${OPENNI_INCLUDE_DIRS})
+  message(STATUS "OpenNI found (include: ${OPENNI_INCLUDE_DIR}, lib: ${OPENNI_LIBRARY})")
 endif(OPENNI_FOUND)
 
