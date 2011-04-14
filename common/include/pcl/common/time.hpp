@@ -34,44 +34,16 @@
  */
 
 #include <iostream>
-
-inline double 
-  pcl::getTime ()
-{
-  timeval current_time;
-#ifdef _WIN32
-  DWORD time = timeGetTime ();
-  current_time.tv_sec  = time / 1000;
-  current_time.tv_usec = time % 1000;
-#else
-  gettimeofday (&current_time, NULL);
-#endif
-  return (current_time.tv_sec + 1e-6 * current_time.tv_usec);
-}
-
 inline pcl::ScopeTime::ScopeTime (const char* title) : title_ (title)
 {
-#ifdef _WIN32
-  QueryPerformanceFrequency (&frequency_);
-  QueryPerformanceCounter (&start_time_);
-#else
-  gettimeofday (&start_time_, NULL);
-#endif
+  start_time_ = boost::posix_time::second_clock::local_time();
   //std::cerr << "start time is ("<<_startTime.tv_sec<<", "<<_startTime.tv_usec<<").\n";
 }
 
 inline pcl::ScopeTime::~ScopeTime ()
 {
-#ifdef _WIN32
-  LARGE_INTEGER end_time;
-  QueryPerformanceCounter (&end_time);
-  double duration = (end_time.QuadPart - start_time_.QuadPart) * 1000.0 / frequency_.QuadPart;
-#else
-  timeval end_time;
-  gettimeofday (&end_time, NULL);
-  double duration = end_time.tv_sec - start_time_.tv_sec + 1e-6 * (end_time.tv_usec - start_time_.tv_usec);
-#endif
+  boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
   //std::cerr << "start time is ("<<_startTime.tv_sec<<", "<<_startTime.tv_usec<<")."
   //          << " End time is ("<<endTime.tv_sec<<", "<<endTime.tv_usec<<") => "<<std::fixed<<duration<<"\n";
-  std::cerr << title_ << " took " << 1000 * duration << "ms.\n";
+  std::cerr << title_ << " took " << (end_time - start_time_).total_milliseconds() << "ms.\n";
 }

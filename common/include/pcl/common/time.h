@@ -38,18 +38,7 @@
 
 #include <cmath>
 #include <string>
-#include "pcl/win32_macros.h"
-
-#ifdef _WIN32
-
-# include <time.h>
-# include <windows.h>
-
-#else
-
-# include <sys/time.h>
-
-#endif
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace pcl
 {
@@ -67,11 +56,7 @@ namespace pcl
       inline ~ScopeTime ();
     private:
       std::string title_;
-#ifdef _WIN32
-      LARGE_INTEGER start_time_, frequency_;
-#else
-      timeval start_time_;
-#endif
+      boost::posix_time::ptime start_time_;
 };
 
 #ifndef MEASURE_FUNCTION_TIME
@@ -79,7 +64,12 @@ namespace pcl
   ScopeTime scopeTime(__func__)
 #endif
 
-inline double getTime ();
+inline double getTime ()
+{
+  boost::posix_time::ptime epoch_time(boost::gregorian::date(1970,1,1));
+  boost::posix_time::ptime current_time = boost::posix_time::microsec_clock::local_time();
+  return (current_time - epoch_time).total_seconds();
+}
 
 /// Executes code, only if secs are gone since last exec.
 #ifndef DO_EVERY_TS
@@ -89,7 +79,7 @@ if (1) {\
   double s_now_ = (currentTime); \
   if (s_lastDone_ > s_now_) \
     s_lastDone_ = s_now_; \
-  if (s_now_ - s_lastDone_ > (secs)) { \
+  if ((s_now_ - s_lastDone_) > (secs)) {        \
     code; \
     s_lastDone_ = s_now_; \
   }\
