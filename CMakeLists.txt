@@ -60,20 +60,18 @@ IF("${is_system_dir}" STREQUAL "-1")
    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 ENDIF("${is_system_dir}" STREQUAL "-1")
 
-# Find universal dependencies
-# Find ROS
-include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
-# Boost
-include(${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
+### ---[ Find universal dependencies
 # SSE flags
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
 PCL_CHECK_FOR_SSE()
-# Eigen
+# Boost (required)
+include(${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
+# Eigen (required)
 find_package(Eigen REQUIRED)
 include_directories(${EIGEN_INCLUDE_DIRS})
 add_definitions(-DEIGEN_USE_NEW_STDVECTOR
-    -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
-# FLANN
+                -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
+# FLANN (required)
 find_package(Flann REQUIRED)
 include_directories(${FLANN_INCLUDE_DIRS})
 # CMinpack
@@ -81,26 +79,22 @@ find_package(CMinpack REQUIRED)
 include_directories(${CMINPACK_INCLUDE_DIRS})
 # OpenMP
 include(${PCL_SOURCE_DIR}/cmake/pcl_openmp.cmake)
-#OpenNI
+# OpenNI
 find_package(OpenNI)
-if(OPENNI_FOUND)
-    include_directories(${OPENNI_INCLUDE_DIRS})
-    message(STATUS "Did find OpenNI after all.")
-    #message(STATUS "OpenNI include ${OPENNI_INCLUDE_DIR}")
-    #message(STATUS "OpenNI libs ${OPENNI_LIBRARY}")
-endif(OPENNI_FOUND)
+# Find ROS
+include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
 
-# Create the config.h file
+### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
 set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
 configure_file(${pcl_config_h_in} ${pcl_config_h})
 PCL_ADD_INCLUDES(common "" ${pcl_config_h})
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
-# Set up for tests
+### ---[ Set up for tests
 include(${PCL_SOURCE_DIR}/cmake/pcl_tests.cmake)
 
-# Add the library subdirectories
+### ---[ Add the library subdirectories
 include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
 add_subdirectory(common)
 add_subdirectory(io)
@@ -117,10 +111,10 @@ add_subdirectory(octree)
 add_subdirectory(visualization)
 add_subdirectory(test)
 
-# Documentation
+### ---[ Documentation
 add_subdirectory(doc)
 
-# Package creation
+### ---[ Package creation
 set(CPACK_GENERATOR "DEB;RPM;NSIS;")
 include(InstallRequiredSystemLibraries)
 include(${PCL_SOURCE_DIR}/cmake/pcl_cpack.cmake)
@@ -128,11 +122,11 @@ PCL_MAKE_CPACK_INPUT()
 set(CPACK_PROJECT_CONFIG_FILE "${PCL_CPACK_CFG_FILE}")
 include(CPack)
 
-# Make a pretty picture of the dependency graph
+### ---[ Make a pretty picture of the dependency graph
 include(${PCL_SOURCE_DIR}/cmake/dep_graph.cmake)
 MAKE_DEP_GRAPH()
 
-# Finish up
+### ---[ Finish up
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
 
