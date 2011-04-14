@@ -200,7 +200,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   {                                                                
     model_coefficients *= -1;
     // Hessian form (D = nc . p_plane (centroid here) + p)
-    model_coefficients[3] = -1 * (model_coefficients.dot (vp));
+    model_coefficients[3] = -1 * (model_coefficients.dot (planar_hull_->points[0].getVector4fMap ()));
   }
     
   // Project all points
