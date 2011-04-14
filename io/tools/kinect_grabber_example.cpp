@@ -72,7 +72,7 @@ class SimpleKinectProcessor
 
       // wait until user quits program with Ctrl-C, but no busy-waiting -> sleep (1);
       while (true)
-        sleep(1);
+        boost::this_thread::sleep (boost::posix_time::seconds (1));
 
       // stop the grabber
       interface->stop ();

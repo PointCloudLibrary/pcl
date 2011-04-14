@@ -240,7 +240,7 @@ main (int argc, char** argv)
       mutex_.unlock ();
     }
     else
-      usleep (1000);
+      boost::this_thread::sleep (boost::posix_time::microseconds (1000));
   }
 
   interface->stop ();
