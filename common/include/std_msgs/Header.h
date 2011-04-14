@@ -3,42 +3,7 @@
 #include <string>
 #include <vector>
 #include <boost/shared_ptr.hpp>
-
-#ifndef _WIN32
-# include <stdint.h>
-#else
-#  if (_MSC_VER >= 1600)
-#    include <stdint.h>
-  // Visual Studio pre-2010 doesn't have stdint.h
-#  else
-    typedef signed char int8_t;
-    typedef short int16_t;
-    typedef int int32_t;
-
-    typedef unsigned char uint8_t;
-    typedef unsigned short uint16_t;
-    typedef unsigned int uint32_t;
-
-    typedef signed char int_least8_t;
-    typedef short int_least16_t;
-    typedef int int_least32_t;
-
-    typedef unsigned char uint_least8_t;
-    typedef unsigned short uint_least16_t;
-    typedef unsigned int uint_least32_t;
-
-    typedef char int_fast8_t;
-    typedef int int_fast16_t;
-    typedef int int_fast32_t;
-
-    typedef unsigned char uint_fast8_t;
-    typedef unsigned int uint_fast16_t;
-    typedef unsigned int uint_fast32_t;
-
-    typedef _Longlong int64_t;
-    typedef _ULonglong uint64_t;
-#  endif
-#endif
+#include <pcl/win32_macros.h>
 
 namespace std_msgs
 {
