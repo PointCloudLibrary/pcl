@@ -1,3 +1,4 @@
+### ---[ PCL global CMake
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
 # In case of Makefiles if the user does not setup CMAKE_BUILD_TYPE, assume it's Debug
@@ -10,11 +11,22 @@ else(${CMAKE_GENERATOR} MATCHES ".*Makefiles")
 	set(CMAKE_BUILD_TYPE Release CACHE STRING "build type default to Release, set to Debug if you are developing PCL" FORCE)
 endif(${CMAKE_GENERATOR} MATCHES ".*Makefiles")
 
+project(PCL)
+string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
     "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-project(PCL)
-string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
+# ---[ Release/Debug specific flags
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_definitions("-DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
+endif(CMAKE_BUILD_TYPE STREQUAL "Release")
+# ---[ Unix/Darwin/Windows specific flags
+if(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing")
+else(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+add_definitions ("-W0 -DEIGEN2_SUPPORT")
+endif(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
 include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
 include(${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake)
@@ -35,14 +47,6 @@ configure_file("${PCL_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
 add_custom_target(uninstall "${CMAKE_COMMAND}" -P
     "${PCL_BINARY_DIR}/uninstall_target.cmake")
 
-#This is definitely not where it should, just for test before moving
-if(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing")
-else(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-add_definitions ("-W0 -DEIGEN_USE_NEW_STDVECTOR -DEIGEN2_SUPPORT")
-endif(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-#set(CMAKE_INSTALL_RPATH_USE_LINK_PATH true)
-
 ###
 # this is copy paste form http://www.itk.org/Wiki/CMake_RPATH_handling
 # in order to always make a full statement RPATH
@@ -61,16 +65,13 @@ ENDIF("${is_system_dir}" STREQUAL "-1")
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
 # Boost
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_definitions(-DBOOST_DISABLE_ASSERTS)
-endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 # SSE flags
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
 PCL_CHECK_FOR_SSE()
 # Eigen
 find_package(Eigen REQUIRED)
 include_directories(${EIGEN_INCLUDE_DIRS})
-add_definitions(-DEIGEN_NO_DEBUG -DEIGEN_USE_NEW_STDVECTOR
+add_definitions(-DEIGEN_USE_NEW_STDVECTOR
     -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
 # FLANN
 find_package(Flann REQUIRED)
