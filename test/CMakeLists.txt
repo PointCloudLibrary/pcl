@@ -23,7 +23,7 @@ if(build)
     add_executable (test_feature test_feature.cpp)
     PCL_ADD_OPENMP_FLAGS(test_feature)
     target_link_libraries (test_feature pcl_features pcl_kdtree pcl_io
-        ${GTEST_BOTH_LIBRARIES} gomp)
+        ${GTEST_BOTH_LIBRARIES})
     PCL_LINK_OPENMP(test_feature)
 
     add_executable (test_sample_consensus test_sample_consensus.cpp)
