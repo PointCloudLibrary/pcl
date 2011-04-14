@@ -17,7 +17,7 @@ find_library(QHULL_LIBRARY qhull
              HINTS ${QHULL_ROOT}
              PATH_SUFFIXES project)
 
-set(QHULL_INCLUDE_DIRS ${QHULL_INCLUDE_DIR})
+set(QHULL_INCLUDE_DIRS ${QHULL_INCLUDE_DIR}/qhull ${QHULL_INCLUDE_DIR})
 set(QHULL_LIBRARIES ${QHULL_LIBRARY})
 
 include(FindPackageHandleStandardArgs)

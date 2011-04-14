@@ -47,22 +47,26 @@
 #include "pcl/PolygonMesh.h"
 #include <math.h>
 
+#ifndef _WIN32
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
+#endif
 #include <stdio.h>
 #include <stdlib.h>
-#include "qhull/qhull.h"
-#include "qhull/mem.h"
-#include "qhull/qset.h"
-#include "qhull/geom.h"
-#include "qhull/merge.h"
-#include "qhull/poly.h"
-#include "qhull/io.h"
-#include "qhull/stat.h"
+#include "qhull.h"
+#include "mem.h"
+#include "qset.h"
+#include "geom.h"
+#include "merge.h"
+#include "poly.h"
+#include "io.h"
+#include "stat.h"
+#ifndef _WIN32
 #if defined(__cplusplus)
 }
+#endif
 #endif
 
 namespace pcl
