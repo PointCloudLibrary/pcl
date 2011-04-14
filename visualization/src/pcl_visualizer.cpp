@@ -1453,7 +1453,7 @@ pcl_visualization::FPSCallback::Execute (vtkObject *caller, unsigned long, void*
   vtkRenderer *ren = reinterpret_cast<vtkRenderer *> (caller);
   float fps = 1.0 / ren->GetLastRenderTimeInSeconds ();
   char buf[128];
-  snprintf (buf, 127, "%.1f FPS", fps);
+  sprintf (buf, "%.1f FPS", fps);
   actor_->SetInput (buf);
 }
 
