@@ -142,6 +142,68 @@ callback without stopping the whole grabber:
    if (c.connected ())
      c.disconnect ();
 
+Benchmark
+---------
+
+The following code snippet will attempt to subscribe to both the *depth* and
+*color* streams, and is provided as a way to benchmark your system. If your
+computer is too slow, and you might not be able to get ~29Hz+, please contact
+us. We might be able to optimize the code even further.
+
+.. code-block:: cpp
+
+  #include <pcl/point_cloud.h>
+  #include <pcl/point_types.h>
+  #include <pcl/io/kinect_grabber.h>
+  #include <pcl/common/time.h>
+
+  class SimpleKinectProcessor
+  {
+    public:
+      void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+      {
+        static unsigned count = 0;
+        static double last = pcl::getTime ();
+        if (++count == 30)
+        {
+          double now = pcl::getTime ();
+          std::cout << "distance of center pixel :" << cloud->points [(cloud->width >> 1) * (cloud->height + 1)].z << " mm. Average framerate: " << double(count)/double(now - last) << " Hz" <<  std::endl;
+          count = 0;
+          last = now;
+        }
+      }
+      
+      void run ()
+      {
+        // create a new grabber for OpenNI devices
+        pcl::Grabber* interface = new pcl::OpenNIGrabber();
+
+        // make callback function from member function
+        boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
+          boost::bind (&SimpleKinectProcessor::cloud_cb_, this, _1);
+
+        // connect callback function for desired signal. In this case its a point cloud with color values
+        boost::signals2::connection c = interface->registerCallback (f);
+
+        // start receiving point clouds
+        interface->start ();
+
+        // wait until user quits program with Ctrl-C, but no busy-waiting -> sleep (1);
+        while (true)
+          sleep(1);
+
+        // stop the grabber
+        interface->stop ();
+      }
+  };
+
+  int main ()
+  {
+    SimpleKinectProcessor v;
+    v.run ();
+    return 0;
+  }
+
 Conclusion
 ----------
 
