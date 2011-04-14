@@ -68,7 +68,7 @@ inline double getTime ()
 {
   boost::posix_time::ptime epoch_time(boost::gregorian::date(1970,1,1));
   boost::posix_time::ptime current_time = boost::posix_time::microsec_clock::local_time();
-  return (current_time - epoch_time).total_seconds();
+  return (current_time - epoch_time).total_nanoseconds() * 1.0e-9;
 }
 
 /// Executes code, only if secs are gone since last exec.
