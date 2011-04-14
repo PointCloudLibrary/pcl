@@ -45,6 +45,7 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::string& pcd_path, float frames_per_second, bool repeat);
   PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat);
   void trigger ();
+  void readAhead ();
   pcl::PCDGrabberBase& grabber_;
   float frames_per_second_;
   bool repeat_;
@@ -52,6 +53,9 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   std::vector<std::string> pcd_files_;
   std::vector<std::string>::iterator pcd_iterator_;
   TimeTrigger time_trigger_;
+
+  sensor_msgs::PointCloud2 next_cloud_;
+  bool valid_;
 };
 
 pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::string& pcd_path, float frames_per_second, bool repeat)
@@ -60,6 +64,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
 , repeat_ (repeat)
 , running_ (false)
 , time_trigger_ (1.0 / (double) std::max(frames_per_second, 0.001f), boost::bind (&PCDGrabberImpl::trigger, this))
+, valid_ (false)
 {
   pcd_files_.push_back (pcd_path);
   pcd_iterator_ = pcd_files_.begin ();
@@ -71,30 +76,36 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
 , repeat_ (repeat)
 , running_ (false)
 , time_trigger_ (1.0 / (double) std::max(frames_per_second, 0.001f), boost::bind (&PCDGrabberImpl::trigger, this))
+, valid_ (false)
 {
   pcd_files_ = pcd_files;
   pcd_iterator_ = pcd_files_.begin ();
 }
 
-void pcl::PCDGrabberBase::PCDGrabberImpl::trigger ()
+void pcl::PCDGrabberBase::PCDGrabberImpl::readAhead ()
 {
-  std::cout << "trigger: " << std::endl;
   if (pcd_iterator_ != pcd_files_.end ())
   {
     PCDReader reader;
-    sensor_msgs::PointCloud2 blob;
     int pcd_version;
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
-    int res = reader.read (*pcd_iterator_, blob, origin, orientation, pcd_version);
-    if (res == 0)
-    {
-      std::cout << "trigger: " << *pcd_iterator_ << std::endl;
-      grabber_.publish (blob);
-    }
+    valid_ = (reader.read (*pcd_iterator_, next_cloud_, origin, orientation, pcd_version) == 0);
+
     if (++pcd_iterator_ == pcd_files_.end () && repeat_)
       pcd_iterator_ = pcd_files_.begin ();
   }
+  else
+    valid_ = false;
+}
+
+void pcl::PCDGrabberBase::PCDGrabberImpl::trigger ()
+{
+  if (valid_)
+    grabber_.publish (next_cloud_);
+
+  // use remaining time, if there is time left!
+  readAhead ();
 }
 
 //////////////////////// GrabberBase //////////////////////

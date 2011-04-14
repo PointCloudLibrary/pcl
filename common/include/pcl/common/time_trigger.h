@@ -95,7 +95,6 @@ private:
   void thread_function ();
   boost::signals2::signal <void() > callbacks_;
 
-  double time_;
   double interval_;
 
   bool quit_;

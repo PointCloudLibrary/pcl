@@ -89,7 +89,6 @@ void pcl::TimeTrigger::start ()
   if (!running_)
   {
     running_ = true;
-    time_ = getTime ();
     condition_.notify_all ();
   }
 }
@@ -106,9 +105,10 @@ void pcl::TimeTrigger::stop ()
 
 void pcl::TimeTrigger::thread_function ()
 {
+  static double time = 0;
   while (!quit_)
   {
-    time_ = getTime ();
+    time = getTime ();
     unique_lock<mutex> lock (condition_mutex_);
     if (!running_)
     {
@@ -117,7 +117,7 @@ void pcl::TimeTrigger::thread_function ()
     else
     {
       callbacks_();
-      double rest = interval_ + time_ - getTime ();
+      double rest = interval_ + time - getTime ();
       condition_.timed_wait (lock, posix_time::microseconds(rest * 1000000.0));
     }
   }
