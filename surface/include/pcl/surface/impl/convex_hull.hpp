@@ -262,11 +262,12 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull,
   {
     Eigen::Affine3f transInverse = transform1.inverse ();
     pcl::transformPointCloud (hull, hull, transInverse);
-    xyz_centroid[0] = -xyz_centroid[0];
-    xyz_centroid[1] = -xyz_centroid[1];
-    xyz_centroid[2] = -xyz_centroid[2];
-    pcl::demeanPointCloud (hull, xyz_centroid, hull);
   }
+
+  xyz_centroid[0] = -xyz_centroid[0];
+  xyz_centroid[1] = -xyz_centroid[1];
+  xyz_centroid[2] = -xyz_centroid[2];
+  pcl::demeanPointCloud (hull, xyz_centroid, hull);
 
   hull.width = hull.points.size ();
   hull.height = 1;
