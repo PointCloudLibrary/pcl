@@ -81,8 +81,8 @@ TEST (PCL, findFeatureCorrespondences)
   RegistrationWrapper <PointXYZ, PointXYZ> reg;
 
   FeatureCloud feature0, feature1, feature2, feature3;
-  feature0.height = feature1.height = feature2.height = feature2.height = 1;
-  feature0.is_dense = feature1.is_dense = feature2.is_dense = feature2.is_dense = true;
+  feature0.height = feature1.height = feature2.height = feature3.height = 1;
+  feature0.is_dense = feature1.is_dense = feature2.is_dense = feature3.is_dense = true;
 
   for (float x = -5.0; x <= 5.0; x += 0.2)
   {
