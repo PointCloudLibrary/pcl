@@ -51,7 +51,7 @@ namespace pcl
 class Grabber
 {
 	public:
-		virtual ~Grabber () {}
+		virtual inline ~Grabber ();
 		template<typename T> boost::signals2::connection registerCallback (const boost::function<T>& callback);
 		virtual void start () = 0;
     virtual void stop () = 0;  
@@ -66,6 +66,12 @@ class Grabber
 		template<typename T> boost::signals2::signal<T>* createSignal ();
 		std::map<const std::type_info*, boost::signals2::signal_base*> signals_;
 };
+
+Grabber::~Grabber ()
+{
+  for (std::map<const std::type_info*, boost::signals2::signal_base*>::iterator signal_it = signals_.begin (); signal_it != signals_.end (); ++signal_it)
+    delete signal_it->second;
+}
 
 template<typename T> boost::signals2::signal<T>* Grabber::find_signal () const
 {

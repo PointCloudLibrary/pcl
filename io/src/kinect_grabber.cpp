@@ -37,11 +37,26 @@
 #include <pcl/io/kinect_grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-
+#include <pcl/common/time.h>
 #include <pcl/io/pcl_io_exception.h>
+#include <boost/shared_array.hpp>
 
 namespace pcl
 {
+
+  typedef union
+  {
+
+    struct /*anonymous*/
+    {
+      unsigned char Blue;
+      unsigned char Green;
+      unsigned char Red;
+      unsigned char Alpha;
+    };
+    float float_value;
+    long long_value;
+  } RGBValue;
 
   OpenNIGrabber::OpenNIGrabber (const std::string& device_id) throw (openni_wrapper::OpenNIException)
     : image_required_(false)
@@ -412,6 +427,10 @@ namespace pcl
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image, 
                                                                         const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
   {
+    static unsigned rgb_array_size = 0;
+    static boost::shared_array<unsigned char> rgb_array(0);
+    static unsigned char* rgb_buffer = 0;
+
     boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > cloud (new pcl::PointCloud<pcl::PointXYZRGB>() );
 
     // do not publish if rgb image is smaller than color image -> seg fault
@@ -425,34 +444,39 @@ namespace pcl
       ++warned;
       return cloud;
     }
-    
+
     cloud->header.frame_id  = rgb_frame_id_;
     cloud->height           = depth_image->getHeight ();
     cloud->width            = depth_image->getWidth ();
     cloud->is_dense         = false;
-
+    
     cloud->points.resize (cloud->height * cloud->width);
 
     float constant = 1.0f / device_->getImageFocalLength (cloud->width);
-    float centerX = (cloud->width >> 1);
-    float centerY = (cloud->height >> 1);
+    int centerX = (cloud->width >> 1);
+    int centerY = (cloud->height >> 1);
 
-    float* depth_buffer = new float [depth_width_ * depth_height_];
-    depth_image->fillDepthImage (depth_width_, depth_height_, depth_buffer, depth_width_ * sizeof (float));
+    register const XnDepthPixel* depth_buffer = depth_image->getDepthMetaData ().Data();
 
-    unsigned char* rgb_buffer = new unsigned char [image_width_ * image_height_ * 3];
+    if (rgb_array_size < image_width_ * image_height_ * 3)
+    {
+      rgb_array_size = image_width_ * image_height_ * 3;
+      rgb_array.reset (new unsigned char [rgb_array_size]);
+      rgb_buffer = rgb_array.get ();
+    }
     image->fillRGB (image_width_, image_height_, rgb_buffer, image_width_ * 3);
 
     // depth_image already has the desired dimensions, but rgb_msg may be higher res.
     int color_idx = 0, depth_idx = 0;
     RGBValue color;
     color.Alpha = 0;
-    for (float v = -centerY; v < centerY; v += 1.0)
+
+    for (int v = -centerY; v < centerY; ++v)
     {
-      for (int u = -centerX; u < centerX; u += 1.0, color_idx += 3, ++depth_idx)
+      for (register int u = -centerX; u < centerX; ++u, color_idx += 3, ++depth_idx)
       {
         pcl::PointXYZRGB& pt = cloud->points[depth_idx];
-        float Z = depth_buffer[depth_idx];
+        register double Z = depth_buffer[depth_idx];
 
         // Check for invalid measurements
         if (pcl_isnan (Z))
@@ -475,10 +499,9 @@ namespace pcl
         pt.rgb = color.float_value;
       }
     }
-    delete (depth_buffer);
-    delete (rgb_buffer);
     return (cloud);
   }
+  
   // TODO: delete me?
   void OpenNIGrabber::updateModeMaps ()
   {
