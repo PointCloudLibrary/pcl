@@ -4,9 +4,9 @@ set(SUBSYS_DEPS common io kdtree range_image octree filters)
 
 # Find wxWidgets
 find_package(wxWidgets)
-# Find VTK
+# Find VTK 
+# rusu:: NOTE: this should be moved to pcl/CMakeLists.txt, when we expand the I/O library
 find_package (VTK)
-
 if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")
@@ -16,11 +16,10 @@ elseif(NOT wxWidgets_FOUND)
 else(NOT VTK_FOUND)
     set(DEFAULT TRUE)
     set(REASON)
+    message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
 endif(NOT VTK_FOUND)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
-message(STATUS "VTK_LIBRARY_DIRS ${VTK_LIBRARY_DIRS}")
-message(STATUS "VTK_LIBRARIES ${VTK_LIBRARY_DIRS}")
 
 if(build)
     include(${wxWidgets_USE_FILE})
