@@ -8,5 +8,6 @@
 +set(CPACK_GENERATOR "DEB;RPM;")
 +include(InstallRequiredSystemLibraries)
 +set(CPACK_PACKAGE_CONTACT "eigen@lists.tuxfamily.org")
++set(CPACK_MONOLITHIC_INSTALL 1)
 +include(CPack)
 +
