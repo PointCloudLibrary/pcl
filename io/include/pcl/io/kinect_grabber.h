@@ -59,6 +59,7 @@ class Synchronizer
   typedef std::pair<long, T2> T2Stamped;
   boost::mutex mutex1_;
   boost::mutex mutex2_;
+  boost::mutex publish_mutex_;
   std::deque<T1Stamped> queueT1;
   std::deque<T2Stamped> queueT2;
 
@@ -167,6 +168,7 @@ private:
       mutex1_.unlock ();
       mutex2_.unlock ();
 
+      publish_mutex_.lock ();
       // call callback
       for (typename std::map<int, CallbackFunction>::iterator cb = cb_.begin (); cb != cb_.end (); ++cb)
       {
@@ -175,6 +177,7 @@ private:
           cb->second.operator()(t1, t2);
         }
       }
+      publish_mutex_.unlock ();
     }
   }
 
