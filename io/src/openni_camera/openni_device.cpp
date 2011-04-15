@@ -42,7 +42,6 @@
 #include <sstream>
 #include <map>
 #include <vector>
-#include <boost/thread/pthread/condition_variable_fwd.hpp>
 
 using namespace std;
 using namespace boost;
