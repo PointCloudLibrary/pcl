@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <ostream>
-#include <stdint.h>
 #include <boost/shared_ptr.hpp>
 #include <pcl/win32_macros.h>
 
