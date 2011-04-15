@@ -4,7 +4,8 @@ all: eigen
 	patch -p0 < cpack.patch
 	cd eigen/build_dir && cmake .. && make package && \
 		cp *.deb ../../ && \
-		cp *.rpm ../../ 
+		cp *.rpm ../../ && \
+		cp *.exe ../../
 
 eigen:
 	hg clone https://bitbucket.org/eigen/eigen/ -r ${VERSION}
