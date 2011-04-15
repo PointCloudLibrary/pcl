@@ -1,3 +1,4 @@
+VERSION=3.0.0
 all: eigen
 	mkdir -p eigen/build_dir
 	patch -p0 < cpack.patch
@@ -6,7 +7,7 @@ all: eigen
 		cp *.rpm ../../ 
 
 eigen:
-	hg clone https://bitbucket.org/eigen/eigen/ -r 3.0.0
+	hg clone https://bitbucket.org/eigen/eigen/ -r ${VERSION}
 
 clean:
-	rm -rf eigen *~
+	rm -rf eigen Eigen* *~
