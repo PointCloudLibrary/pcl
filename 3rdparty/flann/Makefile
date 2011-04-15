@@ -7,7 +7,8 @@ all:
 	cd flann-${VERSION}-src && mkdir -p build && cd build && cmake -DBUILD_C_BINDINGS=false -DBUILD_PYTHON_BINDINGS=false -DBUILD_MATLAB_BINDINGS=false -DCMAKE_BUILD_TYPE=RELEASE .. && \
 		make package && \
 		cp *.deb ../../ && \
-		cp *.rpm ../../
+		cp *.rpm ../../ && \
+		cp *.exe ../../
 
 clean:
 	rm -rf flann* *~

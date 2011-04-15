@@ -10,12 +10,14 @@
 
 --- flann-1.6.8-src/CMakeLists.txt	2011-02-26 08:36:53.000000000 +0000
 +++ flann-1.6.8-src/CMakeLists.txt	2011-04-15 06:55:12.000000000 +0000
-@@ -116,3 +116,14 @@
+@@ -116,3 +116,16 @@
  add_subdirectory( examples )
  add_subdirectory( test )
  add_subdirectory( doc )
 +
-+set(CPACK_GENERATOR "DEB;RPM;")
++set(CPACK_GENERATOR "DEB;RPM;NSIS;")
++set(CPACK_MONOLITHIC_INSTALL 1)
++set(CPACK_SET_DESTDIR ON)
 +include(InstallRequiredSystemLibraries)
 +set(CPACK_PACKAGE_CONTACT "Marius Muja")
 +set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})                                      
