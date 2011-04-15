@@ -45,8 +45,9 @@
   * \param indices the resultant list of indices
   */
 void
-  pcl_visualization::getCorrespondingPointCloud (vtkPolyData *src, const pcl::PointCloud<pcl::PointXYZ> &tgt, 
-                                                 std::vector<int> &indices)
+pcl_visualization::getCorrespondingPointCloud (vtkPolyData *src, 
+                                               const pcl::PointCloud<pcl::PointXYZ> &tgt, 
+                                               std::vector<int> &indices)
 {
   // Iterate through the points and copy the data in a pcl::PointCloud
   pcl::PointCloud<pcl::PointXYZ> cloud;
@@ -62,7 +63,8 @@ void
 
   // Compute a kd-tree for tgt
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
-  kdtree.setInputCloud (boost::make_shared<pcl::PointCloud<pcl::PointXYZ> > (tgt));
+  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> > tgt_ptr (new pcl::PointCloud<pcl::PointXYZ> (tgt));
+  kdtree.setInputCloud (tgt_ptr);
 
   std::vector<int> nn_indices (1);
   std::vector<float> nn_dists (1);
