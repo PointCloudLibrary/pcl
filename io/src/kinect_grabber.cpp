@@ -418,7 +418,7 @@ namespace pcl
         // Fill in XYZ
         pt.x = u * z_d;
         pt.y = v * z_d;
-        pt.z = z;
+        pt.z = z * 0.001;
       }
     }
     return cloud;
@@ -489,7 +489,7 @@ namespace pcl
           double z_d = Z * constant;
           pt.x = u * z_d;
           pt.y = v * z_d;
-          pt.z = Z;
+          pt.z = Z * 0.001;
         }
 
         // Fill in color
