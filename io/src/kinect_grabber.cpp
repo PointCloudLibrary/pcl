@@ -354,7 +354,7 @@ namespace pcl
 
     if (point_cloud_signal_->num_slots () > 0)
       point_cloud_signal_->operator()(convertToXYZPointCloud (depth_image));
-
+    
     return;
   }
 
@@ -382,7 +382,7 @@ namespace pcl
 
     cloud->points.resize (cloud->height * cloud->width);
 
-    register float constant = 1.0f / device_->getDepthFocalLength (depth_width_);
+    register float constant = 0.001f / device_->getDepthFocalLength (depth_width_);
 
     if (device_->isDepthRegistered ())
       cloud->header.frame_id = rgb_frame_id_;
@@ -452,7 +452,7 @@ namespace pcl
     
     cloud->points.resize (cloud->height * cloud->width);
 
-    float constant = 1.0f / device_->getImageFocalLength (cloud->width);
+    float constant = 0.001f / device_->getImageFocalLength (cloud->width);
     int centerX = (cloud->width >> 1);
     int centerY = (cloud->height >> 1);
 
