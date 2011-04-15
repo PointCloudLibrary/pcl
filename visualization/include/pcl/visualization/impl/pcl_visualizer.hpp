@@ -446,9 +446,13 @@ pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   points->SetDataTypeToFloat ();
   points->SetNumberOfPoints (cloud->points.size ());
 
+  double p[3];
   for (vtkIdType i = 0; i < (int)cloud->points.size (); ++i)
   {
-    points->SetPoint (i, cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
+    p[0] = cloud->points[i].x;
+    p[1] = cloud->points[i].y;
+    p[2] = cloud->points[i].z;
+    points->SetPoint (i, p);
     vertices->InsertNextCell ((vtkIdType)1, &i);
   }
   polydata->SetPoints (points);
