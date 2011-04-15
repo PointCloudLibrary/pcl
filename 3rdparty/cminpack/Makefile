@@ -7,7 +7,8 @@ all:
 	cd cminpack-${VERSION} && mkdir -p build && cd build && cmake -DUSE_FPIC=ON -DSHARED_LIBS=ON -DBUILD_EXAMPLES=OFF -DCMINPACK_LIB_INSTALL_DIR="." .. && \
 		make package && \
 		cp *.deb ../../ && \
-		cp *.rpm ../../
+		cp *.rpm ../../ && \
+		cp *.exe ../../
 
 clean:
 	rm -rf cminpack* CMINPACK* *~
