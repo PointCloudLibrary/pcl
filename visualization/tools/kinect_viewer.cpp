@@ -235,7 +235,7 @@ main (int argc, char** argv)
       if (g_cloud)
       {
         p->removePointCloud ("KinectCloud");
-        p->addPointCloud (*g_cloud, "KinectCloud");
+        p->addPointCloud (g_cloud, "KinectCloud");
       }
       mutex_.unlock ();
     }

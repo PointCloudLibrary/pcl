@@ -37,8 +37,9 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool 
-  pcl_visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<PointT> &cloud, 
-                                                   const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addPointCloud (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
@@ -85,9 +86,10 @@ template <typename PointT> bool
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool 
-  pcl_visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<PointT> &cloud, 
-                                                   const PointCloudGeometryHandler<PointT> &geometry_handler,
-                                                   const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addPointCloud (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const PointCloudGeometryHandler<PointT> &geometry_handler,
+    const std::string &id, int viewport)
 {
   if (!geometry_handler.isCapable ())
   {
@@ -133,9 +135,10 @@ template <typename PointT> bool
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool 
-  pcl_visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<PointT> &cloud, 
-                                                   const GeometryHandlerConstPtr &geometry_handler,
-                                                   const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addPointCloud (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const GeometryHandlerConstPtr &geometry_handler,
+    const std::string &id, int viewport)
 {
   if (!geometry_handler->isCapable ())
   {
@@ -184,9 +187,10 @@ template <typename PointT> bool
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool 
-  pcl_visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<PointT> &cloud, 
-                                                   const PointCloudColorHandler<PointT> &color_handler, 
-                                                   const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addPointCloud (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const PointCloudColorHandler<PointT> &color_handler, 
+    const std::string &id, int viewport)
 {
   if (!color_handler.isCapable ())
   {
@@ -243,9 +247,10 @@ template <typename PointT> bool
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool 
-  pcl_visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<PointT> &cloud, 
-                                                   const ColorHandlerConstPtr &color_handler, 
-                                                   const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addPointCloud (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const ColorHandlerConstPtr &color_handler, 
+    const std::string &id, int viewport)
 {
   if (!color_handler->isCapable ())
   {
@@ -303,10 +308,11 @@ template <typename PointT> bool
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool 
-pcl_visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<PointT> &cloud, 
-                                                 const GeometryHandlerConstPtr &geometry_handler, 
-                                                 const ColorHandlerConstPtr &color_handler, 
-                                                 const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addPointCloud (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const GeometryHandlerConstPtr &geometry_handler,  
+    const ColorHandlerConstPtr &color_handler, 
+    const std::string &id, int viewport)
 {
   if (!color_handler->isCapable ())
   {
@@ -365,10 +371,11 @@ pcl_visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<PointT> &
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool 
-pcl_visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<PointT> &cloud, 
-                                                 const PointCloudColorHandler<PointT> &color_handler, 
-                                                 const PointCloudGeometryHandler<PointT> &geometry_handler,
-                                                 const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addPointCloud (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const PointCloudColorHandler<PointT> &color_handler, 
+    const PointCloudGeometryHandler<PointT> &geometry_handler,
+    const std::string &id, int viewport)
 {
   if (!color_handler.isCapable ())
   {
@@ -424,7 +431,9 @@ pcl_visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<PointT> &
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
-pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (const pcl::PointCloud<PointT> &cloud, vtkSmartPointer<vtkPolyData> &polydata)
+pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    vtkSmartPointer<vtkPolyData> &polydata)
 {
   if (!polydata)
     polydata = vtkSmartPointer<vtkPolyData>::New ();
@@ -435,15 +444,11 @@ pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (const pcl::Poi
 
   // Set the points
   points->SetDataTypeToFloat ();
-  points->SetNumberOfPoints (cloud.points.size ());
-  //
-  double p[3];
-  for (vtkIdType i = 0; i < (int)cloud.points.size (); ++i)
+  points->SetNumberOfPoints (cloud->points.size ());
+
+  for (vtkIdType i = 0; i < (int)cloud->points.size (); ++i)
   {
-    p[0] = cloud.points[i].x;
-    p[1] = cloud.points[i].y;
-    p[2] = cloud.points[i].z;
-    points->SetPoint (i, p);
+    points->SetPoint (i, cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
     vertices->InsertNextCell ((vtkIdType)1, &i);
   }
   polydata->SetPoints (points);
@@ -452,7 +457,9 @@ pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (const pcl::Poi
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
-pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (const pcl_visualization::PointCloudGeometryHandler<PointT> &geometry_handler, vtkSmartPointer<vtkPolyData> &polydata)
+pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
+    const pcl_visualization::PointCloudGeometryHandler<PointT> &geometry_handler, 
+    vtkSmartPointer<vtkPolyData> &polydata)
 {
   if (!polydata)
     polydata = vtkSmartPointer<vtkPolyData>::New ();
@@ -473,7 +480,9 @@ pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (const pcl_visu
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl_visualization::PCLVisualizer::addPolygon (const pcl::PointCloud<PointT> &cloud, const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addPolygon (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
@@ -483,7 +492,7 @@ pcl_visualization::PCLVisualizer::addPolygon (const pcl::PointCloud<PointT> &clo
     return (false);
   }
 
-  vtkSmartPointer<vtkDataSet> data = createPolygon (cloud);
+  vtkSmartPointer<vtkDataSet> data = createPolygon<PointT> (cloud);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
@@ -498,9 +507,11 @@ pcl_visualization::PCLVisualizer::addPolygon (const pcl::PointCloud<PointT> &clo
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl_visualization::PCLVisualizer::addPolygon (const pcl::PointCloud<PointT> &cloud, double r, double g, double b, const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addPolygon (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    double r, double g, double b, const std::string &id, int viewport)
 {
-  if (!addPolygon (cloud, id, viewport))
+  if (!addPolygon<PointT> (cloud, id, viewport))
     return (false);
 
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
@@ -633,21 +644,24 @@ pcl_visualization::PCLVisualizer::addSphere (const PointT &center, double radius
   return (true);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> bool
-pcl_visualization::PCLVisualizer::addPointCloudNormals (const pcl::PointCloud<PointNT> &cloud,
-                           int level, double scale, const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addPointCloudNormals (
+    const typename pcl::PointCloud<PointNT>::ConstPtr &cloud,
+    int level, double scale, const std::string &id, int viewport)
 {
-  return addPointCloudNormals<PointNT, PointNT>(cloud, cloud, level, scale, id, viewport);
+  return (addPointCloudNormals<PointNT, PointNT>(cloud, cloud, level, scale, id, viewport));
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
-pcl_visualization::PCLVisualizer::addPointCloudNormals (const pcl::PointCloud<PointT> &cloud,
-                                                        const pcl::PointCloud<PointNT> &normals,
-                                                        int level, double scale,
-                                                        const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addPointCloudNormals (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+    const typename pcl::PointCloud<PointNT>::ConstPtr &normals,
+    int level, double scale,
+    const std::string &id, int viewport)
 {
-  if (normals.points.size () != cloud.points.size ())
+  if (normals->points.size () != cloud->points.size ())
   {
     terminal_tools::print_error ("[addPointCloudNormals] The number of points differs from the number of normals!\n");
     return (false);
@@ -663,12 +677,14 @@ pcl_visualization::PCLVisualizer::addPointCloudNormals (const pcl::PointCloud<Po
 
   vtkSmartPointer<vtkAppendPolyData> polydata = vtkSmartPointer<vtkAppendPolyData>::New ();
 
-  for (size_t i = 0; i < cloud.points.size (); i+=level)
+  for (size_t i = 0; i < cloud->points.size (); i+=level)
   {
-    PointT p = cloud.points[i];
-    p.x += normals.points[i].normal[0] * scale; p.y += normals.points[i].normal[1] * scale; p.z += normals.points[i].normal[2] * scale;
+    PointT p = cloud->points[i];
+    p.x += normals->points[i].normal[0] * scale; 
+    p.y += normals->points[i].normal[1] * scale; 
+    p.z += normals->points[i].normal[2] * scale;
     vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();
-    line->SetPoint1 (cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
+    line->SetPoint1 (cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
     line->SetPoint2 (p.x, p.y, p.z);
     line->Update ();
     polydata->AddInput (line->GetOutput ());
@@ -691,3 +707,4 @@ pcl_visualization::PCLVisualizer::addPointCloudNormals (const pcl::PointCloud<Po
   //style_->setCloudActorMap (boost::make_shared<CloudActorMap> (cloud_actor_map_));
   return (true);
 }
+

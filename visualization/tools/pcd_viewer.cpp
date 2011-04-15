@@ -211,7 +211,7 @@ int
 
   for (size_t i = 0; i < p_file_indices.size (); ++i)
   {
-    sensor_msgs::PointCloud2 cloud;
+    sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
     int version;
@@ -219,22 +219,22 @@ int
     print_highlight (stderr, "Loading "); print_value (stderr, "%s ", argv[p_file_indices.at (i)]);
 
     tt.tic ();
-    if (pcd.read (argv[p_file_indices.at (i)], cloud, origin, orientation, version) < 0)
+    if (pcd.read (argv[p_file_indices.at (i)], *cloud, origin, orientation, version) < 0)
       return (-1);
    
     std::stringstream cloud_name;
 
     // ---[ Special check for 1-point multi-dimension histograms
-    if (cloud.fields.size () == 1 && isMultiDimensionalFeatureField (cloud.fields[0]))
+    if (cloud->fields.size () == 1 && isMultiDimensionalFeatureField (cloud->fields[0]))
     {
       cloud_name << argv[p_file_indices.at (i)];
 
       if (!ph)
-        ph.reset (new pcl_visualization::PCLHistogramVisualizer ());
-      print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", cloud.fields[0].count); print_info (" points]\n");
+        ph.reset (new pcl_visualization::PCLHistogramVisualizer);
+      print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", cloud->fields[0].count); print_info (" points]\n");
 
-      pcl::getMinMax (cloud, 0, cloud.fields[0].name, min_p, max_p);
-      ph->addFeatureHistogram (cloud, cloud.fields[0].name, cloud_name.str ());
+      pcl::getMinMax (*cloud, 0, cloud->fields[0].name, min_p, max_p);
+      ph->addFeatureHistogram (*cloud, cloud->fields[0].name, cloud_name.str ());
       continue;
     }
 
@@ -256,16 +256,16 @@ int
     }
 
     // Convert from blob to pcl::PointCloud
-    pcl::PointCloud<pcl::PointXYZ> cloud_xyz;
-    pcl::fromROSMsg (cloud, cloud_xyz);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::fromROSMsg (*cloud, *cloud_xyz);
 
-    if (cloud_xyz.points.size () == 0)
+    if (cloud_xyz->points.size () == 0)
     {
       print_error ("[error: no points found!]\n");
       return (-1);
     }
-    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", (int)cloud_xyz.points.size ()); print_info (" points]\n");
-    print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
+    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", (int)cloud_xyz->points.size ()); print_info (" points]\n");
+    print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (*cloud).c_str ());
    
     // If no color was given, get random colors
     if (fcolorparam)
@@ -281,12 +281,12 @@ int
     // Add the dataset with a XYZ and a random handler 
     geometry_handler.reset (new pcl_visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud));
     // Add the cloud to the renderer
-    p->addPointCloud (cloud_xyz, geometry_handler, color_handler, cloud_name.str (), viewport);
+    p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, color_handler, cloud_name.str (), viewport);
 
     // If normal lines are enabled
     if (normals != 0)
     {
-      int normal_idx = pcl::getFieldIndex (cloud, "normal_x");
+      int normal_idx = pcl::getFieldIndex (*cloud, "normal_x");
       if (normal_idx == -1)
       {
         print_error ("Normal information requested but not available.\n");
@@ -295,11 +295,11 @@ int
       }      
       //
       // Convert from blob to pcl::PointCloud
-      pcl::PointCloud<pcl::Normal> cloud_normals;
-      pcl::fromROSMsg (cloud, cloud_normals);
+      pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
+      pcl::fromROSMsg (*cloud, *cloud_normals);
       std::stringstream cloud_name_normals;
       cloud_name_normals << argv[p_file_indices.at (i)] << "-" << i << "-normals";
-      p->addPointCloudNormals (cloud_xyz, cloud_normals, normals, normals_scale, cloud_name_normals.str (), viewport);
+      p->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud_xyz, cloud_normals, normals, normals_scale, cloud_name_normals.str (), viewport);
     }
 
     // If principal curvature lines are enabled
@@ -308,14 +308,14 @@ int
       if (normals == 0)
         normals = pc;
 
-      int normal_idx = pcl::getFieldIndex (cloud, "normal_x");
+      int normal_idx = pcl::getFieldIndex (*cloud, "normal_x");
       if (normal_idx == -1)
       {
         print_error ("Normal information requested but not available.\n");
         continue;
         //return (-1);
       }      
-      int pc_idx = pcl::getFieldIndex (cloud, "principal_curvature_x");
+      int pc_idx = pcl::getFieldIndex (*cloud, "principal_curvature_x");
       if (pc_idx == -1)
       {
         print_error ("Principal Curvature information requested but not available.\n");
@@ -324,14 +324,14 @@ int
       }      
       //
       // Convert from blob to pcl::PointCloud
-      pcl::PointCloud<pcl::Normal> cloud_normals;
-      pcl::fromROSMsg (cloud, cloud_normals);
-      pcl::PointCloud<pcl::PrincipalCurvatures> cloud_pc;
-      pcl::fromROSMsg (cloud, cloud_pc);
+      pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
+      pcl::fromROSMsg (*cloud, *cloud_normals);
+      pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr cloud_pc (new pcl::PointCloud<pcl::PrincipalCurvatures>);
+      pcl::fromROSMsg (*cloud, *cloud_pc);
       std::stringstream cloud_name_normals_pc;
       cloud_name_normals_pc << argv[p_file_indices.at (i)] << "-" << i << "-normals";
-      int factor = std::min (normals, pc);
-      p->addPointCloudNormals (cloud_xyz, cloud_normals, factor, normals_scale, cloud_name_normals_pc.str (), viewport);
+      int factor = (std::min)(normals, pc);
+      p->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud_xyz, cloud_normals, factor, normals_scale, cloud_name_normals_pc.str (), viewport);
       p->setPointCloudRenderingProperties (pcl_visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, cloud_name_normals_pc.str ());
       p->setPointCloudRenderingProperties (pcl_visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc.str ());
       cloud_name_normals_pc << "-pc";
@@ -342,24 +342,24 @@ int
     // Add every dimension as a possible color
     if (!fcolorparam)
     {
-      for (size_t f = 0; f < cloud.fields.size (); ++f)
+      for (size_t f = 0; f < cloud->fields.size (); ++f)
       {
-        if (cloud.fields[f].name == "rgb" || cloud.fields[f].name == "rgba")
+        if (cloud->fields[f].name == "rgb" || cloud->fields[f].name == "rgba")
           color_handler.reset (new pcl_visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> (cloud));
         else
         {
-          if (!isValidFieldName (cloud.fields[f].name))
+          if (!isValidFieldName (cloud->fields[f].name))
             continue;
-          color_handler.reset (new pcl_visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2> (cloud, cloud.fields[f].name));
+          color_handler.reset (new pcl_visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2> (cloud, cloud->fields[f].name));
         }
         // Add the cloud to the renderer
-        p->addPointCloud (cloud_xyz, color_handler, cloud_name.str (), viewport);
+        p->addPointCloud<pcl::PointXYZ> (cloud_xyz, color_handler, cloud_name.str (), viewport);
       }
     }
     // Additionally, add normals as a handler
     geometry_handler.reset (new pcl_visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2> (cloud));
     if (geometry_handler->isCapable ())
-      p->addPointCloud (cloud_xyz, geometry_handler, cloud_name.str (), viewport);
+      p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, cloud_name.str (), viewport);
 
     // Change the cloud rendered point size
     if (psize.size () > 0)

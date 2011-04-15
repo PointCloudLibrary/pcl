@@ -51,9 +51,6 @@
 
 namespace pcl_visualization
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Base handler class for PointCloud geometry. */
   template <typename PointT>
   class PointCloudGeometryHandler
@@ -66,204 +63,36 @@ namespace pcl_visualization
       typedef typename boost::shared_ptr<PointCloudGeometryHandler<PointT> > Ptr;
       typedef typename boost::shared_ptr<const PointCloudGeometryHandler<PointT> > ConstPtr;
 
-      inline Ptr makeShared () const { return (boost::make_shared<PointCloudGeometryHandler<PointT> >) (*this); } 
-
       /** \brief Constructor. */
-      PointCloudGeometryHandler (const PointCloud &cloud) : cloud_ (), capable_ (false)
-      {
-        cloud_.reset (new PointCloud (cloud));
-      }
+      PointCloudGeometryHandler (const PointCloudConstPtr &cloud) : 
+        cloud_ (cloud), capable_ (false)
+      {}
 
       /** \brief Abstract getName method. */
-      virtual std::string getName () const = 0;
+      virtual std::string 
+      getName () const = 0;
 
       /** \brief Abstract getFieldName method. */
-      virtual std::string getFieldName () const  = 0;
+      virtual std::string 
+      getFieldName () const  = 0;
 
       /** \brief Return whether this handler is capable of handling the input data or not. */
-      inline bool isCapable () const { return (capable_); }
+      inline bool 
+      isCapable () const { return (capable_); }
 
       /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
         * \param points the resultant geometry 
         */
-      virtual void getGeometry (vtkSmartPointer<vtkPoints> &points) const = 0;
+      virtual void 
+      getGeometry (vtkSmartPointer<vtkPoints> &points) const = 0;
 
     protected:
       /** \brief A pointer to the input dataset. */
-      PointCloudPtr cloud_;
+      PointCloudConstPtr cloud_;
 
-      /** \brief True if this handler is capable of handling the input data, false otherwise. */
-      bool capable_;
-
-      /** \brief The index of the field holding the X data. */
-      int field_x_idx_;
-
-      /** \brief The index of the field holding the Y data. */
-      int field_y_idx_;
-
-      /** \brief The index of the field holding the Z data. */
-      int field_z_idx_;
-
-      /** \brief The list of fields available for this PointCloud. 
-        * The PointCloud must be read from disk as PCD or converted from sensor_msgs/PointCloud2 for this to work! */
-      std::vector<sensor_msgs::PointField> fields_;
-  };
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief XYZ handler class for PointCloud geometry. */
-  template <typename PointT>
-  class PointCloudGeometryHandlerXYZ : public PointCloudGeometryHandler<PointT>
-  {
-    public:
-      typedef typename PointCloudGeometryHandler<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-
-      typedef typename boost::shared_ptr<PointCloudGeometryHandlerXYZ<PointT> > Ptr;
-      typedef typename boost::shared_ptr<const PointCloudGeometryHandlerXYZ<PointT> > ConstPtr;
-
-      /** \brief Constructor. */
-      PointCloudGeometryHandlerXYZ (const PointCloud &cloud);
-
-      /** \brief Class getName method. */
-      virtual inline std::string getName () const { return ("PointCloudGeometryHandlerXYZ"); }
-
-      /** \brief Get the name of the field used. */
-      virtual std::string getFieldName () const { return ("xyz"); }
-
-      /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
-        * \param points the resultant geometry 
+      /** \brief True if this handler is capable of handling the input data, false 
+        * otherwise.
         */
-      virtual void getGeometry (vtkSmartPointer<vtkPoints> &points) const;
-
-    private:
-      // Members derived from the base class
-      using PointCloudGeometryHandler<PointT>::cloud_;
-      using PointCloudGeometryHandler<PointT>::capable_;
-      using PointCloudGeometryHandler<PointT>::field_x_idx_;
-      using PointCloudGeometryHandler<PointT>::field_y_idx_;
-      using PointCloudGeometryHandler<PointT>::field_z_idx_;
-      using PointCloudGeometryHandler<PointT>::fields_;
-  };
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief Surface normal handler class for PointCloud geometry. */
-  template <typename PointT>
-  class PointCloudGeometryHandlerSurfaceNormal : public PointCloudGeometryHandler<PointT>
-  {
-    public:
-      typedef typename PointCloudGeometryHandler<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-
-      typedef typename boost::shared_ptr<PointCloudGeometryHandlerSurfaceNormal<PointT> > Ptr;
-      typedef typename boost::shared_ptr<const PointCloudGeometryHandlerSurfaceNormal<PointT> > ConstPtr;
-
-      /** \brief Constructor. */
-      PointCloudGeometryHandlerSurfaceNormal (const PointCloud &cloud);
-
-      /** \brief Class getName method. */
-      virtual inline std::string getName () const { return ("PointCloudGeometryHandlerSurfaceNormal"); }
-
-      /** \brief Get the name of the field used. */
-      virtual std::string getFieldName () const { return ("normal_xyz"); }
-
-      /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
-        * \param points the resultant geometry 
-        */
-      virtual void getGeometry (vtkSmartPointer<vtkPoints> &points) const;
-
-    private:
-      // Members derived from the base class
-      using PointCloudGeometryHandler<PointT>::cloud_;
-      using PointCloudGeometryHandler<PointT>::capable_;
-      using PointCloudGeometryHandler<PointT>::field_x_idx_;
-      using PointCloudGeometryHandler<PointT>::field_y_idx_;
-      using PointCloudGeometryHandler<PointT>::field_z_idx_;
-      using PointCloudGeometryHandler<PointT>::fields_;
-  };
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief Custom handler class for PointCloud geometry. */
-  template <typename PointT>
-  class PointCloudGeometryHandlerCustom : public PointCloudGeometryHandler<PointT>
-  {
-    public:
-      typedef typename PointCloudGeometryHandler<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-
-      typedef typename boost::shared_ptr<PointCloudGeometryHandlerCustom<PointT> > Ptr;
-      typedef typename boost::shared_ptr<const PointCloudGeometryHandlerCustom<PointT> > ConstPtr;
-
-      /** \brief Constructor. */
-      PointCloudGeometryHandlerCustom (const PointCloud &cloud, const std::string &x_field_name, const std::string &y_field_name, const std::string &z_field_name);
-
-      /** \brief Class getName method. */
-      virtual inline std::string getName () const { return ("PointCloudGeometryHandlerCustom"); }
-
-      /** \brief Get the name of the field used. */
-      virtual std::string getFieldName () const { return (field_name_); }
-
-      /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
-        * \param points the resultant geometry 
-        */
-      virtual void getGeometry (vtkSmartPointer<vtkPoints> &points) const;
-
-    private:
-      // Members derived from the base class
-      using PointCloudGeometryHandler<PointT>::cloud_;
-      using PointCloudGeometryHandler<PointT>::capable_;
-      using PointCloudGeometryHandler<PointT>::field_x_idx_;
-      using PointCloudGeometryHandler<PointT>::field_y_idx_;
-      using PointCloudGeometryHandler<PointT>::field_z_idx_;
-      using PointCloudGeometryHandler<PointT>::fields_;
-
-      /** \brief Name of the field used to create the geometry handler. */
-      std::string field_name_;
-  };
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief Base handler class for PointCloud geometry. */
-  template <>
-  class PointCloudGeometryHandler<sensor_msgs::PointCloud2>
-  {
-    public:
-      typedef sensor_msgs::PointCloud2 PointCloud;
-      typedef PointCloud::Ptr PointCloudPtr;
-      typedef PointCloud::ConstPtr PointCloudConstPtr;
-
-      typedef boost::shared_ptr<PointCloudGeometryHandler<PointCloud> > Ptr;
-      typedef boost::shared_ptr<const PointCloudGeometryHandler<PointCloud> > ConstPtr;
-
-      /** \brief Constructor. */
-      PointCloudGeometryHandler (const PointCloud &cloud) : cloud_ (), capable_ (false)
-      {
-        cloud_.reset (new PointCloud (cloud));
-        fields_ = cloud_->fields;
-      }
-
-      /** \brief Abstract getName method. */
-      virtual std::string getName () const = 0;
-
-      /** \brief Abstract getFieldName method. */
-      virtual std::string getFieldName () const  = 0;
-
-      /** \brief Return whether this handler is capable of handling the input data or not. */
-      inline bool isCapable () const { return (capable_); }
-
-      /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
-        * \param points the resultant geometry 
-        */
-      virtual void getGeometry (vtkSmartPointer<vtkPoints> &points) const;
-
-    protected:
-      /** \brief A pointer to the input dataset. */
-      PointCloudPtr cloud_;
-
-      /** \brief True if this handler is capable of handling the input data, false otherwise. */
       bool capable_;
 
       /** \brief The index of the field holding the X data. */
@@ -279,7 +108,195 @@ namespace pcl_visualization
       std::vector<sensor_msgs::PointField> fields_;
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief XYZ handler class for PointCloud geometry. */
+  template <typename PointT>
+  class PointCloudGeometryHandlerXYZ : public PointCloudGeometryHandler<PointT>
+  {
+    public:
+      typedef typename PointCloudGeometryHandler<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      typedef typename boost::shared_ptr<PointCloudGeometryHandlerXYZ<PointT> > Ptr;
+      typedef typename boost::shared_ptr<const PointCloudGeometryHandlerXYZ<PointT> > ConstPtr;
+
+      /** \brief Constructor. */
+      PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud);
+
+      /** \brief Class getName method. */
+      virtual inline std::string 
+      getName () const { return ("PointCloudGeometryHandlerXYZ"); }
+
+      /** \brief Get the name of the field used. */
+      virtual std::string 
+      getFieldName () const { return ("xyz"); }
+
+      /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
+        * \param points the resultant geometry 
+        */
+      virtual void 
+      getGeometry (vtkSmartPointer<vtkPoints> &points) const;
+
+    private:
+      // Members derived from the base class
+      using PointCloudGeometryHandler<PointT>::cloud_;
+      using PointCloudGeometryHandler<PointT>::capable_;
+      using PointCloudGeometryHandler<PointT>::field_x_idx_;
+      using PointCloudGeometryHandler<PointT>::field_y_idx_;
+      using PointCloudGeometryHandler<PointT>::field_z_idx_;
+      using PointCloudGeometryHandler<PointT>::fields_;
+  };
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Surface normal handler class for PointCloud geometry. */
+  template <typename PointT>
+  class PointCloudGeometryHandlerSurfaceNormal : public PointCloudGeometryHandler<PointT>
+  {
+    public:
+      typedef typename PointCloudGeometryHandler<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      typedef typename boost::shared_ptr<PointCloudGeometryHandlerSurfaceNormal<PointT> > Ptr;
+      typedef typename boost::shared_ptr<const PointCloudGeometryHandlerSurfaceNormal<PointT> > ConstPtr;
+
+      /** \brief Constructor. */
+      PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud);
+
+      /** \brief Class getName method. */
+      virtual inline std::string 
+      getName () const { return ("PointCloudGeometryHandlerSurfaceNormal"); }
+
+      /** \brief Get the name of the field used. */
+      virtual std::string 
+      getFieldName () const { return ("normal_xyz"); }
+
+      /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
+        * \param points the resultant geometry 
+        */
+      virtual void 
+      getGeometry (vtkSmartPointer<vtkPoints> &points) const;
+
+    private:
+      // Members derived from the base class
+      using PointCloudGeometryHandler<PointT>::cloud_;
+      using PointCloudGeometryHandler<PointT>::capable_;
+      using PointCloudGeometryHandler<PointT>::field_x_idx_;
+      using PointCloudGeometryHandler<PointT>::field_y_idx_;
+      using PointCloudGeometryHandler<PointT>::field_z_idx_;
+      using PointCloudGeometryHandler<PointT>::fields_;
+  };
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Custom handler class for PointCloud geometry. */
+  template <typename PointT>
+  class PointCloudGeometryHandlerCustom : public PointCloudGeometryHandler<PointT>
+  {
+    public:
+      typedef typename PointCloudGeometryHandler<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      typedef typename boost::shared_ptr<PointCloudGeometryHandlerCustom<PointT> > Ptr;
+      typedef typename boost::shared_ptr<const PointCloudGeometryHandlerCustom<PointT> > ConstPtr;
+
+      /** \brief Constructor. */
+      PointCloudGeometryHandlerCustom (const PointCloudConstPtr &cloud, 
+                                       const std::string &x_field_name, 
+                                       const std::string &y_field_name, 
+                                       const std::string &z_field_name);
+
+      /** \brief Class getName method. */
+      virtual inline std::string 
+      getName () const { return ("PointCloudGeometryHandlerCustom"); }
+
+      /** \brief Get the name of the field used. */
+      virtual std::string 
+      getFieldName () const { return (field_name_); }
+
+      /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
+        * \param points the resultant geometry 
+        */
+      virtual void 
+      getGeometry (vtkSmartPointer<vtkPoints> &points) const;
+
+    private:
+      // Members derived from the base class
+      using PointCloudGeometryHandler<PointT>::cloud_;
+      using PointCloudGeometryHandler<PointT>::capable_;
+      using PointCloudGeometryHandler<PointT>::field_x_idx_;
+      using PointCloudGeometryHandler<PointT>::field_y_idx_;
+      using PointCloudGeometryHandler<PointT>::field_z_idx_;
+      using PointCloudGeometryHandler<PointT>::fields_;
+
+      /** \brief Name of the field used to create the geometry handler. */
+      std::string field_name_;
+  };
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Base handler class for PointCloud geometry. */
+  template <>
+  class PointCloudGeometryHandler<sensor_msgs::PointCloud2>
+  {
+    public:
+      typedef sensor_msgs::PointCloud2 PointCloud;
+      typedef PointCloud::Ptr PointCloudPtr;
+      typedef PointCloud::ConstPtr PointCloudConstPtr;
+
+      typedef boost::shared_ptr<PointCloudGeometryHandler<PointCloud> > Ptr;
+      typedef boost::shared_ptr<const PointCloudGeometryHandler<PointCloud> > ConstPtr;
+
+      /** \brief Constructor. */
+      PointCloudGeometryHandler (const PointCloudConstPtr &cloud) : 
+        cloud_ (cloud), capable_ (false)
+      {
+        fields_ = cloud_->fields;
+      }
+
+      /** \brief Abstract getName method. */
+      virtual std::string 
+      getName () const = 0;
+
+      /** \brief Abstract getFieldName method. */
+      virtual std::string 
+      getFieldName () const  = 0;
+
+      /** \brief Return whether this handler is capable of handling the input data or not. */
+      inline bool 
+      isCapable () const { return (capable_); }
+
+      /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
+        * \param points the resultant geometry 
+        */
+      virtual void 
+      getGeometry (vtkSmartPointer<vtkPoints> &points) const;
+
+    protected:
+      /** \brief A pointer to the input dataset. */
+      PointCloudConstPtr cloud_;
+
+      /** \brief True if this handler is capable of handling the input data, false 
+        * otherwise. 
+        */
+      bool capable_;
+
+      /** \brief The index of the field holding the X data. */
+      int field_x_idx_;
+
+      /** \brief The index of the field holding the Y data. */
+      int field_y_idx_;
+
+      /** \brief The index of the field holding the Z data. */
+      int field_z_idx_;
+
+      /** \brief The list of fields available for this PointCloud. */
+      std::vector<sensor_msgs::PointField> fields_;
+  };
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
   /** \brief XYZ handler class for PointCloud geometry. */
   template <>
   class PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> : public PointCloudGeometryHandler<sensor_msgs::PointCloud2>
@@ -293,16 +310,18 @@ namespace pcl_visualization
       typedef boost::shared_ptr<const PointCloudGeometryHandlerXYZ<PointCloud> > ConstPtr;
 
       /** \brief Constructor. */
-      PointCloudGeometryHandlerXYZ (const PointCloud &cloud);
+      PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud);
 
       /** \brief Class getName method. */
-      virtual inline std::string getName () const { return ("PointCloudGeometryHandlerXYZ"); }
+      virtual inline 
+      std::string getName () const { return ("PointCloudGeometryHandlerXYZ"); }
 
       /** \brief Get the name of the field used. */
-      virtual std::string getFieldName () const { return ("xyz"); }
+      virtual std::string 
+      getFieldName () const { return ("xyz"); }
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Surface normal handler class for PointCloud geometry. */
   template <>
   class PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2> : public PointCloudGeometryHandler<sensor_msgs::PointCloud2>
@@ -316,16 +335,18 @@ namespace pcl_visualization
       typedef boost::shared_ptr<const PointCloudGeometryHandlerSurfaceNormal<PointCloud> > ConstPtr;
 
       /** \brief Constructor. */
-      PointCloudGeometryHandlerSurfaceNormal (const PointCloud &cloud);
+      PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud);
 
       /** \brief Class getName method. */
-      virtual inline std::string getName () const { return ("PointCloudGeometryHandlerSurfaceNormal"); }
+      virtual inline std::string 
+      getName () const { return ("PointCloudGeometryHandlerSurfaceNormal"); }
 
       /** \brief Get the name of the field used. */
-      virtual std::string getFieldName () const { return ("normal_xyz"); }
+      virtual std::string 
+      getFieldName () const { return ("normal_xyz"); }
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Custom handler class for PointCloud geometry. */
   template <>
   class PointCloudGeometryHandlerCustom<sensor_msgs::PointCloud2> : public PointCloudGeometryHandler<sensor_msgs::PointCloud2>
@@ -336,21 +357,27 @@ namespace pcl_visualization
       typedef PointCloud::ConstPtr PointCloudConstPtr;
 
       /** \brief Constructor. */
-      PointCloudGeometryHandlerCustom (const PointCloud &cloud, const std::string &x_field_name, const std::string &y_field_name, const std::string &z_field_name);
+      PointCloudGeometryHandlerCustom (const PointCloudConstPtr &cloud, 
+                                       const std::string &x_field_name, 
+                                       const std::string &y_field_name, 
+                                       const std::string &z_field_name);
 
       /** \brief Class getName method. */
-      virtual inline std::string getName () const { return ("PointCloudGeometryHandlerCustom"); }
+      virtual inline std::string 
+      getName () const { return ("PointCloudGeometryHandlerCustom"); }
 
       /** \brief Get the name of the field used. */
-      virtual std::string getFieldName () const { return (field_name_); }
+      virtual std::string 
+      getFieldName () const { return (field_name_); }
+
     private:
       /** \brief Name of the field used to create the geometry handler. */
       std::string field_name_;
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Base Handler class for PointCloud colors. */
   template <typename PointT>
   class PointCloudColorHandler
@@ -363,48 +390,46 @@ namespace pcl_visualization
       typedef boost::shared_ptr<PointCloudColorHandler<PointT> > Ptr;
       typedef boost::shared_ptr<const PointCloudColorHandler<PointT> > ConstPtr;
 
-      inline Ptr makeShared () const { return (boost::make_shared<PointCloudColorHandler<PointT> >) (*this); } 
-
       /** \brief Constructor. */
-      PointCloudColorHandler (const PointCloud &cloud) : cloud_ (), capable_ (false)
-      {
-        cloud_.reset (new PointCloud (cloud));
-      }
-
+      PointCloudColorHandler (const PointCloudConstPtr &cloud) : 
+        cloud_ (cloud), capable_ (false)
+      {}
 
       /** \brief Return whether this handler is capable of handling the input data or not. */
-      inline bool isCapable () const { return (capable_); }
-
+      inline bool 
+      isCapable () const { return (capable_); }
 
       /** \brief Abstract getName method. */
-      virtual std::string getName () const = 0;
-
+      virtual std::string 
+      getName () const = 0;
 
       /** \brief Abstract getFieldName method. */
-      virtual std::string getFieldName () const = 0;
-
+      virtual std::string 
+      getFieldName () const = 0;
 
       /** \brief Obtain the actual color for the input dataset as vtk scalars.
         * \param scalars the resultant scalars containing the color for the input dataset
         */
-      virtual void getColor (vtkSmartPointer<vtkDataArray> &scalars) const = 0;
+      virtual void 
+      getColor (vtkSmartPointer<vtkDataArray> &scalars) const = 0;
 
     protected:
       /** \brief A pointer to the input dataset. */
-      PointCloudPtr cloud_;
+      PointCloudConstPtr cloud_;
 
-      /** \brief True if this handler is capable of handling the input data, false otherwise. */
+      /** \brief True if this handler is capable of handling the input data, false 
+        * otherwise. 
+        */
       bool capable_;
 
       /** \brief The index of the field holding the data that represents the color. */
       int field_idx_;
 
-      /** \brief The list of fields available for this PointCloud. 
-        * The PointCloud must be read from disk as PCD or converted from sensor_msgs/PointCloud2 for this to work! */
+      /** \brief The list of fields available for this PointCloud. */
       std::vector<sensor_msgs::PointField> fields_;
   };
  
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Handler for random PointCloud colors. */
   template <typename PointT>
   class PointCloudColorHandlerRandom : public PointCloudColorHandler<PointT>
@@ -418,18 +443,25 @@ namespace pcl_visualization
       typedef boost::shared_ptr<const PointCloudColorHandlerRandom<PointT> > ConstPtr;
 
       /** \brief Constructor. */
-      PointCloudColorHandlerRandom (const PointCloud &cloud) : PointCloudColorHandler<PointT> (cloud) { capable_ = true; }
+      PointCloudColorHandlerRandom (const PointCloudConstPtr &cloud) : 
+        PointCloudColorHandler<PointT> (cloud) 
+      { 
+        capable_ = true; 
+      }
 
       /** \brief Abstract getName method. */
-      virtual inline std::string getName () const { return ("PointCloudColorHandlerRandom"); }
+      virtual inline std::string 
+      getName () const { return ("PointCloudColorHandlerRandom"); }
 
       /** \brief Get the name of the field used. */
-      virtual std::string getFieldName () const { return ("[random]"); }
+      virtual std::string 
+      getFieldName () const { return ("[random]"); }
 
       /** \brief Obtain the actual color for the input dataset as vtk scalars.
         * \param scalars the resultant scalars containing the color for the input dataset
         */
-      virtual void getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+      virtual void 
+      getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
 
     protected:
       // Members derived from the base class
@@ -437,7 +469,7 @@ namespace pcl_visualization
       using PointCloudColorHandler<PointT>::capable_;
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Handler for predefined user colors. */
   template <typename PointT>
   class PointCloudColorHandlerCustom : public PointCloudColorHandler<PointT>
@@ -451,7 +483,9 @@ namespace pcl_visualization
       typedef boost::shared_ptr<const PointCloudColorHandlerCustom<PointT> > ConstPtr;
 
       /** \brief Constructor. */
-      PointCloudColorHandlerCustom (const PointCloud &cloud, double r, double g, double b) : PointCloudColorHandler<PointT> (cloud)
+      PointCloudColorHandlerCustom (const PointCloudConstPtr &cloud, 
+                                    double r, double g, double b) 
+        : PointCloudColorHandler<PointT> (cloud)
       { 
         capable_ = true; 
         r_ = r;
@@ -460,15 +494,18 @@ namespace pcl_visualization
       }
 
       /** \brief Abstract getName method. */
-      virtual inline std::string getName () const { return ("PointCloudColorHandlerCustom"); }
+      virtual inline std::string 
+      getName () const { return ("PointCloudColorHandlerCustom"); }
 
       /** \brief Get the name of the field used. */
-      virtual std::string getFieldName () const { return (""); }
+      virtual std::string 
+      getFieldName () const { return (""); }
 
       /** \brief Obtain the actual color for the input dataset as vtk scalars.
         * \param scalars the resultant scalars containing the color for the input dataset
         */
-      virtual void getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+      virtual void 
+      getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
 
     protected:
       // Members derived from the base class
@@ -479,7 +516,7 @@ namespace pcl_visualization
       double r_, g_, b_;
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
   /** \brief RGB handler class for colors. */
   template <typename PointT>
   class PointCloudColorHandlerRGBField : public PointCloudColorHandler<PointT>
@@ -493,19 +530,22 @@ namespace pcl_visualization
       typedef boost::shared_ptr<const PointCloudColorHandlerRGBField<PointT> > ConstPtr;
 
       /** \brief Constructor. */
-      PointCloudColorHandlerRGBField (const PointCloud &cloud);
+      PointCloudColorHandlerRGBField (const PointCloudConstPtr &cloud);
 
       /** \brief Get the name of the field used. */
-      virtual std::string getFieldName () const { return ("rgb"); }
+      virtual std::string 
+      getFieldName () const { return ("rgb"); }
 
     protected:
       /** \brief Class getName method. */
-      virtual inline std::string getName () const { return ("PointCloudColorHandlerRGBField"); }
+      virtual inline std::string 
+      getName () const { return ("PointCloudColorHandlerRGBField"); }
 
       /** \brief Obtain the actual color for the input dataset as vtk scalars.
         * \param scalars the resultant scalars containing the color for the input dataset
         */
-      virtual void getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+      virtual void 
+      getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
 
     private:
       // Members derived from the base class
@@ -515,7 +555,7 @@ namespace pcl_visualization
       using PointCloudColorHandler<PointT>::fields_;
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Generic field handler class for colors. */
   template <typename PointT>
   class PointCloudColorHandlerGenericField : public PointCloudColorHandler<PointT>
@@ -529,19 +569,22 @@ namespace pcl_visualization
       typedef boost::shared_ptr<const PointCloudColorHandlerGenericField<PointT> > ConstPtr;
 
       /** \brief Constructor. */
-      PointCloudColorHandlerGenericField (const PointCloud &cloud, const std::string &field_name);
+      PointCloudColorHandlerGenericField (const PointCloudConstPtr &cloud, 
+                                          const std::string &field_name);
 
       /** \brief Get the name of the field used. */
       virtual std::string getFieldName () const { return (field_name_); }
 
     protected:
       /** \brief Class getName method. */
-      virtual inline std::string getName () const { return ("PointCloudColorHandlerGenericField"); }
+      virtual inline std::string 
+      getName () const { return ("PointCloudColorHandlerGenericField"); }
 
       /** \brief Obtain the actual color for the input dataset as vtk scalars.
         * \param scalars the resultant scalars containing the color for the input dataset
         */
-      virtual void getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+      virtual void 
+      getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
 
     private:
       using PointCloudColorHandler<PointT>::cloud_;
@@ -553,9 +596,7 @@ namespace pcl_visualization
       std::string field_name_;
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Base Handler class for PointCloud colors. */
   template <>
   class PointCloudColorHandler<sensor_msgs::PointCloud2>
@@ -569,37 +610,42 @@ namespace pcl_visualization
       typedef boost::shared_ptr<const PointCloudColorHandler<PointCloud> > ConstPtr;
 
       /** \brief Constructor. */
-      PointCloudColorHandler (const PointCloud &cloud) : cloud_ (), capable_ (false)
-      {
-        cloud_.reset (new PointCloud (cloud));
-      }
+      PointCloudColorHandler (const PointCloudConstPtr &cloud) : 
+        cloud_ (cloud), capable_ (false)
+      {}
 
       /** \brief Return whether this handler is capable of handling the input data or not. */
-      inline bool isCapable () const { return (capable_); }
+      inline bool 
+      isCapable () const { return (capable_); }
 
       /** \brief Abstract getName method. */
-      virtual std::string getName () const = 0;
+      virtual std::string 
+      getName () const = 0;
 
       /** \brief Abstract getFieldName method. */
-      virtual std::string getFieldName () const = 0;
+      virtual std::string 
+      getFieldName () const = 0;
 
       /** \brief Obtain the actual color for the input dataset as vtk scalars.
         * \param scalars the resultant scalars containing the color for the input dataset
         */
-      virtual void getColor (vtkSmartPointer<vtkDataArray> &scalars) const = 0;
+      virtual void 
+      getColor (vtkSmartPointer<vtkDataArray> &scalars) const = 0;
 
     protected:
       /** \brief A pointer to the input dataset. */
-      PointCloudPtr cloud_;
+      PointCloudConstPtr cloud_;
 
-      /** \brief True if this handler is capable of handling the input data, false otherwise. */
+      /** \brief True if this handler is capable of handling the input data, false 
+        * otherwise. 
+        */
       bool capable_;
 
       /** \brief The index of the field holding the data that represents the color. */
       int field_idx_;
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Handler for random PointCloud colors. */
   template <>
   class PointCloudColorHandlerRandom<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
@@ -613,21 +659,28 @@ namespace pcl_visualization
       typedef boost::shared_ptr<const PointCloudColorHandlerRandom<PointCloud> > ConstPtr;
 
       /** \brief Constructor. */
-      PointCloudColorHandlerRandom (const PointCloud &cloud) : PointCloudColorHandler<sensor_msgs::PointCloud2> (cloud) { capable_ = true; }
+      PointCloudColorHandlerRandom (const PointCloudConstPtr &cloud) : 
+        PointCloudColorHandler<sensor_msgs::PointCloud2> (cloud) 
+      { 
+        capable_ = true; 
+      }
 
       /** \brief Get the name of the class. */
-      virtual inline std::string getName () const { return ("PointCloudColorHandlerRandom"); }
+      virtual inline std::string 
+      getName () const { return ("PointCloudColorHandlerRandom"); }
 
       /** \brief Get the name of the field used. */
-      virtual std::string getFieldName () const { return ("[random]"); }
+      virtual std::string 
+      getFieldName () const { return ("[random]"); }
 
       /** \brief Obtain the actual color for the input dataset as vtk scalars.
         * \param scalars the resultant scalars containing the color for the input dataset
         */
-      virtual void getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+      virtual void 
+      getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Handler for predefined user colors. */
   template <>
   class PointCloudColorHandlerCustom<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
@@ -638,7 +691,9 @@ namespace pcl_visualization
 
     public:
       /** \brief Constructor. */
-      PointCloudColorHandlerCustom (const PointCloud &cloud, double r, double g, double b) : PointCloudColorHandler<sensor_msgs::PointCloud2> (cloud)
+      PointCloudColorHandlerCustom (const PointCloudConstPtr &cloud, 
+                                    double r, double g, double b) : 
+        PointCloudColorHandler<sensor_msgs::PointCloud2> (cloud)
       { 
         capable_ = true; 
         r_ = r;
@@ -647,22 +702,25 @@ namespace pcl_visualization
       }
 
       /** \brief Get the name of the class. */
-      virtual inline std::string getName () const { return ("PointCloudColorHandlerCustom"); }
+      virtual inline std::string 
+      getName () const { return ("PointCloudColorHandlerCustom"); }
 
       /** \brief Get the name of the field used. */
-      virtual std::string getFieldName () const { return (""); }
+      virtual std::string 
+      getFieldName () const { return (""); }
 
       /** \brief Obtain the actual color for the input dataset as vtk scalars.
         * \param scalars the resultant scalars containing the color for the input dataset
         */
-      virtual void getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+      virtual void 
+      getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
 
     protected:
       /** \brief Internal R, G, B holding the values given by the user. */
       double r_, g_, b_;
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
   /** \brief RGB handler class for colors. */
   template <>
   class PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
@@ -676,22 +734,25 @@ namespace pcl_visualization
       typedef boost::shared_ptr<const PointCloudColorHandlerRGBField<PointCloud> > ConstPtr;
 
       /** \brief Constructor. */
-      PointCloudColorHandlerRGBField (const PointCloud &cloud);
+      PointCloudColorHandlerRGBField (const PointCloudConstPtr &cloud);
 
     protected:
       /** \brief Get the name of the class. */
-      virtual inline std::string getName () const { return ("PointCloudColorHandlerRGBField"); }
+      virtual inline std::string 
+      getName () const { return ("PointCloudColorHandlerRGBField"); }
 
       /** \brief Get the name of the field used. */
-      virtual std::string getFieldName () const { return ("rgb"); }
+      virtual std::string 
+      getFieldName () const { return ("rgb"); }
 
       /** \brief Obtain the actual color for the input dataset as vtk scalars.
         * \param scalars the resultant scalars containing the color for the input dataset
         */
-      virtual void getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+      virtual void 
+      getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Generic field handler class for colors. */
   template <>
   class PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
@@ -705,19 +766,23 @@ namespace pcl_visualization
       typedef boost::shared_ptr<const PointCloudColorHandlerGenericField<PointCloud> > ConstPtr;
 
       /** \brief Constructor. */
-      PointCloudColorHandlerGenericField (const PointCloud &cloud, const std::string &field_name);
+      PointCloudColorHandlerGenericField (const PointCloudConstPtr &cloud, 
+                                          const std::string &field_name);
 
     protected:
       /** \brief Get the name of the class. */
-      virtual inline std::string getName () const { return ("PointCloudColorHandlerGenericField"); }
+      virtual inline std::string 
+      getName () const { return ("PointCloudColorHandlerGenericField"); }
 
       /** \brief Get the name of the field used. */
-      virtual std::string getFieldName () const { return (field_name_); }
+      virtual std::string 
+      getFieldName () const { return (field_name_); }
 
       /** \brief Obtain the actual color for the input dataset as vtk scalars.
         * \param scalars the resultant scalars containing the color for the input dataset
         */
-      virtual void getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+      virtual void 
+      getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
 
     private:
       /** \brief Name of the field used to create the color handler. */

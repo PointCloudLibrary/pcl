@@ -106,11 +106,11 @@ pcl_visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2>::getCo
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Constructor. */
 pcl_visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::PointCloudColorHandlerRGBField (
-    const pcl_visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud &cloud) : 
+    const pcl_visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudConstPtr &cloud) : 
   pcl_visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudColorHandler (cloud)
 {
   // Handle the 24-bit packed RGB values
-  field_idx_ = pcl::getFieldIndex (cloud, "rgb");
+  field_idx_ = pcl::getFieldIndex (*cloud, "rgb");
   if (field_idx_ != -1)
     capable_ = true;
   else
@@ -197,11 +197,11 @@ pcl_visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::get
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Constructor. */
 pcl_visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>::PointCloudColorHandlerGenericField (
-    const pcl_visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud &cloud, 
+    const pcl_visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudConstPtr &cloud, 
     const std::string &field_name) : pcl_visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudColorHandler (cloud)
 {
   field_name_ = field_name;
-  field_idx_  = pcl::getFieldIndex (cloud, field_name);
+  field_idx_  = pcl::getFieldIndex (*cloud, field_name);
   if (field_idx_ != -1)
     capable_ = true;
   else
@@ -275,9 +275,6 @@ pcl_visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>:
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
   * \param points the resultant geometry 
   */
@@ -349,16 +346,16 @@ pcl_visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::getGeome
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Constructor. */
-pcl_visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerXYZ (const PointCloud &cloud)
+pcl_visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud)
 : pcl_visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud)
 {
-  field_x_idx_ = pcl::getFieldIndex (cloud, "x");
+  field_x_idx_ = pcl::getFieldIndex (*cloud, "x");
   if (field_x_idx_ == -1)
     return;
-  field_y_idx_ = pcl::getFieldIndex (cloud, "y");
+  field_y_idx_ = pcl::getFieldIndex (*cloud, "y");
   if (field_y_idx_ == -1)
     return;
-  field_z_idx_ = pcl::getFieldIndex (cloud, "z");
+  field_z_idx_ = pcl::getFieldIndex (*cloud, "z");
   if (field_z_idx_ == -1)
     return;
   capable_ = true;
@@ -368,16 +365,16 @@ pcl_visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>::Point
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Constructor. */
-pcl_visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerSurfaceNormal (const PointCloud &cloud) 
+pcl_visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud) 
 : pcl_visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud)
 {
-  field_x_idx_ = pcl::getFieldIndex (cloud, "normal_x");
+  field_x_idx_ = pcl::getFieldIndex (*cloud, "normal_x");
   if (field_x_idx_ == -1)
     return;
-  field_y_idx_ = pcl::getFieldIndex (cloud, "normal_y");
+  field_y_idx_ = pcl::getFieldIndex (*cloud, "normal_y");
   if (field_y_idx_ == -1)
     return;
-  field_z_idx_ = pcl::getFieldIndex (cloud, "normal_z");
+  field_z_idx_ = pcl::getFieldIndex (*cloud, "normal_z");
   if (field_z_idx_ == -1)
     return;
   capable_ = true;
@@ -386,16 +383,16 @@ pcl_visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointClou
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Constructor. */
 pcl_visualization::PointCloudGeometryHandlerCustom<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerCustom (
-    const PointCloud &cloud, const std::string &x_field_name, const std::string &y_field_name, const std::string &z_field_name) 
+    const PointCloudConstPtr &cloud, const std::string &x_field_name, const std::string &y_field_name, const std::string &z_field_name) 
 : pcl_visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud)
 {
-  field_x_idx_ = pcl::getFieldIndex (cloud, x_field_name);
+  field_x_idx_ = pcl::getFieldIndex (*cloud, x_field_name);
   if (field_x_idx_ == -1)
     return;
-  field_y_idx_ = pcl::getFieldIndex (cloud, y_field_name);
+  field_y_idx_ = pcl::getFieldIndex (*cloud, y_field_name);
   if (field_y_idx_ == -1)
     return;
-  field_z_idx_ = pcl::getFieldIndex (cloud, z_field_name);
+  field_z_idx_ = pcl::getFieldIndex (*cloud, z_field_name);
   if (field_z_idx_ == -1)
     return;
   field_name_ = x_field_name + y_field_name + z_field_name;

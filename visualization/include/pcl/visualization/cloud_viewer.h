@@ -52,7 +52,11 @@ namespace pcl_visualization
   {
     public:
       typedef pcl::PointCloud<pcl::PointXYZRGB> ColorCloud;
+      typedef pcl::PointCloud<pcl::PointXYZRGB>::Ptr ColorCloudPtr;
+      typedef pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr ColorCloudConstPtr;
       typedef pcl::PointCloud<pcl::PointXYZ> GrayCloud;
+      typedef pcl::PointCloud<pcl::PointXYZ>::Ptr GrayCloudPtr;
+      typedef pcl::PointCloud<pcl::PointXYZ>::ConstPtr GrayCloudConstPtr;
 
       /** \brief Construct a cloud viewer, with a window name.
        * \param window_name This is displayed at the top of the window
@@ -70,14 +74,14 @@ namespace pcl_visualization
        * \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
        */
       void
-      showCloud (const ColorCloud& cloud, const std::string& cloudname = "cloud");
+      showCloud (const ColorCloudConstPtr &cloud, const std::string& cloudname = "cloud");
 
       /** \brief Show a cloud, with an optional key for multiple clouds.
        *  \param cloud XYZ point cloud
        *  \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
        */
       void
-      showCloud (const GrayCloud& cloud, const std::string& cloudname = "cloud");
+      showCloud (const GrayCloudConstPtr &cloud, const std::string& cloudname = "cloud");
 
       /** \brief Check if the gui was quit, you should quit also
        * \param millis_to_wait This will request to "spin" for the number of milliseconds, before exiting.
@@ -104,10 +108,10 @@ namespace pcl_visualization
       removeVisualizationCallable (const std::string& key = "callable");
     private:
 
-      CloudViewer (const CloudViewer&rhs);//don't copy me for now!
+      CloudViewer (const CloudViewer &rhs);//don't copy me for now!
 
       void
-      operator= (const CloudViewer&rhs);//don't copy me for now!
+      operator= (const CloudViewer &rhs);//don't copy me for now!
 
       /** \brief Private implementation. */
       struct CloudViewer_impl;

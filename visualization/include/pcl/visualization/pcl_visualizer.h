@@ -161,7 +161,9 @@ namespace pcl_visualization
         * \param viewport the view port (default: all)
         */
       bool 
-      addText (const std::string &text, int xpos, int ypos, const std::string &id = "", int viewport = 0);
+      addText (const std::string &text, 
+               int xpos, int ypos, 
+               const std::string &id = "", int viewport = 0);
 
       /** \brief Add a text to screen
         * \param text the text to add
@@ -174,7 +176,8 @@ namespace pcl_visualization
         * \param viewport the view port (default: all)
         */
       bool 
-      addText (const std::string &text, int xpos, int ypos, double r, double g, double b, const std::string &id = "", int viewport = 0);
+      addText (const std::string &text, int xpos, int ypos, double r, double g, double b, 
+               const std::string &id = "", int viewport = 0);
 
       /** \brief Add the estimated surface normals of a Point Cloud to screen. 
         * \param cloud the input point cloud dataset containing XYZ data and normals
@@ -184,9 +187,10 @@ namespace pcl_visualization
         * \param viewport the view port where the Point Cloud should be added (default: all)
         */
       template <typename PointNT>
-      bool addPointCloudNormals (const pcl::PointCloud<PointNT> &cloud,
+      bool addPointCloudNormals (const typename pcl::PointCloud<PointNT>::ConstPtr &cloud,
                                  int level = 100, double scale = 0.02,
                                  const std::string &id = "cloud", int viewport = 0);
+
       /** \brief Add the estimated surface normals of a Point Cloud to screen.
         * \param cloud the input point cloud dataset containing the XYZ data
         * \param normals the input point cloud dataset containing the normal data
@@ -196,10 +200,11 @@ namespace pcl_visualization
         * \param viewport the view port where the Point Cloud should be added (default: all)
         */
       template <typename PointT, typename PointNT>
-      bool addPointCloudNormals (const pcl::PointCloud<PointT> &cloud,
-                                 const pcl::PointCloud<PointNT> &normals,
+      bool addPointCloudNormals (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+                                 const typename pcl::PointCloud<PointNT>::ConstPtr &normals,
                                  int level = 100, double scale = 0.02,
                                  const std::string &id = "cloud", int viewport = 0);
+
       /** \brief Add the estimated principal curvatures of a Point Cloud to screen. 
         * \param cloud the input point cloud dataset containing the XYZ data
         * \param normals the input point cloud dataset containing the normal data
@@ -210,11 +215,12 @@ namespace pcl_visualization
         * \param viewport the view port where the Point Cloud should be added (default: all)
         */
       bool 
-      addPointCloudPrincipalCurvatures (const pcl::PointCloud<pcl::PointXYZ> &cloud, 
-                                        const pcl::PointCloud<pcl::Normal> &normals,
-                                        const pcl::PointCloud<pcl::PrincipalCurvatures> &pcs,
-                                        int level = 100, double scale = 1.0,
-                                        const std::string &id = "cloud", int viewport = 0);
+      addPointCloudPrincipalCurvatures (
+          const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
+          const pcl::PointCloud<pcl::Normal>::ConstPtr &normals,
+          const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
+          int level = 100, double scale = 1.0,
+          const std::string &id = "cloud", int viewport = 0);
  
       /** \brief Add a Point Cloud to screen. 
         * \param cloud the input point cloud dataset
@@ -222,7 +228,7 @@ namespace pcl_visualization
         * \param viewport the view port where the Point Cloud should be added (default: all)
         */
       bool 
-      addPointCloud (const pcl::PointCloud<pcl::PointXYZ> &cloud, 
+      addPointCloud (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
                      const std::string &id = "cloud", int viewport = 0);
 
       /** \brief Add a Point Cloud (templated) to screen. 
@@ -231,7 +237,7 @@ namespace pcl_visualization
         * \param viewport the view port where the Point Cloud should be added (default: all)
         */
       template <typename PointT> bool 
-      addPointCloud (const pcl::PointCloud<PointT> &cloud, 
+      addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
                      const std::string &id = "cloud", int viewport = 0);
 
       /** \brief Add a Point Cloud (templated) to screen. 
@@ -241,7 +247,7 @@ namespace pcl_visualization
         * \param viewport the view port where the Point Cloud should be added (default: all)
         */
       template <typename PointT> bool 
-      addPointCloud (const pcl::PointCloud<PointT> &cloud, 
+      addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
                      const PointCloudGeometryHandler<PointT> &geometry_handler,
                      const std::string &id = "cloud", int viewport = 0);
 
@@ -252,7 +258,7 @@ namespace pcl_visualization
         * \param viewport the view port where the Point Cloud should be added (default: all)
         */
       template <typename PointT> bool 
-      addPointCloud (const pcl::PointCloud<PointT> &cloud, 
+      addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
                      const GeometryHandlerConstPtr &geometry_handler,
                      const std::string &id = "cloud", int viewport = 0);
 
@@ -263,7 +269,7 @@ namespace pcl_visualization
         * \param viewport the view port where the Point Cloud should be added (default: all)
         */
       template <typename PointT> bool 
-      addPointCloud (const pcl::PointCloud<PointT> &cloud, 
+      addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
                      const PointCloudColorHandler<PointT> &color_handler,
                      const std::string &id = "cloud", int viewport = 0);
 
@@ -274,7 +280,7 @@ namespace pcl_visualization
         * \param viewport the view port where the Point Cloud should be added (default: all)
         */
       template <typename PointT> bool 
-      addPointCloud (const pcl::PointCloud<PointT> &cloud, 
+      addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
                      const ColorHandlerConstPtr &color_handler,
                      const std::string &id = "cloud", int viewport = 0);
 
@@ -286,7 +292,7 @@ namespace pcl_visualization
         * \param viewport the view port where the Point Cloud should be added (default: all)
         */
       template <typename PointT> bool 
-      addPointCloud (const pcl::PointCloud<PointT> &cloud, 
+      addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
                      const GeometryHandlerConstPtr &geometry_handler,
                      const ColorHandlerConstPtr &color_handler,
                      const std::string &id = "cloud", int viewport = 0);
@@ -299,7 +305,7 @@ namespace pcl_visualization
         * \param viewport the view port where the Point Cloud should be added (default: all)
         */
       template <typename PointT> bool 
-      addPointCloud (const pcl::PointCloud<PointT> &cloud, 
+      addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
                      const PointCloudColorHandler<PointT> &color_handler,
                      const PointCloudGeometryHandler<PointT> &geometry_handler,
                      const std::string &id = "cloud", int viewport = 0);
@@ -414,7 +420,8 @@ namespace pcl_visualization
         * \param viewport (optional) the id of the new viewport (default: 0)
         */
       template <typename PointT> bool
-      addPolygon (const pcl::PointCloud<PointT> &cloud, double r, double g, double b, 
+      addPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+                  double r, double g, double b, 
                   const std::string &id = "polygon", int viewport = 0);
 
       /** \brief Add a polygon (polyline) that represents the input point cloud (connects all 
@@ -424,7 +431,8 @@ namespace pcl_visualization
         * \param viewport (optional) the id of the new viewport (default: 0)
         */
       template <typename PointT> bool
-      addPolygon (const pcl::PointCloud<PointT> &cloud, const std::string &id = "polygon", 
+      addPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+                  const std::string &id = "polygon", 
                   int viewport = 0);
 
       /** \brief Add a line segment from two points
@@ -658,33 +666,41 @@ namespace pcl_visualization
         * \param data the vtk polydata object to create an actor for
         * \param actor the resultant vtk actor object
         */
-      void createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data, vtkSmartPointer<vtkLODActor> &actor);
+      void createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data, 
+                                      vtkSmartPointer<vtkLODActor> &actor);
 
       /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
         * \param cloud the input PCL PointCloud dataset
         * \param polydata the resultant polydata containing the cloud
         */
-      void convertPointCloudToVTKPolyData (const pcl::PointCloud<pcl::PointXYZ> &cloud, vtkSmartPointer<vtkPolyData> &polydata);
+      void
+      convertPointCloudToVTKPolyData (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
+                                      vtkSmartPointer<vtkPolyData> &polydata);
 
       /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
         * \param cloud the input PCL PointCloud dataset
         * \param polydata the resultant polydata containing the cloud
         */
       template <typename PointT> void 
-      convertPointCloudToVTKPolyData (const pcl::PointCloud<PointT> &cloud, vtkSmartPointer<vtkPolyData> &polydata);
+      convertPointCloudToVTKPolyData (
+          const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+          vtkSmartPointer<vtkPolyData> &polydata);
 
       /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
         * \param geometry_handler the geometry handler object used to extract the XYZ data
         * \param polydata the resultant polydata containing the cloud
         */
       template <typename PointT> void 
-        convertPointCloudToVTKPolyData (const PointCloudGeometryHandler<PointT> &geometry_handler, vtkSmartPointer<vtkPolyData> &polydata);
+      convertPointCloudToVTKPolyData (const PointCloudGeometryHandler<PointT> &geometry_handler, 
+                                      vtkSmartPointer<vtkPolyData> &polydata);
 
       /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
         * \param geometry_handler the geometry handler object used to extract the XYZ data
         * \param polydata the resultant polydata containing the cloud
         */
-      void convertPointCloudToVTKPolyData (const GeometryHandlerConstPtr &geometry_handler, vtkSmartPointer<vtkPolyData> &polydata);
+      void 
+      convertPointCloudToVTKPolyData (const GeometryHandlerConstPtr &geometry_handler, 
+                                      vtkSmartPointer<vtkPolyData> &polydata);
   };
 }
 

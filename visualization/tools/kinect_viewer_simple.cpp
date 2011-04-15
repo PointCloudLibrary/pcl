@@ -50,7 +50,7 @@ class SimpleKinectViewer
     cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
       if (!viewer.wasStopped())
-        viewer.showCloud (*cloud);
+        viewer.showCloud (cloud);
     }
     
     void 

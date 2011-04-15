@@ -14,10 +14,10 @@ int
 
   srand (time (0));
 
-  pcl::PointCloud<Point> cloud;
+  pcl::PointCloud<Point>::Ptr cloud (new pcl::PointCloud<Point>);
 
   pcl::PCDReader pcd;
-  if (pcd.read (argv[1], cloud) == -1)
+  if (pcd.read (argv[1], *cloud) == -1)
     return (-1);
 
   pcl_visualization::PCLVisualizer p ("test");
@@ -28,7 +28,7 @@ int
     std::cerr << "PointCloudColorHandlerRandom demo." << std::endl;
     pcl_visualization::PointCloudColorHandlerRandom<Point> handler (cloud);
     
-    p.addPointCloud (cloud, "cloud_random");      // no need to add the handler, we use a random handler by default
+    p.addPointCloud<Point> (cloud, "cloud_random");      // no need to add the handler, we use a random handler by default
     p.spin ();
     p.removePointCloud ("cloud_random");
 

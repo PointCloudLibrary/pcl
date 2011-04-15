@@ -378,13 +378,13 @@ pcl_visualization::PCLVisualizer::removeShape (const std::string &id, int viewpo
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl_visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::PointCloud<pcl::PointXYZ> &cloud, 
-                                                                    const pcl::PointCloud<pcl::Normal> &normals,
-                                                                    const pcl::PointCloud<pcl::PrincipalCurvatures> &pcs,
+pcl_visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
+                                                                    const pcl::PointCloud<pcl::Normal>::ConstPtr &normals,
+                                                                    const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
                                                                     int level, double scale,
                                                                     const std::string &id, int viewport)
 {
-  if (pcs.points.size () != cloud.points.size () || normals.points.size () != cloud.points.size ())
+  if (pcs->points.size () != cloud->points.size () || normals->points.size () != cloud->points.size ())
   {
     terminal_tools::print_error ("[addPointCloudPrincipalCurvatures] The number of points differs from the number of principal curvatures/normals!\n");
     return (false);
@@ -414,15 +414,15 @@ pcl_visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::P
   line_2_colors->SetName ("Colors"); 
 
   // Create the first sets of lines
-  for (size_t i = 0; i < cloud.points.size (); i+=level)
+  for (size_t i = 0; i < cloud->points.size (); i+=level)
   {
-    pcl::PointXYZ p = cloud.points[i];
-    p.x += (pcs.points[i].pc1 * pcs.points[i].principal_curvature[0]) * scale;
-    p.y += (pcs.points[i].pc1 * pcs.points[i].principal_curvature[1]) * scale;
-    p.z += (pcs.points[i].pc1 * pcs.points[i].principal_curvature[2]) * scale;
+    pcl::PointXYZ p = cloud->points[i];
+    p.x += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[0]) * scale;
+    p.y += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[1]) * scale;
+    p.z += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[2]) * scale;
 
     vtkSmartPointer<vtkLineSource> line_1 = vtkSmartPointer<vtkLineSource>::New ();
-    line_1->SetPoint1 (cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
+    line_1->SetPoint1 (cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
     line_1->SetPoint2 (p.x, p.y, p.z);
     line_1->Update ();
     polydata_1->AddInput (line_1->GetOutput ());
@@ -433,19 +433,23 @@ pcl_visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::P
   line_1_data->GetCellData ()->SetScalars (line_1_colors);
   
   // Create the second sets of lines
-  for (size_t i = 0; i < cloud.points.size (); i+=level)
+  for (size_t i = 0; i < cloud->points.size (); i += level)
   {
-    Eigen::Vector3f pc (pcs.points[i].principal_curvature[0], pcs.points[i].principal_curvature[1], pcs.points[i].principal_curvature[2]);
-    Eigen::Vector3f normal (normals.points[i].normal[0], normals.points[i].normal[1], normals.points[i].normal[2]); 
+    Eigen::Vector3f pc (pcs->points[i].principal_curvature[0], 
+                        pcs->points[i].principal_curvature[1], 
+                        pcs->points[i].principal_curvature[2]);
+    Eigen::Vector3f normal (normals->points[i].normal[0], 
+                            normals->points[i].normal[1], 
+                            normals->points[i].normal[2]); 
     Eigen::Vector3f pc_c = pc.cross (normal);
 
-    pcl::PointXYZ p = cloud.points[i];
-    p.x += (pcs.points[i].pc2 * pc_c[0]) * scale;
-    p.y += (pcs.points[i].pc2 * pc_c[1]) * scale;
-    p.z += (pcs.points[i].pc2 * pc_c[2]) * scale;
+    pcl::PointXYZ p = cloud->points[i];
+    p.x += (pcs->points[i].pc2 * pc_c[0]) * scale;
+    p.y += (pcs->points[i].pc2 * pc_c[1]) * scale;
+    p.z += (pcs->points[i].pc2 * pc_c[2]) * scale;
 
     vtkSmartPointer<vtkLineSource> line_2 = vtkSmartPointer<vtkLineSource>::New ();
-    line_2->SetPoint1 (cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
+    line_2->SetPoint1 (cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
     line_2->SetPoint2 (p.x, p.y, p.z);
     line_2->Update ();
     polydata_2->AddInput (line_2->GetOutput ());
@@ -479,7 +483,7 @@ pcl_visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::P
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl_visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<pcl::PointXYZ> &cloud, 
+pcl_visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
                                                  const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -597,7 +601,7 @@ pcl_visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointer
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl_visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data, 
-                                                               vtkSmartPointer<vtkLODActor> &actor)
+                                                             vtkSmartPointer<vtkLODActor> &actor)
 {
   // If actor is not initialized, initialize it here
   if (!actor)
@@ -623,7 +627,7 @@ pcl_visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoint
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (const pcl::PointCloud<pcl::PointXYZ> &cloud, 
+pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
                                                                   vtkSmartPointer<vtkPolyData> &polydata)
 {
   if (!polydata)
@@ -635,15 +639,11 @@ pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (const pcl::Poi
 
   // Set the points
   points->SetDataTypeToFloat ();
-  points->SetNumberOfPoints (cloud.points.size ());
-  //
-  double p[3];
-  for (vtkIdType i = 0; i < (int)cloud.points.size (); ++i)
+  points->SetNumberOfPoints (cloud->points.size ());
+
+  for (vtkIdType i = 0; i < (int)cloud->points.size (); ++i)
   {
-    p[0] = cloud.points[i].x;
-    p[1] = cloud.points[i].y;
-    p[2] = cloud.points[i].z;
-    points->SetPoint (i, p);
+    points->SetPoint (i, cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
     vertices->InsertNextCell ((vtkIdType)1, &i);
   }
   polydata->SetPoints (points);
@@ -652,7 +652,8 @@ pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (const pcl::Poi
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (const GeometryHandlerConstPtr &geometry_handler, vtkSmartPointer<vtkPolyData> &polydata)
+pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
+    const GeometryHandlerConstPtr &geometry_handler, vtkSmartPointer<vtkPolyData> &polydata)
 {
   if (!polydata)
     polydata = vtkSmartPointer<vtkPolyData>::New ();
@@ -673,7 +674,8 @@ pcl_visualization::PCLVisualizer::convertPointCloudToVTKPolyData (const Geometry
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl_visualization::PCLVisualizer::setBackgroundColor (const double &r, const double &g, const double &b, int viewport)
+pcl_visualization::PCLVisualizer::setBackgroundColor (
+    const double &r, const double &g, const double &b, int viewport)
 {
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
@@ -697,7 +699,8 @@ pcl_visualization::PCLVisualizer::setBackgroundColor (const double &r, const dou
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-pcl_visualization::PCLVisualizer::setPointCloudRenderingProperties (int property, double val1, double val2, double val3, const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::setPointCloudRenderingProperties (
+    int property, double val1, double val2, double val3, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
@@ -770,7 +773,8 @@ pcl_visualization::PCLVisualizer::getPointCloudRenderingProperties (int property
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-pcl_visualization::PCLVisualizer::setPointCloudRenderingProperties (int property, double value, const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::setPointCloudRenderingProperties (
+    int property, double value, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
@@ -814,7 +818,8 @@ pcl_visualization::PCLVisualizer::setPointCloudRenderingProperties (int property
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-pcl_visualization::PCLVisualizer::setShapeRenderingProperties (int property, double value, const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::setShapeRenderingProperties (
+    int property, double value, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
@@ -1018,7 +1023,8 @@ pcl_visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl_visualization::PCLVisualizer::addCylinder (const pcl::ModelCoefficients &coefficients, const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addCylinder (const pcl::ModelCoefficients &coefficients, 
+                                               const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
@@ -1043,7 +1049,8 @@ pcl_visualization::PCLVisualizer::addCylinder (const pcl::ModelCoefficients &coe
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl_visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coefficients, const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coefficients, 
+                                             const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
@@ -1068,7 +1075,8 @@ pcl_visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coeff
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl_visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filename, const std::string &id, int viewport)
+pcl_visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filename, 
+                                                       const std::string &id, int viewport)
 {
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
@@ -1079,11 +1087,11 @@ pcl_visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filena
     return (false);
   }
 
-  vtkSmartPointer < vtkPLYReader > reader = vtkSmartPointer<vtkPLYReader>::New ();
+  vtkSmartPointer<vtkPLYReader> reader = vtkSmartPointer<vtkPLYReader>::New ();
   reader->SetFileName (filename.c_str ());
 
   // Create an Actor
-  vtkSmartPointer < vtkLODActor > actor;
+  vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (reader->GetOutput (), actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
   addActorToRenderer (actor, viewport);
@@ -1390,7 +1398,7 @@ pcl_visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_m
   // Create points from polyMesh.cloud
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
   pcl::PointCloud<pcl::PointXYZ> point_cloud;
-  pcl::fromROSMsg(poly_mesh.cloud, point_cloud);
+  pcl::fromROSMsg (poly_mesh.cloud, point_cloud);
   poly_points->SetNumberOfPoints (point_cloud.points.size ());
 
   size_t i;

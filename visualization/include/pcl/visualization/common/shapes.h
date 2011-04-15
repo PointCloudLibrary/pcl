@@ -61,7 +61,7 @@ namespace pcl_visualization
   /** \brief Create a 3d poly line from a set of points. 
     * \param cloud the set of points used to create the 3d polyline
     */
-  template <typename PointT> vtkSmartPointer<vtkDataSet> inline createPolygon (const pcl::PointCloud<PointT> &cloud);
+  template <typename PointT> vtkSmartPointer<vtkDataSet> inline createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud);
 
   /** \brief Create a line shape from two points
     * \param pt1 the first point on the line

@@ -40,18 +40,18 @@
   * \param cloud the set of points used to create the 3d polyline
   */
 template <typename PointT> vtkSmartPointer<vtkDataSet> 
-  pcl_visualization::createPolygon (const pcl::PointCloud<PointT> &cloud)
+  pcl_visualization::createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
 {
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
   vtkSmartPointer<vtkPolygon> polygon    = vtkSmartPointer<vtkPolygon>::New ();
 
-  poly_points->SetNumberOfPoints (cloud.points.size ());
-  polygon->GetPointIds ()->SetNumberOfIds (cloud.points.size ());
+  poly_points->SetNumberOfPoints (cloud->points.size ());
+  polygon->GetPointIds ()->SetNumberOfIds (cloud->points.size ());
 
   size_t i;
-  for (i = 0; i < cloud.points.size (); ++i)
+  for (i = 0; i < cloud->points.size (); ++i)
   {
-    poly_points->InsertPoint (i, cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
+    poly_points->InsertPoint (i, cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
     polygon->GetPointIds ()->SetId (i, i);
   }
 

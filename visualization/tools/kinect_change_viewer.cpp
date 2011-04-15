@@ -71,14 +71,14 @@ class KinectChangeViewer
       std::cerr << newPointIdxVector->size() << std::endl;
 
       //// extract points from pointcloud
-      pcl::PointCloud<pcl::PointXYZRGB> filtered_cloud (*cloud);
+      pcl::PointCloud<pcl::PointXYZRGB>::Ptr filtered_cloud (new pcl::PointCloud<pcl::PointXYZRGB> (*cloud));
       //pcl::ExtractIndices<pcl::PointXYZRGB> ei;
       //ei.setInputCloud (cloud);
       //ei.setIndices (newPointIdxVector);
       //ei.filter (filtered_cloud);
 
-      for (std::vector<int>::iterator it = newPointIdxVector->begin(); it != newPointIdxVector->end(); it++)
-        filtered_cloud.points[*it].rgb = 255<<16; 
+      for (std::vector<int>::iterator it = newPointIdxVector->begin (); it != newPointIdxVector->end (); it++)
+        filtered_cloud->points[*it].rgb = 255<<16; 
       
       if (!viewer.wasStopped())
         viewer.showCloud (filtered_cloud);

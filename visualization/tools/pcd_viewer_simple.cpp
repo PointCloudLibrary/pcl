@@ -55,8 +55,8 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  pcl::PointCloud<pcl::PointXYZRGB> cloud;
-  pcl::io::loadPCDFile (argv[1], cloud);
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::io::loadPCDFile (argv[1], *cloud);
 
   pcl_visualization::CloudViewer viewer ("Simple Cloud Viewer");
   viewer.showCloud (cloud);

@@ -159,7 +159,7 @@ struct EventHelper
     if (!cloud)
       return;
     p->removePointCloud ("PCDCloud");
-    p->addPointCloud (*cloud, "PCDCloud");
+    p->addPointCloud (cloud, "PCDCloud");
   }
 };
 
