@@ -43,77 +43,76 @@
 #include <boost/function.hpp>
 
 #include <string>
+
 namespace pcl_visualization
 {
   /** \brief Dead simple/easy to use class for a point cloud
    */
   class CloudViewer
   {
-  public:
-    typedef pcl::PointCloud<pcl::PointXYZRGB> ColorCloud;
-    typedef pcl::PointCloud<pcl::PointXYZ> GrayCloud;
+    public:
+      typedef pcl::PointCloud<pcl::PointXYZRGB> ColorCloud;
+      typedef pcl::PointCloud<pcl::PointXYZ> GrayCloud;
 
-    /** \brief Construct a cloud viewer, with a window name.
-     * \param window_name This is displayed at the top of the window
-     */
-    CloudViewer (const std::string& window_name);
+      /** \brief Construct a cloud viewer, with a window name.
+       * \param window_name This is displayed at the top of the window
+       */
+      CloudViewer (const std::string& window_name);
 
-    /** \brief Will quit the window,
-     * and release all resources held by the viewer.
-     * @return
-     */
-    ~CloudViewer ();
+      /** \brief Will quit the window,
+       * and release all resources held by the viewer.
+       * @return
+       */
+      ~CloudViewer ();
 
-    /** \brief Show a cloud, with an optional key for multiple clouds.
-     * \param cloud RGB point cloud
-     * \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-     */
-    void
-    showCloud (const ColorCloud& cloud, const std::string& cloudname = "cloud");
+      /** \brief Show a cloud, with an optional key for multiple clouds.
+       * \param cloud RGB point cloud
+       * \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
+       */
+      void
+      showCloud (const ColorCloud& cloud, const std::string& cloudname = "cloud");
 
-    /** \brief Show a cloud, with an optional key for multiple clouds.
-     *  \param cloud XYZ point cloud
-     *  \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-     */
-    void
-    showCloud (const GrayCloud& cloud, const std::string& cloudname = "cloud");
+      /** \brief Show a cloud, with an optional key for multiple clouds.
+       *  \param cloud XYZ point cloud
+       *  \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
+       */
+      void
+      showCloud (const GrayCloud& cloud, const std::string& cloudname = "cloud");
 
-    /** \brief Check if the gui was quit, you should quit also
-     * \param millis_to_wait This will request to "spin" for the number of milliseconds, before exiting.
-     * \return true if the user signaled the gui to stop
-     */
-    bool
-    wasStopped (int millis_to_wait = 1);
+      /** \brief Check if the gui was quit, you should quit also
+       * \param millis_to_wait This will request to "spin" for the number of milliseconds, before exiting.
+       * \return true if the user signaled the gui to stop
+       */
+      bool
+      wasStopped (int millis_to_wait = 1);
 
-    /** Visualization callable function, may be used for running things on the UI thread.
-     */
-    typedef boost::function1<void, pcl_visualization::PCLVisualizer&> VizCallable;
+      /** Visualization callable function, may be used for running things on the UI thread.
+       */
+      typedef boost::function1<void, pcl_visualization::PCLVisualizer&> VizCallable;
 
-    /** \brief Run a callbable object on the UI thread. Will persist until removed
-     * @param x Use boost::ref(x) for a function object that you would like to not copy
-     * \param key The key for the callable -- use the same key to overwrite.
-     */
-    void
-    runOnVisualizationThread (VizCallable x, const std::string& key = "callable");
+      /** \brief Run a callbable object on the UI thread. Will persist until removed
+       * @param x Use boost::ref(x) for a function object that you would like to not copy
+       * \param key The key for the callable -- use the same key to overwrite.
+       */
+      void
+      runOnVisualizationThread (VizCallable x, const std::string& key = "callable");
 
-    /** \brief Remove a previously added callable object, NOP if it doesn't exist.
-     * @param key the key that was registered with the callable object.
-     */
-    void
-    removeVisualizationCallable (const std::string& key = "callable");
-  private:
+      /** \brief Remove a previously added callable object, NOP if it doesn't exist.
+       * @param key the key that was registered with the callable object.
+       */
+      void
+      removeVisualizationCallable (const std::string& key = "callable");
+    private:
 
-    CloudViewer (const CloudViewer&rhs);//don't copy me for now!
+      CloudViewer (const CloudViewer&rhs);//don't copy me for now!
 
-    void
-    operator= (const CloudViewer&rhs);//don't copy me for now!
+      void
+      operator= (const CloudViewer&rhs);//don't copy me for now!
 
-    /**private implementation
-     */
-    struct CloudViewer_impl;
-    CloudViewer_impl* impl_;
+      /** \brief Private implementation. */
+      struct CloudViewer_impl;
+      CloudViewer_impl* impl_;
   };
 }
 
-#include <pcl/visualization/impl/cloud_viewer.hpp>
 #endif /* CLOUD_VIEWER_H_ */
