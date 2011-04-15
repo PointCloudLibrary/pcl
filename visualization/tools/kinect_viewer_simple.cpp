@@ -46,13 +46,15 @@ class SimpleKinectViewer
   public:
     SimpleKinectViewer () : viewer ("PCL Kinect Viewer") {}
 
-    void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+    void 
+    cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
       if (!viewer.wasStopped())
         viewer.showCloud (*cloud);
     }
     
-    void run ()
+    void 
+    run ()
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
@@ -63,9 +65,9 @@ class SimpleKinectViewer
       
       interface->start ();
       
-      while (!viewer.wasStopped())
+      while (!viewer.wasStopped ())
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        boost::this_thread::sleep (boost::posix_time::seconds (1));
       }
 
       interface->stop ();
@@ -74,9 +76,10 @@ class SimpleKinectViewer
     pcl_visualization::CloudViewer viewer;
 };
 
-int main ()
+int 
+main ()
 {
   SimpleKinectViewer v;
   v.run ();
-  return 0;
+  return (0);
 }
