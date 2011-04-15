@@ -75,32 +75,31 @@ namespace pcl
       {
         size_t i;
 
-        if (this->leafCount_)
-          this->deleteTree ();
-
-        if (indices_)
         {
-          std::vector<int>::const_iterator current = indices_->begin ();
-          while (current != indices_->end ())
+          if (indices_)
           {
-            if ((input_->points[*current].x == input_->points[*current].x) && (input_->points[*current].y
-                == input_->points[*current].y) && (input_->points[*current].z == input_->points[*current].z))
-              // add points to octree
-              this->addPointIdx (*current);
-            ++current;
+            std::vector<int>::const_iterator current = indices_->begin ();
+            while (current != indices_->end ())
+            {
+              if ((input_->points[*current].x == input_->points[*current].x) && (input_->points[*current].y
+                  == input_->points[*current].y) && (input_->points[*current].z == input_->points[*current].z))
+                // add points to octree
+                this->addPointIdx (*current);
+              ++current;
+            }
           }
-        }
-        else
-        {
-          for (i = 0; i < input_->points.size (); i++)
+          else
           {
-            if ((input_->points[i].x == input_->points[i].x) && (input_->points[i].y == input_->points[i].y)
-                && (input_->points[i].z == input_->points[i].z))
-              // add points to octree
-              this->addPointIdx ((unsigned int)i);
+            for (i = 0; i < input_->points.size (); i++)
+            {
+              if ((input_->points[i].x == input_->points[i].x) && (input_->points[i].y == input_->points[i].y)
+                  && (input_->points[i].z == input_->points[i].z))
+                // add points to octree
+                this->addPointIdx ((unsigned int)i);
+            }
           }
-        }
 
+        }
       }
 
     template<typename PointT, typename LeafT, typename OctreeT>
@@ -754,9 +753,9 @@ namespace pcl
       {
 
         // calculate integer key for point coordinates
-        key_arg.x = (unsigned int)floor ((point_arg.x - this->minX_) / this->resolution_);
-        key_arg.y = (unsigned int)floor ((point_arg.y - this->minY_) / this->resolution_);
-        key_arg.z = (unsigned int)floor ((point_arg.z - this->minZ_) / this->resolution_);
+        key_arg.x = (unsigned int) ((point_arg.x - this->minX_) / this->resolution_);
+        key_arg.y = (unsigned int) ((point_arg.y - this->minY_) / this->resolution_);
+        key_arg.z = (unsigned int) ((point_arg.z - this->minZ_) / this->resolution_);
 
       }
 
@@ -1121,7 +1120,7 @@ namespace pcl
                 voxelCount += getOccupiedVoxelCentersRecursive ((OctreeBranch*)childNode, newKey, voxelCenterList_arg);
                 break;
 
-              case LEAVE_NODE:
+              case LEAF_NODE:
                 PointT newPoint;
 
                 genLeafNodeCenterFromOctreeKey (newKey, newPoint);

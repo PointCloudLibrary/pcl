@@ -37,10 +37,6 @@
 #ifndef OCTREE_2BUF_BASE_HPP
 #define OCTREE_2BUF_BASE_HPP
 
-#include <list>
-#include <sstream>
-#include <iostream>
-
 namespace pcl
 {
   namespace octree
@@ -56,6 +52,8 @@ namespace pcl
         // Initialization of globals
         rootNode_ = new OctreeBranch ();
         leafCount_ = 0;
+        branchCount_ = 1;
+
         depthMask_ = 0;
         octreeDepth_ = 0;
         bufferSelector_ = 0;
@@ -189,6 +187,7 @@ namespace pcl
           // reset octree
           deleteBranch (*rootNode_);
           leafCount_ = 0;
+          branchCount_ = 1;
         }
 
       }
@@ -210,18 +209,24 @@ namespace pcl
         // reset flags
         treeDirtyFlag_ = true;
         leafCount_ = 0;
+        branchCount_ = 1;
         resetTree_ = true;
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      Octree2BufBase<DataT, LeafT>::serializeTree (std::ostream& binaryTreeOut_arg)
+      Octree2BufBase<DataT, LeafT>::serializeTree (std::vector<char>& binaryTreeOut_arg, bool doXOREncoding_arg)
       {
-        // clear binary stream
-        binaryTreeOut_arg.clear ();
 
-        serializeTreeRecursive (binaryTreeOut_arg, rootNode_);
+        // clear binary vector
+        binaryTreeOut_arg.clear ();
+        binaryTreeOut_arg.resize (this->branchCount_);
+
+        // iterator for binary tree structure vector
+        vector<char>::iterator binaryTreeVectorIterator = binaryTreeOut_arg.begin ();
+
+        serializeTreeRecursive (binaryTreeVectorIterator, rootNode_, doXOREncoding_arg);
 
         // serializeTreeRecursive cleans-up unused octree nodes in previous octree
         treeDirtyFlag_ = false;
@@ -231,18 +236,25 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      Octree2BufBase<DataT, LeafT>::serializeTree (std::ostream& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg)
+      Octree2BufBase<DataT, LeafT>::serializeTree (std::vector<char>& binaryTreeOut_arg,
+                                                   std::vector<DataT>& dataVector_arg, bool doXOREncoding_arg)
       {
         OctreeKey newKey;
         newKey.x = newKey.y = newKey.z = 0;
 
-        // clear output streams
+        // clear output vectors
         binaryTreeOut_arg.clear ();
         dataVector_arg.clear ();
 
         dataVector_arg.reserve (leafCount_);
+        binaryTreeOut_arg.resize (this->branchCount_);
 
-        Octree2BufBase<DataT, LeafT>::serializeTreeRecursive (binaryTreeOut_arg, rootNode_, newKey, dataVector_arg);
+        // iterator for binary tree structure vector
+        vector<char>::iterator binaryTreeVectorIterator = binaryTreeOut_arg.begin ();
+
+
+        Octree2BufBase<DataT, LeafT>::serializeTreeRecursive (binaryTreeVectorIterator, rootNode_, newKey,
+                                                              dataVector_arg, doXOREncoding_arg);
 
         // serializeTreeRecursive cleans-up unused octree nodes in previous octree
         treeDirtyFlag_ = false;
@@ -256,7 +268,7 @@ namespace pcl
         OctreeKey newKey;
         newKey.x = newKey.y = newKey.z = 0;
 
-        // clear output stream
+        // clear output vector
         dataVector_arg.clear ();
 
         dataVector_arg.reserve (leafCount_);
@@ -270,30 +282,36 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      Octree2BufBase<DataT, LeafT>::deserializeTree (std::istream& binaryTreeIn_arg)
+      Octree2BufBase<DataT, LeafT>::deserializeTree (std::vector<char>& binaryTreeIn_arg, bool doXORDecoding_arg)
       {
         OctreeKey newKey;
         newKey.x = newKey.y = newKey.z = 0;
 
         // we will rebuild an octree -> reset leafCount
         leafCount_ = 0;
-        deserializeTreeRecursive (binaryTreeIn_arg, rootNode_, depthMask_, newKey);
 
-        // deserializeTreeRecursive cleans-up unused octree nodes in previous octree
-        treeDirtyFlag_ = false;
+        // iterator for binary tree structure vector
+        vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
+
+        deserializeTreeRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey, resetTree_, doXORDecoding_arg);
+
+        // we modified the octree structure -> clean-up/tree-reset might be required
+        resetTree_ = false;
+        treeDirtyFlag_ = true;
 
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      Octree2BufBase<DataT, LeafT>::deserializeTree (std::istream& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg)
+      Octree2BufBase<DataT, LeafT>::deserializeTree (std::vector<char>& binaryTreeIn_arg,
+                                                     std::vector<DataT>& dataVector_arg, bool doXORDecoding_arg)
       {
         OctreeKey newKey;
         newKey.x = newKey.y = newKey.z = 0;
 
         // set data iterator to first element
-        typename std::vector<DataT>::iterator dataVectorIterator = dataVector_arg.begin ();
+        typename std::vector<DataT>::const_iterator dataVectorIterator = dataVector_arg.begin ();
 
         // set data iterator to last element
         typename std::vector<DataT>::const_iterator dataVectorEndIterator = dataVector_arg.end ();
@@ -301,18 +319,23 @@ namespace pcl
         // we will rebuild an octree -> reset leafCount
         leafCount_ = 0;
 
-        deserializeTreeRecursive (binaryTreeIn_arg, rootNode_, depthMask_, newKey, dataVectorIterator,
-                                  dataVectorEndIterator);
+        // iterator for binary tree structure vector
+        vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
 
-        // deserializeTreeRecursive cleans-up unused octree nodes in previous octree
-        treeDirtyFlag_ = false;
+        deserializeTreeRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey, dataVectorIterator,
+                                  dataVectorEndIterator, resetTree_, doXORDecoding_arg);
+
+        // we modified the octree structure -> clean-up/tree-reset might be required
+        resetTree_ = false;
+        treeDirtyFlag_ = true;
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      Octree2BufBase<DataT, LeafT>::deserializeTreeAndOutputLeafData (std::istream& binaryTreeIn_arg,
-                                                                      std::vector<DataT>& dataVector_arg)
+      Octree2BufBase<DataT, LeafT>::deserializeTreeAndOutputLeafData (std::vector<char>& binaryTreeIn_arg,
+                                                                      std::vector<DataT>& dataVector_arg,
+                                                                      bool doXORDecoding_arg)
       {
 
         OctreeKey newKey;
@@ -321,18 +344,27 @@ namespace pcl
         // free existing tree before tree rebuild
         deleteTree ();
 
-        deserializeTreeAndOutputLeafDataRecursive (binaryTreeIn_arg, rootNode_, depthMask_, newKey, dataVector_arg);
+        // iterator for binary tree structure vector
+        vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
+
+        deserializeTreeAndOutputLeafDataRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey,
+                                                   dataVector_arg, resetTree_, doXORDecoding_arg);
+
+        // we modified the octree structure -> clean-up/tree-reset might be required
+        resetTree_ = false;
+        treeDirtyFlag_ = true;
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      Octree2BufBase<DataT, LeafT>::serializeNewLeafs (std::vector<DataT>& dataVector_arg, const int minPointsPerLeaf_arg)
+      Octree2BufBase<DataT, LeafT>::serializeNewLeafs (std::vector<DataT>& dataVector_arg,
+                                                       const int minPointsPerLeaf_arg)
       {
         OctreeKey newKey;
         newKey.x = newKey.y = newKey.z = 0;
 
-        // clear output stream
+        // clear output vector
         dataVector_arg.clear ();
 
         dataVector_arg.reserve (leafCount_);
@@ -398,6 +430,8 @@ namespace pcl
               // if required branch does not exist -> create it
               createBranchChild (*branch_arg, childIdx, childBranch);
             }
+
+            branchCount_++;
 
           }
           else
@@ -537,6 +571,7 @@ namespace pcl
             {
               // child branch does not own any sub-child nodes anymore -> delete child branch
               deleteBranchChild (*branch_arg, childIdx);
+              branchCount_--;
             }
           }
 
@@ -566,7 +601,8 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      Octree2BufBase<DataT, LeafT>::serializeTreeRecursive (std::ostream& binaryTreeOut_arg, OctreeBranch* branch_arg)
+      Octree2BufBase<DataT, LeafT>::serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg,
+                                                            OctreeBranch* branch_arg, bool doXOREncoding_arg)
       {
 
         // child iterator
@@ -588,8 +624,17 @@ namespace pcl
         // bit pattern indicating unused octree nodes in previous branch
         unusedBranchesBits = nodeXORBitPattern & nodeBitPatternLastBuffer;
 
-        // write XOR bit pattern to output stream
-        binaryTreeOut_arg.write (&nodeXORBitPattern, 1);
+        if (doXOREncoding_arg)
+        {
+          // write XOR bit pattern to output vector
+          (*binaryTreeOut_arg) = nodeXORBitPattern;
+        }
+        else
+        {
+          // write bit pattern of current buffer to output vector
+          (*binaryTreeOut_arg) = nodeBitPatternCurrentBuffer;
+        }
+        binaryTreeOut_arg++;
 
         // iterate over all children
         for (childIdx = 0; childIdx < 8; childIdx++)
@@ -605,10 +650,10 @@ namespace pcl
               case BRANCH_NODE:
 
                 // recursively proceed with indexed child branch
-                serializeTreeRecursive (binaryTreeOut_arg, (OctreeBranch*)childNode);
+                serializeTreeRecursive (binaryTreeOut_arg, (OctreeBranch*)childNode, doXOREncoding_arg);
                 break;
 
-              case LEAVE_NODE:
+              case LEAF_NODE:
                 // nothing to do
                 break;
             }
@@ -629,8 +674,9 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      Octree2BufBase<DataT, LeafT>::serializeTreeRecursive (std::ostream& binaryTreeOut_arg, OctreeBranch* branch_arg,
-                                                            OctreeKey& key_arg, std::vector<DataT>& dataVector_arg)
+      Octree2BufBase<DataT, LeafT>::serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg,
+                                                            OctreeBranch* branch_arg, OctreeKey& key_arg,
+                                                            typename std::vector<DataT>& dataVector_arg, bool doXOREncoding_arg)
       {
 
         // child iterator
@@ -652,8 +698,17 @@ namespace pcl
         // bit pattern indicating unused octree nodes in previous branch
         unusedBranchesBits = nodeXORBitPattern & nodeBitPatternLastBuffer;
 
-        // write XOR bit pattern to output stream
-        binaryTreeOut_arg.write (&nodeXORBitPattern, 1);
+        if (doXOREncoding_arg)
+        {
+          // write XOR bit pattern to output vector
+          (*binaryTreeOut_arg) = nodeXORBitPattern;
+        }
+        else
+        {
+          // write bit pattern of current buffer to output vector
+          (*binaryTreeOut_arg) = nodeBitPatternCurrentBuffer;
+        }
+        binaryTreeOut_arg++;
 
         // iterate over all children
         for (childIdx = 0; childIdx < 8; childIdx++)
@@ -674,10 +729,11 @@ namespace pcl
             {
               case BRANCH_NODE:
                 // recursively proceed with indexed child branch
-                serializeTreeRecursive (binaryTreeOut_arg, (OctreeBranch*)childNode, newKey, dataVector_arg);
+                serializeTreeRecursive (binaryTreeOut_arg, (OctreeBranch*)childNode, newKey, dataVector_arg,
+                                        doXOREncoding_arg);
                 break;
 
-              case LEAVE_NODE:
+              case LEAF_NODE:
                 OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
 
                 // we reached a leaf node -> decode to dataVector_arg
@@ -703,7 +759,7 @@ namespace pcl
     template<typename DataT, typename LeafT>
       void
       Octree2BufBase<DataT, LeafT>::serializeLeafsRecursive (OctreeBranch* branch_arg, const OctreeKey& key_arg,
-                                                             std::vector<DataT>& dataVector_arg)
+                                                             typename std::vector<DataT>& dataVector_arg)
       {
         // child iterator
         unsigned char childIdx;
@@ -743,7 +799,7 @@ namespace pcl
                 // recursively proceed with indexed child branch
                 serializeLeafsRecursive ((OctreeBranch*)childNode, newKey, dataVector_arg);
                 break;
-              case LEAVE_NODE:
+              case LEAF_NODE:
                 OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
 
                 // we reached a leaf node -> decode to dataVector_arg
@@ -767,7 +823,8 @@ namespace pcl
     template<typename DataT, typename LeafT>
       void
       Octree2BufBase<DataT, LeafT>::serializeNewLeafsRecursive (OctreeBranch* branch_arg, const OctreeKey& key_arg,
-                                                                std::vector<DataT>& dataVector_arg, const int minPointsPerLeaf_arg)
+                                                                std::vector<DataT>& dataVector_arg,
+                                                                const int minPointsPerLeaf_arg)
       {
         // child iterator
         unsigned char childIdx;
@@ -807,7 +864,7 @@ namespace pcl
                 // recursively proceed with indexed child branch
                 serializeNewLeafsRecursive ((OctreeBranch*)childNode, newKey, dataVector_arg, minPointsPerLeaf_arg);
                 break;
-              case LEAVE_NODE:
+              case LEAF_NODE:
                 // check if leaf existed already in previous buffer
                 if (!(nodeBitPatternLastBuffer & (1 << childIdx)))
                 {
@@ -825,7 +882,9 @@ namespace pcl
                     {
                       dataVector_arg.insert (dataVector_arg.end (), newPointIdx.begin (), newPointIdx.end ());
                     }
-                  } else {
+                  }
+                  else
+                  {
                     // push to dataVector_arg directely
                     childLeaf->getData (dataVector_arg);
                   }
@@ -847,264 +906,339 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
-      void
-      Octree2BufBase<DataT, LeafT>::deserializeTreeRecursive (std::istream& binaryTreeIn_arg, OctreeBranch* branch_arg,
-                                                              const unsigned int depthMask_arg, const OctreeKey& key_arg)
+    void
+    Octree2BufBase<DataT, LeafT>::deserializeTreeRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
+                                                            OctreeBranch* branch_arg,
+                                                            const unsigned int depthMask_arg,
+                                                            const OctreeKey& key_arg, bool branchReset_arg,
+                                                            bool doXORDecoding_arg)
+    {
+      // child iterator
+      unsigned char childIdx;
+
+      // node bits
+      char nodeBits;
+      char recoveredNodeBits;
+
+      // branch reset -> this branch has been taken from previous buffer
+      if (branchReset_arg)
       {
-        // child iterator
-        unsigned char childIdx;
-
-        // node bits
-        char nodeBits;
-        char recoveredNodeBits;
-
-        // read branch occupancy bit pattern from stream
-        binaryTreeIn_arg.read (&nodeBits, 1);
-
-        // recover branch occupancy bit pattern
-        recoveredNodeBits = getBranchBitPattern (*branch_arg, !bufferSelector_) ^ nodeBits;
-
-        // iterate over all children
+        // we can safely remove children references
         for (childIdx = 0; childIdx < 8; childIdx++)
         {
-          // if occupancy bit for childIdx is set..
-          if (recoveredNodeBits & (1 << childIdx))
-          {
-
-            // generate new key for current branch voxel
-            OctreeKey newKey;
-            newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
-            newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
-            newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
-
-            if (depthMask_arg > 1)
-            {
-              // we have not reached maximum tree depth
-              OctreeBranch* childBranch;
-
-              if (!branchHasChild (*branch_arg, childIdx))
-              {
-
-                // check if we find a branch node reference in previous buffer
-                if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
-                {
-                  // take child branch from previous buffer
-                  childBranch = (OctreeBranch*)getBranchChild (*branch_arg, !bufferSelector_, childIdx);
-                  setBranchChild (*branch_arg, bufferSelector_, childIdx, (OctreeNode*)childBranch);
-
-                }
-                else
-                {
-                  // if required branch does not exist -> create it
-                  createBranchChild (*branch_arg, childIdx, childBranch);
-                }
-
-              }
-              else
-              {
-                // required branch node already exists - use it
-                childBranch = (OctreeBranch*)getBranchChild (*branch_arg, childIdx);
-              }
-
-              // recursively proceed with indexed child branch
-              deserializeTreeRecursive (binaryTreeIn_arg, childBranch, depthMask_arg / 2, newKey);
-
-            }
-            else
-            {
-              // branch childs are leaf nodes
-
-              OctreeLeaf* childLeaf;
-              DataT newDataT;
-
-              // check if we can take copy a reference from previous buffer
-              if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
-              {
-                // take child leaf node from previous buffer
-                childLeaf = (OctreeLeaf*)getBranchChild (*branch_arg, !bufferSelector_, childIdx);
-                setBranchChild (*branch_arg, bufferSelector_, childIdx, (OctreeNode*)childLeaf);
-
-                // reset child leaf
-                childLeaf->reset ();
-
-              }
-              else
-              {
-                // if required leaf does not exist -> create it
-                createLeafChild (*branch_arg, childIdx, childLeaf);
-
-              }
-
-              // initialize new leaf child
-              if (getDataTByKey (newKey, newDataT) )
-                childLeaf->setData (newDataT);
-
-              leafCount_++;
-
-            }
-          }
-          else
-          {
-
-            // remove old branch pointer information in current branch
-            setBranchChild (*branch_arg, bufferSelector_, childIdx, NULL);
-
-            // remove unused branches in previous buffer
-            deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
-          }
+          setBranchChild (*branch_arg, childIdx, NULL);
         }
 
       }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
-      void
-      Octree2BufBase<DataT, LeafT>::deserializeTreeRecursive (
-                                                              std::istream& binaryTreeIn_arg,
-                                                              OctreeBranch* branch_arg,
-                                                              const unsigned int depthMask_arg,
-                                                              const OctreeKey& key_arg,
-                                                              typename std::vector<DataT>::iterator& dataVectorIterator_arg,
-                                                              typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg)
+      // read branch occupancy bit pattern from vector
+      nodeBits = (*binaryTreeIn_arg);
+      binaryTreeIn_arg++;
+
+      // recover branch occupancy bit pattern
+      if (doXORDecoding_arg)
       {
-        // child iterator
-        unsigned char childIdx;
-
-        // node bits
-        char nodeBits;
-        char recoveredNodeBits;
-
-        // read branch occupancy bit pattern from stream
-        binaryTreeIn_arg.read (&nodeBits, 1);
-
-        // recover branch occupancy bit pattern
         recoveredNodeBits = getBranchBitPattern (*branch_arg, !bufferSelector_) ^ nodeBits;
+      }
+      else
+      {
+        recoveredNodeBits = nodeBits;
+      }
 
-        // iterate over all children
-        for (childIdx = 0; childIdx < 8; childIdx++)
+      // iterate over all children
+      for (childIdx = 0; childIdx < 8; childIdx++)
+      {
+        // if occupancy bit for childIdx is set..
+        if (recoveredNodeBits & (1 << childIdx))
         {
-          // if occupancy bit for childIdx is set..
-          if (recoveredNodeBits & (1 << childIdx))
+
+          // generate new key for current branch voxel
+          OctreeKey newKey;
+          newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
+          newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
+          newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+
+          bool doNodeReset;
+
+          doNodeReset = false;
+
+          if (depthMask_arg > 1)
           {
-            // generate new key for current branch voxel
-            OctreeKey newKey;
-            newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
-            newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
-            newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+            // we have not reached maximum tree depth
+            OctreeBranch* childBranch;
 
-            if (depthMask_arg > 1)
+            if (!branchHasChild (*branch_arg, childIdx))
             {
-              // we have not reached maximum tree depth
-
-              OctreeBranch* childBranch;
 
               // check if we find a branch node reference in previous buffer
-              if (!branchHasChild (*branch_arg, childIdx))
+              if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
               {
-
-                if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
-                {
-                  // take child branch from previous buffer
-                  childBranch = (OctreeBranch*)getBranchChild (*branch_arg, !bufferSelector_, childIdx);
-                  setBranchChild (*branch_arg, bufferSelector_, childIdx, (OctreeNode*)childBranch);
-
-                }
-                else
-                {
-                  // if required branch does not exist -> create it
-                  createBranchChild (*branch_arg, childIdx, childBranch);
-                }
+                // take child branch from previous buffer
+                childBranch = (OctreeBranch*)getBranchChild (*branch_arg, !bufferSelector_, childIdx);
+                setBranchChild (*branch_arg, bufferSelector_, childIdx, (OctreeNode*)childBranch);
+                doNodeReset = true;
 
               }
               else
               {
-                // required branch node already exists - use it
-                childBranch = (OctreeBranch*)getBranchChild (*branch_arg, childIdx);
+                // if required branch does not exist -> create it
+                createBranchChild (*branch_arg, childIdx, childBranch);
               }
 
-              // recursively proceed with indexed child branch
-              deserializeTreeRecursive (binaryTreeIn_arg, childBranch, depthMask_arg / 2, newKey,
-                                        dataVectorIterator_arg, dataVectorEndIterator_arg);
+              branchCount_++;
 
             }
             else
             {
-              // branch childs are leaf nodes
+              // required branch node already exists - use it
+              childBranch = (OctreeBranch*)getBranchChild (*branch_arg, childIdx);
+            }
 
-              OctreeLeaf* childLeaf;
+            // recursively proceed with indexed child branch
+            deserializeTreeRecursive (binaryTreeIn_arg, childBranch, depthMask_arg / 2, newKey, doNodeReset, doXORDecoding_arg);
 
-              // check if we can take copy a reference pointer from previous buffer
+          }
+          else
+          {
+            // branch childs are leaf nodes
+
+            OctreeLeaf* childLeaf;
+            DataT newDataT;
+
+            // check if we can take copy a reference from previous buffer
+            if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
+            {
+              // take child leaf node from previous buffer
+              childLeaf = (OctreeLeaf*)getBranchChild (*branch_arg, !bufferSelector_, childIdx);
+              setBranchChild (*branch_arg, bufferSelector_, childIdx, (OctreeNode*)childLeaf);
+
+              // reset child leaf
+              childLeaf->reset ();
+
+            }
+            else
+            {
+              // if required leaf does not exist -> create it
+              createLeafChild (*branch_arg, childIdx, childLeaf);
+
+            }
+
+            // initialize new leaf child
+            if (getDataTByKey (newKey, newDataT) )
+            childLeaf->setData (newDataT);
+
+            leafCount_++;
+
+          }
+        }
+        else
+        {
+
+          // remove old branch pointer information in current branch
+          setBranchChild (*branch_arg, bufferSelector_, childIdx, NULL);
+
+          // remove unused branches in previous buffer
+          deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
+        }
+      }
+
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename DataT, typename LeafT>
+    void
+    Octree2BufBase<DataT, LeafT>::deserializeTreeRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
+                                                            OctreeBranch* branch_arg,
+                                                            const unsigned int depthMask_arg,
+                                                            const OctreeKey& key_arg,
+                                                            typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
+                                                            typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg,
+                                                            bool branchReset_arg, bool doXORDecoding_arg)
+    {
+      // child iterator
+      unsigned char childIdx;
+
+      // node bits
+      char nodeBits;
+      char recoveredNodeBits;
+
+      // branch reset -> this branch has been taken from previous buffer
+      if (branchReset_arg)
+      {
+        // we can safely remove children references
+        for (childIdx = 0; childIdx < 8; childIdx++)
+        {
+          setBranchChild (*branch_arg, childIdx, NULL);
+        }
+
+      }
+
+      // read branch occupancy bit pattern from vector
+      nodeBits = (*binaryTreeIn_arg);
+      binaryTreeIn_arg++;
+
+      // recover branch occupancy bit pattern
+      if (doXORDecoding_arg)
+      {
+        recoveredNodeBits = getBranchBitPattern (*branch_arg, !bufferSelector_) ^ nodeBits;
+      }
+      else
+      {
+        recoveredNodeBits = nodeBits;
+      }
+
+      // iterate over all children
+      for (childIdx = 0; childIdx < 8; childIdx++)
+      {
+        // if occupancy bit for childIdx is set..
+        if (recoveredNodeBits & (1 << childIdx))
+        {
+          // generate new key for current branch voxel
+          OctreeKey newKey;
+          newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
+          newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
+          newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+
+          bool doNodeReset;
+
+          doNodeReset = false;
+
+          if (depthMask_arg > 1)
+          {
+            // we have not reached maximum tree depth
+
+            OctreeBranch* childBranch;
+
+            // check if we find a branch node reference in previous buffer
+            if (!branchHasChild (*branch_arg, childIdx))
+            {
+
               if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
               {
-                // take child leaf node from previous buffer
-                childLeaf = (OctreeLeaf*)getBranchChild (*branch_arg, !bufferSelector_, childIdx);
-                setBranchChild (*branch_arg, bufferSelector_, childIdx, (OctreeNode*)childLeaf);
-
-                // reset child leaf
-                childLeaf->reset ();
+                // take child branch from previous buffer
+                childBranch = (OctreeBranch*)getBranchChild (*branch_arg, !bufferSelector_, childIdx);
+                setBranchChild (*branch_arg, bufferSelector_, childIdx, (OctreeNode*)childBranch);
+                doNodeReset = true;
 
               }
               else
               {
-                // if required leaf does not exist -> create it
-                createLeafChild (*branch_arg, childIdx, childLeaf);
+                // if required branch does not exist -> create it
+                createBranchChild (*branch_arg, childIdx, childBranch);
               }
 
-              leafCount_++;
-
-              // feed new leaf node with data
-              OctreeKey dataKey;
-
-              bool bKeyBasedEncoding = false;
-              while ((dataVectorIterator_arg != dataVectorEndIterator_arg)
-                  && (this->genOctreeKey (*dataVectorIterator_arg, dataKey) && (dataKey == newKey)))
-              {
-                childLeaf->setData (*dataVectorIterator_arg);
-                dataVectorIterator_arg++;
-                bKeyBasedEncoding = true;
-              }
-
-              if (!bKeyBasedEncoding)
-              {
-                childLeaf->setData (*dataVectorIterator_arg);
-                dataVectorIterator_arg++;
-              }
+              branchCount_++;
 
             }
+            else
+            {
+              // required branch node already exists - use it
+              childBranch = (OctreeBranch*)getBranchChild (*branch_arg, childIdx);
+            }
+
+            // recursively proceed with indexed child branch
+            deserializeTreeRecursive (binaryTreeIn_arg, childBranch, depthMask_arg / 2, newKey,
+                dataVectorIterator_arg, dataVectorEndIterator_arg, doNodeReset, doXORDecoding_arg);
+
           }
           else
           {
+            // branch childs are leaf nodes
 
-            // remove old branch pointer information in current branch
-            setBranchChild (*branch_arg, bufferSelector_, childIdx, NULL);
+            OctreeLeaf* childLeaf;
 
-            // remove unused branches in previous buffer
-            deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
+            // check if we can take copy a reference pointer from previous buffer
+            if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
+            {
+              // take child leaf node from previous buffer
+              childLeaf = (OctreeLeaf*)getBranchChild (*branch_arg, !bufferSelector_, childIdx);
+              setBranchChild (*branch_arg, bufferSelector_, childIdx, (OctreeNode*)childLeaf);
+
+              // reset child leaf
+              childLeaf->reset ();
+
+            }
+            else
+            {
+              // if required leaf does not exist -> create it
+              createLeafChild (*branch_arg, childIdx, childLeaf);
+            }
+
+            leafCount_++;
+
+            // feed new leaf node with data
+            OctreeKey dataKey;
+
+            bool bKeyBasedEncoding = false;
+            while ((dataVectorIterator_arg != dataVectorEndIterator_arg)
+                && (this->genOctreeKey (*dataVectorIterator_arg, dataKey) && (dataKey == newKey)))
+            {
+              childLeaf->setData (*dataVectorIterator_arg);
+              dataVectorIterator_arg++;
+              bKeyBasedEncoding = true;
+            }
+
+            if (!bKeyBasedEncoding)
+            {
+              childLeaf->setData (*dataVectorIterator_arg);
+              dataVectorIterator_arg++;
+            }
+
           }
         }
+        else
+        {
+
+          // remove old branch pointer information in current branch
+          setBranchChild (*branch_arg, bufferSelector_, childIdx, NULL);
+
+          // remove unused branches in previous buffer
+          deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
+        }
       }
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
-      void
-      Octree2BufBase<DataT, LeafT>::deserializeTreeAndOutputLeafDataRecursive (std::istream& binaryTreeIn_arg,
-                                                                               OctreeBranch* branch_arg,
-                                                                               const unsigned int depthMask_arg,
-                                                                               const OctreeKey& key_arg,
-                                                                               std::vector<DataT>& dataVector_arg)
+    void
+    Octree2BufBase<DataT, LeafT>::deserializeTreeAndOutputLeafDataRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
+                                                                             OctreeBranch* branch_arg,
+                                                                             const unsigned int depthMask_arg,
+                                                                             const OctreeKey& key_arg,
+                                                                             typename std::vector<DataT>& dataVector_arg,
+                                                                             bool branchReset_arg, bool doXORDecoding_arg)
+    {
+      // child iterator
+      unsigned char childIdx;
+
+      // node bits
+      char nodeBits;
+      char recoveredNodeBits;
+
+      // branch reset -> this branch has been taken from previous buffer
+      if (branchReset_arg)
       {
-        // child iterator
-        unsigned char childIdx;
+        // we can safely remove children references
+        for (childIdx = 0; childIdx < 8; childIdx++)
+        {
+          setBranchChild (*branch_arg, childIdx, NULL);
+        }
 
-        // node bits
-        char nodeBits;
-        char recoveredNodeBits;
+      }
 
-        // read branch occupancy bit pattern from stream
-        binaryTreeIn_arg.read (&nodeBits, 1);
+      // read branch occupancy bit pattern from vector
+      nodeBits = (*binaryTreeIn_arg);
+      binaryTreeIn_arg++;
 
-        // recover branch occupancy bit pattern
+      // recover branch occupancy bit pattern
+      if (doXORDecoding_arg)
+      {
         recoveredNodeBits = getBranchBitPattern (*branch_arg, !bufferSelector_) ^ nodeBits;
+      }
+      else
+      {
+          recoveredNodeBits = nodeBits;
+        }
 
         // iterate over all children
         for (childIdx = 0; childIdx < 8; childIdx++)
@@ -1118,6 +1252,10 @@ namespace pcl
             newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
             newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
             newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+
+            bool doNodeReset;
+
+            doNodeReset = false;
 
             if (depthMask_arg > 1)
             {
@@ -1133,6 +1271,7 @@ namespace pcl
                   // take child branch from previous buffer
                   childBranch = (OctreeBranch*)getBranchChild (*branch_arg, !bufferSelector_, childIdx);
                   setBranchChild (*branch_arg, bufferSelector_, childIdx, (OctreeNode*)childBranch);
+                  doNodeReset = true;
 
                 }
                 else
@@ -1140,6 +1279,8 @@ namespace pcl
                   // if required branch does not exist -> create it
                   createBranchChild (*branch_arg, childIdx, childBranch);
                 }
+
+                branchCount_++;
 
               }
               else
@@ -1149,7 +1290,7 @@ namespace pcl
               }
 
               // recursively proceed with indexed child branch
-              deserializeTreeRecursive (binaryTreeIn_arg, childBranch, depthMask_arg / 2, newKey);
+              deserializeTreeRecursive (binaryTreeIn_arg, childBranch, depthMask_arg / 2, newKey, doNodeReset, doXORDecoding_arg);
 
             }
             else
@@ -1238,7 +1379,7 @@ namespace pcl
                 // recursively proceed with indexed child branch
                 treeCleanUpRecursive ((OctreeBranch*)childNode);
                 break;
-              case LEAVE_NODE:
+              case LEAF_NODE:
                 // leaf level - nothing to do..
                 break;
             }

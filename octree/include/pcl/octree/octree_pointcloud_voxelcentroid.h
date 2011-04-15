@@ -95,6 +95,9 @@ namespace pcl
 
           std::vector<int> indicesVector;
 
+          voxelCentroidList_arg.clear();
+          voxelCentroidList_arg.reserve(this->leafCount_);
+
           // serialize leafs - this returns a list of point indices. Points indices from the same voxel are locates next to each other within this vector.
           this->serializeLeafs (indicesVector);
 

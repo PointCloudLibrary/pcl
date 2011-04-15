@@ -53,8 +53,8 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT>
-      class OctreePointCloudDensityLeaf : public OctreeLeafAbstract<PointT>
+    template<typename DataT>
+      class OctreePointCloudDensityLeaf : public OctreeLeafAbstract<DataT>
       {
       public:
         /** \brief Class initialization. */
@@ -72,7 +72,7 @@ namespace pcl
          * /param point_arg: input point - this argument is ignored
          *  */
         virtual void
-        setData (const PointT& point_arg)
+        setData (const DataT& point_arg)
         {
           pointCounter_++;
         }
@@ -81,7 +81,7 @@ namespace pcl
          *  \param data_arg: reference to return pointer of leaf node DataT element (will be set to NULL).
          */
         virtual void
-        getData (const PointT*& data_arg)
+        getData (const DataT*& data_arg)
         {
           data_arg = NULL;
         }
@@ -90,7 +90,7 @@ namespace pcl
        *  \param data_arg: reference to dummy DataT vector that is extended with leaf node DataT elements.
          */
         virtual void
-        getData (std::vector<PointT>& dataVector)
+        getData (std::vector<DataT>& dataVector)
         {
         }
 

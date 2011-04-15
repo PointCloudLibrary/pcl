@@ -37,8 +37,6 @@
 #ifndef OCTREE_TREE_2BUF_BASE_H
 #define OCTREE_TREE_2BUF_BASE_H
 
-#include <ostream>
-#include <istream>
 #include <vector>
 #include <math.h>
 
@@ -138,6 +136,15 @@ namespace pcl
           return leafCount_;
         }
 
+        /** \brief Return the amount of existing branches in the octree.
+         *  \return amount of branch nodes.
+         * */
+        inline unsigned int
+        getBranchCount () const
+        {
+          return branchCount_;
+        }
+
         /** \brief Delete the octree structure and its leaf nodes. */
         void
         deleteTree ();
@@ -153,18 +160,21 @@ namespace pcl
         void
         switchBuffers ();
 
-        /** \brief Serialize octree into a binary output stream describing its branch node structure.
-         *  \param binaryTreeOut_arg: reference to output stream for writing binary tree structure.
+        /** \brief Serialize octree into a binary output vector describing its branch node structure.
+         *  \param binaryTreeOut_arg: reference to output vector for writing binary tree structure.
+         *  \param doXOREncoding_arg: select if binary tree structure should be generated based on current octree (false) of based on a XOR comparison between current and previous octree
          * */
         void
-        serializeTree (std::ostream& binaryTreeOut_arg);
+        serializeTree (std::vector<char>& binaryTreeOut_arg, bool doXOREncoding_arg = false);
 
-        /** \brief Serialize octree into a binary output stream describing its branch node structure and and push all DataT elements stored in the octree to a vector.
-         * \param binaryTreeOut_arg: reference to output stream for writing binary tree structure.
+        /** \brief Serialize octree into a binary output vector describing its branch node structure and and push all DataT elements stored in the octree to a vector.
+         * \param binaryTreeOut_arg: reference to output vector for writing binary tree structure.
          * \param dataVector_arg: reference of DataT vector that receives a copy of all DataT objects in the octree
+         * \param doXOREncoding_arg: select if binary tree structure should be generated based on current octree (false) of based on a XOR comparison between current and previous octree
          * */
         void
-        serializeTree (std::ostream& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg);
+        serializeTree (std::vector<char>& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg,
+                       bool doXOREncoding_arg = false);
 
         /** \brief Outputs a vector of all DataT elements that are stored within the octree leaf nodes.
          *  \param dataVector_arg: reference to DataT vector that receives a copy of all DataT objects in the octree.
@@ -179,25 +189,30 @@ namespace pcl
         void
         serializeNewLeafs (std::vector<DataT>& dataVector_arg, const int minPointsPerLeaf_arg = 0);
 
-        /** \brief Deserialize a binary octree description stream and create a corresponding octree structure. Leaf nodes are initialized with getDataTByKey(..).
-         *  \param binaryTreeIn_arg: reference to input stream for reading binary tree structure.
+        /** \brief Deserialize a binary octree description vector and create a corresponding octree structure. Leaf nodes are initialized with getDataTByKey(..).
+         *  \param binaryTreeIn_arg: reference to input vector for reading binary tree structure.
+         *  \param doXOREncoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          * */
         void
-        deserializeTree (std::istream& binaryTreeIn_arg);
+        deserializeTree (std::vector<char>& binaryTreeIn_arg, bool doXORDecoding_arg = false);
 
         /** \brief Deserialize a binary octree description and create a corresponding octree structure. Leaf nodes are initialized with DataT elements from the dataVector.
-         *  \param binaryTreeIn_arg: reference to input stream for reading binary tree structure.
+         *  \param binaryTreeIn_arg: reference to inpvectoream for reading binary tree structure.
          *  \param dataVector_arg: reference to DataT vector that provides DataT objects for initializing leaf nodes.
+         *  \param doXOREncoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          * */
         void
-        deserializeTree (std::istream& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg);
+        deserializeTree (std::vector<char>& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg,
+                         bool doXORDecoding_arg = false);
 
-        /** \brief Deserialize a binary octree description stream and create a corresponding octree structure. Leaf nodes are initialized with getDataTByKey(..). Generated DataT objects are copied to output vector.
-         *  \param binaryTreeIn_arg: reference to input stream for reading binary tree structure.
+        /** \brief Deserialize a binary octree description vector and create a corresponding octree structure. Leaf nodes are initialized with getDataTByKey(..). Generated DataT objects are copied to output vector.
+         *  \param binaryTreeIn_arg: reference to input vector for reading binary tree structure.
          *  \param dataVector_arg: reference to DataT vector that receives a copy of generated DataT objects.
+         *  \param doXOREncoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          * */
         void
-        deserializeTreeAndOutputLeafData (std::istream& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg);
+        deserializeTreeAndOutputLeafData (std::vector<char>& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg,
+                                          bool doXORDecoding_arg = false);
 
       protected:
 
@@ -272,6 +287,7 @@ namespace pcl
         // Protected octree methods based on octree keys
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
         /** \brief Virtual method for generating an octree key for a given DataT object.
          *  \param data_arg: reference to DataT object
          *  \param key_arg: write generated octree key to this octree key reference
@@ -290,7 +306,7 @@ namespace pcl
          *  \return "true" if DataT object could be generated; "false" otherwise
          *  */
         virtual bool
-        getDataTByKey (const OctreeKey & key_arg, DataT& data_arg) const
+        getDataTByKey (const OctreeKey & key_arg, DataT& data_arg)
         {
           // this class cannot relate DataT objects to octree keys
           return false;
@@ -550,7 +566,7 @@ namespace pcl
                 unusedBranchesPool_.push_back ((OctreeBranch*)branchChild);
                 break;
 
-              case LEAVE_NODE:
+              case LEAF_NODE:
 
                 // push unused leaf to branch pool
                 unusedLeafsPool_.push_back ((OctreeLeaf*)branchChild);
@@ -586,7 +602,7 @@ namespace pcl
                 unusedBranchesPool_.push_back ((OctreeBranch*)branchChild);
                 break;
 
-              case LEAVE_NODE:
+              case LEAF_NODE:
 
                 // push unused leaf to branch pool
                 unusedLeafsPool_.push_back ((OctreeLeaf*)branchChild);
@@ -730,7 +746,7 @@ namespace pcl
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        /** \brief Recursivly search for a leaf node at octree key. If leaf node does not exist, it will be created.
+        /** \brief Recursively search for a leaf node at octree key. If leaf node does not exist, it will be created.
          *  \param key_arg: reference to an octree key
          *  \param depthMask_arg: depth mask used for octree key analysis and for branch depth indicator
          *  \param branch_arg: current branch node
@@ -741,7 +757,7 @@ namespace pcl
         getLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg, OctreeBranch* branch_arg,
                           bool branchReset_arg);
 
-        /** \brief Recursivly search for a given leaf node and return a pointer.
+        /** \brief Recursively search for a given leaf node and return a pointer.
          *  \note  If leaf node does not exist, a NULL pointer is returned.
          *  \param key_arg: reference to an octree key
          *  \param depthMask_arg: depth mask used for octree key analysis and for branch depth indicator
@@ -751,7 +767,7 @@ namespace pcl
         LeafT*
         findLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg, OctreeBranch* branch_arg) const;
 
-        /** \brief Recursivly search and delete leaf node
+        /** \brief Recursively search and delete leaf node
          *  \param key_arg: reference to an octree key
          *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
          *  \param branch_arg: current branch node
@@ -760,33 +776,37 @@ namespace pcl
         bool
         deleteLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg, OctreeBranch* branch_arg);
 
-        /** \brief Recursivly explore the octree and output binary octree description
-         *  \param binaryTreeOut_arg: reference to output stream
+        /** \brief Recursively explore the octree and output binary octree description
+         *  \param binaryTreeOut_arg: iterator to output vector
          *  \param branch_arg: current branch node
+         *  \param doXOREncoding_arg: select if binary tree structure should be generated based on current octree (false) of based on a XOR comparison between current and previous octree
          **/
         void
-        serializeTreeRecursive (std::ostream& binaryTreeOut_arg, OctreeBranch* branch_arg);
+        serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg, OctreeBranch* branch_arg,
+                                bool doXOREncoding_arg);
 
-        /** \brief Recursivly explore the octree and output binary octree description together with a vector of leaf node DataT content.
-         *  \param binaryTreeOut_arg: reference to output stream
-         *  \param branch_arg: current branch node
-         *  \param key_arg: reference to an octree key
-         *  \param dataVector_arg: writes DataT content to this DataT vector reference.
-         **/
-        void
-        serializeTreeRecursive (std::ostream& binaryTreeOut_arg, OctreeBranch* branch_arg, OctreeKey& key_arg,
-                                std::vector<DataT>& dataVector_arg);
-
-        /** \brief Recursivly explore the octree and output DataT objects to DataT vector.
+        /** \brief Recursively explore the octree and output binary octree description together with a vector of leaf node DataT content.
+         *  \param binaryTreeOut_arg: iterator to output vector
          *  \param branch_arg: current branch node
          *  \param key_arg: reference to an octree key
-         *  \param dataVector_arg: DataT objects from leaf nodes are written to this DataT vector reference.
+         *  \param dataVector_arg: writes DataT content to this DataT vector.
+         *  \param doXOREncoding_arg: select if binary tree structure should be generated based on current octree (false) of based on a XOR comparison between current and previous octree
          **/
         void
-            serializeLeafsRecursive (OctreeBranch* branch_arg, const OctreeKey& key_arg,
-                                     std::vector<DataT>& dataVector_arg);
+        serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg, OctreeBranch* branch_arg,
+                                OctreeKey& key_arg, typename std::vector<DataT>& dataVector_arg,
+                                bool doXOREncoding_arg);
 
-        /** \brief Recursivly explore the octree and output DataT objects of leafs that do not exist in previous buffer.
+        /** \brief Recursively explore the octree and output DataT objects to DataT vector.
+         *  \param branch_arg: current branch node
+         *  \param key_arg: reference to an octree key
+         *  \param dataVector_arg: DataT objects from leaf nodes are written to this DataT vector.
+         **/
+        void
+        serializeLeafsRecursive (OctreeBranch* branch_arg, const OctreeKey& key_arg,
+                                 typename std::vector<DataT>& dataVector_arg);
+
+        /** \brief Recursively explore the octree and output DataT objects of leafs that do not exist in previous buffer.
          *  \param branch_arg: current branch node
          *  \param key_arg: reference to an octree key
          *  \param dataVector_arg: DataT objects from leaf nodes are written to this DataT vector reference.
@@ -797,39 +817,49 @@ namespace pcl
                                     std::vector<DataT>& dataVector_arg, const int minPointsPerLeaf_arg = 0);
 
         /** \brief Rebuild an octree based on binary XOR octree description.
-         *  \param binaryTreeIn_arg: reference to input stream
+         *  \param binaryTreeIn_arg: iterator to input vector
          *  \param branch_arg: current branch node
          *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
+         *  \param branchReset_arg: Reset pointer array of current branch
+         *  \param doXOREncoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          **/
         void
-        deserializeTreeRecursive (std::istream& binaryTreeIn_arg, OctreeBranch* branch_arg,
-                                  const unsigned int depthMask_arg, const OctreeKey& key_arg);
+        deserializeTreeRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
+                                  OctreeBranch* branch_arg, const unsigned int depthMask_arg, const OctreeKey& key_arg,
+                                  bool branchReset_arg, bool doXORDecoding_arg);
 
         /** \brief Rebuild an octree based on binary XOR octree description and DataT objects for leaf node initialization.
-         *  \param binaryTreeIn_arg: reference to input stream
+         *  \param binaryTreeIn_arg: iterator to input vector
          *  \param branch_arg: current branch node
          *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
          *  \param dataVectorIterator_arg: iterator pointing to current DataT object to be added to a leaf node
          *  \param dataVectorEndIterator_arg: iterator pointing to last object in DataT input vector.
+         *  \param branchReset_arg: Reset pointer array of current branch
+         *  \param doXOREncoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          **/
         void
-        deserializeTreeRecursive (std::istream& binaryTreeIn_arg, OctreeBranch* branch_arg,
-                                  const unsigned int depthMask_arg, const OctreeKey& key,
-                                  typename std::vector<DataT>::iterator& dataVectorIterator_arg,
-                                  typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg);
+        deserializeTreeRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
+                                  OctreeBranch* branch_arg, const unsigned int depthMask_arg, const OctreeKey& key,
+                                  typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
+                                  typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg,
+                                  bool branchReset_arg, bool doXORDecoding_arg);
 
         /** \brief Rebuild an octree based on binary octree description and output generated DataT objects.
-         *  \param binaryTreeIn_arg: reference to input stream
+         *  \param binaryTreeIn_arg: iterator to input vector
          *  \param branch_arg: current branch node
          *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
          *  \param dataVector_arg: reference to DataT vector that receives a copy of generated DataT objects.
+         *  \param branchReset_arg: Reset pointer array of current branch
+         *  \param doXOREncoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          **/
         void
-        deserializeTreeAndOutputLeafDataRecursive (std::istream& binaryTreeIn_arg, OctreeBranch* branch_arg,
-                                                   const unsigned int depthMask_arg, const OctreeKey& key_arg,
-                                                   std::vector<DataT>& dataVector_arg);
+        deserializeTreeAndOutputLeafDataRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
+                                                   OctreeBranch* branch_arg, const unsigned int depthMask_arg,
+                                                   const OctreeKey& key_arg,
+                                                   typename std::vector<DataT>& dataVector_arg,
+                                                   bool branchReset_arg, bool doXORDecoding_arg);
 
-        /** \brief Recursivly explore the octree and remove unused branch and leaf nodes
+        /** \brief Recursively explore the octree and remove unused branch and leaf nodes
          *  \param branch_arg: current branch node
          **/
         void
@@ -839,9 +869,10 @@ namespace pcl
          * \param n_arg: some value
          * \return binary logarithm (log2) of argument n_arg
          */
-        inline double Log2( double n_arg )
+        inline double
+        Log2 (double n_arg)
         {
-           return log( n_arg ) / log( 2.0 );
+          return log (n_arg) / log (2.0);
         }
 
         /** \brief Test if octree is able to dynamically change its depth. This is required for adaptive bounding box adjustment.
@@ -860,6 +891,9 @@ namespace pcl
 
         /** \brief Amount of leaf nodes   **/
         unsigned int leafCount_;
+
+        /** \brief Amount of branch nodes   **/
+        unsigned int branchCount_;
 
         /** \brief Pointer to root branch node of octree   **/
         OctreeBranch* rootNode_;

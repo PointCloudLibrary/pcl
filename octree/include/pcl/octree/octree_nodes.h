@@ -48,7 +48,7 @@ namespace pcl
     // enum of node types within the octree
     enum node_type_t
     {
-      BRANCH_NODE, LEAVE_NODE
+      BRANCH_NODE, LEAF_NODE
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +90,7 @@ namespace pcl
         virtual node_type_t
         getNodeType () const
         {
-          return LEAVE_NODE;
+          return LEAF_NODE;
         }
 
         /** \brief Pure virtual method for storing data into the octree node

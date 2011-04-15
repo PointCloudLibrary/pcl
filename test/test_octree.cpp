@@ -39,7 +39,6 @@
 
 #include <iostream>
 #include <map>
-#include <sstream>
 #include <vector>
 #include <queue>
 
@@ -120,8 +119,8 @@ TEST (PCL, Octree_Test)
 
   // test serialization
 
-  std::stringstream treeBinaryA;
-  std::stringstream treeBinaryB;
+  std::vector<char> treeBinaryA;
+  std::vector<char> treeBinaryB;
 
   std::vector<int> leafVectorA;
   std::vector<int> leafVectorB;
@@ -219,6 +218,9 @@ TEST (PCL, Octree_Test)
     ASSERT_EQ ( (leafVectorA[i] == leafVectorB[i]), true );
   }
 
+
+
+
 }
 
 TEST (PCL, Octree2Buf_Test)
@@ -286,8 +288,8 @@ TEST (PCL, Octree2Buf_Test)
 
   // test serialization
 
-  std::stringstream treeBinaryA;
-  std::stringstream treeBinaryB;
+  std::vector<char> treeBinaryA;
+  std::vector<char> treeBinaryB;
 
   std::vector<int> leafVectorA;
   std::vector<int> leafVectorB;
@@ -396,8 +398,8 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_Test)
   Octree2BufBase<int> octreeA;
   Octree2BufBase<int> octreeB;
 
-  std::stringstream treeBinaryA;
-  std::stringstream treeBinaryB;
+  std::vector<char> treeBinaryA;
+  std::vector<char> treeBinaryB;
 
   std::vector<int> leafVectorA;
   std::vector<int> leafVectorB;
@@ -434,17 +436,96 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_Test)
     }
 
     // test serialization
-    octreeA.serializeTree (treeBinaryA, leafVectorA);
-    octreeB.deserializeTree (treeBinaryA, leafVectorA);
-    octreeB.serializeTree (treeBinaryB, leafVectorB);
+    octreeA.serializeTree (treeBinaryA, leafVectorA, false);
+    octreeB.deserializeTree (treeBinaryA, leafVectorA, false);
+    octreeB.serializeTree (treeBinaryB, leafVectorB, false);
 
     // check leaf count of rebuilt octree
     ASSERT_EQ (octreeA.getLeafCount(),octreeB.getLeafCount());
     ASSERT_EQ (leafVectorB.size(), octreeB.getLeafCount());
     ASSERT_EQ (leafVectorA.size(), leafVectorB.size());
-    ASSERT_EQ (treeBinaryA.str().length(), treeBinaryB.str().length());
+    ASSERT_EQ (treeBinaryA.size(), octreeB.getBranchCount());
+    ASSERT_EQ (treeBinaryA.size(), treeBinaryB.size());
 
     // check if octree content was successfully transfered.
+    for (i=0; i<treeBinaryA.size(); i++)
+    {
+      ASSERT_EQ ( (treeBinaryA[i] == treeBinaryB[i]), true );
+    }
+
+    // check if octree octree structure is consistent.
+    for (i=0; i<leafVectorB.size(); i++)
+    {
+      ASSERT_EQ ( (leafVectorA[i] == leafVectorB[i]), true );
+    }
+
+    // switch buffers
+    octreeA.switchBuffers();
+    octreeB.switchBuffers();
+
+  }
+
+}
+
+TEST (PCL, Octree2Buf_Base_Double_Buffering_XOR_Test)
+{
+
+#define TESTPOINTS 3000
+
+  // create octree instances
+  Octree2BufBase<int> octreeA;
+  Octree2BufBase<int> octreeB;
+
+  std::vector<char> treeBinaryA;
+  std::vector<char> treeBinaryB;
+
+  std::vector<int> leafVectorA;
+  std::vector<int> leafVectorB;
+
+  octreeA.setTreeDepth (5);
+  octreeB.setTreeDepth (5);
+
+  struct MyVoxel
+  {
+    unsigned int x;unsigned int y;unsigned int z;
+  };
+
+  unsigned int i, j;
+  int data[TESTPOINTS];
+  MyVoxel voxels[TESTPOINTS];
+
+  srand (time (NULL));
+
+  const unsigned int test_runs = 15;
+
+  for (j = 0; j < test_runs; j++)
+  {
+    for (i = 0; i < TESTPOINTS; i++)
+    {
+      data[i] = rand ();
+
+      voxels[i].x = rand () % 4096;
+      voxels[i].y = rand () % 4096;
+      voxels[i].z = rand () % 4096;
+
+      // add data to octree
+
+      octreeA.add (voxels[i].x, voxels[i].y, voxels[i].z, data[i]);
+    }
+
+    // test serialization - XOR tree binary data
+    octreeA.serializeTree (treeBinaryA, leafVectorA, true);
+    octreeB.deserializeTree (treeBinaryA, leafVectorA, true);
+    octreeB.serializeTree (treeBinaryB, leafVectorB, true);
+
+    // check leaf count of rebuilt octree
+    ASSERT_EQ (octreeA.getLeafCount(),octreeB.getLeafCount());
+    ASSERT_EQ (leafVectorB.size(), octreeB.getLeafCount());
+    ASSERT_EQ (leafVectorA.size(), leafVectorB.size());
+    ASSERT_EQ (treeBinaryA.size(), octreeB.getBranchCount());
+    ASSERT_EQ (treeBinaryA.size(), treeBinaryB.size());
+
+    // check if octree octree structure is consistent.
     for (i=0; i<leafVectorB.size(); i++)
     {
       ASSERT_EQ ( (leafVectorA[i] == leafVectorB[i]), true );
@@ -553,8 +634,8 @@ TEST (PCL, Octree_Pointcloud_Test)
 
     // test octree pointcloud serialization
 
-    std::stringstream treeBinaryB;
-    std::stringstream treeBinaryC;
+    std::vector<char> treeBinaryB;
+    std::vector<char> treeBinaryC;
 
     std::vector<int> leafVectorB;
     std::vector<int> leafVectorC;
@@ -578,7 +659,7 @@ TEST (PCL, Octree_Pointcloud_Test)
 
     // check if data is consistent
     ASSERT_EQ (octreeB.getLeafCount(), octreeC.getLeafCount());
-    ASSERT_EQ (treeBinaryB.str().length(), treeBinaryC.str().length() );
+    ASSERT_EQ (treeBinaryB.size(), treeBinaryC.size() );
     ASSERT_EQ (octreeB.getLeafCount(), cloudB->points.size());
 
     for (i = 0; i < leafVectorB.size(); ++i)
@@ -586,13 +667,10 @@ TEST (PCL, Octree_Pointcloud_Test)
       ASSERT_EQ (leafVectorB[i], leafVectorC[i]);
     }
 
-    // check if binary octree output is consistent
-    const char* treeBinaryBPtr = treeBinaryB.str().c_str();
-    const char* treeBinaryCPtr = treeBinaryC.str().c_str();
-
-    for (i = 0; i < treeBinaryB.str().length(); ++i)
+    // check if binary octree output of both trees is equal
+    for (i = 0; i < treeBinaryB.size(); ++i)
     {
-      ASSERT_EQ (treeBinaryBPtr[i], treeBinaryCPtr[i]);
+      ASSERT_EQ (treeBinaryB[i], treeBinaryC[i]);
     }
 
   }
@@ -688,9 +766,6 @@ TEST (PCL, Octree_Pointcloud_Occupancy_Test)
 
 TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
 {
-//  const unsigned int test_runs = 100;
-//  unsigned int test_id;
-
   // instantiate point cloud
 
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());

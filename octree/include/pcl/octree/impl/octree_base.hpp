@@ -38,8 +38,6 @@
 #define OCTREE_BASE_HPP
 
 #include <vector>
-#include <sstream>
-#include <iostream>
 
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
@@ -61,6 +59,7 @@ namespace pcl
         rootNode_ = new OctreeBranch ();
         leafCount_ = 0;
         depthMask_ = 0;
+        branchCount_ = 1;
         octreeDepth_ = 0;
 
       }
@@ -126,6 +125,8 @@ namespace pcl
         add (key, data_arg);
 
       }
+
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
@@ -194,6 +195,7 @@ namespace pcl
           // reset octree
           deleteBranch (*rootNode_);
           leafCount_ = 0;
+          branchCount_ = 1;
         }
 
       }
@@ -201,29 +203,37 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::serializeTree (std::ostream& binaryTreeOut_arg) const
+      OctreeBase<DataT, LeafT>::serializeTree (std::vector<char>& binaryTreeOut_arg) const
       {
-        // clear binary stream
+        // clear binary vector
         binaryTreeOut_arg.clear ();
+        binaryTreeOut_arg.resize (this->branchCount_);
 
-        serializeTreeRecursive (binaryTreeOut_arg, rootNode_);
+        //iterator for binary tree structure vector
+        vector<char>::iterator binaryTreeVectorIterator = binaryTreeOut_arg.begin ();
+
+        serializeTreeRecursive (binaryTreeVectorIterator, rootNode_);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::serializeTree (std::ostream& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg) const
+      OctreeBase<DataT, LeafT>::serializeTree (std::vector<char>& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg) const
       {
         OctreeKey newKey;
         newKey.x = newKey.y = newKey.z = 0;
 
-        // clear output streams
+        // clear output vectors
         binaryTreeOut_arg.clear ();
         dataVector_arg.clear ();
 
         dataVector_arg.reserve (this->leafCount_);
+        binaryTreeOut_arg.resize (this->branchCount_);
 
-        OctreeBase<DataT, LeafT>::serializeTreeRecursive (binaryTreeOut_arg, rootNode_, newKey, dataVector_arg);
+        //iterator for binary tree structure vector
+        vector<char>::iterator binaryTreeVectorIterator = binaryTreeOut_arg.begin ();
+
+        OctreeBase<DataT, LeafT>::serializeTreeRecursive (binaryTreeVectorIterator, rootNode_, newKey, dataVector_arg);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -235,10 +245,10 @@ namespace pcl
         OctreeKey newKey;
         newKey.x = newKey.y = newKey.z = 0;
 
-        // clear output stream
+        // clear output vector
         dataVector_arg.clear ();
 
-        dataVector_arg.reserve (this->leafCount_);
+        dataVector_arg.reserve(this->leafCount_);
 
         serializeLeafsRecursive (rootNode_, newKey, dataVector_arg);
       }
@@ -246,7 +256,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::deserializeTree (std::istream& binaryTreeIn_arg)
+      OctreeBase<DataT, LeafT>::deserializeTree (std::vector<char>& binaryTreeIn_arg)
       {
 
         OctreeKey newKey;
@@ -255,19 +265,23 @@ namespace pcl
         // free existing tree before tree rebuild
         deleteTree ();
 
-        deserializeTreeRecursive (binaryTreeIn_arg, rootNode_, depthMask_, newKey);
+        //iterator for binary tree structure vector
+        vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
+
+        deserializeTreeRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::deserializeTree (std::istream& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg)
+      OctreeBase<DataT, LeafT>::deserializeTree (std::vector<char>& binaryTreeIn_arg,
+                                                 std::vector<DataT>& dataVector_arg)
       {
         OctreeKey newKey;
         newKey.x = newKey.y = newKey.z = 0;
 
         // set data iterator to first element
-        typename std::vector<DataT>::iterator dataVectorIterator = dataVector_arg.begin ();
+        typename std::vector<DataT>::const_iterator dataVectorIterator = dataVector_arg.begin ();
 
         // set data iterator to last element
         typename std::vector<DataT>::const_iterator dataVectorEndIterator = dataVector_arg.end ();
@@ -275,14 +289,18 @@ namespace pcl
         // free existing tree before tree rebuild
         deleteTree ();
 
-        deserializeTreeRecursive (binaryTreeIn_arg, rootNode_, depthMask_, newKey, dataVectorIterator,
+        //iterator for binary tree structure vector
+        vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
+
+        deserializeTreeRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey, dataVectorIterator,
                                   dataVectorEndIterator);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::deserializeTreeAndOutputLeafData (std::istream& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg)
+      OctreeBase<DataT, LeafT>::deserializeTreeAndOutputLeafData (std::vector<char>& binaryTreeIn_arg,
+                                                                  std::vector<DataT>& dataVector_arg)
       {
 
         OctreeKey newKey;
@@ -291,7 +309,11 @@ namespace pcl
         // free existing tree before tree rebuild
         deleteTree ();
 
-        deserializeTreeAndOutputLeafDataRecursive (binaryTreeIn_arg, rootNode_, depthMask_, newKey, dataVector_arg);
+        //iterator for binary tree structure vector
+        vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
+
+        deserializeTreeAndOutputLeafDataRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey,
+                                                   dataVector_arg);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -319,6 +341,8 @@ namespace pcl
 
             // if required branch does not exist -> create it
             createBranchChild (*branch_arg, childIdx, childBranch);
+
+            branchCount_++;
 
           }
           else
@@ -442,6 +466,7 @@ namespace pcl
               // child branch does not own any sub-child nodes anymore -> delete child branch
               delete (childBranch);
               setBranchChild (*branch_arg, childIdx, NULL);
+              branchCount_--;
             }
           }
 
@@ -471,7 +496,8 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::serializeTreeRecursive (std::ostream& binaryTreeOut_arg, const OctreeBranch* branch_arg) const
+      OctreeBase<DataT, LeafT>::serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg,
+                                                        const OctreeBranch* branch_arg) const
       {
 
         // child iterator
@@ -481,8 +507,9 @@ namespace pcl
         // branch occupancy bit pattern
         nodeBitPattern = getBranchBitPattern (*branch_arg);
 
-        // write bit pattern to output stream
-        binaryTreeOut_arg.write (&nodeBitPattern, 1);
+        // write bit pattern to output vector
+        (*binaryTreeOut_arg) = nodeBitPattern;
+        binaryTreeOut_arg++;
 
         // iterate over all children
         for (childIdx = 0; childIdx < 8; childIdx++)
@@ -503,7 +530,7 @@ namespace pcl
                 serializeTreeRecursive (binaryTreeOut_arg, (OctreeBranch*)childNode);
                 break;
 
-              case LEAVE_NODE:
+              case LEAF_NODE:
                 // nothing to do
                 break;
             }
@@ -517,7 +544,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::serializeTreeRecursive (std::ostream& binaryTreeOut_arg,
+      OctreeBase<DataT, LeafT>::serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg,
                                                         const OctreeBranch* branch_arg, OctreeKey& key_arg,
                                                         typename std::vector<DataT>& dataVector_arg) const
       {
@@ -529,8 +556,9 @@ namespace pcl
         // branch occupancy bit pattern
         nodeBitPattern = getBranchBitPattern (*branch_arg);
 
-        // write bit pattern to output stream
-        binaryTreeOut_arg.write (&nodeBitPattern, 1);
+        // write bit pattern to output vector
+        (*binaryTreeOut_arg) = nodeBitPattern;
+        binaryTreeOut_arg++;
 
         // iterate over all children
         for (childIdx = 0; childIdx < 8; childIdx++)
@@ -557,7 +585,7 @@ namespace pcl
                 serializeTreeRecursive (binaryTreeOut_arg, (OctreeBranch*)childNode, newKey, dataVector_arg);
                 break;
 
-              case LEAVE_NODE:
+              case LEAF_NODE:
                 OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
 
                 // we reached a leaf node -> decode to dataVector_arg
@@ -604,7 +632,7 @@ namespace pcl
                 serializeLeafsRecursive ((OctreeBranch*)childNode, newKey, dataVector_arg);
                 break;
 
-              case LEAVE_NODE:
+              case LEAF_NODE:
                 OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
 
                 // we reached a leaf node -> decode to dataVector_arg
@@ -620,15 +648,17 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::deserializeTreeRecursive (std::istream& binaryTreeIn_arg, OctreeBranch* branch_arg,
-                                                          const unsigned int depthMask_arg, const OctreeKey& key_arg)
+      OctreeBase<DataT, LeafT>::deserializeTreeRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
+                                                          OctreeBranch* branch_arg, const unsigned int depthMask_arg,
+                                                          const OctreeKey& key_arg)
       {
         // child iterator
         unsigned char childIdx;
         char nodeBits;
 
-        // read branch occupancy bit pattern from stream
-        binaryTreeIn_arg.read (&nodeBits, 1);
+        // read branch occupancy bit pattern from input vector
+        nodeBits = (*binaryTreeIn_arg);
+        binaryTreeIn_arg++;
 
         // iterate over all children
         for (childIdx = 0; childIdx < 8; childIdx++)
@@ -650,6 +680,8 @@ namespace pcl
 
               // create new child branch
               createBranchChild (*branch_arg, childIdx, newBranch);
+
+              branchCount_++;
 
               // recursively proceed with new child branch
               deserializeTreeRecursive (binaryTreeIn_arg, newBranch, depthMask_arg / 2, newKey);
@@ -680,19 +712,20 @@ namespace pcl
     template<typename DataT, typename LeafT>
       void
       OctreeBase<DataT, LeafT>::deserializeTreeRecursive (
-                                                          std::istream& binaryTreeIn_arg,
+                                                          typename std::vector<char>::const_iterator& binaryTreeIn_arg,
                                                           OctreeBranch* branch_arg,
                                                           const unsigned int depthMask_arg,
                                                           const OctreeKey& key_arg,
-                                                          typename std::vector<DataT>::iterator& dataVectorIterator_arg,
+                                                          typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
                                                           typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg)
       {
         // child iterator
         unsigned char childIdx;
         char nodeBits;
 
-        // read branch occupancy bit pattern from stream
-        binaryTreeIn_arg.read (&nodeBits, 1);
+        // read branch occupancy bit pattern from input vector
+        nodeBits = (*binaryTreeIn_arg);
+        binaryTreeIn_arg++;
 
         // iterate over all children
         for (childIdx = 0; childIdx < 8; childIdx++)
@@ -713,6 +746,8 @@ namespace pcl
 
               // create new child branch
               createBranchChild (*branch_arg, childIdx, newBranch);
+
+              branchCount_++;
 
               // recursively proceed with new child branch
               deserializeTreeRecursive (binaryTreeIn_arg, newBranch, depthMask_arg / 2, newKey, dataVectorIterator_arg,
@@ -755,7 +790,8 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::deserializeTreeAndOutputLeafDataRecursive (std::istream& binaryTreeIn_arg,
+      OctreeBase<DataT, LeafT>::deserializeTreeAndOutputLeafDataRecursive (
+                                                                           typename std::vector<char>::const_iterator& binaryTreeIn_arg,
                                                                            OctreeBranch* branch_arg,
                                                                            const unsigned int depthMask_arg,
                                                                            const OctreeKey& key_arg,
@@ -765,12 +801,13 @@ namespace pcl
         unsigned char childIdx;
         char nodeBits;
 
-        // read branch occupancy bit pattern from stream
-        binaryTreeIn_arg.read (&nodeBits, 1);
+        // read branch occupancy bit pattern from input vector
+        nodeBits = (*binaryTreeIn_arg);
+        binaryTreeIn_arg++;
 
-         // iterate over all children
-         for (childIdx = 0; childIdx < 8; childIdx++)
-         {
+        // iterate over all children
+        for (childIdx = 0; childIdx < 8; childIdx++)
+        {
            // if occupancy bit for childIdx is set..
            if (nodeBits & (1 << childIdx))
            {
@@ -778,27 +815,30 @@ namespace pcl
              // generate new key for current branch voxel
              OctreeKey newKey;
              newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
-             newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
-             newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+            newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
+            newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
 
-             if (depthMask_arg > 1)
-             {
-               // we have not reached maximum tree depth
-               OctreeBranch * newBranch;
+            if (depthMask_arg > 1)
+            {
+              // we have not reached maximum tree depth
+              OctreeBranch * newBranch;
 
-               // create new child branch
-               createBranchChild (*branch_arg, childIdx, newBranch);
+              // create new child branch
+              createBranchChild (*branch_arg, childIdx, newBranch);
 
-               // recursively proceed with new child branch
-               deserializeTreeAndOutputLeafDataRecursive (binaryTreeIn_arg, newBranch, depthMask_arg / 2, newKey, dataVector_arg);
+              branchCount_++;
 
-             }
-             else
-             {
-               // we reached leaf node level
-               OctreeLeaf* childLeaf;
+              // recursively proceed with new child branch
+              deserializeTreeAndOutputLeafDataRecursive (binaryTreeIn_arg, newBranch, depthMask_arg / 2, newKey,
+                                                         dataVector_arg);
 
-               DataT newDataT;
+            }
+            else
+            {
+              // we reached leaf node level
+              OctreeLeaf* childLeaf;
+
+              DataT newDataT;
 
                // create leaf node
                createLeafChild (*branch_arg, childIdx, childLeaf);
