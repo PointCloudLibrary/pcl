@@ -14,11 +14,8 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
-#    target_link_libraries(${LIB_NAME} pcl_range_image_border_extractor)
     target_link_libraries(${LIB_NAME})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-#    list(APPEND EXT_DEPS pcl_range_image_border_extractor)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
         "${EXT_DEPS}" "" "" "")
  
