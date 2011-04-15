@@ -70,7 +70,7 @@ if(build)
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/common ${common_incs})
 
-    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/cloud_viewer.hpp
+    set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/histogram_visualizer.hpp
         include/pcl/${SUBSYS_NAME}/impl/pcl_visualizer.hpp
         include/pcl/${SUBSYS_NAME}/impl/point_cloud_handlers.hpp
