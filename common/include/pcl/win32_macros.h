@@ -37,14 +37,14 @@
 
 #include <boost/cstdint.hpp>
 
-typedef boost::uint8_t pcl_uint8_t;
-typedef boost::int8_t pcl_int8_t;
-typedef boost::int16_t pcl_int16_t;
-typedef boost::uint16_t pcl_uint16_t;
-typedef boost::int32_t pcl_int32_t;
-typedef boost::uint32_t pcl_uint32_t;
-typedef boost::int64_t pcl_int64_t;
-typedef boost::uint64_t pcl_uint64_t;
+using boost::uint8_t;
+using boost::int8_t;
+using boost::int16_t;
+using boost::uint16_t;
+using boost::int32_t;
+using boost::uint32_t;
+using boost::int64_t;
+using boost::uint64_t;
 
 // Windows doesn't have std::{isnan,isfinite}
 #ifdef _WIN32
