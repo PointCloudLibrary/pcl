@@ -382,7 +382,7 @@ namespace pcl
 
     cloud->points.resize (cloud->height * cloud->width);
 
-    register float constant = 0.001f / device_->getDepthFocalLength (depth_width_);
+    register float constant = 1.0f / device_->getDepthFocalLength (depth_width_);
 
     if (device_->isDepthRegistered ())
       cloud->header.frame_id = rgb_frame_id_;
@@ -402,7 +402,7 @@ namespace pcl
     {
       for (register float u = -centerX; u < centerX; u += 1.0, ++depth_idx)
       {
-        register double z = depth_map[depth_idx];
+        register double z = depth_map[depth_idx] * 0.001;
         pcl::PointXYZ& pt = cloud->points[depth_idx];
         // Check for invalid measurements
         if (z == 0 ||
@@ -418,7 +418,7 @@ namespace pcl
         // Fill in XYZ
         pt.x = u * z_d;
         pt.y = v * z_d;
-        pt.z = z * 0.001;
+        pt.z = z;
       }
     }
     return cloud;
@@ -452,7 +452,7 @@ namespace pcl
     
     cloud->points.resize (cloud->height * cloud->width);
 
-    float constant = 0.001f / device_->getImageFocalLength (cloud->width);
+    float constant = 1.0f / device_->getImageFocalLength (cloud->width);
     int centerX = (cloud->width >> 1);
     int centerY = (cloud->height >> 1);
 
@@ -476,7 +476,7 @@ namespace pcl
       for (register int u = -centerX; u < centerX; ++u, color_idx += 3, ++depth_idx)
       {
         pcl::PointXYZRGB& pt = cloud->points[depth_idx];
-        register double Z = depth_buffer[depth_idx];
+        register double Z = depth_buffer[depth_idx] * 0.001f;
 
         // Check for invalid measurements
         if (pcl_isnan (Z))
@@ -489,7 +489,7 @@ namespace pcl
           double z_d = Z * constant;
           pt.x = u * z_d;
           pt.y = v * z_d;
-          pt.z = Z * 0.001;
+          pt.z = Z;
         }
 
         // Fill in color
