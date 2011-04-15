@@ -37,19 +37,9 @@
 
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
-#include "pcl/octree/octree_impl.h"
-
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/repetition/repeat_from_to.hpp>
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/seq/for_each_product.hpp>
-#include <boost/preprocessor/seq/to_tuple.hpp>
-#include <boost/preprocessor/cat.hpp>
-#include <boost/preprocessor/expand.hpp>
 
 #include "pcl/octree/octree.h"
 #include "pcl/octree/octree_impl.h"
-
 
 
 // Instantiations of specific point types
@@ -61,19 +51,24 @@ template class pcl::octree::Octree2BufBase<int> ;
 template class pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafDataTVector<int> > ;
 template class pcl::octree::Octree2BufBase<int, pcl::octree::OctreeLeafDataTVector<int> > ;
 
-PCL_INSTANTIATE(OctreePointCloudSingleBuffer, PCL_XYZ_POINT_TYPES);
-PCL_INSTANTIATE(OctreePointCloudDoubleBuffer, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES);
 
+PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataT, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithLeafDataT, PCL_XYZ_POINT_TYPES);
+
+PCL_INSTANTIATE(OctreePointCloudSingleBufferWithEmptyLeaf, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithEmptyLeaf, PCL_XYZ_POINT_TYPES);
+
+/*
 PCL_INSTANTIATE(OctreePointCloudDensity, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(OctreePointCloudSingleBufferWithDensityLeaf, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithDensityLeaf, PCL_XYZ_POINT_TYPES);
 
 PCL_INSTANTIATE(OctreePointCloudOccupancy, PCL_XYZ_POINT_TYPES);
-
 PCL_INSTANTIATE(OctreePointCloudSinglePoint, PCL_XYZ_POINT_TYPES);
-
 PCL_INSTANTIATE(OctreePointCloudPointVector, PCL_XYZ_POINT_TYPES);
-
 PCL_INSTANTIATE(OctreePointCloudChangeDetector, PCL_XYZ_POINT_TYPES);
-
 PCL_INSTANTIATE(OctreePointCloudVoxelCentroid, PCL_XYZ_POINT_TYPES);
-
+*/
 

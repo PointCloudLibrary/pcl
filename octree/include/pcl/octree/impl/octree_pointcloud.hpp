@@ -37,9 +37,7 @@
 #ifndef OCTREE_POINTCLOUD_HPP_
 #define OCTREE_POINTCLOUD_HPP_
 
-#include <list>
 #include <vector>
-#include <queue>
 #include <assert.h>
 
 #include "pcl/common/common.h"
@@ -74,6 +72,9 @@ namespace pcl
       OctreePointCloud<PointT, LeafT, OctreeT>::addPointsFromInputCloud ()
       {
         size_t i;
+
+        if (this->leafCount_>0)
+          this->deleteTree();
 
         {
           if (indices_)
@@ -1141,7 +1142,14 @@ namespace pcl
   }
 }
 
-#define PCL_INSTANTIATE_OctreePointCloudSingleBuffer(T) template class pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafDataTVector<int> , pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafDataTVector<int> > >;
-#define PCL_INSTANTIATE_OctreePointCloudDoubleBuffer(T) template class pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafDataTVector<int> , pcl::octree::Octree2BufBase<int, pcl::octree::OctreeLeafDataTVector<int> > >;
+#define PCL_INSTANTIATE_OctreePointCloudSingleBufferWithLeafDataTVector(T) template class pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafDataTVector<int> , pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafDataTVector<int> > >;
+#define PCL_INSTANTIATE_OctreePointCloudDoubleBufferWithLeafDataTVector(T) template class pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafDataTVector<int> , pcl::octree::Octree2BufBase<int, pcl::octree::OctreeLeafDataTVector<int> > >;
+
+#define PCL_INSTANTIATE_OctreePointCloudSingleBufferWithLeafDataT(T) template class pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafDataT<int> , pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafDataT<int> > >;
+#define PCL_INSTANTIATE_OctreePointCloudDoubleBufferWithLeafDataT(T) template class pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafDataT<int> , pcl::octree::Octree2BufBase<int, pcl::octree::OctreeLeafDataT<int> > >;
+
+#define PCL_INSTANTIATE_OctreePointCloudSingleBufferWithEmptyLeaf(T) template class pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafEmpty<int> , pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafEmpty<int> > >;
+#define PCL_INSTANTIATE_OctreePointCloudDoubleBufferWithEmptyLeaf(T) template class pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafEmpty<int> , pcl::octree::Octree2BufBase<int, pcl::octree::OctreeLeafEmpty<int> > >;
+
 
 #endif /* OCTREE_POINTCLOUD_HPP_ */

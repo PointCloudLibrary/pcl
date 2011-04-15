@@ -339,7 +339,8 @@ namespace pcl
           LeafT* leaf = getLeaf (key_arg);
 
           // assign data to leaf
-          leaf->setData (data_arg);
+          if (leaf)
+            leaf->setData (data_arg);
         }
 
         /** \brief Find leaf node

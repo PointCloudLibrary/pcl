@@ -86,7 +86,6 @@ namespace pcl
         int
         getPointIndicesFromNewVoxels ( std::vector<int> &indicesVector_arg, const int minPointsPerLeaf_arg = 0 )
         {
-          indicesVector_arg.clear();
           this->serializeNewLeafs (indicesVector_arg, minPointsPerLeaf_arg);
 
           return indicesVector_arg.size();

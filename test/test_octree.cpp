@@ -37,12 +37,10 @@
 
 #include <gtest/gtest.h>
 
-#include <iostream>
-#include <map>
 #include <vector>
-#include <queue>
 
 #include <stdio.h>
+
 using namespace std;
 
 #include <pcl/common/time.h>
@@ -52,10 +50,8 @@ using namespace std;
 
 using namespace pcl;
 
-//typedef  PointXYZ MyPoint ;
 #include <pcl/octree/octree.h>
 #include <pcl/octree/octree_impl.h>
-//template class pcl::OctreeOccupancyTree<PointXYZ>;
 
 
 using namespace octree;

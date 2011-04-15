@@ -103,7 +103,9 @@ namespace pcl
         inline void
         setInputCloud (const PointCloudConstPtr &cloud_arg, const IndicesConstPtr &indices_arg = IndicesConstPtr ())
         {
-          if (input_ != cloud_arg)
+          assert (this->leafCount_==0);
+
+          if ( (input_ != cloud_arg) && (this->leafCount_==0) )
           {
             input_ = cloud_arg;
             indices_ = indices_arg;

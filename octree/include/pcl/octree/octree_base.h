@@ -310,7 +310,8 @@ namespace pcl
           LeafT* leaf = getLeaf (key_arg);
 
           // assign data to leaf
-          leaf->setData (data_arg);
+          if (leaf)
+            leaf->setData (data_arg);
         }
 
         /** \brief Add vector of DataT objects to vector of octree keys.
