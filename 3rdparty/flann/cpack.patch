@@ -1,3 +1,13 @@
+--- flann-1.6.8-src/cmake/flann.pc.in	2011-04-15 07:09:34.141641032 +0000
++++ flann-1.6.8-src/cmake/flann.pc.in	2011-04-15 07:10:15.141296537 +0000
+@@ -8,6 +8,6 @@
+ Description: @PKG_DESC@
+ Version: @FLANN_VERSION@
+ Requires: @PKG_EXTERNAL_DEPS@
+-Libs: -L${libdir} -lflann
++Libs: -L${libdir} -lflann_cpp
+ Cflags: -I${includedir}
+
 --- flann-1.6.8-src/CMakeLists.txt	2011-02-26 08:36:53.000000000 +0000
 +++ flann-1.6.8-src/CMakeLists.txt	2011-04-15 06:55:12.000000000 +0000
 @@ -116,3 +116,9 @@
@@ -10,3 +20,27 @@
 +set(CPACK_PACKAGE_CONTACT "Marius Muja")
 +include(CPack)
 +
+--- flann-1.6.8-src/CMakeLists.txt	2011-04-15 07:23:04.320760958 +0000
++++ flann-1.6.8-src/CMakeLists.txt	2011-04-15 07:23:10.983133721 +0000
+@@ -18,9 +18,7 @@
+ ADD_CUSTOM_TARGET (uninstall "${CMAKE_COMMAND}" -P
+     "${PROJECT_BINARY_DIR}/uninstall_target.cmake")
+ 
+-if (NOT DEFINED CMAKE_INSTALL_PREFIX)
+-    set(CMAKE_INSTALL_PREFIX /usr/local)
+-endif()
++set(CMAKE_INSTALL_PREFIX /usr)
+ 
+ # Set the build type.  Options are:
+ #  Debug          : w/ debug symbols, w/o optimization
+--- flann-1.6.8-src/Makefile	2011-04-15 07:17:29.151674954 +0000
++++ flann-1.6.8-src/Makefile	2011-04-15 07:17:34.413133646 +0000
+@@ -1,7 +1,7 @@
+ .PHONY: tests test libs doc all clean examples
+ 
+ BUILD_TYPE?='Release'
+-INSTALL_PREFIX?=/usr/local
++INSTALL_PREFIX?=/usr
+ PYTHON_INSTALL_PREFIX?=false  # using default install prefix
+ BUILD_C_BINDINGS?=true
+ BUILD_MATLAB_BINDINGS?=true
