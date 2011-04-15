@@ -1,8 +1,0 @@
-Package: flann
-Version: __VERSION__
-Section: devel
-Priority: optional
-Architecture: __ARCHITECTURE__
-Depends:
-Maintainer: Marius Muja. debian package: Suat Gedikli (gedikli@willowgarage.com)
-Description: Library for Fast Approximate Nearest Neighbors Search.

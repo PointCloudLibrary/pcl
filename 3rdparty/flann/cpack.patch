@@ -1,0 +1,12 @@
+--- flann-1.6.8-src/CMakeLists.txt	2011-02-26 08:36:53.000000000 +0000
++++ flann-1.6.8-src/CMakeLists.txt	2011-04-15 06:55:12.000000000 +0000
+@@ -116,3 +116,9 @@
+ add_subdirectory( examples )
+ add_subdirectory( test )
+ add_subdirectory( doc )
++
++set(CPACK_GENERATOR "DEB;RPM;")
++include(InstallRequiredSystemLibraries)
++set(CPACK_PACKAGE_CONTACT "Marius Muja")
++include(CPack)
++
