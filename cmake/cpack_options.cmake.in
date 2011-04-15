@@ -11,7 +11,7 @@ set(CPACK_RESOURCE_FILE_LICENSE "@PROJECT_SOURCE_DIR@/LICENSE")
 
 @PCL_CPACK_COMPONENTS@
 
-IF (WIN32 AND NOT UNIX)
+IF (WIN32 AND UNIX AND (CPACK_GENERATOR STREQUAL "NSIS"))
     set(CPACK_NSIS_MUI_ICON "@PROJECT_SOURCE_DIR@/cmake/images/pcl.ico")
     set(CPACK_NSIS_MUI_UNIICON "@PROJECT_SOURCE_DIR@/cmake/images/pcl.ico")
     set(CPACK_PACKAGE_ICON "@PROJECT_SOURCE_DIR@/cmake/images/pcl_vert_large_pos_no_text.bmp")
@@ -24,11 +24,11 @@ IF (WIN32 AND NOT UNIX)
         "User's guide")
     set(CPACK_NSIS_MENU_LINKS "share/doc/@PROJECT_NAME@/developer_guide.pdf"
         "Developer's guide")
-ENDIF (WIN32 AND NOT UNIX)
+ENDIF (WIN32 AND UNIX AND (CPACK_GENERATOR STREQUAL "NSIS"))
 
-IF (UNIX)
+IF (UNIX AND ((CPACK_GENERATOR STREQUAL "DEB") OR (CPACK_GENERATOR STREQUAL "RPM")))
     # define stuff for the DEB/RPM packages
     set(CPACK_PACKAGE_CONTACT "pcl-developers@pointclouds.org")
     set(CPACK_SET_DESTDIR ON)
     set(CPACK_PACKAGING_INSTALL_PREFIX /usr/local)
-ENDIF (UNIX)
+ENDIF ()
