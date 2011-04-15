@@ -235,7 +235,7 @@ namespace pcl
 
       /** \brief Return the size of a sample from which a model is computed */
       inline unsigned int 
-      getSampleSize() const { return SAC_SAMPLE_SIZE.at (getModelType ()); }
+      getSampleSize() const { return SAC_SAMPLE_SIZE.find (getModelType ())->second; }
 
       /** \brief Set the minimum and maximum allowable radius limits for the
         * model (applicable to models that estimate a radius)
