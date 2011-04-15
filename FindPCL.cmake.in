@@ -134,12 +134,15 @@ foreach(component ${PCL_FIND_COMPONENTS})
     ${${PCL_COMPONENT_INCLUDE_DIR}}/${${pcl_component}_header}
     PATH)
   file(TO_CMAKE_PATH ${component_header_path} component_header_path)
-  string(REGEX REPLACE "(.*)/pcl/${component}" "\\1" 
-    component_header_path "${component_header_path}")
-  if(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
-    message(FATAL_ERROR "${component_header_path} is not a valid include directory")
-  endif(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
-  
+	# on windows we can not install
+	if(NOT WIN32)
+		string(REGEX REPLACE "(.*)/pcl/${component}" "\\1" 
+			component_header_path "${component_header_path}")
+		if(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
+			message(FATAL_ERROR "${component_header_path} is not a valid include directory")
+		endif(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
+  endif(NOT WIN32)
+
   find_library(${PCL_COMPONENT_LIBRARY} ${pcl_component}
     HINTS /usr/local 
           ${${PC_PCL_COMPONENT}_LIBDIR} ${${PC_PCL_COMPONENT}_LIBRARY_DIRS}
