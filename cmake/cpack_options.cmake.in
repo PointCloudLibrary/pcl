@@ -1,33 +1,34 @@
 set(CPACK_PACKAGE_NAME "@PROJECT_NAME@")
+set(CPACK_PACKAGE_VENDOR "PointClouds.org")
 set(CPACK_PACKAGE_VERSION "@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@.@PCL_REVISION_VERSION@")
 set(CPACK_PACKAGE_VERSION_MAJOR "@PCL_MAJOR_VERSION@")
 set(CPACK_PACKAGE_VERSION_MINOR "@PCL_MINOR_VERSION@")
 set(CPACK_PACKAGE_VERSION_PATCH "@PCL_REVISION_VERSION@")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Point cloud library")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Point Cloud Library (PCL)")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "@PROJECT_NAME@")
 set(CPACK_PACKAGE_FILE_NAME "@PROJECT_NAME@-@PCL_VERSION@")
 set(CPACK_RESOURCE_FILE_LICENSE "@PROJECT_SOURCE_DIR@/LICENSE")
 
 @PCL_CPACK_COMPONENTS@
 
-IF ((WIN32) OR (UNIX))
+IF (WIN32 AND NOT UNIX)
     set(CPACK_NSIS_MUI_ICON "@PROJECT_SOURCE_DIR@/cmake/images/pcl.ico")
     set(CPACK_NSIS_MUI_UNIICON "@PROJECT_SOURCE_DIR@/cmake/images/pcl.ico")
     set(CPACK_PACKAGE_ICON "@PROJECT_SOURCE_DIR@/cmake/images/pcl_vert_large_pos_no_text.bmp")
 
-    set(CPACK_NSIS_HELP_LINK "http://www.pointclouds.org")
-    set(CPACK_NSIS_URL_INFO_ABOUT "http://www.pointclouds.org")
+    set(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.pointclouds.org")
+    set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.pointclouds.org")
     set(CPACK_NSIS_MODIFY_PATH ON)
     set(CPACK_PACKAGE_EXECUTABLES @PCL_EXECUTABLES@)
     set(CPACK_NSIS_MENU_LINKS "share/doc/@PROJECT_NAME@/user_guide.pdf"
         "User's guide")
     set(CPACK_NSIS_MENU_LINKS "share/doc/@PROJECT_NAME@/developer_guide.pdf"
         "Developer's guide")
-ENDIF ((WIN32) OR (UNIX))
+ENDIF (WIN32 AND NOT UNIX)
 
 IF (UNIX)
     # define stuff for the DEB/RPM packages
-    set(CPACK_PACKAGE_CONTACT "Radu B. Rusu")
+    set(CPACK_PACKAGE_CONTACT "pcl-developers@pointclouds.org")
     set(CPACK_SET_DESTDIR ON)
-    set(CPACK_INSTALL_PREFIX /usr/local)
+    set(CPACK_PACKAGING_INSTALL_PREFIX /usr/local)
 ENDIF (UNIX)
