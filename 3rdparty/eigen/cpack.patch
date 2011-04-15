@@ -1,0 +1,12 @@
+--- eigen/CMakeLists.txt	2011-04-14 23:36:01.000000000 -0700
++++ eigen/CMakeLists.txt	2011-04-14 23:29:55.000000000 -0700
+@@ -391,3 +391,9 @@
+ endif()
+ 
+ message(STATUS "")
++
++set(CPACK_GENERATOR "DEB;RPM;")
++include(InstallRequiredSystemLibraries)
++set(CPACK_PACKAGE_CONTACT "eigen@lists.tuxfamily.org")
++include(CPack)
++

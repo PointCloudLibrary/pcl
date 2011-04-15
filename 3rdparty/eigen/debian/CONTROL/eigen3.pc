@@ -1,7 +1,0 @@
-Name: Eigen3
-Description: A C++ template library for linear algebra: vectors, matrices, and related algorithms
-Version: __VERSION__
-Requires:
-Libs:
-Cflags: -I/usr/include
-
