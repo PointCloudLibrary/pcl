@@ -8,7 +8,7 @@ if (${CMAKE_GENERATOR} MATCHES ".*Makefiles")
   endif("${CMAKE_BUILD_TYPE}" STREQUAL "")
 #if the generator is different for *Makefiles assume it is Release
 else(${CMAKE_GENERATOR} MATCHES ".*Makefiles")
-	set(CMAKE_BUILD_TYPE Release CACHE STRING "build type default to Release, set to Debug if you are developing PCL" FORCE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "build type default to Release, set to Debug if you are developing PCL" FORCE)
 endif(${CMAKE_GENERATOR} MATCHES ".*Makefiles")
 
 project(PCL)
@@ -115,13 +115,13 @@ add_subdirectory(test)
 add_subdirectory(doc)
 
 ### ---[ Package creation
-set(CPACK_GENERATOR "DEB;RPM;NSIS;")
-include(InstallRequiredSystemLibraries)
 include(${PCL_SOURCE_DIR}/cmake/pcl_cpack.cmake)
-PCL_MAKE_CPACK_INPUT()
-set(CPACK_PROJECT_CONFIG_FILE "${PCL_CPACK_CFG_FILE}")
-include(CPack)
-
+if(CPACK_GENERATOR)
+  message(STATUS "Found CPack generators: ${CPACK_GENERATOR}")
+  PCL_MAKE_CPACK_INPUT()
+  set(CPACK_PROJECT_CONFIG_FILE "${PCL_CPACK_CFG_FILE}")
+  include(CPack)
+endif(CPACK_GENERATOR)
 ### ---[ Make a pretty picture of the dependency graph
 include(${PCL_SOURCE_DIR}/cmake/dep_graph.cmake)
 MAKE_DEP_GRAPH()
