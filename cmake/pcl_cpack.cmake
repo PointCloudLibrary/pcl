@@ -22,7 +22,8 @@ if(EXISTS ${NSIS_PROGRAM})
   list(APPEND PACKAGE_EXTENSION ".exe;")
 endif(EXISTS ${NSIS_PROGRAM})
 # dpkg
-find_program(PACKAGE_MAKER_PROGRAM PackageMaker)
+find_program(PACKAGE_MAKER_PROGRAM PackageMaker
+	    HINTS /Developer/Applications/Utilities)
 if(EXISTS ${PACKAGE_MAKER_PROGRAM})
   list(APPEND CPACK_GENERATOR "PackageMaker")
   list(APPEND PACKAGE_EXTENSION ".dmg;")
@@ -40,11 +41,13 @@ if(nb_extensions GREATER 0)
   cp *${ext_name} ../../")
     endforeach(ext)
   endif(${before_last} GREATER 0)
+
   #now configure all the 3rdpaty Makefile
   file(GLOB parties ${PCL_SOURCE_DIR}/3rdparty/*)
   foreach(party ${parties})
     if(EXISTS ${party}/Makefile.in)
       configure_file(${party}/Makefile.in ${party}/Makefile @ONLY)
+      configure_file(${party}/cpack.patch.in ${party}/cpack.patch @ONLY)
     endif(EXISTS ${party}/Makefile.in)
   endforeach(party)
 endif(nb_extensions GREATER 0)
