@@ -32,3 +32,11 @@ IF (UNIX AND ((CPACK_GENERATOR STREQUAL "DEB") OR (CPACK_GENERATOR STREQUAL "RPM
     set(CPACK_SET_DESTDIR ON)
     set(CPACK_PACKAGING_INSTALL_PREFIX /usr/local)
 ENDIF ()
+
+IF (APPLE AND (CPACK_GENERATOR STREQUAL "PackageMaker"))
+    # define stuff for the PackageMaker packages
+    set(CPACK_OSX_PACKAGE_VERSION 10.5)
+    set(CPACK_PACKAGE_CONTACT "pcl-developers@pointclouds.org")
+    set(CPACK_SET_DESTDIR ON)
+    set(CPACK_PACKAGING_INSTALL_PREFIX /opt/local)
+ENDIF ()
