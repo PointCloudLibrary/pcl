@@ -53,7 +53,7 @@ namespace pcl
     template<typename PointT, typename LeafT, typename OctreeT>
       OctreePointCloud<PointT, LeafT, OctreeT>::OctreePointCloud (const double resolution) :
         OctreeT (), epsilon_ (0), resolution_ (resolution), minX_ (0.0f), maxX_ (resolution), minY_ (0.0f),
-            maxY_ (resolution), minZ_ (0.0f), maxZ_ (resolution), maxKeys_ (1)
+            maxY_ (resolution), minZ_ (0.0f), maxZ_ (resolution), maxKeys_ (1), boundingBoxDefined_(false)
       {
         assert ( resolution > 0.0f );
         input_ = PointCloudConstPtr();
@@ -73,8 +73,7 @@ namespace pcl
       {
         size_t i;
 
-        if (this->leafCount_>0)
-          this->deleteTree();
+        assert (this->leafCount_==0);
 
         {
           if (indices_)
@@ -453,6 +452,8 @@ namespace pcl
         // generate bit masks for octree
         getKeyBitSize ();
 
+        boundingBoxDefined_ = true;
+
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -489,6 +490,8 @@ namespace pcl
         // generate bit masks for octree
         getKeyBitSize ();
 
+        boundingBoxDefined_ = true;
+
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -521,6 +524,8 @@ namespace pcl
 
         // generate bit masks for octree
         getKeyBitSize ();
+
+        boundingBoxDefined_ = true;
 
       }
 
@@ -561,7 +566,7 @@ namespace pcl
 
           // do we violate any bounds?
           if (bLowerBoundViolationX || bLowerBoundViolationY || bLowerBoundViolationZ || bUpperBoundViolationX
-              || bUpperBoundViolationY || bUpperBoundViolationZ)
+              || bUpperBoundViolationY || bUpperBoundViolationZ || (!boundingBoxDefined_))
           {
 
             double octreeSideLen;
@@ -626,6 +631,8 @@ namespace pcl
             }
 
             getKeyBitSize ();
+
+            boundingBoxDefined_ = true;
 
           }
           else

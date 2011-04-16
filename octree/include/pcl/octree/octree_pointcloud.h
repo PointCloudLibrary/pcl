@@ -50,6 +50,7 @@
 #include <queue>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 namespace pcl
 {
@@ -105,7 +106,7 @@ namespace pcl
         {
           assert (this->leafCount_==0);
 
-          if ( (input_ != cloud_arg) && (this->leafCount_==0) )
+          if ((input_ != cloud_arg) && (this->leafCount_ == 0))
           {
             input_ = cloud_arg;
             indices_ = indices_arg;
@@ -178,6 +179,14 @@ namespace pcl
          * */
         bool
         isVoxelOccupiedAtPoint (const PointT& point_arg) const;
+
+        /** \brief Delete the octree structure and its leaf nodes. */
+        void
+        deleteTree()
+        {
+          this->boundingBoxDefined_ = false;
+          OctreeT::deleteTree();
+        }
 
         /** \brief Check if voxel at given point coordinates exist.
          *  \param pointX_arg: X coordinate of point to be checked
@@ -650,6 +659,9 @@ namespace pcl
 
         /** \brief Maximum amount of keys available in octree. */
         unsigned int maxKeys_;
+
+        /** \brief Flag indicating if octree has defined bounding box. */
+        bool boundingBoxDefined_;
 
       };
 
