@@ -15,7 +15,7 @@
  add_subdirectory( test )
  add_subdirectory( doc )
 +
-+set(CPACK_GENERATOR "DEB;RPM;NSIS;")
++set(CPACK_GENERATOR "@CPACK_GENERATOR@")
 +set(CPACK_MONOLITHIC_INSTALL 1)
 +set(CPACK_SET_DESTDIR ON)
 +include(InstallRequiredSystemLibraries)

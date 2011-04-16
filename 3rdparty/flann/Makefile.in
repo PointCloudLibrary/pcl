@@ -1,13 +1,13 @@
 VERSION=1.6.8
 
 all:
-  wget http://people.cs.ubc.ca/~mariusm/uploads/FLANN/flann-${VERSION}-src.zip
-  unzip flann-${VERSION}-src.zip
-  patch -p0 < cpack.patch
-  cd flann-${VERSION}-src && mkdir -p build && cd build && cmake -DBUILD_C_BINDINGS=false -DBUILD_PYTHON_BINDINGS=false -DBUILD_MATLAB_BINDINGS=false -DCMAKE_BUILD_TYPE=RELEASE .. && \
-  make package && \
-  @COPY_PACKAGE_COMMAND@
+		wget http://people.cs.ubc.ca/~mariusm/uploads/FLANN/flann-${VERSION}-src.zip
+		unzip flann-${VERSION}-src.zip
+		patch -p0 < cpack.patch
+		cd flann-${VERSION}-src && mkdir -p build && cd build && cmake -DBUILD_C_BINDINGS=false -DBUILD_PYTHON_BINDINGS=false -DBUILD_MATLAB_BINDINGS=false -DCMAKE_BUILD_TYPE=RELEASE .. && \
+		make package && \
+		@COPY_PACKAGE_COMMAND@
 
 clean:
-  rm -rf flann* *~
+		rm -rf flann* *~
 

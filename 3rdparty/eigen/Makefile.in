@@ -1,12 +1,12 @@
 VERSION=3.0.0
 all: eigen
-  mkdir -p eigen/build_dir
-  patch -p0 < cpack.patch
-  cd eigen/build_dir && cmake .. && make package && \
-  @COPY_PACKAGE_COMMAND@
+		mkdir -p eigen/build_dir
+		patch -p0 < cpack.patch
+		cd eigen/build_dir && cmake .. && make package && \
+		@COPY_PACKAGE_COMMAND@
 
 eigen:
-  hg clone https://bitbucket.org/eigen/eigen/ -r ${VERSION}
+		hg clone https://bitbucket.org/eigen/eigen/ -r ${VERSION}
 
 clean:
-  rm -rf eigen Eigen* *~
+		rm -rf eigen Eigen* *~
