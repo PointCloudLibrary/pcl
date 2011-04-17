@@ -3,7 +3,19 @@ all: eigen
 		mkdir -p eigen/build_dir
 		patch -p0 < cpack.patch
 		cd eigen/build_dir && cmake .. && make package && \
-		@COPY_PACKAGE_COMMAND@
+		if test -e *.exe; \
+		then cp *.exe ../../; \
+		fi; \
+		if test -e *.rpm; \
+		then cp *.rpm ../../; \
+		fi; \
+		if test -e *.deb; \
+		then cp *.deb ../../; \
+		fi; \
+		if test -e *.dmg; \
+		then cp *.dmg ../../; \
+		fi;
+
 
 eigen:
 		hg clone https://bitbucket.org/eigen/eigen/ -r ${VERSION}

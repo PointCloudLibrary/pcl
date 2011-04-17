@@ -6,7 +6,18 @@ all:
 		patch -p0 < cpack.patch
 		cd cminpack-${VERSION} && mkdir -p build && cd build && cmake -DUSE_FPIC=ON -DSHARED_LIBS=ON -DBUILD_EXAMPLES=OFF -DCMINPACK_LIB_INSTALL_DIR="." .. && \
 		make package && \
-		@COPY_PACKAGE_COMMAND@
+		if test -e *.exe; \
+		then cp *.exe ../../; \
+		fi; \
+		if test -e *.rpm; \
+		then cp *.rpm ../../; \
+		fi; \
+		if test -e *.deb; \
+		then cp *.deb ../../; \
+		fi; \
+		if test -e *.dmg; \
+		then cp *.dmg ../../; \
+		fi;
 
 clean:
 		rm -rf cminpack* CMINPACK* *~
