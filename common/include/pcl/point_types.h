@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: point_types.h 33238 2010-03-11 00:46:58Z rusu $
+ * $Id$
  *
  */
 #ifndef PCL_DATA_TYPES_H_

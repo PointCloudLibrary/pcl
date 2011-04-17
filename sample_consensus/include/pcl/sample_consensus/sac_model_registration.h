@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_model_registration.h 36095 2011-02-19 22:24:01Z rusu $
+ * $Id$
  *
  */
 
@@ -110,7 +110,7 @@ namespace pcl
         // Compute the distance threshold for sample selection
         sample_dist_thresh_ = eigen_values.array ().sqrt ().sum () / 3.0;
         sample_dist_thresh_ *= sample_dist_thresh_;
-        ROS_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a sample selection distance threshold of: %f", sample_dist_thresh_);
+        PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a sample selection distance threshold of: %f", sample_dist_thresh_);
       }
 
       /** \brief Set the input point cloud target.
@@ -191,7 +191,7 @@ namespace pcl
       bool 
       doSamplesVerifyModel (const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, double threshold)
       {
-        ROS_ERROR ("[pcl::SampleConsensusModelRegistration::doSamplesVerifyModel] called!");
+        PCL_ERROR ("[pcl::SampleConsensusModelRegistration::doSamplesVerifyModel] called!");
         return (false);
       }
 

@@ -39,7 +39,8 @@
 
 #include <pcl/point_cloud.h>
 
-namespace pcl {
+namespace pcl 
+{
   /** Principal Component analysis (PCA) class.\n
    *  Principal components are extracted by singular values decomposition on the 
    * covariance matrix of the centered input cloud. Available data after pca computation 
@@ -78,15 +79,16 @@ namespace pcl {
        * @param basisOnly_ flag to compute only the PCA basis
        */
       PCA(const pcl::PointCloud<PointT>& X_, bool _basis_only = false) : 
-      compute_done(false), basis_only(_basis_only)
+        compute_done (false), basis_only (_basis_only)
       {
-        compute(X_);
+        compute (X_);
       }
 
       /** Copy Constructor
        * @param pca_ PCA object
        */
-      PCA(PCA const & pca_) {
+      PCA(PCA const & pca_) 
+      {
         mean = pca_.mean;
         eigenvalues = pca_.eigenvalues;
         eigenvectors = pca_.eigenvectors;
@@ -96,7 +98,8 @@ namespace pcl {
       /** assignment operator
        * @param pca_ PCA object
        */
-      inline PCA& operator= (PCA const & pca_) {
+      inline PCA& operator= (PCA const & pca_) 
+      {
         mean = pca_.mean;
         eigenvalues = pca_.eigenvalues;
         eigenvectors = pca_.eigenvectors;
@@ -105,63 +108,73 @@ namespace pcl {
       }
 
       /// Mean accessor
-      inline Eigen::Vector4f& getMean() 
+      inline Eigen::Vector4f& 
+      getMean () 
       {
-        if(!compute_done)
-          ROS_ERROR ("[pcl::PCA::getMean] no results available");
-        return mean;
+        if (!compute_done)
+          PCL_ERROR ("[pcl::PCA::getMean] no results available");
+        return (mean);
       }
 
       /// Eigen Vectors accessor
-      inline Eigen::MatrixXf& getEigenVectors() 
+      inline Eigen::MatrixXf& 
+      getEigenVectors () 
       {
-        if(!compute_done)
-          ROS_ERROR("[pcl::PCA::getEigenVectors] no results available");
-        return eigenvectors;
+        if (!compute_done)
+          PCL_ERROR ("[pcl::PCA::getEigenVectors] no results available");
+        return (eigenvectors);
       }
       
       /// Eigen Values accessor
-      inline Eigen::VectorXf& getEigenValues() {
-        if(!compute_done)
-          ROS_ERROR("[pcl::PCA::getEigenValues] no results available");
-        return eigenvalues;
+      inline Eigen::VectorXf& 
+      getEigenValues ()
+      {
+        if (!compute_done)
+          PCL_ERROR ("[pcl::PCA::getEigenValues] no results available");
+        return (eigenvalues);
       }
       
       /// Coefficients accessor
-      inline Eigen::MatrixXf& getCoefficients() {
-        if(!compute_done)
-          ROS_ERROR("[pcl::PCA::getEigenValues] no results available");
-        return coefficients;
+      inline Eigen::MatrixXf& 
+      getCoefficients () 
+      {
+        if (!compute_done)
+          PCL_ERROR ("[pcl::PCA::getEigenValues] no results available");
+        return (coefficients);
       }
 
       /** Compute PCA using the batch algorithm
-       * @param cloud input point cloud
-       */
-      inline void compute(const pcl::PointCloud<PointT>& cloud);
+        * \param cloud input point cloud
+        */
+      inline void 
+      compute (const pcl::PointCloud<PointT>& cloud);
       
       
       /** update PCA with a new point
-       * @param input input point 
-       * @param f_ update flag
-       */
-      inline void update(const PointT& input, FLAG f_=preserve);
+        * \param input input point 
+        * \param f_ update flag
+        */
+      inline void 
+      update (const PointT& input, FLAG f_=preserve);
       
       /** Project point on the eigenspace.
-       * @param input point from original dataset
-       * @return projection the point in eigen vectors space
-       */
-      inline void project(const PointT& input, PointT& projection) const;
+        * \param input point from original dataset
+        * \return projection the point in eigen vectors space
+        */
+      inline void 
+      project (const PointT& input, PointT& projection) const;
       
       /** Reconstruct point from its projection
-       * @param projection point from eigenvector space
-       * @return input reconstructed point
-       */
-      inline void reconstruct(const PointT& projection, PointT& input) const;
+        * \param projection point from eigenvector space
+        * \return input reconstructed point
+        */
+      inline void 
+      reconstruct (const PointT& projection, PointT& input) const;
       
     private:
       bool compute_done;
       bool basis_only;
-      Eigen::MatrixXf eigenvectors,coefficients;
+      Eigen::MatrixXf eigenvectors, coefficients;
       Eigen::Vector4f mean;
       Eigen::VectorXf eigenvalues;
   }; // class PCA

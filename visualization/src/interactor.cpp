@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: interactor.cpp 34885 2010-12-19 00:23:43Z rusu $
+ * $Id$
  *
  */
 

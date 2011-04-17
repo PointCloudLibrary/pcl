@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pfh.cpp 35810 2011-02-08 00:03:46Z rusu $
+ * $Id$
  *
  */
 
@@ -55,7 +55,7 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
 
   if (distance_sqr == 0)
   {
-    ROS_ERROR ("Euclidean distance between points is 0!");
+    PCL_ERROR ("Euclidean distance between points is 0!");
     f1 = f2 = f3 = f4 = 0;
     return (false);
   }
@@ -77,7 +77,7 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
   distance_sqr = v.squaredNorm ();
   if (distance_sqr == 0)
   {
-    ROS_ERROR ("Norm of Delta x U is 0!");
+    PCL_ERROR ("Norm of Delta x U is 0!");
     f1 = f2 = f3 = f4 = 0;
     return (false);
   }

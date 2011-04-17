@@ -59,39 +59,46 @@ int
   pcl::PointCloud<PointType> point_cloud;
   
   bool use_point_cloud_from_file = argc >= 2;
-  if (use_point_cloud_from_file) {
+  if (use_point_cloud_from_file) 
+  {
     string fileName = argv[1];
-    ROS_INFO_STREAM ("Trying to open \""<<fileName<<"\".\n");
-    if (pcl::io::loadPCDFile(fileName, point_cloud) == -1) {
-      ROS_ERROR_STREAM("Was not able to open file \""<<fileName<<"\".\n");
+    PCL_INFO ("Trying to open %s...", fileName.c_str ());
+    if (pcl::io::loadPCDFile (fileName, point_cloud) == -1) 
+    {
+      PCL_ERROR ("Was not able to open file %s!", fileName.c_str ());
       use_point_cloud_from_file = false;
     }
   }
-  else {
-    cout << "\n\nUsage: "<<argv[0]<<" <file.pcl> <angular resolution (default 0.5)> <coordinate frame (default 0)>\n\n";
+  else 
+  {
+    PCL_INFO ("\n\nUsage: %s <file.pcl> <angular resolution (default 0.5)> <coordinate frame (default 0)>\n", argv[0]);
   }
   
-  if (!use_point_cloud_from_file) {
-    ROS_INFO_STREAM ("No file given or could not read file => Genarating example point cloud.\n");
-    for (float y=-0.5f; y<=0.5f; y+=0.01f) {
-      for (float z=-0.5f; z<=0.5f; z+=0.01f) {
+  if (!use_point_cloud_from_file) 
+  {
+    PCL_INFO ("No file given or could not read file => Genarating example point cloud.");
+    for (float y=-0.5f; y<=0.5f; y+=0.01f) 
+    {
+      for (float z=-0.5f; z<=0.5f; z+=0.01f) 
+      {
         PointType point;
         point.x = 2.0f - y;
         point.y = y;
         point.z = z;
-        point_cloud.points.push_back(point);
+        point_cloud.points.push_back (point);
       }
     }
-    point_cloud.width = point_cloud.points.size();
+    point_cloud.width = point_cloud.points.size ();
     point_cloud.height = 1;
   }
 
-  float angular_resolution = DEG2RAD(0.5f);
-  if (argc >= 3) {
-    float tmp_angular_resolution = strtod(argv[2], NULL);
+  float angular_resolution = DEG2RAD (0.5f);
+  if (argc >= 3) 
+  {
+    float tmp_angular_resolution = strtod (argv[2], NULL);
     if (tmp_angular_resolution >= 0.1f)  // Check for too small numbers (or we might get a memory problem)
     {
-      cout << "Using angular resolution "<<tmp_angular_resolution<<"deg from command line.\n";
+      PCL_INFO ("Using angular resolution %f deg from command line.", tmp_angular_resolution); 
       angular_resolution = DEG2RAD(tmp_angular_resolution);
     }
   }
@@ -99,7 +106,7 @@ int
   RangeImage::CoordinateFrame coordinate_frame = RangeImage::CAMERA_FRAME;
   if (argc >= 4) 
   {
-    coordinate_frame = (RangeImage::CoordinateFrame)strtol(argv[3], NULL, 0);
+    coordinate_frame = (RangeImage::CoordinateFrame)strtol (argv[3], NULL, 0);
     cout << "Using coordinate frame "<<coordinate_frame<<".\n";
   }
   

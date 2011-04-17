@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: io.cpp 35818 2011-02-08 00:06:28Z rusu $
+ * $Id$
  *
  */
 #include <pcl/visualization/common/io.h>

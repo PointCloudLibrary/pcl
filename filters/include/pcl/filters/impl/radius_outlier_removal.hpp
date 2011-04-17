@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: radius_outlier_removal.hpp 34685 2010-12-12 04:25:36Z rusu $
+ * $Id$
  *
  */
 
@@ -46,7 +46,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilter (PointCloud &output)
 {
   if (search_radius_ == 0.0)
   {
-    ROS_ERROR ("[pcl::%s::applyFilter] No radius defined!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::applyFilter] No radius defined!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;

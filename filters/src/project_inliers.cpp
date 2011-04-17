@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: project_inliers.cpp 35810 2011-02-08 00:03:46Z rusu $
+ * $Id$
  *
  */
 
@@ -46,7 +46,7 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 {
   if (indices_->empty ())
   {
-    ROS_WARN ("[pcl::%s::applyFilter] No indices given or empty indices!", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::applyFilter] No indices given or empty indices!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.data.clear ();
     return;
@@ -61,7 +61,7 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   // Construct the model and project
   if (!initSACModel (model_type_))
   {
-    ROS_ERROR ("[pcl::%s::segment] Error initializing the SAC model!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::segment] Error initializing the SAC model!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.data.clear ();
     return;
@@ -93,7 +93,7 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     }
     if (x_idx == -1 || y_idx == -1 || z_idx == -1)
     {
-      ROS_ERROR ("[pcl::%s::segment] X (%d) Y (%d) Z (%d) field dimensions not found!", getClassName ().c_str (), x_idx, y_idx, z_idx);
+      PCL_ERROR ("[pcl::%s::segment] X (%d) Y (%d) Z (%d) field dimensions not found!", getClassName ().c_str (), x_idx, y_idx, z_idx);
       output.width = output.height = 0;
       output.data.clear ();
       return;
@@ -136,7 +136,7 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 
       if (x_idx == -1 || y_idx == -1 || z_idx == -1)
       {
-        ROS_ERROR ("[pcl::%s::segment] X (%d) Y (%d) Z (%d) field dimensions not found!", getClassName ().c_str (), x_idx, y_idx, z_idx);
+        PCL_ERROR ("[pcl::%s::segment] X (%d) Y (%d) Z (%d) field dimensions not found!", getClassName ().c_str (), x_idx, y_idx, z_idx);
         output.width = output.height = 0;
         output.data.clear ();
         return;
@@ -168,67 +168,67 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::initSACModel (int model_type)
   {
     case SACMODEL_PLANE:
     {
-      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PLANE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PLANE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelPlane<pcl::PointXYZ> (cloud_ptr));
       break;
     }
     case SACMODEL_LINE:
     {
-      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_LINE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_LINE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelLine<pcl::PointXYZ> (cloud_ptr));
       break;
     }
     case SACMODEL_CIRCLE2D:
     {
-      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_CIRCLE2D", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_CIRCLE2D", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelCircle2D<pcl::PointXYZ> (cloud_ptr));
       break;
     }
     case SACMODEL_SPHERE:
     {
-      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_SPHERE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_SPHERE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelSphere<pcl::PointXYZ> (cloud_ptr));
       break;
     }
     case SACMODEL_PARALLEL_LINE:
     {
-      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PARALLEL_LINE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PARALLEL_LINE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelParallelLine<pcl::PointXYZ> (cloud_ptr));
       break;
     }
     case SACMODEL_PERPENDICULAR_PLANE:
     {
-      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PERPENDICULAR_PLANE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PERPENDICULAR_PLANE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelPerpendicularPlane<pcl::PointXYZ> (cloud_ptr));
       break;
     }
     case SACMODEL_CYLINDER:
     {
-      //ROS_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_CYLINDER", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_CYLINDER", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelCylinder<pcl::PointXYZ, Normal> (cloud_ptr));
       break;
     }
     case SACMODEL_NORMAL_PLANE:
     {
-      //ROS_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PLANE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PLANE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelNormalPlane<pcl::PointXYZ, Normal> (cloud_ptr));
       break;
     }
     case SACMODEL_NORMAL_PARALLEL_PLANE:
     {
-      //ROS_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PARALLEL_PLANE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PARALLEL_PLANE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelNormalParallelPlane<pcl::PointXYZ, Normal> (cloud_ptr));
       break;
     }
     case SACMODEL_PARALLEL_PLANE:
     {
-      //ROS_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_PARALLEL_PLANE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_PARALLEL_PLANE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelParallelPlane<pcl::PointXYZ> (cloud_ptr));
       break;
     }
     default:
     {
-      ROS_ERROR ("[pcl::%s::initSACModel] No valid model given!", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::initSACModel] No valid model given!", getClassName ().c_str ());
       return (false);
     }
   }

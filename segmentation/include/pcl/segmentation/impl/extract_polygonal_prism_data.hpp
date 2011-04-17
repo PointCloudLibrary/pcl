@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: extract_polygonal_prism_data.hpp 35810 2011-02-08 00:03:46Z rusu $
+ * $Id$
  *
  */
 
@@ -159,7 +159,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
 
   if ((int)planar_hull_->points.size () < min_pts_hull_)
   {
-    ROS_ERROR ("[pcl::%s::segment] Not enough points (%zu) in the hull!", getClassName ().c_str (), planar_hull_->points.size ());
+    PCL_ERROR ("[pcl::%s::segment] Not enough points (%zu) in the hull!", getClassName ().c_str (), planar_hull_->points.size ());
     output.indices.clear ();
     return;
   }

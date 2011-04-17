@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: icp.hpp 33198 2010-10-11 04:56:16Z rusu $
+ * $Id$
  *
  */
 
@@ -68,7 +68,7 @@ template <typename PointSource, typename PointTarget> void
     {
       if (!searchForNeighbors (output, idx, nn_indices, nn_dists))
       {
-        ROS_ERROR ("[pcl::%s::computeTransformation] Unable to find a nearest neighbor in the target dataset for point %d in the source!", getClassName ().c_str (), (*indices_)[idx]);
+        PCL_ERROR ("[pcl::%s::computeTransformation] Unable to find a nearest neighbor in the target dataset for point %d in the source!", getClassName ().c_str (), (*indices_)[idx]);
         return;
       }
 
@@ -123,12 +123,12 @@ template <typename PointSource, typename PointTarget> void
     cnt = (int)source_indices_good.size ();
     if (cnt < min_number_correspondences_)
     {
-      ROS_ERROR ("[pcl::%s::computeTransformation] Not enough correspondences found. Relax your threshold parameters.", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::computeTransformation] Not enough correspondences found. Relax your threshold parameters.", getClassName ().c_str ());
       converged_ = false;
       return;
     }
 
-    ROS_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %zu points [100.0%%], RANSAC rejected: %zu [%f%%].", getClassName ().c_str (), cnt, (cnt * 100.0) / indices_->size (), indices_->size (), source_indices.size () - cnt, (source_indices.size () - cnt) * 100.0 / source_indices.size ());
+    PCL_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %zu points [100.0%%], RANSAC rejected: %zu [%f%%].", getClassName ().c_str (), cnt, (cnt * 100.0) / indices_->size (), indices_->size (), source_indices.size () - cnt, (source_indices.size () - cnt) * 100.0 / source_indices.size ());
   
     // Estimate the transform
     estimateRigidTransformationSVD (output, source_indices_good, *target_, target_indices_good, transformation_);
@@ -145,7 +145,7 @@ template <typename PointSource, typename PointTarget> void
         fabs ((transformation_ - previous_transformation_).sum ()) < transformation_epsilon_)
     {
       converged_ = true;
-      ROS_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f",
+      PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f",
                  getClassName ().c_str (), nr_iterations_, max_iterations_, fabs ((transformation_ - previous_transformation_).sum ()));
     }
   }

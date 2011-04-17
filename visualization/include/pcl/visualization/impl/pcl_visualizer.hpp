@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pcl_visualizer.hpp 36004 2011-02-15 16:58:41Z dirkholz $
+ * $Id$
  *
  */
 

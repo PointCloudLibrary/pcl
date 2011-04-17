@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: point_cloud.h 33238 2010-03-11 00:46:58Z rusu $
+ * $Id$
  *
  */
 
@@ -40,7 +40,7 @@
 
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
-#include "pcl/ros_macros.h"
+#include "pcl/pcl_macros.h"
 #include <std_msgs/Header.h>
 #include <pcl/exceptions.h>
 #include <boost/shared_ptr.hpp>
@@ -84,7 +84,7 @@ namespace pcl
       {
         if (rhs.header.frame_id != header.frame_id)
         {
-          ROS_ERROR ("PointCloud frame IDs do not match (%s != %s) for += . Cancelling operation...", 
+          PCL_ERROR ("PointCloud frame IDs do not match (%s != %s) for += . Cancelling operation...", 
                      rhs.header.frame_id.c_str (), header.frame_id.c_str ());
           return (*this);
         }

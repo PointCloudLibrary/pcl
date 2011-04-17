@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: distances.cpp 35984 2011-02-13 03:14:39Z rusu $
+ * $Id$
  *
  */
 #include "pcl/common/distances.h"

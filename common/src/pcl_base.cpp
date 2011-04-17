@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pcl_base.cpp 34570 2010-12-06 19:01:39Z rusu $
+ * $Id$
  *
  */
 
@@ -96,7 +96,7 @@ pcl::PCLBase<sensor_msgs::PointCloud2>::setInputCloud (const PointCloud2ConstPtr
 
       default:
       {
-        ROS_ERROR ("[PCLBase::setInputCloud] Invalid field type (%d)!", input_->fields[d].datatype);
+        PCL_ERROR ("[PCLBase::setInputCloud] Invalid field type (%d)!", input_->fields[d].datatype);
         fsize = 0;
         break;
       }

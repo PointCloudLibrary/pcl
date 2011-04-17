@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_model_plane.hpp 34403 2010-12-01 01:48:52Z rusu $
+ * $Id$
  *
  */
 
@@ -50,7 +50,7 @@ pcl::SampleConsensusModelPlane<PointT>::getSamples (int &iterations, std::vector
   // We're assuming that indices_ have already been set in the constructor
   if (indices_->empty ())
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelPlane::getSamples] Empty set of indices given!");
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::getSamples] Empty set of indices given!");
     return;
   }
 
@@ -60,7 +60,7 @@ pcl::SampleConsensusModelPlane<PointT>::getSamples (int &iterations, std::vector
   // Check if we have enough points
   if (samples.size () > indices_->size ())
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelPlane::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
     // one of these will make it stop :) TODO static constant for each model that the method has to check
     samples.clear ();
     iterations = INT_MAX - 1;
@@ -110,7 +110,7 @@ pcl::SampleConsensusModelPlane<PointT>::getSamples (int &iterations, std::vector
     ++iter;
     if (iter > MAX_ITERATIONS_COLLINEAR )
     {
-      ROS_DEBUG ("[pcl::SampleConsensusModelPlane::getSamples] WARNING: Could not select 3 non collinear points in %d iterations!", MAX_ITERATIONS_COLLINEAR);
+      PCL_DEBUG ("[pcl::SampleConsensusModelPlane::getSamples] WARNING: Could not select 3 non collinear points in %d iterations!", MAX_ITERATIONS_COLLINEAR);
       break;
     }
     //iterations++;
@@ -127,7 +127,7 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
   // Need 3 samples
   if (samples.size () != 3)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelPlane::computeModelCoefficients] Invalid set of samples given (%zu)!", samples.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::computeModelCoefficients] Invalid set of samples given (%zu)!", samples.size ());
     return (false);
   }
 
@@ -170,7 +170,7 @@ pcl::SampleConsensusModelPlane<PointT>::getDistancesToModel (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 4)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelPlane::getDistancesToModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::getDistancesToModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
@@ -201,7 +201,7 @@ pcl::SampleConsensusModelPlane<PointT>::selectWithinDistance (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 4)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
@@ -235,7 +235,7 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 4)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelPlane::optimizeModelCoefficients] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::optimizeModelCoefficients] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     optimized_coefficients = model_coefficients;
     return;
   }
@@ -243,7 +243,7 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
   // Need at least 3 points to estimate a plane
   if (inliers.size () < 4)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelPlane::optimizeModelCoefficients] Not enough inliers found to support a model (%zu)! Returning the same coefficients.", inliers.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::optimizeModelCoefficients] Not enough inliers found to support a model (%zu)! Returning the same coefficients.", inliers.size ());
     optimized_coefficients = model_coefficients;
     return;
   }
@@ -282,7 +282,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 4)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelPlane::projectPoints] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::projectPoints] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
@@ -349,7 +349,7 @@ pcl::SampleConsensusModelPlane<PointT>::doSamplesVerifyModel (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 4)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelPlane::doSamplesVerifyModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::doSamplesVerifyModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return (false);
   }
 

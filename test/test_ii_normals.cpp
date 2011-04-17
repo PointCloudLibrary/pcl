@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: test_ii_normals.cpp 35790 2011-02-05 18:55:14Z holzers $
+ * $Id$
  *
  */
 /** \author Stefan Holzer */

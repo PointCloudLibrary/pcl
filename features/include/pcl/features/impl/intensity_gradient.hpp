@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: intensity_gradient.hpp 35830 2011-02-08 06:18:23Z rusu $
+ * $Id$
  *
  */
 

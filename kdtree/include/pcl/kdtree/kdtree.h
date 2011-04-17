@@ -39,7 +39,6 @@
 #define PCL_KDTREE_KDTREE_H_
 
 #include <limits.h>
-#include "pcl/ros_macros.h"
 #include "pcl/pcl_macros.h"
 #include "pcl/point_cloud.h"
 #include "pcl/point_representation.h"

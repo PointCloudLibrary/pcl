@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: rsd.hpp 35475 2011-01-25 18:27:05Z marton $
+ * $Id$
  *
  */
 
@@ -117,14 +117,14 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   // Check if input was set
   if (!normals_)
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
   }
   if (normals_->points.size () != surface_->points.size ())
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
@@ -133,7 +133,7 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   // Check if search_radius_ was set
   if (search_radius_ < 0)
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] A search radius needs to be set!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeFeature] A search radius needs to be set!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;

@@ -189,7 +189,7 @@ main (int argc, char **argv)
         file.read ((char *) &vectorSize, sizeof (vectorSize));
         if (vectorSize != 3)
         {
-          ROS_ERROR ("Vector size is not 3!");
+          PCL_ERROR ("Vector size is not 3!");
           continue;
         }
 
@@ -205,7 +205,7 @@ main (int argc, char **argv)
         file.read ((char *) &vectorSize, sizeof (vectorSize));
         if (vectorSize != 3)
         {
-          ROS_ERROR ("Vector size is not 3!");
+          PCL_ERROR ("Vector size is not 3!");
           continue;
         }
 
@@ -384,13 +384,13 @@ main (int argc, char **argv)
     headerKeyWord = "PointCloudT<float>";
     if (checkFileHeader (file, headerKeyWord))
     {
-      ROS_INFO ("File is of type \"%s\".", headerKeyWord.c_str ());
-      ROS_ERROR ("Sorry, not implemented yet.");
+      PCL_INFO ("File is of type \"%s\".", headerKeyWord.c_str ());
+      PCL_ERROR ("Sorry, not implemented yet.");
 
       continue;
     }
 
-    ROS_ERROR ("Could not determine file type. Doing nothing.\n");
+    PCL_ERROR ("Could not determine file type. Doing nothing.\n");
 
     continue;
   }

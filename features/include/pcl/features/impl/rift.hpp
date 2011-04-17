@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: rift.hpp 35860 2011-02-08 22:53:53Z rusu $
+ * $Id$
  *
  */
 
@@ -49,7 +49,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
 {
   if (indices.empty ())
   {
-    ROS_ERROR ("[pcl::RIFTEstimation] Null indices points passed!");
+    PCL_ERROR ("[pcl::RIFTEstimation] Null indices points passed!");
     return;
   }
 
@@ -115,7 +115,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
   // Make sure a search radius is set
   if (search_radius_ == 0.0)
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] The search radius must be set before computing the feature!",
+    PCL_ERROR ("[pcl::%s::computeFeature] The search radius must be set before computing the feature!",
                getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
@@ -125,7 +125,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
   // Make sure the RIFT descriptor has valid dimensions
   if (nr_gradient_bins_ <= 0)
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] The number of gradient bins must be greater than zero!",
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of gradient bins must be greater than zero!",
                getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
@@ -133,7 +133,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
   }
   if (nr_distance_bins_ <= 0)
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] The number of distance bins must be greater than zero!",
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of distance bins must be greater than zero!",
                getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
@@ -143,14 +143,14 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
   // Check for valid input gradient
   if (!gradient_)
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] No input gradient was given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeFeature] No input gradient was given!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
   }
   if (gradient_->points.size () != surface_->points.size ())
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the gradient!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the gradient!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;

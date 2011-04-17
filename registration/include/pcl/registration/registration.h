@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: registration.h 35947 2011-02-10 22:59:47Z rusu $
+ * $Id$
  *
  */
 

@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: feature.hpp 35810 2011-02-08 00:03:46Z rusu $
+ * $Id$
  *
  */
 
@@ -49,7 +49,7 @@ pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
     for (int j = 0; j < 3; ++j)
       if (!pcl_isfinite (covariance_matrix (i, j)))
       {
-        //ROS_WARN ("[pcl::solvePlaneParameteres] Covariance matrix has NaN/Inf values!");
+        //PCL_WARN ("[pcl::solvePlaneParameteres] Covariance matrix has NaN/Inf values!");
         plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
         curvature = std::numeric_limits<float>::quiet_NaN ();
         return;
@@ -98,7 +98,7 @@ pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
     for (int j = 0; j < 3; ++j)
       if (!pcl_isfinite (covariance_matrix (i, j)))
       {
-        //ROS_WARN ("[pcl::solvePlaneParameteres] Covariance matrix has NaN/Inf values!");
+        //PCL_WARN ("[pcl::solvePlaneParameteres] Covariance matrix has NaN/Inf values!");
         nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
         return;
       }
@@ -142,7 +142,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
 
   if (!initCompute ()) 
   {
-    ROS_ERROR ("[pcl::%s::compute] Init failed.", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::compute] Init failed.", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
@@ -151,7 +151,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   // If the dataset is empty, just return
   if (input_->points.empty ())
   {
-    ROS_ERROR ("[pcl::%s::compute] input_ is empty!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::compute] input_ is empty!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     deinitCompute ();
@@ -161,7 +161,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   // Check if a space search locator was given
   if (!tree_)
   {
-    ROS_ERROR ("[pcl::%s::compute] No spatial search method was given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     deinitCompute ();
@@ -183,7 +183,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   {
     if (k_ != 0)
     {
-      ROS_ERROR ("[pcl::%s::compute] Both radius (%f) and K (%d) defined! Set one of them to zero first and then re-run compute ().", getClassName ().c_str (), search_radius_, k_);
+      PCL_ERROR ("[pcl::%s::compute] Both radius (%f) and K (%d) defined! Set one of them to zero first and then re-run compute ().", getClassName ().c_str (), search_radius_, k_);
       output.width = output.height = 0;
       output.points.clear ();
 
@@ -236,7 +236,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
     }
     else
     {
-      ROS_ERROR ("[pcl::%s::compute] Neither radius nor K defined! Set one of them to a positive number first and then re-run compute ().", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::compute] Neither radius nor K defined! Set one of them to a positive number first and then re-run compute ().", getClassName ().c_str ());
       output.width = output.height = 0;
       output.points.clear ();
 

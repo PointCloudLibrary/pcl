@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: shapes.cpp 36093 2011-02-19 21:54:55Z rusu $
+ * $Id$
  *
  */
 #include <pcl/visualization/common/shapes.h>

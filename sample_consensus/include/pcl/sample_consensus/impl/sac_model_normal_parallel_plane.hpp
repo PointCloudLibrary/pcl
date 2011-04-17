@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_model_normal_parallel_plane.hpp 34393 2010-11-30 23:02:08Z rusu $
+ * $Id$
  *
  */
 
@@ -52,7 +52,7 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::selectWithinDista
 {
   if (!normals_)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::getDistancesToModel] No input dataset containing normals was given!");
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::getDistancesToModel] No input dataset containing normals was given!");
     return;
   }
 
@@ -103,7 +103,7 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::getDistancesToMod
 {
   if (!normals_)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::getDistancesToModel] No input dataset containing normals was given!");
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::getDistancesToModel] No input dataset containing normals was given!");
     return;
   }
 
@@ -147,7 +147,7 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::isModelValid (con
   // Needs a valid model coefficients
   if (model_coefficients.size () != 4)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::isModelValid] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::isModelValid] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return (false);
   }
 

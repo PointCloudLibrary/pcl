@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: test_common.cpp 36632 2010-05-12 19:17:08Z rusu $
+ * $Id$
  *
  */
 

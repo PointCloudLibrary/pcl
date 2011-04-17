@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_model_parallel_plane.cpp 34693 2010-12-12 06:40:07Z rusu $
+ * $Id$
  *
  */
 

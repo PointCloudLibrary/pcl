@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_model_parallel_line.h 36021 2011-02-17 03:44:01Z vrabaud $
+ * $Id$
  *
  */
 

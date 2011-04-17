@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: print.cpp 30706 2010-07-09 18:20:31Z rusu $
+ * $Id$
  *
  */
 #include <pcl/terminal_tools/print.h>

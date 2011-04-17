@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_model_plane.h 36021 2011-02-17 03:44:01Z vrabaud $
+ * $Id$
  *
  */
 
@@ -181,7 +181,7 @@ namespace pcl
         // Needs a valid model coefficients
         if (model_coefficients.size () != 4)
         {
-          ROS_ERROR ("[pcl::SampleConsensusModelPlane::isModelValid] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+          PCL_ERROR ("[pcl::SampleConsensusModelPlane::isModelValid] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
           return (false);
         }
         return (true);

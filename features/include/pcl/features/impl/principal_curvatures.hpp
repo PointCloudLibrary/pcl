@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: principal_curvatures.hpp 35810 2011-02-08 00:03:46Z rusu $
+ * $Id$
  *
  */
 
@@ -114,14 +114,14 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
   // Check if input was set
   if (!normals_)
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
   }
   if (normals_->points.size () != surface_->points.size ())
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset (%zu) differs from the number of points in the dataset containing the normals (%zu)!",
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset (%zu) differs from the number of points in the dataset containing the normals (%zu)!",
                getClassName ().c_str (), surface_->points.size (), normals_->points.size ());
     output.width = output.height = 0;
     output.points.clear ();

@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: statistical_outlier_removal.hpp 35873 2011-02-09 00:58:01Z rusu $
+ * $Id$
  *
  */
 
@@ -46,7 +46,7 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilter (PointCloud &output)
 {
   if (std_mul_ == 0.0)
   {
-    ROS_ERROR ("[pcl::%s::applyFilter] Standard deviation multipler not set!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::applyFilter] Standard deviation multipler not set!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
@@ -80,7 +80,7 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilter (PointCloud &output)
     if (tree_->nearestKSearch ((*indices_)[cp], mean_k_, nn_indices, nn_dists) == 0)
     {
       distances[cp] = 0;
-      ROS_WARN ("[pcl::%s::applyFilter] Searching for the closest %d neighbors failed.", getClassName ().c_str (), mean_k_);
+      PCL_WARN ("[pcl::%s::applyFilter] Searching for the closest %d neighbors failed.", getClassName ().c_str (), mean_k_);
       continue;
     }
 

@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: rsd.h 35534 2011-01-26 20:45:54Z marton $
+ * $Id$
  *
  */
 
@@ -113,7 +113,11 @@ namespace pcl
       inline double getPlaneRadius () { return (plane_radius_); }
 
       /** \brief Disables the setting of the number of k nearest neighbors to use for the feature estimation. */
-      inline void setKSearch (int) {  ROS_ERROR ("[pcl::%s::computeFeature] RSD does not work with k nearest neighbor search. Use setRadiusSearch() instead!", getClassName ().c_str ()); }
+      inline void 
+      setKSearch (int) 
+      {
+        PCL_ERROR ("[pcl::%s::computeFeature] RSD does not work with k nearest neighbor search. Use setRadiusSearch() instead!", getClassName ().c_str ()); 
+      }
 
     protected:
 

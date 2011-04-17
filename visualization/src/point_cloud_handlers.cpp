@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: point_cloud_handlers.cpp 36250 2011-02-25 19:57:32Z rusu $
+ * $Id$
  *
  */
 

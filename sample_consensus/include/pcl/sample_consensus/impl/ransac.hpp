@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: ransac.hpp 34393 2010-11-30 23:02:08Z rusu $
+ * $Id$
  *
  */
 
@@ -47,7 +47,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
   // Warn and exit if no threshold was set
   if (threshold_ == DBL_MAX)
   {
-    ROS_ERROR ("[pcl::RandomSampleConsensus::computeModel] No threshold set!");
+    PCL_ERROR ("[pcl::RandomSampleConsensus::computeModel] No threshold set!");
     return (false);
   }
 
@@ -69,7 +69,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
 
     if (selection.empty ()) 
     {
-      ROS_ERROR ("[pcl::RandomSampleConsensus::computeModel] No samples could be selected!");
+      PCL_ERROR ("[pcl::RandomSampleConsensus::computeModel] No samples could be selected!");
       break;
     }
 
@@ -107,17 +107,17 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
 
     ++iterations_;
     if (debug_verbosity_level > 1)
-      ROS_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %d inliers (best is: %d so far).", iterations_, k, n_inliers_count, n_best_inliers_count);
+      PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %d inliers (best is: %d so far).", iterations_, k, n_inliers_count, n_best_inliers_count);
     if (iterations_ > max_iterations_)
     {
       if (debug_verbosity_level > 0)
-        ROS_DEBUG ("[pcl::RandomSampleConsensus::computeModel] RANSAC reached the maximum number of trials.");
+        PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] RANSAC reached the maximum number of trials.");
       break;
     }
   }
 
   if (debug_verbosity_level > 0)
-    ROS_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Model: %zu size, %d inliers.", model_.size (), n_best_inliers_count);
+    PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Model: %zu size, %d inliers.", model_.size (), n_best_inliers_count);
 
   if (model_.empty ())
   {

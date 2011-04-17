@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_model_registration.hpp 34128 2010-11-23 03:29:57Z rusu $
+ * $Id$
  *
  */
 
@@ -55,7 +55,7 @@ pcl::SampleConsensusModelRegistration<PointT>::getSamples (int &iterations, std:
   // Check if we have enough points
   if (samples.size () > indices_->size ())
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelRegistration::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
     // one of these will make it stop :) TODO static constant for each model that the method has to check
     samples.clear ();
     iterations = INT_MAX - 1;
@@ -92,7 +92,7 @@ pcl::SampleConsensusModelRegistration<PointT>::getSamples (int &iterations, std:
     ++iter;
     if (iter > MAX_ITERATIONS_COLLINEAR)
     {
-      ROS_DEBUG ("[pcl::SampleConsensusModelRegistration::getSamples] WARNING1: Could not select 3 non collinear points in %d iterations!", MAX_ITERATIONS_COLLINEAR);
+      PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::getSamples] WARNING1: Could not select 3 non collinear points in %d iterations!", MAX_ITERATIONS_COLLINEAR);
       break;
     }
   } 
@@ -128,7 +128,7 @@ pcl::SampleConsensusModelRegistration<PointT>::getSamples (int &iterations, std:
       ++iter2;
       if (iter2 > MAX_ITERATIONS_COLLINEAR)
       {
-        ROS_DEBUG ("[pcl::SampleConsensusModelRegistration::getSamples] WARNING2: Could not select 3 non collinear points in %d iterations!", MAX_ITERATIONS_COLLINEAR);
+        PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::getSamples] WARNING2: Could not select 3 non collinear points in %d iterations!", MAX_ITERATIONS_COLLINEAR);
         break;
       }
     }
@@ -137,7 +137,7 @@ pcl::SampleConsensusModelRegistration<PointT>::getSamples (int &iterations, std:
     ++iter1;
     if (iter1 > MAX_ITERATIONS_COLLINEAR)
     {
-      ROS_DEBUG ("[pcl::SampleConsensusModelRegistration::getSamples] WARNING2: Could not select 3 non collinear points in %d iterations!", MAX_ITERATIONS_COLLINEAR);
+      PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::getSamples] WARNING2: Could not select 3 non collinear points in %d iterations!", MAX_ITERATIONS_COLLINEAR);
       break;
     }
   }
@@ -177,7 +177,7 @@ pcl::SampleConsensusModelRegistration<PointT>::getDistancesToModel (const Eigen:
 {
   if (indices_->size () != indices_tgt_->size ())
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelRegistration::getDistancesToModel] Number of source indices (%zu) differs than number of target indices (%zu)!", indices_->size (), indices_tgt_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::getDistancesToModel] Number of source indices (%zu) differs than number of target indices (%zu)!", indices_->size (), indices_tgt_->size ());
     distances.clear ();
     return;
   }
@@ -213,7 +213,7 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
 {
   if (indices_->size () != indices_tgt_->size ())
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelRegistration::selectWithinDistance] Number of source indices (%zu) differs than number of target indices (%zu)!", indices_->size (), indices_tgt_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::selectWithinDistance] Number of source indices (%zu) differs than number of target indices (%zu)!", indices_->size (), indices_tgt_->size ());
     inliers.clear ();
     return;
   }
@@ -254,7 +254,7 @@ pcl::SampleConsensusModelRegistration<PointT>::optimizeModelCoefficients (const 
 {
   if (indices_->size () != indices_tgt_->size ())
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelRegistration::optimizeModelCoefficients] Number of source indices (%zu) differs than number of target indices (%zu)!", indices_->size (), indices_tgt_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::optimizeModelCoefficients] Number of source indices (%zu) differs than number of target indices (%zu)!", indices_->size (), indices_tgt_->size ());
     optimized_coefficients = model_coefficients;
     return;
   }

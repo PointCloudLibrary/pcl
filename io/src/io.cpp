@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: io.cpp 33240 2010-03-11 00:54:05Z rusu $
+ * $Id$
  *
  */
 
@@ -85,7 +85,7 @@ pcl::getPointCloudAsEigen (const sensor_msgs::PointCloud2 &in, Eigen::MatrixXf &
 
   if (x_idx == -1 || y_idx == -1 || z_idx == -1)
   {
-    ROS_ERROR ("Input dataset has no X-Y-Z coordinates! Cannot convert to Eigen format.");
+    PCL_ERROR ("Input dataset has no X-Y-Z coordinates! Cannot convert to Eigen format.");
     return (false);
   }
 
@@ -93,7 +93,7 @@ pcl::getPointCloudAsEigen (const sensor_msgs::PointCloud2 &in, Eigen::MatrixXf &
       in.fields[y_idx].datatype != sensor_msgs::PointField::FLOAT32 || 
       in.fields[z_idx].datatype != sensor_msgs::PointField::FLOAT32)
   {
-    ROS_ERROR ("X-Y-Z coordinates not floats. Currently only floats are supported.");
+    PCL_ERROR ("X-Y-Z coordinates not floats. Currently only floats are supported.");
     return (false);
   }
 
@@ -127,7 +127,7 @@ pcl::getEigenAsPointCloud (Eigen::MatrixXf &in, sensor_msgs::PointCloud2 &out)
 
   if (x_idx == -1 || y_idx == -1 || z_idx == -1)
   {
-    ROS_ERROR ("Output dataset has no X-Y-Z coordinates set up as fields! Cannot convert from Eigen format.");
+    PCL_ERROR ("Output dataset has no X-Y-Z coordinates set up as fields! Cannot convert from Eigen format.");
     return (false);
   }
 
@@ -135,13 +135,13 @@ pcl::getEigenAsPointCloud (Eigen::MatrixXf &in, sensor_msgs::PointCloud2 &out)
       out.fields[y_idx].datatype != sensor_msgs::PointField::FLOAT32 || 
       out.fields[z_idx].datatype != sensor_msgs::PointField::FLOAT32)
   {
-    ROS_ERROR ("X-Y-Z coordinates not floats. Currently only floats are supported.");
+    PCL_ERROR ("X-Y-Z coordinates not floats. Currently only floats are supported.");
     return (false);
   }
 
   if (in.cols () != (int)(out.width * out.height))
   {
-    ROS_ERROR ("Number of points in the point cloud differs from the Eigen matrix. Cannot continue.");
+    PCL_ERROR ("Number of points in the point cloud differs from the Eigen matrix. Cannot continue.");
     return (false);
   }
 

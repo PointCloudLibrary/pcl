@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: vfh.hpp 36231 2011-02-25 03:01:45Z aaldoma $
+ * $Id$
  *
  */
 
@@ -139,14 +139,14 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   // Check if input was set
   if (!normals_)
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
   }
   if (normals_->points.size () != surface_->points.size ())
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;

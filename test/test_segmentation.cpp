@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: test_segmentation.cpp 34668 2010-12-11 22:18:23Z rusu $
+ * $Id$
  *
  */
 /** \author Radu Bogdan Rusu */

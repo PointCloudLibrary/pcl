@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: intensity_spin.hpp 35810 2011-02-08 00:03:46Z rusu $
+ * $Id$
  *
  */
 
@@ -108,7 +108,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
   // Make sure a search radius is set
   if (search_radius_ == 0.0)
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] The search radius must be set before computing the feature!",
+    PCL_ERROR ("[pcl::%s::computeFeature] The search radius must be set before computing the feature!",
                getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
@@ -118,7 +118,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
   // Make sure the spin image has valid dimensions
   if (nr_intensity_bins_ <= 0)
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] The number of intensity bins must be greater than zero!",
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of intensity bins must be greater than zero!",
                getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
@@ -126,7 +126,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
   }
   if (nr_distance_bins_ <= 0)
   {
-    ROS_ERROR ("[pcl::%s::computeFeature] The number of distance bins must be greater than zero!",
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of distance bins must be greater than zero!",
                getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();

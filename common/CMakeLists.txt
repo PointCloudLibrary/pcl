@@ -32,7 +32,6 @@ if(build)
         include/pcl/point_cloud.h
         include/pcl/point_representation.h
         include/pcl/point_types.h
-        include/pcl/ros_macros.h
         include/pcl/view.h
         include/pcl/win32_macros.h
         )

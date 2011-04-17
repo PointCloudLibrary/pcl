@@ -22,8 +22,8 @@ int main(int argc, char** argv)
 {
   if (argc != 3)
   {
-    ROS_ERROR ("Syntax is: %s <source.pcd> <target.pcd>", argv[0]);
-    ROS_INFO ("Example: %s `rospack find pcl`/test/bun0.pcd `rospack find pcl`/test/bun4.pcd", argv[0]);
+    PCL_ERROR ("Syntax is: %s <source.pcd> <target.pcd>", argv[0]);
+    PCL_INFO ("Example: %s `rospack find pcl`/test/bun0.pcd `rospack find pcl`/test/bun4.pcd", argv[0]);
     return (-1);
   }
 

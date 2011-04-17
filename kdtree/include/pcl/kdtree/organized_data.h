@@ -72,12 +72,12 @@ namespace pcl
       // The following methods will not be implemented
       int nearestKSearch (const PointT &p_q, int k, std::vector<int> &k_indices, std::vector<float> &k_distances)
       {
-        ROS_ERROR ("%s: Method not implemented!", __PRETTY_FUNCTION__); return (false);
+        PCL_ERROR ("%s: Method not implemented!", __PRETTY_FUNCTION__); return (false);
       }
       int radiusSearch (const PointT &p_q, double radius, std::vector<int> &k_indices,
                                 std::vector<float> &k_distances, int max_nn = INT_MAX) const
       {
-        ROS_ERROR ("%s: Method not implemented!", __PRETTY_FUNCTION__); return (false);
+        PCL_ERROR ("%s: Method not implemented!", __PRETTY_FUNCTION__); return (false);
       }
 
       /** \brief Approximate search for neighbors around the given query point within radius.
@@ -104,7 +104,7 @@ namespace pcl
       {
         if (!input_)
         {
-          ROS_ERROR ("[%s] Input dataset does not exist or wrong input dataset!", __PRETTY_FUNCTION__);
+          PCL_ERROR ("[%s] Input dataset does not exist or wrong input dataset!", __PRETTY_FUNCTION__);
           return (false);
         }
         return (radiusSearch (*input_, index, radius, k_indices, k_distances, max_nn));
@@ -131,7 +131,7 @@ namespace pcl
       {
         if (!input_)
         {
-          ROS_ERROR ("[pcl::%s::nearestKSearch] Input dataset does not exist or wrong input dataset!", getName ().c_str ());
+          PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset does not exist or wrong input dataset!", getName ().c_str ());
           return 0;
         }
         return (nearestKSearch (*input_, index, k, k_indices, k_distances));

@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: project_inliers.hpp 35810 2011-02-08 00:03:46Z rusu $
+ * $Id$
  *
  */
 
@@ -46,7 +46,7 @@ pcl::ProjectInliers<PointT>::applyFilter (PointCloud &output)
 {
   if (indices_->empty ())
   {
-    ROS_WARN ("[pcl::%s::applyFilter] No indices given or empty indices!", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::applyFilter] No indices given or empty indices!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
@@ -61,7 +61,7 @@ pcl::ProjectInliers<PointT>::applyFilter (PointCloud &output)
   // Initialize the Sample Consensus model and set its parameters
   if (!initSACModel (model_type_))
   {
-    ROS_ERROR ("[pcl::%s::segment] Error initializing the SAC model!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::segment] Error initializing the SAC model!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
@@ -81,67 +81,67 @@ pcl::ProjectInliers<PointT>::initSACModel (int model_type)
   {
     case SACMODEL_PLANE:
     {
-      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PLANE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PLANE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelPlane<PointT> (input_));
       break;
     }
     case SACMODEL_LINE:
     {
-      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_LINE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_LINE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelLine<PointT> (input_));
       break;
     }
     case SACMODEL_CIRCLE2D:
     {
-      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_CIRCLE2D", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_CIRCLE2D", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelCircle2D<PointT> (input_));
       break;
     }
     case SACMODEL_SPHERE:
     {
-      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_SPHERE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_SPHERE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelSphere<PointT> (input_));
       break;
     }
     case SACMODEL_PARALLEL_LINE:
     {
-      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PARALLEL_LINE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PARALLEL_LINE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelParallelLine<PointT> (input_));
       break;
     }
     case SACMODEL_PERPENDICULAR_PLANE:
     {
-      //ROS_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PERPENDICULAR_PLANE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PERPENDICULAR_PLANE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelPerpendicularPlane<PointT> (input_));
       break;
     }
     case SACMODEL_CYLINDER:
     {
-      //ROS_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_CYLINDER", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_CYLINDER", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelCylinder<PointT, pcl::Normal> (input_));
       break;
     }
     case SACMODEL_NORMAL_PLANE:
     {
-      //ROS_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PLANE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PLANE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelNormalPlane<PointT, pcl::Normal> (input_));
       break;
     }
     case SACMODEL_NORMAL_PARALLEL_PLANE:
     {
-      //ROS_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PARALLEL_PLANE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PARALLEL_PLANE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelNormalParallelPlane<PointT, pcl::Normal> (input_));
       break;
     }
     case SACMODEL_PARALLEL_PLANE:
     {
-      //ROS_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_PARALLEL_PLANE", getClassName ().c_str ());
+      //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_PARALLEL_PLANE", getClassName ().c_str ());
       sacmodel_.reset (new SampleConsensusModelParallelPlane<PointT> (input_));
       break;
     }
     default:
     {
-      ROS_ERROR ("[pcl::%s::initSACModel] No valid model given!", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::initSACModel] No valid model given!", getClassName ().c_str ());
       return (false);
     }
   }

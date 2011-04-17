@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: intensity_gradient.cpp 34738 2010-12-14 09:15:48Z rusu $
+ * $Id$
  *
  */
 

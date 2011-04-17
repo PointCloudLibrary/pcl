@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: conversions.h 33238 2010-03-11 00:46:58Z rusu $
+ * $Id$
  *
  */
 /**
@@ -112,7 +112,7 @@ namespace pcl
         std::stringstream ss;
         ss << "Failed to find a field named: '" << name
            << "'. Cannot convert message to PCL type.";
-        ROS_ERROR ("%s", ss.str().c_str());
+        PCL_ERROR ("%s", ss.str().c_str());
         throw pcl::InvalidConversionException(ss.str());
       }
 

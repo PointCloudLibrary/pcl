@@ -169,7 +169,7 @@ namespace pcl
 
     if (field_idx == -1)
     {
-      ROS_ERROR ("[getMinMax] Invalid field (%s) given!", field_name.c_str ());
+      PCL_ERROR ("[getMinMax] Invalid field (%s) given!", field_name.c_str ());
       return;
     }
 

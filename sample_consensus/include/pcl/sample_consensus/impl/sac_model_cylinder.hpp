@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_model_cylinder.hpp 34403 2010-12-01 01:48:52Z rusu $
+ * $Id$
  *
  */
 
@@ -54,7 +54,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getSamples (int &iterations,
   // We're assuming that indices_ have already been set in the constructor
   if (indices_->empty ())
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCylinder::getSamples] Empty set of indices given!");
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::getSamples] Empty set of indices given!");
     return;
   }
 
@@ -64,7 +64,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getSamples (int &iterations,
   // Check if we have enough points
   if (samples.size () > indices_->size ())
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCylinder::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
     // one of these will make it stop :) TODO static constant for each model that the method has to check
     samples.clear ();
     iterations = INT_MAX - 1;
@@ -100,13 +100,13 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
   // Need 2 samples
   if (samples.size () != 2)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] Invalid set of samples given (%zu)!", samples.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] Invalid set of samples given (%zu)!", samples.size ());
     return (false);
   }
 
   if (!normals_)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] No input dataset containing normals was given!");
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] No input dataset containing normals was given!");
     return (false);
   }
 
@@ -171,7 +171,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getDistancesToModel (
   // Needs a valid model coefficients
   if (model_coefficients.size () != 7)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCylinder::getDistancesToModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::getDistancesToModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
@@ -226,7 +226,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
   // Needs a valid model coefficients
   if (model_coefficients.size () != 7)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCylinder::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
@@ -290,14 +290,14 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::optimizeModelCoefficients (
   // Needs a set of valid model coefficients
   if (model_coefficients.size () != n_unknowns)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCylinder::optimizeModelCoefficients] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::optimizeModelCoefficients] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     optimized_coefficients = model_coefficients;
     return;
   }
 
   if (inliers.empty ())
   {
-    ROS_DEBUG ("[pcl::SampleConsensusModelCylinder:optimizeModelCoefficients] Inliers vector empty! Returning the same coefficients."); 
+    PCL_DEBUG ("[pcl::SampleConsensusModelCylinder:optimizeModelCoefficients] Inliers vector empty! Returning the same coefficients."); 
     optimized_coefficients = model_coefficients;
     return;
   }
@@ -324,7 +324,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::optimizeModelCoefficients (
   int info = lmdif1 (&pcl::SampleConsensusModelCylinder<PointT, PointNT>::functionToOptimize, this, m, n_unknowns, x, fvec, tol, iwa, wa, lwa);
 
   // Compute the L2 norm of the residuals
-  ROS_DEBUG ("[pcl::SampleConsensusModelCylinder::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g %g %g %g \nFinal solution: %g %g %g %g %g %g %g",
+  PCL_DEBUG ("[pcl::SampleConsensusModelCylinder::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g %g %g %g \nFinal solution: %g %g %g %g %g %g %g",
              info, enorm (m, fvec), model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3],
              model_coefficients[4], model_coefficients[5], model_coefficients[6], x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
 
@@ -378,7 +378,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 7)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCylinder::projectPoints] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::projectPoints] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
@@ -463,7 +463,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::doSamplesVerifyModel (
   // Needs a valid model coefficients
   if (model_coefficients.size () != 7)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCylinder::doSamplesVerifyModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::doSamplesVerifyModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return (false);
   }
 
@@ -528,7 +528,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::isModelValid (const Eigen::V
   // Needs a valid model coefficients
   if (model_coefficients.size () != 7)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCylinder::isModelValid] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::isModelValid] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return (false);
   }
  

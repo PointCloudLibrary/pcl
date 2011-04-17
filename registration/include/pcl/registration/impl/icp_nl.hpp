@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: icp_nl.hpp 35881 2011-02-09 02:02:52Z rusu $
+ * $Id$
  *
  */
 
@@ -52,12 +52,12 @@ pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::estimateRigidTran
 
   if (cloud_src.points.size () != cloud_tgt.points.size ())
   {
-    ROS_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Number or points in source (%zu) differs than target (%zu)!", cloud_src.points.size (), cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Number or points in source (%zu) differs than target (%zu)!", cloud_src.points.size (), cloud_tgt.points.size ());
     return;
   }
   if (cloud_src.points.size () < 4)     // need at least 4 samples
   {
-    ROS_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Need at least 4 points to estimate a transform! Source and target have %zu points!", cloud_src.points.size ());
+    PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Need at least 4 points to estimate a transform! Source and target have %zu points!", cloud_src.points.size ());
     return;
   }
 
@@ -86,7 +86,7 @@ pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::estimateRigidTran
   int info = lmdif1 (&pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::functionToOptimize, this, m, n_unknowns, x, fvec, tol, iwa, wa, lwa);
 
   // Compute the norm of the residuals
-  ROS_DEBUG ("[pcl::%s::estimateRigidTransformationLM] LM solver finished with exit code %i, having a residual norm of %g. ",
+  PCL_DEBUG ("[pcl::%s::estimateRigidTransformationLM] LM solver finished with exit code %i, having a residual norm of %g. ",
              //"\nFinal solution: [%f %f %f %f] [%f %f %f]", 
              getClassName ().c_str (), info, enorm (m, fvec));
              //x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
@@ -129,12 +129,12 @@ template <typename PointSource, typename PointTarget> void
 
   if (indices_src.size () != indices_tgt.size ())
   {
-    ROS_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Number or points in source (%zu) differs than target (%zu)!", indices_src.size (), indices_tgt.size ());
+    PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Number or points in source (%zu) differs than target (%zu)!", indices_src.size (), indices_tgt.size ());
     return;
   }
   if (indices_src.size () < 4)     // need at least 4 samples
   {
-    ROS_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Need at least 4 points to estimate a transform! Source and target have %zu points!", indices_src.size ());
+    PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Need at least 4 points to estimate a transform! Source and target have %zu points!", indices_src.size ());
     return;
   }
 
@@ -164,7 +164,7 @@ template <typename PointSource, typename PointTarget> void
   int info = lmdif1 (&pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::functionToOptimizeIndices, this, m, n_unknowns, x, fvec, tol, iwa, wa, lwa);
 
   // Compute the norm of the residuals
-  ROS_DEBUG ("[pcl::%s::estimateRigidTransformationLM] LM solver finished with exit code %i, having a residual norm of %g. ",
+  PCL_DEBUG ("[pcl::%s::estimateRigidTransformationLM] LM solver finished with exit code %i, having a residual norm of %g. ",
              //"\nFinal solution: [%f %f %f %f] [%f %f %f]", 
              getClassName ().c_str (), info, enorm (m, fvec));
              //x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
@@ -222,7 +222,7 @@ template <typename PointSource, typename PointTarget> void
     {
       if (!searchForNeighbors (output, idx, nn_indices, nn_dists))
       {
-        ROS_ERROR ("[pcl::%s::computeTransformation] Unable to find a nearest neighbor in the target dataset for point %d in the source!", getClassName ().c_str (), (*indices_)[idx]);
+        PCL_ERROR ("[pcl::%s::computeTransformation] Unable to find a nearest neighbor in the target dataset for point %d in the source!", getClassName ().c_str (), (*indices_)[idx]);
         return;
       }
 
@@ -238,7 +238,7 @@ template <typename PointSource, typename PointTarget> void
     }
     if (cnt < min_number_correspondences_)
     {
-      ROS_ERROR ("[pcl::%s::computeTransformation] Not enough correspondences found. Relax your threshold parameters.", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::computeTransformation] Not enough correspondences found. Relax your threshold parameters.", getClassName ().c_str ());
       converged_ = false;
       return;
     }
@@ -286,12 +286,12 @@ template <typename PointSource, typename PointTarget> void
     cnt = (int)source_indices_good.size ();
     if (cnt < min_number_correspondences_)
     {
-      ROS_ERROR ("[pcl::%s::computeTransformation] Not enough correspondences found. Relax your threshold parameters.", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::computeTransformation] Not enough correspondences found. Relax your threshold parameters.", getClassName ().c_str ());
       converged_ = false;
       return;
     }
 
-    ROS_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %zu points [100.0%%], RANSAC rejected: %zu [%f%%].", getClassName ().c_str (), cnt, (cnt * 100.0) / indices_->size (), indices_->size (), source_indices.size () - cnt, (source_indices.size () - cnt) * 100.0 / source_indices.size ());
+    PCL_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %zu points [100.0%%], RANSAC rejected: %zu [%f%%].", getClassName ().c_str (), cnt, (cnt * 100.0) / indices_->size (), indices_->size (), source_indices.size () - cnt, (source_indices.size () - cnt) * 100.0 / source_indices.size ());
   
     // Estimate the transform
     estimateRigidTransformationLM (output, source_indices_good, *target_, target_indices_good, transformation_);
@@ -309,7 +309,7 @@ template <typename PointSource, typename PointTarget> void
         fabs ((transformation_ - previous_transformation_).sum ()) < transformation_epsilon_)
     {
       converged_ = true;
-      ROS_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f",
+      PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f",
                  getClassName ().c_str (), nr_iterations_, max_iterations_, fabs ((transformation_ - previous_transformation_).sum ()));
     }
   }

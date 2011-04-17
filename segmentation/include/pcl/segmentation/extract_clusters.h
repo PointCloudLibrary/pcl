@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: extract_clusters.h 36302 2011-03-02 04:43:07Z aaldoma $
+ * $Id$
  *
  */
 
@@ -93,12 +93,12 @@ namespace pcl
   {
     if (tree->getInputCloud ()->points.size () != cloud.points.size ())
     {
-      ROS_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!", tree->getInputCloud ()->points.size (), cloud.points.size ());
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!", tree->getInputCloud ()->points.size (), cloud.points.size ());
       return;
     }
     if (cloud.points.size () != normals.points.size ())
     {
-      ROS_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%zu) different than normals (%zu)!", cloud.points.size (), normals.points.size ());
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%zu) different than normals (%zu)!", cloud.points.size (), normals.points.size ());
       return;
     }
 
@@ -192,17 +192,17 @@ namespace pcl
     //and indices[i]
     if (tree->getInputCloud ()->points.size () != cloud.points.size ())
     {
-      ROS_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!", tree->getInputCloud ()->points.size (), cloud.points.size ());
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!", tree->getInputCloud ()->points.size (), cloud.points.size ());
       return;
     }
     if (tree->getIndices ()->size () != indices.size ())
     {
-      ROS_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%zu) than the input set (%zu)!", tree->getIndices ()->size (), indices.size ());
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%zu) than the input set (%zu)!", tree->getIndices ()->size (), indices.size ());
       return;
     }
     if (cloud.points.size () != normals.points.size ())
     {
-      ROS_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%zu) different than normals (%zu)!", cloud.points.size (), normals.points.size ());
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%zu) different than normals (%zu)!", cloud.points.size (), normals.points.size ());
       return;
     }
     // Create a bool vector of processed point indices, and initialize it to false

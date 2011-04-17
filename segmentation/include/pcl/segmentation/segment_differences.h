@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: segment_differences.h 34546 2010-12-06 11:27:12Z rusu $
+ * $Id$
  *
  */
 

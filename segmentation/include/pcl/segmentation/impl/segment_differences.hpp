@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: segment_differences.hpp 34694 2010-12-12 06:52:05Z rusu $
+ * $Id$
  *
  */
 
@@ -62,7 +62,7 @@ pcl::getPointCloudDifference (
     // Search for the closest point in the target data set (number of neighbors to find = 1)
     if (!tree->nearestKSearch (src.points[i], 1, nn_indices, nn_distances))
     {
-      ROS_WARN ("No neighbor found for point %zu (%f %f %f)!", i, src.points[i].x, src.points[i].y, src.points[i].z);
+      PCL_WARN ("No neighbor found for point %zu (%f %f %f)!", i, src.points[i].x, src.points[i].y, src.points[i].z);
       continue;
     }
 

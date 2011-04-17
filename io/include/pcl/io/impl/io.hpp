@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: io.hpp 34756 2010-12-15 00:40:22Z mihelich $
+ * $Id$
  *
  */
 
@@ -193,7 +193,7 @@ pcl::concatenateFields (const pcl::PointCloud<PointIn1T> &cloud1_in,
 
   if (cloud1_in.points.size () != cloud2_in.points.size ())
   {
-    ROS_ERROR ("[pcl::concatenateFields] The number of points in the two input datasets differs!");
+    PCL_ERROR ("[pcl::concatenateFields] The number of points in the two input datasets differs!");
     return;
   }
 

@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_model_normal_plane.hpp 34393 2010-11-30 23:02:08Z rusu $
+ * $Id$
  *
  */
 
@@ -53,13 +53,13 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 4)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
   if (!normals_)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] No input dataset containing normals was given!");
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] No input dataset containing normals was given!");
     inliers.clear ();
     return;
   }
@@ -112,13 +112,13 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::getDistancesToModel (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 4)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
   if (!normals_)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelNormalPlane::getDistancesToModel] No input dataset containing normals was given!");
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalPlane::getDistancesToModel] No input dataset containing normals was given!");
     return;
   }
 
@@ -162,7 +162,7 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::isModelValid (const Eigen
   // Needs a valid model coefficients
   if (model_coefficients.size () != 4)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return (false);
   }
   

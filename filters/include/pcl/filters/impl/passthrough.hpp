@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: passthrough.hpp 34776 2010-12-15 10:00:05Z rusu $
+ * $Id$
  *
  */
 
@@ -48,7 +48,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
   // Has the input dataset been set already?
   if (!input_)
   {
-    ROS_WARN ("[pcl::%s::applyFilter] No input dataset given!", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
@@ -90,7 +90,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
     int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
     if (distance_idx == -1)
     {
-      ROS_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.", getClassName ().c_str (), distance_idx);
+      PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.", getClassName ().c_str (), distance_idx);
       output.width = output.height = 0;
       output.points.clear ();
       return;

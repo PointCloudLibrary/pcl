@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pcl_base.h 33238 2010-03-11 00:46:58Z rusu $
+ * $Id$
  *
  */
 #ifndef PCL_PCL_BASE_H_
@@ -42,8 +42,8 @@
 // STD includes
 #include <vector>
 
-// Include ROS macros such as ROS_ERROR, etc
-#include "pcl/ros_macros.h"
+// Include PCL macros such as PCL_ERROR, etc
+#include "pcl/pcl_macros.h"
 
 // Boost includes. Needed everywhere.
 #include <boost/shared_ptr.hpp>
@@ -144,7 +144,7 @@ namespace pcl
           }
           catch (std::bad_alloc)
           {
-            ROS_ERROR ("[initCompute] Failed to allocate %zu indices.", input_->points.size ());
+            PCL_ERROR ("[initCompute] Failed to allocate %zu indices.", input_->points.size ());
           }
           for (size_t i = 0; i < indices->size (); ++i) { (*indices)[i] = i; }
           indices_.reset (indices);

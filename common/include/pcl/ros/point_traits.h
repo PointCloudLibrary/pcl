@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: point_traits.h 33238 2010-03-11 00:46:58Z rusu $
+ * $Id$
  *
  */
 /**
@@ -45,7 +45,6 @@ Point traits.
 #ifndef PCL_ROS_POINT_TRAITS_H_
 #define PCL_ROS_POINT_TRAITS_H_
 
-#include <pcl/ros_macros.h>
 #include <std_msgs/Header.h>
 #include <sensor_msgs/PointField.h>
 #include <boost/type_traits/remove_all_extents.hpp>

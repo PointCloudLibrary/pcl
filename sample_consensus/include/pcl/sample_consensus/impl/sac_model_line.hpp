@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_model_line.hpp 34403 2010-12-01 01:48:52Z rusu $
+ * $Id$
  *
  */
 
@@ -49,7 +49,7 @@ pcl::SampleConsensusModelLine<PointT>::getSamples (int &iterations, std::vector<
   // We're assuming that indices_ have already been set in the constructor
   if (indices_->empty ())
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelLine::getSamples] Empty set of indices given!");
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::getSamples] Empty set of indices given!");
     return;
   }
 
@@ -59,7 +59,7 @@ pcl::SampleConsensusModelLine<PointT>::getSamples (int &iterations, std::vector<
   // Check if we have enough points
   if (samples.size () > indices_->size ())
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelLine::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
     // one of these will make it stop :) TODO static constant for each model that the method has to check
     samples.clear ();
     iterations = INT_MAX - 1;
@@ -81,7 +81,7 @@ pcl::SampleConsensusModelLine<PointT>::getSamples (int &iterations, std::vector<
 
     if (iter > MAX_ITERATIONS_UNIQUE )
     {
-      ROS_DEBUG ("[pcl::SampleConsensusModelLine::getSamples] WARNING: Could not select 2 unique points in %d iterations (%zu indices)!", MAX_ITERATIONS_UNIQUE, indices_->size ());
+      PCL_DEBUG ("[pcl::SampleConsensusModelLine::getSamples] WARNING: Could not select 2 unique points in %d iterations (%zu indices)!", MAX_ITERATIONS_UNIQUE, indices_->size ());
       break;
     }
     //iterations++;
@@ -98,7 +98,7 @@ pcl::SampleConsensusModelLine<PointT>::computeModelCoefficients (
   // Need 2 samples
   if (samples.size () != 2)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelLine::computeModelCoefficients] Invalid set of samples given (%zu)!", samples.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::computeModelCoefficients] Invalid set of samples given (%zu)!", samples.size ());
     return (false);
   }
 
@@ -123,7 +123,7 @@ pcl::SampleConsensusModelLine<PointT>::getDistancesToModel (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 6)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelLine::getDistancesToModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::getDistancesToModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
@@ -153,7 +153,7 @@ pcl::SampleConsensusModelLine<PointT>::selectWithinDistance (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 6)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelLine::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
@@ -198,7 +198,7 @@ pcl::SampleConsensusModelLine<PointT>::optimizeModelCoefficients (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 6)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelLine::optimizeModelCoefficients] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::optimizeModelCoefficients] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     optimized_coefficients = model_coefficients;
     return;
   }
@@ -206,7 +206,7 @@ pcl::SampleConsensusModelLine<PointT>::optimizeModelCoefficients (
   // Need at least 2 points to estimate a line
   if (inliers.size () <= 2)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelLine::optimizeModelCoefficients] Not enough inliers found to support a model (%zu)! Returning the same coefficients.", inliers.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::optimizeModelCoefficients] Not enough inliers found to support a model (%zu)! Returning the same coefficients.", inliers.size ());
     optimized_coefficients = model_coefficients;
     return;
   }
@@ -241,7 +241,7 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
   // Needs a valid model coefficients
   if (model_coefficients.size () != 6)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelLine::projectPoints] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::projectPoints] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
@@ -311,7 +311,7 @@ pcl::SampleConsensusModelLine<PointT>::doSamplesVerifyModel (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 6)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelLine::doSamplesVerifyModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::doSamplesVerifyModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return (false);
   }
 

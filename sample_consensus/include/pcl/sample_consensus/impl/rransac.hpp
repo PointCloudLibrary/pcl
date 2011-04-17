@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: rransac.hpp 34393 2010-11-30 23:02:08Z rusu $
+ * $Id$
  *
  */
 
@@ -47,7 +47,7 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
   // Warn and exit if no threshold was set
   if (threshold_ == DBL_MAX)
   {
-    ROS_ERROR ("[pcl::RandomizedRandomSampleConsensus::computeModel] No threshold set!");
+    PCL_ERROR ("[pcl::RandomizedRandomSampleConsensus::computeModel] No threshold set!");
     return (false);
   }
 
@@ -122,17 +122,17 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
     ++iterations_;
 
     if (debug_verbosity_level > 1)
-      ROS_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Trial %d out of %d: %d inliers (best is: %d so far).", iterations_, (int)ceil (k), n_inliers_count, n_best_inliers_count);
+      PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Trial %d out of %d: %d inliers (best is: %d so far).", iterations_, (int)ceil (k), n_inliers_count, n_best_inliers_count);
     if (iterations_ > max_iterations_)
     {
       if (debug_verbosity_level > 0)
-        ROS_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] RRANSAC reached the maximum number of trials.");
+        PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] RRANSAC reached the maximum number of trials.");
       break;
     }
   }
 
   if (debug_verbosity_level > 0)
-    ROS_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Model: %zu size, %d inliers.", model_.size (), n_best_inliers_count);
+    PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Model: %zu size, %d inliers.", model_.size (), n_best_inliers_count);
 
   if (model_.empty ())
     return (false);

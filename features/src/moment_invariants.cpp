@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: moment_invariants.cpp 34714 2010-12-13 20:08:09Z rusu $
+ * $Id$
  *
  */
 

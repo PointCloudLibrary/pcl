@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: vtk_io.cpp 35701 2011-02-02 08:37:38Z rusu $
+ * $Id$
  *
  */
 
@@ -47,7 +47,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
 {
   if (triangles.cloud.data.empty ())
   {
-    ROS_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no data!");
+    PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no data!");
     return (-1);
   }
 
@@ -87,7 +87,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
     }
     if (xyz != 3)
     {
-      ROS_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!");
+      PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!");
       return (-2);
     }
     fs << std::endl;

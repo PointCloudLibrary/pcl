@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_model_parallel_plane.hpp 34393 2010-11-30 23:02:08Z rusu $
+ * $Id$
  a
  */
 
@@ -77,7 +77,7 @@ pcl::SampleConsensusModelParallelPlane<PointT>::isModelValid (const Eigen::Vecto
   // Needs a valid model coefficients
   if (model_coefficients.size () != 4)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelParallelPlane::isModelValid] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelParallelPlane::isModelValid] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return (false);
   }
 

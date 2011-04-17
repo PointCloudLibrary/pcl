@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: normal_3d_omp.hpp 35810 2011-02-08 00:03:46Z rusu $
+ * $Id$
  *
  */
 

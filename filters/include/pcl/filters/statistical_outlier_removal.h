@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: statistical_outlier_removal.h 35433 2011-01-25 01:51:41Z rusu $
+ * $Id$
  *
  */
 

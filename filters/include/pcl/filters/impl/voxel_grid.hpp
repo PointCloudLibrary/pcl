@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: voxel_grid.hpp 35830 2011-02-08 06:18:23Z rusu $
+ * $Id$
  *
  */
 
@@ -95,7 +95,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   // Has the input dataset been set already?
   if (!input_)
   {
-    ROS_WARN ("[pcl::%s::applyFilter] No input dataset given!", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
@@ -165,7 +165,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     std::vector<sensor_msgs::PointField> fields;
     int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
     if (distance_idx == -1)
-      ROS_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.", getClassName ().c_str (), distance_idx);
+      PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.", getClassName ().c_str (), distance_idx);
 
     // First pass: go over all points and insert them into the right leaf
     for (size_t cp = 0; cp < input_->points.size (); ++cp)

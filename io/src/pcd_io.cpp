@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pcd_read.cpp 33162 2010-03-10 07:41:56Z rusu $
+ * $Id$
  *
  */
 
@@ -78,7 +78,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   // Check if the file exists
   if (!boost::filesystem::exists (file_name))
   {
-    ROS_ERROR ("[pcl::PCDReader::readHeader] Could not open file %s.", file_name.c_str ());
+    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file %s.", file_name.c_str ());
     return (-1);
   }
 
@@ -92,7 +92,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   fs.open (file_name.c_str ());
   if (!fs.is_open () || fs.fail ())
   {
-    ROS_ERROR ("[pcl::PCDReader::readHeader] Could not open file %s.", file_name.c_str ());
+    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file %s.", file_name.c_str ());
     return (-1);
   }
 
@@ -271,7 +271,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   }
   catch (const char *exception)
   {
-    ROS_ERROR ("[pcl::PCDReader::readHeader] %s", exception);
+    PCL_ERROR ("[pcl::PCDReader::readHeader] %s", exception);
     return (-1);
   }
 
@@ -288,7 +288,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   if (cloud.height == 0)
   {
     cloud.height = 1;
-    ROS_WARN ("[pcl::PCDReader::readHeader] no HEIGHT given, setting to 1 (unorganized).");
+    PCL_WARN ("[pcl::PCDReader::readHeader] no HEIGHT given, setting to 1 (unorganized).");
     if (cloud.width == 0)
       cloud.width  = nr_points;
   }
@@ -296,14 +296,14 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   {
     if (cloud.width == 0)
     {
-      ROS_ERROR ("[pcl::PCDReader::readHeader] HEIGHT given (%d) but no WIDTH!", cloud.height);
+      PCL_ERROR ("[pcl::PCDReader::readHeader] HEIGHT given (%d) but no WIDTH!", cloud.height);
       return (-1);
     }
   }
 
   if (int(cloud.width * cloud.height) != nr_points)
   {
-    ROS_ERROR ("[pcl::PCDReader::readHeader] HEIGHT (%d) x WIDTH (%d) != number of points (%d)", cloud.height, cloud.width, nr_points);
+    PCL_ERROR ("[pcl::PCDReader::readHeader] HEIGHT (%d) x WIDTH (%d) != number of points (%d)", cloud.height, cloud.width, nr_points);
     return (-1);
   }
 
@@ -335,7 +335,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   fs.open (file_name.c_str ());
   if (!fs.is_open () || fs.fail ())
   {
-    ROS_ERROR ("[pcl::PCDReader::read] Could not open file %s.", file_name.c_str ());
+    PCL_ERROR ("[pcl::PCDReader::read] Could not open file %s.", file_name.c_str ());
     return (-1);
   }
 
@@ -377,7 +377,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       // Convert the first token to float and use it as the first point coordinate
       if (idx >= nr_points)
       {
-        ROS_WARN ("[pcl::PCDReader::read] input file %s has more points than advertised (%d)!", file_name.c_str (), nr_points);
+        PCL_WARN ("[pcl::PCDReader::read] input file %s has more points than advertised (%d)!", file_name.c_str (), nr_points);
         break;
       }
 
@@ -453,7 +453,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
               break;
             }
             default:
-              ROS_WARN ("[pcl::PCDReader::read] Incorrect field data type specified (%d)!",cloud.fields[d].datatype);
+              PCL_WARN ("[pcl::PCDReader::read] Incorrect field data type specified (%d)!",cloud.fields[d].datatype);
               break;
           }
         }
@@ -464,7 +464,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   }
   catch (const char *exception)
   {
-    ROS_ERROR ("[pcl::PCDReader::read] %s", exception);
+    PCL_ERROR ("[pcl::PCDReader::read] %s", exception);
     return (-1);
   }
 
@@ -517,7 +517,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
 
   if ( (idx != nr_points) && (!binary_data) )
   {
-    ROS_ERROR ("[pcl::PCDReader::read] Number of points read (%d) is different than expected (%d)", idx, nr_points);
+    PCL_ERROR ("[pcl::PCDReader::read] Number of points read (%d) is different than expected (%d)", idx, nr_points);
     return (-1);
   }
 
@@ -538,7 +538,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     return (res);
 
   if (pcd_version != PCD_V6)
-    ROS_WARN ("[pcl::PCDReader::read] PCD file > v.6 read from disk. Sensor origin/orientation is lost.");
+    PCL_WARN ("[pcl::PCDReader::read] PCD file > v.6 read from disk. Sensor origin/orientation is lost.");
 
   return 0;
 }
@@ -609,7 +609,7 @@ pcl::PCDWriter::generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud,
   // The size of the fields cannot be larger than point_step
   if (fsize > cloud.point_step)
   {
-    ROS_ERROR ("[pcl::PCDWriter::generateHeader] The size of the fields (%d) is larger than point_step (%d)! Something is wrong here...", fsize, cloud.point_step);
+    PCL_ERROR ("[pcl::PCDWriter::generateHeader] The size of the fields (%d) is larger than point_step (%d)! Something is wrong here...", fsize, cloud.point_step);
     return ("");
   }
 
@@ -678,7 +678,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
 {
   if (cloud.data.empty ())
   {
-    ROS_ERROR ("[pcl::PCDWriter::writeASCII] Input point cloud has no data!");
+    PCL_ERROR ("[pcl::PCDWriter::writeASCII] Input point cloud has no data!");
     return (-1);
   }
 
@@ -762,7 +762,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
             break;
           }
           default:
-            ROS_WARN ("[pcl::PCDWriter::writeASCII] Incorrect field data type specified (%d)!", cloud.fields[d].datatype);
+            PCL_WARN ("[pcl::PCDWriter::writeASCII] Incorrect field data type specified (%d)!", cloud.fields[d].datatype);
             break;
         }
 
@@ -783,7 +783,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
 {
   if (cloud.data.empty ())
   {
-    ROS_ERROR ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!");
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!");
     return (-1);
   }
   int data_idx = 0;
@@ -801,7 +801,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
 #ifndef _WIN32
   if (data_idx > getpagesize ())
   {
-    ROS_ERROR ("[pcl::PCDWriter::writeBinary] Header size (%d) is bigger than page size (%d)! Reduce the number of channels or save in ASCII format.", data_idx, getpagesize ());
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Header size (%d) is bigger than page size (%d)! Reduce the number of channels or save in ASCII format.", data_idx, getpagesize ());
     return (-1);
   }
 #endif
@@ -810,7 +810,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   int fd = pcl_open (file_name.c_str (), O_RDWR);
   if (fd < 0)
   {
-    ROS_ERROR ("[pcl::PCDWriter::writeBinary] Error during open ()!");
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during open ()!");
     return (-1);
   }
 
@@ -823,7 +823,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   if (result < 0)
   {
     pcl_close (fd);
-    ROS_ERROR ("[pcl::PCDWriter::writeBinary] Error during lseek ()!");
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during lseek ()!");
     return (-1);
   }
   // Write a bogus entry so that the new file size comes in effect
@@ -831,7 +831,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   if (result != 1)
   {
     pcl_close (fd);
-    ROS_ERROR ("[pcl::PCDWriter::writeBinary] Error during write ()!");
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during write ()!");
     return (-1);
   }
 
@@ -846,7 +846,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   if (map == MAP_FAILED)
   {
     pcl_close (fd);
-    ROS_ERROR ("[pcl::PCDWriter::writeBinary] Error during mmap ()!");
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during mmap ()!");
     return (-1);
   }
 #endif
@@ -861,7 +861,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   if (munmap (map, (cloud.data.size ())) == -1)
   {
     pcl_close (fd);
-    ROS_ERROR ("[pcl::PCDWriter::writeBinary] Error during munmap ()!");
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during munmap ()!");
     return (-1);
   }
 #endif

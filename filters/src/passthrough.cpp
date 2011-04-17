@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: passthrough.cpp 36192 2011-02-23 07:46:32Z rusu $
+ * $Id$
  *
  */
 
@@ -46,7 +46,7 @@ pcl::PassThrough<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 {
   if (!input_)
   {
-    ROS_ERROR ("[pcl::%s::applyFilter] Input dataset not given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset not given!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.data.clear ();
     return;
@@ -55,7 +55,7 @@ pcl::PassThrough<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   // If fields x/y/z are not present, we cannot filter
   if (x_idx_ == -1 || y_idx_ == -1 || z_idx_ == -1)
   {
-    ROS_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!", getClassName ().c_str ());
     output.width = output.height = 0;
     output.data.clear ();
     return;
@@ -109,7 +109,7 @@ pcl::PassThrough<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_);
     if (distance_idx == -1)
     {
-      ROS_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.", getClassName ().c_str (), distance_idx);
+      PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.", getClassName ().c_str (), distance_idx);
       output.width = output.height = 0;
       output.data.clear ();
       return;
@@ -118,7 +118,7 @@ pcl::PassThrough<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     // @todo fixme
     if (input_->fields[distance_idx].datatype != sensor_msgs::PointField::FLOAT32)
     {
-      ROS_ERROR ("[pcl::%s::downsample] Distance filtering requested, but distances are not float/double in the dataset! Only FLOAT32/FLOAT64 distances are supported right now.", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::downsample] Distance filtering requested, but distances are not float/double in the dataset! Only FLOAT32/FLOAT64 distances are supported right now.", getClassName ().c_str ());
       output.width = output.height = 0;
       output.data.clear ();
       return;

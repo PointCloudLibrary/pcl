@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: test_filters.cpp 35810 2011-02-08 00:03:46Z rusu $
+ * $Id$
  *
  */
 /** \author Radu Bogdan Rusu */
@@ -386,7 +386,7 @@ TEST (VoxelGrid, Filters)
   EXPECT_EQ (grid.getCentroidIndex (output.points[0]), 0);
   EXPECT_EQ (grid.getCentroidIndex (output.points[99]), 99);
   EXPECT_EQ (grid.getCentroidIndexAt (grid.getGridCoordinates (-1,-1,-1), false), -1);
-  //ROS_ERROR ("IGNORE PREVIOUS ERROR: testing it's functionality!");
+  //PCL_ERROR ("IGNORE PREVIOUS ERROR: testing it's functionality!");
 
   // input point 195 [0.04872199893, 0.07376000285, 0.01743399911]
   int centroidIdx = grid.getCentroidIndex (cloud_ptr_->points[195]);
@@ -467,7 +467,7 @@ TEST (VoxelGrid, Filters)
   EXPECT_EQ (grid2.getCentroidIndex (output.points[0].x, output.points[0].y, output.points[0].z), 0);
   EXPECT_EQ (grid2.getCentroidIndex (output.points[99].x, output.points[99].y, output.points[99].z), 99);
   EXPECT_EQ (grid2.getCentroidIndexAt (grid2.getGridCoordinates (-1,-1,-1), false), -1);
-  //ROS_ERROR ("IGNORE PREVIOUS ERROR: testing it's functionality!");
+  //PCL_ERROR ("IGNORE PREVIOUS ERROR: testing it's functionality!");
 
   // input point 195 [0.04872199893, 0.07376000285, 0.01743399911]
   int centroidIdx2 = grid2.getCentroidIndex (0.048722, 0.073760, 0.017434);

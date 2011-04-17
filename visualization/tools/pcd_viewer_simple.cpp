@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pcd_viewer_simple.cpp 34914 2010-12-20 22:50:09Z rusu $
+ * $Id$
  *
  */
 // PCL

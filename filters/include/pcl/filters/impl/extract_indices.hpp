@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: extract_indices.hpp 34688 2010-12-12 04:50:20Z rusu $
+ * $Id$
  *
  */
 

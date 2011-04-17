@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: radius_outlier_removal.h 34663 2010-12-11 21:54:46Z rusu $
+ * $Id$
  *
  */
 

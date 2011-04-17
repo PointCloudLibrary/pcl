@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_segmentation.cpp 34705 2010-12-13 08:13:53Z rusu $
+ * $Id$
  *
  */
 

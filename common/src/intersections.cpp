@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: intersections.cpp 35986 2011-02-13 03:41:58Z rusu $
+ * $Id$
  *
  */
 

@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_model.h 36281 2011-03-01 00:55:10Z rusu $
+ * $Id$
  *
  */
 
@@ -94,7 +94,7 @@ namespace pcl
         indices_.reset (new std::vector<int> (indices));
         if (indices_->size () > input_->points.size ())
         {
-          ROS_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %zu while the input PointCloud has size %zu!", indices_->size (), input_->points.size ());
+          PCL_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %zu while the input PointCloud has size %zu!", indices_->size (), input_->points.size ());
           indices_->clear ();
         }
       };

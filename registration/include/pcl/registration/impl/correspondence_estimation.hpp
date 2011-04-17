@@ -42,7 +42,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setInputT
 {
   if (cloud->points.empty ())
   {
-    ROS_ERROR ("[pcl::%s::setInputTarget] Invalid or empty point cloud dataset given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::setInputTarget] Invalid or empty point cloud dataset given!", getClassName ().c_str ());
     return;
   }
   PointCloudTarget target = *cloud;
@@ -166,7 +166,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::findFeatu
 {
   if (features_map_.empty ())
   {
-    ROS_ERROR ("[pcl::%s::findFeatureCorrespondences] One or more features must be set before finding correspondences!",
+    PCL_ERROR ("[pcl::%s::findFeatureCorrespondences] One or more features must be set before finding correspondences!",
                getClassName ().c_str ());
     return;
   }
@@ -206,7 +206,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
 
   if (!target_)
   {
-    ROS_WARN ("[pcl::%s::compute] No input target dataset was given!", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::compute] No input target dataset was given!", getClassName ().c_str ());
     return;
   }
 
@@ -243,7 +243,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
 
   if (!target_)
   {
-    ROS_WARN ("[pcl::%s::compute] No input target dataset was given!", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::compute] No input target dataset was given!", getClassName ().c_str ());
     return;
   }
 

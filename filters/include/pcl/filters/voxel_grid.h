@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: voxel_grid.h 35810 2011-02-08 00:03:46Z rusu $
+ * $Id$
  *
  */
 
@@ -270,7 +270,7 @@ namespace pcl
         if (idx < 0 || idx >= (int)leaf_layout_.size ()) // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as needed
         {
           if (verbose)
-            ROS_ERROR ("[pcl::%s::getCentroidIndexAt] Specified coordinate is outside grid bounds, or leaf layout is not saved, make sure to call setSaveLeafLayout(true) and filter(output) first!", getClassName ().c_str ());
+            PCL_ERROR ("[pcl::%s::getCentroidIndexAt] Specified coordinate is outside grid bounds, or leaf layout is not saved, make sure to call setSaveLeafLayout(true) and filter(output) first!", getClassName ().c_str ());
           return -1;
         }
         return leaf_layout_[idx];
@@ -472,7 +472,7 @@ namespace pcl
         if (idx < 0 || idx >= (int)leaf_layout_.size ()) // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as needed
         {
           if (verbose)
-            ROS_ERROR ("[pcl::%s::getCentroidIndexAt] Specified coordinate is outside grid bounds, or leaf layout is not saved, make sure to call setSaveLeafLayout(true) and filter(output) first!", getClassName ().c_str ());
+            PCL_ERROR ("[pcl::%s::getCentroidIndexAt] Specified coordinate is outside grid bounds, or leaf layout is not saved, make sure to call setSaveLeafLayout(true) and filter(output) first!", getClassName ().c_str ());
           return -1;
         }
         return leaf_layout_[idx];

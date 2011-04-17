@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: organized_data.hpp 35810 2011-02-08 00:03:46Z rusu $
+ * $Id$
  *
  */
 
@@ -52,7 +52,7 @@ pcl::OrganizedDataIndex<PointT>::radiusSearch (
 
   if (cloud.height == 1)
   {
-    ROS_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not organized!", getName ().c_str ());
+    PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not organized!", getName ().c_str ());
     return 0;
   }
   int data_size = cloud.points.size ();
@@ -118,7 +118,7 @@ pcl::OrganizedDataIndex<PointT>::nearestKSearch (const PointCloud &cloud, int in
   k_indices.resize (k);
   if (cloud.height == 1)
   {
-    ROS_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not dense!", getName ().c_str ());
+    PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not dense!", getName ().c_str ());
     return 0;
   }
   int data_size = cloud.points.size ();

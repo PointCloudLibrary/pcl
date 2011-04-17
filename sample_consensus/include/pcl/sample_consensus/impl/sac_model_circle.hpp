@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sac_model_circle.hpp 34403 2010-12-01 01:48:52Z rusu $
+ * $Id$
  *
  */
 
@@ -48,7 +48,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::getSamples (int &iterations, std::vec
   // We're assuming that indices_ have already been set in the constructor
   if (indices_->empty ())
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCircle2D::getSamples] Empty set of indices given!");
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::getSamples] Empty set of indices given!");
     return;
   }
 
@@ -58,7 +58,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::getSamples (int &iterations, std::vec
   // Check if we have enough points
   if (samples.size () > indices_->size ())
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCircle2D::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
     // one of these will make it stop :) TODO static constant for each model that the method has to check
     samples.clear ();
     iterations = INT_MAX - 1;
@@ -108,7 +108,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::getSamples (int &iterations, std::vec
     ++iter;
     if (iter > MAX_ITERATIONS_COLLINEAR )
     {
-      ROS_DEBUG ("[pcl::SampleConsensusModelCircle2D::getSamples] WARNING: Could not select 3 non collinear points in %d iterations!", MAX_ITERATIONS_COLLINEAR);
+      PCL_DEBUG ("[pcl::SampleConsensusModelCircle2D::getSamples] WARNING: Could not select 3 non collinear points in %d iterations!", MAX_ITERATIONS_COLLINEAR);
       break;
     }
     //iterations++;
@@ -124,7 +124,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::computeModelCoefficients (const std::
   // Need 3 samples
   if (samples.size () != 3)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCircle2D::computeModelCoefficients] Invalid set of samples given (%zu)!", samples.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::computeModelCoefficients] Invalid set of samples given (%zu)!", samples.size ());
     return (false);
   }
 
@@ -160,7 +160,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::getDistancesToModel (const Eigen::Vec
   // Needs a valid model coefficients
   if (model_coefficients.size () != 3)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCircle2D::getDistancesToModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::getDistancesToModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
@@ -194,7 +194,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
   // Needs a valid model coefficients
   if (model_coefficients.size () != 3)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCircle2D::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
@@ -240,7 +240,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::optimizeModelCoefficients (
   // Needs a set of valid model coefficients
   if (model_coefficients.size () != n_unknowns)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCircle2D::optimizeModelCoefficients] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::optimizeModelCoefficients] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     optimized_coefficients = model_coefficients;
     return;
   }
@@ -248,7 +248,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::optimizeModelCoefficients (
   // Need at least 3 samples
   if (inliers.size () <= 3)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCircle2D::optimizeModelCoefficients] Not enough inliers found to support a model (%zu)! Returning the same coefficients.", inliers.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::optimizeModelCoefficients] Not enough inliers found to support a model (%zu)! Returning the same coefficients.", inliers.size ());
     optimized_coefficients = model_coefficients;
     return;
   }
@@ -276,7 +276,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::optimizeModelCoefficients (
   int info = lmdif1 (&pcl::SampleConsensusModelCircle2D<PointT>::functionToOptimize, this, m, n_unknowns, x, fvec, tol, iwa, wa, lwa);
 
   // Compute the L2 norm of the residuals
-  ROS_DEBUG ("[pcl::SampleConsensusModelCircle2D::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g \nFinal solution: %g %g %g",
+  PCL_DEBUG ("[pcl::SampleConsensusModelCircle2D::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g \nFinal solution: %g %g %g",
              info, enorm (m, fvec), model_coefficients[0], model_coefficients[1], model_coefficients[2], x[0], x[1], x[2]);
 
   optimized_coefficients = Eigen::Vector3f (x[0], x[1], x[2]);
@@ -311,7 +311,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 3)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCircle2D::projectPoints] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::projectPoints] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return;
   }
 
@@ -371,7 +371,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::doSamplesVerifyModel (
   // Needs a valid model coefficients
   if (model_coefficients.size () != 3)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCircle2D::doSamplesVerifyModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::doSamplesVerifyModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return (false);
   }
 
@@ -396,7 +396,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::isModelValid (const Eigen::VectorXf &
   // Needs a valid model coefficients
   if (model_coefficients.size () != 3)
   {
-    ROS_ERROR ("[pcl::SampleConsensusModelCircle2D::isModelValid] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::isModelValid] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
     return (false);
   }
 

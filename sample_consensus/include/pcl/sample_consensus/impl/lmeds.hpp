@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: lmeds.hpp 34244 2010-11-25 04:28:15Z rusu $
+ * $Id$
  *
  */
 
@@ -47,7 +47,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
   // Warn and exit if no threshold was set
   if (threshold_ == DBL_MAX)
   {
-    ROS_ERROR ("[pcl::LeastMedianSquares::computeModel] No threshold set!");
+    PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] No threshold set!");
     return (false);
   }
 
@@ -116,13 +116,13 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 
     ++iterations_;
     if (debug_verbosity_level > 1)
-      ROS_DEBUG ("[pcl::LeastMedianSquares::computeModel] Trial %d out of %d. Best penalty is %f.", iterations_, max_iterations_, d_best_penalty);
+      PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Trial %d out of %d. Best penalty is %f.", iterations_, max_iterations_, d_best_penalty);
   }
 
   if (model_.empty ())
   {
     if (debug_verbosity_level > 0)
-      ROS_DEBUG ("[pcl::LeastMedianSquares::computeModel] Unable to find a solution!");
+      PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Unable to find a solution!");
     return (false);
   }
 
@@ -137,7 +137,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
   // No distances? The model must not respect the user given constraints
   if (distances.empty ())
   {
-    ROS_ERROR ("[pcl::LeastMedianSquares::computeModel] The model found failed to verify against the given constraints!");
+    PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] The model found failed to verify against the given constraints!");
     return (false);
   }
 
@@ -145,7 +145,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 
   if (distances.size () != indices.size ())
   {
-    ROS_ERROR ("[pcl::LeastMedianSquares::computeModel] Estimated distances (%zu) differs than the normal of indices (%zu).", distances.size (), indices.size ());
+    PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] Estimated distances (%zu) differs than the normal of indices (%zu).", distances.size (), indices.size ());
     return (false);
   }
 
@@ -160,7 +160,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
   inliers_.resize (n_inliers_count);
 
   if (debug_verbosity_level > 0)
-    ROS_DEBUG ("[pcl::LeastMedianSquares::computeModel] Model: %zu size, %d inliers.", model_.size (), n_inliers_count);
+    PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Model: %zu size, %d inliers.", model_.size (), n_inliers_count);
 
   return (true);
 }

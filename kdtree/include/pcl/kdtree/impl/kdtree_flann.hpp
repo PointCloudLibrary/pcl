@@ -59,7 +59,7 @@ namespace pcl
     // Allocate enough data
     if (!input_)
     {
-      ROS_ERROR ("[pcl::KdTreeANN::setInputCloud] Invalid input!");
+      PCL_ERROR ("[pcl::KdTreeANN::setInputCloud] Invalid input!");
       return;
     }
     if (indices != NULL)
@@ -79,7 +79,7 @@ namespace pcl
   {
     if (!point_representation_->isValid (point))
     {
-      //ROS_ERROR_STREAM ("[pcl::KdTreeFLANN::nearestKSearch] Invalid query point given!" << point);
+      //PCL_ERROR_STREAM ("[pcl::KdTreeFLANN::nearestKSearch] Invalid query point given!" << point);
       return (0);
     }
 
@@ -112,7 +112,7 @@ namespace pcl
 
     if (!point_representation_->isValid (point))
     {
-      //ROS_ERROR_STREAM ("[pcl::KdTreeFLANN::radiusSearch] Invalid query point given!" << point);
+      //PCL_ERROR_STREAM ("[pcl::KdTreeFLANN::radiusSearch] Invalid query point given!" << point);
       return 0;
     }
 

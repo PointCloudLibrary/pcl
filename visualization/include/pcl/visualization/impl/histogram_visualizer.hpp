@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pcl_histogram_visualizer.hpp 31709 2010-08-11 08:11:54Z rusu $
+ * $Id$
  *
  */
 

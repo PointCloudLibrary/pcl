@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: point_types.hpp 35899 2011-02-09 09:17:49Z magnenat $
+ * $Id$
  *
  */
 
