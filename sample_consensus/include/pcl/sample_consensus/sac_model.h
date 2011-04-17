@@ -88,10 +88,10 @@ namespace pcl
         */
       SampleConsensusModel (const PointCloudConstPtr &cloud, const std::vector<int> &indices) :
                             input_ (cloud),
-                            indices_ (boost::make_shared <std::vector<int> > (indices)),
                             radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX) 
     
       {
+        indices_.reset (new std::vector<int> (indices));
         if (indices_->size () > input_->points.size ())
         {
           ROS_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %zu while the input PointCloud has size %zu!", indices_->size (), input_->points.size ());
@@ -196,7 +196,7 @@ namespace pcl
       {
         input_ = cloud;
         if (!indices_)
-          indices_ = boost::make_shared <std::vector<int> > ();
+          indices_.reset (new std::vector<int> ());
         if (indices_->empty ())
         {
           // Prepare a set of indices to be used (entire cloud)
@@ -222,7 +222,7 @@ namespace pcl
       inline void 
       setIndices (std::vector<int> &indices) 
       { 
-        indices_ = boost::make_shared <std::vector<int> > (indices); 
+        indices_.reset (new std::vector<int> (indices)); 
       }
 
       /** \brief Get a pointer to the vector of indices used. */

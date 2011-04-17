@@ -43,8 +43,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <boost/make_shared.hpp>
-
 #include "octree_nodes.h"
 
 #include <queue>

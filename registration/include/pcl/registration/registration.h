@@ -95,7 +95,7 @@ namespace pcl
                         inlier_threshold_ (0.05),
                         converged_ (false), min_number_correspondences_ (3), /*k_ (1),*/ point_representation_ ()
       {
-        tree_ = boost::make_shared<pcl::KdTreeFLANN<PointTarget> > ();     // ANN tree for nearest neighbor search
+        tree_.reset (new pcl::KdTreeFLANN<PointTarget>);     // ANN tree for nearest neighbor search
       }
 
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)

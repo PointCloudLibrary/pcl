@@ -43,7 +43,6 @@
 #include "pcl/pcl_macros.h"
 #include "pcl/point_cloud.h"
 #include "pcl/point_representation.h"
-#include <boost/make_shared.hpp>
 
 namespace pcl
 {
@@ -75,7 +74,7 @@ namespace pcl
       KdTree (bool sorted = true) : input_(), indices_(), 
                                     epsilon_(0.0), min_pts_(1), sorted_(sorted)
       {
-        point_representation_ = boost::make_shared<DefaultPointRepresentation<PointT> > ();
+        point_representation_.reset (new DefaultPointRepresentation<PointT>);
       };
 
 

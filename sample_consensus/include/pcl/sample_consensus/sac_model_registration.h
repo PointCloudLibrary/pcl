@@ -135,7 +135,7 @@ namespace pcl
       setInputTarget (const PointCloudConstPtr &target, const std::vector<int> &indices_tgt)
       {
         target_ = target;
-        indices_tgt_ = boost::make_shared <std::vector<int> > (indices_tgt);
+        indices_tgt_.reset (new std::vector<int> (indices_tgt));
       }
 
       /** \brief Get 3 random indices from a subset of given indices.

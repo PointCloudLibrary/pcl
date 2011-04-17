@@ -92,7 +92,7 @@ namespace pcl
           corr_dist_threshold_ (std::numeric_limits<double>::max()),
           point_representation_ ()
       {
-        tree_ = boost::make_shared<pcl::KdTreeFLANN<PointTarget> > ();     // FLANN tree for nearest neighbor search
+        tree_.reset (new pcl::KdTreeFLANN<PointTarget>);     // FLANN tree for nearest neighbor search
       }
 
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)

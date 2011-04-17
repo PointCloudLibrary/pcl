@@ -49,7 +49,7 @@ int main(int argc, char** argv)
   corr_est.determineCorrespondences(correspondences);
   printf("%d\t original correspondences\n", (int)correspondences.size());
 
-  pcl::registration::CorrespondencesConstPtr correspondences_ptr = boost::make_shared< const std::vector<pcl::registration::Correspondence> >(correspondences);
+  pcl::registration::CorrespondencesConstPtr correspondences_ptr (new std::vector<pcl::registration::Correspondence> (correspondences));
 
   std::vector<Correspondence> correspondeces_reciprocal;
   corr_est.determineReciprocalCorrespondences(correspondeces_reciprocal);

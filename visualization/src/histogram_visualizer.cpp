@@ -67,7 +67,6 @@ pcl_visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () : exit_main
   // Create the interactor style
   style_->Initialize ();
   style_->setRendererCollection (rens_);
-  style_->setCloudActorMap (boost::make_shared<CloudActorMap> (cloud_actor_map_));
   style_->UseTimersOn ();
 
   interactor_->SetInteractorStyle (style_);

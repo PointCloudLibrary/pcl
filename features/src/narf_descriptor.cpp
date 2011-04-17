@@ -60,7 +60,10 @@ void NarfDescriptor::setRangeImage(const RangeImage* range_image, const std::vec
 {
   range_image_ = range_image;
   if (indices != NULL)
-    setIndices(boost::make_shared<std::vector<int> >(*indices));
+  {
+    IndicesPtr indicesptr (new std::vector<int> (*indices));
+    setIndices (indicesptr);
+  }
 }
 
 void NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)

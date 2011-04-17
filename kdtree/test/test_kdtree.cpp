@@ -47,7 +47,6 @@ using namespace std;
 #include <pcl/kdtree/tree_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <boost/make_shared.hpp>
 using namespace pcl;
 
 struct MyPoint : public PointXYZ 
@@ -291,10 +290,10 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class MyPointRepresenationXY : public PointRepresentation<MyPoint>
+class MyPointRepresentationXY : public PointRepresentation<MyPoint>
 {
 public:
-  MyPointRepresenationXY () 
+  MyPointRepresentationXY () 
   { 
     this->nr_dimensions_ = 2; 
   }
@@ -340,7 +339,8 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
   }
   
   // Find k nearest neighbors with a different point representation
-  kdtree.setPointRepresentation (boost::make_shared <MyPointRepresenationXY>());
+  boost::shared_ptr<MyPointRepresentationXY> ptrep (new MyPointRepresentationXY);
+  kdtree.setPointRepresentation (ptrep);
   kdtree.nearestKSearch (p, k, k_indices, k_distances);
   for (int i = 0; i < k; ++i) 
   {

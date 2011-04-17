@@ -47,7 +47,6 @@
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/visualization/common/shapes.h>
-#include <boost/make_shared.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 // VTK includes

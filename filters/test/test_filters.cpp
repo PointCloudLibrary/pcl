@@ -63,12 +63,12 @@ TEST (ExtractIndices, Filters)
 {
   // Test the PointCloud<PointT> method
   ExtractIndices<PointXYZ> ei;
-  vector<int> indices (2);
-  indices[0] = 0; indices[1] = cloud_.points.size () - 1;
+  boost::shared_ptr<vector<int> > indices (new vector<int> (2));
+  (*indices)[0] = 0; (*indices)[1] = cloud_.points.size () - 1;
 
   PointCloud<PointXYZ> output;
   ei.setInputCloud (cloud_ptr_);
-  ei.setIndices (boost::make_shared<std::vector<int> > (indices));
+  ei.setIndices (indices);
   ei.filter (output);
 
   EXPECT_EQ ((int)output.points.size (), 2);
@@ -103,7 +103,7 @@ TEST (ExtractIndices, Filters)
 
   sensor_msgs::PointCloud2 output_blob;
   ei2.setInputCloud (cloud_blob_ptr_);
-  ei2.setIndices (boost::make_shared<std::vector<int> > (indices));
+  ei2.setIndices (indices);
   ei2.filter (output_blob);
 
   fromROSMsg (output_blob, output);

@@ -63,7 +63,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setSource
 {
   if (features_map_.count (key) == 0)
   {
-    features_map_[key] = boost::make_shared<FeatureContainer<FeatureType> > ();
+    features_map_[key].reset (new FeatureContainer<FeatureType>);
   }
   boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setSourceFeature (source_feature);
 }
@@ -91,7 +91,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setTarget
 {
   if (features_map_.count (key) == 0)
   {
-    features_map_[key] = boost::make_shared<FeatureContainer<FeatureType> > ();
+    features_map_[key].reset (new FeatureContainer<FeatureType>);
   }
   boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setTargetFeature (target_feature);
 }
@@ -122,7 +122,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setRadius
 {
   if (features_map_.count (key) == 0)
   {
-    features_map_[key] = boost::make_shared<FeatureContainer<FeatureType> > ();
+    features_map_[key].reset (new FeatureContainer<FeatureType>);
   }
   boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setRadiusSearch (tree, r);
 }
@@ -135,7 +135,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setKSearc
 {
   if (features_map_.count (key) == 0)
   {
-    features_map_[key] = boost::make_shared<FeatureContainer<FeatureType> > ();
+    features_map_[key].reset (new FeatureContainer<FeatureType>);
   }
   boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setKSearch (tree, k);
 }

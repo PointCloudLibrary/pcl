@@ -224,7 +224,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   }
 
   //recompute normals normals and use them for clustering!
-  KdTreePtr normals_tree_filtered = boost::make_shared<pcl::KdTreeFLANN<pcl::PointNormal> > (false);
+  KdTreePtr normals_tree_filtered (new pcl::KdTreeFLANN<pcl::PointNormal> (false));
   normals_tree_filtered->setInputCloud (normals_filtered_cloud);
 
   NormalEstimator n3d;
@@ -233,7 +233,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   n3d.setInputCloud (normals_filtered_cloud);
   n3d.compute (*normals_filtered_cloud);
 
-  KdTreePtr normals_tree = boost::make_shared<pcl::KdTreeFLANN<pcl::PointNormal> > (false);
+  KdTreePtr normals_tree (new pcl::KdTreeFLANN<pcl::PointNormal> (false));
   normals_tree->setInputCloud (normals_filtered_cloud);
   std::vector < pcl::PointIndices > clusters;
 

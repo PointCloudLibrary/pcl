@@ -35,7 +35,6 @@
  *
  */
 
-#include <boost/make_shared.hpp>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
@@ -51,7 +50,7 @@ using namespace std;
 typedef KdTree<PointXYZ>::Ptr KdTreePtr;
 
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
-vector<int> indices;
+boost::shared_ptr<vector<int> > indices (new vector<int>);
 KdTreePtr tree;
 
 /* ---[ */
@@ -66,11 +65,11 @@ int
   fromROSMsg (cloud_blob, *cloud);
 
   // Indices
-  indices.resize (cloud->points.size ());
-  for (size_t i = 0; i < indices.size (); ++i) { indices[i] = i; }
+  indices->resize (cloud->points.size ());
+  for (size_t i = 0; i < indices->size (); ++i) { (*indices)[i] = i; }
 
   // KD-Tree
-  tree = boost::make_shared<KdTreeFLANN<PointXYZ> > ();
+  tree.reset (new KdTreeFLANN<PointXYZ>);
   tree->setInputCloud (cloud);
 
   // Init objects
@@ -80,7 +79,7 @@ int
 
   // Set parameters
   mls.setInputCloud (cloud);
-  mls.setIndices (boost::make_shared <vector<int> > (indices));
+  mls.setIndices (indices);
   mls.setPolynomialFit (true);
   mls.setSearchMethod (tree);
   mls.setSearchRadius (0.03);
@@ -97,7 +96,7 @@ int
 
   // Test triangulation
   std::cerr << "TESTING TRIANGULATION" << std::endl;
-  KdTree<PointNormal>::Ptr tree2 = boost::make_shared<KdTreeFLANN<PointNormal> > ();
+  KdTree<PointNormal>::Ptr tree2 (new KdTreeFLANN<PointNormal>);
   tree2->setInputCloud (mls_cloud.makeShared ());
   PolygonMesh triangles;
 

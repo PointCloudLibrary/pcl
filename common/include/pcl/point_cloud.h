@@ -44,7 +44,6 @@
 #include <std_msgs/Header.h>
 #include <pcl/exceptions.h>
 #include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
 
 namespace pcl
 {
@@ -164,7 +163,6 @@ namespace pcl
       inline size_t size () const { return (points.size ()); }
       inline void push_back (const PointT& p) { points.push_back (p); }
 
-      //inline Ptr makeShared () const { return (boost::make_shared<PointCloud<PointT> >) (*this); } 
       inline Ptr makeShared () const { return Ptr (new PointCloud<PointT> (*this)); } 
 
     protected:

@@ -38,7 +38,6 @@
 
 #include <gtest/gtest.h>
 
-#include <boost/make_shared.hpp>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
@@ -57,8 +56,8 @@ using namespace std;
 typedef KdTree<PointXYZ>::Ptr KdTreePtr;
 
 PointCloud<PointXYZ> cloud;
-vector<int> indices;
-KdTreePtr tree;
+boost::shared_ptr<vector<int> > indices (new vector<int>);
+KdTreePtr tree (new KdTreeFLANN<PointXYZ> (false));
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, MovingLeastSquares)
@@ -71,7 +70,7 @@ TEST (PCL, MovingLeastSquares)
   // Set parameters
   mls.setInputCloud (cloud.makeShared ());
   mls.setOutputNormals (mls_normals);
-  mls.setIndices (boost::make_shared <vector<int> > (indices));
+  mls.setIndices (indices);
   mls.setPolynomialFit (true);
   mls.setSearchMethod (tree);
   mls.setSearchRadius (0.03);
@@ -94,7 +93,7 @@ TEST (PCL, GreedyProjectionTriangulation)
   NormalEstimation<PointXYZ, Normal> n;
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   n.setInputCloud (cloud.makeShared ());
-  n.setIndices (boost::make_shared <vector<int> > (indices));
+  n.setIndices (indices);
   n.setSearchMethod (tree);
   n.setKSearch (20);
   n.compute (*normals);
@@ -104,7 +103,7 @@ TEST (PCL, GreedyProjectionTriangulation)
   pcl::concatenateFields (cloud, *normals, cloud_with_normals);
 
   // Create search tree
-  KdTree<PointNormal>::Ptr tree2 = boost::make_shared<KdTreeFLANN<PointNormal> > ();
+  KdTree<PointNormal>::Ptr tree2 (new KdTreeFLANN<PointNormal>);
   tree2->setInputCloud (cloud_with_normals.makeShared ());
 
   // Init objects
@@ -177,7 +176,7 @@ TEST (PCL, GridProjection)
   PointCloud<PointNormal>::ConstPtr cloud_ptr = cloud_with_normals.makeShared ();
 
   // Create search tree
-  KdTree<PointNormal>::Ptr tree2 = boost::make_shared<KdTreeFLANN<PointNormal> > ();
+  KdTree<PointNormal>::Ptr tree2 (new KdTreeFLANN<PointNormal>);
   tree2->setInputCloud (cloud_ptr);
 
   // Init objects
@@ -370,10 +369,9 @@ int
   loadPCDFile (file_name, cloud_blob);
   fromROSMsg (cloud_blob, cloud);
 
-  indices.resize (cloud.points.size ());
-  for (size_t i = 0; i < indices.size (); ++i) { indices[i] = i; }
+  indices->resize (cloud.points.size ());
+  for (size_t i = 0; i < indices->size (); ++i) { (*indices)[i] = i; }
 
-  tree = boost::make_shared<KdTreeFLANN<PointXYZ> > (false);
   tree->setInputCloud (cloud.makeShared ());
 
   testing::InitGoogleTest (&argc, argv);

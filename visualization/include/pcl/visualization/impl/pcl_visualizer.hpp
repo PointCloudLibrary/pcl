@@ -35,6 +35,8 @@
  *
  */
 
+#include <boost/make_shared.hpp>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool 
 pcl_visualization::PCLVisualizer::addPointCloud (

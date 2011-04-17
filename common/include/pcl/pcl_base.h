@@ -47,7 +47,6 @@
 
 // Boost includes. Needed everywhere.
 #include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
 
 // Point Cloud message includes. Needed everywhere.
 #include <sensor_msgs/PointCloud2.h>
@@ -104,7 +103,7 @@ namespace pcl
       inline void
       setIndices (const PointIndicesConstPtr &indices)
       {
-        indices_ = boost::make_shared<std::vector<int> > (indices->indices);
+        indices_.reset (new std::vector<int> (indices->indices));
         fake_indices_ = false;
         use_indices_  = true;
       }
@@ -213,7 +212,7 @@ namespace pcl
       inline void
       setIndices (const PointIndicesConstPtr &indices)
       {
-        indices_ = boost::make_shared<std::vector<int> > (indices->indices);
+        indices_.reset (new std::vector<int> (indices->indices));
         fake_indices_ = false;
         use_indices_  = true;
       }

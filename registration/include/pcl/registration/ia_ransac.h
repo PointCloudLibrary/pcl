@@ -84,7 +84,7 @@ namespace pcl
       SampleConsensusInitialAlignment () : nr_samples_(3)
       {
         reg_name_ = "SampleConsensusInitialAlignment";
-        feature_tree_ = boost::make_shared<pcl::KdTreeFLANN<FeatureT> > ();
+        feature_tree_.reset (new pcl::KdTreeFLANN<FeatureT>);
       };
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

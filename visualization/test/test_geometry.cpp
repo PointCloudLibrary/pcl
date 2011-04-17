@@ -19,25 +19,25 @@ int
 {
   srand (time (0));
 
-  PointCloud<PointXYZRGB> cloud;
+  PointCloud<PointXYZRGB>::Ptr cloud (new PointCloud<PointXYZRGB>);
 
   PCDReader pcd;
-  if (pcd.read (argv[1], cloud) == -1)
+  if (pcd.read (argv[1], *cloud) == -1)
     return (-1);
 
   // Filter the data
   std::cerr << "Filtering..." << std::endl;
   PassThrough<PointXYZRGB> pass;
-  pass.setInputCloud (boost::make_shared<PointCloud<PointXYZRGB> > (cloud));
-  PointCloud<PointXYZRGB> cloud_filtered;
-  pass.filter (cloud_filtered);
+  pass.setInputCloud (cloud);
+  PointCloud<PointXYZRGB>::Ptr cloud_filtered (new PointCloud<PointXYZRGB>);
+  pass.filter (*cloud_filtered);
 
   // Estimate surface normals
   std::cerr << "Estimating normals..." << std::endl;
   NormalEstimation<PointXYZRGB, Normal> ne;
-  ne.setInputCloud (boost::make_shared<PointCloud <PointXYZRGB> > (cloud_filtered));
+  ne.setInputCloud (cloud_filtered);
   ne.setKSearch (20);
-  KdTreeFLANN<PointXYZRGB>::Ptr tree = boost::make_shared<KdTreeFLANN<PointXYZRGB> > ();
+  KdTreeFLANN<PointXYZRGB>::Ptr tree (new KdTreeFLANN<PointXYZRGB>);
   ne.setSearchMethod (tree);
   PointCloud<Normal> normals;
   ne.compute (normals);
