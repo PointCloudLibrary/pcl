@@ -38,7 +38,6 @@
 
 #include <gtest/gtest.h>
 
-#include <boost/make_shared.hpp>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/integral_image_normal.h>
