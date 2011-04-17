@@ -142,10 +142,16 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
   line_dir.normalize ();
 
   model_coefficients.resize (7);
-  model_coefficients.template head<3> ()    = line_pt.template head<3> ();
-  model_coefficients.template segment<3> (3) = line_dir.template head<3> ();
+  // model_coefficients.template head<3> ()    = line_pt.template head<3> ();
+  model_coefficients[0] = line_pt[0];
+  model_coefficients[1] = line_pt[1];
+  model_coefficients[2] = line_pt[2];
+  // model_coefficients.template segment<3> (3) = line_dir.template head<3> ();
+  model_coefficients[3] = line_dir[0];
+  model_coefficients[4] = line_dir[1];
+  model_coefficients[5] = line_dir[2];
   // cylinder radius
-  model_coefficients[6] = sqrt(pcl::sqrPointToLineDistance (p1, line_pt, line_dir));
+  model_coefficients[6] = sqrt (pcl::sqrPointToLineDistance (p1, line_pt, line_dir));
 
   if (model_coefficients[6] > radius_max_ || model_coefficients[6] < radius_min_)
     return (false);
