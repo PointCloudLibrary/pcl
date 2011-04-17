@@ -233,45 +233,123 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape,
 
   int vertices = 0;
   std::vector<bool> added_vertices (max_vertex_id, false);
-  ridgeT *ridge, **ridgep;
-  FOREACHridge_(edges_set) 
+  std::map<int, std::vector<int> > edges;
+
+  ridgeT * ridge, **ridgep;
+  FOREACHridge_(edges_set)
   {
-    if (ridge->bottom->upperdelaunay || ridge->top->upperdelaunay || !ridge->top->good || !ridge->bottom->good) 
+    if (ridge->bottom->upperdelaunay || ridge->top->upperdelaunay || !ridge->top->good || !ridge->bottom->good)
     {
       int vertex_n, vertex_i;
-      FOREACHvertex_i_((*ridge).vertices)
+      int vertices_in_ridge=0;
+      std::vector<int> pcd_indices;
+      pcd_indices.resize(2);
+
+      FOREACHvertex_i_((*ridge).vertices) //in 2-dim, 2 vertices per ridge!
+
       {
-        if (!added_vertices[vertex->id]) 
+        if (!added_vertices[vertex->id])
         {
           alpha_shape.points[vertices].x = vertex->point[0];
           alpha_shape.points[vertices].y = vertex->point[1];
 
           if (dim > 2)
-            alpha_shape.points[vertices].z = vertex->point[2];
+          alpha_shape.points[vertices].z = vertex->point[2];
           else
-            alpha_shape.points[vertices].z = 0;
+          alpha_shape.points[vertices].z = 0;
 
           qhid_to_pcidx[vertex->id] = vertices; //map the vertex id of qhull to the point cloud index
           added_vertices[vertex->id] = true;
+          pcd_indices[vertices_in_ridge] = vertices;
           vertices++;
         }
+        else
+        {
+          pcd_indices[vertices_in_ridge] = qhid_to_pcidx[vertex->id];
+        }
+
+        vertices_in_ridge++;
       }
+
+      //make edges bidirectional and pointing to alpha_shape pointcloud...
+      edges[pcd_indices[0]].push_back(pcd_indices[1]);
+      edges[pcd_indices[1]].push_back(pcd_indices[0]);
     }
   }
 
   alpha_shape.points.resize (vertices);
-  polygons.resize (dd);
+
+  std::vector < std::vector<int> > connected;
+  PointCloud alpha_shape_sorted;
+  alpha_shape_sorted.points.resize (vertices);
+
+  //iterate over edges until they are empty!
+  std::map<int, std::vector<int> >::iterator curr = edges.begin ();
+  int next;
+  std::vector<bool> used (vertices, false); //used to decide which direction should we take!
+  std::vector<int> pcd_idx_start_polygons;
+  pcd_idx_start_polygons.push_back (0);
+
+  //start following edges and removing elements
+  int sorted_idx = 0;
+  while (!edges.empty ())
+  {
+    alpha_shape_sorted.points[sorted_idx] = alpha_shape.points[(*curr).first];
+    //check where we can go from (*curr).first
+    for (size_t i = 0; i < (*curr).second.size (); i++)
+    {
+      if (!used[((*curr).second)[i]])
+      {
+        //we can go there
+        next = ((*curr).second)[i];
+        break;
+      }
+    }
+
+    used[(*curr).first] = true;
+    edges.erase (curr); //remove edges starting from curr
+
+    sorted_idx++;
+
+    if (edges.empty ())
+      break;
+
+    //reassign current
+    curr = edges.find (next); //if next is not found, then we have unconnected polygons.
+    if (curr == edges.end ())
+    {
+      //set current to any of the remaining in edge!
+      curr = edges.begin ();
+      pcd_idx_start_polygons.push_back (sorted_idx);
+    }
+  }
+
+  pcd_idx_start_polygons.push_back (sorted_idx);
+
+  alpha_shape.points = alpha_shape_sorted.points;
+
+  polygons.resize (pcd_idx_start_polygons.size () - 1);
+
+  for (size_t poly_id = 0; poly_id < polygons.size (); poly_id++)
+  {
+    //std::cout << "indices => start: " << pcd_idx_start_polygons[poly_id] << "end:" << pcd_idx_start_polygons[poly_id+1]  << std::endl;
+    polygons[poly_id].vertices.resize (pcd_idx_start_polygons[poly_id + 1] - pcd_idx_start_polygons[poly_id] + 1);
+    //populate points in the corresponding polygon
+    for (size_t j = (size_t)pcd_idx_start_polygons[poly_id]; j < (size_t)pcd_idx_start_polygons[poly_id + 1]; ++j)
+      polygons[poly_id].vertices[j - pcd_idx_start_polygons[poly_id]] = j;
+
+    polygons[poly_id].vertices[polygons[poly_id].vertices.size () - 1] = pcd_idx_start_polygons[poly_id];
+  }
+
   voronoi_centers_.points.resize (dd);
 
-  if (dim == 2)
-  {
-    Eigen::Affine3f transInverse = transform1.inverse ();
-    pcl::transformPointCloud (alpha_shape, alpha_shape, transInverse);
-    xyz_centroid[0] = -xyz_centroid[0];
-    xyz_centroid[1] = -xyz_centroid[1];
-    xyz_centroid[2] = -xyz_centroid[2];
-    pcl::demeanPointCloud(alpha_shape,xyz_centroid,alpha_shape);
-  }
+  Eigen::Affine3f transInverse = transform1.inverse ();
+  pcl::transformPointCloud (alpha_shape, alpha_shape, transInverse);
+  xyz_centroid[0] = -xyz_centroid[0];
+  xyz_centroid[1] = -xyz_centroid[1];
+  xyz_centroid[2] = -xyz_centroid[2];
+  pcl::demeanPointCloud (alpha_shape, xyz_centroid, alpha_shape);
+
 }
 
 #define PCL_INSTANTIATE_ConcaveHull(T) template class pcl::ConcaveHull<T>;
