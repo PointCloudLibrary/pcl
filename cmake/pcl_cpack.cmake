@@ -7,51 +7,23 @@
 find_program(RPM_PROGRAM rpm)
 if(EXISTS ${RPM_PROGRAM})
   list(APPEND CPACK_GENERATOR "RPM")
-  list(APPEND PACKAGE_EXTENSION ".rpm")
 endif(EXISTS ${RPM_PROGRAM})
 # DEB
 find_program(DPKG_PROGRAM dpkg)
 if(EXISTS ${DPKG_PROGRAM})
   list(APPEND CPACK_GENERATOR "DEB")
-  list(APPEND PACKAGE_EXTENSION ".deb")
 endif(EXISTS ${DPKG_PROGRAM})
 # NSIS
 find_program(NSIS_PROGRAM makensis MakeNSIS)
 if(EXISTS ${NSIS_PROGRAM})
   list(APPEND CPACK_GENERATOR "NSIS")
-  list(APPEND PACKAGE_EXTENSION ".exe;")
 endif(EXISTS ${NSIS_PROGRAM})
 # dpkg
 find_program(PACKAGE_MAKER_PROGRAM PackageMaker
 	    HINTS /Developer/Applications/Utilities)
 if(EXISTS ${PACKAGE_MAKER_PROGRAM})
   list(APPEND CPACK_GENERATOR "PackageMaker")
-  list(APPEND PACKAGE_EXTENSION ".dmg;")
 endif(EXISTS ${PACKAGE_MAKER_PROGRAM})
-
-list(LENGTH PACKAGE_EXTENSION nb_extensions)
-if(nb_extensions GREATER 0)
-  list(GET PACKAGE_EXTENSION 0 ext)
-  set(COPY_PACKAGE_COMMAND "cp *${ext} ../../")
-  math(EXPR before_last "${nb_extensions} - 1")
-  if(${before_last} GREATER 0)
-    foreach(ext RANGE 1 ${before_last})
-      list(GET PACKAGE_EXTENSION ${ext} ext_name)
-      set(COPY_PACKAGE_COMMAND "${COPY_PACKAGE_COMMAND} && \\
-  cp *${ext_name} ../../")
-    endforeach(ext)
-  endif(${before_last} GREATER 0)
-
-  #now configure all the 3rdpaty Makefile
-  file(GLOB parties ${PCL_SOURCE_DIR}/3rdparty/*)
-  foreach(party ${parties})
-    if(EXISTS ${party}/Makefile.in)
-      configure_file(${party}/Makefile.in ${party}/Makefile @ONLY)
-      configure_file(${party}/cpack.patch.in ${party}/cpack.patch @ONLY)
-    endif(EXISTS ${party}/Makefile.in)
-  endforeach(party)
-endif(nb_extensions GREATER 0)
-
 
 include(InstallRequiredSystemLibraries)
 
