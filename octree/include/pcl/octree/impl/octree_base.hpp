@@ -203,7 +203,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::serializeTree (std::vector<char>& binaryTreeOut_arg) const
+      OctreeBase<DataT, LeafT>::serializeTree (std::vector<char>& binaryTreeOut_arg)
       {
         // clear binary vector
         binaryTreeOut_arg.clear ();
@@ -218,7 +218,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::serializeTree (std::vector<char>& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg) const
+      OctreeBase<DataT, LeafT>::serializeTree (std::vector<char>& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg)
       {
         OctreeKey newKey;
         newKey.x = newKey.y = newKey.z = 0;
@@ -239,7 +239,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::serializeLeafs (std::vector<DataT>& dataVector_arg) const
+      OctreeBase<DataT, LeafT>::serializeLeafs (std::vector<DataT>& dataVector_arg)
       {
 
         OctreeKey newKey;
@@ -497,7 +497,7 @@ namespace pcl
     template<typename DataT, typename LeafT>
       void
       OctreeBase<DataT, LeafT>::serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg,
-                                                        const OctreeBranch* branch_arg) const
+                                                        const OctreeBranch* branch_arg)
       {
 
         // child iterator
@@ -546,7 +546,7 @@ namespace pcl
       void
       OctreeBase<DataT, LeafT>::serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg,
                                                         const OctreeBranch* branch_arg, OctreeKey& key_arg,
-                                                        typename std::vector<DataT>& dataVector_arg) const
+                                                        typename std::vector<DataT>& dataVector_arg)
       {
 
         // child iterator
@@ -603,7 +603,7 @@ namespace pcl
     template<typename DataT, typename LeafT>
       void
       OctreeBase<DataT, LeafT>::serializeLeafsRecursive (const OctreeBranch* branch_arg, const OctreeKey& key_arg,
-                                                         std::vector<DataT>& dataVector_arg) const
+                                                         std::vector<DataT>& dataVector_arg)
       {
         // child iterator
         unsigned char childIdx;
@@ -836,7 +836,7 @@ namespace pcl
     template<typename DataT, typename LeafT>
       void
       OctreeBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
-                                                       std::vector<DataT>& dataVector_arg) const
+                                                       std::vector<DataT>& dataVector_arg)
       {
         leaf_arg.getData (dataVector_arg);
       }
@@ -848,7 +848,7 @@ namespace pcl
                                                          OctreeLeaf& leaf_arg,
                                                          const OctreeKey& key_arg,
                                                          typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
-                                                         typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg) const
+                                                         typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg)
       {
         OctreeKey dataKey;
         bool bKeyBasedEncoding = false;
@@ -873,7 +873,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg) const
+      OctreeBase<DataT, LeafT>::deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg)
       {
 
         DataT newDataT;
@@ -891,7 +891,7 @@ namespace pcl
       void
       OctreeBase<DataT, LeafT>::deserializeTreeAndSerializeLeafCallback (OctreeLeaf& leaf_arg,
                                                                          const OctreeKey& key_arg,
-                                                                         std::vector<DataT>& dataVector_arg) const
+                                                                         std::vector<DataT>& dataVector_arg)
       {
 
         DataT newDataT;

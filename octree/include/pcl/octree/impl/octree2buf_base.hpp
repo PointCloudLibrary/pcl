@@ -1309,7 +1309,7 @@ namespace pcl
     template<typename DataT, typename LeafT>
       void
       Octree2BufBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
-                                                           std::vector<DataT>& dataVector_arg) const
+                                                           std::vector<DataT>& dataVector_arg)
       {
         leaf_arg.getData (dataVector_arg);
       }
@@ -1319,7 +1319,7 @@ namespace pcl
       void
       Octree2BufBase<DataT, LeafT>::serializeNewLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
                                                               const int minPointsPerLeaf_arg,
-                                                              std::vector<DataT>& dataVector_arg) const
+                                                              std::vector<DataT>& dataVector_arg)
       {
         // we reached a leaf node
         std::vector<int> newPointIdx;
@@ -1349,7 +1349,7 @@ namespace pcl
                                                              OctreeLeaf& leaf_arg,
                                                              const OctreeKey& key_arg,
                                                              typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
-                                                             typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg) const
+                                                             typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg)
       {
         OctreeKey dataKey;
         bool bKeyBasedEncoding = false;
@@ -1374,7 +1374,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      Octree2BufBase<DataT, LeafT>::deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg) const
+      Octree2BufBase<DataT, LeafT>::deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg)
       {
 
         DataT newDataT;
@@ -1392,7 +1392,7 @@ namespace pcl
       void
       Octree2BufBase<DataT, LeafT>::deserializeTreeAndSerializeLeafCallback (OctreeLeaf& leaf_arg,
                                                                              const OctreeKey& key_arg,
-                                                                             std::vector<DataT>& dataVector_arg) const
+                                                                             std::vector<DataT>& dataVector_arg)
       {
 
         DataT newDataT;

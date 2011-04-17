@@ -870,7 +870,7 @@ namespace pcl
          *  \param dataVector_arg: DataT objects from leaf are pushed to this DataT vector
          **/
         virtual void
-        serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg, std::vector<DataT>& dataVector_arg) const;
+        serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg, std::vector<DataT>& dataVector_arg);
 
         /** \brief Decode new leaf node data of during serialization
          *  \param leaf_arg: reference to new leaf node
@@ -880,14 +880,14 @@ namespace pcl
          **/
         virtual void
         serializeNewLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg, const int minPointsPerLeaf_arg,
-                                  std::vector<DataT>& dataVector_arg) const;
+                                  std::vector<DataT>& dataVector_arg);
 
         /** \brief Initialize leaf nodes during deserialization
          *  \param leaf_arg: reference to new leaf node
          *  \param key_arg: octree key of new leaf node
          **/
         virtual void
-        deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg) const;
+        deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg);
 
         /** \brief Initialize leaf nodes during deserialization
          *  \param leaf_arg: reference to new leaf node
@@ -898,7 +898,7 @@ namespace pcl
         virtual void
         deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
                                  typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
-                                 typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg) const;
+                                 typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg);
 
         /** \brief Initialize leaf nodes during deserialization
          *  \param leaf_arg: reference to new leaf node
@@ -907,7 +907,7 @@ namespace pcl
          **/
         virtual void
         deserializeTreeAndSerializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey & key_arg,
-                                                 std::vector<DataT>& dataVector_arg) const;
+                                                 std::vector<DataT>& dataVector_arg);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Helpers

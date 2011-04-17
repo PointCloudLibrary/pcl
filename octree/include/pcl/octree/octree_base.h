@@ -151,20 +151,20 @@ namespace pcl
          *  \param binaryTreeOut_arg: reference to output vector for writing binary tree structure.
          * */
         void
-        serializeTree (std::vector<char>& binaryTreeOut_arg) const;
+        serializeTree (std::vector<char>& binaryTreeOut_arg);
 
         /** \brief Serialize octree into a binary output vector describing its branch node structure and push all DataT elements stored in the octree to a vector.
          * \param binaryTreeOut_arg: reference to output vector for writing binary tree structure.
          * \param dataVector_arg: reference of DataT vector that receives a copy of all DataT objects in the octree
          * */
         void
-        serializeTree (std::vector<char>& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg) const;
+        serializeTree (std::vector<char>& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg);
 
         /** \brief Outputs a vector of all DataT elements that are stored within the octree leaf nodes.
          *  \param dataVector_arg: reference to DataT vector that receives a copy of all DataT objects in the octree.
          * */
         void
-        serializeLeafs (std::vector<DataT>& dataVector_arg) const;
+        serializeLeafs (std::vector<DataT>& dataVector_arg);
 
         /** \brief Deserialize a binary octree description vector and create a corresponding octree structure. Leaf nodes are initialized with getDataTByKey(..).
          *  \param binaryTreeIn_arg: reference to input vector for reading binary tree structure.
@@ -539,7 +539,7 @@ namespace pcl
          **/
         void
         serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg,
-                                const OctreeBranch* branch_arg) const;
+                                const OctreeBranch* branch_arg);
 
         /** \brief Recursively explore the octree and output binary octree description together with a vector of leaf node DataT content.
          *  \param binaryTreeOut_arg: iterator to output vector
@@ -550,7 +550,7 @@ namespace pcl
         void
         serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg,
                                 const OctreeBranch* branch_arg, OctreeKey& key_arg,
-                                typename std::vector<DataT>& dataVector_arg) const;
+                                typename std::vector<DataT>& dataVector_arg);
 
         /** \brief Recursively explore the octree and output DataT objects to DataT vector.
          *  \param branch_arg: current branch node
@@ -559,7 +559,7 @@ namespace pcl
          **/
         void
         serializeLeafsRecursive (const OctreeBranch* branch_arg, const OctreeKey& key_arg,
-                                 typename std::vector<DataT>& dataVector_arg) const;
+                                 typename std::vector<DataT>& dataVector_arg);
 
         /** \brief Rebuild an octree based on binary octree description.
          *  \param binaryTreeIn_arg: iterator to input vector
@@ -605,14 +605,14 @@ namespace pcl
          *  \param dataVector_arg: DataT objects from leaf are pushed to this DataT vector
          **/
         virtual void
-        serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg, std::vector<DataT>& dataVector_arg) const;
+        serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg, std::vector<DataT>& dataVector_arg);
 
         /** \brief Initialize leaf nodes during deserialization
          *  \param leaf_arg: reference to new leaf node
          *  \param key_arg: octree key of new leaf node
          **/
         virtual void
-        deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg) const;
+        deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg);
 
         /** \brief Initialize leaf nodes during deserialization
          *  \param leaf_arg: reference to new leaf node
@@ -623,7 +623,7 @@ namespace pcl
         virtual void
         deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
                                  typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
-                                 typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg) const;
+                                 typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg);
 
         /** \brief Initialize leaf nodes during deserialization
          *  \param leaf_arg: reference to new leaf node
@@ -632,7 +632,7 @@ namespace pcl
          **/
         virtual void
         deserializeTreeAndSerializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey & key_arg,
-                                                 std::vector<DataT>& dataVector_arg) const;
+                                                 std::vector<DataT>& dataVector_arg);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Helpers

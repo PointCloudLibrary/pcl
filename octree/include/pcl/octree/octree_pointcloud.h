@@ -428,7 +428,6 @@ namespace pcl
           return getVoxelSquaredSideLen( this->octreeDepth_ );
         }
 
-
         typedef typename OctreeT::OctreeLeaf OctreeLeaf;
 
       protected:
