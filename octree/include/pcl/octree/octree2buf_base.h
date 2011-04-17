@@ -294,7 +294,7 @@ namespace pcl
          *  \return "true" if octree could be generated based on DataT object; "false" otherwise
          * */
         virtual bool
-        genOctreeKey (const DataT& data_arg, OctreeKey & key_arg) const
+        genOctreeKeyForDataT (const DataT& data_arg, OctreeKey & key_arg) const
         {
           // this class cannot relate DataT objects to octree keys
           return false;
@@ -304,9 +304,9 @@ namespace pcl
          *  \param key_arg: write generated octree key to this octree key reference
          *  \param data_arg: generated DataT object
          *  \return "true" if DataT object could be generated; "false" otherwise
-         *  */
+         * */
         virtual bool
-        getDataTByKey (const OctreeKey & key_arg, DataT& data_arg)
+        genDataTByOctreeKey (const OctreeKey & key_arg, DataT& data_arg) const
         {
           // this class cannot relate DataT objects to octree keys
           return false;
@@ -859,6 +859,59 @@ namespace pcl
                                                    const OctreeKey& key_arg,
                                                    typename std::vector<DataT>& dataVector_arg,
                                                    bool branchReset_arg, bool doXORDecoding_arg);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Serialization callbacks
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /** \brief Decode leaf node data during serialization
+         *  \param leaf_arg: reference to new leaf node
+         *  \param key_arg: octree key of new leaf node
+         *  \param dataVector_arg: DataT objects from leaf are pushed to this DataT vector
+         **/
+        virtual void
+        serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg, std::vector<DataT>& dataVector_arg) const;
+
+        /** \brief Decode new leaf node data of during serialization
+         *  \param leaf_arg: reference to new leaf node
+         *  \param key_arg: octree key of new leaf node
+         *  \param minPointsPerLeaf_arg: minimum amount of points required within leaf node to become serialized.
+         *  \param dataVector_arg: DataT objects from leaf are pushed to this DataT vector
+         **/
+        virtual void
+        serializeNewLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg, const int minPointsPerLeaf_arg,
+                                  std::vector<DataT>& dataVector_arg) const;
+
+        /** \brief Initialize leaf nodes during deserialization
+         *  \param leaf_arg: reference to new leaf node
+         *  \param key_arg: octree key of new leaf node
+         **/
+        virtual void
+        deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg) const;
+
+        /** \brief Initialize leaf nodes during deserialization
+         *  \param leaf_arg: reference to new leaf node
+         *  \param key_arg: octree key of new leaf node
+         *  \param dataVectorIterator_arg: iterator pointing to current DataT object to be added to the new leaf node
+         *  \param dataVectorEndIterator_arg: iterator pointing to last object in DataT input vector.
+         **/
+        virtual void
+        deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
+                                 typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
+                                 typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg) const;
+
+        /** \brief Initialize leaf nodes during deserialization
+         *  \param leaf_arg: reference to new leaf node
+         *  \param key_arg: octree key of new leaf node
+         *  \param dataVector_arg: generated DataT objects are pushed to this DataT vector
+         **/
+        virtual void
+        deserializeTreeAndSerializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey & key_arg,
+                                                 std::vector<DataT>& dataVector_arg) const;
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Helpers
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         /** \brief Recursively explore the octree and remove unused branch and leaf nodes
          *  \param branch_arg: current branch node

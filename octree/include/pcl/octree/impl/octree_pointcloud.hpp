@@ -671,7 +671,19 @@ namespace pcl
       const PointT&
       OctreePointCloud<PointT, LeafT, OctreeT>::getPointByIndex (const unsigned int index_arg) const
       {
-        return input_->points[index_arg];
+        // retrieve point from input cloud
+
+        if (indices_ == NULL)
+        {
+          assert (index_arg < (unsigned int)input_->points.size ());
+          return this->input_->points[index_arg];
+        }
+        else
+        {
+          assert (index_arg < (unsigned int)indices_->size ());
+          return input_->points[(*indices_)[index_arg]];
+        }
+
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -786,7 +798,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
       bool
-      OctreePointCloud<PointT, LeafT, OctreeT>::genOctreeKey (const int& data_arg, OctreeKey & key_arg) const
+      OctreePointCloud<PointT, LeafT, OctreeT>::genOctreeKeyForDataT (const int& data_arg, OctreeKey & key_arg) const
       {
 
         const PointT tempPoint = getPointByIndex (data_arg);

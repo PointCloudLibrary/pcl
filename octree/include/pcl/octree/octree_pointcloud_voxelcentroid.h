@@ -116,7 +116,7 @@ namespace pcl
 
             if (keyC == keyP)
             {
-              // voxel did not change - add point
+              // key addresses same voxel - add point
               meanPoint.x += idxPoint.x;
               meanPoint.y += idxPoint.y;
               meanPoint.z += idxPoint.z;

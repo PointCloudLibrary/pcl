@@ -258,6 +258,32 @@ namespace pcl
         nearestKSearch (int index_arg, int k_arg, std::vector<int> &k_indices_arg,
                         std::vector<float> &k_sqr_distances_arg);
 
+        /** \brief Search for nearest neighbor at the query point.
+         * \param cloud_arg: the point cloud data
+         * \param indexQuery_arg: the index in \a cloud representing the query point
+         * \param indexNN_arg: write the index of the nearest neighbor point to this reference
+         * \param k_sqr_distances_arg: the resultant squared distance to the neighboring point
+         */
+        void
+        nearestSearch (const PointCloud &cloud_arg, int indexQuery_arg, int& indexNN_arg, float& sqr_distances_arg);
+
+        /** \brief Search for nearest neighbor at the query point.
+         * \param point_arg: the given query point
+         * \param indexNN_arg: write the index of the nearest neighbor point to this reference
+         * \param k_sqr_distances_arg: the resultant squared distance to the neighboring point
+         */
+        int
+        nearestSearch (const PointT &p_q_arg, int& indexNN_arg, float& sqr_distances_arg);
+
+        /** \brief Search for nearest neighbor at the query point.
+         * \param index_arg: index representing the query point in the dataset given by \a setInputCloud.
+         *        If indices were given in setInputCloud, index will be the position in the indices vector.
+         * \param indexNN_arg: write the index of the nearest neighbor point to this reference
+         * \param k_sqr_distances_arg: the resultant squared distance to the neighboring point
+         */
+        int
+        nearestSearch (int index_arg, int& indexNN_arg, float& sqr_distances_arg);
+
         /** \brief Search for all neighbors of query point that are within a given radius.
          * \param cloud_arg: the point cloud data
          * \param index_arg: the index in \a cloud representing the query point
@@ -469,7 +495,7 @@ namespace pcl
          * \return "true" - octree keys are assignable
          */
         virtual bool
-        genOctreeKey (const int& data_arg, OctreeKey & key_arg) const;
+        genOctreeKeyForDataT (const int& data_arg, OctreeKey & key_arg) const;
 
         /** \brief Generate a point at center of leaf node voxel
          * \param key_arg: octree key addressing a leaf node.

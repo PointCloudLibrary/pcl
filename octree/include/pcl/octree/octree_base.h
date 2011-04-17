@@ -265,7 +265,7 @@ namespace pcl
          *  \return "true" if octree could be generated based on DataT object; "false" otherwise
          * */
         virtual bool
-        genOctreeKey (const DataT& data_arg, OctreeKey & key_arg) const
+        genOctreeKeyForDataT (const DataT& data_arg, OctreeKey & key_arg) const
         {
           // this class cannot relate DataT objects to octree keys
           return false;
@@ -277,7 +277,7 @@ namespace pcl
          *  \return "true" if DataT object could be generated; "false" otherwise
          * */
         virtual bool
-        getDataTByKey (const OctreeKey & key_arg, DataT& data_arg)
+        genDataTByOctreeKey (const OctreeKey & key_arg, DataT& data_arg) const
         {
           // this class cannot relate DataT objects to octree keys
           return false;
@@ -505,7 +505,6 @@ namespace pcl
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
         /** \brief Recursively search for a leaf node at octree key. If leaf node does not exist, it will be created.
          *  \param key_arg: reference to an octree key
          *  \param depthMask_arg: depth mask used for octree key analysis and for branch depth indicator
@@ -595,6 +594,49 @@ namespace pcl
                                                    OctreeBranch* branch_arg, const unsigned int depthMask_arg,
                                                    const OctreeKey& key_arg,
                                                    typename std::vector<DataT>& dataVector_arg);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Serialization callbacks
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /** \brief Decode leaf node data during serialization
+         *  \param leaf_arg: reference to new leaf node
+         *  \param key_arg: octree key of new leaf node
+         *  \param dataVector_arg: DataT objects from leaf are pushed to this DataT vector
+         **/
+        virtual void
+        serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg, std::vector<DataT>& dataVector_arg) const;
+
+        /** \brief Initialize leaf nodes during deserialization
+         *  \param leaf_arg: reference to new leaf node
+         *  \param key_arg: octree key of new leaf node
+         **/
+        virtual void
+        deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg) const;
+
+        /** \brief Initialize leaf nodes during deserialization
+         *  \param leaf_arg: reference to new leaf node
+         *  \param key_arg: octree key of new leaf node
+         *  \param dataVectorIterator_arg: iterator pointing to current DataT object to be added to the new leaf node
+         *  \param dataVectorEndIterator_arg: iterator pointing to last object in DataT input vector.
+         **/
+        virtual void
+        deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
+                                 typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
+                                 typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg) const;
+
+        /** \brief Initialize leaf nodes during deserialization
+         *  \param leaf_arg: reference to new leaf node
+         *  \param key_arg: octree key of new leaf node
+         *  \param dataVector_arg: generated DataT objects are pushed to this DataT vector
+         **/
+        virtual void
+        deserializeTreeAndSerializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey & key_arg,
+                                                 std::vector<DataT>& dataVector_arg) const;
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Helpers
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         /** \brief Helper function to calculate the binary logarithm
          * \param n_arg: some value

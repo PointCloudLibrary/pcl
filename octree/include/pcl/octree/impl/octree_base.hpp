@@ -588,8 +588,8 @@ namespace pcl
               case LEAF_NODE:
                 OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
 
-                // we reached a leaf node -> decode to dataVector_arg
-                childLeaf->getData (dataVector_arg);
+                // we reached a leaf node -> execute serialization callback
+                serializeLeafCallback (*childLeaf, newKey, dataVector_arg);
                 break;
             }
 
@@ -635,8 +635,8 @@ namespace pcl
               case LEAF_NODE:
                 OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
 
-                // we reached a leaf node -> decode to dataVector_arg
-                childLeaf->getData (dataVector_arg);
+                // we reached a leaf node -> execute serialization callback
+                serializeLeafCallback (*childLeaf, newKey, dataVector_arg);
                 break;
             }
 
@@ -692,14 +692,11 @@ namespace pcl
               // we reached leaf node level
               OctreeLeaf* childLeaf;
 
-              DataT newDataT;
-
               // create leaf node
               createLeafChild (*branch_arg, childIdx, childLeaf);
 
-              // initialize new leaf child
-              if (getDataTByKey (newKey, newDataT) )
-                childLeaf->setData (newDataT);
+              // execute deserialization callback
+              deserializeLeafCallback (*childLeaf, newKey);
 
               leafCount_++;
             }
@@ -763,23 +760,8 @@ namespace pcl
               // create leaf node
               createLeafChild (*branch_arg, childIdx, childLeaf);
 
-              // feed new leaf node with data
-              OctreeKey dataKey;
-
-              bool bKeyBasedEncoding = false;
-              while ((dataVectorIterator_arg != dataVectorEndIterator_arg)
-                  && (this->genOctreeKey (*dataVectorIterator_arg, dataKey) && (dataKey == newKey)))
-              {
-                childLeaf->setData (*dataVectorIterator_arg);
-                dataVectorIterator_arg++;
-                bKeyBasedEncoding = true;
-              }
-
-              if (!bKeyBasedEncoding)
-              {
-                childLeaf->setData (*dataVectorIterator_arg);
-                dataVectorIterator_arg++;
-              }
+              // execute deserialization callback
+              deserializeLeafCallback (*childLeaf, newKey, dataVectorIterator_arg, dataVectorEndIterator_arg);
 
               leafCount_++;
             }
@@ -790,8 +772,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::deserializeTreeAndOutputLeafDataRecursive (
-                                                                           typename std::vector<char>::const_iterator& binaryTreeIn_arg,
+      OctreeBase<DataT, LeafT>::deserializeTreeAndOutputLeafDataRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
                                                                            OctreeBranch* branch_arg,
                                                                            const unsigned int depthMask_arg,
                                                                            const OctreeKey& key_arg,
@@ -808,13 +789,13 @@ namespace pcl
         // iterate over all children
         for (childIdx = 0; childIdx < 8; childIdx++)
         {
-           // if occupancy bit for childIdx is set..
-           if (nodeBits & (1 << childIdx))
-           {
+          // if occupancy bit for childIdx is set..
+          if (nodeBits & (1 << childIdx))
+          {
 
-             // generate new key for current branch voxel
-             OctreeKey newKey;
-             newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
+            // generate new key for current branch voxel
+            OctreeKey newKey;
+            newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
             newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
             newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
 
@@ -838,24 +819,90 @@ namespace pcl
               // we reached leaf node level
               OctreeLeaf* childLeaf;
 
-              DataT newDataT;
+              // create leaf node
+              createLeafChild (*branch_arg, childIdx, childLeaf);
 
-               // create leaf node
-               createLeafChild (*branch_arg, childIdx, childLeaf);
+              // execute deserialization callback
+              deserializeTreeAndSerializeLeafCallback (*childLeaf, newKey, dataVector_arg);
 
-               // initialize new leaf child
-               if (getDataTByKey (newKey, newDataT) ) {
-                 childLeaf->setData (newDataT);
-                 dataVector_arg.push_back(newDataT);
-               }
+              leafCount_++;
+            }
+          }
+        }
 
-               leafCount_++;
-             }
-           }
-         }
+      }
 
-       }
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename DataT, typename LeafT>
+      void
+      OctreeBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
+                                                       std::vector<DataT>& dataVector_arg) const
+      {
+        leaf_arg.getData (dataVector_arg);
+      }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename DataT, typename LeafT>
+      void
+      OctreeBase<DataT, LeafT>::deserializeLeafCallback (
+                                                         OctreeLeaf& leaf_arg,
+                                                         const OctreeKey& key_arg,
+                                                         typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
+                                                         typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg) const
+      {
+        OctreeKey dataKey;
+        bool bKeyBasedEncoding = false;
+
+        // add DataT objects to octree leaf as long as their key fit to voxel
+        while ((dataVectorIterator_arg != dataVectorEndIterator_arg)
+            && (this->genOctreeKeyForDataT (*dataVectorIterator_arg, dataKey) && (dataKey == key_arg)))
+        {
+          leaf_arg.setData (*dataVectorIterator_arg);
+          dataVectorIterator_arg++;
+          bKeyBasedEncoding = true;
+        }
+
+        // add single DataT object to octree if key-based encoding is disabled
+        if (!bKeyBasedEncoding)
+        {
+          leaf_arg.setData (*dataVectorIterator_arg);
+          dataVectorIterator_arg++;
+        }
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename DataT, typename LeafT>
+      void
+      OctreeBase<DataT, LeafT>::deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg) const
+      {
+
+        DataT newDataT;
+
+        // initialize new leaf child
+        if (genDataTByOctreeKey (key_arg, newDataT))
+        {
+          leaf_arg.setData (newDataT);
+        }
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename DataT, typename LeafT>
+      void
+      OctreeBase<DataT, LeafT>::deserializeTreeAndSerializeLeafCallback (OctreeLeaf& leaf_arg,
+                                                                         const OctreeKey& key_arg,
+                                                                         std::vector<DataT>& dataVector_arg) const
+      {
+
+        DataT newDataT;
+
+        // initialize new leaf child
+        if (genDataTByOctreeKey (key_arg, newDataT))
+        {
+          leaf_arg.setData (newDataT);
+          dataVector_arg.push_back (newDataT);
+        }
+      }
 
   }
 }
