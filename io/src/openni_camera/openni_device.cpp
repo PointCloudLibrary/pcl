@@ -327,7 +327,7 @@ void OpenNIDevice::ImageDataThreadFunction () throw (OpenNIException)
     image_generator_.GetMetaData (*image_data);
 
     image_lock.unlock ();
-
+    
     boost::shared_ptr<Image> image = getCurrentImage (image_data);
     for (map< OpenNIDevice::CallbackHandle, ActualImageCallbackFunction >::iterator callbackIt = image_callback_.begin (); callbackIt != image_callback_.end (); ++callbackIt)
     {
@@ -352,7 +352,7 @@ void OpenNIDevice::DepthDataThreadFunction () throw (OpenNIException)
     boost::shared_ptr<xn::DepthMetaData> depth_data (new xn::DepthMetaData);
     depth_generator_.GetMetaData (*depth_data);
     depth_lock.unlock ();
-
+    
     boost::shared_ptr<DepthImage> depth_image ( new DepthImage (depth_data, baseline_, getDepthFocalLength (), shadow_value_, no_sample_value_) );
 
     for (map< OpenNIDevice::CallbackHandle, ActualDepthImageCallbackFunction >::iterator callbackIt = depth_callback_.begin ();
@@ -365,14 +365,12 @@ void OpenNIDevice::DepthDataThreadFunction () throw (OpenNIException)
 
 void __stdcall OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
 {
-  //cout << "NewDepthDataAvailable" << endl;
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
   device->depth_condition_.notify_all ();
 }
 
 void __stdcall OpenNIDevice::NewImageDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
 {
-  //cout << "NewImageDataAvailable" << endl;
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
   device->image_condition_.notify_all ();
 }

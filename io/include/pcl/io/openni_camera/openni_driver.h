@@ -65,8 +65,10 @@ public:
   inline unsigned getNumberDevices () const throw ();
   
   boost::shared_ptr<OpenNIDevice> getDeviceByIndex (unsigned index) const throw (OpenNIException);
+#ifndef _WIN32
   boost::shared_ptr<OpenNIDevice> getDeviceBySerialNumber (const std::string& serial_number) const throw (OpenNIException);
   boost::shared_ptr<OpenNIDevice> getDeviceByAddress (unsigned char bus, unsigned char address) const throw (OpenNIException);
+#endif
 
   const char* getSerialNumber (unsigned index) const throw ();
   /** \brief returns the connectionstring for current device, which has following format vendorID/productID\@BusID/DeviceID */
@@ -95,8 +97,13 @@ protected:
   OpenNIDriver () throw (OpenNIException);
   boost::shared_ptr<OpenNIDevice> getDevice (unsigned index) const throw (OpenNIException);
 
+ static void getDeviceType (const std::string& connection_string, unsigned short& vendorId, unsigned short& productId);
+
+#ifndef _WIN32
   // workaround to get additional device nformation like serial number, vendor and product name, until Primesense fix this
   void getDeviceInfos () throw ();
+#endif
+  
   mutable std::vector<DeviceContext> device_context_;
   mutable xn::Context context_;
 

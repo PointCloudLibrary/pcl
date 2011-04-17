@@ -125,9 +125,11 @@ OpenNIDriver::updateDeviceList () throw ()
     bus_map_ [bus][address] = deviceIdx;
   }
 
+#ifndef _WIN32
   // get additional info about connected devices like serial number, vendor name and prduct name
   getDeviceInfos ();
-
+#endif
+  
   // build serial number -> device index map
   for (unsigned deviceIdx = 0; deviceIdx < device_info.size (); ++deviceIdx)
   {
@@ -171,15 +173,17 @@ OpenNIDriver::getDeviceByIndex (unsigned index) const throw (OpenNIException)
   boost::shared_ptr<OpenNIDevice> device = device_context_[index].device.lock ();
   if (!device)
   {
-    string connection_string = device_context_[index].device_node.GetCreationInfo ();
-    transform (connection_string.begin (), connection_string.end (), connection_string.begin (), towlower);
-    if (connection_string.substr (0, 4) == "045e")
+    unsigned short vendor_id;
+    unsigned short product_id;
+    getDeviceType (device_context_[index].device_node.GetCreationInfo (), vendor_id, product_id );
+
+    if (vendor_id == 0x45e)
     {
       device = boost::shared_ptr<OpenNIDevice > (new DeviceKinect (context_, device_context_[index].device_node,
                                                                    device_context_[index].image_node, device_context_[index].depth_node));
       device_context_[index].device = device;
     }
-    else if (connection_string.substr (0, 4) == "1d27")
+    else if (vendor_id == 0x1d27)
     {
       device = boost::shared_ptr<OpenNIDevice > (new DevicePrimesense (context_, device_context_[index].device_node,
                                                                        device_context_[index].image_node, device_context_[index].depth_node));
@@ -188,12 +192,13 @@ OpenNIDriver::getDeviceByIndex (unsigned index) const throw (OpenNIException)
     else
     {
       THROW_OPENNI_EXCEPTION ("vendor %s (%s) known by primesense driver, but not by ros driver. Contact maintainer of the ros driver.",
-                              getVendorName (index), connection_string.substr (0, 4).c_str ());
+                              getVendorName (index), vendor_id);
     }
   }
   return (device);
 }
 
+#ifndef _WIN32
 boost::shared_ptr<OpenNIDevice> 
 OpenNIDriver::getDeviceBySerialNumber (const std::string& serial_number) const throw (OpenNIException)
 {
@@ -302,10 +307,44 @@ OpenNIDriver::getDeviceInfos () throw ()
   libusb_free_device_list (devices, 1);
   libusb_exit (context);
 }
+#endif
 
 const char* OpenNIDriver::getSerialNumber (unsigned index) const throw ()
 {
+#ifndef _WIN32
   return device_context_[index].device_node.GetInstanceName ();
+#else
+  return "";
+#endif
+}
+
+void OpenNIDriver::getDeviceType (const std::string& connectionString, unsigned short& vendorId, unsigned short& productId)
+{
+#if _WIN32
+    // expected format: "\\?\usb#vid_[ID]&pid_[ID]#[SERIAL]#{GUID}"
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+    boost::char_separator<char> separators("#&_");
+    tokenizer tokens(connectionString, separators);
+
+    unsigned int tokenIndex = 0;
+    for (tokenizer::iterator tok_iter = tokens.begin(); tok_iter != tokens.end(); ++tok_iter, tokenIndex++)
+    {
+        std::string tokenValue = *tok_iter;
+
+        switch(tokenIndex) {
+            case 2:    // the vendor ID
+                sscanf(tokenValue.c_str(), "%hx", &vendorId);
+                break;
+            case 4: // the product ID
+                sscanf(tokenValue.c_str(), "%hx", &productId);
+                break;
+        }
+    }
+#else
+    unsigned char bus;
+    unsigned char address;
+    sscanf (connectionString.c_str(), "%hx/%hx@%hhu/%hhu", &vendorId, &productId, &bus, &address);
+#endif
 }
 
 const char* OpenNIDriver::getConnectionString (unsigned index) const throw ()
@@ -327,10 +366,14 @@ unsigned short OpenNIDriver::getVendorID (unsigned index) const throw ()
 {
   unsigned short vendor_id;
   unsigned short product_id;
+#ifndef _WIN32
   unsigned char bus;
   unsigned char address;
   sscanf (device_context_[index].device_node.GetCreationInfo (), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
 
+#else
+  getDeviceType (device_context_[index].device_node.GetCreationInfo (), vendor_id, product_id);
+#endif
   return vendor_id;
 }
 
@@ -338,32 +381,38 @@ unsigned short OpenNIDriver::getProductID (unsigned index) const throw ()
 {
   unsigned short vendor_id;
   unsigned short product_id;
+#ifndef _WIN32
   unsigned char bus;
   unsigned char address;
   sscanf (device_context_[index].device_node.GetCreationInfo (), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
 
+#else
+  getDeviceType (device_context_[index].device_node.GetCreationInfo (), vendor_id, product_id);
+#endif
   return product_id;
 }
 
 unsigned char OpenNIDriver::getBus (unsigned index) const throw ()
 {
+  unsigned char bus = 0;
+#ifndef _WIN32
   unsigned short vendor_id;
   unsigned short product_id;
-  unsigned char bus;
   unsigned char address;
   sscanf (device_context_[index].device_node.GetCreationInfo (), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
-
+#endif
   return bus;
 }
 
 unsigned char OpenNIDriver::getAddress (unsigned index) const throw ()
 {
+  unsigned char address = 0;
+#ifndef _WIN32
   unsigned short vendor_id;
   unsigned short product_id;
-  unsigned char bus;
-  unsigned char address;
+  unsigned char bus;  
   sscanf (device_context_[index].device_node.GetCreationInfo (), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
-
+#endif
   return address;
 }
 
