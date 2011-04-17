@@ -1452,6 +1452,67 @@ pcl_visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_m
   return (true);
 }
 
+///////////////////////////////////////////////////////////////////////////////////
+bool
+pcl_visualization::PCLVisualizer::addPolylineFromPolygonMesh (const pcl::PolygonMesh &polymesh, const std::string &id,
+                int viewport) {
+  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
+  if (am_it != shape_actor_map_.end ())
+  {
+    terminal_tools::print_warn (
+                                "[addPolylineFromPolygonMesh] A shape with id <%s> already exists! Please choose a different id and retry.\n",
+                                id.c_str ());
+    return (false);
+  }
+
+  // Create points from polyMesh.cloud
+  vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
+  pcl::PointCloud<pcl::PointXYZ> point_cloud;
+  pcl::fromROSMsg (polymesh.cloud, point_cloud);
+  poly_points->SetNumberOfPoints (point_cloud.points.size ());
+
+  size_t i;
+  for (i = 0; i < point_cloud.points.size (); ++i)
+    poly_points->InsertPoint (i, point_cloud.points[i].x, point_cloud.points[i].y, point_cloud.points[i].z);
+
+  // Create a cell array to store the lines in and add the lines to it
+  vtkSmartPointer < vtkCellArray > cells = vtkSmartPointer<vtkCellArray>::New ();
+  vtkSmartPointer < vtkPolyData > polyData = vtkSmartPointer<vtkPolyData>::New ();
+
+  for (i = 0; i < polymesh.polygons.size (); i++)
+  {
+    vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
+    polyLine->GetPointIds()->SetNumberOfIds(polymesh.polygons[i].vertices.size());
+    for(unsigned int k = 0; k < polymesh.polygons[i].vertices.size(); k++)
+    {
+      polyLine->GetPointIds()->SetId(k,polymesh.polygons[i].vertices[k]);
+    }
+
+    cells->InsertNextCell (polyLine);
+  }
+
+  // Add the points to the dataset
+  polyData->SetPoints (poly_points);
+
+  // Add the lines to the dataset
+  polyData->SetLines (cells);
+
+  // Setup actor and mapper
+  vtkSmartPointer < vtkPolyDataMapper > mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
+  mapper->SetInput (polyData);
+
+  vtkSmartPointer < vtkActor > actor = vtkSmartPointer<vtkActor>::New ();
+  actor->SetMapper (mapper);
+
+
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  shape_actor_map_[id] = actor;
+
+  return (true);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////

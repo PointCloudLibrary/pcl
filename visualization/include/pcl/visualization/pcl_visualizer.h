@@ -62,6 +62,7 @@
 #include <vtkCommand.h>
 #include <vtkPLYReader.h>
 #include <vtkTransformFilter.h>
+#include <vtkPolyLine.h>
 
 namespace pcl_visualization
 {
@@ -317,6 +318,15 @@ namespace pcl_visualization
         */
       bool
       addPolygonMesh (const pcl::PolygonMesh &polymesh, const std::string &id = "polygon", 
+                      int viewport = 0);
+
+      /** \brief Add a Polygonline from a polygonMesh object to screen
+        * \param polymesh the polygonal mesh from where the polylines will be extracted
+        * \param id the polygon object id (default: "polygon")
+        * \param viewport the view port where the PolygonMesh should be added (default: all)
+        */
+      bool
+      addPolylineFromPolygonMesh (const pcl::PolygonMesh &polymesh, const std::string &id = "polyline",
                       int viewport = 0);
 
       /** \brief Get the color handler index of a rendered PointCloud based on its ID
