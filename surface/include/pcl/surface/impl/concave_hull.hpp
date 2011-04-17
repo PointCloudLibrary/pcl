@@ -332,7 +332,6 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape,
 
   for (size_t poly_id = 0; poly_id < polygons.size (); poly_id++)
   {
-    //std::cout << "indices => start: " << pcd_idx_start_polygons[poly_id] << "end:" << pcd_idx_start_polygons[poly_id+1]  << std::endl;
     polygons[poly_id].vertices.resize (pcd_idx_start_polygons[poly_id + 1] - pcd_idx_start_polygons[poly_id] + 1);
     //populate points in the corresponding polygon
     for (size_t j = (size_t)pcd_idx_start_polygons[poly_id]; j < (size_t)pcd_idx_start_polygons[poly_id + 1]; ++j)
