@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: grid_projection.h 36191 2011-02-23 07:29:58Z rusu $
+ * $Id$
  *
  */
 

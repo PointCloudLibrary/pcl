@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: reconstruction.hpp 35668 2011-02-01 19:07:07Z rusu $
+ * $Id$
  *
  */
 
@@ -56,7 +56,7 @@ pcl::SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
   // Check if a space search locator was given
   if (!tree_)
   {
-    ROS_ERROR ("[pcl::%s::compute] No spatial search method was given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!", getClassName ().c_str ());
     output.cloud.width = output.cloud.height = 0;
     output.cloud.data.clear ();
     output.polygons.clear ();

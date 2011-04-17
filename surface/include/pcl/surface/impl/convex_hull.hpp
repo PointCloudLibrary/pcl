@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: convex_hull.hpp 36176 2011-02-23 01:41:05Z rusu $
+ * $Id$
  *
  */
 

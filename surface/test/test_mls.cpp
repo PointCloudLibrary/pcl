@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: test_mls.cpp 36207 2011-02-23 19:17:27Z marton $
+ * $Id$
  *
  */
 

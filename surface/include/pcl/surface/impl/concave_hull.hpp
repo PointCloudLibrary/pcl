@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: convex_hull.hpp 36101 2011-02-21 19:39:30Z aaldoma $
+ * $Id$
  *
  */
 
@@ -134,7 +134,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape,
   // For 3D point clouds, alpha shapes is not yet implemented!
   if (dim == 3) 
   {
-    ROS_WARN ("Alpha shapes for 3-dimensional point clouds not yet implemented..., returning empty PolygonMesh and alpha_shape_points");
+    PCL_WARN ("Alpha shapes for 3-dimensional point clouds not yet implemented..., returning empty PolygonMesh and alpha_shape_points");
     alpha_shape.points.resize (0);
     alpha_shape.width = alpha_shape.height = 0;
     polygons.resize (0);

@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: gp3.hpp 36206 2011-02-23 17:18:22Z marton $
+ * $Id$
  *
  */
 
@@ -46,7 +46,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
 {
   if (search_radius_ <= 0 || mu_ <= 0)
   {
-    ROS_ERROR ("[pcl::%s::performReconstruction] Invalid search radius (%f) or mu parameter (%f)!", getClassName ().c_str (), search_radius_, mu_);
+    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid search radius (%f) or mu parameter (%f)!", getClassName ().c_str (), search_radius_, mu_);
     output.cloud.width = output.cloud.height = 0;
     output.cloud.data.clear ();
     output.polygons.clear ();
@@ -108,7 +108,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
     R_ = is_free;
     if (state_[R_] == FREE)
     {
-      ROS_DEBUG ("Starting to build part %d starting at point: %d", nr_parts+1, R_);
+      PCL_DEBUG ("Starting to build part %d starting at point: %d", nr_parts+1, R_);
       state_[R_] = NONE;
       part_[R_] = part_index++;
 
@@ -269,7 +269,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
       if (max_sqr_fn_dist > sqrDists[nnn_-1])
       {
         if (0 == increase_nnn4fn)
-          ROS_WARN("Not enough neighbors are considered: ffn or sfn out of range! Consider increasing nnn_... Setting R=%d to be BOUNDARY!\n", R_);
+          PCL_WARN("Not enough neighbors are considered: ffn or sfn out of range! Consider increasing nnn_... Setting R=%d to be BOUNDARY!\n", R_);
         increase_nnn4fn++;
         state_[R_] = BOUNDARY;
         continue;
@@ -278,7 +278,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
       if (max_sqr_fns_dist > sqrDists[nnn_-1])
       {
         if (0 == increase_nnn4s)
-          ROS_WARN("Not enough neighbors are considered: source of R=%d is out of range! Consider increasing nnn_...\n", R_);
+          PCL_WARN("Not enough neighbors are considered: source of R=%d is out of range! Consider increasing nnn_...\n", R_);
         increase_nnn4s++;
       }
 
@@ -973,19 +973,19 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
       }
     }
   }
-  ROS_DEBUG ("Number of triangles: %d", (int)output.polygons.size());
-  ROS_DEBUG ("Number of unconnected parts: %d", nr_parts);
+  PCL_DEBUG ("Number of triangles: %d", (int)output.polygons.size());
+  PCL_DEBUG ("Number of unconnected parts: %d", nr_parts);
   if (increase_nnn4fn > 0)
-    ROS_WARN ("Number of neighborhood size increase requests for fringe neighbors: %d", increase_nnn4fn);
+    PCL_WARN ("Number of neighborhood size increase requests for fringe neighbors: %d", increase_nnn4fn);
   if (increase_nnn4s > 0)
-    ROS_WARN ("Number of neighborhood size increase requests for source: %d", increase_nnn4s);
+    PCL_WARN ("Number of neighborhood size increase requests for source: %d", increase_nnn4s);
   if (increase_dist > 0)
-    ROS_WARN ("Number of automatic maximum distance increases: %d", increase_dist);
+    PCL_WARN ("Number of automatic maximum distance increases: %d", increase_dist);
 
   // sorting and removing doubles from fringe queue 
   sort(fringe_queue_.begin(), fringe_queue_.end());
   fringe_queue_.erase(unique(fringe_queue_.begin(), fringe_queue_.end()), fringe_queue_.end());
-  ROS_DEBUG ("Number of processed points: %d / %d", (int)fringe_queue_.size(), (int)indices_->size ());
+  PCL_DEBUG ("Number of processed points: %d / %d", (int)fringe_queue_.size(), (int)indices_->size ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

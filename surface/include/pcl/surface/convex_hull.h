@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: convex_hull.h 36140 2011-02-22 05:42:48Z aaldoma $
+ * $Id$
  *
  */
 

@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: grid_projection.hpp 36191 2011-02-23 07:29:58Z rusu $
+ * $Id$
  *
  */
 
@@ -100,19 +100,19 @@ pcl::GridProjection<PointNT>::getBoundingBox ()
     min_p_(i) = lower_left_index[i] * leaf_size_;
   }
   bounding_box_size = max_p_ - min_p_;
-  ROS_DEBUG ("[pcl::GridProjection::getBoundingBox] Size of Bounding Box is [%f, %f, %f]", 
+  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Size of Bounding Box is [%f, %f, %f]", 
       bounding_box_size.x (), bounding_box_size.y (), bounding_box_size.z ());
   double max_size = 
     (std::max) ((std::max)(bounding_box_size.x (), bounding_box_size.y ()), 
                 bounding_box_size.z ());
 
   data_size_ = max_size / leaf_size_;
-  ROS_DEBUG ("[pcl::GridProjection::getBoundingBox] Lower left point is [%f, %f, %f]",
+  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Lower left point is [%f, %f, %f]",
       min_p_.x (), min_p_.y (), min_p_.z ());
-  ROS_DEBUG ("[pcl::GridProjection::getBoundingBox] Upper left point is [%f, %f, %f]",
+  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Upper left point is [%f, %f, %f]",
       max_p_.x (), max_p_.y (), max_p_.z ());
-  ROS_DEBUG ("[pcl::GridProjection::getBoundingBox] Padding size: %d", padding_size_);
-  ROS_DEBUG ("[pcl::GridProjection::getBoundingBox] Leaf size: %f", leaf_size_);
+  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Padding size: %d", padding_size_);
+  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Leaf size: %f", leaf_size_);
   occupied_cell_list_.resize (data_size_ * data_size_ * data_size_);
   gaussian_scale_ = pow ((padding_size_+1) * leaf_size_ / 2.0, 2.0);
 }
