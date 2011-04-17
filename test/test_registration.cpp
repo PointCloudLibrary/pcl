@@ -229,15 +229,15 @@ TEST (PCL, SampleConsensusInitialAlignment)
   cloud_target_ptr = cloud_target.makeShared ();
 
   // Initialize estimators for surface normals and FPFH features
-  KdTreeFLANN<PointXYZ> tree;
+  KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
 
   NormalEstimation<PointXYZ, Normal> norm_est;
-  norm_est.setSearchMethod (boost::make_shared<KdTreeFLANN<PointXYZ> > (tree));
+  norm_est.setSearchMethod (tree);
   norm_est.setRadiusSearch (0.05);
   PointCloud<Normal> normals;
 
   FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh_est;
-  fpfh_est.setSearchMethod (boost::make_shared<KdTreeFLANN<PointXYZ> > (tree));
+  fpfh_est.setSearchMethod (tree);
   fpfh_est.setRadiusSearch (0.05);
   PointCloud<FPFHSignature33> features_source, features_target;
 

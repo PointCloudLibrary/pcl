@@ -38,7 +38,6 @@
 
 #include <gtest/gtest.h>
 
-#include <boost/make_shared.hpp>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -949,7 +948,8 @@ TEST (PCL, IntensityGradientEstimation)
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   NormalEstimation<PointXYZI, Normal> norm_est;
   norm_est.setInputCloud (cloud_ptr);
-  norm_est.setSearchMethod (boost::make_shared<KdTreeFLANN<PointXYZI> > (false));
+  KdTreeFLANN<PointXYZI>::Ptr treept1 (new KdTreeFLANN<PointXYZI> (false));
+  norm_est.setSearchMethod (treept1);
   norm_est.setRadiusSearch (0.25);
   norm_est.compute (*normals);
 
@@ -958,7 +958,8 @@ TEST (PCL, IntensityGradientEstimation)
   IntensityGradientEstimation<PointXYZI, Normal, IntensityGradient> grad_est;
   grad_est.setInputCloud (cloud_ptr);
   grad_est.setInputNormals (normals);
-  grad_est.setSearchMethod (boost::make_shared<KdTreeFLANN<PointXYZI> > (false));
+  KdTreeFLANN<PointXYZI>::Ptr treept2 (new KdTreeFLANN<PointXYZI> (false));
+  grad_est.setSearchMethod (treept2);
   grad_est.setRadiusSearch (0.25);
   grad_est.compute (gradient);
 
@@ -1024,7 +1025,8 @@ TEST (PCL, IntensitySpinEstimation)
   // Compute the intensity-domain spin features
   typedef Histogram<20> IntensitySpin;
   IntensitySpinEstimation<PointXYZI, IntensitySpin> ispin_est;
-  ispin_est.setSearchMethod (boost::make_shared<KdTreeFLANN<PointXYZI> > (false));
+  KdTreeFLANN<PointXYZI>::Ptr treept3 (new KdTreeFLANN<PointXYZI> (false));
+  ispin_est.setSearchMethod (treept3);
   ispin_est.setRadiusSearch (10.0);
   ispin_est.setNrDistanceBins (4);
   ispin_est.setNrIntensityBins (5);
@@ -1110,7 +1112,8 @@ TEST (PCL, RIFTEstimation)
   // Compute the RIFT features
   typedef Histogram<32> RIFTDescriptor;
   RIFTEstimation<PointXYZI, IntensityGradient, RIFTDescriptor> rift_est;
-  rift_est.setSearchMethod (boost::make_shared<KdTreeFLANN<PointXYZI> > (false));
+  KdTreeFLANN<PointXYZI>::Ptr treept4 (new KdTreeFLANN<PointXYZI> (false));
+  rift_est.setSearchMethod (treept4);
   rift_est.setRadiusSearch (10.0);
   rift_est.setNrDistanceBins (4);
   rift_est.setNrGradientBins (8);

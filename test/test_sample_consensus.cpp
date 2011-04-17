@@ -835,10 +835,11 @@ int
 
   // Estimate surface normals
   NormalEstimation<PointXYZ, Normal> n;
-  KdTree<PointXYZ>::Ptr tree = boost::make_shared<KdTreeFLANN<PointXYZ> > ();
+  KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
   tree->setInputCloud (cloud_);
   n.setInputCloud (cloud_);
-  n.setIndices (boost::make_shared <vector<int> > (indices_));
+  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices_));
+  n.setIndices (indicesptr);
   n.setSearchMethod (tree);
   n.setRadiusSearch (0.02);    // Use 2cm radius to estimate the normals
   n.compute (*normals_);
