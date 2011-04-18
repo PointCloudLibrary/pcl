@@ -46,6 +46,7 @@ namespace pcl
   /** \brief @b PassThrough uses the base Filter class methods to pass through all data that satisfies the user given
     * constraints.
     * \author Radu Bogdan Rusu
+    * \ingroup filters
     */
   template <typename PointT>
   class PassThrough: public Filter<PointT>
@@ -78,21 +79,25 @@ namespace pcl
         * \param val set to true whether the filtered points should be kept and
         * set to a given user value (default: NaN)
         */
-      inline void setKeepOrganized (bool val) { keep_organized_ = val; }
+      inline void 
+      setKeepOrganized (bool val) { keep_organized_ = val; }
       
-      inline bool getKeepOrganized () { return (keep_organized_); }
+      inline bool 
+      getKeepOrganized () { return (keep_organized_); }
 
       /** \brief Provide a value that the filtered points should be set to
         * instead of removing them.  Used in conjunction with \a
         * setKeepOrganized ().
         * \param val the user given value that the filtered point dimensions should be set to
         */
-      inline void setUserFilterValue (float val) { user_filter_value_ = val; }
+      inline void 
+      setUserFilterValue (float val) { user_filter_value_ = val; }
     protected:
       /** \brief Filter a Point Cloud.
         * \param output the resultant point cloud message
         */
-      void applyFilter (PointCloud &output);
+      void 
+      applyFilter (PointCloud &output);
 
       typedef typename pcl::traits::fieldList<PointT>::type FieldList;
 
@@ -110,6 +115,7 @@ namespace pcl
   /** \brief @b PassThrough uses the base Filter class methods to pass through all data that satisfies the user given
     * constraints.
     * \author Radu Bogdan Rusu
+    * \ingroup filters
     */
   template <>
   class PassThrough<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
@@ -134,19 +140,23 @@ namespace pcl
         * \param val set to true whether the filtered points should be kept and
         * set to a given user value (default: NaN)
         */
-      inline void setKeepOrganized (bool val) { keep_organized_ = val; }
+      inline void 
+      setKeepOrganized (bool val) { keep_organized_ = val; }
       
-      inline bool getKeepOrganized () { return (keep_organized_); }
+      inline bool 
+      getKeepOrganized () { return (keep_organized_); }
 
       /** \brief Provide a value that the filtered points should be set to
         * instead of removing them.  Used in conjunction with \a
         * setKeepOrganized ().
         * \param val the user given value that the filtered point dimensions should be set to
         */
-      inline void setUserFilterValue (float val) { user_filter_value_ = val; }
+      inline void 
+      setUserFilterValue (float val) { user_filter_value_ = val; }
 
     protected:
-      void applyFilter (PointCloud2 &output);
+      void 
+      applyFilter (PointCloud2 &output);
 
     private:
       /** \brief Keep the structure of the data organized, by setting the

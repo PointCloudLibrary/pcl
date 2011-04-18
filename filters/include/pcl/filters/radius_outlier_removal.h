@@ -45,12 +45,11 @@
 namespace pcl
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b RadiusOutlierRemoval is a simple filter that removes outliers if the number of neighbors in a certain
     * search radius is smaller than a given K.
     * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
     * \author Radu Bogdan Rusu
+    * \ingroup filters
     */
   template <typename PointT>
   class RadiusOutlierRemoval: public Filter<PointT>
@@ -68,34 +67,33 @@ namespace pcl
     typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
     public:
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
       RadiusOutlierRemoval () : search_radius_ (0.0), min_pts_radius_ (1), tree_ () 
       {
         filter_name_ = "RadiusOutlierRemoval";
       };
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Set the sphere radius that is to be used for determining the k-nearest neighbors for filtering.
         * \param radius the sphere radius that is to contain all k-nearest neighbors
         */
-      inline void setRadiusSearch (double radius) { search_radius_ = radius; }
+      inline void
+      setRadiusSearch (double radius) { search_radius_ = radius; }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get the sphere radius used for determining the k-nearest neighbors. */
-      inline double getRadiusSearch () { return (search_radius_); }
+      inline double 
+      getRadiusSearch () { return (search_radius_); }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Set the minimum number of neighbors that a point needs to have in the given search radius in order to
         * be considered an inlier (i.e., valid).
         * \param min_pts the minimum number of neighbors
         */
-      inline void setMinNeighborsInRadius (int min_pts) { min_pts_radius_ = min_pts; }
+      inline void 
+      setMinNeighborsInRadius (int min_pts) { min_pts_radius_ = min_pts; }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get the minimum number of neighbors that a point needs to have in the given search radius to be
         * considered an inlier and avoid being filtered. */
-      inline double getMinNeighborsInRadius () { return (min_pts_radius_); }
+      inline double 
+      getMinNeighborsInRadius () { return (min_pts_radius_); }
 
     protected:
       /** \brief The nearest neighbors search radius for each point. */
@@ -108,20 +106,19 @@ namespace pcl
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Apply the filter
         * \param output the resultant point cloud message
         */
-      void applyFilter (PointCloud &output);
+      void 
+      applyFilter (PointCloud &output);
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b RadiusOutlierRemoval is a simple filter that removes outliers if the number of neighbors in a certain
     * search radius is smaller than a given K.
     * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
     * \author Radu Bogdan Rusu
+    * \ingroup filters
     */
   template <>
   class RadiusOutlierRemoval<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
@@ -137,34 +134,33 @@ namespace pcl
     typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
 
     public:
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
       RadiusOutlierRemoval () : search_radius_ (0.0), min_pts_radius_ (1), tree_ () 
       {
         filter_name_ = "RadiusOutlierRemoval";
       };
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Set the sphere radius that is to be used for determining the k-nearest neighbors for filtering.
         * \param radius the sphere radius that is to contain all k-nearest neighbors
         */
-      inline void setRadiusSearch (double radius) { search_radius_ = radius; }
+      inline void 
+      setRadiusSearch (double radius) { search_radius_ = radius; }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get the sphere radius used for determining the k-nearest neighbors. */
-      inline double getRadiusSearch () { return (search_radius_); }
+      inline double 
+      getRadiusSearch () { return (search_radius_); }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Set the minimum number of neighbors that a point needs to have in the given search radius in order to
         * be considered an inlier (i.e., valid).
         * \param min_pts the minimum number of neighbors
         */
-      inline void setMinNeighborsInRadius (int min_pts) { min_pts_radius_ = min_pts; }
+      inline void 
+      setMinNeighborsInRadius (int min_pts) { min_pts_radius_ = min_pts; }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get the minimum number of neighbors that a point needs to have in the given search radius to be
         * considered an inlier and avoid being filtered. */
-      inline double getMinNeighborsInRadius () { return (min_pts_radius_); }
+      inline double 
+      getMinNeighborsInRadius () { return (min_pts_radius_); }
 
     protected:
       /** \brief The nearest neighbors search radius for each point. */
@@ -177,7 +173,8 @@ namespace pcl
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;
 
-      void applyFilter (PointCloud2 &output);
+      void 
+      applyFilter (PointCloud2 &output);
   };
 }
 

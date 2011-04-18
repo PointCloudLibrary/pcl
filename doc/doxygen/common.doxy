@@ -1,7 +1,7 @@
 /**
   \addtogroup common Module common
 
-  \section secCommonPresentation Presentation
+  \section secCommonPresentation Overview
 
   Common data structures and methods used by the majority of PCL libraries.
 	

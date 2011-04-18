@@ -120,6 +120,7 @@ namespace pcl
 
   /** \brief @b VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
     * \author Radu Bogdan Rusu, Bastian Steder
+    * \ingroup filters
     */
   template <typename PointT>
   class VoxelGrid: public Filter<PointT>
@@ -315,6 +316,7 @@ namespace pcl
 
   /** \brief @b VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
     * \author Radu Bogdan Rusu, Bastian Steder
+    * \ingroup filters
     */
   template <>
   class VoxelGrid<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>

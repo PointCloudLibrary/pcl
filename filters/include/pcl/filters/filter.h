@@ -50,13 +50,16 @@ namespace pcl
     * \param index the mapping (ordered): cloud_out.points[i] = cloud_in.points[index[i]]
     * \note The density of the point cloud is lost.
     * \note Can be called with cloud_in == cloud_out
+    * \ingroup filters
     */
-  template <typename PointT> void removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT> &cloud_out, std::vector<int> &index);
+  template <typename PointT> void 
+  removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT> &cloud_out, std::vector<int> &index);
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b Filter represents the base filter class. Some generic 3D operations that are applicable to all filters
     * are defined here as static methods.
     * \author Radu Bogdan Rusu
+    * \ingroup filters
     */
   template <typename PointT>
   class Filter : public PCLBase<PointT>
@@ -83,10 +86,12 @@ namespace pcl
         * points having values outside this interval will be discarded.
         * \param field_name the name of the field that contains values used for filtering
         */
-      inline void setFilterFieldName (const std::string &field_name) { filter_field_name_ = field_name; }
+      inline void 
+      setFilterFieldName (const std::string &field_name) { filter_field_name_ = field_name; }
 
       /** \brief Get the name of the field used for filtering. */
-      inline std::string const getFilterFieldName () { return (filter_field_name_); }
+      inline std::string const 
+      getFilterFieldName () { return (filter_field_name_); }
 
       /** \brief Set the field filter limits. All points having field values outside this interval will be discarded.
         * \param limit_min the minimum allowed field value
@@ -111,11 +116,14 @@ namespace pcl
         * Default: false.
         * \param limit_negative return data inside the interval (false) or outside (true)
         */
-      inline void setFilterLimitsNegative (const bool limit_negative) { filter_limit_negative_ = limit_negative; }
+      inline void 
+      setFilterLimitsNegative (const bool limit_negative) { filter_limit_negative_ = limit_negative; }
 
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false). */
-      inline void getFilterLimitsNegative (bool &limit_negative) { limit_negative = filter_limit_negative_; }
-      inline bool getFilterLimitsNegative () { return (filter_limit_negative_); }
+      inline void 
+      getFilterLimitsNegative (bool &limit_negative) { limit_negative = filter_limit_negative_; }
+      inline bool 
+      getFilterLimitsNegative () { return (filter_limit_negative_); }
 
       /** \brief Calls the filtering method and returns the filtered dataset in output.
         * \param output the resultant filtered point cloud dataset 
@@ -170,6 +178,7 @@ namespace pcl
   /** \brief @b Filter represents the base filter class. Some generic 3D operations that are applicable to all filters
     * are defined here as static methods.
     * \author Radu Bogdan Rusu
+    * \ingroup filters
     */
   template <>
   class Filter<sensor_msgs::PointCloud2> : public PCLBase<sensor_msgs::PointCloud2>
@@ -189,10 +198,12 @@ namespace pcl
         * points having values outside this interval will be discarded.
         * \param field_name the name of the field that contains values used for filtering
         */
-      inline void setFilterFieldName (const std::string &field_name) { filter_field_name_ = field_name; }
+      inline void 
+      setFilterFieldName (const std::string &field_name) { filter_field_name_ = field_name; }
 
       /** \brief Get the name of the field used for filtering. */
-      inline std::string const getFilterFieldName () { return (filter_field_name_); }
+      inline std::string const 
+      getFilterFieldName () { return (filter_field_name_); }
 
       /** \brief Set the field filter limits. All points having field values outside this interval will be discarded.
         * \param limit_min the minimum allowed field value
@@ -217,16 +228,20 @@ namespace pcl
         * Default: false.
         * \param limit_negative return data inside the interval (false) or outside (true)
         */
-      inline void setFilterLimitsNegative (const bool limit_negative) { filter_limit_negative_ = limit_negative; }
+      inline void 
+      setFilterLimitsNegative (const bool limit_negative) { filter_limit_negative_ = limit_negative; }
 
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false). */
-      inline void getFilterLimitsNegative (bool &limit_negative) { limit_negative = filter_limit_negative_; }
-      inline bool getFilterLimitsNegative () { return (filter_limit_negative_); }
+      inline void 
+      getFilterLimitsNegative (bool &limit_negative) { limit_negative = filter_limit_negative_; }
+      inline bool 
+      getFilterLimitsNegative () { return (filter_limit_negative_); }
 
       /** \brief Calls the filtering method and returns the filtered dataset in output.
         * \param output the resultant filtered point cloud dataset 
         */
-      void filter (PointCloud2 &output);
+      void 
+      filter (PointCloud2 &output);
 
     protected:
       /** \brief The filter name. */
@@ -248,10 +263,12 @@ namespace pcl
         * 
         * The implementation needs to set output.{data, row_step, point_step, width, height, is_dense}.
         */
-      virtual void applyFilter (PointCloud2 &output) = 0;
+      virtual void 
+      applyFilter (PointCloud2 &output) = 0;
 
       /** \brief Get a string representation of the name of this class. */
-      inline const std::string& getClassName () const { return (filter_name_); }
+      inline const std::string& 
+      getClassName () const { return (filter_name_); }
   };
 }
 

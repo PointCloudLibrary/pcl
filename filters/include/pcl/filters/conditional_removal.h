@@ -376,6 +376,7 @@ namespace pcl
     *  range_filt.setKeepOrganized (false);
     *
     * \author Louis LeGrand, Intel Labs Seattle
+    * \ingroup filters
     */
   template <typename PointT>
   class ConditionalRemoval: public Filter<PointT>

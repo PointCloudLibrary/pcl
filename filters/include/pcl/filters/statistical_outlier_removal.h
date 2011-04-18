@@ -56,6 +56,7 @@ namespace pcl
     *
     * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
     * \author Radu Bogdan Rusu
+    * \ingroup filters
     */
   template <typename PointT>
   class StatisticalOutlierRemoval: public Filter<PointT>
@@ -82,10 +83,12 @@ namespace pcl
       /** \brief Set the number of points (k) to use for mean distance estimation
         * \param nr_k the number of points to use for mean distance estimation
         */
-      inline void setMeanK (int nr_k) { mean_k_ = nr_k; }
+      inline void 
+      setMeanK (int nr_k) { mean_k_ = nr_k; }
 
       /** \brief Get the number of points to use for mean distance estimation. */
-      inline int getMeanK () { return (mean_k_); }
+      inline int 
+      getMeanK () { return (mean_k_); }
 
       /** \brief Set the standard deviation multiplier threshold. All points outside the
         * \f[ \mu \pm \sigma \cdot std\_mul \f]
@@ -93,20 +96,24 @@ namespace pcl
         * and \f$ \sigma \f$ is the standard deviation.
         * \param std_mul the standard deviation multiplier threshold
         */
-      inline void setStddevMulThresh (double std_mul) { std_mul_ = std_mul; }
+      inline void 
+      setStddevMulThresh (double std_mul) { std_mul_ = std_mul; }
 
       /** \brief Get the standard deviation multiplier threshold as set by the user. */
-      inline double getStddevMulThresh () { return (std_mul_); }
+      inline double 
+      getStddevMulThresh () { return (std_mul_); }
 
       /** \brief Set whether the inliers should be returned (true), or the outliers (false).
         * \param negative true if the inliers should be returned, false otherwise
         */
-      inline void setNegative (bool negative) { negative_ = negative; }
+      inline void 
+      setNegative (bool negative) { negative_ = negative; }
 
       /** \brief Get the value of the internal \ref negative_ parameter. If
         * true, all points _except_ the input indices will be returned. 
         */
-      inline bool getNegative () { return (negative_); }
+      inline bool 
+      getNegative () { return (negative_); }
 
     protected:
       /** \brief The number of points to use for mean distance estimation. */
@@ -125,7 +132,8 @@ namespace pcl
       /** \brief Apply the filter
         * \param output the resultant point cloud message
         */
-      void applyFilter (PointCloud &output);
+      void 
+      applyFilter (PointCloud &output);
   };
 
   /** \brief @b StatisticalOutlierRemoval uses point neighborhood statistics to filter outlier data. For more
@@ -138,6 +146,7 @@ namespace pcl
     *
     * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
     * \author Radu Bogdan Rusu
+    * \ingroup filters
     */
   template <>
   class StatisticalOutlierRemoval<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
@@ -162,10 +171,12 @@ namespace pcl
       /** \brief Set the number of points (k) to use for mean distance estimation
         * \param nr_k the number of points to use for mean distance estimation
         */
-      inline void setMeanK (int nr_k) { mean_k_ = nr_k; }
+      inline void 
+      setMeanK (int nr_k) { mean_k_ = nr_k; }
 
       /** \brief Get the number of points to use for mean distance estimation. */
-      inline int getMeanK () { return (mean_k_); }
+      inline int 
+      getMeanK () { return (mean_k_); }
 
       /** \brief Set the standard deviation multiplier threshold. All points outside the
         * \f[ \mu \pm \sigma \cdot std\_mul \f]
@@ -173,20 +184,24 @@ namespace pcl
         * and \f$ \sigma \f$ is the standard deviation.
         * \param std_mul the standard deviation multiplier threshold
         */
-      inline void setStddevMulThresh (double std_mul) { std_mul_ = std_mul; }
+      inline void 
+      setStddevMulThresh (double std_mul) { std_mul_ = std_mul; }
 
       /** \brief Get the standard deviation multiplier threshold as set by the user. */
-      inline double getStddevMulThresh () { return (std_mul_); }
+      inline double 
+      getStddevMulThresh () { return (std_mul_); }
 
       /** \brief Set whether the indices should be returned, or all points _except_ the indices.
         * \param negative true if all points _except_ the input indices will be returned, false otherwise
         */
-      inline void setNegative (bool negative) { negative_ = negative; }
+      inline void 
+      setNegative (bool negative) { negative_ = negative; }
 
       /** \brief Get the value of the internal \ref negative_ parameter. If
         * true, all points _except_ the input indices will be returned. 
         */
-      inline bool getNegative () { return (negative_); }
+      inline bool 
+      getNegative () { return (negative_); }
 
     protected:
       /** \brief The number of points to use for mean distance estimation. */
@@ -202,7 +217,8 @@ namespace pcl
       /** \brief If true, the outliers will be returned instead of the inliers (default: false). */
       bool negative_;
 
-      void applyFilter (PointCloud2 &output);
+      void 
+      applyFilter (PointCloud2 &output);
   };
 }
 
