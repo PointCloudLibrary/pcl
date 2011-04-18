@@ -64,7 +64,6 @@ namespace pcl
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename pcl::NormalEstimation<PointNormal, PointNormal> NormalEstimator;
-      typedef typename pcl::KdTreeFLANN<PointNormal>::Ptr KdTreePtr;
       typedef typename pcl::VFHEstimation<PointInT, PointNT, pcl::VFHSignature308> VFHEstimator;
 
       /** \brief Empty constructor. */
@@ -176,7 +175,7 @@ namespace pcl
       extractEuclideanClustersSmooth (
           const pcl::PointCloud<pcl::PointNormal> &cloud, 
           const pcl::PointCloud<pcl::PointNormal> &normals,
-          float tolerance, const KdTreePtr &tree,
+          float tolerance, const pcl::KdTreeFLANN<pcl::PointNormal>::Ptr &tree,
           std::vector<pcl::PointIndices> &clusters, double eps_angle,
           unsigned int min_pts_per_cluster = 1,
           unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
