@@ -48,7 +48,6 @@ Point Cloud conversions to/from sensor_msgs::PointCloud2.
 #include <sensor_msgs/PointField.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/Image.h>
-#include <sensor_msgs/image_encodings.h>
 #include "pcl/point_cloud.h"
 #include "pcl/ros/point_traits.h"
 #include "pcl/ros/for_each_type.h"
@@ -273,7 +272,8 @@ namespace pcl
       msg.width = cloud.width;
     }
 
-    msg.encoding = sensor_msgs::image_encodings::BGR8;
+    // ensor_msgs::image_encodings::BGR8;
+    msg.encoding = "bgr8";
     msg.step = msg.width * sizeof(uint8_t) * 3;
     msg.data.resize(msg.step * msg.height);
     for (size_t y = 0; y < cloud.height; y++)
@@ -314,7 +314,8 @@ namespace pcl
     int rgb_offset = cloud.fields[rgb_index].offset;
     int point_step = cloud.point_step;
 
-    msg.encoding = sensor_msgs::image_encodings::BGR8;
+    // sensor_msgs::image_encodings::BGR8;
+    msg.encoding = "bgr8";
     msg.step = msg.width * sizeof(uint8_t) * 3;
     msg.data.resize (msg.step * msg.height);
 

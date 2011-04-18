@@ -51,7 +51,6 @@ if(build)
       set(sensor_msg_incs include/sensor_msgs/PointField.h
           include/sensor_msgs/PointCloud2.h
           include/sensor_msgs/CameraInfo.h
-          include/sensor_msgs/image_encodings.h
           include/sensor_msgs/Image.h
           include/sensor_msgs/RegionOfInterest.h
           )
