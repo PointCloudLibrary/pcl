@@ -42,6 +42,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/vfh.h>
 #include <pcl/kdtree/kdtree.h>
+#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/common/common.h>
 
 namespace pcl
