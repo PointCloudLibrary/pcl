@@ -39,42 +39,45 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include <pcl/terminal_tools/print.h>
+#include <pcl/console/print.h>
 
-namespace terminal_tools
+namespace pcl
 {
-  class TicToc
+  namespace console
   {
-    public:
-      void tic ()
-      {
-        tictic = boost::posix_time::microsec_clock::local_time();
-      };
-
-      inline double toc ()
-      {
-        toctoc = boost::posix_time::microsec_clock::local_time();
-        return (toctoc - tictic).total_seconds();
-      };
-      
-      inline void toc_print ()
-      {
-        double seconds = toc ();
-        int minutes = (int) floor ( seconds / 60.0 );
-        seconds -= minutes * 60.0;
-        if (minutes != 0)
+    class TicToc
+    {
+      public:
+        void tic ()
         {
-          print_value ("%i", minutes);
-          print_info (" minutes, ");
-        }
-        print_value ("%g", seconds);
-        print_info (" seconds\n");
-      };
-    
-    private:
-      boost::posix_time::ptime tictic;
-      boost::posix_time::ptime toctoc;
-  };
-} 
+          tictic = boost::posix_time::microsec_clock::local_time();
+        };
+
+        inline double toc ()
+        {
+          toctoc = boost::posix_time::microsec_clock::local_time();
+          return (toctoc - tictic).total_seconds();
+        };
+        
+        inline void toc_print ()
+        {
+          double seconds = toc ();
+          int minutes = (int) floor ( seconds / 60.0 );
+          seconds -= minutes * 60.0;
+          if (minutes != 0)
+          {
+            print_value ("%i", minutes);
+            print_info (" minutes, ");
+          }
+          print_value ("%g", seconds);
+          print_info (" seconds\n");
+        };
+      
+      private:
+        boost::posix_time::ptime tictic;
+        boost::posix_time::ptime toctoc;
+    };
+  } 
+}
 
 #endif
