@@ -59,6 +59,7 @@ namespace pcl
   /** \brief @b Registration represents the base registration class. 
     * All 3D registration methods should inherit from this class.
     * \author Radu Bogdan Rusu, Michael Dixon
+    * \ingroup registration
     */
   template <typename PointSource, typename PointTarget>
   class Registration : public PCLBase<PointSource>

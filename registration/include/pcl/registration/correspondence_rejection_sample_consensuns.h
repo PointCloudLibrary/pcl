@@ -45,12 +45,12 @@ namespace pcl
 {
   namespace registration
   {
-
     /**
-     * @b CorrespondenceRejectorSampleConsensus implements a correspondence rejection
-     * using Random Sample Consensus to identify inliers (and reject outliers)
-     * \author Dirk Holz
-     */
+      * @b CorrespondenceRejectorSampleConsensus implements a correspondence rejection
+      * using Random Sample Consensus to identify inliers (and reject outliers)
+      * \author Dirk Holz
+      * \ingroup registration
+      */
     template <typename PointT>
     class CorrespondenceRejectorSampleConsensus: public CorrespondenceRejector
     {
@@ -69,22 +69,31 @@ namespace pcl
         inlier_threshold_ = 0.05;
       }
 
-      inline void getCorrespondences(const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences);
+      inline void 
+      getCorrespondences (const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences);
 
-      virtual inline void setInputCloud (const PointCloudConstPtr &cloud) { input_ = cloud; }
-      virtual inline void setTargetCloud (const PointCloudConstPtr &cloud) { target_ = cloud; }
+      virtual inline void 
+      setInputCloud (const PointCloudConstPtr &cloud) { input_ = cloud; }
+      virtual inline void 
+      setTargetCloud (const PointCloudConstPtr &cloud) { target_ = cloud; }
 
-      inline void setInlierThreshold(double threshold) { inlier_threshold_ = threshold; };
-      inline double getInlierThreshold() { return inlier_threshold_; };
+      inline void 
+      setInlierThreshold(double threshold) { inlier_threshold_ = threshold; };
+      inline double 
+      getInlierThreshold() { return inlier_threshold_; };
 
-      inline void setMaxIterations(int max_iterations) {max_iterations_ = max_iterations; };
-      inline int getMaxIterations() { return max_iterations_; };
+      inline void 
+      setMaxIterations (int max_iterations) {max_iterations_ = max_iterations; };
+      inline int 
+      getMaxIterations () { return max_iterations_; };
 
-      inline Eigen::Matrix4f getBestTransformation() { return best_transformation_; };
+      inline Eigen::Matrix4f 
+      getBestTransformation () { return best_transformation_; };
 
     protected:
 
-      inline void applyRejection(pcl::registration::Correspondences &correspondences);
+      inline void 
+      applyRejection (pcl::registration::Correspondences &correspondences);
 
       double inlier_threshold_;
 

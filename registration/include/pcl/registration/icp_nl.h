@@ -50,6 +50,7 @@ namespace pcl
   /** \brief @b IterativeClosestPointNonLinear is an ICP variant that uses Levenberg-Marquardt optimization backend. The
     * resultant transformation is optimized as a quaternion.
     * \author Radu Bogdan Rusu, Michael Dixon
+    * \ingroup registration
     */
   template <typename PointSource, typename PointTarget>
   class IterativeClosestPointNonLinear : public Registration<PointSource, PointTarget>

@@ -42,10 +42,10 @@ namespace pcl
 {
   namespace registration
   {
-
     /** @b sortCorrespondencesByQueryIndex : a functor for sorting correspondences by query index
-     * \author Dirk Holz
-     */
+      * \author Dirk Holz
+      * \ingroup registration
+      */
     struct sortCorrespondencesByQueryIndex : public std::binary_function<pcl::registration::Correspondence, pcl::registration::Correspondence, bool>
     {
       bool operator()( pcl::registration::Correspondence a, pcl::registration::Correspondence b)
@@ -55,8 +55,9 @@ namespace pcl
     };
 
     /** @b sortCorrespondencesByMatchIndex : a functor for sorting correspondences by match index
-     * \author Dirk Holz
-     */
+      * \author Dirk Holz
+      * \ingroup registration
+      */
     struct sortCorrespondencesByMatchIndex : public std::binary_function<pcl::registration::Correspondence, pcl::registration::Correspondence, bool>
     {
       bool operator()( pcl::registration::Correspondence a, pcl::registration::Correspondence b)
@@ -66,8 +67,9 @@ namespace pcl
     };
 
     /** @b sortCorrespondencesByDistance : a functor for sorting correspondences by distance
-     * \author Dirk Holz
-     */
+      * \author Dirk Holz
+      * \ingroup registration
+      */
     struct sortCorrespondencesByDistance : public std::binary_function<pcl::registration::Correspondence, pcl::registration::Correspondence, bool>
     {
       bool operator()( pcl::registration::Correspondence a, pcl::registration::Correspondence b)
@@ -77,8 +79,9 @@ namespace pcl
     };
 
     /** @b sortCorrespondencesByQueryIndexAndDistance : a functor for sorting correspondences by query index _and_ distance
-     * \author Dirk Holz
-     */
+      * \author Dirk Holz
+      * \ingroup registration
+      */
     struct sortCorrespondencesByQueryIndexAndDistance : public std::binary_function<pcl::registration::Correspondence, pcl::registration::Correspondence, bool>
     {
       bool operator()( pcl::registration::Correspondence a, pcl::registration::Correspondence b)
@@ -92,8 +95,9 @@ namespace pcl
     };
 
     /** @b sortCorrespondencesByMatchIndexAndDistance : a functor for sorting correspondences by match index _and_ distance
-     * \author Dirk Holz
-     */
+      * \author Dirk Holz
+      * \ingroup registration
+      */
     struct sortCorrespondencesByMatchIndexAndDistance : public std::binary_function<pcl::registration::Correspondence, pcl::registration::Correspondence, bool>
     {
       bool operator()( pcl::registration::Correspondence a, pcl::registration::Correspondence b)
@@ -105,7 +109,6 @@ namespace pcl
         return false;
       }
     };
-
 
   }
 }

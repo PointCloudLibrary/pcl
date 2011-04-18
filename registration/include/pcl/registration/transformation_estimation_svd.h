@@ -43,8 +43,9 @@ namespace pcl
   namespace registration
   {
     /** @b TransformationEstimationSVD implements SVD-based estimation of the transformation aligning the given correspondences in target and input point cloud
-     * \author Dirk Holz
-     */
+      * \author Dirk Holz
+      * \ingroup registration
+      */
     template <typename PointSource, typename PointTarget>
     class TransformationEstimationSVD : public TransformationEstimation<PointSource, PointTarget>
     {

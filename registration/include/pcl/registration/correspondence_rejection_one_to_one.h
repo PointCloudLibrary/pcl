@@ -44,14 +44,15 @@ namespace pcl
   {
 
     /**
-     * @b CorrespondenceRejectorOneToOne implements a correspondence
-     * rejection method based on eliminating duplicate match indices in
-     * the correspondences. Correspondences with the same match index are
-     * removed and only the one with smallest distance between query and
-     * match are kept. That is, considering match->query 1-m correspondences
-     * are removed leaving only 1-1 correspondences.
-     * \author Dirk Holz
-     */
+      * @b CorrespondenceRejectorOneToOne implements a correspondence
+      * rejection method based on eliminating duplicate match indices in
+      * the correspondences. Correspondences with the same match index are
+      * removed and only the one with smallest distance between query and
+      * match are kept. That is, considering match->query 1-m correspondences
+      * are removed leaving only 1-1 correspondences.
+      * \author Dirk Holz
+      * \ingroup registration
+      */
     class CorrespondenceRejectorOneToOne: public CorrespondenceRejector
     {
       using CorrespondenceRejector::input_correspondences_;
@@ -64,12 +65,14 @@ namespace pcl
         rejection_name_ = "CorrespondenceRejectorOneToOne";
       }
 
-      inline void getCorrespondences(const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences);
+      inline void 
+      getCorrespondences (const pcl::registration::Correspondences& original_correspondences, 
+                          pcl::registration::Correspondences& remaining_correspondences);
 
 
     protected:
-
-      void applyRejection(pcl::registration::Correspondences &correspondences);
+      void 
+      applyRejection (pcl::registration::Correspondences &correspondences);
 
     };
 

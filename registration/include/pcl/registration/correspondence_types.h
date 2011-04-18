@@ -41,8 +41,9 @@ namespace pcl
   namespace registration
   {
     /** @b Correspondence represents point correspondences (similar to OpenCV's DMATCH)
-     * \author Dirk Holz
-     */
+      * \author Dirk Holz
+      * \ingroup registration
+      */
     struct Correspondence;
     // Members: int indexQuery, int indexMatch (-1 is used in case there is no match), float distance
 

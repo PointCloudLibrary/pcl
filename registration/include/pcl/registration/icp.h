@@ -46,11 +46,10 @@
 namespace pcl
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b IterativeClosestPoint is an implementation of the Iterative Closest Point algorithm based on Singular
     * Value Decomposition (SVD).
     * \author Radu Bogdan Rusu, Michael Dixon
+    * \ingroup registration
     */
   template <typename PointSource, typename PointTarget>
   class IterativeClosestPoint : public Registration<PointSource, PointTarget>
@@ -81,7 +80,6 @@ namespace pcl
     typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
     public:
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
       IterativeClosestPoint () 
       {
@@ -89,11 +87,11 @@ namespace pcl
       };
 
     protected:
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Rigid transformation computation method.
         * \param output the transformed input point cloud dataset using the rigid transformation found
         */
-      virtual void computeTransformation (PointCloudSource &output);
+      virtual void 
+      computeTransformation (PointCloudSource &output);
   };
 }
 

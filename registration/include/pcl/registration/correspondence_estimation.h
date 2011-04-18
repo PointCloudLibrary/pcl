@@ -56,9 +56,10 @@ namespace pcl
   namespace registration
   {
     /** @b CorrespondenceEstimation represents the base class for determining correspondences between target and query
-     * point sets/features.
-     * \author Radu Bogdan Rusu, Michael Dixon, Dirk Holz
-     * */
+      * point sets/features.
+      * \author Radu Bogdan Rusu, Michael Dixon, Dirk Holz
+      * \ingroup registration
+      */
     template <typename PointSource, typename PointTarget>
     class CorrespondenceEstimation : public PCLBase<PointSource>
     {
@@ -98,36 +99,38 @@ namespace pcl
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)
         * \param cloud the input point cloud target
         */
-      virtual inline void setInputTarget (const PointCloudTargetConstPtr &cloud);
+      virtual inline void 
+      setInputTarget (const PointCloudTargetConstPtr &cloud);
 
       /** \brief Get a pointer to the input point cloud dataset target. */
-      inline PointCloudTargetConstPtr const getInputTarget () { return (target_ ); }
+      inline PointCloudTargetConstPtr const 
+      getInputTarget () { return (target_ ); }
 
       /** \brief Provide a pointer to a cloud of feature descriptors associated with the source point cloud
         * \param source_feature a cloud of feature descriptors associated with the source point cloud
         * \param key a string that uniquely identifies the feature
         */
-      template <typename FeatureType>
-      inline void setSourceFeature (const typename pcl::PointCloud<FeatureType>::ConstPtr &source_feature, std::string key);
+      template <typename FeatureType> inline void 
+      setSourceFeature (const typename pcl::PointCloud<FeatureType>::ConstPtr &source_feature, std::string key);
 
       /** \brief Get a pointer to the source cloud's feature descriptors, specified by the given \a key
         * \param key a string that uniquely identifies the feature (must match the key provided by setSourceFeature)
         */
-      template <typename FeatureType>
-      inline typename pcl::PointCloud<FeatureType>::ConstPtr getSourceFeature (std::string key);
+      template <typename FeatureType> inline typename pcl::PointCloud<FeatureType>::ConstPtr 
+      getSourceFeature (std::string key);
 
       /** \brief Provide a pointer to a cloud of feature descriptors associated with the target point cloud
         * \param target_feature a cloud of feature descriptors associated with the target point cloud
         * \param key a string that uniquely identifies the feature
         */
-      template <typename FeatureType>
-      inline void setTargetFeature (const typename pcl::PointCloud<FeatureType>::ConstPtr &target_feature, std::string key);
+      template <typename FeatureType> inline void 
+      setTargetFeature (const typename pcl::PointCloud<FeatureType>::ConstPtr &target_feature, std::string key);
 
       /** \brief Get a pointer to the source cloud's feature descriptors, specified by the given \a key
         * \param key a string that uniquely identifies the feature (must match the key provided by setTargetFeature)
         */
-      template <typename FeatureType>
-      inline typename pcl::PointCloud<FeatureType>::ConstPtr getTargetFeature (std::string key);
+      template <typename FeatureType> inline typename pcl::PointCloud<FeatureType>::ConstPtr 
+      getTargetFeature (std::string key);
 
       /** \brief Use radius-search as the search method when finding correspondences for the feature associated with the
         * provided \a key
@@ -135,8 +138,8 @@ namespace pcl
         * \param r the radius to use when performing the correspondence search
         * \param key a string that uniquely identifies the feature
         */
-      template <typename FeatureType>
-      inline void setRadiusSearch (const typename pcl::KdTree<FeatureType>::Ptr &tree, float r, std::string key);
+      template <typename FeatureType> inline void 
+      setRadiusSearch (const typename pcl::KdTree<FeatureType>::Ptr &tree, float r, std::string key);
 
       /** \brief Use k-nearest-neighbors as the search method when finding correspondences for the feature associated
         * with the provided \a key
@@ -144,26 +147,28 @@ namespace pcl
         * \param k the number of nearest neighbors to return in the correspondence search
         * \param key a string that uniquely identifies the feature
         */
-      template <typename FeatureType>
-      inline void setKSearch (const typename pcl::KdTree<FeatureType>::Ptr &tree, int k, std::string key);
+      template <typename FeatureType> inline void 
+      setKSearch (const typename pcl::KdTree<FeatureType>::Ptr &tree, int k, std::string key);
 
       /** \brief Set the maximum distance threshold between two correspondent points in source <-> target. If the
         * distance is larger than this threshold, the points will be ignored in the alignment process.
         * \param distance_threshold the maximum distance threshold between a point and its nearest neighbor
         * correspondent in order to be considered in the alignment process
         */
-      inline void setMaxCorrespondenceDistance (double distance_threshold) { corr_dist_threshold_ = distance_threshold; }
+      inline void 
+      setMaxCorrespondenceDistance (double distance_threshold) { corr_dist_threshold_ = distance_threshold; }
 
       /** \brief Get the maximum distance threshold between two correspondent points in source <-> target. If the
         * distance is larger than this threshold, the points will be ignored in the alignment process.
         */
-      inline double getMaxCorrespondenceDistance () { return (corr_dist_threshold_); }
+      inline double 
+      getMaxCorrespondenceDistance () { return (corr_dist_threshold_); }
 
       /** \brief Provide a boost shared pointer to the PointRepresentation to be used when comparing points
         * \param point_representation the PointRepresentation to be used by the k-D tree
         */
       inline void
-        setPointRepresentation (const PointRepresentationConstPtr &point_representation)
+      setPointRepresentation (const PointRepresentationConstPtr &point_representation)
       {
         point_representation_ = point_representation;
       }
@@ -249,12 +254,14 @@ namespace pcl
         * \param correspondences the found correspondences (index of query point, index of target point, distance)
         * \param max_distance maximum distance between correspondences
         */
-      virtual void determineCorrespondences (std::vector<pcl::registration::Correspondence> &correspondences, float max_distance = std::numeric_limits<float>::max());
+      virtual void 
+      determineCorrespondences (std::vector<pcl::registration::Correspondence> &correspondences, float max_distance = std::numeric_limits<float>::max());
 
       /** \brief Determine the correspondences between input and target cloud.
         * \param correspondences the found correspondences (index of query point, index of target point, distance)
         */
-      virtual void determineReciprocalCorrespondences(std::vector<pcl::registration::Correspondence> &correspondences);
+      virtual void 
+      determineReciprocalCorrespondences (std::vector<pcl::registration::Correspondence> &correspondences);
 
 
     protected:
@@ -275,17 +282,20 @@ namespace pcl
       /** \brief Test that all features are valid (i.e., does each key have a valid source cloud, target cloud, and
         * search method)
         */
-      inline bool hasValidFeatures ();
+      inline bool 
+      hasValidFeatures ();
 
       /** \brief Find the indices of the points in the target cloud whose features correspond with the features of the
         * given point in the source cloud
         * \param index the index of the query point (in the source cloud)
         * \param correspondence_indices the resultant vector of indices representing the query's corresponding features (in the target cloud)
         */
-      inline void findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices);
+      inline void 
+      findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices);
 
       /** \brief Abstract class get name method. */
-      inline const std::string& getClassName () const { return (corr_name_); }
+      inline const std::string& 
+      getClassName () const { return (corr_name_); }
 
     private:
 
@@ -312,7 +322,8 @@ namespace pcl
 
           FeatureContainer () : k_(0), radius_(0) {}
 
-          void setSourceFeature (const FeatureCloudConstPtr &source_features)
+          void 
+          setSourceFeature (const FeatureCloudConstPtr &source_features)
           {
             source_features_ = source_features;
           }
@@ -322,7 +333,8 @@ namespace pcl
             return (source_features_);
           }
 
-          void setTargetFeature (const FeatureCloudConstPtr &target_features)
+          void 
+          setTargetFeature (const FeatureCloudConstPtr &target_features)
           {
             target_features_ = target_features;
             if (tree_)
@@ -331,12 +343,14 @@ namespace pcl
             }
           }
 
-          FeatureCloudConstPtr getTargetFeature ()
+          FeatureCloudConstPtr 
+          getTargetFeature ()
           {
             return (target_features_);
           }
 
-          void setRadiusSearch (KdTreePtr tree, float r)
+          void 
+          setRadiusSearch (KdTreePtr tree, float r)
           {
             tree_ = tree;
             radius_ = r;
@@ -347,7 +361,8 @@ namespace pcl
             }
           }
 
-          void setKSearch (KdTreePtr tree, int k)
+          void 
+          setKSearch (KdTreePtr tree, int k)
           {
             tree_ = tree;
             k_ = k;
@@ -358,7 +373,8 @@ namespace pcl
             }
           }
 
-          virtual bool isValid ()
+          virtual bool 
+          isValid ()
           {
             if (!source_features_ || !target_features_ || !tree_)
             {
@@ -372,8 +388,9 @@ namespace pcl
             }
           }
 
-          virtual void findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices,
-                                                   std::vector<float> &distances)
+          virtual void 
+          findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices,
+                                      std::vector<float> &distances)
           {
             if (k_ > 0)
             {
@@ -398,9 +415,12 @@ namespace pcl
       class FeatureContainerInterface
       {
         public:
-          virtual bool isValid () = 0;
-          virtual void findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices,
-                                                   std::vector<float> &distances) = 0;
+          virtual bool 
+          isValid () = 0;
+
+          virtual void 
+          findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices,
+                                      std::vector<float> &distances) = 0;
       };
 
    };

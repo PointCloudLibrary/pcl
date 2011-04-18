@@ -44,10 +44,10 @@ namespace pcl
 {
   namespace registration
   {
-
     /** @b TransformationEstimation represents the base class for methods for transformation estimation based on given a \a correspondence vector
-     * \author Dirk Holz
-     */
+      * \author Dirk Holz
+      * \ingroup registration
+      */
     template <typename PointSource, typename PointTarget>
     class TransformationEstimation
     {

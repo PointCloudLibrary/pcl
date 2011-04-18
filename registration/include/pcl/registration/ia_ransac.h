@@ -42,11 +42,10 @@
 namespace pcl
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusInitialAlignment is an implementation of the initial alignment algorithm described in
-   *  section IV of "Fast Point Feature Histograms (FPFH) for 3D Registration," Rusu et al.
+    *  section IV of "Fast Point Feature Histograms (FPFH) for 3D Registration," Rusu et al.
     * \author Radu Bogdan Rusu, Michael Dixon
+    * \ingroup registration
     */
   template <typename PointSource, typename PointTarget, typename FeatureT>
   class SampleConsensusInitialAlignment : public Registration<PointSource, PointTarget>
@@ -79,7 +78,6 @@ namespace pcl
     typedef typename KdTreeFLANN<FeatureT>::Ptr FeatureKdTreePtr; 
 
     public:
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Constructor. */
       SampleConsensusInitialAlignment () : nr_samples_(3)
       {
@@ -87,54 +85,53 @@ namespace pcl
         feature_tree_.reset (new pcl::KdTreeFLANN<FeatureT>);
       };
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Provide a boost shared pointer to the source point cloud's feature descriptors
         * \param features the source point cloud's features
         */
-      void setSourceFeatures (const FeatureCloudConstPtr &features);
+      void 
+      setSourceFeatures (const FeatureCloudConstPtr &features);
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get a pointer to the source point cloud's features */
-      inline FeatureCloudConstPtr const getSourceFeatures () { return (input_features_); }
+      inline FeatureCloudConstPtr const 
+      getSourceFeatures () { return (input_features_); }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Provide a boost shared pointer to the target point cloud's feature descriptors
         * \param features the target point cloud's features
         */
-      void setTargetFeatures (const FeatureCloudConstPtr &features);
+      void 
+      setTargetFeatures (const FeatureCloudConstPtr &features);
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get a pointer to the target point cloud's features */
-      inline FeatureCloudConstPtr const getTargetFeatures () { return (target_features_); }
+      inline FeatureCloudConstPtr const 
+      getTargetFeatures () { return (target_features_); }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Set the minimum distances between samples
         * \param min_sample_distance the minimum distances between samples
         */
-      void setMinSampleDistance (float min_sample_distance) { min_sample_distance_ = min_sample_distance; }
+      void 
+      setMinSampleDistance (float min_sample_distance) { min_sample_distance_ = min_sample_distance; }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get the minimum distances between samples, as set by the user */
-      float getMinSampleDistance () { return (min_sample_distance_); }
+      float 
+      getMinSampleDistance () { return (min_sample_distance_); }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Set the number of samples to use during each iteration
         * \param nr_samples the number of samples to use during each iteration
         */
-      void setNumberOfSamples (int nr_samples) { nr_samples_ = nr_samples; }
+      void 
+      setNumberOfSamples (int nr_samples) { nr_samples_ = nr_samples; }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Set the number of samples to use during each iteration, as set by the user */
-      int getNumberOfSamples () { return (nr_samples_); }
+      int 
+      getNumberOfSamples () { return (nr_samples_); }
 
     private:
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Choose a random index between 0 and n-1
         * \param n the number of possible indices to choose from
         */
-      inline int getRandomIndex (int n) { return (n * (rand () / (RAND_MAX + 1.0))); };
+      inline int 
+      getRandomIndex (int n) { return (n * (rand () / (RAND_MAX + 1.0))); };
       
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Select \a nr_samples sample points from cloud while making sure that their pairwise distances are greater 
         * than a user-defined minimum distance, \a min_sample_distance.
         * \param cloud the input point cloud
@@ -142,10 +139,10 @@ namespace pcl
         * \param min_sample_distance the minimum distance between any two samples
         * \param sample_indices the resulting sample indices
         */
-      void selectSamples (const PointCloudSource &cloud, int nr_samples, float min_sample_distance, 
-                          std::vector<int> &sample_indices);
+      void 
+      selectSamples (const PointCloudSource &cloud, int nr_samples, float min_sample_distance, 
+                     std::vector<int> &sample_indices);
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief For each of the sample points, find a list of points in the target cloud whose features are similar to 
         * the sample points' features. From these, select one randomly which will be considered that sample point's 
         * correspondence. 
@@ -153,24 +150,24 @@ namespace pcl
         * \param sample_indices the indices of each sample point
         * \param corresponding_indices the resulting indices of each sample's corresponding point in the target cloud
         */
-      void findSimilarFeatures(const FeatureCloud &input_features, const std::vector<int> &sample_indices, 
-                               std::vector<int> &corresponding_indices);
+      void 
+      findSimilarFeatures (const FeatureCloud &input_features, const std::vector<int> &sample_indices, 
+                           std::vector<int> &corresponding_indices);
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief An error metric for that computes the quality of the alignment between the given cloud and the target.
         * \param cloud the input cloud
         * \param threshold distances greater than this value are capped
         */
-      float computeErrorMetric (const PointCloudSource &cloud, float threshold);
+      float 
+      computeErrorMetric (const PointCloudSource &cloud, float threshold);
 
     protected:
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Rigid transformation computation method.
         * \param output the transformed input point cloud dataset using the rigid transformation found
         */
-      virtual void computeTransformation (PointCloudSource &output);
+      virtual void 
+      computeTransformation (PointCloudSource &output);
 
-      
       /** \brief The source point cloud's feature descriptors. */
       FeatureCloudConstPtr input_features_;
 

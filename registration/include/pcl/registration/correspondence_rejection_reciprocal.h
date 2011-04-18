@@ -42,15 +42,15 @@ namespace pcl
 {
   namespace registration
   {
-
     /**
-     * @b CorrespondenceRejectorReciprocal implements a reciprocal
-     * correspondence rejection method for ICP-like registration algorithms.
-     * Given the correspondences between target and source (reciprocal search),
-     * it removes all correspondences, where the target point (match index) has
-     * a different corresponding point in the source than the query point
-     * (query index) and the difference in distances exceeds a given threshold.
-     * \author Dirk Holz
+      * @b CorrespondenceRejectorReciprocal implements a reciprocal
+      * correspondence rejection method for ICP-like registration algorithms.
+      * Given the correspondences between target and source (reciprocal search),
+      * it removes all correspondences, where the target point (match index) has
+      * a different corresponding point in the source than the query point
+      * (query index) and the difference in distances exceeds a given threshold.
+      * \author Dirk Holz
+      * \ingroup registration
      */
     class CorrespondenceRejectorReciprocal: public CorrespondenceRejector
     {
@@ -64,30 +64,32 @@ namespace pcl
         rejection_name_ = "CorrespondenceRejectorReciprocal";
       }
 
-      inline void getCorrespondences(const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences);
+      inline void 
+      getCorrespondences (const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences);
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Set maximally allowable distance between a correspondence and its reciprocal correspondence. */
-      virtual inline void setDistanceThreshold(float threshold) { distance_threshold_ = threshold; };
+      virtual inline void 
+      setDistanceThreshold (float threshold) { distance_threshold_ = threshold; };
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Set maximally allowable distance between a correspondence and its reciprocal correspondence. */
-      inline float getDistanceThreshold() { return distance_threshold_; };
+      inline float 
+      getDistanceThreshold () { return distance_threshold_; };
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Provide a pointer to the vector of the input correspondences.
         * \param correspondences the const boost shared pointer to a std::vector of correspondences
         */
-      virtual inline void setReciprocalCorrespondences(const CorrespondencesConstPtr &correspondences) { reciprocal_correspondences_ = correspondences; };
+      virtual inline void 
+      setReciprocalCorrespondences (const CorrespondencesConstPtr &correspondences) { reciprocal_correspondences_ = correspondences; };
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get a pointer to the vector of the input correspondences. */
-      inline CorrespondencesConstPtr getReciprocalCorrespondences() { return reciprocal_correspondences_; };
+      inline CorrespondencesConstPtr 
+      getReciprocalCorrespondences () { return reciprocal_correspondences_; };
 
 
     protected:
 
-      void applyRejection(pcl::registration::Correspondences &correspondences);
+      void 
+      applyRejection (pcl::registration::Correspondences &correspondences);
 
       float distance_threshold_;
 

@@ -51,6 +51,7 @@ namespace pcl
     * \note The density of the point cloud is lost, since density implies that
     * the origin is the point of view
     * \note Can be used with cloud_in equal to cloud_out
+    * \ingroup registration
     */
   template <typename PointT> void 
   transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -65,6 +66,7 @@ namespace pcl
     * \note The density of the point cloud is lost, since density implies that
     * the origin is the point of view
     * \note Can be used with cloud_in equal to cloud_out
+    * \ingroup registration
     */
   template <typename PointT> void 
   transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -92,6 +94,7 @@ namespace pcl
     * \note The density of the point cloud is lost, since density implies that
     * the origin is the point of view
     * \note Can be used with cloud_in equal to cloud_out
+    * \ingroup registration
     */
   template <typename PointT> void 
   transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -105,6 +108,7 @@ namespace pcl
     * \note The density of the point cloud is lost, since density implies that
     * the origin is the point of view
     * \note Can be used with cloud_in equal to cloud_out
+    * \ingroup registration
     */
   template <typename PointT> void 
   transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
@@ -118,6 +122,7 @@ namespace pcl
     * \param rotation the rotation component of the rigid transformation
     * \note density of the point cloud is lost, since density implies that the
     * origin is the point of view
+    * \ingroup registration
     */
   template <typename PointT> inline void 
   transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -132,6 +137,7 @@ namespace pcl
     * \param rotation the rotation component of the rigid transformation
     * \note density of the point cloud is lost, since density implies that the
     * origin is the point of view
+    * \ingroup registration
     */
   template <typename PointT> inline void 
   transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 

@@ -42,13 +42,13 @@ namespace pcl
 {
   namespace registration
   {
-
     /**
-     * @b CorrespondenceRejectorDistance implements a simple correspondence
-     * rejection method based on thresholding the distances between the
-     * correspondences.
-     * \author Dirk Holz
-     */
+      * @b CorrespondenceRejectorDistance implements a simple correspondence
+      * rejection method based on thresholding the distances between the
+      * correspondences.
+      * \author Dirk Holz
+      * \ingroup registration
+      */
     class CorrespondenceRejectorDistance: public CorrespondenceRejector
     {
       using CorrespondenceRejector::input_correspondences_;
@@ -61,21 +61,23 @@ namespace pcl
         rejection_name_ = "CorrespondenceRejectorDistance";
       }
 
-      inline void getCorrespondences(const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences);
+      inline void 
+      getCorrespondences (const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences);
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Set the maximum distance used for thresholding in correspondence rejection.
        * \param distance Distance to be used as maximum distance between correspondences. Correspondences with larger distance are rejected.
        * */
-      virtual inline void setMaximumDistance(float distance) { max_distance_ = distance; };
+      virtual inline void 
+      setMaximumDistance (float distance) { max_distance_ = distance; };
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get the maximum distance used for thresholding in correspondence rejection. */
-      inline float getMaxmimumDistance() { return max_distance_; };
+      inline float 
+      getMaxmimumDistance () { return max_distance_; };
 
     protected:
 
-      void applyRejection(pcl::registration::Correspondences &correspondences);
+      void 
+      applyRejection (pcl::registration::Correspondences &correspondences);
 
       float max_distance_;
     };
