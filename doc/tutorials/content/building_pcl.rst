@@ -63,70 +63,49 @@ You should see something like the following on screen::
 The explanation
 ---------------
 
-* BUILD_TESTS: this an option which can enables/disables building of
-   tests
+* `BUILD_TESTS`: this an option which can enables/disables building of tests
 
-* BUILD_common: this an option which can enables/disables building of
-   common library
+* `BUILD_common`: this an option which can enables/disables building of common library
 
-* BUILD_features: this an option which can enables/disables building of
-   features library
+* `BUILD_features`: this an option which can enables/disables building of features library
 
-* BUILD_filters: this an option which can enables/disables building of
-   filters library
+* `BUILD_filters`: this an option which can enables/disables building of filters library
 
-* BUILD_global_tests: this an option which can enables/disables building of
-   global unit tests
+* `BUILD_global_tests`: this an option which can enables/disables building of global unit tests
 
-* BUILD_io: this an option which can enables/disables building of
-   io library
+* `BUILD_io`: this an option which can enables/disables building of io library
 
-* BUILD_kdtree: this an option which can enables/disables building of
-   kdtree library
+* `BUILD_kdtree`: this an option which can enables/disables building of kdtree library
 
-* BUILD_keypoints: this an option which can enables/disables building of
-   keypoints library
+* `BUILD_keypoints`: this an option which can enables/disables building of keypoints library
 
-* BUILD_octree: this an option which can enables/disables building of
-   octree library
+* `BUILD_octree`: this an option which can enables/disables building of octree library
 
-* BUILD_range_image: this an option which can enables/disables building of
-   range_image library
+* `BUILD_range_image`: this an option which can enables/disables building of range_image library
 
-* BUILD_registration: this an option which can enables/disables building of
-   registration library
+* `BUILD_registration`: this an option which can enables/disables building of registration library
 
-* BUILD_sample_consensus: this an option which can enables/disables building of
-   sample_consensus library
+* `BUILD_sample_consensus`: this an option which can enables/disables building of sample_consensus library
 
-* BUILD_segmentation: this an option which can enables/disables building of
-   segmentation library
+* `BUILD_segmentation`: this an option which can enables/disables building of segmentation library
 
-* BUILD_surface: this an option which can enables/disables building of
-   surface library
+* `BUILD_surface`: this an option which can enables/disables building of surface library
 
-* BUILD_visualization: this an option which can enables/disables building of
-   visualization library
+* `BUILD_visualization`: this an option which can enables/disables building of visualization library
 
-* CMAKE_BUILD_TYPE: here you specify which the build type. In CMake,
-   a CMAKE_BUILD_TYPE corresponds to a set of options and flags passed
-   to the compiler to activate/deactivate a functionality and to
-   constrain the building process.
+* `CMAKE_BUILD_TYPE`: here you specify which the build type. In CMake, a CMAKE_BUILD_TYPE corresponds to a set of options and flags passed to the compiler to activate/deactivate a functionality and to constrain the building process.
 
-* CMAKE_INSTALL_PREFIX: where the built libraries and the headers
-   will be installed
+* `CMAKE_INSTALL_PREFIX`: where the built libraries and the headers will be installed
 
-* PCL_SHARED_LIBS: option to enable building of shared
-   libraries. Default is yes.
+* `PCL_SHARED_LIBS`: option to enable building of shared libraries. Default is yes.
 
-* PCL_VERSION: this is the PCL library version. It affects the built
-   libraries names.
+* `PCL_VERSION`: this is the PCL library version. It affects the built libraries names.
 
-* VTK_DIR: directory of VTK library if found
+* `VTK_DIR`: directory of VTK library if found
 
-* wxWidgets_CONFIG_EXECUTABLE: path to wx-config program
+* `wxWidgets_CONFIG_EXECUTABLE`: path to wx-config program
 
-* wxWidgets_wxrc_EXECUTABLE: path to wxrc program
+* `wxWidgets_wxrc_EXECUTABLE`: path to wxrc program
 
 The above are called `cmake` cached variables. At this level we only looked at
 the basic ones.
@@ -146,21 +125,13 @@ YYY then XXX will be built but won't appear in the cache.
 
 You can also change the build type:
 
-* Debug: means that no optimization is done and all the debugging
-   symbols are imbedded into the libraries file. This is plateform and
-   compiler dependent. On Linux with gcc this is equivalent to running
-   gcc with -O0 -g -ggdb -Wall
+* `Debug`: means that no optimization is done and all the debugging symbols are imbedded into the libraries file. This is plateform and compiler dependent. On Linux with gcc this is equivalent to running gcc with `-O0 -g -ggdb -Wall`
 
-* Release: the compiled code is optimized and no debug information
-   will be print out. This will lead to -O3 for gcc and -O5 for clang
+* `Release`: the compiled code is optimized and no debug information will be print out. This will lead to `-O3` for gcc and `-O5` for clang
 
-* RelWithDebInfo: the compiled code is optimized but debugging data
-   is also imbedded in the libraries. This is a tradeoff between the
-   two former ones.
+* `RelWithDebInfo`: the compiled code is optimized but debugging data is also imbedded in the libraries. This is a tradeoff between the two former ones.
 
-* MinSizeRel: this, normally, results in the smallest libraries you
-   can build. This is interesting when building for Android or a
-   restricted memory/space system.
+* `MinSizeRel`: this, normally, results in the smallest libraries you can build. This is interesting when building for Android or a restricted memory/space system.
 
 A list of available CMAKE_BUILD_TYPEs can be found by typing::
 
