@@ -55,6 +55,7 @@ namespace pcl
      *  \note The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can be predefined.
      *  \note
      *  \note typename: PointT: type of point used in pointcloud
+     *  \ingroup octree
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

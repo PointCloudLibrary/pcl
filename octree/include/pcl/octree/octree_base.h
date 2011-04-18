@@ -51,6 +51,7 @@ namespace pcl
      *  \note The tree depth defines the maximum amount of octree voxels / leaf nodes (should be initially defined).
      *  \note All leaf nodes are addressed by integer indices.
      *  \note Note: The tree depth equates to the bit length of the voxel indices.
+     *  \ingroup octree
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -427,25 +428,27 @@ namespace pcl
         {
           if (branchHasChild (branch_arg, childIdx_arg))
           {
-
             const OctreeNode* branchChild;
             branchChild = getBranchChild (branch_arg, childIdx_arg);
 
             switch (branchChild->getNodeType ())
             {
               case BRANCH_NODE:
-
                 // free child branch recursively
                 deleteBranch (*(OctreeBranch*)branchChild);
-                delete (branchChild);
+
+                // push unused branch to branch pool
+                unusedBranchesPool_.push_back ((OctreeBranch*)branchChild);
                 break;
 
               case LEAF_NODE:
-                delete (branchChild);
+
+                // push unused leaf to branch pool
+                unusedLeafsPool_.push_back ((OctreeLeaf*)branchChild);
                 break;
             }
 
-            // set branch child pointer to NULL - remove reference
+            // set branch child pointer to NULL
             setBranchChild (branch_arg, childIdx_arg, NULL);
           }
         }
@@ -484,7 +487,19 @@ namespace pcl
         inline void
         createBranch (OctreeBranch*& newBranchChild_arg)
         {
-          newBranchChild_arg = (OctreeBranch*)new OctreeBranch ();
+          if (!unusedBranchesPool_.size ())
+          {
+            // branch pool is empty
+            // we need to create a new octree branch class
+            newBranchChild_arg = (OctreeBranch*)new OctreeBranch ();
+          }
+          else
+          {
+            // reuse branch from branch pool
+            newBranchChild_arg = unusedBranchesPool_.back ();
+            unusedBranchesPool_.pop_back ();
+            branchReset (*newBranchChild_arg);
+          }
         }
 
         /** \brief Create and add a new leaf child to a branch class
@@ -495,9 +510,33 @@ namespace pcl
         inline void
         createLeafChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg, OctreeLeaf*& newLeafChild_arg)
         {
-          newLeafChild_arg = (OctreeLeaf*)new OctreeLeaf ();
-          newLeafChild_arg -> reset ();
+
+          if (!unusedLeafsPool_.size ())
+          {
+            // leaf pool is empty
+            // we need to create a new octree leaf class
+            newLeafChild_arg = (OctreeLeaf*)new OctreeLeaf ();
+          }
+          else
+          {
+            // reuse leaf node from branch pool
+            newLeafChild_arg = unusedLeafsPool_.back ();
+            unusedLeafsPool_.pop_back ();
+          }
+
+          newLeafChild_arg->reset ();
+
           setBranchChild (branch_arg, childIdx_arg, (OctreeNode*)newLeafChild_arg);
+
+        }
+
+        /** \brief Reset branch class
+         *  \param branch_arg: reference to octree branch class
+         * */
+        inline void
+        branchReset (OctreeBranch& branch_arg)
+        {
+          memset (branch_arg.subNodes_, 0, sizeof(branch_arg.subNodes_));
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -679,8 +718,11 @@ namespace pcl
         /** \brief Octree depth */
         unsigned int octreeDepth_;
 
-        /** \brief Global helper variable for newOctreeElementDataTQueue vector */
-        unsigned int octreeBranchSortHelper_;
+        /** \brief Vector pools of unused branch nodes   **/
+        std::vector<OctreeBranch*> unusedBranchesPool_;
+
+        /** \brief Vector pools of unused leaf nodes   **/
+        std::vector<LeafT*> unusedLeafsPool_;
 
       };
   }

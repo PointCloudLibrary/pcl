@@ -53,6 +53,7 @@ namespace pcl
      *  \note The tree depth defines the maximum amount of octree voxels / leaf nodes (should be initially defined).
      *  \note All leaf nodes are addressed by integer indices.
      *  \note Note: The tree depth equates to the bit length of the voxel indices.
+     *  \ingroup octree
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

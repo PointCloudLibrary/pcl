@@ -65,6 +65,7 @@ namespace pcl
      *  \note typename: PointT: type of point used in pointcloud
      *  \note typename: LeafT:  leaf node class (usuallz templated with integer indices values)
      *  \note typename: OctreeT: octree implementation ()
+     *  \ingroup octree
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
