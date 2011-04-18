@@ -10,6 +10,15 @@
 
 --- flann-1.6.8-src/CMakeLists.txt	2011-02-26 08:36:53.000000000 +0000
 +++ flann-1.6.8-src/CMakeLists.txt	2011-04-15 06:55:12.000000000 +0000
+@@ -19,7 +19,7 @@
+     "${PROJECT_BINARY_DIR}/uninstall_target.cmake")
+ 
+ if (NOT DEFINED CMAKE_INSTALL_PREFIX)
+-    set(CMAKE_INSTALL_PREFIX /usr/local)
++    set(CMAKE_INSTALL_PREFIX /usr)
+ endif()
+ 
+ # Set the build type.  Options are:
 @@ -116,3 +116,38 @@
  add_subdirectory( examples )
  add_subdirectory( test )
