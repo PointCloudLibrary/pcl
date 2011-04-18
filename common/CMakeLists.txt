@@ -91,7 +91,6 @@ if(build)
         include/pcl/common/impl/piecewise_linear_function.hpp
         include/pcl/common/impl/polynomial_calculations.hpp
         include/pcl/common/impl/rigid_transforms.hpp
-        include/pcl/common/impl/time.hpp
         include/pcl/common/impl/transform.hpp
         include/pcl/common/impl/transformation_from_correspondences.hpp
         include/pcl/common/impl/vector_average.hpp
