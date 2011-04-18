@@ -2,7 +2,8 @@
   \addtogroup common Module common
 
   \section secCommonPresentation Presentation
-	Common data structures used by all the PCL components.
+
+  Common data structures and methods used by the majority of PCL libraries.
 	
 	\section secCommonHistory History
 	- 1.0 current version
