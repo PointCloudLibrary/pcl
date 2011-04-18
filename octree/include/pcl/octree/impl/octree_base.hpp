@@ -72,7 +72,7 @@ namespace pcl
         // deallocate tree structure
         deleteTree ();
         delete (rootNode_);
-
+        poolCleanUp ();
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////

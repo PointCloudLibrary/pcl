@@ -539,6 +539,26 @@ namespace pcl
           memset (branch_arg.subNodes_, 0, sizeof(branch_arg.subNodes_));
         }
 
+        /** \brief Delete all branch nodes and leaf nodes from octree node pools
+         * */
+        inline void
+        poolCleanUp ()
+        {
+          // delete all branch instances from branch pool
+          while (!unusedBranchesPool_.empty ())
+          {
+            delete (unusedBranchesPool_.back ());
+            unusedBranchesPool_.pop_back ();
+          }
+
+          // delete all leaf instances from leaf pool
+          while (!unusedLeafsPool_.empty ())
+          {
+            delete (unusedLeafsPool_.back ());
+            unusedLeafsPool_.pop_back ();
+          }
+        }
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Recursive octree methods
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
