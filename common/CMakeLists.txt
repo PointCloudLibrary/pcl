@@ -79,6 +79,7 @@ if(build)
         include/pcl/common/transform.h
         include/pcl/common/transformation_from_correspondences.h
         include/pcl/common/vector_average.h
+        include/pcl/common/pca.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
     set(common_incs_impl
@@ -91,6 +92,7 @@ if(build)
         include/pcl/common/impl/piecewise_linear_function.hpp
         include/pcl/common/impl/polynomial_calculations.hpp
         include/pcl/common/impl/rigid_transforms.hpp
+        include/pcl/common/impl/pca.hpp
         include/pcl/common/impl/transform.hpp
         include/pcl/common/impl/transformation_from_correspondences.hpp
         include/pcl/common/impl/vector_average.hpp

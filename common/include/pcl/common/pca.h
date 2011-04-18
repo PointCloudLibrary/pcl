@@ -110,7 +110,7 @@ namespace pcl
       inline Eigen::Vector4f& 
       getMean () 
       {
-        if (!compute_done)
+        if (!compute_done_)
           PCL_ERROR ("[pcl::PCA::getMean] no results available");
         return (mean_);
       }
@@ -119,7 +119,7 @@ namespace pcl
       inline Eigen::MatrixXf& 
       getEigenVectors () 
       {
-        if (!compute_done)
+        if (!compute_done_)
           PCL_ERROR ("[pcl::PCA::getEigenVectors] no results available");
         return (eigenvectors_);
       }
@@ -128,7 +128,7 @@ namespace pcl
       inline Eigen::VectorXf& 
       getEigenValues ()
       {
-        if (!compute_done)
+        if (!compute_done_)
           PCL_ERROR ("[pcl::PCA::getEigenValues] no results available");
         return (eigenvalues_);
       }
@@ -137,7 +137,7 @@ namespace pcl
       inline Eigen::MatrixXf& 
       getCoefficients () 
       {
-        if (!compute_done)
+        if (!compute_done_)
           PCL_ERROR ("[pcl::PCA::getEigenValues] no results available");
         return (coefficients_);
       }

@@ -12,5 +12,12 @@ if(BUILD_TESTS)
         ${Boost_THREAD_LIBRARY})
     PCL_LINK_OPENMP(test_common)
     add_test(common_common test_common)
+
+    add_executable(test_pca test_pca.cpp)
+    PCL_ADD_OPENMP_FLAGS(test_pca)
+    target_link_libraries(test_pca ${GTEST_BOTH_LIBRARIES}
+        ${Boost_THREAD_LIBRARY})
+    PCL_LINK_OPENMP(test_pca)
+    add_test(common_pca test_pca)
 endif(BUILD_TESTS)
 
