@@ -80,6 +80,7 @@ gracefully if it can't be found. As PCL is modular one can request:
  	 include_directories(${PCL_INCLUDE_DIRS})
 
 When PCL is found, several related variables are set:
+
 * `PCL_FOUND`: set to 1 if PCL is found, otherwise unset
 * `PCL_INCLUDE_DIRS`: set to the paths to PCL installed headers
 * `PCL_LIBRARIES`: set to the file names of the built and installed PCL libraries
