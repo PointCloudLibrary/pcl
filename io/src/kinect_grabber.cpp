@@ -43,10 +43,8 @@
 
 namespace pcl
 {
-
   typedef union
   {
-
     struct /*anonymous*/
     {
       unsigned char Blue;
@@ -136,11 +134,11 @@ namespace pcl
         image_callback_registered_ = true;
       }
       device_->startImageStream ();
-      startSynchronization ();
+      //startSynchronization ();
     }
     else if (!image_required_ && device_->isImageStreamRunning ())
     {
-      stopSynchronization ();
+      //stopSynchronization ();
       device_->stopImageStream ();
     }
 
@@ -157,11 +155,11 @@ namespace pcl
         device_->setDepthRegistration (true);
       }
       device_->startDepthStream ();
-      startSynchronization ();
+      //startSynchronization ();
     }
     else if ( !depth_required_ && device_->isDepthStreamRunning ())
     {
-      stopSynchronization ();
+      //stopSynchronization ();
       device_->stopDepthStream ();
     }
     std::cerr << "streams alive: ";
@@ -248,11 +246,13 @@ namespace pcl
     }
 
     try {
-      if (device_id.empty ())
+      if (device_id[0] == '#')
       {
-        printf ("[%s] device_id is not set! Using first device.\n", getName ().c_str ());
-        device_ = driver.getDeviceByIndex (0);
+        unsigned index = atoi (device_id.c_str () + 1);
+        printf ("[%s] searching for device with index = %d\n", getName ().c_str (), index);
+        device_ = driver.getDeviceByIndex (index - 1);
       }
+#ifndef _WIN32
       else if (device_id.find ('@') != std::string::npos)
       {
         size_t pos = device_id.find ('@');
@@ -261,16 +261,16 @@ namespace pcl
         printf ("[%s] searching for device with bus@address = %d@%d\n", getName ().c_str (), bus, address);
         device_ = driver.getDeviceByAddress (bus, address);
       }
-      else if (device_id[0] == '#')
-      {
-        unsigned index = atoi (device_id.c_str () + 1);
-        printf ("[%s] searching for device with index = %d\n", getName ().c_str (), index);
-        device_ = driver.getDeviceByIndex (index - 1);
-      }
-      else
+      else if (!device_id.empty ())
       {
         printf ("[%s] searching for device with serial number = %s\n", getName ().c_str (), device_id.c_str ());
         device_ = driver.getDeviceBySerialNumber (device_id);
+      }
+#endif
+      else
+      {
+        printf ("[%s] device_id is not set or has unknown format: %s! Using first device.\n", getName ().c_str (), device_id.c_str ());
+        device_ = driver.getDeviceByIndex (0);
       }
     }
     catch (const openni_wrapper::OpenNIException& exception)
@@ -354,7 +354,7 @@ namespace pcl
 
     if (point_cloud_signal_->num_slots () > 0)
       point_cloud_signal_->operator()(convertToXYZPointCloud (depth_image));
-    
+
     return;
   }
 
