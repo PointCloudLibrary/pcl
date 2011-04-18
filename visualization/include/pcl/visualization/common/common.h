@@ -45,8 +45,11 @@ namespace pcl_visualization
     * \param r the resultant R color value
     * \param g the resultant G color value
     * \param b the resultant B color value
+    * \param min minimum value for the colors
+    * \param max maximum value for the colors
     */
-  void getRandomColors (double &r, double &g, double &b, double min = 0.2, double max = 2.8);
+  void 
+  getRandomColors (double &r, double &g, double &b, double min = 0.2, double max = 2.8);
 
   enum RenderingProperties
   {

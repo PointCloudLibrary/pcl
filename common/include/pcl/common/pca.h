@@ -57,9 +57,9 @@ namespace pcl
   {
     public:
     
-      /** Updating method flag
-       */
-      enum FLAG {
+      /** Updating method flag */
+      enum FLAG 
+      {
         /** keep the new basis vectors if possible */
         increase, 
         /** preserve subspace dimension */
@@ -67,44 +67,43 @@ namespace pcl
       };
     
     
-      /** Default Constructor
-       * @param basisOnly_ flag to compute only the PCA basis
-       */
-      PCA (bool _basis_only=false) : 
-      compute_done(false), basis_only(_basis_only) {}
+      /** \brief Default Constructor
+        * \param basis_only flag to compute only the PCA basis
+        */
+      PCA (bool basis_only = false) : compute_done_ (false), basis_only_ (basis_only) 
+      {}
       
       /** Constructor with direct computation
-       * @param X_ input m*n matrix (ie n vectors of R(m))
-       * @param dim_ subspace dimension in [1,min(m,n)] (default: min(m;n))
-       * @param basisOnly_ flag to compute only the PCA basis
+        * \param X input m*n matrix (ie n vectors of R(m))
+        * \param basis_only flag to compute only the PCA basis
        */
-      PCA(const pcl::PointCloud<PointT>& X_, bool _basis_only = false) : 
-        compute_done (false), basis_only (_basis_only)
+      PCA(const pcl::PointCloud<PointT>& X, bool basis_only = false) : 
+        compute_done_ (false), basis_only_ (basis_only)
       {
-        compute (X_);
+        compute (X);
       }
 
       /** Copy Constructor
-       * @param pca_ PCA object
-       */
-      PCA(PCA const & pca_) 
+        * \param pca_ PCA object
+        */
+      PCA (PCA const & pca_) 
       {
-        mean = pca_.mean;
-        eigenvalues = pca_.eigenvalues;
-        eigenvectors = pca_.eigenvectors;
-        coefficients = pca_.coefficients;
+        mean_         = pca_.mean;
+        eigenvalues_  = pca_.eigenvalues;
+        eigenvectors_ = pca_.eigenvectors;
+        coefficients_ = pca_.coefficients;
       }
 
-      /** assignment operator
-       * @param pca_ PCA object
-       */
-      inline PCA& operator= (PCA const & pca_) 
+      /** Assignment operator
+        * \param pca PCA object
+        */
+      inline PCA& operator= (PCA const & pca) 
       {
-        mean = pca_.mean;
-        eigenvalues = pca_.eigenvalues;
-        eigenvectors = pca_.eigenvectors;
-        coefficients = pca_.coefficients;
-        return *this;
+        mean_         = pca.mean;
+        eigenvalues_  = pca.eigenvalues;
+        eigenvectors_ = pca.eigenvectors;
+        coefficients_ = pca.coefficients;
+        return (*this);
       }
 
       /// Mean accessor
@@ -113,7 +112,7 @@ namespace pcl
       {
         if (!compute_done)
           PCL_ERROR ("[pcl::PCA::getMean] no results available");
-        return (mean);
+        return (mean_);
       }
 
       /// Eigen Vectors accessor
@@ -122,7 +121,7 @@ namespace pcl
       {
         if (!compute_done)
           PCL_ERROR ("[pcl::PCA::getEigenVectors] no results available");
-        return (eigenvectors);
+        return (eigenvectors_);
       }
       
       /// Eigen Values accessor
@@ -131,7 +130,7 @@ namespace pcl
       {
         if (!compute_done)
           PCL_ERROR ("[pcl::PCA::getEigenValues] no results available");
-        return (eigenvalues);
+        return (eigenvalues_);
       }
       
       /// Coefficients accessor
@@ -140,7 +139,7 @@ namespace pcl
       {
         if (!compute_done)
           PCL_ERROR ("[pcl::PCA::getEigenValues] no results available");
-        return (coefficients);
+        return (coefficients_);
       }
 
       /** Compute PCA using the batch algorithm
@@ -152,31 +151,31 @@ namespace pcl
       
       /** update PCA with a new point
         * \param input input point 
-        * \param f_ update flag
+        * \param flag update flag
         */
       inline void 
-      update (const PointT& input, FLAG f_=preserve);
+      update (const PointT& input, FLAG flag = preserve);
       
       /** Project point on the eigenspace.
         * \param input point from original dataset
-        * \return projection the point in eigen vectors space
+        * \param projection the point in eigen vectors space
         */
       inline void 
       project (const PointT& input, PointT& projection) const;
       
       /** Reconstruct point from its projection
         * \param projection point from eigenvector space
-        * \return input reconstructed point
+        * \param input reconstructed point
         */
       inline void 
       reconstruct (const PointT& projection, PointT& input) const;
       
     private:
-      bool compute_done;
-      bool basis_only;
-      Eigen::MatrixXf eigenvectors, coefficients;
-      Eigen::Vector4f mean;
-      Eigen::VectorXf eigenvalues;
+      bool compute_done_;
+      bool basis_only_;
+      Eigen::MatrixXf eigenvectors_, coefficients_;
+      Eigen::Vector4f mean_;
+      Eigen::VectorXf eigenvalues_;
   }; // class PCA
 } // namespace pcl
 

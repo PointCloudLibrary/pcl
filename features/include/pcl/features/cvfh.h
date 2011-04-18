@@ -63,7 +63,7 @@ namespace pcl
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename pcl::NormalEstimation<PointNormal, PointNormal> NormalEstimator;
-      typedef typename pcl::KdTree<PointNormal>::Ptr KdTreePtr;
+      typedef typename pcl::KdTreeFLANN<PointNormal>::Ptr KdTreePtr;
       typedef typename pcl::VFHEstimation<PointInT, PointNT, pcl::VFHSignature308> VFHEstimator;
 
       /** \brief Empty constructor. */
@@ -76,10 +76,9 @@ namespace pcl
 
       /** \brief Removes normals with high curvature caused by real edges or noisy data
         * \param cloud pointcloud to be filtered
-        * \param indices_in the indices of the remaining points after filtering
         * \param indices_out the indices of the points with higher curvature than threshold
+        * \param indices_in the indices of the remaining points after filtering
         * \param threshold threshold value for curvature
-        * \param indices the k-neighborhood point indices in the dataset
         */
       void
       filterNormalsWithHighCurvature (const pcl::PointCloud<PointNT> & cloud, 
@@ -176,8 +175,8 @@ namespace pcl
       extractEuclideanClustersSmooth (
           const pcl::PointCloud<pcl::PointNormal> &cloud, 
           const pcl::PointCloud<pcl::PointNormal> &normals,
-          float tolerance, const boost::shared_ptr<pcl::KdTree<pcl::PointNormal> > &tree,
-          std::vector<PointIndices> &clusters, double eps_angle,
+          float tolerance, const KdTreePtr &tree,
+          std::vector<pcl::PointIndices> &clusters, double eps_angle,
           unsigned int min_pts_per_cluster = 1,
           unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
 

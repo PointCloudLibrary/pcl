@@ -467,16 +467,6 @@ namespace pcl_visualization
       addLine (const P1 &pt1, const P2 &pt2, double r, double g, double b, 
                const std::string &id = "line", int viewport = 0);
 
-      /** \brief Add a line segment from two points to a group of lines. If the group doesn't 
-        * exist, it will get created.
-        * \param pt1 the first (start) point on the line
-        * \param pt2 the second (end) point on the line
-        * \param group_id the line group id/name (default: "line_group")
-        * \param viewport (optional) the id of the new viewport (default: 0)
-        */
-//!      template <typename P1, typename P2> inline bool addLineToGroup (const P1 &pt1, const P2 &pt2, const std::string &group_id = "line_group", int viewport = 0);
-
-      
       /** \brief Add a sphere shape from a point and a radius
         * \param center the center of the sphere
         * \param radius the radius of the sphere

@@ -146,9 +146,9 @@ namespace pcl
         return (padding_size_);
       }
 
-      /** \brief Set this only when using the k nearest neighbors search instead
-        *  of finding the point union
-        * \param The number of nearest neighbors we are looking for
+      /** \brief Set this only when using the k nearest neighbors search 
+        * instead of finding the point union
+        * \param k The number of nearest neighbors we are looking for
         */
       inline void 
       setNearestNeighborNum (int k)
@@ -326,13 +326,18 @@ namespace pcl
         * \param pt_union_indices the union of input data points within the cell and padding cells
         */
       Eigen::Vector3f
-      getVectorAtPoint (const Eigen::Vector4f &p, std::vector <int> &pt_union_indices);
+      getVectorAtPoint (const Eigen::Vector4f &p, 
+                        std::vector <int> &pt_union_indices);
+
       /** \brief Given the location of a point, get it's vector
         * \param p the coordinates of the input point
-        * \param pt_union_indices the union of input data points within the cell and padding cells
+        * \param k_indices the k nearest neighbors of the query point
+        * \param k_squared_distances the squared distances of the k nearest 
+        * neighbors to the query point
         */
       Eigen::Vector3f
-      getVectorAtPointKNN (const Eigen::Vector4f &p, std::vector<int> &k_indices, 
+      getVectorAtPointKNN (const Eigen::Vector4f &p, 
+                           std::vector<int> &k_indices, 
                            std::vector<float> &k_squared_distances);
 
       /** \brief Get the magnitude of the vector by summing up the distance.
@@ -360,14 +365,17 @@ namespace pcl
       getD2AtPoint (const Eigen::Vector4f &p, const vector3d &vec, 
                     const std::vector <int> &pt_union_indices);
 
-      /** \brief Test whether the edge is intersected by the surface by doing the dot
-        * product of the vector at two end points. Also test whether the edge is
-        * intersected by the maximum surface by examing the 2nd derivative of the
-        * intersection point \param 
+      /** \brief Test whether the edge is intersected by the surface by 
+        * doing the dot product of the vector at two end points. Also test 
+        * whether the edge is intersected by the maximum surface by examing 
+        * the 2nd derivative of the intersection point 
+        * \param end_pts the two points of the edge
+        * \param vect_at_end_pts 
         * \param pt_union_indices the union of input data points within the cell and padding cells
         */
       bool 
-      isIntersected (const Eigen::Vector4f (&end_pts)[2], vector3d vect_at_end_pts[2], 
+      isIntersected (const Eigen::Vector4f (&end_pts)[2], 
+                     vector3d vect_at_end_pts[2], 
                      std::vector <int> &pt_union_indices);
 
       /** \brief Find point where the edge intersects the surface.

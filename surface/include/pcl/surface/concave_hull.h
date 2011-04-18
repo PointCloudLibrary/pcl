@@ -75,8 +75,8 @@ namespace pcl
       void
       reconstruct (PointCloud &output);
 
-      /** \brief describe method here.. 
-        * \param alpha describe alpha here...
+      /** \brief describe method here.
+        * \param alpha describe alpha here.
         */
       inline void 
       setAlpha (double alpha)

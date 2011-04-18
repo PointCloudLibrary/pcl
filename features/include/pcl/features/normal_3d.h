@@ -174,7 +174,7 @@ namespace pcl
     * curvatures.
     *
     * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
-    * \ref NormalEstimationOMP and \ref NormalEstimationTBB for parallel implementations.
+    * \ref NormalEstimationOMP for a parallel implementation.
     * \author Radu Bogdan Rusu
     */
   template <typename PointInT, typename PointOutT>

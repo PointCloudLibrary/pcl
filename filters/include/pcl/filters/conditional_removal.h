@@ -313,7 +313,6 @@ namespace pcl
       ConditionAnd () : ConditionBase<PointT>() {}
   
       /** \brief Determine if a point meets this condition.  
-        * \param the nested condition to be added
         * \return whether the point meets this condition. 
         *
         * The ConditionAnd evaluates to true when ALL
@@ -339,7 +338,6 @@ namespace pcl
       ConditionOr () : ConditionBase<PointT>() {}
   
       /** \brief Determine if a point meets this condition.  
-        * \param the nested condition to be added
         * \return whether the point meets this condition. 
         *
         * The ConditionOr evaluates to true when ANY

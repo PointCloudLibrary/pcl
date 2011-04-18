@@ -135,7 +135,7 @@ namespace pcl
       nearestKSearch (const PointCloud &cloud, int index, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) = 0;
 
       /** \brief Search for k-nearest neighbors for the given query point.
-        * \param point the given query point
+        * \param p_q the given query point
         * \param k the number of neighbors to search for
         * \param k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
         * \param k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
@@ -171,7 +171,7 @@ namespace pcl
                                  std::vector<float> &k_sqr_distances, int max_nn = INT_MAX) const = 0;
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
-        * \param point the given query point
+        * \param p_q the given query point
         * \param radius the radius of the sphere bounding all of p_q's neighbors
         * \param k_indices the resultant indices of the neighboring points
         * \param k_sqr_distances the resultant squared distances to the neighboring points

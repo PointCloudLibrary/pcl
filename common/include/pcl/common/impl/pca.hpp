@@ -2,43 +2,48 @@
 #include "pcl/point_types.h"
 #include "pcl/common/centroid.h"
 
-template<typename PointT> 
-inline void pcl::PCA<PointT>::compute(const pcl::PointCloud<PointT>& cloud_) 
+///////////////////////////////////////////////////////////////////////////////
+template<typename PointT> inline void 
+pcl::PCA<PointT>::compute (const pcl::PointCloud<PointT>& cloud) 
 {
-  // compute mean and covariance
-  mean = Eigen::Vector4f::Zero();
-  compute3DCentroid(cloud_, mean);
+  // Compute mean and covariance
+  mean_ = Eigen::Vector4f::Zero ();
+  compute3DCentroid (cloud, mean_);
   Eigen::Matrix3f covariance;
-  pcl::computeCovarianceMatrixNormalized (cloud_, mean, covariance);
-  // compute demeanished cloud
+  pcl::computeCovarianceMatrixNormalized (cloud, mean_, covariance);
+  
+  // Compute demeanished cloud
   Eigen::MatrixXf cloud_demean;
-  demeanPointCloud (cloud_, mean, cloud_demean);
-  //compute eigen vectors and values
+  demeanPointCloud (cloud, mean_, cloud_demean);
+
+  // Compute eigen vectors and values
   Eigen::EigenSolver<Eigen::Matrix3f> evd (covariance, true);
-  eigenvalues = evd.eigenvalues().real();
-  eigenvectors = evd.eigenvectors().real();
-  if (!basis_only)  
-    coefficients = eigenvectors.transpose() * cloud_demean.topRows<3>();
-  compute_done = true;
+  eigenvalues_ = evd.eigenvalues ().real ();
+  eigenvectors_ = evd.eigenvectors ().real ();
+  if (!basis_only_)
+    coefficients_ = eigenvectors_.transpose() * cloud_demean.topRows<3>();
+  compute_done_ = true;
 }
 
-template<typename PointT>
-inline void pcl::PCA<PointT>::update(const PointT& input_point, FLAG f_) 
+///////////////////////////////////////////////////////////////////////////////
+template<typename PointT> inline void 
+pcl::PCA<PointT>::update (const PointT& input_point, FLAG flag) 
 {
-  if(!compute_done())
-    PCL_ERROR("[pcl::PCA::update] PCA computing still not done");
-  Eigen::Vector3f input(input_point.x, input_point.y, input_point.z);
-  const size_t n = eigenvectors.cols();// number of eigen vectors
-  Eigen::VectorXf meanp = (float(n) * (mean.head<3>() + input)) / float(n + 1);
-  Eigen::VectorXf a = eigenvectors.transpose() * (input - mean.head<3>());
-  Eigen::VectorXf y = (eigenvectors * a) + mean.head<3>();
+  if (!compute_done ())
+    PCL_ERROR ("[pcl::PCA::update] PCA computing still not done.");
+
+  Eigen::Vector3f input (input_point.x, input_point.y, input_point.z);
+  const size_t n = eigenvectors_.cols ();// number of eigen vectors
+  Eigen::VectorXf meanp = (float(n) * (mean_.head<3>() + input)) / float(n + 1);
+  Eigen::VectorXf a = eigenvectors_.transpose() * (input - mean_.head<3>());
+  Eigen::VectorXf y = (eigenvectors_ * a) + mean_.head<3>();
   Eigen::VectorXf h = y - input;
   if (h.norm() > 0) 
-    h.normalize();
+    h.normalize ();
   else
-    h.setZero();
-  float gamma = h.dot(input-mean.head<3>());
-  Eigen::MatrixXf D = Eigen::MatrixXf::Zero(a.size() + 1, a.size() + 1);
+    h.setZero ();
+  float gamma = h.dot(input - mean_.head<3>());
+  Eigen::MatrixXf D = Eigen::MatrixXf::Zero (a.size() + 1, a.size() + 1);
   D.block(0,0,n,n) = a * a.transpose();
   D /=  float(n)/float((n+1) * (n+1));
   for(std::size_t i=0; i < a.size(); i++) {
@@ -72,18 +77,19 @@ inline void pcl::PCA<PointT>::update(const PointT& input_point, FLAG f_)
     coefficients.col(coefficients.cols()-1) = (R.transpose() * a) + etha;
   }
   mean.head<3>() = meanp;
-  switch (f_) {
-  case increase:
-    if (eigenvectors.rows() >= eigenvectors.cols())
+  switch (flag) 
+  {
+    case increase:
+      if (eigenvectors.rows() >= eigenvectors.cols())
+        break;
+    case preserve:
+      if (!basis_only)
+        coefficients = coefficients.topRows(coefficients.rows() - 1);
+      eigenvectors = eigenvectors.leftCols(eigenvectors.cols() - 1);
+      eigenvalues.resize(eigenvalues.size()-1);
       break;
-  case preserve:
-    if (!basis_only)
-      coefficients = coefficients.topRows(coefficients.rows() - 1);
-    eigenvectors = eigenvectors.leftCols(eigenvectors.cols() - 1);
-    eigenvalues.resize(eigenvalues.size()-1);
-    break;
-  default:
-    PCL_ERROR("[pcl::PCA] unknown flag");
+    default:
+      PCL_ERROR("[pcl::PCA] unknown flag");
   }
 }
 

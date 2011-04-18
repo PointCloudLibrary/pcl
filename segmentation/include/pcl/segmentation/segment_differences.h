@@ -114,7 +114,7 @@ namespace pcl
       /** \brief Set the maximum distance tolerance (squared) between corresponding
         * points in the two input datasets.
         *
-        * \param threshold the squared distance tolerance as a measure in L2 Euclidean space
+        * \param sqr_threshold the squared distance tolerance as a measure in L2 Euclidean space
         */
       inline void 
       setDistanceThreshold (double sqr_threshold) { distance_threshold_ = sqr_threshold; }

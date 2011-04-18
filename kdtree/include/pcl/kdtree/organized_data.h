@@ -69,13 +69,27 @@ namespace pcl
 
       inline Ptr makeShared () const { return Ptr (new OrganizedDataIndex<PointT> (*this)); } 
 
-      // The following methods will not be implemented
-      int nearestKSearch (const PointT &p_q, int k, std::vector<int> &k_indices, std::vector<float> &k_distances)
+      /** \brief Method not implemented
+        * \param p_q
+        * \param k
+        * \param k_indices
+        * \param k_distances
+        */
+      int 
+      nearestKSearch (const PointT &p_q, int k, std::vector<int> &k_indices, std::vector<float> &k_distances)
       {
         PCL_ERROR ("%s: Method not implemented!", __PRETTY_FUNCTION__); return (false);
       }
-      int radiusSearch (const PointT &p_q, double radius, std::vector<int> &k_indices,
-                                std::vector<float> &k_distances, int max_nn = INT_MAX) const
+      /** \brief Method not implemented
+        * \param p_q
+        * \param radius
+        * \param k_indices
+        * \param k_distances
+        * \param max_nn
+        */
+      int 
+      radiusSearch (const PointT &p_q, double radius, std::vector<int> &k_indices,
+                    std::vector<float> &k_distances, int max_nn = INT_MAX) const
       {
         PCL_ERROR ("%s: Method not implemented!", __PRETTY_FUNCTION__); return (false);
       }

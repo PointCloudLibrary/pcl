@@ -46,8 +46,8 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmooth (
     const pcl::PointCloud<pcl::PointNormal> &cloud, 
     const pcl::PointCloud<pcl::PointNormal> &normals,
-    float tolerance, const boost::shared_ptr<pcl::KdTree<pcl::PointNormal> > &tree,
-    std::vector<pcl::PointIndices> &clusters, double eps_angle,
+    float tolerance, const KdTreePtr &tree,
+    std::vector<PointIndices> &clusters, double eps_angle,
     unsigned int min_pts_per_cluster,
     unsigned int max_pts_per_cluster)
 {
