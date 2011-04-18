@@ -780,6 +780,15 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnChar ()
         Superclass::OnChar ();
       break;
     }
+    // Quit doesn't seem to work 
+    case 'q': case 'Q':
+    {
+      // Close the window
+      Interactor->GetRenderWindow ()->Finalize ();
+      // Stop the interactor
+      Interactor->TerminateApp ();
+      break;
+    }
     // Switch representation to wireframe
     default:
     {
