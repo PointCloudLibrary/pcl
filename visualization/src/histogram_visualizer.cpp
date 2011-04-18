@@ -228,7 +228,7 @@ pcl_visualization::PCLHistogramVisualizer::addFeatureHistogram (
   RenWinInteractMap::iterator am_it = wins_.find (id);
   if (am_it != wins_.end ())
   {
-    terminal_tools::print_error ("[addFeatureHistogram] A window with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_error ("[addFeatureHistogram] A window with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -244,7 +244,7 @@ pcl_visualization::PCLHistogramVisualizer::addFeatureHistogram (
   int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1)
   {
-    terminal_tools::print_error ("[addFeatureHistogram] Invalid field (%s) given!", field_name.c_str ());
+    pcl::console::print_error ("[addFeatureHistogram] Invalid field (%s) given!", field_name.c_str ());
     return (false);
   }
   xy_array->SetNumberOfTuples (cloud.fields[field_idx].count);

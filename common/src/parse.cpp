@@ -36,10 +36,12 @@
  */
 
 #include <stdio.h>
-#include <pcl/terminal_tools/parse.h>
-#include <pcl/terminal_tools/print.h>
+#include <pcl/console/parse.h>
+#include <pcl/console/print.h>
 
-int terminal_tools::find_argument (int argc, char** argv, const char* argument_name)
+////////////////////////////////////////////////////////////////////////////////
+int 
+pcl::console::find_argument (int argc, char** argv, const char* argument_name)
 {
   for (int i = 1; i < argc; ++i)
   {
@@ -53,16 +55,8 @@ int terminal_tools::find_argument (int argc, char** argv, const char* argument_n
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for a specific given command line argument. Returns the value 
- * sent as a string.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the string value to search for
- * \param val the resultant value
- */
 int
-terminal_tools::parse_argument (int argc, char** argv, const char* str, std::string &val)
+pcl::console::parse_argument (int argc, char** argv, const char* str, std::string &val)
 {
   int index = find_argument (argc, argv, str) + 1;
   if (index > 0 && index < argc )
@@ -72,16 +66,8 @@ terminal_tools::parse_argument (int argc, char** argv, const char* str, std::str
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for a specific given command line argument. Returns the value 
- * sent as a boolean.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the string value to search for
- * \param val the resultant value
- */
 int
-terminal_tools::parse_argument (int argc, char** argv, const char* str, bool &val)
+pcl::console::parse_argument (int argc, char** argv, const char* str, bool &val)
 {
   int index = find_argument (argc, argv, str) + 1;
 
@@ -92,16 +78,8 @@ terminal_tools::parse_argument (int argc, char** argv, const char* str, bool &va
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for a specific given command line argument. Returns the value 
- * sent as a double.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the string value to search for
- * \param val the resultant value
- */
 int
-terminal_tools::parse_argument (int argc, char** argv, const char* str, double &val)
+pcl::console::parse_argument (int argc, char** argv, const char* str, double &val)
 {
   int index = find_argument (argc, argv, str) + 1;
 
@@ -112,16 +90,8 @@ terminal_tools::parse_argument (int argc, char** argv, const char* str, double &
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for a specific given command line argument. Returns the value 
- * sent as an int.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the string value to search for
- * \param val the resultant value
- */
 int
-terminal_tools::parse_argument (int argc, char** argv, const char* str, int &val)
+pcl::console::parse_argument (int argc, char** argv, const char* str, int &val)
 {
   int index = find_argument (argc, argv, str) + 1;
 
@@ -132,16 +102,8 @@ terminal_tools::parse_argument (int argc, char** argv, const char* str, int &val
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for a specific given command line argument. Returns the value 
- * sent as an unsigned int.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the string value to search for
- * \param val the resultant value
- */
 int
-terminal_tools::parse_argument (int argc, char** argv, const char* str, unsigned int &val)
+pcl::console::parse_argument (int argc, char** argv, const char* str, unsigned int &val)
 {
   int index = find_argument (argc, argv, str) + 1;
 
@@ -152,15 +114,8 @@ terminal_tools::parse_argument (int argc, char** argv, const char* str, unsigned
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse command line arguments for file names. Returns a vector with 
- * file names indices.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param extension to search for
- */
 std::vector<int>
-terminal_tools::parse_file_extension_argument (int argc, char** argv, const std::string &extension)
+pcl::console::parse_file_extension_argument (int argc, char** argv, const std::string &extension)
 {
   std::vector<int> indices;
   for (int i = 1; i < argc; ++i)
@@ -189,17 +144,8 @@ terminal_tools::parse_file_extension_argument (int argc, char** argv, const std:
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for specific given command line arguments (2x values comma 
- * separated). Returns the values sent as doubles.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the command line argument to search for
- * \param f the first output value
- * \param s the second output value
- */
 int
-terminal_tools::parse_2x_arguments (int argc, char** argv, const char* str, double &f, double &s, bool debug)
+pcl::console::parse_2x_arguments (int argc, char** argv, const char* str, double &f, double &s, bool debug)
 {
   for (int i = 1; i < argc; ++i)
   {
@@ -223,17 +169,8 @@ terminal_tools::parse_2x_arguments (int argc, char** argv, const char* str, doub
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for specific given command line arguments (2x values comma 
- * separated). Returns the values sent as ints.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the command line argument to search for
- * \param f the first output value
- * \param s the second output value
- */
 int
-terminal_tools::parse_2x_arguments (int argc, char** argv, const char* str, int &f, int &s, bool debug)
+pcl::console::parse_2x_arguments (int argc, char** argv, const char* str, int &f, int &s, bool debug)
 {
   for (int i = 1; i < argc; ++i)
   {
@@ -257,18 +194,8 @@ terminal_tools::parse_2x_arguments (int argc, char** argv, const char* str, int 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for specific given command line arguments (3x values comma 
- * separated). Returns the values sent as doubles.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the command line argument to search for
- * \param f the first output value
- * \param s the second output value
- * \param t the third output value
- */
 int
-terminal_tools::parse_3x_arguments (int argc, char** argv, const char* str, double &f, double &s, double &t, bool debug)
+pcl::console::parse_3x_arguments (int argc, char** argv, const char* str, double &f, double &s, double &t, bool debug)
 {
   for (int i = 1; i < argc; ++i)
   {
@@ -293,18 +220,8 @@ terminal_tools::parse_3x_arguments (int argc, char** argv, const char* str, doub
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for specific given command line arguments (3x values comma 
- * separated). Returns the values sent as ints.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the command line argument to search for
- * \param f the first output value
- * \param s the second output value
- * \param t the third output value
- */
 int
-terminal_tools::parse_3x_arguments (int argc, char** argv, const char* str, int &f, int &s, int &t, bool debug)
+pcl::console::parse_3x_arguments (int argc, char** argv, const char* str, int &f, int &s, int &t, bool debug)
 {
   for (int i = 1; i < argc; ++i)
   {
@@ -329,16 +246,8 @@ terminal_tools::parse_3x_arguments (int argc, char** argv, const char* str, int 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for specific given command line arguments (multiple occurances 
- * of the same command line parameter). Returns the values sent as a vector.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the command line argument to search for
- * \param values the resultant output values
- */
 bool
-terminal_tools::parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<int> &values)
+pcl::console::parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<int> &values)
 {
   for (int i = 1; i < argc; ++i)
   {
@@ -356,16 +265,8 @@ terminal_tools::parse_multiple_arguments (int argc, char** argv, const char* str
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for specific given command line arguments (multiple occurances 
- * of the same command line parameter). Returns the values sent as a vector.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the command line argument to search for
- * \param values the resultant output values
- */
 bool
-terminal_tools::parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<double> &values)
+pcl::console::parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<double> &values)
 {
   for (int i = 1; i < argc; ++i)
   {
@@ -383,16 +284,8 @@ terminal_tools::parse_multiple_arguments (int argc, char** argv, const char* str
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for specific given command line arguments (multiple occurances 
- * of the same command line parameter). Returns the values sent as a vector.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the command line argument to search for
- * \param values the resultant output values
- */
 bool
-terminal_tools::parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<std::string> &values)
+pcl::console::parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<std::string> &values)
 {
   for (int i = 1; i < argc; ++i)
   {
@@ -409,18 +302,8 @@ terminal_tools::parse_multiple_arguments (int argc, char** argv, const char* str
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for specific given command line arguments (multiple occurances 
- * of 2x argument groups, separated by commas). Returns 2 vectors holding the
- * given values.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the command line argument to search for
- * \param values_f the first vector of output values
- * \param values_s the second vector of output values
- */
 bool
-terminal_tools::parse_multiple_2x_arguments (int argc, char** argv, const char* str, std::vector<double> &values_f, std::vector<double> &values_s)
+pcl::console::parse_multiple_2x_arguments (int argc, char** argv, const char* str, std::vector<double> &values_f, std::vector<double> &values_s)
 {
   double f, s;
   for (int i = 1; i < argc; ++i)
@@ -449,19 +332,8 @@ terminal_tools::parse_multiple_2x_arguments (int argc, char** argv, const char* 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-/** \brief Parse for specific given command line arguments (multiple occurances 
- * of 3x argument groups, separated by commas). Returns 3 vectors holding the
- * given values.
- * \param argc the number of command line arguments
- * \param argv the command line arguments
- * \param str the command line argument to search for
- * \param values_f the first vector of output values
- * \param values_s the second vector of output values
- * \param values_t the third vector of output values
- */
 bool
-terminal_tools::parse_multiple_3x_arguments (int argc, char** argv, const char* str,
+pcl::console::parse_multiple_3x_arguments (int argc, char** argv, const char* str,
                                              std::vector<double> &values_f,
                                              std::vector<double> &values_s,
                                              std::vector<double> &values_t)

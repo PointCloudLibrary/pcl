@@ -34,17 +34,11 @@
  * $Id$
  *
  */
-#include <pcl/terminal_tools/print.h>
+#include <pcl/console/print.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Change the text color (on either stdout or stderr) with an attr:fg:bg
-  * \param stream the output stream (stdout, stderr, etc)
-  * \param attribute the text attribute
-  * \param fg the foreground color
-  * \param bg the background color
-  */
 void
-  terminal_tools::change_text_color (FILE *stream, int attribute, int fg, int bg)
+pcl::console::change_text_color (FILE *stream, int attribute, int fg, int bg)
 {
   char command[13];
   // Command is the control command to the terminal
@@ -53,13 +47,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Change the text color (on either stdout or stderr) with an attr:fg
-  * \param stream the output stream (stdout, stderr, etc)
-  * \param attribute the text attribute
-  * \param fg the foreground color
-  */
 void
-  terminal_tools::change_text_color (FILE *stream, int attribute, int fg)
+pcl::console::change_text_color (FILE *stream, int attribute, int fg)
 {
   char command[13];
   // Command is the control command to the terminal
@@ -68,11 +57,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Reset the text color (on either stdout or stderr) to its original state
-  * \param stream the output stream (stdout, stderr, etc)
-  */
 void
-  terminal_tools::reset_text_color (FILE *stream)
+pcl::console::reset_text_color (FILE *stream)
 {
   char command[13];
   // Command is the control command to the terminal
@@ -81,14 +67,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Print a message on stream with colors
-  * \param stream the output stream (stdout, stderr, etc)
-  * \param attribute the text attribute
-  * \param fg the foreground color
-  * \param format the message
-  */
 void
-  terminal_tools::print_color (FILE *stream, int attr, int fg, const char *format, ...)
+pcl::console::print_color (FILE *stream, int attr, int fg, const char *format, ...)
 {
   change_text_color (stream, attr, fg);
   va_list ap;
@@ -101,11 +81,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Print an info message on stream with colors
-  * \param format the message
-  */
 void
-  terminal_tools::print_info (const char *format, ...)
+pcl::console::print_info (const char *format, ...)
 {
   reset_text_color (stdout);
 
@@ -117,12 +94,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Print an info message on stream with colors
-  * \param stream the output stream (stdout, stderr, etc)
-  * \param format the message
-  */
 void
-  terminal_tools::print_info (FILE *stream, const char *format, ...)
+pcl::console::print_info (FILE *stream, const char *format, ...)
 {
   reset_text_color (stream);
 
@@ -134,11 +107,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Print a highlighted info message on stream with colors
-  * \param format the message
-  */
 void
-  terminal_tools::print_highlight (const char *format, ...)
+pcl::console::print_highlight (const char *format, ...)
 {
   change_text_color (stdout, TT_BRIGHT, TT_GREEN);
   fprintf (stdout, "> ");
@@ -152,12 +122,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Print a highlighted info message on stream with colors
-  * \param stream the output stream (stdout, stderr, etc)
-  * \param format the message
-  */
 void
-  terminal_tools::print_highlight (FILE *stream, const char *format, ...)
+pcl::console::print_highlight (FILE *stream, const char *format, ...)
 {
   change_text_color (stream, TT_BRIGHT, TT_GREEN);
   fprintf (stream, "> ");
@@ -171,11 +137,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Print an error message on stream with colors
-  * \param format the message
-  */
 void
-  terminal_tools::print_error (const char *format, ...)
+pcl::console::print_error (const char *format, ...)
 {
   change_text_color (stderr, TT_RESET, TT_RED);
   va_list ap;
@@ -188,12 +151,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Print an error message on stream with colors
-  * \param stream the output stream (stdout, stderr, etc)
-  * \param format the message
-  */
 void
-  terminal_tools::print_error (FILE *stream, const char *format, ...)
+pcl::console::print_error (FILE *stream, const char *format, ...)
 {
   change_text_color (stream, TT_RESET, TT_RED);
   va_list ap;
@@ -206,11 +165,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Print a warning message on stream with colors
-  * \param format the message
-  */
 void
-  terminal_tools::print_warn (const char *format, ...)
+pcl::console::print_warn (const char *format, ...)
 {
   change_text_color (stderr, TT_RESET, TT_YELLOW);
   va_list ap;
@@ -223,12 +179,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Print a warning message on stream with colors
-  * \param stream the output stream (stdout, stderr, etc)
-  * \param format the message
-  */
 void
-  terminal_tools::print_warn (FILE *stream, const char *format, ...)
+pcl::console::print_warn (FILE *stream, const char *format, ...)
 {
   change_text_color (stream, TT_RESET, TT_YELLOW);
   va_list ap;
@@ -241,11 +193,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Print a value message on stream with colors
-  * \param format the message
-  */
 void
-  terminal_tools::print_value (const char *format, ...)
+pcl::console::print_value (const char *format, ...)
 {
   change_text_color (stdout, TT_RESET, TT_CYAN);
   va_list ap;
@@ -258,12 +207,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Print a value message on stream with colors
-  * \param stream the output stream (stdout, stderr, etc)
-  * \param format the message
-  */
 void
-  terminal_tools::print_value (FILE *stream, const char *format, ...)
+pcl::console::print_value (FILE *stream, const char *format, ...)
 {
   change_text_color (stream, TT_RESET, TT_CYAN);
   va_list ap;
@@ -276,11 +221,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Print a value message on stream with colors
-  * \param format the message
-  */
 void
-  terminal_tools::print_debug (const char *format, ...)
+pcl::console::print_debug (const char *format, ...)
 {
   change_text_color (stdout, TT_RESET, TT_GREEN);
   va_list ap;
@@ -293,12 +235,8 @@ void
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** \brief Print a value message on stream with colors
-  * \param stream the output stream (stdout, stderr, etc)
-  * \param format the message
-  */
 void
-  terminal_tools::print_debug (FILE *stream, const char *format, ...)
+pcl::console::print_debug (FILE *stream, const char *format, ...)
 {
   change_text_color (stream, TT_RESET, TT_GREEN);
   va_list ap;

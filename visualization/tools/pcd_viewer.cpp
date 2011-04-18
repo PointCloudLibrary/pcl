@@ -42,22 +42,22 @@
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/histogram_visualizer.h>
-#include <pcl/terminal_tools/print.h>
-#include <pcl/terminal_tools/parse.h>
-#include <pcl/terminal_tools/time.h>
+#include <pcl/console/print.h>
+#include <pcl/console/parse.h>
+#include <pcl/console/time.h>
 
-using terminal_tools::print_color;
-using terminal_tools::print_error;
-using terminal_tools::print_error;
-using terminal_tools::print_warn;
-using terminal_tools::print_info;
-using terminal_tools::print_debug;
-using terminal_tools::print_value;
-using terminal_tools::print_highlight;
-using terminal_tools::TT_BRIGHT;
-using terminal_tools::TT_RED;
-using terminal_tools::TT_GREEN;
-using terminal_tools::TT_BLUE;
+using pcl::console::print_color;
+using pcl::console::print_error;
+using pcl::console::print_error;
+using pcl::console::print_warn;
+using pcl::console::print_info;
+using pcl::console::print_debug;
+using pcl::console::print_value;
+using pcl::console::print_highlight;
+using pcl::console::TT_BRIGHT;
+using pcl::console::TT_RED;
+using pcl::console::TT_GREEN;
+using pcl::console::TT_BLUE;
 
 typedef pcl_visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
 typedef ColorHandler::Ptr ColorHandlerPtr;
@@ -137,33 +137,33 @@ int
 
   // Command line parsing
   double bcolor[3] = {0, 0, 0};
-  terminal_tools::parse_3x_arguments (argc, argv, "-bc", bcolor[0], bcolor[1], bcolor[2]);
+  pcl::console::parse_3x_arguments (argc, argv, "-bc", bcolor[0], bcolor[1], bcolor[2]);
 
   std::vector<double> fcolor_r, fcolor_b, fcolor_g;
-  bool fcolorparam = terminal_tools::parse_multiple_3x_arguments (argc, argv, "-fc", fcolor_r, fcolor_g, fcolor_b);
+  bool fcolorparam = pcl::console::parse_multiple_3x_arguments (argc, argv, "-fc", fcolor_r, fcolor_g, fcolor_b);
 
   std::vector<int> psize;
-  terminal_tools::parse_multiple_arguments (argc, argv, "-ps", psize);
+  pcl::console::parse_multiple_arguments (argc, argv, "-ps", psize);
 
   std::vector<double> opaque;
-  terminal_tools::parse_multiple_arguments (argc, argv, "-opaque", opaque);
+  pcl::console::parse_multiple_arguments (argc, argv, "-opaque", opaque);
 
   int mview = 0;
-  terminal_tools::parse_argument (argc, argv, "-multiview", mview);
+  pcl::console::parse_argument (argc, argv, "-multiview", mview);
 
   int normals = 0;
-  terminal_tools::parse_argument (argc, argv, "-normals", normals);
+  pcl::console::parse_argument (argc, argv, "-normals", normals);
   double normals_scale = NORMALS_SCALE;
-  terminal_tools::parse_argument (argc, argv, "-normals_scale", normals_scale);
+  pcl::console::parse_argument (argc, argv, "-normals_scale", normals_scale);
 
   int pc = 0;
-  terminal_tools::parse_argument (argc, argv, "-pc", pc);
+  pcl::console::parse_argument (argc, argv, "-pc", pc);
   double pc_scale = PC_SCALE;
-  terminal_tools::parse_argument (argc, argv, "-pc_scale", pc_scale);
+  pcl::console::parse_argument (argc, argv, "-pc_scale", pc_scale);
 
   // Parse the command line arguments for .pcd files
   std::vector<int> p_file_indices;
-  p_file_indices = terminal_tools::parse_file_extension_argument (argc, argv, ".pcd");
+  p_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
   if (p_file_indices.size () == 0)
   {
     print_error ("No .PCD file given. Nothing to visualize.\n");
@@ -205,7 +205,7 @@ int
   int k = 0, l = 0, viewport = 0;
   // Load the data files
   pcl::PCDReader pcd;
-  terminal_tools::TicToc tt;
+  pcl::console::TicToc tt;
   ColorHandlerPtr color_handler;
   GeometryHandlerPtr geometry_handler;
 
@@ -374,11 +374,11 @@ int
     p->setBackgroundColor (bcolor[0], bcolor[1], bcolor[2]);
   // Read axes settings
   double axes  = 0.0;
-  terminal_tools::parse_argument (argc, argv, "-ax", axes);
+  pcl::console::parse_argument (argc, argv, "-ax", axes);
   if (axes != 0.0 && p)
   {
     double ax_x = 0.0, ax_y = 0.0, ax_z = 0.0;
-    terminal_tools::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z, false);
+    pcl::console::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z, false);
     // Draw XYZ axes if command-line enabled
     p->addCoordinateSystem (axes, ax_x, ax_y, ax_z);
   }

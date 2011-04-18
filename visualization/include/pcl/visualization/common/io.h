@@ -47,7 +47,7 @@
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/terminal_tools/print.h>
+#include <pcl/console/print.h>
 
 namespace pcl_visualization
 {

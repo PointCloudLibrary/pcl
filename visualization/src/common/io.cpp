@@ -104,7 +104,7 @@ bool
   if (cleaner->GetOutput ()->GetNumberOfPoints () != data->GetNumberOfPoints ())
   {
     int nr_pts_pruned = data->GetNumberOfPoints () - cleaner->GetOutput ()->GetNumberOfPoints ();
-    terminal_tools::print_highlight ("Number of points pruned: "); terminal_tools::print_value ("%d\n", nr_pts_pruned);
+    pcl::console::print_highlight ("Number of points pruned: "); pcl::console::print_value ("%d\n", nr_pts_pruned);
   }
 
   // Attempting to load all Point Cloud data input files (using the actor name)...
@@ -122,16 +122,16 @@ bool
     // Strip the ".pcd-X"
     file_name = file_name.substr (0, position) + ".pcd";
 
-    terminal_tools::print_debug ("  Load: %s ... ", file_name.c_str ());
+    pcl::console::print_debug ("  Load: %s ... ", file_name.c_str ());
     // Assume the name of the actor is the name of the file
     sensor_msgs::PointCloud2 cloud;
     if (pcl::io::loadPCDFile (file_name, cloud) == -1)
     {
-      terminal_tools::print_error (stdout, "[failed]\n");
+      pcl::console::print_error (stdout, "[failed]\n");
       return (false);
     }
     else
-      terminal_tools::print_debug ("[success]\n");
+      pcl::console::print_debug ("[success]\n");
  
     pcl::PointCloud<pcl::PointXYZ> cloud_xyz;
     pcl::fromROSMsg (cloud, cloud_xyz);
@@ -144,15 +144,15 @@ bool
     pcl::copyPointCloud (cloud, indices, cloud_out);
     std::stringstream ss;
     ss << out_file << i++ << ".pcd";
-    terminal_tools::print_debug ("  Save: %s ... ", ss.str ().c_str ());
+    pcl::console::print_debug ("  Save: %s ... ", ss.str ().c_str ());
     if (pcl::io::savePCDFile (ss.str (), cloud_out, Eigen::Vector4f::Zero (),
                               Eigen::Quaternionf::Identity (), true) == -1)
     {
-      terminal_tools::print_error (stdout, "[failed]\n");
+      pcl::console::print_error (stdout, "[failed]\n");
       return (false);
     }
     else
-      terminal_tools::print_debug ("[success]\n");
+      pcl::console::print_debug ("[success]\n");
   }
 
   return (true);

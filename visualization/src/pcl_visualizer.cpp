@@ -338,7 +338,7 @@ pcl_visualization::PCLVisualizer::removePointCloud (const std::string &id, int v
 
   if (am_it == cloud_actor_map_.end ())
   {
-    //terminal_tools::print_warn ("[removePointCloud] Could not find any PointCloud datasets with id <%s>!\n", id.c_str ());
+    //pcl::console::print_warn ("[removePointCloud] Could not find any PointCloud datasets with id <%s>!\n", id.c_str ());
     return (false);
   }
 
@@ -364,7 +364,7 @@ pcl_visualization::PCLVisualizer::removeShape (const std::string &id, int viewpo
 
   if (am_it == shape_actor_map_.end ())
   {
-    //terminal_tools::print_warn ("[removeSape] Could not find any shape with id <%s>!\n", id.c_str ());
+    //pcl::console::print_warn ("[removeSape] Could not find any shape with id <%s>!\n", id.c_str ());
     return (false);
   }
 
@@ -386,7 +386,7 @@ pcl_visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::P
 {
   if (pcs->points.size () != cloud->points.size () || normals->points.size () != cloud->points.size ())
   {
-    terminal_tools::print_error ("[addPointCloudPrincipalCurvatures] The number of points differs from the number of principal curvatures/normals!\n");
+    pcl::console::print_error ("[addPointCloudPrincipalCurvatures] The number of points differs from the number of principal curvatures/normals!\n");
     return (false);
   }
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -394,7 +394,7 @@ pcl_visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::P
 
   if (am_it != cloud_actor_map_.end ())
   {
-    terminal_tools::print_warn ("[addPointCloudPrincipalCurvatures] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn ("[addPointCloudPrincipalCurvatures] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -491,7 +491,7 @@ pcl_visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<pcl::Poin
 
   if (am_it != cloud_actor_map_.end ())
   {
-    terminal_tools::print_warn ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
   vtkSmartPointer<vtkPolyData> polydata;
@@ -707,7 +707,7 @@ pcl_visualization::PCLVisualizer::setPointCloudRenderingProperties (
 
   if (am_it == cloud_actor_map_.end ())
   {
-    terminal_tools::print_error ("[setPointCloudRenderingProperties] Could not find any PointCloud datasets with id <%s>!\n", id.c_str ());
+    pcl::console::print_error ("[setPointCloudRenderingProperties] Could not find any PointCloud datasets with id <%s>!\n", id.c_str ());
     return (false);
   }
   // Get the actor pointer
@@ -723,7 +723,7 @@ pcl_visualization::PCLVisualizer::setPointCloudRenderingProperties (
     }
     default:
     {
-      terminal_tools::print_error ("[setPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
+      pcl::console::print_error ("[setPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
       return (false);
     }
   }
@@ -764,7 +764,7 @@ pcl_visualization::PCLVisualizer::getPointCloudRenderingProperties (int property
     }
     default:
     {
-      terminal_tools::print_error ("[getPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
+      pcl::console::print_error ("[getPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
       return (false);
     }
   }
@@ -781,7 +781,7 @@ pcl_visualization::PCLVisualizer::setPointCloudRenderingProperties (
 
   if (am_it == cloud_actor_map_.end ())
   {
-    terminal_tools::print_error ("[setPointCloudRenderingProperties] Could not find any PointCloud datasets with id <%s>!\n", id.c_str ());
+    pcl::console::print_error ("[setPointCloudRenderingProperties] Could not find any PointCloud datasets with id <%s>!\n", id.c_str ());
     return (false);
   }
   // Get the actor pointer
@@ -809,7 +809,7 @@ pcl_visualization::PCLVisualizer::setPointCloudRenderingProperties (
     }
     default:
     {
-      terminal_tools::print_error ("[setPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
+      pcl::console::print_error ("[setPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
       return (false);
     }
   }
@@ -826,7 +826,7 @@ pcl_visualization::PCLVisualizer::setShapeRenderingProperties (
 
   if (am_it == shape_actor_map_.end ())
   {
-    terminal_tools::print_error ("[setShapeRenderingProperties] Could not find any shape with id <%s>!\n", id.c_str ());
+    pcl::console::print_error ("[setShapeRenderingProperties] Could not find any shape with id <%s>!\n", id.c_str ());
     return (false);
   }
   // Get the actor pointer
@@ -856,7 +856,7 @@ pcl_visualization::PCLVisualizer::setShapeRenderingProperties (
     }
     default:
     {
-      terminal_tools::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
+      pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
       return (false);
     }
   }
@@ -940,7 +940,7 @@ pcl_visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
       // look for '/' as a separator
       if (camera.size () != 6)
       {
-        terminal_tools::print_error ("[PCLVisualizer::getCameraParameters] Camera parameters given, but with an invalid number of options (%zu vs 6)!\n", camera.size ());
+        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Camera parameters given, but with an invalid number of options (%zu vs 6)!\n", camera.size ());
         return (false);
       }
 
@@ -956,7 +956,7 @@ pcl_visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
       boost::split (clip_st, clip_str, boost::is_any_of (","), boost::token_compress_on);
       if (clip_st.size () != 2)
       {
-        terminal_tools::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera clipping angle!\n");
+        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera clipping angle!\n");
         return (false);
       }
       camera_.clip[0] = atof (clip_st.at (0).c_str ());
@@ -966,7 +966,7 @@ pcl_visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
       boost::split (focal_st, focal_str, boost::is_any_of (","), boost::token_compress_on);
       if (focal_st.size () != 3)
       {
-        terminal_tools::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera focal point!\n");
+        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera focal point!\n");
         return (false);
       }
       camera_.focal[0] = atof (focal_st.at (0).c_str ());
@@ -977,7 +977,7 @@ pcl_visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
       boost::split (pos_st, pos_str, boost::is_any_of (","), boost::token_compress_on);
       if (pos_st.size () != 3)
       {
-        terminal_tools::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera position!\n");
+        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera position!\n");
         return (false);
       }
       camera_.pos[0] = atof (pos_st.at (0).c_str ());
@@ -988,7 +988,7 @@ pcl_visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
       boost::split (view_st, view_str, boost::is_any_of (","), boost::token_compress_on);
       if (view_st.size () != 3)
       {
-        terminal_tools::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera viewup!\n");
+        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera viewup!\n");
         return (false);
       }
       camera_.view[0] = atof (view_st.at (0).c_str ());
@@ -999,7 +999,7 @@ pcl_visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
       boost::split (win_size_st, win_size_str, boost::is_any_of (","), boost::token_compress_on);
       if (win_size_st.size () != 2)
       {
-        terminal_tools::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for window size!\n");
+        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for window size!\n");
         return (false);
       }
       camera_.window_size[0] = atof (win_size_st.at (0).c_str ());
@@ -1009,7 +1009,7 @@ pcl_visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
       boost::split (win_pos_st, win_pos_str, boost::is_any_of (","), boost::token_compress_on);
       if (win_pos_st.size () != 2)
       {
-        terminal_tools::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for window position!\n");
+        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for window position!\n");
         return (false);
       }
       camera_.window_pos[0] = atof (win_pos_st.at (0).c_str ());
@@ -1030,7 +1030,7 @@ pcl_visualization::PCLVisualizer::addCylinder (const pcl::ModelCoefficients &coe
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
   {
-    terminal_tools::print_warn ("[addCylinder] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn ("[addCylinder] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1056,7 +1056,7 @@ pcl_visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coeff
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
   {
-    terminal_tools::print_warn ("[addSphere] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn ("[addSphere] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1081,7 +1081,7 @@ pcl_visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filena
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
   {
-    terminal_tools::print_warn (
+    pcl::console::print_warn (
                                 "[addModelFromPLYFile] A shape with id <%s> already exists! Please choose a different id and retry.\n",
                                 id.c_str ());
     return (false);
@@ -1110,7 +1110,7 @@ pcl_visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filena
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
   {
-    terminal_tools::print_warn (
+    pcl::console::print_warn (
                                 "[addModelFromPLYFile] A shape with id <%s> already exists! Please choose a different id and retry.\n",
                                 id.c_str ());
     return (false);
@@ -1143,7 +1143,7 @@ pcl_visualization::PCLVisualizer::addLine (const pcl::ModelCoefficients &coeffic
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
   {
-    terminal_tools::print_warn ("[addLine] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn ("[addLine] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1173,7 +1173,7 @@ bool
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
   {
-    terminal_tools::print_warn ("[addPlane] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn ("[addPlane] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1198,7 +1198,7 @@ pcl_visualization::PCLVisualizer::addCircle (const pcl::ModelCoefficients &coeff
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
   {
-    terminal_tools::print_warn ("[addCircle] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn ("[addCircle] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1223,7 +1223,7 @@ pcl_visualization::PCLVisualizer::addCone (const pcl::ModelCoefficients &coeffic
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
   {
-    terminal_tools::print_warn ("[addCone] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn ("[addCone] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1278,7 +1278,7 @@ pcl_visualization::PCLVisualizer::addText (const std::string &text, int xpos, in
   ShapeActorMap::iterator am_it = shape_actor_map_.find (tid);
   if (am_it != shape_actor_map_.end ())
   {
-    terminal_tools::print_warn ("[addText] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
+    pcl::console::print_warn ("[addText] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
     return (false);
   }
 
@@ -1314,7 +1314,7 @@ pcl_visualization::PCLVisualizer::addText (const std::string &text, int xpos, in
   ShapeActorMap::iterator am_it = shape_actor_map_.find (tid);
   if (am_it != shape_actor_map_.end ())
   {
-    terminal_tools::print_warn ("[addText] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
+    pcl::console::print_warn ("[addText] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
     return (false);
   }
 
@@ -1343,13 +1343,13 @@ pcl_visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &id
   CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
   if (am_it == cloud_actor_map_.end ())
   {
-    terminal_tools::print_warn ("[updateColorHandlerIndex] PointCloud with id <%s> doesn't exist!\n", id.c_str ());
+    pcl::console::print_warn ("[updateColorHandlerIndex] PointCloud with id <%s> doesn't exist!\n", id.c_str ());
     return (false);
   }
 
   if (index >= (int)am_it->second.color_handlers.size ())
   {
-    terminal_tools::print_warn ("[updateColorHandlerIndex] Invalid index <%d> given! Maximum range is: 0-%zu.\n", index, am_it->second.color_handlers.size ());
+    pcl::console::print_warn ("[updateColorHandlerIndex] Invalid index <%d> given! Maximum range is: 0-%zu.\n", index, am_it->second.color_handlers.size ());
     return (false);
   }
   // Get the handler
@@ -1389,7 +1389,7 @@ pcl_visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_m
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
   {
-    terminal_tools::print_warn (
+    pcl::console::print_warn (
                                 "[addPolygonMesh] A shape with id <%s> already exists! Please choose a different id and retry.\n",
                                 id.c_str ());
     return (false);
@@ -1459,7 +1459,7 @@ pcl_visualization::PCLVisualizer::addPolylineFromPolygonMesh (const pcl::Polygon
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
   {
-    terminal_tools::print_warn (
+    pcl::console::print_warn (
                                 "[addPolylineFromPolygonMesh] A shape with id <%s> already exists! Please choose a different id and retry.\n",
                                 id.c_str ());
     return (false);

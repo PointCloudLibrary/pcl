@@ -44,22 +44,22 @@
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/histogram_visualizer.h>
-#include <pcl/terminal_tools/print.h>
-#include <pcl/terminal_tools/parse.h>
-#include <pcl/terminal_tools/time.h>
+#include <pcl/console/print.h>
+#include <pcl/console/parse.h>
+#include <pcl/console/time.h>
 
-using terminal_tools::print_color;
-using terminal_tools::print_error;
-using terminal_tools::print_error;
-using terminal_tools::print_warn;
-using terminal_tools::print_info;
-using terminal_tools::print_debug;
-using terminal_tools::print_value;
-using terminal_tools::print_highlight;
-using terminal_tools::TT_BRIGHT;
-using terminal_tools::TT_RED;
-using terminal_tools::TT_GREEN;
-using terminal_tools::TT_BLUE;
+using pcl::console::print_color;
+using pcl::console::print_error;
+using pcl::console::print_error;
+using pcl::console::print_warn;
+using pcl::console::print_info;
+using pcl::console::print_debug;
+using pcl::console::print_value;
+using pcl::console::print_highlight;
+using pcl::console::TT_BRIGHT;
+using pcl::console::TT_RED;
+using pcl::console::TT_GREEN;
+using pcl::console::TT_BLUE;
 
 typedef pcl_visualization::PointCloudColorHandler<pcl::PointCloud<pcl::PointXYZ> > ColorHandler;
 typedef ColorHandler::Ptr ColorHandlerPtr;
@@ -175,15 +175,15 @@ main (int argc, char** argv)
 
   // Command line parsing
   double bcolor[3] = {0, 0, 0};
-  terminal_tools::parse_3x_arguments (argc, argv, "-bc", bcolor[0], bcolor[1], bcolor[2]);
+  pcl::console::parse_3x_arguments (argc, argv, "-bc", bcolor[0], bcolor[1], bcolor[2]);
 
-  fcolorparam = terminal_tools::parse_multiple_3x_arguments (argc, argv, "-fc", fcolor_r, fcolor_g, fcolor_b);
+  fcolorparam = pcl::console::parse_multiple_3x_arguments (argc, argv, "-fc", fcolor_r, fcolor_g, fcolor_b);
 
   int psize = 0;
-  terminal_tools::parse_argument (argc, argv, "-ps", psize);
+  pcl::console::parse_argument (argc, argv, "-ps", psize);
 
   double opaque;
-  terminal_tools::parse_argument (argc, argv, "-opaque", opaque);
+  pcl::console::parse_argument (argc, argv, "-opaque", opaque);
 
   p.reset (new pcl_visualization::PCLVisualizer (argc, argv, "PCD viewer"));
 
@@ -206,18 +206,18 @@ main (int argc, char** argv)
 
   // Read axes settings
   double axes = 0.0;
-  terminal_tools::parse_argument (argc, argv, "-ax", axes);
+  pcl::console::parse_argument (argc, argv, "-ax", axes);
   if (axes != 0.0 && p)
   {
     double ax_x = 0.0, ax_y = 0.0, ax_z = 0.0;
-    terminal_tools::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z, false);
+    pcl::console::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z, false);
     // Draw XYZ axes if command-line enabled
     p->addCoordinateSystem (axes, ax_x, ax_y, ax_z);
   }
 
 
   std::string device_id = "";
-  terminal_tools::parse_argument (argc, argv, "-dev", device_id);
+  pcl::console::parse_argument (argc, argv, "-dev", device_id);
 
   pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
 

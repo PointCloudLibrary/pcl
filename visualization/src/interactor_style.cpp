@@ -118,13 +118,13 @@ void
 {
   if (!init_)
   {
-    terminal_tools::print_error ("[PCLVisualizerInteractorStyle] Interactor style not initialized. Please call Initialize () before continuing.\n");
+    pcl::console::print_error ("[PCLVisualizerInteractorStyle] Interactor style not initialized. Please call Initialize () before continuing.\n");
     return;
   }
 
   if (!rens_)
   {
-    terminal_tools::print_error ("[PCLVisualizerInteractorStyle] No renderer collection given! Use SetRendererCollection () before continuing.\n");
+    pcl::console::print_error ("[PCLVisualizerInteractorStyle] No renderer collection given! Use SetRendererCollection () before continuing.\n");
     return;
   }
 
@@ -178,7 +178,7 @@ void
 
         // Create the new geometry
         PointCloudGeometryHandler<sensor_msgs::PointCloud2>::ConstPtr geometry_handler = act->geometry_handlers[index];
-        //terminal_tools::print_debug ("[OnChar] Setting a new geometry handler (%s) for actor %s\n", geometry_handler->getFieldName ().c_str (), (*it).first.c_str ());
+        //pcl::console::print_debug ("[OnChar] Setting a new geometry handler (%s) for actor %s\n", geometry_handler->getFieldName ().c_str (), (*it).first.c_str ());
 
         // Use the handler to obtain the geometry
         vtkSmartPointer<vtkPoints> points;
@@ -216,7 +216,7 @@ void
         // Get the new color
         PointCloudColorHandler<sensor_msgs::PointCloud2>::ConstPtr color_handler = act->color_handlers[index];
 
-        //terminal_tools::print_debug ("[OnChar] Setting a new color handler (%s) for actor %s\n", color_handler->getFieldName ().c_str (), (*it).first.c_str ());
+        //pcl::console::print_debug ("[OnChar] Setting a new color handler (%s) for actor %s\n", color_handler->getFieldName ().c_str (), (*it).first.c_str ());
 
         vtkSmartPointer<vtkDataArray> scalars;
         color_handler->getColor (scalars);
@@ -251,7 +251,7 @@ void
   {
     case 'h': case 'H':
     {
-      terminal_tools::print_info ("| Help:\n"
+      pcl::console::print_info ("| Help:\n"
                   "-------\n"
                   "          p, P   : switch to a point-based representation\n"
                   "          w, W   : switch to a wireframe-based representation (where available)\n"
@@ -294,18 +294,18 @@ void
         if (!geometry_handlers_list.empty ())
         {
           int i = 0;
-          terminal_tools::print_info ("List of available geometry handlers for actor "); terminal_tools::print_value ("%s: ", (*it).first.c_str ());
+          pcl::console::print_info ("List of available geometry handlers for actor "); pcl::console::print_value ("%s: ", (*it).first.c_str ());
           for (std::list<std::string>::iterator git = geometry_handlers_list.begin (); git != geometry_handlers_list.end (); ++git)
-            terminal_tools::print_value ("%s(%d) ", (*git).c_str (), ++i);
-          terminal_tools::print_info ("\n");
+            pcl::console::print_value ("%s(%d) ", (*git).c_str (), ++i);
+          pcl::console::print_info ("\n");
         }
         if (!color_handlers_list.empty ())
         {
           int i = 0;
-          terminal_tools::print_info ("List of available color handlers for actor "); terminal_tools::print_value ("%s: ", (*it).first.c_str ());
+          pcl::console::print_info ("List of available color handlers for actor "); pcl::console::print_value ("%s: ", (*it).first.c_str ());
           for (std::list<std::string>::iterator cit = color_handlers_list.begin (); cit != color_handlers_list.end (); ++cit)
-            terminal_tools::print_value ("%s(%d) ", (*cit).c_str (), ++i);
-          terminal_tools::print_info ("\n");
+            pcl::console::print_value ("%s(%d) ", (*cit).c_str (), ++i);
+          pcl::console::print_info ("\n");
         }
       }
       
@@ -355,7 +355,7 @@ void
               << endl;
       ofs_cam.close ();
 
-      terminal_tools::print_info ("Screenshot (%s) and camera information (%s) successfully captured.\n", snapshot_fn, cam_fn);
+      pcl::console::print_info ("Screenshot (%s) and camera information (%s) successfully captured.\n", snapshot_fn, cam_fn);
       break;
     }
     // display current camera settings/parameters
@@ -568,13 +568,13 @@ void
 {
   if (!init_)
   {
-    terminal_tools::print_error ("[PCLVisualizerInteractorStyle] Interactor style not initialized. Please call Initialize () before continuing.\n");
+    pcl::console::print_error ("[PCLVisualizerInteractorStyle] Interactor style not initialized. Please call Initialize () before continuing.\n");
     return;
   }
 
   if (!rens_)
   {
-    terminal_tools::print_error ("[PCLVisualizerInteractorStyle] No renderer collection given! Use SetRendererCollection () before continuing.\n");
+    pcl::console::print_error ("[PCLVisualizerInteractorStyle] No renderer collection given! Use SetRendererCollection () before continuing.\n");
     return;
   }
   rens_->Render ();
@@ -607,13 +607,13 @@ void
 {
   if (!init_)
   {
-    terminal_tools::print_error ("[PCLHistogramVisualizerInteractorStyle] Interactor style not initialized. Please call Initialize () before continuing.\n");
+    pcl::console::print_error ("[PCLHistogramVisualizerInteractorStyle] Interactor style not initialized. Please call Initialize () before continuing.\n");
     return;
   }
 
 /*  if (!wins_)
   {
-    terminal_tools::print_error ("[PCLHistogramVisualizerInteractorStyle] No renderer-window-interactor map given! Use setRenWinInteractMap () before continuing.\n");
+    pcl::console::print_error ("[PCLHistogramVisualizerInteractorStyle] No renderer-window-interactor map given! Use setRenWinInteractMap () before continuing.\n");
     return;
   }*/
 
@@ -643,7 +643,7 @@ void
   {
     case 'h': case 'H':
     {
-      terminal_tools::print_info ("| Help:\n"
+      pcl::console::print_info ("| Help:\n"
                   "-------\n"
                   "          p, P   : switch to a point-based representation\n"
                   "          w, W   : switch to a wireframe-based representation (where available)\n"
@@ -700,7 +700,7 @@ void
               << endl;
       ofs_cam.close ();
 
-      terminal_tools::print_info ("Screenshot (%s) and camera information (%s) successfully captured.\n", snapshot_fn, cam_fn);
+      pcl::console::print_info ("Screenshot (%s) and camera information (%s) successfully captured.\n", snapshot_fn, cam_fn);
       break;
     }
     case 43:        // KEY_PLUS
@@ -794,7 +794,7 @@ void
 {
   if (!init_)
   {
-    terminal_tools::print_error ("[PCLHistogramVisualizerInteractorStyle] Interactor style not initialized. Please call Initialize () before continuing.\n");
+    pcl::console::print_error ("[PCLHistogramVisualizerInteractorStyle] Interactor style not initialized. Please call Initialize () before continuing.\n");
     return;
   }
 

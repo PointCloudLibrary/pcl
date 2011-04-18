@@ -42,7 +42,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>
 // 
-#include <pcl/terminal_tools/print.h>
+#include <pcl/console/print.h>
 #include <pcl/visualization/interactor.h>
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/common/common.h>
