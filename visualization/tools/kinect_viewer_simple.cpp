@@ -38,27 +38,75 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/common/time.h> //fps calculations
 #include <pcl/io/kinect_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 
+#define SHOW_FPS 1
+#if SHOW_FPS
+#define FPS_CALC(_WHAT_) \
+do \
+{ \
+    static unsigned count = 0;\
+    static double last = pcl::getTime ();\
+    if (++count == 100) \
+    { \
+      double now = pcl::getTime (); \
+      std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
+      count = 0; \
+      last = now; \
+    } \
+}while(false)
+#else
+#define FPS_CALC(_WHAT_) \
+do \
+{ \
+}while(false)
+#endif
+
+template <typename PointType>
 class SimpleKinectViewer
 {
   public:
+    typedef pcl::PointCloud<PointType> Cloud;
+    typedef typename Cloud::ConstPtr CloudConstPtr;
+
+
     SimpleKinectViewer () : viewer ("PCL Kinect Viewer") {}
 
-    void 
-    cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
-    {
-      if (!viewer.wasStopped())
-        viewer.showCloud (cloud);
-    }
     
     void 
+    cloud_cb_ (const CloudConstPtr& cloud)
+    {
+      FPS_CALC("callback");
+      set(cloud);
+    }
+
+    void
+    set(const CloudConstPtr& cloud)
+    {
+      //lock while we set our cloud;
+      boost::mutex::scoped_lock lock(mtx_);
+      cloud_  = cloud;
+    }
+
+    CloudConstPtr
+    get(){
+      //lock while we swap our cloud and reset it.
+      boost::mutex::scoped_lock lock(mtx_);
+      CloudConstPtr temp_cloud;
+      std::swap(temp_cloud, cloud_); //here we set cloud_ to null, so that
+                                     //it is safe to set it again from our
+                                     //callback
+      return temp_cloud;
+    }
+
+    void
     run ()
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = 
+      boost::function<void (const CloudConstPtr&)> f =
         boost::bind (&SimpleKinectViewer::cloud_cb_, this, _1);
 
       boost::signals2::connection c = interface->registerCallback (f);
@@ -67,19 +115,52 @@ class SimpleKinectViewer
       
       while (!viewer.wasStopped ())
       {
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+        if(cloud_)
+        {
+          FPS_CALC("drawing");
+          //the call to get() sets the cloud_ to null;
+          viewer.showCloud ( get() );
+        }
       }
 
       interface->stop ();
     }
 
     pcl_visualization::CloudViewer viewer;
+    boost::mutex mtx_;
+    CloudConstPtr cloud_;
 };
 
-int 
-main ()
+void
+usage(char ** argv)
 {
-  SimpleKinectViewer v;
-  v.run ();
+    std::cout << "usage: " << argv[0] << " [XYZ|XYZRGB]\n";
+}
+
+int 
+main (int argc, char ** argv)
+{
+  if(argc != 2)
+  {
+    usage(argv);
+    return 1;
+  }
+
+  std::string arg(argv[1]);
+  if(arg == "XYZRGB")
+  {
+      SimpleKinectViewer<pcl::PointXYZRGB> v;
+      v.run ();
+  }else if(arg == "XYZ")
+  {
+      SimpleKinectViewer<pcl::PointXYZ> v;
+      v.run ();
+  }
+  else if( arg == "--help" || arg == "-h")
+  {
+    usage(argv);
+    return 1;
+  }
+
   return (0);
 }
