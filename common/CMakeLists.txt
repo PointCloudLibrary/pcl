@@ -32,7 +32,6 @@ if(build)
         include/pcl/point_cloud.h
         include/pcl/point_representation.h
         include/pcl/point_types.h
-        include/pcl/view.h
         include/pcl/win32_macros.h
         )
         
@@ -50,9 +49,7 @@ if(build)
     if(NOT USE_ROS)
       set(sensor_msg_incs include/sensor_msgs/PointField.h
           include/sensor_msgs/PointCloud2.h
-          include/sensor_msgs/CameraInfo.h
           include/sensor_msgs/Image.h
-          include/sensor_msgs/RegionOfInterest.h
           )
       PCL_ADD_INCLUDES(${SUBSYS_NAME} "../sensor_msgs" ${sensor_msg_incs})
 
