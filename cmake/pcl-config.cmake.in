@@ -1,8 +1,0 @@
-find_package(Eigen3 REQUIRED)
-set(PCL_ROOT @PCL_ROOT@)
-set(PCL_LIB_ROOT @PCL_LIB_ROOT@)
-
-set(pcl_INCLUDE_DIRS @pcl_INCLUDE_DIRS@)
-set(pcl_LIBRARIES @pcl_LIBRARIES@)
-INCLUDE_DIRECTORIES(${pcl_INCLUDE_DIRS})
-link_directories(@pcl_LIBRARIES_DIR@)
