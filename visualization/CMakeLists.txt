@@ -46,6 +46,9 @@ if(build)
     target_link_libraries(${LIB_NAME} pcl_io pcl_range_image ${wxWidgets_LIBRARIES}
         vtkCommon vtkWidgets vtkHybrid ${Boost_LIBRARIES})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
+    if(OPENNI_FOUND)
+    	list(APPEND EXT_DEPS openni-dev)
+    endif(OPENNI_FOUND)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${EXT_DEPS}" "" "" "")
 
