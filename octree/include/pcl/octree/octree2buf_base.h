@@ -113,7 +113,7 @@ namespace pcl
         /** \brief Check for the existence of leaf node at (idxX, idxY, idxZ).
          *  \param idxX_arg: index of leaf node in the X axis.
          *  \param idxY_arg: index of leaf node in the Y axis.
-         *  \param idxY_arg: index of leaf node in the Z axis.
+         *  \param idxZ_arg: index of leaf node in the Z axis.
          *  \return "true" if leaf node search is successful, otherwise it returns "false".
          * */
         bool
@@ -191,7 +191,7 @@ namespace pcl
 
         /** \brief Deserialize a binary octree description vector and create a corresponding octree structure. Leaf nodes are initialized with getDataTByKey(..).
          *  \param binaryTreeIn_arg: reference to input vector for reading binary tree structure.
-         *  \param doXOREncoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
+         *  \param doXORDecoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          * */
         void
         deserializeTree (std::vector<char>& binaryTreeIn_arg, bool doXORDecoding_arg = false);
@@ -199,7 +199,7 @@ namespace pcl
         /** \brief Deserialize a binary octree description and create a corresponding octree structure. Leaf nodes are initialized with DataT elements from the dataVector.
          *  \param binaryTreeIn_arg: reference to inpvectoream for reading binary tree structure.
          *  \param dataVector_arg: reference to DataT vector that provides DataT objects for initializing leaf nodes.
-         *  \param doXOREncoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
+         *  \param doXORDecoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          * */
         void
         deserializeTree (std::vector<char>& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg,
@@ -208,7 +208,7 @@ namespace pcl
         /** \brief Deserialize a binary octree description vector and create a corresponding octree structure. Leaf nodes are initialized with getDataTByKey(..). Generated DataT objects are copied to output vector.
          *  \param binaryTreeIn_arg: reference to input vector for reading binary tree structure.
          *  \param dataVector_arg: reference to DataT vector that receives a copy of generated DataT objects.
-         *  \param doXOREncoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
+         *  \param doXORDecoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          * */
         void
         deserializeTreeAndOutputLeafData (std::vector<char>& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg,
@@ -690,7 +690,7 @@ namespace pcl
         /** \brief Fetch and add a new leaf child to a branch class
          *  \param branch_arg: reference to octree branch class
          *  \param childIdx_arg: index to child node
-         *  \param newBranchChild_arg: writes a pointer of new leaf child to this reference
+         *  \param newLeafChild_arg: writes a pointer of new leaf child to this reference
          * */
         inline void
         createLeafChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg, OctreeLeaf*& newLeafChild_arg)
@@ -821,8 +821,9 @@ namespace pcl
          *  \param binaryTreeIn_arg: iterator to input vector
          *  \param branch_arg: current branch node
          *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
+         *  \param key_arg: reference to an octree key
          *  \param branchReset_arg: Reset pointer array of current branch
-         *  \param doXOREncoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
+         *  \param doXORDecoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          **/
         void
         deserializeTreeRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
@@ -833,14 +834,15 @@ namespace pcl
          *  \param binaryTreeIn_arg: iterator to input vector
          *  \param branch_arg: current branch node
          *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
+         *  \param key_arg: reference to an octree key
          *  \param dataVectorIterator_arg: iterator pointing to current DataT object to be added to a leaf node
          *  \param dataVectorEndIterator_arg: iterator pointing to last object in DataT input vector.
          *  \param branchReset_arg: Reset pointer array of current branch
-         *  \param doXOREncoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
+         *  \param doXORDecoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          **/
         void
         deserializeTreeRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
-                                  OctreeBranch* branch_arg, const unsigned int depthMask_arg, const OctreeKey& key,
+                                  OctreeBranch* branch_arg, const unsigned int depthMask_arg, const OctreeKey& key_arg,
                                   typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
                                   typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg,
                                   bool branchReset_arg, bool doXORDecoding_arg);
@@ -849,9 +851,10 @@ namespace pcl
          *  \param binaryTreeIn_arg: iterator to input vector
          *  \param branch_arg: current branch node
          *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
+         *  \param key_arg: reference to an octree key
          *  \param dataVector_arg: reference to DataT vector that receives a copy of generated DataT objects.
          *  \param branchReset_arg: Reset pointer array of current branch
-         *  \param doXOREncoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
+         *  \param doXORDecoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
          **/
         void
         deserializeTreeAndOutputLeafDataRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,

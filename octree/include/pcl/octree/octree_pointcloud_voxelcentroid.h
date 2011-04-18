@@ -68,8 +68,8 @@ namespace pcl
         /** \brief OctreePointCloudVoxelCentroids class constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
-        OctreePointCloudVoxelCentroid (const double resolution) :
-          OctreePointCloud<PointT, LeafT, OctreeT> (resolution)
+        OctreePointCloudVoxelCentroid (const double resolution_arg) :
+          OctreePointCloud<PointT, LeafT, OctreeT> (resolution_arg)
         {
         }
 

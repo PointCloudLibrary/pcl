@@ -111,7 +111,7 @@ namespace pcl
         /** \brief Check for the existence of leaf node at (idxX, idxY, idxZ).
          *  \param idxX_arg: index of leaf node in the X axis.
          *  \param idxY_arg: index of leaf node in the Y axis.
-         *  \param idxY_arg: index of leaf node in the Z axis.
+         *  \param idxZ_arg: index of leaf node in the Z axis.
          *  \return "true" if leaf node search is successful, otherwise it returns "false".
          * */
         bool
@@ -490,7 +490,7 @@ namespace pcl
         /** \brief Create and add a new leaf child to a branch class
          *  \param branch_arg: reference to octree branch class
          *  \param childIdx_arg: index to child node
-         *  \param newBranchChild_arg: writes a pointer of new leaf child to this reference
+         *  \param newLeafChild_arg: writes a pointer of new leaf child to this reference
          * */
         inline void
         createLeafChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg, OctreeLeaf*& newLeafChild_arg)
@@ -565,6 +565,7 @@ namespace pcl
          *  \param binaryTreeIn_arg: iterator to input vector
          *  \param branch_arg: current branch node
          *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
+         *  \param key_arg: reference to an octree key
          **/
         void
         deserializeTreeRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
@@ -574,6 +575,7 @@ namespace pcl
          *  \param binaryTreeIn_arg: iterator to input vector
          *  \param branch_arg: current branch node
          *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
+         *  \param key_arg: reference to an octree key
          *  \param dataVectorIterator_arg: iterator pointing to current DataT object to be added to a leaf node
          *  \param dataVectorEndIterator_arg: iterator pointing to last object in DataT input vector.
          **/
@@ -587,6 +589,7 @@ namespace pcl
          *  \param binaryTreeIn_arg: iterator to input vector
          *  \param branch_arg: current branch node
          *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
+         *  \param key_arg: reference to an octree key
          *  \param dataVector_arg: iterator of DataT vector that receives a copy of generated DataT objects.
          **/
         void

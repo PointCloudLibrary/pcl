@@ -87,10 +87,10 @@ namespace pcl
         }
 
         /** \brief Empty getData data vector implementation as this leaf node does not store any data. \
-       *  \param data_arg: reference to dummy DataT vector that is extended with leaf node DataT elements.
+       *  \param dataVector_arg: reference to dummy DataT vector that is extended with leaf node DataT elements.
          */
         virtual void
-        getData (std::vector<DataT>& dataVector)
+        getData (std::vector<DataT>& dataVector_arg)
         {
         }
 
@@ -137,8 +137,8 @@ namespace pcl
         /** \brief OctreePointCloudDensity class constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
-        OctreePointCloudDensity (const double resolution) :
-          OctreePointCloud<PointT, LeafT, OctreeT> (resolution)
+        OctreePointCloudDensity (const double resolution_arg) :
+          OctreePointCloud<PointT, LeafT, OctreeT> (resolution_arg)
         {
         }
 

@@ -70,8 +70,8 @@ namespace pcl
         /** \brief Constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
-        OctreePointCloudOccupancy (const double resolution) :
-          OctreePointCloud<PointT, LeafT, OctreeT> (resolution)
+        OctreePointCloudOccupancy (const double resolution_arg) :
+          OctreePointCloud<PointT, LeafT, OctreeT> (resolution_arg)
         {
         }
 

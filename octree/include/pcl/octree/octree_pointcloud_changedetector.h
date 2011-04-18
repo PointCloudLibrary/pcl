@@ -67,8 +67,8 @@ namespace pcl
         /** \brief Constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
-        OctreePointCloudChangeDetector (const double resolution) :
-          OctreePointCloud<PointT, LeafT, Octree2BufBase<int, LeafT> > (resolution)
+        OctreePointCloudChangeDetector (const double resolution_arg) :
+          OctreePointCloud<PointT, LeafT, Octree2BufBase<int, LeafT> > (resolution_arg)
         {
         }
 

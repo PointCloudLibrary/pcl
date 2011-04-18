@@ -106,10 +106,10 @@ namespace pcl
         getData (const DataT*& data_arg) = 0;
 
         /** \brief Pure virtual method for retrieving a vector of DataT elements from the octree laef node
-         *  \param data_arg: reference to DataT vector that is extended with leaf node DataT elements.
+         *  \param dataVector_arg: reference to DataT vector that is extended with leaf node DataT elements.
          */
         virtual void
-        getData (std::vector<leaf_data_t>& dataVector) = 0;
+        getData (std::vector<leaf_data_t>& dataVector_arg) = 0;
 
         /** \brief Pure virtual method for resetting the data storage of the octree leaf node */
         virtual void
@@ -141,7 +141,7 @@ namespace pcl
          */
 
         virtual void
-        setData (const DataT& point_arg)
+        setData (const DataT& data_arg)
         {
         }
 
@@ -155,10 +155,10 @@ namespace pcl
         }
 
         /** \brief Empty getData data vector implementation as this leaf node does not store any data. \
-       *  \param data_arg: reference to dummy DataT vector that is extended with leaf node DataT elements.
+       *  \param dataVector_arg: reference to dummy DataT vector that is extended with leaf node DataT elements.
          */
         virtual void
-        getData (std::vector<DataT>& dataVector)
+        getData (std::vector<DataT>& dataVector_arg)
         {
         }
 
@@ -208,12 +208,12 @@ namespace pcl
         }
 
         /** \brief Adds leaf node DataT element to dataVector vector of type DataT.
-         *  \param data_arg: reference to DataT vector that is to be extended with leaf node DataT elements.
+         *  \param dataVector_arg: reference to DataT vector that is to be extended with leaf node DataT elements.
          * */
         virtual void
-        getData (std::vector<DataT>& dataVector)
+        getData (std::vector<DataT>& dataVector_arg)
         {
-          dataVector.push_back (this->data_);
+          dataVector_arg.push_back (this->data_);
         }
 
         /** \brief Reset leaf node memory to zero. */
@@ -252,9 +252,9 @@ namespace pcl
          *  \param data_arg: reference to DataT element to be stored within leaf node.
          * */
         virtual void
-        setData (const DataT& point_arg)
+        setData (const DataT& data_arg)
         {
-          leafDataTVector_.push_back (point_arg);
+          leafDataTVector_.push_back (data_arg);
         }
 
         /** \brief Receive the most recent DataT element that was pushed to the internal DataT vector.
@@ -273,7 +273,7 @@ namespace pcl
         }
 
         /** \brief Concatenate the internal DataT vector to vector argument dataVector_arg.
-         * \param data_arg: reference to DataT vector that is to be extended with leaf node DataT elements.
+         * \param dataVector_arg: reference to DataT vector that is to be extended with leaf node DataT elements.
          * */
         virtual void
         getData (std::vector<DataT>& dataVector_arg)
