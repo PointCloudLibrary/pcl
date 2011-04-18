@@ -107,9 +107,9 @@ if(build)
         include/pcl/ros/register_point_struct.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ros ${ros_incs})
-    set(tools_incs include/pcl/terminal_tools/parse.h
-        include/pcl/terminal_tools/print.h
-        include/pcl/terminal_tools/time.h
+    set(tools_incs include/pcl/console/parse.h
+        include/pcl/console/print.h
+        include/pcl/console/time.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} terminal_tools ${tools_incs})
 
