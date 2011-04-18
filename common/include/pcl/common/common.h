@@ -54,6 +54,7 @@ namespace pcl
     * \param v1 the first 3D vector (represented as a \a Eigen::Vector4f)
     * \param v2 the second 3D vector (represented as a \a Eigen::Vector4f)
     * \return the angle between v1 and v2
+    * \ingroup common
     */
   inline double 
   getAngle3D (const Eigen::Vector4f &v1, const Eigen::Vector4f &v2);
@@ -62,6 +63,7 @@ namespace pcl
     * \param values the array of values
     * \param mean the resultant mean of the distribution
     * \param stddev the resultant standard deviation of the distribution
+    * \ingroup common
     */
   inline void 
   getMeanStd (const std::vector<float> &values, double &mean, double &stddev);
@@ -71,6 +73,7 @@ namespace pcl
     * \param min_pt the minimum bounds
     * \param max_pt the maximum bounds
     * \param indices the resultant set of point indices residing in the box
+    * \ingroup common
     */
   template <typename PointT> inline void 
   getPointsInBox (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &min_pt,
@@ -80,16 +83,18 @@ namespace pcl
     * \param cloud the point cloud data message
     * \param pivot_pt the point from where to compute the distance
     * \param max_pt the point in cloud that is the farthest point away from pivot_pt
+    * \ingroup common
     */
   template<typename PointT> inline void
   getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt);
 
   /** \brief Get the point at maximum distance from a given point and a given pointcloud
-      * \param cloud the point cloud data message
-      * \param pivot_pt the point from where to compute the distance
-      * \param indices the vector of point indices to use from \a cloud
-      * \param max_pt the point in cloud that is the farthest point away from pivot_pt
-      */
+    * \param cloud the point cloud data message
+    * \param pivot_pt the point from where to compute the distance
+    * \param indices the vector of point indices to use from \a cloud
+    * \param max_pt the point in cloud that is the farthest point away from pivot_pt
+    * \ingroup common
+    */
   template<typename PointT> inline void
   getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices, 
                   const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt);
@@ -98,6 +103,7 @@ namespace pcl
     * \param cloud the point cloud data message
     * \param min_pt the resultant minimum bounds
     * \param max_pt the resultant maximum bounds
+    * \ingroup common
     */
   template <typename PointT> inline void 
   getMinMax3D (const pcl::PointCloud<PointT> &cloud, PointT &min_pt, PointT &max_pt);
@@ -106,6 +112,7 @@ namespace pcl
     * \param cloud the point cloud data message
     * \param min_pt the resultant minimum bounds
     * \param max_pt the resultant maximum bounds
+    * \ingroup common
     */
   template <typename PointT> inline void 
   getMinMax3D (const pcl::PointCloud<PointT> &cloud, 
@@ -116,6 +123,7 @@ namespace pcl
     * \param indices the vector of point indices to use from \a cloud
     * \param min_pt the resultant minimum bounds
     * \param max_pt the resultant maximum bounds
+    * \ingroup common
     */
   template <typename PointT> inline void 
   getMinMax3D (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices, 
@@ -126,6 +134,7 @@ namespace pcl
     * \param indices the vector of point indices to use from \a cloud
     * \param min_pt the resultant minimum bounds
     * \param max_pt the resultant maximum bounds
+    * \ingroup common
     */
   template <typename PointT> inline void 
   getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices &indices, 
@@ -136,6 +145,7 @@ namespace pcl
     * \param pb the second point
     * \param pc the third point
     * \return the radius of the circumscribed circle
+    * \ingroup common
     */
   template <typename PointT> inline double 
   getCircumcircleRadius (const PointT &pa, const PointT &pb, const PointT &pc);
@@ -145,6 +155,7 @@ namespace pcl
     * \param len the length of the histogram
     * \param min_p the resultant minimum 
     * \param max_p the resultant maximum 
+    * \ingroup common
     */
   template <typename PointT> inline void 
   getMinMax (const PointT &histogram, int len, float &min_p, float &max_p);
@@ -155,6 +166,7 @@ namespace pcl
     * \param field_name the field name containing the multi-dimensional histogram
     * \param min_p the resultant minimum 
     * \param max_p the resultant maximum 
+    * \ingroup common
     */
   void 
   getMinMax (const sensor_msgs::PointCloud2 &cloud, int idx, const std::string &field_name, 
@@ -164,6 +176,7 @@ namespace pcl
     * \param values the array of values
     * \param mean the resultant mean of the distribution
     * \param stddev the resultant standard deviation of the distribution
+    * \ingroup common
     */
   void
   getMeanStdDev (const std::vector<float> &values, double &mean, double &stddev);

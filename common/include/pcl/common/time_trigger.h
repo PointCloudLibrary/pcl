@@ -51,6 +51,7 @@ namespace pcl
    * @brief timer class that invokes registered callback methods periodically.
    * @param interval_seconds interval in seconds
    * @param callback callback to be invoked periodically
+   * \ingroup common
    */
   class TimeTrigger
   {

@@ -55,6 +55,7 @@ namespace pcl
     * \param line_b the coefficients of the second line (point, direction)
     * \param point holder for the computed 3D point
     * \param sqr_eps maximum allowable squared distance to the true solution
+    * \ingroup common
     */
   bool
   lineWithLineIntersection (const Eigen::VectorXf &line_a, 
@@ -66,6 +67,7 @@ namespace pcl
     * \param line_b the coefficients of the second line (point, direction)
     * \param point holder for the computed 3D point
     * \param sqr_eps maximum allowable squared distance to the true solution
+    * \ingroup common
     */
   bool
   lineWithLineIntersection (const pcl::ModelCoefficients &line_a, 

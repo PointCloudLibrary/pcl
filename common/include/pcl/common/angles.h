@@ -47,29 +47,38 @@ namespace pcl
 {
   /** \brief Convert an angle from radians to degrees
     * \param alpha the input angle (in radians)
+    * \ingroup common
     */
-  inline float rad2deg(float alpha);
+  inline float 
+  rad2deg (float alpha);
 
   /** \brief Convert an angle from degrees to radians
     * \param alpha the input angle (in degrees)
+    * \ingroup common
     */
-  inline float deg2rad(float alpha);
+  inline float 
+  deg2rad (float alpha);
 
   /** \brief Convert an angle from radians to degrees
     * \param alpha the input angle (in radians)
+    * \ingroup common
     */
-  inline double rad2deg(double alpha);
+  inline double 
+  rad2deg (double alpha);
 
   /** \brief Convert an angle from degrees to radians
     * \param alpha the input angle (in degrees)
+    * \ingroup common
     */
-  inline double deg2rad(double alpha);
+  inline double 
+  deg2rad (double alpha);
 
   /** \brief Normalize an angle to (-PI, PI]
     * \param alpha the input angle (in radians)
+    * \ingroup common
     */
-  template <typename real>
-  inline real normAngle(real alpha);
+  template <typename real> inline real 
+  normAngle (real alpha);
 }
 /*@}*/
 #include "pcl/common/impl/angles.hpp"

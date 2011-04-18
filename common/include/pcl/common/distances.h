@@ -53,6 +53,7 @@ namespace pcl
     * \param line_b the coefficients of the second line (point, direction)
     * \param pt1_seg the first point on the line segment
     * \param pt2_seg the second point on the line segment
+    * \ingroup common
     */
   void
   lineToLineSegment (const Eigen::VectorXf &line_a, const Eigen::VectorXf &line_b, 
@@ -62,6 +63,7 @@ namespace pcl
     * \param pt a point
     * \param line_pt a point on the line (make sure that line_pt[3] = 0 as there are no internal checks!)
     * \param line_dir the line direction
+    * \ingroup common
     */
   double inline
   sqrPointToLineDistance (const Eigen::Vector4f &pt, const Eigen::Vector4f &line_pt, const Eigen::Vector4f &line_dir)
@@ -77,6 +79,7 @@ namespace pcl
     * \param line_pt a point on the line (make sure that line_pt[3] = 0 as there are no internal checks!)
     * \param line_dir the line direction
     * \param sqr_length the squared norm of the line direction
+    * \ingroup common
     */
   double inline
   sqrPointToLineDistance (const Eigen::Vector4f &pt, const Eigen::Vector4f &line_pt, const Eigen::Vector4f &line_dir, const double sqr_length)

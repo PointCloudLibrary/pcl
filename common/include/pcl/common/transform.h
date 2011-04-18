@@ -52,6 +52,7 @@ namespace pcl
     * \param z_axis the z-axis
     * \param y_direction the y direction
     * \param transformation the resultant 3D rotation
+    * \ingroup common
     */
   inline void
   getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis, const Eigen::Vector3f& y_direction,
@@ -62,6 +63,7 @@ namespace pcl
     * \param z_axis the z-axis
     * \param y_direction the y direction
     * \return the resultant 3D rotation
+    * \ingroup common
     */
   inline Eigen::Affine3f
   getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis, const Eigen::Vector3f& y_direction);
@@ -71,6 +73,7 @@ namespace pcl
     * \param x_axis the x-axis
     * \param y_direction the y direction
     * \param transformation the resultant 3D rotation
+    * \ingroup common
     */
   inline void
   getTransFromUnitVectorsXY (const Eigen::Vector3f& x_axis, const Eigen::Vector3f& y_direction,
@@ -81,6 +84,7 @@ namespace pcl
     * \param x_axis the x-axis
     * \param y_direction the y direction
     * \return the resulting 3D rotation
+    * \ingroup common
     */
   inline Eigen::Affine3f
   getTransFromUnitVectorsXY (const Eigen::Vector3f& x_axis, const Eigen::Vector3f& y_direction);
@@ -100,6 +104,7 @@ namespace pcl
     * \param z_axis the z-axis
     * \param origin the origin
     * \param transformation the resultant transformation matrix
+    * \ingroup common
     */
   inline void
   getTransformationFromTwoUnitVectorsAndOrigin (const Eigen::Vector3f& y_direction, const Eigen::Vector3f& z_axis,
@@ -108,6 +113,7 @@ namespace pcl
   /** \brief Output operator for Tranform3f
     * \param os the output stream
     * \param m the affine transformation to output
+    * \ingroup common
     */
   inline std::ostream&
   operator<< (std::ostream& os, const Eigen::Affine3f& m)
@@ -122,6 +128,7 @@ namespace pcl
   /** \brief Get only the rotation part of the transformation 
     * \param transformation the input transformation matrix 
     * \return the resulting 3D rotation matrix
+    * \ingroup common
     */
   inline Eigen::Affine3f
   getRotation (const Eigen::Affine3f& transformation);
@@ -129,6 +136,7 @@ namespace pcl
   /** \brief Get only the translation part of the transformation 
     * \param transformation the input transformation matrix
     * \return the resulting translation matrix
+    * \ingroup common
     */
   inline Eigen::Vector3f
   getTranslation (const Eigen::Affine3f& transformation);
@@ -136,6 +144,7 @@ namespace pcl
   /** \brief Get the inverse of an Eigen::Affine3f object 
     * \param transformation the input transformation matrix
     * \param inverse_transformation the resultant inverse of \a transformation
+    * \ingroup common
     */
   inline void
   getInverse (const Eigen::Affine3f& transformation, Eigen::Affine3f& inverse_transformation);
@@ -143,6 +152,7 @@ namespace pcl
   /** \brief Get the inverse of an Eigen::Affine3f object 
     * \param transformation the input transformation matrix
     * \return the resulting inverse of \a transformation
+    * \ingroup common
     */
   inline Eigen::Affine3f getInverse (const Eigen::Affine3f& transformation);
 
@@ -150,6 +160,7 @@ namespace pcl
     * \param transformation the transformation to apply
     * \param point the point to transform
     * \return the transformed point
+    * \ingroup common
     */
   template <typename PointType> inline PointType 
   transformXYZ (const Eigen::Affine3f& transformation, const PointType& point);
@@ -158,6 +169,7 @@ namespace pcl
     * \param input the input point cloud
     * \param transformation the transformation matrix to apply
     * \param output the resulting transformed point cloud
+    * \ingroup common
     */
   template <typename PointCloudType> inline void
   getTransformedPointCloud (const PointCloudType& input, const Eigen::Affine3f& transformation,
@@ -168,6 +180,7 @@ namespace pcl
     * \param roll the resulting roll angle
     * \param pitch the resulting pitch angle
     * \param yaw the resulting yaw angle
+    * \ingroup common
     */
   inline void
   getEulerAngles (const Eigen::Affine3f& t, float& roll, float& pitch, float& yaw);
@@ -180,6 +193,7 @@ namespace pcl
     * \param roll the resulting roll angle
     * \param pitch the resulting pitch angle
     * \param yaw the resulting yaw angle
+    * \ingroup common
     */
   inline void
   getTranslationAndEulerAngles (const Eigen::Affine3f& t, float& x, float& y, float& z,
@@ -193,6 +207,7 @@ namespace pcl
     * \param pitch the input pitch angle
     * \param yaw the input yaw angle
     * \param t the resulting transformation matrix
+    * \ingroup common
     */
   inline void
   getTransformation (float x, float y, float z, float roll, float pitch, float yaw, Eigen::Affine3f& t);
@@ -205,6 +220,7 @@ namespace pcl
     * \param pitch the input pitch angle
     * \param yaw the input yaw angle
     * \return the resulting transformation matrix
+    * \ingroup common
     */
   inline Eigen::Affine3f
   getTransformation (float x, float y, float z, float roll, float pitch, float yaw);
@@ -212,14 +228,16 @@ namespace pcl
   /** \brief Write a matrix to an output stream
     * \param matrix the matrix to output
     * \param file the output stream
+    * \ingroup common
     */
   template <typename Derived> void
   saveBinary (const Eigen::MatrixBase<Derived>& matrix, std::ostream& file);
 
   /** \brief Read a matrix from an input stream
-   * \param matrix the resulting matrix, read from the input stream
-   * \param file the input stream
-   */
+    * \param matrix the resulting matrix, read from the input stream
+    * \param file the input stream
+    * \ingroup common
+    */
   template <typename Derived> void
   loadBinary (Eigen::MatrixBase<Derived>& matrix, std::istream& file);
   

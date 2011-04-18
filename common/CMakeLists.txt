@@ -59,42 +59,42 @@ if(build)
     endif(NOT USE_ROS)
     
     set(common_incs include/pcl/common/angles.h
-        include/pcl/common/angles.hpp
         include/pcl/common/bivariate_polynomial.h
-        include/pcl/common/bivariate_polynomial.hpp
         include/pcl/common/centroid.h
         include/pcl/common/concatenate.h
         include/pcl/common/common.h
-        include/pcl/common/common.hpp
         include/pcl/common/common_headers.h
         include/pcl/common/distances.h
         include/pcl/common/eigen.h
         include/pcl/common/file_io.h
-        include/pcl/common/file_io.hpp
         include/pcl/common/intersections.h
         include/pcl/common/norms.h
-        include/pcl/common/norms.hpp
         include/pcl/common/piecewise_linear_function.h
-        include/pcl/common/piecewise_linear_function.hpp
         include/pcl/common/point_correspondence.h
         include/pcl/common/polynomial_calculations.h
-        include/pcl/common/polynomial_calculations.hpp
         include/pcl/common/poses_from_matches.h
         include/pcl/common/rigid_transforms.h
         include/pcl/common/time.h
-        include/pcl/common/time.hpp
         include/pcl/common/time_trigger.h
         include/pcl/common/transform.h
-        include/pcl/common/transform.hpp
         include/pcl/common/transformation_from_correspondences.h
-        include/pcl/common/transformation_from_correspondences.hpp
         include/pcl/common/vector_average.h
-        include/pcl/common/vector_average.hpp
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
     set(common_incs_impl
+        include/pcl/common/impl/angles.hpp
+        include/pcl/common/impl/bivariate_polynomial.hpp
         include/pcl/common/impl/centroid.hpp
+        include/pcl/common/impl/common.hpp
+        include/pcl/common/impl/file_io.hpp
+        include/pcl/common/impl/norms.hpp
+        include/pcl/common/impl/piecewise_linear_function.hpp
+        include/pcl/common/impl/polynomial_calculations.hpp
         include/pcl/common/impl/rigid_transforms.hpp
+        include/pcl/common/impl/time.hpp
+        include/pcl/common/impl/transform.hpp
+        include/pcl/common/impl/transformation_from_correspondences.hpp
+        include/pcl/common/impl/vector_average.hpp
        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common/impl ${common_incs_impl})
     set(impl_incs include/pcl/impl/instantiate.hpp

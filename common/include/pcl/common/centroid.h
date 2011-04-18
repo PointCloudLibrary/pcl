@@ -63,6 +63,7 @@ namespace pcl
     * \param cloud the input point cloud
     * \param indices the point cloud indices that need to be used
     * \param centroid the output centroid
+    * \ingroup common
     */
   template <typename PointT> inline void 
   compute3DCentroid (const pcl::PointCloud<PointT> &cloud, 
@@ -73,6 +74,7 @@ namespace pcl
     * \param cloud the input point cloud
     * \param indices the point cloud indices that need to be used
     * \param centroid the output centroid
+    * \ingroup common
     */
   template <typename PointT> inline void 
   compute3DCentroid (const pcl::PointCloud<PointT> &cloud, 
@@ -86,6 +88,7 @@ namespace pcl
     * \param cloud the input point cloud
     * \param centroid the centroid of the set of points in the cloud
     * \param covariance_matrix the resultant 3x3 covariance matrix
+    * \ingroup common
     */
   template <typename PointT> inline void 
   computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud, 
@@ -99,6 +102,7 @@ namespace pcl
     * \param cloud the input point cloud
     * \param centroid the centroid of the set of points in the cloud
     * \param covariance_matrix the resultant 3x3 covariance matrix
+    * \ingroup common
     */
   template <typename PointT> inline void 
   computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud, 
@@ -114,6 +118,7 @@ namespace pcl
     * \param indices the point cloud indices that need to be used
     * \param centroid the centroid of the set of points in the cloud
     * \param covariance_matrix the resultant 3x3 covariance matrix
+    * \ingroup common
     */
   template <typename PointT> inline void 
   computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud, 
@@ -130,6 +135,7 @@ namespace pcl
     * \param indices the point cloud indices that need to be used
     * \param centroid the centroid of the set of points in the cloud
     * \param covariance_matrix the resultant 3x3 covariance matrix
+    * \ingroup common
     */
   template <typename PointT> inline void 
   computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud, 
@@ -145,6 +151,7 @@ namespace pcl
     * \param indices the point cloud indices that need to be used
     * \param centroid the centroid of the set of points in the cloud
     * \param covariance_matrix the resultant 3x3 covariance matrix
+    * \ingroup common
     */
   template <typename PointT> inline void 
   computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud, 
@@ -159,6 +166,7 @@ namespace pcl
     * \param indices the point cloud indices that need to be used
     * \param centroid the centroid of the set of points in the cloud
     * \param covariance_matrix the resultant 3x3 covariance matrix
+    * \ingroup common
     */
   template <typename PointT> inline void 
   computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud, 
@@ -170,6 +178,7 @@ namespace pcl
     * \param cloud_in the input point cloud
     * \param centroid the centroid of the point cloud
     * \param cloud_out the resultant output point cloud
+    * \ingroup common
     */
   template <typename PointT> void 
   demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -181,6 +190,7 @@ namespace pcl
     * \param indices the set of point indices to use from the input point cloud
     * \param centroid the centroid of the point cloud
     * \param cloud_out the resultant output point cloud
+    * \ingroup common
     */
   template <typename PointT> void 
   demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -194,6 +204,7 @@ namespace pcl
     * \param centroid the centroid of the point cloud
     * \param cloud_out the resultant output XYZ0 dimensions of \a cloud_in as
     * an Eigen matrix (4 rows, N pts columns)
+    * \ingroup common
     */
   template <typename PointT> void 
   demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -207,6 +218,7 @@ namespace pcl
     * \param centroid the centroid of the point cloud
     * \param cloud_out the resultant output XYZ0 dimensions of \a cloud_in as
     * an Eigen matrix (4 rows, N pts columns)
+    * \ingroup common
     */
   template <typename PointT> void 
   demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -251,6 +263,7 @@ namespace pcl
     * indices.
     * \param cloud the input point cloud
     * \param centroid the output centroid
+    * \ingroup common
     */
   template <typename PointT> inline void 
   computeNDCentroid (const pcl::PointCloud<PointT> &cloud, Eigen::VectorXf &centroid);
@@ -260,6 +273,7 @@ namespace pcl
     * \param cloud the input point cloud
     * \param indices the point cloud indices that need to be used
     * \param centroid the output centroid
+    * \ingroup common
     */
   template <typename PointT> inline void 
   computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
@@ -270,6 +284,7 @@ namespace pcl
     * \param cloud the input point cloud
     * \param indices the point cloud indices that need to be used
     * \param centroid the output centroid
+    * \ingroup common
     */
   template <typename PointT> inline void 
   computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
