@@ -44,29 +44,29 @@ namespace sensor_msgs
     typedef ::std_msgs::Header_<ContainerAllocator>  _header_type;
     ::std_msgs::Header_<ContainerAllocator>  header;
 
-    typedef uint32_t _height_type;
-    uint32_t height;
+    typedef pcl::uint32_t _height_type;
+    pcl::uint32_t height;
 
-    typedef uint32_t _width_type;
-    uint32_t width;
+    typedef pcl::uint32_t _width_type;
+    pcl::uint32_t width;
 
     typedef std::vector< ::sensor_msgs::PointField_<ContainerAllocator> , typename ContainerAllocator::template rebind< ::sensor_msgs::PointField_<ContainerAllocator> >::other >  _fields_type;
     std::vector< ::sensor_msgs::PointField_<ContainerAllocator> , typename ContainerAllocator::template rebind< ::sensor_msgs::PointField_<ContainerAllocator> >::other >  fields;
 
-    typedef uint8_t _is_bigendian_type;
-    uint8_t is_bigendian;
+    typedef pcl::uint8_t _is_bigendian_type;
+    pcl::uint8_t is_bigendian;
 
-    typedef uint32_t _point_step_type;
-    uint32_t point_step;
+    typedef pcl::uint32_t _point_step_type;
+    pcl::uint32_t point_step;
 
-    typedef uint32_t _row_step_type;
-    uint32_t row_step;
+    typedef pcl::uint32_t _row_step_type;
+    pcl::uint32_t row_step;
 
-    typedef std::vector<uint8_t, typename ContainerAllocator::template rebind<uint8_t>::other >  _data_type;
-    std::vector<uint8_t, typename ContainerAllocator::template rebind<uint8_t>::other >  data;
+    typedef std::vector<pcl::uint8_t, typename ContainerAllocator::template rebind<pcl::uint8_t>::other >  _data_type;
+    std::vector<pcl::uint8_t, typename ContainerAllocator::template rebind<pcl::uint8_t>::other >  data;
 
-    typedef uint8_t _is_dense_type;
-    uint8_t is_dense;
+    typedef pcl::uint8_t _is_dense_type;
+    pcl::uint8_t is_dense;
 
   public:
     typedef boost::shared_ptr< ::sensor_msgs::PointCloud2_<ContainerAllocator> > Ptr;

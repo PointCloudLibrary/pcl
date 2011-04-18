@@ -32,14 +32,14 @@ namespace sensor_msgs
     typedef std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  _name_type;
     std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  name;
 
-    typedef uint32_t _offset_type;
-    uint32_t offset;
+    typedef pcl::uint32_t _offset_type;
+    pcl::uint32_t offset;
 
-    typedef uint8_t _datatype_type;
-    uint8_t datatype;
+    typedef pcl::uint8_t _datatype_type;
+    pcl::uint8_t datatype;
 
-    typedef uint32_t _count_type;
-    uint32_t count;
+    typedef pcl::uint32_t _count_type;
+    pcl::uint32_t count;
 
     enum { INT8 = 1 };
     enum { UINT8 = 2 };

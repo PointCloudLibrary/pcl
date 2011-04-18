@@ -39,23 +39,23 @@ namespace sensor_msgs
     typedef  ::std_msgs::Header_<ContainerAllocator>  _header_type;
      ::std_msgs::Header_<ContainerAllocator>  header;
 
-    typedef uint32_t _height_type;
-    uint32_t height;
+    typedef pcl::uint32_t _height_type;
+    pcl::uint32_t height;
 
-    typedef uint32_t _width_type;
-    uint32_t width;
+    typedef pcl::uint32_t _width_type;
+    pcl::uint32_t width;
 
     typedef std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  _encoding_type;
     std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  encoding;
 
-    typedef uint8_t _is_bigendian_type;
-    uint8_t is_bigendian;
+    typedef pcl::uint8_t _is_bigendian_type;
+    pcl::uint8_t is_bigendian;
 
-    typedef uint32_t _step_type;
-    uint32_t step;
+    typedef pcl::uint32_t _step_type;
+    pcl::uint32_t step;
 
-    typedef std::vector<uint8_t, typename ContainerAllocator::template rebind<uint8_t>::other >  _data_type;
-    std::vector<uint8_t, typename ContainerAllocator::template rebind<uint8_t>::other >  data;
+    typedef std::vector<pcl::uint8_t, typename ContainerAllocator::template rebind<pcl::uint8_t>::other >  _data_type;
+    std::vector<pcl::uint8_t, typename ContainerAllocator::template rebind<pcl::uint8_t>::other >  data;
 
     typedef boost::shared_ptr< ::sensor_msgs::Image_<ContainerAllocator> > Ptr;
     typedef boost::shared_ptr< ::sensor_msgs::Image_<ContainerAllocator>  const> ConstPtr;

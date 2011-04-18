@@ -26,8 +26,8 @@ namespace std_msgs
     {
     }
 
-    uint32_t seq;
-    uint64_t stamp;
+    pcl::uint32_t seq;
+    pcl::uint64_t stamp;
 
     typedef std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  _frame_id_type;
     std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  frame_id;

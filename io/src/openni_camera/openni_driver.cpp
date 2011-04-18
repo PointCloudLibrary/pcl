@@ -44,6 +44,7 @@
 #include <cctype>
 #include <libusb-1.0/libusb.h>
 #include <map>
+#include <boost/tokenizer.hpp>
 
 namespace openni_wrapper
 {
