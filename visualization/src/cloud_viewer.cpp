@@ -60,10 +60,14 @@ namespace
       template<typename Handler>
       void pop(Handler handler)
       {
-        double psize;
+        double psize,opacity,linesize;
+        viewer->getPointCloudRenderingProperties(pcl_visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+        viewer->getPointCloudRenderingProperties(pcl_visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
         viewer->getPointCloudRenderingProperties(pcl_visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
         viewer->removePointCloud(cloud_name);
         viewer->addPointCloud(cloud, handler, cloud_name);
+        viewer->setPointCloudRenderingProperties(pcl_visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+        viewer->setPointCloudRenderingProperties(pcl_visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
         viewer->setPointCloudRenderingProperties(pcl_visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
         popped_ = true;
       }
@@ -90,7 +94,7 @@ namespace
     template<>
     void cloud_show<gc>::pop()
     {
-      pcl_visualization::PointCloudColorHandlerRandom<pcl::PointXYZ> handler(cloud);
+      pcl_visualization::PointCloudGeometryHandlerXYZ<pcl::PointXYZ> handler(cloud);
       pop(handler);
     }
 }
