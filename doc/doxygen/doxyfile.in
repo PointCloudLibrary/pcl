@@ -3,7 +3,7 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = PCL
+PROJECT_NAME           = "Point Cloud Library (PCL)"
 PROJECT_NUMBER         = @PCL_VERSION@
 OUTPUT_DIRECTORY       = @PCL_BINARY_DIR@/doc
 CREATE_SUBDIRS         = NO
@@ -145,7 +145,7 @@ GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
 HTML_HEADER            = 
-HTML_FOOTER            = 
+HTML_FOOTER            =
 HTML_STYLESHEET        = 
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
@@ -157,7 +157,7 @@ GENERATE_DOCSET        = YES
 DOCSET_FEEDNAME        = "Doxygen generated docs"
 DOCSET_BUNDLE_ID       = pointclouds.org
 DOCSET_PUBLISHER_ID    = pointclouds.org.Publisher
-DOCSET_PUBLISHER_NAME  = Publisher
+DOCSET_PUBLISHER_NAME  = Point Cloud Library (PCL) Development Team
 GENERATE_HTMLHELP      = YES
 CHM_FILE               = @PCL_BINARY_DIR@/doc/pcl.chm
 HHC_LOCATION           = 
