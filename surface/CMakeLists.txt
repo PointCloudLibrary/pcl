@@ -20,7 +20,7 @@ if(build)
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} ${QHULL_LIBRARIES} ${Boost_LIBRARIES})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")

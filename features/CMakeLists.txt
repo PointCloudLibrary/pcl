@@ -29,7 +29,7 @@ if(build)
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
     PCL_LINK_OPENMP(${LIB_NAME})

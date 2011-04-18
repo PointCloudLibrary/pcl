@@ -42,7 +42,7 @@ if(build)
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs})
     target_link_libraries(${LIB_NAME} pcl_io pcl_range_image ${wxWidgets_LIBRARIES}
         vtkCommon vtkWidgets vtkHybrid ${Boost_LIBRARIES})
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
