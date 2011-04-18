@@ -71,20 +71,20 @@ We are requesting to find the PCL package at minimum version 1.0. We
 also says that it is ``REQUIRED`` meaning that cmake will fail
 gracefully if it can't be found. As PCL is modular one can request:
 
- * only one component: find_package(PCL 1.0 REQUIRED COMPONENTS io)
- * several: find_package(PCL 1.0 REQUIRED COMPONENTS io common)
- * all existing: find_package(PCL 1.0 REQUIRED)
+* only one component: find_package(PCL 1.0 REQUIRED COMPONENTS io)
+* several: find_package(PCL 1.0 REQUIRED COMPONENTS io common)
+* all existing: find_package(PCL 1.0 REQUIRED)
 
 .. code-block:: cmake
 
  	 include_directories(${PCL_INCLUDE_DIRS})
 
 When PCL is found, several related variables are set:
- * PCL_FOUND: set to 1 if PCL is found, otherwise unset
- * PCL_INCLUDE_DIRS: set to the paths to PCL installed headers
- * PCL_LIBRARIES: set to the file names of the built and installed PCL libraries
- * PCL_LINK_DIRECTORIES: set to the paths to where PCL libraries reside
- * PCL_VERSION: the version of the found PCL 
+* `PCL_FOUND`: set to 1 if PCL is found, otherwise unset
+* `PCL_INCLUDE_DIRS`: set to the paths to PCL installed headers
+* `PCL_LIBRARIES`: set to the file names of the built and installed PCL libraries
+* `PCL_LINK_DIRECTORIES`: set to the paths to where PCL libraries reside
+* `PCL_VERSION`: the version of the found PCL 
 
 To let cmake know about external headers you include in your project,
 one needs to use ``include_directories()`` macro. In our case
