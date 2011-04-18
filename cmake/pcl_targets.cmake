@@ -81,7 +81,8 @@ macro(PCL_ADD_LIBRARY _name _component)
     target_link_libraries(${_name} ${Boost_LIBRARIES})
     set_target_properties(${_name} PROPERTIES
         VERSION ${PCL_VERSION}
-        SOVERSION ${PCL_MAJOR_VERSION})
+        SOVERSION ${PCL_MAJOR_VERSION}
+				DEFINE_SYMBOL "PCLAPI_EXPORTS")
     install(TARGETS ${_name} LIBRARY DESTINATION ${LIB_INSTALL_DIR}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
         COMPONENT ${_component})
