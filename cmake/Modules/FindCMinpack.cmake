@@ -28,5 +28,12 @@ mark_as_advanced(CMINPACK_LIBRARY CMINPACK_INCLUDE_DIR)
 
 if(CMINPACK_FOUND)
   message(STATUS "CMinPack found (include: ${CMINPACK_INCLUDE_DIRS}, lib: ${CMINPACK_LIBRARY})")
+  if(WIN32)
+    option(CMINPACK_IS_STATIC "Set to ON if you use static cminpack library." OFF)
+    mark_as_advanced(CMINPACK_IS_STATIC)
+    if(CMINPACK_IS_STATIC)
+      add_definitions(-DCMINPACK_NO_DLL)
+    endif(CMINPACK_IS_STATIC)
+  endif(WIN32)
 endif(CMINPACK_FOUND)
 
