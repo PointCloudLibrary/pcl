@@ -41,7 +41,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 /**
-  * \file pcl/common/times.h
+  * \file pcl/common/time.h
   * Define methods for measuring time spent in code blocks
   * \ingroup common
   */
