@@ -547,6 +547,15 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
       break;
     }
 
+    // Quit doesn't seem to work 
+    case 'q': case 'Q':
+    {
+      // Close the window
+      Interactor->GetRenderWindow ()->Finalize ();
+      // Stop the interactor
+      Interactor->TerminateApp ();
+      break;
+    }
     default:
     {
       Superclass::OnChar ();
