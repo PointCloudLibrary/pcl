@@ -285,7 +285,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape,
 
   //iterate over edges until they are empty!
   std::map<int, std::vector<int> >::iterator curr = edges.begin ();
-  int next;
+  int next = -1;
   std::vector<bool> used (vertices, false); //used to decide which direction should we take!
   std::vector<int> pcd_idx_start_polygons;
   pcd_idx_start_polygons.push_back (0);
