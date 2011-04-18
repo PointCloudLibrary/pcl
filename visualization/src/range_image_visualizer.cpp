@@ -38,16 +38,16 @@
 
 #include <pcl/visualization/range_image_visualizer.h>
 
-pcl_visualization::RangeImageVisualizer::RangeImageVisualizer (const std::string& name) : ImageWidgetWX (), name_ (name)
+pcl::visualization::RangeImageVisualizer::RangeImageVisualizer (const std::string& name) : ImageWidgetWX (), name_ (name)
 {
 }
 
-pcl_visualization::RangeImageVisualizer::~RangeImageVisualizer ()
+pcl::visualization::RangeImageVisualizer::~RangeImageVisualizer ()
 {
 }
 
 void 
-  pcl_visualization::RangeImageVisualizer::setRangeImage (const pcl::RangeImage& range_image, float min_value, float max_value, bool grayscale)
+pcl::visualization::RangeImageVisualizer::setRangeImage (const pcl::RangeImage& range_image, float min_value, float max_value, bool grayscale)
 {
   //MEASURE_FUNCTION_TIME;
   
@@ -58,8 +58,8 @@ void
   delete[] ranges;
 }
 
-pcl_visualization::RangeImageVisualizer* 
-  pcl_visualization::RangeImageVisualizer::getRangeImageWidget (
+pcl::visualization::RangeImageVisualizer* 
+pcl::visualization::RangeImageVisualizer::getRangeImageWidget (
     const pcl::RangeImage& range_image, float min_value, float max_value, bool grayscale, const std::string& name)
 {
   RangeImageVisualizer* range_image_widget = new RangeImageVisualizer (name);
@@ -67,7 +67,8 @@ pcl_visualization::RangeImageVisualizer*
   return range_image_widget;
 }
 
-void pcl_visualization::RangeImageVisualizer::visualizeBorders (
+void 
+pcl::visualization::RangeImageVisualizer::visualizeBorders (
     const pcl::RangeImage& range_image, float min_value, float max_value, bool grayscale,
     const pcl::PointCloud<pcl::BorderDescription>& border_descriptions)
 {
@@ -94,8 +95,8 @@ void pcl_visualization::RangeImageVisualizer::visualizeBorders (
   }
 }
 
-pcl_visualization::RangeImageVisualizer* 
-  pcl_visualization::RangeImageVisualizer::getRangeImageBordersWidget (
+pcl::visualization::RangeImageVisualizer* 
+pcl::visualization::RangeImageVisualizer::getRangeImageBordersWidget (
     const pcl::RangeImage& range_image, float min_value, float max_value, bool grayscale,
     const pcl::PointCloud<pcl::BorderDescription>& border_descriptions, const std::string& name)
 {
@@ -107,17 +108,17 @@ pcl_visualization::RangeImageVisualizer*
   return range_image_widget;
 }
 
-pcl_visualization::RangeImageVisualizer* 
-  pcl_visualization::RangeImageVisualizer::getAnglesWidget (const pcl::RangeImage& range_image, float* angles_image,
-                                                            const std::string& name)
+pcl::visualization::RangeImageVisualizer* 
+pcl::visualization::RangeImageVisualizer::getAnglesWidget (const pcl::RangeImage& range_image, float* angles_image,
+                                                           const std::string& name)
 {
   RangeImageVisualizer* widget = new RangeImageVisualizer;
   widget->setAngleImage(angles_image, range_image.width, range_image.height, name.c_str());
   return widget;
 }
 
-pcl_visualization::RangeImageVisualizer* 
-  pcl_visualization::RangeImageVisualizer::getHalfAnglesWidget (const pcl::RangeImage& range_image,
+pcl::visualization::RangeImageVisualizer* 
+pcl::visualization::RangeImageVisualizer::getHalfAnglesWidget (const pcl::RangeImage& range_image,
                                                                 float* angles_image, const std::string& name)
 {
   RangeImageVisualizer* widget = new RangeImageVisualizer;
@@ -125,8 +126,8 @@ pcl_visualization::RangeImageVisualizer*
   return widget;
 }
 
-pcl_visualization::RangeImageVisualizer* 
-  pcl_visualization::RangeImageVisualizer::getInterestPointsWidget (
+pcl::visualization::RangeImageVisualizer* 
+pcl::visualization::RangeImageVisualizer::getInterestPointsWidget (
     const pcl::RangeImage& range_image, float* interest_image, float min_value, float max_value, 
     const pcl::PointCloud<pcl::InterestPoint>& interest_points, const std::string& name)
 {

@@ -37,7 +37,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl_visualization::PCLHistogramVisualizer::addFeatureHistogram (
+pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
     const pcl::PointCloud<PointT> &cloud, int hsize, 
     const std::string &id, int win_width, int win_height)
 {
@@ -117,7 +117,7 @@ pcl_visualization::PCLHistogramVisualizer::addFeatureHistogram (
   renwinint.win_->SetBorders (1);
   
   // Create the interactor style
-  vtkSmartPointer<pcl_visualization::PCLHistogramVisualizerInteractorStyle> style_ = vtkSmartPointer<pcl_visualization::PCLHistogramVisualizerInteractorStyle>::New ();
+  vtkSmartPointer<pcl::visualization::PCLHistogramVisualizerInteractorStyle> style_ = vtkSmartPointer<pcl::visualization::PCLHistogramVisualizerInteractorStyle>::New ();
   style_->Initialize ();
   renwinint.style_ = style_;
   renwinint.style_->UseTimersOn ();

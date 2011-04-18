@@ -53,7 +53,7 @@ namespace
   template<typename CloudT>
     struct cloud_show : cloud_show_base
     {
-      cloud_show(const std::string& cloud_name,typename CloudT::ConstPtr cloud, boost::shared_ptr<pcl_visualization::PCLVisualizer> viewer) :
+      cloud_show(const std::string& cloud_name,typename CloudT::ConstPtr cloud, boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer) :
         cloud_name(cloud_name), cloud(cloud), viewer(viewer),popped_(false)
       {
       }
@@ -61,14 +61,14 @@ namespace
       void pop(Handler handler)
       {
         double psize,opacity,linesize;
-        viewer->getPointCloudRenderingProperties(pcl_visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-        viewer->getPointCloudRenderingProperties(pcl_visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-        viewer->getPointCloudRenderingProperties(pcl_visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
+        viewer->getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+        viewer->getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+        viewer->getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
         viewer->removePointCloud(cloud_name);
         viewer->addPointCloud(cloud, handler, cloud_name);
-        viewer->setPointCloudRenderingProperties(pcl_visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-        viewer->setPointCloudRenderingProperties(pcl_visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-        viewer->setPointCloudRenderingProperties(pcl_visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
+        viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+        viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+        viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
         popped_ = true;
       }
       virtual void pop();
@@ -78,7 +78,7 @@ namespace
       }
       std::string cloud_name;
       typename CloudT::ConstPtr cloud;
-      boost::shared_ptr<pcl_visualization::PCLVisualizer> viewer;
+      boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
       bool popped_;
     };
     typedef pcl::PointCloud<pcl::PointXYZRGB> cc;
@@ -88,17 +88,17 @@ namespace
     template<>
     void cloud_show<cc>::pop()
     {
-      pcl_visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> handler(cloud);
+      pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> handler(cloud);
       pop(handler);
     }
     template<>
     void cloud_show<gc>::pop()
     {
-      pcl_visualization::PointCloudGeometryHandlerXYZ<pcl::PointXYZ> handler(cloud);
+      pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PointXYZ> handler(cloud);
       pop(handler);
     }
 }
-struct pcl_visualization::CloudViewer::CloudViewer_impl
+struct pcl::visualization::CloudViewer::CloudViewer_impl
 {
   ////////////////////////////////////////////////////////////////////////////////////////////
   CloudViewer_impl (const std::string& window_name) :
@@ -138,7 +138,7 @@ struct pcl_visualization::CloudViewer::CloudViewer_impl
   void
   operator() ()
   {
-    using namespace pcl_visualization;
+    using namespace pcl::visualization;
 
     viewer_ = boost::shared_ptr<PCLVisualizer> (new PCLVisualizer (window_name_));
     viewer_->setBackgroundColor (0.1, 0.1, 0.1);
@@ -197,7 +197,7 @@ struct pcl_visualization::CloudViewer::CloudViewer_impl
   }
 
   std::string window_name_;
-  boost::shared_ptr<pcl_visualization::PCLVisualizer> viewer_;
+  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
   boost::mutex mtx_, spin_mtx_, c_mtx;
   boost::thread viewer_thread_;
   bool has_cloud_;
@@ -207,18 +207,18 @@ struct pcl_visualization::CloudViewer::CloudViewer_impl
   CallableMap callables;
 };
 
-pcl_visualization::CloudViewer::CloudViewer (const std::string& window_name) :
+pcl::visualization::CloudViewer::CloudViewer (const std::string& window_name) :
   impl_ (new CloudViewer_impl (window_name))
 {
 
 }
 
-pcl_visualization::CloudViewer::~CloudViewer ()
+pcl::visualization::CloudViewer::~CloudViewer ()
 {
 }
 
 void
-pcl_visualization::CloudViewer::showCloud (const ColorCloud::ConstPtr &cloud,
+pcl::visualization::CloudViewer::showCloud (const ColorCloud::ConstPtr &cloud,
                                            const std::string& cloudname)
 {
   if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
@@ -227,7 +227,7 @@ pcl_visualization::CloudViewer::showCloud (const ColorCloud::ConstPtr &cloud,
 }
 
 void
-pcl_visualization::CloudViewer::showCloud (const GrayCloud::ConstPtr &cloud,
+pcl::visualization::CloudViewer::showCloud (const GrayCloud::ConstPtr &cloud,
                                            const std::string& cloudname)
 {
   if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
@@ -236,26 +236,26 @@ pcl_visualization::CloudViewer::showCloud (const GrayCloud::ConstPtr &cloud,
 }
 
 void
-pcl_visualization::CloudViewer::runOnVisualizationThread (VizCallable x, const std::string& key)
+pcl::visualization::CloudViewer::runOnVisualizationThread (VizCallable x, const std::string& key)
 {
   impl_->post (x, key);
 }
 
 void
-pcl_visualization::CloudViewer::runOnVisualizationThreadOnce (VizCallable x, const std::string& key)
+pcl::visualization::CloudViewer::runOnVisualizationThreadOnce (VizCallable x, const std::string& key)
 {
   impl_->post (x, key);
 }
 
 
 void
-pcl_visualization::CloudViewer::removeVisualizationCallable (const std::string& key)
+pcl::visualization::CloudViewer::removeVisualizationCallable (const std::string& key)
 {
   impl_->remove (key);
 }
 
 bool
-pcl_visualization::CloudViewer::wasStopped (int millis)
+pcl::visualization::CloudViewer::wasStopped (int millis)
 {
   boost::thread::yield (); //allow this to be called in a loop
   if (impl_->viewer_)

@@ -126,7 +126,7 @@ class SimpleKinectViewer
       interface->stop ();
     }
 
-    pcl_visualization::CloudViewer viewer;
+    pcl::visualization::CloudViewer viewer;
     boost::mutex mtx_;
     CloudConstPtr cloud_;
 };

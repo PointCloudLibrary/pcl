@@ -36,11 +36,8 @@
  */
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Create a 3d poly line from a set of points. 
-  * \param cloud the set of points used to create the 3d polyline
-  */
 template <typename PointT> vtkSmartPointer<vtkDataSet> 
-  pcl_visualization::createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
+pcl::visualization::createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
 {
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
   vtkSmartPointer<vtkPolygon> polygon    = vtkSmartPointer<vtkPolygon>::New ();
@@ -65,12 +62,8 @@ template <typename PointT> vtkSmartPointer<vtkDataSet>
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Create a line shape from two points
-  * \param pt1 the first point on the line
-  * \param pt2 the end point on the line
-  */
 template <typename P1, typename P2> vtkSmartPointer<vtkDataSet>
-  pcl_visualization::createLine (const P1 &pt1, const P2 &pt2)
+pcl::visualization::createLine (const P1 &pt1, const P2 &pt2)
 {
   vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();
   line->SetPoint1 (pt1.x, pt1.y, pt1.z);
@@ -81,13 +74,8 @@ template <typename P1, typename P2> vtkSmartPointer<vtkDataSet>
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Create a sphere shape from a point and a radius
-  * \param center the center of the sphere
-  * \param radius the radius of the sphere
-  * \param res (optional) the resolution used for rendering the model
-  */
 template <typename PointT> vtkSmartPointer<vtkDataSet> 
-  pcl_visualization::createSphere (const PointT &center, double radius, int res)
+pcl::visualization::createSphere (const PointT &center, double radius, int res)
 {
   // Set the sphere origin
   vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New ();

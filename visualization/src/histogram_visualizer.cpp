@@ -42,7 +42,7 @@
 #include <pcl/visualization/histogram_visualizer.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl_visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () : exit_main_loop_timer_callback_ (vtkSmartPointer<ExitMainLoopTimerCallback>::New ()), exit_callback_ (vtkSmartPointer<ExitCallback>::New ())
+pcl::visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () : exit_main_loop_timer_callback_ (vtkSmartPointer<ExitMainLoopTimerCallback>::New ()), exit_callback_ (vtkSmartPointer<ExitCallback>::New ())
 {
 /*  // Create a Renderer
   vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New ();
@@ -77,7 +77,7 @@ pcl_visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () : exit_main
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Spin once method. Calls the interactor and updates the screen once. */
 void
-pcl_visualization::PCLHistogramVisualizer::spinOnce (int time, bool force_redraw)
+pcl::visualization::PCLHistogramVisualizer::spinOnce (int time, bool force_redraw)
 {
   resetStoppedFlag ();
 
@@ -118,7 +118,7 @@ pcl_visualization::PCLHistogramVisualizer::spinOnce (int time, bool force_redraw
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl_visualization::PCLHistogramVisualizer::spin ()
+pcl::visualization::PCLHistogramVisualizer::spin ()
 {
   resetStoppedFlag ();
   do
@@ -136,7 +136,7 @@ pcl_visualization::PCLHistogramVisualizer::spin ()
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-pcl_visualization::PCLHistogramVisualizer::wasStopped ()
+pcl::visualization::PCLHistogramVisualizer::wasStopped ()
 {
   for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
   {
@@ -149,7 +149,7 @@ pcl_visualization::PCLHistogramVisualizer::wasStopped ()
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl_visualization::PCLHistogramVisualizer::resetStoppedFlag () 
+pcl::visualization::PCLHistogramVisualizer::resetStoppedFlag () 
 { 
   for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
     (*am_it).second.interactor_->stopped = false; 
@@ -157,7 +157,7 @@ pcl_visualization::PCLHistogramVisualizer::resetStoppedFlag ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl_visualization::PCLHistogramVisualizer::setBackgroundColor (const double &r, const double &g, const double &b, int viewport)
+pcl::visualization::PCLHistogramVisualizer::setBackgroundColor (const double &r, const double &g, const double &b, int viewport)
 {
 /*  rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
@@ -181,7 +181,7 @@ pcl_visualization::PCLHistogramVisualizer::setBackgroundColor (const double &r, 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl_visualization::PCLHistogramVisualizer::setGlobalYRange (float minp, float maxp)
+pcl::visualization::PCLHistogramVisualizer::setGlobalYRange (float minp, float maxp)
 {
   for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
   {
@@ -192,7 +192,7 @@ pcl_visualization::PCLHistogramVisualizer::setGlobalYRange (float minp, float ma
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl_visualization::PCLHistogramVisualizer::updateWindowPositions ()
+pcl::visualization::PCLHistogramVisualizer::updateWindowPositions ()
 {
   int posx = 0, posy = 0;
   for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
@@ -221,7 +221,7 @@ pcl_visualization::PCLHistogramVisualizer::updateWindowPositions ()
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl_visualization::PCLHistogramVisualizer::addFeatureHistogram (
+pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
     const sensor_msgs::PointCloud2 &cloud, const std::string &field_name, 
     const std::string &id, int win_width, int win_height)
 {
@@ -312,7 +312,7 @@ pcl_visualization::PCLHistogramVisualizer::addFeatureHistogram (
   renwinint.win_->SetBorders (1);
   
   // Create the interactor style
-  vtkSmartPointer<pcl_visualization::PCLHistogramVisualizerInteractorStyle> style_ = vtkSmartPointer<pcl_visualization::PCLHistogramVisualizerInteractorStyle>::New ();
+  vtkSmartPointer<pcl::visualization::PCLHistogramVisualizerInteractorStyle> style_ = vtkSmartPointer<pcl::visualization::PCLHistogramVisualizerInteractorStyle>::New ();
   style_->Initialize ();
   renwinint.style_ = style_;
   renwinint.style_->UseTimersOn ();
@@ -335,7 +335,7 @@ pcl_visualization::PCLHistogramVisualizer::addFeatureHistogram (
   return (true);
 }
 
-pcl_visualization::PCLHistogramVisualizer::~PCLHistogramVisualizer ()
+pcl::visualization::PCLHistogramVisualizer::~PCLHistogramVisualizer ()
 {
   for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
      {

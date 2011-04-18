@@ -50,9 +50,8 @@
 #include <vtkPlanes.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Initialization routine. Must be called before anything else. */
 void
-  pcl_visualization::PCLVisualizerInteractorStyle::Initialize ()
+pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
 {
   // Set windows size (width, height) to unknown (-1)
   win_height_ = win_width_ = -1;
@@ -86,9 +85,8 @@ void
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Interactor style internal method. Zoom in. */
 void
-  pcl_visualization::PCLVisualizerInteractorStyle::zoomIn ()
+pcl::visualization::PCLVisualizerInteractorStyle::zoomIn ()
 {
   FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
   // Zoom in
@@ -99,9 +97,8 @@ void
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Interactor style internal method. Zoom out. */
 void
-  pcl_visualization::PCLVisualizerInteractorStyle::zoomOut ()
+pcl::visualization::PCLVisualizerInteractorStyle::zoomOut ()
 {
   FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
   // Zoom out
@@ -112,9 +109,8 @@ void
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Interactor style internal method. Gets called whenever a key is pressed. */
 void
-  pcl_visualization::PCLVisualizerInteractorStyle::OnChar ()
+pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
 {
   if (!init_)
   {
@@ -562,9 +558,8 @@ void
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Interactor style internal method. Gets called periodically if a timer is set. */
 void
-  pcl_visualization::PCLVisualizerInteractorStyle::OnTimer ()
+pcl::visualization::PCLVisualizerInteractorStyle::OnTimer ()
 {
   if (!init_)
   {
@@ -583,9 +578,8 @@ void
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Initialization routine. Must be called before anything else. */
 void
-  pcl_visualization::PCLHistogramVisualizerInteractorStyle::Initialize ()
+pcl::visualization::PCLHistogramVisualizerInteractorStyle::Initialize ()
 {
   // Set windows size (width, height) to unknown (-1)
   win_height_ = win_width_ = -1;
@@ -601,9 +595,8 @@ void
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Interactor style internal method. Gets called whenever a key is pressed. */
 void
-  pcl_visualization::PCLHistogramVisualizerInteractorStyle::OnChar ()
+pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnChar ()
 {
   if (!init_)
   {
@@ -788,9 +781,8 @@ void
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Interactor style internal method. Gets called periodically if a timer is set. */
 void
-  pcl_visualization::PCLHistogramVisualizerInteractorStyle::OnTimer ()
+pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnTimer ()
 {
   if (!init_)
   {
@@ -802,10 +794,13 @@ void
     (*am_it).second.ren_->Render ();
 }
 
-namespace pcl_visualization
+namespace pcl
 {
-  // Standard VTK macro for *New ()
-  vtkStandardNewMacro (PCLVisualizerInteractorStyle);
-  vtkStandardNewMacro (PCLHistogramVisualizerInteractorStyle);
+  namespace visualization
+  {
+    // Standard VTK macro for *New ()
+    vtkStandardNewMacro (PCLVisualizerInteractorStyle);
+    vtkStandardNewMacro (PCLHistogramVisualizerInteractorStyle);
+  }
 }
 

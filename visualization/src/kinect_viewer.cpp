@@ -71,7 +71,7 @@ class KinectViewer
       interface->stop ();
     }
     
-    pcl_visualization::CloudViewer viewer;
+    pcl::visualization::CloudViewer viewer;
 };
 
 

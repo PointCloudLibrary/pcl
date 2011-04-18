@@ -38,16 +38,10 @@
 #include <Eigen/Geometry>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Obtain a list of corresponding indices, for a set of vtk points, 
-  * from a pcl::PointCloud
-  * \param src the set of vtk points
-  * \param tgt the target pcl::PointCloud that we need to obtain indices from
-  * \param indices the resultant list of indices
-  */
 void
-pcl_visualization::getCorrespondingPointCloud (vtkPolyData *src, 
-                                               const pcl::PointCloud<pcl::PointXYZ> &tgt, 
-                                               std::vector<int> &indices)
+pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src, 
+                                                const pcl::PointCloud<pcl::PointXYZ> &tgt, 
+                                                std::vector<int> &indices)
 {
   // Iterate through the points and copy the data in a pcl::PointCloud
   pcl::PointCloud<pcl::PointXYZ> cloud;
@@ -80,15 +74,8 @@ pcl_visualization::getCorrespondingPointCloud (vtkPolyData *src,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Saves the vtk-formatted Point Cloud data into a set of files, based on whether
-  * the data comes from previously loaded PCD files. The PCD files are matched using the 
-  * a list of names for the actors on screen.
-  * \param data the vtk data
-  * \param out_file the output file (extra indices will be appended to it)
-  * \param actors the list of actors present on screen
-  */
 bool 
-  pcl_visualization::savePointData (vtkPolyData* data, const std::string &out_file, const boost::shared_ptr<CloudActorMap> &actors)
+pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_file, const boost::shared_ptr<CloudActorMap> &actors)
 {
   // Clean the data (no duplicates!)
   vtkSmartPointer<vtkCleanPolyData> cleaner = vtkSmartPointer<vtkCleanPolyData>::New ();

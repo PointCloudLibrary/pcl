@@ -48,125 +48,129 @@
 #include <vtkFieldData.h>
 #include <vtkDoubleArray.h>
 
-namespace pcl_visualization
+namespace pcl
 {
-  /** \brief PCL histogram visualizer main class. 
-    * \author Radu Bogdan Rusu
-    */
-  class PCLHistogramVisualizer
+  namespace visualization
   {
-    public:
-      /** \brief PCL histogram visualizer constructor. */
-      PCLHistogramVisualizer ();
+    /** \brief PCL histogram visualizer main class. 
+      * \author Radu Bogdan Rusu
+      * \ingroup visualization
+      */
+    class PCLHistogramVisualizer
+    {
+      public:
+        /** \brief PCL histogram visualizer constructor. */
+        PCLHistogramVisualizer ();
 
-      ~PCLHistogramVisualizer ();
-      /** \brief Spin once method. Calls the interactor and updates the screen once. 
-       *  \param time - How long (in ms) should the visualization loop be allowed to run.
-       *  \param force_redraw - if false it might return without doing anything if the interactor's
-       *                        framerate does not require a redraw yet.
-       */
-      void 
-      spinOnce (int time = 1, bool force_redraw = false);
-      
-      /** \brief Spin method. Calls the interactor and runs an internal loop. */
-      void 
-      spin ();
-      
-      /** \brief Set the viewport's background color.
-        * \param r the red component of the RGB color
-        * \param g the green component of the RGB color
-        * \param b the blue component of the RGB color
-        * \param viewport the view port (default: all)
-        */
-      void 
-      setBackgroundColor (const double &r, const double &g, const double &b, int viewport = 0);
+        ~PCLHistogramVisualizer ();
+        /** \brief Spin once method. Calls the interactor and updates the screen once. 
+         *  \param time - How long (in ms) should the visualization loop be allowed to run.
+         *  \param force_redraw - if false it might return without doing anything if the interactor's
+         *                        framerate does not require a redraw yet.
+         */
+        void 
+        spinOnce (int time = 1, bool force_redraw = false);
+        
+        /** \brief Spin method. Calls the interactor and runs an internal loop. */
+        void 
+        spin ();
+        
+        /** \brief Set the viewport's background color.
+          * \param r the red component of the RGB color
+          * \param g the green component of the RGB color
+          * \param b the blue component of the RGB color
+          * \param viewport the view port (default: all)
+          */
+        void 
+        setBackgroundColor (const double &r, const double &g, const double &b, int viewport = 0);
 
-      /** \brief Add a histogram feature to screen as a separate window.
-        * \param cloud the PointCloud dataset containing the histogram
-        * \param hsize the length of the histogram
-        * \param id the point cloud object id (default: cloud)
-        * \param win_width the size of the window (width)
-        * \param win_height the size of the window (width)
-        */
-      template <typename PointT> bool 
-      addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, int hsize, const std::string &id = "cloud", int win_width = 640, int win_height = 200);
+        /** \brief Add a histogram feature to screen as a separate window.
+          * \param cloud the PointCloud dataset containing the histogram
+          * \param hsize the length of the histogram
+          * \param id the point cloud object id (default: cloud)
+          * \param win_width the size of the window (width)
+          * \param win_height the size of the window (width)
+          */
+        template <typename PointT> bool 
+        addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, int hsize, const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
-      /** \brief Add a histogram feature to screen as a separate window.
-        * \param cloud the PointCloud dataset containing the histogram
-        * \param field_name the field name containing the histogram
-        * \param id the point cloud object id (default: cloud)
-        * \param win_width the size of the window (width)
-        * \param win_height the size of the window (width)
-        */
-      bool 
-      addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, const std::string &field_name, const std::string &id = "cloud", int win_width = 640, int win_height = 200);
+        /** \brief Add a histogram feature to screen as a separate window.
+          * \param cloud the PointCloud dataset containing the histogram
+          * \param field_name the field name containing the histogram
+          * \param id the point cloud object id (default: cloud)
+          * \param win_width the size of the window (width)
+          * \param win_height the size of the window (width)
+          */
+        bool 
+        addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, const std::string &field_name, const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
-      /** \brief Set the Y range to minp-maxp for all histograms.
-        * \param minp the minimum Y range
-        * \param maxp the maximum Y range
-        */
-      void 
-      setGlobalYRange (float minp, float maxp);
+        /** \brief Set the Y range to minp-maxp for all histograms.
+          * \param minp the minimum Y range
+          * \param maxp the maximum Y range
+          */
+        void 
+        setGlobalYRange (float minp, float maxp);
 
-      /** \brief Update all window positions on screen so that they fit. */
-      void 
-      updateWindowPositions ();
+        /** \brief Update all window positions on screen so that they fit. */
+        void 
+        updateWindowPositions ();
 
-      /** \brief Returns true when the user tried to close the window */
-      bool 
-      wasStopped ();
-      
-      /** \brief Set the stopped flag back to false */
-      void 
-      resetStoppedFlag ();
+        /** \brief Returns true when the user tried to close the window */
+        bool 
+        wasStopped ();
+        
+        /** \brief Set the stopped flag back to false */
+        void 
+        resetStoppedFlag ();
 
-    private:
-      /** \brief A map of all windows on screen (with their renderers and interactors). */
-      RenWinInteractMap wins_;
+      private:
+        /** \brief A map of all windows on screen (with their renderers and interactors). */
+        RenWinInteractMap wins_;
 
-      struct ExitMainLoopTimerCallback : public vtkCommand
-      {
-        static ExitMainLoopTimerCallback* New()
+        struct ExitMainLoopTimerCallback : public vtkCommand
         {
-          return new ExitMainLoopTimerCallback;
-        }
-        virtual void Execute(vtkObject* vtkNotUsed(caller), unsigned long event_id, void* call_data)
+          static ExitMainLoopTimerCallback* New()
+          {
+            return new ExitMainLoopTimerCallback;
+          }
+          virtual void Execute(vtkObject* vtkNotUsed(caller), unsigned long event_id, void* call_data)
+          {
+            if (event_id != vtkCommand::TimerEvent)
+              return;
+            int timer_id = *(int*)call_data;
+
+            if (timer_id != right_timer_id)
+              return;
+
+            // Stop vtk loop and send notification to app to wake it up
+            interact->stopLoop ();
+          }
+          int right_timer_id;
+          PCLVisualizerInteractor *interact;
+        };
+        
+        struct ExitCallback : public vtkCommand
         {
-          if (event_id != vtkCommand::TimerEvent)
-            return;
-          int timer_id = *(int*)call_data;
+          static ExitCallback* New ()
+          {
+            return new ExitCallback;
+          }
+          virtual void Execute (vtkObject* caller, unsigned long event_id, void* call_data)
+          {
+            if (event_id != vtkCommand::ExitEvent)
+              return;
 
-          if (timer_id != right_timer_id)
-            return;
+            interact->stopped = true;
+          }
+          PCLVisualizerInteractor *interact;
+        };
 
-          // Stop vtk loop and send notification to app to wake it up
-          interact->stopLoop ();
-        }
-        int right_timer_id;
-        PCLVisualizerInteractor *interact;
-      };
-      
-      struct ExitCallback : public vtkCommand
-      {
-        static ExitCallback* New ()
-        {
-          return new ExitCallback;
-        }
-        virtual void Execute (vtkObject* caller, unsigned long event_id, void* call_data)
-        {
-          if (event_id != vtkCommand::ExitEvent)
-            return;
+        /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
+        vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
+        vtkSmartPointer<ExitCallback> exit_callback_;
 
-          interact->stopped = true;
-        }
-        PCLVisualizerInteractor *interact;
-      };
-
-      /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
-      vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
-      vtkSmartPointer<ExitCallback> exit_callback_;
-
-  };
+    };
+  }
 }
 
 #include <pcl/visualization/impl/histogram_visualizer.hpp>

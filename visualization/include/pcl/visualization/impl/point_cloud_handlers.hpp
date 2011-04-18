@@ -39,11 +39,8 @@
 #include <pcl/win32_macros.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Obtain the actual color for the input dataset as vtk scalars.
-  * \param scalars the resultant scalars containing the color for the input dataset
-  */
 template <typename PointT> void
-pcl_visualization::PointCloudColorHandlerCustom<PointT>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+pcl::visualization::PointCloudColorHandlerCustom<PointT>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
   if (!capable_)
     return;
@@ -69,11 +66,8 @@ pcl_visualization::PointCloudColorHandlerCustom<PointT>::getColor (vtkSmartPoint
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Obtain the actual color for the input dataset as vtk scalars.
-  * \param scalars the resultant scalars containing the color for the input dataset
-  */
 template <typename PointT> void
-pcl_visualization::PointCloudColorHandlerRandom<PointT>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+pcl::visualization::PointCloudColorHandlerRandom<PointT>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
   if (!capable_)
     return;
@@ -88,7 +82,7 @@ pcl_visualization::PointCloudColorHandlerRandom<PointT>::getColor (vtkSmartPoint
   // Get a random color
   unsigned char* colors = new unsigned char[nr_points * 3];
   double r, g, b;
-  pcl_visualization::getRandomColors (r, g, b);
+  pcl::visualization::getRandomColors (r, g, b);
 
   int r_ = pcl_lrint (r * 255.0), g_ = pcl_lrint (g * 255.0), b_ = pcl_lrint (b * 255.0);
 
@@ -103,10 +97,9 @@ pcl_visualization::PointCloudColorHandlerRandom<PointT>::getColor (vtkSmartPoint
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Constructor. */
 template <typename PointT>
-pcl_visualization::PointCloudColorHandlerRGBField<PointT>::PointCloudColorHandlerRGBField (const PointCloudConstPtr &cloud) : 
-  pcl_visualization::PointCloudColorHandler<PointT>::PointCloudColorHandler (cloud)
+pcl::visualization::PointCloudColorHandlerRGBField<PointT>::PointCloudColorHandlerRGBField (const PointCloudConstPtr &cloud) : 
+  pcl::visualization::PointCloudColorHandler<PointT>::PointCloudColorHandler (cloud)
 {
   // Handle the 24-bit packed RGB values
   field_idx_ = pcl::getFieldIndex (*cloud, "rgb", fields_);
@@ -117,11 +110,8 @@ pcl_visualization::PointCloudColorHandlerRGBField<PointT>::PointCloudColorHandle
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Obtain the actual color for the input dataset as vtk scalars.
-  * \param scalars the resultant scalars containing the color for the input dataset
-  */
 template <typename PointT> void 
-pcl_visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
   if (!capable_)
     return;
@@ -184,10 +174,9 @@ pcl_visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPoi
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Constructor. */
 template <typename PointT>
-pcl_visualization::PointCloudColorHandlerGenericField<PointT>::PointCloudColorHandlerGenericField (const PointCloudConstPtr &cloud, 
-    const std::string &field_name) : pcl_visualization::PointCloudColorHandler<PointT>::PointCloudColorHandler (cloud)
+pcl::visualization::PointCloudColorHandlerGenericField<PointT>::PointCloudColorHandlerGenericField (const PointCloudConstPtr &cloud, 
+    const std::string &field_name) : pcl::visualization::PointCloudColorHandler<PointT>::PointCloudColorHandler (cloud)
 {
   field_name_ = field_name;
   field_idx_  = pcl::getFieldIndex (*cloud, field_name, fields_);
@@ -198,11 +187,8 @@ pcl_visualization::PointCloudColorHandlerGenericField<PointT>::PointCloudColorHa
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Obtain the actual color for the input dataset as vtk scalars.
-  * \param scalars the resultant scalars containing the color for the input dataset
-  */
 template <typename PointT> void 
-pcl_visualization::PointCloudColorHandlerGenericField<PointT>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
   if (!capable_)
     return;
@@ -264,10 +250,9 @@ pcl_visualization::PointCloudColorHandlerGenericField<PointT>::getColor (vtkSmar
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Constructor. */
 template <typename PointT>
-pcl_visualization::PointCloudGeometryHandlerXYZ<PointT>::PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud) 
-  : pcl_visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
+pcl::visualization::PointCloudGeometryHandlerXYZ<PointT>::PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud) 
+  : pcl::visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex (*cloud, "x", fields_);
   if (field_x_idx_ == -1)
@@ -282,11 +267,8 @@ pcl_visualization::PointCloudGeometryHandlerXYZ<PointT>::PointCloudGeometryHandl
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
-  * \param points the resultant geometry 
-  */
 template <typename PointT> void 
-pcl_visualization::PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
+pcl::visualization::PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
 {
   if (!capable_)
     return;
@@ -338,8 +320,8 @@ pcl_visualization::PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartPo
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Constructor. */
 template <typename PointT>
-pcl_visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud) 
-  : pcl_visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
+pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud) 
+  : pcl::visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex (*cloud, "normal_x", fields_);
   if (field_x_idx_ == -1)
@@ -354,11 +336,8 @@ pcl_visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::PointCloudGeo
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
-  * \param points the resultant geometry 
-  */
 template <typename PointT> void 
-pcl_visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
+pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
 {
   if (!capable_)
     return;
@@ -381,10 +360,9 @@ pcl_visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::getGeometry (
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Constructor. */
 template <typename PointT>
-pcl_visualization::PointCloudGeometryHandlerCustom<PointT>::PointCloudGeometryHandlerCustom (const PointCloudConstPtr &cloud,
-    const std::string &x_field_name, const std::string &y_field_name, const std::string &z_field_name) : pcl_visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
+pcl::visualization::PointCloudGeometryHandlerCustom<PointT>::PointCloudGeometryHandlerCustom (const PointCloudConstPtr &cloud,
+    const std::string &x_field_name, const std::string &y_field_name, const std::string &z_field_name) : pcl::visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex (*cloud, x_field_name, fields_);
   if (field_x_idx_ == -1)
@@ -400,11 +378,8 @@ pcl_visualization::PointCloudGeometryHandlerCustom<PointT>::PointCloudGeometryHa
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
-  * \param points the resultant geometry 
-  */
 template <typename PointT> void 
-pcl_visualization::PointCloudGeometryHandlerCustom<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
+pcl::visualization::PointCloudGeometryHandlerCustom<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
 {
   if (!capable_)
     return;

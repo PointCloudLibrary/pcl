@@ -48,7 +48,7 @@ using std::cerr;
 IMPLEMENT_APP_NO_MAIN (wxApp)
 
 void 
-  pcl_visualization::ImageWidgetWX::spinOnce ()
+pcl::visualization::ImageWidgetWX::spinOnce ()
 {
   if (wxTheApp != NULL)
     wxTheApp->Yield (true);
@@ -60,12 +60,12 @@ void
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::spin ()
+pcl::visualization::ImageWidgetWX::spin ()
 {
   wxTheApp->OnRun (); 
 }
 
-pcl_visualization::ImageWidgetWX::ImageWidgetWX () : keepAspectRatio (true), visualize_selected_point (false),
+pcl::visualization::ImageWidgetWX::ImageWidgetWX () : keepAspectRatio (true), visualize_selected_point (false),
                                                      print_selected_point(false),
                                                      image_frame (NULL), image_data (NULL)
 {
@@ -83,7 +83,7 @@ pcl_visualization::ImageWidgetWX::ImageWidgetWX () : keepAspectRatio (true), vis
   }
 }
 
-pcl_visualization::ImageWidgetWX::~ImageWidgetWX ()
+pcl::visualization::ImageWidgetWX::~ImageWidgetWX ()
 {
   //cout << __PRETTY_FUNCTION__<<" called.\n";
   if (image_frame != NULL) 
@@ -96,7 +96,7 @@ pcl_visualization::ImageWidgetWX::~ImageWidgetWX ()
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::reset ()
+pcl::visualization::ImageWidgetWX::reset ()
 {
   mouse_click_happened = false;
   last_clicked_point_x = -1.0f;
@@ -107,13 +107,13 @@ void
   image_frame->image_panel->lines.clear ();
 }
 
-//void pcl_visualization::ImageWidgetWX::savePng (std::string filename) const
+//void pcl::visualization::ImageWidgetWX::savePng (std::string filename) const
 //{
   //image_frame->image_panel->SaveFile(filename.c_str());
 //}
 
 void 
-  pcl_visualization::ImageWidgetWX::setSize (int width, int height)
+pcl::visualization::ImageWidgetWX::setSize (int width, int height)
 {
   int original_width  = image_frame->image_panel->image->GetWidth (),
       original_height = image_frame->image_panel->image->GetHeight ();
@@ -136,8 +136,8 @@ void
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::setRGBImage (const unsigned char* data,
-                                                 unsigned int width, unsigned int height, const char* name)
+pcl::visualization::ImageWidgetWX::setRGBImage (const unsigned char* data,
+                                                unsigned int width, unsigned int height, const char* name)
 {
   //cout << __PRETTY_FUNCTION__<<" called.\n";
   reset ();
@@ -162,15 +162,15 @@ void
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::setName (const std::string& name)
+pcl::visualization::ImageWidgetWX::setName (const std::string& name)
 {
   image_frame->SetTitle (wxString (name.c_str(), wxConvUTF8));
   //image_frame->Refresh ();
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::setFloatImage (const float* float_image, unsigned int width, unsigned int height,
-                                                   const char* name, float min_value, float max_value, bool grayscale)
+pcl::visualization::ImageWidgetWX::setFloatImage (const float* float_image, unsigned int width, unsigned int height,
+                                                  const char* name, float min_value, float max_value, bool grayscale)
 {
   unsigned char* rgb_image = FloatImageUtils::getVisualImage (float_image, width, height,
                                                               min_value, max_value, grayscale);
@@ -179,8 +179,8 @@ void
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::setAngleImage (const float* angle_image, unsigned int width, unsigned int height,
-                                                   const char* name)
+pcl::visualization::ImageWidgetWX::setAngleImage (const float* angle_image, unsigned int width, unsigned int height,
+                                                  const char* name)
 {
   unsigned char* rgb_image = FloatImageUtils::getVisualAngleImage (angle_image, width, height);
   setRGBImage (rgb_image, width, height, name);
@@ -188,8 +188,8 @@ void
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::setHalfAngleImage (const float* angle_image, unsigned int width,
-                                                       unsigned int height, const char* name)
+pcl::visualization::ImageWidgetWX::setHalfAngleImage (const float* angle_image, unsigned int width,
+                                                      unsigned int height, const char* name)
 {
   unsigned char* rgb_image = FloatImageUtils::getVisualHalfAngleImage (angle_image, width, height);
   setRGBImage (rgb_image, width, height, name);
@@ -197,39 +197,39 @@ void
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::informAboutImageFrameDestruction () 
+pcl::visualization::ImageWidgetWX::informAboutImageFrameDestruction () 
 {
   //cout << __PRETTY_FUNCTION__<<" called.\n";
   image_frame = NULL;
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::markPoint (float x, float y, const wxPen* color, const wxBrush* background) 
+pcl::visualization::ImageWidgetWX::markPoint (float x, float y, const wxPen* color, const wxBrush* background) 
 {
   image_frame->image_panel->markedPoints.push_back (ImagePoint (x,y, color, background));
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::markLine (float x1, float y1, float x2, float y2, const wxPen* color) 
+pcl::visualization::ImageWidgetWX::markLine (float x1, float y1, float x2, float y2, const wxPen* color) 
 {
   image_frame->image_panel->lines.push_back (ImageLine (x1, y1, x2, y2, color));
 }
 
 bool 
-  pcl_visualization::ImageWidgetWX::isShown () const 
+pcl::visualization::ImageWidgetWX::isShown () const 
 {
   if (image_frame==NULL) return false;
   return image_frame->IsShown ();
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::addPixelClickedHandler (PixelClickedHandler pixel_clicked_handler)
+pcl::visualization::ImageWidgetWX::addPixelClickedHandler (PixelClickedHandler pixel_clicked_handler)
 {
   image_frame->image_panel->pixel_clicked_handlers.push_back (pixel_clicked_handler);
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::show (bool show_widget)
+pcl::visualization::ImageWidgetWX::show (bool show_widget)
 {
   if (image_frame != NULL)
     image_frame->Show (show_widget);
@@ -241,7 +241,7 @@ void
 //==================================
 
 
-pcl_visualization::ImageWidgetWX::ImageFrame::ImageFrame (ImageWidgetWX* parentImageWidget) :
+pcl::visualization::ImageWidgetWX::ImageFrame::ImageFrame (ImageWidgetWX* parentImageWidget) :
   wxFrame (NULL, wxID_ANY, wxString (__func__, wxConvUTF8), wxPoint (50, 50), wxSize (800, 600)),
   parentImageWidget (parentImageWidget)
 {
@@ -251,7 +251,7 @@ pcl_visualization::ImageWidgetWX::ImageFrame::ImageFrame (ImageWidgetWX* parentI
   //this->SetSizer(sizer);
 }
 
-pcl_visualization::ImageWidgetWX::ImageFrame::~ImageFrame() 
+pcl::visualization::ImageWidgetWX::ImageFrame::~ImageFrame() 
 {
   //cout << __PRETTY_FUNCTION__<<" called.\n";
   if (parentImageWidget != NULL)
@@ -259,14 +259,14 @@ pcl_visualization::ImageWidgetWX::ImageFrame::~ImageFrame()
   //delete image_panel;  // This is done by wxApp
 }
 
-BEGIN_EVENT_TABLE (pcl_visualization::ImageWidgetWX::ImageFrame, wxFrame)
+BEGIN_EVENT_TABLE (pcl::visualization::ImageWidgetWX::ImageFrame, wxFrame)
   //EVT_PAINT(ImageWidgetWX::ImageFrame::paintEvent)
-  EVT_SIZE (pcl_visualization::ImageWidgetWX::ImageFrame::OnSize)
-  EVT_CLOSE (pcl_visualization::ImageWidgetWX::ImageFrame::OnClose)  // Subscribe for the close event
+  EVT_SIZE (pcl::visualization::ImageWidgetWX::ImageFrame::OnSize)
+  EVT_CLOSE (pcl::visualization::ImageWidgetWX::ImageFrame::OnClose)  // Subscribe for the close event
 END_EVENT_TABLE ()
 
 void 
-  pcl_visualization::ImageWidgetWX::ImageFrame::OnSize(wxSizeEvent& event) 
+pcl::visualization::ImageWidgetWX::ImageFrame::OnSize(wxSizeEvent& event) 
 {
   //cout << __PRETTY_FUNCTION__<<" called.\n";
   Fit ();
@@ -274,7 +274,7 @@ void
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::ImageFrame::OnClose (wxCloseEvent& event) 
+pcl::visualization::ImageWidgetWX::ImageFrame::OnClose (wxCloseEvent& event) 
 {
   //cout << __PRETTY_FUNCTION__<<" called.\n";
   //this->Destroy();    // If not, destroy the window anyway.
@@ -282,7 +282,7 @@ void
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::ImageFrame::updateImage (unsigned char* data,
+pcl::visualization::ImageWidgetWX::ImageFrame::updateImage (unsigned char* data,
                                                              unsigned int width, unsigned int height) 
 {
   //cout << __PRETTY_FUNCTION__<<" called.\n";
@@ -302,7 +302,7 @@ void
 //   IMAGE PANEL DEFINITION START
 //==================================
 
-BEGIN_EVENT_TABLE (pcl_visualization::ImageWidgetWX::ImagePanel, wxPanel)
+BEGIN_EVENT_TABLE (pcl::visualization::ImageWidgetWX::ImagePanel, wxPanel)
 /* some useful events
  EVT_MOTION(ImageWidgetWX::ImagePanel::mouseMoved)
  EVT_LEFT_DOWN(ImageWidgetWX::ImagePanel::mouseDown)
@@ -312,9 +312,9 @@ BEGIN_EVENT_TABLE (pcl_visualization::ImageWidgetWX::ImagePanel, wxPanel)
  EVT_KEY_UP(ImageWidgetWX::ImagePanel::keyReleased)
  EVT_MOUSEWHEEL(ImageWidgetWX::ImagePanel::mouseWheelMoved)
 */
-EVT_LEFT_UP (pcl_visualization::ImageWidgetWX::ImagePanel::mouseReleased)
-EVT_PAINT (pcl_visualization::ImageWidgetWX::ImagePanel::paintEvent)  // catch paint events
-EVT_SIZE (pcl_visualization::ImageWidgetWX::ImagePanel::OnSize)  // Size event
+EVT_LEFT_UP (pcl::visualization::ImageWidgetWX::ImagePanel::mouseReleased)
+EVT_PAINT (pcl::visualization::ImageWidgetWX::ImagePanel::paintEvent)  // catch paint events
+EVT_SIZE (pcl::visualization::ImageWidgetWX::ImagePanel::OnSize)  // Size event
 END_EVENT_TABLE ()
 /* some useful events
  void ImageWidgetWX::ImagePanel::mouseMoved(wxMouseEvent& event) {}
@@ -326,12 +326,12 @@ END_EVENT_TABLE ()
  void ImageWidgetWX::ImagePanel::keyReleased(wxKeyEvent& event) {}
 */
 
-pcl_visualization::ImageWidgetWX::ImagePanel::ImagePanel (wxFrame* parent) : wxPanel (parent), image (NULL),
+pcl::visualization::ImageWidgetWX::ImagePanel::ImagePanel (wxFrame* parent) : wxPanel (parent), image (NULL),
                                                                              scaledWidth (0), scaledHeight (0)
 {
 }
 
-pcl_visualization::ImageWidgetWX::ImagePanel::~ImagePanel () 
+pcl::visualization::ImageWidgetWX::ImagePanel::~ImagePanel () 
 {
   //cout << __PRETTY_FUNCTION__<<" called.\n";
 }
@@ -342,7 +342,7 @@ pcl_visualization::ImageWidgetWX::ImagePanel::~ImagePanel ()
  * calling Refresh()/Update().
  */
 void 
-  pcl_visualization::ImageWidgetWX::ImagePanel::paintEvent (wxPaintEvent & evt)
+pcl::visualization::ImageWidgetWX::ImagePanel::paintEvent (wxPaintEvent & evt)
 {
   //cout << __PRETTY_FUNCTION__<<" called.\n";
   // depending on your system you may need to look at double-buffered dcs
@@ -351,7 +351,7 @@ void
 }
  
 void 
-  pcl_visualization::ImageWidgetWX::ImagePanel::mouseReleased (wxMouseEvent& event)
+pcl::visualization::ImageWidgetWX::ImagePanel::mouseReleased (wxMouseEvent& event)
 {
   //std::cout << __PRETTY_FUNCTION__<<" called.\n";
   float clicked_pixel_x = (float)event.m_x * (float)image->GetWidth ()/(float)scaledWidth -0.5f,
@@ -380,7 +380,7 @@ void
  * back (by sending a paint event).
  */
 void 
-  pcl_visualization::ImageWidgetWX::ImagePanel::paintNow ()
+pcl::visualization::ImageWidgetWX::ImagePanel::paintNow ()
 {
   // depending on your system you may need to look at double-buffered dcs
   wxClientDC dc (this);
@@ -393,7 +393,7 @@ void
  * (e.g. wxPaintDC or wxClientDC) is used.
  */
 void 
-  pcl_visualization::ImageWidgetWX::ImagePanel::render (wxDC&  dc)
+pcl::visualization::ImageWidgetWX::ImagePanel::render (wxDC&  dc)
 {
   //cout << __PRETTY_FUNCTION__<<" called.\n";
   if (image==NULL) return;
@@ -450,7 +450,7 @@ void
  * So when the user resizes the image panel the image should be resized too.
  */
 void 
-  pcl_visualization::ImageWidgetWX::ImagePanel::OnSize (wxSizeEvent& event) 
+pcl::visualization::ImageWidgetWX::ImagePanel::OnSize (wxSizeEvent& event) 
 {
   event.Skip ();
   if (getParentImageWidget ()->keepAspectRatio) 
@@ -463,7 +463,7 @@ void
 }
 
 void 
-  pcl_visualization::ImageWidgetWX::ImagePanel::resizeImage (int newWidth, int newHeight) 
+pcl::visualization::ImageWidgetWX::ImagePanel::resizeImage (int newWidth, int newHeight) 
 {
   if (newWidth<=0 || newHeight<=0)  // No size given => Use current widget size
     this->GetSize (&newWidth, &newHeight);

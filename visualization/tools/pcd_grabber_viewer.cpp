@@ -59,11 +59,11 @@ using pcl::console::TT_GREEN;
 using pcl::console::TT_BLUE;
 using namespace boost::filesystem;
 
-typedef pcl_visualization::PointCloudColorHandler<pcl::PointCloud<pcl::PointXYZ> > ColorHandler;
+typedef pcl::visualization::PointCloudColorHandler<pcl::PointCloud<pcl::PointXYZ> > ColorHandler;
 typedef ColorHandler::Ptr ColorHandlerPtr;
 typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
-typedef pcl_visualization::PointCloudGeometryHandler<pcl::PointCloud<pcl::PointXYZ> > GeometryHandler;
+typedef pcl::visualization::PointCloudGeometryHandler<pcl::PointCloud<pcl::PointXYZ> > GeometryHandler;
 typedef GeometryHandler::Ptr GeometryHandlerPtr;
 typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 boost::mutex mutex_;
@@ -132,7 +132,7 @@ printHelp (int argc, char **argv)
 }
 
 // Create the PCLVisualizer object
-boost::shared_ptr<pcl_visualization::PCLVisualizer> p;
+boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
 ColorHandlerPtr color_handler;
 GeometryHandlerPtr geometry_handler;
 std::vector<double> fcolor_r, fcolor_b, fcolor_g;
@@ -145,13 +145,13 @@ struct EventHelper
   {
     //std::cout << __PRETTY_FUNCTION__ << " " << cloud->width << std::endl;
     // Add the dataset with a XYZ and a random handler 
-    //  geometry_handler.reset (new pcl_visualization::PointCloudGeometryHandlerXYZ<pcl::PointCloud<pcl::PointXYZRGB> > (*cloud));
+    //  geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PointCloud<pcl::PointXYZRGB> > (*cloud));
 
     //// If color was given, ues that
     //if (fcolorparam)
-    //  color_handler.reset (new pcl_visualization::PointCloudColorHandlerCustom<pcl::PointCloud<pcl::PointXYZRGB> > (cloud, fcolor_r, fcolor_g, fcolor_b));
+    //  color_handler.reset (new pcl::visualization::PointCloudColorHandlerCustom<pcl::PointCloud<pcl::PointXYZRGB> > (cloud, fcolor_r, fcolor_g, fcolor_b));
     //else
-    //  color_handler.reset (new pcl_visualization::PointCloudColorHandlerRandom<pcl::PointCloud<pcl::PointXYZRGB> > (cloud));
+    //  color_handler.reset (new pcl::visualization::PointCloudColorHandlerRandom<pcl::PointCloud<pcl::PointXYZRGB> > (cloud));
 
     // Add the cloud to the renderer
 
@@ -193,15 +193,15 @@ main (int argc, char** argv)
   double opaque;
   pcl::console::parse_argument (argc, argv, "-opaque", opaque);
 
-  p.reset (new pcl_visualization::PCLVisualizer (argc, argv, "PCD viewer"));
+  p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
 
   //  // Change the cloud rendered point size
   //  if (psize > 0)
-  //    p->setPointCloudRenderingProperties (pcl_visualization::PCL_VISUALIZER_POINT_SIZE, psize, "KinectCloud");
+  //    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, "KinectCloud");
   //
   //  // Change the cloud rendered opacity
   //  if (opaque >= 0)
-  //    p->setPointCloudRenderingProperties (pcl_visualization::PCL_VISUALIZER_OPACITY, opaque, "KinectCloud");
+  //    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque, "KinectCloud");
 
   p->setBackgroundColor (bcolor[0], bcolor[1], bcolor[2]);
 

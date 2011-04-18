@@ -44,35 +44,38 @@
 #include <vtkSmartPointer.h>
 #include <sensor_msgs/PointCloud2.h>
 
-namespace pcl_visualization
+namespace pcl
 {
-  class CloudActor
+  namespace visualization
   {
-    typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
-    typedef GeometryHandler::Ptr GeometryHandlerPtr;
-    typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
+    class CloudActor
+    {
+      typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
+      typedef GeometryHandler::Ptr GeometryHandlerPtr;
+      typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 
-    typedef PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
-    typedef ColorHandler::Ptr ColorHandlerPtr;
-    typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
+      typedef PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
+      typedef ColorHandler::Ptr ColorHandlerPtr;
+      typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
-    public:
+      public:
 
-      CloudActor () : color_handler_index_ (0), geometry_handler_index_ (0) {}
+        CloudActor () : color_handler_index_ (0), geometry_handler_index_ (0) {}
 
-      vtkSmartPointer<vtkLODActor> actor;
-      std::vector<GeometryHandlerConstPtr> geometry_handlers;
-      std::vector<ColorHandlerConstPtr> color_handlers;
+        vtkSmartPointer<vtkLODActor> actor;
+        std::vector<GeometryHandlerConstPtr> geometry_handlers;
+        std::vector<ColorHandlerConstPtr> color_handlers;
 
-      /** \brief The active color handler. */
-      int color_handler_index_;
+        /** \brief The active color handler. */
+        int color_handler_index_;
 
-      /** \brief The active geometry handler. */
-      int geometry_handler_index_;
-  };
-  typedef std::map<std::string, CloudActor> CloudActorMap;
+        /** \brief The active geometry handler. */
+        int geometry_handler_index_;
+    };
+    typedef std::map<std::string, CloudActor> CloudActorMap;
 
-  typedef std::map<std::string, vtkSmartPointer<vtkProp> > ShapeActorMap;
+    typedef std::map<std::string, vtkSmartPointer<vtkProp> > ShapeActorMap;
+  }
 }
 
 #endif

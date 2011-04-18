@@ -107,7 +107,7 @@ class KinectChangeViewer
     }
 
     pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZRGB> *octree;
-    pcl_visualization::CloudViewer viewer;
+    pcl::visualization::CloudViewer viewer;
 };
 
 int main (int argc, char* argv[])

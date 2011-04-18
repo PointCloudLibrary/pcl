@@ -37,30 +37,33 @@
 
 #include <pcl/visualization/interactor.h>
 
-namespace pcl_visualization
+namespace pcl
 {
-  // Standard VTK macro for *New () 
-  vtkStandardNewMacro (PCLVisualizerInteractor);
-  
-  void PCLVisualizerInteractor::stopLoop ()
+  namespace visualization
   {
+    // Standard VTK macro for *New () 
+    vtkStandardNewMacro (PCLVisualizerInteractor);
+    
+    void PCLVisualizerInteractor::stopLoop ()
+    {
 #ifndef _WIN32
-    BreakLoopFlagOn ();
-    XClientMessageEvent client;
-    memset (&client, 0, sizeof (client));
-    client.type = ClientMessage;
-    client.display = DisplayId;
-    client.window = WindowId;
-    client.message_type = XInternAtom (client.display, "spinOnce exit", false);
-    client.format = 32; // indicates size of data chunks: 8, 16 or 32 bits...
-    XSendEvent (client.display, client.window, True, NoEventMask, reinterpret_cast<XEvent *>(&client));
-    XFlush (client.display);
+      BreakLoopFlagOn ();
+      XClientMessageEvent client;
+      memset (&client, 0, sizeof (client));
+      client.type = ClientMessage;
+      client.display = DisplayId;
+      client.window = WindowId;
+      client.message_type = XInternAtom (client.display, "spinOnce exit", false);
+      client.format = 32; // indicates size of data chunks: 8, 16 or 32 bits...
+      XSendEvent (client.display, client.window, True, NoEventMask, reinterpret_cast<XEvent *>(&client));
+      XFlush (client.display);
 #endif
+    }
+   //void PCLVisualizerInteractor::TerminateApp(void)
+   //{
+      ////std::cerr<<__PRETTY_FUNCTION__<<" called.\n";
+      //stopped = true;
+    //}
   }
- //void PCLVisualizerInteractor::TerminateApp(void)
- //{
-    ////std::cerr<<__PRETTY_FUNCTION__<<" called.\n";
-    //stopped = true;
-  //}
 }
 

@@ -59,11 +59,11 @@ using pcl::console::TT_RED;
 using pcl::console::TT_GREEN;
 using pcl::console::TT_BLUE;
 
-typedef pcl_visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
+typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
 typedef ColorHandler::Ptr ColorHandlerPtr;
 typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
-typedef pcl_visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
+typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
 typedef GeometryHandler::Ptr GeometryHandlerPtr;
 typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 
@@ -196,8 +196,8 @@ int
       opaque.push_back (1.0);
 
   // Create the PCLVisualizer object
-  boost::shared_ptr<pcl_visualization::PCLHistogramVisualizer> ph;
-  boost::shared_ptr<pcl_visualization::PCLVisualizer> p;
+  boost::shared_ptr<pcl::visualization::PCLHistogramVisualizer> ph;
+  boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
 
   // Using min_p, max_p to set the global Y min/max range for the histogram
   float min_p = FLT_MAX; float max_p = -FLT_MAX;
@@ -230,7 +230,7 @@ int
       cloud_name << argv[p_file_indices.at (i)];
 
       if (!ph)
-        ph.reset (new pcl_visualization::PCLHistogramVisualizer);
+        ph.reset (new pcl::visualization::PCLHistogramVisualizer);
       print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", cloud->fields[0].count); print_info (" points]\n");
 
       pcl::getMinMax (*cloud, 0, cloud->fields[0].name, min_p, max_p);
@@ -241,7 +241,7 @@ int
     cloud_name << argv[p_file_indices.at (i)] << "-" << i;
     // Create the PCLVisualizer object here on the first encountered XYZ file
     if (!p)
-      p.reset (new pcl_visualization::PCLVisualizer (argc, argv, "PCD viewer"));
+      p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
 
     // Multiview enabled?
     if (mview)
@@ -271,15 +271,15 @@ int
     if (fcolorparam)
     {
       if (fcolor_r.size () > i && fcolor_g.size () > i && fcolor_b.size () > i)
-        color_handler.reset (new pcl_visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2> (cloud, fcolor_r[i], fcolor_g[i], fcolor_b[i]));
+        color_handler.reset (new pcl::visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2> (cloud, fcolor_r[i], fcolor_g[i], fcolor_b[i]));
       else
-        color_handler.reset (new pcl_visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2> (cloud));
+        color_handler.reset (new pcl::visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2> (cloud));
     }
     else
-      color_handler.reset (new pcl_visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2> (cloud));
+      color_handler.reset (new pcl::visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2> (cloud));
 
     // Add the dataset with a XYZ and a random handler 
-    geometry_handler.reset (new pcl_visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud));
+    geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud));
     // Add the cloud to the renderer
     p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, color_handler, cloud_name.str (), viewport);
 
@@ -332,11 +332,11 @@ int
       cloud_name_normals_pc << argv[p_file_indices.at (i)] << "-" << i << "-normals";
       int factor = (std::min)(normals, pc);
       p->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud_xyz, cloud_normals, factor, normals_scale, cloud_name_normals_pc.str (), viewport);
-      p->setPointCloudRenderingProperties (pcl_visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, cloud_name_normals_pc.str ());
-      p->setPointCloudRenderingProperties (pcl_visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc.str ());
+      p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, cloud_name_normals_pc.str ());
+      p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc.str ());
       cloud_name_normals_pc << "-pc";
       p->addPointCloudPrincipalCurvatures (cloud_xyz, cloud_normals, cloud_pc, factor, pc_scale, cloud_name_normals_pc.str (), viewport);
-      p->setPointCloudRenderingProperties (pcl_visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc.str ());
+      p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc.str ());
     }
 
     // Add every dimension as a possible color
@@ -345,29 +345,29 @@ int
       for (size_t f = 0; f < cloud->fields.size (); ++f)
       {
         if (cloud->fields[f].name == "rgb" || cloud->fields[f].name == "rgba")
-          color_handler.reset (new pcl_visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> (cloud));
+          color_handler.reset (new pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> (cloud));
         else
         {
           if (!isValidFieldName (cloud->fields[f].name))
             continue;
-          color_handler.reset (new pcl_visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2> (cloud, cloud->fields[f].name));
+          color_handler.reset (new pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2> (cloud, cloud->fields[f].name));
         }
         // Add the cloud to the renderer
         p->addPointCloud<pcl::PointXYZ> (cloud_xyz, color_handler, cloud_name.str (), viewport);
       }
     }
     // Additionally, add normals as a handler
-    geometry_handler.reset (new pcl_visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2> (cloud));
+    geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2> (cloud));
     if (geometry_handler->isCapable ())
       p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, cloud_name.str (), viewport);
 
     // Change the cloud rendered point size
     if (psize.size () > 0)
-      p->setPointCloudRenderingProperties (pcl_visualization::PCL_VISUALIZER_POINT_SIZE, psize.at (i), cloud_name.str ());
+      p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize.at (i), cloud_name.str ());
 
     // Change the cloud rendered opacity
     if (opaque.size () > 0)
-      p->setPointCloudRenderingProperties (pcl_visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
+      p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
   }
 
   if (p)

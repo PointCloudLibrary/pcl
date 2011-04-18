@@ -37,12 +37,8 @@
 #include <pcl/visualization/common/shapes.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Create a cylinder shape from a set of model coefficients.
-  * \param coefficients the model coefficients (point_on_axis, axis_direction, radius)
-  * \param numsides (optional) the number of sides used for rendering the cylinder
-  */
 vtkSmartPointer<vtkDataSet> 
-  pcl_visualization::createCylinder (const pcl::ModelCoefficients &coefficients, int numsides)
+pcl::visualization::createCylinder (const pcl::ModelCoefficients &coefficients, int numsides)
 {
   vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();
   line->SetPoint1 (coefficients.values[0], coefficients.values[1], coefficients.values[2]);
@@ -56,12 +52,9 @@ vtkSmartPointer<vtkDataSet>
   return (tuber->GetOutput ());
 }
 
-/** \brief Create a sphere shape from a set of model coefficients.
-  * \param coefficients the model coefficients (sphere center, radius)
-  * \param res (optional) the resolution used for rendering the model
-  */
+////////////////////////////////////////////////////////////////////////////////////////////
 vtkSmartPointer<vtkDataSet> 
-  pcl_visualization::createSphere (const pcl::ModelCoefficients &coefficients, int res)
+pcl::visualization::createSphere (const pcl::ModelCoefficients &coefficients, int res)
 {
   // Set the sphere origin
   vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New ();
@@ -80,11 +73,9 @@ vtkSmartPointer<vtkDataSet>
   return (tf->GetOutput ());
 }
 
-/** \brief Create a line shape from a set of model coefficients.
-  * \param coefficients the model coefficients (point_on_line, line_direction)
-  */
+////////////////////////////////////////////////////////////////////////////////////////////
 vtkSmartPointer<vtkDataSet> 
-  pcl_visualization::createLine (const pcl::ModelCoefficients &coefficients)
+pcl::visualization::createLine (const pcl::ModelCoefficients &coefficients)
 {
   vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();
   line->SetPoint1 (coefficients.values[0], coefficients.values[1], coefficients.values[2]);
@@ -96,11 +87,9 @@ vtkSmartPointer<vtkDataSet>
   return (line->GetOutput ());
 }
 
-/** \brief Create a planar shape from a set of model coefficients.
-  * \param coefficients the model coefficients (a, b, c, d with ax+by+cz+d=0)
-  */
+////////////////////////////////////////////////////////////////////////////////////////////
 vtkSmartPointer<vtkDataSet> 
-  pcl_visualization::createPlane (const pcl::ModelCoefficients &coefficients)
+pcl::visualization::createPlane (const pcl::ModelCoefficients &coefficients)
 {
   vtkSmartPointer<vtkPlaneSource> plane = vtkSmartPointer<vtkPlaneSource>::New ();
   plane->SetNormal (coefficients.values[0], coefficients.values[1], coefficients.values[2]);
@@ -108,12 +97,9 @@ vtkSmartPointer<vtkDataSet>
   return (plane->GetOutput ());
 }
 
-/** \brief Create a 2d circle shape from a set of model coefficients.
-  * \param coefficients the model coefficients (x, y, radius)
-  * \param z (optional) specify a z value (default: 0)
-  */
+////////////////////////////////////////////////////////////////////////////////////////////
 vtkSmartPointer<vtkDataSet> 
-  pcl_visualization::create2DCircle (const pcl::ModelCoefficients &coefficients, double z)
+pcl::visualization::create2DCircle (const pcl::ModelCoefficients &coefficients, double z)
 {
   vtkSmartPointer<vtkDiskSource> disk = vtkSmartPointer<vtkDiskSource>::New ();
   // Maybe the resolution should be lower e.g. 50 or 25 
@@ -149,11 +135,9 @@ vtkSmartPointer<vtkDataSet>
   return (tf->GetOutput ());
 }
 
-/** \brief Create a cone shape from a set of model coefficients.
-  * \param coefficients the cone coefficients (point_on_axis, axis_direction, radius))
-  */
+////////////////////////////////////////////////////////////////////////////////////////////
 vtkSmartPointer<vtkDataSet> 
-  pcl_visualization::createCone (const pcl::ModelCoefficients &coefficients)
+pcl::visualization::createCone (const pcl::ModelCoefficients &coefficients)
 {
   vtkSmartPointer<vtkConeSource> cone = vtkSmartPointer<vtkConeSource>::New ();
   cone->SetHeight (1.0);

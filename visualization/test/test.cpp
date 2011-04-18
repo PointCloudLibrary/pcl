@@ -20,13 +20,13 @@ int
   if (pcd.read (argv[1], *cloud) == -1)
     return (-1);
 
-  pcl_visualization::PCLVisualizer p ("test");
+  pcl::visualization::PCLVisualizer p ("test");
   p.setBackgroundColor (1, 1, 1);
 
   // Handler random color demo
   {
     std::cerr << "PointCloudColorHandlerRandom demo." << std::endl;
-    pcl_visualization::PointCloudColorHandlerRandom<Point> handler (cloud);
+    pcl::visualization::PointCloudColorHandlerRandom<Point> handler (cloud);
     
     p.addPointCloud<Point> (cloud, "cloud_random");      // no need to add the handler, we use a random handler by default
     p.spin ();
@@ -40,13 +40,13 @@ int
   // Handler custom demo
   {
     std::cerr << "PointCloudColorHandlerCustom demo." << std::endl;
-    pcl_visualization::PointCloudColorHandlerCustom<Point> handler (cloud, 255, 0, 0);
+    pcl::visualization::PointCloudColorHandlerCustom<Point> handler (cloud, 255, 0, 0);
     
     p.addPointCloud (cloud, handler);             // the default id is "cloud"
     p.spin ();
     p.removePointCloud ();                        // the default id is "cloud"
 
-    handler = pcl_visualization::PointCloudColorHandlerCustom<Point> (cloud, 255, 0, 0);
+    handler = pcl::visualization::PointCloudColorHandlerCustom<Point> (cloud, 255, 0, 0);
     p.addPointCloud (cloud, handler, "cloud");
     p.spin ();
     p.removePointCloud ("cloud");
@@ -55,7 +55,7 @@ int
   // Handler RGB demo
   {
     std::cerr << "PointCloudColorHandlerRGBField demo." << std::endl;
-    pcl_visualization::PointCloudColorHandlerRGBField<Point> handler (cloud);
+    pcl::visualization::PointCloudColorHandlerRGBField<Point> handler (cloud);
 
     p.addPointCloud (cloud, handler, "cloud_rgb");
     p.spin ();
@@ -65,8 +65,8 @@ int
   // Handler generic field demo
   {
     std::cerr << "PointCloudColorHandlerGenericField demo." << std::endl;
-    pcl_visualization::PointCloudColorHandlerGenericField<Point> handler_z (cloud, "z");
-    pcl_visualization::PointCloudColorHandlerGenericField<Point> handler_x (cloud, "x");
+    pcl::visualization::PointCloudColorHandlerGenericField<Point> handler_z (cloud, "z");
+    pcl::visualization::PointCloudColorHandlerGenericField<Point> handler_x (cloud, "x");
     
     p.addPointCloud (cloud, handler_x, "cloud_x");
     p.spin ();

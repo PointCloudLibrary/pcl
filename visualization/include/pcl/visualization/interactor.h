@@ -48,23 +48,25 @@
 #  include <vtkWin32RenderWindowInteractor.h>
 #endif
 
-namespace pcl_visualization
+namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief The PCLVisualizer interactor */
-#ifndef _WIN32
-  class PCLVisualizerInteractor : public vtkXRenderWindowInteractor
-#else
-  class PCLVisualizerInteractor : public vtkWin32RenderWindowInteractor
-#endif
+  namespace visualization
   {
-    public:
-      static PCLVisualizerInteractor *New ();
-      //void TerminateApp (void);
-      void stopLoop ();
-      bool stopped;
-      int timer_id_;
-  };
+    /** \brief The PCLVisualizer interactor */
+#ifndef _WIN32
+    class PCLVisualizerInteractor : public vtkXRenderWindowInteractor
+#else
+    class PCLVisualizerInteractor : public vtkWin32RenderWindowInteractor
+#endif
+    {
+      public:
+        static PCLVisualizerInteractor *New ();
+        //void TerminateApp (void);
+        void stopLoop ();
+        bool stopped;
+        int timer_id_;
+    };
+  }
 }
 
 #endif

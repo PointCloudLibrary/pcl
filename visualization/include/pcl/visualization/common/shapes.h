@@ -46,9 +46,6 @@
 #include <vtkUnstructuredGrid.h>
 #include <vtkConeSource.h>
 #include <vtkDiskSource.h>
-/*
-#include <vtkRegularPolygonSource.h>
-*/
 #include <vtkPlaneSource.h>
 #include <vtkSphereSource.h>
 #include <vtkTransform.h>
@@ -56,61 +53,88 @@
 #include <vtkLineSource.h>
 #include <vtkTubeFilter.h>
 
-namespace pcl_visualization
+/**
+  * \file pcl/visualization/common/shapes.h
+  * Define methods or creating 3D shapes from parametric models
+  * \ingroup visualization
+  */
+
+/*@{*/
+namespace pcl
 {
-  /** \brief Create a 3d poly line from a set of points. 
-    * \param cloud the set of points used to create the 3d polyline
-    */
-  template <typename PointT> vtkSmartPointer<vtkDataSet> inline createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud);
+  namespace visualization
+  {
+    /** \brief Create a 3d poly line from a set of points. 
+      * \param cloud the set of points used to create the 3d polyline
+      * \ingroup visualization
+      */
+    template <typename PointT> vtkSmartPointer<vtkDataSet> inline 
+    createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud);
 
-  /** \brief Create a line shape from two points
-    * \param pt1 the first point on the line
-    * \param pt2 the end point on the line
-    */
-  template <typename P1, typename P2> inline vtkSmartPointer<vtkDataSet> createLine (const P1 &pt1, const P2 &pt2);
+    /** \brief Create a line shape from two points
+      * \param pt1 the first point on the line
+      * \param pt2 the end point on the line
+      * \ingroup visualization
+      */
+    template <typename P1, typename P2> inline vtkSmartPointer<vtkDataSet> 
+    createLine (const P1 &pt1, const P2 &pt2);
 
-  /** \brief Create a sphere shape from a point and a radius
-    * \param center the center of the sphere
-    * \param radius the radius of the sphere
-    * \param res (optional) the resolution used for rendering the model
-    */
-  template <typename PointT> vtkSmartPointer<vtkDataSet> inline createSphere (const PointT &center, double radius, int res = 10);
+    /** \brief Create a sphere shape from a point and a radius
+      * \param center the center of the sphere
+      * \param radius the radius of the sphere
+      * \param res (optional) the resolution used for rendering the model
+      * \ingroup visualization
+      */
+    template <typename PointT> vtkSmartPointer<vtkDataSet> inline 
+    createSphere (const PointT &center, double radius, int res = 10);
 
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief Create a cylinder shape from a set of model coefficients.
-    * \param coefficients the model coefficients (point_on_axis, axis_direction, radius)
-    * \param numsides (optional) the number of sides used for rendering the cylinder
-    */
-  vtkSmartPointer<vtkDataSet> createCylinder (const pcl::ModelCoefficients &coefficients, int numsides = 30);
+    /** \brief Create a cylinder shape from a set of model coefficients.
+      * \param coefficients the model coefficients (point_on_axis, axis_direction, radius)
+      * \param numsides (optional) the number of sides used for rendering the cylinder
+      * \ingroup visualization
+      */
+    vtkSmartPointer<vtkDataSet> 
+    createCylinder (const pcl::ModelCoefficients &coefficients, int numsides = 30);
 
-  /** \brief Create a sphere shape from a set of model coefficients.
-    * \param coefficients the model coefficients (sphere center, radius)
-    * \param res (optional) the resolution used for rendering the model
-    */
-  vtkSmartPointer<vtkDataSet> createSphere (const pcl::ModelCoefficients &coefficients, int res = 10);
+    /** \brief Create a sphere shape from a set of model coefficients.
+      * \param coefficients the model coefficients (sphere center, radius)
+      * \param res (optional) the resolution used for rendering the model
+      * \ingroup visualization
+      */
+    vtkSmartPointer<vtkDataSet> 
+    createSphere (const pcl::ModelCoefficients &coefficients, int res = 10);
 
-  /** \brief Create a line shape from a set of model coefficients.
-    * \param coefficients the model coefficients (point_on_line, line_direction)
-    */
-  vtkSmartPointer<vtkDataSet> createLine (const pcl::ModelCoefficients &coefficients);
+    /** \brief Create a line shape from a set of model coefficients.
+      * \param coefficients the model coefficients (point_on_line, line_direction)
+      * \ingroup visualization
+      */
+    vtkSmartPointer<vtkDataSet> 
+    createLine (const pcl::ModelCoefficients &coefficients);
 
-  /** \brief Create a planar shape from a set of model coefficients.
-    * \param coefficients the model coefficients (a, b, c, d with ax+by+cz+d=0)
-    */
-  vtkSmartPointer<vtkDataSet> createPlane (const pcl::ModelCoefficients &coefficients);
+    /** \brief Create a planar shape from a set of model coefficients.
+      * \param coefficients the model coefficients (a, b, c, d with ax+by+cz+d=0)
+      * \ingroup visualization
+      */
+    vtkSmartPointer<vtkDataSet> 
+    createPlane (const pcl::ModelCoefficients &coefficients);
 
-  /** \brief Create a 2d circle shape from a set of model coefficients.
-    * \param coefficients the model coefficients (x, y, radius)
-    * \param z (optional) specify a z value (default: 0)
-    */
-  vtkSmartPointer<vtkDataSet> create2DCircle (const pcl::ModelCoefficients &coefficients, double z = 0.0);
+    /** \brief Create a 2d circle shape from a set of model coefficients.
+      * \param coefficients the model coefficients (x, y, radius)
+      * \param z (optional) specify a z value (default: 0)
+      * \ingroup visualization
+      */
+    vtkSmartPointer<vtkDataSet> 
+    create2DCircle (const pcl::ModelCoefficients &coefficients, double z = 0.0);
 
-  /** \brief Create a cone shape from a set of model coefficients.
-    * \param coefficients the cone coefficients (point_on_axis, axis_direction, radius))
-    */
-  vtkSmartPointer<vtkDataSet> createCone (const pcl::ModelCoefficients &coefficients);
-
+    /** \brief Create a cone shape from a set of model coefficients.
+      * \param coefficients the cone coefficients (point_on_axis, axis_direction, radius))
+      * \ingroup visualization
+      */
+    vtkSmartPointer<vtkDataSet> 
+    createCone (const pcl::ModelCoefficients &coefficients);
+  }
 }
+/*@}*/
 
 #include <pcl/visualization/common/impl/shapes.hpp>
 

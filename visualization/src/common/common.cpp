@@ -39,13 +39,8 @@
 #include <stdlib.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Get (good) random values for R/G/B.
-  * \param r the resultant R color value
-  * \param g the resultant G color value
-  * \param b the resultant B color value
-  */
 void 
-  pcl_visualization::getRandomColors (double &r, double &g, double &b, 
+pcl::visualization::getRandomColors (double &r, double &g, double &b, 
                                       double min, double max)
 {
   double sum;

@@ -47,7 +47,7 @@ using std::max;
 
 
 void 
-pcl_visualization::FloatImageUtils::getColorForFloat (float value, unsigned char& r, unsigned char& g, unsigned char& b) 
+pcl::visualization::FloatImageUtils::getColorForFloat (float value, unsigned char& r, unsigned char& g, unsigned char& b) 
 {
   if (pcl_isinf (value)) 
   {
@@ -112,7 +112,7 @@ pcl_visualization::FloatImageUtils::getColorForFloat (float value, unsigned char
 }
 
 void 
-pcl_visualization::FloatImageUtils::getColorForAngle (float value, unsigned char& r, unsigned char& g, unsigned char& b) 
+pcl::visualization::FloatImageUtils::getColorForAngle (float value, unsigned char& r, unsigned char& g, unsigned char& b) 
 {
   if (pcl_isinf (value)) 
   {
@@ -153,7 +153,7 @@ pcl_visualization::FloatImageUtils::getColorForAngle (float value, unsigned char
 }
 
 void 
-  pcl_visualization::FloatImageUtils::getColorForHalfAngle (float value, unsigned char& r, unsigned char& g, unsigned char& b) 
+pcl::visualization::FloatImageUtils::getColorForHalfAngle (float value, unsigned char& r, unsigned char& g, unsigned char& b) 
 {
   getColorForAngle(2.0f*value, r, g, b);
 }
@@ -161,7 +161,7 @@ void
 
 
 unsigned char* 
-  pcl_visualization::FloatImageUtils::getVisualImage (const float* floatImage, int width, int height, float minValue, float maxValue, bool grayScale) 
+pcl::visualization::FloatImageUtils::getVisualImage (const float* floatImage, int width, int height, float minValue, float maxValue, bool grayScale) 
 {
   //MEASURE_FUNCTION_TIME;
   
@@ -219,7 +219,7 @@ unsigned char*
 }
 
 unsigned char* 
-  pcl_visualization::FloatImageUtils::getVisualAngleImage (const float* angle_image, int width, int height) 
+pcl::visualization::FloatImageUtils::getVisualAngleImage (const float* angle_image, int width, int height) 
 {
   int size = width*height;
   int arraySize = 3 * size;
@@ -238,7 +238,7 @@ unsigned char*
 }
 
 unsigned char* 
-  pcl_visualization::FloatImageUtils::getVisualHalfAngleImage (const float* angle_image, int width, int height) 
+pcl::visualization::FloatImageUtils::getVisualHalfAngleImage (const float* angle_image, int width, int height) 
 {
   int size = width*height;
   int arraySize = 3 * size;

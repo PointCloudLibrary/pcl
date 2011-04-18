@@ -40,11 +40,8 @@
 #include <pcl/win32_macros.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Obtain the actual color for the input dataset as vtk scalars.
-  * \param scalars the resultant scalars containing the color for the input dataset
-  */
 void
-pcl_visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+pcl::visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
   if (!capable_)
     return;
@@ -70,11 +67,8 @@ pcl_visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2>::getCo
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Obtain the actual color for the input dataset as vtk scalars.
-  * \param scalars the resultant scalars containing the color for the input dataset
-  */
 void
-pcl_visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+pcl::visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
   if (!capable_)
     return;
@@ -89,7 +83,7 @@ pcl_visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2>::getCo
   // Get a random color
   unsigned char* colors = new unsigned char[nr_points * 3];
   double r, g, b;
-  pcl_visualization::getRandomColors (r, g, b);
+  pcl::visualization::getRandomColors (r, g, b);
 
   int r_ = pcl_lrint (r * 255.0), g_ = pcl_lrint (g * 255.0), b_ = pcl_lrint (b * 255.0);
 
@@ -104,10 +98,9 @@ pcl_visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2>::getCo
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Constructor. */
-pcl_visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::PointCloudColorHandlerRGBField (
-    const pcl_visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudConstPtr &cloud) : 
-  pcl_visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudColorHandler (cloud)
+pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::PointCloudColorHandlerRGBField (
+    const pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudConstPtr &cloud) : 
+  pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudColorHandler (cloud)
 {
   // Handle the 24-bit packed RGB values
   field_idx_ = pcl::getFieldIndex (*cloud, "rgb");
@@ -118,11 +111,8 @@ pcl_visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::Poi
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Obtain the actual color for the input dataset as vtk scalars.
-  * \param scalars the resultant scalars containing the color for the input dataset
-  */
 void 
-pcl_visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
   if (!capable_)
     return;
@@ -195,10 +185,9 @@ pcl_visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::get
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Constructor. */
-pcl_visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>::PointCloudColorHandlerGenericField (
-    const pcl_visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudConstPtr &cloud, 
-    const std::string &field_name) : pcl_visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudColorHandler (cloud)
+pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>::PointCloudColorHandlerGenericField (
+    const pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudConstPtr &cloud, 
+    const std::string &field_name) : pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudColorHandler (cloud)
 {
   field_name_ = field_name;
   field_idx_  = pcl::getFieldIndex (*cloud, field_name);
@@ -209,11 +198,8 @@ pcl_visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>:
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Obtain the actual color for the input dataset as vtk scalars.
-  * \param scalars the resultant scalars containing the color for the input dataset
-  */
 void 
-pcl_visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
   if (!capable_)
     return;
@@ -275,11 +261,8 @@ pcl_visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>:
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
-  * \param points the resultant geometry 
-  */
 void 
-pcl_visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
+pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
 {
   if (!capable_)
     return;
@@ -345,9 +328,8 @@ pcl_visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::getGeome
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Constructor. */
-pcl_visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud)
-: pcl_visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud)
+pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud)
+: pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex (*cloud, "x");
   if (field_x_idx_ == -1)
@@ -364,9 +346,8 @@ pcl_visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>::Point
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Constructor. */
-pcl_visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud) 
-: pcl_visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud)
+pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud) 
+: pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex (*cloud, "normal_x");
   if (field_x_idx_ == -1)
@@ -381,10 +362,9 @@ pcl_visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointClou
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Constructor. */
-pcl_visualization::PointCloudGeometryHandlerCustom<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerCustom (
+pcl::visualization::PointCloudGeometryHandlerCustom<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerCustom (
     const PointCloudConstPtr &cloud, const std::string &x_field_name, const std::string &y_field_name, const std::string &z_field_name) 
-: pcl_visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud)
+: pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex (*cloud, x_field_name);
   if (field_x_idx_ == -1)

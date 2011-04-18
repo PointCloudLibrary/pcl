@@ -39,51 +39,54 @@
 #include <vtkCommand.h>
 #include <vtkTextActor.h>
 
-namespace pcl_visualization
+namespace pcl
 {
-  /** \brief Get (good) random values for R/G/B.
-    * \param r the resultant R color value
-    * \param g the resultant G color value
-    * \param b the resultant B color value
-    * \param min minimum value for the colors
-    * \param max maximum value for the colors
-    */
-  void 
-  getRandomColors (double &r, double &g, double &b, double min = 0.2, double max = 2.8);
-
-  enum RenderingProperties
+  namespace visualization
   {
-    PCL_VISUALIZER_POINT_SIZE,
-    PCL_VISUALIZER_OPACITY,
-    PCL_VISUALIZER_LINE_WIDTH,
-    PCL_VISUALIZER_FONT_SIZE,
-    PCL_VISUALIZER_COLOR
-  };
+    /** \brief Get (good) random values for R/G/B.
+      * \param r the resultant R color value
+      * \param g the resultant G color value
+      * \param b the resultant B color value
+      * \param min minimum value for the colors
+      * \param max maximum value for the colors
+      */
+    void 
+    getRandomColors (double &r, double &g, double &b, double min = 0.2, double max = 2.8);
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief Camera class holds a set of camera parameters together with the window pos/size. */
-  class Camera
-  {
-    public:
-      double clip[2];     // clipping range
-      double focal[3];    // focal point
-      double pos[3];      // position
-      double view[3];     // viewup
+    enum RenderingProperties
+    {
+      PCL_VISUALIZER_POINT_SIZE,
+      PCL_VISUALIZER_OPACITY,
+      PCL_VISUALIZER_LINE_WIDTH,
+      PCL_VISUALIZER_FONT_SIZE,
+      PCL_VISUALIZER_COLOR
+    };
 
-      double window_size[2];  // window size
-      double window_pos[2];   // window position
-  };
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Camera class holds a set of camera parameters together with the window pos/size. */
+    class Camera
+    {
+      public:
+        double clip[2];     // clipping range
+        double focal[3];    // focal point
+        double pos[3];      // position
+        double view[3];     // viewup
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
-  class FPSCallback : public vtkCommand
-  {
-    public:
-      static FPSCallback *New () { return new FPSCallback;}
-      inline void setTextActor (vtkTextActor *txt) { this->actor_ = txt; }
-      virtual void Execute (vtkObject *, unsigned long, void*);
-    protected:
-      vtkTextActor *actor_;
-  };
+        double window_size[2];  // window size
+        double window_pos[2];   // window position
+    };
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    class FPSCallback : public vtkCommand
+    {
+      public:
+        static FPSCallback *New () { return new FPSCallback;}
+        inline void setTextActor (vtkTextActor *txt) { this->actor_ = txt; }
+        virtual void Execute (vtkObject *, unsigned long, void*);
+      protected:
+        vtkTextActor *actor_;
+    };
+  }
 }
 
 #endif

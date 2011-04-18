@@ -20,19 +20,19 @@ int
   }
 
   // Start the visualizer
-  pcl_visualization::PCLVisualizer p ("test_shapes");
+  pcl::visualization::PCLVisualizer p ("test_shapes");
   p.setBackgroundColor (1, 1, 1);
   p.addCoordinateSystem (0.1);
 
   //p.addPolygon (cloud, "polygon");
   p.addPolygon<PointXYZ> (cloud, 1.0, 0.0, 0.0, "polygon", 0);
-  p.setShapeRenderingProperties (pcl_visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "polygon");
+  p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "polygon");
   
   p.addLine<PointXYZ, PointXYZ> (cloud->points[0], cloud->points[1], 0.0, 1.0, 0.0);
-  p.setShapeRenderingProperties (pcl_visualization::PCL_VISUALIZER_LINE_WIDTH, 50, "line");
+  p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 50, "line");
 
   p.addSphere<PointXYZ> (cloud->points[0], 1, 0.0, 1.0, 0.0);
-  p.setShapeRenderingProperties (pcl_visualization::PCL_VISUALIZER_LINE_WIDTH, 5, "sphere");
+  p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5, "sphere");
 //  p.removePolygon ("poly");
 
   p.spin ();
