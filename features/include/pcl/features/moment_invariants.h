@@ -42,12 +42,12 @@
 
 namespace pcl
 {
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief MomentInvariantsEstimation estimates the 3 moment invariants (j1, j2, j3) at each 3D point.
     *
     * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
     * \a NormalEstimationOpenMP and \a NormalEstimationTBB for examples on how to extend this to parallel implementations.
     * \author Radu Bogdan Rusu
+    * \ingroup features
     */
   template <typename PointInT, typename PointOutT>
   class MomentInvariantsEstimation: public Feature<PointInT, PointOutT>
@@ -62,14 +62,12 @@ namespace pcl
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
       MomentInvariantsEstimation () 
       {
         feature_name_ = "MomentInvariantsEstimation";
       };
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Compute the 3 moment invariants (j1, j2, j3) for a given set of points, using their indices.
         * \param cloud the input point cloud
         * \param indices the point cloud indices that need to be used
@@ -77,25 +75,29 @@ namespace pcl
         * \param j2 the resultant second moment invariant
         * \param j3 the resultant third moment invariant
         */
-      void computePointMomentInvariants (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices, float &j1, float &j2, float &j3);
+      void 
+      computePointMomentInvariants (const pcl::PointCloud<PointInT> &cloud, 
+                                    const std::vector<int> &indices, 
+                                    float &j1, float &j2, float &j3);
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Compute the 3 moment invariants (j1, j2, j3) for a given set of points, using their indices.
         * \param cloud the input point cloud
         * \param j1 the resultant first moment invariant
         * \param j2 the resultant second moment invariant
         * \param j3 the resultant third moment invariant
         */
-      void computePointMomentInvariants (const pcl::PointCloud<PointInT> &cloud, float &j1, float &j2, float &j3);
+      void 
+      computePointMomentInvariants (const pcl::PointCloud<PointInT> &cloud, 
+                                    float &j1, float &j2, float &j3);
 
     protected:
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Estimate moment invariants for all points given in <setInputCloud (), setIndices ()> using the surface
         * in setSearchSurface () and the spatial locator in setSearchMethod ()
         * \param output the resultant point cloud model dataset that contains the moment invariants
         */
-      void computeFeature (PointCloudOut &output);
+      void 
+      computeFeature (PointCloudOut &output);
 
     private:
       /** \brief 16-bytes aligned placeholder for the XYZ centroid of a surface patch. */

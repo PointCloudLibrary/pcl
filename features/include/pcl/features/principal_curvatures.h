@@ -44,13 +44,13 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b PrincipalCurvaturesEstimation estimates the directions (eigenvectors) and magnitudes (eigenvalues) of
     * principal surface curvatures for a given point cloud dataset containing points and normals.
     *
     * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
     * \a NormalEstimationOpenMP and \a NormalEstimationTBB for examples on how to extend this to parallel implementations.
     * \author Radu Bogdan Rusu, Jared Glover
+    * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
   class PrincipalCurvaturesEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
@@ -85,7 +85,10 @@ namespace pcl
        * \param pc1 the max eigenvalue of curvature
        * \param pc2 the min eigenvalue of curvature
        */
-      void computePointPrincipalCurvatures (const pcl::PointCloud<PointNT> &normals, int p_idx, const std::vector<int> &indices, float &pcx, float &pcy, float &pcz, float &pc1, float &pc2);
+      void 
+      computePointPrincipalCurvatures (const pcl::PointCloud<PointNT> &normals, 
+                                       int p_idx, const std::vector<int> &indices, 
+                                       float &pcx, float &pcy, float &pcz, float &pc1, float &pc2);
 
     protected:
 
@@ -94,7 +97,8 @@ namespace pcl
         * setSearchSurface () and the spatial locator in setSearchMethod ()
         * \param output the resultant point cloud model dataset that contains the principal curvature estimates
         */
-      void computeFeature (PointCloudOut &output);
+      void 
+      computeFeature (PointCloudOut &output);
 
     private:
       /** \brief A pointer to the input dataset that contains the point normals of the XYZ dataset. */

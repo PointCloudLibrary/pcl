@@ -63,6 +63,7 @@ namespace pcl
     * \f[
     * \lambda_0 / (\lambda_0 + \lambda_1 + \lambda_2)
     * \f]
+    * \ingroup features
     */
   inline void 
   solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix, 
@@ -79,6 +80,7 @@ namespace pcl
     * \f[
     * \lambda_0 / (\lambda_0 + \lambda_1 + \lambda_2)
     * \f]
+    * \ingroup features
     */
   inline void 
   solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix, 
@@ -90,6 +92,7 @@ namespace pcl
   /** \brief @b Feature represents the base feature class. Some generic 3D operations that 
     * are applicable to all features are defined here as static methods.
     * \author Radu Bogdan Rusu
+    * \ingroup features
     */
   template <typename PointInT, typename PointOutT>
   class Feature : public PCLBase<PointInT>
@@ -120,9 +123,13 @@ namespace pcl
       Feature () : surface_(), tree_(), search_parameter_(0), search_radius_(0), k_(0), fake_surface_(false)
       {};
 
-      /** \brief Provide a pointer to a dataset to add additional information to estimate the features for every point in the input dataset.  This is optional, if this is not set, it will only use the data in the input cloud to estimate the features.  This is useful when you only need to compute the features for a downsampled cloud. 
-        * \param cloud the const boost shared pointer to a PointCloud message
-        */
+      /** \brief Provide a pointer to a dataset to add additional information
+       * to estimate the features for every point in the input dataset.  This
+       * is optional, if this is not set, it will only use the data in the
+       * input cloud to estimate the features.  This is useful when you only
+       * need to compute the features for a downsampled cloud.  
+       * \param cloud a pointer to a PointCloud message
+       */
       inline void
       setSearchSurface (const PointCloudInConstPtr &cloud)
       {
@@ -132,42 +139,51 @@ namespace pcl
       }
 
       /** \brief Get a pointer to the surface point cloud dataset. */
-      inline PointCloudInConstPtr getSearchSurface () { return (surface_); }
+      inline PointCloudInConstPtr 
+      getSearchSurface () { return (surface_); }
 
       /** \brief Provide a pointer to the search object.
         * \param tree a pointer to the spatial search object.
         */
-      inline void setSearchMethod (const KdTreePtr &tree) { tree_ = tree; }
+      inline void 
+      setSearchMethod (const KdTreePtr &tree) { tree_ = tree; }
 
       /** \brief Get a pointer to the search method used. */
-      inline KdTreePtr getSearchMethod () { return (tree_); }
+      inline KdTreePtr 
+      getSearchMethod () { return (tree_); }
 
       /** \brief Get the internal search parameter. */
-      inline double getSearchParameter () { return (search_parameter_); }
+      inline double 
+      getSearchParameter () { return (search_parameter_); }
 
       /** \brief Set the number of k nearest neighbors to use for the feature estimation.
         * \param k the number of k-nearest neighbors
         */
-      inline void setKSearch (int k) { k_ = k; }
+      inline void 
+      setKSearch (int k) { k_ = k; }
 
       /** \brief get the number of k nearest neighbors used for the feature estimation. */
-      inline int getKSearch () { return (k_); }
+      inline int 
+      getKSearch () { return (k_); }
 
       /** \brief Set the sphere radius that is to be used for determining the nearest neighbors used for the feature
         * estimation.
         * \param radius the sphere radius used as the maximum distance to consider a point a neighbor
         */
-      inline void setRadiusSearch (double radius) { search_radius_ = radius; }
+      inline void 
+      setRadiusSearch (double radius) { search_radius_ = radius; }
 
       /** \brief Get the sphere radius used for determining the neighbors. */
-      inline double getRadiusSearch () { return (search_radius_); }
+      inline double 
+      getRadiusSearch () { return (search_radius_); }
 
       /** \brief Base method for feature estimation for all points given in 
         * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () 
         * and the spatial locator in setSearchMethod ()
         * \param output the resultant point cloud model dataset containing the estimated features
         */
-      void compute (PointCloudOut &output);
+      void 
+      compute (PointCloudOut &output);
 
       /** \brief Search for k-nearest neighbors using the spatial locator from 
         * \a setSearchmethod, and the given surface from \a setSearchSurface.
@@ -215,14 +231,17 @@ namespace pcl
       int k_;
 
       /** \brief Get a string representation of the name of this class. */
-      inline const std::string& getClassName () const { return (feature_name_); }
+      inline const std::string& 
+      getClassName () const { return (feature_name_); }
 
     private:
       /** \brief If no surface is given, we use the input PointCloud as the surface. */
       bool fake_surface_;
 
       /** \brief Abstract feature estimation method. */
-      virtual void computeFeature (PointCloudOut &output) = 0;
+      virtual void 
+      computeFeature (PointCloudOut &output) = 0;
+      
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -255,10 +274,12 @@ namespace pcl
         * the XYZ dataset.
         * \param normals the const boost shared pointer to a PointCloud message
         */
-      inline void setInputNormals (const PointCloudNConstPtr &normals) { normals_ = normals; }
+      inline void 
+      setInputNormals (const PointCloudNConstPtr &normals) { normals_ = normals; }
 
       /** \brief Get a pointer to the normals of the input XYZ point cloud dataset. */
-      inline PointCloudNConstPtr getInputNormals () { return (normals_); }
+      inline PointCloudNConstPtr 
+      getInputNormals () { return (normals_); }
 
     protected:     
       /** \brief A pointer to the input dataset that contains the point normals of the XYZ 

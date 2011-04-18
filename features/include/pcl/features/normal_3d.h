@@ -50,6 +50,7 @@ namespace pcl
     * \f[
     * \lambda_0 / (\lambda_0 + \lambda_1 + \lambda_2)
     * \f]
+    * \ingroup features
     */
   template <typename PointT> inline void 
   computePointNormal (const pcl::PointCloud<PointT> &cloud, 
@@ -85,6 +86,7 @@ namespace pcl
     * \f[
     * \lambda_0 / (\lambda_0 + \lambda_1 + \lambda_2)
     * \f]
+    * \ingroup features
     */
   template <typename PointT> inline void 
   computePointNormal (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices, 
@@ -117,6 +119,7 @@ namespace pcl
     * \param vp_y the X coordinate of the viewpoint
     * \param vp_z the X coordinate of the viewpoint
     * \param normal the plane normal to be flipped
+    * \ingroup features
     */
   template <typename PointT> inline void 
   flipNormalTowardsViewpoint (const PointT &point, float vp_x, float vp_y, float vp_z, 
@@ -148,6 +151,7 @@ namespace pcl
     * \param nx the resultant X component of the plane normal
     * \param ny the resultant Y component of the plane normal
     * \param nz the resultant Z component of the plane normal
+    * \ingroup features
     */
   template <typename PointT> inline void 
   flipNormalTowardsViewpoint (const PointT &point, float vp_x, float vp_y, float vp_z, 
@@ -176,6 +180,7 @@ namespace pcl
     * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
     * \ref NormalEstimationOMP for a parallel implementation.
     * \author Radu Bogdan Rusu
+    * \ingroup features
     */
   template <typename PointInT, typename PointOutT>
   class NormalEstimation: public Feature<PointInT, PointOutT>

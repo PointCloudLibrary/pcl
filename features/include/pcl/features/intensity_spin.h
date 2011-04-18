@@ -49,6 +49,7 @@ namespace pcl
     *   A sparse texture representation using local affine regions. 
     *   In IEEE Transactions on Pattern Analysis and Machine Intelligence, volume 27, pages 1265-1278, August 2005.
     * \author Michael Dixon
+    * \ingroup features
     */
   template <typename PointInT, typename PointOutT>
   class IntensitySpinEstimation: public Feature<PointInT, PointOutT>
@@ -83,33 +84,42 @@ namespace pcl
         * \param squared_distances the squared distances from the query point to each point in the neighborhood
         * \param intensity_spin_image the resultant intensity-domain spin image descriptor
         */
-      void computeIntensitySpinImage (
-        const PointCloudIn &cloud, float radius, float sigma, int k, const std::vector<int> &indices, 
-        const std::vector<float> &squared_distances, Eigen::MatrixXf &intensity_spin_image);
+      void 
+      computeIntensitySpinImage (const PointCloudIn &cloud, 
+                                 float radius, float sigma, int k, 
+                                 const std::vector<int> &indices, 
+                                 const std::vector<float> &squared_distances, 
+                                 Eigen::MatrixXf &intensity_spin_image);
 
       /** \brief Set the number of bins to use in the distance dimension of the spin image
         * \param nr_distance_bins the number of bins to use in the distance dimension of the spin image
         */
-      inline void setNrDistanceBins (size_t nr_distance_bins) { nr_distance_bins_ = (int) nr_distance_bins; };
+      inline void 
+      setNrDistanceBins (size_t nr_distance_bins) { nr_distance_bins_ = (int) nr_distance_bins; };
 
       /** \brief Returns the number of bins in the distance dimension of the spin image. */
-      inline int getNrDistanceBins () { return (nr_distance_bins_); };
+      inline int 
+      getNrDistanceBins () { return (nr_distance_bins_); };
 
       /** \brief Set the number of bins to use in the intensity dimension of the spin image.
         * \param nr_intensity_bins the number of bins to use in the intensity dimension of the spin image
         */
-      inline void setNrIntensityBins (size_t nr_intensity_bins) { nr_intensity_bins_ = (int) nr_intensity_bins; };
+      inline void 
+      setNrIntensityBins (size_t nr_intensity_bins) { nr_intensity_bins_ = (int) nr_intensity_bins; };
 
       /** \brief Returns the number of bins in the intensity dimension of the spin image. */
-      inline int getNrIntensityBins () { return (nr_intensity_bins_); };
+      inline int 
+      getNrIntensityBins () { return (nr_intensity_bins_); };
 
       /** \brief Set the standard deviation of the Gaussian smoothing kernel to use when constructing the spin images.  
         * \param sigma the standard deviation of the Gaussian smoothing kernel to use when constructing the spin images
         */
-      inline void setSmoothingBandwith (float sigma) { sigma_ = sigma; };
+      inline void 
+      setSmoothingBandwith (float sigma) { sigma_ = sigma; };
 
       /** \brief Returns the standard deviation of the Gaussian smoothing kernel used to construct the spin images.  */
-      inline float getSmoothingBandwith () { return (sigma_); };
+      inline float 
+      getSmoothingBandwith () { return (sigma_); };
 
     protected:
 
@@ -117,7 +127,8 @@ namespace pcl
         *  using the surface in setSearchSurface (), and the spatial locator in setSearchMethod ().
         * \param output the resultant point cloud model dataset that contains the intensity-domain spin image features
         */
-      void computeFeature (PointCloudOut &output);
+      void 
+      computeFeature (PointCloudOut &output);
     
     private:
 

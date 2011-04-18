@@ -42,10 +42,10 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b NormalEstimationOMP estimates local surface properties at each 3D point, such as surface normals and
     * curvatures, in parallel, using the OpenMP standard.
     * \author Radu Bogdan Rusu
+    * \ingroup features
     */
   template <typename PointInT, typename PointOutT>
   class NormalEstimationOMP: public NormalEstimation<PointInT, PointOutT>
@@ -62,14 +62,12 @@ namespace pcl
       typedef typename NormalEstimation<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
     public:
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
       NormalEstimationOMP () : threads_ (-1) 
       {
         feature_name_ = "NormalEstimationOMP";
       };
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
         */
@@ -79,20 +77,20 @@ namespace pcl
         feature_name_ = "NormalEstimationOMP";
       }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
         */
-      inline void setNumberOfThreads (int nr_threads) { threads_ = nr_threads; }
+      inline void 
+      setNumberOfThreads (int nr_threads) { threads_ = nr_threads; }
 
     private:
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Estimate normals for all points given in <setInputCloud (), setIndices ()> using the surface in
         * setSearchSurface () and the spatial locator in setSearchMethod ()
         * \param output the resultant point cloud model dataset that contains surface normals and curvatures
         */
-      void computeFeature (PointCloudOut &output);
+      void 
+      computeFeature (PointCloudOut &output);
 
     private:
       /** \brief The number of threads the scheduler should use. */

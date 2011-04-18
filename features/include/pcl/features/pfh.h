@@ -54,13 +54,13 @@ namespace pcl
     * \param f2 the second angular feature (angle between nq_idx and v)
     * \param f3 the third angular feature (angle between np_idx and |p_idx - q_idx|)
     * \param f4 the distance feature (p_idx - q_idx)
+    * \ingroup features
     */
   bool 
   computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1, 
                        const Eigen::Vector4f &p2, const Eigen::Vector4f &n2, 
                        float &f1, float &f2, float &f3, float &f4);
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b PFHEstimation estimates the Point Feature Histogram (PFH) descriptor for a given point cloud dataset
     * containing points and normals.
     *
@@ -82,6 +82,7 @@ namespace pcl
     * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
     * \ref FPFHEstimationOMP for examples on parallel implementations of the FPFH (Fast Point Feature Histogram).
     * \author Radu Bogdan Rusu
+    * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
   class PFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>

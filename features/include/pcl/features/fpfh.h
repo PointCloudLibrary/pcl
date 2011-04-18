@@ -42,7 +42,6 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b FPFHEstimation estimates the <b>Fast Point Feature Histogram (FPFH)</b> descriptor for a given point cloud
     * dataset containing points and normals.
     *
@@ -64,6 +63,7 @@ namespace pcl
     * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
     * \ref FPFHEstimationOMP for examples on parallel implementations of the FPFH (Fast Point Feature Histogram).
     * \author Radu Bogdan Rusu
+    * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
   class FPFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
@@ -98,8 +98,9 @@ namespace pcl
         * \param f3 the third angular feature (angle between np_idx and |p_idx - q_idx|)
         * \param f4 the distance feature (p_idx - q_idx)
         */
-      bool computePairFeatures (const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals, 
-                                int p_idx, int q_idx, float &f1, float &f2, float &f3, float &f4);
+      bool 
+      computePairFeatures (const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals, 
+                           int p_idx, int q_idx, float &f1, float &f2, float &f3, float &f4);
 
       /** \brief Estimate the SPFH (Simple Point Feature Histograms) individual signatures of the three angular
         * (f1, f2, f3) features for a given point based on its spatial neighborhood of 3D points with normals
@@ -111,7 +112,11 @@ namespace pcl
         * \param hist_f2 the resultant SPFH histogram for feature f2
         * \param hist_f3 the resultant SPFH histogram for feature f3
         */
-      void computePointSPFHSignature (const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals, int p_idx, const std::vector<int> &indices, Eigen::MatrixXf &hist_f1, Eigen::MatrixXf &hist_f2, Eigen::MatrixXf &hist_f3);
+      void 
+      computePointSPFHSignature (const pcl::PointCloud<PointInT> &cloud, 
+                                 const pcl::PointCloud<PointNT> &normals, int p_idx, 
+                                 const std::vector<int> &indices, 
+                                 Eigen::MatrixXf &hist_f1, Eigen::MatrixXf &hist_f2, Eigen::MatrixXf &hist_f3);
 
       /** \brief Weight the SPFH (Simple Point Feature Histograms) individual histograms to create the final FPFH
         * (Fast Point Feature Histogram) for a given point based on its 3D spatial neighborhood
@@ -122,7 +127,13 @@ namespace pcl
         * \param dists the distances from p_idx to all its k-neighbors
         * \param fpfh_histogram the resultant FPFH histogram representing the feature at the query point
         */
-      void weightPointSPFHSignature (const Eigen::MatrixXf &hist_f1, const Eigen::MatrixXf &hist_f2, const Eigen::MatrixXf &hist_f3, const std::vector<int> &indices, const std::vector<float> &dists, Eigen::VectorXf &fpfh_histogram);
+      void 
+      weightPointSPFHSignature (const Eigen::MatrixXf &hist_f1, 
+                                const Eigen::MatrixXf &hist_f2, 
+                                const Eigen::MatrixXf &hist_f3, 
+                                const std::vector<int> &indices, 
+                                const std::vector<float> &dists, 
+                                Eigen::VectorXf &fpfh_histogram);
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
         * \param indices a pointer to the vector of indices that represents the input data.
@@ -166,7 +177,8 @@ namespace pcl
         * setSearchMethod ()
         * \param output the resultant point cloud model dataset that contains the FPFH feature estimates
         */
-      void computeFeature (PointCloudOut &output);
+      void 
+      computeFeature (PointCloudOut &output);
 
       /** \brief The number of subdivisions for each angular feature interval. */
       int nr_bins_f1_, nr_bins_f2_, nr_bins_f3_;

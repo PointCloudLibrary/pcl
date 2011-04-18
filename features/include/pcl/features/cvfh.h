@@ -49,6 +49,7 @@ namespace pcl
 {
   /** \brief @b CVFHEstimation estimates the <b>Clustered Viewpoint Feature Histogram (CVFH)</b> descriptor for a given point cloud
     * dataset containing points and normals.
+    * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
   class CVFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>

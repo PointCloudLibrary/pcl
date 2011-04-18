@@ -46,6 +46,7 @@ namespace pcl
     * normal and pointing in the direction of the greatest increase in local intensity; the vector's magnitude
     * indicates the rate of intensity change.
     * \author Michael Dixon
+    * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
   class IntensityGradientEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
@@ -72,7 +73,8 @@ namespace pcl
         *  the surface in setSearchSurface () and the spatial locator in setSearchMethod ().
         *  \param output the resultant point cloud that contains the intensity gradient vectors
         */
-      void computeFeature (PointCloudOut &output);
+      void 
+      computeFeature (PointCloudOut &output);
 
     private:
       /** \brief Estimate the intensity gradient around a given point based on its spatial neighborhood of points
@@ -82,10 +84,11 @@ namespace pcl
         * \param normal the 3D surface normal of the given point
         * \param gradient the resultant 3D gradient vector
         */
-      void computePointIntensityGradient (
-          const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices, 
-          const Eigen::Vector3f &point, const Eigen::Vector3f &normal, 
-          Eigen::Vector3f &gradient);
+      void 
+      computePointIntensityGradient (const pcl::PointCloud<PointInT> &cloud, 
+                                     const std::vector<int> &indices, 
+                                     const Eigen::Vector3f &point, const Eigen::Vector3f &normal, 
+                                     Eigen::Vector3f &gradient);
                                       
   };
 }

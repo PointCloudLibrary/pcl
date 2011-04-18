@@ -43,9 +43,10 @@
 namespace pcl
 {
 
-  /**
-   * \brief Generic implementation for creating 2D integral images (including second order integral images).
-   */
+  /** \brief Generic implementation for creating 2D integral images (including second order integral images).
+    * \author Stefan Holzer
+    * \ingroup features
+    */
   template <class DataType, class IIDataType>
   class IntegralImage2D
   {
@@ -90,9 +91,12 @@ namespace pcl
     protected: // functions
     
       /** Computes integral images for multiple dimensions. */
-      void computeIntegralImages (DataType * data);
+      void 
+      computeIntegralImages (DataType * data);
+      
       /** Computes integral image for one dimension. */
-      void computeIntegralImagesOneDimensional (DataType * data);
+      void 
+      computeIntegralImagesOneDimensional (DataType * data);
 
     protected: // data
     

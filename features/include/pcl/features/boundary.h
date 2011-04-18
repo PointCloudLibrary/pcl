@@ -62,6 +62,7 @@ namespace pcl
     * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
     * \a NormalEstimationOpenMP and \a NormalEstimationTBB for examples on how to extend this to parallel implementations.
     * \author Radu Bogdan Rusu
+    * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
   class BoundaryEstimation: public FeatureFromNormals<PointInT, PointNT, PointOutT>
@@ -108,7 +109,10 @@ namespace pcl
         * \param v the v direction
         * \param angle_threshold the threshold angle (default \f$\pi / 2.0\f$)
         */
-      bool isBoundaryPoint (const pcl::PointCloud<PointInT> &cloud, int q_idx, const std::vector<int> &indices, const Eigen::Vector3f &u, const Eigen::Vector3f &v, float angle_threshold);
+      bool 
+      isBoundaryPoint (const pcl::PointCloud<PointInT> &cloud, 
+                       int q_idx, const std::vector<int> &indices, 
+                       const Eigen::Vector3f &u, const Eigen::Vector3f &v, float angle_threshold);
 
       /** \brief Check whether a point is a boundary point in a planar patch of projected points given by indices.
         * \note A coordinate system u-v-n must be computed a-priori using \a getCoordinateSystemOnPlane
@@ -119,7 +123,11 @@ namespace pcl
         * \param v the v direction
         * \param angle_threshold the threshold angle (default \f$\pi / 2.0\f$)
         */
-      bool isBoundaryPoint (const pcl::PointCloud<PointInT> &cloud, const PointInT &q_point, const std::vector<int> &indices, const Eigen::Vector3f &u, const Eigen::Vector3f &v, float angle_threshold);
+      bool 
+      isBoundaryPoint (const pcl::PointCloud<PointInT> &cloud, 
+                       const PointInT &q_point, 
+                       const std::vector<int> &indices, 
+                       const Eigen::Vector3f &u, const Eigen::Vector3f &v, float angle_threshold);
 
       /** \brief The decision boundary (angle threshold) that marks points as boundary or regular. (default \f$\pi / 2.0\f$) */
       float angle_threshold_;
@@ -131,7 +139,8 @@ namespace pcl
         * setSearchMethod ()
         * \param output the resultant point cloud model dataset that contains boundary point estimates
         */
-      void computeFeature (PointCloudOut &output);
+      void 
+      computeFeature (PointCloudOut &output);
   };
 }
 

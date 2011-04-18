@@ -43,7 +43,6 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b FPFHEstimationOMP estimates the Fast Point Feature Histogram (FPFH) descriptor for a given point cloud
     * dataset containing points and normals, in parallel, using the OpenMP standard.
     *
@@ -62,6 +61,7 @@ namespace pcl
     * </li>
     * </ul>
     * \author Radu Bogdan Rusu
+    * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
   class FPFHEstimationOMP : public FPFHEstimation<PointInT, PointNT, PointOutT>
@@ -98,7 +98,8 @@ namespace pcl
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
         */
-      inline void setNumberOfThreads (int nr_threads) { threads_ = nr_threads; }
+      inline void 
+      setNumberOfThreads (int nr_threads) { threads_ = nr_threads; }
 
     private:
 
@@ -107,7 +108,8 @@ namespace pcl
         * setSearchMethod ()
         * \param output the resultant point cloud model dataset that contains the FPFH feature estimates
         */
-      void computeFeature (PointCloudOut &output);
+      void 
+      computeFeature (PointCloudOut &output);
 
     public:
       /** \brief The number of subdivisions for each angular feature interval. */

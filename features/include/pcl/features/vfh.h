@@ -42,7 +42,6 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b VFHEstimation estimates the <b>Viewpoint Feature Histogram (VFH)</b> descriptor for a given point cloud
    * dataset containing points and normals.
    *
@@ -59,6 +58,7 @@ namespace pcl
    * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
    * \ref FPFHEstimationOMP for examples on parallel implementations of the FPFH (Fast Point Feature Histogram).
    * \author Radu Bogdan Rusu
+   * \ingroup features
    */
   template<typename PointInT, typename PointNT, typename PointOutT>
   class VFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
@@ -211,8 +211,8 @@ namespace pcl
     }
 
     /** \brief set normalize_bins_
-     * param normalize If true, the VFH bins are normalized using the total number of points
-     * */
+      * \param normalize If true, the VFH bins are normalized using the total number of points
+      */
     inline void
     setNormalizeBins (bool normalize)
     {
@@ -220,9 +220,9 @@ namespace pcl
     }
 
     /** \brief set normalize_distances_
-     * param normalize If true, the 4th component of VFH (shape distribution component) get normalized
-     * by the maximum size between the centroid and the point cloud
-     * */
+      * \param normalize If true, the 4th component of VFH (shape distribution component) get normalized
+      * by the maximum size between the centroid and the point cloud
+      */
     inline void
     setNormalizeDistance (bool normalize)
     {
@@ -230,9 +230,9 @@ namespace pcl
     }
 
     /** \brief set size_component_
-     * param fill_size True if the 4th component of VFH (shape distribution component) needs to be filled.
-     * Otherwise, it is set to zero.
-     * */
+      * \param fill_size True if the 4th component of VFH (shape distribution component) needs to be filled.
+      * Otherwise, it is set to zero.
+      */
     inline void
     setFillSizeComponent (bool fill_size)
     {
@@ -273,9 +273,7 @@ namespace pcl
     /** \brief Centroid to be used to computed VFH. Default, the centroid of the whole point cloud */
     Eigen::Vector4f centroid_to_use_;
 
-    /** VFH configuration parameters because CVFH instantiates it
-     *  See constructor for default values.
-     **/
+    // VFH configuration parameters because CVFH instantiates it. See constructor for default values.
 
     /** \brief Use the normal_to_use_ */
     bool use_given_normal_;

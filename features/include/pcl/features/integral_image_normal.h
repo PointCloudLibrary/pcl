@@ -45,10 +45,10 @@
 
 namespace pcl
 {
-  /**
-   * \brief Surface normal estimation on dense data using integral images.
-   * \author Stefan Holzer
-   */
+  /** \brief Surface normal estimation on dense data using integral images.
+    * \author Stefan Holzer
+    * \ingroup features
+    */
   class IntegralImageNormalEstimation
   {
     public: // functions

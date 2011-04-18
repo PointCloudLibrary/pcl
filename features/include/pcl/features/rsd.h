@@ -50,13 +50,13 @@ namespace pcl
     * \param nr_subdiv the number of subdivisions for the considered distance interval
     * \param plane_radius document me
     * \param radii the output point of a type that should have r_min and r_max fields
+    * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT> void
-     computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud<PointNT> &normals,
-                 const std::vector<int> &indices, double max_dist,
-                 int nr_subdiv, double plane_radius, PointOutT &radii);
+  computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud<PointNT> &normals,
+              const std::vector<int> &indices, double max_dist,
+              int nr_subdiv, double plane_radius, PointOutT &radii);
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b RSDEstimation estimates the Radius-based Surface Descriptor (minimal and maximal radius of the local surface's curves)
     * for a given point cloud dataset containing points and normals.
     *
@@ -72,6 +72,7 @@ namespace pcl
     *
     * @note The code is stateful as we do not expect this class to be multicore parallelized.
     * \author Zoltan-Csaba Marton
+    * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
   class RSDEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
@@ -97,20 +98,24 @@ namespace pcl
       /** \brief Set the number of subdivisions for the considered distance interval.
         * \param nr_subdiv the number of subdivisions
         */
-      inline void setNrSubdivisions (int nr_subdiv) { nr_subdiv_ = nr_subdiv; }
+      inline void 
+      setNrSubdivisions (int nr_subdiv) { nr_subdiv_ = nr_subdiv; }
 
       /** \brief Get the number of subdivisions for the considered distance interval. */
-      inline int getNrSubdivisions () { return (nr_subdiv_); }
+      inline int 
+      getNrSubdivisions () { return (nr_subdiv_); }
 
       /** \brief Set the maximum radius, above which everything can be considered planar.
         * \note the order of magnitude should be around 10-20 times the search radius (0.2 works well for typical datasets).
         * \note on accurate 3D data (e.g. kinect) a search radius as low as 0.01 still gives good results.
         * \param plane_radius the new plane radius
         */
-      inline void setPlaneRadius (double plane_radius) { plane_radius_ = plane_radius; }
+      inline void 
+      setPlaneRadius (double plane_radius) { plane_radius_ = plane_radius; }
 
       /** \brief Get the maximum radius, above which everything can be considered planar. */
-      inline double getPlaneRadius () { return (plane_radius_); }
+      inline double 
+      getPlaneRadius () { return (plane_radius_); }
 
       /** \brief Disables the setting of the number of k nearest neighbors to use for the feature estimation. */
       inline void 
@@ -126,10 +131,10 @@ namespace pcl
         * setSearchMethod ()
         * \param output the resultant point cloud model dataset that contains the RSD feature estimates (r_min and r_max values)
         */
-      void computeFeature (PointCloudOut &output);
+      void 
+      computeFeature (PointCloudOut &output);
 
     private:
-
       /** \brief The upper bound for the considered distance interval. */
       // TODO double max_dist_;
 
