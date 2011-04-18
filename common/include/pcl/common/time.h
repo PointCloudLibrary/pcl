@@ -40,6 +40,13 @@
 #include <string>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+/**
+  * \file pcl/common/times.h
+  * Define methods for measuring time spent in code blocks
+  * \ingroup common
+  */
+
+/*@{*/
 namespace pcl
 {
   /**
@@ -52,8 +59,17 @@ namespace pcl
   class ScopeTime 
   {
     public: 
-      inline ScopeTime (const char* title);
-      inline ~ScopeTime ();
+      inline ScopeTime (const char* title)
+      {
+        start_time_ = boost::posix_time::second_clock::local_time();
+      }
+
+      inline ~ScopeTime ()
+      {
+        boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+        std::cerr << title_ << " took " << (end_time - start_time_).total_milliseconds() << "ms.\n";
+      }
+
     private:
       std::string title_;
       boost::posix_time::ptime start_time_;
@@ -94,7 +110,6 @@ if (1) {\
 #endif
 
 }  // end namespace
-
-#include "pcl/common/time.hpp"
+/*@}*/
 
 #endif  //#ifndef PCL_NORMS_H_

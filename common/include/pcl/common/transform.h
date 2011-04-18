@@ -39,10 +39,10 @@
 #include <Eigen/Geometry>
 
 /** 
- *  \file pcl/common/tranform.h
- *  Define some libeigen based transformation methods
- *  \ingroup common
- */
+  *  \file pcl/common/transform.h
+  *  Define some libeigen based transformation methods
+  *  \ingroup common
+  */
 
 /*@{*/
 namespace pcl
@@ -223,8 +223,8 @@ namespace pcl
   template <typename Derived> void
   loadBinary (Eigen::MatrixBase<Derived>& matrix, std::istream& file);
   
-}  // namespasce end
+}  // namespace end
 /*@}*/
-#include "pcl/common/transform.hpp"
+#include "pcl/common/impl/transform.hpp"
 
 #endif  //#ifndef PCL_NORMS_H_

@@ -44,10 +44,10 @@
 #include <algorithm>
 
 /** 
- *  \file file_io.h
- *  Define some helper functions for reading and writing files
- *  \ingroup common
- */
+  * \file pcl/common/file_io.h
+  * Define some helper functions for reading and writing files
+  * \ingroup common
+  */
 
 /*@{*/
 namespace pcl
@@ -78,6 +78,6 @@ namespace pcl
   inline std::string getFileExtension (const std::string& input);
 }  // namespace end
 /*@}*/
-#include "pcl/common/file_io.hpp"
+#include "pcl/common/impl/file_io.hpp"
 
 #endif  //#ifndef PCL_FILE_IO_H_

@@ -40,6 +40,13 @@
 #include <pcl/ros/point_traits.h>
 #include <pcl/PointIndices.h>
 
+/**
+  * \file pcl/common/centroid.h
+  * Define methods for centroid estimation and covariance matrix calculus
+  * \ingroup common
+  */
+
+/*@{*/
 namespace pcl
 {
   /** 
@@ -269,7 +276,7 @@ namespace pcl
                      const pcl::PointIndices &indices, Eigen::VectorXf &centroid);
 
 }
-
+/*@}*/
 #include "pcl/common/impl/centroid.hpp"
 
 #endif  //#ifndef PCL_COMMON_CENTROID_H_

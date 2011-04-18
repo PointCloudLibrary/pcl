@@ -37,10 +37,10 @@
 #define PCL_NORMS_H_
 
 /**
- *  \file norms.h
- *  Define standard C methods to calculate different norms
- *  \ingroup common
- */
+  * \file norms.h
+  * Define standard C methods to calculate different norms
+  * \ingroup common
+  */
 
 /*@{*/
 namespace pcl
@@ -141,6 +141,6 @@ namespace pcl
   inline float HIK_Norm (float *A, float *B, int dim);
 }
 /*@}*/
-#include "pcl/common/norms.hpp"
+#include "pcl/common/impl/norms.hpp"
 
 #endif  //#ifndef PCL_NORMS_H_

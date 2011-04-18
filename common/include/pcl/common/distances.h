@@ -40,10 +40,10 @@
 #include <pcl/common/common.h>
 
 /**
- * \file distances.h
- *  Define standard C methods to do distance calculations
- * \ingroup common
- */
+  * \file pcl/common/distances.h
+  * Define standard C methods to do distance calculations
+  * \ingroup common
+  */
 
 /*@{*/
 namespace pcl

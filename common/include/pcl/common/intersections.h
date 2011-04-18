@@ -42,10 +42,10 @@
 #include <pcl/common/distances.h>
 
 /** 
- *  \file intersections.h
- *  Define line with line intersection functions
- *  \ingroup common
- */
+  * \file pcl/common/intersections.h
+  * Define line with line intersection functions
+  * \ingroup common
+  */
 
 /*@{*/
 namespace pcl

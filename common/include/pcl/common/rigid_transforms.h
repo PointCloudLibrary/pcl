@@ -39,6 +39,13 @@
 #include <pcl/point_cloud.h>
 #include <Eigen/Core>
 
+/**
+  * \file pcl/common/rigid_transforms.h
+  * Define rigid transformation methods between two different data sets
+  * \ingroup common
+  */
+
+/*@{*/
 namespace pcl
 {
   /** \brief Estimate a rigid rotation transformation between a source and a target point 
@@ -84,7 +91,7 @@ namespace pcl
                                   const std::vector<int> &indices_tgt, 
                                   Eigen::Matrix4f &transformation_matrix);
 }
-
+/*@}*/
 #include "pcl/common/impl/rigid_transforms.hpp"
 
 #endif // PCL_COMMON_RIGID_TRANSFORMS_H_

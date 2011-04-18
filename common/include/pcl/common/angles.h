@@ -37,10 +37,10 @@
 #define PCL_ANGLES_H_
 
 /**
- * \file angles.h
- *  Define standard C methods to do angle calculations
- * \ingroup common
- */
+  * \file pcl/common/angles.h
+  * Define standard C methods to do angle calculations
+  * \ingroup common
+  */
 
 /*@{*/
 namespace pcl
@@ -72,6 +72,6 @@ namespace pcl
   inline real normAngle(real alpha);
 }
 /*@}*/
-#include "pcl/common/angles.hpp"
+#include "pcl/common/impl/angles.hpp"
 
 #endif  //#ifndef PCL_NORMS_H_

@@ -21,7 +21,7 @@
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR a PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
@@ -31,19 +31,53 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id: distances.cpp 527 2011-04-17 23:57:26Z rusu $
+ *
  */
+#include "pcl/common/common.h"
 
-#include <iostream>
-inline pcl::ScopeTime::ScopeTime (const char* title) : title_ (title)
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::getMinMax (const sensor_msgs::PointCloud2 &cloud, int idx, 
+                const std::string &field_name, float &min_p, float &max_p)
 {
-  start_time_ = boost::posix_time::second_clock::local_time();
-  //std::cerr << "start time is ("<<_startTime.tv_sec<<", "<<_startTime.tv_usec<<").\n";
+  min_p = FLT_MAX;
+  max_p = -FLT_MAX;
+
+  int field_idx = -1;
+  for (size_t d = 0; d < cloud.fields.size (); ++d)
+    if (cloud.fields[d].name == field_name)
+      field_idx = d;
+
+  if (field_idx == -1)
+  {
+    PCL_ERROR ("[getMinMax] Invalid field (%s) given!", field_name.c_str ());
+    return;
+  }
+
+  for (unsigned int i = 0; i < cloud.fields[field_idx].count; ++i)
+  {
+    float data;
+    // TODO: replace float with the real data type
+    memcpy (&data, &cloud.data[cloud.fields[field_idx].offset + i * sizeof (float)], sizeof (float));
+    min_p = (data > min_p) ? min_p : data; 
+    max_p = (data < max_p) ? max_p : data; 
+  }
 }
 
-inline pcl::ScopeTime::~ScopeTime ()
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::getMeanStdDev (const std::vector<float> &values, double &mean, double &stddev)
 {
-  boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-  //std::cerr << "start time is ("<<_startTime.tv_sec<<", "<<_startTime.tv_usec<<")."
-  //          << " End time is ("<<endTime.tv_sec<<", "<<endTime.tv_usec<<") => "<<std::fixed<<duration<<"\n";
-  std::cerr << title_ << " took " << (end_time - start_time_).total_milliseconds() << "ms.\n";
+  double sum = 0, sq_sum = 0;
+
+  for (size_t i = 0; i < values.size (); ++i)
+  {
+    sum += values[i];
+    sq_sum += values[i] * values[i];
+  }
+  mean = sum / values.size ();
+  double variance = (double)(sq_sum - sum * sum / values.size ()) / (values.size () - 1);
+  stddev = sqrt (variance);
 }
+

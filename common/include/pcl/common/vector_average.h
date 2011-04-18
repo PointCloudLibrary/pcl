@@ -41,13 +41,13 @@
 namespace pcl 
 {
   /**
-   * \brief Calculates the weighted average and the covariance matrix
-   *
-   * A class to calculate the weighted average and the covariance matrix of a set of vectors with given weights.
-   * The original data is not saved. Mean and covariance are calculated iteratively.
-   * \author Bastian Steder
-   * \ingroup common
-   */
+    * \brief Calculates the weighted average and the covariance matrix
+    *
+    * A class to calculate the weighted average and the covariance matrix of a set of vectors with given weights.
+    * The original data is not saved. Mean and covariance are calculated iteratively.
+    * \author Bastian Steder
+    * \ingroup common
+    */
   template <typename real, int dimension>
   class VectorAverage 
   {
@@ -90,11 +90,11 @@ namespace pcl
         
         /** Do Principal component analysis */
         inline void
-          doPCA (Eigen::Matrix<real, dimension, 1>& eigen_values) const;
+        doPCA (Eigen::Matrix<real, dimension, 1>& eigen_values) const;
         
         /** Get the eigenvector corresponding to the smallest eigenvalue */
         inline void
-          getEigenVector1 (Eigen::Matrix<real, dimension, 1>& eigen_vector1) const;
+        getEigenVector1 (Eigen::Matrix<real, dimension, 1>& eigen_vector1) const;
         
         //-----VARIABLES-----
         
@@ -112,7 +112,7 @@ namespace pcl
   typedef VectorAverage<float, 4> VectorAverage4f;
 }  // END namespace
 
-#include "pcl/common/vector_average.hpp"
+#include "pcl/common/impl/vector_average.hpp"
 
 #endif  // #ifndef PCL_VECTOR_AVERAGE_H
 

@@ -37,31 +37,29 @@
 
 namespace pcl
 {
+  template <typename real>
+  inline real normAngle(real alpha)
+  {
+    return (alpha >= 0  ?  fmod(alpha+real(M_PI), real(2.0f*M_PI))-real(M_PI) : -(fmod(real(M_PI)-alpha, real(2.0f*M_PI))-real(M_PI)));
+  }
 
-template <typename real>
-inline real normAngle(real alpha)
-{
-  return (alpha >= 0  ?  fmod(alpha+real(M_PI), real(2.0f*M_PI))-real(M_PI) : -(fmod(real(M_PI)-alpha, real(2.0f*M_PI))-real(M_PI)));
-}
+  inline float rad2deg(float alpha)
+  {
+    return alpha*57.29578f;
+  }
 
-inline float rad2deg(float alpha)
-{
-  return alpha*57.29578f;
-}
+  inline float deg2rad(float alpha)
+  {
+    return alpha*0.017453293f;
+  }
 
-inline float deg2rad(float alpha)
-{
-  return alpha*0.017453293f;
-}
+  inline double rad2deg(double alpha)
+  {
+    return alpha*57.29578;
+  }
 
-inline double rad2deg(double alpha)
-{
-  return alpha*57.29578;
-}
-
-inline double deg2rad(double alpha)
-{
-  return alpha*0.017453293;
-}
-
+  inline double deg2rad(double alpha)
+  {
+    return alpha*0.017453293;
+  }
 }

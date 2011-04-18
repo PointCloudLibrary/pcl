@@ -8,6 +8,7 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
     set(srcs src/pcl_base.cpp
+        src/common.cpp
         src/distances.cpp
         src/intersections.cpp
         src/parse.cpp
