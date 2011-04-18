@@ -24,18 +24,17 @@ contributions on any tutorial.
 
      .. |mi_1| image:: images/pcl_logo.png
                :height: 75px
-* Advanced Usage
 
   * :ref:`building_pcl`
 
      ======  ======
-     |mi_2|  Title: **Deeper in PCL building**
+     |mi_2|  Title: **Explaining PCL's cmake options**
 
              Author: *Nizar Sallem*
 
              Compatibility: > PCL 0.9
              
-             In this tutorial, we will learn how to tweak PCL build process to fit your needs using cmake. 
+             In this tutorial, we will explain the basic PCL cmake options, and ways to tweak them to fit your project.
      ======  ======
 
      .. |mi_2| image:: images/pcl_ccmake.png
