@@ -42,7 +42,9 @@
 #include <algorithm>
 #include <locale>
 #include <cctype>
+#ifndef _WIN32
 #include <libusb-1.0/libusb.h>
+#endif
 #include <map>
 #include <boost/tokenizer.hpp>
 
