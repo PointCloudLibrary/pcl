@@ -39,9 +39,9 @@
 #include <Eigen/Geometry>
 
 /** 
-  *  \file pcl/common/transform.h
-  *  Define some libeigen based transformation methods
-  *  \ingroup common
+  * \file pcl/common/transform.h
+  * Define some libeigen based transformation methods
+  * \ingroup common
   */
 
 /*@{*/
