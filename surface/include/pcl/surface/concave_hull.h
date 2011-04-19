@@ -112,17 +112,6 @@ namespace pcl
       /** \brief describe voronoi_centers here.. */
       pcl::PointCloud<PointInT> voronoi_centers_;
 
-      /** \brief describe method here...
-        * \param v
-        * \param center
-        */
-      inline double 
-      computeDistVertexCenter2D (vertexT *v, coordT *center)
-      {
-        return (sqrt ((v->point[0] - center[0]) * (v->point[0] - center[0]) + 
-                      (v->point[1] - center[1]) * (v->point[1] - center[1])));
-      }
-
       /** \brief The actual reconstruction method. 
         * \param points the resultant concave hull vertices
         * \param polygons the resultant concave hull polygons (vertex indices)

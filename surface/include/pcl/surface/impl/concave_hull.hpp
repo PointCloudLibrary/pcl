@@ -242,8 +242,11 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape,
       // Check if the distance from any vertex to the facet->center 
       // (center of the voronoi cell) is smaller than alpha
       vertexT* anyVertex = (vertexT *)(facet->vertices->e[0].p);
-      double r = computeDistVertexCenter2D (anyVertex, facet->center);
-      if (r < alpha_) 
+      double r = (sqrt ((anyVertex->point[0] - facet->center[0]) * 
+                        (anyVertex->point[0] - facet->center[0]) + 
+                        (anyVertex->point[1] - facet->center[1]) * 
+                        (anyVertex->point[1] - facet->center[1])));
+      if (r < alpha_)
       {
         pcl::Vertices facet_vertices;
         qh_makeridges (facet);
