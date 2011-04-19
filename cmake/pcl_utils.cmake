@@ -166,6 +166,8 @@ macro(SET_INSTALL_DIRS)
     else(OS_IS_64BIT)
         set(LIB_INSTALL_DIR "lib")
     endif(OS_IS_64BIT)
+    set(INCLUDE_INSTALL_ROOT
+        "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
     set(INCLUDE_INSTALL_DIR
         "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}/pcl")
     set(BIN_INSTALL_DIR "bin")
