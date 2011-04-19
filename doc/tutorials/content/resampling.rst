@@ -51,6 +51,7 @@ editor, and place the following inside it:
 .. code-block:: cpp
    :linenos:
 
+   #include <boost/make_shared.hpp>
    #include <pcl/point_types.h>
    #include <pcl/io/pcd_io.h>
    #include <pcl/kdtree/kdtree_flann.h>
