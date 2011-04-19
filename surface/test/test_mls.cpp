@@ -88,38 +88,48 @@ int
   mls.setOutputNormals (mls_normals);
   mls.reconstruct (mls_points);
   
-  PointCloud<PointNormal> mls_cloud;
-  pcl::concatenateFields (mls_points, *mls_normals, mls_cloud);
-
   // Save output
-  savePCDFile ("./test/bun0-mls.pcd", mls_cloud);
+  PointCloud<PointNormal>::Ptr mls_cloud (new PointCloud<PointNormal> ());
+  pcl::concatenateFields (mls_points, *mls_normals, *mls_cloud);
+  savePCDFile ("./test/bun0-mls.pcd", *mls_cloud);
 
   // Test triangulation
   std::cerr << "TESTING TRIANGULATION" << std::endl;
   KdTree<PointNormal>::Ptr tree2 (new KdTreeFLANN<PointNormal>);
-  tree2->setInputCloud (mls_cloud.makeShared ());
+  tree2->setInputCloud (mls_cloud);
   PolygonMesh triangles;
+  PolygonMesh grid;
 
   // Initialize object
-  GridProjection<PointNormal> gp3;
-  gp3.setResolution (0.005);
-  gp3.setPaddingSize (3);
-//  GreedyProjectionTriangulation<PointNormal> gp3;
-//  gp3.setSearchRadius (0.025);
-//  gp3.setMu (2.5);
-//  gp3.setMaximumNearestNeighbors (100);
-//  gp3.setMaximumSurfaceAgle(M_PI/4); // 45 degrees
-//  gp3.setMinimumAngle(M_PI/18); // 10 degrees
-//  gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
-//  gp3.setNormalConsistency(false);
+  GreedyProjectionTriangulation<PointNormal> gp3;
+  gp3.setSearchRadius (0.025);
+  gp3.setMu (2.5);
+  gp3.setMaximumNearestNeighbors (100);
+  gp3.setMaximumSurfaceAgle(M_PI/4); // 45 degrees
+  gp3.setMinimumAngle(M_PI/18); // 10 degrees
+  gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
+  gp3.setNormalConsistency(false);
 
   // Get result
-  gp3.setInputCloud (mls_cloud.makeShared ());
+  gp3.setInputCloud (mls_cloud);
   gp3.setSearchMethod (tree2);
   gp3.reconstruct (triangles);
-  saveVTKFile ("./test/bun0-mls.vtk", triangles);
+  saveVTKFile ("./test/bun0-mls-triangles.vtk", triangles);
   //std::cerr << "INPUT: ./test/bun0-mls.pcd" << std::endl;
-  std::cerr << "OUTPUT: ./test/bun0-mls.vtk" << std::endl;
+  std::cerr << "OUTPUT: ./test/bun0-mls-triangles.vtk" << std::endl;
+
+  // Initialize object
+  GridProjection<PointNormal> gp;
+  gp.setResolution (0.005);
+  gp.setPaddingSize (3);
+
+  // Get result
+  gp.setInputCloud (mls_cloud);
+  gp.setSearchMethod (tree2);
+  gp.reconstruct (grid);
+  saveVTKFile ("./test/bun0-mls-grid.vtk", grid);
+  //std::cerr << "INPUT: ./test/bun0-mls.pcd" << std::endl;
+  std::cerr << "OUTPUT: ./test/bun0-mls-grid.vtk" << std::endl;
 
   // Finish
   return (0);
