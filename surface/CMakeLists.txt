@@ -12,7 +12,7 @@ if(build)
         include_directories(${QHULL_INCLUDE_DIRS})
         set(HULL_INCLUDES
             include/pcl/surface/concave_hull.h
-            include/pcl/surface/convexe_hull.h
+            include/pcl/surface/convex_hull.h
             )
         set(HULL_IMPLS
             include/pcl/surfaces/impl/concave_hull.hpp
