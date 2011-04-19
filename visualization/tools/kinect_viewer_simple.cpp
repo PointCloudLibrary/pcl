@@ -95,7 +95,7 @@ class SimpleKinectViewer
       //lock while we swap our cloud and reset it.
       boost::mutex::scoped_lock lock(mtx_);
       CloudConstPtr temp_cloud;
-      std::swap(temp_cloud, cloud_); //here we set cloud_ to null, so that
+      temp_cloud.swap(cloud_);       //here we set cloud_ to null, so that
                                      //it is safe to set it again from our
                                      //callback
       return temp_cloud;
