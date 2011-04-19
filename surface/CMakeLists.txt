@@ -15,8 +15,8 @@ if(build)
             include/pcl/surface/convex_hull.h
             )
         set(HULL_IMPLS
-            include/pcl/surfaces/impl/concave_hull.hpp
-            include/pcl/surfaces/impl/convex_hull.hpp
+            include/pcl/surface/impl/concave_hull.hpp
+            include/pcl/surface/impl/convex_hull.hpp
             )
         set(HULL_SOURCES
             src/concave_hull.cpp
