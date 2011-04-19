@@ -22,7 +22,6 @@ editor, and place the following inside it:
    :linenos:
 
    #include <iostream>
-   #include <boost/make_shared.hpp>
    #include "pcl/ModelCoefficients.h"
    #include "pcl/io/pcd_io.h"
    #include "pcl/point_types.h"

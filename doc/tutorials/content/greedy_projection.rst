@@ -73,7 +73,6 @@ editor, and place the following code inside it:
 .. code-block:: cpp
    :linenos:
 
-   #include <boost/make_shared.hpp>
    #include <pcl/point_types.h>
    #include <pcl/io/pcd_io.h>
    #include <pcl/kdtree/kdtree_flann.h>
@@ -96,7 +95,7 @@ editor, and place the following code inside it:
      // Normal estimation
      NormalEstimation<PointXYZ, Normal> n;
      PointCloud<Normal>::Ptr normals (new PointCloud<Normal>);
-     KdTree<PointXYZ>::Ptr tree = boost::make_shared<KdTreeFLANN<PointXYZ> > ();
+     KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
      tree->setInputCloud (cloud);
      n.setInputCloud (cloud);
      n.setSearchMethod (tree);
@@ -108,7 +107,7 @@ editor, and place the following code inside it:
      pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
 
      // Create search tree
-     KdTree<PointNormal>::Ptr tree2 = boost::make_shared<KdTreeFLANN<PointNormal> > ();
+     KdTree<PointNormal>::Ptr tree2 (new KdTreeFLANN<PointNormal>);
      tree2->setInputCloud (cloud_with_normals);
 
      // Initialize objects
@@ -161,7 +160,7 @@ PointCloud<PointXYZ>.
     // Normal estimation
     NormalEstimation<PointXYZ, Normal> n;
     PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-    KdTree<PointXYZ>::Ptr tree = boost::make_shared<KdTreeFLANN<PointXYZ> > ();
+    KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> > ();
     tree->setInputCloud (cloud);
     n.setInputCloud (cloud);
     n.setSearchMethod (tree);
@@ -182,7 +181,7 @@ Since coordinates and normals need to be in the same PointCloud, we create a Poi
 .. code-block:: cpp
 
     // Create search tree
-    KdTree<PointNormal>::Ptr tree2 = boost::make_shared<KdTreeFLANN<PointNormal> > ();
+    KdTree<PointNormal>::Ptr tree2 (new KdTreeFLANN<PointNormal>);
     tree2->setInputCloud (cloud_with_normals);
 
     // Initialize objects

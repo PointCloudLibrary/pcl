@@ -51,7 +51,6 @@ editor, and place the following inside it:
 .. code-block:: cpp
    :linenos:
 
-   #include <boost/make_shared.hpp>
    #include <pcl/point_types.h>
    #include <pcl/io/pcd_io.h>
    #include <pcl/kdtree/kdtree_flann.h>
@@ -72,7 +71,7 @@ editor, and place the following inside it:
      fromROSMsg (cloud_blob, *cloud);
 
      // Create a KD-Tree
-     KdTree<PointXYZ>::Ptr tree = boost::make_shared<KdTreeFLANN<PointXYZ> > ();
+     KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
      tree->setInputCloud (cloud);
 
      // Output has the same type as the input one, it will be only smoothed
@@ -111,7 +110,7 @@ Now, let's break down the code piece by piece.
 
 .. code-block:: cpp
 
-   KdTree<PointXYZ>::Ptr tree = boost::make_shared<KdTreeFLANN<PointXYZ> > ();
+   KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
    tree->setInputCloud (cloud);
 
 as the example PCD has only XYZ coordinates, we load it into a
