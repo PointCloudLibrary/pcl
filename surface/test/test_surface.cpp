@@ -38,7 +38,6 @@
 
 #include <gtest/gtest.h>
 
-#include <boost/make_shared.hpp>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
@@ -56,8 +55,8 @@ using namespace std;
 
 typedef KdTree<PointXYZ>::Ptr KdTreePtr;
 
-PointCloud<PointXYZ> cloud;
-vector<int> indices;
+PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+boost::shared_ptr<vector<int> > indices (new vector<int>);
 KdTreePtr tree;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,9 +68,9 @@ TEST (PCL, MovingLeastSquares)
   MovingLeastSquares<PointXYZ, Normal> mls;
 
   // Set parameters
-  mls.setInputCloud (cloud.makeShared ());
+  mls.setInputCloud (cloud);
   mls.setOutputNormals (mls_normals);
-  mls.setIndices (boost::make_shared <vector<int> > (indices));
+  mls.setIndices (indices);
   mls.setPolynomialFit (true);
   mls.setSearchMethod (tree);
   mls.setSearchRadius (0.03);
@@ -94,8 +93,8 @@ TEST (PCL, GreedyProjectionTriangulation)
   //*
   NormalEstimation<PointXYZ, Normal> n;
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  n.setInputCloud (cloud.makeShared ());
-  n.setIndices (boost::make_shared <vector<int> > (indices));
+  n.setInputCloud (cloud);
+  n.setIndices (indices);
   n.setSearchMethod (tree);
   n.setKSearch (20);
   n.compute (*normals);
@@ -104,26 +103,26 @@ TEST (PCL, GreedyProjectionTriangulation)
   // Concatenate XYZ and normal information
   PointCloud<PointNormal> cloud_with_normals2;
   //*
-  pcl::concatenateFields (cloud, *normals, cloud_with_normals2);
+  pcl::concatenateFields (*cloud, *normals, cloud_with_normals2);
   savePCDFile ("./test/bun0-normals.pcd", cloud_with_normals2);
   //*/
   //*
-  PointCloud<PointNormal> cloud_with_normals;
+  PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
   sensor_msgs::PointCloud2 cloud_blob;
   loadPCDFile ("./test/bun0-normals.pcd", cloud_blob);
-  fromROSMsg (cloud_blob, cloud_with_normals);
+  fromROSMsg (cloud_blob, *cloud_with_normals);
   //*/
       
   // Create search tree
-  KdTree<PointNormal>::Ptr tree2 = boost::make_shared<KdTreeFLANN<PointNormal> > ();
-  tree2->setInputCloud (cloud_with_normals.makeShared ());
+  KdTree<PointNormal>::Ptr tree2 (new KdTreeFLANN<PointNormal>);
+  tree2->setInputCloud (cloud_with_normals);
 
   // Init objects
   PolygonMesh triangles;
   GreedyProjectionTriangulation<PointNormal> gp3;
 
   // Set parameters
-  gp3.setInputCloud (cloud_with_normals.makeShared ());
+  gp3.setInputCloud (cloud_with_normals);
   gp3.setSearchMethod (tree2);
   gp3.setSearchRadius (0.025);
   gp3.setMu (2.5);
@@ -136,8 +135,8 @@ TEST (PCL, GreedyProjectionTriangulation)
   // Reconstruct
   gp3.reconstruct (triangles);
   saveVTKFile ("./test/bun0-gp3.vtk", triangles);
-  EXPECT_EQ (triangles.cloud.width, cloud_with_normals.width);
-  EXPECT_EQ (triangles.cloud.height, cloud_with_normals.height);
+  EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
+  EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
   //EXPECT_EQ ((int)triangles.polygons.size(), 685);
   EXPECT_NEAR ((int)triangles.polygons.size(), 685, 5);
 
@@ -154,7 +153,7 @@ TEST (PCL, GreedyProjectionTriangulation)
   // Additional vertex information
   std::vector<int> parts = gp3.getPartIDs();
   std::vector<int> states = gp3.getPointStates();
-  int nr_points = cloud_with_normals.width * cloud_with_normals.height;
+  int nr_points = cloud_with_normals->width * cloud_with_normals->height;
   EXPECT_EQ ((int)parts.size (), nr_points);
   EXPECT_EQ ((int)states.size (), nr_points);
   EXPECT_EQ (parts[0], 0);
@@ -167,9 +166,9 @@ TEST (PCL, GreedyProjectionTriangulation)
 TEST (PCL, GridProjection)
 {
   // Create a simple test dataset
-  PointCloud<PointNormal> cloud_with_normals;
-  cloud_with_normals.height = 1;
-  cloud_with_normals.is_dense = true;
+  PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
+  cloud_with_normals->height = 1;
+  cloud_with_normals->is_dense = true;
   for (float x = -0.1; x <= 0.1; x += 0.01)
   {
     for (float y = -0.1; y <= 0.1; y += 0.01)
@@ -182,22 +181,21 @@ TEST (PCL, GridProjection)
       p.normal[1] = 0;
       p.normal[2] = 1;
       p.curvature = 0;
-      cloud_with_normals.points.push_back (p);
+      cloud_with_normals->points.push_back (p);
     }
   }
-  cloud_with_normals.width = cloud_with_normals.points.size ();
-  PointCloud<PointNormal>::ConstPtr cloud_ptr = cloud_with_normals.makeShared ();
+  cloud_with_normals->width = cloud_with_normals->points.size ();
 
   // Create search tree
-  KdTree<PointNormal>::Ptr tree2 = boost::make_shared<KdTreeFLANN<PointNormal> > ();
-  tree2->setInputCloud (cloud_ptr);
+  KdTree<PointNormal>::Ptr tree2 (new KdTreeFLANN<PointNormal>);
+  tree2->setInputCloud (cloud_with_normals);
 
   // Init objects
   PolygonMesh triangles;
   GridProjection<PointNormal> gp3;
 
   // Set parameters
-  gp3.setInputCloud (cloud_ptr);
+  gp3.setInputCloud (cloud_with_normals);
   gp3.setSearchMethod (tree2);
   gp3.setResolution (0.005);
   //gp3.setPaddingSize (3);
@@ -221,9 +219,8 @@ TEST (PCL, ConvexHull_bunny)
   pcl::PointCloud<pcl::PointXYZ> hull;
   std::vector<pcl::Vertices> polygons;
 
-  pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloudptr (new pcl::PointCloud<pcl::PointXYZ> (cloud));
   pcl::ConvexHull<pcl::PointXYZ> chull;
-  chull.setInputCloud (cloudptr);
+  chull.setInputCloud (cloud);
   chull.reconstruct (hull, polygons);
 
   EXPECT_EQ (polygons.size (), 206);
@@ -379,16 +376,15 @@ int
   main (int argc, char** argv)
 {
   assert(argc > 1);
-  char* file_name = argv[1];
   sensor_msgs::PointCloud2 cloud_blob;
-  loadPCDFile (file_name, cloud_blob);
-  fromROSMsg (cloud_blob, cloud);
+  loadPCDFile (argv[1], cloud_blob);
+  fromROSMsg (cloud_blob, *cloud);
 
-  indices.resize (cloud.points.size ());
-  for (size_t i = 0; i < indices.size (); ++i) { indices[i] = i; }
+  indices->resize (cloud->points.size ());
+  for (size_t i = 0; i < indices->size (); ++i) { (*indices)[i] = i; }
 
-  tree = boost::make_shared<KdTreeFLANN<PointXYZ> > (false);
-  tree->setInputCloud (cloud.makeShared ());
+  tree.reset (new KdTreeFLANN<PointXYZ> (false));
+  tree->setInputCloud (cloud);
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
