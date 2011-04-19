@@ -99,6 +99,9 @@ namespace pcl
         tree_.reset (new pcl::KdTreeFLANN<PointTarget>);     // ANN tree for nearest neighbor search
       }
 
+      /** \brief destructor. */
+      virtual ~Registration () {}
+
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)
         * \param cloud the input point cloud target
         */

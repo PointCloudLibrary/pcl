@@ -74,8 +74,11 @@ namespace pcl
       typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
       /** \brief Empty constructor. */
-      PCLBase () : input_ (), indices_ (), use_indices_ (false), fake_indices_ (false) {};
+      PCLBase () : input_ (), indices_ (), use_indices_ (false), fake_indices_ (false) {}
 
+      /** \brief destructor. */
+      virtual ~PCLBase() {}
+      
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
         */
