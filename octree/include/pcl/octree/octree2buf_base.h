@@ -146,9 +146,11 @@ namespace pcl
           return branchCount_;
         }
 
-        /** \brief Delete the octree structure and its leaf nodes. */
+        /** \brief Delete the octree structure and its leaf nodes.
+         *  \param freeMemory_arg: if "true", allocated octree nodes are deleted, otherwise they are pushed to the octree node pool
+         * */
         void
-        deleteTree ();
+        deleteTree ( bool freeMemory_arg = false );
 
         /** \brief Delete octree structure of previous buffer. */
         inline void

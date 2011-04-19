@@ -187,7 +187,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::deleteTree ()
+      OctreeBase<DataT, LeafT>::deleteTree (  bool freeMemory_arg )
       {
 
         if (rootNode_)
@@ -197,6 +197,10 @@ namespace pcl
           leafCount_ = 0;
           branchCount_ = 1;
         }
+
+        // delete node pool
+        if (freeMemory_arg)
+          poolCleanUp ();
 
       }
 

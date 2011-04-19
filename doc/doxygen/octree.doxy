@@ -17,7 +17,7 @@ data set. A set of leaf node classes provide additional functionality, such as
 spacial "occupancy" and "point density per voxel" checks. Functions for serialization 
 and deserialization enable to efficiently encode the octree structure into a binary format.
 Furthermore, a memory pool implementation reduces expensive memory allocation and 
-deallocation operations in scenarios where octrees needs to be at high rate. 
+deallocation operations in scenarios where octrees needs to be created at high rate. 
 
 The following figure illustrates the voxel bounding boxes of an octree nodes at lowest tree level. 
 The octree voxels are surrounding every 3D point from the bunny's surface. The red dots represent the point data. 

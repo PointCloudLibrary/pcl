@@ -251,11 +251,11 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
       int
-      OctreePointCloud<PointT, LeafT, OctreeT>::nearestKSearch (const PointCloud &cloud_arg, int index_arg, int k_arg,
+      OctreePointCloud<PointT, LeafT, OctreeT>::nearestKSearch (const PointCloudConstPtr &cloud_arg, int index_arg, int k_arg,
                                                                 std::vector<int> &k_indices_arg,
                                                                 std::vector<float> &k_sqr_distances_arg)
       {
-        this->setInputCloud (cloud_arg.makeShared ());
+        this->setInputCloud (cloud_arg);
         this->addPointsFromInputCloud ();
 
         return nearestKSearch (index_arg, k_arg, k_indices_arg, k_sqr_distances_arg);
@@ -319,12 +319,51 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::approxNearestSearch (const PointCloudConstPtr &cloud_arg,
+                                                                     int query_index_arg, int &result_index_arg,
+                                                                     float &sqr_distance_arg)
+      {
+        this->setInputCloud (cloud_arg);
+        this->addPointsFromInputCloud ();
+
+        return approxNearestSearch (query_index_arg, result_index_arg, sqr_distance_arg);
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::approxNearestSearch (const PointT &p_q_arg, int &result_index_arg,
+                                                                     float &sqr_distance_arg)
+      {
+        assert (this->leafCount_>0);
+
+        OctreeKey key;
+        key.x = key.y = key.z = 0;
+
+        approxNearestSearchRecursive (p_q_arg, this->rootNode_, key, 1, result_index_arg, sqr_distance_arg);
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::approxNearestSearch (int query_index_arg, int &result_index_arg,
+                                                                     float &sqr_distance_arg)
+      {
+        const PointT searchPoint = getPointByIndex (query_index_arg);
+
+        return approxNearestSearch (searchPoint, result_index_arg, sqr_distance_arg);
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
       int
-      OctreePointCloud<PointT, LeafT, OctreeT>::radiusSearch (const PointCloud &cloud_arg, int index_arg,
+      OctreePointCloud<PointT, LeafT, OctreeT>::radiusSearch (const PointCloudConstPtr &cloud_arg, int index_arg,
                                                               double radius_arg, std::vector<int> &k_indices_arg,
                                                               std::vector<float> &k_sqr_distances_arg, int max_nn_arg)
       {
-        this->setInputCloud (cloud_arg.makeShared ());
+        this->setInputCloud (cloud_arg);
         this->addPointsFromInputCloud ();
 
         return radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
@@ -1103,6 +1142,108 @@ namespace pcl
           }
 
         }
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::approxNearestSearchRecursive (const PointT & point_arg,
+                                                                              const OctreeBranch* node_arg,
+                                                                              const OctreeKey& key_arg,
+                                                                              unsigned int treeDepth_arg,
+                                                                              int& result_index_arg,
+                                                                              float& sqr_distance_arg)
+      {
+
+        unsigned char childIdx;
+        unsigned char minChildIdx;
+        double minVoxelCenterDistance;
+
+        OctreeKey minChildKey;
+        OctreeKey newKey;
+
+        const OctreeNode* childNode;
+
+        // set minimum voxel distance to maximum value
+        minVoxelCenterDistance = numeric_limits<double>::max ();
+
+        minChildIdx = 0xFF;
+
+        // iterate over all children
+        for (childIdx = 0; childIdx < 8; childIdx++)
+        {
+          if (branchHasChild (*node_arg, childIdx))
+          {
+
+            PointT voxelCenter;
+            double voxelPointDist;
+
+            newKey.x = (key_arg.x << 1) + (!!(childIdx & (1 << 2)));
+            newKey.y = (key_arg.y << 1) + (!!(childIdx & (1 << 1)));
+            newKey.z = (key_arg.z << 1) + (!!(childIdx & (1 << 0)));
+
+            // generate voxel center point for voxel at key
+            genVoxelCenterFromOctreeKey (newKey, treeDepth_arg, voxelCenter);
+
+            voxelPointDist = pointSquaredDist (voxelCenter, point_arg);
+
+            // search for child voxel with shortest distance to search point
+            if (voxelPointDist < minVoxelCenterDistance)
+            {
+              minVoxelCenterDistance = voxelPointDist;
+              minChildIdx = childIdx;
+              minChildKey = newKey;
+            }
+
+          }
+        }
+
+        // make sure we found at least one branch child
+        assert (minChildIdx<8);
+
+        childNode = getBranchChild (*node_arg, minChildIdx);
+
+        if (treeDepth_arg < this->octreeDepth_)
+        {
+          // we have not reached maximum tree depth
+          approxNearestSearchRecursive (point_arg, (OctreeBranch*)childNode, minChildKey, treeDepth_arg + 1,
+                                        result_index_arg, sqr_distance_arg);
+
+        }
+        else
+        {
+          // we reached leaf node level
+
+          double squaredDist;
+          double smallestSquaredDist;
+          size_t i;
+          vector<int> decodedPointVector;
+
+          OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
+
+          smallestSquaredDist = numeric_limits<double>::max ();
+
+          // decode leaf node into decodedPointVector
+          childLeaf->getData (decodedPointVector);
+
+          // Linearly iterate over all decoded (unsorted) points
+          for (i = 0; i < decodedPointVector.size (); i++)
+          {
+
+            const PointT& candidatePoint = getPointByIndex (decodedPointVector[i]);
+
+            // calculate point distance to search point
+            squaredDist = pointSquaredDist (candidatePoint, point_arg);
+
+            // check if a closer match is found
+            if (squaredDist < smallestSquaredDist)
+            {
+              result_index_arg = decodedPointVector[i];
+              sqr_distance_arg = smallestSquaredDist = squaredDist;
+            }
+          }
+        }
+
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
