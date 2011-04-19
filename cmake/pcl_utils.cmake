@@ -141,11 +141,11 @@ endmacro(DISSECT_VERSION)
 # Sets LINUX if the operating system is Linux.
 macro(GET_OS_INFO)
     string(REGEX MATCH "Linux" OS_IS_LINUX ${CMAKE_SYSTEM_NAME})
-    if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(OS_IS_64BIT TRUE)
-    else(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+    else(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(OS_IS_64BIT FALSE)
-    endif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+    endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 endmacro(GET_OS_INFO)
 
 
