@@ -235,7 +235,7 @@ TEST (PCL, ConvexHull_bunny)
   Eigen::Vector4f min_pt, max_pt;
   pcl::getMinMax3D (hull, min_pt, max_pt);
 
-  EXPECT_EQ((min_pt - max_pt).norm (), (min_pt_hull - max_pt_hull).norm ());
+  EXPECT_NEAR ((min_pt - max_pt).norm (), (min_pt_hull - max_pt_hull).norm (), 1e-5);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
