@@ -50,7 +50,7 @@
   * \ingroup common
   */
 
-/*@{*/
+/** @{*/
 namespace pcl
 {
   /** \brief A point structure representing Euclidean xyz coordinates. (SSE friendly) 
@@ -247,7 +247,8 @@ namespace pcl
   template <typename PointType> inline bool 
   hasValidXYZ (const PointType& p);
 }
-/*@}*/
+
+/** @} */
 
 #include "pcl/impl/point_types.hpp"  // Include struct definitions
 
