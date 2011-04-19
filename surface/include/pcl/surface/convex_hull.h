@@ -47,37 +47,6 @@
 #include "pcl/PolygonMesh.h"
 #include <math.h>
 
-#ifndef _WIN32
-  #if defined(__cplusplus)
-  extern "C"
-  {
-  #endif
-#  include <stdio.h>
-#  include <stdlib.h>
-#  include "qhull/qhull.h"
-#  include "qhull/mem.h"
-#  include "qhull/qset.h"
-#  include "qhull/geom.h"
-#  include "qhull/merge.h"
-#  include "qhull/poly.h"
-#  include "qhull/io.h"
-#  include "qhull/stat.h"
-  #if defined(__cplusplus)
-  }
-  #endif
-#else
-#  include <stdio.h>
-#  include <stdlib.h>
-#  include "libqhull/qhull.h"
-#  include "libqhull/mem.h"
-#  include "libqhull/qset.h"
-#  include "libqhull/geom.h"
-#  include "libqhull/merge.h"
-#  include "libqhull/poly.h"
-#  include "libqhull/io.h"
-#  include "libqhull/stat.h"
-#endif
-
 namespace pcl
 {
   /** \brief Sort 2D points in a vector structure
