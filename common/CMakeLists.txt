@@ -48,7 +48,8 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
     
     if(NOT USE_ROS)
-      set(sensor_msg_incs include/sensor_msgs/PointField.h
+      set(sensor_msg_incs 
+          include/sensor_msgs/PointField.h
           include/sensor_msgs/PointCloud2.h
           include/sensor_msgs/Image.h
           )
