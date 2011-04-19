@@ -14,7 +14,7 @@ namespace pcl
     PointIndices () : header (), indices ()
     {}
 
-    ::std_msgs::Header_<std::allocator<void> >  header;
+    ::std_msgs::Header header;
 
     std::vector<int> indices;
 

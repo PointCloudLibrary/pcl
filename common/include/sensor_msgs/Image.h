@@ -9,94 +9,52 @@
 
 namespace sensor_msgs
 {
-  template <class ContainerAllocator>
-  struct Image_ 
+  struct Image
   {
-    typedef Image_<ContainerAllocator> Type;
+    Image () : header (), height (0), width (0), encoding (), 
+               is_bigendian (0), step (0), data ()
+    {}
 
-    Image_()
-    : header()
-    , height(0)
-    , width(0)
-    , encoding()
-    , is_bigendian(0)
-    , step(0)
-    , data()
-    {
-    }
+     ::std_msgs::Header  header;
 
-    Image_(const ContainerAllocator& _alloc)
-    : header(_alloc)
-    , height(0)
-    , width(0)
-    , encoding(_alloc)
-    , is_bigendian(0)
-    , step(0)
-    , data(_alloc)
-    {
-    }
-
-    typedef  ::std_msgs::Header_<ContainerAllocator>  _header_type;
-     ::std_msgs::Header_<ContainerAllocator>  header;
-
-    typedef pcl::uint32_t _height_type;
     pcl::uint32_t height;
-
-    typedef pcl::uint32_t _width_type;
     pcl::uint32_t width;
+    std::string encoding;
 
-    typedef std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  _encoding_type;
-    std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  encoding;
-
-    typedef pcl::uint8_t _is_bigendian_type;
     pcl::uint8_t is_bigendian;
-
-    typedef pcl::uint32_t _step_type;
     pcl::uint32_t step;
 
-    typedef std::vector<pcl::uint8_t, typename ContainerAllocator::template rebind<pcl::uint8_t>::other >  _data_type;
-    std::vector<pcl::uint8_t, typename ContainerAllocator::template rebind<pcl::uint8_t>::other >  data;
+    std::vector<pcl::uint8_t> data;
 
-    typedef boost::shared_ptr< ::sensor_msgs::Image_<ContainerAllocator> > Ptr;
-    typedef boost::shared_ptr< ::sensor_msgs::Image_<ContainerAllocator>  const> ConstPtr;
+    typedef boost::shared_ptr< ::sensor_msgs::Image> Ptr;
+    typedef boost::shared_ptr< ::sensor_msgs::Image  const> ConstPtr;
   }; // struct Image
-  typedef  ::sensor_msgs::Image_<std::allocator<void> > Image;
 
   typedef boost::shared_ptr< ::sensor_msgs::Image> ImagePtr;
   typedef boost::shared_ptr< ::sensor_msgs::Image const> ImageConstPtr;
 
-  template<typename ContainerAllocator>
-  std::ostream& stream_with_indentation (std::ostream& s, const std::string& indent, 
-                                         const ::sensor_msgs::Image_<ContainerAllocator> & v)
+  inline std::ostream& operator<<(std::ostream& s, const  ::sensor_msgs::Image & v)
   {
-    s << indent << "header: " << std::endl;
-    stream_with_indentation (s, indent + "  ", v.header);
-    s << indent << "height: ";
-    s << indent << "  " << v.height << std::endl;
-    s << indent << "width: ";
-    s << indent << "  " << v.width << std::endl;
-    s << indent << "encoding: ";
-    s << indent << "  " << v.encoding << std::endl;
-    s << indent << "is_bigendian: ";
-    s << indent << "  " << v.is_bigendian << std::endl;
-    s << indent << "step: ";
-    s << indent << "  " << v.step << std::endl;
-    s << indent << "data[]" << std::endl;
+    s << "header: " << std::endl;
+    s << v.header;
+    s << "height: ";
+    s << "  " << v.height << std::endl;
+    s << "width: ";
+    s << "  " << v.width << std::endl;
+    s << "encoding: ";
+    s << "  " << v.encoding << std::endl;
+    s << "is_bigendian: ";
+    s << "  " << v.is_bigendian << std::endl;
+    s << "step: ";
+    s << "  " << v.step << std::endl;
+    s << "data[]" << std::endl;
     for (size_t i = 0; i < v.data.size (); ++i)
     {
-      s << indent << "  data[" << i << "]: ";
-      s << indent << "  " << v.data[i] << std::endl;
+      s << "  data[" << i << "]: ";
+      s << "  " << v.data[i] << std::endl;
     }
     return (s);
   }
-
-  template<typename ContainerAllocator>
-  std::ostream& operator<<(std::ostream& s, const  ::sensor_msgs::Image_<ContainerAllocator> & v)
-  {
-    stream_with_indentation (s, "", v);
-    return (s);
-  }
-
 } // namespace sensor_msgs
 
 #endif // PCL_MESSAGE_IMAGE_H

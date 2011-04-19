@@ -9,57 +9,34 @@
 
 namespace pcl
 {
-  template <class ContainerAllocator>
-  struct ModelCoefficients_
+  struct ModelCoefficients
   {
-    typedef ModelCoefficients_<ContainerAllocator> Type;
-
-    ModelCoefficients_()
-    : header()
-    , values()
+    ModelCoefficients () : header (), values ()
     {
     }
 
-    ModelCoefficients_(const ContainerAllocator& _alloc)
-    : header(_alloc)
-    , values(_alloc)
-    {
-    }
+    ::std_msgs::Header header;
 
-    typedef ::std_msgs::Header_<ContainerAllocator>  _header_type;
-    ::std_msgs::Header_<ContainerAllocator>  header;
-
-    typedef std::vector<float, typename ContainerAllocator::template rebind<float>::other >  _values_type;
-    std::vector<float, typename ContainerAllocator::template rebind<float>::other >  values;
+    std::vector<float> values;
 
   public:
-    typedef boost::shared_ptr< ::pcl::ModelCoefficients_<ContainerAllocator> > Ptr;
-    typedef boost::shared_ptr< ::pcl::ModelCoefficients_<ContainerAllocator>  const> ConstPtr;
+    typedef boost::shared_ptr< ::pcl::ModelCoefficients> Ptr;
+    typedef boost::shared_ptr< ::pcl::ModelCoefficients  const> ConstPtr;
   }; // struct ModelCoefficients
-  typedef  ::pcl::ModelCoefficients_<std::allocator<void> > ModelCoefficients;
 
   typedef boost::shared_ptr< ::pcl::ModelCoefficients> ModelCoefficientsPtr;
   typedef boost::shared_ptr< ::pcl::ModelCoefficients const> ModelCoefficientsConstPtr;
 
-  template<typename ContainerAllocator>
-  std::ostream& stream_with_indentation (std::ostream& s, const std::string& indent, 
-                                         const ::pcl::ModelCoefficients_<ContainerAllocator> & v)
+  inline std::ostream& operator<<(std::ostream& s, const  ::pcl::ModelCoefficients & v)
   {
-    s << indent << "header: " << std::endl;
-    stream_with_indentation (s, indent + "  ", v.header);
-    s << indent << "values[]" << std::endl;
+    s << "header: " << std::endl;
+    s << v.header;
+    s << "values[]" << std::endl;
     for (size_t i = 0; i < v.values.size (); ++i)
     {
-      s << indent << "  values[" << i << "]: ";
-      s << indent << "  " << v.values[i] << std::endl;
+      s << "  values[" << i << "]: ";
+      s << "  " << v.values[i] << std::endl;
     }
-    return (s);
-  }
-
-  template<typename ContainerAllocator>
-  std::ostream& operator<<(std::ostream& s, const  ::pcl::ModelCoefficients_<ContainerAllocator> & v)
-  {
-    stream_with_indentation (s, "", v);
     return (s);
   }
 

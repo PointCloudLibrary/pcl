@@ -12,66 +12,38 @@
 
 namespace pcl
 {
-  template <class ContainerAllocator>
-  struct PolygonMesh_ 
+  struct PolygonMesh
   {
-    typedef PolygonMesh_<ContainerAllocator> Type;
+    PolygonMesh () : header (), cloud (), polygons ()
+    {}
 
-    PolygonMesh_()
-    : header()
-    , cloud()
-    , polygons()
-    {
-    }
+    ::std_msgs::Header  header;
 
-    PolygonMesh_(const ContainerAllocator& _alloc)
-    : header(_alloc)
-    , cloud(_alloc)
-    , polygons(_alloc)
-    {
-    }
+    ::sensor_msgs::PointCloud2 cloud;
 
-    typedef ::std_msgs::Header_<ContainerAllocator>  _header_type;
-    ::std_msgs::Header_<ContainerAllocator>  header;
-
-    typedef ::sensor_msgs::PointCloud2_<ContainerAllocator>  _cloud_type;
-    ::sensor_msgs::PointCloud2_<ContainerAllocator>  cloud;
-
-    typedef std::vector< ::pcl::Vertices_<ContainerAllocator> , typename ContainerAllocator::template rebind< ::pcl::Vertices_<ContainerAllocator> >::other >  _polygons_type;
-    std::vector< ::pcl::Vertices_<ContainerAllocator> , typename ContainerAllocator::template rebind< ::pcl::Vertices_<ContainerAllocator> >::other >  polygons;
+    std::vector< ::pcl::Vertices>  polygons;
 
 
   public:
-    typedef boost::shared_ptr< ::pcl::PolygonMesh_<ContainerAllocator> > Ptr;
-    typedef boost::shared_ptr< ::pcl::PolygonMesh_<ContainerAllocator>  const> ConstPtr;
+    typedef boost::shared_ptr< ::pcl::PolygonMesh> Ptr;
+    typedef boost::shared_ptr< ::pcl::PolygonMesh const> ConstPtr;
   }; // struct PolygonMesh
-  typedef  ::pcl::PolygonMesh_<std::allocator<void> > PolygonMesh;
 
   typedef boost::shared_ptr< ::pcl::PolygonMesh> PolygonMeshPtr;
   typedef boost::shared_ptr< ::pcl::PolygonMesh const> PolygonMeshConstPtr;
 
-  template<typename ContainerAllocator>
-  std::ostream& stream_with_indentation (std::ostream& s, const std::string& indent, 
-                                         const ::pcl::PolygonMesh_<ContainerAllocator> & v)
+  inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PolygonMesh &v)
   {
-    s << indent << "header: " << std::endl;
-    stream_with_indentation (s, indent + "  ", v.header);
-    s << indent << "cloud: " << std::endl;
-    stream_with_indentation (s, indent + "  ", v.cloud);
-    s << indent << "polygons[]" << std::endl;
+    s << "header: " << std::endl;
+    s << v.header;
+    s << "cloud: " << std::endl;
+    s << v.cloud;
+    s << "polygons[]" << std::endl;
     for (size_t i = 0; i < v.polygons.size (); ++i)
     {
-      s << indent << "  polygons[" << i << "]: " << std::endl;
-      s << indent;
-      stream_with_indentation (s, indent + "    ", v.polygons[i]);
+      s << "  polygons[" << i << "]: " << std::endl;
+      s << v.polygons[i];
     }
-    return (s);
-  }
-
-  template<typename ContainerAllocator>
-  std::ostream& operator<<(std::ostream& s, const  ::pcl::PolygonMesh_<ContainerAllocator> & v)
-  {
-    stream_with_indentation(s, "", v);
     return (s);
   }
 

@@ -10,114 +10,66 @@
 
 namespace sensor_msgs
 {
-  template <class ContainerAllocator>
-  struct PointCloud2_
+  struct PointCloud2
   {
-    typedef PointCloud2_<ContainerAllocator> Type;
+    PointCloud2 () : header (), height (0), width (0), fields (),
+                     is_bigendian (false), point_step (0), row_step (0),
+                     data (), is_dense (false)
+    {}
 
-    PointCloud2_()
-    : header()
-    , height(0)
-    , width(0)
-    , fields()
-    , is_bigendian(false)
-    , point_step(0)
-    , row_step(0)
-    , data()
-    , is_dense(false)
-    {
-    }
+    ::std_msgs::Header header;
 
-    PointCloud2_(const ContainerAllocator& _alloc)
-    : header(_alloc)
-    , height(0)
-    , width(0)
-    , fields(_alloc)
-    , is_bigendian(false)
-    , point_step(0)
-    , row_step(0)
-    , data(_alloc)
-    , is_dense(false)
-    {
-    }
-
-    typedef ::std_msgs::Header_<ContainerAllocator>  _header_type;
-    ::std_msgs::Header_<ContainerAllocator>  header;
-
-    typedef pcl::uint32_t _height_type;
     pcl::uint32_t height;
-
-    typedef pcl::uint32_t _width_type;
     pcl::uint32_t width;
 
-    typedef std::vector< ::sensor_msgs::PointField_<ContainerAllocator> , typename ContainerAllocator::template rebind< ::sensor_msgs::PointField_<ContainerAllocator> >::other >  _fields_type;
-    std::vector< ::sensor_msgs::PointField_<ContainerAllocator> , typename ContainerAllocator::template rebind< ::sensor_msgs::PointField_<ContainerAllocator> >::other >  fields;
+    std::vector< ::sensor_msgs::PointField>  fields;
 
-    typedef pcl::uint8_t _is_bigendian_type;
     pcl::uint8_t is_bigendian;
-
-    typedef pcl::uint32_t _point_step_type;
     pcl::uint32_t point_step;
-
-    typedef pcl::uint32_t _row_step_type;
     pcl::uint32_t row_step;
 
-    typedef std::vector<pcl::uint8_t, typename ContainerAllocator::template rebind<pcl::uint8_t>::other >  _data_type;
-    std::vector<pcl::uint8_t, typename ContainerAllocator::template rebind<pcl::uint8_t>::other >  data;
+    std::vector<pcl::uint8_t> data;
 
-    typedef pcl::uint8_t _is_dense_type;
     pcl::uint8_t is_dense;
 
   public:
-    typedef boost::shared_ptr< ::sensor_msgs::PointCloud2_<ContainerAllocator> > Ptr;
-    typedef boost::shared_ptr< ::sensor_msgs::PointCloud2_<ContainerAllocator>  const> ConstPtr;
+    typedef boost::shared_ptr< ::sensor_msgs::PointCloud2> Ptr;
+    typedef boost::shared_ptr< ::sensor_msgs::PointCloud2  const> ConstPtr;
   }; // struct PointCloud2
-  typedef  ::sensor_msgs::PointCloud2_<std::allocator<void> > PointCloud2;
 
   typedef boost::shared_ptr< ::sensor_msgs::PointCloud2> PointCloud2Ptr;
   typedef boost::shared_ptr< ::sensor_msgs::PointCloud2 const> PointCloud2ConstPtr;
 
-  template<typename ContainerAllocator>
-  std::ostream& stream_with_indentation (std::ostream& s, const std::string& indent, 
-                                         const ::sensor_msgs::PointCloud2_<ContainerAllocator> & v)
+  inline std::ostream& operator<<(std::ostream& s, const  ::sensor_msgs::PointCloud2 &v)
   {
-    s << indent << "header: " << std::endl;
-    stream_with_indentation (s, indent + "  ", v.header);
-    s << indent << "height: ";
-    s << indent << "  " << v.height << std::endl;
-    s << indent << "width: ";
-    s << indent << "  " << v.width << std::endl;
-    s << indent << "fields[]" << std::endl;
+    s << "header: " << std::endl;
+    s << v.header;
+    s << "height: ";
+    s << "  " << v.height << std::endl;
+    s << "width: ";
+    s << "  " << v.width << std::endl;
+    s << "fields[]" << std::endl;
     for (size_t i = 0; i < v.fields.size (); ++i)
     {
-      s << indent << "  fields[" << i << "]: ";
+      s << "  fields[" << i << "]: ";
       s << std::endl;
-      s << indent;
-      s << indent << "    " << v.fields[i] << std::endl;
+      s << "    " << v.fields[i] << std::endl;
     }
-    s << indent << "is_bigendian: ";
-    s << indent << "  " << v.is_bigendian << std::endl;
-    s << indent << "point_step: ";
-    s << indent << "  " << v.point_step << std::endl;
-    s << indent << "row_step: ";
-    s << indent << "  " << v.row_step << std::endl;
-    s << indent << "data[]" << std::endl;
+    s << "is_bigendian: ";
+    s << "  " << v.is_bigendian << std::endl;
+    s << "point_step: ";
+    s << "  " << v.point_step << std::endl;
+    s << "row_step: ";
+    s << "  " << v.row_step << std::endl;
+    s << "data[]" << std::endl;
     for (size_t i = 0; i < v.data.size (); ++i)
     {
-      s << indent << "  data[" << i << "]: ";
-      s << indent << "  " << v.data[i] << std::endl;
+      s << "  data[" << i << "]: ";
+      s << "  " << v.data[i] << std::endl;
     }
-    s << indent << "is_dense: ";
-    s << indent << "  " << v.is_dense << std::endl;
+    s << "is_dense: ";
+    s << "  " << v.is_dense << std::endl;
     
-    return (s);
-  }
-
-
-  template<typename ContainerAllocator>
-  std::ostream& operator<<(std::ostream& s, const  ::sensor_msgs::PointCloud2_<ContainerAllocator> & v)
-  {
-    stream_with_indentation (s, "", v);
     return (s);
   }
 

@@ -7,54 +7,24 @@
 
 namespace std_msgs
 {
-  template <class ContainerAllocator>
-  struct Header_ 
+  struct Header
   {
-    typedef Header_<ContainerAllocator> Type;
-
-    Header_()
-    : seq(0)
-    , stamp()
-    , frame_id()
-    {
-    }
-
-    Header_(const ContainerAllocator& _alloc)
-    : seq(0)
-    , stamp()
-    , frame_id(_alloc)
-    {
-    }
+    Header (): seq (0), stamp (), frame_id ()
+    {}
 
     pcl::uint32_t seq;
     pcl::uint64_t stamp;
 
-    typedef std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  _frame_id_type;
-    std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  frame_id;
+    std::string frame_id;
 
-    typedef boost::shared_ptr<Header_<ContainerAllocator> > Ptr;
-    typedef boost::shared_ptr<Header_<ContainerAllocator>  const> ConstPtr;
+    typedef boost::shared_ptr<Header> Ptr;
+    typedef boost::shared_ptr<Header const> ConstPtr;
   }; // struct Header
-  typedef Header_<std::allocator<void> > Header;
 
   typedef boost::shared_ptr<Header> HeaderPtr;
   typedef boost::shared_ptr<Header const> HeaderConstPtr;
 
-  template<typename ContainerAllocator>
-  std::ostream& stream_with_indentation (std::ostream& s, const std::string& indent, 
-                                         const Header_<ContainerAllocator> & v)
-  {
-    s << indent << "seq: ";
-    s << indent << "  " << v.seq << std::endl;
-    s << indent << "stamp: ";
-    s << indent << "  " << v.stamp << std::endl;
-    s << indent << "frame_id: ";
-    s << indent << "  " << v.frame_id << std::endl;
-    return (s);
-  }
-
-  template<typename ContainerAllocator>
-  std::ostream& operator << (std::ostream& out, const Header_<ContainerAllocator> & h)
+  inline std::ostream& operator << (std::ostream& out, const Header &h)
   {
     out << "seq: " << h.seq;
     out << " stamp: " << h.stamp;
