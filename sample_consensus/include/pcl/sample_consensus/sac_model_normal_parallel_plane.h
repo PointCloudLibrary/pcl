@@ -48,6 +48,7 @@ namespace pcl
   /** \brief @b SampleConsensusModelNormalParallelPlane defines a model for 3D plane segmentation using additional surface normal
     * constraints. The plane must lie parallel to a user-specified axis.
     * \author Radu Bogdan Rusu and Jared Glover and Nico Blodow
+    * \ingroup sample_consensus
     */
   template <typename PointT, typename PointNT>
   class SampleConsensusModelNormalParallelPlane : public SampleConsensusModelPlane<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT>

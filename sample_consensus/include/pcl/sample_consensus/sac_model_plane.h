@@ -49,6 +49,7 @@ namespace pcl
     * \param b the normalized <i>b</i> coefficient of a plane
     * \param c the normalized <i>c</i> coefficient of a plane
     * \param d the normalized <i>d</i> coefficient of a plane
+    * \ingroup sample_consensus
     */
   template <typename Point> inline double
   pointToPlaneDistanceSigned (const Point &p, double a, double b, double c, double d)
@@ -59,6 +60,7 @@ namespace pcl
   /** \brief Get the distance from a point to a plane (signed) defined by ax+by+cz+d=0
     * \param p a point
     * \param plane_coefficients the normalized coefficients (a, b, c, d) of a plane
+    * \ingroup sample_consensus
     */
   template <typename Point> inline double
   pointToPlaneDistanceSigned (const Point &p, const Eigen::Vector4f &plane_coefficients)
@@ -72,6 +74,7 @@ namespace pcl
     * \param b the normalized <i>b</i> coefficient of a plane
     * \param c the normalized <i>c</i> coefficient of a plane
     * \param d the normalized <i>d</i> coefficient of a plane
+    * \ingroup sample_consensus
     */
   template <typename Point> inline double
   pointToPlaneDistance (const Point &p, double a, double b, double c, double d)
@@ -82,6 +85,7 @@ namespace pcl
   /** \brief Get the distance from a point to a plane (unsigned) defined by ax+by+cz+d=0
     * \param p a point
     * \param plane_coefficients the normalized coefficients (a, b, c, d) of a plane
+    * \ingroup sample_consensus
     */
   template <typename Point> inline double
   pointToPlaneDistance (const Point &p, const Eigen::Vector4f &plane_coefficients)
@@ -92,6 +96,7 @@ namespace pcl
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusModelPlane defines a model for 3D plane segmentation.
     * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
     */
   template <typename PointT>
   class SampleConsensusModelPlane : public SampleConsensusModel<PointT>

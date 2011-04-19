@@ -47,6 +47,7 @@ namespace pcl
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusModelLine defines a model for 3D line segmentation.
     * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
     */
   template <typename PointT>
   class SampleConsensusModelLine : public SampleConsensusModel<PointT>

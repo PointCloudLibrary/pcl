@@ -55,6 +55,7 @@ namespace pcl
   /** \brief @b SampleConsensusModel represents the base model class. All sample consensus models must inherit from 
     * this class.
     * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
     */
   template <typename PointT>
   class SampleConsensusModel

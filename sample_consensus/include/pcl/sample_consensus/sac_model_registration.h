@@ -47,6 +47,7 @@ namespace pcl
 {
   /** \brief @b SampleConsensusModelRegistration defines a model for Point-To-Point registration outlier rejection.
     * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
     */
   template <typename PointT>
   class SampleConsensusModelRegistration : public SampleConsensusModel<PointT>

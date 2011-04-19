@@ -48,6 +48,7 @@ namespace pcl
     * described in: "Matching with PROSAC – Progressive Sample Consensus", Chum, O. and Matas, J.G., CVPR, I: 220-226
     * 2005.
     * \author Vincent Rabaud
+    * \ingroup sample_consensus
     */
   template<typename PointT>
   class ProgressiveSampleConsensus : public SampleConsensus<PointT>

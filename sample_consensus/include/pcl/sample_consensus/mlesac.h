@@ -49,6 +49,7 @@ namespace pcl
     * estimating image geometry", P.H.S. Torr and A. Zisserman, Computer Vision and Image Understanding, vol 78, 2000.
     * \note MLESAC is useful in situations where most of the data samples belong to the model, and a fast outlier rejection algorithm is needed.
     * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
     */
   template <typename PointT>
   class MaximumLikelihoodSampleConsensus : public SampleConsensus<PointT>

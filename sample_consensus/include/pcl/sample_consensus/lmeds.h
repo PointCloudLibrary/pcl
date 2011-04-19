@@ -49,6 +49,7 @@ namespace pcl
     * set. See Andrea Fusiello's "Elements of Geometric Computer Vision"
     * (http://homepages.inf.ed.ac.uk/rbf/CVonline/LOCAL_COPIES/FUSIELLO4/tutorial.html#x1-520007) for more details.
     * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
     */
   template <typename PointT>
   class LeastMedianSquares : public SampleConsensus<PointT>

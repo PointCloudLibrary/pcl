@@ -49,6 +49,7 @@ namespace pcl
     * algorithm, as described in: "MLESAC: A new robust estimator with application to estimating image geometry", P.H.S. 
     * Torr and A. Zisserman, Computer Vision and Image Understanding, vol 78, 2000.
     * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
     */
   template <typename PointT>
   class MEstimatorSampleConsensus : public SampleConsensus<PointT>

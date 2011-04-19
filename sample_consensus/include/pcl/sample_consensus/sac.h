@@ -48,6 +48,7 @@ namespace pcl
   //template <typename ... T> // variadic templates don't work yet
   /** \brief @b SampleConsensus represents the base class. All sample consensus methods must inherit from this class.
    * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
    */
   template <typename T>
   class SampleConsensus

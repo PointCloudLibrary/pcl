@@ -50,6 +50,7 @@ namespace pcl
     * estimator (see \a MEstimatorSampleConsensus).
     * \note RMSAC is useful in situations where most of the data samples belong to the model, and a fast outlier rejection algorithm is needed.
     * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
     */
   template <typename PointT>
   class RandomizedMEstimatorSampleConsensus : public SampleConsensus<PointT>

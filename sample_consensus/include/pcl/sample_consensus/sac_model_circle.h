@@ -48,6 +48,7 @@ namespace pcl
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusModelCircle2D defines a model for 2D circle segmentation on the X-Y plane.
    * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
    */
   template <typename PointT>
   class SampleConsensusModelCircle2D : public SampleConsensusModel<PointT>

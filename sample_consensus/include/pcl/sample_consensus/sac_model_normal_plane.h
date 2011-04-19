@@ -48,6 +48,7 @@ namespace pcl
   /** \brief @b SampleConsensusModelNormalPlane defines a model for 3D plane segmentation using additional surface normal
     * constraints.
     * \author Radu Bogdan Rusu and Jared Glover
+    * \ingroup sample_consensus
     */
   template <typename PointT, typename PointNT>
   class SampleConsensusModelNormalPlane : public SampleConsensusModelPlane<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT>

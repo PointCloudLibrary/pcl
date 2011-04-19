@@ -49,6 +49,7 @@ namespace pcl
     * Conf. (BMVC '02), vol. 2, BMVA, pp. 448-457, 2002.
     * \note RRANSAC is useful in situations where most of the data samples belong to the model, and a fast outlier rejection algorithm is needed.
     * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
     */
   template <typename PointT>
   class RandomizedRandomSampleConsensus : public SampleConsensus<PointT>

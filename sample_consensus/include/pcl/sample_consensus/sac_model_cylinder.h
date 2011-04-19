@@ -48,8 +48,9 @@ namespace pcl
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusModelCylinder defines a model for 3D cylinder segmentation.
-   * \author Radu Bogdan Rusu
-   */
+    * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
+    */
   template <typename PointT, typename PointNT>
   class SampleConsensusModelCylinder : public SampleConsensusModel<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT>
   {

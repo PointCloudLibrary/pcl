@@ -47,6 +47,7 @@ namespace pcl
 {
   /** \brief @b SampleConsensusModelSphere defines a model for 3D sphere segmentation.
     * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
     */
   template <typename PointT>
   class SampleConsensusModelSphere : public SampleConsensusModel<PointT>

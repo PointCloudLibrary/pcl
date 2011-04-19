@@ -48,6 +48,7 @@ namespace pcl
     * described in: "Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and 
     * Automated Cartography", Martin A. Fischler and Robert C. Bolles, Comm. Of the ACM 24: 381–395, June 1981.
     * \author Radu Bogdan Rusu
+    * \ingroup sample_consensus
     */
   template <typename PointT>
   class RandomSampleConsensus : public SampleConsensus<PointT>
