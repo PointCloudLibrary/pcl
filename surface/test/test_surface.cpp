@@ -101,16 +101,17 @@ TEST (PCL, GreedyProjectionTriangulation)
   //*/
 
   // Concatenate XYZ and normal information
-  PointCloud<PointNormal> cloud_with_normals2;
+  PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
   //*
-  pcl::concatenateFields (*cloud, *normals, cloud_with_normals2);
-  savePCDFile ("./test/bun0-normals.pcd", cloud_with_normals2);
+  pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
+  //savePCDFile ("./test/bun0-normals.pcd", cloud_with_normals2);
   //*/
   //*
-  PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
-  sensor_msgs::PointCloud2 cloud_blob;
-  loadPCDFile ("./test/bun0-normals.pcd", cloud_blob);
-  fromROSMsg (cloud_blob, *cloud_with_normals);
+  //PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
+//  sensor_msgs::PointCloud2 cloud_blob;
+  //loadPCDFile ("./test/bun0-normals.pcd", *cloud_with_normals);
+// WEIRD SEGFAULT! Need to investigate reading data from binary files into sensor_msgs/PointCloud2!
+//  fromROSMsg (cloud_blob, *cloud_with_normals);
   //*/
       
   // Create search tree
@@ -134,7 +135,7 @@ TEST (PCL, GreedyProjectionTriangulation)
 
   // Reconstruct
   gp3.reconstruct (triangles);
-  saveVTKFile ("./test/bun0-gp3.vtk", triangles);
+  //saveVTKFile ("./test/bun0-gp3.vtk", triangles);
   EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
   EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
   //EXPECT_EQ ((int)triangles.polygons.size(), 685);
@@ -373,9 +374,8 @@ TEST (PCL, ConcaveHull_LTable)
 
 /* ---[ */
 int
-  main (int argc, char** argv)
+main (int argc, char** argv)
 {
-  assert(argc > 1);
   sensor_msgs::PointCloud2 cloud_blob;
   loadPCDFile (argv[1], cloud_blob);
   fromROSMsg (cloud_blob, *cloud);
