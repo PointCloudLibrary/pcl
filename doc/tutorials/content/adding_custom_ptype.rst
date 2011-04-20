@@ -1,5 +1,8 @@
 .. _adding_custom_ptype:
 
+Adding your own custom `PointT` type
+------------------------------------
+
 The current document explains not only how to add your own `PointT` point type,
 but also what templated point types are in PCL, why do they exist, and how are
 they exposed. If you're already familiar with this information, feel free to
@@ -10,9 +13,6 @@ skip to the last part of the document.
 .. note::
   The current document is valid only for PCL 0.x and 1.x. Note that at the time
   of this writing we are expecting things to be changed in PCL 2.x.
-
-Adding your own custom `PointT` type
-------------------------------------
 
 PCL comes with a variety of pre-defined point types, ranging from SSE-aligned
 structures for XYZ data, to more complex n-dimensional histogram
