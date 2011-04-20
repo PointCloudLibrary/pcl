@@ -1,6 +1,6 @@
 --- eigen/CMakeLists.txt	2011-04-14 23:36:01.000000000 -0700
 +++ eigen/CMakeLists.txt	2011-04-14 23:29:55.000000000 -0700
-@@ -391,3 +391,36 @@
+@@ -391,3 +391,37 @@
  endif()
  
  message(STATUS "")
@@ -30,6 +30,7 @@
 +set(CPACK_GENERATOR "${CPACK_GENERATOR}")
 +include(InstallRequiredSystemLibraries)
 +set(CPACK_PACKAGE_CONTACT "eigen@lists.tuxfamily.org")
++set(CPACK_INSTALL_PREFIX "_CPack/install")
 +set(CPACK_SET_DESTDIR ON)
 +set(CPACK_MONOLITHIC_INSTALL 1)
 +set(CPACK_PACKAGE_VERSION_MAJOR "@EIGEN_WORLD_VERSION@")
