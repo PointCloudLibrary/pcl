@@ -40,12 +40,11 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                           pcl::PointCloud<PointT> &cloud_out,
                           const Eigen::Affine3f &transform)
 {
-  // In order to transform the data, we need to remove NaNs
-  cloud_out.is_dense = true;
   if (&cloud_in != &cloud_out)
   {
     // Note: could be replaced by cloud_out = cloud_in
     cloud_out.header   = cloud_in.header;
+    cloud_out.is_dense = cloud_in.is_dense;
     cloud_out.width    = cloud_in.width;
     cloud_out.height   = cloud_in.height;
     cloud_out.points.reserve (cloud_out.points.size ());
@@ -84,7 +83,7 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 {
   size_t npts = indices.size ();
   // In order to transform the data, we need to remove NaNs
-  cloud_out.is_dense = true;
+  cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = npts;
   cloud_out.height   = 1;
