@@ -42,7 +42,7 @@ contributions on any tutorial.
 
 * Advanced Usage
 
-  * :ref:`adding_custom_ptype:`
+  * :ref:`adding_custom_ptype`
 
      ======  ======
      |au_1|  Title: **Adding your own custom `PointT` point type**
