@@ -144,6 +144,9 @@ struct _PointXYZ
   //inline PointXYZ() {}
   //inline PointXYZ(float x, float y, float z) : x(x), y(y), z(z) {}
 };*/
+/** \brief A point structure representing Euclidean xyz coordinates. (SSE friendly) 
+  * \ingroup common
+  */
 struct PointXYZ : public _PointXYZ
 {
   inline PointXYZ()
@@ -160,6 +163,9 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZ& p)
   return (os);
 }
 
+/** \brief A point structure representing Euclidean xyz coordinates, and the intensity value.
+  * \ingroup common
+  */ 
 struct PointXYZI 
 { 
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -180,6 +186,9 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZI& p)
 }
 
 
+/** \brief A point structure representing Euclidean xyz coordinates, and the RGBA color. 
+  * \ingroup common
+  */
 struct PointXYZRGBA
 {
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -201,6 +210,9 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p)
 }
 
 
+/** \brief A point structure representing Euclidean xyz coordinates, and the RGB color. 
+  * \ingroup common
+  */
 struct PointXYZRGB
 {
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -221,6 +233,9 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZRGB& p)
 }
 
 
+/** \brief A 2D point structure representing Euclidean xy coordinates. 
+  * \ingroup common
+  */
 struct PointXY
 {
   float x;
@@ -233,6 +248,9 @@ inline std::ostream& operator << (std::ostream& os, const PointXY& p)
 }
 
 
+/** \brief A point structure representing an interest point with Euclidean xyz coordinates, and an interest value. 
+  * \ingroup common
+  */
 struct InterestPoint
 {
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -253,6 +271,9 @@ inline std::ostream& operator << (std::ostream& os, const InterestPoint& p)
 }
 
 
+/** \brief A point structure representing normal coordinates and the surface curvature estimate. (SSE friendly) 
+  * \ingroup common
+  */
 struct Normal
 {
   PCL_ADD_NORMAL4D;  // This adds the member normal[3] which can also be accessed using the point (which is float[4])
@@ -273,6 +294,9 @@ inline std::ostream& operator << (std::ostream& os, const Normal& p)
 }
 
 
+/** \brief A point structure representing Euclidean xyz coordinates, together with normal coordinates and the surface curvature estimate. (SSE friendly) 
+  * \ingroup common
+  */
 struct PointNormal
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -294,6 +318,9 @@ inline std::ostream& operator << (std::ostream& os, const PointNormal& p)
 }
 
 
+/** \brief A point structure representing Euclidean xyz coordinates, and the RGB color, together with normal coordinates and the surface curvature estimate. 
+  * \ingroup common
+  */
 struct PointXYZRGBNormal
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -315,6 +342,9 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZRGBNormal& p)
   return (os);
 }
 
+/** \brief A point structure representing Euclidean xyz coordinates, intensity, together with normal coordinates and the surface curvature estimate. 
+  * \ingroup common
+  */
 struct PointXYZINormal
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -336,6 +366,9 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZINormal& p)
   return (os);
 }
 
+/** \brief A point structure representing Euclidean xyz coordinates, padded with an extra range float. 
+  * \ingroup common
+  */
 struct PointWithRange 
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -371,6 +404,9 @@ struct _PointWithViewpoint
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 } EIGEN_ALIGN16;
 
+/** \brief A point structure representing Euclidean xyz coordinates together with the viewpoint from which it was seen. 
+  * \ingroup common
+  */
 struct PointWithViewpoint : public _PointWithViewpoint
 {
   PointWithViewpoint(float _x=0.0f, float _y=0.0f, float _z=0.0f, float _vp_x=0.0f, float _vp_y=0.0f, float _vp_z=0.0f)
@@ -385,6 +421,9 @@ inline std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p)
   return (os);
 }
 
+/** \brief A point structure representing the three moment invariants. 
+  * \ingroup common
+  */
 struct MomentInvariants
 {
   float j1, j2, j3;
@@ -395,6 +434,9 @@ inline std::ostream& operator << (std::ostream& os, const MomentInvariants& p)
   return (os);
 }
 
+/** \brief A point structure representing the minimum and maximum surface radii (in meters) computed using RSD. 
+  * \ingroup common
+  */
 struct PrincipalRadiiRSD
 {
   float r_min, r_max;
@@ -405,6 +447,9 @@ inline std::ostream& operator << (std::ostream& os, const PrincipalRadiiRSD& p)
   return (os);
 }
 
+/** \brief A point structure representing a description of whether a point is lying on a surface boundary or not. 
+  * \ingroup common
+  */
 struct Boundary
 {
   uint8_t boundary_point;
@@ -415,6 +460,9 @@ inline std::ostream& operator << (std::ostream& os, const Boundary& p)
   return (os);
 }
 
+/** \brief A point structure representing the principal curvatures and their magnitudes. 
+  * \ingroup common
+  */
 struct PrincipalCurvatures
 {
   union
@@ -436,6 +484,9 @@ inline std::ostream& operator << (std::ostream& os, const PrincipalCurvatures& p
   return (os);
 }
 
+/** \brief A point structure representing the Point Feature Histogram (PFH). 
+  * \ingroup common
+  */
 struct PFHSignature125
 {
   float histogram[125];
@@ -447,6 +498,9 @@ inline std::ostream& operator << (std::ostream& os, const PFHSignature125& p)
   return (os);
 }
 
+/** \brief A point structure representing the Fast Point Feature Histogram (FPFH). 
+  * \ingroup common
+  */
 struct FPFHSignature33
 {
   float histogram[33];
@@ -458,6 +512,9 @@ inline std::ostream& operator << (std::ostream& os, const FPFHSignature33& p)
   return (os);
 }
 
+/** \brief A point structure representing the Viewpoint Feature Histogram (VFH). 
+  * \ingroup common
+  */
 struct VFHSignature308
 {
   float histogram[308];
@@ -469,6 +526,9 @@ inline std::ostream& operator << (std::ostream& os, const VFHSignature308& p)
   return (os);
 }
 
+/** \brief A point structure representing the Narf descriptor. 
+  * \ingroup common
+  */
 struct Narf36
 {
   float x, y, z, roll, pitch, yaw;
@@ -482,6 +542,9 @@ inline std::ostream& operator << (std::ostream& os, const Narf36& p)
   return (os);
 }
 
+/** \brief A structure to store if a point in a range image lies on a border between an obstacle and the background. 
+  * \ingroup common
+  */
 struct BorderDescription 
 {
   int x, y;
@@ -495,6 +558,9 @@ inline std::ostream& operator << (std::ostream& os, const BorderDescription& p)
   return (os);
 }
 
+/** \brief A point structure representing the intensity gradient of an XYZI point cloud. 
+  * \ingroup common
+  */
 struct IntensityGradient
 {
   union
@@ -514,6 +580,9 @@ inline std::ostream& operator << (std::ostream& os, const IntensityGradient& p)
   return (os);
 }
 
+/** \brief A point structure representing an N-D histogram. 
+  * \ingroup common
+  */
 template <int N>
 struct Histogram
 {
@@ -527,6 +596,9 @@ inline std::ostream& operator << (std::ostream& os, const Histogram<N>& p)
   return (os);
 }
 
+/** \brief A point structure representing a 3-D position and scale. 
+  * \ingroup common
+  */
 struct PointWithScale
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -539,6 +611,9 @@ inline std::ostream& operator << (std::ostream& os, const PointWithScale& p)
   return (os);
 }
 
+/** \brief A surfel, that is, a point structure representing Euclidean xyz coordinates, together with normal coordinates, a RGBA color, a radius, a confidence value and the surface curvature estimate. 
+  * \ingroup common
+  */
 struct PointSurfel
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])

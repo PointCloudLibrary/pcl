@@ -53,125 +53,65 @@
 /** @{*/
 namespace pcl
 {
-  /** \brief A point structure representing Euclidean xyz coordinates. (SSE friendly) 
-    * \ingroup common
-    */
   struct PointXYZ;
   // Members: float x, y, z;
 
-  /** \brief A point structure representing Euclidean xyz coordinates, and the intensity value.
-    * \ingroup common
-    */ 
   struct PointXYZI;
   // Members: float x, y, z, intensity; 
 
-  /** \brief A point structure representing Euclidean xyz coordinates, and the RGBA color. 
-    * \ingroup common
-    */
   struct PointXYZRGBA;
   // Members: float x, y, z; uint32_t rgba;
 
-  /** \brief A point structure representing Euclidean xyz coordinates, and the RGB color. 
-    * \ingroup common
-    */
   struct PointXYZRGB;
   // Members: float x, y, z, rgb;
 
-  /** \brief A 2D point structure representing Euclidean xy coordinates. 
-    * \ingroup common
-    */
   struct PointXY;
   // Members: float x, y;
 
-  /** \brief A point structure representing an interest point with Euclidean xyz coordinates, and an interest value. 
-    * \ingroup common
-    */
   struct InterestPoint;
   // Members: float x, y, z, strength;
 
-  /** \brief A point structure representing normal coordinates and the surface curvature estimate. (SSE friendly) 
-    * \ingroup common
-    */
   struct Normal;
   // Members: float normal[3], curvature;
 
-  /** \brief A point structure representing Euclidean xyz coordinates, together with normal coordinates and the surface curvature estimate. (SSE friendly) 
-    * \ingroup common
-    */
   struct PointNormal;
   // Members: float x, y, z; float normal[3], curvature;
 
-  /** \brief A point structure representing Euclidean xyz coordinates, and the RGB color, together with normal coordinates and the surface curvature estimate. 
-    * \ingroup common
-    */
   struct PointXYZRGBNormal;
   // Members: float x, y, z, rgb, normal[3], curvature;
 
-  /** \brief A point structure representing Euclidean xyz coordinates, intensity, together with normal coordinates and the surface curvature estimate. 
-    * \ingroup common
-    */
   struct PointXYZINormal;
   // Members: float x, y, z, intensity, normal[3], curvature;
 
-  /** \brief A point structure representing Euclidean xyz coordinates, padded with an extra range float. 
-    * \ingroup common
-    */
   struct PointWithRange;
   // Members: float x, y, z (union with float point[4]), range;
 
-  /** \brief A point structure representing Euclidean xyz coordinates together with the viewpoint from which it was seen. 
-    * \ingroup common
-    */
   struct PointWithViewpoint;
   // Members: float x, y, z, vp_x, vp_y, vp_z;
 
-  /** \brief A point structure representing the three moment invariants. 
-    * \ingroup common
-    */
   struct MomentInvariants;
   // Members: float j1, j2, j3;
 
   // TODO add point type for Radius-based Surface Descriptor (RSD) histograms, and let pcl::RSDEstimation return it if needed
 
-  /** \brief A point structure representing the minimum and maximum surface radii (in meters) computed using RSD. 
-    * \ingroup common
-    */
   struct PrincipalRadiiRSD;
   // Members: float r_min, r_max;
 
-  /** \brief A point structure representing a description of whether a point is lying on a surface boundary or not. 
-    * \ingroup common
-    */
   struct Boundary;
   // Members: uint8_t boundary_point;
 
-  /** \brief A point structure representing the principal curvatures and their magnitudes. 
-    * \ingroup common
-    */
   struct PrincipalCurvatures;
   // Members: float principal_curvature[3], pc1, pc2;
 
-  /** \brief A point structure representing the Point Feature Histogram (PFH). 
-    * \ingroup common
-    */
   struct PFHSignature125;
   // Members: float pfh[125];
 
-  /** \brief A point structure representing the Fast Point Feature Histogram (FPFH). 
-    * \ingroup common
-    */
   struct FPFHSignature33;
   // Members: float fpfh[33];
 
-  /** \brief A point structure representing the Viewpoint Feature Histogram (VFH). 
-    * \ingroup common
-    */
   struct VFHSignature308;
   // Members: float vfh[308];
   
-  /** \brief A point structure representing the Narf descriptor. 
-    * \ingroup common
-    */
   struct Narf36;
   // Members: float x, y, z, roll, pitch, yaw; float descriptor[36];
 
@@ -203,34 +143,19 @@ namespace pcl
     BORDER_TRAIT__VEIL_POINT_LEFT,
   };
   
-  /** \brief A structure to store if a point in a range image lies on a border between an obstacle and the background. 
-    * \ingroup common
-    */
   struct BorderDescription;
   // Members: int x, y; BorderTraits traits;
 
-  /** \brief A point structure representing the intensity gradient of an XYZI point cloud. 
-    * \ingroup common
-    */
   struct IntensityGradient;
   // Members: float gradient[3];
 
-  /** \brief A point structure representing an N-D histogram. 
-    * \ingroup common
-    */
   template <int N>
   struct Histogram;
   // Members: float histogram[N];
 
-  /** \brief A point structure representing a 3-D position and scale. 
-    * \ingroup common
-    */
   struct PointWithScale;
   // Members: float x, y, z, scale;
   
-  /** \brief A surfel, that is, a point structure representing Euclidean xyz coordinates, together with normal coordinates, a RGBA color, a radius, a confidence value and the surface curvature estimate. 
-    * \ingroup common
-    */
   struct PointSurfel;
   // Members: float x, y, z, normal[3], rgba, radius, confidence, curvature;
 
