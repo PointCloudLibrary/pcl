@@ -1,7 +1,7 @@
 /**
   \addtogroup surface Module surface
 
-  \section secSurfacePresentation Overview
+  \section secSurfacePresentation Presentation
 
 The <b>pcl_surface</b> library deals with reconstructing the original
 surfaces from 3D scans.  Depending on the task at hand, this can be for
@@ -23,9 +23,6 @@ points, and a slower meshing that does smoothing and hole filling as well.
 \image html http://www.pointclouds.org/assets/images/grid-projection.png
 
 Please visit the tutorials on http://www.pointclouds.org for more information.
-
-  \section secSurfacePresentation Presentation
-	Surface data structures.
 	
 	\section secSurfaceHistory History
 	- 1.0 current version
