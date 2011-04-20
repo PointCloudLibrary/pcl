@@ -83,19 +83,6 @@ namespace pcl
         void
         showCloud (const GrayCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
 
-        /** \brief Show a cloud, with an optional key for multiple clouds.
-          * \param cloud RGB point cloud
-          * \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-          */
-         void
-         showCloudNonBlocking (const ColorCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
-
-         /** \brief Show a cloud, with an optional key for multiple clouds.
-          *  \param cloud XYZ point cloud
-          *  \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-          */
-         void
-         showCloudNonBlocking (const GrayCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
 
         /** \brief Check if the gui was quit, you should quit also
          * \param millis_to_wait This will request to "spin" for the number of milliseconds, before exiting.
@@ -127,6 +114,21 @@ namespace pcl
         void
         removeVisualizationCallable (const std::string& key = "callable");
       private:
+
+        //these aren't ready for prime time.
+        /** \brief Show a cloud, with an optional key for multiple clouds.
+          * \param cloud RGB point cloud
+          * \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
+          */
+         void
+         showCloudNonBlocking (const ColorCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
+
+         /** \brief Show a cloud, with an optional key for multiple clouds.
+          *  \param cloud XYZ point cloud
+          *  \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
+          */
+         void
+         showCloudNonBlocking (const GrayCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
 
         CloudViewer (const CloudViewer &rhs);//don't copy me for now!
 

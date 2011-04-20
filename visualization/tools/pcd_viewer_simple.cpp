@@ -42,7 +42,7 @@
 void
 printHelp (int argc, char **argv)
 {
-  std::cout << "Syntax is:" << argv[0] << " <file_name>.bag\n";
+  std::cout << "Syntax is:" << argv[0] << " <file_name>.pcd\n";
 }
 
 /* ---[ */

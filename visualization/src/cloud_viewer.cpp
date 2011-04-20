@@ -189,7 +189,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
         boost::mutex::scoped_lock lock(spin_mtx_);
         //TODO some smart waitkey like stuff here, so that wasStoped() can hold for a long time
         //maybe a counter
-        viewer_->spinOnce (); // Give the GUI millis to handle events, then return
+        viewer_->spinOnce (10); // Give the GUI millis to handle events, then return
       }
     }
   }
