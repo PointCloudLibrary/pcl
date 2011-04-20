@@ -243,6 +243,14 @@ namespace pcl
       inline void 
       align (PointCloudSource &output);
 
+      /** \brief Call the registration algorithm which estimates the transformation and returns the transformed source 
+        * (input) as \a output.
+        * \param output the resultant input transfomed point cloud dataset
+        * \param guess the initial gross estimation of the transformation
+        */
+      inline void 
+        align (PointCloudSource &output, const Eigen::Matrix4f& guess);
+
     protected:
       /** \brief The registration method name. */
       std::string reg_name_;
@@ -331,6 +339,10 @@ namespace pcl
       /** \brief Abstract transformation computation method. */
       virtual void 
       computeTransformation (PointCloudSource &output) = 0;
+
+      /** \brief Abstract transformation computation method with initial guess */
+      virtual void 
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess) {}
 
       // /** \brief The number of K nearest neighbors to use for each point. */
       // int k_;

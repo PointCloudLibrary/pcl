@@ -101,7 +101,7 @@ pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::estimateRigidTran
   q.w () = sqrt (1 - q.dot (q));
   transformation_matrix.topLeftCorner<3, 3> () = q.toRotationMatrix ();
 
-  Eigen::Vector4f t (x[4], x[5], x[6], 1.0);
+  Eigen::Vector4f t (x[0], x[1], x[2], 1.0);
   transformation_matrix.block <4, 1> (0, 3) = t;
 
   tmp_src_ = tmp_tgt_ = NULL;
@@ -194,7 +194,18 @@ template <typename PointSource, typename PointTarget> void
   * \param output the transformed input point cloud dataset using the rigid transformation found
   */
 template <typename PointSource, typename PointTarget> void
-  pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::computeTransformation (PointCloudSource &output)
+pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::computeTransformation (PointCloudSource &output)
+{
+  pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::computeTransformation (output, Eigen::Matrix4f::Identity());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief Rigid transformation computation method.
+  * \param output the transformed input point cloud dataset using the rigid transformation found
+  * \param guess the initial transformation guess
+  */
+template <typename PointSource, typename PointTarget> void
+pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess)
 {
   // Allocate enough space to hold the results
   std::vector<int> nn_indices (1);
@@ -207,6 +218,15 @@ template <typename PointSource, typename PointTarget> void
   nr_iterations_ = 0;
   converged_ = false;
   double dist_threshold = corr_dist_threshold_ * corr_dist_threshold_;
+
+  // If the guessed transformation is non identity
+  if(guess != Eigen::Matrix4f::Identity())
+  {
+    // Initialise final transformation to the guessed one
+    final_transformation_ = guess;
+    // Apply guessed transformation prior to search for neighbours
+    transformPointCloud (output, output, guess);
+  }
 
   while (!converged_)           // repeat until convergence
   {

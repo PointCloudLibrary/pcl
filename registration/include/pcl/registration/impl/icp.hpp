@@ -40,7 +40,17 @@
   * \param output the transformed input point cloud dataset using the rigid transformation found
   */
 template <typename PointSource, typename PointTarget> void
-  pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output)
+pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output)
+{
+  pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (output, Eigen::Matrix4f::Identity());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief Rigid transformation computation method.
+  * \param output the transformed input point cloud dataset using the rigid transformation found
+  */
+template <typename PointSource, typename PointTarget> void
+pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess)
 {
   // Allocate enough space to hold the results
   std::vector<int> nn_indices (1);
@@ -53,6 +63,15 @@ template <typename PointSource, typename PointTarget> void
   nr_iterations_ = 0;
   converged_ = false;
   double dist_threshold = corr_dist_threshold_ * corr_dist_threshold_;
+
+  // If the guessed transformation is non identity
+  if(guess != Eigen::Matrix4f::Identity())
+  {
+    // Initialise final transformation to the guessed one
+    final_transformation_ = guess;
+    // Apply guessed transformation prior to search for neighbours
+    transformPointCloud (output, output, guess);
+  }
 
   while (!converged_)           // repeat until convergence
   {
@@ -136,7 +155,7 @@ template <typename PointSource, typename PointTarget> void
     // Tranform the data
     transformPointCloud (output, output, transformation_);
 
-    // Obtain the final transformation
+    // Obtain the final transformation    
     final_transformation_ = transformation_ * final_transformation_;
 
     nr_iterations_++;

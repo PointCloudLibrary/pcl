@@ -92,6 +92,13 @@ namespace pcl
         */
       virtual void 
       computeTransformation (PointCloudSource &output);
+
+      /** \brief Rigid transformation computation method  with initial guess.
+        * \param output the transformed input point cloud dataset using the rigid transformation found
+        * \param guess the initial guess of the transformation to compute
+        */
+      virtual void 
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess);
   };
 }
 
