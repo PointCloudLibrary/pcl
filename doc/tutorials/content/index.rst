@@ -133,20 +133,6 @@ contributions on any tutorial.
      .. |i_o5| image:: images/kinect_grabber.png
                :height: 100px
 
-  * :ref:`cloud_viewer`
-
-     ======  ======
-     |i_o6|  Title: **Visualizing Point Clouds**
-
-             Author: *Ethan Rublee*
-
-             Compatibility: > PCL 1.0
-
-             This tutorial demonstrates how to use the pcl visualization tools.
-     ======  ======
-
-     .. |i_o6| image:: images/cloud_viewer.jpg
-               :height: 100px
 * Filtering
 
   * :ref:`passthrough`
@@ -321,7 +307,24 @@ contributions on any tutorial.
      .. |oc_1| image:: images/octree_img.png
                :height: 100px
 
-..
+* Visualization
+
+  * :ref:`cloud_viewer`
+
+     ======  ======
+     |vi_1|  Title: **Visualizing Point Clouds**
+
+             Author: *Ethan Rublee*
+
+             Compatibility: > PCL 1.0
+
+             This tutorial demonstrates how to use the pcl visualization tools.
+     ======  ======
+
+     .. |vi_1| image:: images/cloud_viewer.jpg
+               :height: 100px
+
+ ..
   * :ref:`normal_estimation_integral_images`
     Surface normal estimation
   * Range Image
