@@ -1,7 +1,7 @@
 /**
   \addtogroup segmentation Module segmentation
 
-  \section secSegmentationPresentation Presentation
+  \section secSegmentationPresentation Overview
 	segmentation data structures.
 	
 	\section secSegmentationHistory History

@@ -1,7 +1,7 @@
 /**
   \addtogroup range_image Module range_image
 
-  \section secRangeImagePresentation Presentation
+  \section secRangeImagePresentation Overview 
 	range_image data structures.
 	
 	\section secRangeImageHistory History

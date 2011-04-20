@@ -1,7 +1,7 @@
 /**
   \addtogroup surface Module surface
 
-  \section secSurfacePresentation Presentation
+  \section secSurfacePresentation Overview
 
 The <b>pcl_surface</b> library deals with reconstructing the original
 surfaces from 3D scans.  Depending on the task at hand, this can be for

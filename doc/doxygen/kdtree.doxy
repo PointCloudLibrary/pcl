@@ -1,7 +1,7 @@
 /**
   \addtogroup kdtree Module kdtree
 
-  \section secKDtreePresentation Presentation
+  \section secKDtreePresentation Overview 
 
   The <b>pcl_kdtree</b> library provides the kd-tree data-structure, using
   <a href="http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN">FLANN</a>,

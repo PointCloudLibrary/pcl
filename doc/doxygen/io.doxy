@@ -1,7 +1,7 @@
 /*!
   \addtogroup io Module io
 
-  \section secIoPresentation Presentation
+  \section secIoPresentation Overview
 	Io is the place for the input/output operations.
 	
 	\section secIoHistory History

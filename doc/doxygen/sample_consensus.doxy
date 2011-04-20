@@ -1,7 +1,7 @@
 /**
   \addtogroup sample_consensus Module sample_consensus
 
-  \section secSampleConsensusPresentation Presentation
+  \section secSampleConsensusPresentation Overview
 	sample_consensus data structures.
 	
 	\section secSampleConsensusHistory History
