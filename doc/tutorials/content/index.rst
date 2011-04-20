@@ -133,6 +133,20 @@ contributions on any tutorial.
      .. |i_o5| image:: images/kinect_grabber.png
                :height: 100px
 
+  * :ref:`cloud_viewer`
+
+     ======  ======
+     |i_o6|  Title: **Visualizing Point Clouds**
+
+             Author: *Ethan Rublee*
+
+             Compatibility: > PCL 1.0
+
+             This tutorial demonstrates how to use the pcl visualization tools.
+     ======  ======
+
+     .. |i_o6| image:: images/cloud_viewer.jpg
+               :height: 100px
 * Filtering
 
   * :ref:`passthrough`
