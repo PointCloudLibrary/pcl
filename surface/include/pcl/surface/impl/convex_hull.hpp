@@ -147,6 +147,40 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull,
 
   // Compute convex hull
   exitcode = qh_new_qhull (dim, cloud_transformed.points.size (), points, ismalloc, flags, outfile, errfile);
+  std::cout << "exitcode:" << exitcode << std::endl;
+
+  if (exitcode != 0) {
+     PCL_ERROR("ERROR: qhull was unable to compute a convex hull for the given point cloud");
+
+     //check if it fails because of NaN values...
+     if (!cloud_transformed.is_dense) {
+
+       PCL_WARN("Checking for Nans");
+
+       bool NaNvalues = false;
+       for (size_t i = 0; i < cloud_transformed.size (); ++i)
+         {
+           if (!pcl_isfinite (cloud_transformed.points[i].x)
+               ||
+               !pcl_isfinite (cloud_transformed.points[i].y)
+               ||
+               !pcl_isfinite (cloud_transformed.points[i].z)) {
+             NaNvalues = true;
+             break;
+           }
+         }
+
+       if (NaNvalues)
+         PCL_ERROR("ERROR: point cloud contains NaN values, consider running pcl::PassThrough filter first to remove NaNs.");
+
+     }
+
+     hull.points.resize (0);
+     hull.width = hull.height = 0;
+     polygons.resize (0);
+     return;
+  }
+
   qh_triangulate ();
 
   int num_facets = qh num_facets;

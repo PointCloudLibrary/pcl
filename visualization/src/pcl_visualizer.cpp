@@ -1073,6 +1073,57 @@ pcl::visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coef
   return (true);
 }
 
+bool
+pcl::visualization::PCLVisualizer::addModelFromPolyData (vtkSmartPointer<vtkPolyData> polydata, const std::string & id,
+                      int viewport) {
+  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
+  if (am_it != shape_actor_map_.end ())
+  {
+    pcl::console::print_warn (
+                                "[addModelFromPolyData] A shape with id <%s> already exists! Please choose a different id and retry.\n",
+                                id.c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkLODActor> actor;
+  createActorFromVTKDataSet (polydata, actor);
+  actor->GetProperty ()->SetRepresentationToWireframe ();
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  shape_actor_map_[id] = actor;
+  return (true);
+}
+
+bool
+pcl::visualization::PCLVisualizer::addModelFromPolyData (vtkSmartPointer<vtkPolyData> polydata, vtkSmartPointer<vtkTransform> transform, const std::string & id,
+                      int viewport) {
+  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
+  if (am_it != shape_actor_map_.end ())
+  {
+    pcl::console::print_warn (
+                                "[addModelFromPolyData] A shape with id <%s> already exists! Please choose a different id and retry.\n",
+                                id.c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer < vtkTransformFilter > trans_filter = vtkSmartPointer<vtkTransformFilter>::New ();
+  trans_filter->SetTransform (transform);
+  trans_filter->SetInput ( polydata );
+  trans_filter->Update();
+
+  // Create an Actor
+  vtkSmartPointer < vtkLODActor > actor;
+  createActorFromVTKDataSet (trans_filter->GetOutput (), actor);
+  actor->GetProperty ()->SetRepresentationToWireframe ();
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  shape_actor_map_[id] = actor;
+  return (true);
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filename, 

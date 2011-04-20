@@ -493,14 +493,35 @@ namespace pcl
         addSphere (const PointT &center, double radius, double r, double g, double b, 
                    const std::string &id = "sphere", int viewport = 0);
 
+        /** \brief Add a vtkPolydata as a mesh
+          * \param polydata vtkPolyData
+          * \param id the model id/name (default: "PolyData")
+          * \param viewport (optional) the id of the new viewport (default: 0)
+         */
+
+        bool
+        addModelFromPolyData (vtkSmartPointer<vtkPolyData> polydata, const std::string & id = "PolyData", int viewport =
+            0);
+
+        /** \brief Add a vtkPolydata as a mesh
+         * \param polydata vtkPolyData
+         * \param transform transformation to apply
+         * \param id the model id/name (default: "PolyData")
+         * \param viewport (optional) the id of the new viewport (default: 0)
+         */
+
+        bool
+        addModelFromPolyData (vtkSmartPointer<vtkPolyData> polydata, vtkSmartPointer<vtkTransform> transform,
+                              const std::string & id = "PolyData", int viewport = 0);
+
         /** \brief Add a PLYmodel as a mesh
          * \param filename of the ply file
          * \param id the model id/name (default: "PLYModel")
          * \param viewport (optional) the id of the new viewport (default: 0)
          */
-        bool 
-        addModelFromPLYFile (const std::string & filename, const std::string & id = "PLYModel", 
-                             int viewport = 0);
+
+        bool
+        addModelFromPLYFile (const std::string & filename, const std::string & id = "PLYModel", int viewport = 0);
 
         /** \brief Add a PLYmodel as a mesh and applies given transformation
          * \param filename of the ply file
@@ -509,10 +530,10 @@ namespace pcl
          * \param viewport (optional) the id of the new viewport (default: 0)
          */
 
-        bool 
-        addModelFromPLYFile (const std::string & filename, 
-                             vtkSmartPointer<vtkTransform> transform, 
+        bool
+        addModelFromPLYFile (const std::string & filename, vtkSmartPointer<vtkTransform> transform,
                              const std::string & id = "PLYModel", int viewport = 0);
+
         /** \brief Add a cylinder from a set of given model coefficients 
           * \param coefficients the model coefficients (point_on_axis, axis_direction, radius)
           * \param id the cylinder id/name (default: "cylinder")
