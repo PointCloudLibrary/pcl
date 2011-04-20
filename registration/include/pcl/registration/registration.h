@@ -249,7 +249,7 @@ namespace pcl
         * \param guess the initial gross estimation of the transformation
         */
       inline void 
-        align (PointCloudSource &output, const Eigen::Matrix4f& guess);
+      align (PointCloudSource &output, const Eigen::Matrix4f& guess);
 
     protected:
       /** \brief The registration method name. */
