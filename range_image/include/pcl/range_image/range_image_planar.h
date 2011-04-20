@@ -46,7 +46,7 @@ namespace pcl
 {
   /** \brief @b RangeImagePlanar is derived from the original range image and differs from it because it's not a 
     * spherical projection, but using a projection plane (as normal cameras do), therefore being better applicable 
-    * for range sensors that already provide a range image by themselves (stereo cameras, kinect, ToF-cameras), so that
+    * for range sensors that already provide a range image by themselves (stereo cameras, ToF-cameras), so that
     * a conversion to point cloud and then to a spherical range image becomes unnecessary.
     * \author Bastian Steder 
     */
