@@ -40,6 +40,22 @@ contributions on any tutorial.
      .. |mi_2| image:: images/pcl_ccmake.png
                :height: 100px
 
+* Advanced Usage
+
+  * :ref:`adding_custom_ptype:`
+
+     ======  ======
+     |au_1|  Title: **Adding your own custom `PointT` point type**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.9, < PCL 2.0
+             
+             This document explains what templated point types are in PCL, why do they exist, and how to create and use your own `PointT` point type.
+     ======  ======
+
+     .. |au_1| image:: images/pcl_logo.png
+               :height: 75px
 * I/O
 
   * :ref:`reading_pcd`
