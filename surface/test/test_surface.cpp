@@ -90,7 +90,6 @@ TEST (PCL, MovingLeastSquares)
 TEST (PCL, GreedyProjectionTriangulation)
 {
   // Normal estimation
-  //*
   NormalEstimation<PointXYZ, Normal> n;
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   n.setInputCloud (cloud);
@@ -98,21 +97,10 @@ TEST (PCL, GreedyProjectionTriangulation)
   n.setSearchMethod (tree);
   n.setKSearch (20);
   n.compute (*normals);
-  //*/
 
   // Concatenate XYZ and normal information
   PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
-  //*
   pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
-  //savePCDFile ("./test/bun0-normals.pcd", cloud_with_normals2);
-  //*/
-  //*
-  //PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
-//  sensor_msgs::PointCloud2 cloud_blob;
-  //loadPCDFile ("./test/bun0-normals.pcd", *cloud_with_normals);
-// WEIRD SEGFAULT! Need to investigate reading data from binary files into sensor_msgs/PointCloud2!
-//  fromROSMsg (cloud_blob, *cloud_with_normals);
-  //*/
       
   // Create search tree
   KdTree<PointNormal>::Ptr tree2 (new KdTreeFLANN<PointNormal>);
@@ -138,7 +126,6 @@ TEST (PCL, GreedyProjectionTriangulation)
   //saveVTKFile ("./test/bun0-gp3.vtk", triangles);
   EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
   EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
-  //EXPECT_EQ ((int)triangles.polygons.size(), 685);
   EXPECT_NEAR ((int)triangles.polygons.size(), 685, 5);
 
   // Check triangles
@@ -146,10 +133,10 @@ TEST (PCL, GreedyProjectionTriangulation)
   EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(0), 0);
   EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(1), 12);
   EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(2), 198);
-  //EXPECT_EQ ((int)triangles.polygons.at(684).vertices.size(), 3);
-  //EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(0), 393);
-  //EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(1), 394);
-  //EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(2), 395);
+  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.size(), 3);
+  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(0), 393);
+  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(1), 394);
+  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(2), 395);
 
   // Additional vertex information
   std::vector<int> parts = gp3.getPartIDs();

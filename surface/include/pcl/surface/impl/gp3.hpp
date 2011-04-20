@@ -120,8 +120,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
       const Eigen::Vector3f nc = input_->points[(*indices_)[R_]].getNormalVector3fMap ();
 
       // Get a coordinate system that lies on a plane defined by its normal
-      Eigen::Vector3f v = nc.unitOrthogonal ();
-      Eigen::Vector3f u = nc.cross (v);
+      v_ = nc.unitOrthogonal ();
+      u_ = nc.cross (v_);
 
       // Projecting point onto the surface 
       double dist = nc.dot(coords_[R_]);
@@ -134,8 +134,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
       {
         // Transforming coordinates
         tmp_ = coords_[nnIdx[i]] - proj_qp_;
-        uvn_nn[i][0] = tmp_.dot(u);
-        uvn_nn[i][1] = tmp_.dot(v);
+        uvn_nn[i][0] = tmp_.dot(u_);
+        uvn_nn[i][1] = tmp_.dot(v_);
         // Computing the angle between each neighboring point and the query point itself
         angles_[i].angle = atan2(uvn_nn[i][1], uvn_nn[i][0]);
         // initializing angle descriptors
@@ -154,11 +154,11 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
           e.index = i;
           nr_edge++;
           tmp_ = coords_[ffn_[nnIdx[i]]] - proj_qp_;
-          e.first[0] = tmp_.dot(u);
-          e.first[1] = tmp_.dot(v);
+          e.first[0] = tmp_.dot(u_);
+          e.first[1] = tmp_.dot(v_);
           tmp_ = coords_[sfn_[nnIdx[i]]] - proj_qp_;
-          e.second[0] = tmp_.dot(u);
-          e.second[1] = tmp_.dot(v);
+          e.second[0] = tmp_.dot(u_);
+          e.second[1] = tmp_.dot(v_);
           doubleEdges.push_back(e);
         }
       }
@@ -286,8 +286,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
       const Eigen::Vector3f nc = input_->points[(*indices_)[R_]].getNormalVector3fMap ();
 
       // Get a coordinate system that lies on a plane defined by its normal
-      Eigen::Vector3f v = nc.unitOrthogonal ();
-      Eigen::Vector3f u = nc.cross (v);
+      v_ = nc.unitOrthogonal ();
+      u_ = nc.cross (v_);
 
       // Projecting point onto the surface
       double dist = nc.dot(coords_[R_]);
@@ -299,8 +299,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
       for (int i = 1; i < nnn_; i++)
       {
         tmp_ = coords_[nnIdx[i]] - proj_qp_;
-        uvn_nn[i][0] = tmp_.dot(u);
-        uvn_nn[i][1] = tmp_.dot(v);
+        uvn_nn[i][0] = tmp_.dot(u_);
+        uvn_nn[i][1] = tmp_.dot(v_);
   
         // Computing the angle between each neighboring point and the query point itself 
         angles_[i].angle = atan2(uvn_nn[i][1], uvn_nn[i][0]);
@@ -336,11 +336,11 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
           e.index = i;
           nr_edge++;
           tmp_ = coords_[ffn_[nnIdx[i]]] - proj_qp_;
-          e.first[0] = tmp_.dot(u);
-          e.first[1] = tmp_.dot(v);
+          e.first[0] = tmp_.dot(u_);
+          e.first[1] = tmp_.dot(v_);
           tmp_ = coords_[sfn_[nnIdx[i]]] - proj_qp_;
-          e.second[0] = tmp_.dot(u);
-          e.second[1] = tmp_.dot(v);
+          e.second[0] = tmp_.dot(u_);
+          e.second[1] = tmp_.dot(v_);
           doubleEdges.push_back(e);
           // Pruning by visibility criterion 
           if ((state_[nnIdx[i]] == FRINGE) && (ffn_[R_] != nnIdx[i]) && (sfn_[R_] != nnIdx[i]))
@@ -377,8 +377,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
             else
             {
               tmp_ = coords_[source_[nnIdx[i]]] - proj_qp_;
-              uvn_s[0] = tmp_.dot(u);
-              uvn_s[1] = tmp_.dot(v);
+              uvn_s[0] = tmp_.dot(u_);
+              uvn_s[1] = tmp_.dot(v_);
               double angleS = atan2(uvn_s[1] - uvn_nn[i][1], uvn_s[0] - uvn_nn[i][0]);
               if ((angleMin < angleS) && (angleS < angleMax))
               {
@@ -444,8 +444,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
             else
             {
               tmp_ = coords_[source_[R_]] - proj_qp_;
-              uvn_s[0] = tmp_.dot(u);
-              uvn_s[1] = tmp_.dot(v);
+              uvn_s[0] = tmp_.dot(u_);
+              uvn_s[1] = tmp_.dot(v_);
               double angleS = atan2(uvn_s[1], uvn_s[0]);
               double dif = angles_[1].angle - angles_[0].angle;
               if ((angles_[0].angle < angleS) && (angleS < angles_[1].angle))
@@ -797,14 +797,14 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
               for (std::vector<int>::iterator curr_it = prev_it+1; curr_it != it+1; curr_it++)
               {
                 tmp_ = coords_[angles_[*curr_it].index] - proj_qp_;
-                X[0] = tmp_.dot(u);
-                X[1] = tmp_.dot(v);
+                X[0] = tmp_.dot(u_);
+                X[1] = tmp_.dot(v_);
                 tmp_ = coords_[angles_[*prev_it].index] - proj_qp_;
-                S1[0] = tmp_.dot(u);
-                S1[1] = tmp_.dot(v);
+                S1[0] = tmp_.dot(u_);
+                S1[1] = tmp_.dot(v_);
                 tmp_ = coords_[angles_[*(it+1)].index] - proj_qp_;
-                S2[0] = tmp_.dot(u);
-                S2[1] = tmp_.dot(v);
+                S2[0] = tmp_.dot(u_);
+                S2[1] = tmp_.dot(v_);
                 // check for inclusions 
                 if (isVisible(X,S1,S2))
                 {
@@ -858,7 +858,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
             nr_touched++;
           }
         }
-
+                                   
         if (gaps[*it])
           if (gaps[*(it-1)])
           {
@@ -915,6 +915,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
             else already_connected_ = false;
           }
       }
+      
+      // Finishing up R_
       if (ffn_[R_] == sfn_[R_])
       {
         state_[R_] = COMPLETED;
