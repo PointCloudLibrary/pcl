@@ -134,6 +134,18 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
     }
   }
   
+  template<typename T>
+  void
+  nonblock_post_cloud (const typename T::ConstPtr &cloud, const std::string& name)
+  {
+    cloud_show_base::Ptr cs(new cloud_show< T > ( name,cloud,viewer_));
+    {
+      boost::mutex::scoped_lock lock( mtx_);
+
+      cloud_shows_.push_back(cs);
+    }
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////
   void
   operator() ()
@@ -147,32 +159,37 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
     while (!quit_)
     {
       {
+        boost::mutex::scoped_lock lock (mtx_);
+        while(!cloud_shows_.empty())
         {
-          boost::mutex::scoped_lock lock (mtx_);
-          while(!cloud_shows_.empty())
-          {
-            cloud_shows_.back()->pop();
-            cloud_shows_.pop_back();
-          }
+          cloud_shows_.back()->pop();
+          cloud_shows_.pop_back();
         }
-
+      }
+      {
+        boost::mutex::scoped_lock lock(once_mtx);
+        BOOST_FOREACH(CallableList::value_type& x, callables_once)
         {
-          boost::mutex::scoped_lock lock(c_mtx);
-          BOOST_FOREACH(CallableMap::value_type& x, callables)
-          {
-            (x.second) (*viewer_);
-          }
+          (x) (*viewer_);
         }
-        if (viewer_->wasStopped ())
+        callables_once.clear();
+      }
+      {
+        boost::mutex::scoped_lock lock(c_mtx);
+        BOOST_FOREACH(CallableMap::value_type& x, callables)
         {
-          return; //todo handle this better
+          (x.second) (*viewer_);
         }
-        {
-          boost::mutex::scoped_lock lock(spin_mtx_);
-          //TODO some smart waitkey like stuff here, so that wasStoped() can hold for a long time
-          //maybe a counter
-          viewer_->spinOnce (); // Give the GUI millis to handle events, then return
-        }
+      }
+      if (viewer_->wasStopped ())
+      {
+        return; //todo handle this better
+      }
+      {
+        boost::mutex::scoped_lock lock(spin_mtx_);
+        //TODO some smart waitkey like stuff here, so that wasStoped() can hold for a long time
+        //maybe a counter
+        viewer_->spinOnce (); // Give the GUI millis to handle events, then return
       }
     }
   }
@@ -183,6 +200,14 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     boost::mutex::scoped_lock lock(c_mtx);
     callables[key] = x;
+  }
+
+  void
+  post (VizCallable x)
+  {
+    boost::mutex::scoped_lock lock(once_mtx);
+    callables_once.push_back(x);
+
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -198,13 +223,15 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
 
   std::string window_name_;
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
-  boost::mutex mtx_, spin_mtx_, c_mtx;
+  boost::mutex mtx_, spin_mtx_, c_mtx, once_mtx;
   boost::thread viewer_thread_;
   bool has_cloud_;
   bool quit_;
   std::list<boost::shared_ptr<cloud_show_base> > cloud_shows_;
   typedef std::map<std::string, VizCallable> CallableMap;
   CallableMap callables;
+  typedef std::list<VizCallable> CallableList;
+  CallableList callables_once;
 };
 
 pcl::visualization::CloudViewer::CloudViewer (const std::string& window_name) :
@@ -236,15 +263,31 @@ pcl::visualization::CloudViewer::showCloud (const GrayCloud::ConstPtr &cloud,
 }
 
 void
+pcl::visualization::CloudViewer::showCloudNonBlocking (const ColorCloud::ConstPtr &cloud, const std::string& cloudname)
+{
+  if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
+    return;
+  impl_->nonblock_post_cloud<ColorCloud>(cloud, cloudname);
+}
+
+void
+pcl::visualization::CloudViewer::showCloudNonBlocking (const GrayCloud::ConstPtr &cloud, const std::string& cloudname)
+{
+  if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
+    return;
+  impl_->nonblock_post_cloud<GrayCloud>(cloud, cloudname);
+}
+
+void
 pcl::visualization::CloudViewer::runOnVisualizationThread (VizCallable x, const std::string& key)
 {
   impl_->post (x, key);
 }
 
 void
-pcl::visualization::CloudViewer::runOnVisualizationThreadOnce (VizCallable x, const std::string& key)
+pcl::visualization::CloudViewer::runOnVisualizationThreadOnce (VizCallable x)
 {
-  impl_->post (x, key);
+  impl_->post (x);
 }
 
 

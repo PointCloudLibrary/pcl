@@ -83,6 +83,20 @@ namespace pcl
         void
         showCloud (const GrayCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
 
+        /** \brief Show a cloud, with an optional key for multiple clouds.
+          * \param cloud RGB point cloud
+          * \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
+          */
+         void
+         showCloudNonBlocking (const ColorCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
+
+         /** \brief Show a cloud, with an optional key for multiple clouds.
+          *  \param cloud XYZ point cloud
+          *  \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
+          */
+         void
+         showCloudNonBlocking (const GrayCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
+
         /** \brief Check if the gui was quit, you should quit also
          * \param millis_to_wait This will request to "spin" for the number of milliseconds, before exiting.
          * \return true if the user signaled the gui to stop
@@ -101,8 +115,11 @@ namespace pcl
         void
         runOnVisualizationThread (VizCallable x, const std::string& key = "callable");
 
+        /** \brief Run a callbable object on the UI thread. This will run once and be removed
+         * @param x Use boost::ref(x) for a function object that you would like to not copy
+         */
         void
-        runOnVisualizationThreadOnce (VizCallable x, const std::string& key = "callable");
+        runOnVisualizationThreadOnce (VizCallable x);
 
         /** \brief Remove a previously added callable object, NOP if it doesn't exist.
          * @param key the key that was registered with the callable object.
