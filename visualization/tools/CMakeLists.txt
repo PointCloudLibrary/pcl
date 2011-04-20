@@ -17,17 +17,17 @@ if(OPENNI_FOUND)
     target_link_libraries(pcd_grabber_viewer pcl_common pcl_io pcl_kdtree
     pcl_range_image pcl_visualization ${Boost_LIBRARIES})
     
-    PCL_ADD_EXECUTABLE(kinect_viewer_simple ${SUBSYS_NAME}
-        kinect_viewer_simple.cpp)
-    target_link_libraries(kinect_viewer_simple pcl_common pcl_io pcl_kdtree
+    PCL_ADD_EXECUTABLE(openni_viewer_simple ${SUBSYS_NAME}
+        openni_viewer_simple.cpp)
+    target_link_libraries(openni_viewer_simple pcl_common pcl_io pcl_kdtree
         pcl_range_image pcl_visualization ${Boost_LIBRARIES})
 
-    PCL_ADD_EXECUTABLE(kinect_viewer ${SUBSYS_NAME} kinect_viewer.cpp)
-    target_link_libraries(kinect_viewer pcl_common pcl_io pcl_kdtree
+    PCL_ADD_EXECUTABLE(openni_viewer ${SUBSYS_NAME} openni_viewer.cpp)
+    target_link_libraries(openni_viewer pcl_common pcl_io pcl_kdtree
         pcl_range_image pcl_visualization ${Boost_LIBRARIES})
 
-    PCL_ADD_EXECUTABLE(kinect_change_viewer ${SUBSYS_NAME} kinect_change_viewer.cpp)
-    target_link_libraries(kinect_change_viewer pcl_common pcl_io pcl_kdtree pcl_octree
+    PCL_ADD_EXECUTABLE(openni_change_viewer ${SUBSYS_NAME} openni_change_viewer.cpp)
+    target_link_libraries(openni_change_viewer pcl_common pcl_io pcl_kdtree pcl_octree
         pcl_range_image pcl_visualization pcl_filters ${Boost_LIBRARIES})
 endif(OPENNI_FOUND)
 

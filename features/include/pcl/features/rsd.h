@@ -107,7 +107,7 @@ namespace pcl
 
       /** \brief Set the maximum radius, above which everything can be considered planar.
         * \note the order of magnitude should be around 10-20 times the search radius (0.2 works well for typical datasets).
-        * \note on accurate 3D data (e.g. kinect) a search radius as low as 0.01 still gives good results.
+        * \note on accurate 3D data (e.g. openni sernsors) a search radius as low as 0.01 still gives good results.
         * \param plane_radius the new plane radius
         */
       inline void 

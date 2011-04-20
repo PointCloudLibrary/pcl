@@ -36,10 +36,10 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/io/kinect_grabber.h>
+#include <pcl/io/openni_grabber.h>
 #include <pcl/common/time.h>
 
-class SimpleKinectProcessor
+class SimpleOpenNIProcessor
 {
   public:
     void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
@@ -62,7 +62,7 @@ class SimpleKinectProcessor
 
       // make callback function from member function
       boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
-        boost::bind (&SimpleKinectProcessor::cloud_cb_, this, _1);
+        boost::bind (&SimpleOpenNIProcessor::cloud_cb_, this, _1);
 
       // connect callback function for desired signal. In this case its a point cloud with color values
       boost::signals2::connection c = interface->registerCallback (f);
@@ -79,9 +79,10 @@ class SimpleKinectProcessor
     }
 };
 
-int main ()
+int 
+main ()
 {
-  SimpleKinectProcessor v;
+  SimpleOpenNIProcessor v;
   v.run ();
   return 0;
 }

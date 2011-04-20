@@ -39,7 +39,7 @@
 #include <Eigen/Geometry>
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/io/kinect_grabber.h>
+#include <pcl/io/openni_grabber.h>
 #include <cfloat>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -189,11 +189,11 @@ main (int argc, char** argv)
 
   //  // Change the cloud rendered point size
   //  if (psize > 0)
-  //    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, "KinectCloud");
+  //    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, "OpenNICloud");
   //
   //  // Change the cloud rendered opacity
   //  if (opaque >= 0)
-  //    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque, "KinectCloud");
+  //    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque, "OpenNICloud");
 
   p->setBackgroundColor (bcolor[0], bcolor[1], bcolor[2]);
 
@@ -234,8 +234,8 @@ main (int argc, char** argv)
       new_cloud = false;
       if (g_cloud)
       {
-        p->removePointCloud ("KinectCloud");
-        p->addPointCloud (g_cloud, "KinectCloud");
+        p->removePointCloud ("OpenNICloud");
+        p->addPointCloud (g_cloud, "OpenNICloud");
       }
       mutex_.unlock ();
     }

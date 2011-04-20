@@ -34,17 +34,17 @@
  * Author: Nico Blodow (blodow@cs.tum.edu)
  */
 
-#include <pcl/io/kinect_grabber.h>
+#include <pcl/io/openni_grabber.h>
 #include "openni_camera/openni_image.h"
 #include "openni_camera/openni_depth_image.h"
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-class KinectViewer
+class OpenNIViewer
 {
   public:
-    KinectViewer () : viewer ("PCL Kinect Viewer") {}
+    OpenNIViewer () : viewer ("PCL OpenNI Viewer") {}
 
     void cloud_rgb_cb (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > cloud)
     {
@@ -57,7 +57,7 @@ class KinectViewer
 
       boost::signals2::connection c =
         interface->registerCallback <void(boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >)> 
-        (boost::bind (&KinectGrabber::cloud_rgb_cb, *this, _1).);
+        (boost::bind (&OpenNIGrabber::cloud_rgb_cb, *this, _1).);
 
       boost::signals2::connection c1 = interface->registerCallback (testpointcloudrgb);
       
@@ -75,9 +75,10 @@ class KinectViewer
 };
 
 
-int main ()
+int 
+main ()
 {
-  KinectViewer v;
+  OpenNIViewer v;
   v.run ();
   return 0;
 }

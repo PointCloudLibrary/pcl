@@ -8,9 +8,9 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
     if(OPENNI_FOUND)
-        set(KINECT_GRABBER_INCLUDES
+        set(OPENNI_GRABBER_INCLUDES
             include/pcl/io/grabber.h
-            include/pcl/io/kinect_grabber.h
+            include/pcl/io/openni_grabber.h
             include/pcl/io/pcd_grabber.h
             )
         #these should be private and only in the source path...
@@ -25,7 +25,7 @@ if(build)
             include/pcl/io/openni_camera/openni_image_bayer_grbg.h
             include/pcl/io/openni_camera/openni_image_yuv_422.h
             )
-        set(KINECT_GRABBER_SOURCES src/openni_camera/openni_device.cpp
+        set(OPENNI_GRABBER_SOURCES src/openni_camera/openni_device.cpp
             src/openni_camera/openni_device_primesense.cpp
             src/openni_camera/openni_image_bayer_grbg.cpp
             src/openni_camera/openni_depth_image.cpp
@@ -33,7 +33,7 @@ if(build)
             src/openni_camera/openni_driver.cpp
             src/openni_camera/openni_exception.cpp
             src/openni_camera/openni_image_yuv_422.cpp
-            src/kinect_grabber.cpp
+            src/openni_grabber.cpp
             src/pcd_grabber.cpp
             )
     endif(OPENNI_FOUND)
@@ -41,13 +41,13 @@ if(build)
     set(srcs src/io.cpp
         src/pcd_io.cpp
         src/vtk_io.cpp
-        ${KINECT_GRABBER_SOURCES}
+        ${OPENNI_GRABBER_SOURCES}
         )
 
     set(incs include/pcl/${SUBSYS_NAME}/io.h
         include/pcl/${SUBSYS_NAME}/pcd_io.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
-        ${KINECT_GRABBER_INCLUDES}
+        ${OPENNI_GRABBER_INCLUDES}
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/io.hpp)

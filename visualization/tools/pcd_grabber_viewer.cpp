@@ -197,11 +197,11 @@ main (int argc, char** argv)
 
   //  // Change the cloud rendered point size
   //  if (psize > 0)
-  //    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, "KinectCloud");
+  //    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, "OpenNICloud");
   //
   //  // Change the cloud rendered opacity
   //  if (opaque >= 0)
-  //    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque, "KinectCloud");
+  //    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque, "OpenNICloud");
 
   p->setBackgroundColor (bcolor[0], bcolor[1], bcolor[2]);
 

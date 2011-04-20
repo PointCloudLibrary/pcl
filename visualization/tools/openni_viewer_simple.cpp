@@ -39,7 +39,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
-#include <pcl/io/kinect_grabber.h>
+#include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 
 #define SHOW_FPS 1
@@ -65,14 +65,14 @@ do \
 #endif
 
 template <typename PointType>
-class SimpleKinectViewer
+class SimpleOpenNIViewer
 {
   public:
     typedef pcl::PointCloud<PointType> Cloud;
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
 
-    SimpleKinectViewer () : viewer ("PCL Kinect Viewer") {}
+    SimpleOpenNIViewer () : viewer ("PCL OpenNI Viewer") {}
 
     
     void 
@@ -107,7 +107,7 @@ class SimpleKinectViewer
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
       boost::function<void (const CloudConstPtr&)> f =
-        boost::bind (&SimpleKinectViewer::cloud_cb_, this, _1);
+        boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
 
       boost::signals2::connection c = interface->registerCallback (f);
       
@@ -149,11 +149,11 @@ main (int argc, char ** argv)
   std::string arg(argv[1]);
   if(arg == "XYZRGB")
   {
-      SimpleKinectViewer<pcl::PointXYZRGB> v;
+      SimpleOpenNIViewer<pcl::PointXYZRGB> v;
       v.run ();
   }else if(arg == "XYZ")
   {
-      SimpleKinectViewer<pcl::PointXYZ> v;
+      SimpleOpenNIViewer<pcl::PointXYZ> v;
       v.run ();
   }
   else if( arg == "--help" || arg == "-h")

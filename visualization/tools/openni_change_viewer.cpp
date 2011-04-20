@@ -36,17 +36,17 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/io/kinect_grabber.h>
-#include <pcl/io/kinect_grabber.h>
+#include <pcl/io/openni_grabber.h>
+#include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/octree/octree.h>
 #include <pcl/filters/extract_indices.h>
 
-class KinectChangeViewer
+class OpenNIChangeViewer
 {
   public:
-    KinectChangeViewer (double resolution) 
-      : viewer ("PCL Kinect Viewer")
+    OpenNIChangeViewer (double resolution) 
+      : viewer ("PCL OpenNI Viewer")
     {
       octree = new pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZRGB>(resolution);
     }
@@ -92,7 +92,7 @@ class KinectChangeViewer
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
       boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = 
-        boost::bind (&KinectChangeViewer::cloud_cb_, this, _1);
+        boost::bind (&OpenNIChangeViewer::cloud_cb_, this, _1);
 
       boost::signals2::connection c = interface->registerCallback (f);
       
@@ -110,13 +110,14 @@ class KinectChangeViewer
     pcl::visualization::CloudViewer viewer;
 };
 
-int main (int argc, char* argv[])
+int 
+main (int argc, char* argv[])
 {
   double resolution = 0.05;
   if (argc > 1)
     resolution = atof (argv[1]);
 
-  KinectChangeViewer v (resolution);
+  OpenNIChangeViewer v (resolution);
   v.run ();
   return 0;
 }
