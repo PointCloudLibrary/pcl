@@ -146,12 +146,12 @@ namespace pcl
         }
 
         /** \brief Returns a null pointer as this leaf node does not store any data.
-         *  \param data_arg: reference to return pointer of leaf node DataT element (will be set to NULL).
+         *  \param data_arg: reference to return pointer of leaf node DataT element (will be set to 0).
          */
         virtual void
         getData (const DataT*& data_arg)
         {
-          data_arg = NULL;
+          data_arg = 0;
         }
 
         /** \brief Empty getData data vector implementation as this leaf node does not store any data. \
@@ -263,7 +263,7 @@ namespace pcl
         virtual void
         getData (const DataT*& data_arg)
         {
-          DataT* result = NULL;
+          DataT* result = 0;
 
           if (leafDataTVector_.size () > 0)
             result = (DataT*)&leafDataTVector_.back ();

@@ -98,7 +98,7 @@ namespace pcl
 
         /** \brief Provide a pointer to the input data set.
          *  \param cloud_arg the const boost shared pointer to a PointCloud message
-         *  \param indices_arg the point indices subset that is to be used from \a cloud - if NULL the whole point cloud is used
+         *  \param indices_arg the point indices subset that is to be used from \a cloud - if 0 the whole point cloud is used
          */
         inline void
         setInputCloud (const PointCloudConstPtr &cloud_arg, const IndicesConstPtr &indices_arg = IndicesConstPtr ())
@@ -449,7 +449,7 @@ namespace pcl
 
         /** \brief Find octree leaf node at a given point
          * \param point_arg query point
-         * \return pointer to leaf node. If leaf node does not exist, pointer is NULL.
+         * \return pointer to leaf node. If leaf node does not exist, pointer is 0.
          */
         LeafT*
         findLeafAtPoint (const PointT& point_arg) const ;

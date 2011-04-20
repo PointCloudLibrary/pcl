@@ -151,7 +151,7 @@ namespace pcl
         }
 
         // returns true on success
-        return (leaf != NULL);
+        return (leaf != 0);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -329,7 +329,7 @@ namespace pcl
 
         // index to branch child
         unsigned char childIdx;
-        LeafT* result = NULL;
+        LeafT* result = 0;
 
         // find branch child from key
         childIdx = ((!!(key_arg.x & depthMask_arg)) << 2) | ((!!(key_arg.y & depthMask_arg)) << 1) | (!!(key_arg.z
@@ -401,7 +401,7 @@ namespace pcl
       {
         // index to branch child
         unsigned char childIdx;
-        LeafT* result = NULL;
+        LeafT* result = 0;
 
         // find branch child from key
         childIdx = ((!!(key_arg.x & depthMask_arg)) << 2) | ((!!(key_arg.y & depthMask_arg)) << 1) | (!!(key_arg.z
@@ -469,7 +469,7 @@ namespace pcl
             {
               // child branch does not own any sub-child nodes anymore -> delete child branch
               delete (childBranch);
-              setBranchChild (*branch_arg, childIdx, NULL);
+              setBranchChild (*branch_arg, childIdx, 0);
               branchCount_--;
             }
           }

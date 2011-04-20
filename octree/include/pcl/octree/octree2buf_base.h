@@ -348,7 +348,7 @@ namespace pcl
 
         /** \brief Find leaf node
          *  \param key_arg: octree key addressing a leaf node.
-         *  \return pointer to leaf node. If leaf node is not found, this pointer returns NULL.
+         *  \return pointer to leaf node. If leaf node is not found, this pointer returns 0.
          * */
         inline LeafT*
         findLeaf (const OctreeKey& key_arg) const
@@ -382,7 +382,7 @@ namespace pcl
         inline bool
         existLeaf (const OctreeKey& key_arg) const
         {
-          return (findLeafRecursive (key_arg, depthMask_, rootNode_) != NULL);
+          return (findLeafRecursive (key_arg, depthMask_, rootNode_) != 0);
         }
 
         /** \brief Remove leaf node from octree
@@ -434,7 +434,7 @@ namespace pcl
         inline bool
         branchHasChild (const OctreeBranch& branch_arg, const unsigned char childIdx_arg) const
         {
-          return (branch_arg.subNodes_[bufferSelector_][childIdx_arg] != NULL);
+          return (branch_arg.subNodes_[bufferSelector_][childIdx_arg] != 0);
         }
 
         /** \brief Check if branch is pointing to a particular child node in specific octree buffer
@@ -447,7 +447,7 @@ namespace pcl
         branchHasChild (const OctreeBranch& branch_arg, const unsigned char bufferSelector_arg,
                         const unsigned char childIdx_arg) const
         {
-          return (branch_arg.subNodes_[bufferSelector_arg][childIdx_arg] != NULL);
+          return (branch_arg.subNodes_[bufferSelector_arg][childIdx_arg] != 0);
 
         }
 
@@ -577,8 +577,8 @@ namespace pcl
                 break;
             }
 
-            // set branch child pointer to NULL
-            setBranchChild (branch_arg, childIdx_arg, NULL);
+            // set branch child pointer to 0
+            setBranchChild (branch_arg, childIdx_arg, 0);
           }
         }
 
@@ -613,8 +613,8 @@ namespace pcl
                 break;
             }
 
-            // set branch child pointer to NULL
-            setBranchChild (branch_arg, bufferSelector_arg, childIdx_arg, NULL);
+            // set branch child pointer to 0
+            setBranchChild (branch_arg, bufferSelector_arg, childIdx_arg, 0);
 
           }
         }
@@ -762,11 +762,11 @@ namespace pcl
                           bool branchReset_arg);
 
         /** \brief Recursively search for a given leaf node and return a pointer.
-         *  \note  If leaf node does not exist, a NULL pointer is returned.
+         *  \note  If leaf node does not exist, a 0 pointer is returned.
          *  \param key_arg: reference to an octree key
          *  \param depthMask_arg: depth mask used for octree key analysis and for branch depth indicator
          *  \param branch_arg: current branch node
-         *  \return pointer to leaf node class. Returns NULL if leaf node is not found.
+         *  \return pointer to leaf node class. Returns 0 if leaf node is not found.
          **/
         LeafT*
         findLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg, OctreeBranch* branch_arg) const;

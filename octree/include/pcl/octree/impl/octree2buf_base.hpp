@@ -143,7 +143,7 @@ namespace pcl
             data_arg = *dataPtr;
         }
         // returns true on success
-        return (leaf != NULL);
+        return (leaf != 0);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,6 +190,7 @@ namespace pcl
           branchCount_ = 1;
         }
 
+        // delete node pool
         if (freeMemory_arg)
           poolCleanUp ();
 
@@ -387,7 +388,7 @@ namespace pcl
 
         // index to branch child
         unsigned char childIdx;
-        LeafT* result = NULL;
+        LeafT* result = 0;
 
         // branch reset -> this branch has been taken from previous buffer
         if (branchReset_arg)
@@ -395,7 +396,7 @@ namespace pcl
           // we can safely remove children references
           for (childIdx = 0; childIdx < 8; childIdx++)
           {
-            setBranchChild (*branch_arg, childIdx, NULL);
+            setBranchChild (*branch_arg, childIdx, 0);
           }
 
         }
@@ -506,7 +507,7 @@ namespace pcl
       {
         // return leaf node
         unsigned char childIdx;
-        LeafT* result = NULL;
+        LeafT* result = 0;
 
         // find branch child from key
         childIdx = ((!!(key_arg.x & depthMask_arg)) << 2) | ((!!(key_arg.y & depthMask_arg)) << 1) | (!!(key_arg.z
@@ -914,7 +915,7 @@ namespace pcl
         // we can safely remove children references
         for (childIdx = 0; childIdx < 8; childIdx++)
         {
-          setBranchChild (*branch_arg, childIdx, NULL);
+          setBranchChild (*branch_arg, childIdx, 0);
         }
 
       }
@@ -1021,7 +1022,7 @@ namespace pcl
         {
 
           // remove old branch pointer information in current branch
-          setBranchChild (*branch_arg, bufferSelector_, childIdx, NULL);
+          setBranchChild (*branch_arg, bufferSelector_, childIdx, 0);
 
           // remove unused branches in previous buffer
           deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
@@ -1054,7 +1055,7 @@ namespace pcl
         // we can safely remove children references
         for (childIdx = 0; childIdx < 8; childIdx++)
         {
-          setBranchChild (*branch_arg, childIdx, NULL);
+          setBranchChild (*branch_arg, childIdx, 0);
         }
 
       }
@@ -1161,7 +1162,7 @@ namespace pcl
         {
 
           // remove old branch pointer information in current branch
-          setBranchChild (*branch_arg, bufferSelector_, childIdx, NULL);
+          setBranchChild (*branch_arg, bufferSelector_, childIdx, 0);
 
           // remove unused branches in previous buffer
           deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
@@ -1192,7 +1193,7 @@ namespace pcl
         // we can safely remove children references
         for (childIdx = 0; childIdx < 8; childIdx++)
         {
-          setBranchChild (*branch_arg, childIdx, NULL);
+          setBranchChild (*branch_arg, childIdx, 0);
         }
 
       }
@@ -1299,7 +1300,7 @@ namespace pcl
         {
 
           // remove old branch pointer information in current branch
-          setBranchChild (*branch_arg, bufferSelector_, childIdx, NULL);
+          setBranchChild (*branch_arg, bufferSelector_, childIdx, 0);
 
           // remove unused branches in previous buffer
           deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);

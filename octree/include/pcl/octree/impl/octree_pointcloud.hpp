@@ -712,7 +712,7 @@ namespace pcl
       {
         // retrieve point from input cloud
 
-        if (indices_ == NULL)
+        if (indices_ == 0)
         {
           assert (index_arg < (unsigned int)input_->points.size ());
           return this->input_->points[index_arg];
