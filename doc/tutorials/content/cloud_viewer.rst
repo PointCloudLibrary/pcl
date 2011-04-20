@@ -1,12 +1,11 @@
 .. _cloud_viewer:
 
 The CloudViewer
-------------------------------------------
+---------------
 
 The CloudViewer is a straight forward, simple point cloud visualization, meant
 to get you up and viewing clouds in as little code as possible.  
 
---------------------------
 Simple Cloud Visualization
 --------------------------
 
@@ -30,9 +29,8 @@ use a snippet like the following one:
       }
     }
 
----------------------
 A more complete sample:
----------------------
+-----------------------
 
 The following shows how to run code on the visualization thread.  The PCLVisualizer is
 the back end of the CloudViewer, but its running in its own thread.  To access it you

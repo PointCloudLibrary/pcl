@@ -45,7 +45,7 @@ contributions on any tutorial.
   * :ref:`adding_custom_ptype`
 
      ======  ======
-     |au_1|  Title: **Adding your own custom `PointT` point type**
+     |au_1|  Title: **Adding your own custom PointT point type**
 
              Author: *Radu B. Rusu*
 
