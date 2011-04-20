@@ -2,7 +2,7 @@ VERSION=3.0.0
 all: eigen
 		mkdir -p eigen/build_dir
 		patch -p0 < cpack.patch
-		cd eigen/build_dir && cmake .. && make package && \
+		cd eigen/build_dir && cmake .. -DCMAKE_INSTALL_PREFIX=/usr .. && make package && \
 		if test -e *.exe; \
 		then cp *.exe ../../; \
 		fi; \
