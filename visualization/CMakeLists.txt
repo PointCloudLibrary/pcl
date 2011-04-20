@@ -41,6 +41,32 @@ if(build)
         src/cloud_viewer.cpp
         )
 
+    set(incs include/pcl/${SUBSYS_NAME}/cloud_viewer.h
+        include/pcl/${SUBSYS_NAME}/histogram_visualizer.h
+        include/pcl/${SUBSYS_NAME}/interactor.h
+        include/pcl/${SUBSYS_NAME}/interactor_style.h
+        include/pcl/${SUBSYS_NAME}/pcl_visualizer.h
+        include/pcl/${SUBSYS_NAME}/point_cloud_handlers.h
+        include/pcl/${SUBSYS_NAME}/range_image_visualizer.h
+        )
+
+    set(common_incs include/pcl/${SUBSYS_NAME}/common/actor_map.h
+        include/pcl/${SUBSYS_NAME}/common/common.h
+        include/pcl/${SUBSYS_NAME}/common/float_image_utils.h
+        include/pcl/${SUBSYS_NAME}/common/image_widget_wx.h
+        include/pcl/${SUBSYS_NAME}/common/io.h
+        include/pcl/${SUBSYS_NAME}/common/ren_win_interact_map.h
+        include/pcl/${SUBSYS_NAME}/common/shapes.h
+        )
+
+    set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/histogram_visualizer.hpp
+        include/pcl/${SUBSYS_NAME}/impl/pcl_visualizer.hpp
+        include/pcl/${SUBSYS_NAME}/impl/point_cloud_handlers.hpp
+        )
+
+    set(common_impl_incs include/pcl/${SUBSYS_NAME}/common/impl/shapes.hpp)
+
     set(LIB_NAME pcl_${SUBSYS_NAME})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs})
     target_link_libraries(${LIB_NAME} pcl_io pcl_range_image ${wxWidgets_LIBRARIES}
@@ -53,34 +79,9 @@ if(build)
       "${EXT_DEPS}" "" "" "")
 
     # Install include files
-    set(incs include/pcl/${SUBSYS_NAME}/cloud_viewer.h
-        include/pcl/${SUBSYS_NAME}/histogram_visualizer.h
-        include/pcl/${SUBSYS_NAME}/interactor.h
-        include/pcl/${SUBSYS_NAME}/interactor_style.h
-        include/pcl/${SUBSYS_NAME}/pcl_visualizer.h
-        include/pcl/${SUBSYS_NAME}/point_cloud_handlers.h
-        include/pcl/${SUBSYS_NAME}/range_image_visualizer.h
-        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-
-    set(common_incs include/pcl/${SUBSYS_NAME}/common/actor_map.h
-        include/pcl/${SUBSYS_NAME}/common/common.h
-        include/pcl/${SUBSYS_NAME}/common/float_image_utils.h
-        include/pcl/${SUBSYS_NAME}/common/image_widget_wx.h
-        include/pcl/${SUBSYS_NAME}/common/io.h
-        include/pcl/${SUBSYS_NAME}/common/ren_win_interact_map.h
-        include/pcl/${SUBSYS_NAME}/common/shapes.h
-        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/common ${common_incs})
-
-    set(impl_incs 
-        include/pcl/${SUBSYS_NAME}/impl/histogram_visualizer.hpp
-        include/pcl/${SUBSYS_NAME}/impl/pcl_visualizer.hpp
-        include/pcl/${SUBSYS_NAME}/impl/point_cloud_handlers.hpp
-        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-
-    set(common_impl_incs include/pcl/${SUBSYS_NAME}/common/impl/shapes.hpp)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/common/impl
         ${common_impl_incs})
 
@@ -91,4 +92,3 @@ if(build)
 
     # share data: http://pr.willowgarage.com/data/pcl/partial_cup_model_new.pcd
 endif(build)
-

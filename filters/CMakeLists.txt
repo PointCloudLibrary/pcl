@@ -17,6 +17,26 @@ if(build)
         src/voxel_grid.cpp
         )
 
+    set(incs include/pcl/${SUBSYS_NAME}/conditional_removal.h
+        include/pcl/${SUBSYS_NAME}/extract_indices.h
+        include/pcl/${SUBSYS_NAME}/filter.h
+        include/pcl/${SUBSYS_NAME}/passthrough.h
+        include/pcl/${SUBSYS_NAME}/project_inliers.h
+        include/pcl/${SUBSYS_NAME}/radius_outlier_removal.h
+        include/pcl/${SUBSYS_NAME}/statistical_outlier_removal.h
+        include/pcl/${SUBSYS_NAME}/voxel_grid.h
+        )
+
+    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/conditional_removal.hpp
+        include/pcl/${SUBSYS_NAME}/impl/extract_indices.hpp
+        include/pcl/${SUBSYS_NAME}/impl/filter.hpp
+        include/pcl/${SUBSYS_NAME}/impl/passthrough.hpp
+        include/pcl/${SUBSYS_NAME}/impl/project_inliers.hpp
+        include/pcl/${SUBSYS_NAME}/impl/radius_outlier_removal.hpp
+        include/pcl/${SUBSYS_NAME}/impl/statistical_outlier_removal.hpp
+        include/pcl/${SUBSYS_NAME}/impl/voxel_grid.hpp
+        )
+
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
@@ -28,28 +48,8 @@ if(build)
         "${EXT_DEPS}" "" "" "")
 
     # Install include files
-    set(incs include/pcl/${SUBSYS_NAME}/conditional_removal.h
-        include/pcl/${SUBSYS_NAME}/extract_indices.h
-        include/pcl/${SUBSYS_NAME}/filter.h
-        include/pcl/${SUBSYS_NAME}/passthrough.h
-        include/pcl/${SUBSYS_NAME}/project_inliers.h
-        include/pcl/${SUBSYS_NAME}/radius_outlier_removal.h
-        include/pcl/${SUBSYS_NAME}/statistical_outlier_removal.h
-        include/pcl/${SUBSYS_NAME}/voxel_grid.h
-        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-
-    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/conditional_removal.hpp
-        include/pcl/${SUBSYS_NAME}/impl/extract_indices.hpp
-        include/pcl/${SUBSYS_NAME}/impl/filter.hpp
-        include/pcl/${SUBSYS_NAME}/impl/passthrough.hpp
-        include/pcl/${SUBSYS_NAME}/impl/project_inliers.hpp
-        include/pcl/${SUBSYS_NAME}/impl/radius_outlier_removal.hpp
-        include/pcl/${SUBSYS_NAME}/impl/statistical_outlier_removal.hpp
-        include/pcl/${SUBSYS_NAME}/impl/voxel_grid.hpp
-        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
     add_subdirectory(test)
 endif(build)
-

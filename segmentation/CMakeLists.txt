@@ -13,6 +13,18 @@ if(build)
         src/segment_differences.cpp
         )
 
+    set(incs include/pcl/${SUBSYS_NAME}/extract_clusters.h
+        include/pcl/${SUBSYS_NAME}/extract_polygonal_prism_data.h
+        include/pcl/${SUBSYS_NAME}/sac_segmentation.h
+        include/pcl/${SUBSYS_NAME}/segment_differences.h
+        )
+
+    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/extract_clusters.hpp
+        include/pcl/${SUBSYS_NAME}/impl/extract_polygonal_prism_data.hpp
+        include/pcl/${SUBSYS_NAME}/impl/sac_segmentation.hpp
+        include/pcl/${SUBSYS_NAME}/impl/segment_differences.hpp
+        )
+
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
@@ -24,18 +36,7 @@ if(build)
         "${EXT_DEPS}" "" "" "")
 
     # Install include files
-    set(incs include/pcl/${SUBSYS_NAME}/extract_clusters.h
-        include/pcl/${SUBSYS_NAME}/extract_polygonal_prism_data.h
-        include/pcl/${SUBSYS_NAME}/sac_segmentation.h
-        include/pcl/${SUBSYS_NAME}/segment_differences.h
-        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-
-    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/extract_clusters.hpp
-        include/pcl/${SUBSYS_NAME}/impl/extract_polygonal_prism_data.hpp
-        include/pcl/${SUBSYS_NAME}/impl/sac_segmentation.hpp
-        include/pcl/${SUBSYS_NAME}/impl/segment_differences.hpp
-        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 endif(build)
 

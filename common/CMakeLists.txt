@@ -17,16 +17,6 @@ if(build)
         src/time_trigger.cpp
         )
 
-    set(LIB_NAME pcl_${SUBSYS_NAME})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl})
-    target_link_libraries(${LIB_NAME} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_DATE_TIME_LIBRARY})
-    link_ros_libs (${LIB_NAME})
-    PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
-        "" "")
-
-    # Install include files
     set(incs include/pcl/exceptions.h
         include/pcl/pcl_base.h
         include/pcl/pcl_macros.h
@@ -43,20 +33,14 @@ if(build)
           include/pcl/Vertices.h
           include/pcl/PointIndices.h
         )
-    endif(NOT USE_ROS)
-    
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
-    
-    if(NOT USE_ROS)
-      set(sensor_msg_incs 
+
+        set(sensor_msg_incs 
           include/sensor_msgs/PointField.h
           include/sensor_msgs/PointCloud2.h
           include/sensor_msgs/Image.h
           )
-      PCL_ADD_INCLUDES(${SUBSYS_NAME} "../sensor_msgs" ${sensor_msg_incs})
 
-      set(std_msg_incs include/std_msgs/Header.h)
-      PCL_ADD_INCLUDES(${SUBSYS_NAME} "../std_msgs" ${std_msg_incs})
+        set(std_msg_incs include/std_msgs/Header.h)
     endif(NOT USE_ROS)
     
     set(common_incs include/pcl/common/angles.h
@@ -82,7 +66,7 @@ if(build)
         include/pcl/common/vector_average.h
         include/pcl/common/pca.h
         )
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
+
     set(common_incs_impl
         include/pcl/common/impl/angles.hpp
         include/pcl/common/impl/bivariate_polynomial.hpp
@@ -98,24 +82,44 @@ if(build)
         include/pcl/common/impl/transformation_from_correspondences.hpp
         include/pcl/common/impl/vector_average.hpp
        )
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} common/impl ${common_incs_impl})
+
     set(impl_incs include/pcl/impl/instantiate.hpp
         include/pcl/impl/point_types.hpp
         )
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} impl ${impl_incs})
+
     set(ros_incs include/pcl/ros/conversions.h
         include/pcl/ros/for_each_type.h
         include/pcl/ros/point_traits.h
         include/pcl/ros/register_point_struct.h
         )
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ros ${ros_incs})
+
     set(tools_incs 
-    	include/pcl/console/parse.h
+        include/pcl/console/parse.h
         include/pcl/console/print.h
         include/pcl/console/time.h
         )
+
+
+    set(LIB_NAME pcl_${SUBSYS_NAME})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs})
+    target_link_libraries(${LIB_NAME} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_DATE_TIME_LIBRARY})
+    link_ros_libs (${LIB_NAME})
+    PCL_ADD_SSE_FLAGS(${LIB_NAME})
+    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
+        "" "")
+
+    # Install include files
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
+    if(NOT USE_ROS)
+        PCL_ADD_INCLUDES(${SUBSYS_NAME} "../sensor_msgs" ${sensor_msg_incs})
+        PCL_ADD_INCLUDES(${SUBSYS_NAME} "../std_msgs" ${std_msg_incs})
+    endif(NOT USE_ROS)
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} common/impl ${common_incs_impl})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} impl ${impl_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ros ${ros_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} console ${tools_incs})
 
     add_subdirectory(test)
 endif(build)
-
