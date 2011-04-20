@@ -147,7 +147,6 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull,
 
   // Compute convex hull
   exitcode = qh_new_qhull (dim, cloud_transformed.points.size (), points, ismalloc, flags, outfile, errfile);
-  std::cout << "exitcode:" << exitcode << std::endl;
 
   if (exitcode != 0) {
      PCL_ERROR("ERROR: qhull was unable to compute a convex hull for the given point cloud");
