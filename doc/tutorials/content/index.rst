@@ -118,19 +118,19 @@ contributions on any tutorial.
      .. |i_o4| image:: images/concatenate_data.jpg
                :height: 100px
 
-  * :ref:`kinect_grabber`
+  * :ref:`openni_grabber`
 
      ======  ======
-     |i_o5|  Title: **Grabbing Point Clouds from a Kinect camera**
+     |i_o5|  Title: **Grabbing Point Clouds from an OpenNI camera**
 
              Author: *Nico Blodow*
 
              Compatibility: > PCL 1.0
 
-             In this tutorial, we will learn how to acquire point cloud data from a Kinect camera.
+             In this tutorial, we will learn how to acquire point cloud data from an OpenNI camera.
      ======  ======
 
-     .. |i_o5| image:: images/kinect_grabber.png
+     .. |i_o5| image:: images/openni_grabber.png
                :height: 100px
 
 * Filtering

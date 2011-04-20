@@ -1,14 +1,14 @@
-.. _kinect_grabber:
+.. _openni_grabber:
 
-The OpenNI Kinect Grabber Framework in PCL
-------------------------------------------
+The OpenNI Grabber Framework in PCL
+-----------------------------------
 
 As of PCL 1.0, we offer a new generic grabber interface to provide a smooth and
 convenient access to different devices and their drivers, file formats and
 other sources of data. 
 
-The first driver that we incorporated is the new Kinect Grabber, which makes it
-a breeze to request data streams from the Kinect cameras. This tutorial
+The first driver that we incorporated is the new OpenNI Grabber, which makes it
+a breeze to request data streams from OpenNI compatible cameras. This tutorial
 presents how to set up and use the grabber, and since it's so simple, we can
 keep it short :).
 
@@ -25,26 +25,26 @@ In *visualization*, there is a very short piece of code which contains all that
 is required to set up a *pcl::PointCloud<XYZ>* or *pcl::PointCloud<XYZRGB>*
 cloud callback.
 
-Here is a screenshot and a video of the PCL Kinect Viewer in action, which uses
-the Kinect Grabber.
+Here is a screenshot and a video of the PCL OpenNI Viewer in action, which uses
+the OpenNI Grabber.
 
-.. image:: images/pcl_kinect_viewer.png
+.. image:: images/pcl_openni_viewer.png
    :height: 390px
-   :target: _images/pcl_kinect_viewer.png
+   :target: _images/pcl_openni_viewer.png
 
 .. raw:: html
   
-  <iframe title="PCL Kinect Viewer example" width="480" height="390" src="http://www.youtube.com/embed/x3SaWQkPsPI?rel=0" frameborder="0" allowfullscreen></iframe>
+  <iframe title="PCL OpenNI Viewer example" width="480" height="390" src="http://www.youtube.com/embed/x3SaWQkPsPI?rel=0" frameborder="0" allowfullscreen></iframe>
 
-So let's look at the code. From *visualization/tools/kinect_viewer_simple.cpp*
+So let's look at the code. From *visualization/tools/openni_viewer_simple.cpp*
 
 .. code-block:: cpp
    :linenos:
 
-    class SimpleKinectViewer
+    class SimpleOpenNIViewer
     {
       public:
-        SimpleKinectViewer () : viewer ("PCL Kinect Viewer") {}
+        SimpleOpenNIViewer () : viewer ("PCL OpenNI Viewer") {}
 
         void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud)
         {   
@@ -57,7 +57,7 @@ So let's look at the code. From *visualization/tools/kinect_viewer_simple.cpp*
           pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
           boost::function<void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f = 
-            boost::bind (&SimpleKinectViewer::cloud_cb_, this, _1);
+            boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
 
           interface->registerCallback (f);
               
@@ -76,16 +76,16 @@ So let's look at the code. From *visualization/tools/kinect_viewer_simple.cpp*
 
     int main ()
     {
-      SimpleKinectViewer v;
+      SimpleOpenNIViewer v;
       v.run (); 
       return 0;
     }
 
 
-As you can see, the *run ()* function of *SimpleKinectViewer* first creates a
+As you can see, the *run ()* function of *SimpleOpenNIViewer* first creates a
 new *OpenNIGrabber* interface. The next line might seem a bit intimidating at
 first, but it's not that bad. We create a *boost::bind* object with the address
-of the callback *cloud_cb_*, we pass a reference to our *SimpleKinectViewer*
+of the callback *cloud_cb_*, we pass a reference to our *SimpleOpenNIViewer*
 and the argument palce holder *_1*.
 
 The *bind* then gets casted to a *boost::function* object which is templated on
@@ -156,10 +156,10 @@ us. We might be able to optimize the code even further.
 
   #include <pcl/point_cloud.h>
   #include <pcl/point_types.h>
-  #include <pcl/io/kinect_grabber.h>
+  #include <pcl/io/openni_grabber.h>
   #include <pcl/common/time.h>
 
-  class SimpleKinectProcessor
+  class SimpleOpenNIProcessor
   {
     public:
       void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
@@ -182,7 +182,7 @@ us. We might be able to optimize the code even further.
 
         // make callback function from member function
         boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
-          boost::bind (&SimpleKinectProcessor::cloud_cb_, this, _1);
+          boost::bind (&SimpleOpenNIProcessor::cloud_cb_, this, _1);
 
         // connect callback function for desired signal. In this case its a point cloud with color values
         boost::signals2::connection c = interface->registerCallback (f);
@@ -201,7 +201,7 @@ us. We might be able to optimize the code even further.
 
   int main ()
   {
-    SimpleKinectProcessor v;
+    SimpleOpenNIProcessor v;
     v.run ();
     return 0;
   }
@@ -210,10 +210,10 @@ Conclusion
 ----------
 
 The Grabber interface is very powerful and general and makes it a breeze to
-connect to OpenNI cameras (i.e. Kinect, Asus Xtion Pro and Primesense) in your code. We are
-in the process of writing a FileGrabber which can be used using the same
-interface, and can e.g. load all Point Cloud files from a directory and
-provide them to the callback at a certain rate. The only change required is
+connect to OpenNI compatible cameras in your code. We are in the process of
+writing a FileGrabber which can be used using the same interface, and can e.g.
+load all Point Cloud files from a directory and provide them to the callback at
+a certain rate. The only change required is
 the allocation of the Grabber Object (*pcl::Grabber *g = new ...;*).
 
 If you have a sensor which you would like to have available within PCL, just
