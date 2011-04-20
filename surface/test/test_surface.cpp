@@ -53,11 +53,11 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
-typedef KdTree<PointXYZ>::Ptr KdTreePtr;
-
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
-boost::shared_ptr<vector<int> > indices (new vector<int>);
-KdTreePtr tree;
+PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
+//boost::shared_ptr<vector<int> > indices (new vector<int>);
+KdTree<PointXYZ>::Ptr tree;
+KdTree<PointNormal>::Ptr tree2;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, MovingLeastSquares)
@@ -70,7 +70,7 @@ TEST (PCL, MovingLeastSquares)
   // Set parameters
   mls.setInputCloud (cloud);
   mls.setOutputNormals (mls_normals);
-  mls.setIndices (indices);
+  //mls.setIndices (indices);
   mls.setPolynomialFit (true);
   mls.setSearchMethod (tree);
   mls.setSearchRadius (0.03);
@@ -89,23 +89,6 @@ TEST (PCL, MovingLeastSquares)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GreedyProjectionTriangulation)
 {
-  // Normal estimation
-  NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  n.setInputCloud (cloud);
-  n.setIndices (indices);
-  n.setSearchMethod (tree);
-  n.setKSearch (20);
-  n.compute (*normals);
-
-  // Concatenate XYZ and normal information
-  PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
-  pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
-      
-  // Create search tree
-  KdTree<PointNormal>::Ptr tree2 (new KdTreeFLANN<PointNormal>);
-  tree2->setInputCloud (cloud_with_normals);
-
   // Init objects
   PolygonMesh triangles;
   GreedyProjectionTriangulation<PointNormal> gp3;
@@ -153,52 +136,23 @@ TEST (PCL, GreedyProjectionTriangulation)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GridProjection)
 {
-  // Create a simple test dataset
-  PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
-  cloud_with_normals->height = 1;
-  cloud_with_normals->is_dense = true;
-  for (float x = -0.1; x <= 0.1; x += 0.01)
-  {
-    for (float y = -0.1; y <= 0.1; y += 0.01)
-    {
-      PointNormal p;
-      p.x = x;
-      p.y = y;
-      p.z = 0;
-      p.normal[0] = 0;
-      p.normal[1] = 0;
-      p.normal[2] = 1;
-      p.curvature = 0;
-      cloud_with_normals->points.push_back (p);
-    }
-  }
-  cloud_with_normals->width = cloud_with_normals->points.size ();
-
-  // Create search tree
-  KdTree<PointNormal>::Ptr tree2 (new KdTreeFLANN<PointNormal>);
-  tree2->setInputCloud (cloud_with_normals);
-
   // Init objects
-  PolygonMesh triangles;
-  GridProjection<PointNormal> gp3;
+  PolygonMesh grid;
+  GridProjection<PointNormal> gp;
 
   // Set parameters
-  gp3.setInputCloud (cloud_with_normals);
-  gp3.setSearchMethod (tree2);
-  gp3.setResolution (0.005);
-  //gp3.setPaddingSize (3);
+  gp.setInputCloud (cloud_with_normals);
+  gp.setSearchMethod (tree2);
+  gp.setResolution (0.005);
+  gp.setPaddingSize (3);
 
   // Reconstruct
-  /*
-  gp3.reconstruct (triangles);
-  EXPECT_NE (triangles.cloud.width, 0);
-  EXPECT_EQ (triangles.cloud.height, 1);
-  */
-//  EXPECT_EQ (triangles.cloud.width, 1992);
-//  EXPECT_EQ ((int)triangles.polygons.size(), 498);
-//  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.size(), 4);
-//  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(0), 0);
-//  saveVTKFile ("./test/grid.vtk", triangles);
+  gp.reconstruct (grid);
+  //saveVTKFile ("./test/bun0-grid.vtk", grid);
+  EXPECT_EQ (grid.cloud.width, 5180);
+  EXPECT_EQ ((int)grid.polygons.size(), 1295);
+  EXPECT_EQ ((int)grid.polygons.at(0).vertices.size(), 4);
+  EXPECT_EQ ((int)grid.polygons.at(0).vertices.at(0), 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -363,16 +317,36 @@ TEST (PCL, ConcaveHull_LTable)
 int
 main (int argc, char** argv)
 {
+  // Load file
   sensor_msgs::PointCloud2 cloud_blob;
   loadPCDFile (argv[1], cloud_blob);
   fromROSMsg (cloud_blob, *cloud);
 
-  indices->resize (cloud->points.size ());
-  for (size_t i = 0; i < indices->size (); ++i) { (*indices)[i] = i; }
+  // Set up dummy indices
+  //indices->resize (cloud->points.size ());
+  //for (size_t i = 0; i < indices->size (); ++i) { (*indices)[i] = i; }
 
+  // Create search tree
   tree.reset (new KdTreeFLANN<PointXYZ> (false));
   tree->setInputCloud (cloud);
 
+  // Normal estimation
+  NormalEstimation<PointXYZ, Normal> n;
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+  n.setInputCloud (cloud);
+  //n.setIndices (indices[B);
+  n.setSearchMethod (tree);
+  n.setKSearch (20);
+  n.compute (*normals);
+
+  // Concatenate XYZ and normal information
+  pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
+      
+  // Create search tree
+  tree2.reset (new KdTreeFLANN<PointNormal>);
+  tree2->setInputCloud (cloud_with_normals);
+
+  // Testing
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }
