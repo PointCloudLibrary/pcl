@@ -21,6 +21,12 @@ points, and a slower meshing that does smoothing and hole filling as well.
 
 \image html http://www.pointclouds.org/assets/images/contents/documentation/surface_meshing.png
 
+Creating a convex or concave hull is useful for example when there is a need
+for a simplified surface representation or when boundaries need to be
+extracted.
+
+\image html http://www.pointclouds.org/assets/images/contents/documentation/surface_hull.png
+
 Please visit the tutorials on http://www.pointclouds.org for more information.
 	
 	\section secSurfaceHistory History
