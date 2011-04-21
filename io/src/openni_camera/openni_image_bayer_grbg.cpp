@@ -34,7 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <openni_camera/openni_image_bayer_grbg.h>
+#include <pcl/io/openni_camera/openni_image_bayer_grbg.h>
 #include <sstream>
 #include <iostream>
 

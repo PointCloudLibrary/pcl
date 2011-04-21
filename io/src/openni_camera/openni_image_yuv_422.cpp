@@ -34,7 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <openni_camera/openni_image_yuv_422.h>
+#include <pcl/io/openni_camera/openni_image_yuv_422.h>
 #include <sstream>
 #include <iostream>
 

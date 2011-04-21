@@ -34,9 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <openni_camera/openni_driver.h>
-#include <openni_camera/openni_device_kinect.h>
-#include <openni_camera/openni_device_primesense.h>
+#include <pcl/io/openni_camera/openni_driver.h>
+#include <pcl/io/openni_camera/openni_device_kinect.h>
+#include <pcl/io/openni_camera/openni_device_primesense.h>
 #include <sstream>
 #include <iostream>
 #include <algorithm>

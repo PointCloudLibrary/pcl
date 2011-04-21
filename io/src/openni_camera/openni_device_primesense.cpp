@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <openni_camera/openni_device_primesense.h>
-#include <openni_camera/openni_image_yuv_422.h>
+#include <pcl/io/openni_camera/openni_device_primesense.h>
+#include <pcl/io/openni_camera/openni_image_yuv_422.h>
 #include <iostream>
 #include <sstream>
 #include <boost/thread/mutex.hpp>

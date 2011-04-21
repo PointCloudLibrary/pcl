@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <openni_camera/openni_device_kinect.h>
-#include <openni_camera/openni_image_bayer_grbg.h>
+#include <pcl/io/openni_camera/openni_device_kinect.h>
+#include <pcl/io/openni_camera/openni_image_bayer_grbg.h>
 #include <iostream>
 #include <sstream>
 #include <boost/thread/mutex.hpp>
