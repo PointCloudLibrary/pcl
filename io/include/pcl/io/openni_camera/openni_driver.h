@@ -40,8 +40,8 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "openni_exception.h"
-#include "openni_device.h"
+#include <openni_camera/openni_exception.h>
+#include <openni_camera/openni_device.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <XnCppWrapper.h>

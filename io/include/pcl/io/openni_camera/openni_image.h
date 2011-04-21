@@ -38,7 +38,7 @@
 #define __OPENNI_IMAGE__
 
 #include <XnCppWrapper.h>
-#include "openni_exception.h"
+#include <openni_camera/openni_exception.h>
 #include <boost/shared_ptr.hpp>
 
 namespace openni_wrapper
@@ -85,7 +85,7 @@ public:
   inline unsigned getHeight () const throw ();
   inline unsigned getFrameID () const throw ();
   inline unsigned long getTimeStamp () const throw ();
-	inline const xn::ImageMetaData& getMetaData () const throw ();
+  inline const xn::ImageMetaData& getMetaData () const throw ();
 	
 protected:
   boost::shared_ptr<xn::ImageMetaData> image_md_;

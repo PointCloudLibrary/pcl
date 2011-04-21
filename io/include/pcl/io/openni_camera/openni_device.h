@@ -40,7 +40,7 @@
 #include <map>
 #include <vector>
 #include <utility>
-#include "openni_exception.h"
+#include <openni_camera/openni_exception.h>
 #include <XnCppWrapper.h>
 #include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
