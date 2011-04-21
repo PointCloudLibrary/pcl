@@ -52,10 +52,84 @@
 
 namespace pcl
 {
+
+  /** \brief Returns if a point X is visible from point R (or the origin)
+    * when taking into account the segment between the points S1 and S2
+    * \param X 2D coordinate of the point
+    * \param S1 2D coordinate of the segment's first point
+    * \param S2 2D coordinate of the segment's secont point
+    * \param R 2D coorddinate of the reference point (defaults to 0,0)
+    * \ingroup surface
+    */
+  inline bool 
+  isVisible (const Eigen::Vector2f &X, const Eigen::Vector2f &S1, const Eigen::Vector2f &S2, 
+             const Eigen::Vector2f &R = Eigen::Vector2f::Zero ())
+  {
+    double a0 = S1[1] - S2[1];
+    double b0 = S2[0] - S1[0];
+    double c0 = S1[0]*S2[1] - S2[0]*S1[1];
+    double a1 = -X[1];
+    double b1 = X[0];
+    double c1 = 0;
+    if (R != Eigen::Vector2f::Zero())
+    {
+      a1 += R[1];
+      b1 -= R[0];
+      c1 = R[0]*X[1] - X[0]*R[1];
+    }
+    double div = a0*b1 - b0*a1;
+    double x = (b0*c1 - b1*c0) / div;
+    double y = (a1*c0 - a0*c1) / div;
+
+    bool intersection_outside_XR;
+    if (R == Eigen::Vector2f::Zero())
+    {
+      if (X[0] > 0)
+        intersection_outside_XR = (x <= 0) || (x >= X[0]);
+      else if (X[0] < 0)
+        intersection_outside_XR = (x >= 0) || (x <= X[0]);
+      else if (X[1] > 0)
+        intersection_outside_XR = (y <= 0) || (y >= X[1]);
+      else if (X[1] < 0)
+        intersection_outside_XR = (y >= 0) || (y <= X[1]);
+      else
+        intersection_outside_XR = true;
+    }
+    else
+    {
+      if (X[0] > R[0])
+        intersection_outside_XR = (x <= R[0]) || (x >= X[0]);
+      else if (X[0] < R[0])
+        intersection_outside_XR = (x >= R[0]) || (x <= X[0]);
+      else if (X[1] > R[1])
+        intersection_outside_XR = (y <= R[1]) || (y >= X[1]);
+      else if (X[1] < R[1])
+        intersection_outside_XR = (y >= R[1]) || (y <= X[1]);
+      else
+        intersection_outside_XR = true;
+    }
+    if (intersection_outside_XR)
+      return true;
+    else
+    {
+      if (S1[0] > S2[0])
+        return (x <= S2[0]) || (x >= S1[0]);
+      else if (S1[0] < S2[0])
+        return (x >= S2[0]) || (x <= S1[0]);
+      else if (S1[1] > S2[1])
+        return (y <= S2[1]) || (y >= S1[1]);
+      else if (S1[1] < S2[1])                                                                                                                     
+        return (y >= S2[1]) || (y <= S1[1]);
+      else
+        return false;
+    }
+  }  
+
   /** \brief GreedyProjectionTriangulation is an implementation of a greedy triangulation algorithm for 3D points
     * based on local 2D projections. It assumes locally smooth surfaces and relatively smooth transitions between
     * areas with different point densities.
     * \author Zoltan Csaba Marton
+    * \ingroup surface
     */
   template <typename PointInT>
   class GreedyProjectionTriangulation : public SurfaceReconstruction<PointInT>
@@ -373,77 +447,6 @@ namespace pcl
         else
           return a1.visible;
       }
-
-      /** \brief Returns if a point X is visible from point R when taking into account the 
-        * segment S1,S2 (use the print parameter to enable output of debug messages)
-        * \param X 2D coordinate of the point
-        * \param S1 2D coordinate of the segment's first point
-        * \param S2 2D coordinate of the segment's secont point
-        * \param R 2D coorddinate of the reference point (defaults to 0,0)
-        */
-      inline bool 
-      isVisible (const Eigen::Vector2f &X, const Eigen::Vector2f &S1, const Eigen::Vector2f &S2, 
-                 const Eigen::Vector2f &R = Eigen::Vector2f::Zero ())
-      {
-        double a0 = S1[1] - S2[1];
-        double b0 = S2[0] - S1[0];
-        double c0 = S1[0]*S2[1] - S2[0]*S1[1];
-        double a1 = -X[1];
-        double b1 = X[0];
-        double c1 = 0;
-        if (R != Eigen::Vector2f::Zero())
-        {
-          a1 += R[1];
-          b1 -= R[0];
-          c1 = R[0]*X[1] - X[0]*R[1];
-        }
-        double div = a0*b1 - b0*a1;
-        double x = (b0*c1 - b1*c0) / div;
-        double y = (a1*c0 - a0*c1) / div;
-
-        bool intersection_outside_XR;
-        if (R == Eigen::Vector2f::Zero())
-        {
-          if (X[0] > 0)
-            intersection_outside_XR = (x <= 0) || (x >= X[0]);
-          else if (X[0] < 0)
-            intersection_outside_XR = (x >= 0) || (x <= X[0]);
-          else if (X[1] > 0)
-            intersection_outside_XR = (y <= 0) || (y >= X[1]);
-          else if (X[1] < 0)
-            intersection_outside_XR = (y >= 0) || (y <= X[1]);
-          else
-            intersection_outside_XR = true;
-        }
-        else
-        {
-          if (X[0] > R[0])
-            intersection_outside_XR = (x <= R[0]) || (x >= X[0]);
-          else if (X[0] < R[0])
-            intersection_outside_XR = (x >= R[0]) || (x <= X[0]);
-          else if (X[1] > R[1])
-            intersection_outside_XR = (y <= R[1]) || (y >= X[1]);
-          else if (X[1] < R[1])
-            intersection_outside_XR = (y >= R[1]) || (y <= X[1]);
-          else
-            intersection_outside_XR = true;
-        }
-        if (intersection_outside_XR)
-          return true;
-        else
-        {
-          if (S1[0] > S2[0])
-            return (x <= S2[0]) || (x >= S1[0]);
-          else if (S1[0] < S2[0])
-            return (x >= S2[0]) || (x <= S1[0]);
-          else if (S1[1] > S2[1])
-            return (y <= S2[1]) || (y >= S1[1]);
-          else if (S1[1] < S2[1])                                                                                                                     
-            return (y >= S2[1]) || (y <= S1[1]);
-          else
-            return false;
-        }
-      }  
   };
 
 } // namespace pcl
