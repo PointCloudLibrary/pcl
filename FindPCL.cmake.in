@@ -71,6 +71,10 @@ set(pcl_segmentation_header sac_segmentation.h)
 set(pcl_surface_header convex_hull.h)
 set(pcl_octree_header octree.h)
 set(pcl_visualization_header pcl_visualizer.h)
+set(pcl_range_image_border_extractor_header range_image_border_extractor.h)
+
+#if the component doesn't lie in a directory with the same name
+set(range_image_border_extractor_parent features)
 
 #check if user provided a list of components
 if(PCL_FIND_COMPONENTS)
@@ -128,7 +132,7 @@ foreach(component ${PCL_FIND_COMPONENTS})
     HINTS @CMAKE_INSTALL_PREFIX@
 		      ${${PC_PCL_COMPONENT}_INCLUDEDIR} ${${PC_PCL_COMPONENT}_INCLUDE_DIRS} 
           ${PCL_ROOT} ENV PCL_ROOT
-    PATH_SUFFIXES pcl/${component} ${PCL_SUFFIX}/pcl/${component}
+    PATH_SUFFIXES pcl/${component} ${PCL_SUFFIX}/pcl/${component} pcl/${${component}_parent} ${PCL_SUFFIX}/pcl/${${component}_parent}
     DOC "path to ${pcl_component} headers")
   get_filename_component(component_header_path 
     ${${PCL_COMPONENT_INCLUDE_DIR}}/${${pcl_component}_header}
@@ -136,8 +140,13 @@ foreach(component ${PCL_FIND_COMPONENTS})
   file(TO_CMAKE_PATH ${component_header_path} component_header_path)
 	# on windows we can not install
 	if(NOT WIN32)
-		string(REGEX REPLACE "(.*)/pcl/${component}" "\\1" 
-			component_header_path "${component_header_path}")
+		if(${component}_parent)
+			string(REGEX REPLACE "(.*)/pcl/${${component}_parent}" "\\1" 
+				component_header_path "${component_header_path}")
+		else(${component}_parent)
+			string(REGEX REPLACE "(.*)/pcl/${component}" "\\1" 
+				component_header_path "${component_header_path}")
+		endif(${component}_parent)
 		if(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
 			message(FATAL_ERROR "${component_header_path} is not a valid include directory")
 		endif(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
