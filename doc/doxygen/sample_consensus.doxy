@@ -2,7 +2,13 @@
   \addtogroup sample_consensus Module sample_consensus
 
   \section secSampleConsensusPresentation Overview
-	sample_consensus data structures.
+
+  The <b>pcl_sample_consensus</b> library holds SAmple Consensus (SAC)
+  methods like RANSAC and models like planes and cylinders.  These can
+  combined freely in order to detect specific models and their paramters in
+  point clouds.
+
+  \image html http://www.pointclouds.org/assets/images/contents/documentation/sample_consensus_planes_cylinders.png
 	
 	\section secSampleConsensusHistory History
 	- 1.0 current version
