@@ -39,7 +39,7 @@
 
 #include <XnCppWrapper.h>
 
-#include <openni_camera/openni_exception.h>
+#include "openni_exception.h"
 #include <boost/shared_ptr.hpp>
 
 namespace openni_wrapper

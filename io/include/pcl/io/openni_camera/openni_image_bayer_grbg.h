@@ -36,7 +36,7 @@
  */
 #ifndef __OPENNI_IMAGE_BAYER_GRBG__
 #define __OPENNI_IMAGE_BAYER_GRBG__
-#include <openni_camera/openni_image.h>
+#include "openni_image.h"
 
 namespace openni_wrapper
 {

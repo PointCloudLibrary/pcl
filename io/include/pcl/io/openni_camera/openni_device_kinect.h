@@ -38,9 +38,9 @@
 #ifndef __OPENNI_DEVICE_KINECT__
 #define __OPENNI_DEVICE_KINECT__
 
-#include <openni_camera/openni_device.h>
-#include <openni_camera/openni_driver.h>
-#include <openni_camera/openni_image_bayer_grbg.h>
+#include "openni_device.h"
+#include "openni_driver.h"
+#include "openni_image_bayer_grbg.h"
 
 namespace openni_wrapper
 {

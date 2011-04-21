@@ -38,9 +38,9 @@
 #ifndef __OPENNI_DEVICE_PRIMESENSE__
 #define __OPENNI_DEVICE_PRIMESENSE__
 
-#include <openni_camera/openni_device.h>
-#include <openni_camera/openni_driver.h>
-#include <openni_camera/openni_image_yuv_422.h>
+#include "openni_device.h"
+#include "openni_driver.h"
+#include "openni_image_yuv_422.h"
 
 namespace openni_wrapper
 {
