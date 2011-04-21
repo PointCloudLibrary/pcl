@@ -164,6 +164,11 @@ TEST (PCL, ConvexHull_bunny)
   pcl::ConvexHull<pcl::PointXYZ> chull;
   chull.setInputCloud (cloud);
   chull.reconstruct (hull, polygons);
+  
+  //PolygonMesh convex;
+  //toROSMsg (hull, convex.cloud);
+  //convex.polygons = polygons;
+  //saveVTKFile ("./test/bun0-convex.vtk", convex);
 
   EXPECT_EQ (polygons.size (), 206);
 
@@ -244,6 +249,52 @@ TEST (PCL, ConvexHull_LTable)
 
   EXPECT_EQ (polygons.size (), 1);
   EXPECT_EQ (hull.points.size (), 5);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, ConcaveHull_bunny)
+{
+  //construct dataset
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2D (new pcl::PointCloud<pcl::PointXYZ> (*cloud));
+  for (size_t i = 0; i < cloud2D->points.size (); i++) 
+    cloud2D->points[i].z = 0;
+  
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape, voronoi_centers;
+  std::vector<pcl::Vertices> polygons_alpha;
+
+  pcl::ConcaveHull<pcl::PointXYZ> concave_hull;
+  concave_hull.setInputCloud (cloud2D);
+  concave_hull.setAlpha (0.5);
+  concave_hull.setVoronoiCenters (voronoi_centers);
+  concave_hull.reconstruct (alpha_shape, polygons_alpha);
+
+  EXPECT_EQ (alpha_shape.points.size (), 21);
+
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape1, voronoi_centers1;
+  std::vector<pcl::Vertices> polygons_alpha1;
+
+  pcl::ConcaveHull<pcl::PointXYZ> concave_hull1;
+  concave_hull1.setInputCloud (cloud2D);
+  concave_hull1.setAlpha (1.5);
+  concave_hull1.setVoronoiCenters (voronoi_centers1);
+  concave_hull1.reconstruct (alpha_shape1, polygons_alpha1);
+
+  EXPECT_EQ (alpha_shape1.points.size (), 20);
+
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape2, voronoi_centers2;
+  std::vector<pcl::Vertices> polygons_alpha2;
+  pcl::ConcaveHull<pcl::PointXYZ> concave_hull2;
+  concave_hull2.setInputCloud (cloud2D);
+  concave_hull2.setAlpha (0.01);
+  concave_hull2.setVoronoiCenters (voronoi_centers2);
+  concave_hull2.reconstruct (alpha_shape2, polygons_alpha2);
+
+  EXPECT_EQ (alpha_shape2.points.size (), 81);
+  
+  //PolygonMesh concave;
+  //toROSMsg (alpha_shape2, concave.cloud);
+  //concave.polygons = polygons_alpha2;
+  //saveVTKFile ("./test/bun0-concave2d.vtk", concave);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
