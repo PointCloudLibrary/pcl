@@ -62,6 +62,7 @@ namespace pcl
 
   /** \brief Grid projection surface reconstruction method.
     * \author Rosie Li
+    * \ingroup surface
     */
   template <typename PointNT>
   class GridProjection : public SurfaceReconstruction<PointNT>

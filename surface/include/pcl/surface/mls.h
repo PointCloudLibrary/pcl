@@ -52,6 +52,7 @@ namespace pcl
   /** \brief MovingLeastSquares represent an implementation of the MLS (Moving Least Squares) algorithm for data
     * smoothing and improved normal estimation.
     * \author Zoltan Csaba Marton and Radu Bogdan Rusu
+    * \ingroup surface
     */
   template <typename PointInT, typename NormalOutT>
   class MovingLeastSquares : public PCLBase<PointInT>

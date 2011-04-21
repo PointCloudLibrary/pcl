@@ -49,6 +49,7 @@ namespace pcl
 {
   /** \brief @b SurfaceReconstruction represents the base surface reconstruction class. 
     * \author Radu Bogdan Rusu
+    * \ingroup surface
     */
   template <typename PointInT>
   class SurfaceReconstruction: public PCLBase<PointInT>

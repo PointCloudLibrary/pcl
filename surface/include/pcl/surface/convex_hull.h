@@ -52,6 +52,7 @@ namespace pcl
   /** \brief Sort 2D points in a vector structure
     * \param p1 the first point
     * \param p2 the second point
+    * \ingroup surface
     */
   inline bool
   comparePoints2D (const std::pair<int, Eigen::Vector4f> & p1, 
@@ -65,6 +66,7 @@ namespace pcl
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b ConvexHull using libqhull library.
     * \author Aitor Aldoma
+    * \ingroup surface
     */
   template<typename PointInT>
   class ConvexHull : public PCLBase<PointInT>
