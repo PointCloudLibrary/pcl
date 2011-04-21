@@ -76,8 +76,8 @@ namespace pcl
       void
       reconstruct (PointCloud &output);
 
-      /** \brief describe method here.
-        * \param alpha describe alpha here.
+      /** \brief Set the alpha value, which limits the size of the rezultant hull segments (the smaller the more detailed the hull).
+        * \param alpha positive, non-zero value, defining the maximum length from a vertex to the facet center (center of the voronoi cell).
         */
       inline void 
       setAlpha (double alpha)
@@ -107,7 +107,7 @@ namespace pcl
       getClassName () const { return ("ConcaveHull"); }
 
     private:
-      /** \brief describe alpha here... */
+      /** \brief The method accepts facets only if the distance from any vertex to the facet->center (center of the voronoi cell) is smaller than alpha */
       double alpha_;
       
       /** \brief describe voronoi_centers here.. */
