@@ -34,7 +34,7 @@ will be estimated from the eigenvalues as:
 
 <center>\f$\frac{\lambda_0}{\lambda_0 + \lambda_1 + \lambda_2}\f$, where \f$\lambda_0 < \lambda_1 < \lambda_2\f$.</center>
 
-\image html http://www.pointclouds.org/assets/images/contents/documentation/features_spatial_decomposition.png
+\image html http://www.pointclouds.org/assets/images/contents/documentation/features_bunny.png
 
 Please visit http://www.pointclouds.org for more information.
 

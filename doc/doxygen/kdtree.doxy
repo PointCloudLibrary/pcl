@@ -7,7 +7,7 @@
   <a href="http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN">FLANN</a>,
   that allows for fast nearest neighbor searches.
 
-  \image html http://www.pointclouds.org/assets/images/mug-kdtree.png
+  \image html http://www.pointclouds.org/assets/images/contents/documentation/kdtree_mug.png
 	
 	\section secKDtreeHistory History
 	- 1.0 current version

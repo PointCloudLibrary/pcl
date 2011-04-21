@@ -19,8 +19,7 @@ Meshing is a general way to create a surface out of points, and currently
 there are two algorithms provided: a very fast triangulation of the original
 points, and a slower meshing that does smoothing and hole filling as well.
 
-\image html http://www.pointclouds.org/assets/images/gp3.png
-\image html http://www.pointclouds.org/assets/images/grid-projection.png
+\image html http://www.pointclouds.org/assets/images/contents/documentation/surface_meshing.png
 
 Please visit the tutorials on http://www.pointclouds.org for more information.
 	
