@@ -36,12 +36,14 @@ if(build)
         include/pcl/${SUBSYS_NAME}/grid_projection.h
         include/pcl/${SUBSYS_NAME}/mls.h
         include/pcl/${SUBSYS_NAME}/reconstruction.h
+        ${HULL_INCLUDES}
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/gp3.hpp
         include/pcl/${SUBSYS_NAME}/impl/grid_projection.hpp
         include/pcl/${SUBSYS_NAME}/impl/mls.hpp
         include/pcl/${SUBSYS_NAME}/impl/reconstruction.hpp
+        ${HULL_IMPLS}
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
@@ -56,8 +58,8 @@ if(build)
         "${EXT_DEPS}" "" "" "")
 
     # Install include files
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs} ${HULL_INCLUDES})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${impl_incs} ${HULL_IMPLS})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
     add_subdirectory(test)
 endif(build)
