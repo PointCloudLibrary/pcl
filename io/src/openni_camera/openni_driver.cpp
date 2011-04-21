@@ -34,9 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <pcl/io/openni_camera/openni_driver.h>
-#include <pcl/io/openni_camera/openni_device_kinect.h>
-#include <pcl/io/openni_camera/openni_device_primesense.h>
+#include <openni_camera/openni_driver.h>
+#include <openni_camera/openni_device_kinect.h>
+#include <openni_camera/openni_device_primesense.h>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
@@ -46,10 +46,17 @@
 #include <libusb-1.0/libusb.h>
 #endif
 #include <map>
-#include <boost/tokenizer.hpp>
+
+#ifndef _WIN32
+#include <libusb-1.0/libusb.h>
+#endif
+
+using namespace std;
+using namespace boost;
 
 namespace openni_wrapper
 {
+
 OpenNIDriver::OpenNIDriver () throw (OpenNIException)
 {
   // Initialize the Engine
@@ -60,8 +67,7 @@ OpenNIDriver::OpenNIDriver () throw (OpenNIException)
   updateDeviceList ();
 }
 
-unsigned 
-OpenNIDriver::updateDeviceList () throw ()
+unsigned OpenNIDriver::updateDeviceList () throw ()
 {
   // clear current list of devices
   device_context_.clear ();
@@ -132,7 +138,7 @@ OpenNIDriver::updateDeviceList () throw ()
   // get additional info about connected devices like serial number, vendor name and prduct name
   getDeviceInfos ();
 #endif
-  
+
   // build serial number -> device index map
   for (unsigned deviceIdx = 0; deviceIdx < device_info.size (); ++deviceIdx)
   {
@@ -144,8 +150,7 @@ OpenNIDriver::updateDeviceList () throw ()
   return (device_info.size ());
 }
 
-void 
-OpenNIDriver::stopAll () throw (OpenNIException)
+void OpenNIDriver::stopAll () throw (OpenNIException)
 {
   XnStatus status = context_.StopGeneratingAll ();
   if (status != XN_STATUS_OK)
@@ -166,8 +171,7 @@ OpenNIDriver::~OpenNIDriver () throw ()
   context_.Shutdown ();
 }
 
-boost::shared_ptr<OpenNIDevice> 
-OpenNIDriver::getDeviceByIndex (unsigned index) const throw (OpenNIException)
+  boost::shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) const throw (OpenNIException)
 {
   using namespace std;
 

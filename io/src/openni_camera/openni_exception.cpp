@@ -34,7 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <pcl/io/openni_camera/openni_exception.h>
+#include "openni_camera/openni_exception.h"
 #include <sstream>
 
 namespace openni_wrapper

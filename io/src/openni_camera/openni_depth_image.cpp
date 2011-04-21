@@ -34,7 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <pcl/io/openni_camera/openni_depth_image.h>
+#include <openni_camera/openni_depth_image.h>
 #include <sstream>
 #include <limits>
 #include <iostream>
