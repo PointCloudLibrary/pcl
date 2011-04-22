@@ -213,10 +213,7 @@ namespace pcl
         binaryTreeOut_arg.clear ();
         binaryTreeOut_arg.resize (this->branchCount_);
 
-        //iterator for binary tree structure vector
-        vector<char>::iterator binaryTreeVectorIterator = binaryTreeOut_arg.begin ();
-
-        serializeTreeRecursive (binaryTreeVectorIterator, rootNode_);
+        serializeTreeRecursive (binaryTreeOut_arg, rootNode_);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -234,10 +231,7 @@ namespace pcl
         dataVector_arg.reserve (this->leafCount_);
         binaryTreeOut_arg.resize (this->branchCount_);
 
-        //iterator for binary tree structure vector
-        vector<char>::iterator binaryTreeVectorIterator = binaryTreeOut_arg.begin ();
-
-        OctreeBase<DataT, LeafT>::serializeTreeRecursive (binaryTreeVectorIterator, rootNode_, newKey, dataVector_arg);
+        OctreeBase<DataT, LeafT>::serializeTreeRecursive (binaryTreeOut_arg, rootNode_, newKey, dataVector_arg);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -500,7 +494,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg,
+      OctreeBase<DataT, LeafT>::serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg,
                                                         const OctreeBranch* branch_arg)
       {
 
@@ -512,8 +506,7 @@ namespace pcl
         nodeBitPattern = getBranchBitPattern (*branch_arg);
 
         // write bit pattern to output vector
-        (*binaryTreeOut_arg) = nodeBitPattern;
-        binaryTreeOut_arg++;
+        binaryTreeOut_arg.push_back (nodeBitPattern);
 
         // iterate over all children
         for (childIdx = 0; childIdx < 8; childIdx++)
@@ -548,7 +541,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      OctreeBase<DataT, LeafT>::serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg,
+      OctreeBase<DataT, LeafT>::serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg,
                                                         const OctreeBranch* branch_arg, OctreeKey& key_arg,
                                                         typename std::vector<DataT>& dataVector_arg)
       {
@@ -561,8 +554,7 @@ namespace pcl
         nodeBitPattern = getBranchBitPattern (*branch_arg);
 
         // write bit pattern to output vector
-        (*binaryTreeOut_arg) = nodeBitPattern;
-        binaryTreeOut_arg++;
+        binaryTreeOut_arg.push_back (nodeBitPattern);
 
         // iterate over all children
         for (childIdx = 0; childIdx < 8; childIdx++)

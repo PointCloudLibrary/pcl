@@ -781,25 +781,23 @@ namespace pcl
         deleteLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg, OctreeBranch* branch_arg);
 
         /** \brief Recursively explore the octree and output binary octree description
-         *  \param binaryTreeOut_arg: iterator to output vector
+         *  \param binaryTreeOut_arg: binary output vector
          *  \param branch_arg: current branch node
          *  \param doXOREncoding_arg: select if binary tree structure should be generated based on current octree (false) of based on a XOR comparison between current and previous octree
          **/
         void
-        serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg, OctreeBranch* branch_arg,
-                                bool doXOREncoding_arg);
+        serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg, OctreeBranch* branch_arg, bool doXOREncoding_arg);
 
         /** \brief Recursively explore the octree and output binary octree description together with a vector of leaf node DataT content.
-         *  \param binaryTreeOut_arg: iterator to output vector
+         *  \param binaryTreeOut_arg: binary output vector
          *  \param branch_arg: current branch node
          *  \param key_arg: reference to an octree key
          *  \param dataVector_arg: writes DataT content to this DataT vector.
          *  \param doXOREncoding_arg: select if binary tree structure should be generated based on current octree (false) of based on a XOR comparison between current and previous octree
          **/
         void
-        serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg, OctreeBranch* branch_arg,
-                                OctreeKey& key_arg, typename std::vector<DataT>& dataVector_arg,
-                                bool doXOREncoding_arg);
+        serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg, OctreeBranch* branch_arg, OctreeKey& key_arg,
+                                typename std::vector<DataT>& dataVector_arg, bool doXOREncoding_arg);
 
         /** \brief Recursively explore the octree and output DataT objects to DataT vector.
          *  \param branch_arg: current branch node

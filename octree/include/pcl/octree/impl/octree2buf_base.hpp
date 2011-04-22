@@ -227,10 +227,7 @@ namespace pcl
         binaryTreeOut_arg.clear ();
         binaryTreeOut_arg.resize (this->branchCount_);
 
-        // iterator for binary tree structure vector
-        vector<char>::iterator binaryTreeVectorIterator = binaryTreeOut_arg.begin ();
-
-        serializeTreeRecursive (binaryTreeVectorIterator, rootNode_, doXOREncoding_arg);
+        serializeTreeRecursive (binaryTreeOut_arg, rootNode_, doXOREncoding_arg);
 
         // serializeTreeRecursive cleans-up unused octree nodes in previous octree
         treeDirtyFlag_ = false;
@@ -253,11 +250,8 @@ namespace pcl
         dataVector_arg.reserve (leafCount_);
         binaryTreeOut_arg.resize (this->branchCount_);
 
-        // iterator for binary tree structure vector
-        vector<char>::iterator binaryTreeVectorIterator = binaryTreeOut_arg.begin ();
 
-
-        Octree2BufBase<DataT, LeafT>::serializeTreeRecursive (binaryTreeVectorIterator, rootNode_, newKey,
+        Octree2BufBase<DataT, LeafT>::serializeTreeRecursive (binaryTreeOut_arg, rootNode_, newKey,
                                                               dataVector_arg, doXOREncoding_arg);
 
         // serializeTreeRecursive cleans-up unused octree nodes in previous octree
@@ -605,7 +599,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      Octree2BufBase<DataT, LeafT>::serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg,
+      Octree2BufBase<DataT, LeafT>::serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg,
                                                             OctreeBranch* branch_arg, bool doXOREncoding_arg)
       {
 
@@ -631,14 +625,13 @@ namespace pcl
         if (doXOREncoding_arg)
         {
           // write XOR bit pattern to output vector
-          (*binaryTreeOut_arg) = nodeXORBitPattern;
+          binaryTreeOut_arg.push_back (nodeXORBitPattern);
         }
         else
         {
           // write bit pattern of current buffer to output vector
-          (*binaryTreeOut_arg) = nodeBitPatternCurrentBuffer;
+          binaryTreeOut_arg.push_back (nodeBitPatternCurrentBuffer);
         }
-        binaryTreeOut_arg++;
 
         // iterate over all children
         for (childIdx = 0; childIdx < 8; childIdx++)
@@ -678,9 +671,10 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
       void
-      Octree2BufBase<DataT, LeafT>::serializeTreeRecursive (typename std::vector<char>::iterator& binaryTreeOut_arg,
+      Octree2BufBase<DataT, LeafT>::serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg,
                                                             OctreeBranch* branch_arg, OctreeKey& key_arg,
-                                                            typename std::vector<DataT>& dataVector_arg, bool doXOREncoding_arg)
+                                                            typename std::vector<DataT>& dataVector_arg,
+                                                            bool doXOREncoding_arg)
       {
 
         // child iterator
@@ -705,14 +699,13 @@ namespace pcl
         if (doXOREncoding_arg)
         {
           // write XOR bit pattern to output vector
-          (*binaryTreeOut_arg) = nodeXORBitPattern;
+          binaryTreeOut_arg.push_back (nodeXORBitPattern);
         }
         else
         {
           // write bit pattern of current buffer to output vector
-          (*binaryTreeOut_arg) = nodeBitPatternCurrentBuffer;
+          binaryTreeOut_arg.push_back (nodeBitPatternCurrentBuffer);
         }
-        binaryTreeOut_arg++;
 
         // iterate over all children
         for (childIdx = 0; childIdx < 8; childIdx++)

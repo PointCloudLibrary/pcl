@@ -620,6 +620,7 @@ namespace pcl
               OctreeBranch* newRootBranch;
 
               this->createBranch (newRootBranch);
+              this->branchCount_++;
 
               this->setBranchChild (*newRootBranch, childIdx, this->rootNode_);
 
