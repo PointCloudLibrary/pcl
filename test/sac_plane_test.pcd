@@ -1,7 +1,9 @@
 # .PCD v.5 - Point Cloud Data file format
+VERSION .5
 FIELDS x y z w
 SIZE 4 4 4 4
 TYPE F F F F
+COUNT 1 1 1 1
 WIDTH 3283
 HEIGHT 1
 POINTS 3283
