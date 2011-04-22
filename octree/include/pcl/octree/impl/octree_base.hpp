@@ -213,11 +213,14 @@ namespace pcl
       void
       OctreeBase<DataT, LeafT>::serializeTree (std::vector<char>& binaryTreeOut_arg)
       {
+        OctreeKey newKey;
+        newKey.x = newKey.y = newKey.z = 0;
+
         // clear binary vector
         binaryTreeOut_arg.clear ();
         binaryTreeOut_arg.reserve (this->branchCount_);
 
-        serializeTreeRecursive (binaryTreeOut_arg, rootNode_);
+        serializeTreeRecursive (binaryTreeOut_arg, rootNode_, newKey);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -505,7 +508,7 @@ namespace pcl
     template<typename DataT, typename LeafT>
       void
       OctreeBase<DataT, LeafT>::serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg,
-                                                        const OctreeBranch* branch_arg)
+                                                        const OctreeBranch* branch_arg, const OctreeKey& key_arg)
       {
 
         // child iterator
@@ -526,6 +529,12 @@ namespace pcl
           if (branchHasChild (*branch_arg, childIdx))
           {
 
+            // generate new key for current branch voxel
+            OctreeKey newKey;
+            newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
+            newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
+            newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+
             const OctreeNode * childNode;
             childNode = getBranchChild (*branch_arg, childIdx);
 
@@ -534,11 +543,14 @@ namespace pcl
               case BRANCH_NODE:
 
                 // recursively proceed with indexed child branch
-                serializeTreeRecursive (binaryTreeOut_arg, (OctreeBranch*)childNode);
+                serializeTreeRecursive (binaryTreeOut_arg, (OctreeBranch*)childNode, newKey);
                 break;
 
               case LEAF_NODE:
-                // nothing to do
+                OctreeLeaf* childLeaf = (OctreeLeaf*)childNode;
+
+                // we reached a leaf node -> execute serialization callback
+                serializeLeafCallback (*childLeaf, newKey);
                 break;
             }
 
@@ -552,7 +564,7 @@ namespace pcl
     template<typename DataT, typename LeafT>
       void
       OctreeBase<DataT, LeafT>::serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg,
-                                                        const OctreeBranch* branch_arg, OctreeKey& key_arg,
+                                                        const OctreeBranch* branch_arg, const OctreeKey& key_arg,
                                                         typename std::vector<DataT>& dataVector_arg)
       {
 
@@ -837,6 +849,15 @@ namespace pcl
         }
 
       }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename DataT, typename LeafT>
+      void
+      OctreeBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg)
+      {
+        // nothing to do
+      }
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>

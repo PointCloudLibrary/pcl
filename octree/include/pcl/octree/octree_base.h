@@ -601,9 +601,10 @@ namespace pcl
         /** \brief Recursively explore the octree and output binary octree description
          *  \param binaryTreeOut_arg: binary output vector
          *  \param branch_arg: current branch node
+         *  \param key_arg: reference to an octree key
          **/
         void
-        serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg, const OctreeBranch* branch_arg);
+        serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg, const OctreeBranch* branch_arg, const OctreeKey& key_arg);
 
         /** \brief Recursively explore the octree and output binary octree description together with a vector of leaf node DataT content.
          *  \param binaryTreeOut_arg: binary output vector
@@ -613,7 +614,7 @@ namespace pcl
          **/
         void
         serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg, const OctreeBranch* branch_arg,
-                                OctreeKey& key_arg, typename std::vector<DataT>& dataVector_arg);
+                                const OctreeKey& key_arg, typename std::vector<DataT>& dataVector_arg);
 
         /** \brief Recursively explore the octree and output DataT objects to DataT vector.
          *  \param branch_arg: current branch node
@@ -664,6 +665,13 @@ namespace pcl
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Serialization callbacks
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /** \brief Decode leaf node data during serialization
+         *  \param leaf_arg: reference to new leaf node
+         *  \param key_arg: octree key of new leaf node
+         **/
+        virtual void
+        serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg);
 
         /** \brief Decode leaf node data during serialization
          *  \param leaf_arg: reference to new leaf node
