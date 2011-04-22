@@ -225,7 +225,7 @@ namespace pcl
 
         // clear binary vector
         binaryTreeOut_arg.clear ();
-        binaryTreeOut_arg.resize (this->branchCount_);
+        binaryTreeOut_arg.reserve (this->branchCount_);
 
         serializeTreeRecursive (binaryTreeOut_arg, rootNode_, doXOREncoding_arg);
 
@@ -248,7 +248,7 @@ namespace pcl
         dataVector_arg.clear ();
 
         dataVector_arg.reserve (leafCount_);
-        binaryTreeOut_arg.resize (this->branchCount_);
+        binaryTreeOut_arg.reserve (this->branchCount_);
 
 
         Octree2BufBase<DataT, LeafT>::serializeTreeRecursive (binaryTreeOut_arg, rootNode_, newKey,

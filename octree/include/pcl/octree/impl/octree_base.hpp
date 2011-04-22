@@ -211,7 +211,7 @@ namespace pcl
       {
         // clear binary vector
         binaryTreeOut_arg.clear ();
-        binaryTreeOut_arg.resize (this->branchCount_);
+        binaryTreeOut_arg.reserve (this->branchCount_);
 
         serializeTreeRecursive (binaryTreeOut_arg, rootNode_);
       }
@@ -229,7 +229,7 @@ namespace pcl
         dataVector_arg.clear ();
 
         dataVector_arg.reserve (this->leafCount_);
-        binaryTreeOut_arg.resize (this->branchCount_);
+        binaryTreeOut_arg.reserve (this->branchCount_);
 
         OctreeBase<DataT, LeafT>::serializeTreeRecursive (binaryTreeOut_arg, rootNode_, newKey, dataVector_arg);
       }
