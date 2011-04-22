@@ -116,6 +116,9 @@ public:
   virtual void startDepthStream () throw (OpenNIException);
   virtual void stopDepthStream () throw (OpenNIException);
 
+  virtual bool hasImageStream () const throw ();
+  virtual bool hasDepthStream () const throw ();
+
   bool isImageStreamRunning () const throw (OpenNIException);
   bool isDepthStreamRunning () const throw (OpenNIException);
 
@@ -145,6 +148,7 @@ protected:
   typedef boost::function<void(boost::shared_ptr<DepthImage>) > ActualDepthImageCallbackFunction;
 
   OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node) throw (OpenNIException);
+  OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node) throw (OpenNIException);
   static void __stdcall NewDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
   static void __stdcall NewImageDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
 

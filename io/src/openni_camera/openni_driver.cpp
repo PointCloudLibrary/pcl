@@ -37,6 +37,7 @@
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_camera/openni_device_kinect.h>
 #include <pcl/io/openni_camera/openni_device_primesense.h>
+#include <pcl/io/openni_camera/openni_device_xtion.h>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
@@ -74,6 +75,7 @@ unsigned OpenNIDriver::updateDeviceList () throw ()
   // clear maps
   bus_map_.clear ();
   serial_map_.clear ();
+  connection_string_map_.clear ();
 
   // enumerate all devices
   static xn::NodeInfoList node_info_list;
@@ -82,12 +84,11 @@ unsigned OpenNIDriver::updateDeviceList () throw ()
     THROW_OPENNI_EXCEPTION ("enumerating devices failed. Reason: %s", xnGetStatusString (status));
   else if (node_info_list.Begin () == node_info_list.End ())
     return 0; // no exception
-  //THROW_OPENNI_EXCEPTION ("no compatible device found");
 
-  std::vector<xn::NodeInfo> device_info;
   for (xn::NodeInfoList::Iterator nodeIt = node_info_list.Begin (); nodeIt != node_info_list.End (); ++nodeIt)
   {
-    device_info.push_back (*nodeIt);
+    connection_string_map_[(*nodeIt).GetCreationInfo ()] = device_context_.size();
+    device_context_.push_back (DeviceContext (*nodeIt));
   }
 
   // enumerate depth nodes
@@ -96,10 +97,17 @@ unsigned OpenNIDriver::updateDeviceList () throw ()
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("enumerating depth generators failed. Reason: %s", xnGetStatusString (status));
 
-  std::vector<xn::NodeInfo> depth_info;
   for (xn::NodeInfoList::Iterator nodeIt = depth_nodes.Begin (); nodeIt != depth_nodes.End (); ++nodeIt)
   {
-    depth_info.push_back (*nodeIt);
+    // check if to which device this node is assigned to
+    for (xn::NodeInfoList::Iterator neededIt = (*nodeIt).GetNeededNodes ().Begin (); neededIt != (*nodeIt).GetNeededNodes ().End (); ++neededIt)
+    {
+      if ( connection_string_map_.count ((*neededIt).GetCreationInfo ()) )
+      {
+        unsigned device_index = connection_string_map_[(*neededIt).GetCreationInfo ()];
+        device_context_[device_index].depth_node.reset (new xn::NodeInfo(*nodeIt));
+      }
+    }
   }
 
   // enumerate image nodes
@@ -108,46 +116,67 @@ unsigned OpenNIDriver::updateDeviceList () throw ()
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("enumerating image generators failed. Reason: %s", xnGetStatusString (status));
 
-  std::vector<xn::NodeInfo> image_info;
   for (xn::NodeInfoList::Iterator nodeIt = image_nodes.Begin (); nodeIt != image_nodes.End (); ++nodeIt)
   {
-    image_info.push_back (*nodeIt);
+    // check if to which device this node is assigned to
+    for (xn::NodeInfoList::Iterator neededIt = (*nodeIt).GetNeededNodes ().Begin (); neededIt != (*nodeIt).GetNeededNodes ().End (); ++neededIt)
+    {
+      if ( connection_string_map_.count ((*neededIt).GetCreationInfo ()) )
+      {
+        unsigned device_index = connection_string_map_[(*neededIt).GetCreationInfo ()];
+        device_context_[device_index].image_node.reset (new xn::NodeInfo(*nodeIt));
+      }
+    }
   }
 
-  // check if we have same number of streams as devices!
-  if (device_info.size () != depth_info.size () || device_info.size () != image_info.size ())
-    THROW_OPENNI_EXCEPTION ("number of streams and devices does not match: %d devices, %d depth streams, %d image streams",
-                            device_info.size (), depth_info.size (), image_info.size ());
-
+#ifndef _WIN32
   // add context object for each found device
-  for (unsigned deviceIdx = 0; deviceIdx < device_info.size (); ++deviceIdx)
+  for (unsigned deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)
   {
-    // add context object for device
-    device_context_.push_back (DeviceContext (device_info[deviceIdx], image_info[deviceIdx], depth_info[deviceIdx]));
-
     // register bus@address to the corresponding context object
     unsigned short vendor_id;
     unsigned short product_id;
     unsigned char bus;
     unsigned char address;
-    sscanf (device_info[deviceIdx].GetCreationInfo (), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
+    sscanf (device_context_[deviceIdx].device_node.GetCreationInfo (), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
     bus_map_ [bus][address] = deviceIdx;
   }
 
-#ifndef _WIN32
   // get additional info about connected devices like serial number, vendor name and prduct name
   getDeviceInfos ();
-#endif
-
   // build serial number -> device index map
-  for (unsigned deviceIdx = 0; deviceIdx < device_info.size (); ++deviceIdx)
+  for (unsigned deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)
   {
     std::string serial_number = getSerialNumber (deviceIdx);
     if (!serial_number.empty ())
       serial_map_[serial_number] = deviceIdx;
   }
 
-  return (device_info.size ());
+#endif
+
+  // redundant, but needed for Windows right now and also for Xtion
+  for (unsigned deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)
+  {
+    unsigned short product_id;
+    unsigned short vendor_id;
+
+    getDeviceType(device_context_[deviceIdx].device_node.GetCreationInfo (), vendor_id, product_id );
+
+#if _WIN32
+    if (vendor_id == 0x45e)
+    {
+      strcpy ((char*)device_context_[deviceIdx].device_node.GetDescription().strVendor, "Microsoft");
+      strcpy ((char*)device_context_[deviceIdx].device_node.GetDescription().strName, "Xbox NUI Camera");
+    }
+    else
+#endif
+    if (vendor_id == 0x1d27 && device_context_[deviceIdx].image_node.get () == 0)
+    {
+      strcpy ((char*)device_context_[deviceIdx].device_node.GetDescription().strVendor, "ASUS");
+      strcpy ((char*)device_context_[deviceIdx].device_node.GetDescription().strName, "Xtion Pro");
+    }
+  }
+  return (device_context_.size ());
 }
 
 void OpenNIDriver::stopAll () throw (OpenNIException)
@@ -187,13 +216,17 @@ OpenNIDriver::~OpenNIDriver () throw ()
     if (vendor_id == 0x45e)
     {
       device = boost::shared_ptr<OpenNIDevice > (new DeviceKinect (context_, device_context_[index].device_node,
-                                                                   device_context_[index].image_node, device_context_[index].depth_node));
+                                                                   *device_context_[index].image_node, *device_context_[index].depth_node));
       device_context_[index].device = device;
     }
     else if (vendor_id == 0x1d27)
     {
-      device = boost::shared_ptr<OpenNIDevice > (new DevicePrimesense (context_, device_context_[index].device_node,
-                                                                       device_context_[index].image_node, device_context_[index].depth_node));
+      if (device_context_[index].image_node.get())
+        device = boost::shared_ptr<OpenNIDevice > (new DevicePrimesense (context_, device_context_[index].device_node,
+                                                                         *device_context_[index].image_node, *device_context_[index].depth_node));
+      else
+        device = boost::shared_ptr<OpenNIDevice > (new DeviceXtionPro (context_, device_context_[index].device_node,
+                                                                         *device_context_[index].depth_node));
       device_context_[index].device = device;
     }
     else
@@ -423,10 +456,17 @@ unsigned char OpenNIDriver::getAddress (unsigned index) const throw ()
   return address;
 }
 
-OpenNIDriver::DeviceContext::DeviceContext (const xn::NodeInfo& device, const xn::NodeInfo& image, const xn::NodeInfo& depth)
+OpenNIDriver::DeviceContext::DeviceContext (const xn::NodeInfo& device, xn::NodeInfo* image, xn::NodeInfo* depth)
 : device_node (device)
 , image_node (image)
 , depth_node (depth)
+{
+}
+
+OpenNIDriver::DeviceContext::DeviceContext (const xn::NodeInfo& device)
+: device_node (device)
+, image_node ((xn::NodeInfo*)0)
+, depth_node ((xn::NodeInfo*)0)
 {
 }
 

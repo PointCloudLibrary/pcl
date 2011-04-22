@@ -83,21 +83,21 @@ public:
 
   void stopAll () throw (OpenNIException);
 
+  static void getDeviceType (const std::string& connection_string, unsigned short& vendorId, unsigned short& productId);
 protected:
   struct DeviceContext
   {
-    DeviceContext (const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node);
+    DeviceContext (const xn::NodeInfo& device_node, xn::NodeInfo* image_node, xn::NodeInfo* depth_node);
+    DeviceContext (const xn::NodeInfo& device_node);
     DeviceContext (const DeviceContext&);
     xn::NodeInfo device_node;
-    xn::NodeInfo image_node;
-    xn::NodeInfo depth_node;
+    boost::shared_ptr<xn::NodeInfo> image_node;
+    boost::shared_ptr<xn::NodeInfo> depth_node;
     boost::weak_ptr<OpenNIDevice> device;
   };
 
   OpenNIDriver () throw (OpenNIException);
   boost::shared_ptr<OpenNIDevice> getDevice (unsigned index) const throw (OpenNIException);
-
- static void getDeviceType (const std::string& connection_string, unsigned short& vendorId, unsigned short& productId);
 
 #ifndef _WIN32
   // workaround to get additional device nformation like serial number, vendor and product name, until Primesense fix this
@@ -109,6 +109,7 @@ protected:
 
   std::map< unsigned char, std::map<unsigned char, unsigned > > bus_map_;
   std::map< std::string, unsigned > serial_map_;
+  std::map< std::string, unsigned > connection_string_map_;
 };
 
 OpenNIDriver& OpenNIDriver::getInstance () throw (OpenNIException)
