@@ -518,7 +518,7 @@ unsigned short OpenNIDevice::getVendorID () const throw ()
   sscanf (device_node_info_.GetCreationInfo (), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
 
 #else
-  OpenNIDriver::getDeviceType (device_context_[index].device_node.GetCreationInfo (), vendor_id, product_id);
+  OpenNIDriver::getDeviceType (device_node_info_.GetCreationInfo (), vendor_id, product_id);
 #endif
   return vendor_id;
 }
@@ -533,7 +533,7 @@ unsigned short OpenNIDevice::getProductID () const throw ()
   sscanf (device_node_info_.GetCreationInfo (), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
 
 #else
-  OpenNIDriver::getDeviceType (device_context_[index].device_node.GetCreationInfo (), vendor_id, product_id);
+  OpenNIDriver::getDeviceType (device_node_info_.GetCreationInfo (), vendor_id, product_id);
 #endif
   return product_id;
 }

@@ -43,13 +43,12 @@
 #include <algorithm>
 #include <locale>
 #include <cctype>
-#ifndef _WIN32
-#include <libusb-1.0/libusb.h>
-#endif
 #include <map>
 
 #ifndef _WIN32
 #include <libusb-1.0/libusb.h>
+#else
+#include <boost/tokenizer.hpp>
 #endif
 
 using namespace std;
