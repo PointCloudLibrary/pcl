@@ -318,7 +318,6 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull,
 
   // Deallocates memory (also the points)
   qh_freeqhull (!qh_ALL);
-  fclose (errfile);
 
   // Rotate the hull point cloud by transform's inverse
   // If the input point cloud has been rotated
