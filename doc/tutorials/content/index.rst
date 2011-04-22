@@ -58,6 +58,21 @@ contributions on any tutorial.
                :height: 75px
 * I/O
 
+  * :ref:`pcd_file_format`
+
+     ======  ======
+     |i_o0|  Title: **The PCD (Point Cloud Data) file file format**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.9
+
+             This document describes the PCD file format, and the way it is used inside PCL.
+     ======  ======
+     
+     .. |i_o0| image:: images/PCD_icon.png
+               :height: 100px
+
   * :ref:`reading_pcd`
 
      ======  ======
