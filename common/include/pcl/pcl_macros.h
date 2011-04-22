@@ -164,10 +164,12 @@ namespace pcl
     #endif
 #endif
 
-#if (defined WIN32 || defined _WIN32 || defined WINCE) && defined PCLAPI_EXPORTS
-    #define PCL_EXPORTS __declspec(dllexport)
-#else
-    #define PCL_EXPORTS __declspec(dllimport)
+#if (defined WIN32 || defined _WIN32 || defined WINCE) 
+    #ifdef PCLAPI_EXPORTS
+        #define PCL_EXPORTS __declspec(dllexport)
+    #else
+        #define PCL_EXPORTS __declspec(dllimport)
+    #endif
 #endif
 
 #if defined WIN32 || defined _WIN32
