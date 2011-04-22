@@ -55,20 +55,22 @@ namespace pcl
     inline void 
     print (FILE *stream, int attribute, int fg, const char* format, ...)
     {
+#ifndef _WIN32
       char command[13];
       // Command is the control command to the terminal        
       sprintf (command, "%c[%d;%dm", 0x1B, attribute, fg + 30);
       fprintf (stream, "%s", command); 
-
+#endif
       va_list ap; 
 
       va_start (ap, format);
       vfprintf (stream, format, ap);
       va_end (ap);
-
+#ifndef _WIN32
       // Command is the control command to the terminal
       sprintf (command, "%c[0;m", 0x1B);
       fprintf (stream, "%s\n", command);
+#endif
     }
   }
 }
