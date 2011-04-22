@@ -1043,7 +1043,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     // brute force search
     double pointDist;
     double BFdistance = numeric_limits<double>::max ();
-    int BFindex;
+    int BFindex = 0;
 
     for (i = 0; i < cloudIn->points.size (); i++)
     {
