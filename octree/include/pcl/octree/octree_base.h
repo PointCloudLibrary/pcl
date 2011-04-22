@@ -315,7 +315,10 @@ namespace pcl
 
           // assign data to leaf
           if (leaf)
+          {
             leaf->setData (data_arg);
+            objectCount_++;
+          }
         }
 
         /** \brief Add vector of DataT objects to vector of octree keys.
@@ -729,6 +732,9 @@ namespace pcl
 
         /** \brief Amount of branch nodes   **/
         unsigned int branchCount_;
+
+        /** \brief Amount of objects assigned to leaf nodes   **/
+        unsigned int objectCount_;
 
         /** \brief Pointer to root branch node of octree   **/
         OctreeBranch* rootNode_;

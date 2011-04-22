@@ -53,7 +53,7 @@ namespace pcl
         rootNode_ = new OctreeBranch ();
         leafCount_ = 0;
         branchCount_ = 1;
-
+        objectCount_ = 0;
         depthMask_ = 0;
         octreeDepth_ = 0;
         bufferSelector_ = 0;
@@ -118,6 +118,8 @@ namespace pcl
 
         // add data_arg to octree
         add (key, data_arg);
+
+        objectCount_++;
 
       }
 
@@ -188,6 +190,7 @@ namespace pcl
           deleteBranch (*rootNode_);
           leafCount_ = 0;
           branchCount_ = 1;
+          objectCount_ = 0;
         }
 
         // delete node pool
@@ -213,6 +216,7 @@ namespace pcl
         // reset flags
         treeDirtyFlag_ = true;
         leafCount_ = 0;
+        objectCount_ = 0;
         branchCount_ = 1;
         resetTree_ = true;
       }
@@ -247,7 +251,7 @@ namespace pcl
         binaryTreeOut_arg.clear ();
         dataVector_arg.clear ();
 
-        dataVector_arg.reserve (leafCount_);
+        dataVector_arg.reserve (objectCount_);
         binaryTreeOut_arg.reserve (this->branchCount_);
 
 
@@ -269,7 +273,7 @@ namespace pcl
         // clear output vector
         dataVector_arg.clear ();
 
-        dataVector_arg.reserve (leafCount_);
+        dataVector_arg.reserve (objectCount_);
 
         serializeLeafsRecursive (rootNode_, newKey, dataVector_arg);
 
@@ -296,6 +300,8 @@ namespace pcl
         // we modified the octree structure -> clean-up/tree-reset might be required
         resetTree_ = false;
         treeDirtyFlag_ = true;
+
+        objectCount_ = this->leafCount_;
 
       }
 
@@ -326,6 +332,8 @@ namespace pcl
         // we modified the octree structure -> clean-up/tree-reset might be required
         resetTree_ = false;
         treeDirtyFlag_ = true;
+
+        objectCount_ = dataVector_arg.size();
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -351,6 +359,8 @@ namespace pcl
         // we modified the octree structure -> clean-up/tree-reset might be required
         resetTree_ = false;
         treeDirtyFlag_ = true;
+
+        objectCount_ = dataVector_arg.size();
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////

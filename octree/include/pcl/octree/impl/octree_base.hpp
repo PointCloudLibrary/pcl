@@ -60,6 +60,7 @@ namespace pcl
         leafCount_ = 0;
         depthMask_ = 0;
         branchCount_ = 1;
+        objectCount_ = 0;
         octreeDepth_ = 0;
 
       }
@@ -123,6 +124,8 @@ namespace pcl
 
         // add data_arg to octree
         add (key, data_arg);
+
+        objectCount_++;
 
       }
 
@@ -196,6 +199,7 @@ namespace pcl
           deleteBranch (*rootNode_);
           leafCount_ = 0;
           branchCount_ = 1;
+          objectCount_ = 0;
         }
 
         // delete node pool
@@ -228,7 +232,7 @@ namespace pcl
         binaryTreeOut_arg.clear ();
         dataVector_arg.clear ();
 
-        dataVector_arg.reserve (this->leafCount_);
+        dataVector_arg.reserve (this->objectCount_);
         binaryTreeOut_arg.reserve (this->branchCount_);
 
         OctreeBase<DataT, LeafT>::serializeTreeRecursive (binaryTreeOut_arg, rootNode_, newKey, dataVector_arg);
@@ -246,7 +250,7 @@ namespace pcl
         // clear output vector
         dataVector_arg.clear ();
 
-        dataVector_arg.reserve(this->leafCount_);
+        dataVector_arg.reserve(this->objectCount_);
 
         serializeLeafsRecursive (rootNode_, newKey, dataVector_arg);
       }
@@ -267,6 +271,8 @@ namespace pcl
         vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
 
         deserializeTreeRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey);
+
+        objectCount_ = this->leafCount_;
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -292,6 +298,8 @@ namespace pcl
 
         deserializeTreeRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey, dataVectorIterator,
                                   dataVectorEndIterator);
+
+        objectCount_ = dataVector_arg.size();
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -312,6 +320,8 @@ namespace pcl
 
         deserializeTreeAndOutputLeafDataRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey,
                                                    dataVector_arg);
+
+        objectCount_ = dataVector_arg.size();
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////

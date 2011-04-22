@@ -109,7 +109,7 @@ namespace pcl
          *  \return "true" if leaf node search is successful, otherwise it returns "false".
          * */
         bool
-            get (const unsigned int idxX_arg, const unsigned int idxY_arg, const unsigned int idxZ_arg, DataT& data_arg) const ;
+        get (const unsigned int idxX_arg, const unsigned int idxY_arg, const unsigned int idxZ_arg, DataT& data_arg) const ;
 
         /** \brief Check for the existence of leaf node at (idxX, idxY, idxZ).
          *  \param idxX_arg: index of leaf node in the X axis.
@@ -343,7 +343,10 @@ namespace pcl
 
           // assign data to leaf
           if (leaf)
+          {
             leaf->setData (data_arg);
+            objectCount_++;
+          }
         }
 
         /** \brief Find leaf node
@@ -952,6 +955,9 @@ namespace pcl
 
         /** \brief Amount of branch nodes   **/
         unsigned int branchCount_;
+
+        /** \brief Amount of objects assigned to leaf nodes   **/
+        unsigned int objectCount_;
 
         /** \brief Pointer to root branch node of octree   **/
         OctreeBranch* rootNode_;
