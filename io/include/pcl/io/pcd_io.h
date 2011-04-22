@@ -50,8 +50,7 @@ namespace pcl
     public:
       /** \brief Various PCD file versions.
         *
-        * PCD_V6 is the entry point for PCL in ROS. It represents PCD files
-        * with version .6, which contain the following fields:
+        * PCD_V6 represents PCD files with version .6, which contain the following fields:
         * <ul>
         *  <li> lines beginning with # are treated as comments</li>
         *  <li> FIELDS ...</li>
