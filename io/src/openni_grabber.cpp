@@ -64,17 +64,24 @@ namespace pcl
     , depth_image_callback_registered_(false)
     , started_(false)
   {
-
-    // create callback signals
-    image_signal_             = createSignal <sig_cb_openni_image> ();
-    depth_image_signal_       = createSignal <sig_cb_openni_depth_image> ();
-    image_depth_image_signal_ = createSignal <sig_cb_openni_image_depth_image> ();
-    point_cloud_signal_       = createSignal <sig_cb_openni_point_cloud> ();
-    point_cloud_rgb_signal_   = createSignal <sig_cb_openni_point_cloud_rgb> ();
-
     // initialize driver
     if (!onInit (device_id))
       THROW_PCL_IO_EXCEPTION("Device could not be initialized or no devices found.");
+
+    if (!device_->hasDepthStream ())
+      THROW_PCL_IO_EXCEPTION("Device does not provide 3D information.");
+
+    depth_image_signal_       = createSignal <sig_cb_openni_depth_image> ();
+    point_cloud_signal_       = createSignal <sig_cb_openni_point_cloud> ();
+
+    if (device_->hasImageStream ())
+    {
+      // create callback signals
+      image_signal_             = createSignal <sig_cb_openni_image> ();
+      image_depth_image_signal_ = createSignal <sig_cb_openni_image_depth_image> ();
+      point_cloud_rgb_signal_   = createSignal <sig_cb_openni_point_cloud_rgb> ();
+      sync_.addCallback (boost::bind(&OpenNIGrabber::imageDepthImageCallback, this, _1, _2));
+    }
   }
 
   OpenNIGrabber::~OpenNIGrabber ()
@@ -150,7 +157,7 @@ namespace pcl
         depth_image_callback_registered_ = true;
       }
       // TODO: turn this only on if needed ...
-      if (!device_->isDepthRegistered ())
+      if (device_->hasImageStream () && !device_->isDepthRegistered ())
       {
         device_->setDepthRegistration (true);
       }
@@ -198,8 +205,6 @@ namespace pcl
 
   bool OpenNIGrabber::onInit (const std::string& device_id)
   {
-    sync.addCallback (boost::bind(&OpenNIGrabber::imageDepthImageCallback, this, _1, _2));
-
     updateModeMaps ();      // registering mapping from config modes to XnModes and vice versa
     if (!setupDevice (device_id))
       return (false);
@@ -294,19 +299,22 @@ namespace pcl
     printf ("[%s] Opened '%s' on bus %d:%d with serial number '%s'\n", getName ().c_str (),
               device_->getProductName (), device_->getBus (), device_->getAddress (), device_->getSerialNumber ());
 
-    int image_mode = mapXnMode2ConfigMode (device_->getDefaultImageMode ());
-    if (image_mode == -1)
-      return (false);
+    if (device_->hasImageStream ())
+    {
+      int image_mode = mapXnMode2ConfigMode (device_->getDefaultImageMode ());
+      if (image_mode == -1)
+        return (false);
+
+      XnMapOutputMode image_md;
+      if (!mapConfigMode2XnMode (image_mode, image_md))
+        return (false);
+      image_width_  = image_md.nXRes;
+      image_height_ = image_md.nYRes;
+    }
 
     int depth_mode = mapXnMode2ConfigMode (device_->getDefaultDepthMode ());
     if (depth_mode == -1)
       return (false);
-
-    XnMapOutputMode image_md;
-    if (!mapConfigMode2XnMode (image_mode, image_md))
-      return (false);
-    image_width_  = image_md.nXRes;
-    image_height_ = image_md.nYRes;
 
     XnMapOutputMode depth_md;
     if (!mapConfigMode2XnMode (depth_mode, depth_md))
@@ -335,7 +343,7 @@ namespace pcl
   {
     if (num_slots<sig_cb_openni_point_cloud_rgb> () > 0 ||
         num_slots<sig_cb_openni_image_depth_image> () > 0)
-        sync.add0 (image, image->getTimeStamp());
+        sync_.add0 (image, image->getTimeStamp());
 
     if (image_signal_->num_slots () > 0)
         image_signal_->operator()(image);
@@ -347,7 +355,7 @@ namespace pcl
   {
     if (num_slots<sig_cb_openni_point_cloud_rgb> () > 0 ||
         num_slots<sig_cb_openni_image_depth_image> () > 0)
-        sync.add1 (depth_image, depth_image->getTimeStamp());
+        sync_.add1 (depth_image, depth_image->getTimeStamp());
 
     if (depth_image_signal_->num_slots () > 0)
         depth_image_signal_->operator()(depth_image);

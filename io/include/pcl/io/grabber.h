@@ -53,6 +53,7 @@ class Grabber
 	public:
 		virtual inline ~Grabber ();
 		template<typename T> boost::signals2::connection registerCallback (const boost::function<T>& callback);
+    template<typename T> bool providesCallback () const;
 		virtual void start () = 0;
     virtual void stop () = 0;  
     virtual std::string getName () const = 0;
@@ -142,6 +143,12 @@ template<typename T> boost::signals2::connection Grabber::registerCallback (cons
   return ret;
 }
 
+template<typename T> bool Grabber::providesCallback () const
+{
+	if (signals_.find (&typeid(T)) == signals_.end ())
+    return false;
+  return true;
+}
 
 } // namespace
 

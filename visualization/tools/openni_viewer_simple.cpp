@@ -41,6 +41,7 @@
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/io/openni_camera/openni_driver.h>
 
 #define SHOW_FPS 1
 #if SHOW_FPS
@@ -72,7 +73,10 @@ class SimpleOpenNIViewer
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
 
-    SimpleOpenNIViewer () : viewer ("PCL OpenNI Viewer") {}
+    SimpleOpenNIViewer (const std::string& device_id = "")
+    : viewer ("PCL OpenNI Viewer")
+    , device_id_(device_id)
+    {}
 
     
     void 
@@ -104,7 +108,7 @@ class SimpleOpenNIViewer
     void
     run ()
     {
-      pcl::Grabber* interface = new pcl::OpenNIGrabber();
+      pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id_);
 
       boost::function<void (const CloudConstPtr&)> f =
         boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
@@ -127,6 +131,7 @@ class SimpleOpenNIViewer
     }
 
     pcl::visualization::CloudViewer viewer;
+    std::string device_id_;
     boost::mutex mtx_;
     CloudConstPtr cloud_;
 };
@@ -134,7 +139,22 @@ class SimpleOpenNIViewer
 void
 usage(char ** argv)
 {
-    std::cout << "usage: " << argv[0] << " [XYZ|XYZRGB]\n";
+  std::cout << "usage: " << argv[0] << " <device_id>\n";
+
+  openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
+  if (driver.getNumberDevices () > 0)
+  {
+    for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
+    {
+      cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
+              << ", connected: " << (int)driver.getBus (deviceIdx) << " @ " << (int)driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
+      cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << endl
+           << "                 bus@address for the device connected to a specific usb-bus / address combination (wotks only in Linux) or" << endl
+           << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << endl;
+    }
+  }
+  else
+    cout << "No devices connected." << endl;
 }
 
 int 
@@ -147,19 +167,23 @@ main (int argc, char ** argv)
   }
 
   std::string arg(argv[1]);
-  if(arg == "XYZRGB")
-  {
-      SimpleOpenNIViewer<pcl::PointXYZRGB> v;
-      v.run ();
-  }else if(arg == "XYZ")
-  {
-      SimpleOpenNIViewer<pcl::PointXYZ> v;
-      v.run ();
-  }
-  else if( arg == "--help" || arg == "-h")
+  
+  if( arg == "--help" || arg == "-h")
   {
     usage(argv);
     return 1;
+  }
+
+  pcl::OpenNIGrabber grabber(arg);
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+  {
+    SimpleOpenNIViewer<pcl::PointXYZRGB> v(arg);
+    v.run ();
+  }
+  else
+  {
+    SimpleOpenNIViewer<pcl::PointXYZ> v(arg);
+    v.run ();
   }
 
   return (0);

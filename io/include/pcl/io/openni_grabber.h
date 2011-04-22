@@ -330,7 +330,7 @@ private:
   boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
                                                                                    const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
 
-  Synchronizer<boost::shared_ptr<openni_wrapper::Image>, boost::shared_ptr<openni_wrapper::DepthImage> > sync;
+  Synchronizer<boost::shared_ptr<openni_wrapper::Image>, boost::shared_ptr<openni_wrapper::DepthImage> > sync_;
 
   /** \brief the actual openni device*/
   boost::shared_ptr<openni_wrapper::OpenNIDevice> device_;
