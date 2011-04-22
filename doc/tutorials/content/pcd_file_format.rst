@@ -205,3 +205,11 @@ type and inducing additional delays through conversion functions.
   `pcl_io` library should offer the possibility to save and load data in all
   the other aforementioned file formats too.
 
+
+Example
+-------
+
+A snippet of a PCD file is attached below. It is left to the reader to
+interpret the data and see what it means. :) Have fun!
+
+
