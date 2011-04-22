@@ -46,7 +46,8 @@ if(build)
         ${OPENNI_GRABBER_SOURCES}
         )
 
-    set(incs include/pcl/${SUBSYS_NAME}/io.h
+    set(incs 
+        include/pcl/${SUBSYS_NAME}/io.h
         include/pcl/${SUBSYS_NAME}/pcd_io.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
         ${OPENNI_GRABBER_INCLUDES}
