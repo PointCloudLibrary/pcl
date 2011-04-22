@@ -114,8 +114,8 @@ After you have made the executable, you can run it. Simply do::
 
   $ ./convex_hull_2d
 
-You will see something similar to::
+You will see *something similar* to::
 
   PointCloud after filtering has: 139656 data points.
-  Convex hull has: 31 data points.
+  Convex hull has: 30 data points.
 
