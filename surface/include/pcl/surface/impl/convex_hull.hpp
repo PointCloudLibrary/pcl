@@ -193,8 +193,8 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull,
   int max_vertex_id = -1;
   FORALLvertices
   {
-    if (vertex->id > max_vertex_id)
-    max_vertex_id = vertex->id;
+    if ((int)vertex->id > max_vertex_id)
+      max_vertex_id = vertex->id;
   }
 
   ++max_vertex_id;
