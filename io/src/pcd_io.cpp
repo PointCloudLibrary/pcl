@@ -123,6 +123,10 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
       if (line_type.substr (0, 1) == "#")
         continue;
 
+      // Version numbers are not needed for now, but we are checking to see if they're there
+      if (line_type.substr (0, 7) == "VERSION")
+        continue;
+
       // Get the field indices (check for COLUMNS too for backwards compatibility)
       if ( (line_type.substr (0, 6) == "FIELDS") || (line_type.substr (0, 7) == "COLUMNS") )
       {
@@ -553,6 +557,7 @@ pcl::PCDWriter::generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud,
   std::ostringstream oss;
 
   oss << "# .PCD v.7 - Point Cloud Data file format"
+         "\nVERSION .7"
          "\nFIELDS ";
 
   oss << getFieldsList (cloud);
@@ -599,6 +604,7 @@ pcl::PCDWriter::generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud,
   std::ostringstream oss;
 
   oss << "# .PCD v.7 - Point Cloud Data file format"
+         "\nVERSION .7"
          "\nFIELDS";
 
   // Compute the total size of the fields
