@@ -25,7 +25,7 @@ endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 if(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing")
 else(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-add_definitions ("-W0 -DEIGEN2_SUPPORT")
+add_definitions ("-W0")
 endif(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
 include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
