@@ -98,6 +98,7 @@ namespace pcl
           PCL_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %zu while the input PointCloud has size %zu!", indices_->size (), input_->points.size ());
           indices_->clear ();
         }
+        shuffled_indices_ = *indices_;
       };
 
       /** \brief Destructor for base SampleConsensusModel. */
@@ -215,7 +216,7 @@ namespace pcl
         * \param indices a pointer to the vector of indices that represents the input data.
         */
       inline void 
-      setIndices (const IndicesPtr &indices) { indices_ = indices; }
+      setIndices (const IndicesPtr &indices) { indices_ = indices; shuffled_indices_ = *indices_;}
 
       /** \brief Provide the vector of indices that represents the input data.
         * \param indices the vector of indices that represents the input data.
@@ -223,7 +224,8 @@ namespace pcl
       inline void 
       setIndices (std::vector<int> &indices) 
       { 
-        indices_.reset (new std::vector<int> (indices)); 
+        indices_.reset (new std::vector<int> (indices));
+        shuffled_indices_ = indices;
       }
 
       /** \brief Get a pointer to the vector of indices used. */
@@ -267,6 +269,23 @@ namespace pcl
       friend class ProgressiveSampleConsensus<PointT>;
 
     protected:
+      /** \brief Fills a sample array with random samples from the indices_ vector
+       * Sure, there are some swaps in there but it is linear in the size of the sample, no stupid while loop to
+       * compare the elements between them
+       * \param model_coefficients the set of model coefficients
+       */
+      inline void
+      drawIndexSample (std::vector<int> & sample)
+      {
+        size_t sample_size = sample.size ();
+        size_t index_size = shuffled_indices_.size ();
+        for (unsigned int i = 0; i < sample_size; ++i)
+          // The 1/(RAND_MAX+1.0) trick is when the random numbers are not uniformly distributed and for small modulo
+          // elements, that does not matter (and nowadays, random number generators are good)
+          std::swap (shuffled_indices_[i], shuffled_indices_[i + (rand () % (index_size - i))]);
+        std::copy (shuffled_indices_.begin (), shuffled_indices_.begin () + sample_size, sample.begin ());
+      }
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param model_coefficients the set of model coefficients
         */
@@ -283,6 +302,10 @@ namespace pcl
         * Applicable to all models that estimate a radius. 
         */
       double radius_min_, radius_max_;
+
+      /** Data containing a shuffled version of the indices. This is used and modified when drawing samples
+       */
+      std::vector<int> shuffled_indices_;
   };
 
   /** \brief @b SampleConsensusModelFromNormals represents the base model class
