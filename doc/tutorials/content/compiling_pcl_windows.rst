@@ -1,7 +1,7 @@
 .. _compiling_pcl_windows:
 
-Compiling PCL and its dependecies from source in Windows
---------------------------------------------------------
+Compiling PCL and its dependencies from source in Windows
+---------------------------------------------------------
 
 This tutorial explains how to build the Point Cloud Library **from source** on
 Microsoft Windows platforms, and tries to guide you through the download and

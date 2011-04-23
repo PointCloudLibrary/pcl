@@ -43,7 +43,7 @@ contributions on any tutorial.
   * :ref:`compiling_pcl_windows`
 
      ======  ======
-     |mi_3|  Title: **Compiling PCL and its dependecies from source in Windows**
+     |mi_3|  Title: **Compiling PCL and its dependencies from source in Windows**
 
              Author: *Alessio Placitelli*
 
