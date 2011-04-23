@@ -9,6 +9,13 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+    set(incs include/pcl/${SUBSYS_NAME}/range_image.h
+        include/pcl/${SUBSYS_NAME}/range_image_planar.h
+        )
+    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/range_image.hpp
+        include/pcl/${SUBSYS_NAME}/impl/range_image_planar.hpp
+        )
+
     set(srcs src/range_image.cpp
         src/range_image_planar.cpp
         )
@@ -24,14 +31,7 @@ if(build)
         "${EXT_DEPS}" "" "" "")
 
     # Install include files
-    set(incs include/pcl/${SUBSYS_NAME}/range_image.h
-        include/pcl/${SUBSYS_NAME}/range_image_planar.h
-        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-
-    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/range_image.hpp
-        include/pcl/${SUBSYS_NAME}/impl/range_image_planar.hpp
-        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 endif(build)
 
