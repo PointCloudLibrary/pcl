@@ -88,8 +88,7 @@ if(build)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs})
     target_link_libraries(${LIB_NAME} pcl_io pcl_range_image 
                                       ${wxWidgets_LIBRARIES} 
-                                      vtkCommon vtkWidgets vtkHybrid 
-                                      ${Boost_LIBRARIES})
+                                      vtkCommon vtkWidgets vtkHybrid)
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     if(OPENNI_FOUND)
     	list(APPEND EXT_DEPS openni-dev)
