@@ -28,9 +28,9 @@ cloud callback.
 Here is a screenshot and a video of the PCL OpenNI Viewer in action, which uses
 the OpenNI Grabber.
 
-.. image:: images/pcl_openni_viewer.png
+.. image:: images/pcl_openni_viewer.jpg
    :height: 390px
-   :target: _images/pcl_openni_viewer.png
+   :target: _images/pcl_openni_viewer.jpg
 
 .. raw:: html
   

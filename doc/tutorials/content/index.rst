@@ -17,7 +17,7 @@ contributions on any tutorial.
 
              Author: *Nizar Sallem*
 
-             Compatibility: > PCL 0.9
+             Compatibility: > PCL 1.0
              
              In this tutorial, we will learn how to link your own project to PCL using cmake.
      ======  ======
@@ -32,12 +32,27 @@ contributions on any tutorial.
 
              Author: *Nizar Sallem*
 
-             Compatibility: > PCL 0.9
+             Compatibility: > PCL 1.0
              
              In this tutorial, we will explain the basic PCL cmake options, and ways to tweak them to fit your project.
      ======  ======
 
      .. |mi_2| image:: images/pcl_ccmake.png
+               :height: 100px
+
+  * :ref:`compiling_pcl_windows`
+
+     ======  ======
+     |mi_3|  Title: **Compiling PCL and its dependecies from source in Windows**
+
+             Author: *Alessio Placitelli*
+
+             Compatibility: > PCL 1.0
+             
+             In this tutorial, we will explain how to compile PCL and all its 3rd party dependencies from source in Microsoft Windows.
+     ======  ======
+
+     .. |mi_3| image:: images/windows_logo.png
                :height: 100px
 
 * Advanced Usage
