@@ -224,7 +224,7 @@ namespace pcl
       double sample_dist_thresh_;
 
       /** \brief Define the maximum number of iterations for collinearity checks */
-      const static int MAX_ITERATIONS_COLLINEAR = 1000;
+      const static unsigned int MAX_ITERATIONS_COLLINEAR = 1000;
   };
 }
 

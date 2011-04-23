@@ -78,7 +78,7 @@ pcl::SampleConsensusModelRegistration<PointT>::getSamples (int &iterations, std:
       return;
   }
   PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::getSamples] WARNING: Could not select 3 non collinear points in %d iterations!", MAX_ITERATIONS_COLLINEAR);
-  sample.clear();
+  samples.clear ();
 }
 
 //////////////////////////////////////////////////////////////////////////
