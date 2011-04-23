@@ -193,8 +193,12 @@ namespace pcl
       }
 
     private:
-      /** \brief Define the maximum number of iterations for collinearity checks */
-      const static int MAX_ITERATIONS_COLLINEAR = 1000;
+      /** \brief Check if a sample of indices results in a good sample of points
+        * indices. Pure virtual.
+        * \param samples the resultant index samples
+        */
+      bool
+      isSampleGood(const std::vector<int> &samples) const;
   };
 }
 

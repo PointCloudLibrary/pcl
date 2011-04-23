@@ -44,79 +44,23 @@
 #include "pcl/common/concatenate.h"
 
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::SampleConsensusModelPlane<PointT>::getSamples (int &iterations, std::vector<int> &samples)
+template <typename PointT> bool
+pcl::SampleConsensusModelPlane<PointT>::isSampleGood(const std::vector<int> &samples) const
 {
-  // We're assuming that indices_ have already been set in the constructor
-  if (indices_->empty ())
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelPlane::getSamples] Empty set of indices given!");
-    return;
-  }
-
-  samples.resize (3);
-  double trand = indices_->size () / (RAND_MAX + 1.0);
-
-  // Check if we have enough points
-  if (samples.size () > indices_->size ())
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelPlane::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
-    // one of these will make it stop :) TODO static constant for each model that the method has to check
-    samples.clear ();
-    iterations = INT_MAX - 1;
-    return;
-  }
-
-  // Get a random number between 1 and max_indices
-  int idx = (int)(rand () * trand);
-  // Get the index
-  samples[0] = (*indices_)[idx];
-
-  // Get a second point which is different than the first
-  do
-  {
-    idx = (int)(rand () * trand);
-    samples[1] = (*indices_)[idx];
-    //iterations++;
-  } while (samples[1] == samples[0]);
-  //iterations--;
-
   // Get the values at the two points
   pcl::Array4fMapConst p0 = input_->points[samples[0]].getArray4fMap ();
   pcl::Array4fMapConst p1 = input_->points[samples[1]].getArray4fMap ();
+  pcl::Array4fMapConst p2 = input_->points[samples[2]].getArray4fMap ();
 
   // Compute the segment values (in 3d) between p1 and p0
   Eigen::Array4f p1p0 = p1 - p0;
 
-  Eigen::Array4f dy1dy2;
-  int iter = 0;
-  do
-  {
-    // Get the third point, different from the first two
-    do
-    {
-      idx = (int)(rand () * trand);
-      samples[2] = (*indices_)[idx];
-      //iterations++;
-    } while ( (samples[2] == samples[1]) || (samples[2] == samples[0]) );
-    //iterations--;
+  // Compute the segment values (in 3d) between p2 and p0
+  Eigen::Array4f p2p0 = p2 - p0;
 
-    pcl::Array4fMapConst p2 = input_->points[samples[2]].getArray4fMap ();
+  Eigen::Array4f dy1dy2 = p1p0 / p2p0;
 
-    // Compute the segment values (in 3d) between p2 and p0
-    Eigen::Array4f p2p0 = p2 - p0;
-
-    dy1dy2 = p1p0 / p2p0;
-    ++iter;
-    if (iter > MAX_ITERATIONS_COLLINEAR )
-    {
-      PCL_DEBUG ("[pcl::SampleConsensusModelPlane::getSamples] WARNING: Could not select 3 non collinear points in %d iterations!", MAX_ITERATIONS_COLLINEAR);
-      break;
-    }
-    //iterations++;
-  }
-  while ( (dy1dy2[0] == dy1dy2[1]) && (dy1dy2[2] == dy1dy2[1]) );
-  //iterations--;
+  return ( (dy1dy2[0] != dy1dy2[1]) || (dy1dy2[2] != dy1dy2[1]) );
 }
 
 //////////////////////////////////////////////////////////////////////////

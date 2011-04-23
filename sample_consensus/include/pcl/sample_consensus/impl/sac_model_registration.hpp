@@ -42,43 +42,22 @@
 #include "pcl/common/rigid_transforms.h"
 
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::SampleConsensusModelRegistration<PointT>::getSamples (int &iterations, std::vector<int> &samples)
+template <typename PointT> bool
+pcl::SampleConsensusModelRegistration<PointT>::isSampleGood(const std::vector<int> &samples) const
 {
-  // We're assuming that indices_ have already been set in the constructor
-  if (indices_->size () < 3)
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
-    // one of these will make it stop :) TODO static constant for each model that the method has to check
-    samples.clear ();
-    iterations = INT_MAX - 1;
-    return;
-  }
-
-  samples.resize (3);
-
-  // Get a second point which is different than the first
   Eigen::Array4f p1p0, p2p0, p2p1;
-  for(unsigned int iter = 0; iter <= MAX_ITERATIONS_COLLINEAR; ++iter)
-  {
-    // Choose thre random indices
-    SampleConsensusModel<PointT>::drawIndexSample (samples);
 
-    // Get the values at the points
-    pcl::Array4fMapConst p0 = input_->points[samples[0]].getArray4fMap ();
-    pcl::Array4fMapConst p1 = input_->points[samples[1]].getArray4fMap ();
-    pcl::Array4fMapConst p2 = input_->points[samples[2]].getArray4fMap ();
+  // Get the values at the points
+  pcl::Array4fMapConst p0 = input_->points[samples[0]].getArray4fMap();
+  pcl::Array4fMapConst p1 = input_->points[samples[1]].getArray4fMap();
+  pcl::Array4fMapConst p2 = input_->points[samples[2]].getArray4fMap();
 
-    // Compute the segment values (in 3d) between p1 and p0
-    p1p0 = p1 - p0;
-    p2p0 = p2 - p0;
-    p2p1 = p2 - p1;
-    if ((p1p0.matrix ().squaredNorm () > sample_dist_thresh_) && (p2p0.matrix ().squaredNorm ()
-          > sample_dist_thresh_) && (p2p1.matrix ().squaredNorm () > sample_dist_thresh_))
-      return;
-  }
-  PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::getSamples] WARNING: Could not select 3 non collinear points in %d iterations!", MAX_ITERATIONS_COLLINEAR);
-  samples.clear ();
+  // Compute the segment values (in 3d) between p1 and p0
+  p1p0 = p1 - p0;
+  p2p0 = p2 - p0;
+  p2p1 = p2 - p1;
+  return ((p1p0.matrix().squaredNorm() > sample_dist_thresh_) && (p2p0.matrix().squaredNorm() > sample_dist_thresh_)
+        && (p2p1.matrix().squaredNorm() > sample_dist_thresh_));
 }
 
 //////////////////////////////////////////////////////////////////////////

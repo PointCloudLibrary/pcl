@@ -109,8 +109,33 @@ namespace pcl
         * \param iterations the internal number of iterations used by SAC methods
         * \param samples the resultant model samples
         */
-      virtual void 
-      getSamples (int &iterations, std::vector<int> &samples) = 0;
+      void getSamples(int &iterations, std::vector<int> &samples)
+      {
+        // We're assuming that indices_ have already been set in the constructor
+        if (indices_->size () < getSampleSize())
+        {
+          PCL_ERROR ("[pcl::SampleConsensusModel::getSamples] Can not select %zu unique points out of %zu!",
+                     samples.size (), indices_->size ());
+          // one of these will make it stop :)
+          samples.clear ();
+          iterations = INT_MAX - 1;
+          return;
+        }
+
+        // Get a second point which is different than the first
+        samples.resize(getSampleSize());
+        for(unsigned int iter = 0; iter < max_sample_checks_; ++iter)
+        {
+          // Choose the random indices
+          SampleConsensusModel<PointT>::drawIndexSample (samples);
+
+          // If it's a good sample, stop here
+          if (isSampleGood(samples))
+            return;
+        }
+        PCL_DEBUG ("[pcl::SampleConsensusModel::getSamples] WARNING: Could not select 3 non collinear points in %d iterations!", max_sample_checks_);
+        samples.clear();
+      }
 
       /** \brief Check whether the given index samples can form a valid model,
         * compute the model coefficients from these samples and store them
@@ -206,6 +231,7 @@ namespace pcl
           for (size_t i = 0; i < cloud->points.size (); ++i) 
             (*indices_)[i] = i;
         }
+        shuffled_indices_ = *indices_;
       }
 
       /** \brief Get a pointer to the input point cloud dataset. */
@@ -272,7 +298,7 @@ namespace pcl
       /** \brief Fills a sample array with random samples from the indices_ vector
         * Sure, there are some swaps in there but it is linear in the size of the sample, no stupid while loop to
         * compare the elements between them
-        * \param model_coefficients the set of model coefficients
+        * \param sample the set of indices of target_ to analyze
         */
       inline void
       drawIndexSample (std::vector<int> & sample)
@@ -292,11 +318,21 @@ namespace pcl
       virtual inline bool
       isModelValid (const Eigen::VectorXf &model_coefficients) = 0;
 
+      /** \brief Check if a sample of indices results in a good sample of points
+        * indices. Pure virtual.
+        * \param samples the resultant index samples
+        */
+      virtual bool
+      isSampleGood(const std::vector<int> &samples) const = 0;
+
       /** \brief A boost shared pointer to the point cloud data array. */
       PointCloudConstPtr input_;
 
       /** \brief A pointer to the vector of point indices to use. */
       IndicesPtr indices_;
+
+      /** The maximum number of samples to try until we get a good one */
+      static const unsigned int max_sample_checks_ = 1000;
 
       /** \brief The minimum and maximum radius limits for the model.
         * Applicable to all models that estimate a radius. 

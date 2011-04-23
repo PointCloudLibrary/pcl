@@ -43,51 +43,10 @@
 #include "pcl/common/concatenate.h"
 
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::SampleConsensusModelLine<PointT>::getSamples (int &iterations, std::vector<int> &samples)
+template <typename PointT> bool
+pcl::SampleConsensusModelLine<PointT>::isSampleGood(const std::vector<int> &samples) const
 {
-  // We're assuming that indices_ have already been set in the constructor
-  if (indices_->empty ())
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelLine::getSamples] Empty set of indices given!");
-    return;
-  }
-
-  samples.resize (2);
-  double trand = indices_->size () / (RAND_MAX + 1.0);
-
-  // Check if we have enough points
-  if (samples.size () > indices_->size ())
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelLine::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
-    // one of these will make it stop :) TODO static constant for each model that the method has to check
-    samples.clear ();
-    iterations = INT_MAX - 1;
-    return;
-  }
-
-  // Get a random number between 1 and max_indices
-  int idx = (int)(rand () * trand);
-  // Get the index
-  samples[0] = (*indices_)[idx];
-
-  // Get a second point which is different than the first
-  int iter = 0;
-  do
-  {
-    idx = (int)(rand () * trand);
-    samples[1] = (*indices_)[idx];
-    ++iter;
-
-    if (iter > MAX_ITERATIONS_UNIQUE )
-    {
-      PCL_DEBUG ("[pcl::SampleConsensusModelLine::getSamples] WARNING: Could not select 2 unique points in %d iterations (%zu indices)!", MAX_ITERATIONS_UNIQUE, indices_->size ());
-      break;
-    }
-    //iterations++;
-  }
-  while (samples[1] == samples[0]);
-  //iterations--;
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////

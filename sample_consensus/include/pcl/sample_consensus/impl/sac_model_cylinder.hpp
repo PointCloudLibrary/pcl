@@ -44,46 +44,12 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Get 2 random points with their normals as data samples and return them as point indices.
-  * \param iterations the internal number of iterations used by SAC methods
   * \param samples the resultant model samples
-  * \note assumes unique points!
   */
-template <typename PointT, typename PointNT> void
-pcl::SampleConsensusModelCylinder<PointT, PointNT>::getSamples (int &iterations, std::vector<int> &samples)
+template <typename PointT, typename PointNT> bool
+pcl::SampleConsensusModelCylinder<PointT, PointNT>::isSampleGood(const std::vector<int> &samples) const
 {
-  // We're assuming that indices_ have already been set in the constructor
-  if (indices_->empty ())
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::getSamples] Empty set of indices given!");
-    return;
-  }
-
-  samples.resize (2);
-  double trand = indices_->size () / (RAND_MAX + 1.0);
-
-  // Check if we have enough points
-  if (samples.size () > indices_->size ())
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelCylinder::getSamples] Can not select %zu unique points out of %zu!", samples.size (), indices_->size ());
-    // one of these will make it stop :) TODO static constant for each model that the method has to check
-    samples.clear ();
-    iterations = INT_MAX - 1;
-    return;
-  }
-
-  // Get a random number between 1 and max_indices
-  int idx = (int)(rand () * trand);
-  // Get the index
-  samples[0] = (*indices_)[idx];
-
-  // Get a second point which is different than the first
-  do
-  {
-    idx = (int)(rand () * trand);
-    samples[1] = (*indices_)[idx];
-    //iterations++;
-  } while (samples[1] == samples[0]);
-  //iterations--;
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

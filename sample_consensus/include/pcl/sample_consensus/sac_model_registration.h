@@ -139,15 +139,6 @@ namespace pcl
         indices_tgt_.reset (new std::vector<int> (indices_tgt));
       }
 
-      /** \brief Get 3 random indices from a subset of given indices.
-        * \param iterations the internal number of iterations used by SAC methods
-        * \param samples the resultant model samples
-        * \note assumes unique points!
-        */
-      void 
-      getSamples (int &iterations, 
-                  std::vector<int> &samples);
-
       /** \brief Compute a 4x4 rigid transformation matrix from the samples given
         * \param samples the indices found as good candidates for creating a valid model
         * \param model_coefficients the resultant model coefficients
@@ -213,6 +204,13 @@ namespace pcl
         return (true);
       }
 
+      /** \brief Check if a sample of indices results in a good sample of points
+        * indices. Pure virtual.
+        * \param samples the resultant index samples
+        */
+      bool
+      isSampleGood(const std::vector<int> &samples) const;
+
     private:
       /** \brief A boost shared pointer to the target point cloud data array. */
       PointCloudConstPtr target_;
@@ -222,9 +220,6 @@ namespace pcl
 
       /** \brief Internal distance threshold used for the sample selection step. */
       double sample_dist_thresh_;
-
-      /** \brief Define the maximum number of iterations for collinearity checks */
-      const static unsigned int MAX_ITERATIONS_COLLINEAR = 1000;
   };
 }
 

@@ -137,9 +137,12 @@ namespace pcl
         return (true);
       }
 
-     private:
-      /** \brief Define the maximum number of iterations for unique points search. */
-      const static int MAX_ITERATIONS_UNIQUE = 1000;
+      /** \brief Check if a sample of indices results in a good sample of points
+        * indices. Pure virtual.
+        * \param samples the resultant index samples
+        */
+      bool
+      isSampleGood(const std::vector<int> &samples) const;
   };
 }
 

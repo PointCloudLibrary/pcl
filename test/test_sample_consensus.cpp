@@ -72,8 +72,58 @@ typedef SampleConsensusModelParallelPlane<PointXYZ>::Ptr SampleConsensusModelPar
 PointCloud<PointXYZ>::Ptr cloud_ (new PointCloud<PointXYZ> ());
 PointCloud<Normal>::Ptr normals_ (new PointCloud<Normal> ());
 vector<int> indices_;
+float plane_coeffs_[] = {-0.8964, -0.5868, -1.208};
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template<typename ModelType, typename SacType>
+void verifyPlaneSac(ModelType & model, SacType & sac, unsigned int inlier_number = 2000, float tol = 1e-1,
+                      float refined_tol = 1e-2, float proj_tol = 1e-3)
+{
+  // Algorithm tests
+  bool result = sac.computeModel ();
+  ASSERT_EQ (result, true);
+
+  std::vector<int> sample;
+  sac.getModel (sample);
+  EXPECT_EQ ((int)sample.size (), 3);
+
+  std::vector<int> inliers;
+  sac.getInliers (inliers);
+  EXPECT_GE ((int)inliers.size (), inlier_number);
+
+  Eigen::VectorXf coeff;
+  sac.getModelCoefficients (coeff);
+  EXPECT_EQ ((int)coeff.size (), 4);
+  EXPECT_NEAR (coeff[0]/coeff[3], plane_coeffs_[0], tol);
+  EXPECT_NEAR (coeff[1]/coeff[3], plane_coeffs_[1], tol);
+  EXPECT_NEAR (coeff[2]/coeff[3], plane_coeffs_[2], tol);
+
+
+  Eigen::VectorXf coeff_refined;
+  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
+  EXPECT_EQ ((int)coeff_refined.size (), 4);
+  EXPECT_NEAR (coeff_refined[0]/coeff_refined[3], plane_coeffs_[0], refined_tol);
+  EXPECT_NEAR (coeff_refined[1]/coeff_refined[3], plane_coeffs_[1], refined_tol);
+  EXPECT_NEAR (coeff_refined[2]/coeff_refined[3], plane_coeffs_[2], refined_tol);
+
+  // Projection tests
+  PointCloud<PointXYZ> proj_points;
+  model->projectPoints (inliers, coeff_refined, proj_points);
+  EXPECT_NEAR (proj_points.points[20].x,  1.1266, proj_tol);
+  EXPECT_NEAR (proj_points.points[20].y,  0.0152, proj_tol);
+  EXPECT_NEAR (proj_points.points[20].z, -0.0156, proj_tol);
+
+  EXPECT_NEAR (proj_points.points[30].x,  1.1843, proj_tol);
+  EXPECT_NEAR (proj_points.points[30].y, -0.0635, proj_tol);
+  EXPECT_NEAR (proj_points.points[30].z, -0.0201, proj_tol);
+
+  EXPECT_NEAR (proj_points.points[50].x,  1.0749, proj_tol);
+  EXPECT_NEAR (proj_points.points[50].y, -0.0586, proj_tol);
+  EXPECT_NEAR (proj_points.points[50].z,  0.0587, proj_tol);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SampleConsensusModelPlane, Base)
 {
   // Create a shared plane model pointer directly
@@ -128,51 +178,7 @@ TEST (RANSAC, SampleConsensusModelPlane)
   // Create the RANSAC object
   RandomSampleConsensus<PointXYZ> sac (model, 0.03);
 
-  // Algorithm tests
-  bool result = sac.computeModel ();
-  ASSERT_EQ (result, true);
-
-  std::vector<int> sample;
-  sac.getModel (sample);
-  EXPECT_EQ ((int)sample.size (), 3);
-  EXPECT_EQ (sample[0], 1818);
-  EXPECT_EQ (sample[1], 1567);
-  EXPECT_EQ (sample[2], 2064);
-
-  std::vector<int> inliers;
-  sac.getInliers (inliers);
-  EXPECT_EQ ((int)inliers.size (), 2525);
-
-  Eigen::VectorXf coeff;
-  sac.getModelCoefficients (coeff);
-  EXPECT_EQ ((int)coeff.size (), 4);
-  EXPECT_NEAR (coeff[0],  0.5590537786, 1e-4);
-  EXPECT_NEAR (coeff[1],  0.3575230539, 1e-4);
-  EXPECT_NEAR (coeff[2],  0.7480883598, 1e-4);
-  EXPECT_NEAR (coeff[3], -0.622878551,  1e-4);
-
-  Eigen::VectorXf coeff_refined;
-  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ ((int)coeff_refined.size (), 4);
-  EXPECT_NEAR (coeff_refined[0],  0.5554245114, 1e-4);
-  EXPECT_NEAR (coeff_refined[1],  0.3644647598, 1e-4);
-  EXPECT_NEAR (coeff_refined[2],  0.747441709,  1e-4);
-  EXPECT_NEAR (coeff_refined[3], -0.619598031,  1e-4);
-
-  // Projection tests
-  PointCloud<PointXYZ> proj_points;
-  model->projectPoints (inliers, coeff_refined, proj_points);
-  EXPECT_NEAR (proj_points.points[20].x,  1.12661,   1e-4);
-  EXPECT_NEAR (proj_points.points[20].y,  0.0152829, 1e-4);
-  EXPECT_NEAR (proj_points.points[20].z, -0.0156815, 1e-4);
-
-  EXPECT_NEAR (proj_points.points[30].x,  1.18438,   1e-4);
-  EXPECT_NEAR (proj_points.points[30].y, -0.0635465, 1e-4);
-  EXPECT_NEAR (proj_points.points[30].z, -0.0201715, 1e-4);
-
-  EXPECT_NEAR (proj_points.points[50].x,  1.07499,   1e-4);
-  EXPECT_NEAR (proj_points.points[50].y, -0.0586441, 1e-4);
-  EXPECT_NEAR (proj_points.points[50].z,  0.0587273, 1e-4);
+  verifyPlaneSac(model, sac);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -185,52 +191,7 @@ TEST (LMedS, SampleConsensusModelPlane)
   // Create the LMedS object
   LeastMedianSquares<PointXYZ> sac (model, 0.03);
 
-  // Algorithm tests
-  bool result = sac.computeModel ();
-  ASSERT_EQ (result, true);
-
-  std::vector<int> sample;
-  sac.getModel (sample);
-  EXPECT_EQ ((int)sample.size (), 3);
-  EXPECT_EQ (sample[0], 338);
-  EXPECT_EQ (sample[1], 413);
-  EXPECT_EQ (sample[2], 1626);
-
-  std::vector<int> inliers;
-  sac.getInliers (inliers);
-  EXPECT_EQ ((int)inliers.size (), 2490);
-
-  Eigen::VectorXf coeff;
-  sac.getModelCoefficients (coeff);
-  EXPECT_EQ ((int)coeff.size (), 4);
-  EXPECT_NEAR (coeff[0], -0.5413796306, 1e-4);
-  EXPECT_NEAR (coeff[1], -0.3658693433, 1e-4);
-  EXPECT_NEAR (coeff[2], -0.756999135,  1e-4);
-  EXPECT_NEAR (coeff[3],  0.606127798,  1e-4);
-
-  Eigen::VectorXf coeff_refined;
-  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ ((int)coeff_refined.size (), 4);
-  EXPECT_NEAR (coeff_refined[0],  0.5517195463, 1e-4);
-  EXPECT_NEAR (coeff_refined[1],  0.3651787937, 1e-4);
-  EXPECT_NEAR (coeff_refined[2],  0.74983340,   1e-4);
-  EXPECT_NEAR (coeff_refined[3], -0.6159575582, 1e-4);
-
-  // Projection tests
-  PointCloud<PointXYZ> proj_points;
-  model->projectPoints (inliers, coeff_refined, proj_points);
-
-  EXPECT_NEAR (proj_points.points[20].x,  1.12694,   1e-4);
-  EXPECT_NEAR (proj_points.points[20].y,  0.0154845, 1e-4);
-  EXPECT_NEAR (proj_points.points[20].z, -0.0152713, 1e-4);
-
-  EXPECT_NEAR (proj_points.points[30].x,  1.18486,   1e-4);
-  EXPECT_NEAR (proj_points.points[30].y, -0.0632408, 1e-4);
-  EXPECT_NEAR (proj_points.points[30].z, -0.0195459, 1e-4);
-
-  EXPECT_NEAR (proj_points.points[50].x,  1.07512,   1e-4);
-  EXPECT_NEAR (proj_points.points[50].y, -0.0585533, 1e-4);
-  EXPECT_NEAR (proj_points.points[50].z,  0.058916,  1e-4);
+  verifyPlaneSac(model, sac);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -243,53 +204,7 @@ TEST (MSAC, SampleConsensusModelPlane)
   // Create the MSAC object
   MEstimatorSampleConsensus<PointXYZ> sac (model, 0.03);
 
-  // Algorithm tests
-  bool result = sac.computeModel ();
-  ASSERT_EQ (result, true);
-
-  std::vector<int> sample;
-  sac.getModel (sample);
-  EXPECT_EQ ((int)sample.size (), 3);
-  EXPECT_EQ (sample[0], 464);
-  EXPECT_EQ (sample[1], 1992);
-  EXPECT_EQ (sample[2], 53);
-
-  std::vector<int> inliers;
-  sac.getInliers (inliers);
-  EXPECT_EQ ((int)inliers.size (), 2505);
-
-  Eigen::VectorXf coeff;
-  sac.getModelCoefficients (coeff);
-  EXPECT_EQ ((int)coeff.size (), 4);
-
-  EXPECT_NEAR (coeff[0], -0.5485954285, 1e-4);
-  EXPECT_NEAR (coeff[1], -0.3597415686, 1e-4);
-  EXPECT_NEAR (coeff[2], -0.7547376752, 1e-4);
-  EXPECT_NEAR (coeff[3],  0.6130523086, 1e-4);
-
-  Eigen::VectorXf coeff_refined;
-  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ ((int)coeff_refined.size (), 4);
-  EXPECT_NEAR (coeff_refined[0],  0.5532695055, 1e-4);
-  EXPECT_NEAR (coeff_refined[1],  0.3648152649, 1e-4);
-  EXPECT_NEAR (coeff_refined[2],  0.7488676906, 1e-4);
-  EXPECT_NEAR (coeff_refined[3], -0.617486834,  1e-4);
-
-  // Projection tests
-  PointCloud<PointXYZ> proj_points;
-  model->projectPoints (inliers, coeff_refined, proj_points);
-
-  EXPECT_NEAR (proj_points.points[20].x,  1.12681,   1e-4);
-  EXPECT_NEAR (proj_points.points[20].y,  0.0154031, 1e-4);
-  EXPECT_NEAR (proj_points.points[20].z, -0.0154375, 1e-4);
-
-  EXPECT_NEAR (proj_points.points[30].x,  1.18466,   1e-4);
-  EXPECT_NEAR (proj_points.points[30].y, -0.0633676, 1e-4);
-  EXPECT_NEAR (proj_points.points[30].z, -0.0198059, 1e-4);
-
-  EXPECT_NEAR (proj_points.points[50].x,  1.07506,   1e-4);
-  EXPECT_NEAR (proj_points.points[50].y, -0.0585913, 1e-4);
-  EXPECT_NEAR (proj_points.points[50].z,  0.0588374, 1e-4);
+  verifyPlaneSac(model, sac);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -305,52 +220,7 @@ TEST (RRANSAC, SampleConsensusModelPlane)
   sac.setFractionNrPretest (10.0);
   ASSERT_EQ (sac.getFractionNrPretest (), 10.0);
 
-  // Algorithm tests
-  bool result = sac.computeModel ();
-  ASSERT_EQ (result, true);
-
-  std::vector<int> sample;
-  sac.getModel (sample);
-  EXPECT_EQ ((int)sample.size (), 3);
-  EXPECT_EQ (sample[0], 2758);
-  EXPECT_EQ (sample[1], 1294);
-  EXPECT_EQ (sample[2], 2570);
-
-  std::vector<int> inliers;
-  sac.getInliers (inliers);
-  EXPECT_EQ ((int)inliers.size (), 2482);
-
-  Eigen::VectorXf coeff;
-  sac.getModelCoefficients (coeff);
-  EXPECT_EQ ((int)coeff.size (), 4);
-  EXPECT_NEAR (coeff[0], -0.5901594758, 1e-4);
-  EXPECT_NEAR (coeff[1], -0.3539851904, 1e-4);
-  EXPECT_NEAR (coeff[2], -0.725538671,  1e-4);
-  EXPECT_NEAR (coeff[3],  0.6641977429, 1e-4);
-
-  Eigen::VectorXf coeff_refined;
-  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ ((int)coeff_refined.size (), 4);
-  EXPECT_NEAR (fabs (coeff_refined[0]), 0.5598492622, 1e-4);
-  EXPECT_NEAR (fabs (coeff_refined[1]), 0.3632659912, 1e-4);
-  EXPECT_NEAR (fabs (coeff_refined[2]), 0.7447191477, 1e-4);
-  EXPECT_NEAR (fabs (coeff_refined[3]), 0.6246083975, 1e-4);
-
-  // Projection tests
-  PointCloud<PointXYZ> proj_points;
-  model->projectPoints (inliers, coeff_refined, proj_points);
-
-  EXPECT_NEAR (proj_points.points[20].x,  1.1266,    1e-4);
-  EXPECT_NEAR (proj_points.points[20].y,  0.0152881, 1e-4);
-  EXPECT_NEAR (proj_points.points[20].z, -0.0156696, 1e-4);
-
-  EXPECT_NEAR (proj_points.points[30].x,  1.18417,   1e-4);
-  EXPECT_NEAR (proj_points.points[30].y, -0.0636751, 1e-4);
-  EXPECT_NEAR (proj_points.points[30].z, -0.0204345, 1e-4);
-
-  EXPECT_NEAR (proj_points.points[50].x,  1.07519,   1e-4);
-  EXPECT_NEAR (proj_points.points[50].y, -0.0585223, 1e-4);
-  EXPECT_NEAR (proj_points.points[50].z,  0.0589761, 1e-4);
+  verifyPlaneSac(model, sac, 600, 1.0 , 1.0, 0.01);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -366,52 +236,7 @@ TEST (RMSAC, SampleConsensusModelPlane)
   sac.setFractionNrPretest (10.0);
   ASSERT_EQ (sac.getFractionNrPretest (), 10.0);
 
-  // Algorithm tests
-  bool result = sac.computeModel ();
-  ASSERT_EQ (result, true);
-
-  std::vector<int> sample;
-  sac.getModel (sample);
-  EXPECT_EQ ((int)sample.size (), 3);
-  EXPECT_EQ (sample[0], 2758);
-  EXPECT_EQ (sample[1], 1294);
-  EXPECT_EQ (sample[2], 2570);
-
-  std::vector<int> inliers;
-  sac.getInliers (inliers);
-  EXPECT_EQ ((int)inliers.size (), 2482);
-
-  Eigen::VectorXf coeff;
-  sac.getModelCoefficients (coeff);
-  EXPECT_EQ ((int)coeff.size (), 4);
-  EXPECT_NEAR (coeff[0], -0.5901594758, 1e-4);
-  EXPECT_NEAR (coeff[1], -0.3539851904, 1e-4);
-  EXPECT_NEAR (coeff[2], -0.725538671,  1e-4);
-  EXPECT_NEAR (coeff[3],  0.6641977429, 1e-4);
-
-  Eigen::VectorXf coeff_refined;
-  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ ((int)coeff_refined.size (), 4);
-  EXPECT_NEAR (fabs (coeff_refined[0]), 0.5598492622, 1e-4);
-  EXPECT_NEAR (fabs (coeff_refined[1]), 0.3632659912, 1e-4);
-  EXPECT_NEAR (fabs (coeff_refined[2]), 0.7447191477, 1e-4);
-  EXPECT_NEAR (fabs (coeff_refined[3]), 0.6246083975, 1e-4);
-
-  // Projection tests
-  PointCloud<PointXYZ> proj_points;
-  model->projectPoints (inliers, coeff_refined, proj_points);
-
-  EXPECT_NEAR (proj_points.points[20].x,  1.1266,    1e-4);
-  EXPECT_NEAR (proj_points.points[20].y,  0.0152881, 1e-4);
-  EXPECT_NEAR (proj_points.points[20].z, -0.0156696, 1e-4);
-
-  EXPECT_NEAR (proj_points.points[30].x,  1.18417,   1e-4);
-  EXPECT_NEAR (proj_points.points[30].y, -0.0636751, 1e-4);
-  EXPECT_NEAR (proj_points.points[30].z, -0.0204345, 1e-4);
-
-  EXPECT_NEAR (proj_points.points[50].x,  1.07519,   1e-4);
-  EXPECT_NEAR (proj_points.points[50].y, -0.0585223, 1e-4);
-  EXPECT_NEAR (proj_points.points[50].z,  0.0589761, 1e-4);
+  verifyPlaneSac(model, sac, 600, 1.0, 1.0, 0.01);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -424,53 +249,7 @@ TEST (MLESAC, SampleConsensusModelPlane)
   // Create the MSAC object
   MaximumLikelihoodSampleConsensus<PointXYZ> sac (model, 0.03);
 
-  // Algorithm tests
-  bool result = sac.computeModel ();
-  ASSERT_EQ (result, true);
-
-  std::vector<int> sample;
-  sac.getModel (sample);
-  EXPECT_EQ ((int)sample.size (), 3);
-  EXPECT_EQ (sample[0], 2758);
-  EXPECT_EQ (sample[1], 1294);
-  EXPECT_EQ (sample[2], 2570);
-
-  std::vector<int> inliers;
-  sac.getInliers (inliers);
-  EXPECT_EQ ((int)inliers.size (), 2214);
-
-  Eigen::VectorXf coeff;
-  sac.getModelCoefficients (coeff);
-  EXPECT_EQ ((int)coeff.size (), 4);
-
-  EXPECT_NEAR (coeff[0], -0.5901594758, 1e-4);
-  EXPECT_NEAR (coeff[1], -0.3539851904, 1e-4);
-  EXPECT_NEAR (coeff[2], -0.725538671,  1e-4);
-  EXPECT_NEAR (coeff[3],  0.664197742,  1e-4);
-
-  Eigen::VectorXf coeff_refined;
-  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ ((int)coeff_refined.size (), 4);
-  EXPECT_NEAR (fabs (coeff_refined[0]), 0.5599190593, 1e-4);
-  EXPECT_NEAR (fabs (coeff_refined[1]), 0.3627234101, 1e-4);
-  EXPECT_NEAR (fabs (coeff_refined[2]), 0.7449311614, 1e-4);
-  EXPECT_NEAR (fabs (coeff_refined[3]), 0.625774502,  1e-4);
-
-  // Projection tests
-  PointCloud<PointXYZ> proj_points;
-  model->projectPoints (inliers, coeff_refined, proj_points);
-
-  EXPECT_NEAR (proj_points.points[20].x,  1.12721,   1e-4);
-  EXPECT_NEAR (proj_points.points[20].y,  0.01568,   1e-4);
-  EXPECT_NEAR (proj_points.points[20].z, -0.014851,  1e-4);
-
-  EXPECT_NEAR (proj_points.points[30].x,  1.18476,   1e-4);
-  EXPECT_NEAR (proj_points.points[30].y, -0.063291,  1e-4);
-  EXPECT_NEAR (proj_points.points[30].z, -0.019650,  1e-4);
-
-  EXPECT_NEAR (proj_points.points[50].x,  1.07578,   1e-4);
-  EXPECT_NEAR (proj_points.points[50].y, -0.058144, 1e-4);
-  EXPECT_NEAR (proj_points.points[50].z,  0.059756, 1e-4);
+  verifyPlaneSac(model, sac, 1000, 0.3, 0.2, 0.01);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -505,10 +284,6 @@ TEST (RANSAC, SampleConsensusModelSphere)
   std::vector<int> sample;
   sac.getModel (sample);
   EXPECT_EQ ((int)sample.size (), 4);
-  EXPECT_EQ (sample[0], 1);
-  EXPECT_EQ (sample[1], 3);
-  EXPECT_EQ (sample[2], 7);
-  EXPECT_EQ (sample[3], 2);
 
   std::vector<int> inliers;
   sac.getInliers (inliers);
@@ -517,18 +292,16 @@ TEST (RANSAC, SampleConsensusModelSphere)
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ ((int)coeff.size (), 4);
-  EXPECT_NEAR (coeff[0], 2.00052,  1e-4);
-  EXPECT_NEAR (coeff[1], 1.9997,   1e-4);
-  EXPECT_NEAR (coeff[2], 2.00003,  1e-4);
-  EXPECT_NEAR (coeff[3], 0.999565, 1e-4);
+  EXPECT_NEAR (coeff[0]/coeff[3], 2,  1e-3);
+  EXPECT_NEAR (coeff[1]/coeff[3], 2,  1e-3);
+  EXPECT_NEAR (coeff[2]/coeff[3], 2,  1e-3);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ ((int)coeff_refined.size (), 4);
-  EXPECT_NEAR (coeff_refined[0], 2.00023,  1e-3);
-  EXPECT_NEAR (coeff_refined[1], 1.99979,  1e-3);
-  EXPECT_NEAR (coeff_refined[2], 1.99979,  1e-3);
-  EXPECT_NEAR (coeff_refined[3], 0.999888, 1e-3);
+  EXPECT_NEAR (coeff_refined[0]/coeff_refined[3], 2,  1e-3);
+  EXPECT_NEAR (coeff_refined[1]/coeff_refined[3], 2,  1e-3);
+  EXPECT_NEAR (coeff_refined[2]/coeff_refined[3], 2,  1e-3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -597,8 +370,6 @@ TEST (RANSAC, SampleConsensusModelCylinder)
   std::vector<int> sample;
   sac.getModel (sample);
   EXPECT_EQ ((int)sample.size (), 2);
-  EXPECT_EQ (sample[0], 16);
-  EXPECT_EQ (sample[1], 7);
 
   std::vector<int> inliers;
   sac.getInliers (inliers);
@@ -607,14 +378,14 @@ TEST (RANSAC, SampleConsensusModelCylinder)
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ ((int)coeff.size (), 7);
-  EXPECT_NEAR (coeff[0], -0.500038, 1e-4);
-  EXPECT_NEAR (coeff[1],  1.69997,  1e-4);
-  EXPECT_NEAR (coeff[6],  0.499934, 1e-4);
+  EXPECT_NEAR (coeff[0], -0.5, 1e-3);
+  EXPECT_NEAR (coeff[1],  1.7,  1e-3);
+  EXPECT_NEAR (coeff[6],  0.5, 1e-3);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ ((int)coeff_refined.size (), 7);
-  EXPECT_NEAR (coeff_refined[6], 0.499966, 1e-4);
+  EXPECT_NEAR (coeff_refined[6], 0.5, 1e-3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -658,9 +429,6 @@ TEST (RANSAC, SampleConsensusModelCircle2D)
   std::vector<int> sample;
   sac.getModel (sample);
   EXPECT_EQ ((int)sample.size (), 3);
-  EXPECT_EQ (sample[0], 15);
-  EXPECT_EQ (sample[1], 7);
-  EXPECT_EQ (sample[2], 14);
 
   std::vector<int> inliers;
   sac.getInliers (inliers);
@@ -669,16 +437,16 @@ TEST (RANSAC, SampleConsensusModelCircle2D)
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ ((int)coeff.size (), 3);
-  EXPECT_NEAR (coeff[0],  2.9988,   1e-4);
-  EXPECT_NEAR (coeff[1], -4.99885,  1e-4);
-  EXPECT_NEAR (coeff[2],  0.998406, 1e-4);
+  EXPECT_NEAR (coeff[0],  3, 1e-3);
+  EXPECT_NEAR (coeff[1], -5, 1e-3);
+  EXPECT_NEAR (coeff[2],  1, 1e-3);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ ((int)coeff_refined.size (), 3);
-  EXPECT_NEAR (coeff_refined[0],  2.99999,  1e-4);
-  EXPECT_NEAR (coeff_refined[1], -5.00004,  1e-4);
-  EXPECT_NEAR (coeff_refined[2],  0.999962, 1e-4);
+  EXPECT_NEAR (coeff_refined[0],  3, 1e-3);
+  EXPECT_NEAR (coeff_refined[1], -5, 1e-3);
+  EXPECT_NEAR (coeff_refined[2],  1, 1e-3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -714,8 +482,6 @@ TEST (RANSAC, SampleConsensusModelLine)
   std::vector<int> sample;
   sac.getModel (sample);
   EXPECT_EQ ((int)sample.size (), 2);
-  EXPECT_EQ (sample[0], 1);
-  EXPECT_EQ (sample[1], 3);
 
   std::vector<int> inliers;
   sac.getInliers (inliers);
@@ -724,16 +490,14 @@ TEST (RANSAC, SampleConsensusModelLine)
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ ((int)coeff.size (), 6);
-  EXPECT_NEAR (coeff[3], 0.57735, 1e-4);
-  EXPECT_NEAR (coeff[4], 0.57735, 1e-4);
-  EXPECT_NEAR (coeff[5], 0.57735, 1e-4);
+  EXPECT_NEAR (coeff[4]/coeff[3], 1, 1e-4);
+  EXPECT_NEAR (coeff[5]/coeff[3], 1, 1e-4);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ ((int)coeff_refined.size (), 6);
-  EXPECT_NEAR (coeff_refined[3], 0.57735, 1e-4);
-  EXPECT_NEAR (coeff_refined[4], 0.57735, 1e-4);
-  EXPECT_NEAR (coeff_refined[5], 0.57735, 1e-4);
+  EXPECT_NEAR (coeff[4]/coeff[3], 1, 1e-4);
+  EXPECT_NEAR (coeff[5]/coeff[3], 1, 1e-4);
 
   // Projection tests
   PointCloud<PointXYZ> proj_points;
@@ -763,52 +527,7 @@ TEST (RANSAC, SampleConsensusModelNormalPlane)
   // Create the RANSAC object
   RandomSampleConsensus<PointXYZ> sac (model, 0.03);
 
-  // Algorithm tests
-  bool result = sac.computeModel ();
-  ASSERT_EQ (result, true);
-
-  std::vector<int> sample;
-  sac.getModel (sample);
-  EXPECT_EQ ((int)sample.size (), 3);
-  EXPECT_EQ (sample[0], 1818);
-  EXPECT_EQ (sample[1], 1567);
-  EXPECT_EQ (sample[2], 2064);
-
-  std::vector<int> inliers;
-  sac.getInliers (inliers);
-  EXPECT_EQ ((int)inliers.size (), 2440);
-
-  Eigen::VectorXf coeff;
-  sac.getModelCoefficients (coeff);
-  EXPECT_EQ ((int)coeff.size (), 4);
-  EXPECT_NEAR (coeff[0],  0.5590537786, 1e-4);
-  EXPECT_NEAR (coeff[1],  0.3575230538, 1e-4);
-  EXPECT_NEAR (coeff[2],  0.7480884194, 1e-4);
-  EXPECT_NEAR (coeff[3], -0.6228785514, 1e-4);
-
-  Eigen::VectorXf coeff_refined;
-  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ ((int)coeff_refined.size (), 4);
-  EXPECT_NEAR (fabs (coeff_refined[0]), 0.552499, 1e-4);
-  EXPECT_NEAR (fabs (coeff_refined[1]), 0.364361, 1e-4);
-  EXPECT_NEAR (fabs (coeff_refined[2]), 0.749656, 1e-4);
-  EXPECT_NEAR (fabs (coeff_refined[3]), 0.617206, 1e-4);
-
-  // Projection tests
-  PointCloud<PointXYZ> proj_points;
-  model->projectPoints (inliers, coeff_refined, proj_points);
-
-  EXPECT_NEAR (proj_points.points[20].x,  1.12707,   1e-4);
-  EXPECT_NEAR (proj_points.points[20].y,  0.0155766, 1e-4);
-  EXPECT_NEAR (proj_points.points[20].z, -0.0149861, 1e-4);
-
-  EXPECT_NEAR (proj_points.points[30].x,  1.185,    1e-4);
-  EXPECT_NEAR (proj_points.points[30].y, -0.063224, 1e-4);
-  EXPECT_NEAR (proj_points.points[30].z, -0.019343, 1e-4);
-
-  EXPECT_NEAR (proj_points.points[50].x,  1.07528,   1e-4);
-  EXPECT_NEAR (proj_points.points[50].y, -0.0584513, 1e-4);
-  EXPECT_NEAR (proj_points.points[50].z,  0.0591309, 1e-4);
+  verifyPlaneSac(model, sac);
 }
 
 /* ---[ */

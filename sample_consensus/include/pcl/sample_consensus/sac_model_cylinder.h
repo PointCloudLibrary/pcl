@@ -196,6 +196,13 @@ namespace pcl
         */
       bool isModelValid (const Eigen::VectorXf &model_coefficients);
 
+      /** \brief Check if a sample of indices results in a good sample of points
+        * indices. Pure virtual.
+        * \param samples the resultant index samples
+        */
+      bool
+      isSampleGood(const std::vector<int> &samples) const;
+
     private:
       /** \brief The axis along which we need to search for a plane perpendicular to. */
       Eigen::Vector3f axis_;
@@ -208,9 +215,6 @@ namespace pcl
 
       /** \brief temporary pointer to a list of given indices for optimizeModelCoefficients () */
       const std::vector<int> *tmp_inliers_;
-
-      /** \brief Define the maximum number of iterations for collinearity checks */
-      const static int MAX_ITERATIONS_COLLINEAR = 1000;
 
       /** \brief Cost function to be minimized
         * \param p a pointer to our data structure array
