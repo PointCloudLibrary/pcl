@@ -270,10 +270,10 @@ namespace pcl
 
     protected:
       /** \brief Fills a sample array with random samples from the indices_ vector
-       * Sure, there are some swaps in there but it is linear in the size of the sample, no stupid while loop to
-       * compare the elements between them
-       * \param model_coefficients the set of model coefficients
-       */
+        * Sure, there are some swaps in there but it is linear in the size of the sample, no stupid while loop to
+        * compare the elements between them
+        * \param model_coefficients the set of model coefficients
+        */
       inline void
       drawIndexSample (std::vector<int> & sample)
       {
@@ -303,8 +303,7 @@ namespace pcl
         */
       double radius_min_, radius_max_;
 
-      /** Data containing a shuffled version of the indices. This is used and modified when drawing samples
-       */
+      /** Data containing a shuffled version of the indices. This is used and modified when drawing samples. */
       std::vector<int> shuffled_indices_;
   };
 
