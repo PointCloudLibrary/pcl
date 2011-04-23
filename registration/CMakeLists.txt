@@ -7,7 +7,6 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
-    # Install include files
     set(incs include/pcl/${SUBSYS_NAME}/correspondence_estimation.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_distance.h
@@ -48,12 +47,11 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_kdtree pcl_sample_consensus
-        ${Boost_LIBRARIES})
+    target_link_libraries(${LIB_NAME} pcl_kdtree pcl_sample_consensus)
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
         "${EXT_DEPS}" "" "" "")
-      
+    # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 endif(build)
