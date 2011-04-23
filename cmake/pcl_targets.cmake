@@ -77,8 +77,16 @@ macro(PCL_ADD_LIBRARY _name _component)
         set(_lib_type "STATIC")
     endif(PCL_SHARED_LIBS)
     add_library(${_name} ${_lib_type} ${ARGN})
-    #must link explicitly against boost.
+    # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
+    #
+    # Only link if needed
+    if(UNIX)
+      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS --as-needed)
+    elseif(WIN32)
+      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS /OPT:REF)
+    endif()
+    #
     set_target_properties(${_name} PROPERTIES
         VERSION ${PCL_VERSION}
         SOVERSION ${PCL_MAJOR_VERSION}
@@ -96,6 +104,16 @@ endmacro(PCL_ADD_LIBRARY)
 # ARGN the source files for the library.
 macro(PCL_ADD_EXECUTABLE _name _component)
     add_executable(${_name} ${ARGN})
+    # must link explicitly against boost.
+    target_link_libraries(${_name} ${Boost_LIBRARIES})
+    #
+    # Only link if needed
+    if(UNIX)
+      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS --as-needed)
+    elseif(WIN32)
+      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS /OPT:REF)
+    endif()
+    #
     set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
         COMPONENT ${_component})
