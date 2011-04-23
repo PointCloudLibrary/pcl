@@ -1,16 +1,14 @@
 if(BUILD_TESTS)
     if(QHULL_FOUND)
-        add_executable(test_surface test_surface.cpp)
-        PCL_ADD_OPENMP_FLAGS(test_surface)
-        target_link_libraries(test_surface pcl_io pcl_kdtree pcl_surface
-            pcl_features ${GTEST_BOTH_LIBRARIES})
-        PCL_LINK_OPENMP(test_surface)
-        add_test(surface_surface test_surface ${PCL_SOURCE_DIR}/test/bun0.pcd)
+        PCL_ADD_TEST(surface_surface test_surface
+                     FILES test_surface.cpp
+                     LINK_WITH pcl_io pcl_kdtree pcl_surface pcl_features
+                     ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
     endif(QHULL_FOUND)
 
-    add_executable(surface_example surface_example.cpp)
-    target_link_libraries(surface_example pcl_io pcl_kdtree pcl_surface
-        ${GTEST_BOTH_LIBRARIES})
-    add_test(surface_reconstruction surface_example ${PCL_SOURCE_DIR}/test/bun0.pcd)
+    PCL_ADD_TEST(surface_reconstruction surface_example 
+                 FILES surface_example.cpp
+                 LINK_WITH pcl_io pcl_kdtree pcl_surface
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
 endif(BUILD_TESTS)
 

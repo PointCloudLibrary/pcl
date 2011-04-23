@@ -19,13 +19,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 
 # ---[ Release/Debug specific flags
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_definitions("-DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
+  add_definitions("-DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
 endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 # ---[ Unix/Darwin/Windows specific flags
 if(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing")
+  add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing")
 else(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-add_definitions ("-W0 -DBOOST_ALL_NO_LIB")
+  add_definitions ("-W0 -DBOOST_ALL_NO_LIB")
 endif(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
 include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
@@ -40,12 +40,12 @@ set(PCL_POINTCLOUDS_DIR ${PCL_RESOURCES_DIR}/pointclouds)
 
 # Configure FindPCL.cmake
 configure_file("${PCL_SOURCE_DIR}/FindPCL.cmake.in"
-    "${PCL_BINARY_DIR}/FindPCL.cmake" @ONLY)
+               "${PCL_BINARY_DIR}/FindPCL.cmake" @ONLY)
 # Add an "uninstall" target
 configure_file("${PCL_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
-    "${PCL_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
+               "${PCL_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
 add_custom_target(uninstall "${CMAKE_COMMAND}" -P
-    "${PCL_BINARY_DIR}/uninstall_target.cmake")
+                  "${PCL_BINARY_DIR}/uninstall_target.cmake")
 
 ###
 # this is copy paste form http://www.itk.org/Wiki/CMake_RPATH_handling

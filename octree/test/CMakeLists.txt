@@ -1,0 +1,6 @@
+if(BUILD_TESTS)
+    PCL_ADD_TEST(a_octree_test test_octree
+                 FILES test_octree.cpp
+                 LINK_WITH pcl_octree)
+endif(BUILD_TESTS)
+

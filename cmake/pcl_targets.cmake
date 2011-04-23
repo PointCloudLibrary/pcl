@@ -119,6 +119,40 @@ macro(PCL_ADD_EXECUTABLE _name _component)
         COMPONENT ${_component})
 endmacro(PCL_ADD_EXECUTABLE)
 
+###############################################################################
+# Add a test target.
+# _name The test name.
+# _exename The exe name.
+# ARGN :
+#    FILES the source files for the test
+#    ARGUMENTS Arguments for test executable
+#    LINK_WITH link test executable with libraries
+macro(PCL_ADD_TEST _name _exename)
+    set(options)
+    set(oneValueArgs)
+    set(multiValueArgs FILES ARGUMENTS LINK_WITH)
+    cmake_parse_arguments(PCL_ADD_TEST "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+    add_executable(${_exename} ${PCL_ADD_TEST_FILES})
+    PCL_ADD_OPENMP_FLAGS(${_exename})
+    # must link explicitly against boost only on Windows
+    target_link_libraries(${_exename} ${Boost_LIBRARIES})
+    #
+    # Only link if needed
+    if(UNIX)
+      SET_TARGET_PROPERTIES(${_exename} PROPERTIES LINK_FLAGS --as-needed)
+    elseif(WIN32)
+      SET_TARGET_PROPERTIES(${_exename} PROPERTIES LINK_FLAGS /OPT:REF)
+    endif()
+    # 
+    target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
+    PCL_LINK_OPENMP(${_exename})
+    set_target_properties(${_exename} PROPERTIES DEBUG_OUTPUT_NAME "${_exename}${CMAKE_DEBUG_POSTFIX}")
+    set_target_properties(${_exename} PROPERTIES RELEASE_OUTPUT_NAME "${_exename}${CMAKE_RELEASE_POSTFIX}")
+    install(TARGETS ${_exename} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+            COMPONENT ${_component})
+	add_test(${_name} ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
+endmacro(PCL_ADD_TEST)
+###############################################################################
 
 ###############################################################################
 # Add compile flags to a target (because CMake doesn't provide something so

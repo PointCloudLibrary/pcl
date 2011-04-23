@@ -20,47 +20,39 @@ if(build)
     enable_testing()
     include_directories(${GTEST_INCLUDE_DIRS})
 
-    add_executable (test_feature test_feature.cpp)
-    PCL_ADD_OPENMP_FLAGS(test_feature)
-    target_link_libraries (test_feature pcl_features pcl_kdtree pcl_io
-        ${GTEST_BOTH_LIBRARIES})
-    PCL_LINK_OPENMP(test_feature)
+    PCL_ADD_TEST(a_feature_test test_feature
+                 FILES test_feature.cpp
+                 LINK_WITH pcl_features pcl_kdtree pcl_io
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
 
-    add_executable (test_sample_consensus test_sample_consensus.cpp)
-    PCL_ADD_OPENMP_FLAGS(test_sample_consensus)
-    target_link_libraries (test_sample_consensus pcl_io pcl_sample_consensus pcl_kdtree pcl_features ${GTEST_BOTH_LIBRARIES})
-    PCL_LINK_OPENMP(test_sample_consensus)
+    PCL_ADD_TEST(a_sample_consensus_test test_sample_consensus
+                 FILES test_sample_consensus.cpp
+                 LINK_WITH pcl_io pcl_sample_consensus pcl_kdtree pcl_features
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/sac_plane_test.pcd)
 
-    add_executable (test_transforms test_transforms.cpp)
-    target_link_libraries (test_transforms pcl_io ${GTEST_BOTH_LIBRARIES})
+    PCL_ADD_TEST(a_transforms_test test_transforms
+                 FILES test_transforms.cpp
+                 LINK_WITH pcl_io
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
 
-    add_executable (test_segmentation test_segmentation.cpp)
-    target_link_libraries (test_segmentation pcl_io pcl_segmentation ${GTEST_BOTH_LIBRARIES})
+    PCL_ADD_TEST(a_segmentation_test test_segmentation
+                 FILES test_segmentation.cpp
+                 LINK_WITH pcl_io pcl_segmentation
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
 
-    add_executable (test_registration test_registration.cpp)
-    PCL_ADD_OPENMP_FLAGS(test_registration)
-    target_link_libraries (test_registration pcl_io pcl_registration pcl_features ${GTEST_BOTH_LIBRARIES})
-    target_link_libraries (test_registration ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
-    PCL_LINK_OPENMP(test_registration)
+    PCL_ADD_TEST(a_registration_test test_registration
+                 FILES test_registration.cpp
+                 LINK_WITH pcl_io pcl_registration pcl_features
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd)
 
-    add_executable (test_keypoints test_keypoints.cpp)
-    target_link_libraries (test_keypoints pcl_io pcl_kdtree pcl_filters ${GTEST_BOTH_LIBRARIES})
+    PCL_ADD_TEST(a_keypoints_test test_keypoints
+                 FILES test_keypoints.cpp
+                 LINK_WITH pcl_io pcl_kdtree pcl_filters
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/cturtle.pcd)
 
-    add_executable (test_ii_normals test_ii_normals.cpp)
-    PCL_ADD_OPENMP_FLAGS(test_ii_normals)
-    target_link_libraries (test_ii_normals pcl_io pcl_features ${GTEST_BOTH_LIBRARIES})
-    PCL_LINK_OPENMP(test_ii_normals)
+    PCL_ADD_TEST(a_ii_normals_test test_ii_normals
+                 FILES test_ii_normals.cpp
+                 LINK_WITH pcl_io pcl_features
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd)
 
-    add_executable (test_octree test_octree.cpp)
-    target_link_libraries (test_octree pcl_octree ${GTEST_BOTH_LIBRARIES})
-    PCL_ADD_OPENMP_FLAGS(test_octree)
-
-    add_test(a_keypoints_test test_keypoints ${PCL_SOURCE_DIR}/test/cturtle.pcd)
-    add_test(a_sample_consensus_test test_sample_consensus ${PCL_SOURCE_DIR}/test/sac_plane_test.pcd)
-    add_test(a_octree_test test_octree)
-    add_test(a_transforms_test test_transforms ${PCL_SOURCE_DIR}/test/bun0.pcd)
-    add_test(a_registration_test test_registration ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd)
-    add_test(a_feature_test test_feature ${PCL_SOURCE_DIR}/test/bun0.pcd)
-    add_test(a_ii_normals_test test_ii_normals ${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd)
-    add_test(a_segmentation_test test_segmentation ${PCL_SOURCE_DIR}/test/bun0.pcd)
 endif(build)
