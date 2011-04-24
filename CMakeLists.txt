@@ -20,7 +20,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 # ---[ Release/Debug specific flags
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
   add_definitions("-DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
+	set(CMAKE_RELEASE_POSTFIX "")
+elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	set(CMAKE_DEBUG_POSTFIX "-gd")
 endif(CMAKE_BUILD_TYPE STREQUAL "Release")
+
 # ---[ Unix/Darwin/Windows specific flags
 if(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing")

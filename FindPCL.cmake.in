@@ -37,6 +37,8 @@
 include(FindPackageHandleStandardArgs)
 #set a suffix based on project name and version
 set(PCL_SUFFIX @PROJECT_NAME_LOWER@-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@)
+#set a suffix for debug libraries
+set(PCL_DEBUG_SUFFIX @CMAKE_DEBUG_POSTFIX@)
 
 #set all pcl component and their account into variables
 set(pcl_all_components io common kdtree keypoints filters range_image registration sample_consensus segmentation features surface octree visualization )
@@ -156,9 +158,18 @@ foreach(component ${PCL_FIND_COMPONENTS})
     HINTS /usr/local 
           ${${PC_PCL_COMPONENT}_LIBDIR} ${${PC_PCL_COMPONENT}_LIBRARY_DIRS}
           ${PCL_ROOT} ENV PCL_ROOT
-    DOC "path to ${pcl_component} library")  
+    DOC "path to ${pcl_component} library")
   get_filename_component(component_library_path 
 		${${PCL_COMPONENT_LIBRARY}}
+    PATH)
+
+  find_library(${PCL_COMPONENT_LIBRARY}_DEBUG ${pcl_component}${PCL_DEBUG_SUFFIX}
+    HINTS /usr/local 
+          ${${PC_PCL_COMPONENT}_LIBDIR} ${${PC_PCL_COMPONENT}_LIBRARY_DIRS}
+          ${PCL_ROOT} ENV PCL_ROOT
+    DOC "path to ${pcl_component} library debug")  
+  get_filename_component(component_library_path 
+		${${PCL_COMPONENT_LIBRARY}_DEBUG}
     PATH)
 
   find_package_handle_standard_args(${PCL_COMPONENT} DEFAULT_MSG
