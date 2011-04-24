@@ -171,6 +171,8 @@ namespace pcl
     #else
         #define PCL_EXPORTS
     #endif
+#else
+    #define PCL_EXPORTS
 #endif
 
 #if defined WIN32 || defined _WIN32
