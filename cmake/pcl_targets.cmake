@@ -146,7 +146,7 @@ macro(PCL_ADD_TEST _name _exename)
     # 
     target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
     PCL_LINK_OPENMP(${_exename})
-	add_test(${_name} ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
+  	add_test(${_name} ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
 endmacro(PCL_ADD_TEST)
 
 
