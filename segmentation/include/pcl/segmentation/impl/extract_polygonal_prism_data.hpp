@@ -255,9 +255,9 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   deinitCompute ();
 }
 
-#define PCL_INSTANTIATE_ExtractPolygonalPrismData(T) template class pcl::ExtractPolygonalPrismData<T>;
-#define PCL_INSTANTIATE_isPointIn2DPolygon(T) template bool pcl::isPointIn2DPolygon<T>(const T&, const pcl::PointCloud<T> &);
-#define PCL_INSTANTIATE_isXYPointIn2DXYPolygon(T) template bool pcl::isXYPointIn2DXYPolygon<T>(const T &, const pcl::PointCloud<T> &);
+#define PCL_INSTANTIATE_ExtractPolygonalPrismData(T) template class PCL_EXPORTS pcl::ExtractPolygonalPrismData<T>;
+#define PCL_INSTANTIATE_isPointIn2DPolygon(T) template bool PCL_EXPORTS pcl::isPointIn2DPolygon<T>(const T&, const pcl::PointCloud<T> &);
+#define PCL_INSTANTIATE_isXYPointIn2DXYPolygon(T) template bool PCL_EXPORTS pcl::isXYPointIn2DXYPolygon<T>(const T &, const pcl::PointCloud<T> &);
 
 #endif    // PCL_SEGMENTATION_IMPL_EXTRACT_POLYGONAL_PRISM_DATA_H_
 

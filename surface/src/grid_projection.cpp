@@ -41,7 +41,7 @@
 #include "pcl/surface/impl/grid_projection.hpp"
 
 // Instantiations of specific point types
-template class pcl::GridProjection<pcl::PointNormal>;
-template class pcl::GridProjection<pcl::PointXYZRGBNormal>;
-template class pcl::GridProjection<pcl::PointXYZINormal>;
+template class PCL_EXPORTS pcl::GridProjection<pcl::PointNormal>;
+template class PCL_EXPORTS pcl::GridProjection<pcl::PointXYZRGBNormal>;
+template class PCL_EXPORTS pcl::GridProjection<pcl::PointXYZINormal>;
 

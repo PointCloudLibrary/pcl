@@ -46,6 +46,8 @@
 #include <boost/weak_ptr.hpp>
 #include <XnCppWrapper.h>
 
+#include <pcl/pcl_macros.h>
+
 namespace openni_wrapper
 {
 //class OpenNIDevice;
@@ -55,7 +57,7 @@ namespace openni_wrapper
  * @author Suat Gedikli
  * @date 02.january 2011
  */
-class OpenNIDriver
+class PCL_EXPORTS OpenNIDriver
 {
 public:
   ~OpenNIDriver () throw ();

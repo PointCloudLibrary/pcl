@@ -82,7 +82,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilter (PointCloud &output)
   output.is_dense = true; // radiusSearch filters invalid points
 }
 
-#define PCL_INSTANTIATE_RadiusOutlierRemoval(T) template class pcl::RadiusOutlierRemoval<T>;
+#define PCL_INSTANTIATE_RadiusOutlierRemoval(T) template class PCL_EXPORTS pcl::RadiusOutlierRemoval<T>;
 
 #endif    // PCL_FILTERS_IMPL_RADIUS_OUTLIER_REMOVAL_H_
 

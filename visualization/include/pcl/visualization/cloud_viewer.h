@@ -52,7 +52,7 @@ namespace pcl
       * \author Ethan Rublee
       * \ingroup visualization
       */
-    class CloudViewer
+    class PCL_EXPORTS CloudViewer
     {
       public:
         typedef pcl::PointCloud<pcl::PointXYZRGB> ColorCloud;

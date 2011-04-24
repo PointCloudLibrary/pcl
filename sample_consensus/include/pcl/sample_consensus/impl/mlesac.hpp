@@ -273,7 +273,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedian (
   median[3] = 0;
 }
 
-#define PCL_INSTANTIATE_MaximumLikelihoodSampleConsensus(T) template class pcl::MaximumLikelihoodSampleConsensus<T>;
+#define PCL_INSTANTIATE_MaximumLikelihoodSampleConsensus(T) template class PCL_EXPORTS pcl::MaximumLikelihoodSampleConsensus<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
 

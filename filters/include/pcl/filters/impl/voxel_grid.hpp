@@ -336,8 +336,8 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   output.width = output.points.size ();
 }
 
-#define PCL_INSTANTIATE_VoxelGrid(T) template class pcl::VoxelGrid<T>;
-#define PCL_INSTANTIATE_getMinMax3D(T) template void pcl::getMinMax3D<T> (const pcl::PointCloud<T>::ConstPtr &, const std::string &, float, float, Eigen::Vector4f &, Eigen::Vector4f &, bool);
+#define PCL_INSTANTIATE_VoxelGrid(T) template class PCL_EXPORTS pcl::VoxelGrid<T>;
+#define PCL_INSTANTIATE_getMinMax3D(T) template PCL_EXPORTS void pcl::getMinMax3D<T> (const pcl::PointCloud<T>::ConstPtr &, const std::string &, float, float, Eigen::Vector4f &, Eigen::Vector4f &, bool);
 
 #endif    // PCL_FILTERS_IMPL_VOXEL_GRID_H_
 

@@ -121,7 +121,7 @@ namespace pcl
     * \ingroup filters
     */
   template <>
-  class RadiusOutlierRemoval<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
+  class PCL_EXPORTS RadiusOutlierRemoval<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
   {
     using Filter<sensor_msgs::PointCloud2>::filter_name_;
     using Filter<sensor_msgs::PointCloud2>::getClassName;

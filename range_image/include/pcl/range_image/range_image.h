@@ -57,7 +57,7 @@ namespace pcl
     *  a 3D scene was captured from a specific view point. 
     * \author Bastian Steder
     */
-  class RangeImage : public pcl::PointCloud<PointWithRange>
+  class /*RANGE_IMAGE_API*/ RangeImage : public pcl::PointCloud<PointWithRange>
   {
     public:
       // =====TYPEDEFS=====
@@ -77,7 +77,7 @@ namespace pcl
       /** Constructor */
       RangeImage ();
       /** Destructor */
-      ~RangeImage ();
+      PCL_EXPORTS ~RangeImage ();
       
       // =====STATIC METHODS=====
       /** \brief Get the size of a certain area when seen from the given pose
@@ -209,7 +209,7 @@ namespace pcl
         * \return a pointer to a new float array containing the range values
         * \note This method allocates a new float array; the caller is responsible for freeing this memory.
         */
-      float*
+      PCL_EXPORTS float*
         getRangesArray () const;
       
       /** Getter for the transformation from the world system into the range image system
@@ -539,11 +539,11 @@ namespace pcl
        *  The patch will have size pixel_size x pixel_size and each pixel
        *  covers world_size/pixel_size meters in the world
        *  You are responsible for deleting the structure afterwards! */
-      float*
+      PCL_EXPORTS float*
         getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int pixel_size, float world_size) const;
       
       //! Same as above, but using the local coordinate frame defined by point and the viewing direction
-      float*
+      PCL_EXPORTS float*
         getInterpolatedSurfaceProjection (const Eigen::Vector3f& point, int pixel_size, float world_size) const;
       
       //! Get the local coordinate frame with 0,0,0 in point, upright and Z as the viewing direction
@@ -558,7 +558,7 @@ namespace pcl
         getRotationToViewerCoordinateFrame (const Eigen::Vector3f& point, Eigen::Affine3f& transformation) const;
 
       /** Get a local coordinate frame at the given point based on the normal. */
-      bool
+      PCL_EXPORTS bool
         getNormalBasedUprightTransformation (const Eigen::Vector3f& point,
                                             float max_dist, Eigen::Affine3f& transformation) const;
       

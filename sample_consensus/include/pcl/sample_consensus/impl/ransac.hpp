@@ -130,7 +130,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
   return (true);
 }
 
-#define PCL_INSTANTIATE_RandomSampleConsensus(T) template class pcl::RandomSampleConsensus<T>;
+#define PCL_INSTANTIATE_RandomSampleConsensus(T) template class PCL_EXPORTS pcl::RandomSampleConsensus<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_RANSAC_H_
 

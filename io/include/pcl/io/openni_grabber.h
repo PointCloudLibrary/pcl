@@ -266,7 +266,7 @@ private:
   */
 };
 
-class OpenNIGrabber : public Grabber
+class PCL_EXPORTS OpenNIGrabber : public Grabber
 {
 public:
   // TODO: improve configuriability, get rid of stoopid dynamic_reconfigure left overs

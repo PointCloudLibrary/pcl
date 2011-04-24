@@ -148,7 +148,7 @@ namespace pcl
     * \ingroup filters
     */
   template <>
-  class ProjectInliers<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
+  class PCL_EXPORTS ProjectInliers<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
   {
     using Filter<sensor_msgs::PointCloud2>::filter_name_;
     using Filter<sensor_msgs::PointCloud2>::getClassName;

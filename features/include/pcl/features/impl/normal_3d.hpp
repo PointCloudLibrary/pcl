@@ -67,6 +67,6 @@ pcl::NormalEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &outpu
   }
 }
 
-#define PCL_INSTANTIATE_NormalEstimation(T,NT) template class pcl::NormalEstimation<T,NT>;
+#define PCL_INSTANTIATE_NormalEstimation(T,NT) template class PCL_EXPORTS pcl::NormalEstimation<T,NT>;
 
 #endif    // PCL_FEATURES_IMPL_NORMAL_3D_H_ 

@@ -126,6 +126,6 @@ pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT>::computePointInt
 }
 
 
-#define PCL_INSTANTIATE_IntensityGradientEstimation(InT,NT,OutT) template class pcl::IntensityGradientEstimation<InT,NT,OutT>;
+#define PCL_INSTANTIATE_IntensityGradientEstimation(InT,NT,OutT) template class PCL_EXPORTS pcl::IntensityGradientEstimation<InT,NT,OutT>;
 
 #endif    // PCL_FEATURES_IMPL_INTENSITY_GRADIENT_H_ 

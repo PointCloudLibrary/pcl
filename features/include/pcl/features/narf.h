@@ -56,7 +56,7 @@ namespace pcl
    *        Please refer to pcl/features/narf_descriptor.h if you want the class derived from pcl Feature.
    * \ingroup features
    */
-  class Narf
+  class PCL_EXPORTS Narf
   {
     public:
       // =====CONSTRUCTOR & DESTRUCTOR=====

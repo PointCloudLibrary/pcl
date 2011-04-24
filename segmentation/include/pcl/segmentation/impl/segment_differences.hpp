@@ -122,8 +122,8 @@ pcl::SegmentDifferences<PointT>::segment (PointCloud &output)
   deinitCompute ();
 }
 
-#define PCL_INSTANTIATE_SegmentDifferences(T) template class pcl::SegmentDifferences<T>;
-#define PCL_INSTANTIATE_getPointCloudDifference(T) template void pcl::getPointCloudDifference<T>(const pcl::PointCloud<T> &, const pcl::PointCloud<T> &, double, const boost::shared_ptr<pcl::KdTree<T> > &, pcl::PointCloud<T> &);
+#define PCL_INSTANTIATE_SegmentDifferences(T) template class PCL_EXPORTS pcl::SegmentDifferences<T>;
+#define PCL_INSTANTIATE_getPointCloudDifference(T) template PCL_EXPORTS void pcl::getPointCloudDifference<T>(const pcl::PointCloud<T> &, const pcl::PointCloud<T> &, double, const boost::shared_ptr<pcl::KdTree<T> > &, pcl::PointCloud<T> &);
 
 #endif        // PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_
 

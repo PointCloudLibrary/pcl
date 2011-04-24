@@ -524,7 +524,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::isModelValid (const Eigen::V
   return (true);
 }
 
-#define PCL_INSTANTIATE_SampleConsensusModelCylinder(PointT, PointNT)	template class pcl::SampleConsensusModelCylinder<PointT, PointNT>;
+#define PCL_INSTANTIATE_SampleConsensusModelCylinder(PointT, PointNT)	template class PCL_EXPORTS pcl::SampleConsensusModelCylinder<PointT, PointNT>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
 

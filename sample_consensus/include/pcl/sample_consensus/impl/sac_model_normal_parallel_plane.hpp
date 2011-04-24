@@ -175,7 +175,7 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::isModelValid (con
   return (true);
 }
 
-#define PCL_INSTANTIATE_SampleConsensusModelNormalParallelPlane(PointT, PointNT) template class pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>;
+#define PCL_INSTANTIATE_SampleConsensusModelNormalParallelPlane(PointT, PointNT) template class PCL_EXPORTS pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_NORMAL_PARALLEL_PLANE_H_
 

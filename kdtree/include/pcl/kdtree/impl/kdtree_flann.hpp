@@ -280,7 +280,7 @@ namespace pcl
 
 }  // end namespace
 
-#define PCL_INSTANTIATE_KdTreeFLANN(T) template class pcl::KdTreeFLANN<T>;
+#define PCL_INSTANTIATE_KdTreeFLANN(T) template class PCL_EXPORTS pcl::KdTreeFLANN<T>;
 
 #endif  //#ifndef _PCL_KDTREE_KDTREE_IMPL_FLANN_H_
 

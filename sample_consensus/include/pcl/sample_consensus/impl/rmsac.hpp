@@ -171,7 +171,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
   return (true);
 }
 
-#define PCL_INSTANTIATE_RandomizedMEstimatorSampleConsensus(T) template class pcl::RandomizedMEstimatorSampleConsensus<T>;
+#define PCL_INSTANTIATE_RandomizedMEstimatorSampleConsensus(T) template class PCL_EXPORTS pcl::RandomizedMEstimatorSampleConsensus<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_RMSAC_H_
 

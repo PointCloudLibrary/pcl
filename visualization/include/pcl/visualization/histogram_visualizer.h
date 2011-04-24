@@ -56,7 +56,7 @@ namespace pcl
       * \author Radu Bogdan Rusu
       * \ingroup visualization
       */
-    class PCLHistogramVisualizer
+    class PCL_EXPORTS PCLHistogramVisualizer
     {
       public:
         /** \brief PCL histogram visualizer constructor. */

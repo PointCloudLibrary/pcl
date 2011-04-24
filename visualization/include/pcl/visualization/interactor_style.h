@@ -72,7 +72,7 @@ namespace pcl
       * \author Radu Bogdan Rusu
       * \ingroup visualization
       */
-    class PCLVisualizerInteractorStyle : public vtkInteractorStyleTrackballCamera
+    class PCL_EXPORTS PCLVisualizerInteractorStyle : public vtkInteractorStyleTrackballCamera
     {
       typedef boost::shared_ptr<CloudActorMap> CloudActorMapPtr;
 

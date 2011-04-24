@@ -99,7 +99,7 @@ pcl::SampleConsensusModelPerpendicularPlane<PointT>::isModelValid (const Eigen::
   return (true);
 }
 
-#define PCL_INSTANTIATE_SampleConsensusModelPerpendicularPlane(T) template class pcl::SampleConsensusModelPerpendicularPlane<T>;
+#define PCL_INSTANTIATE_SampleConsensusModelPerpendicularPlane(T) template class PCL_EXPORTS pcl::SampleConsensusModelPerpendicularPlane<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PERPENDICULAR_PLANE_H_
 

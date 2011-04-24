@@ -299,7 +299,7 @@ pcl::SampleConsensusModelLine<PointT>::doSamplesVerifyModel (
   return (true);
 }
 
-#define PCL_INSTANTIATE_SampleConsensusModelLine(T) template class pcl::SampleConsensusModelLine<T>;
+#define PCL_INSTANTIATE_SampleConsensusModelLine(T) template class PCL_EXPORTS pcl::SampleConsensusModelLine<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_LINE_H_
 

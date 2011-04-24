@@ -38,6 +38,7 @@
 #ifndef PCL_IO_VTK_IO_H_
 #define PCL_IO_VTK_IO_H_
 
+#include <pcl/pcl_macros.h>
 #include <pcl/PolygonMesh.h>
 
 namespace pcl
@@ -49,7 +50,7 @@ namespace pcl
       * \param triangles the polygonal mesh to save
       * \param precision the output ASCII precision
       */
-    int 
+    PCL_EXPORTS int 
     saveVTKFile (const std::string &file_name, const pcl::PolygonMesh &triangles, unsigned precision = 5);
   }
 }

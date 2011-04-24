@@ -310,7 +310,7 @@ pcl::SampleConsensusModelPlane<PointT>::doSamplesVerifyModel (
   return (true);
 }
 
-#define PCL_INSTANTIATE_SampleConsensusModelPlane(T) template class pcl::SampleConsensusModelPlane<T>;
+#define PCL_INSTANTIATE_SampleConsensusModelPlane(T) template class PCL_EXPORTS pcl::SampleConsensusModelPlane<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PLANE_H_
 

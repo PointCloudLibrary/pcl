@@ -202,7 +202,7 @@ namespace pcl
     * \param cloud2 the second input point cloud dataset
     * \param cloud_out the resultant output point cloud dataset
     */
-  bool 
+  PCL_EXPORTS bool 
   concatenatePointCloud (const sensor_msgs::PointCloud2 &cloud1, 
                          const sensor_msgs::PointCloud2 &cloud2, 
                          sensor_msgs::PointCloud2 &cloud_out);
@@ -212,7 +212,7 @@ namespace pcl
     * \param indices the vector of indices representing the points to be copied from \a cloud_in
     * \param cloud_out the resultant output point cloud dataset
     */
-  void 
+  PCL_EXPORTS void 
   copyPointCloud (const sensor_msgs::PointCloud2 &cloud_in, 
                   const std::vector<int> &indices, 
                   sensor_msgs::PointCloud2 &cloud_out);
@@ -261,7 +261,7 @@ namespace pcl
     * \param in the point cloud message
     * \param out the resultant Eigen MatrixXf format containing XYZ0 / point
     */
-  bool 
+  PCL_EXPORTS bool 
   getPointCloudAsEigen (const sensor_msgs::PointCloud2 &in, Eigen::MatrixXf &out);
 
   /** \brief Copy the XYZ dimensions from an Eigen MatrixXf into a sensor_msgs::PointCloud2 message
@@ -269,7 +269,7 @@ namespace pcl
     * \param out the resultant point cloud message
     * \note the method assumes that the PointCloud2 message already has the fields set up properly !
     */
-  bool 
+  PCL_EXPORTS bool 
   getEigenAsPointCloud (Eigen::MatrixXf &in, sensor_msgs::PointCloud2 &out);
 }
 

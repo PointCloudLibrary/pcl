@@ -118,7 +118,7 @@ namespace pcl
     * \ingroup filters
     */
   template <>
-  class PassThrough<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
+  class PCL_EXPORTS PassThrough<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
   {
     typedef sensor_msgs::PointCloud2 PointCloud2;
     typedef PointCloud2::Ptr PointCloud2Ptr;

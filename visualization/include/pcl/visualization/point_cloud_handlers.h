@@ -249,7 +249,7 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PointCloudGeometryHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudGeometryHandler<sensor_msgs::PointCloud2>
     {
       public:
         typedef sensor_msgs::PointCloud2 PointCloud;
@@ -311,7 +311,7 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> : public PointCloudGeometryHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> : public PointCloudGeometryHandler<sensor_msgs::PointCloud2>
     {
       public:
         typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
@@ -338,7 +338,7 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2> : public PointCloudGeometryHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2> : public PointCloudGeometryHandler<sensor_msgs::PointCloud2>
     {
       public:
         typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
@@ -365,7 +365,7 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PointCloudGeometryHandlerCustom<sensor_msgs::PointCloud2> : public PointCloudGeometryHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudGeometryHandlerCustom<sensor_msgs::PointCloud2> : public PointCloudGeometryHandler<sensor_msgs::PointCloud2>
     {
       public:
         typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
@@ -625,7 +625,7 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandler<sensor_msgs::PointCloud2>
     {
       public:
         typedef sensor_msgs::PointCloud2 PointCloud;
@@ -676,7 +676,7 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PointCloudColorHandlerRandom<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerRandom<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
     {
       typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;
@@ -713,7 +713,7 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PointCloudColorHandlerCustom<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerCustom<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
     {
       typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;
@@ -755,7 +755,7 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
     {
       typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;
@@ -789,7 +789,7 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
     {
       typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;

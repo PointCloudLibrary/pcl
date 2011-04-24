@@ -173,7 +173,7 @@ namespace pcl
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   template <>
-  class PCLBase<sensor_msgs::PointCloud2>
+  class PCL_EXPORTS PCLBase<sensor_msgs::PointCloud2>
   {
     public:
       typedef sensor_msgs::PointCloud2 PointCloud2;

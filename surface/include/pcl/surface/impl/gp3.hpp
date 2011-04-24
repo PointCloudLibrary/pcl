@@ -1610,7 +1610,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
 }
 
 #define PCL_INSTANTIATE_GreedyProjectionTriangulation(T)		\
-  template class pcl::GreedyProjectionTriangulation<T>;
+  template class PCL_EXPORTS pcl::GreedyProjectionTriangulation<T>;
 
 #endif    // PCL_SURFACE_IMPL_GP3_H_
 

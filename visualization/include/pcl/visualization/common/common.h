@@ -39,6 +39,8 @@
 #include <vtkCommand.h>
 #include <vtkTextActor.h>
 
+#include <pcl/pcl_macros.h>
+
 namespace pcl
 {
   namespace visualization
@@ -50,7 +52,7 @@ namespace pcl
       * \param min minimum value for the colors
       * \param max maximum value for the colors
       */
-    void 
+    PCL_EXPORTS void 
     getRandomColors (double &r, double &g, double &b, double min = 0.2, double max = 2.8);
 
     enum RenderingProperties

@@ -321,7 +321,7 @@ pcl::SampleConsensusModelSphere<PointT>::doSamplesVerifyModel (
   return (true);
 }
 
-#define PCL_INSTANTIATE_SampleConsensusModelSphere(T) template class pcl::SampleConsensusModelSphere<T>;
+#define PCL_INSTANTIATE_SampleConsensusModelSphere(T) template class PCL_EXPORTS pcl::SampleConsensusModelSphere<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
 

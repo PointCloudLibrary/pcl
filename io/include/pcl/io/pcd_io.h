@@ -45,7 +45,7 @@ namespace pcl
   /** \brief Point Cloud Data (PCD) file format reader.
     * \author Radu Bogdan Rusu
     */
-  class PCDReader
+  class PCL_EXPORTS PCDReader
   {
     public:
       /** \brief Various PCD file versions.
@@ -141,7 +141,7 @@ namespace pcl
   /** \brief Point Cloud Data (PCD) file format writer.
     * \author Radu Bogdan Rusu
     */
-  class PCDWriter
+  class PCL_EXPORTS PCDWriter
   {
     public:
       /** \brief Generate the header of a PCD v.7 file format

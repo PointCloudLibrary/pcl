@@ -934,7 +934,7 @@ namespace pcl
   }
 }
 
-#define PCL_INSTANTIATE_OctreeBase(T) template class pcl::octree::OctreeBase<T>;
+#define PCL_INSTANTIATE_OctreeBase(T) template class PCL_EXPORTS pcl::octree::OctreeBase<T>;
 
 #endif
 

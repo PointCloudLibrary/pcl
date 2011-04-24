@@ -259,6 +259,6 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     output.points[0].histogram[d + data_size] = hist_vp_[d];
 }
 
-#define PCL_INSTANTIATE_VFHEstimation(T,NT,OutT) template class pcl::VFHEstimation<T,NT,OutT>;
+#define PCL_INSTANTIATE_VFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::VFHEstimation<T,NT,OutT>;
 
 #endif    // PCL_FEATURES_IMPL_VFH_H_

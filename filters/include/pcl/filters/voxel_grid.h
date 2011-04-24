@@ -45,11 +45,11 @@
 
 namespace pcl
 {
-  void 
+  PCL_EXPORTS void 
   getMinMax3D (const sensor_msgs::PointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx, 
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
 
-  void 
+  PCL_EXPORTS void 
   getMinMax3D (const sensor_msgs::PointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx, 
                const std::string &distance_field_name, float min_distance, float max_distance, 
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
@@ -319,7 +319,7 @@ namespace pcl
     * \ingroup filters
     */
   template <>
-  class VoxelGrid<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
+  class PCL_EXPORTS VoxelGrid<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
   {
     using Filter<sensor_msgs::PointCloud2>::filter_name_;
     using Filter<sensor_msgs::PointCloud2>::getClassName;

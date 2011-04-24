@@ -80,6 +80,6 @@ pcl::initTree (const int &spatial_locator, boost::shared_ptr<pcl::KdTree<PointT>
   }
 }
 
-#define PCL_INSTANTIATE_initTree(T) template void pcl::initTree<T> (const int &, boost::shared_ptr<pcl::KdTree<T> > &, int);
+#define PCL_INSTANTIATE_initTree(T) template void PCL_EXPORTS pcl::initTree<T> (const int &, boost::shared_ptr<pcl::KdTree<T> > &, int);
 
 #endif  //#ifndef PCL_KDTREE_IMPL_TREE_TYPES_H_

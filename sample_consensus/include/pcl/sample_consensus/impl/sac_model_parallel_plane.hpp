@@ -100,7 +100,7 @@ pcl::SampleConsensusModelParallelPlane<PointT>::isModelValid (const Eigen::Vecto
   return (true);
 }
 
-#define PCL_INSTANTIATE_SampleConsensusModelParallelPlane(T) template class pcl::SampleConsensusModelParallelPlane<T>;
+#define PCL_INSTANTIATE_SampleConsensusModelParallelPlane(T) template class PCL_EXPORTS pcl::SampleConsensusModelParallelPlane<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_PLANE_H_
 

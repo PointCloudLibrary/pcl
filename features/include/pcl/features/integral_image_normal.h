@@ -49,7 +49,7 @@ namespace pcl
     * \author Stefan Holzer
     * \ingroup features
     */
-  class IntegralImageNormalEstimation
+  class PCL_EXPORTS IntegralImageNormalEstimation
   {
     public: // functions
     

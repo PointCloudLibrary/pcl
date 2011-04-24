@@ -272,7 +272,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
   }
 }
 
-#define PCL_INSTANTIATE_MovingLeastSquares(T,OutT) template class pcl::MovingLeastSquares<T,OutT>;
+#define PCL_INSTANTIATE_MovingLeastSquares(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquares<T,OutT>;
 
 #endif    // PCL_SURFACE_IMPL_MLS_H_
 

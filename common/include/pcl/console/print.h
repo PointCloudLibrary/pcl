@@ -40,6 +40,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#include <pcl/pcl_macros.h>
+
 namespace pcl
 {
   namespace console
@@ -73,7 +75,7 @@ namespace pcl
       * \param fg the foreground color
       * \param bg the background color
       */
-    void 
+    PCL_EXPORTS void 
     change_text_color (FILE *stream, int attribute, int fg, int bg);
     
     /** \brief Change the text color (on either stdout or stderr) with an attr:fg
@@ -81,13 +83,13 @@ namespace pcl
       * \param attribute the text attribute
       * \param fg the foreground color
       */
-    void 
+    PCL_EXPORTS void 
     change_text_color (FILE *stream, int attribute, int fg);
 
     /** \brief Reset the text color (on either stdout or stderr) to its original state
       * \param stream the output stream (stdout, stderr, etc)
       */
-    void 
+    PCL_EXPORTS void 
     reset_text_color (FILE *stream);
 
     /** \brief Print a message on stream with colors
@@ -96,86 +98,86 @@ namespace pcl
       * \param fg the foreground color
       * \param format the message
       */
-    void 
+    PCL_EXPORTS void 
     print_color (FILE *stream, int attr, int fg, const char *format, ...);
 
     /** \brief Print an info message on stream with colors
       * \param format the message
       */
-    void 
+    PCL_EXPORTS void 
     print_info  (const char *format, ...);
 
     /** \brief Print an info message on stream with colors
       * \param stream the output stream (stdout, stderr, etc)
       * \param format the message
       */
-    void 
+    PCL_EXPORTS void 
     print_info  (FILE *stream, const char *format, ...);
 
     /** \brief Print a highlighted info message on stream with colors
       * \param format the message
       */
-    void 
+    PCL_EXPORTS void 
     print_highlight  (const char *format, ...);
 
     /** \brief Print a highlighted info message on stream with colors
       * \param stream the output stream (stdout, stderr, etc)
       * \param format the message
       */
-    void 
+    PCL_EXPORTS void 
     print_highlight  (FILE *stream, const char *format, ...);
 
     /** \brief Print an error message on stream with colors
       * \param format the message
       */
-    void 
+    PCL_EXPORTS void 
     print_error (const char *format, ...);
 
     /** \brief Print an error message on stream with colors
       * \param stream the output stream (stdout, stderr, etc)
       * \param format the message
       */
-    void 
+    PCL_EXPORTS void 
     print_error (FILE *stream, const char *format, ...);
 
     /** \brief Print a warning message on stream with colors
       * \param format the message
       */
-    void 
+    PCL_EXPORTS void 
     print_warn (const char *format, ...);
 
     /** \brief Print a warning message on stream with colors
       * \param stream the output stream (stdout, stderr, etc)
       * \param format the message
       */
-    void 
+    PCL_EXPORTS void 
     print_warn (FILE *stream, const char *format, ...);
 
     /** \brief Print a debug message on stream with colors
       * \param format the message
       */
-    void 
+    PCL_EXPORTS void 
     print_debug (const char *format, ...);
 
     /** \brief Print a debug message on stream with colors
       * \param stream the output stream (stdout, stderr, etc)
       * \param format the message
       */
-    void 
+    PCL_EXPORTS void 
     print_debug (FILE *stream, const char *format, ...);
 
 
     /** \brief Print a value message on stream with colors
       * \param format the message
       */
-    void 
+    PCL_EXPORTS void 
     print_value (const char *format, ...);
 
     /** \brief Print a value message on stream with colors
       * \param stream the output stream (stdout, stderr, etc)
       * \param format the message
       */
-    void 
+    PCL_EXPORTS void 
     print_value (FILE *stream, const char *format, ...);
   }
 } 

@@ -153,6 +153,6 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
   return (true);
 }
 
-#define PCL_INSTANTIATE_MEstimatorSampleConsensus(T) template class pcl::MEstimatorSampleConsensus<T>;
+#define PCL_INSTANTIATE_MEstimatorSampleConsensus(T) template class PCL_EXPORTS pcl::MEstimatorSampleConsensus<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_MSAC_H_

@@ -105,7 +105,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   }
 }
 
-#define PCL_INSTANTIATE_FPFHEstimationOMP(T,NT,OutT) template class pcl::FPFHEstimationOMP<T,NT,OutT>;
+#define PCL_INSTANTIATE_FPFHEstimationOMP(T,NT,OutT) template class PCL_EXPORTS pcl::FPFHEstimationOMP<T,NT,OutT>;
 
 #endif    // PCL_FEATURES_IMPL_FPFH_OMP_H_ 
 

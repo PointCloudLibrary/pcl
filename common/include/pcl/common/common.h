@@ -168,7 +168,7 @@ namespace pcl
     * \param max_p the resultant maximum 
     * \ingroup common
     */
-  void 
+  PCL_EXPORTS void 
   getMinMax (const sensor_msgs::PointCloud2 &cloud, int idx, const std::string &field_name, 
              float &min_p, float &max_p);
 
@@ -178,7 +178,7 @@ namespace pcl
     * \param stddev the resultant standard deviation of the distribution
     * \ingroup common
     */
-  void
+  PCL_EXPORTS void
   getMeanStdDev (const std::vector<float> &values, double &mean, double &stddev);
 
 }

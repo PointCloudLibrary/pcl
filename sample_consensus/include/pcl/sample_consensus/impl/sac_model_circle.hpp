@@ -351,7 +351,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::isModelValid (const Eigen::VectorXf &
   return (true);
 }
 
-#define PCL_INSTANTIATE_SampleConsensusModelCircle2D(T) template class pcl::SampleConsensusModelCircle2D<T>;
+#define PCL_INSTANTIATE_SampleConsensusModelCircle2D(T) template class PCL_EXPORTS pcl::SampleConsensusModelCircle2D<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE_H_
 

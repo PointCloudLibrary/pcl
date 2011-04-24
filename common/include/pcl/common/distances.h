@@ -55,7 +55,7 @@ namespace pcl
     * \param pt2_seg the second point on the line segment
     * \ingroup common
     */
-  void
+  PCL_EXPORTS void
   lineToLineSegment (const Eigen::VectorXf &line_a, const Eigen::VectorXf &line_b, 
                      Eigen::Vector4f &pt1_seg, Eigen::Vector4f &pt2_seg);
 

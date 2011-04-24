@@ -200,7 +200,7 @@ pcl::SampleConsensusModelRegistration<PointT>::optimizeModelCoefficients (const 
   optimized_coefficients.segment<4>(12) = transform.row (3);
 }
 
-#define PCL_INSTANTIATE_SampleConsensusModelRegistration(T) template class pcl::SampleConsensusModelRegistration<T>;
+#define PCL_INSTANTIATE_SampleConsensusModelRegistration(T) template class PCL_EXPORTS pcl::SampleConsensusModelRegistration<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_REGISTRATION_H_
 

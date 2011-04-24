@@ -201,7 +201,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   }
 }
 
-#define PCL_INSTANTIATE_PFHEstimation(T,NT,OutT) template class pcl::PFHEstimation<T,NT,OutT>;
+#define PCL_INSTANTIATE_PFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PFHEstimation<T,NT,OutT>;
 
 #endif    // PCL_FEATURES_IMPL_PFH_H_ 
 

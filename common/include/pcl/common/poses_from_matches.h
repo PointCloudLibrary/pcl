@@ -36,6 +36,7 @@
 #ifndef PCL_POSES_FROM_MATCHES_H_
 #define PCL_POSES_FROM_MATCHES_H_
 
+#include <pcl/pcl_macros.h>
 #include <pcl/common/point_correspondence.h>
 
 namespace pcl
@@ -45,7 +46,7 @@ namespace pcl
     * \author Bastian Steder
     * \ingroup common
     */
-  class PosesFromMatches
+  class PCL_EXPORTS PosesFromMatches
   {
     public:
       // =====CONSTRUCTOR & DESTRUCTOR=====

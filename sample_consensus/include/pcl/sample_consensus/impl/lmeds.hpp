@@ -165,7 +165,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
   return (true);
 }
 
-#define PCL_INSTANTIATE_LeastMedianSquares(T) template class pcl::LeastMedianSquares<T>;
+#define PCL_INSTANTIATE_LeastMedianSquares(T) template class PCL_EXPORTS pcl::LeastMedianSquares<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_LMEDS_H_
 

@@ -145,6 +145,6 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
   }
 }
 
-#define PCL_INSTANTIATE_PrincipalCurvaturesEstimation(T,NT,OutT) template class pcl::PrincipalCurvaturesEstimation<T,NT,OutT>;
+#define PCL_INSTANTIATE_PrincipalCurvaturesEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PrincipalCurvaturesEstimation<T,NT,OutT>;
 
 #endif    // PCL_FEATURES_IMPL_PRINCIPAL_CURVATURES_H_ 

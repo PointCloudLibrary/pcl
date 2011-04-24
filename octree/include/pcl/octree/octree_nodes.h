@@ -40,6 +40,8 @@
 // maximum depth of octree as we are using "unsigned int" octree keys / bit masks
 #define OCT_MAXTREEDEPTH ( sizeof(unsigned int) * 8  )
 
+#include <pcl/pcl_macros.h>
+
 namespace pcl
 {
   namespace octree
@@ -56,7 +58,7 @@ namespace pcl
      * \note Every octree node should implement the getNodeType () method
      * \author Julius Kammerl (julius@kammerl.de)
      */
-    class OctreeNode
+    class PCL_EXPORTS OctreeNode
     {
     public:
 

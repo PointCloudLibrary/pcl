@@ -229,6 +229,6 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
   return (true);
 }
 
-#define PCL_INSTANTIATE_ProgressiveSampleConsensus(T) template class pcl::ProgressiveSampleConsensus<T>;
+#define PCL_INSTANTIATE_ProgressiveSampleConsensus(T) template class PCL_EXPORTS pcl::ProgressiveSampleConsensus<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_PROSAC_H_

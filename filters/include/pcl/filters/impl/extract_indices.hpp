@@ -85,6 +85,6 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
   }
 }
 
-#define PCL_INSTANTIATE_ExtractIndices(T) template class pcl::ExtractIndices<T>;
+#define PCL_INSTANTIATE_ExtractIndices(T) template class PCL_EXPORTS pcl::ExtractIndices<T>;
 
 #endif    // PCL_FILTERS_IMPL_EXTRACT_INDICES_H_

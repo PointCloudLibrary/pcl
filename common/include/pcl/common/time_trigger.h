@@ -45,6 +45,8 @@
 #include <boost/signals2.hpp>
 #include <boost/signals2/slot.hpp>
 
+#include <pcl/pcl_macros.h>
+
 namespace pcl
 {
   /**
@@ -53,7 +55,7 @@ namespace pcl
    * @param callback callback to be invoked periodically
    * \ingroup common
    */
-  class TimeTrigger
+  class PCL_EXPORTS TimeTrigger
   {
     public:
       typedef boost::function<void() > callback_type;

@@ -416,6 +416,6 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape,
 
 }
 
-#define PCL_INSTANTIATE_ConcaveHull(T) template class pcl::ConcaveHull<T>;
+#define PCL_INSTANTIATE_ConcaveHull(T) template class PCL_EXPORTS pcl::ConcaveHull<T>;
 
 #endif    // PCL_SURFACE_IMPL_CONCAVE_HULL_H_

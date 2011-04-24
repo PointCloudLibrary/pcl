@@ -376,6 +376,6 @@ pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points,
   deinitCompute ();
 }
 
-#define PCL_INSTANTIATE_ConvexHull(T) template class pcl::ConvexHull<T>;
+#define PCL_INSTANTIATE_ConvexHull(T) template class PCL_EXPORTS pcl::ConvexHull<T>;
 
 #endif    // PCL_SURFACE_IMPL_CONVEX_HULL_H_

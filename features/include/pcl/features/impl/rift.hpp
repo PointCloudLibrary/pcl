@@ -175,7 +175,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
   }
 }
 
-#define PCL_INSTANTIATE_RIFTEstimation(T,NT,OutT) template class pcl::RIFTEstimation<T,NT,OutT>;
+#define PCL_INSTANTIATE_RIFTEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::RIFTEstimation<T,NT,OutT>;
 
 #endif    // PCL_FEATURES_IMPL_RIFT_H_ 
 

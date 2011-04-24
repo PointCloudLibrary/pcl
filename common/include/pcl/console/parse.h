@@ -44,6 +44,8 @@
 #include <boost/algorithm/string.hpp>
 #include <sstream>
 
+#include <pcl/pcl_macros.h>
+
 namespace pcl
 {
   namespace console
@@ -55,7 +57,7 @@ namespace pcl
       * \param argument_name the string value to search for
       * \return index of found argument or -1 of arguments does not appear in list
      */
-    int 
+    PCL_EXPORTS int 
     find_argument (int argc, char** argv, const char* argument_name);
 
     /** \brief template version for parsing arguments. Template parameter needs to have input stream operator overloaded!
@@ -88,7 +90,7 @@ namespace pcl
       * \param str the string value to search for
       * \param val the resultant value
       */
-    int 
+    PCL_EXPORTS int 
     parse_argument (int argc, char** argv, const char* str, std::string &val);
 
     /** \brief Parse for a specific given command line argument. Returns the value 
@@ -98,7 +100,7 @@ namespace pcl
       * \param str the string value to search for
       * \param val the resultant value
       */
-    int 
+    PCL_EXPORTS int 
     parse_argument (int argc, char** argv, const char* str, bool &val);
 
     /** \brief Parse for a specific given command line argument. Returns the value 
@@ -108,7 +110,7 @@ namespace pcl
       * \param str the string value to search for
       * \param val the resultant value
       */
-    int 
+    PCL_EXPORTS int 
     parse_argument (int argc, char** argv, const char* str, double &val);
 
     /** \brief Parse for a specific given command line argument. Returns the value 
@@ -118,7 +120,7 @@ namespace pcl
       * \param str the string value to search for
       * \param val the resultant value
       */
-    int 
+    PCL_EXPORTS int 
     parse_argument (int argc, char** argv, const char* str, int &val);
 
     /** \brief Parse for a specific given command line argument. Returns the value 
@@ -128,7 +130,7 @@ namespace pcl
       * \param str the string value to search for
       * \param val the resultant value
       */
-    int 
+    PCL_EXPORTS int 
     parse_argument (int argc, char** argv, const char* str, unsigned int &val);
 
     /** \brief Parse for specific given command line arguments (2x values comma 
@@ -140,7 +142,7 @@ namespace pcl
       * \param s the second output value
       * \param debug whether to print debug info or not
       */
-    int 
+    PCL_EXPORTS int 
     parse_2x_arguments (int argc, char** argv, const char* str, double &f, double &s, bool debug = true);
 
     /** \brief Parse for specific given command line arguments (2x values comma 
@@ -152,7 +154,7 @@ namespace pcl
       * \param s the second output value
       * \param debug whether to print debug info or not
       */
-    int 
+    PCL_EXPORTS int 
     parse_2x_arguments (int argc, char** argv, const char* str, int &f, int &s, bool debug = true);
 
     /** \brief Parse for specific given command line arguments (3x values comma 
@@ -165,7 +167,7 @@ namespace pcl
       * \param t the third output value
       * \param debug whether to print debug info or not
       */
-    int 
+    PCL_EXPORTS int 
     parse_3x_arguments (int argc, char** argv, const char* str, double &f, double &s, double &t, bool debug = true);
 
     /** \brief Parse for specific given command line arguments (3x values comma 
@@ -178,7 +180,7 @@ namespace pcl
       * \param t the third output value
       * \param debug whether to print debug info or not
       */
-    int 
+    PCL_EXPORTS int 
     parse_3x_arguments (int argc, char** argv, const char* str, int &f, int &s, int &t, bool debug = true);
 
     /** \brief Parse for specific given command line arguments (multiple occurances 
@@ -188,7 +190,7 @@ namespace pcl
       * \param str the command line argument to search for
       * \param values the resultant output values
       */
-    bool 
+    PCL_EXPORTS bool 
     parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<int> &values);
 
     /** \brief Parse for specific given command line arguments (multiple occurances 
@@ -198,7 +200,7 @@ namespace pcl
       * \param str the command line argument to search for
       * \param values the resultant output values
       */
-    bool 
+    PCL_EXPORTS bool 
     parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<double> &values);
 
     /** \brief Parse for a specific given command line argument (multiple occurences
@@ -208,7 +210,7 @@ namespace pcl
       * \param str the string value to search for
       * \param values the resultant output values
       */
-    bool 
+    PCL_EXPORTS bool 
     parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<std::string> &values);
 
     /** \brief Parse for specific given command line arguments (multiple occurances 
@@ -220,7 +222,7 @@ namespace pcl
       * \param values_f the first vector of output values
       * \param values_s the second vector of output values
       */
-    bool 
+    PCL_EXPORTS bool 
     parse_multiple_2x_arguments (int argc, char** argv, const char* str, std::vector<double> &values_f, std::vector<double> &values_s);
 
     /** \brief Parse for specific given command line arguments (multiple occurances 
@@ -233,7 +235,7 @@ namespace pcl
       * \param values_s the second vector of output values
       * \param values_t the third vector of output values
       */
-    bool 
+    PCL_EXPORTS bool 
     parse_multiple_3x_arguments (int argc, char** argv, const char* str, std::vector<double> &values_f, std::vector<double> &values_s, std::vector<double> &values_t);
 
     /** \brief Parse command line arguments for file names. Returns a vector with 
@@ -242,7 +244,7 @@ namespace pcl
       * \param argv the command line arguments
       * \param ext the extension to search for
       */
-    std::vector<int> 
+    PCL_EXPORTS std::vector<int> 
     parse_file_extension_argument (int argc, char** argv, const std::string &ext);
   }
 } 

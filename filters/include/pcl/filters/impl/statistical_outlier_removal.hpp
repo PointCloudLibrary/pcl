@@ -120,7 +120,7 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilter (PointCloud &output)
   output.is_dense = true; // nearestKSearch filters invalid points
 }
 
-#define PCL_INSTANTIATE_StatisticalOutlierRemoval(T) template class pcl::StatisticalOutlierRemoval<T>;
+#define PCL_INSTANTIATE_StatisticalOutlierRemoval(T) template class PCL_EXPORTS pcl::StatisticalOutlierRemoval<T>;
 
 #endif    // PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
 

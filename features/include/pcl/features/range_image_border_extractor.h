@@ -50,7 +50,7 @@ namespace pcl
     * \author Bastian Steder
     * \ingroup features
     */
-  class RangeImageBorderExtractor : public Feature<PointWithRange,BorderDescription>
+  class PCL_EXPORTS RangeImageBorderExtractor : public Feature<PointWithRange,BorderDescription>
   {
     public:
       // =====TYPEDEFS=====

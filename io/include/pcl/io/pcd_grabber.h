@@ -48,7 +48,7 @@ namespace pcl
 /**
  * @brief Base class for PCD file grabber.
  */
-  class PCDGrabberBase : public Grabber
+  class PCL_EXPORTS PCDGrabberBase : public Grabber
   {
     public:
       /**

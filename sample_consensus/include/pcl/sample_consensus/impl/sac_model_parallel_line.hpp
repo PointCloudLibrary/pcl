@@ -99,7 +99,7 @@ pcl::SampleConsensusModelParallelLine<PointT>::isModelValid (const Eigen::Vector
   return (true);
 }
 
-#define PCL_INSTANTIATE_SampleConsensusModelParallelLine(T) template class pcl::SampleConsensusModelParallelLine<T>;
+#define PCL_INSTANTIATE_SampleConsensusModelParallelLine(T) template class PCL_EXPORTS pcl::SampleConsensusModelParallelLine<T>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_LINE_H_
 

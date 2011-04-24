@@ -182,7 +182,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
   output.points.resize (output.width * output.height);
 }
 
-#define PCL_INSTANTIATE_PassThrough(T) template class pcl::PassThrough<T>;
+#define PCL_INSTANTIATE_PassThrough(T) template class PCL_EXPORTS pcl::PassThrough<T>;
 
 #endif    // PCL_FILTERS_IMPL_PASSTHROUGH_H_
 

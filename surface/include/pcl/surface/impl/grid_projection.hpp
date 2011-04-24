@@ -727,7 +727,7 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PolygonMesh &output)
   }
 }
 
-#define PCL_INSTANTIATE_GridProjection(T) template class pcl::GridProjection<T>;
+#define PCL_INSTANTIATE_GridProjection(T) template class PCL_EXPORTS pcl::GridProjection<T>;
 
 #endif    // PCL_SURFACE_IMPL_GRID_PROJECTION_H_
 
