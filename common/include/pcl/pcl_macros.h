@@ -157,7 +157,6 @@ namespace pcl
 /*   #endif */
 /* #endif */
 
-//adapted from OpenCV
 #ifndef PCL_EXTERN_C
     #ifdef __cplusplus
         #define PCL_EXTERN_C extern "C"
@@ -170,7 +169,7 @@ namespace pcl
     #ifdef PCLAPI_EXPORTS
         #define PCL_EXPORTS __declspec(dllexport)
     #else
-        #define PCL_EXPORTS __declspec(dllimport)
+        #define PCL_EXPORTS
     #endif
 #endif
 
