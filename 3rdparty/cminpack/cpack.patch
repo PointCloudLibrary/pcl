@@ -45,3 +45,14 @@
  include(${PROJECT_SOURCE_DIR}/cmake/cminpack_utils.cmake)
  # Set version and OS-specific settings
  set(CMINPACK_VERSION 1.0.90 CACHE STRING "CMinpack version")
+@@ -52,7 +53,9 @@
+ set (cminpack_hdrs
+     cminpack.h minpack.h)
+ 
+-add_library (cminpack ${LIB_TYPE} ${cminpack_srcs})
++add_library (cminpack SHARED ${cminpack_srcs})
++add_library (cminpack_static STATIC ${cminpack_srcs}) 
++set_target_properties(cminpack_static  PROPERTIES ARCHIVE_OUTPUT_NAME cminpack)
+ 
+ install (TARGETS cminpack 
+    LIBRARY DESTINATION ${CMINPACK_LIB_INSTALL_DIR} COMPONENT library
