@@ -146,13 +146,9 @@ macro(PCL_ADD_TEST _name _exename)
     # 
     target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
     PCL_LINK_OPENMP(${_exename})
-    set_target_properties(${_exename} PROPERTIES DEBUG_OUTPUT_NAME "${_exename}${CMAKE_DEBUG_POSTFIX}")
-    set_target_properties(${_exename} PROPERTIES RELEASE_OUTPUT_NAME "${_exename}${CMAKE_RELEASE_POSTFIX}")
-    install(TARGETS ${_exename} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-            COMPONENT ${_component})
 	add_test(${_name} ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
 endmacro(PCL_ADD_TEST)
-###############################################################################
+
 
 ###############################################################################
 # Add compile flags to a target (because CMake doesn't provide something so
