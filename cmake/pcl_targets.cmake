@@ -90,7 +90,7 @@ macro(PCL_ADD_LIBRARY _name _component)
     set_target_properties(${_name} PROPERTIES
         VERSION ${PCL_VERSION}
         SOVERSION ${PCL_MAJOR_VERSION}
-				DEFINE_SYMBOL "PCLAPI_EXPORTS")
+        DEFINE_SYMBOL "PCLAPI_EXPORTS")
     install(TARGETS ${_name} LIBRARY DESTINATION ${LIB_INSTALL_DIR}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
         COMPONENT ${_component})
@@ -146,7 +146,12 @@ macro(PCL_ADD_TEST _name _exename)
     # 
     target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
     PCL_LINK_OPENMP(${_exename})
-  	add_test(${_name} ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
+
+    if(${CMAKE_VERSION} VERSION_LESS 2.8.4)
+      add_test(${_name} ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
+    else(${CMAKE_VERSION} VERSION_LESS 2.8.4)
+      add_test(NAME ${_name} COMMAND ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
+    endif(${CMAKE_VERSION} VERSION_LESS 2.8.4)
 endmacro(PCL_ADD_TEST)
 
 
