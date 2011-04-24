@@ -103,38 +103,4 @@ __inline float pcl_round(float number)
 #define pcl_lrintf(x) ((long int) pcl_round(x))
 
 
-// Generic helper definitions for shared library support
-// see http://gcc.gnu.org/wiki/Visibility for more information
-#if defined _WIN32 || defined __CYGWIN__
-  #define PCL_HELPER_DLL_IMPORT __declspec(dllimport)
-  #define PCL_HELPER_DLL_EXPORT __declspec(dllexport)
-  #define PCL_HELPER_DLL_LOCAL
-#else
-  #if __GNUC__ >= 4
-    #define PCL_HELPER_DLL_IMPORT __attribute__ ((visibility("default")))
-    #define PCL_HELPER_DLL_EXPORT __attribute__ ((visibility("default")))
-    #define PCL_HELPER_DLL_LOCAL  __attribute__ ((visibility("hidden")))
-  #else
-    #define PCL_HELPER_DLL_IMPORT
-    #define PCL_HELPER_DLL_EXPORT
-    #define PCL_HELPER_DLL_LOCAL
-  #endif
-#endif
-
-// Now we use the generic helper definitions above to define PCL_API and PCL_LOCAL.
-// PCL_API is used for the public API symbols. It either DLL imports or DLL exports (or does nothing for static build)
-// PCL_LOCAL is used for non-api symbols.
-
-#ifdef PCL_DLL // defined if PCL is compiled as a DLL
-  #ifdef PCL_DLL_EXPORTS // defined if we are building the PCL DLL (instead of using it)
-    #define PCL_API PCL_HELPER_DLL_EXPORT
-  #else
-    #define PCL_API PCL_HELPER_DLL_IMPORT
-  #endif // PCL_DLL_EXPORTS
-  #define PCL_LOCAL PCL_HELPER_DLL_LOCAL
-#else // PCL_DLL is not defined: this means PCL is a static lib.
-  #define PCL_API
-  #define PCL_LOCAL
-#endif // PCL_DLL
-
 #endif  //#ifndef PCL_WIN32_MACROS_H_
