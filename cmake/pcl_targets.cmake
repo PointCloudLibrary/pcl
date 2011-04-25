@@ -82,7 +82,7 @@ macro(PCL_ADD_LIBRARY _name _component)
     #
     # Only link if needed
     if(UNIX)
-      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS --as-needed)
+      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     elseif(WIN32)
       SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS /OPT:REF)
     endif()
@@ -109,7 +109,7 @@ macro(PCL_ADD_EXECUTABLE _name _component)
     #
     # Only link if needed
     if(UNIX)
-      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS --as-needed)
+      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     elseif(WIN32)
       SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS /OPT:REF)
     endif()
@@ -139,7 +139,7 @@ macro(PCL_ADD_TEST _name _exename)
     #
     # Only link if needed
     if(UNIX)
-      SET_TARGET_PROPERTIES(${_exename} PROPERTIES LINK_FLAGS --as-needed)
+      SET_TARGET_PROPERTIES(${_exename} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     elseif(WIN32)
       SET_TARGET_PROPERTIES(${_exename} PROPERTIES LINK_FLAGS /OPT:REF)
     endif()
