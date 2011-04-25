@@ -17,8 +17,15 @@ find_path(FLANN_INCLUDE_DIR flann/flann.hpp
 find_library(FLANN_LIBRARY flann_cpp
     HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS})
 
+find_library(FLANN_LIBRARY_DEBUG flann_cpp-gd
+    HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS})
+
 set(FLANN_INCLUDE_DIRS ${FLANN_INCLUDE_DIR})
-set(FLANN_LIBRARIES ${FLANN_LIBRARY})
+if(FLANN_LIBRARY_DEBUG)
+	set(FLANN_LIBRARIES optimized ${FLANN_LIBRARY} debug ${FLANN_LIBRARY_DEBUG})
+else(FLANN_LIBRARY_DEBUG)
+	set(FLANN_LIBRARIES ${FLANN_LIBRARY})
+endif(FLANN_LIBRARY_DEBUG)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Flann DEFAULT_MSG
@@ -27,6 +34,6 @@ find_package_handle_standard_args(Flann DEFAULT_MSG
 mark_as_advanced(FLANN_LIBRARY FLANN_INCLUDE_DIR)
 
 if(FLANN_FOUND)
-  message(STATUS "FLANN found (include: ${FLANN_INCLUDE_DIRS}, lib: ${FLANN_LIBRARY})")
+  message(STATUS "FLANN found (include: ${FLANN_INCLUDE_DIRS}, lib: ${FLANN_LIBRARIES})")
 endif(FLANN_FOUND)
 

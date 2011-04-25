@@ -5,6 +5,7 @@
 # CMINPACK_FOUND - True if CMinpack was found.
 # CMINPACK_INCLUDE_DIRS - Directories containing the CMinpack include files.
 # CMINPACK_LIBRARIES - Libraries needed to use CMinpack.
+# CMINPACK_LIBRARIES_DEBUG - Libraries needed to use CMinpack, debug version.
 # CMINPACK_DEFINITIONS - Compiler flags for CMinpack.
 
 find_package(PkgConfig)
@@ -17,17 +18,24 @@ find_path(CMINPACK_INCLUDE_DIR cminpack.h
 find_library(CMINPACK_LIBRARY cminpack
     HINTS ${PC_CMINPACK_LIBDIR} ${PC_CMINPACK_LIBRARY_DIRS})
 
+find_library(CMINPACK_LIBRARY_DEBUG cminpack-gd
+    HINTS ${PC_CMINPACK_LIBDIR} ${PC_CMINPACK_LIBRARY_DIRS})
+
 set(CMINPACK_INCLUDE_DIRS ${CMINPACK_INCLUDE_DIR})
-set(CMINPACK_LIBRARIES ${CMINPACK_LIBRARY})
+if(CMINPACK_LIBRARY_DEBUG)
+	set(CMINPACK_LIBRARIES optimized ${CMINPACK_LIBRARY} debug ${CMINPACK_LIBRARY_DEBUG})
+else(CMINPACK_LIBRARY_DEBUG)
+	set(CMINPACK_LIBRARIES ${CMINPACK_LIBRARY})
+endif(CMINPACK_LIBRARY_DEBUG)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(CMinpack DEFAULT_MSG
     CMINPACK_LIBRARY CMINPACK_INCLUDE_DIR)
 
-mark_as_advanced(CMINPACK_LIBRARY CMINPACK_INCLUDE_DIR)
+mark_as_advanced(CMINPACK_LIBRARY CMINPACK_LIBRARY_DEBUG CMINPACK_INCLUDE_DIR)
 
 if(CMINPACK_FOUND)
-  message(STATUS "CMinPack found (include: ${CMINPACK_INCLUDE_DIRS}, lib: ${CMINPACK_LIBRARY})")
+  message(STATUS "CMinPack found (include: ${CMINPACK_INCLUDE_DIRS}, libs: ${CMINPACK_LIBRARIES})")
   if(WIN32)
     option(CMINPACK_IS_STATIC "Set to ON if you use static cminpack library." OFF)
     mark_as_advanced(CMINPACK_IS_STATIC)
@@ -36,4 +44,3 @@ if(CMINPACK_FOUND)
     endif(CMINPACK_IS_STATIC)
   endif(WIN32)
 endif(CMINPACK_FOUND)
-
