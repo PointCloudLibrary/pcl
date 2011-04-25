@@ -51,8 +51,8 @@ compile a series of 3rd party library dependencies:
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
-   build system (http://www.cmake.org/), at least version **2.6**. We recommend
-   version **2.8**.
+   build system (http://www.cmake.org/), at least version **2.8.3**. We recommend
+   version **2.8.4**.
 
 Building dependencies
 ---------------------
