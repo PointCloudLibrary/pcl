@@ -1,11 +1,11 @@
 --- flann-1.6.8-src/cmake/flann.pc.in	2011-04-15 07:09:34.141641032 +0000
 +++ flann-1.6.8-src/cmake/flann.pc.in	2011-04-15 07:10:15.141296537 +0000
-@@ -8,6 +8,6 @@
+@@ -8,5 +8,5 @@
  Description: @PKG_DESC@
  Version: @FLANN_VERSION@
  Requires: @PKG_EXTERNAL_DEPS@
 -Libs: -L${libdir} -lflann
-+Libs: -L${libdir} -lflann_cpp
++Libs: -L${libdir} -lflann_cpp -lflann_cpp-gd
  Cflags: -I${includedir}
 
 --- flann-1.6.8-src/CMakeLists.txt	2011-02-26 08:36:53.000000000 +0000
@@ -50,3 +50,34 @@
 +include(CPack)
 +
 
+--- flann-1.6.8-src/src/cpp/CMakeLists.txt	2011-02-26 09:36:53.000000000 +0100
++++ flann-1.6.8-src/src/cpp/CMakeLists.txt	2011-04-25 08:57:02.015164002 +0200
+@@ -22,6 +22,7 @@
+     target_link_libraries(flann_cpp -Wl,-whole-archive flann_cpp_s -Wl,-no-whole-archive)
+ else()
+     add_library(flann_cpp SHARED ${CPP_SOURCES})
++    add_library(flann_cpp_s STATIC ${CPP_SOURCES})
+ endif()
+ 
+ set_target_properties(flann_cpp PROPERTIES
+@@ -29,6 +30,11 @@
+    SOVERSION ${FLANN_SOVERSION}
+ ) 
+ 
++add_library(flann_cpp-gd SHARED ${CPP_SOURCES})
++set_target_properties(flann_cpp-gd PROPERTIES COMPILE_FLAGS ${CMAKE_CXX_FLAGS_DEBUG})
++add_library(flann_cpp_s-gd STATIC ${CPP_SOURCES})
++set_target_properties(flann_cpp_s-gd PROPERTIES COMPILE_FLAGS ${CMAKE_CXX_FLAGS_DEBUG})
++
+ if (BUILD_C_BINDINGS)
+     add_library(flann_s STATIC ${C_SOURCES})
+     if(CMAKE_COMPILER_IS_GNUCC)
+@@ -61,7 +67,7 @@
+ 
+ 
+ install (
+-    TARGETS flann_cpp flann_cpp_s
++    TARGETS flann_cpp flann_cpp_s flann_cpp-gd flann_cpp_s-gd
+     RUNTIME DESTINATION bin
+     LIBRARY DESTINATION ${FLANN_LIB_INSTALL_DIR}
+     ARCHIVE DESTINATION ${FLANN_LIB_INSTALL_DIR}
