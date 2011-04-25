@@ -52,14 +52,6 @@
 
 --- flann-1.6.8-src/src/cpp/CMakeLists.txt	2011-02-26 09:36:53.000000000 +0100
 +++ flann-1.6.8-src/src/cpp/CMakeLists.txt	2011-04-25 08:57:02.015164002 +0200
-@@ -22,6 +22,7 @@
-     target_link_libraries(flann_cpp -Wl,-whole-archive flann_cpp_s -Wl,-no-whole-archive)
- else()
-     add_library(flann_cpp SHARED ${CPP_SOURCES})
-+    add_library(flann_cpp_s STATIC ${CPP_SOURCES})
- endif()
- 
- set_target_properties(flann_cpp PROPERTIES
 @@ -29,6 +30,11 @@
     SOVERSION ${FLANN_SOVERSION}
  ) 
