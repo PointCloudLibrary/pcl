@@ -1,5 +1,5 @@
 ###############################################################################
-# Find QHULL
+# Find QHULL 2011.1
 #
 # This sets the following variables:
 # QHULL_FOUND - True if QHULL was found.
@@ -7,24 +7,34 @@
 # QHULL_LIBRARIES - Libraries needed to use QHULL.
 # QHULL_DEFINITIONS - Compiler flags for QHULL.
 
+set(QHULL_MAJOR_VERSION 6)
+
 find_path(QHULL_INCLUDE_DIR qhull.h
           HINTS ${QHULL_ROOT}
           PATH_SUFFIXES qhull src/libqhull libqhull)
 
-find_library(QHULL_LIBRARY qhull
+find_library(QHULL_LIBRARY qhull qhull${QHULL_MAJOR_VERSION}
              HINTS ${QHULL_ROOT}
-             PATH_SUFFIXES project)
+             PATH_SUFFIXES project build bin)
+
+find_library(QHULL_LIBRARY_DEBUG qhull_d qhull_d${QHULL_MAJOR_VERSION}
+             HINTS ${QHULL_ROOT}
+             PATH_SUFFIXES project build bin)
 
 set(QHULL_INCLUDE_DIRS ${QHULL_INCLUDE_DIR})
-set(QHULL_LIBRARIES ${QHULL_LIBRARY})
+if(QHULL_LIBRARY_DEBUG)
+	set(QHULL_LIBRARIES optimized ${QHULL_LIBRARY} debug ${QHULL_LIBRARY_DEBUG})
+else(QHULL_LIBRARY_DEBUG)
+	set(QHULL_LIBRARIES ${QHULL_LIBRARY})
+endif(QHULL_LIBRARY_DEBUG)
+
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Qhull DEFAULT_MSG QHULL_LIBRARY
     QHULL_INCLUDE_DIR)
 
-mark_as_advanced(QHULL_LIBRARY QHULL_INCLUDE_DIR)
+mark_as_advanced(QHULL_LIBRARY QHULL_LIBRARY_DEBUG QHULL_INCLUDE_DIR)
 
 if(QHULL_FOUND)
   message(STATUS "QHULL found (include: ${QHULL_INCLUDE_DIRS}, lib: ${QHULL_LIBRARIES})")
 endif(QHULL_FOUND)
-
