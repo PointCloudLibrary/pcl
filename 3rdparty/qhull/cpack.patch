@@ -1,5 +1,5 @@
---- qhull-2011.1/CMakeLists.txt	2011-04-18 02:38:33.000000000 +0200
-+++ qhull-2011.1/CMakeLists.txt	2011-04-25 10:58:47.847164000 +0200
+--- qhull-2011.1/CMakeLists.txt	2011-04-17 17:38:33.000000000 -0700
++++ qhull-2011.1/CMakeLists.txt	2011-04-25 17:17:13.000000000 -0700
 @@ -10,7 +10,7 @@
  # $Id: //main/2011/qhull/CMakeLists.txt#9 $$Change: 1373 $
  # $DateTime: 2011/04/17 22:20:48 $$Author: bbarber $
@@ -51,7 +51,7 @@
          qhull rbox qconvex qdelaunay qvoronoi qhalf
          user_eg user_eg2 user_eg3
  )
-@@ -188,17 +188,32 @@
+@@ -188,17 +188,34 @@
      COMPILE_DEFINITIONS "qh_QHpointer"
      VERSION ${qhull_VERSION})
  
@@ -64,8 +64,10 @@
 +    COMPILE_FLAGS ${CMAKE_CXX_FLAGS_DEBUG}
 +    VERSION ${qhull_VERSION})
 +
-+target_link_libraries(${qhull_SHARED} m)
-+target_link_libraries(${qhull_SHARED_DEBUG} m)
++if(UNIX)
++  target_link_libraries(${qhull_SHARED} m)
++  target_link_libraries(${qhull_SHARED_DEBUG} m)
++endif(UNIX)
  
  if(UNIX)
      if(APPLE)
@@ -85,7 +87,7 @@
      endif()
  endif(UNIX)
  
-@@ -215,6 +230,22 @@
+@@ -215,6 +232,24 @@
      COMPILE_DEFINITIONS "qh_QHpointer"
      VERSION ${qhull_VERSION})
  
@@ -100,15 +102,17 @@
 +    VERSION ${qhull_VERSION} 
 +    COMPILE_FLAGS ${CMAKE_CXX_FLAGS_DEBUG})
 +
-+target_link_libraries(${qhull_STATIC} m)
-+target_link_libraries(${qhull_STATIC_DEBUG} m)
-+target_link_libraries(${qhull_STATICP} m)
-+target_link_libraries(${qhull_STATICP_DEBUG} m)
++if(UNIX)
++  target_link_libraries(${qhull_STATIC} m)
++  target_link_libraries(${qhull_STATIC_DEBUG} m)
++  target_link_libraries(${qhull_STATICP} m)
++  target_link_libraries(${qhull_STATICP_DEBUG} m)
++endif(UNIX)
 +
  # ---------------------------------------
  # Define C++ static library qhullcpp (qh_QHpointer)
  # ---------------------------------------
-@@ -224,6 +255,12 @@
+@@ -224,6 +259,12 @@
      COMPILE_DEFINITIONS "qh_QHpointer"
      VERSION ${qhull_VERSION})
  
@@ -121,7 +125,7 @@
  # ---------------------------------------
  # Define qhull executables linked to qhullstatic library
  # ---------------------------------------
-@@ -320,3 +357,35 @@
+@@ -320,3 +361,35 @@
  install(FILES ${road_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/road)
  
  install(DIRECTORY html/ DESTINATION ${DOC_INSTALL_DIR})
@@ -157,3 +161,13 @@
 +SET(CPACK_PACKAGE_VERSION ${qhull_VERSION})
 +SET(CPACK_PACKAGE_VERSION_MAJOR ${qhull_MAJOR})
 +include(CPack)
+--- qhull-2011.1/src/libqhullcpp/PointCoordinates.cpp	2011-03-16 19:14:56.000000000 -0700
++++ qhull-2011.1/src/libqhullcpp/PointCoordinates.cpp	2011-04-25 17:15:48.000000000 -0700
+@@ -11,6 +11,7 @@
+ #include "PointCoordinates.h"
+ 
+ #include <iostream>
++#include <iterator>
+ 
+ using std::istream;
+ using std::string;
