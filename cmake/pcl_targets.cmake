@@ -134,17 +134,19 @@ macro(PCL_ADD_TEST _name _exename)
     cmake_parse_arguments(PCL_ADD_TEST "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
     add_executable(${_exename} ${PCL_ADD_TEST_FILES})
     PCL_ADD_OPENMP_FLAGS(${_exename})
+    target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
     # must link explicitly against boost only on Windows
     target_link_libraries(${_exename} ${Boost_LIBRARIES})
     #
     # Only link if needed
     if(UNIX)
       SET_TARGET_PROPERTIES(${_exename} PROPERTIES LINK_FLAGS -Wl,--as-needed)
+      # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
+      target_link_libraries(${_exename} pthread)
     elseif(WIN32)
       SET_TARGET_PROPERTIES(${_exename} PROPERTIES LINK_FLAGS /OPT:REF)
     endif()
     # 
-    target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
     PCL_LINK_OPENMP(${_exename})
 
     if(${CMAKE_VERSION} VERSION_LESS 2.8.4)
