@@ -135,8 +135,6 @@ macro(PCL_ADD_TEST _name _exename)
     add_executable(${_exename} ${PCL_ADD_TEST_FILES})
     PCL_ADD_OPENMP_FLAGS(${_exename})
     target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
-    # must link explicitly against boost only on Windows
-    target_link_libraries(${_exename} ${Boost_LIBRARIES})
     #
     # Only link if needed
     if(UNIX)
@@ -148,7 +146,9 @@ macro(PCL_ADD_TEST _name _exename)
     endif()
     # 
     PCL_LINK_OPENMP(${_exename})
-
+    # must link explicitly against boost only on Windows
+    target_link_libraries(${_exename} ${Boost_LIBRARIES})
+    #
     if(${CMAKE_VERSION} VERSION_LESS 2.8.4)
       add_test(${_name} ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
     else(${CMAKE_VERSION} VERSION_LESS 2.8.4)
