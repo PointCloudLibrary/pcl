@@ -17,15 +17,14 @@ find_path(FLANN_INCLUDE_DIR flann/flann.hpp
 find_library(FLANN_LIBRARY flann_cpp
     HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS})
 
-find_library(FLANN_LIBRARY_DEBUG flann_cpp-gd
+find_library(FLANN_LIBRARY_DEBUG flann_cpp-gd flann_cpp
     HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS})
+if(NOT FLANN_LIBRARY_DEBUG)
+  set(FLANN_LIBRARY_DEBUG ${FLANN_LIBRARY})
+endif(NOT FLANN_LIBRARY_DEBUG)
 
 set(FLANN_INCLUDE_DIRS ${FLANN_INCLUDE_DIR})
-if(FLANN_LIBRARY_DEBUG)
-	set(FLANN_LIBRARIES optimized ${FLANN_LIBRARY} debug ${FLANN_LIBRARY_DEBUG})
-else(FLANN_LIBRARY_DEBUG)
-	set(FLANN_LIBRARIES ${FLANN_LIBRARY})
-endif(FLANN_LIBRARY_DEBUG)
+set(FLANN_LIBRARIES optimized ${FLANN_LIBRARY} debug ${FLANN_LIBRARY_DEBUG})
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Flann DEFAULT_MSG
