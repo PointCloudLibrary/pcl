@@ -38,14 +38,21 @@
 #define PCL_PCL_VISUALIZER_INTERACTOR_H_
 
 #include <vtkObjectFactory.h>
+#ifdef _WIN32
+#  include <vtkWin32RenderWindowInteractor.h>
+#else
+#include <vtkConfigure.h>
+#if defined VTK_USE_CARBON
+#  include <vtkCarbonRenderWindowInteractor.h>
+#elif defined VTK_USE_COCOA
+#  include <vtkCocoaRenderWindowInteractor.h>
+#else
 // Stupid X.h defines Complex, Bool, Success globally (!)
-#ifndef _WIN32
 #  include <vtkXRenderWindowInteractor.h>
 #  undef Complex
 #  undef Bool
 #  undef Success
-#else
-#  include <vtkWin32RenderWindowInteractor.h>
+#endif
 #endif
 
 namespace pcl
@@ -53,10 +60,14 @@ namespace pcl
   namespace visualization
   {
     /** \brief The PCLVisualizer interactor */
-#ifndef _WIN32
-    class PCLVisualizerInteractor : public vtkXRenderWindowInteractor
-#else
+#ifdef _WIN32
     class PCLVisualizerInteractor : public vtkWin32RenderWindowInteractor
+#elif defined VTK_USE_CARBON
+    class PCLVisualizerInteractor : public vtkCarbonRenderWindowInteractor
+#elif defined VTK_USE_COCOA
+    class PCLVisualizerInteractor : public vtkCocoaRenderWindowInteractor
+#else
+    class PCLVisualizerInteractor : public vtkXRenderWindowInteractor
 #endif
     {
       public:
