@@ -1,15 +1,10 @@
 ### ---[ PCL global CMake
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
-# In case of Makefiles if the user does not setup CMAKE_BUILD_TYPE, assume it's Debug
-if (${CMAKE_GENERATOR} MATCHES ".*Makefiles")
-  if("${CMAKE_BUILD_TYPE}" STREQUAL "")
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "build type default to Debug, set to Release to improve performance" FORCE)
-  endif("${CMAKE_BUILD_TYPE}" STREQUAL "")
-#if the generator is different for *Makefiles assume it is Release
-else(${CMAKE_GENERATOR} MATCHES ".*Makefiles")
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "build type default to Release, set to Debug if you are developing PCL" FORCE)
-endif(${CMAKE_GENERATOR} MATCHES ".*Makefiles")
+# In case the user does not setup CMAKE_BUILD_TYPE, assume it's RelWithDebInfo
+if("${CMAKE_BUILD_TYPE}" STREQUAL "")
+  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
+endif("${CMAKE_BUILD_TYPE}" STREQUAL "")
 
 project(PCL)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
