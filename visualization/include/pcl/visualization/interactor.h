@@ -76,6 +76,24 @@ namespace pcl
         void stopLoop ();
         bool stopped;
         int timer_id_;
+
+#ifdef _WIN32
+        int BreakLoopFlag;                // if true quit the GetMessage loop
+
+        virtual void 
+        Start ();                         // Redefine the vtkWin32RenderWindowInteractor::Start method...
+
+        vtkGetMacro (BreakLoopFlag, int);
+
+        void 
+        SetBreakLoopFlag (int);           // Change the value of BreakLoopFlag
+
+        void 
+        BreakLoopFlagOff ();              // set BreakLoopFlag to 0
+        
+        void 
+        BreakLoopFlagOn ();               // set BreakLoopFlag to 1 (quit)
+#endif
     };
   }
 }
