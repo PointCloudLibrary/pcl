@@ -57,7 +57,7 @@ extern "C"
 #  include "qhull/io.h"
 #  include "qhull/stat.h"
 #else
-#  include "libqhull/qhull.h"
+#  include "libqhull/libqhull.h"
 #  include "libqhull/mem.h"
 #  include "libqhull/qset.h"
 #  include "libqhull/geom.h"
