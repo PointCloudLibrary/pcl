@@ -247,11 +247,11 @@ TEST (PCL, IO)
 
   // Make sure we have permissions to write there
   PCDWriter w;
-  int res = w.writeASCII ("/tmp/test_pcl_io.pcd", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), 10);
+  int res = w.writeASCII ("test_pcl_io.pcd", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), 10);
   EXPECT_EQ ((int)res, 0);                            // test for savePCDFileASCII ()
 
   // Please make sure that this file exists, otherwise the test will fail.
-  res = loadPCDFile ("/tmp/test_pcl_io.pcd", cloud_blob);
+  res = loadPCDFile ("test_pcl_io.pcd", cloud_blob);
   EXPECT_NE ((int)res, -1);                               // test for loadPCDFile ()
   EXPECT_EQ ((uint32_t)cloud_blob.width, cloud.width);    // test for loadPCDFile ()
   EXPECT_EQ ((uint32_t)cloud_blob.height, cloud.height);  // test for loadPCDFile ()
@@ -278,11 +278,11 @@ TEST (PCL, IO)
   EXPECT_NEAR ((uint32_t)cloud.points[nr_p - 1].intensity, last.intensity, 1e-5); // test for fromROSMsg ()
 
   // Make sure we have permissions to write there
-  res = savePCDFile ("/tmp/test_pcl_io.pcd", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true);
+  res = savePCDFile ("test_pcl_io.pcd", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true);
   EXPECT_EQ ((int)res, 0);                            // test for savePCDFileBinary ()
 
   // Please make sure that this file exists, otherwise the test will fail.
-  res = loadPCDFile ("/tmp/test_pcl_io.pcd", cloud_blob);
+  res = loadPCDFile ("test_pcl_io.pcd", cloud_blob);
   EXPECT_NE ((int)res, -1);                               // test for loadPCDFile ()
   EXPECT_EQ ((uint32_t)cloud_blob.width, cloud.width);    // test for loadPCDFile ()
   EXPECT_EQ ((uint32_t)cloud_blob.height, cloud.height);  // test for loadPCDFile ()
@@ -346,10 +346,10 @@ TEST (PCL, PCDReaderWriter)
              cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for toROSMsg ()
 
   PCDWriter writer;
-  writer.write ("/tmp/test_pcl_io.pcd", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true);
+  writer.write ("test_pcl_io.pcd", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true);
 
   PCDReader reader;
-  reader.read ("/tmp/test_pcl_io.pcd", cloud_blob);
+  reader.read ("test_pcl_io.pcd", cloud_blob);
   EXPECT_EQ ((uint32_t)cloud_blob.width, cloud.width);
   EXPECT_EQ ((uint32_t)cloud_blob.height, cloud.height);
   EXPECT_EQ ((bool)cloud_blob.is_dense, false);   // @todo: let is_dense be false for now when reading from binary files
@@ -408,9 +408,9 @@ TEST (PCL, ExtendedIO)
     cloud.points[1].histogram[i] = 33 - i;
   }
 
-  savePCDFile ("/tmp/v.pcd", cloud);
+  savePCDFile ("v.pcd", cloud);
   cloud.points.clear ();
-  loadPCDFile ("/tmp/v.pcd", cloud);
+  loadPCDFile ("v.pcd", cloud);
 
   EXPECT_EQ ((int)cloud.width, 2);
   EXPECT_EQ ((int)cloud.height, 1);
