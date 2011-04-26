@@ -3,27 +3,36 @@
 ###############################################################################
 #find available package generators
 
-# RPM
-find_program(RPM_PROGRAM rpm)
-if(EXISTS ${RPM_PROGRAM})
-  list(APPEND CPACK_GENERATOR "RPM")
-endif(EXISTS ${RPM_PROGRAM})
+# RPM (disabled until RedHat/Fedora users/developers need this)
+#find_program(RPM_PROGRAM rpm)
+#if(EXISTS ${RPM_PROGRAM})
+#  list(APPEND CPACK_GENERATOR "RPM")
+#endif(EXISTS ${RPM_PROGRAM})
+
 # DEB
-find_program(DPKG_PROGRAM dpkg)
-if(EXISTS ${DPKG_PROGRAM})
-  list(APPEND CPACK_GENERATOR "DEB")
-endif(EXISTS ${DPKG_PROGRAM})
+if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  find_program(DPKG_PROGRAM dpkg)
+  if(EXISTS ${DPKG_PROGRAM})
+    list(APPEND CPACK_GENERATOR "DEB")
+  endif(EXISTS ${DPKG_PROGRAM})
+endif()
+
 # NSIS
-find_program(NSIS_PROGRAM makensis MakeNSIS)
-if(EXISTS ${NSIS_PROGRAM})
-  list(APPEND CPACK_GENERATOR "NSIS")
-endif(EXISTS ${NSIS_PROGRAM})
+if(WIN32)
+  find_program(NSIS_PROGRAM makensis MakeNSIS)
+  if(EXISTS ${NSIS_PROGRAM})
+    list(APPEND CPACK_GENERATOR "NSIS")
+  endif(EXISTS ${NSIS_PROGRAM})
+endif()
+
 # dpkg
-find_program(PACKAGE_MAKER_PROGRAM PackageMaker
-	    HINTS /Developer/Applications/Utilities)
-if(EXISTS ${PACKAGE_MAKER_PROGRAM})
-  list(APPEND CPACK_GENERATOR "PackageMaker")
-endif(EXISTS ${PACKAGE_MAKER_PROGRAM})
+if(APPLE)
+  find_program(PACKAGE_MAKER_PROGRAM PackageMaker
+               HINTS /Developer/Applications/Utilities)
+  if(EXISTS ${PACKAGE_MAKER_PROGRAM})
+    list(APPEND CPACK_GENERATOR "PackageMaker")
+  endif(EXISTS ${PACKAGE_MAKER_PROGRAM})
+endif()
 
 include(InstallRequiredSystemLibraries)
 
