@@ -15,7 +15,7 @@ use a snippet like the following one:
 .. code-block:: cpp
    :linenos:
 
-    #include <pcl_visualization/cloud_viewer.h>
+    #include <pcl/visualization/cloud_viewer.h>
     //...
     void 
     foo ()
