@@ -339,7 +339,7 @@ pcl::GridProjection<PointNT>::getProjectionWithPlaneFit (const Eigen::Vector4f &
   // Compute the plane coefficients
   Eigen::Vector4f model_coefficients;
   float curvature;
-  /// @NOTE: iterative weighted least squares or sac might give better results
+  /// @remark iterative weighted least squares or sac might give better results
   pcl::computePointNormal (*data_, pt_union_indices, model_coefficients, curvature);
 
   // Projected point
