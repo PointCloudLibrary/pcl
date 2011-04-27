@@ -282,7 +282,7 @@ namespace pcl
     {
       if (!device_)
       {
-        printf ("[%s] No matching device found.\n", getName ().c_str ());
+        printf ("[%s] No matching device found. %s\n", getName ().c_str (), exception.what());
         return (false);
       }
       else

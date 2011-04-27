@@ -55,24 +55,58 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
 : device_node_info_ (device_node)
 , context_ (context)
 {
+   XnStatus status = XN_STATUS_OK;
+   
+#ifndef MAC 
   // create the production nodes
-  XnStatus status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
+  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating depth generator failed. Reason: %s", xnGetStatusString (status));
-
-  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(image_node));
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("creating image generator failed. Reason: %s", xnGetStatusString (status));
-
-  // get production node instances
+    // get production node instances
+  
   status = depth_node.GetInstance (depth_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating depth generator instance failed. Reason: %s", xnGetStatusString (status));
-
+  
+  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(image_node));
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION ("creating image generator failed. Reason: %s", xnGetStatusString (status));
+  
   status = image_node.GetInstance (image_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating image generator instance failed. Reason: %s", xnGetStatusString (status));
+#else
+  xn::Query device_query;
+  device_query.SetCreationInfo(device_node.GetCreationInfo());
 
+  status = device_.Create(context_, &device_query );
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION ("creating device instance failed. Reason: %s", xnGetStatusString (status));
+  
+  xn::Query query;
+  query.SetName(image_node.GetInstanceName());
+  status = image_generator_.Create(context_, &query);
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION ("creating image generator instance failed. Reason: %s", xnGetStatusString (status));
+  
+  query.SetName(depth_node.GetInstanceName());
+  status = depth_generator_.Create(context_, &query);
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION ("creating depth generator instance failed. Reason: %s", xnGetStatusString (status));
+  
+  xn::NodeInfoList node_info_list;
+  context_.EnumerateExistingNodes (node_info_list);
+  for (xn::NodeInfoList::Iterator nodeIt = node_info_list.Begin (); nodeIt != node_info_list.End (); ++nodeIt)
+  {
+    xn::NodeInfoList needed = (*nodeIt).GetNeededNodes();
+    cout << "existing nodes: " << (*nodeIt).GetInstanceName () << endl;
+    if (!needed.IsEmpty())
+        for (xn::NodeInfoList::Iterator neededIt = needed.Begin (); neededIt != needed.End (); ++neededIt)
+        {
+          cout << "needs: " <<(*neededIt).GetInstanceName () << " : " << (*neededIt).GetCreationInfo() << endl;
+        }
+  }
+#endif
   // we have to start the threads after initializing OpenNI.
   running_  = true;
   image_thread_ = boost::thread (&OpenNIDevice::ImageDataThreadFunction, this);
@@ -83,8 +117,11 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
 : device_node_info_ (device_node)
 , context_ (context)
 {
-    // create the production nodes
-  XnStatus status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
+  XnStatus status = XN_STATUS_OK;
+  
+  #ifndef MAC
+  // create the production nodes
+  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating depth generator failed. Reason: %s", xnGetStatusString (status));
 
@@ -93,6 +130,20 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating depth generator instance failed. Reason: %s", xnGetStatusString (status));
 
+#else
+  xn::Query device_query;
+  device_query.SetCreationInfo(device_node.GetCreationInfo());
+
+  status = device_.Create(context_, &device_query );
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION ("creating device instance failed. Reason: %s", xnGetStatusString (status));
+  
+  xn::Query query;
+  query.SetName(depth_node.GetInstanceName());
+  status = depth_generator_.Create(context_, &query);
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION ("creating depth generator instance failed. Reason: %s", xnGetStatusString (status));
+#endif
   // we have to start the threads after initializing OpenNI.
   running_  = true;
   depth_thread_ = boost::thread (&OpenNIDevice::DepthDataThreadFunction, this);

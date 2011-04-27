@@ -176,6 +176,8 @@ protected:
 
   /** \brief node object for current device */
   const xn::NodeInfo& device_node_info_;
+  
+  xn::Device device_;
   /** \brief Depth generator object. */
   xn::DepthGenerator depth_generator_;
   /** \brief Image generator object. */
