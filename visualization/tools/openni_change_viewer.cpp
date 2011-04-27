@@ -66,7 +66,7 @@ class OpenNIChangeViewer
       boost::shared_ptr<std::vector<int> > newPointIdxVector (new std::vector<int>);
 
       // get a vector of new points, which did not exist in previous buffer
-      octree->getPointIndicesFromNewVoxels (*newPointIdxVector, 10);
+      octree->getPointIndicesFromNewVoxels (*newPointIdxVector, 7);
 
       std::cerr << newPointIdxVector->size() << std::endl;
 
@@ -113,7 +113,7 @@ class OpenNIChangeViewer
 int 
 main (int argc, char* argv[])
 {
-  double resolution = 0.05;
+  double resolution = 0.01;
   if (argc > 1)
     resolution = atof (argv[1]);
 
