@@ -145,7 +145,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
    
    add_executable (project_inliers project_inliers.cpp)
-   target_link_libraries (project_inliers pcl_io pcl_filters)
+   target_link_libraries (project_inliers ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY})
 
 After you have made the executable, you can run it. Simply do::
 

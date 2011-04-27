@@ -29,13 +29,19 @@ editor, and place the following code inside it:
        std::cerr << "Couldn't read file test_pcd.pcd" << std::endl;
        return (-1);
      }
-     std::cerr << "Loaded " << cloud_blob.width * cloud_blob.height << " data points from test_pcd.pcd with the following fields: " << pcl::getFieldsList (cloud_blob) << std::endl;
+     std::cerr << "Loaded " 
+               << cloud_blob.width * cloud_blob.height 
+               << " data points from test_pcd.pcd with the following fields: " 
+               << pcl::getFieldsList (cloud_blob) 
+               << std::endl;
 
      // Convert to the templated message type
      pcl::fromROSMsg (cloud_blob, cloud);
 
      for (size_t i = 0; i < cloud.points.size (); ++i)
-       std::cerr << "    " << cloud.points[i].x << " " << cloud.points[i].y << " " << cloud.points[i].z << std::endl;
+       std::cerr << "    " << cloud.points[i].x 
+                 << " " << cloud.points[i].y 
+                 << " " << cloud.points[i].z << std::endl;
 
      return (0);
    }
@@ -78,7 +84,9 @@ Finally:
 .. code-block:: cpp
 
    for (size_t i = 0; i < cloud.points.size (); ++i)
-     std::cerr << "    " << cloud.points[i].x << " " << cloud.points[i].y << " " << cloud.points[i].z << std::endl;
+     std::cerr << "    " << cloud.points[i].x 
+               << " " << cloud.points[i].y 
+               << " " << cloud.points[i].z << std::endl;
 
 is used to show the data that was loaded from file.
 
@@ -90,7 +98,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
 
    add_executable (pcd_read pcd_read.cpp)
-   target_link_libraries (pcd_read pcl_io)
+   target_link_libraries (pcd_read ${PCL_IO_LIBRARY})
 
 After you have made the executable, you can run it. Simply do::
 

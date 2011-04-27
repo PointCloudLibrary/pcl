@@ -243,7 +243,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
    
    add_executable (octreesearch octree_search.cpp)
-   target_link_libraries (octreesearch pcl_common)
+   target_link_libraries (octreesearch ${PCL_COMMON_LIBRARY})
 
 After you have made the executable, you can run it. Simply do::
 
