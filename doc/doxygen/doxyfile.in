@@ -5,7 +5,7 @@
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Point Cloud Library (PCL)"
 PROJECT_NUMBER         = @PCL_VERSION@
-OUTPUT_DIRECTORY       = @PCL_BINARY_DIR@/doc
+OUTPUT_DIRECTORY       = "@PCL_BINARY_DIR@/doc"
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
 BRIEF_MEMBER_DESC      = YES
@@ -83,7 +83,7 @@ SHOW_DIRECTORIES       = YES
 SHOW_FILES             = YES
 SHOW_NAMESPACES        = YES
 FILE_VERSION_FILTER    = 
-LAYOUT_FILE            = @PCL_SOURCE_DIR@/doc/doxygen/doxygen_layout.xml
+LAYOUT_FILE            = "@PCL_SOURCE_DIR@/doc/doxygen/doxygen_layout.xml"
 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
@@ -99,15 +99,15 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = @PCL_SOURCE_DIR@ \
- 												 @PCL_SOURCE_DIR@/doc/doxygen
+INPUT                  = "@PCL_SOURCE_DIR@" \
+ 												 "@PCL_SOURCE_DIR@/doc/doxygen"
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \
                          *.hpp \
 												 *.doxy
 RECURSIVE              = YES
 EXCLUDE                = */.svn \
-                         @PCL_SOURCE_DIR@/cmake
+                         "@PCL_SOURCE_DIR@/cmake"
 EXCLUDE_SYMLINKS       = YES
 EXCLUDE_PATTERNS       = 
 EXCLUDE_SYMBOLS        = 
@@ -159,7 +159,7 @@ DOCSET_BUNDLE_ID       = pointclouds.org
 DOCSET_PUBLISHER_ID    = pointclouds.org.Publisher
 DOCSET_PUBLISHER_NAME  = Point Cloud Library (PCL) Development Team
 GENERATE_HTMLHELP      = YES
-CHM_FILE               = @PCL_BINARY_DIR@/doc/pcl.chm
+CHM_FILE               = "@PCL_BINARY_DIR@/doc/pcl.chm"
 HHC_LOCATION           = 
 GENERATE_CHI           = NO
 CHM_INDEX_ENCODING     = 
