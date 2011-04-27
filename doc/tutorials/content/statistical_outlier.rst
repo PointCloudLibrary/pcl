@@ -148,7 +148,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
    
    add_executable (statistical_removal statistical_removal.cpp)
-   target_link_libraries (statistical_removal pcl_io pcl_filters)
+   target_link_libraries (statistical_removal ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY})
 
 After you have made the executable, you can run it. Simply do::
 

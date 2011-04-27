@@ -173,7 +173,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
    
    add_executable (cylinder_segmentation cylinder_segmentation.cpp)
-   target_link_libraries (cylinder_segmentation pcl_io pcl_filters pcl_segmentation)
+   target_link_libraries (cylinder_segmentation ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY} ${PCL_SEGMENTATION_LIBRARY})
 
 After you have made the executable, you can run it. Simply do::
 

@@ -232,7 +232,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
    
    add_executable (greedy_projection greedy_projection.cpp)
-   target_link_libraries (greedy_projection pcl_io pcl_surface)
+   target_link_libraries (greedy_projection ${PCL_IO_LIBRARY} ${PCL_SURFACE_LIBRARY})
 
 After you have made the executable, you can run it. Simply do::
 
