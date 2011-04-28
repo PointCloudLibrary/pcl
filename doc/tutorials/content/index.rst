@@ -76,7 +76,7 @@ contributions on any tutorial.
   * :ref:`pcd_file_format`
 
      ======  ======
-     |i_o0|  Title: **The PCD (Point Cloud Data) file file format**
+     |i_o0|  Title: **The PCD (Point Cloud Data) file format**
 
              Author: *Radu B. Rusu*
 
