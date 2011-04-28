@@ -199,6 +199,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   if (cos_theta < 0)
   {                                                                
     model_coefficients *= -1;
+    model_coefficients[3] = 0;
     // Hessian form (D = nc . p_plane (centroid here) + p)
     model_coefficients[3] = -1 * (model_coefficients.dot (planar_hull_->points[0].getVector4fMap ()));
   }
