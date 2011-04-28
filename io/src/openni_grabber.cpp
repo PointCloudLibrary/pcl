@@ -413,9 +413,9 @@ namespace pcl
         register double z = depth_map[depth_idx] * 0.001;
         pcl::PointXYZ& pt = cloud->points[depth_idx];
         // Check for invalid measurements
-        if (z == 0 ||
-            z == depth->getNoSampleValue () ||
-            z == depth->getShadowValue ())
+        if (depth_map[depth_idx] == 0 ||
+            depth_map[depth_idx] == depth->getNoSampleValue () ||
+            depth_map[depth_idx] == depth->getShadowValue ())
         {
           // not valid
           pt.x = pt.y = pt.z = bad_point;
@@ -479,17 +479,21 @@ namespace pcl
     RGBValue color;
     color.Alpha = 0;
 
+    float bad_point = std::numeric_limits<float>::quiet_NaN ();
+    
     for (int v = -centerY; v < centerY; ++v)
     {
       for (register int u = -centerX; u < centerX; ++u, color_idx += 3, ++depth_idx)
       {
         pcl::PointXYZRGB& pt = cloud->points[depth_idx];
         register double Z = depth_buffer[depth_idx] * 0.001f;
-
+        /// @todo Different values for these cases
         // Check for invalid measurements
-        if (pcl_isnan (Z))
+        if (depth_buffer[depth_idx] == 0 ||
+            depth_buffer[depth_idx] == depth_image->getNoSampleValue () ||
+            depth_buffer[depth_idx] == depth_image->getShadowValue ()) 
         {
-          pt.x = pt.y = pt.z = Z;
+          pt.x = pt.y = pt.z = bad_point;
         }
         else
         {
