@@ -19,10 +19,11 @@ set(OPENNI_DEFINITIONS ${PC_OPENNI_CFLAGS_OTHER})
 #add a hint so that it can find it without the pkg-config
 find_path(OPENNI_INCLUDE_DIR XnStatus.h
     HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} /usr/include/openni
+    $ENV{PROGRAMFILES}/OpenNI/include
     PATH_SUFFIXES openni)
 #add a hint so that it can find it without the pkg-config
 find_library(OPENNI_LIBRARY OpenNI
-    HINTS ${PC_OPENNI_LIBDIR} ${PC_OPENNI_LIBRARY_DIRS} /usr/lib)
+    HINTS ${PC_OPENNI_LIBDIR} ${PC_OPENNI_LIBRARY_DIRS} /usr/lib $ENV{PROGRAMFILES}/OpenNI/Lib)
 
 set(OPENNI_INCLUDE_DIRS ${OPENNI_INCLUDE_DIR})
 set(OPENNI_LIBRARIES ${OPENNI_LIBRARY})
