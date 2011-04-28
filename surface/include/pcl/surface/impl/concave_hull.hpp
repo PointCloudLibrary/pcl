@@ -374,8 +374,6 @@ template<typename PointInT>
       alpha_shape.points.resize (vertices);
       alpha_shape.width = alpha_shape.points.size ();
       alpha_shape.height = 1;
-
-      return;
     }
     else
     {
@@ -549,10 +547,10 @@ template<typename PointInT>
     //if keep_information_
     if (keep_information_)
     {
-      PCL_INFO("Keep information is true, points in hull created from the original input cloud");
+      PCL_INFO("[ConcaveHull] Keep information is true, points in hull created from the original input cloud");
       //build a tree with the original points
       pcl::KdTreeFLANN<PointInT> tree (true);
-      tree.setInputCloud (input_);
+      tree.setInputCloud (input_, indices_);
 
       std::vector<int> neighbor;
       std::vector<float> distances;
@@ -567,7 +565,7 @@ template<typename PointInT>
       for (size_t i = 0; i < alpha_shape.points.size (); i++)
       {
         tree.nearestKSearch (alpha_shape.points[i], 1, neighbor, distances);
-        indices[i] = neighbor[0];
+        indices[i] = (*indices_)[neighbor[0]];
       }
 
       //replace point with the closest neighbor in the original point cloud

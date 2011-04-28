@@ -329,10 +329,10 @@ FORALLfacets      {
   //if keep_information_
   if(keep_information_)
   {
-    PCL_INFO("Keep information is true, points in hull created from the original input cloud");
+    PCL_INFO("[ConvexHull] Keep information is true, points in hull created from the original input cloud");
     //build a tree with the original points
     pcl::KdTreeFLANN<PointInT> tree(true);
-    tree.setInputCloud (input_);
+    tree.setInputCloud (input_, indices_);
 
     std::vector<int> neighbor;
     std::vector<float> distances;
@@ -347,7 +347,7 @@ FORALLfacets      {
     for(size_t i=0; i < hull.points.size(); i++)
     {
       tree.nearestKSearch(hull.points[i],1,neighbor,distances);
-      indices[i] = neighbor[0];
+      indices[i] = (*indices_)[neighbor[0]];
     }
 
     //replace point with the closest neighbor in the original point cloud
