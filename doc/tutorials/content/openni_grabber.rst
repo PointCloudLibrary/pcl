@@ -49,7 +49,7 @@ So let's look at the code. From *visualization/tools/openni_viewer_simple.cpp*
         void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud)
         {   
           if (!viewer.wasStopped())
-            viewer.showCloud (*cloud);
+            viewer.showCloud (cloud);
         }   
 
         void run ()
@@ -71,7 +71,7 @@ So let's look at the code. From *visualization/tools/openni_viewer_simple.cpp*
           interface->stop (); 
         }   
 
-        pcl_visualization::CloudViewer viewer;
+        pcl::visualization::CloudViewer viewer;
     };
 
     int main ()
