@@ -259,7 +259,8 @@ TEST (PCL, ConcaveHull_bunny)
   for (size_t i = 0; i < cloud2D->points.size (); i++) 
     cloud2D->points[i].z = 0;
   
-  pcl::PointCloud<pcl::PointXYZ> alpha_shape, voronoi_centers;
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers (new pcl::PointCloud<pcl::PointXYZ>);
   std::vector<pcl::Vertices> polygons_alpha;
 
   pcl::ConcaveHull<pcl::PointXYZ> concave_hull;
@@ -270,7 +271,8 @@ TEST (PCL, ConcaveHull_bunny)
 
   EXPECT_EQ (alpha_shape.points.size (), 21);
 
-  pcl::PointCloud<pcl::PointXYZ> alpha_shape1, voronoi_centers1;
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape1;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers1 (new pcl::PointCloud<pcl::PointXYZ>);
   std::vector<pcl::Vertices> polygons_alpha1;
 
   pcl::ConcaveHull<pcl::PointXYZ> concave_hull1;
@@ -281,7 +283,8 @@ TEST (PCL, ConcaveHull_bunny)
 
   EXPECT_EQ (alpha_shape1.points.size (), 20);
 
-  pcl::PointCloud<pcl::PointXYZ> alpha_shape2, voronoi_centers2;
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape2;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers2 (new pcl::PointCloud<pcl::PointXYZ>);
   std::vector<pcl::Vertices> polygons_alpha2;
   pcl::ConcaveHull<pcl::PointXYZ> concave_hull2;
   concave_hull2.setInputCloud (cloud2D);
@@ -331,7 +334,8 @@ TEST (PCL, ConcaveHull_LTable)
 
   pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloudptr (new pcl::PointCloud<pcl::PointXYZ> (cloud_out_ltable));
 
-  pcl::PointCloud<pcl::PointXYZ> alpha_shape, voronoi_centers;
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers (new pcl::PointCloud<pcl::PointXYZ>);
   std::vector<pcl::Vertices> polygons_alpha;
 
   pcl::ConcaveHull<pcl::PointXYZ> concave_hull;
@@ -342,7 +346,8 @@ TEST (PCL, ConcaveHull_LTable)
 
   EXPECT_EQ (alpha_shape.points.size (), 27);
 
-  pcl::PointCloud<pcl::PointXYZ> alpha_shape1, voronoi_centers1;
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape1;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers1 (new pcl::PointCloud<pcl::PointXYZ>);
   std::vector<pcl::Vertices> polygons_alpha1;
 
   pcl::ConcaveHull<pcl::PointXYZ> concave_hull1;
@@ -353,7 +358,8 @@ TEST (PCL, ConcaveHull_LTable)
 
   EXPECT_EQ (alpha_shape1.points.size (), 23);
 
-  pcl::PointCloud<pcl::PointXYZ> alpha_shape2, voronoi_centers2;
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape2;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers2 (new pcl::PointCloud<pcl::PointXYZ>);
   std::vector<pcl::Vertices> polygons_alpha2;
   pcl::ConcaveHull<pcl::PointXYZ> concave_hull2;
   concave_hull2.setInputCloud (cloudptr);
