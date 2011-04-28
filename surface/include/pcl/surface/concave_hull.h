@@ -48,12 +48,12 @@ namespace pcl
    * \ingroup surface
    */
   template<typename PointInT>
-  class ConcaveHull : public PCLBase<PointInT>
-  {
-    using PCLBase<PointInT>::input_;
-    using PCLBase<PointInT>::indices_;
-    using PCLBase<PointInT>::initCompute;
-    using PCLBase<PointInT>::deinitCompute;
+    class ConcaveHull : public PCLBase<PointInT>
+    {
+      using PCLBase<PointInT>::input_;
+      using PCLBase<PointInT>::indices_;
+      using PCLBase<PointInT>::initCompute;
+      using PCLBase<PointInT>::deinitCompute;
 
     public:
       typedef pcl::PointCloud<PointInT> PointCloud;
@@ -61,65 +61,84 @@ namespace pcl
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
       /** \brief Empty constructor. */
-      ConcaveHull () {};
+      ConcaveHull ()
+      {
+        keep_information_ = false;
+      };
 
       /** \brief Compute a concave hull for all points given 
-        * \param points the resultant concave hull vertices
-        * \param polygons the resultant concave hull polygons (vertex indices)
-        */
+       * \param points the resultant concave hull vertices
+       * \param polygons the resultant concave hull polygons (vertex indices)
+       */
       void
       reconstruct (PointCloud &points, std::vector<pcl::Vertices> &polygons);
 
       /** \brief Compute a concave hull for all points given 
-        * \param output the resultant concave hull vertices
-        */
+       * \param output the resultant concave hull vertices
+       */
       void
       reconstruct (PointCloud &output);
 
-      /** \brief Set the alpha value, which limits the size of the rezultant hull segments (the smaller the more detailed the hull).
-        * \param alpha positive, non-zero value, defining the maximum length from a vertex to the facet center (center of the voronoi cell).
-        */
-      inline void 
+      /** \brief Set the alpha value, which limits the size of the resultant hull segments (the smaller the more detailed the hull).
+       * \param alpha positive, non-zero value, defining the maximum length from a vertex to the facet center (center of the voronoi cell).
+       */
+      inline void
       setAlpha (double alpha)
       {
         alpha_ = alpha;
       }
 
-      /** \brief describe method here. */
+      /** \brief Returns the alpha parameter, see setAlpha(). */
       inline double
       getAlpha ()
       {
         return (alpha_);
       }
 
-      /** \brief describe method here.
-        * \param voronoi_centers
-        */
-      inline void 
-      setVoronoiCenters (PointCloud &voronoi_centers)
+      /** \brief If set, the voronoi cells center will be saved in _voronoi_centers_
+       * \param voronoi_centers
+       */
+      inline void
+      setVoronoiCenters (PointCloudPtr voronoi_centers)
       {
         voronoi_centers_ = voronoi_centers;
+      }
+
+      /** \brief If keep_information_is set to true the convex hull
+       * points keep other information like rgb, normals, ...
+       * \param value where to keep the information or not, default is false
+       */
+      void
+      setKeepInformation (bool value)
+      {
+        keep_information_ = value;
       }
 
     protected:
       /** \brief Class get name method. */
       std::string
-      getClassName () const { return ("ConcaveHull"); }
+      getClassName () const
+      {
+        return ("ConcaveHull");
+      }
 
     private:
       /** \brief The method accepts facets only if the distance from any vertex to the facet->center (center of the voronoi cell) is smaller than alpha */
       double alpha_;
-      
+
+      /** \brief If set to true, the reconstructed point cloud describing the hull is obtained from the original input cloud by performing a nearest neighbor search from Qhull output. */
+      bool keep_information_;
+
       /** \brief describe voronoi_centers here.. */
-      pcl::PointCloud<PointInT> voronoi_centers_;
+      PointCloudPtr voronoi_centers_;
 
       /** \brief The actual reconstruction method. 
-        * \param points the resultant concave hull vertices
-        * \param polygons the resultant concave hull polygons (vertex indices)
-        */
+       * \param points the resultant concave hull vertices
+       * \param polygons the resultant concave hull polygons (vertex indices)
+       */
       void
       performReconstruction (PointCloud &points, std::vector<pcl::Vertices> &polygons);
-  };
+    };
 
 }
 

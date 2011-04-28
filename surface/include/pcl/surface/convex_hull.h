@@ -50,31 +50,30 @@
 namespace pcl
 {
   /** \brief Sort 2D points in a vector structure
-    * \param p1 the first point
-    * \param p2 the second point
-    * \ingroup surface
-    */
+   * \param p1 the first point
+   * \param p2 the second point
+   * \ingroup surface
+   */
   inline bool
-  comparePoints2D (const std::pair<int, Eigen::Vector4f> & p1, 
-                   const std::pair<int, Eigen::Vector4f> & p2)
+  comparePoints2D (const std::pair<int, Eigen::Vector4f> & p1, const std::pair<int, Eigen::Vector4f> & p2)
   {
-    double angle1 = atan2 (p1.second[1],p1.second[0]) + M_PI;
-    double angle2 = atan2 (p2.second[1],p2.second[0]) + M_PI;
+    double angle1 = atan2 (p1.second[1], p1.second[0]) + M_PI;
+    double angle2 = atan2 (p2.second[1], p2.second[0]) + M_PI;
     return (angle1 > angle2);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b ConvexHull using libqhull library.
-    * \author Aitor Aldoma
-    * \ingroup surface
-    */
+   * \author Aitor Aldoma
+   * \ingroup surface
+   */
   template<typename PointInT>
-  class ConvexHull : public PCLBase<PointInT>
-  {
-    using PCLBase<PointInT>::input_;
-    using PCLBase<PointInT>::indices_;
-    using PCLBase<PointInT>::initCompute;
-    using PCLBase<PointInT>::deinitCompute;
+    class ConvexHull : public PCLBase<PointInT>
+    {
+      using PCLBase<PointInT>::input_;
+      using PCLBase<PointInT>::indices_;
+      using PCLBase<PointInT>::initCompute;
+      using PCLBase<PointInT>::deinitCompute;
 
     public:
       typedef pcl::PointCloud<PointInT> PointCloud;
@@ -82,30 +81,44 @@ namespace pcl
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
       /** \brief Empty constructor. */
-      ConvexHull () {};
+      ConvexHull ()
+      {
+        keep_information_ = false;
+      };
 
       /** \brief Compute a convex hull for all points given 
-        * \param points the resultant convex hull vertices
-        * \param polygons the resultant convex hull polygons (vertex indices)
-        */
+       * \param points the resultant convex hull vertices
+       * \param polygons the resultant convex hull polygons (vertex indices)
+       */
       void
       reconstruct (PointCloud &points, std::vector<pcl::Vertices> &polygons);
 
       /** \brief Compute a convex hull for all points given 
-        * \param output the resultant convex hull vertices
-        */
+       * \param output the resultant convex hull vertices
+       */
       void
       reconstruct (PointCloud &output);
 
+      /** \brief If keep_information_is set to true the convex hull
+       * points keep other information like rgb, normals, ...
+       * \param value where to keep the information or not, default is false
+       */
+      void
+      setKeepInformation (bool value)
+      {
+        keep_information_ = value;
+      }
+
     private:
       /** \brief The actual reconstruction method. 
-        * \param points the resultant convex hull vertices
-        * \param polygons the resultant convex hull polygons (vertex indices)
-        * \param fill_polygon_data true if polygons should be filled, false otherwise
-        */
-      void 
-      performReconstruction (PointCloud &points, std::vector<pcl::Vertices> &polygons,
-                             bool fill_polygon_data = false);
+       * \param points the resultant convex hull vertices
+       * \param polygons the resultant convex hull polygons (vertex indices)
+       * \param fill_polygon_data true if polygons should be filled, false otherwise
+       */
+      void
+      performReconstruction (PointCloud &points, std::vector<pcl::Vertices> &polygons, bool fill_polygon_data = false);
+
+      bool keep_information_;
 
     protected:
       /** \brief Class get name method. */
@@ -114,7 +127,7 @@ namespace pcl
       {
         return ("ConvexHull");
       }
-  };
+    };
 }
 
 #endif  //#ifndef PCL_CONVEX_HULL_2D_H_
