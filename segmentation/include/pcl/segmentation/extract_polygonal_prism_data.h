@@ -49,6 +49,7 @@ namespace pcl
     * 2D polygon, but performs an internal XY projection of both the polygon and the point. 
     * \param point a 3D point projected onto the same plane as the polygon
     * \param polygon a polygon
+    * \ingroup segmentation
     */
   template <typename PointT> bool isPointIn2DPolygon (const PointT &point, const pcl::PointCloud<PointT> &polygon);
 
@@ -60,6 +61,7 @@ namespace pcl
     *       Copyright (c) 1995-1996 Galacticomm, Inc.  Freeware source code.
     * \param point a 3D point projected onto the same plane as the polygon
     * \param polygon a polygon
+    * \ingroup segmentation
     */
   template <typename PointT> bool isXYPointIn2DXYPolygon (const PointT &point, const pcl::PointCloud<PointT> &polygon);
 
@@ -73,6 +75,7 @@ namespace pcl
     * boundaries (e.g., objects supported by a plane).
     *
     * \author Radu Bogdan Rusu
+    * \ingroup segmentation
     */
   template <typename PointT>
   class ExtractPolygonalPrismData : public PCLBase<PointT>

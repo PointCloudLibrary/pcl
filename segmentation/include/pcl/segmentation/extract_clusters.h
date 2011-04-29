@@ -54,6 +54,7 @@ namespace pcl
     * \param clusters the resultant clusters containing point indices (as a vector of PointIndices)
     * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
+    * \ingroup segmentation
     */
   template <typename PointT> void extractEuclideanClusters (const PointCloud<PointT> &cloud, const boost::shared_ptr<KdTree<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
 
@@ -67,6 +68,7 @@ namespace pcl
     * \param clusters the resultant clusters containing point indices (as a vector of PointIndices)
     * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
+    * \ingroup segmentation
     */
   template <typename PointT> void extractEuclideanClusters (const PointCloud<PointT> &cloud, const std::vector<int> &indices, const boost::shared_ptr<KdTree<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
 
@@ -82,6 +84,7 @@ namespace pcl
     * \param eps_angle the maximum allowed difference between normals in radians for cluster/region growing
     * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
+    * \ingroup segmentation
     */
   template <typename PointT, typename Normal> void 
   extractEuclideanClusters (
@@ -179,6 +182,7 @@ namespace pcl
     * \param eps_angle the maximum allowed difference between normals in degrees for cluster/region growing
     * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
+    * \ingroup segmentation
     */
   template <typename PointT, typename Normal> 
   void extractEuclideanClusters (
@@ -274,6 +278,7 @@ namespace pcl
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b EuclideanClusterExtraction represents a segmentation class for cluster extraction in an Euclidean sense.
     * \author Radu Bogdan Rusu
+    * \ingroup segmentation
     */
   template <typename PointT>
   class EuclideanClusterExtraction: public PCLBase<PointT>
@@ -371,7 +376,9 @@ namespace pcl
 
   };
 
-  /** \brief Sort clusters method (for std::sort). */
+  /** \brief Sort clusters method (for std::sort). 
+    * \ingroup segmentation
+    */
   inline bool 
     comparePointClusters (const pcl::PointIndices &a, const pcl::PointIndices &b)
   {
