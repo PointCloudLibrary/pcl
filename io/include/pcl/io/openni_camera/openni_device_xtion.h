@@ -48,6 +48,7 @@ namespace openni_wrapper
  * @brief Concrete implementation of the interface OpenNIDevice for a Asus Xtion Pro device.
  * @author Suat Gedikli
  * @date 02.january 2011
+ * @ingroup io
  */
 class DeviceXtionPro : public OpenNIDevice
 {

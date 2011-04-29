@@ -48,24 +48,27 @@
 namespace pcl
 {
 
+/** \brief
+  * \ingroup io
+  */
 class Grabber
 {
-	public:
-		virtual inline ~Grabber ();
-		template<typename T> boost::signals2::connection registerCallback (const boost::function<T>& callback);
+  public:
+    virtual inline ~Grabber ();
+    template<typename T> boost::signals2::connection registerCallback (const boost::function<T>& callback);
     template<typename T> bool providesCallback () const;
-		virtual void start () = 0;
+    virtual void start () = 0;
     virtual void stop () = 0;  
     virtual std::string getName () const = 0;
     virtual bool isRunning () const = 0;
-	protected:
+  protected:
     virtual void signalsChanged () {}
     template<typename T> boost::signals2::signal<T>* find_signal () const;
     template<typename T> int num_slots () const;
     template<typename T> void disconnect_all_slots ();
 
-		template<typename T> boost::signals2::signal<T>* createSignal ();
-		std::map<const std::type_info*, boost::signals2::signal_base*> signals_;
+    template<typename T> boost::signals2::signal<T>* createSignal ();
+    std::map<const std::type_info*, boost::signals2::signal_base*> signals_;
 };
 
 Grabber::~Grabber ()
@@ -80,9 +83,9 @@ template<typename T> boost::signals2::signal<T>* Grabber::find_signal () const
 
   std::map<const std::type_info*, boost::signals2::signal_base*>::const_iterator signal_it = signals_.find (&typeid(T));
   if (signal_it != signals_.end ()) 
-    return dynamic_cast<Signal*> (signal_it->second);
+    return (dynamic_cast<Signal*> (signal_it->second));
 
-  return NULL;
+  return (NULL);
 }
 
 template<typename T> void Grabber::disconnect_all_slots ()
@@ -105,49 +108,50 @@ template<typename T> int Grabber::num_slots () const
   if (signal_it != signals_.end())
   {
     Signal* signal = dynamic_cast<Signal*> (signal_it->second);
-    return signal->num_slots ();
+    return (signal->num_slots ());
   }
-  return 0;
+  return (0);
 }
 
 template<typename T> boost::signals2::signal<T>* Grabber::createSignal ()
 {
-	typedef boost::signals2::signal<T> Signal;
+  typedef boost::signals2::signal<T> Signal;
 
-	if (signals_.find (&typeid(T)) == signals_.end ())
-	{
+  if (signals_.find (&typeid(T)) == signals_.end ())
+  {
     Signal* signal = new Signal ();
-		signals_[&typeid(T)] = signal;
-		return signal;
-	}
-	return 0;
+    signals_[&typeid(T)] = signal;
+    return (signal);
+  }
+  return (0);
 }
 
 template<typename T> boost::signals2::connection Grabber::registerCallback (const boost::function<T> & callback)
 {
-	typedef boost::signals2::signal<T> Signal;
-	if (signals_.find (&typeid(T)) == signals_.end ())
-	{
+  typedef boost::signals2::signal<T> Signal;
+  if (signals_.find (&typeid(T)) == signals_.end ())
+  {
     std::cout << "no callback for type: void (" << typeid(T).name() << ")" << std::endl;
     std::cout << "registered Callbacks are:" << std::endl;
-    for( std::map<const std::type_info*, boost::signals2::signal_base*>::const_iterator cIt = signals_.begin (); cIt != signals_.end (); ++cIt)
+    for( std::map<const std::type_info*, boost::signals2::signal_base*>::const_iterator cIt = signals_.begin (); 
+         cIt != signals_.end (); ++cIt)
     {
       std::cout << "void (" << cIt->first->name() << ")" << std::endl;
     }
-		return boost::signals2::connection ();
-	}
-	Signal* signal = dynamic_cast<Signal*> (signals_[&typeid(T)]);
+    return (boost::signals2::connection ());
+  }
+  Signal* signal = dynamic_cast<Signal*> (signals_[&typeid(T)]);
   boost::signals2::connection ret = signal->connect (callback);
 
   signalsChanged ();
-  return ret;
+  return (ret);
 }
 
 template<typename T> bool Grabber::providesCallback () const
 {
-	if (signals_.find (&typeid(T)) == signals_.end ())
-    return false;
-  return true;
+  if (signals_.find (&typeid(T)) == signals_.end ())
+    return (false);
+  return (true);
 }
 
 } // namespace

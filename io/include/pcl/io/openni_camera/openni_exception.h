@@ -52,6 +52,7 @@ namespace openni_wrapper
  * @brief General exception class
  * @author Suat Gedikli
  * @date 02.january 2011
+ * @ingroup io
  */
 class OpenNIException : public std::exception
 {

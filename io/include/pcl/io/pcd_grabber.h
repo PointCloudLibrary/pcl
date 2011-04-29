@@ -47,6 +47,7 @@ namespace pcl
 {
 /**
  * @brief Base class for PCD file grabber.
+ * @ingroup io
  */
   class PCL_EXPORTS PCDGrabberBase : public Grabber
   {
@@ -99,6 +100,9 @@ namespace pcl
       PCDGrabberImpl* impl_;
   };
 
+  /**
+   * @ingroup io
+   */
   template <typename T> class PointCloud;
   //class sensor_msgs::PointCloud2;
   template <typename PointT> class PCDGrabber : public PCDGrabberBase

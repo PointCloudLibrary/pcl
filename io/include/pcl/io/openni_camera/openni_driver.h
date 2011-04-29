@@ -56,6 +56,7 @@ namespace openni_wrapper
  * provides methods for enumerating and accessing devices.
  * @author Suat Gedikli
  * @date 02.january 2011
+ * @ingroup io
  */
 class PCL_EXPORTS OpenNIDriver
 {

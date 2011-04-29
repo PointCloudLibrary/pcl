@@ -44,6 +44,7 @@ namespace pcl
 {
   /** \brief Point Cloud Data (PCD) file format reader.
     * \author Radu Bogdan Rusu
+    * \ingroup io
     */
   class PCL_EXPORTS PCDReader
   {
@@ -140,6 +141,7 @@ namespace pcl
 
   /** \brief Point Cloud Data (PCD) file format writer.
     * \author Radu Bogdan Rusu
+    * \ingroup io
     */
   class PCL_EXPORTS PCDWriter
   {
@@ -281,6 +283,7 @@ namespace pcl
       *
       * \param file_name the name of the file to load
       * \param cloud the resultant templated point cloud
+      * \ingroup io
       */
     inline int 
     loadPCDFile (const std::string &file_name, sensor_msgs::PointCloud2 &cloud)
@@ -295,7 +298,7 @@ namespace pcl
       * \param origin the sensor acquisition origin (only for > PCD_V7 - null if not present)
       * \param orientation the sensor acquisition orientation (only for >
       * PCD_V7 - identity if not present)
-      *
+      * \ingroup io
       */
     inline int 
     loadPCDFile (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
@@ -309,6 +312,7 @@ namespace pcl
     /** \brief Load any PCD file into a templated PointCloud type
       * \param file_name the name of the file to load
       * \param cloud the resultant templated point cloud
+      * \ingroup io
       */
     template<typename PointT> inline int
     loadPCDFile (const std::string &file_name, pcl::PointCloud<PointT> &cloud)
@@ -330,6 +334,7 @@ namespace pcl
       * thus significantly alter the data. This is a known issue, and the fix
       * involves switching RGB data to be stored as a packed integer in
       * future versions of PCL.
+      * \ingroup io
       */
     inline int 
     savePCDFile (std::string file_name, const sensor_msgs::PointCloud2 &cloud, 
@@ -353,6 +358,7 @@ namespace pcl
       * thus significantly alter the data. This is a known issue, and the fix
       * involves switching RGB data to be stored as a packed integer in
       * future versions of PCL.
+      * \ingroup io
       */
     template<typename PointT> inline int
     savePCDFile (const std::string &file_name, const pcl::PointCloud<PointT> &cloud, bool binary_mode = false)
@@ -375,6 +381,7 @@ namespace pcl
       * thus significantly alter the data. This is a known issue, and the fix
       * involves switching RGB data to be stored as a packed integer in
       * future versions of PCL.
+      * \ingroup io
       */
     template<typename PointT> inline int
     savePCDFileASCII (const std::string &file_name, const pcl::PointCloud<PointT> &cloud)
@@ -390,6 +397,7 @@ namespace pcl
       *      This version is to retain backwards compatibility.
       * \param file_name the output file name
       * \param cloud the point cloud data message
+      * \ingroup io
       */
     template<typename PointT> inline int
     savePCDFileBinary (const std::string &file_name, const pcl::PointCloud<PointT> &cloud)
@@ -414,6 +422,7 @@ namespace pcl
       * thus significantly alter the data. This is a known issue, and the fix
       * involves switching RGB data to be stored as a packed integer in
       * future versions of PCL.
+      * \ingroup io
       */
     template<typename PointT> int
     savePCDFile (const std::string &file_name, const pcl::PointCloud<PointT> &cloud,
