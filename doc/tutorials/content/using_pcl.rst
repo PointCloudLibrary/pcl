@@ -28,7 +28,7 @@ And create a file named CMakeLists.txt that contains:
 	 
 	 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 	 project(MY_GRAND_PROJECT)
-	 list(APPEND CMAKE_MODULE_PATH ${MY_GRAND_PROJECT_SOURCE_DIR})
+	 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 	 find_package(PCL 1.0 REQUIRED COMPONENTS io)
 	 include_directories(${PCL_INCLUDE_DIRS})
 	 add_executable(pcd_write_test pcd_write.cpp)
