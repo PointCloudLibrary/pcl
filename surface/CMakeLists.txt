@@ -50,7 +50,7 @@ if(build)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     if(QHULL_FOUND)
-        target_link_libraries(${LIB_NAME} ${QHULL_LIBRARIES})
+        target_link_libraries(${LIB_NAME} pcl_kdtree ${QHULL_LIBRARIES})
     endif(QHULL_FOUND)
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
