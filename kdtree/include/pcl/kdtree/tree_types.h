@@ -50,6 +50,7 @@ namespace pcl
     * \param spatial_locator the type of spatial locator to construct (0 = FLANN, 1 = organized)
     * \param tree the resultant tree as a boost shared pointer
     * \param k optional parameter (default 0) applied only if the spatial locator is set to organized (1)
+    * \ingroup kdtree
     */
   template <typename PointT> void initTree (const int &spatial_locator, boost::shared_ptr<pcl::KdTree<PointT> > &tree, int k = 0);
 }
