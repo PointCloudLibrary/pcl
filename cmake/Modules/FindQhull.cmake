@@ -9,12 +9,13 @@
 
 set(QHULL_MAJOR_VERSION 6)
 
-find_path(QHULL_INCLUDE_DIR qhull.h
-          HINTS ${QHULL_ROOT}
+find_path(QHULL_INCLUDE_DIR 
+		  NAMES libqhull.h qhull.h
+          HINTS ${QHULL_ROOT} "$ENV{PROGRAMFILES}/qhull 6.2.0.1373/include"
           PATH_SUFFIXES qhull src/libqhull libqhull)
 
 find_library(QHULL_LIBRARY qhull qhull${QHULL_MAJOR_VERSION}
-             HINTS ${QHULL_ROOT}
+             HINTS ${QHULL_ROOT} "$ENV{PROGRAMFILES}/qhull 6.2.0.1373/lib"
              PATH_SUFFIXES project build bin)
 
 find_library(QHULL_LIBRARY_DEBUG qhull_d qhull_d${QHULL_MAJOR_VERSION} qhull qhull${QHULL_MAJOR_VERSION}
