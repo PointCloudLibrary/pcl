@@ -2,7 +2,14 @@
   \addtogroup io Module io
 
   \section secIoPresentation Overview
-	Io is the place for the input/output operations.
+	The pcl_io library contains classes and functions for reading and writing point cloud data and capturing from OpenNI-compatible depth cameras.
+
+	<ul>
+	<li/><a href="http://pointclouds.org/documentation/tutorials/pcd_file_format.php#pcd-file-format">The PCD (Point Cloud Data) file format</a>
+	<li/><a href="http://pointclouds.org/documentation/tutorials/reading_pcd.php#reading-pcd">Reading PointCloud data from PCD files</a>
+	<li/><a href="http://pointclouds.org/documentation/tutorials/writing_pcd.php#writing-pcd">Writing PointCloud data to PCD files</a>
+	<li/><a href="http://pointclouds.org/documentation/tutorials/openni_grabber.php#openni-grabber">The OpenNI Grabber Framework in PCL</a>
+	</ul>
 	
 	\section secIoHistory History
 	- 1.0 current version
