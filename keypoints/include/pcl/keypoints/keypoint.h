@@ -49,6 +49,7 @@ namespace pcl
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b Keypoint represents the base class for key points.
     * \author Bastian Steder
+    * \ingroup keypoints
     */
   template <typename PointInT, typename PointOutT>
   class Keypoint : public PCLBase<PointInT>
