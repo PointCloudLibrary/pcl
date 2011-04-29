@@ -10,7 +10,7 @@
 set(QHULL_MAJOR_VERSION 6)
 
 find_path(QHULL_INCLUDE_DIR 
-		  NAMES libqhull.h qhull.h
+		  NAMES libqhull/libqhull.h qhull.h
           HINTS ${QHULL_ROOT} "$ENV{PROGRAMFILES}/qhull 6.2.0.1373/include"
           PATH_SUFFIXES qhull src/libqhull libqhull)
 
