@@ -5,6 +5,13 @@ Aligning object templates to a point cloud
 
 This tutorial gives an example of how some of the tools covered in the other tutorials can be combined to solve a higher level problem --- aligning a previously captured model of an object to some newly captured data.  In this specific example, we'll take a depth image that contains a person and try to fit some previously captured templates of their face; this will allow us to determine the position and orientation of the face in the scene.
 
+.. figure:: images/template_alignment_2.png
+   :scale: 50 %
+   :alt: Template alignment results
+   :align: center
+
+   We can use the code below to fit a template of a person's face (the red points) to a new point cloud (the green points). 
+
 
 The code
 --------
