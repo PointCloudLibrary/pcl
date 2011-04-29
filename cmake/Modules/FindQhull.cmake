@@ -14,7 +14,8 @@ find_path(QHULL_INCLUDE_DIR
           HINTS ${QHULL_ROOT} "$ENV{PROGRAMFILES}/qhull 6.2.0.1373/include"
           PATH_SUFFIXES qhull src/libqhull libqhull)
 
-find_library(QHULL_LIBRARY qhull qhull${QHULL_MAJOR_VERSION}
+find_library(QHULL_LIBRARY 
+             NAMES qhullstatic qhull qhull${QHULL_MAJOR_VERSION}
              HINTS ${QHULL_ROOT} "$ENV{PROGRAMFILES}/qhull 6.2.0.1373/lib"
              PATH_SUFFIXES project build bin)
 
