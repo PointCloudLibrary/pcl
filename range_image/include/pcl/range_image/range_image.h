@@ -56,6 +56,7 @@ namespace pcl
   /** \brief @b RangeImage is derived from pcl/PointCloud and provides functionalities with focus on situations where
     *  a 3D scene was captured from a specific view point. 
     * \author Bastian Steder
+    * \ingroup range_image
     */
   class /*RANGE_IMAGE_API*/ RangeImage : public pcl::PointCloud<PointWithRange>
   {
@@ -670,6 +671,9 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  /**
+    * /ingroup range_image
+    */
   inline std::ostream&
     operator<< (std::ostream& os, const RangeImage& r)
   {

@@ -49,6 +49,7 @@ namespace pcl
     * for range sensors that already provide a range image by themselves (stereo cameras, ToF-cameras), so that
     * a conversion to point cloud and then to a spherical range image becomes unnecessary.
     * \author Bastian Steder 
+    * \ingroup range_image
     */
   class RangeImagePlanar : public RangeImage
   {
