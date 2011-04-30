@@ -78,7 +78,7 @@ Depending on the compilation toolchain you intend to use to build PCL, you need
 to change the following `--toolset` argument to msvc-8.0, msvc-9.0 (Visual
 Studio 2008) or msvc-10.0 (Visual Studio 2010)::
 
-	prompt> bjam --toolset=msvc-9.0 --with-thread --with-date_time --build-type=complete stage
+	prompt> bjam --toolset=msvc-9.0 --with-thread --with-system --with-filesystem --with-date_time --build-type=complete stage
 
 This will take a while (time for coffee or something).
 
