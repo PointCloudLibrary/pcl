@@ -14,12 +14,12 @@ set(FLANN_DEFINITIONS ${PC_FLANN_CFLAGS_OTHER})
 find_path(FLANN_INCLUDE_DIR flann/flann.hpp
     HINTS ${PC_FLANN_INCLUDEDIR} ${PC_FLANN_INCLUDE_DIRS} "$ENV{PROGRAMFILES}/flann 1.6.8/include")
 
-find_library(FLANN_LIBRARY 
-  NAMES flann_cpp_s flann_cpp
+find_library(FLANN_LIBRARY
+    NAMES flann_cpp_s flann_cpp
     HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "$ENV{PROGRAMFILES}/flann 1.6.8/lib")
 
-find_library(FLANN_LIBRARY_DEBUG flann_cpp-gd flann_cpp
-    HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS})
+find_library(FLANN_LIBRARY_DEBUG flann_cpp_s-gd flann_cpp-gd flann_cpp
+    HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "$ENV{PROGRAMFILES}/flann 1.6.8/lib")
 if(NOT FLANN_LIBRARY_DEBUG)
   set(FLANN_LIBRARY_DEBUG ${FLANN_LIBRARY})
 endif(NOT FLANN_LIBRARY_DEBUG)
