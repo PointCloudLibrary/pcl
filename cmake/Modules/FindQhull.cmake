@@ -19,8 +19,8 @@ find_library(QHULL_LIBRARY
              HINTS ${QHULL_ROOT} "$ENV{PROGRAMFILES}/qhull 6.2.0.1373/lib"
              PATH_SUFFIXES project build bin)
 
-find_library(QHULL_LIBRARY_DEBUG qhull_d qhull_d${QHULL_MAJOR_VERSION} qhull qhull${QHULL_MAJOR_VERSION}
-             HINTS ${QHULL_ROOT}
+find_library(QHULL_LIBRARY_DEBUG qhullstatic_d qhull_d qhull_d${QHULL_MAJOR_VERSION} qhull qhull${QHULL_MAJOR_VERSION}
+             HINTS ${QHULL_ROOT} "$ENV{PROGRAMFILES}/qhull 6.2.0.1373/lib"
              PATH_SUFFIXES project build bin)
 
 if(NOT QHULL_LIBRARY_DEBUG)
