@@ -223,4 +223,6 @@ namespace pcl
   };
 }
 
+#include "pcl/sample_consensus/impl/sac_model_registration.hpp"
+
 #endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_H_
