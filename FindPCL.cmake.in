@@ -131,7 +131,7 @@ foreach(component ${PCL_FIND_COMPONENTS})
   endif(${PC_PCL_COMPONENT}_VERSION AND NOT PCL_COMPONENTS_VERSION)
 	
   find_path(${PCL_COMPONENT_INCLUDE_DIR} ${${pcl_component}_header} 
-    HINTS @CMAKE_INSTALL_PREFIX@
+    HINTS "@CMAKE_INSTALL_PREFIX@"
 		      ${${PC_PCL_COMPONENT}_INCLUDEDIR} ${${PC_PCL_COMPONENT}_INCLUDE_DIRS} 
           ${PCL_ROOT} ENV PCL_ROOT
     PATH_SUFFIXES pcl/${component} ${PCL_SUFFIX}/pcl/${component} pcl/${${component}_parent} ${PCL_SUFFIX}/pcl/${${component}_parent}
@@ -157,7 +157,7 @@ foreach(component ${PCL_FIND_COMPONENTS})
   find_library(${PCL_COMPONENT_LIBRARY} ${pcl_component}
     HINTS /usr/local 
           ${${PC_PCL_COMPONENT}_LIBDIR} ${${PC_PCL_COMPONENT}_LIBRARY_DIRS}
-          ${PCL_ROOT} ENV PCL_ROOT
+          "${PCL_ROOT}" "$ENV{PCL_ROOT}" "@LIB_INSTALL_DIR@"
     DOC "path to ${pcl_component} library")
   get_filename_component(component_library_path 
 		${${PCL_COMPONENT_LIBRARY}}
@@ -166,7 +166,7 @@ foreach(component ${PCL_FIND_COMPONENTS})
   find_library(${PCL_COMPONENT_LIBRARY}_DEBUG ${pcl_component}${PCL_DEBUG_SUFFIX}
     HINTS /usr/local 
           ${${PC_PCL_COMPONENT}_LIBDIR} ${${PC_PCL_COMPONENT}_LIBRARY_DIRS}
-          ${PCL_ROOT} ENV PCL_ROOT
+          "${PCL_ROOT}" "$ENV{PCL_ROOT}" "@LIB_INSTALL_DIR@"
     DOC "path to ${pcl_component} library debug")  
   get_filename_component(component_library_path 
 		${${PCL_COMPONENT_LIBRARY}_DEBUG}
