@@ -137,3 +137,140 @@ A list of available CMAKE_BUILD_TYPEs can be found by typing::
 
   $ cmake --help-variable CMAKE_BUILD_TYPE
 
+Tweaking advanced settings
+--------------------------
+
+Now we are done with all the basic stuff. Sometimes you have
+dependencies installed in unusal locations and thus cmake hangs with
+`XXX_NOT_FOUND` this can even prevent you from building PCL although
+you have all the dependencies installed. In this section we will
+discuss each dependency entry so that you can configure/build or
+update/build PCL according to your system.
+
+* Boost
+
+
+   ==============================  ===========================================
+   cache variable                  meaning
+   ==============================  ===========================================
+   Boost_DATE_TIME_LIBRARY         full path to boost_date-time.[so,dll,lib,a]
+   Boost_DATE_TIME_LIBRARY_DEBUG   full path to boost_date-time.[so,dll,lib,a] (debug version)
+   Boost_DATE_TIME_LIBRARY_RELEAS  full path to boost_date-time.[so,dll,lib,a] (relase version)
+   Boost_FILESYSTEM_LIBRARY        full path to boost_filesystem.[so,dll,lib,a]
+   Boost_FILESYSTEM_LIBRARY_DEBUG  full path to boost_filesystem.[so,dll,lib,a] (debug version)
+   Boost_FILESYSTEM_LIBRARY_RELEA  full path to boost_filesystem.[so,dll,lib,a] (relase version)
+   Boost_INCLUDE_DIR               path to boost headers directory
+   Boost_LIBRARY_DIRS              path to boost libraries directory 
+   Boost_SYSTEM_LIBRARY            full path to boost_system.[so,dll,lib,a]
+   Boost_SYSTEM_LIBRARY_DEBUG      full path to boost_system.[so,dll,lib,a] (debug version)
+   Boost_SYSTEM_LIBRARY_RELEASE    full path to boost_ystem.[so,dll,lib,a] (relase version)
+   Boost_THREAD_LIBRARY            path to boost headers directory
+   Boost_THREAD_LIBRARY_DEBUG      full path to boost_thread.[so,dll,lib,a] (debug version)
+   Boost_THREAD_LIBRARY_RELEASE    full path to boost_thread.[so,dll,lib,a] (relase version)
+   ==============================  ===========================================
+
+  * example
+
+   ==============================  ============
+   cache variable                  sample value
+   ==============================  ============
+   Boost_DATE_TIME_LIBRARY         /usr/local/lib/libboost_date_time.so
+   Boost_DATE_TIME_LIBRARY_DEBUG   /usr/local/lib/libboost_date_time-gd.so
+   Boost_DATE_TIME_LIBRARY_RELEAS  /usr/local/lib/libboost_date_time.so
+   Boost_FILESYSTEM_LIBRARY        /usr/local/lib/libboost_filesystem.so
+   Boost_FILESYSTEM_LIBRARY_DEBUG  /usr/local/lib/libboost_filesystem-gd.so
+   Boost_FILESYSTEM_LIBRARY_RELEA  /usr/local/lib/libboost_filesystem.so
+   Boost_INCLUDE_DIR               /usr/local/include
+   Boost_LIBRARY_DIRS              /usr/local/lib
+   Boost_SYSTEM_LIBRARY            /usr/local/lib/libboost_system.so
+   Boost_SYSTEM_LIBRARY_DEBUG      /usr/local/lib/libboost_system-gd.so
+   Boost_SYSTEM_LIBRARY_RELEASE    /usr/local/lib/libboost_system.so
+   Boost_THREAD_LIBRARY            /usr/local/lib/libboost_thread.so
+   Boost_THREAD_LIBRARY_DEBUG      /usr/local/lib/libboost_thread-gd.so
+   Boost_THREAD_LIBRARY_RELEASE    /usr/local/lib/libboost_thread.so
+   ==============================  ============
+
+
+   UNIX users generally don't have to bother with debug vs release
+   versions they are fully complient. You would just loose debug
+   symbols if you use release libraries version instead of debug while
+   you will end up with much more verbose output and slower
+   execution. This said, Windows MSVC users and Apple iCode ones can
+   build debug/release from the same project, thus it will be safer
+   and more coherent to fill them accordingly.
+
+* CMinpack
+   ====================== =======
+   cache variable         meaning
+   ====================== =======
+   CMINPACK_INCLUDE_DIR   path to cminpack headers directory
+   CMINPACK_LIBRARY       full path to cminpack.[so,dll,lib,a] (release version)
+   CMINPACK_LIBRARY_DEBUG full path to cminpack.[so,dll,lib,a] (debug version)
+   ====================== =======
+
+  * example
+  
+   ====================== ============
+   cache variable         sample value
+   ====================== ============
+   CMINPACK_INCLUDE_DIR   /usr/local/include/cminpack-1
+   CMINPACK_LIBRARY       /usr/local/lib/libcminpack.so
+   CMINPACK_LIBRARY_DEBUG /usr/local/lib/libcminpack-gd.so
+   ====================== ============
+
+* Flann
+   ==================== =======
+   cache variable       meaning
+   ==================== =======  
+   FLANN_INCLUDE_DIR    path to flann headers directory
+   FLANN_LIBRARY        full path to libflann_cpp.[so,dll,lib,a] (release version)
+   FLANN_LIBRARY_DEBUG  full path to libflann_cpp.[so,dll,lib,a] (debug version)
+   ==================== =======
+
+  * example
+
+   =================== ============
+   cache variable      sample value
+   =================== ============   
+   FLANN_INCLUDE_DIR   /usr/local/include
+   FLANN_LIBRARY       /usr/local/lib/libflann_cpp.so
+   FLANN_LIBRARY_DEBUG /usr/local/lib/libflann_cpp-gd.so
+   =================== ============
+
+* Eigen
+   ================= =======
+   cache variable    meaning
+   ================= =======  
+   EIGEN_INCLUDE_DIR path to eigen headers directory
+   ================= =======  
+  
+  * example
+
+   ================= ============
+   cache variable    sample value
+   ================= ============  
+   EIGEN_INCLUDE_DIR /usr/local/include/eigen3
+   ================= ============ 
+
+* Google Test
+   ======================== =======
+   cache variable           meaning
+   ======================== =======  
+   GTEST_INCLUDE_DIR        path to google test headers directory
+   GTEST_LIBRARY            path to libgtest.[so,dll,lib,a] (release version)
+   GTEST_LIBRARY_DEBUG      path to libgtest.[so,dll,lib,a] (debug version)
+   GTEST_MAIN_LIBRARY       path to libgtest_main.[so,dll,lib,a] (release version)
+   GTEST_MAIN_LIBRARY_DEBUG path to libgtest_main.[so,dll,lib,a] (debug version)
+   ======================== =======  
+
+  * example
+
+   ======================== =======
+   cache variable           meaning
+   ======================== =======  
+   GTEST_INCLUDE_DIR        /usr/include
+   GTEST_LIBRARY            /usr/lib/libgtest.a
+   GTEST_LIBRARY_DEBUG      GTEST_LIBRARY_DEBUG-NOTFOUND
+   GTEST_MAIN_LIBRARY       /usr/lib/libgtest_main.a
+   GTEST_MAIN_LIBRARY_DEBUG GTEST_MAIN_LIBRARY_DEBUG-NOTFOUND
+   ======================== =======  
