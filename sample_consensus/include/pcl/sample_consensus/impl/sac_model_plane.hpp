@@ -215,6 +215,7 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
   optimized_coefficients[0] = eigen_vectors (0, 0);
   optimized_coefficients[1] = eigen_vectors (1, 0);
   optimized_coefficients[2] = eigen_vectors (2, 0);
+  optimized_coefficients[3] = 0;
   optimized_coefficients[3] = -1 * optimized_coefficients.dot (xyz_centroid);
 }
 
