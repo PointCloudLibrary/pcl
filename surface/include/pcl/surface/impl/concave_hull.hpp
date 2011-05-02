@@ -260,7 +260,7 @@ template<typename PointInT>
           double r = qh_pointdist(anyVertex->point,center,dim);
           facetT * neighb;
 
-          if (voronoi_centers_ != 0)
+          if (voronoi_centers_)
           {
             voronoi_centers_->points[non_upper].x = facet->center[0];
             voronoi_centers_->points[non_upper].y = facet->center[1];
@@ -405,9 +405,12 @@ template<typename PointInT>
             FOREACHridge_(facet->ridges)
             qh_setappend (&edges_set, ridge);
 
-            voronoi_centers_->points[dd].x = facet->center[0];
-            voronoi_centers_->points[dd].y = facet->center[1];
-            voronoi_centers_->points[dd].z = 0;
+            if (voronoi_centers_) {
+              voronoi_centers_->points[dd].x = facet->center[0];
+              voronoi_centers_->points[dd].y = facet->center[1];
+              voronoi_centers_->points[dd].z = 0;
+            }
+
             ++dd;
           }
           else
