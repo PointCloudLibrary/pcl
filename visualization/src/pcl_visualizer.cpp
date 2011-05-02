@@ -90,7 +90,8 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   interactor_->SetDesiredUpdateRate (30.0);
   // Initialize and create timer
   interactor_->Initialize ();
-  interactor_->CreateRepeatingTimer (5000L);
+  //interactor_->CreateRepeatingTimer (5000L);
+  interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
 
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
@@ -163,7 +164,8 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   interactor_->SetDesiredUpdateRate (30.0);
   // Initialize and create timer
   interactor_->Initialize ();
-  interactor_->CreateRepeatingTimer (5000L);
+  //interactor_->CreateRepeatingTimer (5000L);
+  interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
 
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
@@ -180,6 +182,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::~PCLVisualizer ()
 {
+  interactor_->DestroyTimer (interactor_->timer_id_);
   // Clear the collections
   rens_->RemoveAllItems ();
 }
@@ -205,18 +208,18 @@ pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
   
   if (force_redraw)
   {
-    interactor_->Render();
-    exit_main_loop_timer_callback_->right_timer_id = interactor_->CreateRepeatingTimer(time);
-    interactor_->Start();
-    interactor_->DestroyTimer(exit_main_loop_timer_callback_->right_timer_id);
+    interactor_->Render ();
+    exit_main_loop_timer_callback_->right_timer_id = interactor_->CreateRepeatingTimer (time);
+    interactor_->Start ();
+    interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
     return;
   }
   
-  DO_EVERY(1.0/interactor_->GetDesiredUpdateRate(),
-    interactor_->Render();
-    exit_main_loop_timer_callback_->right_timer_id = interactor_->CreateRepeatingTimer(time);
-    interactor_->Start();
-    interactor_->DestroyTimer(exit_main_loop_timer_callback_->right_timer_id);
+  DO_EVERY(1.0/interactor_->GetDesiredUpdateRate (),
+    interactor_->Render ();
+    exit_main_loop_timer_callback_->right_timer_id = interactor_->CreateRepeatingTimer (time);
+    interactor_->Start ();
+    interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
   );
 }
 
