@@ -63,37 +63,37 @@ You should see something like the following on screen::
 The explanation
 ---------------
 
-* `BUILD_TESTS`: this an option to enable/disable building of tests
+* `BUILD_TESTS`: option to enable/disable building of tests
 
-* `BUILD_common`: this an option to enable/disable building of common library
+* `BUILD_common`: option to enable/disable building of common library
 
-* `BUILD_features`: this an option to enable/disable building of features library
+* `BUILD_features`: option to enable/disable building of features library
 
-* `BUILD_filters`: this an option to enable/disable building of filters library
+* `BUILD_filters`: option to enable/disable building of filters library
 
-* `BUILD_global_tests`: this an option to enable/disable building of global unit tests
+* `BUILD_global_tests`: option to enable/disable building of global unit tests
 
-* `BUILD_io`: this an option to enable/disable building of io library
+* `BUILD_io`: option to enable/disable building of io library
 
-* `BUILD_kdtree`: this an option to enable/disable building of kdtree library
+* `BUILD_kdtree`: option to enable/disable building of kdtree library
 
-* `BUILD_keypoints`: this an option to enable/disable building of keypoints library
+* `BUILD_keypoints`: option to enable/disable building of keypoints library
 
-* `BUILD_octree`: this an option to enable/disable building of octree library
+* `BUILD_octree`: option to enable/disable building of octree library
 
-* `BUILD_range_image`: this an option to enable/disable building of range_image library
+* `BUILD_range_image`: option to enable/disable building of range_image library
 
-* `BUILD_registration`: this an option to enable/disable building of registration library
+* `BUILD_registration`: option to enable/disable building of registration library
 
-* `BUILD_sample_consensus`: this an option to enable/disable building of sample_consensus library
+* `BUILD_sample_consensus`: option to enable/disable building of sample_consensus library
 
-* `BUILD_segmentation`: this an option to enable/disable building of segmentation library
+* `BUILD_segmentation`: option to enable/disable building of segmentation library
 
-* `BUILD_surface`: this an option to enable/disable building of surface library
+* `BUILD_surface`: option to enable/disable building of surface library
 
-* `BUILD_visualization`: this an option to enable/disable building of visualization library
+* `BUILD_visualization`: option to enable/disable building of visualization library
 
-* `CMAKE_BUILD_TYPE`: here you specify which the build type. In CMake, a CMAKE_BUILD_TYPE corresponds to a set of options and flags passed to the compiler to activate/deactivate a functionality and to constrain the building process.
+* `CMAKE_BUILD_TYPE`: here you specify the build type. In CMake, a CMAKE_BUILD_TYPE corresponds to a set of options and flags passed to the compiler to activate/deactivate a functionality and to constrain the building process.
 
 * `CMAKE_INSTALL_PREFIX`: where the headers and the built libraries will be installed
 
@@ -125,15 +125,15 @@ YYY then XXX will be built but won't appear in the cache.
 
 You can also change the build type:
 
-* `Debug`: means that no optimization is done and all the debugging symbols are imbedded into the libraries file. This is plateform and compiler dependent. On Linux with gcc this is equivalent to running gcc with `-O0 -g -ggdb -Wall`
+* **Debug**: means that no optimization is done and all the debugging symbols are imbedded into the libraries file. This is plateform and compiler dependent. On Linux with gcc this is equivalent to running gcc with `-O0 -g -ggdb -Wall`
 
-* `Release`: the compiled code is optimized and no debug information will be print out. This will lead to `-O3` for gcc and `-O5` for clang
+* **Release**: the compiled code is optimized and no debug information will be print out. This will lead to `-O3` for gcc and `-O5` for clang
 
-* `RelWithDebInfo`: the compiled code is optimized but debugging data is also imbedded in the libraries. This is a tradeoff between the two former ones.
+* **RelWithDebInfo**: the compiled code is optimized but debugging data is also imbedded in the libraries. This is a tradeoff between the two former ones.
 
-* `MinSizeRel`: this, normally, results in the smallest libraries you can build. This is interesting when building for Android or a restricted memory/space system.
+* **MinSizeRel**: this, normally, results in the smallest libraries you can build. This is interesting when building for Android or a restricted memory/space system.
 
-A list of available CMAKE_BUILD_TYPEs can be found by typing::
+A list of available CMAKE_BUILD_TYPEs can be found typing::
 
   $ cmake --help-variable CMAKE_BUILD_TYPE
 
