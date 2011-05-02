@@ -163,11 +163,11 @@ configuration.
 
 The available ROOTs you can set are as follow:
 
-* **BOOST_ROOT**: for boost libraries with value *C:\Program Files\boost-1.4.6* for instance
-* **CMINPACK_ROOT**: for cminpack with value *C:\Program Files\CMINPACK 1.1.13* for instance
-* **QHULL_ROOT**: for qhull with value *C:\Program Files\qhull 6.2.0.1373* for instance
-* **FLANN_ROOT**: for flann with value *C:\Program Files\flann 1.6.8* for instance
-* **EIGEN_ROOT**: for eigen with value *C:\Program Files\Eigen 3.0.0* for instance
+* **BOOST_ROOT**: for boost libraries with value `C:/Program Files/boost-1.4.6` for instance
+* **CMINPACK_ROOT**: for cminpack with value `C:/Program Files/CMINPACK 1.1.13` for instance
+* **QHULL_ROOT**: for qhull with value `C:/Program Files/qhull 6.2.0.1373` for instance
+* **FLANN_ROOT**: for flann with value `C:/Program Files/flann 1.6.8` for instance
+* **EIGEN_ROOT**: for eigen with value `C:/Program Files/Eigen 3.0.0` for instance
 
 To ensure that all the dependencies were correctly found, beside the
 message you get from CMake, you can check or edit each dependency specific
