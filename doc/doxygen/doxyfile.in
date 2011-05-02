@@ -25,7 +25,19 @@ ALWAYS_DETAILED_SEC    = NO
 INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = YES
 STRIP_FROM_PATH        = 
-STRIP_FROM_INC_PATH    = 
+STRIP_FROM_INC_PATH    = @PCL_SOURCE_DIR@/common/include \
+                         @PCL_SOURCE_DIR@/features/include \
+                         @PCL_SOURCE_DIR@/surface/include \
+                         @PCL_SOURCE_DIR@/visualization/include \
+                         @PCL_SOURCE_DIR@/kdtree/include \
+                         @PCL_SOURCE_DIR@/registration/include \
+                         @PCL_SOURCE_DIR@/filters/include \
+                         @PCL_SOURCE_DIR@/io/include \
+                         @PCL_SOURCE_DIR@/range_image/include \
+                         @PCL_SOURCE_DIR@/segmentation/include \
+                         @PCL_SOURCE_DIR@/octree/include \
+                         @PCL_SOURCE_DIR@/sample_consensus/include \
+                         @PCL_SOURCE_DIR@/keypoints/include
 SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = YES
 QT_AUTOBRIEF           = NO
@@ -104,10 +116,11 @@ INPUT                  = "@PCL_SOURCE_DIR@" \
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \
                          *.hpp \
-												 *.doxy
+                         *.doxy
 RECURSIVE              = YES
 EXCLUDE                = */.svn \
-                         "@PCL_SOURCE_DIR@/cmake"
+                         "@PCL_SOURCE_DIR@/cmake" \
+                         "@PCL_SOURCE_DIR@/3rdparty"
 EXCLUDE_SYMLINKS       = YES
 EXCLUDE_PATTERNS       = 
 EXCLUDE_SYMBOLS        = 
