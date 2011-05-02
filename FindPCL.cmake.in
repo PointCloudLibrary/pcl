@@ -122,74 +122,81 @@ foreach(component ${PCL_FIND_COMPONENTS})
   set(${PCL_COMPONENT_DEFINITIONS} ${${PC_PCL_COMPONENT}_CFLAGS_OTHER})
   mark_as_advanced(${PCL_COMPONENT_DEFINITIONS})
 
-	if(${PC_PCL_COMPONENT}_VERSION AND NOT PCL_COMPONENTS_VERSION)
-		set(PCL_COMPONENTS_VERSION ${${PC_PCL_COMPONENT}_VERSION})
-	elseif(PCL_COMPONENTS_VERSION AND 
-			   (NOT PCL_COMPONENTS_VERSION EQUAL ${PC_PCL_COMPONENT}_VERSION))
-			message(FATAL_ERROR 
-				"PCL component: ${component} should be at version ${PCL_COMPONENTS_VERSION}")
+  if(${PC_PCL_COMPONENT}_VERSION AND NOT PCL_COMPONENTS_VERSION)
+    set(PCL_COMPONENTS_VERSION ${${PC_PCL_COMPONENT}_VERSION})
+  elseif(PCL_COMPONENTS_VERSION AND 
+         (NOT PCL_COMPONENTS_VERSION EQUAL ${PC_PCL_COMPONENT}_VERSION))
+      message(FATAL_ERROR 
+        "PCL component: ${component} should be at version ${PCL_COMPONENTS_VERSION}")
   endif(${PC_PCL_COMPONENT}_VERSION AND NOT PCL_COMPONENTS_VERSION)
-	
+  
   find_path(${PCL_COMPONENT_INCLUDE_DIR} ${${pcl_component}_header} 
     HINTS "@CMAKE_INSTALL_PREFIX@"
-		      ${${PC_PCL_COMPONENT}_INCLUDEDIR} ${${PC_PCL_COMPONENT}_INCLUDE_DIRS} 
-          ${PCL_ROOT} ENV PCL_ROOT
+          ${${PC_PCL_COMPONENT}_INCLUDEDIR} ${${PC_PCL_COMPONENT}_INCLUDE_DIRS} 
+          ${PCL_ROOT} $ENV{PCL_ROOT} ${PCL_ROOT}/include $ENV{PCL_ROOT}/include
     PATH_SUFFIXES pcl/${component} ${PCL_SUFFIX}/pcl/${component} pcl/${${component}_parent} ${PCL_SUFFIX}/pcl/${${component}_parent}
     DOC "path to ${pcl_component} headers")
   get_filename_component(component_header_path 
     ${${PCL_COMPONENT_INCLUDE_DIR}}/${${pcl_component}_header}
     PATH)
   file(TO_CMAKE_PATH ${component_header_path} component_header_path)
-	# on windows we can not install
-	if(NOT WIN32)
-		if(${component}_parent)
-			string(REGEX REPLACE "(.*)/pcl/${${component}_parent}" "\\1" 
-				component_header_path "${component_header_path}")
-		else(${component}_parent)
-			string(REGEX REPLACE "(.*)/pcl/${component}" "\\1" 
-				component_header_path "${component_header_path}")
-		endif(${component}_parent)
-		if(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
-			message(FATAL_ERROR "${component_header_path} is not a valid include directory")
-		endif(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
+  # on windows we can not install
+  if(NOT WIN32)
+    if(${component}_parent)
+      string(REGEX REPLACE "(.*)/pcl/${${component}_parent}" "\\1" 
+        component_header_path "${component_header_path}")
+    else(${component}_parent)
+      string(REGEX REPLACE "(.*)/pcl/${component}" "\\1" 
+        component_header_path "${component_header_path}")
+    endif(${component}_parent)
+    if(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
+      message(FATAL_ERROR "${component_header_path} is not a valid include directory")
+    endif(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
   endif(NOT WIN32)
 
   find_library(${PCL_COMPONENT_LIBRARY} ${pcl_component}
     HINTS /usr/local 
           ${${PC_PCL_COMPONENT}_LIBDIR} ${${PC_PCL_COMPONENT}_LIBRARY_DIRS}
-          "${PCL_ROOT}" "$ENV{PCL_ROOT}" "@LIB_INSTALL_DIR@"
+          "${PCL_ROOT}" "$ENV{PCL_ROOT}" "@CMAKE_INSTALL_PREFIX@"
+    PATH_SUFFIXES "@LIB_INSTALL_DIR@"
     DOC "path to ${pcl_component} library")
   get_filename_component(component_library_path 
-		${${PCL_COMPONENT_LIBRARY}}
+    ${${PCL_COMPONENT_LIBRARY}}
     PATH)
 
   find_library(${PCL_COMPONENT_LIBRARY}_DEBUG ${pcl_component}${PCL_DEBUG_SUFFIX}
     HINTS /usr/local 
           ${${PC_PCL_COMPONENT}_LIBDIR} ${${PC_PCL_COMPONENT}_LIBRARY_DIRS}
-          "${PCL_ROOT}" "$ENV{PCL_ROOT}" "@LIB_INSTALL_DIR@"
+          "${PCL_ROOT}" "$ENV{PCL_ROOT}" "@CMAKE_INSTALL_PREFIX@"
+    PATH_SUFFIXES "@LIB_INSTALL_DIR@"
     DOC "path to ${pcl_component} library debug")  
   get_filename_component(component_library_path 
-		${${PCL_COMPONENT_LIBRARY}_DEBUG}
+    ${${PCL_COMPONENT_LIBRARY}_DEBUG}
     PATH)
 
   find_package_handle_standard_args(${PCL_COMPONENT} DEFAULT_MSG
     ${PCL_COMPONENT_LIBRARY} ${PCL_COMPONENT_INCLUDE_DIR})
 
-	if(${PCL_COMPONENT}_FOUND)
-		list(APPEND PCL_INCLUDE_DIRS ${component_header_path})
-		if(${PC_PCL_COMPONENT}_INCLUDE_DIRS)
-			list(APPEND PCL_INCLUDE_DIRS ${${PC_PCL_COMPONENT}_INCLUDE_DIRS})
-		endif(${PC_PCL_COMPONENT}_INCLUDE_DIRS)
-		mark_as_advanced(${PCL_COMPONENT_INCLUDE_DIR})
-		list(APPEND PCL_LIBRARIES ${${PCL_COMPONENT_LIBRARY}})
-		list(APPEND PCL_LINK_DIRECTORIES ${component_library_path})
-		mark_as_advanced(${PCL_COMPONENT_LIBRARY})
-	endif(${PCL_COMPONENT}_FOUND)
+  if(${PCL_COMPONENT}_FOUND)
+    list(APPEND PCL_INCLUDE_DIRS ${component_header_path})
+    if(${PC_PCL_COMPONENT}_INCLUDE_DIRS)
+      list(APPEND PCL_INCLUDE_DIRS ${${PC_PCL_COMPONENT}_INCLUDE_DIRS})
+    endif(${PC_PCL_COMPONENT}_INCLUDE_DIRS)
+    mark_as_advanced(${PCL_COMPONENT_INCLUDE_DIR})
+    list(APPEND PCL_LIBRARIES ${${PCL_COMPONENT_LIBRARY}})
+    list(APPEND PCL_LINK_DIRECTORIES ${component_library_path})
+    mark_as_advanced(${PCL_COMPONENT_LIBRARY})
+  endif(${PCL_COMPONENT}_FOUND)
 endforeach(component)
 
-list(REMOVE_DUPLICATES PCL_INCLUDE_DIRS)
+if(NOT "${PCL_INCLUDE_DIRS}" STREQUAL "")
+  list(REMOVE_DUPLICATES PCL_INCLUDE_DIRS)
+endif(NOT "${PCL_INCLUDE_DIRS}" STREQUAL "")
 list(APPEND PCL_INCLUDE_DIRS ${component_header_path}/pcl)
-list(REMOVE_DUPLICATES PCL_LINK_DIRECTORIES)
+
+if(NOT "${PCL_LINK_DIRECTORIES}" STREQUAL "")
+  list(REMOVE_DUPLICATES PCL_LINK_DIRECTORIES)
+endif(NOT "${PCL_LINK_DIRECTORIES}" STREQUAL "")
 
 find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
 mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS)
@@ -197,16 +204,16 @@ mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS)
 
 find_package(VTK)
 if(VTK_FOUND)
-	include (${VTK_USE_FILE})
+  include (${VTK_USE_FILE})
 endif()
 
 find_package(wxWidgets)
 if(wxWidgets_FOUND)
-	include(${wxWidgets_USE_FILE})
-	include_directories(${wxWidgets_INCLUDE_DIRS})
+  include(${wxWidgets_USE_FILE})
+  include_directories(${wxWidgets_INCLUDE_DIRS})
 endif()
 
 
 if(PCL_COMPONENTS_VERSION)
-	set(PCL_VERSION ${PCL_COMPONENTS_VERSION})
+  set(PCL_VERSION ${PCL_COMPONENTS_VERSION})
 endif(PCL_COMPONENTS_VERSION)
