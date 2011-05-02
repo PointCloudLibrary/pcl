@@ -49,6 +49,7 @@ namespace pcl
   /** \brief @b KdTree represents the base spatial locator class for nearest neighbor estimation. All types of spatial
     * locators should inherit from KdTree.
     * \author Radu Bogdan Rusu, Bastian Steder, Michael Dixon
+    * \ingroup kdtree
     */
   template <typename PointT>
   class KdTree

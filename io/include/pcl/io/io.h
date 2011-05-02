@@ -50,6 +50,7 @@ namespace pcl
   /** \brief Get the index of a specified field (i.e., dimension/channel)
     * \param cloud the the point cloud message
     * \param field_name the string defining the field name
+    * \ingroup io
     */
   inline int
   getFieldIndex (const sensor_msgs::PointCloud2 &cloud, const std::string &field_name)
@@ -65,6 +66,7 @@ namespace pcl
     * \param cloud the the point cloud message
     * \param field_name the string defining the field name
     * \param fields a vector to the original \a PointField vector that the raw PointCloud message contains
+    * \ingroup io
     */
   template <typename PointT> inline int 
   getFieldIndex (const pcl::PointCloud<PointT> &cloud, const std::string &field_name, 
@@ -73,18 +75,21 @@ namespace pcl
   /** \brief Get the list of available fields (i.e., dimension/channel)
     * \param cloud the the point cloud message
     * \param fields a vector to the original \a PointField vector that the raw PointCloud message contains
+    * \ingroup io
     */
   template <typename PointT> inline void 
   getFields (const pcl::PointCloud<PointT> &cloud, std::vector<sensor_msgs::PointField> &fields);
 
   /** \brief Get the list of all fields available in a given cloud
     * \param cloud the the point cloud message
+    * \ingroup io
     */
   template <typename PointT> inline std::string 
   getFieldsList (const pcl::PointCloud<PointT> &cloud);
 
   /** \brief Get the available point cloud fields as a space separated string
     * \param cloud a pointer to the PointCloud message
+    * \ingroup io
     */
   inline std::string
   getFieldsList (const sensor_msgs::PointCloud2 &cloud)
@@ -98,6 +103,7 @@ namespace pcl
 
   /** \brief Obtains the size of a specific field data type in bytes
     * \param datatype the field data type (see PointField.h)
+    * \ingroup io
     */
   inline int
   getFieldSize (int datatype)
@@ -128,6 +134,7 @@ namespace pcl
   /** \brief Obtains the type of the PointField from a specific size and type
     * \param size the size in bytes of the data field
     * \param type a char describing the type of the field  ('F' = float, 'I' = signed, 'U' = unsigned)
+    * \ingroup io
     */
   inline int
   getFieldType (int size, char type)
@@ -165,6 +172,7 @@ namespace pcl
 
   /** \brief Obtains the type of the PointField from a specific PointField as a char
     * \param type the PointField field type
+    * \ingroup io
     */
   inline char
   getFieldType (int type)
@@ -192,15 +200,18 @@ namespace pcl
   /** \brief Copy all the fields from a given point cloud into a new point cloud
     * \param cloud_in the input point cloud dataset
     * \param cloud_out the resultant output point cloud dataset
+    * \ingroup io
     */
   template <typename PointInT, typename PointOutT> void 
   copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
                   pcl::PointCloud<PointOutT> &cloud_out);
 
-  /** \brief Concatenate two sensor_msgs::PointCloud2. Returns true if successful, false if failed (e.g., name/number of fields differs)
+  /** \brief Concatenate two sensor_msgs::PointCloud2. Returns true if successful, false if failed (e.g., name/number 
+    * of fields differs)
     * \param cloud1 the first input point cloud dataset
     * \param cloud2 the second input point cloud dataset
     * \param cloud_out the resultant output point cloud dataset
+    * \ingroup io
     */
   PCL_EXPORTS bool 
   concatenatePointCloud (const sensor_msgs::PointCloud2 &cloud1, 
@@ -211,6 +222,7 @@ namespace pcl
     * \param cloud_in the input point cloud dataset
     * \param indices the vector of indices representing the points to be copied from \a cloud_in
     * \param cloud_out the resultant output point cloud dataset
+    * \ingroup io
     */
   PCL_EXPORTS void 
   copyPointCloud (const sensor_msgs::PointCloud2 &cloud_in, 
@@ -221,6 +233,7 @@ namespace pcl
     * \param cloud_in the input point cloud dataset
     * \param indices the vector of indices representing the points to be copied from \a cloud_in
     * \param cloud_out the resultant output point cloud dataset
+    * \ingroup io
     */
   template <typename PointT> void 
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -231,6 +244,7 @@ namespace pcl
     * \param cloud_in the input point cloud dataset
     * \param indices the PointIndices structure representing the points to be copied from \a cloud_in
     * \param cloud_out the resultant output point cloud dataset
+    * \ingroup io
     */
   template <typename PointT> void 
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -241,6 +255,7 @@ namespace pcl
     * \param cloud_in the input point cloud dataset
     * \param indices the vector of indices representing the points to be copied from \a cloud_in
     * \param cloud_out the resultant output point cloud dataset
+    * \ingroup io
     */
   template <typename PointT> void 
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -251,6 +266,7 @@ namespace pcl
     * \param cloud1_in the first input dataset
     * \param cloud2_in the second input dataset
     * \param cloud_out the resultant output dataset created by the concatenation of all the fields in the input datasets
+    * \ingroup io
     */
   template <typename PointIn1T, typename PointIn2T, typename PointOutT> void 
   concatenateFields (const pcl::PointCloud<PointIn1T> &cloud1_in, 
@@ -260,6 +276,7 @@ namespace pcl
   /** \brief Copy the XYZ dimensions of a sensor_msgs::PointCloud2 into Eigen format
     * \param in the point cloud message
     * \param out the resultant Eigen MatrixXf format containing XYZ0 / point
+    * \ingroup io
     */
   PCL_EXPORTS bool 
   getPointCloudAsEigen (const sensor_msgs::PointCloud2 &in, Eigen::MatrixXf &out);
@@ -268,6 +285,7 @@ namespace pcl
     * \param in the Eigen MatrixXf format containing XYZ0 / point
     * \param out the resultant point cloud message
     * \note the method assumes that the PointCloud2 message already has the fields set up properly !
+    * \ingroup io
     */
   PCL_EXPORTS bool 
   getEigenAsPointCloud (Eigen::MatrixXf &in, sensor_msgs::PointCloud2 &out);

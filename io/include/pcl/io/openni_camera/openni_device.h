@@ -61,6 +61,7 @@ class DepthImage;
  * @brief Class representing an astract device for Primesense or MS Kinect devices.
  * @author Suat Gedikli
  * @date 02.january 2011
+ * @ingroup io
  */
 class OpenNIDevice : public boost::noncopyable
 {

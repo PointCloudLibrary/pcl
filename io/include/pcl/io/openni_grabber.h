@@ -52,6 +52,9 @@ struct PointXYZ;
 struct PointXYZRGB;
 template <typename T> class PointCloud;
 
+/** /brief
+  * /ingroup io
+  */
 template <typename T1, typename T2>
 class Synchronizer
 {
@@ -266,6 +269,9 @@ private:
   */
 };
 
+/** /brief
+  * /ingroup io
+  */
 class PCL_EXPORTS OpenNIGrabber : public Grabber
 {
 public:

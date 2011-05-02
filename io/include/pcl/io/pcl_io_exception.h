@@ -43,12 +43,18 @@
 #define THROW_PCL_IO_EXCEPTION(format,...) throwPCLIOException( __PRETTY_FUNCTION__, __FILE__, __LINE__, format , ##__VA_ARGS__ )
 namespace pcl
 {
+/** /brief
+  * /ingroup io
+  */
 class PCLIOException : public PCLException
 {
   public:
     PCLIOException(const std::string error_description) : PCLException (error_description) {}
 };
 
+/** /brief
+  * /ingroup io
+  */
 inline void throwPCLIOException (const char* function, const char* file, unsigned line, const char* format, ...)
 {
   char temp[1024];

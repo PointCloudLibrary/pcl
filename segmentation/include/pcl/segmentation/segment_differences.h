@@ -53,6 +53,7 @@ namespace pcl
     * src has a correspondence > threshold than a point p2 from tgt)
     * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching built over \a tgt
     * \param output the resultant output point cloud difference
+    * \ingroup segmentation
     */
   template <typename PointT> 
   void getPointCloudDifference (
@@ -67,6 +68,7 @@ namespace pcl
     * aligned point clouds and returns the difference between them for a maximum
     * given distance threshold.
     * \author Radu Bogdan Rusu
+    * \ingroup segmentation
     */
   template <typename PointT>
   class SegmentDifferences: public PCLBase<PointT>

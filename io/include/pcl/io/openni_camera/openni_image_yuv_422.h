@@ -45,6 +45,7 @@ namespace openni_wrapper
  * @brief Concrete implementation of the interface Image for a YUV 422 image used by Primesense devices.
  * @author Suat Gedikli
  * @date 02.january 2011
+ * @ingroup io
  */
 class ImageYUV422 : public Image
 {

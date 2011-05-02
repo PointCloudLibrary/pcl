@@ -48,6 +48,7 @@ namespace pcl
   /** \brief @b OrganizedDataIndex is a type of spatial locator used to query organized datasets, such as point clouds
     * acquired using dense stereo devices. The class best supports square data blocks for now in the form of (k*k+1)^2.
     * \author Radu Bogdan Rusu
+    * \ingroup kdtree
     */
   template <typename PointT>
   class OrganizedDataIndex : public KdTree<PointT>

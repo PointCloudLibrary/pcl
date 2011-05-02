@@ -50,8 +50,9 @@ class RangeImage;
 class RangeImageBorderExtractor;
 
 /** \brief @b NARF (Normal Aligned Radial Feature) keypoints. Input is a range image,
- *            output the indices of the keypoints
+  *           output the indices of the keypoints
   * \author Bastian Steder
+  * \ingroup keypoints
   */
 class NarfKeypoint : public Keypoint<PointWithRange, int>
 {
@@ -174,6 +175,9 @@ class NarfKeypoint : public Keypoint<PointWithRange, int>
     std::vector<float*> interest_image_scale_space_;
 };
 
+/** 
+  * \ingroup keypoints
+  */
 inline std::ostream&
   operator << (std::ostream& os, const NarfKeypoint::Parameters& p)
 {

@@ -48,6 +48,7 @@ namespace openni_wrapper
  * @brief This class provides methods to fill a depth or disparity image.
  * @author Suat Gedikli
  * @date 02.january 2011
+ * @ingroup io
  */
 class DepthImage
 {

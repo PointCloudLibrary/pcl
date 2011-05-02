@@ -53,6 +53,7 @@ namespace pcl
     * Sample Consensus methods and models, in the sense that it just creates a
     * Nodelet wrapper for generic-purpose SAC-based segmentation.
     * \author Radu Bogdan Rusu
+    * \ingroup segmentation
     */
   template <typename PointT>
   class SACSegmentation : public PCLBase<PointT>
@@ -254,6 +255,7 @@ namespace pcl
 
   /** \brief @b SACSegmentationFromNormals represents the PCL nodelet segmentation class for Sample Consensus methods and
     * models that require the use of surface normals for estimation.
+    * \ingroup segmentation
     */
   template <typename PointT, typename PointNT>
   class SACSegmentationFromNormals: public SACSegmentation<PointT>

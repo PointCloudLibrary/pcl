@@ -50,6 +50,7 @@ namespace pcl
     *    International Journal of Computer Vision, 60, 2 (2004), pp. 91-110.
     *
     * \author Michael Dixon
+    * \ingroup keypoints
     */
   template <typename PointInT, typename PointOutT>
   class SIFTKeypoint : public Keypoint<PointInT, PointOutT>

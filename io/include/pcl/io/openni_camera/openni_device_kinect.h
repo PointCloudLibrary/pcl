@@ -49,6 +49,7 @@ namespace openni_wrapper
  * @brief Concrete implementation of the interface OpenNIDevice for a MS Kinect device.
  * @author Suat Gedikli
  * @date 02.january 2011
+ * @ingroup io
  */
 class DeviceKinect : public OpenNIDevice
 {

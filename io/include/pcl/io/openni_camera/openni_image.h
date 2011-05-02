@@ -50,6 +50,7 @@ namespace openni_wrapper
  * @author Suat Gedikli
  * @date 02.january 2011
  * @param image_meta_data
+ * @ingroup io
  */
 class Image
 {

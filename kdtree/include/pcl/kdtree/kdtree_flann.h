@@ -51,6 +51,7 @@ namespace pcl
     *
     * @note libFLANN is not thread safe, so we need mutices in places to make KdTreeFLANN thread safe.
     * \author Radu Bogdan Rusu
+    * \ingroup kdtree 
     */
   template <typename PointT>
   class KdTreeFLANN : public KdTree<PointT>
