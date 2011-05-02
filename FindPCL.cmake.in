@@ -131,7 +131,7 @@ foreach(component ${PCL_FIND_COMPONENTS})
   endif(${PC_PCL_COMPONENT}_VERSION AND NOT PCL_COMPONENTS_VERSION)
   
   find_path(${PCL_COMPONENT_INCLUDE_DIR} ${${pcl_component}_header} 
-    HINTS "@CMAKE_INSTALL_PREFIX@"
+    HINTS "@CMAKE_INSTALL_PREFIX@" "@CMAKE_INSTALL_PREFIX@/include"
           ${${PC_PCL_COMPONENT}_INCLUDEDIR} ${${PC_PCL_COMPONENT}_INCLUDE_DIRS} 
           ${PCL_ROOT} $ENV{PCL_ROOT} ${PCL_ROOT}/include $ENV{PCL_ROOT}/include
     PATH_SUFFIXES pcl/${component} ${PCL_SUFFIX}/pcl/${component} pcl/${${component}_parent} ${PCL_SUFFIX}/pcl/${${component}_parent}
