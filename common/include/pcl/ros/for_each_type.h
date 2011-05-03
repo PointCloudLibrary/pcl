@@ -70,7 +70,7 @@ namespace pcl
     {
       typedef typename boost::mpl::deref<Iterator>::type arg;
 
-#ifdef _WIN32
+#if (defined _WIN32 && defined _MSC_VER)
       boost::mpl::aux::unwrap(f, 0).operator()<arg> ();
 #else
       boost::mpl::aux::unwrap(f, 0).template operator()<arg> ();
