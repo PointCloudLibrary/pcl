@@ -51,14 +51,14 @@ if(build)
         include/pcl/${SUBSYS_NAME}/io.h
         include/pcl/${SUBSYS_NAME}/pcd_io.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
-        include/pcl/compression/octree_pointcloud_compression.h
+   #     include/pcl/compression/octree_pointcloud_compression.h
         include/pcl/compression/entropy_range_coder.h
         ${OPENNI_GRABBER_INCLUDES}
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/io.hpp
                   include/pcl/compression/impl/entropy_range_coder.hpp
-                  include/pcl/compression/impl/octree_pointcloud_compression.hpp
+    #              include/pcl/compression/impl/octree_pointcloud_compression.hpp
        )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
