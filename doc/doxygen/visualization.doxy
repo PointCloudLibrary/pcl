@@ -15,8 +15,7 @@
        of points or from parametric equations;
        \image html http://www.pointclouds.org/documentation/overview/_images/shapes.jpg
   <li> a histogram visualization module (PCLHistogramVisualizer) for 2D plots;
-       .. image:: http://www.pointclouds.org/documentation/overview/_images/histogram.jpg
-       \image html
+       \image html http://www.pointclouds.org/documentation/overview/_images/histogram.jpg
   <li> a multitude of Geometry and Color handler for pcl::PointCloud<T> datasets;
        \image html http://www.pointclouds.org/documentation/overview/_images/normals.jpg
        \image html http://www.pointclouds.org/documentation/overview/_images/pcs.jpg

@@ -2,7 +2,7 @@
   \addtogroup io Module io
 
   \section secIoPresentation Overview
-	The pcl_io library contains classes and functions for reading and writing point cloud data and capturing from OpenNI-compatible depth cameras.
+	The pcl_io library contains classes and functions for reading and writing point cloud data and capturing from OpenNI-compatible depth cameras.  An introduction to some of these capabilities can be found in the following tutorials.
 
 	<ul>
 	<li><a href="http://pointclouds.org/documentation/tutorials/pcd_file_format.php#pcd-file-format">The PCD (Point Cloud Data) file format</a>
