@@ -87,9 +87,10 @@ namespace pcl
       {
         min_number_correspondences_ = 4;
         reg_name_ = "IterativeClosestPointNonLinear";
-        rigid_transformation_estimation_
-          = boost::bind(&(IterativeClosestPointNonLinear<PointSource, PointTarget>::estimateRigidTransformationLM),
-                        this, _1, _2, _3, _4, _5);
+
+        rigid_transformation_estimation_ = 
+          boost::bind (&IterativeClosestPointNonLinear<PointSource, PointTarget>::estimateRigidTransformationLM, 
+              this, _1, _2, _3, _4, _5);
       }
 
       /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative
