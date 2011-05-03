@@ -100,7 +100,7 @@ endif((PCL_FIND_COMPONENTS_LENGTH EQUAL 0) OR
 find_package(PkgConfig)
 
 set(PCL_INCLUDE_DIRS)
-set(PCL_LIBRARIES)
+set(PCL_FOUND_LIBRARIES)
 
 #find each component separately
 foreach(component ${PCL_FIND_COMPONENTS})
@@ -142,8 +142,8 @@ foreach(component ${PCL_FIND_COMPONENTS})
     ${${PCL_COMPONENT_INCLUDE_DIR}}/${${pcl_component}_header}
     PATH)
   file(TO_CMAKE_PATH ${component_header_path} component_header_path)
-  # on windows we can not install
-  if(NOT WIN32)
+  # on windows we can not always install but I got sick
+#  if(NOT WIN32)
     if(${component}_parent)
       string(REGEX REPLACE "(.*)/pcl/${${component}_parent}" "\\1" 
         component_header_path "${component_header_path}")
@@ -154,7 +154,7 @@ foreach(component ${PCL_FIND_COMPONENTS})
     if(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
       message(FATAL_ERROR "${component_header_path} is not a valid include directory")
     endif(NOT EXISTS ${component_header_path}/pcl/pcl_config.h)
-  endif(NOT WIN32)
+#  endif(NOT WIN32)
 
   find_library(${PCL_COMPONENT_LIBRARY} ${pcl_component}
     HINTS /usr/local 
@@ -181,18 +181,19 @@ foreach(component ${PCL_FIND_COMPONENTS})
   get_filename_component(component_library_path_debug 
     ${${PCL_COMPONENT_LIBRARY}_DEBUG}
     PATH)
-
+	
   find_package_handle_standard_args(${PCL_COMPONENT} DEFAULT_MSG
     ${PCL_COMPONENT_LIBRARY} ${PCL_COMPONENT_INCLUDE_DIR})
 
   if(${PCL_COMPONENT}_FOUND)
+	set(${PCL_COMPONENT}_LIBRARIES optimized ${${PCL_COMPONENT_LIBRARY}} debug ${${PCL_COMPONENT_LIBRARY}_DEBUG})
     list(APPEND PCL_INCLUDE_DIRS ${${PCL_COMPONENT_INCLUDE_DIR}})
     if(${PC_PCL_COMPONENT}_INCLUDE_DIRS)
       list(APPEND PCL_INCLUDE_DIRS ${${PC_PCL_COMPONENT}_INCLUDE_DIRS})
     endif(${PC_PCL_COMPONENT}_INCLUDE_DIRS)
     mark_as_advanced(${PCL_COMPONENT_INCLUDE_DIR})
-    list(APPEND PCL_LIBRARIES ${${PCL_COMPONENT_LIBRARY}})
-		list(APPEND PCL_LIBRARIES_DEBUG ${${PCL_COMPONENT_LIBRARY}_DEBUG})
+    list(APPEND PCL_FOUND_LIBRARIES ${${PCL_COMPONENT_LIBRARY}})
+		list(APPEND PCL_FOUND_LIBRARIES_DEBUG ${${PCL_COMPONENT_LIBRARY}_DEBUG})
     list(APPEND PCL_LINK_DIRECTORIES ${component_library_path})
 		list(APPEND PCL_LINK_DIRECTORIES_DEBUG ${component_library_path_debug})
     mark_as_advanced(${PCL_COMPONENT_LIBRARY} ${PCL_COMPONENT_LIBRARY}_DEBUG)
@@ -212,9 +213,9 @@ if(NOT "${PCL_LINK_DIRECTORIES_DEBUG}" STREQUAL "")
   list(REMOVE_DUPLICATES PCL_LINK_DIRECTORIES)
 endif(NOT "${PCL_LINK_DIRECTORIES_DEBUG}" STREQUAL "")
 
-find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
-mark_as_advanced(PCL_LIBRARIES PCL_LIBRARIES_DEBUG PCL_INCLUDE_DIRS)
-
+find_package_handle_standard_args(PCL DEFAULT_MSG PCL_FOUND_LIBRARIES PCL_INCLUDE_DIRS)
+mark_as_advanced(PCL_FOUND_LIBRARIES PCL_FOUND_LIBRARIES_DEBUG PCL_INCLUDE_DIRS)
+set(PCL_LIBRARIES optimized ${PCL_FOUND_LIBRARIES} debug ${PCL_FOUND_LIBRARIES_DEBUG})
 
 find_package(VTK)
 if(VTK_FOUND)
