@@ -10,7 +10,9 @@
 #  PCL_FOUND
 #  PCL_INCLUDE_DIRS
 #  PCL_LIBRARIES
+#  PCL_LIBRARIES_DEBUG
 #  PCL_LINK_DIRECTORIES
+#  PCL_LINK_DIRECTORIES_DEBUG
 #  PCL_VERSION
 #
 # In addition for each component these are set:
@@ -29,7 +31,7 @@
 # module from COMPONENTS
 #
 # Tested with:
-# -PCL 2.0
+# -PCL 1.0
 #
 # www.pointclouds.org
 # --------------------------------
@@ -157,8 +159,8 @@ foreach(component ${PCL_FIND_COMPONENTS})
   find_library(${PCL_COMPONENT_LIBRARY} ${pcl_component}
     HINTS /usr/local 
           ${${PC_PCL_COMPONENT}_LIBDIR} ${${PC_PCL_COMPONENT}_LIBRARY_DIRS}
-          "${PCL_ROOT}" "$ENV{PCL_ROOT}" "@CMAKE_INSTALL_PREFIX@"
-    PATH_SUFFIXES "@LIB_INSTALL_DIR@"
+          "${PCL_ROOT}" "$ENV{PCL_ROOT}" "@CMAKE_INSTALL_PREFIX@" "@LIB_INSTALL_DIR@"
+    PATH_SUFFIXES lib bin
     DOC "path to ${pcl_component} library")
   get_filename_component(component_library_path 
     ${${PCL_COMPONENT_LIBRARY}}
@@ -167,10 +169,16 @@ foreach(component ${PCL_FIND_COMPONENTS})
   find_library(${PCL_COMPONENT_LIBRARY}_DEBUG ${pcl_component}${PCL_DEBUG_SUFFIX}
     HINTS /usr/local 
           ${${PC_PCL_COMPONENT}_LIBDIR} ${${PC_PCL_COMPONENT}_LIBRARY_DIRS}
-          "${PCL_ROOT}" "$ENV{PCL_ROOT}" "@CMAKE_INSTALL_PREFIX@"
-    PATH_SUFFIXES "@LIB_INSTALL_DIR@"
-    DOC "path to ${pcl_component} library debug")  
-  get_filename_component(component_library_path 
+          "${PCL_ROOT}" "$ENV{PCL_ROOT}" "@CMAKE_INSTALL_PREFIX@" "@LIB_INSTALL_DIR@"
+    PATH_SUFFIXES lib bin
+    DOC "path to ${pcl_component} library debug")
+	# if only release found let release be debug too
+	# NOTE: this is only for non Makefile sake
+	if(NOT ${PCL_COMPONENT_LIBRARY}_DEBUG AND ${PCL_COMPONENT_LIBRARY})
+		set(${PCL_COMPONENT_LIBRARY}_DEBUG ${${PCL_COMPONENT_LIBRARY}})
+	endif(NOT ${PCL_COMPONENT_LIBRARY}_DEBUG AND ${PCL_COMPONENT_LIBRARY})
+
+  get_filename_component(component_library_path_debug 
     ${${PCL_COMPONENT_LIBRARY}_DEBUG}
     PATH)
 
@@ -184,8 +192,10 @@ foreach(component ${PCL_FIND_COMPONENTS})
     endif(${PC_PCL_COMPONENT}_INCLUDE_DIRS)
     mark_as_advanced(${PCL_COMPONENT_INCLUDE_DIR})
     list(APPEND PCL_LIBRARIES ${${PCL_COMPONENT_LIBRARY}})
+		list(APPEND PCL_LIBRARIES_DEBUG ${${PCL_COMPONENT_LIBRARY}_DEBUG})
     list(APPEND PCL_LINK_DIRECTORIES ${component_library_path})
-    mark_as_advanced(${PCL_COMPONENT_LIBRARY})
+		list(APPEND PCL_LINK_DIRECTORIES_DEBUG ${component_library_path_debug})
+    mark_as_advanced(${PCL_COMPONENT_LIBRARY} ${PCL_COMPONENT_LIBRARY}_DEBUG)
   endif(${PCL_COMPONENT}_FOUND)
 endforeach(component)
 
@@ -198,8 +208,12 @@ if(NOT "${PCL_LINK_DIRECTORIES}" STREQUAL "")
   list(REMOVE_DUPLICATES PCL_LINK_DIRECTORIES)
 endif(NOT "${PCL_LINK_DIRECTORIES}" STREQUAL "")
 
+if(NOT "${PCL_LINK_DIRECTORIES_DEBUG}" STREQUAL "")
+  list(REMOVE_DUPLICATES PCL_LINK_DIRECTORIES)
+endif(NOT "${PCL_LINK_DIRECTORIES_DEBUG}" STREQUAL "")
+
 find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
-mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS)
+mark_as_advanced(PCL_LIBRARIES PCL_LIBRARIES_DEBUG PCL_INCLUDE_DIRS)
 
 
 find_package(VTK)
