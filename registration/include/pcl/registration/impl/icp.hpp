@@ -35,6 +35,8 @@
  *
  */
 
+#include <boost/unordered_map.hpp>
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Rigid transformation computation method.
   * \param output the transformed input point cloud dataset using the rigid transformation found
@@ -129,12 +131,15 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
         sac.getInliers (inliers);
         source_indices_good.resize (inliers.size ());
         target_indices_good.resize (inliers.size ());
+
+        boost::unordered_map<int, int> source_to_target;
+        for (unsigned int i = 0; i < source_indices.size(); ++i)
+          source_to_target[source_indices[i]] = target_indices[i];
+
         // Copy just the inliers
+        std::copy(inliers.begin(), inliers.end(), source_indices_good.begin());
         for (size_t i = 0; i < inliers.size (); ++i)
-        {
-          source_indices_good[i] = source_indices[inliers[i]];
-          target_indices_good[i] = target_indices[inliers[i]];
-        }
+          target_indices_good[i] = source_to_target[inliers[i]];
       }
     }
 
@@ -150,7 +155,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
     PCL_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %zu points [100.0%%], RANSAC rejected: %zu [%f%%].", getClassName ().c_str (), cnt, (cnt * 100.0) / indices_->size (), indices_->size (), source_indices.size () - cnt, (source_indices.size () - cnt) * 100.0 / source_indices.size ());
   
     // Estimate the transform
-    estimateRigidTransformationSVD (output, source_indices_good, *target_, target_indices_good, transformation_);
+    rigid_transformation_estimation_(output, source_indices_good, *target_, target_indices_good, transformation_);
 
     // Tranform the data
     transformPointCloud (output, output, transformation_);

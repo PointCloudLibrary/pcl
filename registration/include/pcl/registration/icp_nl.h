@@ -39,7 +39,7 @@
 #define PCL_ICP_NL_H_
 
 // PCL includes
-#include "pcl/registration/registration.h"
+#include "pcl/registration/icp.h"
 #include "pcl/sample_consensus/ransac.h"
 #include "pcl/sample_consensus/sac_model_registration.h"
 
@@ -53,28 +53,30 @@ namespace pcl
     * \ingroup registration
     */
   template <typename PointSource, typename PointTarget>
-  class IterativeClosestPointNonLinear : public Registration<PointSource, PointTarget>
+  class IterativeClosestPointNonLinear : public IterativeClosestPoint<PointSource, PointTarget>
   {
-    using Registration<PointSource, PointTarget>::reg_name_;
-    using Registration<PointSource, PointTarget>::getClassName;
-    using Registration<PointSource, PointTarget>::indices_;
-    using Registration<PointSource, PointTarget>::target_;
-    using Registration<PointSource, PointTarget>::nr_iterations_;
-    using Registration<PointSource, PointTarget>::max_iterations_;
-    using Registration<PointSource, PointTarget>::previous_transformation_;
-    using Registration<PointSource, PointTarget>::final_transformation_;
-    using Registration<PointSource, PointTarget>::transformation_;
-    using Registration<PointSource, PointTarget>::transformation_epsilon_;
-    using Registration<PointSource, PointTarget>::converged_;
-    using Registration<PointSource, PointTarget>::corr_dist_threshold_;
-    using Registration<PointSource, PointTarget>::inlier_threshold_;
-    using Registration<PointSource, PointTarget>::min_number_correspondences_;
+    using IterativeClosestPoint<PointSource, PointTarget>::reg_name_;
+    using IterativeClosestPoint<PointSource, PointTarget>::getClassName;
+    using IterativeClosestPoint<PointSource, PointTarget>::indices_;
+    using IterativeClosestPoint<PointSource, PointTarget>::target_;
+    using IterativeClosestPoint<PointSource, PointTarget>::nr_iterations_;
+    using IterativeClosestPoint<PointSource, PointTarget>::max_iterations_;
+    using IterativeClosestPoint<PointSource, PointTarget>::previous_transformation_;
+    using IterativeClosestPoint<PointSource, PointTarget>::final_transformation_;
+    using IterativeClosestPoint<PointSource, PointTarget>::transformation_;
+    using IterativeClosestPoint<PointSource, PointTarget>::transformation_epsilon_;
+    using IterativeClosestPoint<PointSource, PointTarget>::converged_;
+    using IterativeClosestPoint<PointSource, PointTarget>::corr_dist_threshold_;
+    using IterativeClosestPoint<PointSource, PointTarget>::inlier_threshold_;
+    using IterativeClosestPoint<PointSource, PointTarget>::min_number_correspondences_;
 
-    typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
+    using IterativeClosestPoint<PointSource, PointTarget>::rigid_transformation_estimation_;
+
+    typedef pcl::PointCloud<PointSource> PointCloudSource;
     typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
     typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
 
-    typedef typename Registration<PointSource, PointTarget>::PointCloudTarget PointCloudTarget;
+    typedef pcl::PointCloud<PointTarget> PointCloudTarget;
 
     typedef PointIndices::Ptr PointIndicesPtr;
     typedef PointIndices::ConstPtr PointIndicesConstPtr;
@@ -85,7 +87,10 @@ namespace pcl
       {
         min_number_correspondences_ = 4;
         reg_name_ = "IterativeClosestPointNonLinear";
-      };
+        rigid_transformation_estimation_
+          = boost::bind(&(IterativeClosestPointNonLinear<PointSource, PointTarget>::estimateRigidTransformationLM),
+                        this, _1, _2, _3, _4, _5);
+      }
 
       /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative
         * non-linear Levenberg-Marquardt approach.
@@ -110,19 +115,7 @@ namespace pcl
                                      Eigen::Matrix4f &transformation_matrix);
 
     protected:
-
-      /** \brief Rigid transformation computation method.
-        * \param output the transformed input point cloud dataset using the rigid transformation found
-        */
-      void 
-      computeTransformation (PointCloudSource &output);
-
-      /** \brief Rigid transformation computation method with initial guess.
-        * \param output the transformed input point cloud dataset using the rigid transformation found
-        * \param guess the initial guess of the transformation to compute
-        */
-      void 
-      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess);
+      using IterativeClosestPoint<PointSource, PointTarget>::computeTransformation;
 
     private:
       /** \brief Compute the median value from a set of doubles
