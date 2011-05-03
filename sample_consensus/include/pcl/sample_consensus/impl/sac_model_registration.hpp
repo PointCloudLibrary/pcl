@@ -72,8 +72,8 @@ pcl::SampleConsensusModelRegistration<PointT>::computeModelCoefficients (const s
   std::vector<int> indices_tgt (3);
   for (int i = 0; i < 3; ++i)
   {
-    indices_src[i] = (*indices_)[samples[i]];
-    indices_tgt[i] = (*indices_tgt_)[samples[i]];
+    indices_src[i] = samples[i];
+    indices_tgt[i] = original_index_mapping_[samples[i]];
   }
 
   Eigen::Matrix4f transform;
@@ -159,7 +159,7 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
     Eigen::Vector4f p_tr  = transform * pt_src;
     // Calculate the distance from the transformed point to its correspondence
     if ((p_tr - pt_tgt).squaredNorm () < thresh)
-      inliers[nr_p++] = i;
+      inliers[nr_p++] = (*indices_)[i];
   }
   inliers.resize (nr_p);
 } 

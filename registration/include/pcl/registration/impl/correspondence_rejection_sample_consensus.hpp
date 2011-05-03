@@ -36,6 +36,8 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 
+#include <boost/unordered_map.hpp>
+
 template <typename PointT>
 inline void pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::applyRejection(pcl::registration::Correspondences &correspondences)
 {
@@ -74,9 +76,14 @@ inline void pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::ap
      {
        std::vector<int> inliers;
        sac.getInliers (inliers);
+
+       boost::unordered_map<int, pcl::registration::Correspondence> index_to_correspondence;
+       for (unsigned int i = 0; i < input_correspondences_->size(); ++i)
+         index_to_correspondence[input_correspondences_->at(i).indexQuery] = i;
+
        correspondences.resize(inliers.size());
        for (size_t i = 0; i < inliers.size (); ++i)
-         correspondences[i] = input_correspondences_->at(inliers[i]);
+         correspondences[i] = input_correspondences_[index_to_correspondence[inliers[i]]];
 
        // get best transformation
        Eigen::VectorXf model_coefficients;
@@ -130,8 +137,14 @@ void pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getCorres
        std::vector<int> inliers;
        sac.getInliers (inliers);
        remaining_correspondences.resize(inliers.size());
+
+       boost::unordered_map<int, pcl::registration::Correspondence> index_to_correspondence;
+       for (unsigned int i = 0; i < input_correspondences_->size(); ++i)
+         index_to_correspondence[input_correspondences_->at(i).indexQuery] = i;
+
+       correspondences.resize(inliers.size());
        for (size_t i = 0; i < inliers.size (); ++i)
-         remaining_correspondences[i] = original_correspondences.at(inliers[i]);
+         remaining_correspondences[i] = original_correspondences[index_to_correspondence[inliers[i]]];
 
        // get best transformation
        Eigen::VectorXf model_coefficients;
