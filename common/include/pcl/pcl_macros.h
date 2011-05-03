@@ -55,7 +55,7 @@ namespace pcl
     inline void 
     print (FILE *stream, int attribute, int fg, const char* format, ...)
     {
-#if (defined _WIN32 && defined _MSC_VER)
+#ifndef _WIN32
       char command[13];
       // Command is the control command to the terminal        
       sprintf (command, "%c[%d;%dm", 0x1B, attribute, fg + 30);
