@@ -1,6 +1,6 @@
 set(SUBSYS_NAME io)
 set(SUBSYS_DESC "Point cloud IO library")
-set(SUBSYS_DEPS common)
+set(SUBSYS_DEPS common octree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -43,6 +43,7 @@ if(build)
     set(srcs src/io.cpp
         src/pcd_io.cpp
         src/vtk_io.cpp
+        src/compression.cpp
         ${OPENNI_GRABBER_SOURCES}
         )
 
@@ -50,10 +51,15 @@ if(build)
         include/pcl/${SUBSYS_NAME}/io.h
         include/pcl/${SUBSYS_NAME}/pcd_io.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
+        include/pcl/compression/octree_pointcloud_compression.h
+        include/pcl/compression/entropy_range_coder.h
         ${OPENNI_GRABBER_INCLUDES}
         )
 
-    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/io.hpp)
+    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/io.hpp
+                  include/pcl/compression/impl/entropy_range_coder.hpp
+                  include/pcl/compression/impl/octree_pointcloud_compression.hpp
+       )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
