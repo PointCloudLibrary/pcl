@@ -18,21 +18,43 @@ compilation of your project.
 .. // * http://www.drdobbs.com/blog/archives/2010/08/c_compilation_s.html
 .. // * http://gamesfromwithin.com/physical-structure-and-c-part-2-build-times
 
-:ref:`c_cache`
+* :ref:`c_cache`
 
-CCache is a compiler cache. It speeds up recompilation by caching previous
-compilations and detecting when the same compilation is being done again.
-Supported languages are C, C++, Objective-C and Objective-C++.
-  
-:ref:`compiler_optimizations`
+  `CCache` is a compiler cache. It speeds up recompilation by caching previous
+  compilations and detecting when the same compilation is being done again.
+  Supported languages are C, C++, Objective-C and Objective-C++.
 
-Depending on what compiler optimizations you use, your code might behave
-differently, both at compile time and at run time.
+  .. image:: images/ccache.png
+     :height: 75px
 
-:ref:`single_compile_unit`
 
-In certain cases, it's better to concatenate source files into single
-compilation units to speed up compiling.
+* :ref:`distc`
+
+  `distcc` is a program to distribute builds of C, C++, Objective C or
+  Objective C++ code across several machines on a network. distcc should always
+  generate the same results as a local build, is simple to install and use, and
+  is usually much faster than a local compile. 
+    
+  .. image:: images/distcc.png
+     :height: 75px
+
+
+* :ref:`compiler_optimizations`
+
+  Depending on what compiler optimizations you use, your code might behave
+  differently, both at compile time and at run time.
+
+  .. image:: images/optimize.png
+     :height: 75px
+
+
+* :ref:`single_compile_unit`
+
+  In certain cases, it's better to concatenate source files into single
+  compilation units to speed up compiling.
+
+  .. image:: images/unitybuild.jpg
+     :height: 75px
 
 Developing PCL code
 -------------------
@@ -41,29 +63,30 @@ To make our lives easier, and to be able to read and integrate code from each
 other without causing ourselves headaches, we assembled a set of rules for PCL
 development that everyone should follow:
 
- * if you make any commits, please add the commit log or something similar to
-   the changelist page
+.. topic:: Rules
+
+ * if you make any commits, please **_add the commit log_** or something similar **_to
+   the changelist page_**
    (http://dev.pointclouds.org/projects/pcl/wiki/ChangeList);
    
- * if you change anything in an existing algorithm, make sure that there are
-   unit tests for it and make sure that they pass before you commit the code;
+ * if you change anything in an existing algorithm, **_make sure that there are
+   unit tests_** for it and **_make sure that they pass before you commit_** the code;
 
- * if you add a new algorithm or method, please document the code in a similar
-   manner to the existing PCL code (or better!), and add some minimal unit
-   tests before you commit it;
+ * if you add a new algorithm or method, please **_document the code in a similar
+   manner to the existing PCL code_** (or better!), and **_add some minimal unit
+   tests_** before you commit it;
 
  * method definitions go into (include/.h), templated implementations go into
    (include/impl/.hpp), non-templated implementations go into (src/.cpp), and
    unit tests go in (test/.cpp);
 
- * last but not least, please respect the same naming and indentation
-   guidelines as you see in the :ref:`pcl_style_guide`.
+ * last but not least, please **_respect the same naming and indentation
+   guidelines_** as you see in the :ref:`pcl_style_guide`.
 
 
-:ref:`pcl_style_guide`
+* :ref:`pcl_style_guide`
 
-Please follow the following naming and indentation rules when developing code
-for PCL.
+  Please follow the following naming and indentation rules when developing code for PCL.
 
 
 ..
@@ -76,6 +99,7 @@ Contents
 .. toctree::
   
    c_cache
+   distcc
    compiler_optimizations
    single_compile_unit
    pcl_style_guide
