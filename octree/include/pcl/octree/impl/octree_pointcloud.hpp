@@ -83,25 +83,30 @@ namespace pcl
             {
               if ((input_->points[*current].x == input_->points[*current].x) && (input_->points[*current].y
                   == input_->points[*current].y) && (input_->points[*current].z == input_->points[*current].z))
+              {
                 // add points to octree
                 this->addPointIdx (*current);
-              ++current;
+                ++current;
+              }
             }
           }
           else
           {
             for (i = 0; i < input_->points.size (); i++)
             {
-              if ((input_->points[i].x == input_->points[i].x) && (input_->points[i].y == input_->points[i].y)
-                  && (input_->points[i].z == input_->points[i].z))
+              if ((input_->points[i].x == input_->points[i].x) &&
+                  (input_->points[i].y == input_->points[i].y) &&
+                  (input_->points[i].z == input_->points[i].z)) {
                 // add points to octree
                 this->addPointIdx ((unsigned int)i);
+              }
             }
           }
 
         }
       }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
       void
       OctreePointCloud<PointT, LeafT, OctreeT>::addPointFromCloud (const int pointIdx_arg, IndicesPtr indices_arg)
@@ -602,6 +607,7 @@ namespace pcl
           bool bUpperBoundViolationX = (pointIdx_arg.x >= maxX_);
           bool bUpperBoundViolationY = (pointIdx_arg.y >= maxY_);
           bool bUpperBoundViolationZ = (pointIdx_arg.z >= maxZ_);
+
 
           // do we violate any bounds?
           if (bLowerBoundViolationX || bLowerBoundViolationY || bLowerBoundViolationZ || bUpperBoundViolationX

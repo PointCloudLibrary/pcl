@@ -200,6 +200,7 @@ namespace pcl
           leafCount_ = 0;
           branchCount_ = 1;
           objectCount_ = 0;
+
         }
 
         // delete node pool
