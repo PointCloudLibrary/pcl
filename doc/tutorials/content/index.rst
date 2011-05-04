@@ -354,6 +354,23 @@ contributions on any tutorial.
      .. |vi_1| image:: images/cloud_viewer.jpg
                :height: 100px
 
+* Applications
+
+  * :ref:`template_alignment`
+
+     ======  ======
+     |ap_1|  Title: **Aligning object templates to a point cloud**
+
+             Author: *Michael Dixon*
+
+             Compatibility: > PCL 1.0
+
+             This tutorial gives an example of how some of the tools covered in the previous tutorials can be combined to solve a higher level problem --- aligning a previously captured model of an object to some newly captured data.
+     ======  ======
+
+     .. |ap_1| image:: images/template_alignment_2.png
+               :height: 100px
+
  ..
   * :ref:`normal_estimation_integral_images`
     Surface normal estimation
