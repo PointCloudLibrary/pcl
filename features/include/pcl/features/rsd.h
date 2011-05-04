@@ -121,7 +121,7 @@ namespace pcl
       inline void 
       setKSearch (int) 
       {
-        PCL_ERROR ("[pcl::%s::computeFeature] RSD does not work with k nearest neighbor search. Use setRadiusSearch() instead!", getClassName ().c_str ()); 
+        PCL_ERROR ("[pcl::%s::computeFeature] RSD does not work with k nearest neighbor search. Use setRadiusSearch() instead!\n", getClassName ().c_str ()); 
       }
 
     protected:

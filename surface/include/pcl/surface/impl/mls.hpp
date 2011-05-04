@@ -69,7 +69,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output
   // Check if a space search locator was given
   if (!tree_)
   {
-    PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
@@ -115,7 +115,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
 {
   if (search_radius_ <= 0 || sqr_gauss_param_ <= 0)
   {
-    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid search radius (%f) or Gaussian parameter (%f)!", getClassName ().c_str (), search_radius_, sqr_gauss_param_);
+    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid search radius (%f) or Gaussian parameter (%f)!\n", getClassName ().c_str (), search_radius_, sqr_gauss_param_);
     output.width = output.height = 0;
     output.points.clear ();
     if (normals_)

@@ -49,7 +49,7 @@ pcl::RadiusOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &o
   // If fields x/y/z are not present, we cannot filter
   if (x_idx_ == -1 || y_idx_ == -1 || z_idx_ == -1)
   {
-    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.data.clear ();
     return;
@@ -57,7 +57,7 @@ pcl::RadiusOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &o
 
   if (search_radius_ == 0.0)
   {
-    PCL_ERROR ("[pcl::%s::applyFilter] No radius defined!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::applyFilter] No radius defined!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.data.clear ();
     return;

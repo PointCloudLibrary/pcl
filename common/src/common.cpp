@@ -51,7 +51,7 @@ pcl::getMinMax (const sensor_msgs::PointCloud2 &cloud, int idx,
 
   if (field_idx == -1)
   {
-    PCL_ERROR ("[getMinMax] Invalid field (%s) given!", field_name.c_str ());
+    PCL_ERROR ("[getMinMax] Invalid field (%s) given!\n", field_name.c_str ());
     return;
   }
 

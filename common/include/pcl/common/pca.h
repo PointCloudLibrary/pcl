@@ -111,7 +111,7 @@ namespace pcl
       getMean () 
       {
         if (!compute_done_)
-          PCL_ERROR ("[pcl::PCA::getMean] no results available");
+          PCL_ERROR ("[pcl::PCA::getMean] no results available\n");
         return (mean_);
       }
 
@@ -120,7 +120,7 @@ namespace pcl
       getEigenVectors () 
       {
         if (!compute_done_)
-          PCL_ERROR ("[pcl::PCA::getEigenVectors] no results available");
+          PCL_ERROR ("[pcl::PCA::getEigenVectors] no results available\n");
         return (eigenvectors_);
       }
       
@@ -129,7 +129,7 @@ namespace pcl
       getEigenValues ()
       {
         if (!compute_done_)
-          PCL_ERROR ("[pcl::PCA::getEigenValues] no results available");
+          PCL_ERROR ("[pcl::PCA::getEigenValues] no results available\n");
         return (eigenvalues_);
       }
       
@@ -138,7 +138,7 @@ namespace pcl
       getCoefficients () 
       {
         if (!compute_done_)
-          PCL_ERROR ("[pcl::PCA::getEigenValues] no results available");
+          PCL_ERROR ("[pcl::PCA::getEigenValues] no results available\n");
         return (coefficients_);
       }
 

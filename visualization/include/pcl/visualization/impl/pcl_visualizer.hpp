@@ -48,7 +48,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 
   if (am_it != cloud_actor_map_.end ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.", id.c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
   vtkSmartPointer<vtkPolyData> polydata;
@@ -57,7 +57,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   PointCloudGeometryHandlerXYZ<PointT> geometry_handler (cloud);
   if (!geometry_handler.isCapable ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!", id.c_str (), geometry_handler.getName ().c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!\n", id.c_str (), geometry_handler.getName ().c_str ());
     return (false);
   }
 
@@ -95,7 +95,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 {
   if (!geometry_handler.isCapable ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!", id.c_str (), geometry_handler.getName ().c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!\n", id.c_str (), geometry_handler.getName ().c_str ());
     return (false);
   }
 
@@ -104,7 +104,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 
   if (am_it != cloud_actor_map_.end ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.", id.c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
   vtkSmartPointer<vtkPolyData> polydata;
@@ -144,7 +144,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 {
   if (!geometry_handler->isCapable ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!", id.c_str (), geometry_handler->getName ().c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!\n", id.c_str (), geometry_handler->getName ().c_str ());
     return (false);
   }
 
@@ -196,7 +196,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 {
   if (!color_handler.isCapable ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!", id.c_str (), color_handler.getName ().c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!\n", id.c_str (), color_handler.getName ().c_str ());
     return (false);
   }
 
@@ -204,7 +204,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   PointCloudGeometryHandlerXYZ<PointT> geometry_handler (cloud);
   if (!geometry_handler.isCapable ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!", id.c_str (), geometry_handler.getName ().c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!\n", id.c_str (), geometry_handler.getName ().c_str ());
     return (false);
   }
   
@@ -213,7 +213,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 
   if (am_it != cloud_actor_map_.end ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.", id.c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
 
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
@@ -256,7 +256,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 {
   if (!color_handler->isCapable ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!", id.c_str (), color_handler->getName ().c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!\n", id.c_str (), color_handler->getName ().c_str ());
     return (false);
   }
 
@@ -264,7 +264,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   PointCloudGeometryHandlerXYZ<PointT> geometry_handler (cloud);
   if (!geometry_handler.isCapable ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!", id.c_str (), geometry_handler.getName ().c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!\n", id.c_str (), geometry_handler.getName ().c_str ());
     return (false);
   }
   
@@ -272,7 +272,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
   if (am_it != cloud_actor_map_.end ())
   {
-    //PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.", id.c_str ());
+    //PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
@@ -318,14 +318,14 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 {
   if (!color_handler->isCapable ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!", id.c_str (), color_handler->getName ().c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!\n", id.c_str (), color_handler->getName ().c_str ());
     return (false);
   }
 
   // Convert the PointCloud to VTK PolyData
   if (!geometry_handler->isCapable ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!", id.c_str (), geometry_handler->getName ().c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!\n", id.c_str (), geometry_handler->getName ().c_str ());
     return (false);
   }
   
@@ -333,7 +333,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
   if (am_it != cloud_actor_map_.end ())
   {
-    //PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.", id.c_str ());
+    //PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
@@ -381,13 +381,13 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 {
   if (!color_handler.isCapable ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!", id.c_str (), color_handler.getName ().c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!\n", id.c_str (), color_handler.getName ().c_str ());
     return (false);
   }
   
   if (!geometry_handler.isCapable ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!", id.c_str (), geometry_handler.getName ().c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> requested with an invalid handler (%s)!\n", id.c_str (), geometry_handler.getName ().c_str ());
     return (false);
   }
 
@@ -396,7 +396,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 
   if (am_it != cloud_actor_map_.end ())
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.", id.c_str ());
+    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
     //cloud_actor_map_[id].geometry_handlers.push_back (geometry_handler);
@@ -494,7 +494,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
   {
-    PCL_WARN ("[addPolygon] A shape with id <%s> already exists! Please choose a different id and retry.", id.c_str ());
+    PCL_WARN ("[addPolygon] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -535,7 +535,7 @@ pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, const 
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
   {
-    PCL_WARN ("[addLine] A shape with id <%s> already exists! Please choose a different id and retry.", id.c_str ());
+    PCL_WARN ("[addLine] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -619,7 +619,7 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
   if (am_it != shape_actor_map_.end ())
   {
-    PCL_WARN ("[addSphere] A shape with id <%s> already exists! Please choose a different id and retry.", id.c_str ());
+    PCL_WARN ("[addSphere] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -669,7 +669,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
 {
   if (normals->points.size () != cloud->points.size ())
   {
-    PCL_ERROR ("[addPointCloudNormals] The number of points differs from the number of normals!");
+    PCL_ERROR ("[addPointCloudNormals] The number of points differs from the number of normals!\n");
     return (false);
   }
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -677,7 +677,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
 
   if (am_it != cloud_actor_map_.end ())
   {
-    PCL_WARN ("[addPointCloudNormals] A PointCloud with id <%s> already exists! Please choose a different id and retry.", id.c_str ());
+    PCL_WARN ("[addPointCloudNormals] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 

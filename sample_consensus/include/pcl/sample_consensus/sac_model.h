@@ -95,7 +95,7 @@ namespace pcl
         indices_.reset (new std::vector<int> (indices));
         if (indices_->size () > input_->points.size ())
         {
-          PCL_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %zu while the input PointCloud has size %zu!", indices_->size (), input_->points.size ());
+          PCL_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %lu while the input PointCloud has size %lu!\n", (unsigned long)indices_->size (), (unsigned long)input_->points.size ());
           indices_->clear ();
         }
         shuffled_indices_ = *indices_;
@@ -114,8 +114,8 @@ namespace pcl
         // We're assuming that indices_ have already been set in the constructor
         if (indices_->size () < getSampleSize())
         {
-          PCL_ERROR ("[pcl::SampleConsensusModel::getSamples] Can not select %zu unique points out of %zu!",
-                     samples.size (), indices_->size ());
+          PCL_ERROR ("[pcl::SampleConsensusModel::getSamples] Can not select %lu unique points out of %lu!\n",
+                     (unsigned long)samples.size (), (unsigned long)indices_->size ());
           // one of these will make it stop :)
           samples.clear ();
           iterations = INT_MAX - 1;
@@ -133,7 +133,7 @@ namespace pcl
           if (isSampleGood(samples))
             return;
         }
-        PCL_DEBUG ("[pcl::SampleConsensusModel::getSamples] WARNING: Could not select 3 non collinear points in %d iterations!", max_sample_checks_);
+        PCL_DEBUG ("[pcl::SampleConsensusModel::getSamples] WARNING: Could not select 3 non collinear points in %d iterations!\n", max_sample_checks_);
         samples.clear();
       }
 

@@ -55,7 +55,7 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
 
   if (distance_sqr == 0)
   {
-    PCL_ERROR ("Euclidean distance between points is 0!");
+    PCL_ERROR ("Euclidean distance between points is 0!\n");
     f1 = f2 = f3 = f4 = 0;
     return (false);
   }
@@ -77,7 +77,7 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
   distance_sqr = v.squaredNorm ();
   if (distance_sqr == 0)
   {
-    PCL_ERROR ("Norm of Delta x U is 0!");
+    PCL_ERROR ("Norm of Delta x U is 0!\n");
     f1 = f2 = f3 = f4 = 0;
     return (false);
   }

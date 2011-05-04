@@ -47,7 +47,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
   // Warn and exit if no threshold was set
   if (threshold_ == DBL_MAX)
   {
-    PCL_ERROR ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] No threshold set!");
+    PCL_ERROR ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] No threshold set!\n");
     return (false);
   }
 
@@ -130,11 +130,11 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
 
     ++iterations_;
     if (debug_verbosity_level > 1)
-      PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Trial %d out of %d. Best penalty is %f.", iterations_, (int)ceil (k), d_best_penalty);
+      PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Trial %d out of %d. Best penalty is %f.\n", iterations_, (int)ceil (k), d_best_penalty);
     if (iterations_ > max_iterations_)
     {
       if (debug_verbosity_level > 0)
-        PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] MSAC reached the maximum number of trials.");
+        PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] MSAC reached the maximum number of trials.\n");
       break;
     }
   }
@@ -142,7 +142,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
   if (model_.empty ())
   {
     if (debug_verbosity_level > 0)
-      PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Unable to find a solution!");
+      PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Unable to find a solution!\n");
     return (false);
   }
 
@@ -151,7 +151,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
   std::vector<int> &indices = *sac_model_->getIndices ();
   if (distances.size () != indices.size ())
   {
-    PCL_ERROR ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Estimated distances (%zu) differs than the normal of indices (%zu).", distances.size (), indices.size ());
+    PCL_ERROR ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Estimated distances (%lu) differs than the normal of indices (%lu).\n", (unsigned long)distances.size (), (unsigned long)indices.size ());
     return (false);
   }
 
@@ -166,7 +166,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
   inliers_.resize (n_inliers_count);
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Model: %zu size, %d inliers.", model_.size (), n_inliers_count);
+    PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", (unsigned long)model_.size (), n_inliers_count);
 
   return (true);
 }

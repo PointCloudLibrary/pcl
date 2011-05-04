@@ -54,12 +54,12 @@ pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::estimateRigidTran
 
   if (cloud_src.points.size () != cloud_tgt.points.size ())
   {
-    PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Number or points in source (%zu) differs than target (%zu)!", cloud_src.points.size (), cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Number or points in source (%lu) differs than target (%lu)!\n", (unsigned long)cloud_src.points.size (), (unsigned long)cloud_tgt.points.size ());
     return;
   }
   if (cloud_src.points.size () < 4)     // need at least 4 samples
   {
-    PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Need at least 4 points to estimate a transform! Source and target have %zu points!", cloud_src.points.size ());
+    PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Need at least 4 points to estimate a transform! Source and target have %lu points!\n", (unsigned long)cloud_src.points.size ());
     return;
   }
 
@@ -88,7 +88,7 @@ pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::estimateRigidTran
   int info = lmdif1 (&pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::functionToOptimize, this, m, n_unknowns, x, fvec, tol, iwa, wa, lwa);
 
   // Compute the norm of the residuals
-  PCL_DEBUG ("[pcl::%s::estimateRigidTransformationLM] LM solver finished with exit code %i, having a residual norm of %g. ",
+  PCL_DEBUG ("[pcl::%s::estimateRigidTransformationLM] LM solver finished with exit code %i, having a residual norm of %g. \n",
              //"\nFinal solution: [%f %f %f %f] [%f %f %f]", 
              getClassName ().c_str (), info, enorm (m, fvec));
              //x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
@@ -131,12 +131,12 @@ template <typename PointSource, typename PointTarget> void
 
   if (indices_src.size () != indices_tgt.size ())
   {
-    PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Number or points in source (%zu) differs than target (%zu)!", indices_src.size (), indices_tgt.size ());
+    PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Number or points in source (%lu) differs than target (%lu)!\n", (unsigned long)indices_src.size (), (unsigned long)indices_tgt.size ());
     return;
   }
   if (indices_src.size () < 4)     // need at least 4 samples
   {
-    PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Need at least 4 points to estimate a transform! Source and target have %zu points!", indices_src.size ());
+    PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] Need at least 4 points to estimate a transform! Source and target have %lu points!", (unsigned long)indices_src.size ());
     return;
   }
 
@@ -166,7 +166,7 @@ template <typename PointSource, typename PointTarget> void
   int info = lmdif1 (&pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::functionToOptimizeIndices, this, m, n_unknowns, x, fvec, tol, iwa, wa, lwa);
 
   // Compute the norm of the residuals
-  PCL_DEBUG ("[pcl::%s::estimateRigidTransformationLM] LM solver finished with exit code %i, having a residual norm of %g. ",
+  PCL_DEBUG ("[pcl::%s::estimateRigidTransformationLM] LM solver finished with exit code %i, having a residual norm of %g. \n",
              //"\nFinal solution: [%f %f %f %f] [%f %f %f]", 
              getClassName ().c_str (), info, enorm (m, fvec));
              //x[0], x[1], x[2], x[3], x[4], x[5], x[6]);

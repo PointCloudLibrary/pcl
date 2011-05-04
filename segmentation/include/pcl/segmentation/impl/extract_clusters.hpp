@@ -50,7 +50,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 {
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", (unsigned long)tree->getInputCloud ()->points.size (), (unsigned long)cloud.points.size ());
     return;
   }
   // Create a bool vector of processed point indices, and initialize it to false
@@ -122,12 +122,12 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
   //and indices[i]
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", (unsigned long)tree->getInputCloud ()->points.size (), (unsigned long)cloud.points.size ());
     return;
   }
   if (tree->getIndices ()->size () != indices.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%zu) than the input set (%zu)!", tree->getIndices ()->size (), indices.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%lu) than the input set (%lu)!\n", (unsigned long)tree->getIndices ()->size (), (unsigned long)indices.size ());
     return;
   }
 

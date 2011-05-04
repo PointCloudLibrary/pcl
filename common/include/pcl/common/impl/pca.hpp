@@ -30,7 +30,7 @@ template<typename PointT> inline void
 pcl::PCA<PointT>::update (const PointT& input_point, FLAG flag) 
 {
   if (!compute_done_)
-    PCL_ERROR ("[pcl::PCA::update] PCA computing still not done.");
+    PCL_ERROR ("[pcl::PCA::update] PCA computing still not done.\n");
 
   Eigen::Vector3f input (input_point.x, input_point.y, input_point.z);
   const size_t n = eigenvectors_.cols ();// number of eigen vectors
@@ -89,7 +89,7 @@ pcl::PCA<PointT>::update (const PointT& input_point, FLAG flag)
       eigenvalues_.resize(eigenvalues_.size()-1);
       break;
     default:
-      PCL_ERROR("[pcl::PCA] unknown flag");
+      PCL_ERROR("[pcl::PCA] unknown flag\n");
   }
 }
 
@@ -97,7 +97,7 @@ template<typename PointT>
 inline void pcl::PCA<PointT>::project(const PointT& input, PointT& projection) const 
 {
   if(!compute_done_)
-    PCL_ERROR("[pcl::PCA::project] PCA computing still not done");
+    PCL_ERROR("[pcl::PCA::project] PCA computing still not done\n");
   Eigen::Vector3f demean_input = input.getVector3fMap () - mean_.head<3>();
   projection.getVector3fMap () = eigenvectors_.transpose() * demean_input;
 }
@@ -106,7 +106,7 @@ template<typename PointT>
 inline void pcl::PCA<PointT>::reconstruct(const PointT& projection, PointT& input) const 
 {
   if(!compute_done_)
-    PCL_ERROR("[pcl::PCA::reconstruct] PCA computing still not done");
+    PCL_ERROR("[pcl::PCA::reconstruct] PCA computing still not done\n");
   input.getVector3fMap () = (eigenvectors_ * projection.getVector3fMap ()) + mean_.head<3>();
 }
 

@@ -46,7 +46,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
 {
   if (search_radius_ <= 0 || mu_ <= 0)
   {
-    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid search radius (%f) or mu parameter (%f)!", getClassName ().c_str (), search_radius_, mu_);
+    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid search radius (%f) or mu parameter (%f)!\n", getClassName ().c_str (), search_radius_, mu_);
     output.cloud.width = output.cloud.height = 0;
     output.cloud.data.clear ();
     output.polygons.clear ();
@@ -108,7 +108,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
     R_ = is_free;
     if (state_[R_] == FREE)
     {
-      PCL_DEBUG ("Starting to build part %d starting at point: %d", nr_parts+1, R_);
+      PCL_DEBUG ("Starting to build part %d starting at point: %d\n", nr_parts+1, R_);
       state_[R_] = NONE;
       part_[R_] = part_index++;
 
@@ -975,19 +975,19 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
       }
     }
   }
-  PCL_DEBUG ("Number of triangles: %d", (int)output.polygons.size());
-  PCL_DEBUG ("Number of unconnected parts: %d", nr_parts);
+  PCL_DEBUG ("Number of triangles: %d\n", (int)output.polygons.size());
+  PCL_DEBUG ("Number of unconnected parts: %d\n", nr_parts);
   if (increase_nnn4fn > 0)
-    PCL_WARN ("Number of neighborhood size increase requests for fringe neighbors: %d", increase_nnn4fn);
+    PCL_WARN ("Number of neighborhood size increase requests for fringe neighbors: %d\n", increase_nnn4fn);
   if (increase_nnn4s > 0)
-    PCL_WARN ("Number of neighborhood size increase requests for source: %d", increase_nnn4s);
+    PCL_WARN ("Number of neighborhood size increase requests for source: %d\n", increase_nnn4s);
   if (increase_dist > 0)
-    PCL_WARN ("Number of automatic maximum distance increases: %d", increase_dist);
+    PCL_WARN ("Number of automatic maximum distance increases: %d\n", increase_dist);
 
   // sorting and removing doubles from fringe queue 
   sort(fringe_queue_.begin(), fringe_queue_.end());
   fringe_queue_.erase(unique(fringe_queue_.begin(), fringe_queue_.end()), fringe_queue_.end());
-  PCL_DEBUG ("Number of processed points: %d / %d", (int)fringe_queue_.size(), (int)indices_->size ());
+  PCL_DEBUG ("Number of processed points: %d / %d\n", (int)fringe_queue_.size(), (int)indices_->size ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

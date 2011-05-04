@@ -56,7 +56,7 @@ pcl::SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
   // Check if a space search locator was given
   if (!tree_)
   {
-    PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!\n", getClassName ().c_str ());
     output.cloud.width = output.cloud.height = 0;
     output.cloud.data.clear ();
     output.polygons.clear ();

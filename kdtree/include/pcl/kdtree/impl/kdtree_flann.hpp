@@ -59,7 +59,7 @@ namespace pcl
     // Allocate enough data
     if (!input_)
     {
-      PCL_ERROR ("[pcl::KdTreeANN::setInputCloud] Invalid input!");
+      PCL_ERROR ("[pcl::KdTreeANN::setInputCloud] Invalid input!\n");
       return;
     }
     if (indices != NULL)

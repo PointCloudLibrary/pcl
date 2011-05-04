@@ -93,7 +93,7 @@ namespace pcl
         {
           if ( !input_correspondences_ || input_correspondences_->size() == 0 )
           {
-            PCL_WARN ("[pcl::%s::getRejectedQueryIndices] Input correspondences not set (lookup of rejected correspondences _not_ possible).", getClassName ().c_str ());
+            PCL_WARN ("[pcl::%s::getRejectedQueryIndices] Input correspondences not set (lookup of rejected correspondences _not_ possible).\n", getClassName ().c_str ());
             return;
           }
 

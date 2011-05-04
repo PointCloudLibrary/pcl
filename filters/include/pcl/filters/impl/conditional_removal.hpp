@@ -60,7 +60,7 @@ pcl::FieldComparison<PointT>::FieldComparison (
   // Find field_name
   if (point_fields.empty ())
   {
-    PCL_WARN ("[pcl::FieldComparison::FieldComparison] no fields found!");
+    PCL_WARN ("[pcl::FieldComparison::FieldComparison] no fields found!\n");
     capable_ = false;
     return;
   }
@@ -75,7 +75,7 @@ pcl::FieldComparison<PointT>::FieldComparison (
   
   if (d == point_fields.size ())
   {
-    PCL_WARN ("[pcl::FieldComparison::FieldComparison] field not found!");
+    PCL_WARN ("[pcl::FieldComparison::FieldComparison] field not found!\n");
     capable_ = false;
     return;
   }
@@ -103,7 +103,7 @@ pcl::FieldComparison<PointT>::evaluate (const PointT &point) const
 {
   if (!this->capable_)
   {
-    PCL_WARN ("[pcl::FieldComparison::evaluate] invalid compariosn!");
+    PCL_WARN ("[pcl::FieldComparison::evaluate] invalid compariosn!\n");
     return (false);
   }
 
@@ -125,7 +125,7 @@ pcl::FieldComparison<PointT>::evaluate (const PointT &point) const
     case pcl::ComparisonOps::EQ :
       return (compare_result == 0);
     default:
-      PCL_WARN ("[pcl::FieldComparison::evaluate] unrecognized op_!");
+      PCL_WARN ("[pcl::FieldComparison::evaluate] unrecognized op_!\n");
       return (false);
   }
 }
@@ -152,7 +152,7 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
   }
   if (d == point_fields.size ())
   {
-    PCL_WARN ("[pcl::PackedRGBComparison::PackedRGBComparison] rgb field not found!");
+    PCL_WARN ("[pcl::PackedRGBComparison::PackedRGBComparison] rgb field not found!\n");
     capable_ = false;
     return;
   }
@@ -163,7 +163,7 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
       datatype != sensor_msgs::PointField::UINT32 && 
       datatype != sensor_msgs::PointField::INT32) 
   {
-    PCL_WARN ("[pcl::PackedRGBComparison::PackedRGBComparison] has unusable type!");
+    PCL_WARN ("[pcl::PackedRGBComparison::PackedRGBComparison] has unusable type!\n");
     capable_ = false;
     return;
   }
@@ -183,7 +183,7 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
   } 
   else 
   {
-    PCL_WARN ("[pcl::PackedRGBComparison::PackedRGBComparison] unrecognized component name!");
+    PCL_WARN ("[pcl::PackedRGBComparison::PackedRGBComparison] unrecognized component name!\n");
     capable_ = false;
     return;
   }
@@ -218,7 +218,7 @@ pcl::PackedRGBComparison<PointT>::evaluate (const PointT &point) const
     case pcl::ComparisonOps::EQ :
       return (my_val == this->compare_val_);
     default:
-      PCL_WARN ("[pcl::PackedRGBComparison::evaluate] unrecognized op_!");
+      PCL_WARN ("[pcl::PackedRGBComparison::evaluate] unrecognized op_!\n");
       return (false);
   }
 }
@@ -243,7 +243,7 @@ pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
       break;
   if (d == point_fields.size ())
   {
-    PCL_WARN ("[pcl::PackedHSIComparison::PackedHSIComparison] rgb field not found!");
+    PCL_WARN ("[pcl::PackedHSIComparison::PackedHSIComparison] rgb field not found!\n");
     capable_ = false;
     return;
   }
@@ -254,7 +254,7 @@ pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
       datatype != sensor_msgs::PointField::UINT32 && 
       datatype != sensor_msgs::PointField::INT32) 
   {
-    PCL_WARN ("[pcl::PackedHSIComparison::PackedHSIComparison] has unusable type!");
+    PCL_WARN ("[pcl::PackedHSIComparison::PackedHSIComparison] has unusable type!\n");
     capable_ = false;
     return;
   }
@@ -263,7 +263,7 @@ pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
   uint32_t offset = point_fields[d].offset;
   if (offset % 4 != 0)
   {
-    PCL_WARN ("[pcl::PackedHSIComparison::PackedHSIComparison] rgb field is not 32 bit aligned!");
+    PCL_WARN ("[pcl::PackedHSIComparison::PackedHSIComparison] rgb field is not 32 bit aligned!\n");
     capable_ = false;
     return;
   }
@@ -284,7 +284,7 @@ pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
   } 
   else 
   {
-    PCL_WARN ("[pcl::PackedRGBComparison::PackedRGBComparison] unrecognized component name!");
+    PCL_WARN ("[pcl::PackedRGBComparison::PackedRGBComparison] unrecognized component name!\n");
     capable_ = false;
     return;
   }
@@ -368,7 +368,7 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
     case pcl::ComparisonOps::EQ :
       return (my_val == this->compare_val_);
     default:
-      PCL_WARN ("[pcl::PackedHSIComparison::evaluate] unrecognized op_!");
+      PCL_WARN ("[pcl::PackedHSIComparison::evaluate] unrecognized op_!\n");
       return (false);
   }
 }
@@ -437,7 +437,7 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
       return ( pt_val > val ) - ( pt_val < val );
     }
     default : 
-      PCL_WARN ("[pcl::pcl::PointDataAtOffset::compare] unknown data_type!");
+      PCL_WARN ("[pcl::pcl::PointDataAtOffset::compare] unknown data_type!\n");
       return (0);
   }
 }
@@ -514,19 +514,19 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 {
   if (capable_ == false)
   {
-    PCL_WARN ("[pcl::%s::applyFilter] not capable!", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::applyFilter] not capable!\n", getClassName ().c_str ());
     return;
   }
   // Has the input dataset been set already?
   if (!input_)
   {
-    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!\n", getClassName ().c_str ());
     return;
   }
 
   if (condition_.get () == NULL) 
   {
-    PCL_WARN ("[pcl::%s::applyFilter] No filtering condition given!", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::applyFilter] No filtering condition given!\n", getClassName ().c_str ());
     return;
   }
 

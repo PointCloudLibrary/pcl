@@ -93,7 +93,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estima
 {
   if (indices_src.size () != cloud_tgt.points.size ())
   {
-    PCL_ERROR ("[pcl::estimateRigidTransformationSVD] Number or points in source (%zu) differs than target (%zu)!", indices_src.size (), cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::estimateRigidTransformationSVD] Number or points in source (%lu) differs than target (%lu)!\n", (unsigned long)indices_src.size (), (unsigned long)cloud_tgt.points.size ());
     return;
   }
 
@@ -147,7 +147,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estima
 {
   if (indices_src.size () != indices_tgt.size ())
   {
-    PCL_ERROR ("[pcl::estimateRigidTransformationSVD] Number or points in source (%zu) differs than target (%zu)!", indices_src.size (), indices_tgt.size ());
+    PCL_ERROR ("[pcl::estimateRigidTransformationSVD] Number or points in source (%lu) differs than target (%lu)!\n", (unsigned long)indices_src.size (), (unsigned long)indices_tgt.size ());
     return;
   }
 

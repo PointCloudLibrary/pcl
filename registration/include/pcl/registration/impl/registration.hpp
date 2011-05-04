@@ -42,7 +42,7 @@ pcl::Registration<PointSource, PointTarget>::setInputTarget (const PointCloudTar
 {
   if (cloud->points.empty ())
   {
-    PCL_ERROR ("[pcl::%s::setInputTarget] Invalid or empty point cloud dataset given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::setInputTarget] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
     return;
   }
   PointCloudTarget target = *cloud;
@@ -166,7 +166,7 @@ pcl::Registration<PointSource, PointTarget>::findFeatureCorrespondences (int ind
 {
   if (features_map_.empty ())
   {
-    PCL_ERROR ("[pcl::%s::findFeatureCorrespondences] One or more features must be set before finding correspondences!",
+    PCL_ERROR ("[pcl::%s::findFeatureCorrespondences] One or more features must be set before finding correspondences!\n",
                getClassName ().c_str ());
     return;
   }
@@ -246,7 +246,7 @@ pcl::Registration<PointSource, PointTarget>::align (PointCloudSource &output)
 
   if (!target_)
   {
-    PCL_WARN ("[pcl::%s::compute] No input target dataset was given!", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());
     return;
   }
 
@@ -298,7 +298,7 @@ pcl::Registration<PointSource, PointTarget>::align (PointCloudSource &output, co
 
   if (!target_)
   {
-    PCL_WARN ("[pcl::%s::compute] No input target dataset was given!", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());
     return;
   }
 

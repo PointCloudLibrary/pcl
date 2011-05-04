@@ -52,7 +52,7 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::selectWithinDista
 {
   if (!normals_)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::getDistancesToModel] No input dataset containing normals was given!");
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::getDistancesToModel] No input dataset containing normals was given!\n");
     return;
   }
 
@@ -103,7 +103,7 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::getDistancesToMod
 {
   if (!normals_)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::getDistancesToModel] No input dataset containing normals was given!");
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::getDistancesToModel] No input dataset containing normals was given!\n");
     return;
   }
 
@@ -147,7 +147,7 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::isModelValid (con
   // Needs a valid model coefficients
   if (model_coefficients.size () != 4)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::isModelValid] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::isModelValid] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
     return (false);
   }
 

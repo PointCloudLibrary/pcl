@@ -62,7 +62,7 @@ pcl::initTree (const int &spatial_locator, boost::shared_ptr<pcl::KdTree<PointT>
         boost::shared_ptr<OrganizedDataIndex<PointT> > tree_organized = boost::static_pointer_cast<OrganizedDataIndex<PointT> > (tree);
         // Special case: use k as a rectangular window.
         tree_organized->setSearchWindowAsK (k);
-        PCL_DEBUG ("[pcl::initTree] Setting the horizontal/vertical window to %d/%d, given k = %d.",
+        PCL_DEBUG ("[pcl::initTree] Setting the horizontal/vertical window to %d/%d, given k = %d.\n",
                    tree_organized->getHorizontalSearchWindow (), tree_organized->getVerticalSearchWindow (), k);
 
         // Default parameters
@@ -73,7 +73,7 @@ pcl::initTree (const int &spatial_locator, boost::shared_ptr<pcl::KdTree<PointT>
     }
     default:
     {
-      PCL_WARN ("[pcl::initTree] No spatial locator or wrong spatial locator given (%d)!", spatial_locator);
+      PCL_WARN ("[pcl::initTree] No spatial locator or wrong spatial locator given (%d)!\n", spatial_locator);
       tree.reset ();
       break;
     }

@@ -77,7 +77,7 @@ pcl::SampleConsensusModelParallelLine<PointT>::isModelValid (const Eigen::Vector
   // Needs a valid model coefficients
   if (model_coefficients.size () != 6)
   {
-    PCL_ERROR ("[pcl::SampleConsensusParallelLine::isModelValid] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusParallelLine::isModelValid] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
     return (false);
   }
 

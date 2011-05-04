@@ -47,7 +47,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
 {
   if (triangles.cloud.data.empty ())
   {
-    PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no data!");
+    PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no data!\n");
     return (-1);
   }
 
@@ -87,7 +87,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
     }
     if (xyz != 3)
     {
-      PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!");
+      PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
     fs << std::endl;

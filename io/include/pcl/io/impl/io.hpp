@@ -193,7 +193,7 @@ pcl::concatenateFields (const pcl::PointCloud<PointIn1T> &cloud1_in,
 
   if (cloud1_in.points.size () != cloud2_in.points.size ())
   {
-    PCL_ERROR ("[pcl::concatenateFields] The number of points in the two input datasets differs!");
+    PCL_ERROR ("[pcl::concatenateFields] The number of points in the two input datasets differs!\n");
     return;
   }
 

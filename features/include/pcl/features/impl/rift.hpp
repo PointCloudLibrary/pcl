@@ -49,7 +49,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
 {
   if (indices.empty ())
   {
-    PCL_ERROR ("[pcl::RIFTEstimation] Null indices points passed!");
+    PCL_ERROR ("[pcl::RIFTEstimation] Null indices points passed!\n");
     return;
   }
 
@@ -115,7 +115,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
   // Make sure a search radius is set
   if (search_radius_ == 0.0)
   {
-    PCL_ERROR ("[pcl::%s::computeFeature] The search radius must be set before computing the feature!",
+    PCL_ERROR ("[pcl::%s::computeFeature] The search radius must be set before computing the feature!\n",
                getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
@@ -125,7 +125,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
   // Make sure the RIFT descriptor has valid dimensions
   if (nr_gradient_bins_ <= 0)
   {
-    PCL_ERROR ("[pcl::%s::computeFeature] The number of gradient bins must be greater than zero!",
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of gradient bins must be greater than zero!\n",
                getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
@@ -133,7 +133,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
   }
   if (nr_distance_bins_ <= 0)
   {
-    PCL_ERROR ("[pcl::%s::computeFeature] The number of distance bins must be greater than zero!",
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of distance bins must be greater than zero!\n",
                getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
@@ -143,14 +143,14 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
   // Check for valid input gradient
   if (!gradient_)
   {
-    PCL_ERROR ("[pcl::%s::computeFeature] No input gradient was given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeFeature] No input gradient was given!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
   }
   if (gradient_->points.size () != surface_->points.size ())
   {
-    PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the gradient!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the gradient!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
