@@ -111,7 +111,7 @@ namespace pcl
         std::stringstream ss;
         ss << "Failed to find a field named: '" << name
            << "'. Cannot convert message to PCL type.";
-        PCL_ERROR ("%s", ss.str().c_str());
+        PCL_ERROR ("%s\n", ss.str().c_str());
         throw pcl::InvalidConversionException(ss.str());
       }
 

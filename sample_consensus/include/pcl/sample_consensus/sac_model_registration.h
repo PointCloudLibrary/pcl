@@ -116,7 +116,7 @@ namespace pcl
         // Compute the distance threshold for sample selection
         sample_dist_thresh_ = eigen_values.array ().sqrt ().sum () / 3.0;
         sample_dist_thresh_ *= sample_dist_thresh_;
-        PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a sample selection distance threshold of: %f", sample_dist_thresh_);
+        PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a sample selection distance threshold of: %f\n", sample_dist_thresh_);
       }
 
       /** \brief Set the input point cloud target.
@@ -190,7 +190,7 @@ namespace pcl
       bool 
       doSamplesVerifyModel (const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, double threshold)
       {
-        PCL_ERROR ("[pcl::SampleConsensusModelRegistration::doSamplesVerifyModel] called!");
+        PCL_ERROR ("[pcl::SampleConsensusModelRegistration::doSamplesVerifyModel] called!\n");
         return (false);
       }
 

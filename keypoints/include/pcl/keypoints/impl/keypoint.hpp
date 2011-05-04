@@ -38,14 +38,14 @@ template <typename PointInT, typename PointOutT> inline void
 {
   if (!initCompute ())
   {
-    PCL_ERROR ("[pcl::%s::compute] initCompute failed!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::compute] initCompute failed!\n", getClassName ().c_str ());
     return;
   }
 
   // Check if a space search locator was given
   if (!tree_)
   {
-    PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!\n", getClassName ().c_str ());
     return;
   }
 
@@ -63,7 +63,7 @@ template <typename PointInT, typename PointOutT> inline void
   {
     if (k_ != 0)
     {
-      PCL_ERROR ("[pcl::%s::compute] Both radius (%f) and K (%d) defined! Set one of them to zero first and then re-run compute ().", getClassName ().c_str (), search_radius_, k_);
+      PCL_ERROR ("[pcl::%s::compute] Both radius (%f) and K (%d) defined! Set one of them to zero first and then re-run compute ().\n", getClassName ().c_str (), search_radius_, k_);
       return;
     }
     else                  // Use the radiusSearch () function
@@ -105,7 +105,7 @@ template <typename PointInT, typename PointOutT> inline void
     }
     else
     {
-      PCL_ERROR ("[pcl::%s::compute] Neither radius nor K defined! Set one of them to a positive number first and then re-run compute ().", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::compute] Neither radius nor K defined! Set one of them to a positive number first and then re-run compute ().\n", getClassName ().c_str ());
       return;
     }
   }

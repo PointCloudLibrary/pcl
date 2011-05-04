@@ -67,7 +67,7 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
   // Need 4 samples
   if (samples.size () != 4)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelSphere::computeModelCoefficients] Invalid set of samples given (%zu)!", samples.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelSphere::computeModelCoefficients] Invalid set of samples given (%lu)!\n", (unsigned long)samples.size ());
     return (false);
   }
 
@@ -205,7 +205,7 @@ pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
   // Needs a set of valid model coefficients
   if (model_coefficients.size () != n_unknowns)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
     optimized_coefficients = model_coefficients;
     return;
   }
@@ -213,7 +213,7 @@ pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
   // Need at least 4 samples
   if (inliers.size () <= 4)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] Not enough inliers found to support a model (%zu)! Returning the same coefficients.", inliers.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] Not enough inliers found to support a model (%lu)! Returning the same coefficients.\n", (unsigned long)inliers.size ());
     optimized_coefficients = model_coefficients;
     return;
   }
@@ -241,7 +241,7 @@ pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
   int info = lmdif1 (&pcl::SampleConsensusModelSphere<PointT>::functionToOptimize, this, m, n_unknowns, x, fvec, tol, iwa, wa, lwa);
 
   // Compute the L2 norm of the residuals
-  PCL_DEBUG ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g \nFinal solution: %g %g %g %g",
+  PCL_DEBUG ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g \nFinal solution: %g %g %g %g\n",
              info, enorm (m, fvec), model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3], x[0], x[1], x[2], x[3]);
 
   optimized_coefficients = Eigen::Vector4f (x[0], x[1], x[2], x[3]);
@@ -278,7 +278,7 @@ pcl::SampleConsensusModelSphere<PointT>::projectPoints (
   // Needs a valid model coefficients
   if (model_coefficients.size () != 4)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelSphere::projectPoints] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelSphere::projectPoints] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
     return;
   }
 
@@ -289,7 +289,7 @@ pcl::SampleConsensusModelSphere<PointT>::projectPoints (
   projected_points.height   = input_->height;
   projected_points.is_dense = input_->is_dense;
 
-  PCL_WARN ("[pcl::SampleConsensusModelSphere::projectPoints] Not implemented yet.");
+  PCL_WARN ("[pcl::SampleConsensusModelSphere::projectPoints] Not implemented yet.\n");
   projected_points.points = input_->points;
 }
 
@@ -301,7 +301,7 @@ pcl::SampleConsensusModelSphere<PointT>::doSamplesVerifyModel (
   // Needs a valid model coefficients
   if (model_coefficients.size () != 4)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelSphere::doSamplesVerifyModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelSphere::doSamplesVerifyModel] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
     return (false);
   }
 

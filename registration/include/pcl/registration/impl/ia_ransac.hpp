@@ -42,7 +42,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setSou
 {
   if (features == NULL || features->points.empty ())
   {
-    PCL_ERROR ("[pcl::%s::setSourceFeatures] Invalid or empty point cloud dataset given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::setSourceFeatures] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
     return;
   }
   input_features_ = features;
@@ -55,7 +55,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setTar
 {
   if (features == NULL || features->points.empty ())
   {
-    PCL_ERROR ("[pcl::%s::setTargetFeatures] Invalid or empty point cloud dataset given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::setTargetFeatures] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
     return;
   }
   target_features_ = features;
@@ -69,7 +69,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::select
 {
   if (nr_samples > (int) cloud.points.size ())
   {
-    PCL_ERROR ("[pcl::%s::selectSamples] The number of samples (%d) must not be greater than the number of points (%d)!",
+    PCL_ERROR ("[pcl::%s::selectSamples] The number of samples (%d) must not be greater than the number of points (%d)!\n",
                getClassName ().c_str (), nr_samples, (int) cloud.points.size ());
     return;
   }
@@ -110,7 +110,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::select
     // If no valid samples can be found, relax the inter-sample distance requirements
     if (iterations_without_a_sample >= max_iterations_without_a_sample)
     {
-      PCL_WARN ("[pcl::%s::selectSamples] No valid sample found after %d iterations. Relaxing min_sample_distance_ to %f", 
+      PCL_WARN ("[pcl::%s::selectSamples] No valid sample found after %d iterations. Relaxing min_sample_distance_ to %f\n", 
                 getClassName ().c_str (), iterations_without_a_sample, 0.5*min_sample_distance);
       min_sample_distance_ *= 0.5;
       min_sample_distance = min_sample_distance_;
@@ -183,13 +183,13 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
 {
   if (!input_features_)
   {
-    PCL_ERROR ("[pcl::%s::computeTransformation] No source features were given! Call setSourceFeatures before aligning.", 
+    PCL_ERROR ("[pcl::%s::computeTransformation] No source features were given! Call setSourceFeatures before aligning.\n", 
                getClassName ().c_str ());
     return;
   }
   if (!target_features_)
   {
-    PCL_ERROR ("[pcl::%s::computeTransformation] No target features were given! Call setTargetFeatures before aligning", 
+    PCL_ERROR ("[pcl::%s::computeTransformation] No target features were given! Call setTargetFeatures before aligning.\n", 
                getClassName ().c_str ());
     return;
   }

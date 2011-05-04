@@ -57,7 +57,7 @@ pcl::SampleConsensusModelLine<PointT>::computeModelCoefficients (
   // Need 2 samples
   if (samples.size () != 2)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelLine::computeModelCoefficients] Invalid set of samples given (%zu)!", samples.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::computeModelCoefficients] Invalid set of samples given (%lu)!\n", (unsigned long)samples.size ());
     return (false);
   }
 
@@ -82,7 +82,7 @@ pcl::SampleConsensusModelLine<PointT>::getDistancesToModel (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 6)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelLine::getDistancesToModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::getDistancesToModel] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
     return;
   }
 
@@ -112,7 +112,7 @@ pcl::SampleConsensusModelLine<PointT>::selectWithinDistance (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 6)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelLine::selectWithinDistance] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
     return;
   }
 
@@ -157,7 +157,7 @@ pcl::SampleConsensusModelLine<PointT>::optimizeModelCoefficients (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 6)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelLine::optimizeModelCoefficients] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::optimizeModelCoefficients] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
     optimized_coefficients = model_coefficients;
     return;
   }
@@ -165,7 +165,7 @@ pcl::SampleConsensusModelLine<PointT>::optimizeModelCoefficients (
   // Need at least 2 points to estimate a line
   if (inliers.size () <= 2)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelLine::optimizeModelCoefficients] Not enough inliers found to support a model (%zu)! Returning the same coefficients.", inliers.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::optimizeModelCoefficients] Not enough inliers found to support a model (%lu)! Returning the same coefficients.\n", (unsigned long)inliers.size ());
     optimized_coefficients = model_coefficients;
     return;
   }
@@ -200,7 +200,7 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
   // Needs a valid model coefficients
   if (model_coefficients.size () != 6)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelLine::projectPoints] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::projectPoints] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
     return;
   }
 
@@ -270,7 +270,7 @@ pcl::SampleConsensusModelLine<PointT>::doSamplesVerifyModel (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 6)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelLine::doSamplesVerifyModel] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::doSamplesVerifyModel] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
     return (false);
   }
 

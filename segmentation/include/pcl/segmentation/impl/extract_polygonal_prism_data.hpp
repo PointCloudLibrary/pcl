@@ -159,7 +159,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
 
   if ((int)planar_hull_->points.size () < min_pts_hull_)
   {
-    PCL_ERROR ("[pcl::%s::segment] Not enough points (%zu) in the hull!", getClassName ().c_str (), planar_hull_->points.size ());
+    PCL_ERROR ("[pcl::%s::segment] Not enough points (%lu) in the hull!\n", getClassName ().c_str (), (unsigned long)planar_hull_->points.size ());
     output.indices.clear ();
     return;
   }

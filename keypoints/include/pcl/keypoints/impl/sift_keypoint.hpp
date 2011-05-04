@@ -38,19 +38,19 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::setScales (float min_scale, int nr_octav
 {
   if (min_scale <= 0)
   {
-    PCL_ERROR ("[pcl::%s::setScales] : min_scale (%f) must be positive!", 
+    PCL_ERROR ("[pcl::%s::setScales] : min_scale (%f) must be positive!\n", 
                name_.c_str (), min_scale);
     return;
   }
   if (nr_octaves <= 0)
   {
-    PCL_ERROR ("[pcl::%s::setScales] : Number of octaves (%d) must be at least 1!", 
+    PCL_ERROR ("[pcl::%s::setScales] : Number of octaves (%d) must be at least 1!\n", 
                name_.c_str (), nr_octaves);
     return;
   }
   if (nr_scales_per_octave < 1)
   {
-    PCL_ERROR ("[pcl::%s::setScales] : Number of scales per octave (%d) must be at least 1!", 
+    PCL_ERROR ("[pcl::%s::setScales] : Number of scales per octave (%d) must be at least 1!\n", 
                name_.c_str (), nr_scales_per_octave);
     return;
   }
@@ -67,7 +67,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::setMinimumContrast (float min_contrast)
 {
   if (min_contrast < 0)
   {
-    PCL_ERROR ("[pcl::%s::setMinimumContrast] : min_contrast (%f) must be non-negative!", 
+    PCL_ERROR ("[pcl::%s::setMinimumContrast] : min_contrast (%f) must be non-negative!\n", 
                name_.c_str (), min_contrast);
     return;
   } 
@@ -80,12 +80,12 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
   // Check for valid inputs
   if (min_scale_ == 0 || nr_octaves_ == 0 || nr_scales_per_octave_ == 0)
   {
-    PCL_ERROR ("[pcl::%s::detectKeypoints] : A valid range of scales must be specified by setScales before detecting keypoints!", name_.c_str ());
+    PCL_ERROR ("[pcl::%s::detectKeypoints] : A valid range of scales must be specified by setScales before detecting keypoints!\n", name_.c_str ());
     return;
   }
   if (surface_ != input_)
   {
-    PCL_WARN ("[pcl::%s::detectKeypoints] : A search surface has be set by setSearchSurface, but this SIFT keypoint detection algorithm does not support search surfaces other than the input cloud.  The cloud provided in setInputCloud is being used instead.", name_.c_str ());
+    PCL_WARN ("[pcl::%s::detectKeypoints] : A search surface has be set by setSearchSurface, but this SIFT keypoint detection algorithm does not support search surfaces other than the input cloud.  The cloud provided in setInputCloud is being used instead.\n", name_.c_str ());
   }
 
   // Make sure the output cloud is empty

@@ -44,7 +44,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
   RenWinInteractMap::iterator am_it = wins_.find (id);
   if (am_it != wins_.end ())
   {
-    PCL_WARN ("[addFeatureHistogram] A window with id <%s> already exists! Please choose a different id and retry.", id.c_str ());
+    PCL_WARN ("[addFeatureHistogram] A window with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 

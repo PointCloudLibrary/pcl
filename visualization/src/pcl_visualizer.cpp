@@ -943,7 +943,7 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
       // look for '/' as a separator
       if (camera.size () != 6)
       {
-        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Camera parameters given, but with an invalid number of options (%zu vs 6)!\n", camera.size ());
+        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Camera parameters given, but with an invalid number of options (%lu vs 6)!\n", (unsigned long)camera.size ());
         return (false);
       }
 
@@ -1403,7 +1403,7 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
 
   if (index >= (int)am_it->second.color_handlers.size ())
   {
-    pcl::console::print_warn ("[updateColorHandlerIndex] Invalid index <%d> given! Maximum range is: 0-%zu.\n", index, am_it->second.color_handlers.size ());
+    pcl::console::print_warn ("[updateColorHandlerIndex] Invalid index <%d> given! Maximum range is: 0-%lu.\n", index, (unsigned long)am_it->second.color_handlers.size ());
     return (false);
   }
   // Get the handler

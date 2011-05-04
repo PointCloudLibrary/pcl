@@ -96,7 +96,7 @@ pcl::PCLBase<sensor_msgs::PointCloud2>::setInputCloud (const PointCloud2ConstPtr
 
       default:
       {
-        PCL_ERROR ("[PCLBase::setInputCloud] Invalid field type (%d)!", input_->fields[d].datatype);
+        PCL_ERROR ("[PCLBase::setInputCloud] Invalid field type (%d)!\n", input_->fields[d].datatype);
         fsize = 0;
         break;
       }

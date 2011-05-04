@@ -52,7 +52,7 @@ pcl::OrganizedDataIndex<PointT>::radiusSearch (
 
   if (cloud.height == 1)
   {
-    PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not organized!", getName ().c_str ());
+    PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not organized!\n", getName ().c_str ());
     return 0;
   }
   int data_size = cloud.points.size ();
@@ -118,7 +118,7 @@ pcl::OrganizedDataIndex<PointT>::nearestKSearch (const PointCloud &cloud, int in
   k_indices.resize (k);
   if (cloud.height == 1)
   {
-    PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not dense!", getName ().c_str ());
+    PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not dense!\n", getName ().c_str ());
     return 0;
   }
   int data_size = cloud.points.size ();

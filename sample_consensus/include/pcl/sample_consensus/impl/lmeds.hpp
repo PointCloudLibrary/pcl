@@ -47,7 +47,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
   // Warn and exit if no threshold was set
   if (threshold_ == DBL_MAX)
   {
-    PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] No threshold set!");
+    PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] No threshold set!\n");
     return (false);
   }
 
@@ -116,13 +116,13 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 
     ++iterations_;
     if (debug_verbosity_level > 1)
-      PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Trial %d out of %d. Best penalty is %f.", iterations_, max_iterations_, d_best_penalty);
+      PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Trial %d out of %d. Best penalty is %f.\n", iterations_, max_iterations_, d_best_penalty);
   }
 
   if (model_.empty ())
   {
     if (debug_verbosity_level > 0)
-      PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Unable to find a solution!");
+      PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Unable to find a solution!\n");
     return (false);
   }
 
@@ -137,7 +137,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
   // No distances? The model must not respect the user given constraints
   if (distances.empty ())
   {
-    PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] The model found failed to verify against the given constraints!");
+    PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] The model found failed to verify against the given constraints!\n");
     return (false);
   }
 
@@ -145,7 +145,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 
   if (distances.size () != indices.size ())
   {
-    PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] Estimated distances (%zu) differs than the normal of indices (%zu).", distances.size (), indices.size ());
+    PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] Estimated distances (%lu) differs than the normal of indices (%lu).\n", (unsigned long)distances.size (), (unsigned long)indices.size ());
     return (false);
   }
 
@@ -160,7 +160,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
   inliers_.resize (n_inliers_count);
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Model: %zu size, %d inliers.", model_.size (), n_inliers_count);
+    PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Model: %lu size, %d inliers.\n", (unsigned long)model_.size (), n_inliers_count);
 
   return (true);
 }

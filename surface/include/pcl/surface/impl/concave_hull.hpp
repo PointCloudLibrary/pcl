@@ -188,7 +188,7 @@ template<typename PointInT>
 
     if (exitcode != 0)
     {
-      PCL_ERROR ("ERROR: qhull was unable to compute the concave hull for the given point cloud");
+      PCL_ERROR ("ERROR: qhull was unable to compute the concave hull for the given point cloud\n");
 
       //check if it fails because of NaN values...
       if (!cloud_transformed.is_dense)
@@ -209,8 +209,7 @@ template<typename PointInT>
         }
 
         if (NaNvalues)
-          PCL_ERROR (
-              "ERROR: point cloud contains NaN values, consider running pcl::PassThrough filter first to remove NaNs.");
+          PCL_ERROR ("ERROR: point cloud contains NaN values, consider running pcl::PassThrough filter first to remove NaNs.\n");
 
       }
 
@@ -550,7 +549,7 @@ template<typename PointInT>
     //if keep_information_
     if (keep_information_)
     {
-      PCL_INFO("[ConcaveHull] Keep information is true, points in hull created from the original input cloud");
+      PCL_INFO("[ConcaveHull] Keep information is true, points in hull created from the original input cloud\n");
       //build a tree with the original points
       pcl::KdTreeFLANN<PointInT> tree (true);
       tree.setInputCloud (input_, indices_);

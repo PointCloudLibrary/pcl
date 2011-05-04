@@ -46,7 +46,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilter (PointCloud &output)
 {
   if (search_radius_ == 0.0)
   {
-    PCL_ERROR ("[pcl::%s::applyFilter] No radius defined!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::applyFilter] No radius defined!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;

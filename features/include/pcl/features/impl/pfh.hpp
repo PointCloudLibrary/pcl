@@ -55,7 +55,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePairFeatures (
 
   if (distance_sqr == 0)
   {
-    PCL_ERROR ("Euclidean distance between points %d and %d is 0!", p_idx, q_idx);
+    PCL_ERROR ("Euclidean distance between points %d and %d is 0!\n", p_idx, q_idx);
     f1 = f2 = f3 = f4 = 0;
     return (false);
   }
@@ -78,7 +78,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePairFeatures (
   distance_sqr = v.squaredNorm ();
   if (distance_sqr == 0)
   {
-    PCL_ERROR ("Norm of Delta x U is 0 for point %d and %d!", p_idx, q_idx);
+    PCL_ERROR ("Norm of Delta x U is 0 for point %d and %d!\n", p_idx, q_idx);
     f1 = f2 = f3 = f4 = 0;
     return (false);
   }
@@ -167,14 +167,14 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   // Check if input was set
   if (!normals_)
   {
-    PCL_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
   }
   if (normals_->points.size () != surface_->points.size ())
   {
-    PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;

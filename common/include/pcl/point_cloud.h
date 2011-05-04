@@ -84,7 +84,7 @@ namespace pcl
       {
         if (rhs.header.frame_id != header.frame_id)
         {
-          PCL_ERROR ("PointCloud frame IDs do not match (%s != %s) for += . Cancelling operation...", 
+          PCL_ERROR ("PointCloud frame IDs do not match (%s != %s) for += . Cancelling operation...\n", 
                      rhs.header.frame_id.c_str (), header.frame_id.c_str ());
           return (*this);
         }

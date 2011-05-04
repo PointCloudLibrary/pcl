@@ -48,7 +48,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
   // Has the input dataset been set already?
   if (!input_)
   {
-    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
@@ -90,7 +90,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
     int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
     if (distance_idx == -1)
     {
-      PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.", getClassName ().c_str (), distance_idx);
+      PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), distance_idx);
       output.width = output.height = 0;
       output.points.clear ();
       return;

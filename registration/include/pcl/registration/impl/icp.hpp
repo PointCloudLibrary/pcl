@@ -89,7 +89,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
     {
       if (!searchForNeighbors (output, idx, nn_indices, nn_dists))
       {
-        PCL_ERROR ("[pcl::%s::computeTransformation] Unable to find a nearest neighbor in the target dataset for point %d in the source!", getClassName ().c_str (), (*indices_)[idx]);
+        PCL_ERROR ("[pcl::%s::computeTransformation] Unable to find a nearest neighbor in the target dataset for point %d in the source!\n", getClassName ().c_str (), (*indices_)[idx]);
         return;
       }
 
@@ -147,12 +147,12 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
     cnt = (int)source_indices_good.size ();
     if (cnt < min_number_correspondences_)
     {
-      PCL_ERROR ("[pcl::%s::computeTransformation] Not enough correspondences found. Relax your threshold parameters.", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::computeTransformation] Not enough correspondences found. Relax your threshold parameters.\n", getClassName ().c_str ());
       converged_ = false;
       return;
     }
 
-    PCL_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %zu points [100.0%%], RANSAC rejected: %zu [%f%%].", getClassName ().c_str (), cnt, (cnt * 100.0) / indices_->size (), indices_->size (), source_indices.size () - cnt, (source_indices.size () - cnt) * 100.0 / source_indices.size ());
+    PCL_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %lu points [100.0%%], RANSAC rejected: %lu [%f%%].\n", getClassName ().c_str (), cnt, (cnt * 100.0) / indices_->size (), (unsigned long)indices_->size (), (unsigned long)source_indices.size () - cnt, (source_indices.size () - cnt) * 100.0 / source_indices.size ());
   
     // Estimate the transform
     rigid_transformation_estimation_(output, source_indices_good, *target_, target_indices_good, transformation_);
@@ -169,7 +169,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
         fabs ((transformation_ - previous_transformation_).sum ()) < transformation_epsilon_)
     {
       converged_ = true;
-      PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f",
+      PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f\n",
                  getClassName ().c_str (), nr_iterations_, max_iterations_, fabs ((transformation_ - previous_transformation_).sum ()));
     }
   }

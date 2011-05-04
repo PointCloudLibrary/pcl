@@ -47,7 +47,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   // Warn and exit if no threshold was set
   if (threshold_ == DBL_MAX)
   {
-    PCL_ERROR ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] No threshold set!");
+    PCL_ERROR ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] No threshold set!\n");
     return (false);
   }
 
@@ -63,7 +63,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   // Compute sigma - remember to set threshold_ correctly !
   sigma_ = computeMedianAbsoluteDeviation (sac_model_->getInputCloud (), sac_model_->getIndices (), threshold_);
   if (debug_verbosity_level > 1)
-    PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Estimated sigma value: %f.", sigma_);
+    PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Estimated sigma value: %f.\n", sigma_);
 
   // Compute the bounding box diagonal: V = sqrt (sum (max(pointCloud) - min(pointCloud)^2))
   Eigen::Vector4f min_pt, max_pt;
@@ -145,11 +145,11 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
 
     ++iterations_;
     if (debug_verbosity_level > 1)
-      PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Trial %d out of %d. Best penalty is %f.", iterations_, (int)ceil (k), d_best_penalty);
+      PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Trial %d out of %d. Best penalty is %f.\n", iterations_, (int)ceil (k), d_best_penalty);
     if (iterations_ > max_iterations_)
     {
       if (debug_verbosity_level > 0)
-        PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] MLESAC reached the maximum number of trials.");
+        PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] MLESAC reached the maximum number of trials.\n");
       break;
     }
   }
@@ -157,7 +157,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   if (model_.empty ())
   {
     if (debug_verbosity_level > 0)
-      PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Unable to find a solution!");
+      PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Unable to find a solution!\n");
     return (false);
   }
 
@@ -166,7 +166,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   std::vector<int> &indices = *sac_model_->getIndices ();
   if (distances.size () != indices.size ())
   {
-    PCL_ERROR ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Estimated distances (%zu) differs than the normal of indices (%zu).", distances.size (), indices.size ());
+    PCL_ERROR ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Estimated distances (%lu) differs than the normal of indices (%lu).\n", (unsigned long)distances.size (), (unsigned long)indices.size ());
     return (false);
   }
 
@@ -181,7 +181,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   inliers_.resize (n_inliers_count);
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Model: %zu size, %d inliers.", model_.size (), n_inliers_count);
+    PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", (unsigned long)model_.size (), n_inliers_count);
 
   return (true);
 }

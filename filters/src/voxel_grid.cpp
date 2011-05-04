@@ -52,7 +52,7 @@ pcl::getMinMax3D (const sensor_msgs::PointCloud2ConstPtr &cloud, int x_idx, int 
       cloud->fields[y_idx].datatype != sensor_msgs::PointField::FLOAT32 ||
       cloud->fields[z_idx].datatype != sensor_msgs::PointField::FLOAT32)
   {
-    PCL_ERROR ("[pcl::getMinMax3D] XYZ dimensions are not float type!");
+    PCL_ERROR ("[pcl::getMinMax3D] XYZ dimensions are not float type!\n");
     return;
   }
 
@@ -98,7 +98,7 @@ pcl::getMinMax3D (const sensor_msgs::PointCloud2ConstPtr &cloud, int x_idx, int 
       cloud->fields[y_idx].datatype != sensor_msgs::PointField::FLOAT32 ||
       cloud->fields[z_idx].datatype != sensor_msgs::PointField::FLOAT32)
   {
-    PCL_ERROR ("[pcl::getMinMax3D] XYZ dimensions are not float type!");
+    PCL_ERROR ("[pcl::getMinMax3D] XYZ dimensions are not float type!\n");
     return;
   }
 
@@ -112,7 +112,7 @@ pcl::getMinMax3D (const sensor_msgs::PointCloud2ConstPtr &cloud, int x_idx, int 
   // @todo fix this
   if (cloud->fields[distance_idx].datatype != sensor_msgs::PointField::FLOAT32)
   {
-    PCL_ERROR ("[pcl::getMinMax3D] Filtering dimensions is not float type!");
+    PCL_ERROR ("[pcl::getMinMax3D] Filtering dimensions is not float type!\n");
     return;
   }
 
@@ -177,7 +177,7 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   // If fields x/y/z are not present, we cannot downsample
   if (x_idx_ == -1 || y_idx_ == -1 || z_idx_ == -1)
   {
-    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.data.clear ();
     return;
@@ -282,7 +282,7 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     // @todo fixme
     if (input_->fields[distance_idx].datatype != sensor_msgs::PointField::FLOAT32)
     {
-      PCL_ERROR ("[pcl::%s::applyFilter] Distance filtering requested, but distances are not float/double in the dataset! Only FLOAT32/FLOAT64 distances are supported right now.", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::applyFilter] Distance filtering requested, but distances are not float/double in the dataset! Only FLOAT32/FLOAT64 distances are supported right now.\n", getClassName ().c_str ());
       output.width = output.height = 0;
       output.data.clear ();
       return;
