@@ -1,6 +1,7 @@
 #include <Eigen/Eigenvalues>
 #include "pcl/point_types.h"
 #include "pcl/common/centroid.h"
+#include <pcl/console/print.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> inline void 

@@ -42,6 +42,11 @@
 
 #include <pcl/pcl_macros.h>
 
+#define PCL_DEBUG(...) pcl::console::print_debug (__VA_ARGS__)
+#define PCL_INFO(...)  pcl::console::print_info  (__VA_ARGS__)
+#define PCL_WARN(...)  pcl::console::print_warn  (__VA_ARGS__)
+#define PCL_ERROR(...) pcl::console::print_error (__VA_ARGS__)
+
 namespace pcl
 {
   namespace console

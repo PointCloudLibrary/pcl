@@ -43,38 +43,6 @@
 #ifndef PCL_MACROS_H_
 #define PCL_MACROS_H_
 
-#define PCL_DEBUG(...) pcl::console::print (stdout, 2, 2, __VA_ARGS__)
-#define PCL_INFO(...) pcl::console::print (stdout, 2, 7, __VA_ARGS__)
-#define PCL_WARN(...) pcl::console::print (stderr, 2, 3, __VA_ARGS__)
-#define PCL_ERROR(...) pcl::console::print (stderr, 1, 1, __VA_ARGS__)
-
-namespace pcl
-{
-  namespace console
-  {
-    inline void 
-    print (FILE *stream, int attribute, int fg, const char* format, ...)
-    {
-#ifndef _WIN32
-      char command[13];
-      // Command is the control command to the terminal        
-      sprintf (command, "%c[%d;%dm", 0x1B, attribute, fg + 30);
-      fprintf (stream, "%s", command); 
-#endif
-      va_list ap; 
-
-      va_start (ap, format);
-      vfprintf (stream, format, ap);
-      va_end (ap);
-#ifndef _WIN32
-      // Command is the control command to the terminal
-      sprintf (command, "%c[0;m", 0x1B);
-      fprintf (stream, "%s\n", command);
-#endif
-    }
-  }
-}
-
 #ifndef DEG2RAD
 #define DEG2RAD(x) ((x)*0.017453293)
 #endif
