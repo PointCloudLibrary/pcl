@@ -45,27 +45,28 @@
 #include "pcl/io/io.h"
 #include "pcl/io/pcd_io.h"
 
-#ifdef _WIN32
+#if defined _WIN32 && defined _MSVC
 # include <io.h>
 # include <windows.h>
-# define pcl_open(pathname,flags)    _open(pathname,flags)
+# define pcl_open                    _open
 # define pcl_close(fd)               _close(fd)
 # define pcl_lseek(fd,offset,origin) _lseek(fd,offset,origin)
 #else
 # include <sys/mman.h>
-# define pcl_open(pathname,flags)    open(pathname,flags)
+# define pcl_open                    open
 # define pcl_close(fd)               close(fd)
 # define pcl_lseek(fd,offset,origin) lseek(fd,offset,origin)
 #endif
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
-                            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version)
+                            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
+                            int &pcd_version, bool &binary_data, int &data_idx)
 {
   // Default values
+  data_idx = 0;
+  binary_data = false;
   pcd_version = PCD_V6;
   origin      = Eigen::Vector4f::Zero ();
   orientation = Eigen::Quaternionf::Identity ();
@@ -88,8 +89,9 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
 
   int specified_channel_count = 0;
 
-  // Open file
-  fs.open (file_name.c_str ());
+  // Open file in binary mode to avoid problem of 
+  // std::getline() corrupting the result of ifstream::tellg()
+  fs.open (file_name.c_str (), std::ios::binary);
   if (!fs.is_open () || fs.fail ())
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file %s.", file_name.c_str ());
@@ -270,6 +272,16 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
         continue;
       }
 
+      // Read the header + comments line by line until we get to <DATA>
+      if (line_type.substr (0, 4) == "DATA")
+      {
+        data_idx = fs.tellg ();
+        if (st.at (1).substr (0, 6) == "binary")
+        {
+           binary_data = true;
+        }
+        continue;
+      }
       break;
     }
   }
@@ -322,165 +334,155 @@ int
 pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
                       Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version)
 {
-  int res = readHeader (file_name, cloud, origin, orientation, pcd_version);
+  bool binary_data;
+  int data_idx;
+
+  int res = readHeader (file_name, cloud, origin, orientation, pcd_version, binary_data, data_idx);
 
   if (res < 0)
     return (res);
 
-  // By default, assume that we have ASCII data
-  bool binary_data = false, data_found = false;
+  // @todo fixme
+  cloud.is_bigendian = false;  
+
   int idx = 0;
 
   // Get the number of points the cloud should have
   int nr_points = cloud.width * cloud.height;
 
-  // Re-open the file (readHeader closes it)
-  std::ifstream fs;
-  fs.open (file_name.c_str ());
-  if (!fs.is_open () || fs.fail ())
+  // if ascii
+  if (!binary_data)
   {
-    PCL_ERROR ("[pcl::PCDReader::read] Could not open file %s.", file_name.c_str ());
-    return (-1);
-  }
-
-  std::string line;
-  std::vector<std::string> st;
-
-  // Read the rest of the file
-  try
-  {
-    while (!fs.eof ())
+    // Re-open the file (readHeader closes it)
+    std::ifstream fs;
+    fs.open (file_name.c_str ());
+    if (!fs.is_open () || fs.fail ())
     {
-      getline (fs, line);
-      // Ignore empty lines
-      if (line == "")
-        continue;
+      PCL_ERROR ("[pcl::PCDReader::read] Could not open file %s.", file_name.c_str ());
+      return (-1);
+    }
 
-      // Tokenize the line
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+    fs.seekg (data_idx);
 
-      std::string line_type = st.at (0);
+    std::string line;
+    std::vector<std::string> st;
 
-      // Read the header + comments line by line until we get to <DATA>
-      if (line_type.substr (0, 4) == "DATA")
+    // Read the rest of the file
+    try
+    {
+      while (!fs.eof ())
       {
-        data_found = true;
-        if (st.at (1).substr (0, 6) == "binary")
+        getline (fs, line);
+        // Ignore empty lines
+        if (line == "")
+          continue;
+
+        // Tokenize the line
+        boost::trim (line);
+        boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
+
+        // We must have points then
+        // Convert the first token to float and use it as the first point coordinate
+        if (idx >= nr_points)
         {
-          binary_data = true;
+          PCL_WARN ("[pcl::PCDReader::read] input file %s has more points than advertised (%d)!", file_name.c_str (), nr_points);
           break;
         }
-        continue;
-      }
-      else if (!data_found)
-        continue;
- 
 
-      // Nothing of the above? We must have points then
-      // Convert the first token to float and use it as the first point coordinate
-      if (idx >= nr_points)
-      {
-        PCL_WARN ("[pcl::PCDReader::read] input file %s has more points than advertised (%d)!", file_name.c_str (), nr_points);
-        break;
-      }
-
-      // Copy data
-      for (size_t d = 0; d < cloud.fields.size (); ++d)
-      {
-        for (size_t c = 0; c < cloud.fields[d].count; ++c)
+        // Copy data
+        for (size_t d = 0; d < cloud.fields.size (); ++d)
         {
-          switch (cloud.fields[d].datatype)
+          for (size_t c = 0; c < cloud.fields[d].count; ++c)
           {
-            case sensor_msgs::PointField::INT8:
+            switch (cloud.fields[d].datatype)
             {
-              char value = (char)atoi (st.at (d + c).c_str ());
-              if (!pcl_isfinite (value))
-                cloud.is_dense = false;
-              memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (char)], &value, sizeof (char));
-              break;
+              case sensor_msgs::PointField::INT8:
+              {
+                char value = (char)atoi (st.at (d + c).c_str ());
+                if (!pcl_isfinite (value))
+                  cloud.is_dense = false;
+                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (char)], &value, sizeof (char));
+                break;
+              }
+              case sensor_msgs::PointField::UINT8:
+              {
+                unsigned char value = atoi (st.at (d + c).c_str ());
+                if (!pcl_isfinite (value))
+                  cloud.is_dense = false;
+                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (unsigned char)], &value, sizeof (unsigned char));
+                break;
+              }
+              case sensor_msgs::PointField::INT16:
+              {
+                short value = atoi (st.at (d + c).c_str ());
+                if (!pcl_isfinite (value))
+                  cloud.is_dense = false;
+                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (short)], &value, sizeof (short));
+                break;
+              }
+              case sensor_msgs::PointField::UINT16:
+              {
+                unsigned short value = atoi (st.at (d + c).c_str ());
+                if (!pcl_isfinite (value))
+                  cloud.is_dense = false;
+                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (unsigned short)], &value, sizeof (unsigned short));
+                break;
+              }
+              case sensor_msgs::PointField::INT32:
+              {
+                int value = atoi (st.at (d + c).c_str ());
+                if (!pcl_isfinite (value))
+                  cloud.is_dense = false;
+                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (int)], &value, sizeof (int));
+                break;
+              }
+              case sensor_msgs::PointField::UINT32:
+              {
+                unsigned int value = atoi (st.at (d + c).c_str ());
+                if (!pcl_isfinite (value))
+                  cloud.is_dense = false;
+                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (unsigned int)], &value, sizeof (unsigned int));
+                break;
+              }
+              case sensor_msgs::PointField::FLOAT32:
+              {
+                float value = atof (st.at (d + c).c_str ());
+                if (!pcl_isfinite (value))
+                  cloud.is_dense = false;
+                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (float)], &value, sizeof (float));
+                break;
+              }
+              case sensor_msgs::PointField::FLOAT64:
+              {
+                double value = atof (st.at (d + c).c_str ());
+                if (!pcl_isfinite (value))
+                  cloud.is_dense = false;
+                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (double)], &value, sizeof (double));
+                break;
+              }
+              default:
+                PCL_WARN ("[pcl::PCDReader::read] Incorrect field data type specified (%d)!",cloud.fields[d].datatype);
+                break;
             }
-            case sensor_msgs::PointField::UINT8:
-            {
-              unsigned char value = atoi (st.at (d + c).c_str ());
-              if (!pcl_isfinite (value))
-                cloud.is_dense = false;
-              memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (unsigned char)], &value, sizeof (unsigned char));
-              break;
-            }
-            case sensor_msgs::PointField::INT16:
-            {
-              short value = atoi (st.at (d + c).c_str ());
-              if (!pcl_isfinite (value))
-                cloud.is_dense = false;
-              memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (short)], &value, sizeof (short));
-              break;
-            }
-            case sensor_msgs::PointField::UINT16:
-            {
-              unsigned short value = atoi (st.at (d + c).c_str ());
-              if (!pcl_isfinite (value))
-                cloud.is_dense = false;
-              memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (unsigned short)], &value, sizeof (unsigned short));
-              break;
-            }
-            case sensor_msgs::PointField::INT32:
-            {
-              int value = atoi (st.at (d + c).c_str ());
-              if (!pcl_isfinite (value))
-                cloud.is_dense = false;
-              memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (int)], &value, sizeof (int));
-              break;
-            }
-            case sensor_msgs::PointField::UINT32:
-            {
-              unsigned int value = atoi (st.at (d + c).c_str ());
-              if (!pcl_isfinite (value))
-                cloud.is_dense = false;
-              memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (unsigned int)], &value, sizeof (unsigned int));
-              break;
-            }
-            case sensor_msgs::PointField::FLOAT32:
-            {
-              float value = atof (st.at (d + c).c_str ());
-              if (!pcl_isfinite (value))
-                cloud.is_dense = false;
-              memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (float)], &value, sizeof (float));
-              break;
-            }
-            case sensor_msgs::PointField::FLOAT64:
-            {
-              double value = atof (st.at (d + c).c_str ());
-              if (!pcl_isfinite (value))
-                cloud.is_dense = false;
-              memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (double)], &value, sizeof (double));
-              break;
-            }
-            default:
-              PCL_WARN ("[pcl::PCDReader::read] Incorrect field data type specified (%d)!",cloud.fields[d].datatype);
-              break;
           }
         }
+
+        idx++;
       }
-
-      idx++;
     }
+    catch (const char *exception)
+    {
+      PCL_ERROR ("[pcl::PCDReader::read] %s", exception);
+      return (-1);
+    }
+
+    // Close file
+    fs.close ();
+
   }
-  catch (const char *exception)
-  {
-    PCL_ERROR ("[pcl::PCDReader::read] %s", exception);
-    return (-1);
-  }
-
-  // @todo fixme
-  cloud.is_bigendian = false;
-
-  // Close file
-  fs.close ();
-
+  else 
   /// ---[ Binary mode only
   /// We must re-open the file and read with mmap () for binary
-  if (binary_data)
   {
     // Set the is_dense mode to false -- otherwise we would have to iterate over all points and check them 1 by 1
     cloud.is_dense = false;
@@ -490,13 +492,19 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       return (-1);
 
     // Prepare the map
-#ifdef _WIN32
-    // UNTESTED!!!
-    HANDLE fm = CreateFileMapping ((HANDLE) _get_osfhandle (fd), NULL, PAGE_READONLY, 0, 0, NULL);
-    char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ, 0, 0, cloud.data.size ()));
+#if defined _WIN32 && defined _MSVC
+    // map te whole file
+    HANDLE fm = CreateFileMapping ((HANDLE) _get_osfhandle (fd), NULL, PAGE_READONLY, 0, data_idx + cloud.data.size (), NULL);
+    char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ, 0, 0, data_idx + cloud.data.size ()));
+    if(map == NULL)
+    {
+      CloseHandle (fm);
+      pcl_close (fd);
+      return (-1);
+    }
     CloseHandle (fm);
 #else
-    char *map = (char*)mmap (0, cloud.data.size (), PROT_READ, MAP_SHARED, fd, getpagesize ());
+    char *map = (char*)mmap (0, data_idx + cloud.data.size (), PROT_READ, MAP_SHARED, fd, 0);
     if (map == MAP_FAILED)
     {
       pcl_close (fd);
@@ -504,10 +512,10 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     }
 #endif
     // Copy the data
-    memcpy (&cloud.data[0], &map[0], cloud.data.size ());
+    memcpy (&cloud.data[0], &map[0] + data_idx, cloud.data.size ());
 
     // Unmap the pages of memory
-#if _WIN32
+#if _WIN32 && _MSC_VER
     UnmapViewOfFile (map);
 #else
     if (munmap (map, cloud.data.size ()) == -1)
@@ -547,8 +555,6 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   return 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 std::string
 pcl::PCDWriter::generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud, 
@@ -793,39 +799,27 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
     return (-1);
   }
   int data_idx = 0;
-  std::ofstream fs;
-  // Open file
-  fs.open (file_name.c_str ());
+  std::ostringstream oss;
+  oss << generateHeaderBinary (cloud, origin, orientation) << "DATA binary\n";
+  oss.flush();
+  data_idx = oss.tellp ();
 
-  // Write the header information
-  fs << generateHeaderBinary (cloud, origin, orientation) << "DATA binary\n";
-
-  data_idx = fs.tellp ();
-  // Close file
-  fs.close ();
-
-#ifndef _WIN32
-  if (data_idx > getpagesize ())
+#if _WIN32 && _MSC_VER
+  HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  if(h_native_file == INVALID_HANDLE_VALUE)
   {
-    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Header size (%d) is bigger than page size (%d)! Reduce the number of channels or save in ASCII format.", data_idx, getpagesize ());
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during CreateFile (%s)!\n", file_name.c_str());
     return (-1);
   }
-#endif
-
-  // Open for writing
-  int fd = pcl_open (file_name.c_str (), O_RDWR);
+#else
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
   if (fd < 0)
   {
-    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during open ()!");
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during open (%s)!\n", file_name.c_str());
     return (-1);
   }
-
   // Stretch the file size to the size of the data
-#ifdef _WIN32
-  int result = pcl_lseek (fd, cloud.data.size () - 1, SEEK_SET);
-#else
   int result = pcl_lseek (fd, getpagesize () + cloud.data.size () - 1, SEEK_SET);
-#endif
   if (result < 0)
   {
     pcl_close (fd);
@@ -840,15 +834,15 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during write ()!");
     return (-1);
   }
-
+#endif
   // Prepare the map
-#ifdef _WIN32
-  HANDLE fm = CreateFileMapping ((HANDLE) _get_osfhandle (fd), NULL, PAGE_READWRITE, 0, 0, NULL);
-  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, cloud.data.size ()));
-
+#if defined _WIN32 && defined _MSVC
+  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_idx + cloud.data.size (), NULL);
+  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + cloud.data.size ()));
   CloseHandle (fm);
+
 #else
-  char *map = (char*)mmap (0, cloud.data.size (), PROT_READ | PROT_WRITE, MAP_SHARED, fd, getpagesize ());
+  char *map = (char*)mmap (0, data_idx + cloud.data.size (), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if (map == MAP_FAILED)
   {
     pcl_close (fd);
@@ -857,14 +851,17 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   }
 #endif
 
+  // copy header
+  memcpy (&map[0], oss.str().c_str(), data_idx);
+
   // Copy the data
-  memcpy (&map[0], &cloud.data[0], cloud.data.size ());
+  memcpy (&map[0] + data_idx, &cloud.data[0], cloud.data.size ());
 
   // Unmap the pages of memory
-#if _WIN32
+#if _WIN32 && _MSC_VER
     UnmapViewOfFile (map);
 #else
-  if (munmap (map, (cloud.data.size ())) == -1)
+  if (munmap (map, (data_idx + cloud.data.size ())) == -1)
   {
     pcl_close (fd);
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during munmap ()!");
@@ -872,6 +869,10 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   }
 #endif
   // Close file
+#if _WIN32 && _MSC_VER
+  CloseHandle(h_native_file);
+#else
   pcl_close (fd);
+#endif
   return (0);
 }

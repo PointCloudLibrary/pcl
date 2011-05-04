@@ -93,9 +93,13 @@ namespace pcl
         * \param origin the sensor acquisition origin (only for > PCD_V7 - null if not present)
         * \param orientation the sensor acquisition orientation (only for > PCD_V7 - identity if not present)
         * \param pcd_version the PCD version of the file (either PCD_V6 or PCD_V7)
+        * \param binary_data is true if the PCD file contains binary data, false if ascii 
+        * \param data_idx the offset of cloud data within the file
         */
-      int readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
-                      Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version);
+      int 
+      readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
+                  Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version,
+                  bool &binary_data, int &data_idx);
 
       /** \brief Read a point cloud data from a PCD file and store it into a sensor_msgs/PointCloud2.
         * \param file_name the name of the file containing the actual PointCloud data
@@ -104,8 +108,9 @@ namespace pcl
         * \param orientation the sensor acquisition orientation (only for > PCD_V7 - identity if not present)
         * \param pcd_version the PCD version of the file (either PCD_V6 or PCD_V7)
         */
-      int read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
-                Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version);
+      int 
+      read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
+            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version);
 
       /** \brief Read a point cloud data from a PCD file (PCD_V6 only!) and store it into a sensor_msgs/PointCloud2.
         * 
@@ -117,14 +122,15 @@ namespace pcl
         * \param file_name the name of the file containing the actual PointCloud data
         * \param cloud the resultant PointCloud message read from disk
         */
-      int read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud);
+      int 
+      read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud);
 
       /** \brief Read a point cloud data from any PCD file, and convert it to the given template format.
         * \param file_name the name of the file containing the actual PointCloud data
         * \param cloud the resultant PointCloud message read from disk
         */
       template<typename PointT> inline int
-        read (const std::string &file_name, pcl::PointCloud<PointT> &cloud)
+      read (const std::string &file_name, pcl::PointCloud<PointT> &cloud)
       {
         sensor_msgs::PointCloud2 blob;
         int pcd_version;
@@ -179,10 +185,11 @@ namespace pcl
         * involves switching RGB data to be stored as a packed integer in
         * future versions of PCL.
         */
-      int writeASCII (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
-                      const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
-                      const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
-                      int precision = 7);
+      int 
+      writeASCII (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
+                  const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
+                  const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
+                  int precision = 7);
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY format
         * \param file_name the output file name
@@ -190,9 +197,10 @@ namespace pcl
         * \param origin the sensor acquisition origin
         * \param orientation the sensor acquisition orientation
         */
-      int writeBinary (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud,
-                       const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
-                       const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
+      int 
+      writeBinary (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud,
+                   const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
+                   const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
 
       /** \brief Save point cloud data to a PCD file containing n-D points
         * \param file_name the output file name
