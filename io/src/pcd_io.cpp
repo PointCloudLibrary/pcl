@@ -45,7 +45,7 @@
 #include "pcl/io/io.h"
 #include "pcl/io/pcd_io.h"
 
-#if defined _WIN32 && defined _MSVC
+#ifdef _MSC_VER
 # include <io.h>
 # include <windows.h>
 # define pcl_open                    _open
@@ -492,7 +492,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       return (-1);
 
     // Prepare the map
-#if defined _WIN32 && defined _MSVC
+#ifdef _MSC_VER
     // map te whole file
     HANDLE fm = CreateFileMapping ((HANDLE) _get_osfhandle (fd), NULL, PAGE_READONLY, 0, data_idx + cloud.data.size (), NULL);
     char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ, 0, 0, data_idx + cloud.data.size ()));
@@ -836,7 +836,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   }
 #endif
   // Prepare the map
-#if defined _WIN32 && defined _MSVC
+#ifdef _MSC_VER
   HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_idx + cloud.data.size (), NULL);
   char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + cloud.data.size ()));
   CloseHandle (fm);
