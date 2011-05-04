@@ -40,6 +40,7 @@
 // needed for the grabber interface / observers
 #include <map>
 #include <iostream>
+#include <string>
 #include <boost/signals2.hpp>
 #include <boost/signals2/slot.hpp>
 #include <typeinfo>
@@ -68,12 +69,12 @@ class Grabber
     template<typename T> void disconnect_all_slots ();
 
     template<typename T> boost::signals2::signal<T>* createSignal ();
-    std::map<const std::type_info*, boost::signals2::signal_base*> signals_;
+    std::map<std::string, boost::signals2::signal_base*> signals_;
 };
 
 Grabber::~Grabber ()
 {
-  for (std::map<const std::type_info*, boost::signals2::signal_base*>::iterator signal_it = signals_.begin (); signal_it != signals_.end (); ++signal_it)
+  for (std::map<std::string, boost::signals2::signal_base*>::iterator signal_it = signals_.begin (); signal_it != signals_.end (); ++signal_it)
     delete signal_it->second;
 }
 
@@ -81,7 +82,7 @@ template<typename T> boost::signals2::signal<T>* Grabber::find_signal () const
 {
   typedef boost::signals2::signal<T> Signal;
 
-  std::map<const std::type_info*, boost::signals2::signal_base*>::const_iterator signal_it = signals_.find (&typeid(T));
+  std::map<std::string, boost::signals2::signal_base*>::const_iterator signal_it = signals_.find (typeid(T).name());
   if (signal_it != signals_.end ()) 
     return (dynamic_cast<Signal*> (signal_it->second));
 
@@ -92,9 +93,9 @@ template<typename T> void Grabber::disconnect_all_slots ()
 {
   typedef boost::signals2::signal<T> Signal;
 
-  if (signals_.find (&typeid(T)) != signals_.end ()) 
+  if (signals_.find (typeid(T).name()) != signals_.end ()) 
   {
-    Signal* signal = dynamic_cast<Signal*> (signals_[&typeid(T)]);
+    Signal* signal = dynamic_cast<Signal*> (signals_[typeid(T).name()]);
     signal->disconnect_all_slots ();
   }
 }
@@ -104,7 +105,7 @@ template<typename T> int Grabber::num_slots () const
   typedef boost::signals2::signal<T> Signal;
 
   // see if we have a signal for this type
-  std::map<const std::type_info*, boost::signals2::signal_base*>::const_iterator signal_it = signals_.find (&typeid(T));
+  std::map<std::string, boost::signals2::signal_base*>::const_iterator signal_it = signals_.find (typeid(T).name());
   if (signal_it != signals_.end())
   {
     Signal* signal = dynamic_cast<Signal*> (signal_it->second);
@@ -117,10 +118,10 @@ template<typename T> boost::signals2::signal<T>* Grabber::createSignal ()
 {
   typedef boost::signals2::signal<T> Signal;
 
-  if (signals_.find (&typeid(T)) == signals_.end ())
+  if (signals_.find (typeid(T).name()) == signals_.end ())
   {
     Signal* signal = new Signal ();
-    signals_[&typeid(T)] = signal;
+    signals_[typeid(T).name ()] = signal;
     return (signal);
   }
   return (0);
@@ -129,18 +130,18 @@ template<typename T> boost::signals2::signal<T>* Grabber::createSignal ()
 template<typename T> boost::signals2::connection Grabber::registerCallback (const boost::function<T> & callback)
 {
   typedef boost::signals2::signal<T> Signal;
-  if (signals_.find (&typeid(T)) == signals_.end ())
+  if (signals_.find (typeid(T).name()) == signals_.end ())
   {
-    std::cout << "no callback for type: void (" << typeid(T).name() << ")" << std::endl;
+    std::cout << "no callback for type:" << typeid(T).name() << std::endl;
     std::cout << "registered Callbacks are:" << std::endl;
-    for( std::map<const std::type_info*, boost::signals2::signal_base*>::const_iterator cIt = signals_.begin (); 
+    for( std::map<std::string, boost::signals2::signal_base*>::const_iterator cIt = signals_.begin (); 
          cIt != signals_.end (); ++cIt)
     {
-      std::cout << "void (" << cIt->first->name() << ")" << std::endl;
+      std::cout << cIt->first << std::endl;
     }
     return (boost::signals2::connection ());
   }
-  Signal* signal = dynamic_cast<Signal*> (signals_[&typeid(T)]);
+  Signal* signal = dynamic_cast<Signal*> (signals_[typeid(T).name()]);
   boost::signals2::connection ret = signal->connect (callback);
 
   signalsChanged ();
@@ -149,7 +150,7 @@ template<typename T> boost::signals2::connection Grabber::registerCallback (cons
 
 template<typename T> bool Grabber::providesCallback () const
 {
-  if (signals_.find (&typeid(T)) == signals_.end ())
+  if (signals_.find (typeid(T).name()) == signals_.end ())
     return (false);
   return (true);
 }
