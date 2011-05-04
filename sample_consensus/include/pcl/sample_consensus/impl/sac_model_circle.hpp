@@ -293,6 +293,12 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
     projected_points.width    = inliers.size ();
     projected_points.height   = 1;
 
+    typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+    // Iterate over each point
+    for (size_t i = 0; i < inliers.size (); ++i)
+      // Iterate over each dimension
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+
     // Iterate through the 3d points and calculate the distances from them to the plane
     for (size_t i = 0; i < inliers.size (); ++i)
     {
