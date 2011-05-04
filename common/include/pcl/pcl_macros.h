@@ -165,7 +165,7 @@ namespace pcl
     #endif
 #endif
 
-#if (defined _MSC_VER && (defined WIN32 || defined _WIN32 || defined WINCE))
+#if defined WIN32 || defined _WIN32 || defined WINCE || defined __MINGW32__
     #ifdef PCLAPI_EXPORTS
         #define PCL_EXPORTS __declspec(dllexport)
     #else

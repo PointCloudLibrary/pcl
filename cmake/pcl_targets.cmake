@@ -81,10 +81,10 @@ macro(PCL_ADD_LIBRARY _name _component)
     target_link_libraries(${_name} ${Boost_LIBRARIES})
     #
     # Only link if needed
-    if(UNIX)
-      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
-    elseif(WIN32)
+    if(WIN32 AND MSVC)
       SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS /OPT:REF)
+		else()
+      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
     #
     set_target_properties(${_name} PROPERTIES
@@ -110,10 +110,10 @@ macro(PCL_ADD_EXECUTABLE _name _component)
     target_link_libraries(${_name} ${Boost_LIBRARIES})
     #
     # Only link if needed
-    if(UNIX)
-      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
-    elseif(WIN32)
+		if(WIN32 AND MSVC)
       SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS /OPT:REF)
+    else()
+      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
     #
     set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
