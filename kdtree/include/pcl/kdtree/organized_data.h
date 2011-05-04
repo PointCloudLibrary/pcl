@@ -39,6 +39,7 @@
 #define PCL_KDTREE_ORGANIZED_DATA_H_
 
 #include "pcl/kdtree/kdtree.h"
+#include <pcl/console/print.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
 

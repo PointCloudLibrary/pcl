@@ -43,6 +43,7 @@
 #include "pcl/pcl_macros.h"
 #include <std_msgs/Header.h>
 #include <pcl/exceptions.h>
+#include <pcl/console/print.h>
 #include <boost/shared_ptr.hpp>
 
 namespace pcl

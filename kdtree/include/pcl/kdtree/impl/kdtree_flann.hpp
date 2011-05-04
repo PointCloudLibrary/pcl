@@ -37,6 +37,7 @@
 #define PCL_KDTREE_KDTREE_IMPL_FLANN_H_
 
 #include "pcl/kdtree/kdtree_flann.h"
+#include <pcl/console/print.h>
 
 namespace pcl
 {

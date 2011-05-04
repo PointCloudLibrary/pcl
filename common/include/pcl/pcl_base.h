@@ -54,6 +54,8 @@
 #include "pcl/PointIndices.h"
 #include "pcl/win32_macros.h"
 
+#include <pcl/console/print.h>
+
 namespace pcl
 {
   // definitions used everywhere
