@@ -191,6 +191,11 @@ namespace pcl
           leafCount_ = 0;
           branchCount_ = 1;
           objectCount_ = 0;
+
+          resetTree_ = false;
+          treeDirtyFlag_ = false;
+          depthMask_ = 0;
+          octreeDepth_ = 0;
         }
 
         // delete node pool

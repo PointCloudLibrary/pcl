@@ -639,6 +639,10 @@ namespace pcl
               // reference was copied - there is only one child instance to be deleted
               deleteBranchChild (branch_arg, 0, i);
 
+              // remove pointers from both buffers
+              setBranchChild (branch_arg, 0, i, 0);
+              setBranchChild (branch_arg, 1, i, 0);
+
             }
             else
             {

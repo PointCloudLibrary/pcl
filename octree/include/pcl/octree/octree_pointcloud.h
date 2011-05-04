@@ -183,7 +183,11 @@ namespace pcl
         void
         deleteTree()
         {
+          // reset bounding box
+          minX_ = minY_ = maxY_ = minZ_ = maxZ_ = 0;
+          maxKeys_ = 1;
           this->boundingBoxDefined_ = false;
+
           OctreeT::deleteTree();
         }
 

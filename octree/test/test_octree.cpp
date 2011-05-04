@@ -310,6 +310,7 @@ TEST (PCL, Octree2Buf_Test)
 
   // checking deleteTree();
   octreeB.deleteTree();
+  octreeB.setTreeDepth (8);
 
   // octreeB.getLeafCount() should be zero now;
   ASSERT_EQ (0,octreeB.getLeafCount());
@@ -407,46 +408,54 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_Test)
     unsigned int x;unsigned int y;unsigned int z;
   };
 
-  unsigned int i, j;
+  unsigned int i, j, k, runs;
   int data[TESTPOINTS];
   MyVoxel voxels[TESTPOINTS];
 
   srand (time (NULL));
 
-  const unsigned int test_runs = 15;
+  const unsigned int test_runs = 20;
 
   for (j = 0; j < test_runs; j++)
   {
-    for (i = 0; i < TESTPOINTS; i++)
-    {
-      data[i] = rand ();
+    octreeA.deleteTree();
+    octreeB.deleteTree();
+    octreeA.setTreeDepth (5);
+    octreeB.setTreeDepth (5);
 
-      voxels[i].x = rand () % 4096;
-      voxels[i].y = rand () % 4096;
-      voxels[i].z = rand () % 4096;
+    runs = rand()%20+1;
+    for (k=0; k<runs; k++)  {
+      // switch buffers
+      octreeA.switchBuffers();
+      octreeB.switchBuffers();
 
-      // add data to octree
 
-      octreeA.add (voxels[i].x, voxels[i].y, voxels[i].z, data[i]);
+      for (i = 0; i < TESTPOINTS; i++)
+      {
+        data[i] = rand ();
+
+        voxels[i].x = rand () % 4096;
+        voxels[i].y = rand () % 4096;
+        voxels[i].z = rand () % 4096;
+
+        // add data to octree
+
+        octreeA.add (voxels[i].x, voxels[i].y, voxels[i].z, data[i]);
+
+      }
+
+      // test serialization
+      octreeA.serializeTree (treeBinaryA, leafVectorA, true);
+      octreeB.deserializeTree (treeBinaryA, leafVectorA, true);
     }
 
-    // test serialization
-    octreeA.serializeTree (treeBinaryA, leafVectorA, false);
-    octreeB.deserializeTree (treeBinaryA, leafVectorA, false);
-    octreeB.serializeTree (treeBinaryB, leafVectorB, false);
+    octreeB.serializeTree (treeBinaryB, leafVectorB, true);
 
     // check leaf count of rebuilt octree
     ASSERT_EQ (octreeA.getLeafCount(),octreeB.getLeafCount());
     ASSERT_EQ (leafVectorB.size(), octreeB.getLeafCount());
     ASSERT_EQ (leafVectorA.size(), leafVectorB.size());
-    ASSERT_EQ (treeBinaryA.size(), octreeB.getBranchCount());
-    ASSERT_EQ (treeBinaryA.size(), treeBinaryB.size());
 
-    // check if octree content was successfully transfered.
-    for (i=0; i<treeBinaryA.size(); i++)
-    {
-      ASSERT_EQ ( (treeBinaryA[i] == treeBinaryB[i]), true );
-    }
 
     // check if octree octree structure is consistent.
     for (i=0; i<leafVectorB.size(); i++)
@@ -454,9 +463,7 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_Test)
       ASSERT_EQ ( (leafVectorA[i] == leafVectorB[i]), true );
     }
 
-    // switch buffers
-    octreeA.switchBuffers();
-    octreeB.switchBuffers();
+
 
   }
 

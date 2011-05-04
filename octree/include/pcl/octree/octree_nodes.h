@@ -284,6 +284,15 @@ namespace pcl
           dataVector_arg.insert (dataVector_arg.end (), leafDataTVector_.begin (), leafDataTVector_.end ());
         }
 
+        /** \brief Receive const reference to internal DataT Vector
+         *  \return reference to internal DataT Vector
+         * */
+        virtual const std::vector<DataT>&
+        getIdxVector ()
+        {
+          return leafDataTVector_;
+        }
+
         /** \brief Reset leaf node. Clear DataT vector.*/
         virtual void
         reset ()
