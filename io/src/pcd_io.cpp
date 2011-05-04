@@ -40,7 +40,6 @@
 #include <string>
 #include <stdlib.h>
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include "pcl/io/io.h"
 #include "pcl/io/pcd_io.h"
@@ -75,13 +74,6 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
 
   // By default, assume that there are _no_ invalid (e.g., NaN) points
   cloud.is_dense = true;
-
-  // Check if the file exists
-  if (!boost::filesystem::exists (file_name))
-  {
-    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file %s.", file_name.c_str ());
-    return (-1);
-  }
 
   int nr_points = 0;
   std::ifstream fs;
