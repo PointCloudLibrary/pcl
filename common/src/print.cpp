@@ -35,7 +35,7 @@
  *
  */
 #include <pcl/console/print.h>
-#ifdef WIN32
+#if defined WIN32 && defined _MSC_VER
 # include <windows.h>
 
 DWORD convertAttributesColor(int attribute, int fg, int bg=-1)
