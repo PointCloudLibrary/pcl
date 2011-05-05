@@ -5,12 +5,11 @@ Aligning object templates to a point cloud
 
 This tutorial gives an example of how some of the tools covered in the other tutorials can be combined to solve a higher level problem --- aligning a previously captured model of an object to some newly captured data.  In this specific example, we'll take a depth image that contains a person and try to fit some previously captured templates of their face; this will allow us to determine the position and orientation of the face in the scene.
 
-.. figure:: images/template_alignment_2.png
-   :scale: 50 %
-   :alt: Template alignment results
-   :align: center
+.. raw:: html 
 
-   We can use the code below to fit a template of a person's face (the red points) to a new point cloud (the green points). 
+  <iframe width="560" height="349" style="margin-left:50px" src="http://www.youtube.com/embed/1T5HxTTgE4I" frameborder="0" allowfullscreen></iframe>
+
+We can use the code below to fit a template of a person's face (the red points) to a new point cloud (the green points). 
 
 
 The code
@@ -681,10 +680,13 @@ You can also use the `pcd_viewer <http://www.pointclouds.org/documentation/overv
 The clouds should look something like this:
 
 .. image:: images/template_alignment_1.png
-  :scale: 50 %
+  :height: 200
 
 .. image:: images/template_alignment_2.png
-  :scale: 50 %
+  :height: 200
 
 .. image:: images/template_alignment_3.png
-  :scale: 50 %
+  :height: 200
+
+.. image:: images/template_alignment_4.png
+  :height: 200
