@@ -23,7 +23,7 @@ The code
 --------
 
 First, download the dataset `table_scene_lms400.pcd
-<http://dev.pointclouds.org/attachments/download/22/table_scene_lms400.pcd>`_
+<http://dev.pointclouds.org/attachments/download/157/table_scene_lms400.pcd>`_
 and save it somewhere to disk.
 
 Then, create a file, let's say, ``cylinder_segmentation.cpp`` in your favorite

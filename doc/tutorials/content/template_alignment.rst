@@ -15,7 +15,7 @@ We can use the code below to fit a template of a person's face (the blue points)
 The code
 --------
 
-First, download the dataset `face_templates.tar.gz <http://dev.pointclouds.org/attachments/download/130/template_alignment_data.tar.gz>`_
+First, download the dataset `face_templates.tar.gz <http://dev.pointclouds.org/attachments/download/156/template_alignment_data.tar.gz>`_
 and extract the files.
 
 Next, `download <http://dev.pointclouds.org/attachments/download/129/template_alignment_src.tar.gz>`_ the source files (``feature_cloud.hpp``, ``template_alignment.hpp``, and ``template_alignment_tutorial.cpp``), or just copy and paste the following code into your editor and save it as ``template_alignment_tutorial.cpp``.
