@@ -43,9 +43,9 @@
 #include "pcl/filters/conditional_removal.h"
 
 /*
-//#include <pcl/filters/pixel_grid.h>
-//#include <pcl/filters/filter_dimension.h>
-*/
+ //#include <pcl/filters/pixel_grid.h>
+ //#include <pcl/filters/filter_dimension.h>
+ */
 // Include the implementations instead of compiling them separately to speed up compile time
 //#include "passthrough.cpp"
 //#include "extract_indices.cpp"
@@ -56,13 +56,14 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Base method for feature estimation for all points given in <setInputCloud (), setIndices ()> using
-  * the surface in setSearchSurface () and the spatial locator in setSearchMethod ()
-  * \param output the resultant filtered point cloud dataset 
-  */
+ * the surface in setSearchSurface () and the spatial locator in setSearchMethod ()
+ * \param output the resultant filtered point cloud dataset
+ */
 void
 pcl::Filter<sensor_msgs::PointCloud2>::filter (PointCloud2 &output)
 {
-  if (!initCompute ()) return;
+  if (!initCompute ())
+    return;
 
   // Copy fields and header at a minimum
   output.header = input_->header;
@@ -75,5 +76,6 @@ pcl::Filter<sensor_msgs::PointCloud2>::filter (PointCloud2 &output)
 }
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(removeNanFromPointCloud, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(removeNanFromPointCloud, PCL_XYZ_POINT_TYPES)
+;
 

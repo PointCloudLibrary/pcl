@@ -47,84 +47,103 @@ namespace pcl
 {
 
   /** \brief @b StatisticalOutlierRemoval uses point neighborhood statistics to filter outlier data. For more
-    * information check:
-    * <ul>
-    * <li> R. B. Rusu, Z. C. Marton, N. Blodow, M. Dolha, and M. Beetz.
-    *      Towards 3D Point Cloud Based Object Maps for Household Environments
-    *      Robotics and Autonomous Systems Journal (Special Issue on Semantic Knowledge), 2008.
-    * </ul>
-    *
-    * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
-    * \author Radu Bogdan Rusu
-    * \ingroup filters
-    */
-  template <typename PointT>
-  class StatisticalOutlierRemoval: public Filter<PointT>
-  {
-    using Filter<PointT>::input_;
-    using Filter<PointT>::indices_;
-    using Filter<PointT>::filter_name_;
-    using Filter<PointT>::getClassName;
-    
-    using Filter<PointT>::removed_indices_;
-    using Filter<PointT>::extract_removed_indices_;
+   * information check:
+   * <ul>
+   * <li> R. B. Rusu, Z. C. Marton, N. Blodow, M. Dolha, and M. Beetz.
+   *      Towards 3D Point Cloud Based Object Maps for Household Environments
+   *      Robotics and Autonomous Systems Journal (Special Issue on Semantic Knowledge), 2008.
+   * </ul>
+   *
+   * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
+   * \author Radu Bogdan Rusu
+   * \ingroup filters
+   */
+  template<typename PointT>
+    class StatisticalOutlierRemoval : public Filter<PointT>
+    {
+      using Filter<PointT>::input_;
+      using Filter<PointT>::indices_;
+      using Filter<PointT>::filter_name_;
+      using Filter<PointT>::getClassName;
 
-    typedef typename pcl::KdTree<PointT> KdTree;
-    typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
+      using Filter<PointT>::removed_indices_;
+      using Filter<PointT>::extract_removed_indices_;
 
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      typedef typename pcl::KdTree<PointT> KdTree;
+      typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
+
+      typedef typename Filter<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
     public:
       /** \brief Empty constructor. */
-		  StatisticalOutlierRemoval (bool extract_removed_indices=false) : Filter<PointT>::Filter(extract_removed_indices),
-		  mean_k_ (2), std_mul_ (0.0), tree_ (), negative_ (false)
-		  {
-		    filter_name_ = "StatisticalOutlierRemoval";
-		  };
+      StatisticalOutlierRemoval (bool extract_removed_indices = false) :
+        Filter<PointT>::Filter (extract_removed_indices), mean_k_ (2), std_mul_ (0.0), tree_ (), negative_ (false)
+      {
+        filter_name_ = "StatisticalOutlierRemoval";
+      }
+      ;
 
       /** \brief Set the number of points (k) to use for mean distance estimation
-        * \param nr_k the number of points to use for mean distance estimation
-        */
-      inline void 
-      setMeanK (int nr_k) { mean_k_ = nr_k; }
+       * \param nr_k the number of points to use for mean distance estimation
+       */
+      inline void
+      setMeanK (int nr_k)
+      {
+        mean_k_ = nr_k;
+      }
 
       /** \brief Get the number of points to use for mean distance estimation. */
-      inline int 
-      getMeanK () { return (mean_k_); }
+      inline int
+      getMeanK ()
+      {
+        return (mean_k_);
+      }
 
       /** \brief Set the standard deviation multiplier threshold. All points outside the
-        * \f[ \mu \pm \sigma \cdot std\_mul \f]
-        * will be considered outliers, where \f$ \mu \f$ is the estimated mean,
-        * and \f$ \sigma \f$ is the standard deviation.
-        * \param std_mul the standard deviation multiplier threshold
-        */
-      inline void 
-      setStddevMulThresh (double std_mul) { std_mul_ = std_mul; }
+       * \f[ \mu \pm \sigma \cdot std\_mul \f]
+       * will be considered outliers, where \f$ \mu \f$ is the estimated mean,
+       * and \f$ \sigma \f$ is the standard deviation.
+       * \param std_mul the standard deviation multiplier threshold
+       */
+      inline void
+      setStddevMulThresh (double std_mul)
+      {
+        std_mul_ = std_mul;
+      }
 
       /** \brief Get the standard deviation multiplier threshold as set by the user. */
-      inline double 
-      getStddevMulThresh () { return (std_mul_); }
+      inline double
+      getStddevMulThresh ()
+      {
+        return (std_mul_);
+      }
 
       /** \brief Set whether the inliers should be returned (true), or the outliers (false).
-        * \param negative true if the inliers should be returned, false otherwise
-        */
-      inline void 
-      setNegative (bool negative) { negative_ = negative; }
+       * \param negative true if the inliers should be returned, false otherwise
+       */
+      inline void
+      setNegative (bool negative)
+      {
+        negative_ = negative;
+      }
 
       /** \brief Get the value of the internal \ref negative_ parameter. If
-        * true, all points _except_ the input indices will be returned. 
-        */
-      inline bool 
-      getNegative () { return (negative_); }
+       * true, all points _except_ the input indices will be returned.
+       */
+      inline bool
+      getNegative ()
+      {
+        return (negative_);
+      }
 
     protected:
       /** \brief The number of points to use for mean distance estimation. */
       int mean_k_;
 
       /** \brief Standard deviations threshold (i.e., points outside of 
-        * \f$ \mu \pm \sigma \cdot std\_mul \f$ will be marked as outliers). */
+       * \f$ \mu \pm \sigma \cdot std\_mul \f$ will be marked as outliers). */
       double std_mul_;
 
       /** \brief A pointer to the spatial search object. */
@@ -134,89 +153,109 @@ namespace pcl
       bool negative_;
 
       /** \brief Apply the filter
-        * \param output the resultant point cloud message
-        */
-      void 
+       * \param output the resultant point cloud message
+       */
+      void
       applyFilter (PointCloud &output);
-  };
+    };
 
   /** \brief @b StatisticalOutlierRemoval uses point neighborhood statistics to filter outlier data. For more
-    * information check:
-    * <ul>
-    * <li> R. B. Rusu, Z. C. Marton, N. Blodow, M. Dolha, and M. Beetz.
-    *      Towards 3D Point Cloud Based Object Maps for Household Environments
-    *      Robotics and Autonomous Systems Journal (Special Issue on Semantic Knowledge), 2008.
-    * </ul>
-    *
-    * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
-    * \author Radu Bogdan Rusu
-    * \ingroup filters
-    */
-  template <>
-  class PCL_EXPORTS StatisticalOutlierRemoval<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
-  {
-    using Filter<sensor_msgs::PointCloud2>::filter_name_;
-    using Filter<sensor_msgs::PointCloud2>::getClassName;
-    
-		using Filter<sensor_msgs::PointCloud2>::removed_indices_;
-		using Filter<sensor_msgs::PointCloud2>::extract_removed_indices_;
+   * information check:
+   * <ul>
+   * <li> R. B. Rusu, Z. C. Marton, N. Blodow, M. Dolha, and M. Beetz.
+   *      Towards 3D Point Cloud Based Object Maps for Household Environments
+   *      Robotics and Autonomous Systems Journal (Special Issue on Semantic Knowledge), 2008.
+   * </ul>
+   *
+   * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
+   * \author Radu Bogdan Rusu
+   * \ingroup filters
+   */
+  template<>
+    class PCL_EXPORTS StatisticalOutlierRemoval<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
+    {
+      using Filter<sensor_msgs::PointCloud2>::filter_name_;
+      using Filter<sensor_msgs::PointCloud2>::getClassName;
 
-    typedef pcl::KdTree<pcl::PointXYZ> KdTree;
-    typedef pcl::KdTree<pcl::PointXYZ>::Ptr KdTreePtr;
+      using Filter<sensor_msgs::PointCloud2>::removed_indices_;
+      using Filter<sensor_msgs::PointCloud2>::extract_removed_indices_;
 
-    typedef sensor_msgs::PointCloud2 PointCloud2;
-    typedef PointCloud2::Ptr PointCloud2Ptr;
-    typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
+      typedef pcl::KdTree<pcl::PointXYZ> KdTree;
+      typedef pcl::KdTree<pcl::PointXYZ>::Ptr KdTreePtr;
+
+      typedef sensor_msgs::PointCloud2 PointCloud2;
+      typedef PointCloud2::Ptr PointCloud2Ptr;
+      typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
 
     public:
       /** \brief Empty constructor. */
-      StatisticalOutlierRemoval (bool extract_removed_indices=false) : Filter<sensor_msgs::PointCloud2>::Filter(extract_removed_indices),
-      mean_k_ (2), std_mul_ (0.0), tree_ (), negative_ (false)
+      StatisticalOutlierRemoval (bool extract_removed_indices = false) :
+        Filter<sensor_msgs::PointCloud2>::Filter (extract_removed_indices), mean_k_ (2), std_mul_ (0.0), tree_ (),
+            negative_ (false)
       {
         filter_name_ = "StatisticalOutlierRemoval";
-      };
+      }
+      ;
 
       /** \brief Set the number of points (k) to use for mean distance estimation
-        * \param nr_k the number of points to use for mean distance estimation
-        */
-      inline void 
-      setMeanK (int nr_k) { mean_k_ = nr_k; }
+       * \param nr_k the number of points to use for mean distance estimation
+       */
+      inline void
+      setMeanK (int nr_k)
+      {
+        mean_k_ = nr_k;
+      }
 
       /** \brief Get the number of points to use for mean distance estimation. */
-      inline int 
-      getMeanK () { return (mean_k_); }
+      inline int
+      getMeanK ()
+      {
+        return (mean_k_);
+      }
 
       /** \brief Set the standard deviation multiplier threshold. All points outside the
-        * \f[ \mu \pm \sigma \cdot std\_mul \f]
-        * will be considered outliers, where \f$ \mu \f$ is the estimated mean,
-        * and \f$ \sigma \f$ is the standard deviation.
-        * \param std_mul the standard deviation multiplier threshold
-        */
-      inline void 
-      setStddevMulThresh (double std_mul) { std_mul_ = std_mul; }
+       * \f[ \mu \pm \sigma \cdot std\_mul \f]
+       * will be considered outliers, where \f$ \mu \f$ is the estimated mean,
+       * and \f$ \sigma \f$ is the standard deviation.
+       * \param std_mul the standard deviation multiplier threshold
+       */
+      inline void
+      setStddevMulThresh (double std_mul)
+      {
+        std_mul_ = std_mul;
+      }
 
       /** \brief Get the standard deviation multiplier threshold as set by the user. */
-      inline double 
-      getStddevMulThresh () { return (std_mul_); }
+      inline double
+      getStddevMulThresh ()
+      {
+        return (std_mul_);
+      }
 
       /** \brief Set whether the indices should be returned, or all points _except_ the indices.
-        * \param negative true if all points _except_ the input indices will be returned, false otherwise
-        */
-      inline void 
-      setNegative (bool negative) { negative_ = negative; }
+       * \param negative true if all points _except_ the input indices will be returned, false otherwise
+       */
+      inline void
+      setNegative (bool negative)
+      {
+        negative_ = negative;
+      }
 
       /** \brief Get the value of the internal \ref negative_ parameter. If
-        * true, all points _except_ the input indices will be returned. 
-        */
-      inline bool 
-      getNegative () { return (negative_); }
+       * true, all points _except_ the input indices will be returned.
+       */
+      inline bool
+      getNegative ()
+      {
+        return (negative_);
+      }
 
     protected:
       /** \brief The number of points to use for mean distance estimation. */
       int mean_k_;
 
       /** \brief Standard deviations threshold (i.e., points outside of 
-        * \f$ \mu \pm \sigma \cdot std\_mul \f$ will be marked as outliers). */
+       * \f$ \mu \pm \sigma \cdot std\_mul \f$ will be marked as outliers). */
       double std_mul_;
 
       /** \brief A pointer to the spatial search object. */
@@ -225,9 +264,9 @@ namespace pcl
       /** \brief If true, the outliers will be returned instead of the inliers (default: false). */
       bool negative_;
 
-      void 
+      void
       applyFilter (PointCloud2 &output);
-  };
+    };
 }
 
 #endif  //#ifndef PCL_FILTERS_STATISTICALOUTLIERREMOVAL_H_

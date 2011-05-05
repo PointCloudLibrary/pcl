@@ -82,8 +82,8 @@ pcl::StatisticalOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointClou
   // Go over all the points and calculate the mean or smallest distance
   for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
-    if (!pcl_isfinite (cloud->points[(*indices_)[cp]].x) ||
-        !pcl_isfinite (cloud->points[(*indices_)[cp]].y) ||
+    if (!pcl_isfinite (cloud->points[(*indices_)[cp]].x) || !pcl_isfinite (cloud->points[(*indices_)[cp]].y)
+        ||
         !pcl_isfinite (cloud->points[(*indices_)[cp]].z))
     {
       distances[cp] = 0;
@@ -101,7 +101,7 @@ pcl::StatisticalOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointClou
     double dist_sum = 0;
     for (int j = 1; j < mean_k_; ++j)
       dist_sum += sqrt (nn_dists[j]);
-    distances[cp] = dist_sum / (mean_k_-1);
+    distances[cp] = dist_sum / (mean_k_ - 1);
   }
 
   // Estimate the mean and the standard deviation of the distance vector
@@ -111,12 +111,11 @@ pcl::StatisticalOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointClou
 
   // Copy the common fields
   output.is_bigendian = input_->is_bigendian;
-  output.point_step   = input_->point_step;
-  output.height       = 1;
+  output.point_step = input_->point_step;
+  output.height = 1;
 
-  output.data.resize (indices_->size () * input_->point_step);      // reserve enough space
-  removed_indices_->resize(input_->data.size ());
-
+  output.data.resize (indices_->size () * input_->point_step); // reserve enough space
+  removed_indices_->resize (input_->data.size ());
 
   // Build a new cloud by neglecting outliers
   int nr_p = 0;
@@ -127,37 +126,38 @@ pcl::StatisticalOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointClou
     {
       if (distances[cp] <= distance_threshold)
       {
-				if (extract_removed_indices_)
-				{
-					(*removed_indices_)[nr_removed_p]=cp;
-					nr_removed_p++;
-				}
-				continue;
+        if (extract_removed_indices_)
+        {
+          (*removed_indices_)[nr_removed_p] = cp;
+          nr_removed_p++;
+        }
+        continue;
       }
     }
     else
     {
       if (distances[cp] > distance_threshold)
       {
-				if (extract_removed_indices_)
-				{
-					(*removed_indices_)[nr_removed_p]=cp;
-					nr_removed_p++;
-				}
-				continue;
+        if (extract_removed_indices_)
+        {
+          (*removed_indices_)[nr_removed_p] = cp;
+          nr_removed_p++;
+        }
+        continue;
       }
     }
 
-    memcpy (&output.data[nr_p * output.point_step], &input_->data[(*indices_)[cp] * output.point_step], output.point_step);
+    memcpy (&output.data[nr_p * output.point_step], &input_->data[(*indices_)[cp] * output.point_step],
+            output.point_step);
     nr_p++;
   }
   output.width = nr_p;
   output.data.resize (output.width * output.point_step);
   output.row_step = output.point_step * output.width;
-  
-  removed_indices_->resize(nr_removed_p);
-}
 
+  removed_indices_->resize (nr_removed_p);
+}
 // Instantiations of specific point types
-PCL_INSTANTIATE(StatisticalOutlierRemoval, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(StatisticalOutlierRemoval, PCL_XYZ_POINT_TYPES)
+;
 
