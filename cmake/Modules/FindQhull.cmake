@@ -12,15 +12,18 @@ set(QHULL_MAJOR_VERSION 6)
 find_path(QHULL_INCLUDE_DIR 
           NAMES libqhull/libqhull.h qhull.h
           HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
+          PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
           PATH_SUFFIXES qhull src/libqhull libqhull include)
 
 find_library(QHULL_LIBRARY 
              NAMES qhullstatic qhull qhull${QHULL_MAJOR_VERSION}
              HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
+             PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
              PATH_SUFFIXES project build bin lib)
 
 find_library(QHULL_LIBRARY_DEBUG qhullstatic_d qhull_d qhull_d${QHULL_MAJOR_VERSION} qhull qhull${QHULL_MAJOR_VERSION}
              HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
+             PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
              PATH_SUFFIXES project build bin lib)
 
 if(NOT QHULL_LIBRARY_DEBUG)
