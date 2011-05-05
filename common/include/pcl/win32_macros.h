@@ -49,8 +49,8 @@ namespace pcl
   using boost::uint64_t;
 }
 
-// Windows doesn't have std::{isnan,isfinite}
-#ifdef _WIN32
+// MSCV doesn't have std::{isnan,isfinite}
+#if defined _WIN32 && defined _MSC_VER
 
 // Stupid. This should be removed when all the PCL dependencies have min/max fixed.
 # define NOMINMAX
