@@ -4,7 +4,11 @@ if(NOT PCL_SHARED_LIBS)
     set(Boost_USE_STATIC_LIBS ON)
 endif(NOT PCL_SHARED_LIBS)
 
-find_package(Boost 1.40.0 COMPONENTS system thread date_time)
+find_package(Boost 1.40.0 COMPONENTS system filesystem thread date_time)
+
+# Obtain diagnostic information about Boost's automatic linking outputted 
+# during compilation time.
+add_definitions(${Boost_LIB_DIAGNOSTIC_DEFINITIONS})
 
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
