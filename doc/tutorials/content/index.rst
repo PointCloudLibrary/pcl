@@ -368,7 +368,7 @@ contributions on any tutorial.
              This tutorial gives an example of how some of the tools covered in the previous tutorials can be combined to solve a higher level problem --- aligning a previously captured model of an object to some newly captured data.
      ======  ======
 
-     .. |ap_1| image:: images/template_alignment_2.png
+     .. |ap_1| image:: images/template_alignment_1.png
                :height: 100px
 
  ..
