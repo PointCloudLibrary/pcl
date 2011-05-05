@@ -65,6 +65,9 @@ namespace pcl
     using Filter<PointT>::indices_;
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::getClassName;
+    
+    using Filter<PointT>::removed_indices_;
+    using Filter<PointT>::extract_removed_indices_;
 
     typedef typename pcl::KdTree<PointT> KdTree;
     typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
@@ -75,10 +78,11 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      StatisticalOutlierRemoval () : mean_k_ (2), std_mul_ (0.0), tree_ (), negative_ (false) 
-      {
-        filter_name_ = "StatisticalOutlierRemoval";
-      };
+		  StatisticalOutlierRemoval (bool extract_removed_indices=false) : Filter<PointT>::Filter(extract_removed_indices),
+		  mean_k_ (2), std_mul_ (0.0), tree_ (), negative_ (false)
+		  {
+		    filter_name_ = "StatisticalOutlierRemoval";
+		  };
 
       /** \brief Set the number of points (k) to use for mean distance estimation
         * \param nr_k the number of points to use for mean distance estimation
@@ -153,6 +157,9 @@ namespace pcl
   {
     using Filter<sensor_msgs::PointCloud2>::filter_name_;
     using Filter<sensor_msgs::PointCloud2>::getClassName;
+    
+		using Filter<sensor_msgs::PointCloud2>::removed_indices_;
+		using Filter<sensor_msgs::PointCloud2>::extract_removed_indices_;
 
     typedef pcl::KdTree<pcl::PointXYZ> KdTree;
     typedef pcl::KdTree<pcl::PointXYZ>::Ptr KdTreePtr;
@@ -163,7 +170,8 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      StatisticalOutlierRemoval () : mean_k_ (2), std_mul_ (0.0), tree_ (), negative_ (false) 
+      StatisticalOutlierRemoval (bool extract_removed_indices=false) : Filter<sensor_msgs::PointCloud2>::Filter(extract_removed_indices),
+      mean_k_ (2), std_mul_ (0.0), tree_ (), negative_ (false)
       {
         filter_name_ = "StatisticalOutlierRemoval";
       };

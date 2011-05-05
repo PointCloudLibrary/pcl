@@ -59,13 +59,16 @@ namespace pcl
     using Filter<PointT>::filter_limit_negative_;
     using Filter<PointT>::getClassName;
     
+    using Filter<PointT>::removed_indices_;
+    using Filter<PointT>::extract_removed_indices_;
+    
     typedef typename Filter<PointT>::PointCloud PointCloud;
     typedef typename PointCloud::Ptr PointCloudPtr;
     typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
     public:
-      /** \brief Empty constructor. */
-      PassThrough () :
+      /** \brief Constructor. */
+      PassThrough (bool extract_removed_indices=false) : Filter<PointT>::Filter(extract_removed_indices),
         keep_organized_ (false), user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
         filter_name_ = "PassThrough";
@@ -123,15 +126,18 @@ namespace pcl
     typedef sensor_msgs::PointCloud2 PointCloud2;
     typedef PointCloud2::Ptr PointCloud2Ptr;
     typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
+    
+    using Filter<sensor_msgs::PointCloud2>::removed_indices_;
+    using Filter<sensor_msgs::PointCloud2>::extract_removed_indices_;
 
     public:
-      /** \brief Empty constructor. */
-      PassThrough () :
+      /** \brief Constructor. */
+      PassThrough (bool extract_removed_indices=false) : Filter<sensor_msgs::PointCloud2>::Filter(extract_removed_indices),
         keep_organized_ (false), user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
         filter_name_ = "PassThrough";
       };
-
+      
       /** \brief Set whether the filtered points should be kept and set to the
         * value given through \a setUserFilterValue (default: NaN), or removed
         * from the PointCloud, thus potentially breaking its organized

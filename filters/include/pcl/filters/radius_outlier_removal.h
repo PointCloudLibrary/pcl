@@ -58,6 +58,9 @@ namespace pcl
     using Filter<PointT>::indices_;
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::getClassName;
+    
+  	using Filter<PointT>::removed_indices_;
+  	using Filter<PointT>::extract_removed_indices_;
 
     typedef typename pcl::KdTree<PointT> KdTree;
     typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
@@ -68,10 +71,11 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      RadiusOutlierRemoval () : search_radius_ (0.0), min_pts_radius_ (1), tree_ () 
-      {
-        filter_name_ = "RadiusOutlierRemoval";
-      };
+		  RadiusOutlierRemoval (bool extract_removed_indices=false) : Filter<PointT>::Filter(extract_removed_indices),
+		  search_radius_ (0.0), min_pts_radius_ (1), tree_ ()
+		  {
+		    filter_name_ = "RadiusOutlierRemoval";
+		  };
 
       /** \brief Set the sphere radius that is to be used for determining the k-nearest neighbors for filtering.
         * \param radius the sphere radius that is to contain all k-nearest neighbors
@@ -125,6 +129,9 @@ namespace pcl
   {
     using Filter<sensor_msgs::PointCloud2>::filter_name_;
     using Filter<sensor_msgs::PointCloud2>::getClassName;
+    
+		using Filter<sensor_msgs::PointCloud2>::removed_indices_;
+		using Filter<sensor_msgs::PointCloud2>::extract_removed_indices_;
 
     typedef pcl::KdTree<pcl::PointXYZ> KdTree;
     typedef pcl::KdTree<pcl::PointXYZ>::Ptr KdTreePtr;
@@ -135,7 +142,8 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      RadiusOutlierRemoval () : search_radius_ (0.0), min_pts_radius_ (1), tree_ () 
+      RadiusOutlierRemoval (bool extract_removed_indices=false) : Filter<sensor_msgs::PointCloud2>::Filter(extract_removed_indices),
+      search_radius_ (0.0), min_pts_radius_ (1), tree_ ()
       {
         filter_name_ = "RadiusOutlierRemoval";
       };

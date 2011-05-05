@@ -40,6 +40,7 @@
 
 #include "pcl/pcl_base.h"
 #include "pcl/ros/conversions.h"
+#include <boost/make_shared.hpp>
 #include <cfloat>
 
 namespace pcl
@@ -76,11 +77,17 @@ namespace pcl
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
       /** \brief Empty constructor. */
-      Filter () : filter_field_name_ (""), 
-                  filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX), 
-                  filter_limit_negative_ (false)
-      {};
-
+			Filter(bool extract_removed_indices = false) : 
+						filter_field_name_(""), filter_limit_min_(-FLT_MAX), filter_limit_max_(
+							FLT_MAX), filter_limit_negative_(false),
+							extract_removed_indices_(extract_removed_indices) 
+			{
+				removed_indices_ = boost::make_shared<std::vector<int> > ();
+			};
+	
+			/** \brief Get the point indices being removed */
+			inline IndicesConstPtr const
+			getRemovedIndices() { return (removed_indices_);}
 
       /** \brief Provide the name of the field to be used for filtering data. In conjunction with  \a setFilterLimits,
         * points having values outside this interval will be discarded.
@@ -149,6 +156,12 @@ namespace pcl
       }
 
     protected:
+    
+    	/** \brief Set to true if we want to return the indices of the removed points. */
+			bool extract_removed_indices_;
+    	/** \brief Indices of the points that are removed */
+			IndicesPtr removed_indices_;
+    
       /** \brief The filter name. */
       std::string filter_name_;
 
@@ -189,10 +202,16 @@ namespace pcl
       typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
 
       /** \brief Empty constructor. */
-      Filter () : filter_field_name_ (""), 
-                  filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX),
-                  filter_limit_negative_ (false) 
-      {};
+			Filter(bool extract_removed_indices = false) :
+				filter_field_name_(""), filter_limit_min_(-FLT_MAX), filter_limit_max_(
+						FLT_MAX), filter_limit_negative_(false),
+						extract_removed_indices_(extract_removed_indices) {
+				removed_indices_ = boost::make_shared<std::vector<int> > ();
+			}
+
+			/** \brief Get the point indices being removed */
+			inline IndicesConstPtr const
+			getRemovedIndices() { return (removed_indices_);}
 
       /** \brief Provide the name of the field to be used for filtering data. In conjunction with  \a setFilterLimits,
         * points having values outside this interval will be discarded.
@@ -244,6 +263,11 @@ namespace pcl
       filter (PointCloud2 &output);
 
     protected:
+    	/** \brief Set to true if we want to return the indices of the removed points. */
+			bool extract_removed_indices_;
+    	/** \brief Indices of the points that are removed */
+			IndicesPtr removed_indices_;
+    
       /** \brief The filter name. */
       std::string filter_name_;
 

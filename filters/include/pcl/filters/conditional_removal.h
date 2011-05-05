@@ -385,6 +385,9 @@ namespace pcl
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::getClassName;
     
+		using Filter<PointT>::removed_indices_;
+		using Filter<PointT>::extract_removed_indices_;
+    
     typedef typename Filter<PointT>::PointCloud PointCloud;
     typedef typename PointCloud::Ptr PointCloudPtr;
     typedef typename PointCloud::ConstPtr PointCloudConstPtr;
@@ -399,7 +402,8 @@ namespace pcl
         * All ConditionalRemovals require a condition which can be set
         * using the setCondition method 
         */
-      ConditionalRemoval () : keep_organized_(false), condition_()
+        //if the argument passed as a bool, it gives compilation error due to casting issues
+      ConditionalRemoval (int extract_removed_indices=false): Filter<PointT>::Filter(extract_removed_indices), keep_organized_(false), condition_()
       {
         filter_name_ = "ConditionalRemoval";
       }
@@ -408,7 +412,7 @@ namespace pcl
         * \param condition the condition that each point must satisfy to avoid
         * being removed by the filter
         */
-      ConditionalRemoval (ConditionBasePtr condition) : keep_organized_(false), condition_()
+      ConditionalRemoval (ConditionBasePtr condition,bool extract_removed_indices=false): Filter<PointT>::Filter(extract_removed_indices), keep_organized_(false), condition_()
       {
         filter_name_ = "ConditionalRemoval";
         setCondition (condition);

@@ -80,8 +80,11 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
     output.is_dense = true;
   }
   output.points.resize (input_->points.size ());
+  removed_indices_->resize(input_->points.size ());
 
   int nr_p = 0;
+  int nr_removed_p = 0;
+  
   // If we don't want to process the entire cloud, but rather filter points far away from the viewpoint first...
   if (!filter_field_name_.empty ())
   {
@@ -116,6 +119,14 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
             output.points[cp].x = output.points[cp].y = output.points[cp].z = user_filter_value_;
             continue;
           }
+          else 
+          {
+          	if (extract_removed_indices_)
+          	{
+          		(*removed_indices_)[nr_removed_p]=cp;
+	  					nr_removed_p++;
+          	}
+          }
         }
         else
         {
@@ -125,6 +136,14 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
             output.points[cp].x = output.points[cp].y = output.points[cp].z = user_filter_value_;
             continue;
           }
+					else
+					{
+						if(extract_removed_indices_)
+						{
+							(*removed_indices_)[nr_removed_p]=cp;
+							nr_removed_p++;
+						}
+					}
         }
       }
       nr_p = input_->points.size ();
@@ -137,7 +156,14 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
       {
         // Check if the point is invalid
         if (!pcl_isfinite (input_->points[cp].x) || !pcl_isfinite (input_->points[cp].y) || !pcl_isfinite (input_->points[cp].z))
+        {
+					if(extract_removed_indices_)
+					{
+						(*removed_indices_)[nr_removed_p]=cp;
+							nr_removed_p++;
+					}
           continue;
+        }
 
         // Get the distance value
         uint8_t* pt_data = (uint8_t*)&input_->points[cp];
@@ -146,15 +172,29 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
 
         if (filter_limit_negative_)
         {
-          // Use a threshold for cutting out points which inside the interval
-          if ((distance_value < filter_limit_max_) && (distance_value > filter_limit_min_))
-            continue;
+					// Use a threshold for cutting out points which inside the interval
+					if (distance_value < filter_limit_max_ && distance_value > filter_limit_min_)
+					{
+							if(extract_removed_indices_)
+							{
+								(*removed_indices_)[nr_removed_p]=cp;
+								nr_removed_p++;
+							}
+							continue;
+					}
         }
         else
         {
           // Use a threshold for cutting out points which are too close/far away
-          if ((distance_value > filter_limit_max_) || (distance_value < filter_limit_min_))
-            continue;
+          if (distance_value > filter_limit_max_ || distance_value < filter_limit_min_)
+          {
+          	if(extract_removed_indices_)
+          	{
+          		(*removed_indices_)[nr_removed_p]=cp;
+	  					nr_removed_p++;
+          	}
+          	continue;
+          }
         }
 
         pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[nr_p]));
@@ -171,7 +211,14 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
     {
       // Check if the point is invalid
       if (!pcl_isfinite (input_->points[cp].x) || !pcl_isfinite (input_->points[cp].y) || !pcl_isfinite (input_->points[cp].z))
-        continue;
+      {
+      	if(extract_removed_indices_)
+				{
+					(*removed_indices_)[nr_removed_p]=cp;
+						nr_removed_p++;
+				}
+      	continue;
+      }
 
       pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[nr_p]));
       nr_p++;
@@ -180,6 +227,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
   }
 
   output.points.resize (output.width * output.height);
+  removed_indices_->resize(nr_removed_p);
 }
 
 #define PCL_INSTANTIATE_PassThrough(T) template class PCL_EXPORTS pcl::PassThrough<T>;

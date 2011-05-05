@@ -544,8 +544,10 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     output.is_dense = this->input_->is_dense;
   }
   output.points.resize (input_->points.size ());
+  removed_indices_->resize(input_->points.size ());
 
   int nr_p = 0;
+  int nr_removed_p = 0;
 
   if (keep_organized_ == true)
   {
@@ -554,13 +556,28 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
       // Check if the point is invalid
       if (!pcl_isfinite (input_->points[cp].x) || 
           !pcl_isfinite (input_->points[cp].y) || 
-          !pcl_isfinite (input_->points[cp].z)) 
-        continue;
+          !pcl_isfinite (input_->points[cp].z))
+      {
+				if (extract_removed_indices_)
+				{
+					(*removed_indices_)[nr_removed_p]=cp;
+					nr_removed_p++;
+				}
+				continue;
+      } 
 
       if (condition_->evaluate (input_->points[cp]))
       {
         pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[nr_p]));
         nr_p++;
+      }
+      else
+      {
+				if (extract_removed_indices_)
+				{
+					(*removed_indices_)[nr_removed_p]=cp;
+					nr_removed_p++;
+				}
       }
     }
 
@@ -576,9 +593,18 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
       // copy all the fields
       pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[cp]));
       if (!condition_->evaluate (input_->points[cp]))
-        output.points[cp].getVector4fMap ().setConstant (bad_point);
+      {
+      	output.points[cp].getVector4fMap ().setConstant (bad_point);
+	
+				if (extract_removed_indices_)
+				{
+					(*removed_indices_)[nr_removed_p]=cp;
+					nr_removed_p++;
+				}
+      }
     }
   }
+	removed_indices_->resize(nr_removed_p);
 }
 
 #define PCL_INSTANTIATE_PointDataAtOffset(T) template class pcl::PointDataAtOffset<T>;
