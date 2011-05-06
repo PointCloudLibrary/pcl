@@ -1,10 +1,12 @@
 --- cminpack-1.1.3/CMakeLists.txt	2011-02-06 20:49:15.000000000 +0100
 +++ cminpack-1.1.3.mine/CMakeLists.txt	2011-05-06 11:16:11.000000000 -0700
-@@ -5,9 +5,10 @@
+@@ -5,9 +5,12 @@
  project (CMINPACK)
  string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
  
-+set(CMAKE_INSTALL_PREFIX /usr)
++if(NOT MSVC)
++  set(CMAKE_INSTALL_PREFIX /usr)
++endif(NOT MSVC)
  include(${PROJECT_SOURCE_DIR}/cmake/cminpack_utils.cmake)
  # Set version and OS-specific settings
 -set(CMINPACK_VERSION 1.0.90 CACHE STRING "CMinpack version")
@@ -17,7 +19,7 @@
    message (STATUS "Building static libraries.")
    set (LIB_TYPE STATIC)
 +	if(WIN32)
-+		add_definitions(-DCMINPACK_NO_DLL)
++		#add_definitions(-DCMINPACK_NO_DLL)
 +	endif(WIN32)
  endif (SHARED_LIBS)
  
@@ -29,18 +31,18 @@
 -add_library (cminpack ${LIB_TYPE} ${cminpack_srcs})
 +add_library (cminpack SHARED ${cminpack_srcs})
 +add_library (cminpack_static STATIC ${cminpack_srcs}) 
-+set_target_properties(cminpack_static  PROPERTIES ARCHIVE_OUTPUT_NAME cminpack)
++set_target_properties(cminpack_static  PROPERTIES ARCHIVE_OUTPUT_NAME cminpack_s COMPILE_DEFINITIONS CMINPACK_NO_DLL)
 +add_library (cminpack-debug SHARED ${cminpack_srcs})
 +set_target_properties(cminpack-debug PROPERTIES OUTPUT_NAME cminpack-gd COMPILE_FLAGS ${CMAKE_CXX_FLAGS_DEBUG})
 +add_library (cminpack_static-debug STATIC ${cminpack_srcs}) 
-+set_target_properties(cminpack_static-debug PROPERTIES OUTPUT_NAME cminpack-gd COMPILE_FLAGS ${CMAKE_CXX_FLAGS_DEBUG})
++set_target_properties(cminpack_static-debug PROPERTIES OUTPUT_NAME cminpack_s-gd COMPILE_FLAGS ${CMAKE_CXX_FLAGS_DEBUG} COMPILE_DEFINITIONS CMINPACK_NO_DLL)
  
 -install (TARGETS cminpack 
 +install (TARGETS cminpack cminpack_static cminpack-debug cminpack_static-debug
     LIBRARY DESTINATION ${CMINPACK_LIB_INSTALL_DIR} COMPONENT library
     ARCHIVE DESTINATION ${CMINPACK_LIB_INSTALL_DIR} COMPONENT library
     RUNTIME DESTINATION ${CMINPACK_LIB_INSTALL_DIR} COMPONENT library)
-@@ -67,3 +77,34 @@
+@@ -67,3 +77,40 @@
  
  set_target_properties(cminpack PROPERTIES VERSION ${CMINPACK_VERSION})
  
@@ -66,6 +68,12 @@
 +  list(APPEND CPACK_GENERATOR "PackageMaker")
 +endif(EXISTS ${PACKAGE_MAKER_PROGRAM})
 + 
++if(CMAKE_SIZEOF_VOID_P EQUAL 8)
++  set(CPACK_NSIS_PROGRAMFILES "$ENV{PROGRAMW6432}")
++else()
++  set(CPACK_NSIS_PROGRAMFILES "$ENV{PROGRAMFILES}")
++endif()
++set(CPACK_NSIS_INSTALL_ROOT "${CPACK_NSIS_PROGRAMFILES}")
 +set(CPACK_GENERATOR "${CPACK_GENERATOR}")
 +set(CPACK_MONOLITHIC_INSTALL 1)
 +set(CPACK_PACKAGE_VERSION_MAJOR "@CMINPACK_MAJOR_VERSION@")
