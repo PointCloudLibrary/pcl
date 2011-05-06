@@ -39,6 +39,8 @@
 #define PCL_FILTER_IMPL_FIELD_VAL_CONDITION_H_
 
 #include <pcl/io/io.h>
+#include <boost/shared_ptr.hpp>
+#include <vector>
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -46,7 +48,7 @@
 template <typename PointT>
 pcl::FieldComparison<PointT>::FieldComparison (
     std::string field_name, ComparisonOps::CompareOp op, double compare_val) :
-  compare_val_(compare_val), point_data_(NULL)
+      compare_val_(compare_val), point_data_(NULL)
 {
   field_name_ = field_name;
   op_ = op;
@@ -88,7 +90,7 @@ pcl::FieldComparison<PointT>::FieldComparison (
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::FieldComparison<PointT>::~FieldComparison() 
+pcl::FieldComparison<PointT>::~FieldComparison () 
 {
   if (point_data_ != NULL)
   {
@@ -98,7 +100,7 @@ pcl::FieldComparison<PointT>::~FieldComparison()
 }
 
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline bool
+template <typename PointT> bool
 pcl::FieldComparison<PointT>::evaluate (const PointT &point) const
 {
   if (!this->capable_)
@@ -108,11 +110,11 @@ pcl::FieldComparison<PointT>::evaluate (const PointT &point) const
   }
 
   // if p(data) > val then compare_result = 1
-  // if p(data) == val then compare_result = 0 
+  // if p(data) == val then compare_result = 0
   // if p(data) <  ival then compare_result = -1
   int compare_result = point_data_->compare (point, compare_val_);
   
-  switch (this->op_) 
+  switch (this->op_)
   {
     case pcl::ComparisonOps::GT :
       return (compare_result > 0);
@@ -138,7 +140,7 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
     std::string component_name, ComparisonOps::CompareOp op, double compare_val)
 {
   // get all the fields
-  std::vector<sensor_msgs::PointField> point_fields; 
+  std::vector<sensor_msgs::PointField> point_fields;
   // Use a dummy cloud to get the field types in a clever way
   PointCloud<PointT> dummyCloud;
   pcl::getFields (dummyCloud, point_fields);
@@ -147,7 +149,7 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
   size_t d;
   for (d = 0; d < point_fields.size (); ++d)
   {
-    if (point_fields[d].name == "rgb" || point_fields[d].name == "rgba") 
+    if (point_fields[d].name == "rgb" || point_fields[d].name == "rgba")
       break;
   }
   if (d == point_fields.size ())
@@ -159,9 +161,9 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
 
   // Verify the datatype
   uint8_t datatype = point_fields[d].datatype;
-  if (datatype != sensor_msgs::PointField::FLOAT32 && 
-      datatype != sensor_msgs::PointField::UINT32 && 
-      datatype != sensor_msgs::PointField::INT32) 
+  if (datatype != sensor_msgs::PointField::FLOAT32 &&
+      datatype != sensor_msgs::PointField::UINT32 &&
+      datatype != sensor_msgs::PointField::INT32)
   {
     PCL_WARN ("[pcl::PackedRGBComparison::PackedRGBComparison] has unusable type!\n");
     capable_ = false;
@@ -172,16 +174,16 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
   if (component_name == "r")
   {
     component_offset_ = point_fields[d].offset + 2;
-  } 
+  }
   else if (component_name == "g")
   {
     component_offset_ = point_fields[d].offset + 1;
-  } 
-  else if (component_name == "b") 
+  }
+  else if (component_name == "b")
   {
     component_offset_ = point_fields[d].offset;
-  } 
-  else 
+  }
+  else
   {
     PCL_WARN ("[pcl::PackedRGBComparison::PackedRGBComparison] unrecognized component name!\n");
     capable_ = false;
@@ -197,7 +199,7 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
 
 
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline bool
+template <typename PointT> bool
 pcl::PackedRGBComparison<PointT>::evaluate (const PointT &point) const
 {
   // extract the component value
@@ -297,7 +299,7 @@ pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
 }
 
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline bool
+template <typename PointT> bool
 pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
 {
   // Since this is a const function, we can't make these data members because we change them here
@@ -377,7 +379,7 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline int
+template <typename PointT> int
 pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val) 
 {
   // if p(data) > val return 1
@@ -455,7 +457,7 @@ pcl::ConditionBase<PointT>::addComparison (ComparisonBaseConstPtr comparison)
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
-pcl::ConditionBase<PointT>::addCondition (ConstPtr condition)
+pcl::ConditionBase<PointT>::addCondition (Ptr condition)
 {
   if (!condition->isCapable ())
     capable_ = false;
@@ -465,7 +467,7 @@ pcl::ConditionBase<PointT>::addCondition (ConstPtr condition)
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline bool
+template <typename PointT> bool
 pcl::ConditionAnd<PointT>::evaluate (const PointT &point) const
 {
   for (size_t i = 0; i < comparisons_.size (); ++i)
@@ -482,7 +484,7 @@ pcl::ConditionAnd<PointT>::evaluate (const PointT &point) const
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline bool 
+template <typename PointT> bool 
 pcl::ConditionOr<PointT>::evaluate (const PointT &point) const
 {
   if (comparisons_.empty () && conditions_.empty ()) 
@@ -544,7 +546,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     output.is_dense = this->input_->is_dense;
   }
   output.points.resize (input_->points.size ());
-  removed_indices_->resize(input_->points.size ());
+  removed_indices_->resize (input_->points.size ());
 
   int nr_p = 0;
   int nr_removed_p = 0;
@@ -558,12 +560,12 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
           !pcl_isfinite (input_->points[cp].y) || 
           !pcl_isfinite (input_->points[cp].z))
       {
-				if (extract_removed_indices_)
-				{
-					(*removed_indices_)[nr_removed_p]=cp;
-					nr_removed_p++;
-				}
-				continue;
+        if (extract_removed_indices_)
+        {
+          (*removed_indices_)[nr_removed_p] = cp;
+          nr_removed_p++;
+        }
+        continue;
       } 
 
       if (condition_->evaluate (input_->points[cp]))
@@ -573,11 +575,11 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
       }
       else
       {
-				if (extract_removed_indices_)
-				{
-					(*removed_indices_)[nr_removed_p]=cp;
-					nr_removed_p++;
-				}
+        if (extract_removed_indices_)
+        {
+          (*removed_indices_)[nr_removed_p] = cp;
+          nr_removed_p++;
+        }
       }
     }
 
@@ -594,23 +596,25 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
       pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[cp]));
       if (!condition_->evaluate (input_->points[cp]))
       {
-      	output.points[cp].getVector4fMap ().setConstant (bad_point);
-	
-				if (extract_removed_indices_)
-				{
-					(*removed_indices_)[nr_removed_p]=cp;
-					nr_removed_p++;
-				}
+        output.points[cp].getVector4fMap ().setConstant (bad_point);
+
+        if (extract_removed_indices_)
+        {
+          (*removed_indices_)[nr_removed_p]=cp;
+          nr_removed_p++;
+        }
       }
     }
   }
-	removed_indices_->resize(nr_removed_p);
+  removed_indices_->resize(nr_removed_p);
 }
 
 #define PCL_INSTANTIATE_PointDataAtOffset(T) template class pcl::PointDataAtOffset<T>;
+#define PCL_INSTANTIATE_ComparisonBase(T) template class pcl::ComparisonBase<T>;
 #define PCL_INSTANTIATE_FieldComparison(T) template class pcl::FieldComparison<T>;
 #define PCL_INSTANTIATE_PackedRGBComparison(T) template class pcl::PackedRGBComparison<T>;
 #define PCL_INSTANTIATE_PackedHSIComparison(T) template class pcl::PackedHSIComparison<T>;
+#define PCL_INSTANTIATE_ConditionBase(T) template class pcl::ConditionBase<T>;
 #define PCL_INSTANTIATE_ConditionAnd(T) template class pcl::ConditionAnd<T>;
 #define PCL_INSTANTIATE_ConditionOr(T) template class pcl::ConditionOr<T>;
 #define PCL_INSTANTIATE_ConditionalRemoval(T) template class pcl::ConditionalRemoval<T>;

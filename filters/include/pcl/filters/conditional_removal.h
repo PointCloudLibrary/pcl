@@ -46,8 +46,8 @@ namespace pcl
   namespace ComparisonOps
   {
     /** \brief The kind of comparison operations that are possible within a 
-     * comparison object
-     */
+      * comparison object
+      */
     typedef enum
     {
       GT, GE, LT, LE, EQ
@@ -57,8 +57,8 @@ namespace pcl
   //////////////////////////////////////////////////////////////////////////////////////////
   /** \brief A datatype that enables type-correct comparisons. */
   template<typename PointT>
-    class PointDataAtOffset
-    {
+  class PointDataAtOffset
+  {
     public:
       /** \brief Constructor. */
       PointDataAtOffset (uint8_t datatype, uint32_t offset) :
@@ -67,9 +67,9 @@ namespace pcl
       }
 
       /** \brief Compare function. 
-       * \param p the point to compare
-       * \param val the value to compare the point to
-       */
+        * \param p the point to compare
+        * \param val the value to compare the point to
+        */
       int
       compare (const PointT& p, const double& val);
     protected:
@@ -82,13 +82,13 @@ namespace pcl
       PointDataAtOffset ()
       {
       }
-    };
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////
   /** \brief The (abstract) base class for the comparison object. */
   template<typename PointT>
-    class ComparisonBase
-    {
+  class ComparisonBase
+  {
     public:
       typedef boost::shared_ptr<ComparisonBase<PointT> > Ptr;
       typedef boost::shared_ptr<const ComparisonBase<PointT> > ConstPtr;
@@ -116,37 +116,36 @@ namespace pcl
 
       /** \brief The comparison operator type. */
       ComparisonOps::CompareOp op_;
-    };
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////
   /** \brief The field-based specialization of the comparison object. */
   template<typename PointT>
-    class FieldComparison : public ComparisonBase<PointT>
-    {
-      using ComparisonBase<PointT>::field_name_;
-      using ComparisonBase<PointT>::op_;
-      using ComparisonBase<PointT>::capable_;
+  class FieldComparison : public ComparisonBase<PointT>
+  {
+    using ComparisonBase<PointT>::field_name_;
+    using ComparisonBase<PointT>::op_;
+    using ComparisonBase<PointT>::capable_;
 
     public:
       typedef boost::shared_ptr<FieldComparison<PointT> > Ptr;
       typedef boost::shared_ptr<const FieldComparison<PointT> > ConstPtr;
 
       /** \brief Construct a FieldComparison
-       * \param field_name the name of the field that contains the data we want to compare
-       * \param op the operator to use when making the comparison
-       * \param compare_val the constant value to compare the field value too
-       */
+        * \param field_name the name of the field that contains the data we want to compare
+        * \param op the operator to use when making the comparison
+        * \param compare_val the constant value to compare the field value too
+        */
       FieldComparison (std::string field_name, ComparisonOps::CompareOp op, double compare_val);
 
       /** \brief Destructor. */
-      virtual
-      ~FieldComparison ();
+      virtual ~FieldComparison ();
 
       /** \brief Determine the result of this comparison.  
-       * \param point the point to evaluate
-       * \return the result of this comparison.
-       */
-      virtual inline bool
+        * \param point the point to evaluate
+        * \return the result of this comparison.
+        */
+      virtual bool
       evaluate (const PointT &point) const;
 
     protected:
@@ -160,29 +159,29 @@ namespace pcl
       FieldComparison ()
       {
       } // not allowed
-    };
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////
   /** \brief A packed rgb specialization of the comparison object. */
   template<typename PointT>
-    class PackedRGBComparison : public ComparisonBase<PointT>
-    {
-      using ComparisonBase<PointT>::capable_;
-      using ComparisonBase<PointT>::op_;
+  class PackedRGBComparison : public ComparisonBase<PointT>
+  {
+    using ComparisonBase<PointT>::capable_;
+    using ComparisonBase<PointT>::op_;
 
     public:
       /** \brief Construct a PackedRGBComparison
-       * \param component_name either "r", "g" or "b"
-       * \param op the operator to use when making the comparison
-       * \param compare_val the constant value to compare the component value too
-       */
+        * \param component_name either "r", "g" or "b"
+        * \param op the operator to use when making the comparison
+        * \param compare_val the constant value to compare the component value too
+        */
       PackedRGBComparison (std::string component_name, ComparisonOps::CompareOp op, double compare_val);
 
       /** \brief Determine the result of this comparison.  
-       * \param point the point to evaluate
-       * \return the result of this comparison.
-       */
-      virtual inline bool
+        * \param point the point to evaluate
+        * \return the result of this comparison.
+        */
+      virtual bool
       evaluate (const PointT &point) const;
 
     protected:
@@ -200,29 +199,29 @@ namespace pcl
       {
       } // not allowed
 
-    };
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////
   /** \brief A packed HSI specialization of the comparison object. */
   template<typename PointT>
-    class PackedHSIComparison : public ComparisonBase<PointT>
-    {
-      using ComparisonBase<PointT>::capable_;
-      using ComparisonBase<PointT>::op_;
+  class PackedHSIComparison : public ComparisonBase<PointT>
+  {
+    using ComparisonBase<PointT>::capable_;
+    using ComparisonBase<PointT>::op_;
 
     public:
       /** \brief Construct a PackedHSIComparison 
-       * \param component_name either "h", "s" or "i"
-       * \param op the operator to use when making the comparison
-       * \param compare_val the constant value to compare the component value too
-       */
+        * \param component_name either "h", "s" or "i"
+        * \param op the operator to use when making the comparison
+        * \param compare_val the constant value to compare the component value too
+        */
       PackedHSIComparison (std::string component_name, ComparisonOps::CompareOp op, double compare_val);
 
       /** \brief Determine the result of this comparison.  
-       * \param point the point to evaluate
-       * \return the result of this comparison.
-       */
-      virtual inline bool
+        * \param point the point to evaluate
+        * \return the result of this comparison.
+        */
+      virtual bool
       evaluate (const PointT &point) const;
 
       typedef enum
@@ -250,13 +249,13 @@ namespace pcl
       PackedHSIComparison ()
       {
       } // not allowed
-    };
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Base condition class. */
   template<typename PointT>
-    class ConditionBase
-    {
+  class ConditionBase
+  {
     public:
       typedef typename pcl::ComparisonBase<PointT> ComparisonBase;
       typedef typename ComparisonBase::Ptr ComparisonBasePtr;
@@ -266,14 +265,12 @@ namespace pcl
       typedef boost::shared_ptr<const ConditionBase<PointT> > ConstPtr;
 
       /** \brief Constructor. */
-      ConditionBase () :
-        capable_ (true)
+      ConditionBase () : capable_ (true)
       {
       }
 
       /** \brief Destructor. */
-      virtual
-      ~ConditionBase ()
+      virtual ~ConditionBase ()
       {
         // comparisons are boost::shared_ptr.will take care of themselves
         comparisons_.clear ();
@@ -283,19 +280,18 @@ namespace pcl
       }
 
       /** \brief Add a new comparison
-       * \param comparison the comparison operator to add
-       */
+        * \param comparison the comparison operator to add
+        */
       void
       addComparison (ComparisonBaseConstPtr comparison);
 
       /** \brief Add a nested condition to this condition.  
-       * \param condition the nested condition to be added
-       */
+        * \param condition the nested condition to be added
+        */
       void
-      addCondition (ConstPtr condition);
+      addCondition (Ptr condition);
 
-      /** \brief Check if evaluation requirements are met.  
-       */
+      /** \brief Check if evaluation requirements are met. */
       inline bool
       isCapable () const
       {
@@ -303,8 +299,8 @@ namespace pcl
       }
 
       /** \brief Determine if a point meets this condition.  
-       * \return whether the point meets this condition.
-       */
+        * \return whether the point meets this condition.
+        */
       virtual bool
       evaluate (const PointT &point) const = 0;
 
@@ -317,15 +313,15 @@ namespace pcl
 
       /** \brief The collection of all conditions that need to be verified. */
       std::vector<Ptr> conditions_;
-    };
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////
   /** \brief AND condition. */
   template<typename PointT>
-    class ConditionAnd : public ConditionBase<PointT>
-    {
-      using ConditionBase<PointT>::conditions_;
-      using ConditionBase<PointT>::comparisons_;
+  class ConditionAnd : public ConditionBase<PointT>
+  {
+    using ConditionBase<PointT>::conditions_;
+    using ConditionBase<PointT>::comparisons_;
 
     public:
       typedef boost::shared_ptr<ConditionAnd<PointT> > Ptr;
@@ -338,22 +334,22 @@ namespace pcl
       }
 
       /** \brief Determine if a point meets this condition.  
-       * \return whether the point meets this condition.
-       *
-       * The ConditionAnd evaluates to true when ALL
-       * comparisons and nested conditions evaluate to true
-       */
-      virtual inline bool
+        * \return whether the point meets this condition.
+        *
+        * The ConditionAnd evaluates to true when ALL
+        * comparisons and nested conditions evaluate to true
+        */
+      virtual bool
       evaluate (const PointT &point) const;
-    };
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////
   /** \brief OR condition. */
   template<typename PointT>
-    class ConditionOr : public ConditionBase<PointT>
-    {
-      using ConditionBase<PointT>::conditions_;
-      using ConditionBase<PointT>::comparisons_;
+  class ConditionOr : public ConditionBase<PointT>
+  {
+    using ConditionBase<PointT>::conditions_;
+    using ConditionBase<PointT>::comparisons_;
 
     public:
       typedef boost::shared_ptr<ConditionOr<PointT> > Ptr;
@@ -366,59 +362,59 @@ namespace pcl
       }
 
       /** \brief Determine if a point meets this condition.  
-       * \return whether the point meets this condition.
-       *
-       * The ConditionOr evaluates to true when ANY
-       * comparisons or nested conditions evaluate to true
-       */
-      virtual inline bool
+        * \return whether the point meets this condition.
+        *
+        * The ConditionOr evaluates to true when ANY
+        * comparisons or nested conditions evaluate to true
+        */
+      virtual bool
       evaluate (const PointT &point) const;
-    };
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b ConditionalRemoval filters data that satisfies certain conditions.
-   *
-   * A ConditionalRemoval must be provided a condition. There are two types of
-   * conditions: ConditionAnd and ConditionOr. Conditions require one or more
-   * comparisons and/or other conditions. A comparison has a name, a
-   * comparison operator, and a value.
-   *
-   * An ConditionAnd will evaluate to true when ALL of its encapsulated
-   * comparisons and conditions are true.
-   *
-   * An ConditionOr will evaluate to true when ANY of its encapsulated
-   * comparisons and conditions are true.
-   *
-   * Depending on the derived type of the comparison, the name can correspond
-   * to a PointCloud field name, or a color component in rgb color space or
-   * hsi color space.
-   *
-   * Here is an example usage:
-   *  // Build the condition
-   *  pcl::ConditionAnd<PointT>::Ptr range_cond (new pcl::ConditionAnd<PointT> ());
-   *  range_cond->addComparison (pcl::FieldComparison<PointT>::Ptr (new pcl::FieldComparison<PointT>("z", pcl::ComparisonOps::LT, 2.0)));
-   *  range_cond->addComparison (pcl::FieldComparison<PointT>::Ptr (new pcl::FieldComparison<PointT>("z", pcl::ComparisonOps::GT, 0.0)));
-   *  // Build the filter
-   *  pcl::ConditionalRemoval<PointT> range_filt;
-   *  range_filt.setCondition (range_cond);
-   *  range_filt.setKeepOrganized (false);
-   *
-   * \author Louis LeGrand, Intel Labs Seattle
-   * \ingroup filters
-   */
+    *
+    * A ConditionalRemoval must be provided a condition. There are two types of
+    * conditions: ConditionAnd and ConditionOr. Conditions require one or more
+    * comparisons and/or other conditions. A comparison has a name, a
+    * comparison operator, and a value.
+    *
+    * An ConditionAnd will evaluate to true when ALL of its encapsulated
+    * comparisons and conditions are true.
+    *
+    * An ConditionOr will evaluate to true when ANY of its encapsulated
+    * comparisons and conditions are true.
+    *
+    * Depending on the derived type of the comparison, the name can correspond
+    * to a PointCloud field name, or a color component in rgb color space or
+    * hsi color space.
+    *
+    * Here is an example usage:
+    *  // Build the condition
+    *  pcl::ConditionAnd<PointT>::Ptr range_cond (new pcl::ConditionAnd<PointT> ());
+    *  range_cond->addComparison (pcl::FieldComparison<PointT>::Ptr (new pcl::FieldComparison<PointT>("z", pcl::ComparisonOps::LT, 2.0)));
+    *  range_cond->addComparison (pcl::FieldComparison<PointT>::Ptr (new pcl::FieldComparison<PointT>("z", pcl::ComparisonOps::GT, 0.0)));
+    *  // Build the filter
+    *  pcl::ConditionalRemoval<PointT> range_filt;
+    *  range_filt.setCondition (range_cond);
+    *  range_filt.setKeepOrganized (false);
+    *
+    * \author Louis LeGrand, Intel Labs Seattle
+    * \ingroup filters
+    */
   template<typename PointT>
-    class ConditionalRemoval : public Filter<PointT>
-    {
-      using Filter<PointT>::input_;
-      using Filter<PointT>::filter_name_;
-      using Filter<PointT>::getClassName;
+  class ConditionalRemoval : public Filter<PointT>
+  {
+    using Filter<PointT>::input_;
+    using Filter<PointT>::filter_name_;
+    using Filter<PointT>::getClassName;
 
-      using Filter<PointT>::removed_indices_;
-      using Filter<PointT>::extract_removed_indices_;
+    using Filter<PointT>::removed_indices_;
+    using Filter<PointT>::extract_removed_indices_;
 
-      typedef typename Filter<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    typedef typename Filter<PointT>::PointCloud PointCloud;
+    typedef typename PointCloud::Ptr PointCloudPtr;
+    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
     public:
       typedef typename pcl::ConditionBase<PointT> ConditionBase;
@@ -426,11 +422,10 @@ namespace pcl
       typedef typename ConditionBase::ConstPtr ConditionBaseConstPtr;
 
       /** \brief the default constructor.  
-       *
-       * All ConditionalRemovals require a condition which can be set
-       * using the setCondition method
-       */
-      //if the argument passed as a bool, it gives compilation error due to casting issues
+        *
+        * All ConditionalRemovals require a condition which can be set
+        * using the setCondition method
+        */
       ConditionalRemoval (int extract_removed_indices = false) :
         Filter<PointT>::Filter (extract_removed_indices), keep_organized_ (false), condition_ ()
       {
@@ -438,9 +433,9 @@ namespace pcl
       }
 
       /** \brief a constructor that includes the condition.  
-       * \param condition the condition that each point must satisfy to avoid
-       * being removed by the filter
-       */
+        * \param condition the condition that each point must satisfy to avoid
+        * being removed by the filter
+        */
       ConditionalRemoval (ConditionBasePtr condition, bool extract_removed_indices = false) :
         Filter<PointT>::Filter (extract_removed_indices), keep_organized_ (false), condition_ ()
       {
@@ -449,13 +444,13 @@ namespace pcl
       }
 
       /** \brief Set whether the filtered points should be kept and set to the
-       * value given through \a setUserFilterValue (default: NaN), or removed
-       * from the PointCloud, thus potentially breaking its organized
-       * structure. By default, points are removed.
-       *
-       * \param val set to true whether the filtered points should be kept and
-       * set to a given user value (default: NaN)
-       */
+        * value given through \a setUserFilterValue (default: NaN), or removed
+        * from the PointCloud, thus potentially breaking its organized
+        * structure. By default, points are removed.
+        *
+        * \param val set to true whether the filtered points should be kept and
+        * set to a given user value (default: NaN)
+        */
       inline void
       setKeepOrganized (bool val)
       {
@@ -469,18 +464,18 @@ namespace pcl
       }
 
       /** \brief Set the condition that the filter will use.  
-       * \param condition each point must satisfy this condition to avoid
-       * being removed by the filter
-       *
-       * All ConditionalRemovals require a condition
-       */
+        * \param condition each point must satisfy this condition to avoid
+        * being removed by the filter
+        *
+        * All ConditionalRemovals require a condition
+        */
       void
       setCondition (ConditionBasePtr condition);
 
     protected:
       /** \brief Filter a Point Cloud.
-       * \param output the resultant point cloud message
-       */
+        * \param output the resultant point cloud message
+        */
       void
       applyFilter (PointCloud &output);
 
@@ -490,15 +485,13 @@ namespace pcl
       bool capable_;
 
       /** \brief Keep the structure of the data organized, by setting the
-       * filtered points to the a user given value (NaN by default).
-       */
+        * filtered points to the a user given value (NaN by default).
+        */
       bool keep_organized_;
 
       /** \brief The condition to use for filtering */
       ConditionBasePtr condition_;
-    };
+  };
 }
-
-#include <pcl/filters/impl/conditional_removal.hpp>
 
 #endif 

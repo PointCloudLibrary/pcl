@@ -66,7 +66,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilter (PointCloud &output)
 
 
   output.points.resize (input_->points.size ());      // reserve enough space
-  removed_indices_->resize(input_->points.size ());
+  removed_indices_->resize (input_->points.size ());
   
   int nr_p = 0;
   int nr_removed_p = 0;
@@ -78,17 +78,17 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilter (PointCloud &output)
     // Check if the number of neighbors is larger than the user imposed limit
     if (k < min_pts_radius_)
     {
-  		if (extract_removed_indices_)
-  		{
-  			(*removed_indices_)[nr_removed_p]=cp;
-  			nr_removed_p++;
-  		}
+      if (extract_removed_indices_)
+      {
+        (*removed_indices_)[nr_removed_p] = cp;
+        nr_removed_p++;
+      }
       continue;
     }
 
     output.points[nr_p++] = input_->points[(*indices_)[cp]];
   }
-  removed_indices_->resize(nr_removed_p);
+  removed_indices_->resize (nr_removed_p);
   output.points.resize (nr_p);
   output.width  = nr_p;
   output.height = 1;

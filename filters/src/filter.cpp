@@ -40,7 +40,7 @@
 #include "pcl/point_types.h"
 #include "pcl/filters/filter.h"
 #include "pcl/filters/impl/filter.hpp"
-#include "pcl/filters/conditional_removal.h"
+//#include "pcl/filters/conditional_removal.h"
 
 /*
  //#include <pcl/filters/pixel_grid.h>
@@ -76,6 +76,5 @@ pcl::Filter<sensor_msgs::PointCloud2>::filter (PointCloud2 &output)
 }
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(removeNanFromPointCloud, PCL_XYZ_POINT_TYPES)
-;
+PCL_INSTANTIATE(removeNanFromPointCloud, PCL_XYZ_POINT_TYPES);
 

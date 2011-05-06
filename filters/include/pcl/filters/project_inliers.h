@@ -59,36 +59,34 @@ namespace pcl
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b ProjectInliers uses a model and a set of inlier indices from a PointCloud to project them into a
-   * separate PointCloud.
-   * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
-   * \author Radu Bogdan Rusu
-   * \ingroup filters
-   */
+    * separate PointCloud.
+    * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
+    * \author Radu Bogdan Rusu
+    * \ingroup filters
+    */
   template<typename PointT>
-    class ProjectInliers : public Filter<PointT>
-    {
-      using Filter<PointT>::input_;
-      using Filter<PointT>::indices_;
-      using Filter<PointT>::filter_name_;
-      using Filter<PointT>::getClassName;
+  class ProjectInliers : public Filter<PointT>
+  {
+    using Filter<PointT>::input_;
+    using Filter<PointT>::indices_;
+    using Filter<PointT>::filter_name_;
+    using Filter<PointT>::getClassName;
 
-      typedef typename Filter<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+    typedef typename Filter<PointT>::PointCloud PointCloud;
+    typedef typename PointCloud::Ptr PointCloudPtr;
+    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
-      typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
+    typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
     public:
       /** \brief Empty constructor. */
-      ProjectInliers () :
-        copy_all_data_ (false)
+      ProjectInliers () : copy_all_data_ (false)
       {
         filter_name_ = "ProjectInliers";
       }
-      ;
 
       /** \brief The type of model to use (user given parameter).
-       * \param model the model type (check \a model_types.h)
-       */
+        * \param model the model type (check \a model_types.h)
+        */
       inline void
       setModelType (int model)
       {
@@ -103,8 +101,8 @@ namespace pcl
       }
 
       /** \brief Provide a pointer to the model coefficients.
-       * \param model a pointer to the model coefficients
-       */
+        * \param model a pointer to the model coefficients
+        */
       inline void
       setModelCoefficients (const ModelCoefficientsConstPtr &model)
       {
@@ -119,8 +117,8 @@ namespace pcl
       }
 
       /** \brief Set whether all data will be returned, or only the projected inliers.
-       * \param val true if all data should be returned, false if only the projected inliers
-       */
+        * \param val true if all data should be returned, false if only the projected inliers
+        */
       inline void
       setCopyAllData (bool val)
       {
@@ -136,8 +134,8 @@ namespace pcl
     protected:
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Project point indices into a separate PointCloud
-       * \param output the resultant point cloud message
-       */
+        * \param output the resultant point cloud message
+        */
       void
       applyFilter (PointCloud &output);
 
@@ -155,43 +153,41 @@ namespace pcl
       bool copy_all_data_;
 
       /** \brief Initialize the Sample Consensus model and set its parameters.
-       * \param model_type the type of SAC model that is to be used
-       */
+        * \param model_type the type of SAC model that is to be used
+        */
       virtual bool
       initSACModel (int model_type);
-    };
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b ProjectInliers uses a model and a set of inlier indices from a PointCloud to project them into a
-   * separate PointCloud.
-   * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
-   * \author Radu Bogdan Rusu
-   * \ingroup filters
-   */
+    * separate PointCloud.
+    * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
+    * \author Radu Bogdan Rusu
+    * \ingroup filters
+    */
   template<>
-    class PCL_EXPORTS ProjectInliers<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
-    {
-      using Filter<sensor_msgs::PointCloud2>::filter_name_;
-      using Filter<sensor_msgs::PointCloud2>::getClassName;
+  class PCL_EXPORTS ProjectInliers<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
+  {
+    using Filter<sensor_msgs::PointCloud2>::filter_name_;
+    using Filter<sensor_msgs::PointCloud2>::getClassName;
 
-      typedef sensor_msgs::PointCloud2 PointCloud2;
-      typedef PointCloud2::Ptr PointCloud2Ptr;
-      typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
+    typedef sensor_msgs::PointCloud2 PointCloud2;
+    typedef PointCloud2::Ptr PointCloud2Ptr;
+    typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
 
-      typedef SampleConsensusModel<PointXYZ>::Ptr SampleConsensusModelPtr;
+    typedef SampleConsensusModel<PointXYZ>::Ptr SampleConsensusModelPtr;
 
     public:
       /** \brief Empty constructor. */
-      ProjectInliers () :
-        copy_all_data_ (false), copy_all_fields_ (true)
+      ProjectInliers () : copy_all_data_ (false), copy_all_fields_ (true)
       {
         filter_name_ = "ProjectInliers";
       }
-      ;
 
       /** \brief The type of model to use (user given parameter).
-       * \param model the model type (check \a model_types.h)
-       */
+        * \param model the model type (check \a model_types.h)
+        */
       inline void
       setModelType (int model)
       {
@@ -206,8 +202,8 @@ namespace pcl
       }
 
       /** \brief Provide a pointer to the model coefficients.
-       * \param model a pointer to the model coefficients
-       */
+        * \param model a pointer to the model coefficients
+        */
       inline void
       setModelCoefficients (const ModelCoefficientsConstPtr &model)
       {
@@ -222,8 +218,8 @@ namespace pcl
       }
 
       /** \brief Set whether all fields should be copied, or only the XYZ.
-       * \param val true if all fields will be returned, false if only XYZ
-       */
+        * \param val true if all fields will be returned, false if only XYZ
+        */
       inline void
       setCopyAllFields (bool val)
       {
@@ -238,8 +234,8 @@ namespace pcl
       }
 
       /** \brief Set whether all data will be returned, or only the projected inliers.
-       * \param val true if all data should be returned, false if only the projected inliers
-       */
+        * \param val true if all data should be returned, false if only the projected inliers
+        */
       inline void
       setCopyAllData (bool val)
       {
@@ -274,8 +270,7 @@ namespace pcl
 
       virtual bool
       initSACModel (int model_type);
-
-    };
+  };
 }
 
 #endif  //#ifndef PCL_FILTERS_PROJECT_INLIERS_H_

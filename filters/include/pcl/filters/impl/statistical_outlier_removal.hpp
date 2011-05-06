@@ -97,7 +97,7 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilter (PointCloud &output)
   double distance_threshold = mean + std_mul_ * stddev; // a distance that is bigger than this signals an outlier
 
   output.points.resize (input_->points.size ());      // reserve enough space
-  removed_indices_->resize(input_->points.size ());
+  removed_indices_->resize (input_->points.size ());
   
   // Build a new cloud by neglecting outliers
   int nr_p = 0;
@@ -109,36 +109,36 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilter (PointCloud &output)
     {
       if (distances[cp] <= distance_threshold)
       {
-  			if (extract_removed_indices_)
-  			{
-  				(*removed_indices_)[nr_removed_p]=cp;
-  				nr_removed_p++;
-  			}
-				continue;
+        if (extract_removed_indices_)
+        {
+          (*removed_indices_)[nr_removed_p] = cp;
+          nr_removed_p++;
+        }
+        continue;
       }
     }
     else
     {
       if (distances[cp] > distance_threshold)
       {
-  			if (extract_removed_indices_)
-  			{
-  				(*removed_indices_)[nr_removed_p]=cp;
-  				nr_removed_p++;
-  			}
-      	continue;
+        if (extract_removed_indices_)
+        {
+          (*removed_indices_)[nr_removed_p] = cp;
+          nr_removed_p++;
+        }
+        continue;
       }
     }
 
     output.points[nr_p++] = input_->points[(*indices_)[cp]];
   }
-  
+
   output.points.resize (nr_p);
   output.width  = nr_p;
   output.height = 1;
   output.is_dense = true; // nearestKSearch filters invalid points
-  
-  removed_indices_->resize(nr_removed_p);
+
+  removed_indices_->resize (nr_removed_p);
 }
 
 #define PCL_INSTANTIATE_StatisticalOutlierRemoval(T) template class PCL_EXPORTS pcl::StatisticalOutlierRemoval<T>;

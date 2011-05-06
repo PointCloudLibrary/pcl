@@ -158,6 +158,5 @@ pcl::StatisticalOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointClou
   removed_indices_->resize (nr_removed_p);
 }
 // Instantiations of specific point types
-PCL_INSTANTIATE(StatisticalOutlierRemoval, PCL_XYZ_POINT_TYPES)
-;
+PCL_INSTANTIATE(StatisticalOutlierRemoval, PCL_XYZ_POINT_TYPES);
 
