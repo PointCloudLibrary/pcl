@@ -82,6 +82,7 @@ namespace pcl
       Filter (bool extract_removed_indices = false) :
         filter_field_name_ (""), filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX),
             filter_limit_negative_ (false), extract_removed_indices_ (extract_removed_indices)
+
       {
         removed_indices_ = boost::make_shared<std::vector<int> > ();
       }
@@ -178,8 +179,6 @@ namespace pcl
 
     protected:
 
-      /** \brief Set to true if we want to return the indices of the removed points. */
-      bool extract_removed_indices_;
       /** \brief Indices of the points that are removed */
       IndicesPtr removed_indices_;
 
@@ -197,6 +196,9 @@ namespace pcl
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_;
+
+      /** \brief Set to true if we want to return the indices of the removed points. */
+      bool extract_removed_indices_;
 
       /** \brief Abstract filter method. 
        *
@@ -307,8 +309,7 @@ namespace pcl
       filter (PointCloud2 &output);
 
     protected:
-      /** \brief Set to true if we want to return the indices of the removed points. */
-      bool extract_removed_indices_;
+
       /** \brief Indices of the points that are removed */
       IndicesPtr removed_indices_;
 
@@ -326,6 +327,9 @@ namespace pcl
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_;
+
+      /** \brief Set to true if we want to return the indices of the removed points. */
+      bool extract_removed_indices_;
 
       /** \brief Abstract filter method.
        *
