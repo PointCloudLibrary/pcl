@@ -129,6 +129,8 @@ int
 {
   srand (time (0));
 
+  print_info ("The viewer window provides interactive commands; for help, press 'h' or 'H' from within the window.\n");
+
   if (argc < 2)
   {
     printHelp (argc, argv);
