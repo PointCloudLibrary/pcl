@@ -210,11 +210,14 @@ Troubleshooting
 ---------------
 
 Q: I get an error that theres now device connected:
+
 .. note::
+
   [OpenNIGrabber] No devices connected.
   terminate called after throwing an instance of 'pcl::PCLIOException'
   what():  pcl::OpenNIGrabber::OpenNIGrabber(const std::string&) in openni_grabber.cpp @ 69: Device could not be initialized or no devices found.
   [1]    8709 abort      openni_viewer
+
 A: most probably this is a problem with the XnSensorServer. Do you have the
 ps-engine package installed? Is there a old process of XnSensorServer hanging
 around, try kill it.

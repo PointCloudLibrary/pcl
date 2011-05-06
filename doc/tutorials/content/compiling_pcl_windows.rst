@@ -119,10 +119,10 @@ Then open CMake-gui and fill in the fields::
 
   Where is my source code: C:/PCL_dependencies/cminpack-1.1.3
   Where to build binaries: C:/PCL_dependencies/cminpack-1.1.3/bin32
-  
-.. image:: images/cmake_cminpack_1.png
-   :alt: CMake configuration dialog
-   :align: center  
+ 
+  .. image:: images/cmake_cminpack_1.png
+     :alt: CMake configuration dialog
+     :align: center  
   
  .. note::
   
