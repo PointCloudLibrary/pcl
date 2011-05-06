@@ -44,7 +44,7 @@
 #include "pcl/io/io.h"
 #include "pcl/io/pcd_io.h"
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 # include <io.h>
 # include <windows.h>
 # define pcl_open                    _open
@@ -484,7 +484,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       return (-1);
 
     // Prepare the map
-#ifdef _MSC_VER
+#ifdef _WIN32
     // map te whole file
     HANDLE fm = CreateFileMapping ((HANDLE) _get_osfhandle (fd), NULL, PAGE_READONLY, 0, data_idx + cloud.data.size (), NULL);
     char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ, 0, 0, data_idx + cloud.data.size ()));
@@ -507,7 +507,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     memcpy (&cloud.data[0], &map[0] + data_idx, cloud.data.size ());
 
     // Unmap the pages of memory
-#if _WIN32 && _MSC_VER
+#if _WIN32
     UnmapViewOfFile (map);
 #else
     if (munmap (map, cloud.data.size ()) == -1)
@@ -796,7 +796,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   oss.flush();
   data_idx = oss.tellp ();
 
-#if _WIN32 && _MSC_VER
+#if _WIN32
   HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
   if(h_native_file == INVALID_HANDLE_VALUE)
   {
@@ -828,7 +828,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   }
 #endif
   // Prepare the map
-#ifdef _MSC_VER
+#ifdef _WIN32
   HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_idx + cloud.data.size (), NULL);
   char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + cloud.data.size ()));
   CloseHandle (fm);
@@ -850,7 +850,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   memcpy (&map[0] + data_idx, &cloud.data[0], cloud.data.size ());
 
   // Unmap the pages of memory
-#if _WIN32 && _MSC_VER
+#if _WIN32
     UnmapViewOfFile (map);
 #else
   if (munmap (map, (data_idx + cloud.data.size ())) == -1)
@@ -861,7 +861,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   }
 #endif
   // Close file
-#if _WIN32 && _MSC_VER
+#if _WIN32
   CloseHandle(h_native_file);
 #else
   pcl_close (fd);
