@@ -256,9 +256,9 @@ namespace pcl
     uint8_t frequencyTableByteSize;
 
     // define numerical limits
-    const uint64_t top = (unsigned long)1 << 56;
-    const uint64_t bottom = (unsigned long)1 << 48;
-    const uint64_t maxRange = (unsigned long)1 << 48;
+    const uint64_t top = (uint64_t)1 << 56;
+    const uint64_t bottom = (uint64_t)1 << 48;
+    const uint64_t maxRange = (uint64_t)1 << 48;
 
     unsigned long input_size = inputIntVector_arg.size ();
     uint64_t low, range;
@@ -305,7 +305,7 @@ namespace pcl
 
         // init new frequency range with zero
         memset (&cFreqTable_[oldfrequencyTableSize + 1], 0,
-                sizeof(unsigned long) * (frequencyTableSize - oldfrequencyTableSize));
+                sizeof(uint64_t) * (frequencyTableSize - oldfrequencyTableSize));
       }
       cFreqTable_[inputSymbol + 1]++;
     }
@@ -349,7 +349,7 @@ namespace pcl
 
     readPos = 0;
     low = 0;
-    range = (unsigned long)-1;
+    range = (uint64_t)-1;
 
     // start encoding
     while (readPos < input_size)
@@ -399,8 +399,8 @@ namespace pcl
     unsigned int i, f;
 
     // define range limits
-    const uint64_t top = (unsigned long)1 << 56;
-    const uint64_t bottom = (unsigned long)1 << 48;
+    const uint64_t top = (uint64_t)1 << 56;
+    const uint64_t bottom = (uint64_t)1 << 48;
 
     uint64_t low, range;
     uint64_t code;
@@ -431,7 +431,7 @@ namespace pcl
     }
 
     // init with zero
-    memset (&cFreqTable_[0], 0, sizeof(unsigned long) * frequencyTableSize);
+    memset (&cFreqTable_[0], 0, sizeof(uint64_t) * frequencyTableSize);
 
     // read cumulative frequency table
     for (f = 1; f < frequencyTableSize; f++)
@@ -443,7 +443,7 @@ namespace pcl
     // initialize range & code
     code = 0;
     low = 0;
-    range = (unsigned long)-1;
+    range = (uint64_t)-1;
 
     // init code vector
     for (i = 0; i < 8; i++)

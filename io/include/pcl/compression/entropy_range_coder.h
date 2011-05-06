@@ -168,7 +168,7 @@ namespace pcl
     decodeStreamToCharVector (std::istream& inputByteStream_arg, std::vector<char>& outputByteVector_arg);
 
   protected:
-    typedef unsigned int DWord; // 4 bytes
+    typedef boost::uint32_t DWord; // 4 bytes
 
     /** \brief Helper function to calculate the binary logarithm
      * \param n_arg: some value
