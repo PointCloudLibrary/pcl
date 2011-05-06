@@ -132,8 +132,8 @@ Then we create a point cloud instance cloudA which is initialized with random po
 
 Point cloud cloudA is our reference point cloud and the octree structure describe its spatial distribution. The class OctreePointCloudChangeDetector inherits from 
 class Octree2BufBase which enables to keep and manage two octrees in the memory at the same time. In addition, it implements a memory pool that reuses 
-node already allocated nodes and therefore reduces expensive memory allocation and deallocation operations. By calling "octree.switchBuffers()", we reset the 
-octree while keeping the previous octree based on "cloudA" in memory.
+already allocated node objects and therefore reduces expensive memory allocation and deallocation operations when generating octrees of multiple point clouds. By calling "octree.switchBuffers()", we reset the 
+octree class while keeping the previous octree structure in memory.
 
 .. code-block:: cpp
 	
