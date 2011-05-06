@@ -146,6 +146,26 @@ namespace pcl
           return (epsilon_);
         }
 
+        /** \brief Set/change the octree voxel resolution
+         * \param resolution_arg side length of voxels at lowest tree level
+         */
+        inline void
+        setResolution (double resolution_arg)
+        {
+          // octree needs to be empty to change its resolution
+          assert( this->leafCount_ == 0 );
+
+          resolution_ = resolution_arg;
+        }
+
+        /** \brief Get octree voxel resolution
+         * \return voxel resolution at lowest tree level*/
+        inline double
+        getResolution ()
+        {
+          return (resolution_);
+        }
+
         /** \brief Add points from input point cloud to octree. */
         void
         addPointsFromInputCloud ();
