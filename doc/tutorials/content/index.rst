@@ -5,6 +5,10 @@ their source codes may already be provided as part of the PCL regular releases,
 so check there before you start copy & pasting the code. The list of tutorials
 below is automatically generated from reST files located in our SVN repository.
 
+.. note::
+
+  Before you start reading, please make sure that you go through the higher-level overview documentation at http://www.pointclouds.org/documentation/, under **Getting Started**. Thank you.
+
 As always, we would be happy to hear your comments and receive your
 contributions on any tutorial.
 

@@ -1,7 +1,7 @@
 .. _octree_change_detection:
 
 Spatial change detection on unorganized point cloud data
--------------------------------------------------------
+--------------------------------------------------------
 
 An octree is a tree-based data structure for organizing sparse 3-D data. In this tutorial we will learn how to use the octree implementation for detecting
 spatial changes between multiple unorganized point clouds which could vary in size, resolution, density and point ordering. By recursively comparing 
@@ -9,7 +9,8 @@ the tree structures of octrees, spatial changes represented by differences in vo
 Additionally, we explain how to use the pcl octree "double buffering" technique allows us to efficiently process multiple point clouds over time.
 
 The code:
---------------
+---------
+
 First, create a file, let's say, ``octree_change_detection.cpp`` and place the following inside it:
 
 
@@ -176,13 +177,14 @@ In order to retrieve points that are stored at voxels of the current octree stru
 Finally, we output the results to the std::cout stream.
 
 .. code-block:: cpp
-    // Output points
-  std::cout << "Output from getPointIndicesFromNewVoxels:" << std::endl;
-  for (size_t i = 0; i < newPointIdxVector.size (); ++i)
-    std::cout << i << "# Index:" << newPointIdxVector[i]
-                   << "  Point:" << cloudB->points[newPointIdxVector[i]].x << " "
-                                 << cloudB->points[newPointIdxVector[i]].y << " "
-                                 << cloudB->points[newPointIdxVector[i]].z << std::endl;
+   
+   // Output points
+   std::cout << "Output from getPointIndicesFromNewVoxels:" << std::endl;
+   for (size_t i = 0; i < newPointIdxVector.size (); ++i)
+     std::cout << i << "# Index:" << newPointIdxVector[i]
+                    << "  Point:" << cloudB->points[newPointIdxVector[i]].x << " "
+                                  << cloudB->points[newPointIdxVector[i]].y << " "
+                                  << cloudB->points[newPointIdxVector[i]].z << std::endl;
 
 Compiling and running the program
 ---------------------------------
@@ -209,7 +211,7 @@ You will see something similar to::
 	5# Index:53  Point:52.0745 14.9643 63.5844
 
 Another example application: OpenNI change viewer
------------------------------------------
+-------------------------------------------------
 
 The pcl visualization component contains an openNI change detector example. It displays grabbed point clouds from the OpenNI interface and displays 
 detected spatial changes in red. 
@@ -227,6 +229,7 @@ And you should see something like this:
      
 Conclusion
 ----------
+
 This octree-based change detection enables to analyse "unorganized" point clouds for spatial changes.      
 
 Additional Details
