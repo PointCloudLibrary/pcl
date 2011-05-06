@@ -55,6 +55,9 @@ TEST (PCL, Adaptive_Range_Coder_Test)
   std::vector<char> inputData;
   std::vector<char> outputData;
 
+  unsigned long writeByteLen;
+  unsigned long readByteLen;
+
   // vector size
   const unsigned int vectorSize = 1000;
 
@@ -71,10 +74,14 @@ TEST (PCL, Adaptive_Range_Coder_Test)
   pcl::AdaptiveRangeCoder rangeCoder;
 
   // encode char vector to stringstream
-  rangeCoder.encodeCharVectorToStream(inputData, sstream);
+  writeByteLen = rangeCoder.encodeCharVectorToStream(inputData, sstream);
 
   // decode stringstream to char vector
-  rangeCoder.decodeStreamToCharVector(sstream, outputData);
+  readByteLen = rangeCoder.decodeStreamToCharVector(sstream, outputData);
+
+  // compare amount of bytes that are read and written to/from stream
+  EXPECT_EQ (writeByteLen, readByteLen);
+  EXPECT_EQ (writeByteLen, sstream.str().length());
 
   // compare input and output vector - should be identical
   EXPECT_EQ (inputData.size(), outputData.size());
@@ -98,6 +105,9 @@ TEST (PCL, Static_Range_Coder_Test)
   std::vector<unsigned int> inputIntData;
   std::vector<unsigned int> outputIntData;
 
+  unsigned long writeByteLen;
+  unsigned long readByteLen;
+
   // vector size
   const unsigned int vectorSize = 1000;
 
@@ -118,10 +128,14 @@ TEST (PCL, Static_Range_Coder_Test)
   pcl::StaticRangeCoder rangeCoder;
 
   // encode char vector to stringstream
-  rangeCoder.encodeCharVectorToStream(inputCharData, sstream);
+  writeByteLen = rangeCoder.encodeCharVectorToStream(inputCharData, sstream);
 
   // decode stringstream to char vector
-  rangeCoder.decodeStreamToCharVector(sstream, outputCharData);
+  readByteLen = rangeCoder.decodeStreamToCharVector(sstream, outputCharData);
+
+  // compare amount of bytes that are read and written to/from stream
+  EXPECT_EQ (writeByteLen, readByteLen);
+  EXPECT_EQ (writeByteLen, sstream.str().length());
 
   // compare input and output vector - should be identical
   EXPECT_EQ (inputCharData.size(), outputCharData.size());
@@ -132,11 +146,16 @@ TEST (PCL, Static_Range_Coder_Test)
     EXPECT_EQ (inputCharData[i], outputCharData[i]);
   }
 
+  sstream.clear();
+
   // encode integer vector to stringstream
-  rangeCoder.encodeIntVectorToStream(inputIntData, sstream);
+  writeByteLen = rangeCoder.encodeIntVectorToStream(inputIntData, sstream);
 
   // decode stringstream to integer vector
-  rangeCoder.decodeStreamToIntVector(sstream, outputIntData);
+  readByteLen = rangeCoder.decodeStreamToIntVector(sstream, outputIntData);
+
+  // compare amount of bytes that are read and written to/from stream
+  EXPECT_EQ (writeByteLen, readByteLen);
 
   // compare input and output vector - should be identical
   EXPECT_EQ (inputIntData.size(), outputIntData.size());

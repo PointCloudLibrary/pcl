@@ -45,9 +45,8 @@
 #include "pcl/compression/entropy_range_coder.h"
 #include "pcl/compression/impl/entropy_range_coder.hpp"
 
-//#include "pcl/compression/octree_pointcloud_compression.h"
-//#include "pcl/compression/impl/octree_pointcloud_compression.hpp"
+#include "pcl/compression/octree_pointcloud_compression.h"
+#include "pcl/compression/impl/octree_pointcloud_compression.hpp"
 
-
-//template class pcl::octree::OctreePointCloudCompression<pcl::PointXYZRGB>;
-
+template class pcl::octree::PointCloudCompression<pcl::PointXYZ>;
+template class pcl::octree::PointCloudCompression<pcl::PointXYZRGB>;
