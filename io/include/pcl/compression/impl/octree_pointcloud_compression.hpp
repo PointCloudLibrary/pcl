@@ -54,16 +54,6 @@ namespace pcl
   {
     using namespace std;
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree compression class
-     *  \note This octree-based pointcloud class enables to generate points from a binary octree description.
-     *  \note The octree pointcloud is initialized with its voxel resolution.
-     *  \note
-     *  \note typename: PointT: type of point used in pointcloud
-     *  \author Julius Kammerl (julius@kammerl.de)
-     */
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT>
       void

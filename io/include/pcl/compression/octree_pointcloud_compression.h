@@ -44,6 +44,8 @@
 #include "color_coding.h"
 #include "point_coding.h"
 
+#include "compression_profiles.h"
+
 #include <iterator>
 #include <iostream>
 #include <vector>
@@ -67,9 +69,8 @@ namespace pcl
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT>
-
-      class PointCloudCompression : public OctreePointCloud<PointT, OctreeLeafDataTVector<int> , Octree2BufBase<
-          int, OctreeLeafDataTVector<int> > >
+      class PointCloudCompression : public OctreePointCloud<PointT, OctreeLeafDataTVector<int> , Octree2BufBase<int,
+          OctreeLeafDataTVector<int> > >
 
       {
       public:
@@ -86,6 +87,7 @@ namespace pcl
         typedef typename OctreeT::OctreeLeaf OctreeLeaf;
 
         /** \brief Constructor
+         *  \param compressionProfile_arg:  define compression profile
          *  \param octreeResolution_arg:  octree resolution at lowest octree level
          *  \param pointResolution_arg:  precision of point coordinates
          *  \param doVoxelGridDownDownSampling_arg:  voxel grid filtering
@@ -94,13 +96,15 @@ namespace pcl
          *  \param colorBitResolution_arg:  color bit depth
          *  \param showStatistics_arg:  output compression statistics
          * */
-        PointCloudCompression (const double pointResolution_arg = 0.001,
-                                     const double octreeResolution_arg = 0.01,
-                                     bool doVoxelGridDownDownSampling_arg = false,
-                                     unsigned int iFrameRate_arg = 30,
-                                     const unsigned char colorBitResolution_arg = 6,
-                                     bool doColorEncoding_arg = false,
-                                     bool showStatistics_arg = true) :
+        PointCloudCompression (compression_Profiles_e compressionProfile_arg = HIGH_RES_ONLINE_COMPRESSION_WITH_COLOR,
+                               bool showStatistics_arg = true,
+                               const double pointResolution_arg = 0.001,
+                               const double octreeResolution_arg = 0.01,
+                               bool doVoxelGridDownDownSampling_arg = false,
+                               unsigned int iFrameRate_arg = 30,
+                               bool doColorEncoding_arg = true,
+                               const unsigned char colorBitResolution_arg = 6
+                               ) :
 
           OctreePointCloud<PointT, LeafT, OctreeT> (octreeResolution_arg),
               doVoxelGridEnDecoding_ (doVoxelGridDownDownSampling_arg), iFrameRate_ (iFrameRate_arg),
@@ -111,9 +115,32 @@ namespace pcl
         {
           output_ = PointCloudPtr ();
 
-          // configure point & color coder
-          pointCoder_.setPrecision (pointResolution_arg);
-          colorCoder_.setBitDepth (colorBitResolution_arg);
+          if (compressionProfile_arg != MANUAL_CONFIGURATION)
+          {
+            // apply selected compression profile
+
+            // retrieve profile settings
+            const configurationProfile_t selectedProfile = compressionProfiles_[compressionProfile_arg];
+
+            // apply profile settings
+            iFrameRate_ = selectedProfile.iFrameRate;
+            doVoxelGridEnDecoding_ = selectedProfile.doVoxelGridDownSampling;
+            this->setResolution (selectedProfile.octreeResolution);
+            pointCoder_.setPrecision (selectedProfile.pointResolution);
+            doColorEncoding_ = selectedProfile.doColorEncoding;
+            colorCoder_.setBitDepth (selectedProfile.colorBitResolution);
+
+          } else {
+            // configure point & color coder
+            pointCoder_.setPrecision (pointResolution_arg);
+            colorCoder_.setBitDepth (colorBitResolution_arg);
+          }
+
+          if ( pointCoder_.getPrecision() == this->getResolution() )
+          {
+            //disable differential point colding
+            doVoxelGridEnDecoding_ = true;
+          }
 
         }
 
