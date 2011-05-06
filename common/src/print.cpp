@@ -35,11 +35,12 @@
  *
  */
 #include <pcl/console/print.h>
-#if defined WIN32 && defined _MSC_VER
+#if defined WIN32
 # include <windows.h>
 
 DWORD convertAttributesColor(int attribute, int fg, int bg=-1)
 {
+#if defined _MSC_VER
     static DWORD wAttributes[7]  = { 0, //TT_RESET
                                      FOREGROUND_INTENSITY , // TT_BRIGHT
                                      0, // TT_DIM
@@ -48,6 +49,17 @@ DWORD convertAttributesColor(int attribute, int fg, int bg=-1)
                                      COMMON_LVB_REVERSE_VIDEO, // TT_REVERSE
                                      0 //TT_HIDDEN    = 8
                                     };
+#else
+   static DWORD wAttributes[7]  = { 0, //TT_RESET
+                                     FOREGROUND_INTENSITY , // TT_BRIGHT
+                                     0, // TT_DIM
+                                     0, // TT_UNDERLINE
+                                     0, // TT_BLINK     = 4,
+                                     0, // TT_REVERSE
+                                     0 //TT_HIDDEN    = 8
+                                    };
+#endif
+
     static DWORD wFgColors[8]  = { 0, // TT_BLACK
                                    FOREGROUND_RED, // TT_RED
                                    FOREGROUND_GREEN , // TT_GREEN
