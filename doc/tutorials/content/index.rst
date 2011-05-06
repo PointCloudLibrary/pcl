@@ -336,6 +336,21 @@ contributions on any tutorial.
      
      .. |oc_1| image:: images/octree_img.png
                :height: 100px
+               
+  * :ref:`octree_change_detection`
+  
+     ======  ======
+     |oc_2|  Title: **Spatial change detection on unorganized point cloud data**
+
+             Author: *Julius Kammerl*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to use octrees for detecting spatial changes within point clouds.
+     ======  ======
+     
+     .. |oc_2| image:: images/changedetectionThumb.png
+               :height: 100px
 
 * Visualization
 
