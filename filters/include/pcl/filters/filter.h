@@ -40,32 +40,35 @@
 
 #include "pcl/pcl_base.h"
 #include "pcl/ros/conversions.h"
+#include <boost/make_shared.hpp>
 #include <cfloat>
 
 namespace pcl
 {
   /** \brief Removes points with x, y, or z equal to NaN
-    * \param cloud_in the input point cloud
-    * \param cloud_out the input point cloud
-    * \param index the mapping (ordered): cloud_out.points[i] = cloud_in.points[index[i]]
-    * \note The density of the point cloud is lost.
-    * \note Can be called with cloud_in == cloud_out
-    * \ingroup filters
-    */
-  template <typename PointT> void 
-  removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT> &cloud_out, std::vector<int> &index);
+   * \param cloud_in the input point cloud
+   * \param cloud_out the input point cloud
+   * \param index the mapping (ordered): cloud_out.points[i] = cloud_in.points[index[i]]
+   * \note The density of the point cloud is lost.
+   * \note Can be called with cloud_in == cloud_out
+   * \ingroup filters
+   */
+  template<typename PointT>
+    void
+    removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT> &cloud_out, std::vector<
+        int> &index);
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b Filter represents the base filter class. Some generic 3D operations that are applicable to all filters
-    * are defined here as static methods.
-    * \author Radu Bogdan Rusu
-    * \ingroup filters
-    */
-  template <typename PointT>
-  class Filter : public PCLBase<PointT>
-  {
-    using PCLBase<PointT>::initCompute;
-    using PCLBase<PointT>::deinitCompute;
+   * are defined here as static methods.
+   * \author Radu Bogdan Rusu
+   * \ingroup filters
+   */
+  template<typename PointT>
+    class Filter : public PCLBase<PointT>
+    {
+      using PCLBase<PointT>::initCompute;
+      using PCLBase<PointT>::deinitCompute;
 
     public:
       using PCLBase<PointT>::indices_;
@@ -76,27 +79,43 @@ namespace pcl
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
       /** \brief Empty constructor. */
-      Filter () : filter_field_name_ (""), 
-                  filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX), 
-                  filter_limit_negative_ (false)
-      {};
+      Filter (bool extract_removed_indices = false) :
+        filter_field_name_ (""), filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX),
+            filter_limit_negative_ (false), extract_removed_indices_ (extract_removed_indices)
 
+      {
+        removed_indices_ = boost::make_shared<std::vector<int> > ();
+      }
+      ;
+
+      /** \brief Get the point indices being removed */
+      inline IndicesConstPtr const
+      getRemovedIndices ()
+      {
+        return (removed_indices_);
+      }
 
       /** \brief Provide the name of the field to be used for filtering data. In conjunction with  \a setFilterLimits,
-        * points having values outside this interval will be discarded.
-        * \param field_name the name of the field that contains values used for filtering
-        */
-      inline void 
-      setFilterFieldName (const std::string &field_name) { filter_field_name_ = field_name; }
+       * points having values outside this interval will be discarded.
+       * \param field_name the name of the field that contains values used for filtering
+       */
+      inline void
+      setFilterFieldName (const std::string &field_name)
+      {
+        filter_field_name_ = field_name;
+      }
 
       /** \brief Get the name of the field used for filtering. */
-      inline std::string const 
-      getFilterFieldName () { return (filter_field_name_); }
+      inline std::string const
+      getFilterFieldName ()
+      {
+        return (filter_field_name_);
+      }
 
       /** \brief Set the field filter limits. All points having field values outside this interval will be discarded.
-        * \param limit_min the minimum allowed field value
-        * \param limit_max the maximum allowed field value
-        */
+       * \param limit_min the minimum allowed field value
+       * \param limit_max the maximum allowed field value
+       */
       inline void
       setFilterLimits (const double &limit_min, const double &limit_max)
       {
@@ -113,30 +132,40 @@ namespace pcl
       }
 
       /** \brief Set to true if we want to return the data outside the interval specified by setFilterLimits (min, max).
-        * Default: false.
-        * \param limit_negative return data inside the interval (false) or outside (true)
-        */
-      inline void 
-      setFilterLimitsNegative (const bool limit_negative) { filter_limit_negative_ = limit_negative; }
+       * Default: false.
+       * \param limit_negative return data inside the interval (false) or outside (true)
+       */
+      inline void
+      setFilterLimitsNegative (const bool limit_negative)
+      {
+        filter_limit_negative_ = limit_negative;
+      }
 
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false). */
-      inline void 
-      getFilterLimitsNegative (bool &limit_negative) { limit_negative = filter_limit_negative_; }
-      inline bool 
-      getFilterLimitsNegative () { return (filter_limit_negative_); }
+      inline void
+      getFilterLimitsNegative (bool &limit_negative)
+      {
+        limit_negative = filter_limit_negative_;
+      }
+      inline bool
+      getFilterLimitsNegative ()
+      {
+        return (filter_limit_negative_);
+      }
 
       /** \brief Calls the filtering method and returns the filtered dataset in output.
-        * \param output the resultant filtered point cloud dataset 
-        */
+       * \param output the resultant filtered point cloud dataset
+       */
       inline void
       filter (PointCloud &output)
       {
-        if (!initCompute ()) return;
+        if (!initCompute ())
+          return;
 
         // Resize the output dataset
         //if (output.points.size () != indices_->size ())
         //  output.points.resize (indices_->size ());
-        
+
         // Copy header at a minimum
         output.header = input_->header;
         output.sensor_origin_ = input_->sensor_origin_;
@@ -149,6 +178,10 @@ namespace pcl
       }
 
     protected:
+
+      /** \brief Indices of the points that are removed */
+      IndicesPtr removed_indices_;
+
       /** \brief The filter name. */
       std::string filter_name_;
 
@@ -164,51 +197,74 @@ namespace pcl
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_;
 
+      /** \brief Set to true if we want to return the indices of the removed points. */
+      bool extract_removed_indices_;
+
       /** \brief Abstract filter method. 
-        * 
-        * The implementation needs to set output.{points, width, height, is_dense}.
-        */
-      virtual void applyFilter (PointCloud &output) = 0;
+       *
+       * The implementation needs to set output.{points, width, height, is_dense}.
+       */
+      virtual void
+      applyFilter (PointCloud &output) = 0;
 
       /** \brief Get a string representation of the name of this class. */
-      inline const std::string& getClassName () const { return (filter_name_); }
-  };
+      inline const std::string&
+      getClassName () const
+      {
+        return (filter_name_);
+      }
+    };
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b Filter represents the base filter class. Some generic 3D operations that are applicable to all filters
-    * are defined here as static methods.
-    * \author Radu Bogdan Rusu
-    * \ingroup filters
-    */
-  template <>
-  class PCL_EXPORTS Filter<sensor_msgs::PointCloud2> : public PCLBase<sensor_msgs::PointCloud2>
-  {
+   * are defined here as static methods.
+   * \author Radu Bogdan Rusu
+   * \ingroup filters
+   */
+  template<>
+    class PCL_EXPORTS Filter<sensor_msgs::PointCloud2> : public PCLBase<sensor_msgs::PointCloud2>
+    {
     public:
       typedef sensor_msgs::PointCloud2 PointCloud2;
       typedef PointCloud2::Ptr PointCloud2Ptr;
       typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
 
       /** \brief Empty constructor. */
-      Filter () : filter_field_name_ (""), 
-                  filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX),
-                  filter_limit_negative_ (false) 
-      {};
+      Filter (bool extract_removed_indices = false) :
+        filter_field_name_ (""), filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX),
+            filter_limit_negative_ (false), extract_removed_indices_ (extract_removed_indices)
+      {
+        removed_indices_ = boost::make_shared<std::vector<int> > ();
+      }
+
+      /** \brief Get the point indices being removed */
+      inline IndicesConstPtr const
+      getRemovedIndices ()
+      {
+        return (removed_indices_);
+      }
 
       /** \brief Provide the name of the field to be used for filtering data. In conjunction with  \a setFilterLimits,
-        * points having values outside this interval will be discarded.
-        * \param field_name the name of the field that contains values used for filtering
-        */
-      inline void 
-      setFilterFieldName (const std::string &field_name) { filter_field_name_ = field_name; }
+       * points having values outside this interval will be discarded.
+       * \param field_name the name of the field that contains values used for filtering
+       */
+      inline void
+      setFilterFieldName (const std::string &field_name)
+      {
+        filter_field_name_ = field_name;
+      }
 
       /** \brief Get the name of the field used for filtering. */
-      inline std::string const 
-      getFilterFieldName () { return (filter_field_name_); }
+      inline std::string const
+      getFilterFieldName ()
+      {
+        return (filter_field_name_);
+      }
 
       /** \brief Set the field filter limits. All points having field values outside this interval will be discarded.
-        * \param limit_min the minimum allowed field value
-        * \param limit_max the maximum allowed field value
-        */
+       * \param limit_min the minimum allowed field value
+       * \param limit_max the maximum allowed field value
+       */
       inline void
       setFilterLimits (const double &limit_min, const double &limit_max)
       {
@@ -225,25 +281,38 @@ namespace pcl
       }
 
       /** \brief Set to true if we want to return the data outside the interval specified by setFilterLimits (min, max).
-        * Default: false.
-        * \param limit_negative return data inside the interval (false) or outside (true)
-        */
-      inline void 
-      setFilterLimitsNegative (const bool limit_negative) { filter_limit_negative_ = limit_negative; }
+       * Default: false.
+       * \param limit_negative return data inside the interval (false) or outside (true)
+       */
+      inline void
+      setFilterLimitsNegative (const bool limit_negative)
+      {
+        filter_limit_negative_ = limit_negative;
+      }
 
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false). */
-      inline void 
-      getFilterLimitsNegative (bool &limit_negative) { limit_negative = filter_limit_negative_; }
-      inline bool 
-      getFilterLimitsNegative () { return (filter_limit_negative_); }
+      inline void
+      getFilterLimitsNegative (bool &limit_negative)
+      {
+        limit_negative = filter_limit_negative_;
+      }
+      inline bool
+      getFilterLimitsNegative ()
+      {
+        return (filter_limit_negative_);
+      }
 
       /** \brief Calls the filtering method and returns the filtered dataset in output.
-        * \param output the resultant filtered point cloud dataset 
-        */
-      void 
+       * \param output the resultant filtered point cloud dataset
+       */
+      void
       filter (PointCloud2 &output);
 
     protected:
+
+      /** \brief Indices of the points that are removed */
+      IndicesPtr removed_indices_;
+
       /** \brief The filter name. */
       std::string filter_name_;
 
@@ -259,17 +328,23 @@ namespace pcl
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_;
 
+      /** \brief Set to true if we want to return the indices of the removed points. */
+      bool extract_removed_indices_;
+
       /** \brief Abstract filter method.
-        * 
-        * The implementation needs to set output.{data, row_step, point_step, width, height, is_dense}.
-        */
-      virtual void 
+       *
+       * The implementation needs to set output.{data, row_step, point_step, width, height, is_dense}.
+       */
+      virtual void
       applyFilter (PointCloud2 &output) = 0;
 
       /** \brief Get a string representation of the name of this class. */
-      inline const std::string& 
-      getClassName () const { return (filter_name_); }
-  };
+      inline const std::string&
+      getClassName () const
+      {
+        return (filter_name_);
+      }
+    };
 }
 
 #endif  //#ifndef PCL_FILTER_H_
