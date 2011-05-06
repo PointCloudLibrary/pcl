@@ -65,7 +65,7 @@ pcl::RadiusOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &o
   // Initialize the spatial locator
   //initTree (spatial_locator_type_, tree_, k_);
 
-  tree_.reset (new KdTreeFLANN<pcl::PointXYZ>);
+  tree_.reset (new KdTreeFLANN<pcl::PointXYZ> );
 
   // Send the input dataset to the spatial locator
   pcl::PointCloud<pcl::PointXYZ> cloud;
@@ -78,29 +78,41 @@ pcl::RadiusOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &o
 
   // Copy the common fields
   output.is_bigendian = input_->is_bigendian;
-  output.point_step   = input_->point_step;
-  output.height       = 1;
+  output.point_step = input_->point_step;
+  output.height = 1;
 
-  output.data.resize (input_->width * input_->point_step);      // reserve enough space
+  output.data.resize (input_->width * input_->point_step); // reserve enough space
+  removed_indices_->resize (input_->data.size ());
 
   int nr_p = 0;
+  int nr_removed_p = 0;
   // Go over all the points and check which doesn't have enough neighbors
   for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
     int k = tree_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_dists);
     // Check if the number of neighbors is larger than the user imposed limit
     if (k < min_pts_radius_)
+    {
+      if (extract_removed_indices_)
+      {
+        (*removed_indices_)[nr_removed_p] = cp;
+        nr_removed_p++;
+      }
       continue;
+    }
 
-    memcpy (&output.data[nr_p * output.point_step], &input_->data[(*indices_)[cp] * output.point_step], output.point_step);
+    memcpy (&output.data[nr_p * output.point_step], &input_->data[(*indices_)[cp] * output.point_step],
+            output.point_step);
     nr_p++;
   }
-  output.width  = nr_p;
+
+  output.width = nr_p;
   output.height = 1;
   output.data.resize (output.width * output.point_step);
   output.row_step = output.point_step * output.width;
-}
 
+  removed_indices_->resize (nr_removed_p);
+}
 // Instantiations of specific point types
 PCL_INSTANTIATE(RadiusOutlierRemoval, PCL_XYZ_POINT_TYPES);
 

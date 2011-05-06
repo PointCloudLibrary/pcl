@@ -48,8 +48,8 @@ namespace pcl
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
-  template <typename PointT>
-  class PassThrough: public Filter<PointT>
+  template<typename PointT>
+  class PassThrough : public Filter<PointT>
   {
     using Filter<PointT>::input_;
     using Filter<PointT>::filter_name_;
@@ -58,18 +58,22 @@ namespace pcl
     using Filter<PointT>::filter_limit_max_;
     using Filter<PointT>::filter_limit_negative_;
     using Filter<PointT>::getClassName;
-    
+
+    using Filter<PointT>::removed_indices_;
+    using Filter<PointT>::extract_removed_indices_;
+
     typedef typename Filter<PointT>::PointCloud PointCloud;
     typedef typename PointCloud::Ptr PointCloudPtr;
     typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
     public:
-      /** \brief Empty constructor. */
-      PassThrough () :
-        keep_organized_ (false), user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
+      /** \brief Constructor. */
+      PassThrough (bool extract_removed_indices = false) :
+        Filter<PointT>::Filter (extract_removed_indices), keep_organized_ (false), 
+        user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
         filter_name_ = "PassThrough";
-      };
+      }
 
       /** \brief Set whether the filtered points should be kept and set to the
         * value given through \a setUserFilterValue (default: NaN), or removed
@@ -79,35 +83,46 @@ namespace pcl
         * \param val set to true whether the filtered points should be kept and
         * set to a given user value (default: NaN)
         */
-      inline void 
-      setKeepOrganized (bool val) { keep_organized_ = val; }
-      
-      inline bool 
-      getKeepOrganized () { return (keep_organized_); }
+      inline void
+      setKeepOrganized (bool val)
+      {
+        keep_organized_ = val;
+      }
+
+      inline bool
+      getKeepOrganized ()
+      {
+        return (keep_organized_);
+      }
 
       /** \brief Provide a value that the filtered points should be set to
         * instead of removing them.  Used in conjunction with \a
         * setKeepOrganized ().
         * \param val the user given value that the filtered point dimensions should be set to
         */
-      inline void 
-      setUserFilterValue (float val) { user_filter_value_ = val; }
+      inline void
+      setUserFilterValue (float val)
+      {
+        user_filter_value_ = val;
+      }
     protected:
       /** \brief Filter a Point Cloud.
         * \param output the resultant point cloud message
         */
-      void 
+      void
       applyFilter (PointCloud &output);
 
       typedef typename pcl::traits::fieldList<PointT>::type FieldList;
 
     private:
       /** \brief Keep the structure of the data organized, by setting the
-       * filtered points to the a user given value (NaN by default). */
+        * filtered points to the a user given value (NaN by default). 
+        */
       bool keep_organized_;
 
       /** \brief User given value to be set to any filtered point. Casted to
-       * the correct field type. */
+        * the correct field type. 
+        */
       float user_filter_value_;
   };
 
@@ -117,20 +132,24 @@ namespace pcl
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
-  template <>
+  template<>
   class PCL_EXPORTS PassThrough<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
   {
     typedef sensor_msgs::PointCloud2 PointCloud2;
     typedef PointCloud2::Ptr PointCloud2Ptr;
     typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
 
+    using Filter<sensor_msgs::PointCloud2>::removed_indices_;
+    using Filter<sensor_msgs::PointCloud2>::extract_removed_indices_;
+
     public:
-      /** \brief Empty constructor. */
-      PassThrough () :
-        keep_organized_ (false), user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
+      /** \brief Constructor. */
+      PassThrough (bool extract_removed_indices = false) :
+        Filter<sensor_msgs::PointCloud2>::Filter (extract_removed_indices), keep_organized_ (false),
+        user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
         filter_name_ = "PassThrough";
-      };
+      }
 
       /** \brief Set whether the filtered points should be kept and set to the
         * value given through \a setUserFilterValue (default: NaN), or removed
@@ -140,33 +159,43 @@ namespace pcl
         * \param val set to true whether the filtered points should be kept and
         * set to a given user value (default: NaN)
         */
-      inline void 
-      setKeepOrganized (bool val) { keep_organized_ = val; }
-      
-      inline bool 
-      getKeepOrganized () { return (keep_organized_); }
+      inline void
+      setKeepOrganized (bool val)
+      {
+        keep_organized_ = val;
+      }
+
+      inline bool
+      getKeepOrganized ()
+      {
+        return (keep_organized_);
+      }
 
       /** \brief Provide a value that the filtered points should be set to
         * instead of removing them.  Used in conjunction with \a
         * setKeepOrganized ().
         * \param val the user given value that the filtered point dimensions should be set to
         */
-      inline void 
-      setUserFilterValue (float val) { user_filter_value_ = val; }
+      inline void
+      setUserFilterValue (float val)
+      {
+        user_filter_value_ = val;
+      }
 
     protected:
-      void 
+      void
       applyFilter (PointCloud2 &output);
 
     private:
       /** \brief Keep the structure of the data organized, by setting the
-       * filtered points to the a user given value (NaN by default). */
+        * filtered points to the a user given value (NaN by default). 
+        */
       bool keep_organized_;
 
       /** \brief User given value to be set to any filtered point. Casted to
-       * the correct field type. */
+        * the correct field type. 
+        */
       float user_filter_value_;
-
   };
 }
 

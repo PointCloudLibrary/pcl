@@ -64,8 +64,8 @@ namespace pcl
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
-  template <typename PointT>
-  class ProjectInliers: public Filter<PointT>
+  template<typename PointT>
+  class ProjectInliers : public Filter<PointT>
   {
     using Filter<PointT>::input_;
     using Filter<PointT>::indices_;
@@ -82,43 +82,62 @@ namespace pcl
       ProjectInliers () : copy_all_data_ (false)
       {
         filter_name_ = "ProjectInliers";
-      };
+      }
 
       /** \brief The type of model to use (user given parameter).
         * \param model the model type (check \a model_types.h)
         */
-      inline void 
-      setModelType (int model) { model_type_ = model; }
+      inline void
+      setModelType (int model)
+      {
+        model_type_ = model;
+      }
 
       /** \brief Get the type of SAC model used. */
-      inline int 
-      getModelType () { return (model_type_); }
+      inline int
+      getModelType ()
+      {
+        return (model_type_);
+      }
 
       /** \brief Provide a pointer to the model coefficients.
         * \param model a pointer to the model coefficients
         */
-      inline void 
-      setModelCoefficients (const ModelCoefficientsConstPtr &model) { model_ = model; }
+      inline void
+      setModelCoefficients (const ModelCoefficientsConstPtr &model)
+      {
+        model_ = model;
+      }
 
       /** \brief Get a pointer to the model coefficients. */
-      inline ModelCoefficientsConstPtr 
-      getModelCoefficients () { return (model_); }
+      inline ModelCoefficientsConstPtr
+      getModelCoefficients ()
+      {
+        return (model_);
+      }
 
       /** \brief Set whether all data will be returned, or only the projected inliers.
         * \param val true if all data should be returned, false if only the projected inliers
         */
-      inline void 
-      setCopyAllData (bool val) { copy_all_data_ = val; }
-      
+      inline void
+      setCopyAllData (bool val)
+      {
+        copy_all_data_ = val;
+      }
+
       /** \brief Get whether all data is being copied (true), or only the projected inliers (false). */
-      inline bool 
-      getCopyAllData ()         { return (copy_all_data_); }
+      inline bool
+      getCopyAllData ()
+      {
+        return (copy_all_data_);
+      }
     protected:
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Project point indices into a separate PointCloud
         * \param output the resultant point cloud message
         */
-      void applyFilter (PointCloud &output);
+      void
+      applyFilter (PointCloud &output);
 
     private:
       /** \brief A pointer to the vector of model coefficients. */
@@ -136,7 +155,7 @@ namespace pcl
       /** \brief Initialize the Sample Consensus model and set its parameters.
         * \param model_type the type of SAC model that is to be used
         */
-      virtual bool 
+      virtual bool
       initSACModel (int model_type);
   };
 
@@ -147,7 +166,7 @@ namespace pcl
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
-  template <>
+  template<>
   class PCL_EXPORTS ProjectInliers<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
   {
     using Filter<sensor_msgs::PointCloud2>::filter_name_;
@@ -164,47 +183,71 @@ namespace pcl
       ProjectInliers () : copy_all_data_ (false), copy_all_fields_ (true)
       {
         filter_name_ = "ProjectInliers";
-      };
+      }
 
       /** \brief The type of model to use (user given parameter).
         * \param model the model type (check \a model_types.h)
         */
-      inline void 
-      setModelType (int model) { model_type_ = model; }
+      inline void
+      setModelType (int model)
+      {
+        model_type_ = model;
+      }
 
       /** \brief Get the type of SAC model used. */
-      inline int 
-      getModelType () { return (model_type_); }
+      inline int
+      getModelType ()
+      {
+        return (model_type_);
+      }
 
       /** \brief Provide a pointer to the model coefficients.
         * \param model a pointer to the model coefficients
         */
-      inline void 
-      setModelCoefficients (const ModelCoefficientsConstPtr &model) { model_ = model; }
+      inline void
+      setModelCoefficients (const ModelCoefficientsConstPtr &model)
+      {
+        model_ = model;
+      }
 
       /** \brief Get a pointer to the model coefficients. */
-      inline ModelCoefficientsConstPtr 
-      getModelCoefficients () { return (model_); }
+      inline ModelCoefficientsConstPtr
+      getModelCoefficients ()
+      {
+        return (model_);
+      }
 
       /** \brief Set whether all fields should be copied, or only the XYZ.
         * \param val true if all fields will be returned, false if only XYZ
         */
-      inline void 
-      setCopyAllFields (bool val) { copy_all_fields_ = val; }
+      inline void
+      setCopyAllFields (bool val)
+      {
+        copy_all_fields_ = val;
+      }
 
       /** \brief Get whether all fields are being copied (true), or only XYZ (false). */
-      inline bool 
-      getCopyAllFields ()         { return (copy_all_fields_); }
-      
+      inline bool
+      getCopyAllFields ()
+      {
+        return (copy_all_fields_);
+      }
+
       /** \brief Set whether all data will be returned, or only the projected inliers.
         * \param val true if all data should be returned, false if only the projected inliers
         */
-      inline void 
-      setCopyAllData (bool val) { copy_all_data_ = val; }
+      inline void
+      setCopyAllData (bool val)
+      {
+        copy_all_data_ = val;
+      }
 
       /** \brief Get whether all data is being copied (true), or only the projected inliers (false). */
-      inline bool 
-      getCopyAllData ()         { return (copy_all_data_); }
+      inline bool
+      getCopyAllData ()
+      {
+        return (copy_all_data_);
+      }
     protected:
       /** \brief The type of model to use (user given parameter). */
       int model_type_;
@@ -218,16 +261,15 @@ namespace pcl
       /** \brief A pointer to the vector of model coefficients. */
       ModelCoefficientsConstPtr model_;
 
-      void 
+      void
       applyFilter (PointCloud2 &output);
 
     private:
       /** \brief The model that needs to be segmented. */
       SampleConsensusModelPtr sacmodel_;
 
-      virtual bool 
+      virtual bool
       initSACModel (int model_type);
-
   };
 }
 

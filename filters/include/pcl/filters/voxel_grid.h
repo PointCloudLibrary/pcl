@@ -72,7 +72,7 @@ namespace pcl
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Helper functor structure for copying data between an Eigen::VectorXf and a PointT. */
   template <typename PointT>
-    struct NdCopyEigenPointFunctor
+  struct NdCopyEigenPointFunctor
   {
     typedef typename traits::POD<PointT>::type Pod;
     
@@ -97,7 +97,7 @@ namespace pcl
 
   /** \brief Helper functor structure for copying data between an Eigen::VectorXf and a PointT. */
   template <typename PointT>
-    struct NdCopyPointEigenFunctor
+  struct NdCopyPointEigenFunctor
   {
     typedef typename traits::POD<PointT>::type Pod;
     

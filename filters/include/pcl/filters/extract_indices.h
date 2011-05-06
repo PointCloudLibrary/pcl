@@ -47,8 +47,8 @@ namespace pcl
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
-  template <typename PointT>
-  class ExtractIndices: public Filter<PointT>
+  template<typename PointT>
+  class ExtractIndices : public Filter<PointT>
   {
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::getClassName;
@@ -62,7 +62,8 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      ExtractIndices () : negative_ (false)
+      ExtractIndices () :
+        negative_ (false)
       {
         use_indices_ = true;
         filter_name_ = "ProjectInliers";
@@ -71,19 +72,26 @@ namespace pcl
       /** \brief Set whether the indices should be returned, or all points _except_ the indices.
         * \param negative true if all points _except_ the input indices will be returned, false otherwise
         */
-      inline void 
-      setNegative (bool negative) { negative_ = negative; }
+      inline void
+      setNegative (bool negative)
+      {
+        negative_ = negative;
+      }
 
       /** \brief Get the value of the internal \a negative parameter. If true, all points _except_ the input indices
-        * will be returned. */
-      inline bool 
-      getNegative () { return (negative_); }
+        * will be returned. 
+        */
+      inline bool
+      getNegative ()
+      {
+        return (negative_);
+      }
 
     protected:
       /** \brief Extract point indices into a separate PointCloud
         * \param output the resultant point cloud message
         */
-      void 
+      void
       applyFilter (PointCloud &output);
 
       /** \brief If true, all the points _except_ the input indices will be returned. False by default. */
@@ -96,7 +104,7 @@ namespace pcl
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
-  template <>
+  template<>
   class PCL_EXPORTS ExtractIndices<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
   {
     using Filter<sensor_msgs::PointCloud2>::filter_name_;
@@ -117,16 +125,24 @@ namespace pcl
       /** \brief Set whether the indices should be returned, or all points _except_ the indices.
         * \param negative true if all points _except_ the input indices will be returned, false otherwise
         */
-      inline void 
-      setNegative (bool negative) { negative_ = negative; }
+      inline void
+      setNegative (bool negative)
+      {
+        negative_ = negative;
+      }
 
       /** \brief Get the value of the internal \a negative parameter. If true, all points _except_ the input indices
-        * will be returned. */
-      inline bool 
-      getNegative () { return (negative_); }
+        * will be returned. 
+        */
+      inline bool
+      getNegative ()
+      {
+        return (negative_);
+      }
 
     protected:
-      void applyFilter (PointCloud2 &output);
+      void
+      applyFilter (PointCloud2 &output);
 
       /** \brief If true, all the points _except_ the input indices will be returned. False by default. */
       bool negative_;
