@@ -53,6 +53,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/vtk_io.h
         include/pcl/compression/octree_pointcloud_compression.h
         include/pcl/compression/color_coding.h
+        include/pcl/compression/compression_profiles.h
         include/pcl/compression/entropy_range_coder.h
         include/pcl/compression/point_coding.h
         ${OPENNI_GRABBER_INCLUDES}
