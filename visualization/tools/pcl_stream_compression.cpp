@@ -39,6 +39,7 @@
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/console/parse.h>
 
 #include "pcl/compression/octree_pointcloud_compression.h"
 
@@ -48,7 +49,6 @@
 #include <sstream>
 #include <stdlib.h>
 #include "stdio.h"
-#include <ctype.h>
 
 #include <iostream>
 #include <string>
@@ -172,7 +172,7 @@ int main (int argc, char **argv)
   bool doVoxelGridDownDownSampling;
   unsigned int iFrameRate;
   bool doColorEncoding;
-  char colorBitResolution;
+  unsigned int colorBitResolution;
 
   // default values
   showStatistics = false;
@@ -195,142 +195,120 @@ int main (int argc, char **argv)
   bServerFileMode = false;
   bEnDecode = false;
 
-  // decode command line arguments
-  while ((c = getopt (argc, argv, "sc:taoxdr:o:vcb:i:sp:f:")) != -1)
+  if (pcl::console::find_argument (argc, argv, "-s")>0) {
+    bEnDecode = true;
+    bServerFileMode = true;
+    validArguments = true;
+  }
 
-    switch (c)
+  if (pcl::console::parse_argument (argc, argv, "-c", hostName)>0) {
+    bEnDecode = false;
+    bServerFileMode = true;
+    validArguments = true;
+  }
+
+  if (pcl::console::find_argument (argc, argv, "-x")>0) {
+    bEnDecode = true;
+    bServerFileMode = false;
+    validArguments = true;
+  }
+
+  if (pcl::console::find_argument (argc, argv, "-x")>0) {
+    bEnDecode = true;
+    bServerFileMode = false;
+    validArguments = true;
+  }
+
+  if (pcl::console::find_argument (argc, argv, "-d")>0) {
+    bEnDecode = false;
+    bServerFileMode = false;
+    validArguments = true;
+  }
+
+  if (pcl::console::find_argument (argc, argv, "-t")>0) {
+    showStatistics = true;
+  }
+
+  if (pcl::console::find_argument (argc, argv, "-a")>0) {
+    doColorEncoding = true;
+    compressionProfile = pcl::octree::MANUAL_CONFIGURATION;
+  }
+
+  if (pcl::console::find_argument (argc, argv, "-v")>0) {
+    doVoxelGridDownDownSampling = true;
+    compressionProfile = pcl::octree::MANUAL_CONFIGURATION;
+  }
+
+  pcl::console::parse_argument (argc, argv, "-f", fileName);
+
+  pcl::console::parse_argument (argc, argv, "-r", pointResolution);
+
+  pcl::console::parse_argument (argc, argv, "-i", iFrameRate);
+
+  pcl::console::parse_argument (argc, argv, "-o", octreeResolution);
+
+  pcl::console::parse_argument (argc, argv, "-b", colorBitResolution);
+
+  std::string profile;
+  if (pcl::console::parse_argument (argc, argv, "-p", profile)>0)
+  {
+    if (profile == "lowC")
     {
-      case 's':
-        bEnDecode = true;
-        bServerFileMode = true;
-        validArguments = true;
-        break;
-      case 'c':
-        bEnDecode = false;
-        bServerFileMode = true;
-        validArguments = true;
-        hostName = optarg;
-        break;
-      case 'x':
-        bEnDecode = true;
-        bServerFileMode = false;
-        validArguments = true;
-        break;
-      case 'd':
-        bEnDecode = false;
-        bServerFileMode = false;
-        validArguments = true;
-        break;
-      case 't':
-        showStatistics = true;
-        break;
-      case 'a':
-        doColorEncoding = true;
-        compressionProfile = pcl::octree::MANUAL_CONFIGURATION;
-        break;
-      case 'v':
-        doVoxelGridDownDownSampling = true;
-        compressionProfile = pcl::octree::MANUAL_CONFIGURATION;
-        break;
-      case 'f':
-        fileName = optarg;
-        break;
-      case 'r':
-        compressionProfile = pcl::octree::MANUAL_CONFIGURATION;
-        pointResolution = atof (optarg);
-        if (pointResolution <= 0)
-        {
-          print_usage ("Invalid resolution parameter..\n");
-          return -1;
-        }
-        break;
-      case 'i':
-        compressionProfile = pcl::octree::MANUAL_CONFIGURATION;
-        iFrameRate = atoi (optarg);
-        if (iFrameRate <= 0)
-        {
-          print_usage ("Invalid iframe rate..\n");
-          return -1;
-        }
-        break;
-      case 'o':
-        compressionProfile = pcl::octree::MANUAL_CONFIGURATION;
-        octreeResolution = atof (optarg);
-        if (octreeResolution <= 0)
-        {
-          print_usage ("Invalid octree voxel size parameter..\n");
-          return -1;
-        }
-        break;
-      case 'b':
-        compressionProfile = pcl::octree::MANUAL_CONFIGURATION;
-        colorBitResolution = atoi (optarg);
-        if (colorBitResolution <= 0)
-        {
-          print_usage ("Invalid octree voxel size parameter..\n");
-          return -1;
-        }
-        break;
-      case 'p':
-        if (strcmp (optarg, "lowC") == 0)
-        {
-          compressionProfile = pcl::octree::LOW_RES_OFFLINE_COMPRESSION_WITH_COLOR;
-        }
-        else if (strcmp (optarg, "lowNC") == 0)
-        {
-          compressionProfile = pcl::octree::LOW_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
-        }
-        else if (strcmp (optarg, "medC") == 0)
-        {
-          compressionProfile = pcl::octree::MED_RES_OFFLINE_COMPRESSION_WITH_COLOR;
-        }
-        else if (strcmp (optarg, "medNC") == 0)
-        {
-          compressionProfile = pcl::octree::MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
-        }
-        else if (strcmp (optarg, "highC") == 0)
-        {
-          compressionProfile = pcl::octree::HIGH_RES_OFFLINE_COMPRESSION_WITH_COLOR;
-        }
-        else if (strcmp (optarg, "highNC") == 0)
-        {
-          compressionProfile = pcl::octree::HIGH_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
-        }
-        else
-        {
-          print_usage ("Unknown profile parameter..\n");
-          return -1;
-        }
-
-        if (compressionProfile != MANUAL_CONFIGURATION)
-        {
-          // apply selected compression profile
-
-          // retrieve profile settings
-          const pcl::octree::configurationProfile_t selectedProfile = pcl::octree::compressionProfiles_[compressionProfile];
-
-          // apply profile settings
-          pointResolution = selectedProfile.pointResolution;
-          octreeResolution = selectedProfile.octreeResolution;
-          doVoxelGridDownDownSampling = selectedProfile.doVoxelGridDownSampling;
-          iFrameRate = selectedProfile.iFrameRate;
-          doColorEncoding = selectedProfile.doColorEncoding;
-          colorBitResolution = selectedProfile.colorBitResolution;
-
-        }
-
-        break;
-      case '?':
-        if (isprint (optopt))
-          fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-        else
-          fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
-
-        print_usage ("");
-        return 1;
-      default:
-        abort ();
+      compressionProfile = pcl::octree::LOW_RES_OFFLINE_COMPRESSION_WITH_COLOR;
     }
+    else if (profile == "lowNC")
+    {
+      compressionProfile = pcl::octree::LOW_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
+    }
+    else if (profile == "medC")
+    {
+      compressionProfile = pcl::octree::MED_RES_OFFLINE_COMPRESSION_WITH_COLOR;
+    }
+    else if (profile =="medNC")
+    {
+      compressionProfile = pcl::octree::MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
+    }
+    else if (profile == "highC")
+    {
+      compressionProfile = pcl::octree::HIGH_RES_OFFLINE_COMPRESSION_WITH_COLOR;
+    }
+    else if (profile == "highNC")
+    {
+      compressionProfile = pcl::octree::HIGH_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
+    }
+    else
+    {
+      print_usage ("Unknown profile parameter..\n");
+      return -1;
+    }
+
+    if (compressionProfile != MANUAL_CONFIGURATION)
+    {
+      // apply selected compression profile
+
+      // retrieve profile settings
+      const pcl::octree::configurationProfile_t selectedProfile = pcl::octree::compressionProfiles_[compressionProfile];
+
+      // apply profile settings
+      pointResolution = selectedProfile.pointResolution;
+      octreeResolution = selectedProfile.octreeResolution;
+      doVoxelGridDownDownSampling = selectedProfile.doVoxelGridDownSampling;
+      iFrameRate = selectedProfile.iFrameRate;
+      doColorEncoding = selectedProfile.doColorEncoding;
+      colorBitResolution = selectedProfile.colorBitResolution;
+
+    }
+  }
+
+  if (pcl::console::find_argument (argc, argv, "-?")>0) {
+    if (isprint (optopt))
+      fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+    else
+      fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
+
+    print_usage ("");
+    return 1;
+  }
 
   if (!validArguments)
   {
