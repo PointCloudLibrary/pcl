@@ -5,8 +5,8 @@ set(SUBSYS_DEPS common io kdtree octree range_image octree filters)
 # Find wxWidgets
 find_package(wxWidgets)
 if(wxWidgets_FOUND)
-	include(${wxWidgets_USE_FILE})
-	include_directories(${wxWidgets_INCLUDE_DIRS})
+  include(${wxWidgets_USE_FILE})
+  include_directories(${wxWidgets_INCLUDE_DIRS})
 endif()
 # Find VTK 
 # rusu:: NOTE: this should be moved to pcl/CMakeLists.txt, when we expand the I/O library
@@ -89,9 +89,14 @@ if(build)
     target_link_libraries(${LIB_NAME} pcl_io pcl_kdtree pcl_range_image 
                                       ${wxWidgets_LIBRARIES} 
                                       vtkCommon vtkWidgets vtkHybrid)
+    if(WIN32 AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
+        target_link_libraries(${LIB_NAME} pcl_io pcl_kdtree pcl_range_image 
+                                          ${wxWidgets_LIBRARIES} 
+                                          vtkCommon-gd vtkWidgets-gd vtkHybrid-gd)
+    endif(WIN32 AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     if(OPENNI_FOUND)
-    	list(APPEND EXT_DEPS openni-dev)
+      list(APPEND EXT_DEPS openni-dev)
     endif(OPENNI_FOUND)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${EXT_DEPS}" "" "" "")
