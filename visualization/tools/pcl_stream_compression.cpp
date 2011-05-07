@@ -161,7 +161,6 @@ class SimpleOpenNIViewer
 
 int main (int argc, char **argv)
 {
-  int c;
   PointCloudCompression<PointXYZRGB>* octreeCoder;
 
   pcl::octree::compression_Profiles_e compressionProfile;
