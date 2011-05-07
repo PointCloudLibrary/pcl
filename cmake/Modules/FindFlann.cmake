@@ -12,20 +12,34 @@ pkg_check_modules(PC_FLANN flann)
 set(FLANN_DEFINITIONS ${PC_FLANN_CFLAGS_OTHER})
 
 find_path(FLANN_INCLUDE_DIR flann/flann.hpp
-    HINTS ${PC_FLANN_INCLUDEDIR} ${PC_FLANN_INCLUDE_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/flann 1.6.8" "$ENV{PROGRAMW6432}/flann 1.6.8" 
-    PATH_SUFFIXES include)
+          HINTS ${PC_FLANN_INCLUDEDIR} ${PC_FLANN_INCLUDE_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
+          PATHS "$ENV{PROGRAMFILES}/flann 1.6.8" "$ENV{PROGRAMW6432}/flann 1.6.8" 
+          PATH_SUFFIXES include)
 
-find_library(FLANN_LIBRARY
-    NAMES flann_cpp_s flann_cpp
-    HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/flann 1.6.8" "$ENV{PROGRAMW6432}/flann 1.6.8" 
-    PATH_SUFFIXES lib)
+# Prefer static libraries in Windows over shared ones
+if(WIN32)
+  find_library(FLANN_LIBRARY
+               NAMES flann_cpp_s flann_cpp
+               HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
+               PATHS "$ENV{PROGRAMFILES}/flann 1.6.8" "$ENV{PROGRAMW6432}/flann 1.6.8" 
+               PATH_SUFFIXES lib)
 
-find_library(FLANN_LIBRARY_DEBUG flann_cpp_s-gd flann_cpp-gd flann_cpp
-    HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT} $ENV{FLANN_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/flann 1.6.8" "$ENV{PROGRAMW6432}/flann 1.6.8" 
-    PATH_SUFFIXES lib)
+  find_library(FLANN_LIBRARY_DEBUG 
+               NAMES flann_cpp_s-gd flann_cpp-gd flann_cpp_s flann_cpp
+               HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT} $ENV{FLANN_ROOT}"
+               PATHS "$ENV{PROGRAMFILES}/flann 1.6.8" "$ENV{PROGRAMW6432}/flann 1.6.8" 
+               PATH_SUFFIXES lib)
+else(WIN32)
+  find_library(FLANN_LIBRARY
+               NAMES flann_cpp
+               HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
+               PATH_SUFFIXES lib)
+
+  find_library(FLANN_LIBRARY_DEBUG 
+               NAMES flann_cpp-gd flann_cpp
+               HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT} $ENV{FLANN_ROOT}"
+               PATH_SUFFIXES lib)
+endif(WIN32)
 
 if(NOT FLANN_LIBRARY_DEBUG)
     set(FLANN_LIBRARY_DEBUG ${FLANN_LIBRARY})
