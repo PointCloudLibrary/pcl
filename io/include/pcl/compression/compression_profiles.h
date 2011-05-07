@@ -112,9 +112,8 @@ namespace pcl
         6, /* colorBitResolution = */
         true /* doColorEncoding = */
     }, {
-
     // PROFILE: HIGH_RES_ONLINE_COMPRESSION_WITHOUT_COLOR
-        0.001, /* pointResolution = */
+        0.0001, /* pointResolution = */
         0.01, /* octreeResolution = */
         false, /* doVoxelGridDownDownSampling = */
         30, /* iFrameRate = */
@@ -122,7 +121,7 @@ namespace pcl
         false /* doColorEncoding = */
     }, {
     // PROFILE: HIGH_RES_ONLINE_COMPRESSION_WITH_COLOR
-        0.001, /* pointResolution = */
+        0.0001, /* pointResolution = */
         0.01, /* octreeResolution = */
         false, /* doVoxelGridDownDownSampling = */
         30, /* iFrameRate = */
@@ -146,25 +145,25 @@ namespace pcl
         true /* doColorEncoding = */
     }, {
     // PROFILE: MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR
-        0.005, /* pointResolution = */
-        0.005, /* octreeResolution = */
+        0.001, /* pointResolution = */
+        0.001, /* octreeResolution = */
         true, /* doVoxelGridDownDownSampling = */
         100, /* iFrameRate = */
         6, /* colorBitResolution = */
         false /* doColorEncoding = */
     }, {
     // PROFILE: MED_RES_OFFLINE_COMPRESSION_WITH_COLOR
-        0.005, /* pointResolution = */
+        0.001, /* pointResolution = */
         0.01, /* octreeResolution = */
-        true, /* doVoxelGridDownDownSampling = */
+        false, /* doVoxelGridDownDownSampling = */
         100, /* iFrameRate = */
         6, /* colorBitResolution = */
         true /* doColorEncoding = */
     }, {
     // PROFILE: HIGH_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR
-        0.001, /* pointResolution = */
-        0.001, /* octreeResolution = */
-        false, /* doVoxelGridDownDownSampling = */
+        0.0001, /* pointResolution = */
+        0.0001, /* octreeResolution = */
+        true, /* doVoxelGridDownDownSampling = */
         100, /* iFrameRate = */
         8, /* colorBitResolution = */
         false /* doColorEncoding = */
