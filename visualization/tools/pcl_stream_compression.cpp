@@ -95,6 +95,7 @@ char usage[] = "\n"
   "      -i rate  : i-frame rate\n"
   "      -b bits  : bits/color component\n"
   "      -t       : output statistics\n"
+  "      -e       : show input cloud during encoding\n"
   "\n"
   "  example:\n"
   "      ./pcl_stream_compression -x -p highC -t -f pc_compressed.pcc \n"
@@ -158,8 +159,56 @@ class SimpleOpenNIViewer
 
 };
 
+struct EventHelper
+{
+  EventHelper (ostream& outputFile_arg, PointCloudCompression<PointXYZRGB>* octreeEncoder_arg) :
+    outputFile_ (outputFile_arg), octreeEncoder_ (octreeEncoder_arg)
+  {
+  }
 
-int main (int argc, char **argv)
+  void
+  cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+  {
+    if (!outputFile_.fail ())
+    {
+
+      PointCloud<PointXYZRGB>::Ptr cloudOut (new PointCloud<PointXYZRGB> ());
+
+      octreeEncoder_->encodePointCloud (cloud, outputFile_);
+    }
+  }
+
+  void
+  run ()
+  {
+
+    // create a new grabber for OpenNI devices
+    pcl::Grabber* interface = new pcl::OpenNIGrabber ();
+
+    // make callback function from member function
+    boost::function<void
+    (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&EventHelper::cloud_cb_, this, _1);
+
+    // connect callback function for desired signal. In this case its a point cloud with color values
+    boost::signals2::connection c = interface->registerCallback (f);
+
+    // start receiving point clouds
+    interface->start ();
+
+    while (!outputFile_.fail ())
+    {
+      sleep (1);
+    }
+
+    interface->stop ();
+  }
+
+  ostream& outputFile_;
+  PointCloudCompression<PointXYZRGB>* octreeEncoder_;
+};
+
+int
+main (int argc, char **argv)
 {
   PointCloudCompression<PointXYZRGB>* octreeCoder;
 
@@ -173,6 +222,8 @@ int main (int argc, char **argv)
   bool doColorEncoding;
   unsigned int colorBitResolution;
 
+  bool bShowInputCloud;
+
   // default values
   showStatistics = false;
   pointResolution = 0.001;
@@ -182,6 +233,8 @@ int main (int argc, char **argv)
   doColorEncoding = false;
   colorBitResolution = 6;
   compressionProfile = pcl::octree::MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
+
+  bShowInputCloud = false;
 
   std::string fileName = "pc_compressed.pcc";
   std::string hostName = "localhost";
@@ -193,6 +246,10 @@ int main (int argc, char **argv)
   validArguments = false;
   bServerFileMode = false;
   bEnDecode = false;
+
+  if (pcl::console::find_argument (argc, argv, "-e")>0) {
+    bShowInputCloud = true;
+  }
 
   if (pcl::console::find_argument (argc, argv, "-s")>0) {
     bEnDecode = true;
@@ -327,8 +384,15 @@ int main (int argc, char **argv)
       ofstream compressedPCFile;
       compressedPCFile.open (fileName.c_str(), ios::out | ios::trunc | ios::binary);
 
-      SimpleOpenNIViewer v(compressedPCFile, octreeCoder);
-      v.run ();
+      if (!bShowInputCloud) {
+        EventHelper v (compressedPCFile, octreeCoder);
+        v.run ();
+      } else
+      {
+        SimpleOpenNIViewer v (compressedPCFile, octreeCoder);
+        v.run ();
+      }
+
     } else
     {
       // DECODING
@@ -393,10 +457,14 @@ int main (int argc, char **argv)
 
         std::cout << "Connected!" << std::endl;
 
-        SimpleOpenNIViewer v (socketStream, octreeCoder);
-        // start receiving point clouds
-
-        v.run ();
+        if (!bShowInputCloud) {
+          EventHelper v (socketStream, octreeCoder);
+          v.run ();
+        } else
+        {
+          SimpleOpenNIViewer v (socketStream, octreeCoder);
+          v.run ();
+        }
 
         std::cout << "Disconnected!" << std::endl;
 
