@@ -196,7 +196,7 @@ Setup the CMake fields as usual::
 Hit "Configure" and set the following options::
 
  BUILD_SHARED_LIBS                      OFF
- gtest_force_shared_crt					(ON if you are building PCL as a static library, OFF otherwise)
+ gtest_force_shared_crt					        ON
  
 Generate and build the resulting project.
  
