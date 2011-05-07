@@ -609,14 +609,14 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
   removed_indices_->resize(nr_removed_p);
 }
 
-#define PCL_INSTANTIATE_PointDataAtOffset(T) template class pcl::PointDataAtOffset<T>;
-#define PCL_INSTANTIATE_ComparisonBase(T) template class pcl::ComparisonBase<T>;
-#define PCL_INSTANTIATE_FieldComparison(T) template class pcl::FieldComparison<T>;
-#define PCL_INSTANTIATE_PackedRGBComparison(T) template class pcl::PackedRGBComparison<T>;
-#define PCL_INSTANTIATE_PackedHSIComparison(T) template class pcl::PackedHSIComparison<T>;
-#define PCL_INSTANTIATE_ConditionBase(T) template class pcl::ConditionBase<T>;
-#define PCL_INSTANTIATE_ConditionAnd(T) template class pcl::ConditionAnd<T>;
-#define PCL_INSTANTIATE_ConditionOr(T) template class pcl::ConditionOr<T>;
-#define PCL_INSTANTIATE_ConditionalRemoval(T) template class pcl::ConditionalRemoval<T>;
+#define PCL_INSTANTIATE_PointDataAtOffset(T) template class PCL_EXPORTS pcl::PointDataAtOffset<T>;
+#define PCL_INSTANTIATE_ComparisonBase(T) template class PCL_EXPORTS pcl::ComparisonBase<T>;
+#define PCL_INSTANTIATE_FieldComparison(T) template class PCL_EXPORTS pcl::FieldComparison<T>;
+#define PCL_INSTANTIATE_PackedRGBComparison(T) template class PCL_EXPORTS pcl::PackedRGBComparison<T>;
+#define PCL_INSTANTIATE_PackedHSIComparison(T) template class PCL_EXPORTS pcl::PackedHSIComparison<T>;
+#define PCL_INSTANTIATE_ConditionBase(T) template class PCL_EXPORTS pcl::ConditionBase<T>;
+#define PCL_INSTANTIATE_ConditionAnd(T) template class PCL_EXPORTS pcl::ConditionAnd<T>;
+#define PCL_INSTANTIATE_ConditionOr(T) template class PCL_EXPORTS pcl::ConditionOr<T>;
+#define PCL_INSTANTIATE_ConditionalRemoval(T) template class PCL_EXPORTS pcl::ConditionalRemoval<T>;
 
 #endif 
