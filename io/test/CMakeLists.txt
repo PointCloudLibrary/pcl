@@ -8,5 +8,10 @@ if(BUILD_TESTS)
     PCL_ADD_TEST(io_iterators test_iterators 
                  FILES test_iterators.cpp
                  LINK_WITH pcl_io)
+                 
+    PCL_ADD_TEST(compression_range_coder test_range_coder 
+             FILES test_range_coder.cpp
+             LINK_WITH pcl_io)             
+                 
 endif(BUILD_TESTS)
 

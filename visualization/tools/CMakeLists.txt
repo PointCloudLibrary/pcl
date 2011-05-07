@@ -29,5 +29,11 @@ if(OPENNI_FOUND)
     PCL_ADD_EXECUTABLE(openni_change_viewer ${SUBSYS_NAME} openni_change_viewer.cpp)
     target_link_libraries(openni_change_viewer pcl_common pcl_io pcl_kdtree pcl_octree
         pcl_range_image pcl_visualization pcl_filters)
+        
+    PCL_ADD_EXECUTABLE(pcl_stream_compression ${SUBSYS_NAME} pcl_stream_compression.cpp)
+    target_link_libraries(pcl_stream_compression pcl_common pcl_io pcl_kdtree pcl_octree
+        pcl_range_image pcl_visualization pcl_filters)    
+        
+
 endif(OPENNI_FOUND)
 
