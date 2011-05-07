@@ -192,33 +192,33 @@ then a sample value is given for reference.
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+ 
 | cache variable                   | meaning                                                       | sample value                             |
 +==================================+===============================================================+==========================================+
-| Boost_DATE_TIME_LIBRARY          | full path to boost_date-time.[so,dll,lib,a]                   | /usr/local/lib/libboost_date_time.so     |
+| Boost_DATE_TIME_LIBRARY          | full path to boost_date-time.[so,lib,a]                       | /usr/local/lib/libboost_date_time.so     |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_DATE_TIME_LIBRARY_DEBUG    | full path to boost_date-time.[so,dll,lib,a] (debug version)   | /usr/local/lib/libboost_date_time-gd.so  |
+| Boost_DATE_TIME_LIBRARY_DEBUG    | full path to boost_date-time.[so,lib,a] (debug version)       | /usr/local/lib/libboost_date_time-gd.so  |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_DATE_TIME_LIBRARY_RELEASE  | full path to boost_date-time.[so,dll,lib,a] (relase version)  | /usr/local/lib/libboost_date_time.so     |
+| Boost_DATE_TIME_LIBRARY_RELEASE  | full path to boost_date-time.[so,lib,a] (release version)     | /usr/local/lib/libboost_date_time.so     |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_FILESYSTEM_LIBRARY         | full path to boost_filesystem.[so,dll,lib,a]                  | /usr/local/lib/libboost_filesystem.so    |
+| Boost_FILESYSTEM_LIBRARY         | full path to boost_filesystem.[so,lib,a]                      | /usr/local/lib/libboost_filesystem.so    |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_FILESYSTEM_LIBRARY_DEBUG   | full path to boost_filesystem.[so,dll,lib,a] (debug version)  | /usr/local/lib/libboost_filesystem-gd.so |
+| Boost_FILESYSTEM_LIBRARY_DEBUG   | full path to boost_filesystem.[so,lib,a] (debug version)      | /usr/local/lib/libboost_filesystem-gd.so |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_FILESYSTEM_LIBRARY_RELEASE | full path to boost_filesystem.[so,dll,lib,a] (relase version) | /usr/local/lib/libboost_filesystem.so    |
+| Boost_FILESYSTEM_LIBRARY_RELEASE | full path to boost_filesystem.[so,lib,a] (release version)    | /usr/local/lib/libboost_filesystem.so    |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
 | Boost_INCLUDE_DIR                | path to boost headers directory                               | /usr/local/include                       |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
 | Boost_LIBRARY_DIRS               | path to boost libraries directory                             | /usr/local/lib                           |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_SYSTEM_LIBRARY             | full path to boost_system.[so,dll,lib,a]                      | /usr/local/lib/libboost_system.so        |
+| Boost_SYSTEM_LIBRARY             | full path to boost_system.[so,lib,a]                          | /usr/local/lib/libboost_system.so        |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_SYSTEM_LIBRARY_DEBUG       | full path to boost_system.[so,dll,lib,a] (debug version)      | /usr/local/lib/libboost_system-gd.so     |
+| Boost_SYSTEM_LIBRARY_DEBUG       | full path to boost_system.[so,lib,a] (debug version)          | /usr/local/lib/libboost_system-gd.so     |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_SYSTEM_LIBRARY_RELEASE     | full path to boost_system.[so,dll,lib,a] (relase version)     | /usr/local/lib/libboost_system.so        |
+| Boost_SYSTEM_LIBRARY_RELEASE     | full path to boost_system.[so,lib,a] (release version)        | /usr/local/lib/libboost_system.so        |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_THREAD_LIBRARY             | full path to boost_thread.[so,dll,lib,a]                      | /usr/local/lib/libboost_thread.so        |
+| Boost_THREAD_LIBRARY             | full path to boost_thread.[so,lib,a]                          | /usr/local/lib/libboost_thread.so        |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_THREAD_LIBRARY_DEBUG       | full path to boost_thread.[so,dll,lib,a] (debug version)      | /usr/local/lib/libboost_thread-gd.so     |
+| Boost_THREAD_LIBRARY_DEBUG       | full path to boost_thread.[so,lib,a] (debug version)          | /usr/local/lib/libboost_thread-gd.so     |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
-| Boost_THREAD_LIBRARY_RELEASE     | full path to boost_thread.[so,dll,lib,a] (relase version)     | /usr/local/lib/libboost_thread.so        |
+| Boost_THREAD_LIBRARY_RELEASE     | full path to boost_thread.[so,lib,a] (release version)        | /usr/local/lib/libboost_thread.so        |
 +----------------------------------+---------------------------------------------------------------+------------------------------------------+
 
 
@@ -229,9 +229,9 @@ then a sample value is given for reference.
 +========================+========================================================+==================================+ 
 | CMINPACK_INCLUDE_DIR   | path to cminpack headers directory                     | /usr/local/include/cminpack-1    |
 +------------------------+--------------------------------------------------------+----------------------------------+
-| CMINPACK_LIBRARY       | full path to cminpack.[so,dll,lib,a] (release version) | /usr/local/lib/libcminpack.so    |
+| CMINPACK_LIBRARY       | full path to cminpack.[so,lib,a] (release version)     | /usr/local/lib/libcminpack.so    |
 +------------------------+--------------------------------------------------------+----------------------------------+
-| CMINPACK_LIBRARY_DEBUG | full path to cminpack.[so,dll,lib,a] (debug version)   | /usr/local/lib/libcminpack-gd.so |    
+| CMINPACK_LIBRARY_DEBUG | full path to cminpack.[so,lib,a] (debug version)       | /usr/local/lib/libcminpack-gd.so |    
 +------------------------+--------------------------------------------------------+----------------------------------+
 
 
@@ -242,9 +242,9 @@ then a sample value is given for reference.
 +=====================+============================================================+===================================+
 | FLANN_INCLUDE_DIR   | path to flann headers directory                            | /usr/local/include                |
 +---------------------+------------------------------------------------------------+-----------------------------------+
-| FLANN_LIBRARY       | full path to libflann_cpp.[so,dll,lib,a] (release version) | /usr/local/lib/libflann_cpp.so    |
+| FLANN_LIBRARY       | full path to libflann_cpp.[so,lib,a] (release version)     | /usr/local/lib/libflann_cpp.so    |
 +---------------------+------------------------------------------------------------+-----------------------------------+
-| FLANN_LIBRARY_DEBUG | full path to libflann_cpp.[so,dll,lib,a] (debug version)   | /usr/local/lib/libflann_cpp-gd.so |
+| FLANN_LIBRARY_DEBUG | full path to libflann_cpp.[so,lib,a] (debug version)       | /usr/local/lib/libflann_cpp-gd.so |
 +---------------------+------------------------------------------------------------+-----------------------------------+
 
 
