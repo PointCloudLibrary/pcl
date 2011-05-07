@@ -15,16 +15,30 @@ find_path(QHULL_INCLUDE_DIR
           PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
           PATH_SUFFIXES qhull src/libqhull libqhull include)
 
-find_library(QHULL_LIBRARY 
-             NAMES qhullstatic qhull qhull${QHULL_MAJOR_VERSION}
-             HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
-             PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
-             PATH_SUFFIXES project build bin lib)
+# Prefer static libraries in Windows over shared ones
+if(WIN32)
+  find_library(QHULL_LIBRARY 
+               NAMES qhullstatic qhull qhull${QHULL_MAJOR_VERSION}
+               HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
+               PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
+               PATH_SUFFIXES project build bin lib)
 
-find_library(QHULL_LIBRARY_DEBUG qhullstatic_d qhull_d qhull_d${QHULL_MAJOR_VERSION} qhull qhull${QHULL_MAJOR_VERSION}
-             HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
-             PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
-             PATH_SUFFIXES project build bin lib)
+  find_library(QHULL_LIBRARY_DEBUG 
+               NAMES qhullstatic_d qhull_d qhull_d${QHULL_MAJOR_VERSION} qhull qhull${QHULL_MAJOR_VERSION}
+               HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
+               PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
+               PATH_SUFFIXES project build bin lib)
+else(WIN32)
+  find_library(QHULL_LIBRARY 
+               NAMES qhull qhull${QHULL_MAJOR_VERSION}
+               HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
+               PATH_SUFFIXES project build bin lib)
+
+  find_library(QHULL_LIBRARY_DEBUG 
+               NAMES qhull_d qhull_d${QHULL_MAJOR_VERSION} qhull qhull${QHULL_MAJOR_VERSION}
+               HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
+               PATH_SUFFIXES project build bin lib)
+endif(WIN32)
 
 if(NOT QHULL_LIBRARY_DEBUG)
   set(QHULL_LIBRARY_DEBUG ${QHULL_LIBRARY})
