@@ -451,7 +451,7 @@ namespace pcl
           compressedTreeDataIn_arg.read ((char*)&readChar, sizeof(readChar));
           if (readChar != frameHeaderIdentifier_[headerIdPos++])
           {
-            headerIdPos = 0;
+            headerIdPos = (frameHeaderIdentifier_[0]==readChar)?1:0;
           }
         }
 
