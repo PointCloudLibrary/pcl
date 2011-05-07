@@ -43,6 +43,8 @@
 
 #include <pcl/keypoints/sift_keypoint.h>
 
+#include <set>
+
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
@@ -97,6 +99,51 @@ TEST (PCL, SIFTKeypoint)
     EXPECT_NEAR (keypoints.points[i].scale, correct_keypoints[i][3], 1e-4);
   }
 
+}
+
+TEST (PCL, SIFTKeypoint_radiusSearch)
+{
+  int nr_scales_per_octave = 3;
+  float scale = 0.02;
+
+  KdTreeFLANN<PointXYZI>::Ptr tree_ (new KdTreeFLANN<PointXYZI>);
+  boost::shared_ptr<pcl::PointCloud<PointXYZI> > cloud = cloud_xyzi->makeShared ();
+
+  VoxelGrid<PointXYZI> voxel_grid;
+  float s = 1.0 * scale; 
+  voxel_grid.setLeafSize (s, s, s);
+  voxel_grid.setInputCloud (cloud);
+  voxel_grid.filter (*cloud);
+  tree_->setInputCloud (cloud);
+  
+  const PointCloud<PointXYZI> & input = *cloud;
+  KdTreeFLANN<PointXYZI> & tree = *tree_;
+  float base_scale = scale;
+
+  std::vector<float> scales (nr_scales_per_octave + 3);
+  for (int i_scale = 0; i_scale <= nr_scales_per_octave + 2; ++i_scale)
+  {
+    scales[i_scale] = base_scale * pow (2.0, (1.0 * i_scale - 1) / nr_scales_per_octave);
+  }
+  Eigen::MatrixXf diff_of_gauss;
+
+  std::vector<int> nn_indices;
+  std::vector<float> nn_dist;
+  diff_of_gauss.resize (input.size (), scales.size () - 1);
+
+  const float max_radius = 0.10;
+
+  size_t i_point = 500;
+  tree.radiusSearch (i_point, max_radius, nn_indices, nn_dist);
+
+  // Are they all unique?
+  set<int> unique_indices;
+  for (size_t i_neighbor = 0; i_neighbor < nn_indices.size (); ++i_neighbor)
+  {
+    unique_indices.insert (nn_indices[i_neighbor]);
+  }
+
+  EXPECT_EQ (nn_indices.size (), unique_indices.size ());
 }
 
 /* ---[ */
