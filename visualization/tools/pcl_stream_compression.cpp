@@ -47,10 +47,9 @@
 #include <stdio.h>
 #include <sstream>
 #include <stdlib.h>
-#include <sys/time.h>
 #include "stdio.h"
- #include <ctype.h>
- #include <unistd.h>
+#include <ctype.h>
+#include <unistd.h>
 
 #include <iostream>
 #include <string>
@@ -404,12 +403,9 @@ int main (int argc, char **argv)
     if (bEnDecode)
     {
       // ENCODING
-
       try
       {
-
         boost::asio::io_service io_service;
-
         tcp::endpoint endpoint (tcp::v4 (), 6666);
         tcp::acceptor acceptor (io_service, endpoint);
 
