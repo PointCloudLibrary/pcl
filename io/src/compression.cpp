@@ -48,5 +48,5 @@
 #include "pcl/compression/octree_pointcloud_compression.h"
 #include "pcl/compression/impl/octree_pointcloud_compression.hpp"
 
-template class pcl::octree::PointCloudCompression<pcl::PointXYZ>;
-template class pcl::octree::PointCloudCompression<pcl::PointXYZRGB>;
+template class PCL_EXPORTS pcl::octree::PointCloudCompression<pcl::PointXYZ>;
+template class PCL_EXPORTS pcl::octree::PointCloudCompression<pcl::PointXYZRGB>;
