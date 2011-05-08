@@ -374,6 +374,12 @@ TEST (PCL, ConcaveHull_LTable)
 int
 main (int argc, char** argv)
 {
+  if (argc < 2)
+  {
+    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+
   // Load file
   sensor_msgs::PointCloud2 cloud_blob;
   loadPCDFile (argv[1], cloud_blob);
