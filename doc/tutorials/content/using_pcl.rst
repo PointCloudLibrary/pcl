@@ -32,7 +32,7 @@ And create a file named CMakeLists.txt that contains:
 	 find_package(PCL 1.0 REQUIRED COMPONENTS io)
 	 include_directories(${PCL_INCLUDE_DIRS})
 	 add_executable(pcd_write_test pcd_write.cpp)
-	 target_link_libraries(pcd_write_test ${PCL_IO_LIBRARY})
+	 target_link_libraries(pcd_write_test ${PCL_IO_LIBRARIES})
 	 
 The explanation
 ---------------
@@ -103,7 +103,7 @@ Windows platform and blank on UNIX) and the permissions.
 
 .. code-block:: cmake
 
-	 target_link_libraries(pcd_write_test ${PCL_IO_LIBRARY})
+	 target_link_libraries(pcd_write_test ${PCL_IO_LIBRARIES})
 
 The executable we are building makes call to PCL functions. So far, we
 have only included the PCL headers so the compilers knows about the
