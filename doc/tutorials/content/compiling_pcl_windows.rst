@@ -297,7 +297,7 @@ During the CMake configuration for the PCL project, the following options were s
   BUILD_global_tests			(ON if you are interested in building software testing units)
   BUILD_visualization			(ON if you want to build the optional visualization component) 
   QHULL_LIBRARY					"C:/PCL_dependencies/qhull/bin32/src/Release/qhull.lib" 
-  QHULL_INCLUDE_DIR				"C:/PCL_dependencies/qhull" 
+  QHULL_INCLUDE_DIR				"C:/PCL_dependencies/qhull/src" 
   QHULL_LIBRARY_DEBUG			"C:/PCL_dependencies/qhull/bin32/src/Debug/qhull.lib" 
   VTK_DIR						"C:/PCL_dependencies/vtk-5.6.1-mod/bin32"  
 
