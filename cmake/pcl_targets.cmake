@@ -82,8 +82,8 @@ macro(PCL_ADD_LIBRARY _name _component)
     #
     # Only link if needed
     if(WIN32 AND MSVC)
-      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS /OPT:REF)
-		else()
+      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
+    else()
       SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
     #
@@ -110,8 +110,8 @@ macro(PCL_ADD_EXECUTABLE _name _component)
     target_link_libraries(${_name} ${Boost_LIBRARIES})
     #
     # Only link if needed
-		if(WIN32 AND MSVC)
-      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS /OPT:REF)
+    if(WIN32 AND MSVC)
+      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
     else()
       SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
@@ -144,7 +144,7 @@ macro(PCL_ADD_TEST _name _exename)
       # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
       target_link_libraries(${_exename} pthread)
     elseif(WIN32)
-      SET_TARGET_PROPERTIES(${_exename} PROPERTIES LINK_FLAGS /OPT:REF)
+      SET_TARGET_PROPERTIES(${_exename} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
     endif()
     # 
     PCL_LINK_OPENMP(${_exename})
