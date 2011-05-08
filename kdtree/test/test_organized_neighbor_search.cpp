@@ -81,7 +81,7 @@ public:
 TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
 {
 
-  const unsigned int test_runs = 5;
+  const unsigned int test_runs = 500;
   unsigned int test_id;
 
   // instantiate point cloud
@@ -127,7 +127,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
     for (ypos = -centerY; ypos < centerY; ypos++)
       for (xpos = -centerX; xpos < centerX; xpos++)
       {
-        z = 15.0 * ((double)rand () / (double)(RAND_MAX+1.0))+10;
+        z = 15.0 * ((double)rand () / (double)(RAND_MAX+1.0))+20;
         y = (double)ypos*oneOverFocalLength*(double)z;
         x = (double)xpos*oneOverFocalLength*(double)z;
 
