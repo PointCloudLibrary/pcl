@@ -1,6 +1,6 @@
-diff -ur VTK/Charts/CMakeLists.txt VTK/Charts/CMakeLists.txt
+diff -ru VTK/Charts/CMakeLists.txt VTK/Charts/CMakeLists.txt
 --- VTK/Charts/CMakeLists.txt	2010-09-27 22:40:00.000000000 +0200
-+++ VTK/Charts/CMakeLists.txt	2011-05-08 01:49:56.058914906 +0200
++++ VTK/Charts/CMakeLists.txt	2011-05-08 02:09:15.086914905 +0200
 @@ -13,6 +13,9 @@
  SET(KIT_LIBS vtkIO vtkftgl
    ${VTK_FREETYPE_LIBRARIES}
@@ -22,9 +22,9 @@ diff -ur VTK/Charts/CMakeLists.txt VTK/Charts/CMakeLists.txt
    ENDIF (APPLE)
  ENDIF(VTK_USE_QT)
  
-diff -ur VTK/CMake/KitCommonBlock.cmake VTK/CMake/KitCommonBlock.cmake
+diff -ru VTK/CMake/KitCommonBlock.cmake VTK/CMake/KitCommonBlock.cmake
 --- VTK/CMake/KitCommonBlock.cmake	2010-09-27 22:40:00.000000000 +0200
-+++ VTK/CMake/KitCommonBlock.cmake	2011-05-08 01:49:56.058914906 +0200
++++ VTK/CMake/KitCommonBlock.cmake	2011-05-08 02:09:15.086914905 +0200
 @@ -5,7 +5,9 @@
                         ${VTK_BINARY_DIR} "")
  
@@ -60,9 +60,9 @@ diff -ur VTK/CMake/KitCommonBlock.cmake VTK/CMake/KitCommonBlock.cmake
  TARGET_LINK_LIBRARIES(vtk${KIT} LINK_INTERFACE_LIBRARIES ${KIT_INTERFACE_LIBRARIES})
 +TARGET_LINK_LIBRARIES(vtk${KIT}-gd LINK_INTERFACE_LIBRARIES ${KIT_INTERFACE_LIBRARIES_DEBUG})
  
-diff -ur VTK/Common/CMakeLists.txt VTK/Common/CMakeLists.txt
+diff -ru VTK/Common/CMakeLists.txt VTK/Common/CMakeLists.txt
 --- VTK/Common/CMakeLists.txt	2010-09-27 22:40:00.000000000 +0200
-+++ VTK/Common/CMakeLists.txt	2011-05-08 01:49:56.058914906 +0200
++++ VTK/Common/CMakeLists.txt	2011-05-08 02:09:15.086914905 +0200
 @@ -4,6 +4,7 @@
  SET(KIT_PYTHON_LIBS)
  SET(KIT_JAVA_LIBS)
@@ -97,9 +97,9 @@ diff -ur VTK/Common/CMakeLists.txt VTK/Common/CMakeLists.txt
  ENDIF(CMAKE_SYSTEM MATCHES "SunOS.*") 
  
  #-----------------------------------------------------------------------------
-diff -ur VTK/Examples/Build/vtkLocal/CMakeLists.txt VTK/Examples/Build/vtkLocal/CMakeLists.txt
+diff -ru VTK/Examples/Build/vtkLocal/CMakeLists.txt VTK/Examples/Build/vtkLocal/CMakeLists.txt
 --- VTK/Examples/Build/vtkLocal/CMakeLists.txt	2010-09-27 22:40:01.000000000 +0200
-+++ VTK/Examples/Build/vtkLocal/CMakeLists.txt	2011-05-08 01:49:56.062914906 +0200
++++ VTK/Examples/Build/vtkLocal/CMakeLists.txt	2011-05-08 02:09:15.086914905 +0200
 @@ -87,6 +87,9 @@
    # Create the library.
    ADD_LIBRARY(${PROJECT_NAME} ${vtkLocal_SRCS} ${vtkLocalInstantiator_SRCS})
@@ -110,9 +110,9 @@ diff -ur VTK/Examples/Build/vtkLocal/CMakeLists.txt VTK/Examples/Build/vtkLocal/
  
    # Create Tcl wrappers if VTK is wrapped in Tcl.
    IF(VTK_WRAP_TCL)
-diff -ur VTK/Examples/Build/vtkMy/Common/CMakeLists.txt VTK/Examples/Build/vtkMy/Common/CMakeLists.txt
+diff -ru VTK/Examples/Build/vtkMy/Common/CMakeLists.txt VTK/Examples/Build/vtkMy/Common/CMakeLists.txt
 --- VTK/Examples/Build/vtkMy/Common/CMakeLists.txt	2010-09-27 22:40:01.000000000 +0200
-+++ VTK/Examples/Build/vtkMy/Common/CMakeLists.txt	2011-05-08 01:49:56.062914906 +0200
++++ VTK/Examples/Build/vtkMy/Common/CMakeLists.txt	2011-05-08 02:09:15.090914905 +0200
 @@ -14,6 +14,9 @@
  # Create the vtkmyCommon C++ library.
  ADD_LIBRARY (vtkmyCommon ${Common_SRCS})
@@ -123,9 +123,9 @@ diff -ur VTK/Examples/Build/vtkMy/Common/CMakeLists.txt VTK/Examples/Build/vtkMy
  
  # Create the vtkmyCommon Tcl library.
  IF (VTK_WRAP_TCL AND VTKMY_WRAP_TCL)
-diff -ur VTK/Examples/Build/vtkMy/Imaging/CMakeLists.txt VTK/Examples/Build/vtkMy/Imaging/CMakeLists.txt
+diff -ru VTK/Examples/Build/vtkMy/Imaging/CMakeLists.txt VTK/Examples/Build/vtkMy/Imaging/CMakeLists.txt
 --- VTK/Examples/Build/vtkMy/Imaging/CMakeLists.txt	2010-09-27 22:40:01.000000000 +0200
-+++ VTK/Examples/Build/vtkMy/Imaging/CMakeLists.txt	2011-05-08 01:49:56.062914906 +0200
++++ VTK/Examples/Build/vtkMy/Imaging/CMakeLists.txt	2011-05-08 02:09:15.090914905 +0200
 @@ -14,6 +14,9 @@
  # Create the vtkmyImaging C++ library
  ADD_LIBRARY (vtkmyImaging ${Imaging_SRCS})
@@ -136,9 +136,9 @@ diff -ur VTK/Examples/Build/vtkMy/Imaging/CMakeLists.txt VTK/Examples/Build/vtkM
  
  # Create the vtkmyImaging Tcl library
  IF (VTK_WRAP_TCL AND VTKMY_WRAP_TCL)
-diff -ur VTK/Examples/Build/vtkMy/Unsorted/CMakeLists.txt VTK/Examples/Build/vtkMy/Unsorted/CMakeLists.txt
+diff -ru VTK/Examples/Build/vtkMy/Unsorted/CMakeLists.txt VTK/Examples/Build/vtkMy/Unsorted/CMakeLists.txt
 --- VTK/Examples/Build/vtkMy/Unsorted/CMakeLists.txt	2010-09-27 22:40:01.000000000 +0200
-+++ VTK/Examples/Build/vtkMy/Unsorted/CMakeLists.txt	2011-05-08 01:49:56.062914906 +0200
++++ VTK/Examples/Build/vtkMy/Unsorted/CMakeLists.txt	2011-05-08 02:09:15.090914905 +0200
 @@ -14,9 +14,13 @@
  # Create the vtkmyUnsorted C++ library.
  ADD_LIBRARY (vtkmyUnsorted ${Unsorted_SRCS})
@@ -164,9 +164,9 @@ diff -ur VTK/Examples/Build/vtkMy/Unsorted/CMakeLists.txt VTK/Examples/Build/vtk
  ENDIF (VTK_USE_RENDERING)
  
  # Create the vtkmyUnsorted Tcl library.
-diff -ur VTK/Filtering/CMakeLists.txt VTK/Filtering/CMakeLists.txt
+diff -ru VTK/Filtering/CMakeLists.txt VTK/Filtering/CMakeLists.txt
 --- VTK/Filtering/CMakeLists.txt	2010-09-27 22:40:02.000000000 +0200
-+++ VTK/Filtering/CMakeLists.txt	2011-05-08 01:49:56.062914906 +0200
++++ VTK/Filtering/CMakeLists.txt	2011-05-08 02:09:15.090914905 +0200
 @@ -4,6 +4,7 @@
  SET(KIT_PYTHON_LIBS vtkCommonPythonD)
  SET(KIT_JAVA_LIBS vtkCommonJava)
@@ -175,9 +175,9 @@ diff -ur VTK/Filtering/CMakeLists.txt VTK/Filtering/CMakeLists.txt
  
  SET( Kit_SRCS
  vtkAbstractCellLocator.cxx
-diff -ur VTK/GenericFiltering/CMakeLists.txt VTK/GenericFiltering/CMakeLists.txt
+diff -ru VTK/GenericFiltering/CMakeLists.txt VTK/GenericFiltering/CMakeLists.txt
 --- VTK/GenericFiltering/CMakeLists.txt	2010-09-27 22:40:03.000000000 +0200
-+++ VTK/GenericFiltering/CMakeLists.txt	2011-05-08 01:49:56.062914906 +0200
++++ VTK/GenericFiltering/CMakeLists.txt	2011-05-08 02:09:15.090914905 +0200
 @@ -4,6 +4,7 @@
  SET(KIT_PYTHON_LIBS vtkFilteringPythonD vtkGraphicsPythonD)
  SET(KIT_JAVA_LIBS vtkFilteringJava vtkGraphicsJava)
@@ -186,9 +186,9 @@ diff -ur VTK/GenericFiltering/CMakeLists.txt VTK/GenericFiltering/CMakeLists.txt
  
  SET( Kit_SRCS
  vtkGenericContourFilter.cxx
-diff -ur VTK/Geovis/CMakeLists.txt VTK/Geovis/CMakeLists.txt
+diff -ru VTK/Geovis/CMakeLists.txt VTK/Geovis/CMakeLists.txt
 --- VTK/Geovis/CMakeLists.txt	2010-09-27 22:40:03.000000000 +0200
-+++ VTK/Geovis/CMakeLists.txt	2011-05-08 01:49:56.062914906 +0200
++++ VTK/Geovis/CMakeLists.txt	2011-05-08 02:09:15.090914905 +0200
 @@ -4,7 +4,9 @@
  SET(KIT_PYTHON_LIBS vtkWidgetsPythonD vtkViewsPythonD)
  SET(KIT_JAVA_LIBS vtkWidgetsJava vtkViewsJava)
@@ -199,9 +199,9 @@ diff -ur VTK/Geovis/CMakeLists.txt VTK/Geovis/CMakeLists.txt
  
  SET( Kit_SRCS
    vtkCompassRepresentation.cxx
-diff -ur VTK/Graphics/CMakeLists.txt VTK/Graphics/CMakeLists.txt
+diff -ru VTK/Graphics/CMakeLists.txt VTK/Graphics/CMakeLists.txt
 --- VTK/Graphics/CMakeLists.txt	2010-09-27 22:40:03.000000000 +0200
-+++ VTK/Graphics/CMakeLists.txt	2011-05-08 01:49:56.066914906 +0200
++++ VTK/Graphics/CMakeLists.txt	2011-05-08 02:09:15.094914905 +0200
 @@ -7,7 +7,9 @@
    SET(KIT_JAVA_LIBS ${KIT_JAVA_LIBS} ${JAVA_AWT_LIBRARY} ${JAVA_JVM_LIBRARY})
  ENDIF(JAVA_AWT_LIBRARY)
@@ -228,9 +228,9 @@ diff -ur VTK/Graphics/CMakeLists.txt VTK/Graphics/CMakeLists.txt
  
  ENDIF(VTK_USE_GNU_R)
  
-diff -ur VTK/GUISupport/MFC/CMakeLists.txt VTK/GUISupport/MFC/CMakeLists.txt
+diff -ru VTK/GUISupport/MFC/CMakeLists.txt VTK/GUISupport/MFC/CMakeLists.txt
 --- VTK/GUISupport/MFC/CMakeLists.txt	2010-09-27 22:40:03.000000000 +0200
-+++ VTK/GUISupport/MFC/CMakeLists.txt	2011-05-08 01:49:56.066914906 +0200
++++ VTK/GUISupport/MFC/CMakeLists.txt	2011-05-08 02:09:15.094914905 +0200
 @@ -18,14 +18,18 @@
    ) 
  
@@ -262,9 +262,9 @@ diff -ur VTK/GUISupport/MFC/CMakeLists.txt VTK/GUISupport/MFC/CMakeLists.txt
        )
    ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  ENDIF ( WIN32 )
-diff -ur VTK/GUISupport/Qt/Chart/CMakeLists.txt VTK/GUISupport/Qt/Chart/CMakeLists.txt
+diff -ru VTK/GUISupport/Qt/Chart/CMakeLists.txt VTK/GUISupport/Qt/Chart/CMakeLists.txt
 --- VTK/GUISupport/Qt/Chart/CMakeLists.txt	2010-09-27 22:40:03.000000000 +0200
-+++ VTK/GUISupport/Qt/Chart/CMakeLists.txt	2011-05-08 01:49:56.066914906 +0200
++++ VTK/GUISupport/Qt/Chart/CMakeLists.txt	2011-05-08 02:09:15.094914905 +0200
 @@ -306,14 +306,25 @@
      ${vtkQtChart_MOC_SOURCES}
    )
@@ -302,9 +302,9 @@ diff -ur VTK/GUISupport/Qt/Chart/CMakeLists.txt VTK/GUISupport/Qt/Chart/CMakeLis
    ENDIF(NOT VTK_INSTALL_NO_LIBRARIES AND VTK_INSTALL_BIN_DIR_CM24 AND VTK_INSTALL_LIB_DIR_CM24)
  
  ENDIF(NOT QT4_FOUND)
-diff -ur VTK/GUISupport/Qt/CMakeLists.txt VTK/GUISupport/Qt/CMakeLists.txt
+diff -ru VTK/GUISupport/Qt/CMakeLists.txt VTK/GUISupport/Qt/CMakeLists.txt
 --- VTK/GUISupport/Qt/CMakeLists.txt	2010-09-27 22:40:03.000000000 +0200
-+++ VTK/GUISupport/Qt/CMakeLists.txt	2011-05-08 01:49:56.066914906 +0200
++++ VTK/GUISupport/Qt/CMakeLists.txt	2011-05-08 02:09:15.094914905 +0200
 @@ -125,10 +125,13 @@
  SET_DIRECTORY_PROPERTIES(PROPERTIES INCLUDE_DIRECTORIES "${include_dirs_tmp}")
  
@@ -395,9 +395,9 @@ diff -ur VTK/GUISupport/Qt/CMakeLists.txt VTK/GUISupport/Qt/CMakeLists.txt
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  
  CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.ctest.in"
-diff -ur VTK/Hybrid/CMakeLists.txt VTK/Hybrid/CMakeLists.txt
+diff -ru VTK/Hybrid/CMakeLists.txt VTK/Hybrid/CMakeLists.txt
 --- VTK/Hybrid/CMakeLists.txt	2010-09-27 22:40:04.000000000 +0200
-+++ VTK/Hybrid/CMakeLists.txt	2011-05-08 01:49:56.066914906 +0200
++++ VTK/Hybrid/CMakeLists.txt	2011-05-08 02:09:15.094914905 +0200
 @@ -5,8 +5,10 @@
  SET(KIT_PYTHON_LIBS vtkRenderingPythonD vtkIOPythonD)
  SET(KIT_JAVA_LIBS vtkRenderingJava vtkIOJava)
@@ -435,9 +435,9 @@ diff -ur VTK/Hybrid/CMakeLists.txt VTK/Hybrid/CMakeLists.txt
    ENDIF(VTK_USE_PARALLEL)
  ENDIF(VTK_HAS_EXODUS)
  
-diff -ur VTK/Imaging/CMakeLists.txt VTK/Imaging/CMakeLists.txt
+diff -ru VTK/Imaging/CMakeLists.txt VTK/Imaging/CMakeLists.txt
 --- VTK/Imaging/CMakeLists.txt	2010-09-27 22:40:05.000000000 +0200
-+++ VTK/Imaging/CMakeLists.txt	2011-05-08 01:49:56.066914906 +0200
++++ VTK/Imaging/CMakeLists.txt	2011-05-08 02:09:15.094914905 +0200
 @@ -4,6 +4,7 @@
  SET(KIT_PYTHON_LIBS vtkFilteringPythonD)
  SET(KIT_JAVA_LIBS vtkFilteringJava)
@@ -446,9 +446,9 @@ diff -ur VTK/Imaging/CMakeLists.txt VTK/Imaging/CMakeLists.txt
  
  SET( Kit_SRCS
  vtkBooleanTexture.cxx
-diff -ur VTK/Infovis/CMakeLists.txt VTK/Infovis/CMakeLists.txt
+diff -ru VTK/Infovis/CMakeLists.txt VTK/Infovis/CMakeLists.txt
 --- VTK/Infovis/CMakeLists.txt	2010-09-27 22:40:05.000000000 +0200
-+++ VTK/Infovis/CMakeLists.txt	2011-05-08 01:49:56.066914906 +0200
++++ VTK/Infovis/CMakeLists.txt	2011-05-08 02:09:15.098914905 +0200
 @@ -9,13 +9,17 @@
    SET(KIT_PYTHON_LIBS vtkWidgetsPythonD)
    SET(KIT_JAVA_LIBS vtkWidgetsJava)
@@ -475,9 +475,9 @@ diff -ur VTK/Infovis/CMakeLists.txt VTK/Infovis/CMakeLists.txt
  ENDIF(VTK_USE_PARALLEL)
  
  # Add these classes only if vtkTypeUInt64Array exists
-diff -ur VTK/IO/CMakeLists.txt VTK/IO/CMakeLists.txt
+diff -ru VTK/IO/CMakeLists.txt VTK/IO/CMakeLists.txt
 --- VTK/IO/CMakeLists.txt	2010-09-27 22:40:05.000000000 +0200
-+++ VTK/IO/CMakeLists.txt	2011-05-08 01:49:56.070914906 +0200
++++ VTK/IO/CMakeLists.txt	2011-05-08 02:09:15.098914905 +0200
 @@ -18,11 +18,17 @@
  SET(KIT_PYTHON_LIBS vtkFilteringPythonD)
  SET(KIT_JAVA_LIBS vtkFilteringJava)
@@ -528,9 +528,9 @@ diff -ur VTK/IO/CMakeLists.txt VTK/IO/CMakeLists.txt
  ENDIF (VTK_USE_MPEG2_ENCODER)
  
  #-----------------------------------------------------------------------------
-diff -ur VTK/Parallel/CMakeLists.txt VTK/Parallel/CMakeLists.txt
+diff -ru VTK/Parallel/CMakeLists.txt VTK/Parallel/CMakeLists.txt
 --- VTK/Parallel/CMakeLists.txt	2010-09-27 22:40:06.000000000 +0200
-+++ VTK/Parallel/CMakeLists.txt	2011-05-08 01:49:56.070914906 +0200
++++ VTK/Parallel/CMakeLists.txt	2011-05-08 02:09:15.098914905 +0200
 @@ -4,19 +4,25 @@
  SET(KIT_PYTHON_LIBS vtkIOPythonD)
  SET(KIT_JAVA_LIBS vtkIOJava)
@@ -580,9 +580,9 @@ diff -ur VTK/Parallel/CMakeLists.txt VTK/Parallel/CMakeLists.txt
    ENDIF (MPI_EXTRA_LIBRARY) 
  ENDIF (VTK_USE_MPI)
  
-diff -ur VTK/Rendering/CMakeLists.txt VTK/Rendering/CMakeLists.txt
+diff -ru VTK/Rendering/CMakeLists.txt VTK/Rendering/CMakeLists.txt
 --- VTK/Rendering/CMakeLists.txt	2010-09-27 22:40:06.000000000 +0200
-+++ VTK/Rendering/CMakeLists.txt	2011-05-08 01:49:56.070914906 +0200
++++ VTK/Rendering/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -9,9 +9,13 @@
  ENDIF (JAVA_AWT_LIBRARY)
  
@@ -784,9 +784,9 @@ diff -ur VTK/Rendering/CMakeLists.txt VTK/Rendering/CMakeLists.txt
    ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  ENDIF (VTK_WRAP_PYTHON AND VTK_USE_TK AND TK_FOUND)
  
-diff -ur VTK/TextAnalysis/CMakeLists.txt VTK/TextAnalysis/CMakeLists.txt
+diff -ru VTK/TextAnalysis/CMakeLists.txt VTK/TextAnalysis/CMakeLists.txt
 --- VTK/TextAnalysis/CMakeLists.txt	2010-09-27 22:40:07.000000000 +0200
-+++ VTK/TextAnalysis/CMakeLists.txt	2011-05-08 01:49:56.070914906 +0200
++++ VTK/TextAnalysis/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -34,6 +34,11 @@
    vtkFiltering
    )
@@ -810,9 +810,9 @@ diff -ur VTK/TextAnalysis/CMakeLists.txt VTK/TextAnalysis/CMakeLists.txt
    ENDIF (APPLE)
  ENDIF(VTK_USE_QT)
  
-diff -ur VTK/Utilities/Cosmo/CMakeLists.txt VTK/Utilities/Cosmo/CMakeLists.txt
+diff -ru VTK/Utilities/Cosmo/CMakeLists.txt VTK/Utilities/Cosmo/CMakeLists.txt
 --- VTK/Utilities/Cosmo/CMakeLists.txt	2010-09-27 22:40:07.000000000 +0200
-+++ VTK/Utilities/Cosmo/CMakeLists.txt	2011-05-08 01:49:56.070914906 +0200
++++ VTK/Utilities/Cosmo/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -33,13 +33,22 @@
  INCLUDE_DIRECTORIES (${Cosmo_SOURCE_DIR} ${Cosmo_BINARY_DIR})
  
@@ -836,9 +836,9 @@ diff -ur VTK/Utilities/Cosmo/CMakeLists.txt VTK/Utilities/Cosmo/CMakeLists.txt
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
-diff -ur VTK/Utilities/DICOMParser/CMakeLists.txt VTK/Utilities/DICOMParser/CMakeLists.txt
+diff -ru VTK/Utilities/DICOMParser/CMakeLists.txt VTK/Utilities/DICOMParser/CMakeLists.txt
 --- VTK/Utilities/DICOMParser/CMakeLists.txt	2010-09-27 22:40:07.000000000 +0200
-+++ VTK/Utilities/DICOMParser/CMakeLists.txt	2011-05-08 01:49:56.070914906 +0200
++++ VTK/Utilities/DICOMParser/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -27,10 +27,13 @@
                 ${DICOMParser_BINARY_DIR}/DICOMCMakeConfig.h)
  
@@ -864,9 +864,9 @@ diff -ur VTK/Utilities/DICOMParser/CMakeLists.txt VTK/Utilities/DICOMParser/CMak
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
    FILE(GLOB __install_files.h "${DICOMParser_SOURCE_DIR}/*.h")
-diff -ur VTK/Utilities/ftgl/CMakeLists.txt VTK/Utilities/ftgl/CMakeLists.txt
+diff -ru VTK/Utilities/ftgl/CMakeLists.txt VTK/Utilities/ftgl/CMakeLists.txt
 --- VTK/Utilities/ftgl/CMakeLists.txt	2010-09-27 22:40:08.000000000 +0200
-+++ VTK/Utilities/ftgl/CMakeLists.txt	2011-05-08 01:49:56.070914906 +0200
++++ VTK/Utilities/ftgl/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -146,10 +146,14 @@
  #
  ADD_LIBRARY (vtkftgl ${FTGL_SRCS})
@@ -893,9 +893,9 @@ diff -ur VTK/Utilities/ftgl/CMakeLists.txt VTK/Utilities/ftgl/CMakeLists.txt
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  
  #
-diff -ur VTK/Utilities/kwsys/CMakeLists.txt VTK/Utilities/kwsys/CMakeLists.txt
+diff -ru VTK/Utilities/kwsys/CMakeLists.txt VTK/Utilities/kwsys/CMakeLists.txt
 --- VTK/Utilities/kwsys/CMakeLists.txt	2010-09-27 22:40:08.000000000 +0200
-+++ VTK/Utilities/kwsys/CMakeLists.txt	2011-05-08 01:55:24.906914905 +0200
++++ VTK/Utilities/kwsys/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -858,7 +858,11 @@
  IF(KWSYS_C_SRCS OR KWSYS_CXX_SRCS)
    ADD_LIBRARY(${KWSYS_NAMESPACE} ${KWSYS_LIBRARY_TYPE}
@@ -946,9 +946,9 @@ diff -ur VTK/Utilities/kwsys/CMakeLists.txt VTK/Utilities/kwsys/CMakeLists.txt
    ENDIF(KWSYS_LIBRARY_INSTALL_DIR)
  ENDIF(KWSYS_ENABLE_C AND KWSYS_C_SRCS)
  
-diff -ur VTK/Utilities/mrmpi/mpistubs/CMakeLists.txt VTK/Utilities/mrmpi/mpistubs/CMakeLists.txt
+diff -ru VTK/Utilities/mrmpi/mpistubs/CMakeLists.txt VTK/Utilities/mrmpi/mpistubs/CMakeLists.txt
 --- VTK/Utilities/mrmpi/mpistubs/CMakeLists.txt	2010-09-27 22:40:08.000000000 +0200
-+++ VTK/Utilities/mrmpi/mpistubs/CMakeLists.txt	2011-05-08 01:49:56.090914906 +0200
++++ VTK/Utilities/mrmpi/mpistubs/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -2,8 +2,12 @@
  
  ADD_LIBRARY (mpistubs ${mpistubs_SOURCES})
@@ -973,9 +973,9 @@ diff -ur VTK/Utilities/mrmpi/mpistubs/CMakeLists.txt VTK/Utilities/mrmpi/mpistub
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
-diff -ur VTK/Utilities/mrmpi/src/CMakeLists.txt VTK/Utilities/mrmpi/src/CMakeLists.txt
+diff -ru VTK/Utilities/mrmpi/src/CMakeLists.txt VTK/Utilities/mrmpi/src/CMakeLists.txt
 --- VTK/Utilities/mrmpi/src/CMakeLists.txt	2010-09-27 22:40:08.000000000 +0200
-+++ VTK/Utilities/mrmpi/src/CMakeLists.txt	2011-05-08 01:49:56.090914906 +0200
++++ VTK/Utilities/mrmpi/src/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -8,9 +8,13 @@
          error.cpp)
  
@@ -1001,9 +1001,9 @@ diff -ur VTK/Utilities/mrmpi/src/CMakeLists.txt VTK/Utilities/mrmpi/src/CMakeLis
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
-diff -ur VTK/Utilities/verdict/CMakeLists.txt VTK/Utilities/verdict/CMakeLists.txt
+diff -ru VTK/Utilities/verdict/CMakeLists.txt VTK/Utilities/verdict/CMakeLists.txt
 --- VTK/Utilities/verdict/CMakeLists.txt	2010-09-27 22:40:08.000000000 +0200
-+++ VTK/Utilities/verdict/CMakeLists.txt	2011-05-08 01:49:56.090914906 +0200
++++ VTK/Utilities/verdict/CMakeLists.txt	2011-05-08 02:12:23.814914905 +0200
 @@ -76,11 +76,16 @@
  endif ( NOT VERDICT_NO_LIBRARY_VERSION )
  
@@ -1036,21 +1036,33 @@ diff -ur VTK/Utilities/verdict/CMakeLists.txt VTK/Utilities/verdict/CMakeLists.t
  endif ( VERDICT_ENABLE_TESTING )
  
  if (VTK_INSTALL_BIN_DIR_CM24)
-@@ -162,6 +170,11 @@
-       RUNTIME DESTINATION ${verdict_INSTALL_BIN_DIR} COMPONENT RuntimeLibraries # .exe, .dll
+@@ -163,6 +171,11 @@
        LIBRARY DESTINATION ${verdict_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries # .so, mod.dll
        ARCHIVE DESTINATION ${verdict_INSTALL_LIB_DIR} COMPONENT Development      # .a, .lib
-+)
+ )
 +install(TARGETS ${verdict_LIBRARY}-gd
 +      RUNTIME DESTINATION ${verdict_INSTALL_BIN_DIR} COMPONENT RuntimeLibraries # .exe, .dll
 +      LIBRARY DESTINATION ${verdict_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries # .so, mod.dll
 +      ARCHIVE DESTINATION ${verdict_INSTALL_LIB_DIR} COMPONENT Development      # .a, .lib
- )
++)
  
  #
-diff -ur VTK/Utilities/VPIC/CMakeLists.txt VTK/Utilities/VPIC/CMakeLists.txt
+ # Packing stuff
+@@ -201,6 +214,11 @@
+     set (CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.sandia.gov")
+     set (CPACK_NSIS_CONTACT "cubit@sandia.gov")
+     set (CPACK_NSIS_MODIFY_PATH ON)
++		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
++			set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
++    else()  
++      set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES32")
++    endif()
+   else (WIN32 AND NOT UNIX)
+     #set (CPACK_STRIP_FILES "bin/ccmake;bin/cmake;bin/cpack;bin/ctest")
+     #set (CPACK_PACKAGE_EXECUTABLES "")
+diff -ru VTK/Utilities/VPIC/CMakeLists.txt VTK/Utilities/VPIC/CMakeLists.txt
 --- VTK/Utilities/VPIC/CMakeLists.txt	2010-09-27 22:40:08.000000000 +0200
-+++ VTK/Utilities/VPIC/CMakeLists.txt	2011-05-08 01:49:56.090914906 +0200
++++ VTK/Utilities/VPIC/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -24,10 +24,16 @@
  
  ADD_LIBRARY(VPIC ${VPIC_SOURCES})
@@ -1079,9 +1091,9 @@ diff -ur VTK/Utilities/VPIC/CMakeLists.txt VTK/Utilities/VPIC/CMakeLists.txt
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
-diff -ur VTK/Utilities/vtkalglib/CMakeLists.txt VTK/Utilities/vtkalglib/CMakeLists.txt
+diff -ru VTK/Utilities/vtkalglib/CMakeLists.txt VTK/Utilities/vtkalglib/CMakeLists.txt
 --- VTK/Utilities/vtkalglib/CMakeLists.txt	2010-09-27 22:40:09.000000000 +0200
-+++ VTK/Utilities/vtkalglib/CMakeLists.txt	2011-05-08 01:49:56.090914906 +0200
++++ VTK/Utilities/vtkalglib/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -36,10 +36,15 @@
  add_library( vtkalglib
    ${ALGLIB_SRCS}
@@ -1110,9 +1122,9 @@ diff -ur VTK/Utilities/vtkalglib/CMakeLists.txt VTK/Utilities/vtkalglib/CMakeLis
    )
  endif ( NOT VTK_INSTALL_NO_LIBRARIES )
  
-diff -ur VTK/Utilities/vtkexodus2/CMakeLists.txt VTK/Utilities/vtkexodus2/CMakeLists.txt
+diff -ru VTK/Utilities/vtkexodus2/CMakeLists.txt VTK/Utilities/vtkexodus2/CMakeLists.txt
 --- VTK/Utilities/vtkexodus2/CMakeLists.txt	2010-09-27 22:40:09.000000000 +0200
-+++ VTK/Utilities/vtkexodus2/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Utilities/vtkexodus2/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -214,10 +214,14 @@
  
  ADD_LIBRARY(vtkexoIIc ${cbind_SRCS})
@@ -1139,9 +1151,9 @@ diff -ur VTK/Utilities/vtkexodus2/CMakeLists.txt VTK/Utilities/vtkexodus2/CMakeL
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
  #  INSTALL_FILES(${VTK_INSTALL_INCLUDE_DIR}/vtkexodus2 .h
-diff -ur VTK/Utilities/vtkexpat/CMakeLists.txt VTK/Utilities/vtkexpat/CMakeLists.txt
+diff -ru VTK/Utilities/vtkexpat/CMakeLists.txt VTK/Utilities/vtkexpat/CMakeLists.txt
 --- VTK/Utilities/vtkexpat/CMakeLists.txt	2010-09-27 22:40:09.000000000 +0200
-+++ VTK/Utilities/vtkexpat/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Utilities/vtkexpat/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -23,10 +23,13 @@
                 ${VTKEXPAT_BINARY_DIR}/.NoDartCoverage)
  
@@ -1167,9 +1179,9 @@ diff -ur VTK/Utilities/vtkexpat/CMakeLists.txt VTK/Utilities/vtkexpat/CMakeLists
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
    INSTALL(FILES
-diff -ur VTK/Utilities/vtkfreetype/CMakeLists.txt VTK/Utilities/vtkfreetype/CMakeLists.txt
+diff -ru VTK/Utilities/vtkfreetype/CMakeLists.txt VTK/Utilities/vtkfreetype/CMakeLists.txt
 --- VTK/Utilities/vtkfreetype/CMakeLists.txt	2010-09-27 22:40:09.000000000 +0200
-+++ VTK/Utilities/vtkfreetype/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Utilities/vtkfreetype/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -100,18 +100,21 @@
  # Define the library (and install it)
  #
@@ -1204,9 +1216,9 @@ diff -ur VTK/Utilities/vtkfreetype/CMakeLists.txt VTK/Utilities/vtkfreetype/CMak
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  
  #
-diff -ur VTK/Utilities/vtkjpeg/CMakeLists.txt VTK/Utilities/vtkjpeg/CMakeLists.txt
+diff -ru VTK/Utilities/vtkjpeg/CMakeLists.txt VTK/Utilities/vtkjpeg/CMakeLists.txt
 --- VTK/Utilities/vtkjpeg/CMakeLists.txt	2010-09-27 22:40:09.000000000 +0200
-+++ VTK/Utilities/vtkjpeg/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Utilities/vtkjpeg/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -46,10 +46,13 @@
                 ${VTKJPEG_BINARY_DIR}/jpegDllConfig.h)
  
@@ -1232,9 +1244,9 @@ diff -ur VTK/Utilities/vtkjpeg/CMakeLists.txt VTK/Utilities/vtkjpeg/CMakeLists.t
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
    INSTALL(FILES
-diff -ur VTK/Utilities/vtklibproj4/CMakeLists.txt VTK/Utilities/vtklibproj4/CMakeLists.txt
+diff -ru VTK/Utilities/vtklibproj4/CMakeLists.txt VTK/Utilities/vtklibproj4/CMakeLists.txt
 --- VTK/Utilities/vtklibproj4/CMakeLists.txt	2010-09-27 22:40:09.000000000 +0200
-+++ VTK/Utilities/vtklibproj4/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Utilities/vtklibproj4/CMakeLists.txt	2011-05-08 02:09:15.102914905 +0200
 @@ -183,11 +183,18 @@
  add_library( vtkproj4
    ${LP4_SRCS}
@@ -1301,9 +1313,9 @@ diff -ur VTK/Utilities/vtklibproj4/CMakeLists.txt VTK/Utilities/vtklibproj4/CMak
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
    INSTALL(FILES
-diff -ur VTK/Utilities/vtklibxml2/CMakeLists.txt VTK/Utilities/vtklibxml2/CMakeLists.txt
+diff -ru VTK/Utilities/vtklibxml2/CMakeLists.txt VTK/Utilities/vtklibxml2/CMakeLists.txt
 --- VTK/Utilities/vtklibxml2/CMakeLists.txt	2010-09-27 22:40:10.000000000 +0200
-+++ VTK/Utilities/vtklibxml2/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Utilities/vtklibxml2/CMakeLists.txt	2011-05-08 02:09:15.106914905 +0200
 @@ -297,10 +297,14 @@
  ENDIF(NOT BUILD_SHARED_LIBS)
  ADD_LIBRARY(vtklibxml2 ${vtklibxml2_la_SOURCES})
@@ -1330,9 +1342,9 @@ diff -ur VTK/Utilities/vtklibxml2/CMakeLists.txt VTK/Utilities/vtklibxml2/CMakeL
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
    INSTALL(FILES
-diff -ur VTK/Utilities/vtkmetaio/CMakeLists.txt VTK/Utilities/vtkmetaio/CMakeLists.txt
+diff -ru VTK/Utilities/vtkmetaio/CMakeLists.txt VTK/Utilities/vtkmetaio/CMakeLists.txt
 --- VTK/Utilities/vtkmetaio/CMakeLists.txt	2010-09-27 22:40:10.000000000 +0200
-+++ VTK/Utilities/vtkmetaio/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Utilities/vtkmetaio/CMakeLists.txt	2011-05-08 02:09:15.106914905 +0200
 @@ -52,12 +52,48 @@
    metaArray.cxx
  )
@@ -1474,9 +1486,9 @@ diff -ur VTK/Utilities/vtkmetaio/CMakeLists.txt VTK/Utilities/vtkmetaio/CMakeLis
                      COMPONENT RuntimeLibraries
              ARCHIVE DESTINATION ${INSTALL_LIB_DIR_CM24} 
                      COMPONENT Development
-diff -ur VTK/Utilities/vtknetcdf/CMakeLists.txt VTK/Utilities/vtknetcdf/CMakeLists.txt
+diff -ru VTK/Utilities/vtknetcdf/CMakeLists.txt VTK/Utilities/vtknetcdf/CMakeLists.txt
 --- VTK/Utilities/vtknetcdf/CMakeLists.txt	2010-09-27 22:40:10.000000000 +0200
-+++ VTK/Utilities/vtknetcdf/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Utilities/vtknetcdf/CMakeLists.txt	2011-05-08 02:09:15.106914905 +0200
 @@ -288,9 +288,15 @@
  
  ADD_LIBRARY(vtkNetCDF
@@ -1512,9 +1524,9 @@ diff -ur VTK/Utilities/vtknetcdf/CMakeLists.txt VTK/Utilities/vtknetcdf/CMakeLis
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
    INSTALL(FILES
-diff -ur VTK/Utilities/vtkoggtheora/CMakeLists.txt VTK/Utilities/vtkoggtheora/CMakeLists.txt
+diff -ru VTK/Utilities/vtkoggtheora/CMakeLists.txt VTK/Utilities/vtkoggtheora/CMakeLists.txt
 --- VTK/Utilities/vtkoggtheora/CMakeLists.txt	2010-09-27 22:40:10.000000000 +0200
-+++ VTK/Utilities/vtkoggtheora/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Utilities/vtkoggtheora/CMakeLists.txt	2011-05-08 02:09:15.106914905 +0200
 @@ -249,10 +249,12 @@
  ADD_DEFINITIONS(-DHAVE_CONFIG_H)
  
@@ -1540,9 +1552,9 @@ diff -ur VTK/Utilities/vtkoggtheora/CMakeLists.txt VTK/Utilities/vtkoggtheora/CM
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
-diff -ur VTK/Utilities/vtkpng/CMakeLists.txt VTK/Utilities/vtkpng/CMakeLists.txt
+diff -ru VTK/Utilities/vtkpng/CMakeLists.txt VTK/Utilities/vtkpng/CMakeLists.txt
 --- VTK/Utilities/vtkpng/CMakeLists.txt	2010-09-27 22:40:10.000000000 +0200
-+++ VTK/Utilities/vtkpng/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Utilities/vtkpng/CMakeLists.txt	2011-05-08 02:09:15.106914905 +0200
 @@ -26,17 +26,22 @@
                 ${VTKPNG_BINARY_DIR}/pngDllConfig.h)
  
@@ -1577,9 +1589,9 @@ diff -ur VTK/Utilities/vtkpng/CMakeLists.txt VTK/Utilities/vtkpng/CMakeLists.txt
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
    INSTALL(FILES
-diff -ur VTK/Utilities/vtksqlite/CMakeLists.txt VTK/Utilities/vtksqlite/CMakeLists.txt
+diff -ru VTK/Utilities/vtksqlite/CMakeLists.txt VTK/Utilities/vtksqlite/CMakeLists.txt
 --- VTK/Utilities/vtksqlite/CMakeLists.txt	2010-09-27 22:40:10.000000000 +0200
-+++ VTK/Utilities/vtksqlite/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Utilities/vtksqlite/CMakeLists.txt	2011-05-08 02:09:15.106914905 +0200
 @@ -28,6 +28,8 @@
  
  IF (WIN32)
@@ -1618,9 +1630,9 @@ diff -ur VTK/Utilities/vtksqlite/CMakeLists.txt VTK/Utilities/vtksqlite/CMakeLis
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
-diff -ur VTK/Utilities/vtktiff/CMakeLists.txt VTK/Utilities/vtktiff/CMakeLists.txt
+diff -ru VTK/Utilities/vtktiff/CMakeLists.txt VTK/Utilities/vtktiff/CMakeLists.txt
 --- VTK/Utilities/vtktiff/CMakeLists.txt	2010-09-27 22:40:10.000000000 +0200
-+++ VTK/Utilities/vtktiff/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Utilities/vtktiff/CMakeLists.txt	2011-05-08 02:09:15.106914905 +0200
 @@ -119,15 +119,20 @@
  
  ADD_LIBRARY(vtktiff ${common_SRCS})
@@ -1653,9 +1665,9 @@ diff -ur VTK/Utilities/vtktiff/CMakeLists.txt VTK/Utilities/vtktiff/CMakeLists.t
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
    INSTALL(FILES
-diff -ur VTK/Utilities/vtkzlib/CMakeLists.txt VTK/Utilities/vtkzlib/CMakeLists.txt
+diff -ru VTK/Utilities/vtkzlib/CMakeLists.txt VTK/Utilities/vtkzlib/CMakeLists.txt
 --- VTK/Utilities/vtkzlib/CMakeLists.txt	2010-09-27 22:40:10.000000000 +0200
-+++ VTK/Utilities/vtkzlib/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Utilities/vtkzlib/CMakeLists.txt	2011-05-08 02:09:15.106914905 +0200
 @@ -30,10 +30,13 @@
  
  
@@ -1681,9 +1693,9 @@ diff -ur VTK/Utilities/vtkzlib/CMakeLists.txt VTK/Utilities/vtkzlib/CMakeLists.t
  ENDIF(NOT VTK_INSTALL_NO_LIBRARIES)
  
  IF(NOT VTK_INSTALL_NO_DEVELOPMENT)
-diff -ur VTK/Views/CMakeLists.txt VTK/Views/CMakeLists.txt
+diff -ru VTK/Views/CMakeLists.txt VTK/Views/CMakeLists.txt
 --- VTK/Views/CMakeLists.txt	2010-09-27 22:40:10.000000000 +0200
-+++ VTK/Views/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/Views/CMakeLists.txt	2011-05-08 02:09:15.106914905 +0200
 @@ -4,6 +4,7 @@
  SET(KIT_PYTHON_LIBS vtkInfovisPythonD)
  SET(KIT_JAVA_LIBS vtkInfovisJava)
@@ -1692,9 +1704,9 @@ diff -ur VTK/Views/CMakeLists.txt VTK/Views/CMakeLists.txt
  
  SET( Kit_SRCS
  vtkConvertSelectionDomain.cxx
-diff -ur VTK/VolumeRendering/CMakeLists.txt VTK/VolumeRendering/CMakeLists.txt
+diff -ru VTK/VolumeRendering/CMakeLists.txt VTK/VolumeRendering/CMakeLists.txt
 --- VTK/VolumeRendering/CMakeLists.txt	2010-09-27 22:40:11.000000000 +0200
-+++ VTK/VolumeRendering/CMakeLists.txt	2011-05-08 01:49:56.094914906 +0200
++++ VTK/VolumeRendering/CMakeLists.txt	2011-05-08 02:09:15.106914905 +0200
 @@ -5,7 +5,9 @@
  SET(KIT_PYTHON_LIBS vtkRenderingPythonD vtkIOPythonD)
  SET(KIT_JAVA_LIBS vtkRenderingJava vtkIOJava)
@@ -1731,9 +1743,9 @@ diff -ur VTK/VolumeRendering/CMakeLists.txt VTK/VolumeRendering/CMakeLists.txt
  ENDIF (VTK_USE_VOLUMEPRO_1000)
  
  MARK_AS_ADVANCED (
-diff -ur VTK/VTKCPack.cmake VTK/VTKCPack.cmake
+diff -ru VTK/VTKCPack.cmake VTK/VTKCPack.cmake
 --- VTK/VTKCPack.cmake	2010-09-27 22:40:10.000000000 +0200
-+++ VTK/VTKCPack.cmake	2011-05-08 01:49:56.058914906 +0200
++++ VTK/VTKCPack.cmake	2011-05-08 02:09:15.106914905 +0200
 @@ -7,8 +7,10 @@
  
      # For now, only build the CPack installer if vtk(.exe) will be available for
@@ -1755,9 +1767,9 @@ diff -ur VTK/VTKCPack.cmake VTK/VTKCPack.cmake
  
    ENDIF("${VTK_BINARY_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
  ENDIF(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
-diff -ur VTK/vtkMacros.cmake VTK/vtkMacros.cmake
+diff -ru VTK/vtkMacros.cmake VTK/vtkMacros.cmake
 --- VTK/vtkMacros.cmake	2010-09-27 22:40:11.000000000 +0200
-+++ VTK/vtkMacros.cmake	2011-05-08 01:49:56.098914906 +0200
++++ VTK/vtkMacros.cmake	2011-05-08 02:09:15.106914905 +0200
 @@ -19,6 +19,8 @@
                          HEADER_LOCATION ${VTK_BINARY_DIR})
    ENDIF (COMMAND VTK_MAKE_INSTANTIATOR2)
@@ -1767,9 +1779,9 @@ diff -ur VTK/vtkMacros.cmake VTK/vtkMacros.cmake
  ENDMACRO(VTK_USE_INSTANTIATOR KIT CAPS_KIT)
  
  #
-diff -ur VTK/Widgets/CMakeLists.txt VTK/Widgets/CMakeLists.txt
+diff -ru VTK/Widgets/CMakeLists.txt VTK/Widgets/CMakeLists.txt
 --- VTK/Widgets/CMakeLists.txt	2010-09-27 22:40:11.000000000 +0200
-+++ VTK/Widgets/CMakeLists.txt	2011-05-08 01:49:56.098914906 +0200
++++ VTK/Widgets/CMakeLists.txt	2011-05-08 02:09:15.106914905 +0200
 @@ -5,7 +5,9 @@
  SET(KIT_PYTHON_LIBS vtkRenderingPythonD vtkHybridPythonD)
  SET(KIT_JAVA_LIBS vtkRenderingJava vtkHybridJava)
