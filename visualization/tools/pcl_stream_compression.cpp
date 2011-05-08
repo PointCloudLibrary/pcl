@@ -355,18 +355,13 @@ main (int argc, char **argv)
 
     }
   }
-/*
+
   if (pcl::console::find_argument (argc, argv, "-?")>0) 
   {
-    if (isprint (optopt))
-      fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-    else
-      fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
-
     print_usage ("");
     return 1;
   }
-*/
+
   if (!validArguments)
   {
     print_usage ("Please specify compression mode..\n");
