@@ -86,20 +86,20 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs})
-    if(MSVC)
-       set(VTK_COMMON_LIBRARIES optimized vtkCommon debug vtkCommon-gd)
-       set(VTK_WIDGETS_LIBRARIES optimized vtkWidgets debug vtkWidgets-gd)
-       set(VTK_HYBRID_LIBRARIES optimized vtkHybrid debug vtkHybrid-gd)
-       target_link_libraries(${LIB_NAME} pcl_io pcl_kdtree pcl_range_image 
-                                        ${wxWidgets_LIBRARIES} 
-                                        ${VTK_COMMON_LIBRARIES} 
-                                        ${VTK_WIDGETS_LIBRARIES}
-                                        ${VTK_HYBRID_LIBRARIES})
-    else(MSVC)
+#    if(MSVC)
+#       set(VTK_COMMON_LIBRARIES optimized vtkCommon debug vtkCommon-gd)
+#       set(VTK_WIDGETS_LIBRARIES optimized vtkWidgets debug vtkWidgets-gd)
+#       set(VTK_HYBRID_LIBRARIES optimized vtkHybrid debug vtkHybrid-gd)
+#       target_link_libraries(${LIB_NAME} pcl_io pcl_kdtree pcl_range_image 
+#                                        ${wxWidgets_LIBRARIES} 
+#                                        ${VTK_COMMON_LIBRARIES} 
+#                                        ${VTK_WIDGETS_LIBRARIES}
+#                                        ${VTK_HYBRID_LIBRARIES})
+#    else(MSVC)
        target_link_libraries(${LIB_NAME} pcl_io pcl_kdtree pcl_range_image 
                                         ${wxWidgets_LIBRARIES} 
                                         vtkCommon vtkWidgets vtkHybrid)
-    endif(MSVC)
+#    endif(MSVC)
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     if(OPENNI_FOUND)
       list(APPEND EXT_DEPS openni-dev)
