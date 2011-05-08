@@ -81,7 +81,7 @@ public:
 TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
 {
 
-  const unsigned int test_runs = 500;
+  const unsigned int test_runs = 5;
   unsigned int test_id;
 
   // instantiate point cloud
