@@ -116,7 +116,7 @@ namespace pcl
         }
 
         /** \brief Set amount of points within point cloud to be encoded and reserve memory
-         *  \param voxelCount_arg: amounts of points within point cloud
+         *  \param pointCount_arg: amounts of points within point cloud
          * */
         inline
         void

@@ -105,7 +105,7 @@ namespace pcl
         }
 
         /** \brief Set amount of points within point cloud to be encoded and reserve memory
-         *  \param voxelCount_arg: amounts of points within point cloud
+         *  \param pointCount_arg: amounts of points within point cloud
          * */
         inline
         void
@@ -181,7 +181,7 @@ namespace pcl
          * \param endIdx_arg index indicating last point to be assiged with color information
          * */
         void
-        decodePoints (PointCloudPtr outputCloud_arg, const double* referencePoint, std::size_t beginIdx_arg,
+        decodePoints (PointCloudPtr outputCloud_arg, const double* referencePoint_arg, std::size_t beginIdx_arg,
                       std::size_t endIdx_arg)
         {
           std::size_t i;
@@ -203,9 +203,9 @@ namespace pcl
             PointT& point = outputCloud_arg->points[beginIdx_arg + i];
 
             // decode point position
-            point.x = referencePoint[0] + (((float)diffX) * pointCompressionResolution_);
-            point.y = referencePoint[1] + (((float)diffY) * pointCompressionResolution_);
-            point.z = referencePoint[2] + (((float)diffZ) * pointCompressionResolution_);
+            point.x = referencePoint_arg[0] + (((float)diffX) * pointCompressionResolution_);
+            point.y = referencePoint_arg[1] + (((float)diffY) * pointCompressionResolution_);
+            point.z = referencePoint_arg[2] + (((float)diffZ) * pointCompressionResolution_);
           }
 
         }
