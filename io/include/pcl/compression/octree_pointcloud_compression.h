@@ -194,7 +194,7 @@ namespace pcl
         writeFrameHeader (std::ostream& compressedTreeDataOut_arg);
 
         /** \brief Read frame information to output stream
-         *  \param compressedTreeDataOut_arg: binary input stream
+         *  \param compressedTreeDataIn_arg: binary input stream
          * */
         void
         readFrameHeader (std::istream& compressedTreeDataIn_arg);
@@ -206,7 +206,7 @@ namespace pcl
         entropyEncoding (std::ostream& compressedTreeDataOut_arg);
 
         /** \brief Entropy decoding of input binary stream and output to information vectors
-         *  \param compressedTreeDataOut_arg: binary input stream
+         *  \param compressedTreeDataIn_arg: binary input stream
          * */
         void
         entropyDecoding (std::istream& compressedTreeDataIn_arg);

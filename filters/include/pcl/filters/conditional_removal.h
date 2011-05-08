@@ -425,6 +425,7 @@ namespace pcl
         *
         * All ConditionalRemovals require a condition which can be set
         * using the setCondition method
+        * \param extract_removed_indices extract filtered indices from indices vector
         */
       ConditionalRemoval (int extract_removed_indices = false) :
         Filter<PointT>::Filter (extract_removed_indices), keep_organized_ (false), condition_ ()
@@ -435,6 +436,7 @@ namespace pcl
       /** \brief a constructor that includes the condition.  
         * \param condition the condition that each point must satisfy to avoid
         * being removed by the filter
+        * \param extract_removed_indices extract filtered indices from indices vector
         */
       ConditionalRemoval (ConditionBasePtr condition, bool extract_removed_indices = false) :
         Filter<PointT>::Filter (extract_removed_indices), keep_organized_ (false), condition_ ()
