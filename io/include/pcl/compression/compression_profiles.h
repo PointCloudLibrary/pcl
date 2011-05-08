@@ -180,7 +180,6 @@ namespace pcl
   }
 }
 
-#define PCL_INSTANTIATE_PointCloudCompression(T) template class pcl::octree::PointCloudCompression<T>;
 
 #endif
 
