@@ -145,7 +145,7 @@ class SimpleOpenNIViewer
 
       while (!outputFile_.fail())
       {
-        sleep (1);
+        boost::this_thread::sleep(boost::posix_time::seconds(1));
       }
 
       interface->stop ();
@@ -197,7 +197,7 @@ struct EventHelper
 
     while (!outputFile_.fail ())
     {
-      sleep (1);
+      boost::this_thread::sleep(boost::posix_time::seconds(1));
     }
 
     interface->stop ();
@@ -355,8 +355,9 @@ main (int argc, char **argv)
 
     }
   }
-
-  if (pcl::console::find_argument (argc, argv, "-?")>0) {
+/*
+  if (pcl::console::find_argument (argc, argv, "-?")>0) 
+  {
     if (isprint (optopt))
       fprintf (stderr, "Unknown option `-%c'.\n", optopt);
     else
@@ -365,7 +366,7 @@ main (int argc, char **argv)
     print_usage ("");
     return 1;
   }
-
+*/
   if (!validArguments)
   {
     print_usage ("Please specify compression mode..\n");
@@ -457,10 +458,12 @@ main (int argc, char **argv)
 
         std::cout << "Connected!" << std::endl;
 
-        if (!bShowInputCloud) {
+        if (!bShowInputCloud) 
+        {
           EventHelper v (socketStream, octreeCoder);
           v.run ();
-        } else
+        } 
+        else
         {
           SimpleOpenNIViewer v (socketStream, octreeCoder);
           v.run ();
@@ -468,7 +471,7 @@ main (int argc, char **argv)
 
         std::cout << "Disconnected!" << std::endl;
 
-        sleep (3);
+        boost::this_thread::sleep(boost::posix_time::seconds(3));
 
       }
       catch (std::exception& e)
