@@ -81,7 +81,7 @@ public:
 TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
 {
 
-  const unsigned int test_runs = 5;
+  const unsigned int test_runs = 2;
   unsigned int test_id;
 
   // instantiate point cloud
@@ -115,8 +115,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
     K = (rand () % 10)+1;
 
     // generate point cloud
-    cloudIn->width = 640;
-    cloudIn->height = 480;
+    cloudIn->width = 128;
+    cloudIn->height = 32;
     cloudIn->points.clear();
     cloudIn->points.reserve (cloudIn->width * cloudIn->height);
 
