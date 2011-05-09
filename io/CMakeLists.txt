@@ -13,7 +13,6 @@ if(build)
             include/pcl/io/openni_grabber.h
             include/pcl/io/pcd_grabber.h
             )
-        #these should be private and only in the source path...
         set(OPENNI_INCLUDES
             include/pcl/io/openni_camera/openni_depth_image.h
             include/pcl/io/openni_camera/openni_device.h
@@ -82,7 +81,7 @@ if(build)
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-    #PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openni_camera ${OPENNI_INCLUDES})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openni_camera ${OPENNI_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
     add_subdirectory(tools)
