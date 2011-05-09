@@ -56,5 +56,12 @@ mark_as_advanced(FLANN_LIBRARY FLANN_LIBRARY_DEBUG FLANN_INCLUDE_DIR)
 
 if(FLANN_FOUND)
     message(STATUS "FLANN found (include: ${FLANN_INCLUDE_DIRS}, lib: ${FLANN_LIBRARIES})")
+    if(WIN32)
+      option(FLANN_IS_STATIC "Set to OFF if you use shared flann library." ON)
+      mark_as_advanced(FLANN_IS_STATIC)
+      if(FLANN_IS_STATIC)
+        add_definitions(-DFLANN_STATIC)
+      endif(FLANN_IS_STATIC)
+    endif(WIN32)
 endif(FLANN_FOUND)
 
