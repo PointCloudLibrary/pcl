@@ -245,6 +245,24 @@ contributions on any tutorial.
      .. |fi_5| image:: images/extract_indices.jpg
                :height: 100px
 
+* Features
+
+  * :ref:`features_tutorial`
+    
+     ======  ======
+     |fe_1|  Title: **How 3D features work**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 1.0
+
+             This document presents a basic introduction to the 3D feature estimation methodologies in PCL.
+     ======  ======
+     
+     .. |fe_1| image:: images/good_features_small.png
+               :height: 100px
+
+  
 * Segmentation
 
   * :ref:`planar_segmentation`
