@@ -1,8 +1,8 @@
 # Find and set Boost flags
 
-if(NOT PCL_SHARED_LIBS)
+if(NOT PCL_SHARED_LIBS OR WIN32)
     set(Boost_USE_STATIC_LIBS ON)
-endif(NOT PCL_SHARED_LIBS)
+endif(NOT PCL_SHARED_LIBS OR WIN32)
 
 find_package(Boost 1.40.0 COMPONENTS system filesystem thread date_time)
 
