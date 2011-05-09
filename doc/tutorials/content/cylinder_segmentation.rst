@@ -45,7 +45,7 @@ editor, and place the following inside it:
    typedef pcl::PointXYZ PointT;
 
    int
-     main (int argc, char** argv)
+   main (int argc, char** argv)
    {
      // All the objects needed
      pcl::PCDReader reader;
