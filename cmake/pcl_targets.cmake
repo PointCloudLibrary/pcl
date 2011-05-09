@@ -82,9 +82,11 @@ macro(PCL_ADD_LIBRARY _name _component)
     #
     # Only link if needed
     if(WIN32 AND MSVC)
-      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
     else()
-      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
     #
     set_target_properties(${_name} PROPERTIES
@@ -111,9 +113,11 @@ macro(PCL_ADD_EXECUTABLE _name _component)
     #
     # Only link if needed
     if(WIN32 AND MSVC)
-      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
     else()
-      SET_TARGET_PROPERTIES(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
     #
     set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
@@ -139,12 +143,15 @@ macro(PCL_ADD_TEST _name _exename)
     target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
     #
     # Only link if needed
-    if(UNIX)
-      SET_TARGET_PROPERTIES(${_exename} PROPERTIES LINK_FLAGS -Wl,--as-needed)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
+      target_link_libraries(${_exename} pthread)
+    elseif(UNIX)
+      set_target_properties(${_exename} PROPERTIES LINK_FLAGS -Wl,--as-needed)
       # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
       target_link_libraries(${_exename} pthread)
     elseif(WIN32)
-      SET_TARGET_PROPERTIES(${_exename} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
+      set_target_properties(${_exename} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
     endif()
     # 
     PCL_LINK_OPENMP(${_exename})
