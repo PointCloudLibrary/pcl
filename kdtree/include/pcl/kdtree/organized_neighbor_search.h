@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de)
+ * Author: Julius Kammerl (julius@kammerl.de), Nico Blodow (blodow@cs.tum.edu)
  */
 
 #ifndef POINTCLOUD_DEPTH_NEIGHBOR_SEARCH_H
