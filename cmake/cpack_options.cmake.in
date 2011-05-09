@@ -29,8 +29,10 @@ ENDIF ()
 IF (UNIX AND ((CPACK_GENERATOR STREQUAL "DEB") OR (CPACK_GENERATOR STREQUAL "RPM")))
     # define stuff for the DEB/RPM packages
     set(CPACK_PACKAGE_CONTACT "pcl-developers@pointclouds.org")
-    set(CPACK_SET_DESTDIR ON)
-    set(CPACK_PACKAGING_INSTALL_PREFIX /usr/local)
+ENDIF ()
+
+IF (UNIX AND (CPACK_GENERATOR STREQUAL "DEB"))
+    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libboost-all-dev, cminpack, eigen, flann, lbqhull5, libvtk5-dev, openni-dev, ps-engine")
 ENDIF ()
 
 IF (APPLE AND (CPACK_GENERATOR STREQUAL "PackageMaker"))
