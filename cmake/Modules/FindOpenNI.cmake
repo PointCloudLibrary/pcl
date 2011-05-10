@@ -28,7 +28,11 @@ find_library(OPENNI_LIBRARY
              PATHS "$ENV{PROGRAMFILES}/OpenNI/Lib${OPENNI_SUFFIX}" "$ENV{PROGRAMW6432}/OpenNI/Lib${OPENNI_SUFFIX}")
 
 set(OPENNI_INCLUDE_DIRS ${OPENNI_INCLUDE_DIR})
-set(OPENNI_LIBRARIES ${OPENNI_LIBRARY})
+if(APPLE)
+  set(OPENNI_LIBRARIES ${OPENNI_LIBRARY} usb-1.0)
+else()
+  set(OPENNI_LIBRARIES ${OPENNI_LIBRARY})
+endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(OpenNI DEFAULT_MSG
