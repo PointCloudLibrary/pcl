@@ -36,14 +36,14 @@
  */
 // PCL
 #include <pcl/io/pcd_grabber.h>
-#include <pcl/io/dirent.h>
 #include <pcl/console/parse.h>
+#define BOOST_FILESYSTEM_VERSION 2
+#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <pcl/console/print.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <sstream>
 
 using pcl::console::print_color;
 using pcl::console::print_error;
@@ -57,6 +57,7 @@ using pcl::console::TT_BRIGHT;
 using pcl::console::TT_RED;
 using pcl::console::TT_GREEN;
 using pcl::console::TT_BLUE;
+using namespace boost::filesystem;
 
 typedef pcl::visualization::PointCloudColorHandler<pcl::PointCloud<pcl::PointXYZ> > ColorHandler;
 typedef ColorHandler::Ptr ColorHandlerPtr;
@@ -236,10 +237,7 @@ main (int argc, char** argv)
   std::string path = "";
   pcl::console::parse_argument (argc, argv, "-file", path);
   std::cout << "path: " << path << std::endl;
-  std::ifstream fs;
-  // Open file
-  fs.open (path.c_str ());
-  if (fs.is_open () && !fs.fail ())
+  if (path != "" && exists (path))
   {
     grabber = new pcl::PCDGrabber<pcl::PointXYZ > (path, frames_per_second, repeat);
   }
@@ -248,32 +246,17 @@ main (int argc, char** argv)
     std::vector<std::string> pcd_files;
     pcl::console::parse_argument (argc, argv, "-dir", path);
     std::cout << "path: " << path << std::endl;
-    // Note: this does not traverse the directory recursively. Use a shell for this
-    if (path.substr(path.size() - 1, 1) == "/")
-      path.resize(path.size () - 1);
-    DIR* dir;
-    if ((dir = opendir (path.c_str ())) != NULL)
+    if (path != "" && exists (path))
     {
-      dirent* de;
-      while ((de = readdir (dir)) != NULL)
+      directory_iterator end_itr;
+      for (directory_iterator itr (path); itr != end_itr; ++itr)
       {
-        if (de->d_name[0] != '.')
+        if (!is_directory (itr->status()) && boost::algorithm::to_upper_copy(extension (itr->leaf())) == ".PCD" )
         {
-          std::stringstream entryname;
-          entryname << path << "/" << de->d_name;
-
-          std::string entry = entryname.str ();
-          // Note: there are some issues with toupper, therefore i am checking both cases, and ".PcD" will fail (it should anyway :P)
-          if (entry.size() > 4 && 
-              (entry.substr(entry.size() - 4, 4) == ".PCD" ||
-               entry.substr(entry.size() - 4, 4) == ".pcd"))
-          {
-            pcd_files.push_back (entry);
-            std::cout << "added: " << entry << std::endl;
-          }
-        } 
+          pcd_files.push_back (itr->path ().string());
+          std::cout << "added: " << itr->path ().string() << std::endl;
+        }
       }
-      closedir (dir);
     }
     else
     {
