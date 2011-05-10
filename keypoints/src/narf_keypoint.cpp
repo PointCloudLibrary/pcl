@@ -309,7 +309,7 @@ void NarfKeypoint::calculateInterestImage ()
     vector<bool> invalid_beams, old_invalid_beams;
     
     //double histogram_time = -getTime ();
-#   pragma omp parallel for num_threads(parameters_.max_no_of_threads) default(shared) private(invalid_beams, old_invalid_beams) schedule(dynamic, 1)
+//#   pragma omp parallel for num_threads(parameters_.max_no_of_threads) default(shared) private(invalid_beams, old_invalid_beams) schedule(dynamic, 1)
     for (int y=0; y<height; ++y)
     {
       for (int x=0; x<width; ++x)
@@ -395,7 +395,7 @@ void NarfKeypoint::calculateInterestImage ()
             float& histogram_value = angle_histogram[histogram_cell];
             float& negative_score = interest_image[neighbor_index];
             
-#           pragma omp critical
+//#           pragma omp critical
             {
               histogram_value = (std::max) (histogram_value, positive_score);
               negative_score  = (std::min) (negative_score, current_negative_score);
@@ -474,10 +474,6 @@ void NarfKeypoint::calculateInterestImage ()
     interest_image_ = NULL;
   else
     interest_image_ = interest_image_scale_space_[0];
-  
-# if USE_OMP
-//#   pragma omp parallel for default (shared)
-# endif
 }
 
 void NarfKeypoint::calculateInterestPoints ()
