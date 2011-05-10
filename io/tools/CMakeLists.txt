@@ -3,5 +3,7 @@ if(OPENNI_FOUND)
   target_link_libraries(openni_grabber_example pcl_common pcl_io)
   PCL_ADD_EXECUTABLE(convert_pcd_ascii_binary ${SUBSYS_NAME} convert_pcd_ascii_binary.cpp)
   target_link_libraries(convert_pcd_ascii_binary pcl_common pcl_io)
+  PCL_ADD_EXECUTABLE(openni_grab_frame ${SUBSYS_NAME} openni_grab_frame.cpp)
+  target_link_libraries(openni_grab_frame pcl_common pcl_io)
 endif(OPENNI_FOUND)
 
