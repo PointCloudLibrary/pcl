@@ -144,7 +144,7 @@ macro(PCL_ADD_TEST _name _exename)
     #
     # Only link if needed
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
+      set_target_properties(${_exename} PROPERTIES LINK_FLAGS -Wl)
       target_link_libraries(${_exename} pthread)
     elseif(UNIX)
       set_target_properties(${_exename} PROPERTIES LINK_FLAGS -Wl,--as-needed)
