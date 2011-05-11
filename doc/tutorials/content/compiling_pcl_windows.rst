@@ -120,11 +120,11 @@ Then open CMake-gui and fill in the fields::
   Where is my source code: C:/PCL_dependencies/cminpack-1.1.3
   Where to build binaries: C:/PCL_dependencies/cminpack-1.1.3/bin32
  
-  .. image:: images/cmake_cminpack_1.png
-     :alt: CMake configuration dialog
-     :align: center  
+.. image:: images/cmake_cminpack_1.png
+   :alt: CMake configuration dialog
+   :align: center  
   
- .. note::
+.. note::
   
   If you are building 64 bit libraries, I suggest you to choose as binaries output folder bin64 
   instead of bin32. This way, in case you need to build the 32 bit version too, they can both
@@ -195,8 +195,8 @@ Setup the CMake fields as usual::
 
 Hit "Configure" and set the following options::
 
- BUILD_SHARED_LIBS                      OFF
- gtest_force_shared_crt					        ON
+ BUILD_SHARED_LIBS                OFF
+ gtest_force_shared_crt           ON
  
 Generate and build the resulting project.
  
@@ -258,7 +258,7 @@ stating that CMake could not find library XXX. The GUI will also highlight in
 red the items which need to be modified. In my case the first time it couldn't
 find the EIGEN library, so it said::
 
-	Could NOT find Eigen (missing: EIGEN_INCLUDE_DIR) .
+	Could NOT find Eigen (missing: EIGEN_INCLUDE_DIR)
 
 Simply modify the **EIGEN_INCLUDE_DIR** key to point to the correct Eigen include
 directory (C:/PCL_dependencies/eigen in our case). 
@@ -276,30 +276,30 @@ available. Hit it and a project will be generated in C:/PCL/bin32.
 
 During the CMake configuration for the PCL project, the following options were set::
 
-  Boost_INCLUDE_DIR				"C:/PCL_dependencies/boost_1_46_1"
-  CMINPACK_IS_STATIC			(ON if you are building PCL as a static library, OFF otherwise) 
-  CMINPACK_INCLUDE_DIR			"C:/PCL_dependencies/cminpack-1.1.3/" 
-  CMINPACK_LIBRARY				"C:/PCL_dependencies/cminpack-1.1.3/bin32/Release/cminpack.lib" 
-  CMINPACK_LIBRARY_DEBUG		"C:/PCL_dependencies/cminpack-1.1.3/bin32/Debug/cminpack.lib" 
-  EIGEN_INCLUDE_DIR				"C:/PCL_dependencies/eigen" 
-  FLANN_INCLUDE_DIR				"C:/PCL_dependencies/flann-1.6.8-src/src/cpp" 
-  FLANN_LIBRARY					"C:/PCL_dependencies/flann-1.6.8-src/lib/Release/flann_cpp_s.lib" 
-  FLANN_LIBRARY_DEBUG			"C:/PCL_dependencies/flann-1.6.8-src/lib/Debug/flann_cpp_s.lib" 
-  GTEST_INCLUDE_DIR				"C:/PCL_dependencies/gtest-1.6.0/include" 
-  GTEST_LIBRARY					"C:/PCL_dependencies/gtest-1.6.0/bin32/Release/gtest.lib" 
-  GTEST_LIBRARY_DEBUG			"C:/PCL_dependencies/gtest-1.6.0/bin32/Debug/gtest.lib" 
-  GTEST_MAIN_LIBRARY			"C:/PCL_dependencies/gtest-1.6.0/bin32/Release/gtest_main.lib" 
-  GTEST_MAIN_LIBRARY_DEBUG		"C:/PCL_dependencies/gtest-1.6.0/bin32/Debug/gtest_main.lib" 
-  OPENNI_INCLUDE_DIR			"C:/Program Files (x86)/OpenNI/Include"
-  OPENNI_LIBRARY				"C:/Program Files (x86)/OpenNI/Lib/openNI.lib"
-  PCL_SHARED_LIBS				(OFF if you want PCL to be a static library, ON if you want PCL to be a shared library/DLL)
-  BUILD_TESTS					(ON if you are interested in building software testing units)
-  BUILD_global_tests			(ON if you are interested in building software testing units)
-  BUILD_visualization			(ON if you want to build the optional visualization component) 
-  QHULL_LIBRARY					"C:/PCL_dependencies/qhull/bin32/src/Release/qhull.lib" 
-  QHULL_INCLUDE_DIR				"C:/PCL_dependencies/qhull/src" 
-  QHULL_LIBRARY_DEBUG			"C:/PCL_dependencies/qhull/bin32/src/Debug/qhull.lib" 
-  VTK_DIR						"C:/PCL_dependencies/vtk-5.6.1-mod/bin32"  
+  Boost_INCLUDE_DIR             "C:/PCL_dependencies/boost_1_46_1"
+  CMINPACK_IS_STATIC            (ON if you are building PCL as a static library, OFF otherwise) 
+  CMINPACK_INCLUDE_DIR          "C:/PCL_dependencies/cminpack-1.1.3/" 
+  CMINPACK_LIBRARY              "C:/PCL_dependencies/cminpack-1.1.3/bin32/Release/cminpack.lib" 
+  CMINPACK_LIBRARY_DEBUG        "C:/PCL_dependencies/cminpack-1.1.3/bin32/Debug/cminpack.lib" 
+  EIGEN_INCLUDE_DIR             "C:/PCL_dependencies/eigen" 
+  FLANN_INCLUDE_DIR             "C:/PCL_dependencies/flann-1.6.8-src/src/cpp" 
+  FLANN_LIBRARY                 "C:/PCL_dependencies/flann-1.6.8-src/lib/Release/flann_cpp_s.lib" 
+  FLANN_LIBRARY_DEBUG           "C:/PCL_dependencies/flann-1.6.8-src/lib/Debug/flann_cpp_s.lib" 
+  GTEST_INCLUDE_DIR             "C:/PCL_dependencies/gtest-1.6.0/include" 
+  GTEST_LIBRARY                 "C:/PCL_dependencies/gtest-1.6.0/bin32/Release/gtest.lib" 
+  GTEST_LIBRARY_DEBUG           "C:/PCL_dependencies/gtest-1.6.0/bin32/Debug/gtest.lib" 
+  GTEST_MAIN_LIBRARY            "C:/PCL_dependencies/gtest-1.6.0/bin32/Release/gtest_main.lib" 
+  GTEST_MAIN_LIBRARY_DEBUG      "C:/PCL_dependencies/gtest-1.6.0/bin32/Debug/gtest_main.lib" 
+  OPENNI_INCLUDE_DIR            "C:/Program Files (x86)/OpenNI/Include"
+  OPENNI_LIBRARY                "C:/Program Files (x86)/OpenNI/Lib/openNI.lib"
+  PCL_SHARED_LIBS               (OFF if you want PCL to be a static library, ON if you want PCL to be a shared library/DLL)
+  BUILD_TESTS                   (ON if you are interested in building software testing units)
+  BUILD_global_tests            (ON if you are interested in building software testing units)
+  BUILD_visualization           (ON if you want to build the optional visualization component) 
+  QHULL_LIBRARY                 "C:/PCL_dependencies/qhull/bin32/src/Release/qhull.lib" 
+  QHULL_INCLUDE_DIR             "C:/PCL_dependencies/qhull/src" 
+  QHULL_LIBRARY_DEBUG           "C:/PCL_dependencies/qhull/bin32/src/Debug/qhull.lib" 
+  VTK_DIR                       "C:/PCL_dependencies/vtk-5.6.1-mod/bin32"  
 
 .. note::
   
@@ -314,4 +314,9 @@ Using PCL
 
 We finally managed to compile the Point Cloud Library (PCL) as binaries for
 Windows. You can start using them in your project by following the
-:ref:`using_pcl` tutorial.
+:ref:`using_pcl` tutorial. 
+
+.. note::
+    Please remember that if you are using the static version of the Point Cloud
+    Library in your project you will have to manually link the static version of the
+    required dependencies.
