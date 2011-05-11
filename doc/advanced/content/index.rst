@@ -89,6 +89,15 @@ development that everyone should follow:
   Please follow the following naming and indentation rules when developing code for PCL.
 
 
+Improving the PCL documentation
+-------------------------------
+
+* :ref:`how_to_write_a_tutorial`
+
+  In case you want to contribute/help PCL by improving the existing
+  documentation and tutorials/examples, please read our short guide on how to
+  start.
+
 ..
   Profiling your code
 
@@ -103,4 +112,5 @@ Contents
    compiler_optimizations
    single_compile_unit
    pcl_style_guide
+   how_to_write_a_tutorial
 
