@@ -319,7 +319,7 @@ contributions on any tutorial.
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial we will learn how to calculate a simple 2D convex hull polygon for a set of points supported by a plane.
      ======  ======
@@ -351,7 +351,7 @@ contributions on any tutorial.
 
              Author: *Julius Kammerl*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to use octrees for spatial partitioning and nearest neighbor search.
      ======  ======
@@ -366,7 +366,7 @@ contributions on any tutorial.
 
              Author: *Julius Kammerl*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to use octrees for detecting spatial changes within point clouds.
      ======  ======
