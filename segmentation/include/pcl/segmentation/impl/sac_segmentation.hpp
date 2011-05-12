@@ -399,8 +399,8 @@ pcl::SACSegmentationFromNormals<PointT, PointNT>::initSACModel (const int model_
   return (true);
 }
 
-#define PCL_INSTANTIATE_SACSegmentation(T) template class pcl::SACSegmentation<T>;
-#define PCL_INSTANTIATE_SACSegmentationFromNormals(T,NT) template class pcl::SACSegmentationFromNormals<T,NT>;
+#define PCL_INSTANTIATE_SACSegmentation(T) template class PCL_EXPORTS pcl::SACSegmentation<T>;
+#define PCL_INSTANTIATE_SACSegmentationFromNormals(T,NT) template class PCL_EXPORTS pcl::SACSegmentationFromNormals<T,NT>;
 
 #endif        // PCL_SEGMENTATION_IMPL_SAC_SEGMENTATION_H_
 
