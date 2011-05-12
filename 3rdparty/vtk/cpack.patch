@@ -1639,7 +1639,7 @@ diff -ru VTK/Utilities/vtktiff/CMakeLists.txt VTK/Utilities/vtktiff/CMakeLists.t
  TARGET_LINK_LIBRARIES( vtktiff ${VTK_ZLIB_LIBRARIES} ${VTK_JPEG_LIBRARIES} )
 +ADD_LIBRARY(vtktiff-gd ${common_SRCS})
 +SET_TARGET_PROPERTIES( vtktiff-gd PROPERTIES COMPILE_FLAGS ${CMAKE_CXX_FLAGS_DEBUG})
-+TARGET_LINK_LIBRARIES( vtktiff-gd ${VTK_ZLIB_LIBRARIES}-gd ${VTK_JPEG_LIBRARIES_DEBUG} )
++TARGET_LINK_LIBRARIES( vtktiff-gd ${VTK_ZLIB_LIBRARIES}-gd ${VTK_JPEG_LIBRARIES}-gd )
  
  # link against the math library
  IF(UNIX)
