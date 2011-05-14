@@ -115,27 +115,23 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_tests.cmake)
 
 ### ---[ Add the library subdirectories
 include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
-collect_subproject_directory_names(${PCL_SOURCE_DIR} PCL_MODULES_DIRS "CMakeLists.txt")
-foreach(subdir ${PCL_MODULES_DIRS})
-  file(STRINGS ${PCL_SOURCE_DIR}/${subdir}/CMakeLists.txt  DEPENDENCIES 
-       REGEX "set.*SUBSYS_DEPS *.*")
-  string(REGEX REPLACE "set.*SUBSYS_DEPS" "" DEPENDENCIES "${DEPENDENCIES}")
-	string(REPLACE ")" "" DEPENDENCIES "${DEPENDENCIES}")
-	string(STRIP "${DEPENDENCIES}" DEPENDENCIES)
-	string(REPLACE " " ";" DEPENDENCIES "${DEPENDENCIES}")
-  if(NOT("${DEPENDENCIES}" STREQUAL ""))
-    string(TOUPPER "PCL_${subdir}_DEPENDS" THIS_MODULE_DEPENDS)
-    set(${THIS_MODULE_DEPENDS} ${DEPENDENCIES})
-  endif(NOT("${DEPENDENCIES}" STREQUAL ""))
-endforeach(subdir)
+add_subdirectory(common)
+add_subdirectory(octree)
+add_subdirectory(io)
+add_subdirectory(kdtree)
+add_subdirectory(range_image)
+add_subdirectory(features)
+add_subdirectory(sample_consensus)
+add_subdirectory(keypoints)
+add_subdirectory(filters)
+add_subdirectory(registration)
+add_subdirectory(segmentation)
+add_subdirectory(surface)
+add_subdirectory(visualization)
+add_subdirectory(test)
 
-topological_sort(PCL_MODULES_DIRS PCL_ _DEPENDS)
-foreach(subdir ${PCL_MODULES_DIRS})
- 	add_subdirectory(${subdir})
-endforeach(subdir)
-
-#### ---[ Documentation
-#add_subdirectory(doc)
+### ---[ Documentation
+add_subdirectory(doc)
 
 ### ---[ Package creation
 include(${PCL_SOURCE_DIR}/cmake/pcl_cpack.cmake)
