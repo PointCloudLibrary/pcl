@@ -119,9 +119,12 @@ pcl::GridProjection<PointNT>::getBoundingBox ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void 
-pcl::GridProjection<PointNT>::getVertexFromCellCenter(const Eigen::Vector4f &cell_center, 
-                                                      Eigen::Vector4f (&pts)[8]) const
+pcl::GridProjection<PointNT>::getVertexFromCellCenter (
+    const Eigen::Vector4f &cell_center, 
+    std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &pts) const
 {
+  assert (pts.size () == 8);
+
   float sz = leaf_size_ / 2.0;
 
   pts[0] = cell_center + Eigen::Vector4f (-sz,  sz, -sz, 0);
@@ -135,18 +138,8 @@ pcl::GridProjection<PointNT>::getVertexFromCellCenter(const Eigen::Vector4f &cel
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointNT> void 
-pcl::GridProjection<PointNT>::getVertexFromIndex (const Index3D &index, 
-                                                  Eigen::Vector4f (&pts)[8]) const
-{
-  Eigen::Vector4f cell_center;
-  getCellCenterFromIndex (index, cell_center);
-  getVertexFromCellCenter (cell_center, pts);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::GridProjection<PointNT>::getDataPtsUnion (const Index3D &index, 
+pcl::GridProjection<PointNT>::getDataPtsUnion (const Eigen::Vector3i &index, 
                                                std::vector <int> &pt_union_indices)
 {
   for (int i = index[0] - padding_size_; i <= index[0] + padding_size_; ++i)
@@ -155,7 +148,7 @@ pcl::GridProjection<PointNT>::getDataPtsUnion (const Index3D &index,
     {
       for (int k = index[2] - padding_size_; k <= index[2] + padding_size_; ++k)
       {
-        Index3D cell_index_3d = { i, j, k };
+        Eigen::Vector3i cell_index_3d (i, j, k);
         int cell_index_1d = getIndexIn1D (cell_index_3d);
         if (cell_hash_map_.find (cell_index_1d) != cell_hash_map_.end ())
         {
@@ -172,23 +165,28 @@ pcl::GridProjection<PointNT>::getDataPtsUnion (const Index3D &index,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::GridProjection<PointNT>::createSurfaceForCell (const Index3D &index, 
+pcl::GridProjection<PointNT>::createSurfaceForCell (const Eigen::Vector3i &index, 
                                                     std::vector <int> &pt_union_indices)
 {
   // 8 vertices of the cell
-  Eigen::Vector4f vertices[8];
+  std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > vertices (8);
 
   // 4 end points that shared by 3 edges connecting the upper left front points 
   Eigen::Vector4f pts[4];
-  vector3d vector_at_pts[4];
+  Eigen::Vector3f vector_at_pts[4];
 
-  getVertexFromIndex (index, vertices);
+  // Given the index of cell, caluate the coordinates of the eight vertices of the cell
+  // index the index of the cell in (x,y,z) 3d format
+  Eigen::Vector4f cell_center;
+  getCellCenterFromIndex (index, cell_center);
+  getVertexFromCellCenter (cell_center, vertices);
 
   // Get the indices of the cells which stores the 4 end points.
-  Index3D indices[4] = { {index[0], index[1], index[2] - 1},
-                         {index[0], index[1], index[2]},
-                         {index[0], index[1] - 1, index[2]},
-                         {index[0] + 1, index[1], index[2]} };
+  Eigen::Vector3i indices[4];
+  indices[0] = Eigen::Vector3i (index[0], index[1], index[2] - 1);
+  indices[1] = Eigen::Vector3i (index[0], index[1], index[2]);
+  indices[2] = Eigen::Vector3i (index[0], index[1] - 1, index[2]);
+  indices[3] = Eigen::Vector3i (index[0] + 1, index[1], index[2]);
 
   // Get the coordinate of the 4 end points, and the corresponding vectors 
   for (size_t i = 0; i < 4; ++i)
@@ -205,8 +203,8 @@ pcl::GridProjection<PointNT>::createSurfaceForCell (const Index3D &index,
   // Go through the 3 edges, test whether they are intersected by the surface 
   for (size_t i = 0; i < 3; ++i)
   {
-    Eigen::Vector4f end_pts[2];
-    vector3d vect_at_end_pts[2];
+    std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > end_pts (2);
+    std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > vect_at_end_pts (2);
     for (size_t j = 0; j < 2; ++j)
     {
       end_pts[j] = pts[I_SHIFT_EDGE[i][j]];
@@ -216,62 +214,29 @@ pcl::GridProjection<PointNT>::createSurfaceForCell (const Index3D &index,
     {
       // Indices of cells that contains points which will be connected to
       // create a polygon
-      Index3D polygon[4];
+      Eigen::Vector3i polygon[4];
       Eigen::Vector4f polygon_pts[4];
       int polygon_indices_1d[4];
       bool is_all_in_hash_map = true;
       switch (i)
       {
         case 0:
-          polygon[0][0] = index[0] - 1;
-          polygon[0][1] = index[1] + 1;
-          polygon[0][2] = index[2];
-
-          polygon[1][0] = index[0] - 1;
-          polygon[1][1] = index[1];
-          polygon[1][2] = index[2];
-
-          polygon[2][0] = index[0];
-          polygon[2][1] = index[1];
-          polygon[2][2] = index[2];
-
-          polygon[3][0] = index[0];
-          polygon[3][1] = index[1] + 1;
-          polygon[3][2] = index[2];
+          polygon[0] = Eigen::Vector3i (index[0] - 1, index[1] + 1, index[2]);
+          polygon[1] = Eigen::Vector3i (index[0] - 1, index[1], index[2]);
+          polygon[2] = Eigen::Vector3i (index[0], index[1], index[2]);
+          polygon[3] = Eigen::Vector3i (index[0], index[1] + 1, index[2]);
           break;
         case 1:
-          polygon[0][0] = index[0];
-          polygon[0][1] = index[1] + 1;
-          polygon[0][2] = index[2] + 1;
-
-          polygon[1][0] = index[0];
-          polygon[1][1] = index[1] + 1;
-          polygon[1][2] = index[2];
-
-          polygon[2][0] = index[0];
-          polygon[2][1] = index[1];
-          polygon[2][2] = index[2];
-
-          polygon[3][0] = index[0];
-          polygon[3][1] = index[1];
-          polygon[3][2] = index[2] + 1;
+          polygon[0] = Eigen::Vector3i (index[0], index[1] + 1, index[2] + 1);
+          polygon[1] = Eigen::Vector3i (index[0], index[1] + 1, index[2]);
+          polygon[2] = Eigen::Vector3i (index[0], index[1], index[2]);
+          polygon[3] = Eigen::Vector3i (index[0], index[1], index[2] + 1);
           break;
         case 2:
-          polygon[0][0] = index[0] - 1;
-          polygon[0][1] = index[1];
-          polygon[0][2] = index[2] + 1;
-
-          polygon[1][0] = index[0] - 1;
-          polygon[1][1] = index[1];
-          polygon[1][2] = index[2];
-
-          polygon[2][0] = index[0];
-          polygon[2][1] = index[1];
-          polygon[2][2] = index[2];
-
-          polygon[3][0] = index[0];
-          polygon[3][1] = index[1];
-          polygon[3][2] = index[2] + 1;
+          polygon[0] = Eigen::Vector3i (index[0] - 1, index[1], index[2] + 1);
+          polygon[1] = Eigen::Vector3i (index[0] - 1, index[1], index[2]);
+          polygon[2] = Eigen::Vector3i (index[0], index[1], index[2]);
+          polygon[3] = Eigen::Vector3i (index[0], index[1], index[2] + 1);
           break;
         default:
           break;
@@ -298,15 +263,15 @@ pcl::GridProjection<PointNT>::createSurfaceForCell (const Index3D &index,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointNT> Eigen::Vector4f
+template <typename PointNT> void
 pcl::GridProjection<PointNT>::getProjection (const Eigen::Vector4f &p, 
-                                             std::vector <int> &pt_union_indices)
+                                             std::vector <int> &pt_union_indices, Eigen::Vector4f &projection)
 {
   const double projection_distance = leaf_size_ * 3;
-  Eigen::Vector4f end_pt[2];
-  vector3d end_pt_vect[2];
+  std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > end_pt (2);
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > end_pt_vect (2);
   end_pt[0] = p;
-  end_pt_vect[0] = getVectorAtPoint (end_pt[0], pt_union_indices);
+  getVectorAtPoint (end_pt[0], pt_union_indices, end_pt_vect[0]);
   end_pt_vect[0].normalize();
   
   double dSecond = getD2AtPoint (end_pt[0], end_pt_vect[0], pt_union_indices);
@@ -316,25 +281,27 @@ pcl::GridProjection<PointNT>::getProjection (const Eigen::Vector4f &p,
   // surface
   if (dSecond > 0)
     end_pt[1] = end_pt[0] + Eigen::Vector4f (end_pt_vect[0][0] * projection_distance, 
-                                              end_pt_vect[0][1] * projection_distance, 
-                                              end_pt_vect[0][2] * projection_distance, 0);
+                                             end_pt_vect[0][1] * projection_distance, 
+                                             end_pt_vect[0][2] * projection_distance, 0);
   else
     end_pt[1] = end_pt[0] - Eigen::Vector4f (end_pt_vect[0][0] * projection_distance, 
-                                              end_pt_vect[0][1] * projection_distance, 
-                                              end_pt_vect[0][2] * projection_distance, 0);
-  end_pt_vect[1] = getVectorAtPoint (end_pt[1], pt_union_indices);
+                                             end_pt_vect[0][1] * projection_distance, 
+                                             end_pt_vect[0][2] * projection_distance, 0);
+  getVectorAtPoint (end_pt[1], pt_union_indices, end_pt_vect[1]);
   if (end_pt_vect[1].dot (end_pt_vect[0]) < 0)
   {
     Eigen::Vector4f mid_pt = end_pt[0] + (end_pt[1] - end_pt[0]) * 0.5;
-    return (findIntersection (0, end_pt, end_pt_vect, mid_pt, pt_union_indices));
+    findIntersection (0, end_pt, end_pt_vect, mid_pt, pt_union_indices, projection);
   }
-  return (p);
+  else
+    projection = p;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointNT> Eigen::Vector4f
+template <typename PointNT> void 
 pcl::GridProjection<PointNT>::getProjectionWithPlaneFit (const Eigen::Vector4f &p, 
-                                                         std::vector <int> (&pt_union_indices))
+                                                         std::vector <int> (&pt_union_indices),
+                                                         Eigen::Vector4f &projection)
 {
   // Compute the plane coefficients
   Eigen::Vector4f model_coefficients;
@@ -347,20 +314,18 @@ pcl::GridProjection<PointNT>::getProjectionWithPlaneFit (const Eigen::Vector4f &
   float distance = point.dot (model_coefficients.head < 3 > ()) + model_coefficients[3];
   point -= distance * model_coefficients.head < 3 > ();
 
-  return (Eigen::Vector4f (point[0], point[1], point[2], 0));
-
-  //return the center of the cell, for testing
-  //return p;
+  projection = Eigen::Vector4f (point[0], point[1], point[2], 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointNT> Eigen::Vector3f
+template <typename PointNT> void
 pcl::GridProjection<PointNT>::getVectorAtPoint (const Eigen::Vector4f &p, 
-                                                std::vector <int> &pt_union_indices)
+                                                std::vector <int> &pt_union_indices, 
+                                                Eigen::Vector3f &vo)
 {
   std::vector <double> pt_union_dist (pt_union_indices.size ());
   std::vector <double> pt_union_weight (pt_union_indices.size ());
-  vector3d out_vector (0, 0, 0);
+  Eigen::Vector3f out_vector (0, 0, 0);
   double sum = 0.0;
   double mag = 0.0;
 
@@ -374,14 +339,14 @@ pcl::GridProjection<PointNT>::getVectorAtPoint (const Eigen::Vector4f &p,
 
   pcl::VectorAverage3f vector_average;
 
-  vector3d v (data_->points[pt_union_indices[0]].normal[0],
+  Eigen::Vector3f v (data_->points[pt_union_indices[0]].normal[0],
               data_->points[pt_union_indices[0]].normal[1],
               data_->points[pt_union_indices[0]].normal[2]);
 
   for (size_t i = 0; i < pt_union_weight.size (); ++i)
   {
     pt_union_weight[i] /= sum;
-    vector3d vec (data_->points[pt_union_indices[i]].normal[0],
+    Eigen::Vector3f vec (data_->points[pt_union_indices[i]].normal[0],
                   data_->points[pt_union_indices[i]].normal[1],
                   data_->points[pt_union_indices[i]].normal[2]);
     if (vec.dot (v) < 0)
@@ -394,16 +359,17 @@ pcl::GridProjection<PointNT>::getVectorAtPoint (const Eigen::Vector4f &p,
   out_vector.normalize ();
   double d1 = getD1AtPoint (p, out_vector, pt_union_indices);
   out_vector = out_vector * sum;
-  return ((d1 > 0) ? -1 : 1) * out_vector;
+  vo = ((d1 > 0) ? -1 : 1) * out_vector;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointNT> Eigen::Vector3f
+template <typename PointNT> void
 pcl::GridProjection<PointNT>::getVectorAtPointKNN (const Eigen::Vector4f &p, 
                                                    std::vector <int> &k_indices, 
-                                                   std::vector <float> &k_squared_distances)
+                                                   std::vector <float> &k_squared_distances,
+                                                   Eigen::Vector3f &vo)
 {
-  vector3d out_vector (0, 0, 0);
+  Eigen::Vector3f out_vector (0, 0, 0);
   std::vector <float> k_weight;
   k_weight.resize (k_);
   float sum = 0.0;
@@ -417,7 +383,7 @@ pcl::GridProjection<PointNT>::getVectorAtPointKNN (const Eigen::Vector4f &p,
   for (int i = 0; i < k_; i++)
   {
     k_weight[i] /= sum;
-    vector3d vec (data_->points[k_indices[i]].normal[0],
+    Eigen::Vector3f vec (data_->points[k_indices[i]].normal[0],
                   data_->points[k_indices[i]].normal[1], 
                   data_->points[k_indices[i]].normal[2]);
     vector_average.add (vec, k_weight[i]);
@@ -426,7 +392,7 @@ pcl::GridProjection<PointNT>::getVectorAtPointKNN (const Eigen::Vector4f &p,
   out_vector.normalize ();
   double d1 = getD1AtPoint (p, out_vector, k_indices);
   out_vector = out_vector * sum;
-  return ((d1 > 0) ? -1 : 1) * out_vector;
+  vo = ((d1 > 0) ? -1 : 1) * out_vector;
 
 }
 
@@ -437,7 +403,7 @@ pcl::GridProjection<PointNT>::getMagAtPoint (const Eigen::Vector4f &p,
 {
   std::vector <double> pt_union_dist (pt_union_indices.size ());
   std::vector <double> pt_union_weight (pt_union_indices.size ());
-  vector3d out_vector;
+  Eigen::Vector3f out_vector;
   double sum = 0.0;
   for (size_t i = 0; i < pt_union_indices.size (); ++i)
   {
@@ -449,11 +415,11 @@ pcl::GridProjection<PointNT>::getMagAtPoint (const Eigen::Vector4f &p,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> double
-pcl::GridProjection<PointNT>::getD1AtPoint (const Eigen::Vector4f &p, const vector3d &vec, 
+pcl::GridProjection<PointNT>::getD1AtPoint (const Eigen::Vector4f &p, const Eigen::Vector3f &vec, 
                                             const std::vector <int> &pt_union_indices)
 {
   double sz = 0.01 * leaf_size_;
-  vector3d v = vec * sz;
+  Eigen::Vector3f v = vec * sz;
 
   double forward  = getMagAtPoint (p + Eigen::Vector4f (v[0], v[1], v[2], 0), pt_union_indices);
   double backward = getMagAtPoint (p - Eigen::Vector4f (v[0], v[1], v[2], 0), pt_union_indices);
@@ -462,11 +428,11 @@ pcl::GridProjection<PointNT>::getD1AtPoint (const Eigen::Vector4f &p, const vect
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> double
-pcl::GridProjection<PointNT>::getD2AtPoint (const Eigen::Vector4f &p, const vector3d &vec, 
+pcl::GridProjection<PointNT>::getD2AtPoint (const Eigen::Vector4f &p, const Eigen::Vector3f &vec, 
                                             const std::vector <int> &pt_union_indices)
 {
   double sz = 0.01 * leaf_size_;
-  vector3d v = vec * sz;
+  Eigen::Vector3f v = vec * sz;
 
   double forward = getD1AtPoint (p + Eigen::Vector4f (v[0], v[1], v[2], 0), vec, pt_union_indices);
   double backward = getD1AtPoint (p - Eigen::Vector4f (v[0], v[1], v[2], 0), vec, pt_union_indices);
@@ -475,10 +441,13 @@ pcl::GridProjection<PointNT>::getD2AtPoint (const Eigen::Vector4f &p, const vect
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> bool
-pcl::GridProjection<PointNT>::isIntersected (const Eigen::Vector4f (&end_pts)[2], 
-                                             vector3d vect_at_end_pts[2], 
+pcl::GridProjection<PointNT>::isIntersected (const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &end_pts, 
+                                             std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > &vect_at_end_pts, 
                                              std::vector <int> &pt_union_indices)
 {
+  assert (end_pts.size () == 2);
+  assert (vect_at_end_pts.size () == 2);
+
   double length[2];
   for (size_t i = 0; i < 2; ++i)
   {
@@ -490,9 +459,11 @@ pcl::GridProjection<PointNT>::isIntersected (const Eigen::Vector4f (&end_pts)[2]
   {
     double ratio = length[0] / (length[0] + length[1]);
     Eigen::Vector4f start_pt = end_pts[0] + (end_pts[1] - end_pts[0]) * ratio;
-    Eigen::Vector4f intersection_pt = findIntersection (0, end_pts, vect_at_end_pts, start_pt, pt_union_indices);
+    Eigen::Vector4f intersection_pt;
+    findIntersection (0, end_pts, vect_at_end_pts, start_pt, pt_union_indices, intersection_pt);
     
-    vector3d vec = getVectorAtPoint (intersection_pt, pt_union_indices);
+    Eigen::Vector3f vec;
+    getVectorAtPoint (intersection_pt, pt_union_indices, vec);
     vec.normalize ();
 
     double d2 = getD2AtPoint (intersection_pt, vec, pt_union_indices);
@@ -503,20 +474,26 @@ pcl::GridProjection<PointNT>::isIntersected (const Eigen::Vector4f (&end_pts)[2]
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointNT> Eigen::Vector4f
+template <typename PointNT> void
 pcl::GridProjection<PointNT>::findIntersection (int level, 
-                                                const Eigen::Vector4f (&end_pts)[2], 
-                                                vector3d vect_at_end_pts[2],
+                                                const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &end_pts, 
+                                                const std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > &vect_at_end_pts,
                                                 const Eigen::Vector4f &start_pt,
-                                                std::vector <int> &pt_union_indices)
+                                                std::vector <int> &pt_union_indices,
+                                                Eigen::Vector4f &intersection)
 {
-  vector3d vec = getVectorAtPoint (start_pt, pt_union_indices);
+  assert (end_pts.size () == 2);
+  assert (vect_at_end_pts.size () == 2);
+
+  Eigen::Vector3f vec;
+  getVectorAtPoint (start_pt, pt_union_indices, vec);
   double d1 = getD1AtPoint (start_pt, vec, pt_union_indices);
-  Eigen::Vector4f new_end_pts[2];
-  vector3d new_vect_at_end_pts[2];
+  std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > new_end_pts (2);
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > new_vect_at_end_pts (2);
   if ((abs (d1) < 10e-3) || (level == max_binary_search_level_))
   {
-    return (start_pt);
+    intersection = start_pt;
+    return;
   }
   else
   {
@@ -528,7 +505,8 @@ pcl::GridProjection<PointNT>::findIntersection (int level,
       new_end_pts[1] = start_pt;
       new_vect_at_end_pts[0] = vect_at_end_pts[0];
       new_vect_at_end_pts[1] = vec;
-      return (findIntersection (level + 1, new_end_pts, new_vect_at_end_pts, new_start_pt, pt_union_indices));
+      findIntersection (level + 1, new_end_pts, new_vect_at_end_pts, new_start_pt, pt_union_indices, intersection);
+      return;
     }
     if (vec.dot (vect_at_end_pts[1]) < 0)
     {
@@ -537,16 +515,18 @@ pcl::GridProjection<PointNT>::findIntersection (int level,
       new_end_pts[1] = end_pts[1];
       new_vect_at_end_pts[0] = vec;
       new_vect_at_end_pts[1] = vect_at_end_pts[1];
-      return (findIntersection (level + 1, new_end_pts, new_vect_at_end_pts, new_start_pt, pt_union_indices));
+      findIntersection (level + 1, new_end_pts, new_vect_at_end_pts, new_start_pt, pt_union_indices, intersection);
+      return;
     }
-    return (start_pt);
+    intersection = start_pt;
+    return;
   }
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::GridProjection<PointNT>::fillPad (const Index3D &index)
+pcl::GridProjection<PointNT>::fillPad (const Eigen::Vector3i &index)
 {
   for (int i = index[0] - padding_size_; i < index[0] + padding_size_; ++i)
   {
@@ -554,7 +534,7 @@ pcl::GridProjection<PointNT>::fillPad (const Index3D &index)
     {
       for (int k = index[2] - padding_size_; k < index[2] + padding_size_; ++k)
       {
-        Index3D cell_index_3d = { i, j, k };
+        Eigen::Vector3i cell_index_3d (i, j, k);
         unsigned int cell_index_1d = getIndexIn1D (cell_index_3d);
         if (cell_hash_map_.find (cell_index_1d) == cell_hash_map_.end ())
         {
@@ -570,7 +550,7 @@ pcl::GridProjection<PointNT>::fillPad (const Index3D &index)
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
 pcl::GridProjection<PointNT>::storeVectAndSurfacePoint (int index_1d, 
-                                                        const Index3D &index_3d, 
+                                                        const Eigen::Vector3i &index_3d, 
                                                         std::vector <int> &pt_union_indices,
                                                         const Leaf &cell_data)
 {
@@ -580,13 +560,13 @@ pcl::GridProjection<PointNT>::storeVectAndSurfacePoint (int index_1d,
                            cell_data.pt_on_surface.z () + leaf_size_ / 2.0, 0);
 
   // Save the vector and the point on the surface
-  cell_hash_map_[index_1d].vect_at_grid_pt = getVectorAtPoint (grid_pt, pt_union_indices);
-  cell_hash_map_[index_1d].pt_on_surface   = getProjection (cell_data.pt_on_surface, pt_union_indices);
+  getVectorAtPoint (grid_pt, pt_union_indices, cell_hash_map_[index_1d].vect_at_grid_pt);
+  getProjection (cell_data.pt_on_surface, pt_union_indices, cell_hash_map_[index_1d].pt_on_surface);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::GridProjection<PointNT>::storeVectAndSurfacePointKNN (int index_1d, Index3D index_3d, 
+pcl::GridProjection<PointNT>::storeVectAndSurfacePointKNN (int index_1d, const Eigen::Vector3i &index_3d, 
                                                            const Leaf &cell_data)
 {
   Eigen::Vector4f cell_center = cell_data.pt_on_surface;
@@ -602,8 +582,8 @@ pcl::GridProjection<PointNT>::storeVectAndSurfacePointKNN (int index_1d, Index3D
   PointNT pt; pt.x = grid_pt.x (); pt.y = grid_pt.y (); pt.z = grid_pt.z ();
   tree_->nearestKSearch (pt, k_, k_indices, k_squared_distances);
 
-  cell_hash_map_[index_1d].vect_at_grid_pt = getVectorAtPointKNN (grid_pt, k_indices, k_squared_distances);
-  cell_hash_map_[index_1d].pt_on_surface = getProjectionWithPlaneFit (cell_center, k_indices);
+  getVectorAtPointKNN (grid_pt, k_indices, k_squared_distances, cell_hash_map_[index_1d].vect_at_grid_pt);
+  getProjectionWithPlaneFit (cell_center, k_indices, cell_hash_map_[index_1d].pt_on_surface);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -627,7 +607,7 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PolygonMesh &output)
         !pcl_isfinite (data_->points[cp].z))
       continue;
 
-    Index3D index_3d;
+    Eigen::Vector3i index_3d;
     getCellIndex (data_->points[cp].getVector4fMap (), index_3d);
     int index_1d = getIndexIn1D (index_3d);
     if (cell_hash_map_.find (index_1d) == cell_hash_map_.end ())
@@ -646,7 +626,7 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PolygonMesh &output)
     }
   }
 
-  Index3D index;
+  Eigen::Vector3i index;
   int numOfFilledPad = 0;
 
   for (int i = 0; i < data_size_; ++i)
