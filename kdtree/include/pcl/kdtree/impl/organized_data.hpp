@@ -182,7 +182,7 @@ pcl::OrganizedDataIndex<PointT>::setSearchWindowAsK (int k)
   vertical_window_ = vw - 1;
 }
 
-#define PCL_INSTANTIATE_OrganizedDataIndex(T) template class pcl::OrganizedDataIndex<T>;
+#define PCL_INSTANTIATE_OrganizedDataIndex(T) template class PCL_EXPORTS pcl::OrganizedDataIndex<T>;
 
 #endif  //#ifndef _PCL_KDTREE_KDTREE_IMPL_ORGANIZED_DATA_INDEX_H_
 

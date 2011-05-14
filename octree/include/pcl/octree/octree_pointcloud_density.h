@@ -173,10 +173,10 @@ namespace pcl
 
 }
 
-#define PCL_INSTANTIATE_OctreePointCloudDensity(T) template class pcl::octree::OctreePointCloudDensity<T>;
+#define PCL_INSTANTIATE_OctreePointCloudDensity(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudDensity<T>;
 
-#define PCL_INSTANTIATE_OctreePointCloudSingleBufferWithDensityLeaf(T) template class pcl::octree::OctreePointCloud<T, pcl::octree::OctreePointCloudDensityLeaf<int> , pcl::octree::OctreeBase<int, pcl::octree::OctreePointCloudDensityLeaf<int> > >;
-#define PCL_INSTANTIATE_OctreePointCloudDoubleBufferWithDensityLeaf(T) template class pcl::octree::OctreePointCloud<T, pcl::octree::OctreePointCloudDensityLeaf<int> , pcl::octree::Octree2BufBase<int, pcl::octree::OctreePointCloudDensityLeaf<int> > >;
+#define PCL_INSTANTIATE_OctreePointCloudSingleBufferWithDensityLeaf(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreePointCloudDensityLeaf<int> , pcl::octree::OctreeBase<int, pcl::octree::OctreePointCloudDensityLeaf<int> > >;
+#define PCL_INSTANTIATE_OctreePointCloudDoubleBufferWithDensityLeaf(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreePointCloudDensityLeaf<int> , pcl::octree::Octree2BufBase<int, pcl::octree::OctreePointCloudDensityLeaf<int> > >;
 
 
 #endif

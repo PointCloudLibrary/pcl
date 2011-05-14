@@ -86,6 +86,6 @@ namespace pcl
   }
 }
 
-#define PCL_INSTANTIATE_OctreePointCloudSinglePoint(T) template class pcl::octree::OctreePointCloudSinglePoint<T>;
+#define PCL_INSTANTIATE_OctreePointCloudSinglePoint(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudSinglePoint<T>;
 
 #endif

@@ -606,7 +606,7 @@ namespace pcl
   ;
 }
 
-#define PCL_INSTANTIATE_PointCloudCompression(T) template class pcl::octree::PointCloudCompression<T>;
+#define PCL_INSTANTIATE_PointCloudCompression(T) template class PCL_EXPORTS pcl::octree::PointCloudCompression<T>;
 
 #endif
 
