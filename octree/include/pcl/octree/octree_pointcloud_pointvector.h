@@ -86,6 +86,6 @@ namespace pcl
   }
 }
 
-#define PCL_INSTANTIATE_OctreePointCloudPointVector(T) template class pcl::octree::OctreePointCloudPointVector<T>;
+#define PCL_INSTANTIATE_OctreePointCloudPointVector(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudPointVector<T>;
 
 #endif

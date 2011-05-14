@@ -330,6 +330,6 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   }
 }
 
-#define PCL_INSTANTIATE_CVFHEstimation(T,NT,OutT) template class pcl::CVFHEstimation<T,NT,OutT>;
+#define PCL_INSTANTIATE_CVFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::CVFHEstimation<T,NT,OutT>;
 
 #endif    // PCL_FEATURES_IMPL_VFH_H_ 
