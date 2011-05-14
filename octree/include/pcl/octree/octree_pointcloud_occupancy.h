@@ -87,7 +87,7 @@ namespace pcl
 
 }
 
-#define PCL_INSTANTIATE_OctreePointCloudOccupancy(T) template class pcl::octree::OctreePointCloudOccupancy<T>;
+#define PCL_INSTANTIATE_OctreePointCloudOccupancy(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudOccupancy<T>;
 
 #endif
 

@@ -143,7 +143,7 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
   }
 }
 
-#define PCL_INSTANTIATE_BoundaryEstimation(PointInT,PointNT,PointOutT) template class pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>;
+#define PCL_INSTANTIATE_BoundaryEstimation(PointInT,PointNT,PointOutT) template class PCL_EXPORTS pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>;
 
 #endif    // PCL_FEATURES_IMPL_BOUNDARY_H_ 
 

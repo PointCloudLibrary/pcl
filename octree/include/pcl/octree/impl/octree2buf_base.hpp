@@ -1494,7 +1494,7 @@ namespace pcl
   }
 }
 
-#define PCL_INSTANTIATE_Octree2BufBase(T) template class pcl::octree::Octree2BufBase<T>;
+#define PCL_INSTANTIATE_Octree2BufBase(T) template class PCL_EXPORTS pcl::octree::Octree2BufBase<T>;
 
 #endif
 

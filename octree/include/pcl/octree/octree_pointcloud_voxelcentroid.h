@@ -229,7 +229,7 @@ namespace pcl
 
 }
 
-#define PCL_INSTANTIATE_OctreePointCloudVoxelCentroid(T) template class pcl::octree::OctreePointCloudVoxelCentroid<T>;
+#define PCL_INSTANTIATE_OctreePointCloudVoxelCentroid(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudVoxelCentroid<T>;
 
 #endif
 
