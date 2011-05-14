@@ -49,7 +49,7 @@ namespace pcl
     void 
     PCLVisualizerInteractor::stopLoop ()
     {
-#ifndef _WIN32
+#if !defined _WIN32 || defined VTK_USE_X 
       BreakLoopFlagOn ();
       XClientMessageEvent client;
       memset (&client, 0, sizeof (client));
@@ -69,7 +69,7 @@ namespace pcl
 #endif
     }
 
-#ifdef _WIN32
+#if defined _WIN32 || defined VTK_USE_CARBON || defined VTK_USE_CARBON
     //////////////////////////////////////////////////////////////////////////
     void 
     PCLVisualizerInteractor::Start ()
