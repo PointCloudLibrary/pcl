@@ -92,7 +92,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
   output.points.clear ();
 
   // Create a local copy of the input cloud that will be resized for each octave
-  boost::shared_ptr<pcl::PointCloud<PointInT> > cloud = input_->makeShared ();
+  boost::shared_ptr<pcl::PointCloud<PointInT> > cloud (new pcl::PointCloud<PointInT> (*input_));
 
   // Search for keypoints at each octave
   float scale = min_scale_;
