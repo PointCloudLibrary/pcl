@@ -1152,15 +1152,10 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
 
     ASSERT_EQ ( cloudNWRRadius.size() , cloudSearchBruteforce.size());
 
-    bool pointInBruteforceCloud;
-
     // check if result from octree radius search can be also found in bruteforce search
     std::vector<int>::const_iterator current = cloudNWRSearch.begin();
     while (current != cloudNWRSearch.end())
     {
-
-      pointInBruteforceCloud = false;
-
       pointDist = sqrt (
           (cloudIn->points[*current].x-searchPoint.x) * (cloudIn->points[*current].x-searchPoint.x) +
           (cloudIn->points[*current].y-searchPoint.y) * (cloudIn->points[*current].y-searchPoint.y) +
