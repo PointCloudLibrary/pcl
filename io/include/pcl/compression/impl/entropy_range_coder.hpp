@@ -525,10 +525,8 @@ namespace pcl
     outputCharVector_.reserve(sizeof(char) * input_size);
 
     uint64_t FreqHist[257];
-    uint64_t freqMaxrange;
 
     // calculate frequency table
-    freqMaxrange = input_size;
     memset (FreqHist, 0, sizeof(FreqHist));
     readPos = 0;
     while (readPos < input_size)
