@@ -67,11 +67,13 @@ namespace pcl
 
       /** Return a newly created RangeImagePlanar.
        *  Reimplmentation to return an image of the same type. */
-      virtual RangeImage* getNew() const { return new RangeImagePlanar; }
+      virtual RangeImage* 
+      getNew () const { return new RangeImagePlanar; }
       
       // =====PUBLIC METHODS=====
       /** \brief Get a boost shared pointer of a copy of this */
-      inline Ptr makeShared () const { return Ptr (new RangeImagePlanar (*this)); } 
+      inline Ptr 
+      makeShared () { return Ptr (new RangeImagePlanar (*this)); } 
       
       /** \brief Create the image from an existing disparity image.
         * \param disparity_image the input disparity image data
@@ -161,12 +163,12 @@ namespace pcl
         * \param sub_image - the output image
         */
       virtual void
-        getSubImage (int sub_image_image_offset_x, int sub_image_image_offset_y, int sub_image_width,
-                     int sub_image_height, int combine_pixels, RangeImage& sub_image) const;
+      getSubImage (int sub_image_image_offset_x, int sub_image_image_offset_y, int sub_image_width,
+                   int sub_image_height, int combine_pixels, RangeImage& sub_image) const;
       
       //! Get a range image with half the resolution
       virtual void 
-        getHalfImage(RangeImage& half_image) const;
+      getHalfImage(RangeImage& half_image) const;
       
     protected:
       float focal_length_x_, focal_length_y_; //!< The focal length of the image in pixels

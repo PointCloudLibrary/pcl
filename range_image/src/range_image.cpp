@@ -36,7 +36,7 @@
 \author Bastian Steder
 **/
 
-
+#include <cstddef>
 #include <Eigen/StdVector>
 #include <iostream>
 using std::cout;
