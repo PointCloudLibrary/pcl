@@ -69,7 +69,7 @@ namespace pcl
       /** \brief Empty constructor for OrganizedDataIndex. Sets some internal values to their defaults. */
       OrganizedDataIndex () : KdTree<PointT>(), max_distance_ (0), horizontal_window_ (0), vertical_window_ (0) {}
 
-      inline Ptr makeShared () const { return Ptr (new OrganizedDataIndex<PointT> (*this)); } 
+      inline Ptr makeShared () { return Ptr (new OrganizedDataIndex<PointT> (*this)); } 
 
       /** \brief Method not implemented
         * \param p_q
