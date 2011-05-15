@@ -723,7 +723,6 @@ void RangeImageBorderExtractor::calculateSurfaceChanges()
       size   = width*height;
   surface_change_scores_ = new float[size];
   surface_change_directions_ = new Eigen::Vector3f[size];
-  Eigen::Vector3f sensor_pos = range_image_->getSensorPos();
 # if USE_OMP
 //#   pragma omp parallel for default(shared) schedule(dynamic, 10)
 #   pragma omp parallel for default(shared)
