@@ -38,6 +38,11 @@
 #ifndef PCL_POINT_CLOUD_H_
 #define PCL_POINT_CLOUD_H_
 
+#if defined __INTEL_COMPILER
+  #pragma warning disable 2196 2536 279
+#endif
+
+#include <cstddef>
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include "pcl/pcl_macros.h"
@@ -65,8 +70,8 @@ namespace pcl
 
   namespace detail 
   {
-    template <typename PointT>
-    boost::shared_ptr<pcl::MsgFieldMap>& getMapping(pcl::PointCloud<PointT>& p);
+    template <typename PointT> boost::shared_ptr<pcl::MsgFieldMap>& 
+    getMapping (pcl::PointCloud<PointT>& p);
   } // namespace detail
 
   /** @b PointCloud represents a templated PointCloud implementation. 
@@ -79,9 +84,26 @@ namespace pcl
       PointCloud () : width (0), height (0), is_dense (true), 
                       sensor_origin_ (Eigen::Vector4f::Zero ()), sensor_orientation_ (Eigen::Quaternionf::Identity ())
       {}
-      
+ 
+      /** \brief Copy constructor (needed by compilers such as Intel C++)
+        * \param pc the cloud to copy into this 
+        */
+      inline PointCloud (PointCloud<PointT> &pc)
+      {
+        *this = pc;
+      }
+
+      /** \brief Copy constructor (needed by compilers such as Intel C++)
+        * \param pc the cloud to copy into this 
+        */
+      inline PointCloud (const PointCloud<PointT> &pc)
+      {
+        *this = pc;
+      }
+
       ////////////////////////////////////////////////////////////////////////////////////////
-      inline PointCloud& operator += (const PointCloud& rhs)
+      inline PointCloud& 
+      operator += (const PointCloud& rhs)
       {
         if (rhs.header.frame_id != header.frame_id)
         {
@@ -109,7 +131,8 @@ namespace pcl
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
-      inline PointT at (int u, int v) const
+      inline PointT 
+      at (int u, int v) const
       {
         if (this->height > 1)
           return (points.at (v * this->width + u));
@@ -118,12 +141,14 @@ namespace pcl
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
-      inline const PointT& operator () (int u, int v) const
+      inline const PointT& 
+      operator () (int u, int v) const
       {
         return (points[v * this->width + u]);
       }
       
-      inline PointT& operator () (int u, int v)
+      inline PointT& 
+      operator () (int u, int v)
       {
         return (points[v * this->width + u]);
       }
@@ -164,13 +189,13 @@ namespace pcl
       inline size_t size () const { return (points.size ()); }
       inline void push_back (const PointT& p) { points.push_back (p); }
 
-      inline Ptr makeShared () const { return Ptr (new PointCloud<PointT> (*this)); } 
+      inline Ptr makeShared () { return Ptr (new PointCloud<PointT> (*this)); } 
 
     protected:
       // This is motivated by ROS integration. Users should not need to access mapping_.
       boost::shared_ptr<MsgFieldMap> mapping_;
 
-      friend boost::shared_ptr<MsgFieldMap>& detail::getMapping<PointT>(PointCloud& p);
+      friend boost::shared_ptr<MsgFieldMap>& detail::getMapping<PointT>(pcl::PointCloud<PointT> &p);
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
@@ -178,12 +203,15 @@ namespace pcl
 
   namespace detail 
   {
-    template <typename PointT>
-    boost::shared_ptr<pcl::MsgFieldMap>& getMapping(pcl::PointCloud<PointT>& p) { return p.mapping_; }
+    template <typename PointT> boost::shared_ptr<pcl::MsgFieldMap>& 
+    getMapping (pcl::PointCloud<PointT>& p) 
+    { 
+      return (p.mapping_);
+    }
   } // namespace detail
 
-  template <typename PointT>
-  std::ostream& operator << (std::ostream& s, const pcl::PointCloud<PointT> &p)
+  template <typename PointT> std::ostream& 
+  operator << (std::ostream& s, const pcl::PointCloud<PointT> &p)
   {
     s << "header: " << std::endl;
     s << p.header;

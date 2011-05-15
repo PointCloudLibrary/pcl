@@ -37,6 +37,7 @@
 #ifndef PCL_PCL_BASE_H_
 #define PCL_PCL_BASE_H_
 
+#include <cstddef>
 // Eigen includes
 #include <Eigen/StdVector>
 // STD includes
