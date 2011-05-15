@@ -39,7 +39,7 @@
 #define PCL_KDTREE_KDTREE_FLANN_H_
 
 #include <cstdio>
-#include "pcl/kdtree/kdtree.h"
+#include <pcl/kdtree/kdtree.h>
 #include <boost/thread/mutex.hpp>
 #include <flann/flann.hpp>
 
@@ -54,7 +54,7 @@ namespace pcl
     * \ingroup kdtree 
     */
   template <typename PointT>
-  class KdTreeFLANN : public KdTree<PointT>
+  class KdTreeFLANN : public pcl::KdTree<PointT>
   {
     using KdTree<PointT>::input_;
     using KdTree<PointT>::indices_;
@@ -83,7 +83,7 @@ namespace pcl
         * param indices the point cloud indices
         */
       //! \brief Default Constructor for KdTreeFLANN.
-      KdTreeFLANN (bool sorted = true) : KdTree<PointT> (sorted), flann_index_(NULL), cloud_(NULL)
+      KdTreeFLANN (bool sorted = true) : pcl::KdTree<PointT> (sorted), flann_index_(NULL), cloud_(NULL)
       {
         cleanup ();
       }
@@ -95,12 +95,12 @@ namespace pcl
       * why it's needed is because boost::mutex is non-copyable, so the
       * default copy constructor would not work
       */
-      KdTreeFLANN (const KdTreeFLANN& tree) : KdTree<PointT> (tree)
+      KdTreeFLANN (KdTreeFLANN& tree) : pcl::KdTree<PointT> (tree)
       {
         shallowCopy (tree);
       }
 
-      inline Ptr makeShared () const { return Ptr (new KdTreeFLANN<PointT> (*this)); } 
+      inline Ptr makeShared () { return Ptr (new KdTreeFLANN<PointT> (*this)); } 
 
       KdTreeFLANN& operator= (const KdTreeFLANN& tree)
       {

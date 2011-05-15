@@ -106,7 +106,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
   const double oneOverFocalLength = 0.0018;
   double x,y,z;
 
-  int xpos, ypos, centerX, centerY, idx;
+  int xpos, ypos, centerX, centerY;
 
   for (test_id = 0; test_id < test_runs; test_id++)
   {
@@ -123,7 +123,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
     centerX = cloudIn->width>>1;
     centerY = cloudIn->height>>1;
 
-    idx = 0;
     for (ypos = -centerY; ypos < centerY; ypos++)
       for (xpos = -centerX; xpos < centerX; xpos++)
       {
@@ -285,15 +284,10 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     organizedNeighborSearch.setInputCloud (cloudIn);
     organizedNeighborSearch.radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius);
 
-    bool pointInBruteforceCloud;
-
     // check if result from organized radius search can be also found in bruteforce search
     std::vector<int>::const_iterator current = cloudNWRSearch.begin();
     while (current != cloudNWRSearch.end())
     {
-
-      pointInBruteforceCloud = false;
-
       pointDist = sqrt (
           (cloudIn->points[*current].x-searchPoint.x) * (cloudIn->points[*current].x-searchPoint.x) +
           (cloudIn->points[*current].y-searchPoint.y) * (cloudIn->points[*current].y-searchPoint.y) +
@@ -311,8 +305,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     while (current != cloudSearchBruteforce.end())
     {
 
-      pointInBruteforceCloud = false;
-
       pointDist = sqrt (
           (cloudIn->points[*current].x-searchPoint.x) * (cloudIn->points[*current].x-searchPoint.x) +
           (cloudIn->points[*current].y-searchPoint.y) * (cloudIn->points[*current].y-searchPoint.y) +
@@ -324,29 +316,18 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
       ++current;
     }
 
-    for (i = 0; i < cloudSearchBruteforce.size (); i++) {
-      bool found = false;
-      for (j = 0; j < cloudNWRSearch.size (); j++) {
+    for (i = 0; i < cloudSearchBruteforce.size (); i++) 
+      for (j = 0; j < cloudNWRSearch.size (); j++) 
         if (cloudNWRSearch[i]== cloudSearchBruteforce[j])
-        {
-          found = true;
           break;
-        }
-      }
-    }
 
-
-    ASSERT_EQ ( cloudNWRRadius.size() , cloudSearchBruteforce.size());
-
-
+    ASSERT_EQ (cloudNWRRadius.size() , cloudSearchBruteforce.size ());
 
     // check if result limitation works
-    organizedNeighborSearch.radiusSearch(searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
+    organizedNeighborSearch.radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
 
-    ASSERT_EQ ( cloudNWRRadius.size() <= 5, true);
-
+    ASSERT_EQ (cloudNWRRadius.size () <= 5, true);
   }
-
 }
 
 /* ---[ */
