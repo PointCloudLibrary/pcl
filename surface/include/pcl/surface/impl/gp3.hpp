@@ -996,14 +996,12 @@ pcl::GreedyProjectionTriangulation<PointInT>::closeTriangle (pcl::PolygonMesh &o
 {
   state_[R_] = COMPLETED;
   addTriangle (angles_[0].index, angles_[1].index, R_, output);
-  short hole[2] = {0,0};
   for (int aIdx=0; aIdx<2; aIdx++)
   {
     if (ffn_[angles_[aIdx].index] == R_)
     {
       if (sfn_[angles_[aIdx].index] == angles_[(aIdx+1)%2].index)
       {
-        hole[aIdx] = 1;
         state_[angles_[aIdx].index] = COMPLETED;
       }
       else
@@ -1015,7 +1013,6 @@ pcl::GreedyProjectionTriangulation<PointInT>::closeTriangle (pcl::PolygonMesh &o
     {
       if (ffn_[angles_[aIdx].index] == angles_[(aIdx+1)%2].index)
       {
-        hole[aIdx] = 1;
         state_[angles_[aIdx].index] = COMPLETED;
       }
       else
