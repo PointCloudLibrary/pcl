@@ -51,7 +51,8 @@ namespace pcl
     * \param polygon a polygon
     * \ingroup segmentation
     */
-  template <typename PointT> bool isPointIn2DPolygon (const PointT &point, const pcl::PointCloud<PointT> &polygon);
+  template <typename PointT> bool 
+  isPointIn2DPolygon (const PointT &point, const pcl::PointCloud<PointT> &polygon);
 
   /** \brief Check if a 2d point (X and Y coordinates considered only!) is
     * inside or outside a given polygon. This method assumes that both the point
@@ -63,7 +64,8 @@ namespace pcl
     * \param polygon a polygon
     * \ingroup segmentation
     */
-  template <typename PointT> bool isXYPointIn2DXYPolygon (const PointT &point, const pcl::PointCloud<PointT> &polygon);
+  template <typename PointT> bool 
+  isXYPointIn2DXYPolygon (const PointT &point, const pcl::PointCloud<PointT> &polygon);
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b ExtractPolygonalPrismData uses a set of point indices that
