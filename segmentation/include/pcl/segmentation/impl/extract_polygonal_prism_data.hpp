@@ -206,7 +206,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
     
   // Project all points
   PointCloud projected_points;
-  SampleConsensusModelPlane<PointT> sacmodel  = SampleConsensusModelPlane<PointT> (input_);
+  SampleConsensusModelPlane<PointT> sacmodel (input_);
   sacmodel.projectPoints (*indices_, model_coefficients, projected_points, false);
 
   // Create a X-Y projected representation for within bounds polygonal checking
