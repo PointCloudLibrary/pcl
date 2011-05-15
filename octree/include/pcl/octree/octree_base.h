@@ -725,10 +725,10 @@ namespace pcl
         /** \brief Test if octree is able to dynamically change its depth. This is required for adaptive bounding box adjustment.
          *  \return "true"
          **/
-        inline const bool
+        inline bool
         octreeCanResize ()
         {
-          return true;
+          return (true);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
