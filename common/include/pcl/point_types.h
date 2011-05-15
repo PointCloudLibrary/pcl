@@ -37,6 +37,10 @@
 #ifndef PCL_DATA_TYPES_H_
 #define PCL_DATA_TYPES_H_
 
+#if defined __INTEL_COMPILER
+  #pragma warning disable 2196 2536 279
+#endif
+
 #include <Eigen/Core>
 #include <bitset>
 #include <vector>
