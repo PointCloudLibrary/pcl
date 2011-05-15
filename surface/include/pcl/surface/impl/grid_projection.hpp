@@ -47,13 +47,13 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::GridProjection<PointNT>::GridProjection () : 
-  leaf_size_(0.001), data_size_(0), max_binary_search_level_(10), k_(50), padding_size_(3)
+  leaf_size_(0.001), data_size_(0), max_binary_search_level_(10), k_(50), padding_size_(3), data_()
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::GridProjection<PointNT>::GridProjection (double resolution) :
-  leaf_size_(resolution), data_size_(0), max_binary_search_level_(10), k_(50), padding_size_(3)
+  leaf_size_(resolution), data_size_(0), max_binary_search_level_(10), k_(50), padding_size_(3), data_()
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,6 +64,7 @@ pcl::GridProjection<PointNT>::~GridProjection ()
   surface_.clear ();;
   cell_hash_map_.clear ();
   occupied_cell_list_.clear ();
+  data_.reset ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -384,8 +385,8 @@ pcl::GridProjection<PointNT>::getVectorAtPointKNN (const Eigen::Vector4f &p,
   {
     k_weight[i] /= sum;
     Eigen::Vector3f vec (data_->points[k_indices[i]].normal[0],
-                  data_->points[k_indices[i]].normal[1], 
-                  data_->points[k_indices[i]].normal[2]);
+                         data_->points[k_indices[i]].normal[1], 
+                         data_->points[k_indices[i]].normal[2]);
     vector_average.add (vec, k_weight[i]);
   }
   vector_average.getEigenVector1 (out_vector);
