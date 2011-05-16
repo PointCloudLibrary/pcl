@@ -73,7 +73,7 @@ namespace pcl
 // Are the C++ cmath functions enabled?
 # include <cmath>
 # define pcl_isnan(x)    std::isnan(x)
-# define pcl_isfinite(x) std::sfinite(x)
+# define pcl_isfinite(x) std::isfinite(x)
 # define pcl_isinf(x)    std::isinf(x)
 
 #else
