@@ -56,7 +56,7 @@ namespace pcl
           /** \brief distance between query and matching point (w.r.t. the used feature descriptors) */
           float distance;
         };
-      }; EIGEN_ALIGN16;
+      } EIGEN_ALIGN16;
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
       /** \brief standard Constructor */
       inline Correspondence()
