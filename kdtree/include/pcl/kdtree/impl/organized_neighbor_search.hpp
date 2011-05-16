@@ -445,6 +445,6 @@ OrganizedNeighborSearch<PointT>::getPointByIndex (const unsigned int index_arg) 
 
 }
 
-#define PCL_INSTANTIATE_OrganizedNeighborSearch(T) template class pcl::OrganizedNeighborSearch<T>;
+#define PCL_INSTANTIATE_OrganizedNeighborSearch(T) template class PCL_EXPORTS pcl::OrganizedNeighborSearch<T>;
 
 #endif
