@@ -63,16 +63,25 @@ namespace pcl
 # define __func__ __FUNCTION__
 
 #elif ANDROID
+// Use the math.h macros
 # include <math.h>
 # define pcl_isnan(x)    isnan(x)
 # define pcl_isfinite(x) isfinite(x)
 # define pcl_isinf(x)    isinf(x)
 
-#else
-
+#elif _GLIBCXX_USE_C99_MATH
+// Are the C++ cmath functions enabled?
+# include <cmath>
 # define pcl_isnan(x)    std::isnan(x)
-# define pcl_isfinite(x) std::isfinite(x)
+# define pcl_isfinite(x) std::sfinite(x)
 # define pcl_isinf(x)    std::isinf(x)
+
+#else
+// Use the math.h macros
+# include<math.h>
+# define pcl_isnan(x)    isnan(x)
+# define pcl_isfinite(x) isfinite(x)
+# define pcl_isinf(x)    isinf(x)
 
 #endif
 

@@ -32,16 +32,16 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
-\author Bastian Steder
-**/
+#ifndef PCL_MACROS_H_
+#define PCL_MACROS_H_
+
+#if defined __INTEL_COMPILER
+  #pragma warning disable 2196 2536 279
+#endif
 
 #include <iostream>
 #include <stdarg.h>
 #include <stdio.h>
-
-#ifndef PCL_MACROS_H_
-#define PCL_MACROS_H_
 
 #ifndef DEG2RAD
 #define DEG2RAD(x) ((x)*0.017453293)
