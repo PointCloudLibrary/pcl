@@ -38,14 +38,10 @@
 #ifndef PCL_POINT_CLOUD_H_
 #define PCL_POINT_CLOUD_H_
 
-#if defined __INTEL_COMPILER
-  #pragma warning disable 2196 2536 279
-#endif
-
 #include <cstddef>
+#include "pcl/pcl_macros.h"
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
-#include "pcl/pcl_macros.h"
 #include <std_msgs/Header.h>
 #include <pcl/exceptions.h>
 #include <pcl/console/print.h>
