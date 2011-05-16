@@ -507,17 +507,17 @@ TEST (PCL, PrincipalCurvaturesEstimation)
   EXPECT_NEAR (pcs->points[2].pc1, 108.0137481, 1e-4);
   EXPECT_NEAR (pcs->points[2].pc2,  77.2759780, 1e-4);
 
-  EXPECT_NEAR (pcs->points[indices.size () - 3].principal_curvature[0], 0.86725, 1e-4);
+  EXPECT_NEAR (pcs->points[indices.size () - 3].principal_curvature[0],  0.86725, 1e-4);
   EXPECT_NEAR (pcs->points[indices.size () - 3].principal_curvature[1], -0.37599, 1e-4);
-  EXPECT_NEAR (pcs->points[indices.size () - 3].principal_curvature[2], 0.32636, 1e-4);
-  EXPECT_NEAR (pcs->points[indices.size () - 3].pc1, 102.82320, 1.5e-4);
+  EXPECT_NEAR (pcs->points[indices.size () - 3].principal_curvature[2],  0.32636, 1e-4);
+  EXPECT_NEAR (pcs->points[indices.size () - 3].pc1, 102.82320, 1e-3);
   EXPECT_NEAR (pcs->points[indices.size () - 3].pc2,  71.09062, 1e-4);
 
-  EXPECT_NEAR (pcs->points[indices.size () - 1].principal_curvature[0], 0.86725, 1e-4);
+  EXPECT_NEAR (pcs->points[indices.size () - 1].principal_curvature[0],  0.86725, 1e-4);
   EXPECT_NEAR (pcs->points[indices.size () - 1].principal_curvature[1], -0.37599, 1e-4);
-  EXPECT_NEAR (pcs->points[indices.size () - 1].principal_curvature[2], 0.32636, 1e-4);
+  EXPECT_NEAR (pcs->points[indices.size () - 1].principal_curvature[2],  0.32636, 1e-4);
   EXPECT_NEAR (pcs->points[indices.size () - 1].pc1, 102.82326, 1e-4);
-  EXPECT_NEAR (pcs->points[indices.size () - 1].pc2,  71.09061, 1e-4);
+  EXPECT_NEAR (pcs->points[indices.size () - 1].pc2,  71.09061, 1e-3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
