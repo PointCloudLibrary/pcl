@@ -643,21 +643,21 @@ inline std::ostream& operator << (std::ostream& os, const PointSurfel& p)
 }
 
 
-template <typename PointType1, typename PointType2>
-inline float squaredEuclideanDistance (const PointType1& p1, const PointType2& p2)
+template <typename PointType1, typename PointType2> inline float 
+squaredEuclideanDistance (const PointType1& p1, const PointType2& p2)
 {
   float diff_x = p2.x - p1.x, diff_y = p2.y - p1.y, diff_z = p2.z - p1.z;
   return (diff_x*diff_x + diff_y*diff_y + diff_z*diff_z);
 }
 
-template <typename PointType1, typename PointType2>
-inline float euclideanDistance (const PointType1& p1, const PointType2& p2)
+template <typename PointType1, typename PointType2> inline float 
+euclideanDistance (const PointType1& p1, const PointType2& p2)
 {
   return (sqrtf (squaredEuclideanDistance (p1, p2)));
 }
 
-template <typename PointType>
-inline bool hasValidXYZ (const PointType& p)
+template <typename PointType> inline bool 
+hasValidXYZ (const PointType& p)
 {
   return (pcl_isfinite (p.x) && pcl_isfinite (p.y) && pcl_isfinite (p.z));
 }
