@@ -35,16 +35,12 @@
  */
 /** \author Bastian Steder */
 
+#include <pcl/pcl_macros.h>
 #include <iostream> 
 #include <sstream> 
 #include <gtest/gtest.h>
 #include <pcl/common/vector_average.h>
 using namespace pcl;
-
-void 
-  init ()
-{
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, VectorAverage_mean)
@@ -80,7 +76,6 @@ int
   main (int argc, char** argv)
 {
   testing::InitGoogleTest (&argc, argv);
-  init();
   return (RUN_ALL_TESTS ());
 }
 /* ]--- */
