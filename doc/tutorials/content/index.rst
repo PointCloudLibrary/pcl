@@ -277,6 +277,22 @@ contributions on any tutorial.
      .. |fe_2| image:: images/normal_estimation.png
                :height: 100px
 
+
+  * :ref:`normal_estimation_using_integral_images`
+    
+     ======  ======
+     |fe_3|  Title: **Normal Estimation Using Integral Images**
+
+             Author: *Stefan Holzer*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial we will learn how to compute normals for an organized point cloud using integral images.
+     ======  ======
+     
+     .. |fe_3| image:: images/normal_estimation.png
+               :height: 100px
+
   
 * Segmentation
 
