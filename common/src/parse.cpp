@@ -35,6 +35,7 @@
  *
  */
 
+#include <ctype.h>
 #include <stdio.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
