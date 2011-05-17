@@ -233,7 +233,7 @@ Next, `download <http://dev.pointclouds.org/attachments/download/129/template_al
   // Align a collection of object templates to a sample point cloud
   int main (int argc, char **argv)
   {
-    if (argc < 2)
+    if (argc < 3)
     {
       printf ("No target PCD file given!\n");
       return (-1);
@@ -241,7 +241,7 @@ Next, `download <http://dev.pointclouds.org/attachments/download/129/template_al
 
     // Load the object templates specified in the object_templates.txt file
     std::vector<FeatureCloud> object_templates;
-    std::ifstream input_stream ("./object_templates.txt");
+    std::ifstream input_stream (argv[1]);
     object_templates.resize (0);
     std::string pcd_filename;
     while (input_stream.good ())
@@ -258,7 +258,7 @@ Next, `download <http://dev.pointclouds.org/attachments/download/129/template_al
 
     // Load the target cloud PCD file
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::io::loadPCDFile (argv[1], *cloud);
+    pcl::io::loadPCDFile (argv[2], *cloud);
     
     // Preprocess the cloud by...
     // ...removing distant points
@@ -526,7 +526,7 @@ Finally, we define a method that will align all of the templates to the target c
     return (best_template);
   }
 
-Now that we have a class that handles aligning object templates, we'll apply it to the the problem of face alignment.  In the supplied data files, we've included nine template point clouds that we created from different views of a person's face.  Each one was downsampled to a spacing of 5mm and manually cropped to include only points from the face.  In the following code, we show how to use our *TemplateAlignment* class to locate the position and orientation of the person's face in a new cloud.
+Now that we have a class that handles aligning object templates, we'll apply it to the the problem of face alignment.  In the supplied data files, we've included six template point clouds that we created from different views of a person's face.  Each one was downsampled to a spacing of 5mm and manually cropped to include only points from the face.  In the following code, we show how to use our *TemplateAlignment* class to locate the position and orientation of the person's face in a new cloud.
 
 First, we load the object template clouds.  We've stored our templates as .PCD files, and we've listed their names in a file called ``object_templates.txt``.  Here, we read in each file name, load it into a FeatureCloud, and store the FeatureCloud in a vector for later.
 
@@ -534,7 +534,7 @@ First, we load the object template clouds.  We've stored our templates as .PCD f
 
   // Load the object templates specified in the object_templates.txt file
   std::vector<FeatureCloud> object_templates;
-  std::ifstream input_stream ("./object_templates.txt");
+  std::ifstream input_stream (argv[1]);
   object_templates.resize (0);
   std::string pcd_filename;
   while (input_stream.good ())
@@ -555,7 +555,7 @@ Next we load the target cloud (from the filename supplied on the command line).
 
   // Load the target cloud PCD file
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::io::loadPCDFile (argv[1], *cloud);
+  pcl::io::loadPCDFile (argv[2], *cloud);
 
 We then perform a little pre-processing on the data to get it ready for alignment.  The first step is to filter out any background points.  In this example we assume the person we're trying to align to will be less than 1 meter away, so we apply a pass-through filter, filtering on the "z" field (i.e., depth) with limits of 0 to 1.
 
