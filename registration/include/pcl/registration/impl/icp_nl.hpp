@@ -38,12 +38,6 @@
 #include <boost/unordered_map.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative
-  * non-linear Levenberg-Marquardt approach.
-  * \param cloud_src the source point cloud dataset
-  * \param cloud_tgt the target point cloud dataset
-  * \param transformation_matrix the resultant transformation matrix
-  */
 template <typename PointSource, typename PointTarget> void
 pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::estimateRigidTransformationLM (
       const PointCloudSource &cloud_src, const PointCloudTarget &cloud_tgt, Eigen::Matrix4f &transformation_matrix)
@@ -113,14 +107,6 @@ pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::estimateRigidTran
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative
-  * non-linear Levenberg-Marquardt approach.
-  * \param cloud_src the source point cloud dataset
-  * \param indices_src the vector of indices describing the points of interest in \a cloud_src
-  * \param cloud_tgt the target point cloud dataset
-  * \param indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
-  * \param transformation_matrix the resultant transformation matrix
-  */
 template <typename PointSource, typename PointTarget> void
   pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::estimateRigidTransformationLM (
       const PointCloudSource &cloud_src, const std::vector<int> &indices_src, const PointCloudTarget &cloud_tgt, const std::vector<int> &indices_tgt, Eigen::Matrix4f &transformation_matrix)
@@ -192,14 +178,6 @@ template <typename PointSource, typename PointTarget> void
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////(
-/** \brief Cost function to be minimized
-  * \param p a pointer to our data structure array
-  * \param m the number of functions
-  * \param n the number of variables
-  * \param x a pointer to the variables array
-  * \param fvec a pointer to the resultant functions evaluations
-  * \param iflag set to -1 inside the function to terminate execution
-  */
 template <typename PointSource, typename PointTarget> inline int
   pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::functionToOptimize (void *p, int m, int n, const double *x, double *fvec, int iflag)
 {
@@ -237,10 +215,6 @@ template <typename PointSource, typename PointTarget> inline int
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Compute the median value from a set of doubles
-  * \param fvec the set of doubles
-  * \param m the number of doubles in the set
-  */
 template <typename PointSource, typename PointTarget> inline double
   pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::computeMedian (double *fvec, int m)
 {
@@ -260,14 +234,6 @@ template <typename PointSource, typename PointTarget> inline double
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////(
-/** \brief Cost function to be minimized
-  * \param p a pointer to our data structure array
-  * \param m the number of functions
-  * \param n the number of variables
-  * \param x a pointer to the variables array
-  * \param fvec a pointer to the resultant functions evaluations
-  * \param iflag set to -1 inside the function to terminate execution
-  */
 template <typename PointSource, typename PointTarget> inline int
   pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::functionToOptimizeIndices (void *p, int m, int n, const double *x, double *fvec, int iflag)
 {

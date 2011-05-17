@@ -39,7 +39,7 @@
 void
 pcl::registration::CorrespondenceRejectorOneToOne::applyRejection(pcl::registration::Correspondences &correspondences)
 {
-  /** not really an efficient implementation */
+  /* not really an efficient implementation */
   pcl::registration::Correspondences input = *input_correspondences_;
 
   std::sort(input.begin(), input.end(), pcl::registration::sortCorrespondencesByMatchIndexAndDistance());
@@ -64,7 +64,7 @@ pcl::registration::CorrespondenceRejectorOneToOne::applyRejection(pcl::registrat
 void
 pcl::registration::CorrespondenceRejectorOneToOne::getCorrespondences(const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences)
 {
-  /** not really an efficient implementation */
+  /* not really an efficient implementation */
   pcl::registration::Correspondences input = original_correspondences;
 
   std::sort(input.begin(), input.end(), pcl::registration::sortCorrespondencesByMatchIndexAndDistance());

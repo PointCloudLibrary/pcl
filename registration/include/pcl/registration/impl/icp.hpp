@@ -37,20 +37,12 @@
 
 #include <boost/unordered_map.hpp>
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Rigid transformation computation method.
-  * \param output the transformed input point cloud dataset using the rigid transformation found
-  */
 template <typename PointSource, typename PointTarget> void
 pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output)
 {
   pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (output, Eigen::Matrix4f::Identity());
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Rigid transformation computation method.
-  * \param output the transformed input point cloud dataset using the rigid transformation found
-  */
 template <typename PointSource, typename PointTarget> void
 pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess)
 {

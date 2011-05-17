@@ -51,13 +51,26 @@ namespace pcl
     typedef boost::shared_ptr<std::vector<pcl::registration::Correspondence> > CorrespondencesPtr;
     typedef boost::shared_ptr<const std::vector<pcl::registration::Correspondence> > CorrespondencesConstPtr;
 
-    /** get mean and standard deviation of the correspondence distances */
+    /** \brief calculates the mean and standard deviation of descriptor distances from correspondences
+        \param[in] correspondences list of correspondences
+        \param[out] mean the mean descriptor distance of correspondences
+        \param[out] stddev the standard deviation of descriptor distances.
+        \note The sample varaiance is used to determine the standard deviation
+    */
     inline void getCorDistMeanStd(const Correspondences& correspondences, double &mean, double &stddev);
 
-    /** get a vector containing only the query indices */
+    /** \brief extracts the query indices
+        \param[in] correspondences list of correspondences
+        \param[out] indices array of extracted indices.
+        \note order of indices corresponds to input list of descriptor correspondences
+    */
     inline void getQueryIndices(const Correspondences& correspondences, std::vector<int>& indices);
 
-    /** get a vector containing only the match indices */
+    /** \brief extracts the match indices
+        \param[in] correspondences list of correspondences
+        \param[out] indices array of extracted indices.
+        \note order of indices corresponds to input list of descriptor correspondences
+    */
     inline void getMatchIndices(const Correspondences& correspondences, std::vector<int>& indices);
 
 //    inline void getNonMatchingQueryIndices()
