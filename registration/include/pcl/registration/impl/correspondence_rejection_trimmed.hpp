@@ -39,7 +39,7 @@
 void
 pcl::registration::CorrespondenceRejectorTrimmed::applyRejection(pcl::registration::Correspondences &correspondences)
 {
-  /** not really an efficient implementation */
+  /* not really an efficient implementation */
   correspondences = *input_correspondences_;
   unsigned int number_valid_correspondences = ( int( std::floor( overlap_ratio_ * (float)(correspondences.size()) ) ) );
   number_valid_correspondences = std::max(number_valid_correspondences, nr_min_correspondences_);
@@ -56,7 +56,7 @@ pcl::registration::CorrespondenceRejectorTrimmed::applyRejection(pcl::registrati
 void
 pcl::registration::CorrespondenceRejectorTrimmed::getCorrespondences(const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences)
 {
-  /** not really an efficient implementation */
+  /* not really an efficient implementation */
   remaining_correspondences = original_correspondences;
   unsigned int number_valid_correspondences = ( int( std::floor( overlap_ratio_ * (float)(remaining_correspondences.size()) ) ) );
   number_valid_correspondences = std::max(number_valid_correspondences, nr_min_correspondences_);

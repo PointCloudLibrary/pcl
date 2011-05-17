@@ -318,7 +318,6 @@ pcl::visualization::PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartP
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Constructor. */
 template <typename PointT>
 pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud) 
   : pcl::visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)

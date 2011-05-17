@@ -43,9 +43,6 @@
 #include "pcl/common/concatenate.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Get 2 random points with their normals as data samples and return them as point indices.
-  * \param samples the resultant model samples
-  */
 template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::isSampleGood(const std::vector<int> &samples) const
 {
@@ -53,12 +50,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::isSampleGood(const std::vect
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Check whether the given index samples can form a valid cylinder model, compute the model coefficients
-  * from these samples and store them in model_coefficients. The cylinder coefficients are: point_on_axis,
-  * axis_direction, cylinder_radius_R
-  * \param samples the point indices found as possible good candidates for creating a valid model
-  * \param model_coefficients the resultant model coefficients
-  */
 template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
       const std::vector<int> &samples, Eigen::VectorXf &model_coefficients)
@@ -126,10 +117,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Compute all distances from the cloud data to a given cylinder model.
-  * \param model_coefficients the coefficients of a cylinder model that we need to compute distances to
-  * \param distances the resultant estimated distances
-  */
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::getDistancesToModel (
       const Eigen::VectorXf &model_coefficients, std::vector<double> &distances)
@@ -180,11 +167,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getDistancesToModel (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Select all the points which respect the given model coefficients as inliers.
-  * \param model_coefficients the coefficients of a cylinder model that we need to compute distances to
-  * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
-  * \param inliers the resultant model inliers
-  */
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
       const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers)
@@ -240,12 +222,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Recompute the cylinder coefficients using the given inlier set and return them to the user.
-  * @note: these are the coefficients of the cylinder model after refinement (eg. after SVD)
-  * \param inliers the data inliers found as supporting the model
-  * \param model_coefficients the initial guess for the optimization
-  * \param optimized_coefficients the resultant recomputed coefficients after non-linear optimization
-  */
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::optimizeModelCoefficients (
       const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients)
@@ -302,14 +278,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::optimizeModelCoefficients (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////(
-/** \brief Cost function to be minimized
-  * \param p a pointer to our data structure array
-  * \param m the number of functions
-  * \param n the number of variables
-  * \param x a pointer to the variables array
-  * \param fvec a pointer to the resultant functions evaluations
-  * \param iflag set to -1 inside the function to terminate execution
-  */
 template <typename PointT, typename PointNT> int
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::functionToOptimize (void *p, int m, int n, const double *x, double *fvec, int iflag)
 {
@@ -330,13 +298,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::functionToOptimize (void *p,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Create a new point cloud with inliers projected onto the cylinder model.
-  * \param inliers the data inliers that we want to project on the cylinder model
-  * \param model_coefficients the coefficients of a cylinder model
-  * \param projected_points the resultant projected points
-  * \param copy_data_fields set to true if we need to copy the other data fields
-  * \todo implement this.
-  */
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
       const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields)
@@ -423,11 +384,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Verify whether a subset of indices verifies the given cylinder model coefficients.
-  * \param indices the data indices that need to be tested against the cylinder model
-  * \param model_coefficients the cylinder model coefficients
-  * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
-  */
 template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::doSamplesVerifyModel (
       const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, double threshold)
@@ -453,10 +409,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::doSamplesVerifyModel (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Get the distance from a point to a line (represented by a point and a direction)
-  * \param pt a point
-  * \param model_coefficients the line coefficients (a point on the line, line direction)
-  */
 template <typename PointT, typename PointNT> double
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::pointToLineDistance (
       const Eigen::Vector4f &pt, const Eigen::VectorXf &model_coefficients)
@@ -467,12 +419,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::pointToLineDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Project a point onto a cylinder given by its model coefficients (point_on_axis, axis_direction,
-  * cylinder_radius_R)
-  * \param pt the input point to project
-  * \param model_coefficients the coefficients of the cylinder (point_on_axis, axis_direction, cylinder_radius_R)
-  * \param pt_proj the resultant projected point
-  */
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPointToCylinder (
       const Eigen::Vector4f &pt, const Eigen::VectorXf &model_coefficients, Eigen::Vector4f &pt_proj)
@@ -491,9 +437,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPointToCylinder (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Check whether a model is valid given the user constraints.
-  * \param model_coefficients the set of model coefficients
-  */
 template <typename PointT, typename PointNT> bool 
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::isModelValid (const Eigen::VectorXf &model_coefficients)
 {

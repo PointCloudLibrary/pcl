@@ -137,6 +137,14 @@ namespace pcl
       static int 
       functionToOptimize (void *p, int m, int n, const double *x, double *fvec, int iflag);
       static int 
+      /** \brief Cost function to be minimized
+        * \param p a pointer to our data structure array
+        * \param m the number of functions
+        * \param n the number of variables
+        * \param x a pointer to the variables array
+        * \param fvec a pointer to the resultant functions evaluations
+        * \param iflag set to -1 inside the function to terminate execution
+        */
       functionToOptimizeIndices (void *p, int m, int n, const double *x, double *fvec, int iflag);
 
       /** \brief Use a Huber kernel to estimate the distance between two vectors
