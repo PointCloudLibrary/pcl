@@ -446,6 +446,14 @@ pcl::IntegralImageNormalEstimation::compute (const int pos_x, const int pos_y)
     
     return normal;
   }
+
+  pcl::Normal normal;
+  normal.normal_x = 0.0f;
+  normal.normal_y = 0.0f;
+  normal.normal_z = 0.0f;
+  normal.curvature = 0.0f;
+      
+  return normal;
 }
 
 
