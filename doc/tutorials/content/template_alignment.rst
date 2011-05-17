@@ -55,14 +55,16 @@ Next, `download <http://dev.pointclouds.org/attachments/download/129/template_al
     ~FeatureCloud () {}
 
     // Process the given cloud
-    void setInputCloud (PointCloud::Ptr xyz)
+    void 
+    setInputCloud (PointCloud::Ptr xyz)
     {
       xyz_ = xyz;
       processInput ();
     }
 
     // Load and process the cloud in the given PCD file
-    void loadInputCloud (const std::string & pcd_file)
+    void 
+    loadInputCloud (const std::string & pcd_file)
     {
       xyz_ = PointCloud::Ptr (new PointCloud);
       pcl::io::loadPCDFile (pcd_file, *xyz_);
@@ -70,33 +72,38 @@ Next, `download <http://dev.pointclouds.org/attachments/download/129/template_al
     }
 
     // Get a pointer to the cloud 3D points
-    PointCloud::Ptr getPointCloud () const
+    PointCloud::Ptr 
+    getPointCloud () const
     {
       return (xyz_);
     }
 
     // Get a pointer to the cloud of 3D surface normals
-    SurfaceNormals::Ptr getSurfaceNormals () const
+    SurfaceNormals::Ptr 
+    getSurfaceNormals () const
     {
       return (normals_);
     }
 
     // Get a pointer to the cloud of feature descriptors
-    LocalFeatures::Ptr getLocalFeatures () const
+    LocalFeatures::Ptr 
+    getLocalFeatures () const
     {
       return (features_);
     }
   
   protected:
     // Compute the surface normals and local features
-    void processInput ()
+    void 
+    processInput ()
     {
       computeSurfaceNormals ();
       computeLocalFeatures ();
     }
 
     // Compute the surface normals
-    void computeSurfaceNormals ()
+    void 
+    computeSurfaceNormals ()
     {
       normals_ = SurfaceNormals::Ptr (new SurfaceNormals);
 
@@ -108,7 +115,8 @@ Next, `download <http://dev.pointclouds.org/attachments/download/129/template_al
     }
 
     // Compute the local feature descriptors
-    void computeLocalFeatures ()
+    void 
+    computeLocalFeatures ()
     {
       features_ = LocalFeatures::Ptr (new LocalFeatures);
 
@@ -157,7 +165,8 @@ Next, `download <http://dev.pointclouds.org/attachments/download/129/template_al
     ~TemplateAlignment () {}
 
     // Set the given cloud as the target to which the templates will be aligned
-    void setTargetCloud (FeatureCloud &target_cloud)
+    void 
+    setTargetCloud (FeatureCloud &target_cloud)
     {
       target_ = target_cloud;
       sac_ia_.setInputTarget (target_cloud.getPointCloud ());
@@ -165,13 +174,15 @@ Next, `download <http://dev.pointclouds.org/attachments/download/129/template_al
     }
 
     // Add the given cloud to the list of template clouds
-    void addTemplateCloud (FeatureCloud &template_cloud)
+    void 
+    addTemplateCloud (FeatureCloud &template_cloud)
     {
       templates_.push_back (template_cloud);
     }
 
     // Align the given template cloud to the target specified by setTargetCloud ()
-    void align (FeatureCloud &template_cloud, TemplateAlignment::Result &result)
+    void 
+    align (FeatureCloud &template_cloud, TemplateAlignment::Result &result)
     {
       sac_ia_.setInputCloud (template_cloud.getPointCloud ());
       sac_ia_.setSourceFeatures (template_cloud.getLocalFeatures ());
@@ -184,7 +195,8 @@ Next, `download <http://dev.pointclouds.org/attachments/download/129/template_al
     }
 
     // Align all of template clouds set by addTemplateCloud to the target specified by setTargetCloud ()
-    void alignAll (std::vector<TemplateAlignment::Result> &results)
+    void 
+    alignAll (std::vector<TemplateAlignment::Result> &results)
     {
       results.resize (templates_.size ());
       for (size_t i = 0; i < templates_.size (); ++i)
@@ -194,7 +206,8 @@ Next, `download <http://dev.pointclouds.org/attachments/download/129/template_al
     }
 
     // Align all of template clouds to the target cloud to find the one with best alignment score
-    int findBestAlignment (TemplateAlignment::Result &result)
+    int 
+    findBestAlignment (TemplateAlignment::Result &result)
     {
       // Align all of the templates to the target cloud
       std::vector<Result> results;
@@ -231,7 +244,8 @@ Next, `download <http://dev.pointclouds.org/attachments/download/129/template_al
   };
 
   // Align a collection of object templates to a sample point cloud
-  int main (int argc, char **argv)
+  int 
+  main (int argc, char **argv)
   {
     if (argc < 3)
     {
