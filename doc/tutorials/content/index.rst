@@ -262,6 +262,21 @@ contributions on any tutorial.
      .. |fe_1| image:: images/good_features_small.png
                :height: 100px
 
+  * :ref:`normal_estimation`
+    
+     ======  ======
+     |fe_2|  Title: **Estimating Surface Normals in a PointCloud**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             This tutorial discusses the theoretical and implementation details of the surface normal estimation module in PCL.
+     ======  ======
+     
+     .. |fe_2| image:: images/normal_estimation.png
+               :height: 100px
+
   
 * Segmentation
 
