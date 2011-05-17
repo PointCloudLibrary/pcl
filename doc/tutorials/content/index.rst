@@ -290,7 +290,7 @@ contributions on any tutorial.
              In this tutorial we will learn how to compute normals for an organized point cloud using integral images.
      ======  ======
      
-     .. |fe_3| image:: images/normal_estimation.png
+     .. |fe_3| image:: images/normal_estimation_ii.png
                :height: 100px
 
   
