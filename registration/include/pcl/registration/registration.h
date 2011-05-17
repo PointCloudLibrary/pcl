@@ -92,7 +92,7 @@ namespace pcl
                         final_transformation_ (Eigen::Matrix4f::Identity ()),
                         transformation_ (Eigen::Matrix4f::Identity ()),
                         previous_transformation_ (Eigen::Matrix4f::Identity ()),
-                        transformation_epsilon_ (0.0), corr_dist_threshold_ (std::numeric_limits<double>::max ()),
+                        transformation_epsilon_ (0.0), corr_dist_threshold_ (std::sqrt (std::numeric_limits<double>::max ())),
                         inlier_threshold_ (0.05),
                         converged_ (false), min_number_correspondences_ (3), /*k_ (1),*/ point_representation_ ()
       {
