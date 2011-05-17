@@ -41,11 +41,6 @@
 #include "pcl/sample_consensus/sac_model_normal_parallel_plane.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Select all the points which respect the given model coefficients as inliers.
-  * \param model_coefficients the coefficients of a plane model that we need to compute distances to
-  * \param inliers the resultant model inliers
-  * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
-  */
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::selectWithinDistance (
       const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers)
@@ -93,10 +88,6 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::selectWithinDista
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Compute all distances from the cloud data to a given plane model.
-  * \param model_coefficients the coefficients of a plane model that we need to compute distances to
-  * \param distances the resultant estimated distances
-  */
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::getDistancesToModel (
       const Eigen::VectorXf &model_coefficients, std::vector<double> &distances)
@@ -138,9 +129,6 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::getDistancesToMod
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Check whether a model is valid given the user constraints.
-  * \param model_coefficients the set of model coefficients
-  */
 template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::isModelValid (const Eigen::VectorXf &model_coefficients)
 {

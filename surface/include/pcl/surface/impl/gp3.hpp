@@ -1132,7 +1132,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
         int min_dist = -1;
         if (prev_ffn && next_sfn && prev_sfn && next_ffn)
         {
-          /** should be never the case **/
+          /* should be never the case */
           double prev2f = (coords_[ffn_[current_index_]] - coords_[prev_index]).squaredNorm ();
           double next2s = (coords_[sfn_[current_index_]] - coords_[next_index]).squaredNorm ();
           double prev2s = (coords_[sfn_[current_index_]] - coords_[prev_index]).squaredNorm ();
@@ -1174,7 +1174,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
         }
         else if (prev_ffn && next_sfn)
         {
-          /** a clear case **/
+          /* a clear case */
           double prev2f = (coords_[ffn_[current_index_]] - coords_[prev_index]).squaredNorm ();
           double next2s = (coords_[sfn_[current_index_]] - coords_[next_index]).squaredNorm ();
           if (prev2f < next2s)
@@ -1184,7 +1184,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
         }
         else if (prev_sfn && next_ffn)
         {
-          /** a clear case **/
+          /* a clear case */
           double prev2s = (coords_[sfn_[current_index_]] - coords_[prev_index]).squaredNorm ();
           double next2f = (coords_[ffn_[current_index_]] - coords_[next_index]).squaredNorm ();
           if (prev2s < next2f)
@@ -1192,7 +1192,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
           else
             min_dist = 2;
         }
-        /** straightforward cases **/
+        /* straightforward cases */
         else if (prev_ffn && !next_sfn && !prev_sfn && !next_ffn)
           min_dist = 0;
         else if (!prev_ffn && !next_sfn && prev_sfn && !next_ffn)
@@ -1201,7 +1201,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
           min_dist = 2;
         else if (!prev_ffn && next_sfn && !prev_sfn && !next_ffn)
           min_dist = 3;
-        /** messed up cases **/
+        /* messed up cases */
         else if (prev_ffn)
         {
           double prev2f = (coords_[ffn_[current_index_]] - coords_[prev_index]).squaredNorm ();
@@ -1248,7 +1248,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
             {
               addTriangle (current_index_, ffn_[current_index_], prev_index, output);
 
-              /** updating prev_index **/
+              /* updating prev_index */
               if (ffn_[prev_index] == current_index_)
               {
                 ffn_[prev_index] = ffn_[current_index_];
@@ -1272,7 +1272,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
                 new2boundary_ = ffn_[current_index_];
               }
 
-              /** updating ffn **/
+              /* updating ffn */
               if (ffn_[ffn_[current_index_]] == current_index_)
               {
                 ffn_[ffn_[current_index_]] = prev_index;
@@ -1282,7 +1282,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
                 sfn_[ffn_[current_index_]] = prev_index;
               }
 
-              /** updating current **/
+              /* updating current */
               ffn_[current_index_] = next_index;
 
               break;
@@ -1291,7 +1291,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
             {
               addTriangle (current_index_, sfn_[current_index_], prev_index, output);
 
-              /** updating prev_index **/
+              /* updating prev_index */
               if (ffn_[prev_index] == current_index_)
               {
                 ffn_[prev_index] = sfn_[current_index_];
@@ -1315,7 +1315,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
                 new2boundary_ = sfn_[current_index_];
               }
 
-              /** updating sfn **/
+              /* updating sfn */
               if (ffn_[sfn_[current_index_]] == current_index_)
               {
                 ffn_[sfn_[current_index_]] = prev_index;
@@ -1325,7 +1325,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
                 sfn_[sfn_[current_index_]] = prev_index;
               }
 
-              /** updating current **/
+              /* updating current */
               sfn_[current_index_] = next_index;
 
               break;
@@ -1335,7 +1335,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
               addTriangle (current_index_, ffn_[current_index_], next_index, output);
               int neighbor_update = next_index;
 
-              /** updating next_index **/
+              /* updating next_index */
               if (state_[next_index] <= FREE)
               {
                 state_[next_index] = FRINGE;
@@ -1400,7 +1400,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
                       addTriangle (next_index, ffn_[current_index_], ffn_[next_index], output);
                       neighbor_update = ffn_[next_index];
 
-                      /** ffn[next_index] **/
+                      /* ffn[next_index] */
                       if ((ffn_[ffn_[next_index]] == ffn_[current_index_]) || (sfn_[ffn_[next_index]] == ffn_[current_index_]))
                       {
                         state_[ffn_[next_index]] = COMPLETED;
@@ -1423,7 +1423,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
                       addTriangle (next_index, ffn_[current_index_], sfn_[next_index], output);
                       neighbor_update = sfn_[next_index];
 
-                      /** sfn[next_index] **/
+                      /* sfn[next_index] */
                       if ((ffn_[sfn_[next_index]] = ffn_[current_index_]) || (sfn_[sfn_[next_index]] == ffn_[current_index_]))
                       {
                         state_[sfn_[next_index]] = COMPLETED;
@@ -1446,7 +1446,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
                 }
               }
 
-              /** updating ffn **/
+              /* updating ffn */
               if ((ffn_[ffn_[current_index_]] == neighbor_update) || (sfn_[ffn_[current_index_]] == neighbor_update))
               {
                 state_[ffn_[current_index_]] = COMPLETED;
@@ -1460,7 +1460,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
                 sfn_[ffn_[current_index_]] = neighbor_update;
               }
 
-              /** updating current **/
+              /* updating current */
               ffn_[current_index_] = prev_index;
 
               break;
@@ -1470,7 +1470,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
               addTriangle (current_index_, sfn_[current_index_], next_index, output);
               int neighbor_update = next_index;
 
-              /** updating next_index **/
+              /* updating next_index */
               if (state_[next_index] <= FREE)
               {
                 state_[next_index] = FRINGE;
@@ -1535,7 +1535,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
                       addTriangle (next_index, sfn_[current_index_], ffn_[next_index], output);
                       neighbor_update = ffn_[next_index];
 
-                      /** ffn[next_index] **/
+                      /* ffn[next_index] */
                       if ((ffn_[ffn_[next_index]] == sfn_[current_index_]) || (sfn_[ffn_[next_index]] == sfn_[current_index_]))
                       {
                         state_[ffn_[next_index]] = COMPLETED;
@@ -1558,7 +1558,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
                       addTriangle (next_index, sfn_[current_index_], sfn_[next_index], output);
                       neighbor_update = sfn_[next_index];
 
-                      /** sfn[next_index] **/
+                      /* sfn[next_index] */
                       if ((ffn_[sfn_[next_index]] == sfn_[current_index_]) || (sfn_[sfn_[next_index]] == sfn_[current_index_]))
                       {
                         state_[sfn_[next_index]] = COMPLETED;
@@ -1581,7 +1581,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
                 }
               }
 
-              /** updating sfn **/
+              /* updating sfn */
               if ((ffn_[sfn_[current_index_]] == neighbor_update) || (sfn_[sfn_[current_index_]] == neighbor_update))
               {
                 state_[sfn_[current_index_]] = COMPLETED;
