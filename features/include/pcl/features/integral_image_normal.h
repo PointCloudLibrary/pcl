@@ -45,12 +45,21 @@
 
 namespace pcl
 {
-  /** \brief Surface normal estimation on dense data using integral images.
-    * \author Stefan Holzer
-    * \ingroup features
-    */
-  class PCL_EXPORTS IntegralImageNormalEstimation
+  /**
+   * \brief Surface normal estimation on dense data using integral images.
+   * \author Stefan Holzer
+   */
+  class IntegralImageNormalEstimation
   {
+    public: // enums
+
+      enum NormalEstimationMethod
+      {
+        COVARIANCE_MATRIX,
+        AVERAGE_3D_GRADIENT,
+        AVERAGE_DEPTH_CHANGE
+      };
+
     public: // functions
     
       //! Constructor
@@ -72,7 +81,8 @@ namespace pcl
        */
       void 
       setInputData (float *data, const int width, const int height, const int dimensions,
-                    const int element_stride, const int row_stride, const float distance_threshold);
+                    const int element_stride, const int row_stride, const float distance_threshold,
+                    const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT );
 
       /**
        * Set the regions size which is considered for normal estimation.
@@ -85,7 +95,30 @@ namespace pcl
        */
       pcl::Normal compute (const int posX, const int posY);
 
+      /**
+       * Computes the normal for the complete cloud. 
+       */
+      static void compute (
+        ::pcl::PointCloud< ::pcl::PointXYZ > & cloud,
+        ::pcl::PointCloud< ::pcl::Normal > & normals,
+        const float maxDepthChangeFactor = 20.0f*0.001f,
+        const float normalSmoothingSize = 10.0f,
+        const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT );
+
+      /**
+       * Computes the normal for the complete cloud. 
+       */
+      static void compute (
+        ::pcl::PointCloud< ::pcl::PointXYZ > & cloud,
+        ::pcl::PointCloud< ::pcl::Normal > & normals,
+        const bool useDepthDependentSmoothing,
+        const float maxDepthChangeFactor = 20.0f*0.001f,
+        const float normalSmoothingSize = 10.0f,
+        const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT );
+
     protected: // data
+
+      NormalEstimationMethod normal_estimation_method_;
     
       /** The width of the neighborhood region used for computing the normal. */
       int rect_width_;
@@ -109,9 +142,13 @@ namespace pcl
       float distance_threshold_;
 
       /** integral image in x-direction */
-      IntegralImage2D<float, float> *integral_image_x_;
+      IntegralImage2D<float, double> *integral_image_x_;
       /** integral image in y-direction */
-      IntegralImage2D<float, float> *integral_image_y_;
+      IntegralImage2D<float, double> *integral_image_y_;
+      /** integral image xyz */
+      IntegralImage2D<float, double> *integral_image_xyz_;
+      /** integral image */
+      IntegralImage2D<float, double> *integral_image_;
 
       /** derivatives in x-direction */
       float *diff_x_;
