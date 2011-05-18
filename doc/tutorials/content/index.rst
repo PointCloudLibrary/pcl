@@ -293,6 +293,22 @@ contributions on any tutorial.
      .. |fe_3| image:: images/normal_estimation_ii.png
                :height: 100px
 
+  * :ref:`pfh_estimation`
+    
+     ======  ======
+     |fe_4|  Title: **Point Feature Histograms (PFH) descriptors**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             This tutorial introduces a family of 3D feature descriptors called PFH (Point Feature Histograms) and discusses their implementation details from PCL's perspective.
+     ======  ======
+     
+     .. |fe_4| image:: images/pfh_estimation.png
+               :height: 100px
+
+
   
 * Segmentation
 
