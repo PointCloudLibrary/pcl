@@ -235,6 +235,15 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
   projected_points.is_dense = input_->is_dense;
 
   Eigen::Vector4f mc (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
+
+  // normalize the vector perpendicular to the plane...
+  mc.normalize ();
+  // ... and store the resulting normal as a local copy of the model coefficients
+  Eigen::Vector4f tmp_mc = model_coefficients;
+  tmp_mc[0] = mc[0];
+  tmp_mc[1] = mc[1];
+  tmp_mc[2] = mc[2];
+
   // Copy all the data fields from the input cloud to the projected one?
   if (copy_data_fields)
   {
@@ -257,7 +266,8 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
                          input_->points[inliers[i]].y,
                          input_->points[inliers[i]].z,
                          1);
-      float distance_to_plane = model_coefficients.dot (p);
+      // use normalized coefficients to calculate the scalar projection 
+      float distance_to_plane = tmp_mc.dot (p);
 
       pcl::Vector4fMap pp = projected_points.points[inliers[i]].getVector4fMap ();
       pp = p - mc * distance_to_plane;        // mc[3] = 0, therefore the 3rd coordinate is safe
@@ -284,7 +294,8 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
                          input_->points[inliers[i]].y,
                          input_->points[inliers[i]].z,
                          1);
-      float distance_to_plane = model_coefficients.dot (p);
+      // use normalized coefficients to calculate the scalar projection 
+      float distance_to_plane = tmp_mc.dot (p);
 
       pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap ();
       pp = p - mc * distance_to_plane;        // mc[3] = 0, therefore the 3rd coordinate is safe
