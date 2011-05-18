@@ -822,6 +822,42 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool 
 pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
+    int property, double val1, double val2, double val3, const std::string &id, int viewport)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
+
+  if (am_it == shape_actor_map_.end ())
+  {
+    pcl::console::print_error ("[setShapeRenderingProperties] Could not find any shape with id <%s>!\n", id.c_str ());
+    return (false);
+  }
+  // Get the actor pointer
+  vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second);
+
+  switch (property)
+  {
+    case PCL_VISUALIZER_COLOR:
+    {
+      actor->GetProperty ()->SetColor (val1, val2, val3);
+      actor->GetProperty ()->SetAmbientColor  (val1, val2, val3);
+      actor->GetProperty ()->SetSpecularColor (val1, val2, val3);
+      actor->GetProperty ()->SetAmbient (0.8);
+      actor->Modified ();
+      break;
+    }
+    default:
+    {
+      pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
+      return (false);
+    }
+  }
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     int property, double value, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -837,6 +873,12 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
 
   switch (property)
   {
+    case PCL_VISUALIZER_POINT_SIZE:
+    {
+      actor->GetProperty ()->SetPointSize (value);
+      actor->Modified ();
+      break;
+    }
     case PCL_VISUALIZER_OPACITY:
     {
       actor->GetProperty ()->SetOpacity (value);
@@ -865,7 +907,6 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
   }
   return (true);
 }
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void

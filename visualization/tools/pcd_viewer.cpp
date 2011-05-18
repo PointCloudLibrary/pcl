@@ -45,6 +45,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+#include <vtkPolyDataReader.h>
 
 using pcl::console::print_color;
 using pcl::console::print_error;
@@ -92,7 +93,7 @@ bool
 void
   printHelp (int argc, char **argv)
 {
-  print_error ("Syntax is: %s <file_name 1..N>.pcd <options>\n", argv[0]);
+  print_error ("Syntax is: %s <file_name 1..N>.<pcd or vtk> <options>\n", argv[0]);
   print_info ("  where options are:\n");
   print_info ("                     -bc r,g,b                = background color\n");
   print_info ("                     -fc r,g,b                = foreground color\n");
@@ -166,9 +167,11 @@ int
   // Parse the command line arguments for .pcd files
   std::vector<int> p_file_indices;
   p_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
-  if (p_file_indices.size () == 0)
+  std::vector<int> vtk_file_indices;
+  vtk_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".vtk");
+  if (p_file_indices.size () == 0 && vtk_file_indices.size () == 0)
   {
-    print_error ("No .PCD file given. Nothing to visualize.\n");
+    print_error ("No .PCDor .VTK file given. Nothing to visualize.\n");
     return (-1);
   }
 
@@ -211,6 +214,55 @@ int
   ColorHandlerPtr color_handler;
   GeometryHandlerPtr geometry_handler;
 
+  // Go through VTK files
+  for (size_t i = 0; i < vtk_file_indices.size (); ++i)
+  {
+    // Load file
+    tt.tic ();
+    print_highlight (stderr, "Loading "); print_value (stderr, "%s ", argv[vtk_file_indices.at (i)]);
+    vtkPolyDataReader* reader = vtkPolyDataReader::New ();
+    reader->SetFileName (argv[vtk_file_indices.at (i)]);
+    reader->Update ();
+    vtkSmartPointer<vtkPolyData> polydata = reader->GetOutput ();
+    if (!polydata)
+      return (-1);
+    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", polydata->GetNumberOfPoints ()); print_info (" points]\n");
+
+    // Create the PCLVisualizer object here on the first encountered XYZ file
+    if (!p)
+      p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
+
+    // Multiview enabled?
+    if (mview)
+    {
+      p->createViewPort (k * x_step, l * y_step, (k + 1) * x_step, (l + 1) * y_step, viewport);
+      k++;
+      if (k >= x_s)
+      {
+        k = 0;
+        l++;
+      }
+    }
+
+    // Add as actor
+    std::stringstream cloud_name ("vtk-");
+    cloud_name << argv[vtk_file_indices.at (i)] << "-" << i;
+    p->addModelFromPolyData (polydata, cloud_name.str (), viewport);
+
+    // Change the shape rendered color
+    if (fcolorparam && fcolor_r.size () > i && fcolor_g.size () > i && fcolor_b.size () > i)
+      p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, fcolor_r[i], fcolor_g[i], fcolor_b[i], cloud_name.str ());
+
+    // Change the shape rendered point size
+    if (psize.size () > 0)
+      p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize.at (i), cloud_name.str ());
+
+    // Change the shape rendered opacity
+    if (opaque.size () > 0)
+      p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
+  }
+
+  // Go through PCD files
   for (size_t i = 0; i < p_file_indices.size (); ++i)
   {
     sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
@@ -241,6 +293,7 @@ int
     }
 
     cloud_name << argv[p_file_indices.at (i)] << "-" << i;
+
     // Create the PCLVisualizer object here on the first encountered XYZ file
     if (!p)
       p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
