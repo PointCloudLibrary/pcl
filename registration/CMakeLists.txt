@@ -7,7 +7,8 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
-    set(incs include/pcl/${SUBSYS_NAME}/correspondence_estimation.h
+    set(incs 
+        include/pcl/${SUBSYS_NAME}/correspondence_estimation.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_distance.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_one_to_one.h
@@ -26,7 +27,8 @@ if(build)
         )
 
 
-    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation.hpp
+    set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_distance.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_one_to_one.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_reciprocal.hpp
@@ -50,7 +52,7 @@ if(build)
     target_link_libraries(${LIB_NAME} pcl_kdtree pcl_sample_consensus)
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-        "${EXT_DEPS}" "" "" "")
+                       "${EXT_DEPS}" "" "" "")
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
