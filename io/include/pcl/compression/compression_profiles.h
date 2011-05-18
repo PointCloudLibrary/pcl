@@ -101,7 +101,7 @@ namespace pcl
         0.01, /* octreeResolution = */
         false, /* doVoxelGridDownDownSampling = */
         40, /* iFrameRate = */
-        6, /* colorBitResolution = */
+        4, /* colorBitResolution = */
         false /* doColorEncoding = */
     }, {
     // PROFILE: MED_RES_ONLINE_COMPRESSION_WITH_COLOR
@@ -109,7 +109,7 @@ namespace pcl
         0.01, /* octreeResolution = */
         false, /* doVoxelGridDownDownSampling = */
         40, /* iFrameRate = */
-        6, /* colorBitResolution = */
+        4, /* colorBitResolution = */
         true /* doColorEncoding = */
     }, {
     // PROFILE: HIGH_RES_ONLINE_COMPRESSION_WITHOUT_COLOR
@@ -149,7 +149,7 @@ namespace pcl
         0.001, /* octreeResolution = */
         true, /* doVoxelGridDownDownSampling = */
         100, /* iFrameRate = */
-        6, /* colorBitResolution = */
+        4, /* colorBitResolution = */
         false /* doColorEncoding = */
     }, {
     // PROFILE: MED_RES_OFFLINE_COMPRESSION_WITH_COLOR
@@ -157,7 +157,7 @@ namespace pcl
         0.01, /* octreeResolution = */
         false, /* doVoxelGridDownDownSampling = */
         100, /* iFrameRate = */
-        6, /* colorBitResolution = */
+        4, /* colorBitResolution = */
         true /* doColorEncoding = */
     }, {
     // PROFILE: HIGH_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR
