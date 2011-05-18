@@ -96,6 +96,10 @@ namespace pcl
         typedef OctreePointCloud<PointT, LeafT, OctreeBase<int, LeafT> > SingleBuffer;
         typedef OctreePointCloud<PointT, LeafT, Octree2BufBase<int, LeafT> > DoubleBuffer;
 
+        // Boost shared pointers
+        typedef boost::shared_ptr<OctreePointCloud<PointT, LeafT, OctreeT> > Ptr;
+        typedef boost::shared_ptr<const OctreePointCloud<PointT, LeafT, OctreeT> > ConstPtr;
+
         /** \brief Provide a pointer to the input data set.
          *  \param cloud_arg the const boost shared pointer to a PointCloud message
          *  \param indices_arg the point indices subset that is to be used from \a cloud - if 0 the whole point cloud is used
