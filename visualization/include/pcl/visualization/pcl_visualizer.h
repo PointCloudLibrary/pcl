@@ -405,6 +405,18 @@ namespace pcl
         setShapeRenderingProperties (int property, double value, 
                                      const std::string &id, int viewport = 0);
 
+        /** \brief Set the rendering properties of a shape (3x values - e.g., RGB)
+          * \param property the property type
+          * \param val1 the first value to be set
+          * \param val2 the second value to be set
+          * \param val3 the third value to be set
+          * \param id the shape object id
+          * \param viewport the view port where the shape's properties should be modified (default: all)
+          */
+         bool
+         setShapeRenderingProperties (int property, double val1, double val2, double val3,
+                                      const std::string &id, int viewport = 0);
+
         /** \brief Returns true when the user tried to close the window */
         bool 
         wasStopped () const { return (interactor_->stopped); }
