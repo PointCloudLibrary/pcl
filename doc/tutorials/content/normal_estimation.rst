@@ -24,6 +24,10 @@ possibilities:
 This tutorial will address the latter, that is, given a point cloud dataset,
 directly compute the surface normals at each point in the cloud.
 
+.. raw:: html
+
+  <iframe width="425" height="349" src="http://www.youtube.com/embed/x1FSssJrfik" frameborder="0" allowfullscreen></iframe>
+
 Theoretical primer
 ------------------
 
@@ -236,5 +240,20 @@ and the fourth coordinate is D = nc . p_plane (centroid here) + p. The output su
 .. math::
 
    \sigma = \frac{\lambda_0}{\lambda_0 + \lambda_1 + \lambda_2}
+
+Speeding Normal Estimation with OpenMP
+--------------------------------------
+
+For the speed-savvy users, PCL provides an additional implementation of surface
+normal estimation which uses multi-core/multi-threaded paradigms using OpenMP
+to speed the computation. The name of the class is
+**pcl::NormaleEstimationOMP**, and its API is 100% compatible to the
+single-threaded **pcl::NormalEstimation**, which makes it suitable as a drop-in
+replacement. On a system with 8 cores, you should get anything between 6-8
+times faster computation times.
+
+.. note::
+
+   If your dataset is organized (e.g., acquired using a TOF camera, stereo camera, etc -- that is, it has a width and a height), for even faster results see the :ref:`normal_estimation_using_integral_images`.
 
 
