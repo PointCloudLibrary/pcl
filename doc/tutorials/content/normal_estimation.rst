@@ -162,6 +162,7 @@ and large otherwise.
 
 Estimating the normals
 ----------------------
+
 Though an example of normal estimation has already been given in
 :ref:`features_tutorial`, we will revise one of them here for the purpose of
 better explaining what goes on behind the scenes.
