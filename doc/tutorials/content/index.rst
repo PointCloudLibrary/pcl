@@ -308,6 +308,20 @@ contributions on any tutorial.
      .. |fe_4| image:: images/pfh_estimation.png
                :height: 100px
 
+  * :ref:`fpfh_estimation`
+    
+     ======  ======
+     |fe_5|  Title: **Fast Point Feature Histograms (FPFH) descriptors**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             This tutorial introduces the FPFH (Fast Point Feature Histograms) 3D descriptor and discusses their implementation details from PCL's perspective.
+     ======  ======
+     
+     .. |fe_5| image:: images/fpfh_estimation.jpg
+               :height: 100px
 
   
 * Segmentation
