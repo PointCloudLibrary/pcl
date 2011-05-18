@@ -98,6 +98,11 @@ In this space, a histogram bin increment corresponds to a point having certain
 values for all its 4 features. The figure below presents examples of Point
 Feature Histograms representations for different points in a cloud.
 
+In some cases, the fourth feature, **d**, does not present an extreme
+significance for 2.5D datasets, usually acquired in robotics, as the distance
+between neighboring points increases from the viewpoint. Therefore, omitting
+**d** for scans where the local point density influences this feature dimension
+has proved to be beneficial. 
 
 .. image:: images/pfh_estimation/example_pfhs.png
    :align: center
@@ -111,9 +116,17 @@ Estimating PFH features
 -----------------------
 
 Point Feature Histograms are implemented in PCL as part of the `pcl_features
-<http://docs.pointclouds.org/trunk/group__features.html>`_ library. The
-following code snippet will estimate a set of PFH features for all the points
-in the input dataset.
+<http://docs.pointclouds.org/trunk/group__features.html>`_ library. 
+
+The default PFH implementation uses 5 binning subdivisions (e.g., each of the
+four feature values will use this many bins from its value interval), and does
+not include the distances (as explained above -- although the
+**computePairFeatures** method can be called by the user to obtain the
+distances too, if desired) which results in a 125-byte array (:math:`3^5`) of
+float values. These are stored in a **pcl::PFHSignature125** point type.
+
+The following code snippet will estimate a set of PFH features for all the
+points in the input dataset.
 
 .. code-block:: cpp
    :linenos:
@@ -147,9 +160,6 @@ in the input dataset.
      // IMPORTANT: the radius used here has to be larger than the radius used to estimate the surface normals!!!
      pfh.setRadiusSearch (0.05);
 
-     // Set the number of binning subdivisions (each of the four feature values will use this many bins from its value interval)
-     pfh.setNrSubdivisions (3);
-
      // Compute the features
      pfh.compute (*pfhs);
 
@@ -162,7 +172,7 @@ The actual **compute** call from the **PFHEstimation** class does nothing intern
 
    1. get the nearest neighbors of p
 
-   2. for each pair of neighbors, compute the four values
+   2. for each pair of neighbors, compute the three angular values
 
    3. bin all the results in an output histogram
 

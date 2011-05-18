@@ -134,18 +134,6 @@ namespace pcl
       computePointPFHSignature (const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals, 
                                 const std::vector<int> &indices, int nr_split, Eigen::VectorXf &pfh_histogram);
 
-      /** \brief Set the number of subdivisions for each angular feature interval.
-        * \param nr_subdiv the number of subdivisions
-        */
-      inline void 
-      setNrSubdivisions (int nr_subdiv) { nr_subdiv_ = nr_subdiv; }
-
-      /** \brief Get the number of subdivisions for the feature interval.
-        * \param nr_subdiv the resultant number of subdivisions as set by the user
-        */
-      inline void 
-      getNrSubdivisions (int &nr_subdiv) { nr_subdiv = nr_subdiv_; }
-
     protected:
 
       /** \brief Estimate the Point Feature Histograms (PFH) descriptors at a set of points given by
