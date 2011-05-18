@@ -36,6 +36,9 @@
 #ifndef PCL_REGISTRATION_CORRESPONDENCE_TYPES_H_
 #define PCL_REGISTRATION_CORRESPONDENCE_TYPES_H_
 
+#include <vector>
+#include <boost/shared_ptr.hpp>
+
 namespace pcl
 {
   namespace registration
