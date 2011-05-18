@@ -88,6 +88,10 @@ development that everyone should follow:
 
   Please follow the following naming and indentation rules when developing code for PCL.
 
+* :ref:`branches_repository`
+
+  If you're not sure how to best make concurrent commits to the repository to both **trunk**, and any of the existing **branches**, see this example.
+
 
 Improving the PCL documentation
 -------------------------------
@@ -112,5 +116,6 @@ Contents
    compiler_optimizations
    single_compile_unit
    pcl_style_guide
+   branches_repository
    how_to_write_a_tutorial
 
