@@ -541,9 +541,6 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   if (res < 0)
     return (res);
 
-  if (pcd_version != PCD_V6)
-    PCL_WARN ("[pcl::PCDReader::read] PCD file > v.6 read from disk. Sensor origin/orientation is lost.\n");
-
   return 0;
 }
 
