@@ -49,7 +49,7 @@ namespace pcl
    * \brief Surface normal estimation on dense data using integral images.
    * \author Stefan Holzer
    */
-  class IntegralImageNormalEstimation
+  class PCL_EXPORTS IntegralImageNormalEstimation
   {
     public: // enums
 
