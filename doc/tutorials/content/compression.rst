@@ -359,7 +359,7 @@ The advanced parametrization is explained in the following:
 	- **colorBitResolution_arg**: This parameter defines the amount of bits per color component to be encoded. 
 
 Command line tool for PCL point cloud stream compression
--------------------------------------------------
+--------------------------------------------------------
 
 The pcl visualization component contains a command line tool for point cloud compression and streaming:
 Simply execute "./pcl_stream_compression -?" to see a full list of options::
