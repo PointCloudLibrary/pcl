@@ -775,7 +775,7 @@ The above crawled the *data/* subdirectory, and created a kd-tree with 195 entri
           done
         done
 
-      and run the script like this::
+    and run the script like this::
 
         bash test.sh
 
