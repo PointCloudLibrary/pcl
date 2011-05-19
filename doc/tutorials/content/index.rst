@@ -484,6 +484,21 @@ contributions on any tutorial.
      .. |ap_1| image:: images/template_alignment_1.png
                :height: 100px
 
+  * :ref:`vfh_recognition`
+    
+     ======  ======
+     |ap_2|  Title: **Cluster Recognition and 6DOF Pose Estimation using VFH descriptors**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.8
+
+             In this tutorial we show how the Viewpoint Feature Histogram (VFH) descriptor can be used to recognize similar clusters in terms of their geometry.
+     ======  ======
+     
+     .. |ap_2| image:: images/vfh_recognition.jpg
+               :height: 100px
+
  ..
   * :ref:`normal_estimation_integral_images`
     Surface normal estimation
