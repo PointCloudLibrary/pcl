@@ -29,14 +29,11 @@ We want to find and segment the individual object point clusters lying on the
 plane. Assuming that we use a Kd-tree structure for finding the nearest
 neighbors, the algorithmic steps for that would be (from [RusuDissertation]_):
 
-    1. *create a kd-tree representation for the input point cloud dataset*
-       :math:`P`;
+    1. *create a kd-tree representation for the input point cloud dataset* :math:`P`;
 
-    2. *set up an empty list of clusters* :math:`C`, *and a queue of the
-       points that need to be checked* :math:`Q`;
+    2. *set up an empty list of clusters* :math:`C`, *and a queue of the points that need to be checked* :math:`Q`;
 
-    3. *then for every point* :math:`\boldsymbol{p}_i \in P`, *perform the
-       following steps:*
+    3. *then for every point* :math:`\boldsymbol{p}_i \in P`, *perform the following steps:*
 
        * *add* :math:`\boldsymbol{p}_i` *to the current queue* :math:`Q`;
 
