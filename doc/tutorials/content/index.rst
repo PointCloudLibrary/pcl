@@ -395,7 +395,7 @@ contributions on any tutorial.
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial we will learn how to calculate a simple 2D convex hull polygon for a set of points supported by a plane.
      ======  ======
@@ -420,34 +420,49 @@ contributions on any tutorial.
 
 * Octree
 
-  * :ref:`octree_search`
+  * :ref:`octree_compression`
   
      ======  ======
-     |oc_1|  Title: **Octrees for spatial partitioning and neighbor search**
+     |oc_1|  Title: **Point cloud compression**
 
              Author: *Julius Kammerl*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
+
+             In this tutorial, we will learn how to compress a single point cloud and streams of point clouds.
+     ======  ======
+     
+     .. |oc_1| image:: images/compression_tutorial.png
+               :height: 100px
+
+  * :ref:`octree_search`
+  
+     ======  ======
+     |oc_2|  Title: **Octrees for spatial partitioning and neighbor search**
+
+             Author: *Julius Kammerl*
+
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to use octrees for spatial partitioning and nearest neighbor search.
      ======  ======
      
-     .. |oc_1| image:: images/octree_img.png
+     .. |oc_2| image:: images/octree_img.png
                :height: 100px
                
   * :ref:`octree_change_detection`
   
      ======  ======
-     |oc_2|  Title: **Spatial change detection on unorganized point cloud data**
+     |oc_3|  Title: **Spatial change detection on unorganized point cloud data**
 
              Author: *Julius Kammerl*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to use octrees for detecting spatial changes within point clouds.
      ======  ======
      
-     .. |oc_2| image:: images/changedetectionThumb.png
+     .. |oc_3| image:: images/changedetectionThumb.png
                :height: 100px
 
 * Visualization
