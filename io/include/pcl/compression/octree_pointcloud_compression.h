@@ -96,12 +96,12 @@ namespace pcl
          *  \param colorBitResolution_arg:  color bit depth
          *  \param showStatistics_arg:  output compression statistics
          * */
-        PointCloudCompression (compression_Profiles_e compressionProfile_arg = HIGH_RES_ONLINE_COMPRESSION_WITH_COLOR,
-                               bool showStatistics_arg = true,
+        PointCloudCompression (compression_Profiles_e compressionProfile_arg = MED_RES_ONLINE_COMPRESSION_WITH_COLOR,
+                               bool showStatistics_arg = false,
                                const double pointResolution_arg = 0.001,
                                const double octreeResolution_arg = 0.01,
                                bool doVoxelGridDownDownSampling_arg = false,
-                               unsigned int iFrameRate_arg = 30,
+                               const unsigned int iFrameRate_arg = 30,
                                bool doColorEncoding_arg = true,
                                const unsigned char colorBitResolution_arg = 6
                                ) :
