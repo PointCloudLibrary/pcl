@@ -870,8 +870,6 @@ TEST (PCL, VFHEstimation)
 
   // set parameters
   vfh.setInputCloud (cloud.makeShared ());
-  vfh.setNrSubdivisions (45, 45, 45, 45);
-  vfh.setNrViewpointSubdivisions (128);
   vfh.setIndices (indicesptr);
   vfh.setSearchMethod (tree);
 

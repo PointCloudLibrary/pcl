@@ -110,7 +110,7 @@ points in the input dataset.
      ... read, pass in or create a point cloud with normals ...
      ... (note: you can create a single PointCloud<PointNormal> if you want) ...
 
-     // Create the PFH estimation class, and pass the input dataset+normals to it
+     // Create the FPFH estimation class, and pass the input dataset+normals to it
      FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh;
      fpfh.setInputCloud (cloud);
      fpfh.setInputNormals (normals);
