@@ -323,6 +323,21 @@ contributions on any tutorial.
      .. |fe_5| image:: images/fpfh_estimation.jpg
                :height: 100px
 
+  * :ref:`vfh_estimation`
+    
+     ======  ======
+     |fe_6|  Title: **Estimating VFH signatures for a set of points**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.8
+
+             This document describes the Viewpoint Feature Histogram (VFH) descriptor, a novel representation for point clusters for the problem of Cluster (e.g., Object) Recognition and 6DOF Pose Estimation.
+     ======  ======
+     
+     .. |fe_6| image:: images/vfh_estimation.png
+               :height: 100px
+
   
 * Segmentation
 

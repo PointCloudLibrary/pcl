@@ -155,11 +155,10 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   // ---[ Step 1a : compute the centroid in XYZ space
   Eigen::Vector4f xyz_centroid;
 
-  if (use_given_centroid_) {
+  if (use_given_centroid_) 
     xyz_centroid = centroid_to_use_;
-  } else {
+  else
     compute3DCentroid (*surface_, *indices_, xyz_centroid);          // Estimate the XYZ centroid
-  }
 
   // ---[ Step 1b : compute the centroid in normal space
   Eigen::Vector4f normal_centroid = Eigen::Vector4f::Zero ();
@@ -168,9 +167,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   // If the data is dense, we don't need to check for NaN
 
   if (use_given_normal_)
-  {
     normal_centroid = normal_to_use_;
-  }
   else
   {
     if (normals_->is_dense)
@@ -232,11 +229,10 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   hist_vp_.setZero (nr_bins_vp_);
 
   double hist_incr;
-  if (normalize_bins_) {
+  if (normalize_bins_)
     hist_incr = 100.0 / (double)(indices_->size ());
-  } else {
+  else
     hist_incr = 1.0;
-  }
 
   for (size_t i = 0; i < indices_->size (); ++i)
   {

@@ -109,47 +109,6 @@ namespace pcl
                                const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
                                const std::vector<int> &indices);
 
-    /** \brief Set the number of subdivisions for each feature interval.
-     * \param nr_bins_f1 number of subdivisions for the first angular feature
-     * \param nr_bins_f2 number of subdivisions for the second angular feature
-     * \param nr_bins_f3 number of subdivisions for the third angular feature
-     * \param nr_bins_f4 number of subdivisions for the fourth distance feature
-     */
-    void
-    setNrSubdivisions (int nr_bins_f1, int nr_bins_f2, int nr_bins_f3, int nr_bins_f4)
-    {
-      nr_bins_f1_ = nr_bins_f1;
-      nr_bins_f2_ = nr_bins_f2;
-      nr_bins_f3_ = nr_bins_f3;
-      nr_bins_f4_ = nr_bins_f4;
-    }
-
-    /** \brief Get the number of subdivisions for each feature interval. */
-    void
-    getNrSubdivisions (int &nr_bins_f1, int &nr_bins_f2, int &nr_bins_f3, int &nr_bins_f4)
-    {
-      nr_bins_f1 = nr_bins_f1_;
-      nr_bins_f2 = nr_bins_f2_;
-      nr_bins_f3 = nr_bins_f3_;
-      nr_bins_f4 = nr_bins_f4_;
-    }
-
-    /** \brief Set the number of subdivisions for the viewpoint feature interval.
-     * \param nr_bins number of subdivisions for the viewpoint feature interval.
-     */
-    void
-    setNrViewpointSubdivisions (int nr_bins)
-    {
-      nr_bins_vp_ = nr_bins;
-    }
-
-    /** \brief Get the number of subdivisions for the viewpoint feature interval. */
-    void
-    getNrViewpointSubdivisions (int &nr_bins)
-    {
-      nr_bins = nr_bins_vp_;
-    }
-
     /** \brief Set the viewpoint.
      * \param vpx the X coordinate of the viewpoint
      * \param vpy the Y coordinate of the viewpoint
