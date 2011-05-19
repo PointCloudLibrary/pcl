@@ -587,7 +587,6 @@ TEST (PCL, PFHEstimation)
   pfh.setInputCloud (cloud.makeShared ());
   pfh.setIndices (indicesptr);
   pfh.setSearchMethod (tree);
-  pfh.setNrSubdivisions (3);
   pfh.setKSearch (indices.size ());
 
   // estimate
