@@ -30,31 +30,29 @@ plane. Assuming that we use a Kd-tree structure for finding the nearest
 neighbors, the algorithmic steps for that would be (from [RusuDissertation]_):
 
 
-    1. *create a kd-tree representation for the input point cloud dataset* :math:`P`;
+  1. *create a kd-tree representation for the input point cloud dataset* :math:`P`;
 
 
-    2. *set up an empty list of clusters* :math:`C`, *and a queue of the points that need to be checked* :math:`Q`;
+  2. *set up an empty list of clusters* :math:`C`, *and a queue of the points that need to be checked* :math:`Q`;
 
 
-    3. *then for every point* :math:`\boldsymbol{p}_i \in P`, *perform the following steps:*
+  3. *then for every point* :math:`\boldsymbol{p}_i \in P`, *perform the following steps:*
 
 
-       * *add* :math:`\boldsymbol{p}_i` *to the current queue* :math:`Q`;
+     * *add* :math:`\boldsymbol{p}_i` *to the current queue* :math:`Q`;
 
-       * *for every point* :math:`\boldsymbol{p}_i \in Q` *do:*
+     * *for every point* :math:`\boldsymbol{p}_i \in Q` *do:*
 
-          * *search for the set* :math:`P^i_k` *of point neighbors of* :math:`\boldsymbol{p}_i` *in a sphere with radius* :math:`r < d_{th}`;
+        * *search for the set* :math:`P^i_k` *of point neighbors of* :math:`\boldsymbol{p}_i` *in a sphere with radius* :math:`r < d_{th}`;
 
-          * *for every neighbor* :math:`\boldsymbol{p}^k_i \in P^k_i`, *check if the point has already been processed, and if not add it to* :math:`Q`;
+        * *for every neighbor* :math:`\boldsymbol{p}^k_i \in P^k_i`, *check if the point has already been processed, and if not add it to* :math:`Q`;
 
-      * *when the list of all points in* :math:`Q` *has been processed, add*
-        :math:`Q` *to the list of clusters* :math:`C`, *and reset* :math:`Q` *to an
-        empty list*
+    * *when the list of all points in* :math:`Q` *has been processed, add*
+      :math:`Q` *to the list of clusters* :math:`C`, *and reset* :math:`Q` *to an
+      empty list*
 
 
-    4. *the algorithm terminates when all points* :math:`\boldsymbol{p}_i \in
-       P` *have been processed and are now part of the list of point clusters*
-       :math:`C`
+  4. *the algorithm terminates when all points* :math:`\boldsymbol{p}_i \in P` *have been processed and are now part of the list of point clusters* :math:`C`
 
 The Code
 --------
