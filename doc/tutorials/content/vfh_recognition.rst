@@ -8,7 +8,7 @@ As previously described in :ref:`vfh_estimation`, Viewpoint Feature Histograms
 recognition and pose estimation for **clusters** of points. We here refer to a
 **cluster** as a collection of 3D points, most of the time representing a
 particular object or part of a scene, obtained through some segmentation or
-detection mechanisms (please see :ref:`cluster_segmentation` for an example).
+detection mechanisms (please see :ref:`cluster_extraction` for an example).
 
 Our goal here is not to provide an ultimate recognition tool, but rather a
 mechanism for obtaining **candidates** that *could potentially be the
@@ -67,7 +67,7 @@ Training
 --------
 
 We begin the training by assuming that the *objects* are already separated as
-individual clusters (see :ref:`cluster_segmentation`), as shown in the figure
+individual clusters (see :ref:`cluster_extraction`), as shown in the figure
 below:
 
 .. image:: images/vfh_recognition/scene_raw.png

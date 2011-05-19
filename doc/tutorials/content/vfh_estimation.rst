@@ -123,10 +123,11 @@ http://www.pointclouds.org/documentation/overview/visualization.php.
 .. [VFH] http://www.willowgarage.com/sites/default/files/Rusu10IROS.pdf
 .. note::
     @InProceedings{Rusu10IROS,
-      author = {Radu Bogdan Rusu and Gary Bradski and Romain Thibaux and John Hsu},
-      title = {Fast 3D Recognition and Pose Using the Viewpoint Feature Histogram},
-      booktitle = {Proceedings of the 23rd IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
-      year = {2010},
-      address = {Taipei, Taiwan},
-      month = {October}
+    author = {Radu Bogdan Rusu and Gary Bradski and Romain Thibaux and John Hsu},
+    title = {Fast 3D Recognition and Pose Using the Viewpoint Feature Histogram},
+    booktitle = {Proceedings of the 23rd IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+    year = {2010},
+    address = {Taipei, Taiwan},
+    month = {October}
     }
+

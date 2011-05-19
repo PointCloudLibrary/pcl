@@ -371,6 +371,21 @@ contributions on any tutorial.
      .. |se_2| image:: images/cylinder_segmentation.jpg
                :height: 100px
 
+  * :ref:`cluster_extraction`
+
+     ======  ======
+     |se_3|  Title: **Euclidean Cluster Extraction**
+
+             Author: *Serkan Tuerker*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial we will learn how to extract Euclidean clusters with the ``pcl::EuclideanClusterExtraction`` class.
+     ======  ======
+     
+     .. |se_3| image:: images/cluster_extraction.jpg
+               :height: 100px
+
 * Surface
 
   * :ref:`moving_least_squares`
