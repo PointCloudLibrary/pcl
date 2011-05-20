@@ -63,7 +63,7 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      NormalEstimationOMP () : threads_ (-1) 
+      NormalEstimationOMP () : threads_ (1) 
       {
         feature_name_ = "NormalEstimationOMP";
       };
@@ -71,7 +71,7 @@ namespace pcl
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
         */
-      NormalEstimationOMP (int nr_threads)
+      NormalEstimationOMP (unsigned int nr_threads)
       {
         setNumberOfThreads (nr_threads);
         feature_name_ = "NormalEstimationOMP";
@@ -81,7 +81,13 @@ namespace pcl
         * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
         */
       inline void 
-      setNumberOfThreads (int nr_threads) { threads_ = nr_threads; }
+      setNumberOfThreads (unsigned int nr_threads)
+      { 
+        if (nr_threads == 0)
+          nr_threads == 1;
+        threads_ = nr_threads; 
+      }
+
 
     private:
 
@@ -94,7 +100,7 @@ namespace pcl
 
     private:
       /** \brief The number of threads the scheduler should use. */
-      int threads_;
+      unsigned int threads_;
 
   };
 }
