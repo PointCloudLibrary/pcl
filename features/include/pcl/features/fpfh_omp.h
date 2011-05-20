@@ -82,7 +82,7 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Empty constructor. */
-      FPFHEstimationOMP () : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), threads_ (-1) 
+      FPFHEstimationOMP () : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), threads_ (1) 
       {
         feature_name_ = "FPFHEstimationOMP";
       };
@@ -90,7 +90,7 @@ namespace pcl
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
         */
-      FPFHEstimationOMP (int nr_threads) : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11)
+      FPFHEstimationOMP (unsigned int nr_threads) : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11)
       {
         setNumberOfThreads (nr_threads);
       }
@@ -99,7 +99,12 @@ namespace pcl
         * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
         */
       inline void 
-      setNumberOfThreads (int nr_threads) { threads_ = nr_threads; }
+      setNumberOfThreads (unsigned int nr_threads) 
+      { 
+        if (nr_threads == 0)
+          nr_threads == 1;
+        threads_ = nr_threads; 
+      }
 
     private:
 
@@ -116,7 +121,7 @@ namespace pcl
       int nr_bins_f1_, nr_bins_f2_, nr_bins_f3_;
     private:
       /** \brief The number of threads the scheduler should use. */
-      int threads_;
+      unsigned int threads_;
   };
 }
 
