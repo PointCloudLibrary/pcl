@@ -381,6 +381,7 @@ namespace pcl
         * \param vect_at_end_pts the vectors at the two end points
         * \param start_pt the starting point we use for binary search
         * \param pt_union_indices the union of input data points within the cell and padding cells
+        * \param intersection the resultant intersection point
         */
       void
       findIntersection (int level, 
