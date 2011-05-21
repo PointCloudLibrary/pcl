@@ -78,6 +78,7 @@ namespace pcl
        * \param row_stride number of DataType entries per row (equal or bigger than element_stride * number of 
        *          elements per row).
        * \param distance_threshold threshold for detecting depth discontinuities
+       * \param normal_estimation_method the normal estimation method. Select between: COVARIANCE_MATRIX, AVERAGE_3D_GRADIENT, AVERAGE_DEPTH_CHANGE
        */
       void 
       setInputData (float *data, const int width, const int height, const int dimensions,
