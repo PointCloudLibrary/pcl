@@ -18,14 +18,15 @@ set(OPENNI_DEFINITIONS ${PC_OPENNI_CFLAGS_OTHER})
 
 #add a hint so that it can find it without the pkg-config
 find_path(OPENNI_INCLUDE_DIR XnStatus.h
-          HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} /usr/include/openni
+          HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} /usr/include/openni "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
           PATHS "$ENV{PROGRAMFILES}/OpenNI/Include" "$ENV{PROGRAMW6432}/OpenNI/Include"
-          PATH_SUFFIXES openni)
+          PATH_SUFFIXES openni include Include)
 #add a hint so that it can find it without the pkg-config
 find_library(OPENNI_LIBRARY 
              NAMES OpenNI64 OpenNI
-             HINTS ${PC_OPENNI_LIBDIR} ${PC_OPENNI_LIBRARY_DIRS} /usr/lib 
-             PATHS "$ENV{PROGRAMFILES}/OpenNI/Lib" "$ENV{PROGRAMW6432}/OpenNI/Lib64")
+             HINTS ${PC_OPENNI_LIBDIR} ${PC_OPENNI_LIBRARY_DIRS} /usr/lib "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
+             PATHS "$ENV{PROGRAMFILES}/OpenNI/Lib" "$ENV{PROGRAMW6432}/OpenNI/Lib64"
+			 PATH_SUFFIXES lib Lib Lib64)
 
 set(OPENNI_INCLUDE_DIRS ${OPENNI_INCLUDE_DIR})
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
