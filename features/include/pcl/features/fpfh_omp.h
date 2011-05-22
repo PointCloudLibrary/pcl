@@ -102,7 +102,7 @@ namespace pcl
       setNumberOfThreads (unsigned int nr_threads) 
       { 
         if (nr_threads == 0)
-          nr_threads == 1;
+          nr_threads = 1;
         threads_ = nr_threads; 
       }
 
