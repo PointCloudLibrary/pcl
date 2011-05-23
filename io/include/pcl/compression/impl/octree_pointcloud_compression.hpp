@@ -140,17 +140,6 @@ namespace pcl
           bytesPerColor = (float)compressedColorDataLen_ / (float)pointCount_;
 
 
-          static bool isOpened = false;
-          static FILE * pFile = 0;
-          if (!isOpened) {
-            pFile = fopen ( "rate.dat" , "a+" );
-            isOpened = true;
-          }
-
-          fprintf (pFile, "%f\n",  bytesPerXYZ);
-          fflush (pFile);
-
-
           std::cerr << "*** POINTCLOUD ENCODING ***" << std::endl;
           std::cerr << "Frame ID: " << frameID_ << std::endl;
           if (iFrame_)
