@@ -98,7 +98,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
 
    add_executable (pcd_read pcd_read.cpp)
-   target_link_libraries (pcd_read ${PCL_IO_LIBRARY})
+   target_link_libraries (pcd_read ${PCL_IO_LIBRARIES})
 
 After you have made the executable, you can run it. Simply do::
 
