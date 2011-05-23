@@ -26,7 +26,7 @@ find_library(OPENNI_LIBRARY
              NAMES OpenNI64 OpenNI
              HINTS ${PC_OPENNI_LIBDIR} ${PC_OPENNI_LIBRARY_DIRS} /usr/lib "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
              PATHS "$ENV{PROGRAMFILES}/OpenNI/Lib" "$ENV{PROGRAMW6432}/OpenNI/Lib64"
-			 PATH_SUFFIXES lib Lib Lib64)
+             PATH_SUFFIXES lib Lib Lib64)
 
 set(OPENNI_INCLUDE_DIRS ${OPENNI_INCLUDE_DIR})
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -42,6 +42,10 @@ find_package_handle_standard_args(OpenNI DEFAULT_MSG
 mark_as_advanced(OPENNI_LIBRARY OPENNI_INCLUDE_DIR)
 if(OPENNI_FOUND)
   include_directories(${OPENNI_INCLUDE_DIRS})
-  message(STATUS "OpenNI found (include: ${OPENNI_INCLUDE_DIR}, lib: ${OPENNI_LIBRARY})")
+  message(STATUS "OpenNI found (include: ${OPENNI_INCLUDE_DIRS}, lib: ${OPENNI_LIBRARY})")
+
+  file(TO_CMAKE_PATH ${OPENNI_LIBRARY} OPENNI_LIBRARY_PATH)
+  string(REGEX REPLACE "(.*)/[^/]+" "\\1" OPENNI_LIBRARY_PATH "${OPENNI_LIBRARY_PATH}")
+  set(OPENNI_LIB_DIRS ${OPENNI_LIBRARY_PATH} CACHE INTERNAL "OPENNI_LIB_DIRS" FORCE)
 endif(OPENNI_FOUND)
 
