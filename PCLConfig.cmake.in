@@ -3,7 +3,7 @@
 # Sample usage:
 # copy paste PCLConfig.cmake in your project source directory
 # include(PCLConfig.cmake)
-# target_link_libraries(my_fabulous_target pcl_xxx where xxx is in
+# target_link_libraries(my_fabulous_target pcl_xxx) where xxx is in
 # - common
 # - octree
 # - io
@@ -26,6 +26,7 @@
 # --------------------------------
 set(PCL_VERSION @PCL_VERSION@)
 set(PCL_INCLUDE_DIRS @CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_ROOT@)
-include_directories(${PCL_INCLUDE_DIRS})
 include(@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/pcl/UsePCL.cmake)
+include_directories(${PCL_INCLUDE_DIRS})
+include_directories(@EIGEN_INCLUDE_DIRS@)
 link_directories(@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@)
