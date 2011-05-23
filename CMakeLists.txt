@@ -167,7 +167,7 @@ include(${PCL_SOURCE_DIR}/cmake/dep_graph.cmake)
 MAKE_DEP_GRAPH()
 
 ### ---[ Finish up
-# Configure FindPCL.cmake
+# Configure PCLConfig.cmake
 configure_file("${PCL_SOURCE_DIR}/PCLConfig.cmake.in"
                "${PCL_BINARY_DIR}/PCLConfig.cmake" @ONLY)
 PCL_WRITE_STATUS_REPORT()
