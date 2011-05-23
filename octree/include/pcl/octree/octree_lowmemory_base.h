@@ -34,8 +34,8 @@
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
-#ifndef OCTREE_TREE_BASE_H
-#define OCTREE_TREE_BASE_H
+#ifndef OCTREE_LOWMEM_TREE_BASE_H
+#define OCTREE_LOWMEM_TREE_BASE_H
 
 #include <cstddef>
 #include <vector>
@@ -57,17 +57,17 @@ namespace pcl
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT = OctreeLeafDataT<DataT> >
-      class OctreeBase
+      class OctreeLowMemBase
       {
 
       public:
 
         /** \brief Empty constructor. */
-        OctreeBase ();
+        OctreeLowMemBase ();
 
         /** \brief Empty deconstructor. */
         virtual
-        ~OctreeBase ();
+        ~OctreeLowMemBase ();
 
         /** \brief Set the maximum amount of voxels per dimension.
          *  \param maxVoxelIndex_arg: maximum amount of voxels per dimension
@@ -149,20 +149,23 @@ namespace pcl
          *  \param freeMemory_arg: if "true", allocated octree nodes are deleted, otherwise they are pushed to the octree node pool
          * */
         void
-        deleteTree ( bool freeMemory_arg = false );
+        deleteTree ( );
 
         /** \brief Serialize octree into a binary output vector describing its branch node structure.
          *  \param binaryTreeOut_arg: reference to output vector for writing binary tree structure.
+         *  \param doXOREncoding_arg: dummy argument to be consistent with the octree compression interface. As only a single octree is managed in memory, no XOR encoding is performed.
          * */
         void
-        serializeTree (std::vector<char>& binaryTreeOut_arg);
+        serializeTree (std::vector<char>& binaryTreeOut_arg, bool doXOREncoding_arg = false);
 
-        /** \brief Serialize octree into a binary output vector describing its branch node structure and push all DataT elements stored in the octree to a vector.
+        /** \brief Serialize octree into a binary output vector describing its branch node structure and and push all DataT elements stored in the octree to a vector.
          * \param binaryTreeOut_arg: reference to output vector for writing binary tree structure.
          * \param dataVector_arg: reference of DataT vector that receives a copy of all DataT objects in the octree
+         * \param doXOREncoding_arg: dummy argument to be consistent with the octree compression interface. As only a single octree is managed in memory, no XOR encoding is performed.
          * */
         void
-        serializeTree (std::vector<char>& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg);
+        serializeTree (std::vector<char>& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg,
+                       bool doXOREncoding_arg = false);
 
         /** \brief Outputs a vector of all DataT elements that are stored within the octree leaf nodes.
          *  \param dataVector_arg: reference to DataT vector that receives a copy of all DataT objects in the octree.
@@ -172,16 +175,19 @@ namespace pcl
 
         /** \brief Deserialize a binary octree description vector and create a corresponding octree structure. Leaf nodes are initialized with getDataTByKey(..).
          *  \param binaryTreeIn_arg: reference to input vector for reading binary tree structure.
+         *  \param doXORDecoding_arg: dummy argument to be consistent with the octree compression interface. As only a single octree is managed in memory, no XOR encoding is performed.
          * */
         void
-        deserializeTree (std::vector<char>& binaryTreeIn_arg);
+        deserializeTree (std::vector<char>& binaryTreeIn_arg, bool doXORDecoding_arg = false);
 
         /** \brief Deserialize a binary octree description and create a corresponding octree structure. Leaf nodes are initialized with DataT elements from the dataVector.
-         *  \param binaryTreeIn_arg: reference to input vector for reading binary tree structure.
+         *  \param binaryTreeIn_arg: reference to inpvectoream for reading binary tree structure.
          *  \param dataVector_arg: reference to DataT vector that provides DataT objects for initializing leaf nodes.
+         *  \param doXORDecoding_arg: dummy argument to be consistent with the octree compression interface. As only a single octree is managed in memory, no XOR encoding is performed.
          * */
         void
-        deserializeTree (std::vector<char>& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg);
+        deserializeTree (std::vector<char>& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg,
+                         bool doXORDecoding_arg = false);
 
         /** \brief Deserialize a binary octree description vector and create a corresponding octree structure. Leaf nodes are initialized with getDataTByKey(..). Generated DataT objects are copied to output vector.
          *  \param binaryTreeIn_arg: reference to input vector for reading binary tree structure.
@@ -189,6 +195,13 @@ namespace pcl
          * */
         void
         deserializeTreeAndOutputLeafData (std::vector<char>& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg);
+
+        /** \brief Switch buffers interface for compression. As this octree implementation manages only a single buffer, it just deletes the current octree. */
+        void
+        switchBuffers ()
+        {
+          this->deleteTree ();
+        }
 
       protected:
 
@@ -212,7 +225,9 @@ namespace pcl
           }
 
           // Indices addressing a voxel at (X, Y, Z)
-          unsigned int x;unsigned int y;unsigned int z;
+          unsigned int x;
+          unsigned int y;
+          unsigned int z;
         };
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -224,14 +239,28 @@ namespace pcl
         class OctreeBranch : public OctreeNode
         {
           // OctreeBase is a friend!
-          friend class OctreeBase;
+          friend class OctreeLowMemBase;
 
         public:
 
           /** \brief Constructor for initializing child node pointer array. */
           OctreeBranch ()
           {
-            memset (this->subNodes_, 0, sizeof(this->subNodes_));
+            // initialize
+            occupancyByte_ = 0;
+            this->reset();
+          }
+
+          /** \brief Reset Octree Branch */
+          void
+          reset ()
+          {
+            // if pointers to childs exist, we delete them
+            if (occupancyByte_)
+              delete[] subNodes_;
+
+            // reset occupancy byte
+            occupancyByte_ = 0;
           }
 
           /** \brief Empty deconstructor. */
@@ -251,8 +280,8 @@ namespace pcl
 
         private:
 
-          /** \brief Child node pointer array of size 8.  */
-          const OctreeNode * subNodes_[8];
+          unsigned char occupancyByte_;
+          OctreeNode** subNodes_;
 
         };
 
@@ -380,7 +409,24 @@ namespace pcl
         inline const OctreeNode*
         getBranchChild (const OctreeBranch& branch_arg, const unsigned char childIdx_arg) const
         {
-          return branch_arg.subNodes_[childIdx_arg];
+          // check if branch child exists according to occupancyBtye
+          if (branch_arg.occupancyByte_ & (1 << childIdx_arg))
+          {
+            unsigned int c, idx;
+
+            // retrieve array index of child pointer
+            idx = 0;
+            for (c = 0; c < childIdx_arg; c++)
+            {
+              if (branch_arg.occupancyByte_ & (1 << c))
+                idx++;
+            }
+
+            return branch_arg.subNodes_[idx];
+
+          }
+
+          return 0;
         }
 
         /** \brief Check if branch is pointing to a particular child node
@@ -391,7 +437,8 @@ namespace pcl
         inline bool
         branchHasChild (const OctreeBranch& branch_arg, const unsigned char childIdx_arg) const
         {
-          return (branch_arg.subNodes_[childIdx_arg] != 0);
+          // test occupancyByte for child existence
+          return (branch_arg.occupancyByte_ & (1 << childIdx_arg));
         }
 
         /** \brief Generate bit pattern reflecting the existence of child node pointers
@@ -401,17 +448,7 @@ namespace pcl
         inline char
         getBranchBitPattern (const OctreeBranch& branch_arg) const
         {
-          unsigned char i;
-          char nodeBits;
-
-          // create bit pattern
-          nodeBits = 0;
-          for (i = 0; i < 8; i++)
-          {
-            nodeBits |= (!!branch_arg.subNodes_[i]) << i;
-          }
-
-          return nodeBits;
+          return branch_arg.occupancyByte_;
         }
 
         /** \brief Assign new child node to branch
@@ -420,9 +457,122 @@ namespace pcl
          *  \param newChild_arg: pointer to new child node
          * */
         inline void
-        setBranchChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg, const OctreeNode * newChild_arg)
+        setBranchChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg, OctreeNode * newChild_arg)
         {
-          branch_arg.subNodes_[childIdx_arg] = newChild_arg;
+
+          if (!(branch_arg.occupancyByte_ & (1 << childIdx_arg)))
+          {
+            // branch child does not exists
+            unsigned int c, idx, total;
+
+            // retrieve total amount of child pointers and retrieve index of new child pointer
+            idx = 0;
+            total = 0;
+            for (c = 0; c < 8; c++)
+            {
+              if (branch_arg.occupancyByte_ & (1 << c))
+              {
+                if (c < childIdx_arg)
+                  idx++;
+
+                total++;
+              }
+            }
+
+            if (newChild_arg != 0)
+            {
+              // a new child pointer is to be added to child array
+
+              // allocate new pointer array
+              OctreeNode** newNodes = new OctreeNode*[total + 1];
+
+              // copy pointers to new pointer array
+              memcpy (&newNodes[0], &branch_arg.subNodes_[0], idx * sizeof(OctreeNode*));
+              newNodes[idx] = newChild_arg;
+              memcpy (&newNodes[idx + 1], &branch_arg.subNodes_[idx], (total - idx) * sizeof(OctreeNode*));
+
+              // delete old pointer array
+              if (total > 0)
+                delete[] branch_arg.subNodes_;
+
+              // set new child pointer array
+              branch_arg.subNodes_ = newNodes;
+
+              // update occupancyByte
+              branch_arg.occupancyByte_ |= (1 << childIdx_arg);
+            }
+
+          }
+          else
+          {
+            // child pointer already exists
+            unsigned int c, idx, total;
+
+            // pointer set to 0 -> delete child pointer
+            if (newChild_arg == 0)
+            {
+
+              // retrieve total amount of child pointers and detect index of child pointer to be removed
+              idx = 0;
+              total = 0;
+              for (c = 0; c < 8; c++)
+              {
+                if (branch_arg.occupancyByte_ & (1 << c))
+                {
+                  if (c < childIdx_arg)
+                    idx++;
+
+                  total++;
+                }
+              }
+
+              if (total == 1)
+              {
+                // if only a single pointer exists, simply delete the data structure
+                delete[] branch_arg.subNodes_;
+
+                branch_arg.subNodes_ = 0;
+                branch_arg.occupancyByte_ = 0;
+              }
+              else
+              {
+                // allocate new pointer array with reduced size
+                OctreeNode** newNodes = new OctreeNode*[total - 1];
+
+                // copy old pointer references to new array
+                memcpy (&newNodes[0], &branch_arg.subNodes_[0], idx * sizeof(OctreeNode*));
+                memcpy (&newNodes[idx], &branch_arg.subNodes_[idx + 1], (total - (idx + 1)) * sizeof(OctreeNode*));
+
+                // delete previous pointer array and update "branch_arg.subNodes_"
+                delete[] branch_arg.subNodes_;
+                branch_arg.subNodes_ = newNodes;
+
+                // update occupancyByte by removing the corresponding bit
+                branch_arg.occupancyByte_ &= ~(1 << childIdx_arg);
+
+              }
+
+            }
+            else
+            {
+              // update existing child pointer
+
+              // retrieve index of child pointer to be updated
+              idx = 0;
+              for (c = 0; c < childIdx_arg; c++)
+              {
+                if (branch_arg.occupancyByte_ & (1 << c))
+                {
+                  idx++;
+                }
+              }
+
+              // update pointer
+              branch_arg.subNodes_[idx] = newChild_arg;
+            }
+
+          }
+
         }
 
         /** \brief Delete child node and all its subchilds from octree
@@ -443,16 +593,15 @@ namespace pcl
                 // free child branch recursively
                 deleteBranch (*(OctreeBranch*)branchChild);
 
-                // push unused branch to branch pool
-                unusedBranchesPool_.push_back ((OctreeBranch*)branchChild);
                 break;
 
               case LEAF_NODE:
 
-                // push unused leaf to branch pool
-                unusedLeafsPool_.push_back ((OctreeLeaf*)branchChild);
                 break;
             }
+
+            // delete branch child
+            delete (branchChild);
 
             // set branch child pointer to 0
             setBranchChild (branch_arg, childIdx_arg, 0);
@@ -480,19 +629,10 @@ namespace pcl
         inline void
         createBranch (OctreeBranch*& newBranchChild_arg)
         {
-          if (!unusedBranchesPool_.size ())
-          {
-            // branch pool is empty
-            // we need to create a new octree branch class
-            newBranchChild_arg = (OctreeBranch*)new OctreeBranch ();
-          }
-          else
-          {
-            // reuse branch from branch pool
-            newBranchChild_arg = unusedBranchesPool_.back ();
-            unusedBranchesPool_.pop_back ();
-            branchReset (*newBranchChild_arg);
-          }
+
+          // we need to create a new octree branch class
+          newBranchChild_arg = (OctreeBranch*)new OctreeBranch ();
+
         }
 
         /** \brief Create and add a new branch child to a branch class
@@ -504,10 +644,9 @@ namespace pcl
         createBranchChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg,
                            OctreeBranch*& newBranchChild_arg)
         {
-          createBranch ( newBranchChild_arg );
+          createBranch (newBranchChild_arg);
           setBranchChild (branch_arg, childIdx_arg, (OctreeNode*)newBranchChild_arg);
         }
-
 
         /** \brief Create and add a new leaf child to a branch class
          *  \param branch_arg: reference to octree branch class
@@ -518,20 +657,9 @@ namespace pcl
         createLeafChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg, OctreeLeaf*& newLeafChild_arg)
         {
 
-          if (!unusedLeafsPool_.size ())
-          {
-            // leaf pool is empty
-            // we need to create a new octree leaf class
-            newLeafChild_arg = (OctreeLeaf*)new OctreeLeaf ();
-          }
-          else
-          {
-            // reuse leaf node from branch pool
-            newLeafChild_arg = unusedLeafsPool_.back ();
-            unusedLeafsPool_.pop_back ();
-          }
-
-          newLeafChild_arg->reset ();
+          // we need to create a new octree leaf class
+          newLeafChild_arg = (OctreeLeaf*)new OctreeLeaf ();
+          newLeafChild_arg->reset();
 
           setBranchChild (branch_arg, childIdx_arg, (OctreeNode*)newLeafChild_arg);
 
@@ -543,28 +671,9 @@ namespace pcl
         inline void
         branchReset (OctreeBranch& branch_arg)
         {
-          memset (branch_arg.subNodes_, 0, sizeof(branch_arg.subNodes_));
+          branch_arg.reset();
         }
 
-        /** \brief Delete all branch nodes and leaf nodes from octree node pools
-         * */
-        inline void
-        poolCleanUp ()
-        {
-          // delete all branch instances from branch pool
-          while (!unusedBranchesPool_.empty ())
-          {
-            delete (unusedBranchesPool_.back ());
-            unusedBranchesPool_.pop_back ();
-          }
-
-          // delete all leaf instances from leaf pool
-          while (!unusedLeafsPool_.empty ())
-          {
-            delete (unusedLeafsPool_.back ());
-            unusedLeafsPool_.pop_back ();
-          }
-        }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Recursive octree methods
