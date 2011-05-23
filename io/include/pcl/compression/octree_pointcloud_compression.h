@@ -68,16 +68,13 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT>
-      class PointCloudCompression : public OctreePointCloud<PointT, OctreeLeafDataTVector<int> , Octree2BufBase<int,
-          OctreeLeafDataTVector<int> > >
-
+    template<typename PointT, typename LeafT = OctreeLeafDataTVector<int> , typename OctreeT = Octree2BufBase<int,
+        OctreeLeafDataTVector<int> > >
+      class PointCloudCompression : public OctreePointCloud<PointT, LeafT, OctreeT>
       {
       public:
 
         // public typedefs
-        typedef OctreeLeafDataTVector<int> LeafT;
-        typedef Octree2BufBase<int, LeafT> OctreeT;
 
         typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloud PointCloud;
         typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloudPtr PointCloudPtr;
@@ -85,6 +82,9 @@ namespace pcl
 
         typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::OctreeKey OctreeKey;
         typedef typename OctreeT::OctreeLeaf OctreeLeaf;
+
+        typedef PointCloudCompression<PointT, LeafT, Octree2BufBase<int, LeafT> > RealTimeStreamCompression;
+        typedef PointCloudCompression<PointT, LeafT, OctreeLowMemBase<int, LeafT> > SinglePointCloudCompressionLowMemory;
 
         /** \brief Constructor
          *  \param compressionProfile_arg:  define compression profile
@@ -271,9 +271,9 @@ namespace pcl
 
       };
 
-      // define frame header initialization
-      template<typename PointT>
-      const char* PointCloudCompression<PointT>::frameHeaderIdentifier_ = "<PCL-COMPRESSED>";
+    // define frame header initialization
+    template<typename PointT, typename LeafT, typename OctreeT>
+      const char* PointCloudCompression<PointT, LeafT, OctreeT>::frameHeaderIdentifier_ = "<PCL-COMPRESSED>";
   }
 
 }
