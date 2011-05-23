@@ -108,7 +108,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
    
    add_executable (convex_hull_2d convex_hull_2d.cpp)
-   target_link_libraries (convex_hull_2d ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY} ${PCL_SEGMENTATION_LIBRARY})
+   target_link_libraries (convex_hull_2d ${PCL_IO_LIBRARIES} ${PCL_FILTERS_LIBRARIES} ${PCL_SEGMENTATION_LIBRARIES})
 
 After you have made the executable, you can run it. Simply do::
 

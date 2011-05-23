@@ -124,7 +124,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
 
   add_executable (range_image_creation range_image_creation.cpp)
-  target_link_libraries (range_image_creation ${PCL_RANGE_IMAGE_LIBRARY})
+  target_link_libraries (range_image_creation ${PCL_RANGE_IMAGE_LIBRARIES})
 
 After you have made the executable, you can run it. Simply do::
 
