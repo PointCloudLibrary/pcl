@@ -159,7 +159,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
    
    add_executable (resampling resampling.cpp)
-   target_link_libraries (resampling ${PCL_IO_LIBRARY} ${PCL_SURFACE_LIBRARY})
+   target_link_libraries (resampling ${PCL_IO_LIBRARIES} ${PCL_SURFACE_LIBRARIES})
 
 After you have made the executable, you can run it. Simply do::
 
