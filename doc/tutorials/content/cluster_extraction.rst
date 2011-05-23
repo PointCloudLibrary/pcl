@@ -260,7 +260,7 @@ Add the following lines to your CMakeLists.txt
 .. code-block:: cmake
 
   add_executable (cluster_extraction cluster_extraction.cpp)
-  target_link_libraries (cluster_extraction ${PCL_IO_LIBRARY} ${PCL_FILTERS_LIBRARY} ${PCL_SEGMENTATION_LIBRARY} ${PCL_KDTREE_LIBRARY} ${PCL_FEATURES_LIBRARY})
+  target_link_libraries (cluster_extraction ${PCL_IO_LIBRARIES} ${PCL_FILTERS_LIBRARIES} ${PCL_SEGMENTATION_LIBRARIES} ${PCL_KDTREE_LIBRARIES} ${PCL_FEATURES_LIBRARIES})
 
 After you have made the executable, you can run it. Simply do::
 
