@@ -71,12 +71,7 @@ endmacro(PCL_ADD_INCLUDES)
 # _component The part of PCL that this library belongs to.
 # ARGN The source files for the library.
 macro(PCL_ADD_LIBRARY _name _component)
-    if(PCL_SHARED_LIBS)
-        set(_lib_type "SHARED")
-    else(PCL_SHARED_LIBS)
-        set(_lib_type "STATIC")
-    endif(PCL_SHARED_LIBS)
-    add_library(${_name} ${_lib_type} ${ARGN})
+    add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
     #
@@ -93,10 +88,11 @@ macro(PCL_ADD_LIBRARY _name _component)
         VERSION ${PCL_VERSION}
         SOVERSION ${PCL_MAJOR_VERSION}
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
-    install(TARGETS ${_name} 
+    install(TARGETS ${_name} EXPORT pcl
         RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component}
         LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component})
+    install(EXPORT pcl DESTINATION ${LIB_INSTALL_DIR}/pcl FILE UsePCL.cmake)
 endmacro(PCL_ADD_LIBRARY)
 
 
