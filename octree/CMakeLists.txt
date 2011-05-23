@@ -23,12 +23,14 @@ if(build)
         include/pcl/${SUBSYS_NAME}/octree_pointcloud.h
         include/pcl/${SUBSYS_NAME}/octree.h
         include/pcl/${SUBSYS_NAME}/octree2buf_base.h
+        include/pcl/${SUBSYS_NAME}/octree_lowmemory_base.h
         )
 
     set(impl_incs    
         include/pcl/${SUBSYS_NAME}/impl/octree_base.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree2buf_base.hpp
+        include/pcl/${SUBSYS_NAME}/impl/octree_lowmemory_base.hpp      
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
