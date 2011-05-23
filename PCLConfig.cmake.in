@@ -1,120 +1,31 @@
-# Try to find PCL library installation
+# Helper to use PCL from outside project
 #
-# The following are set after configuration is done: 
-#  PCL_FOUND
-#  PCL_INCLUDE_DIRS
-#  PCL_LIBRARIES
-#  PCL_LINK_DIRECTORIES
-#  PCL_LINK_DIRECTORIES_DEBUG
-#  PCL_VERSION
-#
-# In addition for each component these are set:
-#  PCL_COMPONENT_INCLUDE_DIR
-#  PCL_COMPONENT_LIBRARY
-#  PCL_COMPONENT_LIBRARY_DEBUG
-#  PCL_COMPONENT_LIBRARIES
-#  PCL_COMPONENT_DEFINITIONS if available
-# 
-# To use PCL from within you code
-# find_package(PCL [VERSION] [REQUIRED] [COMPONENTS module1 module2 ...])
-# if(PCL_FOUND)
-#   include_directories(${PCL_INCLUDE_DIRS})
-#   list(APPEND LIBS ${PCL_LBRARIES})
-# endif(PCL_FOUND)
-# Or if you want to link against a particular module
-# target_link_libraries(my_fabulous_target ${PCL_XXX_LIBRARIES}) where XXX is 
-# module from COMPONENTS
-#
+# Sample usage:
+# copy paste PCLConfig.cmake in your project source directory
+# include(PCLConfig.cmake)
+# target_link_libraries(my_fabulous_target pcl_xxx where xxx is in
+# - common
+# - octree
+# - io
+# - kdtree
+# - range_image
+# - features
+# - range_image_border_extractor
+# - sample_consensus
+# - keypoints
+# - filters
+# - registration
+# - segmentation
+# - surface
+# - visualization
+
 # Tested with:
 # -PCL 1.0
 #
 # www.pointclouds.org
 # --------------------------------
 set(PCL_VERSION @PCL_VERSION@)
-set(PCL_INSTALLED_COMPONENTS @PCL_INSTALLED_COMPONENTS@)
-set(PCL_INCLUDE_DIRS_ROOT @CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_DIR@)
-set(PCL_INCLUDE_DIRS ${PCL_INCLUDE_DIRS_ROOT})
-file(GLOB PCL_INCLUDE_DIRS_ROOT_CONTENT ${PCL_INCLUDE_DIRS_ROOT}/*)
-foreach(content ${PCL_INCLUDE_DIRS_ROOT_CONTENT})
-	if((IS_DIRECTORY ${content}) AND (NOT content MATCHES .*impl))
-		list(APPEND PCL_INCLUDE_DIRS ${content})
-		string(REPLACE "@CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_DIR@/" "" component "${content}")
-		string(TOUPPER PCL_${component}_INCLUDE_DIR PCL_COMPONENT_INCLUDE_DIR)
-		set(${PCL_COMPONENT_INCLUDE_DIR} ${content})
-		list(APPEND PCL_INSTALLED_COMPONENTS ${component})
-	endif((IS_DIRECTORY ${content}) AND (NOT content MATCHES .*impl))
-endforeach(content)
-
-set(PCL_LINK_DIRECTORIES @CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@)
-
-if(NOT WIN32)
-	file(GLOB PCL_LIBRARIES @CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/@PCL_LIB_PREFIX@pcl*@PCL_LIB_SUFFIX@)
-  foreach(file ${PCL_LIBRARIES})
-    string(REPLACE "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/@PCL_LIB_PREFIX@pcl" "" lib "${file}")
-    string(REPLACE "@PCL_LIB_SUFFIX@" "" lib "${lib}")
-    string(TOUPPER PCL${lib}_LIBRARIES PCL_COMPONENT_LIBRARIES)
-    set(${PCL_COMPONENT_LIBRARIES} optimized ${file} debug ${file})
-  endforeach(file)
-else(NOT WIN32)
-	file(GLOB PCL_LIBRARIES_DEBUG @CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/@PCL_LIB_PREFIX@pcl*@CMAKE_DEBUG_POSTFIX@@PCL_LIB_SUFFIX@)
-	file(GLOB PCL_LIBRARIES_OPTIM @CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/@PCL_LIB_PREFIX@pcl*@PCL_LIB_SUFFIX@)
-  foreach(file ${PCL_LIBRARIES_OPTIM})
-    string(REPLACE "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/@PCL_LIB_PREFIX@pcl" "" lib "${file}")
-    string(REPLACE "@PCL_LIB_SUFFIX@" "" lib "${lib}")
-			string(TOUPPER PCL${lib}_LIBRARIES PCL_COMPONENT_LIBRARIES)
-		if(EXISTS @CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/@PCL_LIB_PREFIX@${lib}@CMAKE_DEBUG_POSTFIX@@PCL_LIB_SUFFIX@)
-			set(${PCL_COMPONENT_LIBRARIES} optimized ${file} debug @CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/@PCL_LIB_PREFIX@${lib}@CMAKE_DEBUG_POSTFIX@@PCL_LIB_SUFFIX@)
-		else()
-			set(${PCL_COMPONENT_LIBRARIES} optimized ${file} debug ${file})
-		endif()
-  endforeach(file)
-endif(NOT WIN32)
-
-foreach(component ${PCL_INSTALLED_COMPONENTS})
-	string(TOUPPER "${component}" COMPONENT)
-	mark_as_advanced(PCL_${COMPONENT}_LIBRARIES PCL_${COMPONENT}_INCLUDE_DIR)
-endforeach(component)
-
-find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
-mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS PCL_LINK_DIRECTORIES PCL_LINK_DIRECTORIES_DEBUG)
-
-##
-# Boost
-##
-include_directories(@Boost_INCLUDE_DIR@)
-link_directories(@Boost_LIBRARY_DIRS@)
-
-##
-# VTK
-##
-link_directories(@VTK_DIR@)
-include_directories(@VTK_INCLUDE_DIRS@)
-
-##
-# QHULL
-##
-link_directories(@QHULL_LIB_DIRS@)
-include_directories(@QHULL_INCLUDE_DIRS@)
-
-##
-# FLANN
-##
-link_directories(@FLANN_LIB_DIRS@)
-include_directories(@FLANN_INCLUDE_DIRS@)
-
-##
-# CMINPACK
-##
-link_directories(@CMINPACK_LIB_DIRS@)
-include_directories(@CMINPACK_INCLUDE_DIRS@)
-
-##
-# EIGEN
-##
-include_directories(@EIGEN_INCLUDE_DIRS@)
-
-##
-# OPENNI
-##
-link_directories(@OPENNI_LIB_DIRS@)
-include_directories(@OPENNI_INCLUDE_DIRS@)
+set(PCL_INCLUDE_DIRS @CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_ROOT@)
+include_directories(${PCL_INCLUDE_DIRS})
+include(@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/pcl/UsePCL.cmake)
+link_directories(@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@)
