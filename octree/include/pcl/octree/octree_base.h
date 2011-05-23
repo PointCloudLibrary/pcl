@@ -474,19 +474,6 @@ namespace pcl
           }
         }
 
-        /** \brief Create and add a new branch child to a branch class
-         *  \param branch_arg: reference to octree branch class
-         *  \param childIdx_arg: index to child node
-         *  \param newBranchChild_arg: write a pointer of new branch child to this reference
-         * */
-        inline void
-        createBranchChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg,
-                           OctreeBranch*& newBranchChild_arg)
-        {
-          newBranchChild_arg = (OctreeBranch*)new OctreeBranch ();
-          setBranchChild (branch_arg, childIdx_arg, (OctreeNode*)newBranchChild_arg);
-        }
-
         /** \brief Create a new branch class and receive a pointer to it
          *  \param newBranchChild_arg: writes a pointer of new branch child to this reference
          * */
@@ -507,6 +494,20 @@ namespace pcl
             branchReset (*newBranchChild_arg);
           }
         }
+
+        /** \brief Create and add a new branch child to a branch class
+         *  \param branch_arg: reference to octree branch class
+         *  \param childIdx_arg: index to child node
+         *  \param newBranchChild_arg: write a pointer of new branch child to this reference
+         * */
+        inline void
+        createBranchChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg,
+                           OctreeBranch*& newBranchChild_arg)
+        {
+          createBranch ( newBranchChild_arg );
+          setBranchChild (branch_arg, childIdx_arg, (OctreeNode*)newBranchChild_arg);
+        }
+
 
         /** \brief Create and add a new leaf child to a branch class
          *  \param branch_arg: reference to octree branch class

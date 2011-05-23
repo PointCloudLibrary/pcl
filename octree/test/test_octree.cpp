@@ -213,9 +213,6 @@ TEST (PCL, Octree_Test)
     ASSERT_EQ ( (leafVectorA[i] == leafVectorB[i]), true );
   }
 
-
-
-
 }
 
 TEST (PCL, Octree2Buf_Test)
@@ -374,6 +371,166 @@ TEST (PCL, Octree2Buf_Test)
   octreeB.serializeTree(treeBinaryB, leafVectorB);
 
   // test size and leaf count of reconstructed octree
+  ASSERT_EQ (leafVectorB.size(), octreeB.getLeafCount());
+  ASSERT_EQ (leafVectorA.size(), leafVectorB.size());
+
+  for (i=0; i<leafVectorB.size(); i++)
+  {
+    ASSERT_EQ ( (leafVectorA[i] == leafVectorB[i]), true );
+  }
+
+}
+
+
+TEST (PCL, Octree_LowMem_Test)
+{
+
+  unsigned int i, j;
+  int data[256];
+
+  // create octree instance
+  OctreeLowMemBase<int> octreeA;
+  OctreeLowMemBase<int> octreeB;
+
+  // set octree depth
+  octreeA.setTreeDepth (8);
+  octreeB.setTreeDepth (8);
+
+  struct MyVoxel
+  {
+    unsigned int x;unsigned int y;unsigned int z;
+  };
+  MyVoxel voxels[256];
+
+  srand (time (NULL));
+
+  // generate some voxel indices
+  for (i = 0; i < 256; i++)
+  {
+    data[i] = i;
+
+    voxels[i].x = i;
+    voxels[i].y = 255 - i;
+    voxels[i].z = i;
+
+    // add data to leaf node voxel
+    octreeA.add (voxels[i].x, voxels[i].y, voxels[i].z, data[i]);
+  }
+
+  int LeafNode;
+  for (i = 0; i < 128; i++)
+  {
+    // retrieve data from leaf node voxel
+    octreeA.get (voxels[i].x, voxels[i].y, voxels[i].z, LeafNode);
+    // check if retrieved data is identical to data[]
+    ASSERT_EQ (LeafNode, data[i]);
+  }
+
+  for (i=128; i<256; i++)
+  {
+    // check if leaf node exists in tree
+    ASSERT_EQ ( octreeA.existLeaf(voxels[i].x,voxels[i].y,voxels[i].z) , true);
+
+    // remove leaf node
+    octreeA.removeLeaf(voxels[i].x,voxels[i].y,voxels[i].z);
+
+    //  leaf node shouldn't exist in tree anymore
+    ASSERT_EQ ( octreeA.existLeaf(voxels[i].x,voxels[i].y,voxels[i].z) , false);
+  }
+
+  // test serialization
+
+  std::vector<char> treeBinaryA;
+  std::vector<char> treeBinaryB;
+
+  std::vector<int> leafVectorA;
+  std::vector<int> leafVectorB;
+
+  // serialize tree - generate binary octree description
+  octreeA.serializeTree(treeBinaryA);
+
+  // deserialize tree - rebuild octree based on binary octree description
+  octreeB.deserializeTree(treeBinaryA);
+
+  for (i=0; i<128; i++)
+  {
+    // check if leafs exist in both octrees
+    ASSERT_EQ ( octreeA.existLeaf(voxels[i].x,voxels[i].y,voxels[i].z), true);
+    ASSERT_EQ ( octreeB.existLeaf(voxels[i].x,voxels[i].y,voxels[i].z) , true);
+  }
+
+  for (i=128; i<256; i++)
+  {
+    // these leafs were not copies and should not exist
+    ASSERT_EQ ( octreeB.existLeaf(voxels[i].x,voxels[i].y,voxels[i].z) , false);
+  }
+
+  // testing deleteTree();
+  octreeB.deleteTree();
+
+  // octreeB.getLeafCount() should be zero now;
+  ASSERT_EQ (0,octreeB.getLeafCount());
+
+  // .. and previous leafs deleted..
+  for (i=0; i<128; i++)
+  {
+    ASSERT_EQ (octreeB.existLeaf(voxels[i].x,voxels[i].y,voxels[i].z) , false);
+  }
+
+  // test tree serialization
+  octreeA.serializeTree(treeBinaryA, leafVectorA);
+
+  // make sure, we retrieved all data objects
+  ASSERT_EQ (leafVectorA.size(), octreeA.getLeafCount());
+
+  // check if leaf data is found in octree input data
+  bool bFound;
+  for (i=0; i<128; i++)
+  {
+    int leafInt = leafVectorA.back();
+    leafVectorA.pop_back();
+
+    bFound = false;
+    for (j=0; j<256; j++)
+    if ( data[j]==leafInt )
+    {
+      bFound = true;
+      break;
+    }
+
+    ASSERT_EQ (bFound, true);
+  }
+
+  // test tree serialization
+  octreeA.serializeLeafs(leafVectorA);
+
+  for (i=0; i<128; i++)
+  {
+    int leafInt = leafVectorA.back();
+    leafVectorA.pop_back();
+
+    bFound = false;
+    for (j=0; j<256; j++)
+    if ( data[j]==leafInt )
+    {
+      bFound = true;
+      break;
+    }
+
+    ASSERT_EQ (bFound, true);
+  }
+
+  // test tree serialization with leaf data vectors
+  octreeA.serializeTree(treeBinaryA, leafVectorA);
+  octreeB.deserializeTree(treeBinaryA, leafVectorA);
+
+  // test size and leaf count of reconstructed octree
+  ASSERT_EQ (octreeA.getLeafCount(),octreeB.getLeafCount());
+  ASSERT_EQ (128,octreeB.getLeafCount());
+
+  octreeB.serializeTree(treeBinaryB, leafVectorB);
+
+  // compare octree data content of octree A and octree B
   ASSERT_EQ (leafVectorB.size(), octreeB.getLeafCount());
   ASSERT_EQ (leafVectorA.size(), leafVectorB.size());
 
