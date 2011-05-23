@@ -47,12 +47,16 @@
 
 template class pcl::octree::OctreeBase<int>;
 template class pcl::octree::Octree2BufBase<int>;
+template class pcl::octree::OctreeLowMemBase<int>;
+
 
 template class pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafDataTVector<int> >;
 template class pcl::octree::Octree2BufBase<int, pcl::octree::OctreeLeafDataTVector<int> >;
+template class pcl::octree::OctreeLowMemBase<int, pcl::octree::OctreeLeafDataTVector<int> >;
 
 PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES);
 PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES);
+//PCL_INSTANTIATE(OctreePointCloudLowMemWithLeafDataTVector, PCL_XYZ_POINT_TYPES);
 
 /*
 

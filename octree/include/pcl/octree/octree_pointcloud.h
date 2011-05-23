@@ -39,6 +39,7 @@
 
 #include "octree_base.h"
 #include "octree2buf_base.h"
+#include "octree_lowmemory_base.h"
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -95,6 +96,9 @@ namespace pcl
         // public typedefs for single/double buffering
         typedef OctreePointCloud<PointT, LeafT, OctreeBase<int, LeafT> > SingleBuffer;
         typedef OctreePointCloud<PointT, LeafT, Octree2BufBase<int, LeafT> > DoubleBuffer;
+        typedef OctreePointCloud<PointT, LeafT, OctreeLowMemBase<int, LeafT> > LowMem;
+
+
 
         // Boost shared pointers
         typedef boost::shared_ptr<OctreePointCloud<PointT, LeafT, OctreeT> > Ptr;
