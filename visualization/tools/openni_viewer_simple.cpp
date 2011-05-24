@@ -72,46 +72,45 @@ class SimpleOpenNIViewer
     typedef pcl::PointCloud<PointType> Cloud;
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
-
     SimpleOpenNIViewer (const std::string& device_id = "")
     : viewer ("PCL OpenNI Viewer")
-    , device_id_(device_id)
+    , device_id_ (device_id)
     {}
 
     
     void 
     cloud_cb_ (const CloudConstPtr& cloud)
     {
-      FPS_CALC("callback");
-      set(cloud);
+      FPS_CALC ("callback");
+      set (cloud);
     }
 
     void
-    set(const CloudConstPtr& cloud)
+    set (const CloudConstPtr& cloud)
     {
       //lock while we set our cloud;
-      boost::mutex::scoped_lock lock(mtx_);
+      boost::mutex::scoped_lock lock (mtx_);
       cloud_  = cloud;
     }
 
     CloudConstPtr
-    get(){
+    get ()
+    {
       //lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock(mtx_);
+      boost::mutex::scoped_lock lock (mtx_);
       CloudConstPtr temp_cloud;
-      temp_cloud.swap(cloud_);       //here we set cloud_ to null, so that
-                                     //it is safe to set it again from our
-                                     //callback
-      return temp_cloud;
+      temp_cloud.swap (cloud_);       //here we set cloud_ to null, so that
+                                      //it is safe to set it again from our
+                                      //callback
+      return (temp_cloud);
     }
 
     void
     run ()
     {
-      pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id_);
+      pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      boost::function<void (const CloudConstPtr&)> f =
-        boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
+      boost::function<void (const CloudConstPtr&)> f = boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
 
       boost::signals2::connection c = interface->registerCallback (f);
       
@@ -121,9 +120,9 @@ class SimpleOpenNIViewer
       {
         if(cloud_)
         {
-          FPS_CALC("drawing");
+          FPS_CALC ("drawing");
           //the call to get() sets the cloud_ to null;
-          viewer.showCloud ( get() );
+          viewer.showCloud (get ());
         }
       }
 
@@ -137,7 +136,7 @@ class SimpleOpenNIViewer
 };
 
 void
-usage(char ** argv)
+usage (char ** argv)
 {
   std::cout << "usage: " << argv[0] << " <device_id>\n";
 
@@ -160,29 +159,29 @@ usage(char ** argv)
 int 
 main (int argc, char ** argv)
 {
-  if(argc != 2)
+  if (argc != 2)
   {
-    usage(argv);
+    usage (argv);
     return 1;
   }
 
-  std::string arg(argv[1]);
+  std::string arg (argv[1]);
   
-  if( arg == "--help" || arg == "-h")
+  if (arg == "--help" || arg == "-h")
   {
-    usage(argv);
+    usage (argv);
     return 1;
   }
 
-  pcl::OpenNIGrabber grabber(arg);
+  pcl::OpenNIGrabber grabber (arg);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {
-    SimpleOpenNIViewer<pcl::PointXYZRGB> v(arg);
+    SimpleOpenNIViewer<pcl::PointXYZRGB> v (arg);
     v.run ();
   }
   else
   {
-    SimpleOpenNIViewer<pcl::PointXYZ> v(arg);
+    SimpleOpenNIViewer<pcl::PointXYZ> v (arg);
     v.run ();
   }
 
