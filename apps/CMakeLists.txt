@@ -1,0 +1,31 @@
+set(SUBSYS_NAME apps)
+set(SUBSYS_DESC "Application examples/samples that show how PCL works")
+set(SUBSYS_DEPS common io filters visualization)
+
+# Find VTK 
+# rusu:: NOTE: this should be moved to pcl/CMakeLists.txt, when we expand the I/O library
+find_package (VTK)
+if(NOT VTK_FOUND)
+    set(DEFAULT FALSE)
+    set(REASON "VTK was not found.")
+elseif(NOT wxWidgets_FOUND)
+    set(DEFAULT TRUE)   # wxWidgets is optional
+    set(REASON "wxWidgets was not found.")
+    include (${VTK_USE_FILE})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+else(NOT VTK_FOUND)
+    set(DEFAULT TRUE)
+    set(REASON)
+    message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
+    include (${VTK_USE_FILE})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+endif(NOT VTK_FOUND)
+PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
+
+if(build)
+  if (VTK_FOUND)
+    PCL_ADD_EXECUTABLE(openni_voxel_grid ${SUBSYS_NAME} src/openni_voxel_grid.cpp)
+    target_link_libraries(openni_voxel_grid pcl_common pcl_io pcl_filters pcl_visualization)
+  endif()
+endif(build)
