@@ -46,9 +46,9 @@
 namespace pcl
 {
   /**
-   * \brief Surface normal estimation on dense data using integral images.
-   * \author Stefan Holzer
-   */
+    * \brief Surface normal estimation on dense data using integral images.
+    * \author Stefan Holzer
+    */
   class PCL_EXPORTS IntegralImageNormalEstimation
   {
     public: // enums
@@ -96,26 +96,26 @@ namespace pcl
        */
       pcl::Normal compute (const int posX, const int posY);
 
-      /**
-       * Computes the normal for the complete cloud. 
-       */
-      static void compute (
-        ::pcl::PointCloud< ::pcl::PointXYZ > & cloud,
-        ::pcl::PointCloud< ::pcl::Normal > & normals,
-        const float maxDepthChangeFactor = 20.0f*0.001f,
-        const float normalSmoothingSize = 10.0f,
-        const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT );
+      /** \brief Computes the normal for the complete cloud. 
+        * \param cloud the input point cloud
+        */
+      template <typename PointInT, typename PointOutT> static void 
+      compute (const pcl::PointCloud<PointInT> &cloud,
+               pcl::PointCloud<PointOutT> &normals,
+               const float maxDepthChangeFactor = 20.0f*0.001f,
+               const float normalSmoothingSize = 10.0f,
+               const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT);
 
-      /**
-       * Computes the normal for the complete cloud. 
-       */
-      static void compute (
-        ::pcl::PointCloud< ::pcl::PointXYZ > & cloud,
-        ::pcl::PointCloud< ::pcl::Normal > & normals,
-        const bool useDepthDependentSmoothing,
-        const float maxDepthChangeFactor = 20.0f*0.001f,
-        const float normalSmoothingSize = 10.0f,
-        const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT );
+      /** \brief Computes the normal for the complete cloud. 
+        * \param cloud the input point cloud
+        */
+      template <typename PointInT, typename PointOutT> static void 
+      compute (const pcl::PointCloud<PointInT> &cloud,
+               pcl::PointCloud<PointOutT> &normals,
+               const bool useDepthDependentSmoothing,
+               const float maxDepthChangeFactor = 20.0f*0.001f,
+               const float normalSmoothingSize = 10.0f,
+               const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT);
 
     protected: // data
 
@@ -161,6 +161,8 @@ namespace pcl
   };
 
 }
+
+#include "pcl/features/impl/integral_image_normal.hpp"
 
 #endif 
 
