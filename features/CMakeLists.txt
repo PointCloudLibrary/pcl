@@ -34,6 +34,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/integral_image_2d.hpp
+        include/pcl/${SUBSYS_NAME}/impl/integral_image_normal.hpp
         include/pcl/${SUBSYS_NAME}/impl/intensity_gradient.hpp
         include/pcl/${SUBSYS_NAME}/impl/intensity_spin.hpp
         include/pcl/${SUBSYS_NAME}/impl/moment_invariants.hpp
