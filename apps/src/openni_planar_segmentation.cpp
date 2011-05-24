@@ -40,26 +40,39 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
-#include <pcl/filters/voxel_grid.h>
 #include <pcl/console/parse.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/extract_indices.h>
+
 
 template <typename PointType>
-class OpenNIVoxelGrid
+class OpenNIPlanarSegmentation
 {
   public:
     typedef pcl::PointCloud<PointType> Cloud;
     typedef typename Cloud::Ptr CloudPtr;
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
-    OpenNIVoxelGrid (const std::string& device_id = "", 
-                     float leaf_size_x = 0.01, float leaf_size_y = 0.01, float leaf_size_z = 0.01)
-    : viewer ("PCL OpenNI VoxelGrid Viewer")
-    , device_id_(device_id)
+    OpenNIPlanarSegmentation (const std::string& device_id = "", double threshold = 0.01)
+      : viewer ("PCL OpenNI Planar Segmentation Viewer"),
+        device_id_ (device_id)
     {
-      grid_.setLeafSize (leaf_size_x, leaf_size_y, leaf_size_z);
+      grid_.setFilterFieldName ("z");
+      grid_.setFilterLimits (0.0, 3.0);
+      grid_.setLeafSize (0.01, 0.01, 0.01);
+
+      seg_.setOptimizeCoefficients (true);
+      seg_.setModelType (pcl::SACMODEL_PLANE);
+      seg_.setMethodType (pcl::SAC_RANSAC);
+      seg_.setMaxIterations (1000);
+      seg_.setDistanceThreshold (threshold);
+
+      extract_.setNegative (false);
     }
 
-    
     void 
     cloud_cb_ (const CloudConstPtr& cloud)
     {
@@ -80,10 +93,22 @@ class OpenNIVoxelGrid
       //lock while we swap our cloud and reset it.
       boost::mutex::scoped_lock lock (mtx_);
       CloudPtr temp_cloud (new Cloud);
+      CloudPtr temp_cloud2 (new Cloud);
 
       grid_.setInputCloud (cloud_);
       grid_.filter (*temp_cloud);
-      return (temp_cloud);
+
+      pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
+      pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
+
+      seg_.setInputCloud (temp_cloud);
+      seg_.segment (*inliers, *coefficients);
+
+      extract_.setInputCloud (temp_cloud);
+      extract_.setIndices (inliers);
+      extract_.filter (*temp_cloud2);
+
+      return (temp_cloud2);
     }
 
     void
@@ -91,7 +116,7 @@ class OpenNIVoxelGrid
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIVoxelGrid::cloud_cb_, this, _1);
+      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIPlanarSegmentation::cloud_cb_, this, _1);
       boost::signals2::connection c = interface->registerCallback (f);
       
       interface->start ();
@@ -108,8 +133,11 @@ class OpenNIVoxelGrid
       interface->stop ();
     }
 
-    pcl::VoxelGrid<PointType> grid_;
     pcl::visualization::CloudViewer viewer;
+    pcl::VoxelGrid<PointType> grid_;
+    pcl::SACSegmentation<PointType> seg_;
+    pcl::ExtractIndices<PointType> extract_;
+
     std::string device_id_;
     boost::mutex mtx_;
     CloudConstPtr cloud_;
@@ -119,7 +147,7 @@ void
 usage (char ** argv)
 {
   std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n"
-            << "where options are:\n         -leaf x, y, z  :: set the VoxelGrid leaf size (default: 0.01)\n";
+            << "where options are:\n         -thresh X        :: set the planar segmentation threshold (default: 0.5)\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
   if (driver.getNumberDevices () > 0)
@@ -154,18 +182,18 @@ main (int argc, char ** argv)
     return 1;
   }
 
-  double leaf_x = 0.01, leaf_y = 0.01, leaf_z = 0.01;
-  pcl::console::parse_3x_arguments (argc, argv, "-leaf", leaf_x, leaf_y, leaf_z, false);
+  double threshold = 0.05;
+  pcl::console::parse_argument (argc, argv, "-thresh", threshold);
 
   pcl::OpenNIGrabber grabber (arg);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {
-    OpenNIVoxelGrid<pcl::PointXYZRGB> v (arg, leaf_x, leaf_y, leaf_z);
+    OpenNIPlanarSegmentation<pcl::PointXYZRGB> v (arg, threshold);
     v.run ();
   }
   else
   {
-    OpenNIVoxelGrid<pcl::PointXYZ> v (arg, leaf_x, leaf_y, leaf_z);
+    OpenNIPlanarSegmentation<pcl::PointXYZ> v (arg, threshold);
     v.run ();
   }
 

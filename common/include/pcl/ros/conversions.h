@@ -285,11 +285,12 @@ namespace pcl
       }
     }
   }
+
   /** \brief Copy the RGB fields of a PointCloud2 msg into sensor_msgs::Image format
-   * \param cloud the point cloud message
-   * \param msg the resultant sensor_msgs::Image
-   * will throw std::runtime_error if there is a problem
-   */
+    * \param cloud the point cloud message
+    * \param msg the resultant sensor_msgs::Image
+    * will throw std::runtime_error if there is a problem
+    */
   inline void
   toROSMsg (const sensor_msgs::PointCloud2& cloud, sensor_msgs::Image& msg)
   {
@@ -301,9 +302,9 @@ namespace pcl
         rgb_index = d;
         break;
       }
-    if(rgb_index == -1){
+
+    if(rgb_index == -1)
       throw std::runtime_error ("No rgb field!!");
-    }
     if (cloud.width == 0 && cloud.height == 0)
       throw std::runtime_error ("Needs to be a dense like cloud!!");
     else
@@ -324,7 +325,7 @@ namespace pcl
       for (size_t x = 0; x < cloud.width; x++, rgb_offset += point_step)
       {
         uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        memcpy (pixel, &(cloud.data[rgb_offset]), 3 * sizeof(uint8_t));
+        memcpy (pixel, &(cloud.data[rgb_offset]), 3 * sizeof (uint8_t));
       }
     }
   }

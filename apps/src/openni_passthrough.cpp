@@ -40,26 +40,26 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
-#include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/passthrough.h>
 #include <pcl/console/parse.h>
 
 template <typename PointType>
-class OpenNIVoxelGrid
+class OpenNIPassthrough
 {
   public:
     typedef pcl::PointCloud<PointType> Cloud;
     typedef typename Cloud::Ptr CloudPtr;
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
-    OpenNIVoxelGrid (const std::string& device_id = "", 
-                     float leaf_size_x = 0.01, float leaf_size_y = 0.01, float leaf_size_z = 0.01)
-    : viewer ("PCL OpenNI VoxelGrid Viewer")
+    OpenNIPassthrough (const std::string& device_id = "", 
+                       const std::string& field_name = "z", float min_v = 0, float max_v = 3.0)
+    : viewer ("PCL OpenNI PassThrough Viewer")
     , device_id_(device_id)
     {
-      grid_.setLeafSize (leaf_size_x, leaf_size_y, leaf_size_z);
+      pass_.setFilterFieldName (field_name);
+      pass_.setFilterLimits (min_v, max_v);
     }
 
-    
     void 
     cloud_cb_ (const CloudConstPtr& cloud)
     {
@@ -81,8 +81,8 @@ class OpenNIVoxelGrid
       boost::mutex::scoped_lock lock (mtx_);
       CloudPtr temp_cloud (new Cloud);
 
-      grid_.setInputCloud (cloud_);
-      grid_.filter (*temp_cloud);
+      pass_.setInputCloud (cloud_);
+      pass_.filter (*temp_cloud);
       return (temp_cloud);
     }
 
@@ -91,7 +91,7 @@ class OpenNIVoxelGrid
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIVoxelGrid::cloud_cb_, this, _1);
+      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIPassthrough::cloud_cb_, this, _1);
       boost::signals2::connection c = interface->registerCallback (f);
       
       interface->start ();
@@ -108,7 +108,7 @@ class OpenNIVoxelGrid
       interface->stop ();
     }
 
-    pcl::VoxelGrid<PointType> grid_;
+    pcl::PassThrough<PointType> pass_;
     pcl::visualization::CloudViewer viewer;
     std::string device_id_;
     boost::mutex mtx_;
@@ -119,7 +119,8 @@ void
 usage (char ** argv)
 {
   std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n"
-            << "where options are:\n         -leaf x, y, z  :: set the VoxelGrid leaf size (default: 0.01)\n";
+            << "where options are:\n         -minmax min-max  :: set the PassThrough min-max cutting values (default: 0-3.0)\n"
+            <<                     "         -field  X        :: use field/dimension 'X' to filter data on (default: 'z')\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
   if (driver.getNumberDevices () > 0)
@@ -154,18 +155,20 @@ main (int argc, char ** argv)
     return 1;
   }
 
-  double leaf_x = 0.01, leaf_y = 0.01, leaf_z = 0.01;
-  pcl::console::parse_3x_arguments (argc, argv, "-leaf", leaf_x, leaf_y, leaf_z, false);
+  double min_v = 0, max_v = 3.0;
+  pcl::console::parse_2x_arguments (argc, argv, "-minmax", min_v, max_v, false);
+  std::string field_name ("z");
+  pcl::console::parse_argument (argc, argv, "-field", field_name);
 
   pcl::OpenNIGrabber grabber (arg);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {
-    OpenNIVoxelGrid<pcl::PointXYZRGB> v (arg, leaf_x, leaf_y, leaf_z);
+    OpenNIPassthrough<pcl::PointXYZRGB> v (arg, field_name, min_v, max_v);
     v.run ();
   }
   else
   {
-    OpenNIVoxelGrid<pcl::PointXYZ> v (arg, leaf_x, leaf_y, leaf_z);
+    OpenNIPassthrough<pcl::PointXYZ> v (arg, field_name, min_v, max_v);
     v.run ();
   }
 
