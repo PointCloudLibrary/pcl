@@ -83,9 +83,6 @@ class OpenNIVoxelGrid
 
       grid_.setInputCloud (cloud_);
       grid_.filter (*temp_cloud);
-      //temp_cloud.swap (cloud_);       //here we set cloud_ to null, so that
-                                      //it is safe to set it again from our
-                                      //callback
       return (temp_cloud);
     }
 
