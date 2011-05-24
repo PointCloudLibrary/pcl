@@ -131,6 +131,7 @@ add_subdirectory(segmentation)
 add_subdirectory(surface)
 add_subdirectory(visualization)
 add_subdirectory(test)
+add_subdirectory(apps)
 
 ### ---[ Documentation
 add_subdirectory(doc)
