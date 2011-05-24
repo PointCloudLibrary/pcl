@@ -119,8 +119,6 @@ Next, copy and paste the following code into your editor and save it as
 
       int vfh_idx;
       // Load the file as a PCD
-      stringstream ss;
-      ss << path;
       try
       {
         sensor_msgs::PointCloud2 cloud;
@@ -129,7 +127,7 @@ Next, copy and paste the following code into your editor and save it as
         Eigen::Quaternionf orientation;
         PCDReader r;
         bool binary; int idx;
-        r.readHeader (ss.str (), cloud, origin, orientation, version, binary, idx);
+        r.readHeader (path.string (), cloud, origin, orientation, version, binary, idx);
 
         vfh_idx = getFieldIndex (cloud, "vfh");
         if (vfh_idx == -1)
@@ -144,7 +142,7 @@ Next, copy and paste the following code into your editor and save it as
 
       // Treat the VFH signature as a single Point Cloud
       PointCloud <VFHSignature308> point;
-      io::loadPCDFile (ss.str (), point);
+      io::loadPCDFile (path.string (), point);
       vfh.second.resize (308);
 
       std::vector <sensor_msgs::PointField> fields;
@@ -154,7 +152,7 @@ Next, copy and paste the following code into your editor and save it as
       {
         vfh.second[i] = point.points[0].histogram[i];
       }
-      vfh.first = ss.str ();
+      vfh.first = path.string ();
       return (true);
     }
 
@@ -177,7 +175,7 @@ Next, copy and paste the following code into your editor and save it as
         {
           std::stringstream ss;
           ss << it->path ();
-          print_highlight ("Loading %s (%zu models loaded so far).\n", ss.str ().c_str (), models.size ());
+          print_highlight ("Loading %s (%lu models loaded so far).\n", ss.str ().c_str (), (unsigned long)models.size ());
           loadFeatureModels (it->path (), extension, models);
         }
         if (boost::filesystem::is_regular_file (it->status ()) && boost::filesystem::extension (it->path ()) == extension)
@@ -345,8 +343,6 @@ Begin by copying and pasting the following code into your editor and save it as
 
       int vfh_idx;
       // Load the file as a PCD
-      stringstream ss;
-      ss << path;
       try
       {
         sensor_msgs::PointCloud2 cloud;
@@ -355,7 +351,7 @@ Begin by copying and pasting the following code into your editor and save it as
         Eigen::Quaternionf orientation;
         PCDReader r;
         bool binary; int idx;
-        r.readHeader (ss.str (), cloud, origin, orientation, version, binary, idx);
+        r.readHeader (path.string (), cloud, origin, orientation, version, binary, idx);
 
         vfh_idx = getFieldIndex (cloud, "vfh");
         if (vfh_idx == -1)
@@ -370,7 +366,7 @@ Begin by copying and pasting the following code into your editor and save it as
 
       // Treat the VFH signature as a single Point Cloud
       PointCloud <VFHSignature308> point;
-      io::loadPCDFile (ss.str (), point);
+      io::loadPCDFile (path.string (), point);
       vfh.second.resize (308);
 
       std::vector <sensor_msgs::PointField> fields;
@@ -380,7 +376,7 @@ Begin by copying and pasting the following code into your editor and save it as
       {
         vfh.second[i] = point.points[0].histogram[i];
       }
-      vfh.first = ss.str ();
+      vfh.first = path.string ();
       return (true);
     }
 
@@ -505,7 +501,7 @@ Begin by copying and pasting the following code into your editor and save it as
 
       // Load the results
       PCLVisualizer p (argc, argv, "VFH Cluster Classifier");
-      int y_s = (int)floor (sqrt (k));
+      int y_s = (int)floor (sqrt ((double)k));
       int x_s = y_s + (int)ceil ((k / (double)y_s) - y_s);
       double x_step = (double)(1 / (double)x_s);
       double y_step = (double)(1 / (double)y_s);
@@ -646,7 +642,7 @@ Lines:
 .. code-block:: cpp
 
       PCLVisualizer p (argc, argv, "VFH Cluster Classifier");
-      int y_s = (int)floor (sqrt (k));
+      int y_s = (int)floor (sqrt ((double)k));
       int x_s = y_s + (int)ceil ((k / (double)y_s) - y_s);
       double x_step = (double)(1 / (double)x_s);
       double y_step = (double)(1 / (double)y_s);
