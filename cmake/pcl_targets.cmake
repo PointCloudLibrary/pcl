@@ -152,6 +152,31 @@ macro(PCL_ADD_EXECUTABLE _name _component)
         COMPONENT ${_component})
 endmacro(PCL_ADD_EXECUTABLE)
 
+
+###############################################################################
+# Add an executable target.
+# _name The executable name.
+# _component The part of PCL that this library belongs to.
+# ARGN the source files for the library.
+macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
+    cuda_add_executable(${_name} ${ARGN})
+    # must link explicitly against boost.
+    target_link_libraries(${_name} ${Boost_LIBRARIES})
+    #
+    # Only link if needed
+    if(WIN32 AND MSVC)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX})
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
+    else()
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
+    endif()
+    #
+    set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
+    install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+        COMPONENT ${_component})
+endmacro(PCL_CUDA_ADD_EXECUTABLE)
+
 ###############################################################################
 # Add a test target.
 # _name The test name.
