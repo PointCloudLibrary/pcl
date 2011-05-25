@@ -33,7 +33,8 @@
  *
  */
 
-/* \author Bastian Steder */
+#include <pcl/pcl_config.h>
+#ifdef HAVE_WXWIDGETS
 
 #ifndef PCL_VISUALIZATION_IMAGE_WIDGET_WX_H_
 #define PCL_VISUALIZATION_IMAGE_WIDGET_WX_H_
@@ -245,3 +246,4 @@ namespace pcl
 }
 
 #endif  //#ifndef PCL_VISUALIZATION_IMAGE_WIDGET_WX_H_
+#endif

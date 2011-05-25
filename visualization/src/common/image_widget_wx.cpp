@@ -32,10 +32,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
-\author Bastian Steder
-**/
-
+#include <pcl/pcl_config.h>
+#ifdef HAVE_WXWIDGETS
 
 #include <pcl/visualization/common/image_widget_wx.h>
 #include <pcl/visualization/common/float_image_utils.h>
@@ -475,3 +473,4 @@ pcl::visualization::ImageWidgetWX::ImagePanel::resizeImage (int newWidth, int ne
   //cout << "Image has new size "<<scaledWidth<<"x"<<scaledHeight<<"\n";
 }
 
+#endif

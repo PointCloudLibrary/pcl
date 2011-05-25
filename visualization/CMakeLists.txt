@@ -5,6 +5,7 @@ set(SUBSYS_DEPS common io kdtree octree range_image octree filters)
 # Find wxWidgets
 find_package(wxWidgets)
 if(wxWidgets_FOUND)
+	set(HAVE_WXWIDGETS ON)
   include(${wxWidgets_USE_FILE})
   include_directories(${wxWidgets_INCLUDE_DIRS})
 endif()
