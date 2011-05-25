@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #ifndef __OPENNI_IMAGE_YUV422__
 #define __OPENNI_IMAGE_YUV422__
 #include "openni_image.h"
@@ -71,4 +74,5 @@ bool ImageYUV422::resizingSupported (unsigned input_width, unsigned input_height
 }
 } // namespace
 
+#endif
 #endif // __OPENNI_IMAGE__

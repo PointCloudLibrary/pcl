@@ -35,6 +35,9 @@
  *
  */
 
+#include <pcl/pcl_config.h>
+#ifdef HAVE_QHULL
+
 #ifndef PCL_CONVEX_HULL_2D_H_
 #define PCL_CONVEX_HULL_2D_H_
 
@@ -131,3 +134,4 @@ namespace pcl
 }
 
 #endif  //#ifndef PCL_CONVEX_HULL_2D_H_
+#endif

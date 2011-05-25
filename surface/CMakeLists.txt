@@ -7,7 +7,6 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
-    find_package(Qhull)
     if(QHULL_FOUND)
         include_directories(${QHULL_INCLUDE_DIRS})
         set(HULL_INCLUDES

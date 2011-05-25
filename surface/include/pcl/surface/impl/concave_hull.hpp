@@ -35,6 +35,9 @@
  *
  */
 
+#include <pcl/pcl_config.h>
+#ifdef HAVE_QHULL
+
 #ifndef PCL_SURFACE_IMPL_CONCAVE_HULL_H_
 #define PCL_SURFACE_IMPL_CONCAVE_HULL_H_
 
@@ -578,3 +581,4 @@ template<typename PointInT>
 #define PCL_INSTANTIATE_ConcaveHull(T) template class PCL_EXPORTS pcl::ConcaveHull<T>;
 
 #endif    // PCL_SURFACE_IMPL_CONCAVE_HULL_H_
+#endif

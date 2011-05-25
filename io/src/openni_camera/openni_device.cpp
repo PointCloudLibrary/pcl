@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_camera/openni_device.h>
 #include <pcl/io/openni_camera/openni_depth_image.h>
@@ -808,3 +811,4 @@ XnMapOutputMode OpenNIDevice::getDepthOutputMode () const throw (OpenNIException
 // This magic value is taken from a calibration routine, unless calibrated params are not supported we rely on thsi value!
 const float OpenNIDevice::rgb_focal_length_SXGA_ = 1050;
 } // namespace
+#endif //OPENNI

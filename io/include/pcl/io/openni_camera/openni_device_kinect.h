@@ -35,6 +35,9 @@
  *
  */
 
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #ifndef __OPENNI_DEVICE_KINECT__
 #define __OPENNI_DEVICE_KINECT__
 
@@ -88,4 +91,5 @@ const ImageBayerGRBG::DebayeringMethod& DeviceKinect::getDebayeringMethod () con
 }
 } // namespace
 
+#endif
 #endif // __OPENNI_DEVICE_KINECT__
