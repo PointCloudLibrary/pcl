@@ -35,6 +35,9 @@
  *
  */
 
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #ifndef __OPENNI_DEVICE_PRIMESENSE__
 #define __OPENNI_DEVICE_PRIMESENSE__
 
@@ -68,4 +71,5 @@ protected:
 };
 } // namespace
 
+#endif
 #endif // __OPENNI_DEVICE_PRIMESENSE__

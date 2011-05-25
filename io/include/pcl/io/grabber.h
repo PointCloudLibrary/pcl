@@ -34,6 +34,9 @@
  * Author: Suat Gedikli (gedikli@willowgarage.com), Nico Blodow (blodow@cs.tum.edu)
  */
 
+#include "pcl/pcl_config.h"
+#ifdef HAVE_OPENNI
+
 #ifndef __PCL_IO_GRABBER__
 #define __PCL_IO_GRABBER__
 
@@ -158,4 +161,4 @@ template<typename T> bool Grabber::providesCallback () const
 } // namespace
 
 #endif
-
+#endif //HAVE_OPENNI

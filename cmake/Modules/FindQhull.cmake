@@ -54,5 +54,6 @@ find_package_handle_standard_args(Qhull DEFAULT_MSG QHULL_LIBRARY
 mark_as_advanced(QHULL_LIBRARY QHULL_LIBRARY_DEBUG QHULL_INCLUDE_DIR)
 
 if(QHULL_FOUND)
+	set(HAVE_QHULL ON)
   message(STATUS "QHULL found (include: ${QHULL_INCLUDE_DIRS}, lib: ${QHULL_LIBRARIES})")
 endif(QHULL_FOUND)

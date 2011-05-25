@@ -34,6 +34,9 @@
  * Author: Nico Blodow (blodow@cs.tum.edu), Suat Gedikli (gedikli@willowgarage.com)
  */
 
+#include "pcl/pcl_config.h"
+#ifdef HAVE_OPENNI
+
 #ifndef __PCL_IO_OPENNI_GRABBER__
 #define __PCL_IO_OPENNI_GRABBER__
 
@@ -391,4 +394,5 @@ public:
   //      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 };
 }
+#endif
 #endif

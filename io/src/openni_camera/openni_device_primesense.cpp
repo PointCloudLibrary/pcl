@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #include <pcl/io/openni_camera/openni_device_primesense.h>
 #include <pcl/io/openni_camera/openni_image_yuv_422.h>
 #include <iostream>
@@ -255,4 +258,5 @@ void DevicePrimesense::startDepthStream () throw (OpenNIException)
     OpenNIDevice::startDepthStream ();
 }
 
-} //namespace
+}//namespace
+#endif

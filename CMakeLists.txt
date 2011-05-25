@@ -102,6 +102,8 @@ include_directories(${CMINPACK_INCLUDE_DIRS})
 include(${PCL_SOURCE_DIR}/cmake/pcl_openmp.cmake)
 # OpenNI
 find_package(OpenNI)
+# Qhull
+find_package(Qhull)
 # Find ROS
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
 

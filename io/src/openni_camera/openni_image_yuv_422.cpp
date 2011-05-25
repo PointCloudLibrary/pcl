@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #include <pcl/io/openni_camera/openni_image_yuv_422.h>
 #include <sstream>
 #include <iostream>
@@ -145,4 +148,5 @@ void ImageYUV422::fillGrayscale (unsigned width, unsigned height, unsigned char*
     }
   }
 }
-} //namespace
+}//namespace
+#endif

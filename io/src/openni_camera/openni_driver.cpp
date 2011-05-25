@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_camera/openni_device_kinect.h>
 #include <pcl/io/openni_camera/openni_device_primesense.h>
@@ -478,3 +481,4 @@ OpenNIDriver::DeviceContext::DeviceContext (const DeviceContext& other)
 }
 
 } // namespace
+#endif

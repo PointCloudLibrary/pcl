@@ -34,6 +34,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #include <pcl/io/openni_camera/openni_depth_image.h>
 #include <sstream>
 #include <limits>
@@ -176,3 +180,4 @@ void DepthImage::fillDisparityImage (unsigned width, unsigned height, float* dis
   }
 }
 } // namespace
+#endif //HAVE_OPENNI

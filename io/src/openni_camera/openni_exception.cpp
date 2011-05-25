@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #include <pcl/io/openni_camera/openni_exception.h>
 #include <sstream>
 
@@ -81,4 +84,5 @@ unsigned OpenNIException::getLineNumber () const throw ()
   return line_number_;
 }
 
-} //namespace openni_camera
+}//namespace openni_camera
+#endif

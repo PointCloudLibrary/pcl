@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #ifndef __OPENNI_DEPTH_IMAGE__
 #define __OPENNI_DEPTH_IMAGE__
 
@@ -138,4 +141,5 @@ unsigned long DepthImage::getTimeStamp () const throw ()
   return depth_md_->Timestamp ();
 }
 } // namespace
+#endif
 #endif //__OPENNI_DEPTH_IMAGE

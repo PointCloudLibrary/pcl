@@ -35,6 +35,9 @@
  *
  */
 
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #ifndef OPENNI_OPENNI_H_
 #define OPENNI_OPENNI_H_
 #include <string>
@@ -126,4 +129,5 @@ unsigned OpenNIDriver::getNumberDevices () const throw ()
   return (unsigned)device_context_.size ();
 }
 } // namespace
+#endif
 #endif
