@@ -134,6 +134,7 @@ add_subdirectory(surface)
 add_subdirectory(visualization)
 add_subdirectory(test)
 add_subdirectory(apps)
+add_subdirectory(cuda)
 
 ### ---[ Documentation
 add_subdirectory(doc)
