@@ -38,10 +38,10 @@
 #ifndef PCL_INTEGRALIMAGE_BASED_NORMAL_ESTIMATOR_H_
 #define PCL_INTEGRALIMAGE_BASED_NORMAL_ESTIMATOR_H_
 
-#include "pcl/features/integral_image_2d.h"
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <vector>
+#include "pcl/features/feature.h"
+#include "pcl/features/integral_image_2d.h"
 
 namespace pcl
 {
@@ -49,9 +49,13 @@ namespace pcl
     * \brief Surface normal estimation on dense data using integral images.
     * \author Stefan Holzer
     */
-  class PCL_EXPORTS IntegralImageNormalEstimation
+  template <typename PointInT, typename PointOutT>
+  class IntegralImageNormalEstimation: public Feature<PointInT, PointOutT>
   {
-    public: // enums
+    using Feature<PointInT, PointOutT>::input_;
+    using Feature<PointInT, PointOutT>::feature_name_;
+
+    public:
 
       enum NormalEstimationMethod
       {
@@ -60,65 +64,88 @@ namespace pcl
         AVERAGE_DEPTH_CHANGE
       };
 
-    public: // functions
-    
+      typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
+      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+
       //! Constructor
-      IntegralImageNormalEstimation ();
+      IntegralImageNormalEstimation () : integral_image_x_(NULL), integral_image_y_(NULL), 
+                                         integral_image_xyz_(NULL), integral_image_(NULL),
+                                         diff_x_(NULL), diff_y_(NULL), depth_data_(NULL)
+      {
+        feature_name_ = "IntegralImagesNormalEstimation";
+      }
+
       //! Destructor
       virtual ~IntegralImageNormalEstimation ();
 
-      /**
-       * Sets the input data.
-       *
-       * \param data the dense 2d input data array.
-       * \param width the width of the 2d input data array.
-       * \param height the height of the 2d input data array. 
-       * \param dimensions number of dimensions of each element.
-       * \param element_stride number of DataType entries per element (equal or bigger than dimensions).
-       * \param row_stride number of DataType entries per row (equal or bigger than element_stride * number of 
-       *          elements per row).
-       * \param distance_threshold threshold for detecting depth discontinuities
-       * \param normal_estimation_method the normal estimation method. Select between: COVARIANCE_MATRIX, AVERAGE_3D_GRADIENT, AVERAGE_DEPTH_CHANGE
-       */
-      void 
-      setInputData (float *data, const int width, const int height, const int dimensions,
-                    const int element_stride, const int row_stride, const float distance_threshold,
-                    const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT );
-
-      /**
-       * Set the regions size which is considered for normal estimation.
-       */
+      /** \brief Set the regions size which is considered for normal estimation.
+        * \param width the width of the search rectangle
+        * \param height the height of the search rectangle
+        */
       void 
       setRectSize (const int width, const int height);
 
+      /** \brief Computes the normal at the specified position. 
+        * \param pos_x x position (pixel)
+        * \param pos_y y position (pixel)
+        * \param normal the output estimated normal 
+        */
+      void
+      computePointNormal (const int pos_x, const int pos_y, PointOutT &normal);
+
+      /** \brief Estimate normals for all points given in <setInputCloud (), setIndices ()> using the surface in
+        * setSearchSurface () and the spatial locator in setSearchMethod ()
+        * \param output the resultant point cloud model dataset that contains surface normals and curvatures
+        */
+      void 
+      compute (PointCloudOut &output);
+
+    protected:
+
+      void 
+      computeFeature (PointCloudOut &output) {}
+
+      /** \brief Computes the normal for the complete cloud. 
+        * \param cloud the input point cloud
+        */
+      void
+      computeFeature (PointCloudIn &cloud,
+                      PointCloudOut &normals,
+                      const float maxDepthChangeFactor = 20.0f*0.001f,
+                      const float normalSmoothingSize = 10.0f,
+                      const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT);
+
+      /** \brief Computes the normal for the complete cloud. 
+        * \param cloud the input point cloud
+        */
+      void 
+      computeFeature (PointCloudIn &cloud,
+                      PointCloudOut &normals,
+                      const bool useDepthDependentSmoothing,
+                      const float maxDepthChangeFactor = 20.0f*0.001f,
+                      const float normalSmoothingSize = 10.0f,
+                      const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT);
+
       /**
-       * Computes the normal at the specified position. 
-       */
-      pcl::Normal compute (const int posX, const int posY);
-
-      /** \brief Computes the normal for the complete cloud. 
-        * \param cloud the input point cloud
+        * Sets the input data.
+        *
+        * \param data the dense 2d input data array.
+        * \param width the width of the 2d input data array.
+        * \param height the height of the 2d input data array. 
+        * \param dimensions number of dimensions of each element.
+        * \param element_stride number of DataType entries per element (equal or bigger than dimensions).
+        * \param row_stride number of DataType entries per row (equal or bigger than element_stride * number of 
+        *          elements per row).
+        * \param distance_threshold threshold for detecting depth discontinuities
+        * \param normal_estimation_method the normal estimation method. Select between: COVARIANCE_MATRIX, AVERAGE_3D_GRADIENT, AVERAGE_DEPTH_CHANGE
         */
-      template <typename PointInT, typename PointOutT> static void 
-      compute (const pcl::PointCloud<PointInT> &cloud,
-               pcl::PointCloud<PointOutT> &normals,
-               const float maxDepthChangeFactor = 20.0f*0.001f,
-               const float normalSmoothingSize = 10.0f,
-               const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT);
+      void 
+      setInputData (float *data, const int width, const int height, const int dimensions,
+                    const int element_stride, const int row_stride, const float distance_threshold,
+                    const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT);
 
-      /** \brief Computes the normal for the complete cloud. 
-        * \param cloud the input point cloud
-        */
-      template <typename PointInT, typename PointOutT> static void 
-      compute (const pcl::PointCloud<PointInT> &cloud,
-               pcl::PointCloud<PointOutT> &normals,
-               const bool useDepthDependentSmoothing,
-               const float maxDepthChangeFactor = 20.0f*0.001f,
-               const float normalSmoothingSize = 10.0f,
-               const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT);
-
-    protected: // data
-
+    private:
+      /** \brief The normal estimation method to use. */
       NormalEstimationMethod normal_estimation_method_;
     
       /** The width of the neighborhood region used for computing the normal. */
