@@ -106,6 +106,11 @@ find_package(OpenNI)
 find_package(Qhull)
 # Find ROS
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
+# Find wxWidgets
+find_package(wxWidgets)
+if(wxWidgets_FOUND)
+	set(HAVE_WXWIDGETS ON)
+endif()
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")

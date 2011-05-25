@@ -32,9 +32,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
-\author Bastian Steder
-**/
+#include <pcl/pcl_config.h>
+#ifdef HAVE_WXWIDGETS
 
 #include <pcl/visualization/common/float_image_utils.h>
 #include <cmath>
@@ -256,3 +255,4 @@ pcl::visualization::FloatImageUtils::getVisualHalfAngleImage (const float* angle
   return data;
 }
 
+#endif
