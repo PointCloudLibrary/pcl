@@ -33,6 +33,10 @@
  *
  *
  */
+
+#include <pcl/pcl_config.h>
+#ifdef HAVE_WXWIDGETS
+
 #ifndef PCL_VISUALIZATION_RANGE_IMAGE_VISUALIZER_H_
 #define PCL_VISUALIZATION_RANGE_IMAGE_VISUALIZER_H_
 
@@ -106,3 +110,4 @@ namespace pcl
 }
 
 #endif  //#define PCL_VISUALIZATION_RANGE_IMAGE_VISUALIZER_H_
+#endif

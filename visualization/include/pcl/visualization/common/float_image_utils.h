@@ -32,10 +32,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
-\author Bastian Steder
-**/
-
+#include <pcl/pcl_config.h>
+#ifdef HAVE_WXWIDGETS
 
 #ifndef PCL_VISUALIZATION_FLOAT_IMAGE_UTILS_H_
 #define PCL_VISUALIZATION_FLOAT_IMAGE_UTILS_H_
@@ -91,3 +89,4 @@ namespace pcl
 }
 
 #endif  //#ifndef PCL_VISUALIZATION_FLOAT_IMAGE_UTILS_H_
+#endif
