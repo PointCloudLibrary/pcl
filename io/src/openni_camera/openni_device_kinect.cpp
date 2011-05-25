@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #include <pcl/io/openni_camera/openni_device_kinect.h>
 #include <pcl/io/openni_camera/openni_image_bayer_grbg.h>
 #include <iostream>
@@ -146,4 +149,5 @@ bool DeviceKinect::isDepthCroppingSupported () const throw ()
   return false;
 }
 
-} //namespace
+}//namespace
+#endif

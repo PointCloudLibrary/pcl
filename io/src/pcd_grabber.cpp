@@ -34,6 +34,9 @@
  * Author: Suat Gedikli (gedikli@willowgarage.com)
  */
 
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -162,4 +165,4 @@ void pcl::PCDGrabberBase::rewind ()
   impl_->pcd_iterator_ = impl_->pcd_files_.begin ();
 }
 
-
+#endif

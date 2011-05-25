@@ -35,6 +35,9 @@
  *
  */
 
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #ifndef __OPENNI_IDEVICE_H__
 #define __OPENNI_IDEVICE_H__
 #include <map>
@@ -250,4 +253,5 @@ template<typename T> OpenNIDevice::CallbackHandle OpenNIDevice::registerDepthCal
   return depth_callback_handle_counter_++;
 }
 }
+#endif
 #endif // __OPENNI_IDEVICE_H__

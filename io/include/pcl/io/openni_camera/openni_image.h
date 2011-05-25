@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #ifndef __OPENNI_IMAGE__
 #define __OPENNI_IMAGE__
 
@@ -126,4 +129,5 @@ const xn::ImageMetaData& Image::getMetaData () const throw ()
 	return *image_md_;
 }
 } // namespace
+#endif
 #endif //__OPENNI_IMAGE__

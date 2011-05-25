@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #include <pcl/io/openni_camera/openni_image_bayer_grbg.h>
 #include <sstream>
 #include <iostream>
@@ -1419,3 +1422,4 @@ void ImageBayerGRBG::fillRGB (unsigned width, unsigned height, unsigned char* rg
   }
 }
 } //namespace
+#endif

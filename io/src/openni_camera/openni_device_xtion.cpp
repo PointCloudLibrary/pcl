@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #include <pcl/io/openni_camera/openni_device_xtion.h>
 #include <iostream>
 #include <sstream>
@@ -123,4 +126,5 @@ void DeviceXtionPro::startDepthStream () throw (OpenNIException)
     OpenNIDevice::startDepthStream ();
 }
 
-} //namespace
+}//namespace
+#endif

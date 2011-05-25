@@ -35,6 +35,9 @@
  *
  */
 
+#include <pcl/pcl_config.h>
+#ifdef HAVE_QHULL
+
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
 #include "pcl/surface/convex_hull.h"
@@ -42,3 +45,5 @@
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(ConvexHull, PCL_XYZ_POINT_TYPES);
+
+#endif

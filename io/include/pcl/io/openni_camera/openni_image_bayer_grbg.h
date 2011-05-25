@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #ifndef __OPENNI_IMAGE_BAYER_GRBG__
 #define __OPENNI_IMAGE_BAYER_GRBG__
 #include "openni_image.h"
@@ -92,4 +95,5 @@ bool ImageBayerGRBG::resizingSupported (unsigned input_width, unsigned input_hei
 }
 } // namespace
 
+#endif
 #endif // __OPENNI_IMAGE__

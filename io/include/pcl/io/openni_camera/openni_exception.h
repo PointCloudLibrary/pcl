@@ -34,6 +34,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI
+
 #ifndef __OPENNI_EXCEPTION__
 #define __OPENNI_EXCEPTION__
 
@@ -82,4 +86,5 @@ inline void throwOpenNIException (const char* function, const char* file, unsign
   throw OpenNIException (function, file, line, msg);
 }
 } // namespace openni_camera
+#endif
 #endif

@@ -34,6 +34,9 @@
  * Author: Suat Gedikli (gedikli@willowgarage.com)
  */
 
+#include "pcl/pcl_config.h"
+#ifdef HAVE_OPENNI
+
 #ifndef __PCL_IO_PCD_GRABBER__
 #define __PCL_IO_PCD_GRABBER__
 
@@ -138,4 +141,5 @@ namespace pcl
     signal_->operator () (cloud);
   }
 }
+#endif
 #endif
