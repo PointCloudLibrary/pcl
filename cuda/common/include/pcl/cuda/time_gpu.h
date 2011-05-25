@@ -38,78 +38,78 @@
 #ifndef PCL_CUDA_TIME_GPU_H_
 #define PCL_CUDA_TIME_GPU_H_
 
-#include <cutil_inline.h>
 #include <cuda.h>
+#include <pcl/cuda/cutil_inline.h>
 
 namespace pcl
 {
-namespace cuda
-{
-  /**
-   * \brief Class to measure the time spent in a scope
-   *
-   * To use this class, e.g. to measure the time spent in a function,
-   * just create an instance at the beginning of the function.
-   */
-  class ScopeTimeGPU 
+  namespace cuda
   {
-    public: 
-      /** \brief Constructor. */
-      inline ScopeTimeGPU (const char* title) : title_ (title)
-      {
-        start ();
-      }
-
-      /** \brief Destructor. */
-      inline ~ScopeTimeGPU ()
-      {
-        stop ();
-        std::cerr << title_ << " took " << elapsed_time_ << "ms.\n";
-      }
-
-      /** \brief Start the timer. */
-      inline void 
-      start ()
-      {
-        CUT_CHECK_ERROR ("dude");
-        cutilSafeCall (cudaEventCreate (&start_));
-        cutilSafeCall (cudaEventCreate (&end_));
-
-        cutilSafeCall (cudaEventRecord (start_, 0));
-      }
-
-      /** \brief Stop the timer. */
-      inline void 
-      stop ()
-      {
-        CUT_CHECK_ERROR ("dude");
-        // Measure time needed to copy data
-        cutilSafeCall (cudaThreadSynchronize ());
-        cutilSafeCall (cudaEventRecord (end_, 0));
-        cutilSafeCall (cudaEventSynchronize (end_));
-        cutilSafeCall (cudaEventElapsedTime (&elapsed_time_, start_, end_));
-
-        cutilSafeCall (cudaEventDestroy (end_));
-        cutilSafeCall (cudaEventDestroy (start_));
-      }
-
-      /** \brief Stop and print the timer. */
-      inline void stop_print ()
-      {
-        stop ();
-        std::cerr << title_ << " took " << elapsed_time_ << "ms.\n";
-      }
-
-
-    private:
-      cudaEvent_t start_;
-      cudaEvent_t end_;
-
-      float elapsed_time_;
-
-      std::string title_;
-  };
-} // namespace
+    /**
+     * \brief Class to measure the time spent in a scope
+     *
+     * To use this class, e.g. to measure the time spent in a function,
+     * just create an instance at the beginning of the function.
+     */
+    class ScopeTimeGPU 
+    {
+      public: 
+        /** \brief Constructor. */
+        inline ScopeTimeGPU (const char* title) : title_ (title)
+        {
+          start ();
+        }
+  
+        /** \brief Destructor. */
+        inline ~ScopeTimeGPU ()
+        {
+          stop ();
+          std::cerr << title_ << " took " << elapsed_time_ << "ms.\n";
+        }
+  
+        /** \brief Start the timer. */
+        inline void 
+        start ()
+        {
+          CUT_CHECK_ERROR ("dude");
+          cutilSafeCall (cudaEventCreate (&start_));
+          cutilSafeCall (cudaEventCreate (&end_));
+  
+          cutilSafeCall (cudaEventRecord (start_, 0));
+        }
+  
+        /** \brief Stop the timer. */
+        inline void 
+        stop ()
+        {
+          CUT_CHECK_ERROR ("dude");
+          // Measure time needed to copy data
+          cutilSafeCall (cudaThreadSynchronize ());
+          cutilSafeCall (cudaEventRecord (end_, 0));
+          cutilSafeCall (cudaEventSynchronize (end_));
+          cutilSafeCall (cudaEventElapsedTime (&elapsed_time_, start_, end_));
+  
+          cutilSafeCall (cudaEventDestroy (end_));
+          cutilSafeCall (cudaEventDestroy (start_));
+        }
+  
+        /** \brief Stop and print the timer. */
+        inline void stop_print ()
+        {
+          stop ();
+          std::cerr << title_ << " took " << elapsed_time_ << "ms.\n";
+        }
+  
+  
+      private:
+        cudaEvent_t start_;
+        cudaEvent_t end_;
+  
+        float elapsed_time_;
+  
+        std::string title_;
+    };
+  } // namespace
 } // namespace
 
 #endif  //#ifndef PCL_CUDA_TIMER_H_

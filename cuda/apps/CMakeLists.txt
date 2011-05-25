@@ -1,6 +1,6 @@
 set(SUBSYS_NAME cuda_apps)
 set(SUBSYS_DESC "Point cloud library CUDA apps")
-set(SUBSYS_DEPS cuda cuda_common cuda_io common io visualization)
+set(SUBSYS_DEPS cuda cuda_common cuda_io cuda_features common io visualization)
 
 # ---[ Point Cloud Library - pcl/cuda/apps
 
@@ -31,6 +31,9 @@ if(build)
 
     PCL_CUDA_ADD_EXECUTABLE(kinect_viewer_cuda ${SUBSYS_NAME} src/kinect_viewer_cuda.cpp)
     target_link_libraries (kinect_viewer_cuda pcl_io pcl_cuda_io pcl_visualization pcl_common pcl_kdtree pcl_range_image)
+
+    PCL_CUDA_ADD_EXECUTABLE(kinect_normals_cuda ${SUBSYS_NAME} src/kinect_normals_cuda.cpp)
+    target_link_libraries (kinect_normals_cuda pcl_io pcl_cuda_io pcl_cuda_features pcl_visualization pcl_common pcl_kdtree pcl_range_image)
 
   endif(VTK_FOUND)
 endif(build)
