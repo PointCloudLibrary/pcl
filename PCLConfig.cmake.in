@@ -90,7 +90,7 @@ if(PCL_FIND_COMPONENTS)
     if(found EQUAL -1)
       message(FATAL_ERROR "requested components ${comp} not found")
     else(found EQUAL -1)
-      string(TOUPPER COMP ${comp})
+      string(TOUPPER ${comp} COMP)
       set(PCL_${COMP}_LIBRARY pcl_${comp})
       set(PCL_${COMP}_LIBRARY_DEBUG pcl_${comp})
       set(PCL_${COMP}_LIBRARIES pcl_${comp})
@@ -105,7 +105,7 @@ list(APPEND PCL_INCLUDE_DIRS "@Boost_INCLUDE_DIR@")
 
 list(APPEND PCL_INCLUDE_DIRS "@FLANN_INCLUDE_DIRS@")
 
-list(APPEND PCL_INCLUDE_DIRS "@CMINPACK_LIB_DIRS@")
+list(APPEND PCL_INCLUDE_DIRS "@CMINPACK_INCLUDE_DIRS@")
 
 list(APPEND PCL_INCLUDE_DIRS "@EIGEN_INCLUDE_DIRS@")
 
