@@ -480,6 +480,24 @@ contributions on any tutorial.
      .. |oc_3| image:: images/changedetectionThumb.png
                :height: 100px
 
+* Range Images
+
+  * :ref:`range_image_creation`
+
+     ======  ======
+     |ri_1|  Title: **Creating Range Images from Point Clouds**
+
+             Author: *Bastian Steder*
+
+             Compatibility: > PCL 1.0
+             
+             This tutorial demonstrates how to create a range image from a point cloud and a given sensor position. 
+     ======  ======
+
+     .. |ri_1| image:: images/range_image_visualization.png
+               :height: 100px
+
+
 * Visualization
 
   * :ref:`cloud_viewer`
@@ -495,6 +513,21 @@ contributions on any tutorial.
      ======  ======
 
      .. |vi_1| image:: images/cloud_viewer.jpg
+               :height: 100px
+
+  * :ref:`range_image_visualization`
+
+     ======  ======
+     |vi_2|  Title: **Visualizing Range Images**
+
+             Author: *Bastian Steder*
+
+             Compatibility: > PCL 1.0
+
+             This tutorial demonstrates how to use the pcl visualization tools for range images.
+     ======  ======
+
+     .. |vi_2| image:: images/range_image_visualization.png
                :height: 100px
 
 * Applications
