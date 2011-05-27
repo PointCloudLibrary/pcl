@@ -64,7 +64,7 @@ then convert to the actual representation that we want to use.
 
    if (pcl::io::loadPCDFile ("test_pcd.pcd", cloud_blob) == -1)
    {
-     ROS_ERROR ("Couldn't read file test_pcd.pcd");
+     std::cerr << "Couldn't read file test_pcd.pcd" << std::endl;
      return (-1);
    }
 
