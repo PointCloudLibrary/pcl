@@ -2,16 +2,12 @@ set(SUBSYS_NAME visualization)
 set(SUBSYS_DESC "Point cloud visualization library")
 set(SUBSYS_DEPS common io kdtree octree range_image octree filters)
 
-# Find wxWidgets
-find_package(wxWidgets)
 if(wxWidgets_FOUND)
-	set(HAVE_WXWIDGETS ON)
+  set(HAVE_WXWIDGETS ON)
   include(${wxWidgets_USE_FILE})
   include_directories(${wxWidgets_INCLUDE_DIRS})
 endif()
-# Find VTK 
-# rusu:: NOTE: this should be moved to pcl/CMakeLists.txt, when we expand the I/O library
-find_package (VTK)
+
 if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")
