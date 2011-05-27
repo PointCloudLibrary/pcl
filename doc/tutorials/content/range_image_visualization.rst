@@ -157,7 +157,7 @@ editor, and place the following code inside it:
 Explanation
 -----------
 
-In the beginning we do command line parsing, read a point cloud from disc (or create it if not provided) and create a range image. All of these steps are already covered in the range_image_creation tutorial.
+In the beginning we do command line parsing, read a point cloud from disc (or create it if not provided) and create a range image. All of these steps are already covered in the 'How to create a range image from a point cloud' tutorial.
 
 The interesting part begins here:
 
@@ -217,4 +217,11 @@ You can also try it with an actual 3D scan:
 
   $ ./range_image_visualization some_pointcloud.pcd
 
-Unseen areas (range -INFINITY) will be shown in pale green, far ranges (range INFINITY - if available in the scan) are shown in pale blue.
+The output should look similar to this:
+
+.. image:: images/range_image_visualization.png
+  :width: 500
+
+Unseen areas (range -INFINITY) are shown in pale green and far ranges (range INFINITY - if available in the scan) in pale blue.
+
+
