@@ -106,10 +106,15 @@ find_package(OpenNI)
 find_package(Qhull)
 # Find ROS
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
+# Find VTK 
+find_package (VTK)
+if(VTK_FOUND)
+  set(HAVE_VTK ON)
+endif()
 # Find wxWidgets
 find_package(wxWidgets)
 if(wxWidgets_FOUND)
-	set(HAVE_WXWIDGETS ON)
+  set(HAVE_WXWIDGETS ON)
 endif()
 
 ### ---[ Create the config.h file
