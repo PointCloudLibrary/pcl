@@ -306,8 +306,24 @@ During the CMake configuration for the PCL project, the following options were s
   In order to correctly link against the FLANN library, you have to use the flann_cpp_s library file. The use
   of other files will result in undefined symbols and various linking time errors.
   
-Open that folder and use the generated project to finally build the PCL library
-using the toolchain of your choice.
+Open that folder and use the generated project (PCL.sln for instance) to finally build the PCL libraries
+using the toolchain of your choice. Building the "ALL_BUILD" project will build everything. 
+Make sure to build the "ALL_BUILD" project in both debug and release mode.
+
+.. image:: images/msvc_build_build_all.jpg
+   :alt: Build ALL_BUILD project
+   :align: center  
+
+Installing PCL
+--------------
+
+To install the built libraries and executbles, you need to build the "INSTALL" project in the solution explorer.
+This utility project will copy PCL headers, libraries and executable to the directory defined by the CMAKE_INSTALL_PREFIX 
+cmake variable. Make sure to build the "INSTALL" project in both debug and release mode.
+ 
+.. image:: images/msvc_build_install.jpg
+   :alt: Build INSTALL project
+   :align: center  
 
 Using PCL
 ---------
