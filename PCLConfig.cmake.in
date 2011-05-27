@@ -1,8 +1,5 @@
 # Helper to use PCL from outside project
 #
-# Sample usage:
-# copy paste PCLConfig.cmake in your project source directory
-# include(PCLConfig.cmake)
 # target_link_libraries(my_fabulous_target pcl_xxx) where xxx is in
 # - common
 # - octree
@@ -24,9 +21,74 @@
 #
 # www.pointclouds.org
 # --------------------------------
-set(PCL_VERSION @PCL_VERSION@)
-set(PCL_INCLUDE_DIRS @CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_ROOT@)
-include(@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/pcl/UsePCL.cmake)
-include_directories(${PCL_INCLUDE_DIRS})
-include_directories(@EIGEN_INCLUDE_DIRS@)
-link_directories(@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@)
+set(PCL_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_ROOT@")
+set(PCL_LIBRARY_DIRS "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@")
+include("@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/pcl/PCLDepends.cmake")
+
+if(@PCL_SUBSYS_STATUS_common@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_common)
+endif(@PCL_SUBSYS_STATUS_common@ EQUAL TRUE)
+
+if(@PCL_SUBSYS_STATUS_io@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_io)
+endif(@PCL_SUBSYS_STATUS_io@ EQUAL TRUE)
+
+if(@PCL_SUBSYS_STATUS_filters@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_filters)
+endif(@PCL_SUBSYS_STATUS_filters@ EQUAL TRUE)
+
+if(@PCL_SUBSYS_STATUS_features@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_features)
+endif(@PCL_SUBSYS_STATUS_features@ EQUAL TRUE)
+
+if(@PCL_SUBSYS_STATUS_kdtree@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_kdtree)
+endif(@PCL_SUBSYS_STATUS_kdtree@ EQUAL TRUE)
+
+if(@PCL_SUBSYS_STATUS_octree@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_octree)
+endif(@PCL_SUBSYS_STATUS_octree@ EQUAL TRUE)
+
+if(@PCL_SUBSYS_STATUS_range_image@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_range_image)
+  append(PCL_COMPONENTS pcl_range_image_border_extractor)
+endif(@PCL_SUBSYS_STATUS_range_image@ EQUAL TRUE)
+
+if(@PCL_SUBSYS_STATUS_surface@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_surface)
+endif(@PCL_SUBSYS_STATUS_surface@ EQUAL TRUE)
+
+if(@PCL_SUBSYS_STATUS_sample_consensus@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_sample_consensus)
+endif(@PCL_SUBSYS_STATUS_sample_consensus@ EQUAL TRUE)
+
+if(@PCL_SUBSYS_STATUS_registration@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_registration)
+endif(@PCL_SUBSYS_STATUS_registration@ EQUAL TRUE)
+
+if(@PCL_SUBSYS_STATUS_segmentation@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_segmentation)
+endif(@PCL_SUBSYS_STATUS_segmentation@ EQUAL TRUE)
+
+if(@PCL_SUBSYS_STATUS_visualization@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_visualization)
+endif(@PCL_SUBSYS_STATUS_visualization@ EQUAL TRUE)
+
+if(@PCL_SUBSYS_STATUS_keypoints@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_keypoints)
+endif(@PCL_SUBSYS_STATUS_keypoints@ EQUAL TRUE)
+
+if(@PCL_SUBSYS_STATUS_cuda@ EQUAL TRUE)
+  append(PCL_COMPONENTS pcl_cuda)
+endif(@PCL_SUBSYS_STATUS_cuda@ EQUAL TRUE)
+
+set(PCL_LIBRARIES ${PCL_COMPONENTS})
+
+if(PCL_FIND_COMPONENTS)
+  foreach(comp ${PCL_FIND_COMPONENTS})
+    list(FIND PCL_COMPONENTS pcl_${comp} found)
+    if(found EQUAL -1)
+      message(FATAL_ERROR "requested components ${comp} not found")
+    endif(found EQUAL -1)
+  endforeach(comp)
+endif(PCL_FIND_COMPONENTS)

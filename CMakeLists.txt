@@ -179,6 +179,12 @@ MAKE_DEP_GRAPH()
 # Configure PCLConfig.cmake
 configure_file("${PCL_SOURCE_DIR}/PCLConfig.cmake.in"
                "${PCL_BINARY_DIR}/PCLConfig.cmake" @ONLY)
+configure_file("${PCL_SOURCE_DIR}/PCLConfigVersion.cmake.in"
+               "${PCL_BINARY_DIR}/PCLConfigVersion.cmake" @ONLY)
+install(FILES
+        "${PCL_BINARY_DIR}/PCLConfig.cmake"
+        "${PCL_BINARY_DIR}/PCLConfigVersion.cmake"
+        DESTINATION share/pcl)
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
 
