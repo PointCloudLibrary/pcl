@@ -1,0 +1,13 @@
+# Check whether the requested PCL_FIND_VERSION is compatible
+
+set(PCL_VERSION @PCL_VERSION@)
+
+# Check whether the requested PACKAGE_FIND_VERSION is compatible
+if("${PCL_VERSION}" VERSION_LESS "${PCL_FIND_VERSION}")
+  set(PCL_VERSION_COMPATIBLE FALSE)
+else()
+  set(PCL_VERSION_COMPATIBLE TRUE)
+  if ("${PCL_VERSION}" VERSION_EQUAL "${PCL_FIND_VERSION}")
+    set(PCL_VERSION_EXACT TRUE)
+  endif()
+endif()

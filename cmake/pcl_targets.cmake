@@ -92,7 +92,7 @@ macro(PCL_ADD_LIBRARY _name _component)
         RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component}
         LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component})
-    install(EXPORT pcl DESTINATION ${LIB_INSTALL_DIR}/pcl FILE UsePCL.cmake)
+    install(EXPORT pcl DESTINATION ${LIB_INSTALL_DIR}/pcl FILE PCLDepends.cmake)
 endmacro(PCL_ADD_LIBRARY)
 
 
