@@ -148,7 +148,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
    
    add_executable (concatenate_fields concatenate_fields.cpp)
-   target_link_libraries (concatenate_fields ${PCL_IO_LIBRARIES})
+   target_link_libraries (concatenate_fields ${PCL_COMMON_LIBRARIES})
 
 After you have made the executable, you can run it. Simply do::
 
