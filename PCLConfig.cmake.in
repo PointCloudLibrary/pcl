@@ -89,14 +89,16 @@ if(PCL_FIND_COMPONENTS)
     list(FIND PCL_COMPONENTS pcl_${comp} found)
     if(found EQUAL -1)
       message(FATAL_ERROR "requested components ${comp} not found")
-    else(found EQUAL -1)
-      string(TOUPPER ${comp} COMP)
-      set(PCL_${COMP}_LIBRARY pcl_${comp})
-      set(PCL_${COMP}_LIBRARY_DEBUG pcl_${comp})
-      set(PCL_${COMP}_LIBRARIES pcl_${comp})
     endif(found EQUAL -1)
   endforeach(comp)
 endif(PCL_FIND_COMPONENTS)
+
+foreach(comp ${PCL_COMPONENTS})
+  string(TOUPPER ${comp} COMP)
+  set(${COMP}_LIBRARY ${comp})
+  set(${COMP}_LIBRARY_DEBUG ${comp})
+  set(${COMP}_LIBRARIES ${comp})
+endforeach(comp)
 
 ##
 # append 3rd party include dirs
