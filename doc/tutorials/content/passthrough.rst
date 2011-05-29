@@ -17,7 +17,6 @@ editor, and place the following inside it:
    :linenos:
 
    #include <iostream>
-   #include "pcl/io/pcd_io.h"
    #include "pcl/point_types.h"
    #include "pcl/filters/passthrough.h"
   
@@ -122,7 +121,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
    
    add_executable (passthrough passthrough.cpp)
-   target_link_libraries (passthrough ${PCL_IO_LIBRARIES} ${PCL_FILTERS_LIBRARIES})
+   target_link_libraries (passthrough ${PCL_COMMON_LIBRARIES} ${PCL_FILTERS_LIBRARIES})
 
 After you have made the executable, you can run it. Simply do::
 
