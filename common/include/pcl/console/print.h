@@ -42,10 +42,12 @@
 
 #include <pcl/pcl_macros.h>
 
-#define PCL_DEBUG(...) pcl::console::print_debug (__VA_ARGS__)
-#define PCL_INFO(...)  pcl::console::print_info  (__VA_ARGS__)
-#define PCL_WARN(...)  pcl::console::print_warn  (__VA_ARGS__)
-#define PCL_ERROR(...) pcl::console::print_error (__VA_ARGS__)
+#define PCL_ALWAYS(...)  pcl::console::print (pcl::console::L_ALWAYS, __VA_ARGS__)
+#define PCL_ERROR(...)   pcl::console::print (pcl::console::L_ERROR, __VA_ARGS__)
+#define PCL_WARN(...)    pcl::console::print (pcl::console::L_WARN, __VA_ARGS__)
+#define PCL_INFO(...)    pcl::console::print (pcl::console::L_INFO, __VA_ARGS__)
+#define PCL_DEBUG(...)   pcl::console::print (pcl::console::L_DEBUG, __VA_ARGS__)
+#define PCL_VERBOSE(...) pcl::console::print (pcl::console::L_VERBOSE, __VA_ARGS__)
 
 namespace pcl
 {
@@ -73,6 +75,32 @@ namespace pcl
       TT_CYAN,
       TT_WHITE
     };
+
+    enum VERBOSITY_LEVEL
+    {
+      L_ALWAYS,
+      L_ERROR,
+      L_WARN,
+      L_INFO,
+      L_DEBUG,
+      L_VERBOSE
+    };
+
+    /** set the verbosity level */
+    PCL_EXPORTS void 
+    setVerbosityLevel (VERBOSITY_LEVEL level);
+
+    /** get the verbosity level. */
+    PCL_EXPORTS VERBOSITY_LEVEL 
+    getVerbosityLevel ();
+
+    /** initialize verbosity level. */
+    PCL_EXPORTS bool 
+    initVerbosityLevel ();
+
+    /** is verbosity level enabled? */
+    PCL_EXPORTS bool 
+    isVerbosityLevelEnabled (VERBOSITY_LEVEL severity);
 
     /** \brief Change the text color (on either stdout or stderr) with an attr:fg:bg
       * \param stream the output stream (stdout, stderr, etc)
@@ -184,6 +212,21 @@ namespace pcl
       */
     PCL_EXPORTS void 
     print_value (FILE *stream, const char *format, ...);
+
+	/** \brief Print a message on stream
+      * \param level the verbosity level
+      * \param stream the output stream (stdout, stderr, etc)
+      * \param format the message
+      */
+    PCL_EXPORTS void 
+    print (VERBOSITY_LEVEL level, FILE *stream, const char *format, ...);
+
+	/** \brief Print a message
+      * \param level the verbosity level
+      * \param format the message
+      */
+    PCL_EXPORTS void 
+    print (VERBOSITY_LEVEL level, const char *format, ...);
   }
 } 
 
