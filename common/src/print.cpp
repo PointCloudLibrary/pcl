@@ -395,17 +395,22 @@ void
 pcl::console::print (pcl::console::VERBOSITY_LEVEL level, FILE *stream, const char *format, ...)
 {
   if (!isVerbosityLevelEnabled (level)) return;
-  switch(level)
+  switch (level)
   {
-  case L_DEBUG:
-    change_text_color (stream, TT_RESET, TT_GREEN);
-    break;
-  case L_WARN:
-    change_text_color (stream, TT_BRIGHT, TT_YELLOW);
-    break;
-  case L_ERROR:
-    change_text_color (stream, TT_BRIGHT, TT_RED);
-    break;
+    case L_DEBUG:
+      change_text_color (stream, TT_RESET, TT_GREEN);
+      break;
+    case L_WARN:
+      change_text_color (stream, TT_BRIGHT, TT_YELLOW);
+      break;
+    case L_ERROR:
+      change_text_color (stream, TT_BRIGHT, TT_RED);
+      break;
+    case L_ALWAYS:
+    case L_INFO:
+    case L_VERBOSE:
+    default:
+      break;
   }
 
   va_list ap;
@@ -423,17 +428,22 @@ pcl::console::print (pcl::console::VERBOSITY_LEVEL level, const char *format, ..
 {
   if (!isVerbosityLevelEnabled (level)) return;
   FILE *stream = (level == L_WARN || level == L_ERROR) ? stderr : stdout;
-  switch(level)
+  switch (level)
   {
-  case L_DEBUG:
-    change_text_color (stream, TT_RESET, TT_GREEN);
-    break;
-  case L_WARN:
-    change_text_color (stream, TT_BRIGHT, TT_YELLOW);
-    break;
-  case L_ERROR:
-    change_text_color (stream, TT_BRIGHT, TT_RED);
-    break;
+    case L_DEBUG:
+      change_text_color (stream, TT_RESET, TT_GREEN);
+      break;
+    case L_WARN:
+      change_text_color (stream, TT_BRIGHT, TT_YELLOW);
+      break;
+    case L_ERROR:
+      change_text_color (stream, TT_BRIGHT, TT_RED);
+      break;
+    case L_ALWAYS:
+    case L_INFO:
+    case L_VERBOSE:
+    default:
+      break;
   }
   
   va_list ap;
