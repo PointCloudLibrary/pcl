@@ -108,7 +108,6 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
     R_ = is_free;
     if (state_[R_] == FREE)
     {
-      PCL_DEBUG ("Starting to build part %d starting at point: %d\n", nr_parts+1, R_);
       state_[R_] = NONE;
       part_[R_] = part_index++;
 
