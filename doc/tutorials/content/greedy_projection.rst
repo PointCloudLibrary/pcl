@@ -92,7 +92,7 @@ editor, and place the following code inside it:
      loadPCDFile ("bun0.pcd", cloud_blob);
      fromROSMsg (cloud_blob, *cloud);
 
-     // Normal estimation
+     // Normal estimation*
      NormalEstimation<PointXYZ, Normal> n;
      PointCloud<Normal>::Ptr normals (new PointCloud<Normal>);
      KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
@@ -102,11 +102,11 @@ editor, and place the following code inside it:
      n.setKSearch (20);
      n.compute (*normals);
 
-     // Concatenate the XYZ and normal fields
+     // Concatenate the XYZ and normal fields*
      PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
      pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
 
-     // Create search tree
+     // Create search tree*
      KdTree<PointNormal>::Ptr tree2 (new KdTreeFLANN<PointNormal>);
      tree2->setInputCloud (cloud_with_normals);
 
@@ -147,10 +147,11 @@ Now, let's break down the code piece by piece.
 .. code-block:: cpp
 
     // Load input file into a PointCloud<T> with an appropriate type
-    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
+    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
     sensor_msgs::PointCloud2 cloud_blob;
     loadPCDFile ("bun0.pcd", cloud_blob);
     fromROSMsg (cloud_blob, *cloud);
+    //* the data should be available in cloud
 
 as the example PCD has only XYZ coordinates, we load it into a
 PointCloud<PointXYZ>.
@@ -159,13 +160,14 @@ PointCloud<PointXYZ>.
 
     // Normal estimation
     NormalEstimation<PointXYZ, Normal> n;
-    PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-    KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> > ();
+    PointCloud<Normal>::Ptr normals (new PointCloud<Normal>);
+    KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> > (false));
     tree->setInputCloud (cloud);
     n.setInputCloud (cloud);
     n.setSearchMethod (tree);
     n.setKSearch (20);
     n.compute (*normals);
+    //* normals should not contain the point normals + surface curvatures
 
 the method requires normals, so they are estimated using the standard method
 from PCL.
@@ -175,6 +177,7 @@ from PCL.
     // Concatenate the XYZ and normal fields
     PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
     pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
+    //* cloud_with_normals = cloud + normals
 
 Since coordinates and normals need to be in the same PointCloud, we create a PointNormal type point cloud.
 
@@ -230,9 +233,12 @@ Compiling and running the program
 Add the following lines to your CMakeLists.txt file:
 
 .. code-block:: cmake
-   
-   add_executable (greedy_projection greedy_projection.cpp)
-   target_link_libraries (greedy_projection ${PCL_IO_LIBRARIES} ${PCL_SURFACE_LIBRARIES})
+
+  find_package(PCL 1.0 REQUIRED COMPONENTS common kdtree surface io features)
+  include_directories(${PCL_INCLUDE_DIRS})
+
+  add_executable (greedy_projection greedy_projection.cpp)
+  target_link_libraries (greedy_projection ${PCL_COMMON_LIBRARIES} ${PCL_KDTREE_LIBRARIES} ${PCL_SURFACE_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_FEATURES_LIBRARIES})
 
 After you have made the executable, you can run it. Simply do::
 
