@@ -89,6 +89,10 @@ macro(PCL_ADD_LIBRARY _name _component)
         VERSION ${PCL_VERSION}
         SOVERSION ${PCL_MAJOR_VERSION}
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
+    if(USE_PROJECT_FOLDERS)
+      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+    endif(USE_PROJECT_FOLDERS)
+
     install(TARGETS ${_name} EXPORT pcl
         RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component}
         LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component}
@@ -120,6 +124,10 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
         VERSION ${PCL_VERSION}
         SOVERSION ${PCL_MAJOR_VERSION}
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
+    if(USE_PROJECT_FOLDERS)
+      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+    endif(USE_PROJECT_FOLDERS)
+
     install(TARGETS ${_name} EXPORT pcl
         RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component}
         LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component}
@@ -147,6 +155,10 @@ macro(PCL_ADD_EXECUTABLE _name _component)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
     #
+    if(USE_PROJECT_FOLDERS)
+      set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
+    endif(USE_PROJECT_FOLDERS)
+
     set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
         COMPONENT ${_component})
@@ -172,6 +184,10 @@ macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
     #
+    if(USE_PROJECT_FOLDERS)
+      set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
+    endif(USE_PROJECT_FOLDERS)
+	
     set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
         COMPONENT ${_component})
@@ -210,6 +226,10 @@ macro(PCL_ADD_TEST _name _exename)
     # must link explicitly against boost only on Windows
     target_link_libraries(${_exename} ${Boost_LIBRARIES})
     #
+    if(USE_PROJECT_FOLDERS)
+      set_target_properties(${_exename} PROPERTIES FOLDER "Tests")
+    endif(USE_PROJECT_FOLDERS)
+
     if(${CMAKE_VERSION} VERSION_LESS 2.8.4)
       add_test(${_name} ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
     else(${CMAKE_VERSION} VERSION_LESS 2.8.4)
