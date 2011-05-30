@@ -30,7 +30,7 @@ plane. Assuming that we use a Kd-tree structure for finding the nearest
 neighbors, the algorithmic steps for that would be (from [RusuDissertation]_):
 
 
-  1. *create a kd-tree representation for the input point cloud dataset* :math:`P`;
+  1. *create a Kd-tree representation for the input point cloud dataset* :math:`P`;
 
 
   2. *set up an empty list of clusters* :math:`C`, *and a queue of the points that need to be checked* :math:`Q`;
@@ -143,7 +143,7 @@ editor, and place the following inside it:
   
      vector<PointIndices> cluster_indices;
      EuclideanClusterExtraction<PointXYZ> ec;
-     ec.setClusterTolerance (0.02); // 2cmm
+     ec.setClusterTolerance (0.02); // 2cm
      ec.setMinClusterSize (100);
      ec.setMaxClusterSize (25000);
      ec.setSearchMethod (tree);
@@ -232,7 +232,7 @@ PointXYZ since our point cloud is of type PointXYZ. We are also setting the
 parameters and variables for the extraction.  Be careful setting the right
 value for **setClusterTolerance()**. If you take a very small value, it can
 happen that an actual *object* can be seen as multiple clusters. On the other
-hand, if you set the value too high, it could happen, that mutliple *objects*
+hand, if you set the value too high, it could happen, that multiple *objects*
 are seen as one cluster. So our recommendation is to just test and try out
 which value suits your dataset.
 
@@ -255,7 +255,7 @@ each entry and write all points of the current cluster in the `PointCloud`.
 
        cerr << "PointCloud representing the Cluster: " << cloud_cluster->points.size () << " data points." << endl;
        stringstream ss;
-       ss << "cloud_cluster_" << distance (indices.begin (), it) << ".pcd";
+       ss << "cloud_cluster_" << j  << ".pcd";
        writer.write<PointXYZ> (ss.str (), *cloud_cluster, false); //*
        j++;
      }
