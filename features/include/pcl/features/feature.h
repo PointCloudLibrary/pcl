@@ -105,6 +105,9 @@ namespace pcl
       using PCLBase<PointInT>::input_;
 
       typedef PCLBase<PointInT> BaseClass;
+
+      typedef boost::shared_ptr< Feature<PointInT, PointOutT> > Ptr;
+      typedef boost::shared_ptr< const Feature<PointInT, PointOutT> > ConstPtr;
       
       typedef typename pcl::KdTree<PointInT> KdTree;
       typedef typename pcl::KdTree<PointInT>::Ptr KdTreePtr;
