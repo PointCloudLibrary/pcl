@@ -15,7 +15,8 @@ machine.
 Project settings
 ----------------
 Let us say the project is placed under /PATH/TO/MY/GRAND/PROJECT that
-contains a lonely cpp file name ``pcd_write.cpp``. Do::
+contains a lonely cpp file name ``pcd_write.cpp`` (copy it from the
+:ref:`writing_pcd` tutorial). Do::
 
 
   $ cd /PATH/TO/MY/GRAND/PROJECT
