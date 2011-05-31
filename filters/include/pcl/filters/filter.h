@@ -72,7 +72,7 @@ namespace pcl
       using PCLBase<PointT>::indices_;
       using PCLBase<PointT>::input_;
 
-	  typedef boost::shared_ptr< Filter<PointT> > Ptr;
+      typedef boost::shared_ptr< Filter<PointT> > Ptr;
       typedef boost::shared_ptr< const Filter<PointT> > ConstPtr;
 
       typedef pcl::PointCloud<PointT> PointCloud;
