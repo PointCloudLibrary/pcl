@@ -443,6 +443,9 @@ Begin by copying and pasting the following code into your editor and save it as
         return (-1);
       }
 
+      // this won't be needed for flann > 1.6.10
+      flann::ObjectFactory<flann::IndexParams, flann_algorithm_t>::instance().register_<flann::LinearIndexParams>(FLANN_INDEX_LINEAR);
+
       string extension (".pcd");
       transform (extension.begin (), extension.end (), extension.begin (), (int(*)(int))tolower);
 
@@ -709,12 +712,21 @@ Create a new ``CMakeLists.txt`` file, and put the following content into it::
 
   find_package(Flann)
   include_directories(${FLANN_INCLUDE_DIRS})
+  
+  find_package(HDF5)
+  include_directories(${HDF5_INCLUDE_DIR})
 
   add_executable(build_tree src/build_tree.cpp)
-  target_link_libraries(build_tree ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_FEATURES_LIBRARIES} ${Boost_LIBRARIES} ${FLANN_LIBRARIES} hdf5)
+  target_link_libraries(build_tree ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_FEATURES_LIBRARIES} ${Boost_LIBRARIES} ${FLANN_LIBRARIES} ${HDF5_hdf5_LIBRARY})
 
   add_executable(nearest_neighbors src/nearest_neighbors.cpp)
-  target_link_libraries(nearest_neighbors ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_FEATURES_LIBRARIES} ${PCL_VISUALIZATION_LIBRARIES} ${Boost_LIBRARIES} ${FLANN_LIBRARIES} hdf5 vtkCommon vtkRendering)
+  target_link_libraries(nearest_neighbors ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_FEATURES_LIBRARIES} ${PCL_VISUALIZATION_LIBRARIES} ${Boost_LIBRARIES} ${FLANN_LIBRARIES} ${HDF5_hdf5_LIBRARY} vtkCommon vtkRendering)
+
+.. note::
+	
+	If you are running this tutorial on Windows, you have to install (`HDF5 1.8.7 Shared Library<http://www.hdfgroup.org/ftp/HDF5/hdf5-1.8.7/bin/windows/`_). If CMake is not able to find HDF5, 
+	you can manually supply the include directory in HDF5_INCLUDE_DIR variable and the full path of **hdf5dll.lib** in HDF5_hdf5_LIBRARY variable. 
+	Make sure that the needed dlls are in the same folder as the executables.
 
 The above assumes that your two source files (``build_tree.cpp`` and ``nearest_neighbors.cpp``) are stored into the *src/* subdirectory.
 
