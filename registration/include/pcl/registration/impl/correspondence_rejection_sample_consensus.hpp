@@ -43,8 +43,9 @@ inline void pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::ap
 {
   std::vector<int> source_indices;
   std::vector<int> target_indices;
-  source_indices.resize(input_correspondences_->size());
-  target_indices.resize(input_correspondences_->size());
+  int nr_correspondences = input_correspondences_->size();
+  source_indices.resize(nr_correspondences);
+  target_indices.resize(nr_correspondences);
   for (unsigned int i = 0; i < input_correspondences_->size(); ++i)
   {
     source_indices[i] = input_correspondences_->at(i).indexQuery;
@@ -77,13 +78,13 @@ inline void pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::ap
        std::vector<int> inliers;
        sac.getInliers (inliers);
 
-       boost::unordered_map<int, int> index_to_correspondence;        // boost::unordered_map<int, pcl::registration::Correspondence> index_to_correspondence;
-       for (unsigned int i = 0; i < input_correspondences_->size(); ++i)
+       boost::unordered_map<int, int> index_to_correspondence;
+       for (int i = 0; i < nr_correspondences; ++i)
          index_to_correspondence[input_correspondences_->at(i).indexQuery] = i;
 
        correspondences.resize(inliers.size());
        for (size_t i = 0; i < inliers.size (); ++i)
-         correspondences[i] = input_correspondences_[index_to_correspondence[inliers[i]]];
+         correspondences[i] = input_correspondences_->at(index_to_correspondence[inliers[i]]);
 
        // get best transformation
        Eigen::VectorXf model_coefficients;
@@ -101,8 +102,9 @@ void pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getCorres
 {
   std::vector<int> source_indices;
   std::vector<int> target_indices;
-  source_indices.resize(original_correspondences.size());
-  target_indices.resize(original_correspondences.size());
+  int nr_correspondences = input_correspondences_->size();
+  source_indices.resize(nr_correspondences);
+  target_indices.resize(nr_correspondences);
   for (unsigned int i = 0; i < original_correspondences.size(); ++i)
   {
     source_indices[i] = original_correspondences.at(i).indexQuery;
@@ -134,13 +136,12 @@ void pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getCorres
      {
        std::vector<int> inliers;
        sac.getInliers (inliers);
-       remaining_correspondences.resize(inliers.size());
 
-       boost::unordered_map<int, int> index_to_correspondence; //        boost::unordered_map<int, pcl::registration::Correspondence> index_to_correspondence;
-       for (unsigned int i = 0; i < input_correspondences_->size(); ++i)
+       boost::unordered_map<int, int> index_to_correspondence;
+       for (int i = 0; i < nr_correspondences; ++i)
          index_to_correspondence[input_correspondences_->at(i).indexQuery] = i;
 
-       correspondences.resize(inliers.size());
+       remaining_correspondences.resize(inliers.size());
        for (size_t i = 0; i < inliers.size (); ++i)
          remaining_correspondences[i] = original_correspondences[index_to_correspondence[inliers[i]]];
 
