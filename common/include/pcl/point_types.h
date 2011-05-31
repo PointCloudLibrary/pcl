@@ -197,12 +197,14 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZRGBA,
                                    (float, z, z)
                                    (uint32_t, rgba, rgba)
 )
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZRGB,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGB,
                                    (float, x, x)
                                    (float, y, y)
                                    (float, z, z)
                                    (float, rgb, rgb)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGB, pcl::_PointXYZRGB)
+  
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::InterestPoint,
                                    (float, x, x)
                                    (float, y, y)

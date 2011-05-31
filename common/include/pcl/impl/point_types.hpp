@@ -187,6 +187,23 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZI& p)
 
 
 /** \brief A point structure representing Euclidean xyz coordinates, and the RGBA color. 
+  *
+  * The RGBA information is available either as separate r, g, b, or as a
+  * packed uint32_t rgba value. To pack it, use:
+  *
+  * \code
+  * int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
+  * \endcode
+  *
+  * To unpack it use:
+  *
+  * \code
+  * int rgb = ...;
+  * uint8_t r = (rgb >> 16) & 0x0000ff;
+  * uint8_t g = (rgb >> 8)  & 0x0000ff;
+  * uint8_t b = (rgb)     & 0x0000ff;
+  * \endcode
+  *
   * \ingroup common
   */
 struct PointXYZRGBA
@@ -194,11 +211,14 @@ struct PointXYZRGBA
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   union
   {
-    struct
+    struct 
     {
-      uint32_t rgba;
+      uint8_t b;
+      uint8_t g;
+      uint8_t r;
+      uint8_t _unused;
     };
-    float data_c[4];
+    uint32_t rgba;
   };
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 } EIGEN_ALIGN16;
@@ -211,21 +231,68 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p)
 
 
 /** \brief A point structure representing Euclidean xyz coordinates, and the RGB color. 
+  * 
+  * Due to historical reasons (PCL was first developed as a ROS package), the
+  * RGB information is packed into an integer and casted to a float. This is
+  * something we wish to remove in the near future, but in the meantime, the
+  * following code snippet should help you pack and unpack RGB colors in your
+  * PointXYZRGB structure:
+  *
+  * \code
+  * // pack r/g/b into rgb
+  * uint8_t r = 255, g = 0, b = 0;    // Example: Red color
+  * uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+  * p.rgb = *reinterpret_cast<float*>(&rgb);
+  * \endcode
+  *
+  * To unpack the data into separate values, use:
+  *
+  * \code
+  * PointXYZRGB p;
+  * // unpack rgb into r/g/b
+  * uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);
+  * uint8_t r = (rgb >> 16) & 0x0000ff;
+  * uint8_t g = (rgb >> 8)  & 0x0000ff;
+  * uint8_t b = (rgb)       & 0x0000ff;
+  * \endcode
+  *
+  *
+  * Alternatively, from 1.1.0 onwards, you can use p.r, p.g, and p.b directly.
+  *
   * \ingroup common
   */
-struct PointXYZRGB
+struct _PointXYZRGB 
 {
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   union
   {
-    struct
+    struct 
     {
-      float rgb;
+      uint8_t b;
+      uint8_t g;
+      uint8_t r;
+      uint8_t _unused;
     };
-    float data_c[4];
+    float rgb;
+    uint32_t data_c;
   };
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 } EIGEN_ALIGN16;
+
+struct PointXYZRGB : public _PointXYZRGB
+{
+  inline PointXYZRGB ()
+  {
+    _unused = 0;
+  }
+  inline PointXYZRGB (uint8_t _r, uint8_t _g, uint8_t _b)
+  {
+    r = _r;
+    g = _g;
+    b = _b;
+    _unused = 0;
+  }
+};
 inline std::ostream& operator << (std::ostream& os, const PointXYZRGB& p)
 {
   os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.rgb << ")";
