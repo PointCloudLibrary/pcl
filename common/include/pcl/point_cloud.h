@@ -1,39 +1,39 @@
-/*
- * Software License Agreement (BSD License)
- *
- *  Copyright (c) 2010, Willow Garage, Inc.
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
- *
- */
+/**
+  * Software License Agreement (BSD License)
+  *
+  *  Copyright (c) 2010, Willow Garage, Inc.
+  *  All rights reserved.
+  *
+  *  Redistribution and use in source and binary forms, with or without
+  *  modification, are permitted provided that the following conditions
+  *  are met:
+  *
+  *   * Redistributions of source code must retain the above copyright
+  *     notice, this list of conditions and the following disclaimer.
+  *   * Redistributions in binary form must reproduce the above
+  *     copyright notice, this list of conditions and the following
+  *     disclaimer in the documentation and/or other materials provided
+  *     with the distribution.
+  *   * Neither the name of Willow Garage, Inc. nor the names of its
+  *     contributors may be used to endorse or promote products derived
+  *     from this software without specific prior written permission.
+  *
+  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  *  POSSIBILITY OF SUCH DAMAGE.
+  *
+  * $Id$
+  *
+  */
 
 #ifndef PCL_POINT_CLOUD_H_
 #define PCL_POINT_CLOUD_H_
@@ -49,7 +49,7 @@
 
 namespace pcl
 {
-  namespace detail 
+  namespace detail
   {
     struct FieldMapping
     {
@@ -64,25 +64,25 @@ namespace pcl
   // Forward declarations
   template <typename PointT> class PointCloud;
 
-  namespace detail 
+  namespace detail
   {
-    template <typename PointT> boost::shared_ptr<pcl::MsgFieldMap>& 
+    template <typename PointT> boost::shared_ptr<pcl::MsgFieldMap>&
     getMapping (pcl::PointCloud<PointT>& p);
   } // namespace detail
 
-  /** @b PointCloud represents a templated PointCloud implementation. 
+  /** @b PointCloud represents a templated PointCloud implementation.
     * \author Patrick Mihelich, Radu Bogdan Rusu
     */
   template <typename PointT>
   class PointCloud
   {
     public:
-      PointCloud () : width (0), height (0), is_dense (true), 
+      PointCloud () : width (0), height (0), is_dense (true),
                       sensor_origin_ (Eigen::Vector4f::Zero ()), sensor_orientation_ (Eigen::Quaternionf::Identity ())
       {}
- 
+
       /** \brief Copy constructor (needed by compilers such as Intel C++)
-        * \param pc the cloud to copy into this 
+        * \param pc the cloud to copy into this
         */
       inline PointCloud (PointCloud<PointT> &pc)
       {
@@ -90,7 +90,7 @@ namespace pcl
       }
 
       /** \brief Copy constructor (needed by compilers such as Intel C++)
-        * \param pc the cloud to copy into this 
+        * \param pc the cloud to copy into this
         */
       inline PointCloud (const PointCloud<PointT> &pc)
       {
@@ -98,12 +98,12 @@ namespace pcl
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
-      inline PointCloud& 
+      inline PointCloud&
       operator += (const PointCloud& rhs)
       {
         if (rhs.header.frame_id != header.frame_id)
         {
-          PCL_ERROR ("PointCloud frame IDs do not match (%s != %s) for += . Cancelling operation...\n", 
+          PCL_ERROR ("PointCloud frame IDs do not match (%s != %s) for += . Cancelling operation...\n",
                      rhs.header.frame_id.c_str (), header.frame_id.c_str ());
           return (*this);
         }
@@ -127,7 +127,7 @@ namespace pcl
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
-      inline PointT 
+      inline PointT
       at (int u, int v) const
       {
         if (this->height > 1)
@@ -137,19 +137,19 @@ namespace pcl
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
-      inline const PointT& 
+      inline const PointT&
       operator () (int u, int v) const
       {
         return (points[v * this->width + u]);
       }
-      
-      inline PointT& 
+
+      inline PointT&
       operator () (int u, int v)
       {
         return (points[v * this->width + u]);
       }
 
-      /** \brief The point cloud header. It contains information about the acquisition time, as well as a transform 
+      /** \brief The point cloud header. It contains information about the acquisition time, as well as a transform
         * frame (see \a tf). */
       std_msgs::Header header;
 
@@ -174,7 +174,7 @@ namespace pcl
       typedef boost::shared_ptr<PointCloud<PointT> > Ptr;
       typedef boost::shared_ptr<const PointCloud<PointT> > ConstPtr;
 
-      // iterators 
+      // iterators
       typedef typename VectorType::iterator iterator;
       typedef typename VectorType::const_iterator const_iterator;
       inline iterator begin () { return (points.begin ()); }
@@ -185,7 +185,7 @@ namespace pcl
       inline size_t size () const { return (points.size ()); }
       inline void push_back (const PointT& p) { points.push_back (p); }
 
-      inline Ptr makeShared () { return Ptr (new PointCloud<PointT> (*this)); } 
+      inline Ptr makeShared () { return Ptr (new PointCloud<PointT> (*this)); }
 
     protected:
       // This is motivated by ROS integration. Users should not need to access mapping_.
@@ -197,16 +197,16 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
   };
 
-  namespace detail 
+  namespace detail
   {
-    template <typename PointT> boost::shared_ptr<pcl::MsgFieldMap>& 
-    getMapping (pcl::PointCloud<PointT>& p) 
-    { 
+    template <typename PointT> boost::shared_ptr<pcl::MsgFieldMap>&
+    getMapping (pcl::PointCloud<PointT>& p)
+    {
       return (p.mapping_);
     }
   } // namespace detail
 
-  template <typename PointT> std::ostream& 
+  template <typename PointT> std::ostream&
   operator << (std::ostream& s, const pcl::PointCloud<PointT> &p)
   {
     s << "header: " << std::endl;
@@ -214,11 +214,11 @@ namespace pcl
     s << "points[]: " << p.points.size () << std::endl;
     s << "width: " << p.width << std::endl;
     s << "height: " << p.height << std::endl;
-    s << "sensor_origin_: " 
+    s << "sensor_origin_: "
       << p.sensor_origin_[0] << ' '
       << p.sensor_origin_[1] << ' '
       << p.sensor_origin_[2] << std::endl;
-    s << "sensor_orientation_: " 
+    s << "sensor_orientation_: "
       << p.sensor_orientation_.x() << ' '
       << p.sensor_orientation_.y() << ' '
       << p.sensor_orientation_.z() << ' '

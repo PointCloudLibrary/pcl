@@ -146,13 +146,13 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
 
   if (exitcode != 0)
   {
-    PCL_ERROR("ERROR: qhull was unable to compute a convex hull for the given point cloud\n");
+    PCL_ERROR ("ERROR: qhull was unable to compute a convex hull for the given point cloud\n");
 
     //check if it fails because of NaN values...
     if (!cloud_transformed.is_dense)
     {
 
-      PCL_WARN("Checking for Nans");
+      PCL_WARN ("Checking for Nans");
 
       bool NaNvalues = false;
       for (size_t i = 0; i < cloud_transformed.size (); ++i)
@@ -167,13 +167,18 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
       }
 
       if (NaNvalues)
-        PCL_ERROR("ERROR: point cloud contains NaN values, consider running pcl::PassThrough filter first to remove NaNs.\n");
+        PCL_ERROR ("ERROR: point cloud contains NaN values, consider running pcl::PassThrough filter first to remove NaNs.\n");
 
     }
 
     hull.points.resize (0);
     hull.width = hull.height = 0;
     polygons.resize (0);
+
+    qh_freeqhull (!qh_ALL);
+    int curlong, totlong;
+    qh_memfreeshort (&curlong, &totlong);
+
     return;
   }
 
@@ -315,6 +320,8 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
 
   // Deallocates memory (also the points)
   qh_freeqhull(!qh_ALL);
+  int curlong, totlong;
+  qh_memfreeshort (&curlong, &totlong);
 
   // Rotate the hull point cloud by transform's inverse
   // If the input point cloud has been rotated
