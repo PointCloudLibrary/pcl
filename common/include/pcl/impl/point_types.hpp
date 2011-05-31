@@ -230,6 +230,24 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p)
 }
 
 
+struct _PointXYZRGB 
+{
+  PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+  union
+  {
+    struct 
+    {
+      uint8_t b;
+      uint8_t g;
+      uint8_t r;
+      uint8_t _unused;
+    };
+    float rgb;
+    uint32_t data_c;
+  };
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+} EIGEN_ALIGN16;
+
 /** \brief A point structure representing Euclidean xyz coordinates, and the RGB color. 
   * 
   * Due to historical reasons (PCL was first developed as a ROS package), the
@@ -261,24 +279,6 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p)
   *
   * \ingroup common
   */
-struct _PointXYZRGB 
-{
-  PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-  union
-  {
-    struct 
-    {
-      uint8_t b;
-      uint8_t g;
-      uint8_t r;
-      uint8_t _unused;
-    };
-    float rgb;
-    uint32_t data_c;
-  };
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-} EIGEN_ALIGN16;
-
 struct PointXYZRGB : public _PointXYZRGB
 {
   inline PointXYZRGB ()
