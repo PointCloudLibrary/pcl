@@ -13,7 +13,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_distance.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_one_to_one.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_reciprocal.h
-        include/pcl/${SUBSYS_NAME}/correspondence_rejection_sample_consensuns.h
+        include/pcl/${SUBSYS_NAME}/correspondence_rejection_sample_consensus.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_trimmed.h
         include/pcl/${SUBSYS_NAME}/correspondence_sorting.h
         include/pcl/${SUBSYS_NAME}/correspondence_types.h
