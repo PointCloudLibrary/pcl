@@ -114,8 +114,9 @@ find_package(Qhull)
 # Find ROS
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
 # Find VTK 
-find_package (VTK)
+find_package(VTK)
 if(VTK_FOUND)
+  message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
   set(HAVE_VTK ON)
 endif()
 # Find wxWidgets
