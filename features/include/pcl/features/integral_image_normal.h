@@ -67,15 +67,21 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
-      //! Constructor
-      IntegralImageNormalEstimation () : integral_image_x_(NULL), integral_image_y_(NULL), 
-                                         integral_image_xyz_(NULL), integral_image_(NULL),
-                                         diff_x_(NULL), diff_y_(NULL), depth_data_(NULL)
+      /** \brief Constructor */
+      IntegralImageNormalEstimation () : 
+        normal_estimation_method_(AVERAGE_3D_GRADIENT),
+        integral_image_x_(NULL), integral_image_y_(NULL), 
+        integral_image_xyz_(NULL), integral_image_(NULL),
+        diff_x_(NULL), diff_y_(NULL), depth_data_(NULL),
+        use_depth_dependent_smoothing_(false),
+        max_depth_change_factor_(20.0f*0.001f),
+        normal_smoothing_size_(10.0f)
       {
         feature_name_ = "IntegralImagesNormalEstimation";
       }
 
-      //! Destructor
+
+      /** \brief Destructor **/
       virtual ~IntegralImageNormalEstimation ();
 
       /** \brief Set the regions size which is considered for normal estimation.
@@ -93,12 +99,40 @@ namespace pcl
       void
       computePointNormal (const int pos_x, const int pos_y, PointOutT &normal);
 
-      /** \brief Estimate normals for all points given in <setInputCloud (), setIndices ()> using the surface in
-        * setSearchSurface () and the spatial locator in setSearchMethod ()
+      /** \brief Estimate normals for all points given in <setInputCloud (),
+        * setIndices ()> using the surface in setSearchSurface () and the
+        * spatial locator in setSearchMethod ()
+        *
         * \param output the resultant point cloud model dataset that contains surface normals and curvatures
         */
       void 
       compute (PointCloudOut &output);
+
+
+      void 
+      setMaxDepthChangeFactor (float max_depth_change_factor)
+      {
+        max_depth_change_factor_ = max_depth_change_factor;
+      }
+
+      void
+      setNormalSmoothingSize (float normal_smoothing_size)
+      {
+        normal_smoothing_size_ = normal_smoothing_size;
+      }
+
+      void
+      setNormalEstimationMethod (NormalEstimationMethod normal_estimation_method)
+      {
+        normal_estimation_method_ = normal_estimation_method;
+      }
+
+      void
+      setDepthDependentSmoothing (bool use_depth_dependent_smoothing)
+      {
+        use_depth_dependent_smoothing_ = use_depth_dependent_smoothing;
+      }
+
 
     protected:
 
@@ -111,8 +145,8 @@ namespace pcl
       void
       computeFeature (PointCloudIn &cloud,
                       PointCloudOut &normals,
-                      const float maxDepthChangeFactor = 20.0f*0.001f,
-                      const float normalSmoothingSize = 10.0f,
+                      const float max_depth_change_factor = 20.0f*0.001f,
+                      const float normal_smoothing_size = 10.0f,
                       const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT);
 
       /** \brief Computes the normal for the complete cloud. 
@@ -121,9 +155,9 @@ namespace pcl
       void 
       computeFeature (PointCloudIn &cloud,
                       PointCloudOut &normals,
-                      const bool useDepthDependentSmoothing,
-                      const float maxDepthChangeFactor = 20.0f*0.001f,
-                      const float normalSmoothingSize = 10.0f,
+                      const bool use_depth_dependent_smoothing,
+                      const float max_depth_change_factor = 20.0f*0.001f,
+                      const float normal_smoothing_size = 10.0f,
                       const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT);
 
       /**
@@ -145,7 +179,12 @@ namespace pcl
                     const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT);
 
     private:
-      /** \brief The normal estimation method to use. */
+      /** \brief The normal estimation method to use. Currently, 3 implementations are provided:
+        *
+        * - COVARIANCE_MATRIX
+        * - AVERAGE_3D_GRADIENT
+        * - AVERAGE_DEPTH_CHANGE
+        */
       NormalEstimationMethod normal_estimation_method_;
     
       /** The width of the neighborhood region used for computing the normal. */
@@ -185,8 +224,16 @@ namespace pcl
 
       /** depth data */
       float *depth_data_;
-  };
 
+      /** \brief Smooth data based on depth (true/false). */
+      bool use_depth_dependent_smoothing_;
+
+      /** \brief */
+      float max_depth_change_factor_;
+
+      /** \brief */
+      float normal_smoothing_size_;
+  };
 }
 
 #include "pcl/features/impl/integral_image_normal.hpp"

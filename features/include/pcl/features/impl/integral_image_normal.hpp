@@ -659,7 +659,11 @@ template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::compute (PointCloudOut &output)
 {
   PointCloudIn input = *input_;
-  computeFeature (input, output);
+  computeFeature (input, output, 
+                  use_depth_dependent_smoothing_,
+                  max_depth_change_factor_,
+                  normal_smoothing_size_,
+                  normal_estimation_method_);
 }
 
 
