@@ -65,6 +65,7 @@ if(build)
         include/pcl/common/transformation_from_correspondences.h
         include/pcl/common/vector_average.h
         include/pcl/common/pca.h
+        include/pcl/common/synchronizer.h
         )
 
     set(common_incs_impl

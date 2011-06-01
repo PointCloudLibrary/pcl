@@ -32,6 +32,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *	
  * Author: Nico Blodow (blodow@cs.tum.edu)
+ *         Radu Bogdan Rusu (rusu@willowgarage.com)
+ *         Suat Gedikli (gedikli@willowgarage.com)
+ *         Ethan Rublee (rublee@willowgarage.com)
  */
 
 #include <boost/thread/thread.hpp>
@@ -123,6 +126,7 @@ class SimpleOpenNIViewer
           FPS_CALC ("drawing");
           //the call to get() sets the cloud_ to null;
           viewer.showCloud (get ());
+          //sleep(1);
         }
       }
 
@@ -135,7 +139,7 @@ class SimpleOpenNIViewer
     CloudConstPtr cloud_;
 };
 
-void
+unsigned
 usage (char ** argv)
 {
   std::cout << "usage: " << argv[0] << " <device_id>\n";
@@ -154,25 +158,31 @@ usage (char ** argv)
   }
   else
     cout << "No devices connected." << endl;
+  
+  return driver.getNumberDevices ();
 }
 
 int 
 main (int argc, char ** argv)
 {
-  if (argc != 2)
-  {
-    usage (argv);
-    return 1;
-  }
-
-  std::string arg (argv[1]);
+  std::string arg("");
   
-  if (arg == "--help" || arg == "-h")
+  if (argc == 2)
   {
-    usage (argv);
-    return 1;
+    arg = argv[1];
+    
+    if(arg == "--help" || arg == "-h" )
+    {
+      usage (argv);
+      return 1;
+    }
   }
-
+  else
+  {
+    if (usage (argv));
+      cout << "Device Id not set, using first device." << endl;
+  }
+  
   pcl::OpenNIGrabber grabber (arg);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {

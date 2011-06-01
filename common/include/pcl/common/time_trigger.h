@@ -36,8 +36,8 @@
  *
  */
 
-#ifndef __PCL_IO_TIME_TRIGGER__
-#define __PCL_IO_TIME_TRIGGER__
+#ifndef __PCL_TIME_TRIGGER__
+#define __PCL_TIME_TRIGGER__
 
 #include <boost/timer.hpp>
 #include <boost/thread.hpp>
