@@ -934,6 +934,55 @@ pcl::visualization::PCLVisualizer::updateCamera ()
      renderer->GetActiveCamera ()->SetClippingRange (camera_.clip);
    }
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::getCameras (std::vector<pcl::visualization::Camera>& cameras)
+{
+  cameras.clear();
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    cameras.push_back(Camera());
+    cameras.back ().pos[0] = renderer->GetActiveCamera ()->GetPosition ()[0];
+    cameras.back ().pos[1] = renderer->GetActiveCamera ()->GetPosition ()[1];
+    cameras.back ().pos[2] = renderer->GetActiveCamera ()->GetPosition ()[2];
+    cameras.back ().focal[0] = renderer->GetActiveCamera ()->GetFocalPoint ()[0];
+    cameras.back ().focal[1] = renderer->GetActiveCamera ()->GetFocalPoint ()[1];
+    cameras.back ().focal[2] = renderer->GetActiveCamera ()->GetFocalPoint ()[2];
+    cameras.back ().clip[0] = renderer->GetActiveCamera ()->GetClippingRange ()[0];
+    cameras.back ().clip[1] = renderer->GetActiveCamera ()->GetClippingRange ()[1];
+    cameras.back ().view[0] = renderer->GetActiveCamera ()->GetViewUp ()[0];
+    cameras.back ().view[1] = renderer->GetActiveCamera ()->GetViewUp ()[1];
+    cameras.back ().view[2] = renderer->GetActiveCamera ()->GetViewUp ()[2];
+    cameras.back ().window_size[0] = renderer->GetRenderWindow ()->GetSize()[0];
+    cameras.back ().window_size[1] = renderer->GetRenderWindow ()->GetSize()[1];
+    cameras.back ().window_pos[0] = 0;
+    cameras.back ().window_pos[1] = 0;
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+Eigen::Affine3f
+pcl::visualization::PCLVisualizer::getViewerPose ()
+{
+  Eigen::Affine3f ret(Eigen::Affine3f::Identity());
+  if (rens_->GetNumberOfItems () < 1)
+    return ret;
+  vtkCamera& camera = *rens_->GetFirstRenderer ()->GetActiveCamera ();
+  Eigen::Vector3d pos, x_axis, y_axis, z_axis;
+  camera.GetPosition (pos[0], pos[1], pos[2]);
+  camera.GetViewPlaneNormal (x_axis[0], x_axis[1], x_axis[2]);
+  x_axis = -x_axis;
+  camera.GetViewUp (z_axis[0], z_axis[1], z_axis[2]);
+  y_axis = z_axis.cross(x_axis).normalized();
+  ret(0,0)=x_axis[0], ret(0,1)=y_axis[0], ret(0,2)=z_axis[0], ret(0,3)=pos[0],
+  ret(1,0)=x_axis[1], ret(1,1)=y_axis[1], ret(1,2)=z_axis[1], ret(1,3)=pos[1],
+  ret(2,0)=x_axis[2], ret(2,1)=y_axis[2], ret(2,2)=z_axis[2], ret(2,3)=pos[2];
+  return ret;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::resetCamera ()

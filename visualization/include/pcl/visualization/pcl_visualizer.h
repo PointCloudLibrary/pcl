@@ -618,6 +618,14 @@ namespace pcl
         void 
         resetCamera ();
 
+        /** \brief Get the current camera parameters. */
+        void
+        getCameras (std::vector<Camera>& cameras);
+        
+        /** \brief Get the current viewing pose. */
+        Eigen::Affine3f
+        getViewerPose ();
+
       protected:
         /** \brief The render window interactor. */
         vtkSmartPointer<PCLVisualizerInteractor> interactor_;
