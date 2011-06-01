@@ -17,31 +17,27 @@ editor, and place the following code inside it:
    #include <iostream>
    #include "pcl/io/pcd_io.h"
    #include "pcl/point_types.h"
+   
+   using namespace pcl;
 
    int
-     main (int argc, char** argv)
+   main (int argc, char** argv)
    {
-     sensor_msgs::PointCloud2 cloud_blob;
-     pcl::PointCloud<pcl::PointXYZ> cloud;
+     PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 
-     if (pcl::io::loadPCDFile ("test_pcd.pcd", cloud_blob) == -1)
+     if (io::loadPCDFile<PointXYZ> ("test_pcd.pcd", *cloud) == -1) //* load the file
      {
        std::cerr << "Couldn't read file test_pcd.pcd" << std::endl;
        return (-1);
      }
      std::cerr << "Loaded " 
-               << cloud_blob.width * cloud_blob.height 
+               << cloud->width * cloud->height 
                << " data points from test_pcd.pcd with the following fields: " 
-               << pcl::getFieldsList (cloud_blob) 
                << std::endl;
-
-     // Convert to the templated message type
-     pcl::fromROSMsg (cloud_blob, cloud);
-
-     for (size_t i = 0; i < cloud.points.size (); ++i)
-       std::cerr << "    " << cloud.points[i].x 
-                 << " " << cloud.points[i].y 
-                 << " " << cloud.points[i].z << std::endl;
+     for (size_t i = 0; i < cloud->points.size (); ++i)
+       std::cerr << "    " << cloud->points[i].x 
+                 << " "    << cloud->points[i].y 
+                 << " "    << cloud->points[i].z << std::endl;
 
      return (0);
    }
@@ -53,12 +49,9 @@ Now, let's break down the code piece by piece.
 
 .. code-block:: cpp
 
-   sensor_msgs::PointCloud2 cloud_blob;
+   PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 
-creates a binary blob sensor_msgs/PointCloud2 message. Note that due to the
-dynamic nature of point clouds, we prefer to read them as binary blobs, and
-then convert to the actual representation that we want to use.
-
+creates a PointCloud<PointXYZ> boost shared pointer and initializes it.
 
 .. code-block:: cpp
 
@@ -71,22 +64,27 @@ then convert to the actual representation that we want to use.
 loads the PointCloud data from disk (we assume that test_pcd.pcd has already
 been created from the previous tutorial) into the binary blob.
 
+Alternatively, you can read a PointCloud2 blob (available only in PCL 1.x). Due
+to the dynamic nature of point clouds, we prefer to read them as binary blobs,
+and then convert to the actual representation that we want to use.
 
 .. code-block:: cpp
 
-   pcl::fromROSMsg (cloud_blob, cloud);
+   sensor_msgs::PointCloud2 cloud_blob;
+   io::loadPCDFile ("test_pcd.pcd", cloud_blob);
+   fromROSMsg (cloud_blob, *cloud); //* convert from sensor_msgs/PointCloud2 to pcl::PointCloud<T>
 
-converts the binary blob into the templated PointCloud format, here using
-pcl::PointXYZ as the underlying point type.
+reads and converts the binary blob into the templated PointCloud format, here
+using pcl::PointXYZ as the underlying point type.
 
 Finally:
 
 .. code-block:: cpp
 
-   for (size_t i = 0; i < cloud.points.size (); ++i)
-     std::cerr << "    " << cloud.points[i].x 
-               << " " << cloud.points[i].y 
-               << " " << cloud.points[i].z << std::endl;
+   for (size_t i = 0; i < cloud->points.size (); ++i)
+     std::cerr << "    " << cloud->points[i].x 
+               << " "    << cloud->points[i].y 
+               << " "    << cloud->points[i].z << std::endl;
 
 is used to show the data that was loaded from file.
 
@@ -98,7 +96,7 @@ Add the following lines to your CMakeLists.txt file:
 .. code-block:: cmake
 
    add_executable (pcd_read pcd_read.cpp)
-   target_link_libraries (pcd_read ${PCL_IO_LIBRARIES})
+   target_link_libraries (pcd_read ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
 
 After you have made the executable, you can run it. Simply do::
 
@@ -117,3 +115,4 @@ Note that if the file test_pcd.pcd does not exist (either it hasn't been
 created or it has been erased), you should get an error message such as::
 
   Couldn't read file test_pcd.pcd
+
