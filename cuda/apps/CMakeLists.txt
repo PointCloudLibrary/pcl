@@ -5,8 +5,6 @@ set(SUBSYS_DEPS cuda cuda_common cuda_io cuda_features common io visualization)
 # ---[ Point Cloud Library - pcl/cuda/apps
 
 # Find VTK 
-# rusu:: NOTE: this should be moved to pcl/CMakeLists.txt, when we expand the I/O library
-find_package (VTK)
 if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")
