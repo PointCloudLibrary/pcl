@@ -3,27 +3,25 @@ set(SUBSYS_DESC "Point cloud visualization library")
 set(SUBSYS_DEPS common io kdtree octree range_image octree filters)
 
 if(wxWidgets_FOUND)
-  set(HAVE_WXWIDGETS ON)
   include(${wxWidgets_USE_FILE})
   include_directories(${wxWidgets_INCLUDE_DIRS})
-endif()
+  set(wxWidgets_USE_FILE ${wxWidgets_USE_FILE} CACHE INTERNAL "wxWidgets_USE_FILE")
+else(wxWidgets_FOUND)
+  set(DEFAULT TRUE)   # wxWidgets is optional
+  set(REASON "wxWidgets was not found.")
+endif(wxWidgets_FOUND)
 
 if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")
-elseif(NOT wxWidgets_FOUND)
-    set(DEFAULT TRUE)   # wxWidgets is optional
-    set(REASON "wxWidgets was not found.")
-    include (${VTK_USE_FILE})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 else(NOT VTK_FOUND)
     set(DEFAULT TRUE)
     set(REASON)
     set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
-    message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
     include (${VTK_USE_FILE})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 endif(NOT VTK_FOUND)
+
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
