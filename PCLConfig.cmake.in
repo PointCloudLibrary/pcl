@@ -1,28 +1,44 @@
+# ------------------------------------------------------------------------------------
 # Helper to use PCL from outside project
 #
 # target_link_libraries(my_fabulous_target pcl_xxx) where xxx is in
 # - common
-# - octree
+# - cuda
+# - features
+# - filters
 # - io
 # - kdtree
-# - range_image
-# - features
-# - range_image_border_extractor
-# - sample_consensus
 # - keypoints
-# - filters
+# - octree
+# - range_image
+# - range_image_border_extractor
 # - registration
+# - sample_consensus
 # - segmentation
 # - surface
 # - visualization
-
-# Tested with:
-# -PCL 1.0
 #
-# www.pointclouds.org
-# --------------------------------
+# For compatibility reason we also provide PCL_XXX_LIBRARY, PCL_XXX_LIBRARY_CONFIG
+# and PCL_XXX_LIBRARIES where : 
+# * XXX is upper cased xxx from the components above
+# * CONFIG is a valid CMAKE_BUILD_TYPE listed in CMAKE_CONFIGURATION_TYPES
+# But they are really a burden so please use the above notation because:
+# - If there is no built for a given configuration then the found build type is
+#   used to fill the libraries.
+# - PCL_XXX_LIBRARY corresponds either to Release or MinSizeRel build types or default 
+#   to the CMAKE_BUILD_TYPE of PCL so the behavior can be unpredictable.
+#
+# Tested with:
+# - PCL 1.0
+# - PCL 1.0.1
+#
+#                                   www.pointclouds.org
+#------------------------------------------------------------------------------------
+
 set(PCL_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_ROOT@")
 set(PCL_LIBRARY_DIRS "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@")
+string(TOUPPER "@CMAKE_BUILD_TYPE@" PCL_BUILD_TYPE)
+string(TOUPPER "@CMAKE_CONFIGURATION_TYPES@" PCL_CONFIGURATION_TYPES)
 include("@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/pcl/PCLDepends.cmake")
 
 if("@PCL_SUBSYS_STATUS_common@" STREQUAL "TRUE")
@@ -82,31 +98,55 @@ if("@PCL_SUBSYS_STATUS_cuda@" STREQUAL "TRUE")
   list(APPEND PCL_COMPONENTS cuda)
 endif("@PCL_SUBSYS_STATUS_cuda@" STREQUAL "TRUE")
 
+###
+# For windows users (and to be consistent with FindPCL.cmake?) we try to locate 
+# the debug and the release versions of same library
+###
 if(PCL_FIND_COMPONENTS)
   foreach(comp ${PCL_FIND_COMPONENTS})
     list(FIND PCL_COMPONENTS ${comp} found)
     if(found EQUAL -1)
       message(FATAL_ERROR "requested components ${comp} not found")
     else(found EQUAL -1)
-      string(TOUPPER ${comp} COMP)
-      set(PCL_${COMP}_LIBRARY pcl_${comp})
-      set(PCL_${COMP}_LIBRARY_DEBUG pcl_${comp})
-      set(PCL_${COMP}_LIBRARIES pcl_${comp})
-      list(APPEND PCL_LIBRARIES pcl_${comp})
+      string(TOUPPER "${comp}" COMP)
+      foreach(CONFIG ${PCL_CONFIGURATION_TYPES})
+        get_target_property(PCL_${COMP}_LIBRARY_${CONFIG} pcl_${comp} IMPORTED_LOCATION_${CONFIG})
+        if(NOT PCL_${COMP}_LIBRARY_${CONFIG})
+          get_target_property(PCL_${COMP}_LIBRARY_${CONFIG} pcl_${comp} IMPORTED_LOCATION_${PCL_BUILD_TYPE})
+        endif(NOT PCL_${COMP}_LIBRARY_${CONFIG})
+        string(TOLOWER "${CONFIG}" config)
+        if(("${config}" STREQUAL "release") OR ("${config}" STREQUAL "minsizerel"))
+          set(PCL_${COMP}_LIBRARY ${PCL_${COMP}_LIBRARY_RELEASE})
+          list(APPEND PCL_${COMP}_LIBRARIES optimized ${PCL_${COMP}_LIBRARY})
+        else(("${config}" STREQUAL "release") OR ("${config}" STREQUAL "minsizerel"))
+          list(APPEND PCL_${COMP}_LIBRARIES ${config} ${PCL_${COMP}_LIBRARY_${CONFIG}})
+        endif(("${config}" STREQUAL "release") OR ("${config}" STREQUAL "minsizerel"))
+			endforeach(CONFIG)
+			list(APPEND PCL_LIBRARIES ${PCL_${COMP}_LIBRARIES})
     endif(found EQUAL -1)
   endforeach(comp)
 else(PCL_FIND_COMPONENTS)
   foreach(comp ${PCL_COMPONENTS})
-    string(TOUPPER ${comp} COMP)
-    set(PCL_${COMP}_LIBRARY pcl_${comp})
-    set(PCL_${COMP}_LIBRARY_DEBUG pcl_${comp})
-    set(PCL_${COMP}_LIBRARIES pcl_${comp})
-    list(APPEND PCL_LIBRARIES pcl_${comp})
+    string(TOUPPER "${comp}" COMP)
+    foreach(CONFIG ${PCL_CONFIGURATION_TYPES})
+      get_target_property(PCL_${COMP}_LIBRARY_${CONFIG} pcl_${comp} IMPORTED_LOCATION_${CONFIG})
+      if(NOT PCL_${COMP}_LIBRARY_${CONFIG})
+        get_target_property(PCL_${COMP}_LIBRARY_${CONFIG} pcl_${comp} IMPORTED_LOCATION_${PCL_BUILD_TYPE})
+      endif(NOT PCL_${COMP}_LIBRARY_${CONFIG})
+      string(TOLOWER "${CONFIG}" config)
+      if(("${config}" STREQUAL "release") OR ("${config}" STREQUAL "minsizerel"))
+        set(PCL_${COMP}_LIBRARY ${PCL_${COMP}_LIBRARY_RELEASE})
+        list(APPEND PCL_${COMP}_LIBRARIES optimized ${PCL_${COMP}_LIBRARY})
+      else(("${config}" STREQUAL "release") OR ("${config}" STREQUAL "minsizerel"))
+        list(APPEND PCL_${COMP}_LIBRARIES ${config} ${PCL_${COMP}_LIBRARY_${CONFIG}})
+      endif(("${config}" STREQUAL "release") OR ("${config}" STREQUAL "minsizerel"))
+    endforeach(CONFIG)
+    list(APPEND PCL_LIBRARIES ${PCL_${COMP}_LIBRARIES})
   endforeach(comp)
 endif(PCL_FIND_COMPONENTS)
 
 ##
-# append 3rd party include dirs
+# append 3rd party stuff
 ##
 list(APPEND PCL_INCLUDE_DIRS "@Boost_INCLUDE_DIR@")
 
@@ -116,8 +156,6 @@ list(APPEND PCL_INCLUDE_DIRS "@CMINPACK_INCLUDE_DIRS@")
 
 list(APPEND PCL_INCLUDE_DIRS "@EIGEN_INCLUDE_DIRS@")
 
-include ("@VTK_USE_FILE@")
-
 if("@HAVE_OPENNI@" STREQUAL "ON")
   list(APPEND PCL_INCLUDE_DIRS "@OPENNI_INCLUDE_DIRS@")
 endif("@HAVE_OPENNI@" STREQUAL "ON")
@@ -126,4 +164,17 @@ if("@HAVE_QHULL@" STREQUAL "ON")
   list(APPEND PCL_INCLUDE_DIRS "@QHULL_INCLUDE_DIRS@")
 endif("@HAVE_QHULL@" STREQUAL "ON")
 
+if("@wxWidgets_FOUND@" STREQUAL "TRUE")
+  find_package(wxWidgets REQUIRED)
+  include("@wxWidgets_USE_FILE@")
+  list(APPEND PCL_INCLUDE_DIRS "@wxWidgets_INCLUDE_DIRS@")
+  list(APPEND PCL_LIBRARY_DIRS "@wxWidgets_LIBRARY_DIRS@")
+endif ("@wxWidgets_FOUND@" STREQUAL "TRUE")
+
+list(APPEND PCL_INCLUDE_DIRS "@VTK_INCLUDE_DIRS@")
+list(APPEND PCL_LIBRARY_DIRS "@VTK_LIBRARY_DIRS@")
+set(VTK_CMAKE_DIR "@VTK_CMAKE_DIR@")
+include ("@VTK_USE_FILE@")
+
+list(SORT PCL_INCLUDE_DIRS)
 list(REMOVE_DUPLICATES PCL_INCLUDE_DIRS)
