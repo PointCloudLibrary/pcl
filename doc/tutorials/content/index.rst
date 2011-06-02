@@ -59,6 +59,21 @@ contributions on any tutorial.
      .. |mi_3| image:: images/windows_logo.png
                :height: 100px
 
+  * :ref:`compiling_pcl_windows_3rdparty_installers`
+
+     ======  ======
+     |mi_4|  Title: **Compiling PCL in Windows using the provided 3rd Party installers**
+
+             Author: *Mourad Boufarguine*
+
+             Compatibility: > PCL 1.0
+             
+             In this tutorial, we will explain how to compile PCL in Microsoft Windows using the provided 3rd Party installers.
+     ======  ======
+
+     .. |mi_4| image:: images/windows_logo.png
+               :height: 100px
+
 * Advanced Usage
 
   * :ref:`adding_custom_ptype`
