@@ -166,13 +166,9 @@ private:
   std::map<XnMapOutputMode, int, modeComp> xn2config_map_;
   std::map<int, XnMapOutputMode> config2xn_map_;
 
-  // for safe shutdown, remember what callbacks were registered with the driver
-  std::vector<openni_wrapper::OpenNIDevice::CallbackHandle> image_callback_handles;
-  std::vector<openni_wrapper::OpenNIDevice::CallbackHandle> depth_callback_handles;
-
-  bool image_callback_registered_;
-  bool depth_image_callback_registered_;
-  bool started_;
+  openni_wrapper::OpenNIDevice::CallbackHandle depth_callback_handle;
+  openni_wrapper::OpenNIDevice::CallbackHandle image_callback_handle;
+  bool running_;
 };
 } // namespace pcl
 #endif // __PCL_IO_OPENNI_GRABBER__
