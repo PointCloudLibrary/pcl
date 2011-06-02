@@ -119,6 +119,14 @@ namespace pcl
   };
 
   /** \brief @b VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
+    *
+    * The @b VoxelGrid class creates a *3D voxel grid* (think about a voxel
+    * grid as a set of tiny 3D boxes in space) over the input point cloud data.
+    * Then, in each *voxel* (i.e., 3D box), all the points present will be
+    * approximated (i.e., *downsampled*) with their centroid. This approach is
+    * a bit slower than approximating them with the center of the voxel, but it
+    * represents the underlying surface more accurately.
+    *
     * \author Radu Bogdan Rusu, Bastian Steder
     * \ingroup filters
     */
@@ -315,7 +323,15 @@ namespace pcl
   };
 
   /** \brief @b VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
-    * \author Radu Bogdan Rusu, Bastian Steder
+    *
+    * The @b VoxelGrid class creates a *3D voxel grid* (think about a voxel
+    * grid as a set of tiny 3D boxes in space) over the input point cloud data.
+    * Then, in each *voxel* (i.e., 3D box), all the points present will be
+    * approximated (i.e., *downsampled*) with their centroid. This approach is
+    * a bit slower than approximating them with the center of the voxel, but it
+    * represents the underlying surface more accurately.
+    *
+     * \author Radu Bogdan Rusu, Bastian Steder
     * \ingroup filters
     */
   template <>
