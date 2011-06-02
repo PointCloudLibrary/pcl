@@ -141,6 +141,7 @@ variable value, we can either browse the CMake variables to look for it, or we c
 Let's check whether CMake did actually find the needed third party dependencies or not :
 
 - **Boost** : 
+
 	CMake was not able to find boost automatically. No problem, we will help it find it :) . If CMake has found your
 	boost installation, then skip to the next bullet item.
 
@@ -163,6 +164,7 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		is able to find libraries using the headers path.
 
 - **Eigen** : 
+
 	Eigen is a header-only library, thus, we need only **EIGEN_INCLUDE_DIR** to be set. Hopefully, CMake did fing Eigen.
 
 	.. image:: images/windows/cmake_eigen_include_dir.png
@@ -170,6 +172,7 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		:align: center	
 
 - **CMINPACK** :
+
 	CMake was able to find my CMinpack installation. By default on windows, PCL will pick the static CMinpack libraries
 	with `_s` suffix. Thus, the **CMINPACK_IS_STATIC** checkbox is checked by default.
 	
@@ -184,6 +187,7 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		**CMINPACK_IS_STATIC**. Make sure the CMinpack dlls are either in your PATH or in the same folder as your executables.
 		
 - **FLANN** :
+
 	CMake was able to find my FLANN installation. By default on windows, PCL will pick the static FLANN libraries
 	with `_s` suffix. Thus, the **FLANN_IS_STATIC** checkbox is checked by default.
 	
@@ -198,6 +202,7 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		**FLANN_IS_STATIC**. Make sure the FLANN dlls are either in your PATH or in the same folder as your executables.
 
 - **VTK** :
+
 	CMake did not find my VTK installation. There is only one VTK related CMake variable called **VTK_DIR**. We have to set it
 	to the path of the folder containing **VTKConfig.cmake**, which is in my case : C:\\Program Files\\VTK 5.6\\lib\\vtk-5.6 .
 	After you set **VTK_DIR**, hit `configure` again.
@@ -215,6 +220,7 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		:align: center	
 
 - **QHull** :
+
 	CMake was able to find my QHull installation. By default on windows, PCL will pick the static QHull libraries
 	with `static` suffix.
 	
@@ -223,6 +229,7 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		:align: center	
 
 - **OpenNI** :
+
 	CMake was able to find my OpenNI installation. 
 	
 	.. image:: images/windows/cmake_openni.png
@@ -234,9 +241,11 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		CMake do not look for the installed OpenNI Sensor module. It is needed at runtime.
 		
 - **GTest** :
+
 	If you want to build PCL tests, you need to download GTest and build it yourself. In this tutorial, we will not build tests.
 	
 - **WxWidgets** :
+
 	In this tutorial, we will not use wxWidgets which is optional anyway.
 	
 Once CMake has found all the needed dependencies, let's see the PCL specific CMake variables :
@@ -246,6 +255,7 @@ Once CMake has found all the needed dependencies, let's see the PCL specific CMa
 	:align: center
 	
 - **PCL_SHARED_LIBS** is checked by default. Uncheck it if you want static PCL libs (not recommanded).
+
 - **CMAKE_INSTALL_DIR** is where PCL will be installed after building it (more information on this later).
 	
 If you have the Pro version of Microsoft Visual Studio, you can check **USE_PROJECT_FOLDERS** checkbox to organize PCL
