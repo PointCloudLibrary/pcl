@@ -340,21 +340,13 @@ pcl::visualization::PCLVisualizer::removePointCloud (const std::string &id, int 
   CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
 
   if (am_it == cloud_actor_map_.end ())
-  {
-    //pcl::console::print_warn ("[removePointCloud] Could not find any PointCloud datasets with id <%s>!\n", id.c_str ());
     return (false);
-  }
-
-  // Clear the handlers
-  am_it->second.geometry_handlers.clear ();
-  am_it->second.color_handlers.clear ();
 
   // Remove it from all renderers
   removeActorFromRenderer (am_it->second.actor, viewport);
 
   // Remove the pointer/ID pair to the global actor map
   cloud_actor_map_.erase (am_it);
-  style_->setCloudActorMap (boost::make_shared<CloudActorMap> (cloud_actor_map_));
   return (true);
 }
 
@@ -477,17 +469,15 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::
 
   // Save the pointer/ID pair to the global actor map
   CloudActor act;
-  //act.color_handlers.push_back (handler);
   act.actor = actor;
   cloud_actor_map_[id] = act;
-  //style_->setCloudActorMap (boost::make_shared<CloudActorMap> (cloud_actor_map_));
   return (true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
-                                                 const std::string &id, int viewport)
+                                                  const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
@@ -521,8 +511,26 @@ pcl::visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<pcl::Poi
   //act.color_handlers.push_back (handler);
   act.actor = actor;
   cloud_actor_map_[id] = act;
-  //cloud_actor_map_[id] = actor;
-  style_->setCloudActorMap (boost::make_shared<CloudActorMap> (cloud_actor_map_));
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::updatePointCloud (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
+                                                     const std::string &id)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
+
+  if (am_it == cloud_actor_map_.end ())
+    return (false);
+
+  vtkSmartPointer<vtkPolyData> polydata;
+  // Convert the PointCloud to VTK PolyData
+  convertPointCloudToVTKPolyData (cloud, polydata);
+  polydata->Update ();
+  // Update the mapper
+  reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
   return (true);
 }
 
@@ -604,7 +612,7 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data, 
-                                                             vtkSmartPointer<vtkLODActor> &actor)
+                                                              vtkSmartPointer<vtkLODActor> &actor)
 {
   // If actor is not initialized, initialize it here
   if (!actor)
@@ -621,6 +629,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
     mapper->SetScalarRange (minmax);
   mapper->SetScalarModeToUsePointData ();
   mapper->ScalarVisibilityOn ();
+  mapper->ImmediateModeRenderingOn ();
 
   actor->SetNumberOfCloudPoints (data->GetNumberOfPoints () / 10);
   actor->GetProperty ()->SetInterpolationToFlat ();
@@ -631,24 +640,29 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
-                                                                  vtkSmartPointer<vtkPolyData> &polydata)
+                                                                   vtkSmartPointer<vtkPolyData> &polydata)
 {
   if (!polydata)
     polydata = vtkSmartPointer<vtkPolyData>::New ();
 
   // Create the supporting structures
   vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New ();
+  vtkSmartPointer<vtkIdTypeArray> cells  = vtkSmartPointer<vtkIdTypeArray>::New ();
+  cells->SetNumberOfValues ((vtkIdType)cloud->points.size () * 2);
   vtkSmartPointer<vtkPoints> points      = vtkSmartPointer<vtkPoints>::New ();
 
   // Set the points
   points->SetDataTypeToFloat ();
   points->SetNumberOfPoints (cloud->points.size ());
 
+  vtkIdType *cell = cells->GetPointer (0);
   for (vtkIdType i = 0; i < (int)cloud->points.size (); ++i)
   {
     points->SetPoint (i, cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
-    vertices->InsertNextCell ((vtkIdType)1, &i);
+    *cell++ = 1;
+    *cell++ = i;
   }
+  vertices->SetCells ((vtkIdType)cloud->points.size (), (vtkIdTypeArray*)cells);
   polydata->SetPoints (points);
   polydata->SetVerts (vertices);
 }
@@ -661,16 +675,23 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   if (!polydata)
     polydata = vtkSmartPointer<vtkPolyData>::New ();
 
-  // Create the supporting structures
-  vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New ();
-
   // Use the handler to obtain the geometry
   vtkSmartPointer<vtkPoints> points;
   geometry_handler->getGeometry (points);
-  
+
+  // Create the supporting structures
+  vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New ();
+  vtkSmartPointer<vtkIdTypeArray> cells  = vtkSmartPointer<vtkIdTypeArray>::New ();
+  cells->SetNumberOfValues ((vtkIdType)points->GetNumberOfPoints () * 2);
+
+  vtkIdType *cell = cells->GetPointer (0);
   // Set the vertices
   for (vtkIdType i = 0; i < (int)points->GetNumberOfPoints (); ++i)
-    vertices->InsertNextCell ((vtkIdType)1, &i);
+  {
+    *cell++ = 1;
+    *cell++ = i;
+  }
+  vertices->SetCells ((vtkIdType)points->GetNumberOfPoints (), (vtkIdTypeArray*)cells);
   polydata->SetPoints (points);
   polydata->SetVerts (vertices);
 }

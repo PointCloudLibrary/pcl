@@ -62,6 +62,12 @@ namespace pcl
 
         CloudActor () : color_handler_index_ (0), geometry_handler_index_ (0) {}
 
+        virtual ~CloudActor ()
+        {
+          geometry_handlers.clear ();
+          color_handlers.clear ();
+        }
+
         vtkSmartPointer<vtkLODActor> actor;
         std::vector<GeometryHandlerConstPtr> geometry_handlers;
         std::vector<ColorHandlerConstPtr> color_handlers;
