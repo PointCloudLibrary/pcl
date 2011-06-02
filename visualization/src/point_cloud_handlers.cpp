@@ -136,7 +136,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
   int x_idx = pcl::getFieldIndex (*cloud_, "x");
   if (x_idx != -1)
   {
-    float x_data;
+    float x_data, y_data, z_data;
     int x_point_offset = cloud_->fields[x_idx].offset;
     
     // Color every point
@@ -151,7 +151,10 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
         continue;
 
       memcpy (&x_data, &cloud_->data[x_point_offset], sizeof (float));
-      if (!pcl_isfinite (x_data))
+      memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
+      memcpy (&z_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
+
+      if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
         continue;
 
       int rgb = *reinterpret_cast<int*>(&rgb_data);
@@ -220,7 +223,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>
   int x_idx = pcl::getFieldIndex (*cloud_, "x");
   if (x_idx != -1)
   {
-    float x_data;
+    float x_data, y_data, z_data;
     int x_point_offset = cloud_->fields[x_idx].offset;
     
     // Color every point
@@ -235,7 +238,9 @@ pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>
         continue;
 
       memcpy (&x_data, &cloud_->data[x_point_offset], sizeof (float));
-      if (!pcl_isfinite (x_data))
+      memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
+      memcpy (&z_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
+      if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
         continue;
 
       colors[j] = field_data;
