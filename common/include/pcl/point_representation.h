@@ -248,6 +248,46 @@ namespace pcl
           out[i] = p.histogram[i];
       }
   };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief @b CustomPointRepresentation extends PointRepresentation to allow for sub-part selection on the point.
+   */
+  template <typename PointDefault>
+  class CustomPointRepresentation : public PointRepresentation <PointDefault>
+  {
+    using PointRepresentation <PointDefault>::nr_dimensions_;
+
+    /** \brief Use at most this many dimensions (i.e. the "k" in "k-D" is at most max_dim_) -- \note float fields are assumed */
+    int max_dim_;
+    /** \brief Use dimensions only starting with this one (i.e. the "k" in "k-D" is = dim - start_dim_) -- \note float fields are assumed */
+    int start_dim_;
+
+    public:
+
+      // TODO why was this not public
+      typedef boost::shared_ptr<CustomPointRepresentation<PointDefault> > Ptr;
+
+      CustomPointRepresentation (int max_dim = 3, int start_dim = 0) : max_dim_(max_dim), start_dim_(start_dim)
+      {
+        // If point type is unknown, assume it's a struct/array of floats, and compute the number of dimensions
+        nr_dimensions_ = sizeof (PointDefault) / sizeof (float) - start_dim_;
+        // Limit the default representation to the first 3 elements
+        if (nr_dimensions_ > max_dim_) nr_dimensions_ = max_dim_;
+      }
+
+      inline Ptr makeShared () const { return Ptr (new CustomPointRepresentation<PointDefault> (*this)); }
+
+      virtual void
+        copyToFloatArray (const PointDefault &p, float * out) const
+      {
+        // If point type is unknown, treat it as a struct/array of floats
+        const float * ptr = ((float *)&p) + start_dim_;
+        for (int i = 0; i < nr_dimensions_; ++i)
+        {
+          out[i] = ptr[i];
+        }
+      }
+  };
 }
 
 #endif // #ifndef PCL_POINT_REPRESENTATION_H_
