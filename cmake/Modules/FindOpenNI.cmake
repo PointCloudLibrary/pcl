@@ -18,7 +18,7 @@ set(OPENNI_DEFINITIONS ${PC_OPENNI_CFLAGS_OTHER})
 
 #add a hint so that it can find it without the pkg-config
 find_path(OPENNI_INCLUDE_DIR XnStatus.h
-          HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} /usr/include/openni "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
+          HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} /usr/include/openni /usr/include/ni "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
           PATHS "$ENV{PROGRAMFILES}/OpenNI/Include" "$ENV{PROGRAMW6432}/OpenNI/Include"
           PATH_SUFFIXES openni include Include)
 #add a hint so that it can find it without the pkg-config
