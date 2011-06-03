@@ -134,10 +134,12 @@ namespace pcl
   class DefaultPointRepresentation : public PointRepresentation <PointDefault>
   {
     using PointRepresentation <PointDefault>::nr_dimensions_;
-      
-    typedef boost::shared_ptr<DefaultPointRepresentation<PointDefault> > Ptr;
 
     public:
+      // Boost shared pointers
+      typedef boost::shared_ptr<DefaultPointRepresentation<PointDefault> > Ptr;
+      typedef boost::shared_ptr<const DefaultPointRepresentation<PointDefault> > ConstPtr;
+
       DefaultPointRepresentation ()
       {
         // If point type is unknown, assume it's a struct/array of floats, and compute the number of dimensions
@@ -280,9 +282,9 @@ namespace pcl
     int start_dim_;
 
     public:
-
-      // TODO why was this not public
+      // Boost shared pointers
       typedef boost::shared_ptr<CustomPointRepresentation<PointDefault> > Ptr;
+      typedef boost::shared_ptr<const CustomPointRepresentation<PointDefault> > ConstPtr;
 
       CustomPointRepresentation (int max_dim = 3, int start_dim = 0) : max_dim_(max_dim), start_dim_(start_dim)
       {
