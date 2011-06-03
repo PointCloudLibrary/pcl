@@ -249,6 +249,23 @@ namespace pcl
       }
   };
 
+  template <>
+  class DefaultPointRepresentation <VFHSignature308> : public  PointRepresentation <VFHSignature308>
+  {
+    public:
+      DefaultPointRepresentation ()
+      {
+        nr_dimensions_ = 308;
+      }
+
+      virtual void
+        copyToFloatArray (const VFHSignature308 &p, float * out) const
+      {
+        for (int i = 0; i < nr_dimensions_; ++i)
+          out[i] = p.histogram[i];
+      }
+  };
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b CustomPointRepresentation extends PointRepresentation to allow for sub-part selection on the point.
    */
