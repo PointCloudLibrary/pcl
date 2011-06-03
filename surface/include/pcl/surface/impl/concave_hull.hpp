@@ -50,16 +50,7 @@
 
 extern "C"
 {
-#ifndef _WIN32
-#  include "qhull/qhull.h"
-#  include "qhull/mem.h"
-#  include "qhull/qset.h"
-#  include "qhull/geom.h"
-#  include "qhull/merge.h"
-#  include "qhull/poly.h"
-#  include "qhull/io.h"
-#  include "qhull/stat.h"
-#else
+#ifdef HAVE_QHULL_2011
 #  include "libqhull/libqhull.h"
 #  include "libqhull/mem.h"
 #  include "libqhull/qset.h"
@@ -68,6 +59,15 @@ extern "C"
 #  include "libqhull/poly.h"
 #  include "libqhull/io.h"
 #  include "libqhull/stat.h"
+#else
+#  include "qhull/qhull.h"
+#  include "qhull/mem.h"
+#  include "qhull/qset.h"
+#  include "qhull/geom.h"
+#  include "qhull/merge.h"
+#  include "qhull/poly.h"
+#  include "qhull/io.h"
+#  include "qhull/stat.h"
 #endif
 }
 
