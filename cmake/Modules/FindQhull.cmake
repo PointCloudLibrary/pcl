@@ -1,5 +1,5 @@
 ###############################################################################
-# Find QHULL 2011.1
+# Find QHULL
 #
 # This sets the following variables:
 # QHULL_FOUND - True if QHULL was found.
@@ -9,11 +9,25 @@
 
 set(QHULL_MAJOR_VERSION 6)
 
-find_path(QHULL_INCLUDE_DIR 
-          NAMES libqhull/libqhull.h qhull.h
+find_path(QHULL_INCLUDE_DIR_PRE2011
+          NAMES qhull.h
           HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
           PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
           PATH_SUFFIXES qhull src/libqhull libqhull include)
+
+find_path(QHULL_INCLUDE_DIR_2011
+          NAMES libqhull/libqhull.h
+          HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
+          PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
+          PATH_SUFFIXES qhull src/libqhull libqhull include)
+
+if(QHULL_INCLUDE_DIR_PRE2011)
+   set(HAVE_QHULL_2011 OFF)
+   set(QHULL_INCLUDE_DIR "${QHULL_INCLUDE_DIR_PRE2011}")
+elseif(QHULL_INCLUDE_DIR_2011)
+   set(HAVE_QHULL_2011 ON)
+   set(QHULL_INCLUDE_DIR "${QHULL_INCLUDE_DIR_2011}")
+endif()
 
 # Prefer static libraries in Windows over shared ones
 if(WIN32)
