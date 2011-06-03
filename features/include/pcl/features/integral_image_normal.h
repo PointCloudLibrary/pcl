@@ -141,6 +141,10 @@ namespace pcl
 
       /** \brief Computes the normal for the complete cloud. 
         * \param cloud the input point cloud
+        * \param normals the resulting normals
+        * \param max_depth_change_factor the depth change threshold for computing object borders based on depth changes
+        * \param normal_smoothing_size factor which influences the size of the area used to smooth normals (depth dependent)
+        * \param normal_estimation_method the method used for normal estimation (COVARIANCE_MATRIX, AVERAGE_3D_GRADIENT, AVERAGE_DEPTH_CHANGE)
         */
       void
       computeFeature (PointCloudIn &cloud,
@@ -151,6 +155,11 @@ namespace pcl
 
       /** \brief Computes the normal for the complete cloud. 
         * \param cloud the input point cloud
+        * \param normals the resulting normals
+        * \param use_depth_dependent_smoothing decides whether the smoothing is depth dependent
+        * \param max_depth_change_factor the depth change threshold for computing object borders based on depth changes
+        * \param normal_smoothing_size factor which influences the size of the area used to smooth normals (depth dependent if useDepthDependentSmoothing is true)
+        * \param normal_estimation_method the method used for normal estimation (COVARIANCE_MATRIX, AVERAGE_3D_GRADIENT, AVERAGE_DEPTH_CHANGE)
         */
       void 
       computeFeature (PointCloudIn &cloud,
