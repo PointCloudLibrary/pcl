@@ -18,9 +18,9 @@ The code
 First, download the dataset `face_templates.tar.gz <http://dev.pointclouds.org/attachments/download/156/template_alignment_data.tar.gz>`_
 and extract the files.
 
-Next, copy and paste the following code into your editor and save it as ``template_alignment_tutorial.cpp``.
+Next, copy and paste the following code into your editor and save it as ``template_alignment.cpp``.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :linenos:
 
@@ -33,37 +33,37 @@ We'll start by examining the *FeatureCloud* class.  This class is defined in ord
 
 The constructor creates a new *KdTreeFLANN* object and initializes the radius parameters that will be used when computing surface normals and local features.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 24-28
 
 Then we define methods for setting the input cloud, either by passing a shared pointer to a PointCloud or by providing the name of a PCD file to load.  In either case, after setting the input, *processInput* is called, which will compute the local feature descriptors as described later.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 32-47
 
 We also define some public accessor methods that can be used to get shared pointers to the points, surface normals, and local feature descriptors.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 49-68
 
 Next we define the method for processing the input point cloud, which first computes the cloud's surface normals and then computes its local features.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 71-77
 
 We use PCL's *NormalEstimation* class to compute the surface normals. To do so, we must specify the input point cloud, the KdTree to use when searching for neighboring points, and the radius that defines each point's neighborhood.  We then compute the surface normals and store them in a member variable for later use.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 79-90
 
 Similarly, we use PCL's *FPFHEstimation* class to compute "Fast Point Feature Histogram" descriptors from the input point cloud and its surface normals.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 92-104
 
@@ -77,43 +77,43 @@ We start by defining a structure to store the alignment results.  It contains a 
 
    Because we are including an Eigen::Matrix4f in this struct, we need to include the EIGEN_MAKE_ALIGNED_OPERATOR_NEW macro, which will overload the struct's "operator new" so that it will generate 16-bytes-aligned pointers.  If you're curious, you can find more information about this issue `here <http://eigen.tuxfamily.org/api/TopicStructHavingEigenMembers.html>`_.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 122-128
 
 In the constructor, we initialize the *SampleConsensusInitialAlignment* (SAC-IA) object that we'll be using to perform the alignment, providing values for each of its parameters.  (Note: the maximum correspondence distance is actually specified as squared distance; for this example, we've decided to truncate the error with an upper limit of 1 cm, so we pass in 0.01 squared.)
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 130-139
 
 Next we define a method for setting the target cloud (i.e., the cloud to which the templates will be aligned), which sets the inputs of SAC-IA alignment algorithm.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 143-150
 
 We then define a method for specifying which template or templates to attempt to align.  Each call to this method will add the given template cloud to an internal vector of FeatureClouds and store them for future use.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 152-157
 
 Next we define our alignment method.  This method takes a template as input and aligns it to the target cloud that was specified by calling *setTargetCloud*.  It works by setting the given template as the SAC-IA algorithm's source cloud and then calling its *align* method to align the source to the target.  Note that the *align* method requires us to pass in a point cloud that will store the newly aligned source cloud, but we can ignore this output for our application.  Instead, we call SAC-IA's accessor methods to get the alignment's fitness score and final transformation matrix (the rigid transformation from the source cloud to the target), and we output them as a Result struct.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 159-171
 
 Because this class is designed to work with multiple templates, we also define a method for aligning all of the templates to the target cloud and storing the results in a vector of Result structs.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 173-182
 
 Finally, we define a method that will align all of the templates to the target cloud and return the index of the best match and its corresponding Result struct.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 184-208
 
@@ -121,43 +121,43 @@ Now that we have a class that handles aligning object templates, we'll apply it 
 
 First, we load the object template clouds.  We've stored our templates as .PCD files, and we've listed their names in a file called ``object_templates.txt``.  Here, we read in each file name, load it into a FeatureCloud, and store the FeatureCloud in a vector for later.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 232-247
 
 Next we load the target cloud (from the filename supplied on the command line).
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 249-251
 
 We then perform a little pre-processing on the data to get it ready for alignment.  The first step is to filter out any background points.  In this example we assume the person we're trying to align to will be less than 1 meter away, so we apply a pass-through filter, filtering on the "z" field (i.e., depth) with limits of 0 to 1.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 253-260
 
 We also downsample the point cloud with a spacing of 5mm, which reduces the ammount of computation that's required.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 262-267
 
 And after the pre-processing is finished, we create our target FeatureCloud.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 269-271
 
 Next, we initialize our *TemplateAlignment* object.  For this, we need to add each of our template clouds and set the target cloud.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 273-279
 
 Now that our *TemplateAlignment* object is initialized, we're ready call the *findBestAlignment* method to determine which template best fits the given target cloud.  We store the alignment results in *best_alignment*.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 281-284
 
@@ -171,13 +171,13 @@ Next we output the results.  Looking at the fitness score (*best_alignment.fitne
     &   &   & t_z \\
   0 & 0 & 0 &  1  \end{array} \right]
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 286-298
 
 Finally, we take the best fitting template, apply the transform that aligns it to the target cloud, and save the aligned template out as a .PCD file so that we can visualize it later to see how well the alignment worked.
 
-.. literalinclude:: template_alignment.cpp
+.. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 300-303
 

@@ -11,58 +11,26 @@ The code
 First, create a file called, let's say, ``pcd_write.cpp`` in your favorite
 editor, and place the following code inside it:
 
-.. code-block:: cpp
+.. literalinclude:: sources/pcd_write/pcd_write.cpp
+   :language: cpp
    :linenos:
-
-   #include <iostream>
-   #include "pcl/io/pcd_io.h"
-   #include "pcl/point_types.h"
-
-   int
-     main (int argc, char** argv)
-   {
-     pcl::PointCloud<pcl::PointXYZ> cloud;
-
-     // Fill in the cloud data
-     cloud.width    = 5;
-     cloud.height   = 1;
-     cloud.is_dense = false;
-     cloud.points.resize (cloud.width * cloud.height);
-
-     for (size_t i = 0; i < cloud.points.size (); ++i)
-     {
-       cloud.points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-       cloud.points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-       cloud.points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
-     }
-
-     pcl::io::savePCDFileASCII ("test_pcd.pcd", cloud);
-     std::cerr << "Saved " << cloud.points.size () << " data points to test_pcd.pcd." << std::endl;
-
-     for (size_t i = 0; i < cloud.points.size (); ++i)
-       std::cerr << "    " << cloud.points[i].x << " " << cloud.points[i].y << " " << cloud.points[i].z << std::endl;
-
-     return (0);
-   }
 
 The explanation
 ---------------
 
 Now, let's break down the code piece by piece.
 
-.. code-block:: cpp
-
-   #include "pcl/io/pcd_io.h"
-   #include "pcl/point_types.h"
+.. literalinclude:: sources/pcd_write/pcd_write.cpp
+   :language: cpp
+   :lines: 2-3
 
 pcl/io/pcd_io.h is the header that contains the definitions for PCD I/O
 operations, and pcl/point_types.h contains definitions for several PointT type
 structures (pcl::PointXYZ in our case).
 
-
-.. code-block:: cpp
-
-   pcl::PointCloud<pcl::PointXYZ> cloud;
+.. literalinclude:: sources/pcd_write/pcd_write.cpp
+   :language: cpp
+   :lines: 8
 
 describes the templated PointCloud structure that we will create. The type of
 each point is set to pcl::PointXYZ, which is:
@@ -79,40 +47,26 @@ each point is set to pcl::PointXYZ, which is:
 
 The lines:
 
-.. code-block:: cpp
-
-   // Fill in the cloud data
-   cloud.width    = 5;
-   cloud.height   = 1;
-   cloud.is_dense = false;
-   cloud.points.resize (cloud.width * cloud.height);
-  
-   for (size_t i = 0; i < cloud.points.size (); ++i)
-   {
-     cloud.points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-     cloud.points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-     cloud.points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
-   }
+.. literalinclude:: sources/pcd_write/pcd_write.cpp
+   :language: cpp
+   :lines: 10-21
 
 fill in the PointCloud structure with random point values, and set the
 appropriate parameters (width, height, is_dense).
 
 Then:
 
-.. code-block:: cpp
-
-   pcl::io::savePCDFileASCII ("test_pcd.pcd", cloud);
+.. literalinclude:: sources/pcd_write/pcd_write.cpp
+   :language: cpp
+   :lines: 23
 
 saves the PointCloud data to disk into a file called test_pcd.pcd
 
 Finally:
 
-.. code-block:: cpp
-
-   std::cerr << "Saved " << cloud.points.size () << " data points to test_pcd.pcd." << std::endl;
-
-   for (size_t i = 0; i < cloud.points.size (); ++i)
-     std::cerr << "    " << cloud.points[i].x << " " << cloud.points[i].y << " " << cloud.points[i].z << std::endl;
+.. literalinclude:: sources/pcd_write/pcd_write.cpp
+   :language: cpp
+   :lines: 24-27
 
 is used to show the data that was generated.
 
@@ -121,10 +75,9 @@ Compiling and running the program
 
 Add the following lines to your CMakeLists.txt file:
 
-.. code-block:: cmake
-
-   add_executable (pcd_write pcd_write.cpp)
-   target_link_libraries (pcd_write ${PCL_IO_LIBRARIES})
+.. literalinclude:: sources/pcd_write/CMakeLists.txt
+   :language: cmake
+   :linenos:
 
 After you have made the executable, you can run it. Simply do::
 
