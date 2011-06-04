@@ -11,56 +11,25 @@ The code
 First, create a file called, let's say, ``pcd_read.cpp`` in your favorite
 editor, and place the following code inside it:
 
-.. code-block:: cpp
+.. literalinclude:: sources/pcd_read/pcd_read.cpp
+   :language: cpp
    :linenos:
-
-   #include <iostream>
-   #include "pcl/io/pcd_io.h"
-   #include "pcl/point_types.h"
-   
-   using namespace pcl;
-
-   int
-   main (int argc, char** argv)
-   {
-     PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
-
-     if (io::loadPCDFile<PointXYZ> ("test_pcd.pcd", *cloud) == -1) //* load the file
-     {
-       std::cerr << "Couldn't read file test_pcd.pcd" << std::endl;
-       return (-1);
-     }
-     std::cerr << "Loaded " 
-               << cloud->width * cloud->height 
-               << " data points from test_pcd.pcd with the following fields: " 
-               << std::endl;
-     for (size_t i = 0; i < cloud->points.size (); ++i)
-       std::cerr << "    " << cloud->points[i].x 
-                 << " "    << cloud->points[i].y 
-                 << " "    << cloud->points[i].z << std::endl;
-
-     return (0);
-   }
 
 The explanation
 ---------------
 
 Now, let's break down the code piece by piece.
 
-.. code-block:: cpp
-
-   PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
-
+.. literalinclude:: sources/pcd_read/pcd_read.cpp
+   :language: cpp
+   :lines: 10
+   
 creates a PointCloud<PointXYZ> boost shared pointer and initializes it.
 
-.. code-block:: cpp
-
-   if (pcl::io::loadPCDFile ("test_pcd.pcd", cloud_blob) == -1)
-   {
-     std::cerr << "Couldn't read file test_pcd.pcd" << std::endl;
-     return (-1);
-   }
-
+.. literalinclude:: sources/pcd_read/pcd_read.cpp
+   :language: cpp
+   :lines: 12-16
+   
 loads the PointCloud data from disk (we assume that test_pcd.pcd has already
 been created from the previous tutorial) into the binary blob.
 
@@ -79,13 +48,10 @@ using pcl::PointXYZ as the underlying point type.
 
 Finally:
 
-.. code-block:: cpp
-
-   for (size_t i = 0; i < cloud->points.size (); ++i)
-     std::cerr << "    " << cloud->points[i].x 
-               << " "    << cloud->points[i].y 
-               << " "    << cloud->points[i].z << std::endl;
-
+.. literalinclude:: sources/pcd_read/pcd_read.cpp
+   :language: cpp
+   :lines: 21-24
+   
 is used to show the data that was loaded from file.
 
 Compiling and running the program
@@ -93,10 +59,9 @@ Compiling and running the program
 
 Add the following lines to your CMakeLists.txt file:
 
-.. code-block:: cmake
-
-   add_executable (pcd_read pcd_read.cpp)
-   target_link_libraries (pcd_read ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
+.. literalinclude:: sources/pcd_read/CMakeLists.txt
+   :language: cmake
+   :linenos:
 
 After you have made the executable, you can run it. Simply do::
 
