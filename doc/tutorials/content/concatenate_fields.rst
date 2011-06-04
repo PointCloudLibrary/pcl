@@ -13,57 +13,9 @@ The code
 First, create a file, let's say, ``concatenate_fields.cpp`` in your favorite
 editor, and place the following code inside it:
 
-.. code-block:: cpp
+.. literalinclude:: sources/concatenate_fields/concatenate_fields.cpp
+   :language: cpp
    :linenos:
-
-   #include <iostream>
-   #include "pcl/io/pcd_io.h"
-   #include "pcl/point_types.h"
-   
-   int
-     main (int argc, char** argv)
-   {
-     pcl::PointCloud<pcl::PointXYZ> cloud_a;
-     pcl::PointCloud<pcl::Normal> cloud_b;
-     pcl::PointCloud<pcl::PointNormal> cloud_c;
-   
-     // Fill in the cloud data
-     cloud_a.width  = cloud_b.width  = 5;
-     cloud_a.height = cloud_b.height = 1;
-     cloud_a.points.resize (cloud_a.width * cloud_a.height);
-     cloud_b.points.resize (cloud_b.width * cloud_b.height);
-   
-     for (size_t i = 0; i < cloud_a.points.size (); ++i)
-     {
-       cloud_a.points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-       cloud_a.points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-       cloud_a.points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
-     }
-   
-     for (size_t i = 0; i < cloud_b.points.size (); ++i)
-     {
-       cloud_b.points[i].normal[0] = 1024 * rand () / (RAND_MAX + 1.0);
-       cloud_b.points[i].normal[1] = 1024 * rand () / (RAND_MAX + 1.0);
-       cloud_b.points[i].normal[2] = 1024 * rand () / (RAND_MAX + 1.0);
-     }
-   
-     std::cerr << "Cloud A: " << std::endl;
-     for (size_t i = 0; i < cloud_a.points.size (); ++i)
-       std::cerr << "    " << cloud_a.points[i].x << " " << cloud_a.points[i].y << " " << cloud_a.points[i].z << std::endl;
-   
-     std::cerr << "Cloud B: " << std::endl;
-     for (size_t i = 0; i < cloud_b.points.size (); ++i)
-       std::cerr << "    " << cloud_b.points[i].normal[0] << " " << cloud_b.points[i].normal[1] << " " << cloud_b.points[i].normal[2] << std::endl;
-   
-     pcl::concatenateFields (cloud_a, cloud_b, cloud_c);
-     std::cerr << "Cloud C: " << std::endl;
-     for (size_t i = 0; i < cloud_c.points.size (); ++i)
-       std::cerr << "    " <<
-         cloud_c.points[i].x << " " << cloud_c.points[i].y << " " << cloud_c.points[i].z << " " <<
-         cloud_c.points[i].normal[0] << " " << cloud_c.points[i].normal[1] << " " << cloud_c.points[i].normal[2] << std::endl;
-   
-     return (0);
-   }
 
 The explanation
 ---------------
@@ -71,72 +23,42 @@ The explanation
 Now, let's break down the code piece by piece.
 
 
-.. code-block:: cpp
-
-   pcl::PointCloud<pcl::PointXYZ> cloud_a;
-   pcl::PointCloud<pcl::Normal> cloud_b;
-   pcl::PointCloud<pcl::PointNormal> cloud_c;
+.. literalinclude:: sources/concatenate_fields/concatenate_fields.cpp
+   :language: cpp
+   :lines: 8-10
 
 define the three Point Clouds: two inputs (cloud_a and cloud_b), one output
 (cloud_c).
 
 The lines:
 
-.. code-block:: cpp
-
-   // Fill in the cloud data
-   cloud_a.width  = cloud_b.width  = 5;
-   cloud_a.height = cloud_b.height = 1;
-   cloud_a.points.resize (cloud_a.width * cloud_a.height);
-   cloud_b.points.resize (cloud_b.width * cloud_b.height);
-   
-   for (size_t i = 0; i < cloud_a.points.size (); ++i)
-   {
-     cloud_a.points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-     cloud_a.points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-     cloud_a.points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
-   }
-   
-   for (size_t i = 0; i < cloud_b.points.size (); ++i)
-   {
-     cloud_b.points[i].normal[0] = 1024 * rand () / (RAND_MAX + 1.0);
-     cloud_b.points[i].normal[1] = 1024 * rand () / (RAND_MAX + 1.0);
-     cloud_b.points[i].normal[2] = 1024 * rand () / (RAND_MAX + 1.0);
-   }
+.. literalinclude:: sources/concatenate_fields/concatenate_fields.cpp
+   :language: cpp
+   :lines: 12-30
 
 fill in the data for the two input point clouds.
 
 Then, lines:
 
-.. code-block:: cpp
-
-   std::cerr << "Cloud A: " << std::endl;
-   for (size_t i = 0; i < cloud_a.points.size (); ++i)
-     std::cerr << "    " << cloud_a.points[i].x << " " << cloud_a.points[i].y << " " << cloud_a.points[i].z << std::endl;
-  
-   std::cerr << "Cloud B: " << std::endl;
-   for (size_t i = 0; i < cloud_b.points.size (); ++i)
-     std::cerr << "    " << cloud_b.points[i].normal[0] << " " << cloud_b.points[i].normal[1] << " " << cloud_b.points[i].normal[2] << std::endl;
+.. literalinclude:: sources/concatenate_fields/concatenate_fields.cpp
+   :language: cpp
+   :lines: 32-38
 
 display the content of cloud_a and cloud_b to screen.
 
 In line:
 
-.. code-block:: cpp
-
-   pcl::concatenateFields (cloud_a, cloud_b, cloud_c);
+.. literalinclude:: sources/concatenate_fields/concatenate_fields.cpp
+   :language: cpp
+   :lines: 40
 
 we create cloud_c by concatenating the fields of cloud_a and cloud_b together.
 
 Finally:
 
-.. code-block:: cpp
-
-   std::cerr << "Cloud C: " << std::endl;
-   for (size_t i = 0; i < cloud_c.points.size (); ++i)
-     std::cerr << "    " <<
-       cloud_c.points[i].x << " " << cloud_c.points[i].y << " " << cloud_c.points[i].z << " " <<
-       cloud_c.points[i].normal[0] << " " << cloud_c.points[i].normal[1] << " " << cloud_c.points[i].normal[2] << std::endl;
+.. literalinclude:: sources/concatenate_fields/concatenate_fields.cpp
+   :language: cpp
+   :lines: 41-45
 
 is used to show the content of cloud_c.
 
@@ -145,10 +67,9 @@ Compiling and running the program
 
 Add the following lines to your CMakeLists.txt file:
 
-.. code-block:: cmake
-   
-   add_executable (concatenate_fields concatenate_fields.cpp)
-   target_link_libraries (concatenate_fields ${PCL_COMMON_LIBRARIES})
+.. literalinclude:: sources/concatenate_fields/CMakeLists.txt
+   :language: cmake
+   :linenos:
 
 After you have made the executable, you can run it. Simply do::
 
