@@ -83,10 +83,10 @@ int
 
   fromROSMsg (cloud_blob, cloud);
 
-  normalEstimator.setInputData(
-    reinterpret_cast<float*>(&(cloud.points[0])),
-    cloud.width, cloud.height,
-    3, sizeof(cloud.points[0])/sizeof(float), (sizeof(cloud.points[0])/sizeof(float))*cloud.width, 10.0f);
+//  normalEstimator.setInputData(
+//    reinterpret_cast<float*>(&(cloud.points[0])),
+//    cloud.width, cloud.height,
+//    3, sizeof(cloud.points[0])/sizeof(float), (sizeof(cloud.points[0])/sizeof(float))*cloud.width, 10.0f);
   
   normalEstimator.setRectSize(2, 2);
   
