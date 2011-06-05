@@ -61,9 +61,9 @@ namespace pcl
       
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */
-      RangeImagePlanar ();
+      PCL_EXPORTS RangeImagePlanar ();
       /** Destructor */
-      ~RangeImagePlanar ();
+      PCL_EXPORTS ~RangeImagePlanar ();
 
       /** Return a newly created RangeImagePlanar.
        *  Reimplmentation to return an image of the same type. */
@@ -85,7 +85,7 @@ namespace pcl
         *         close to this angular resolution as possible while not going over this value (the density will not be
         *         lower than this value). The value is in radians per pixel. 
         */
-      void
+      PCL_EXPORTS void
       setDisparityImage (const float* disparity_image, int di_width, int di_height,
                          float focal_length, float base_line, float desired_angular_resolution=-1);
       
@@ -101,7 +101,7 @@ namespace pcl
         *         close to this angular resolution as possible while not going over this value (the density will not be
         *         lower than this value). The value is in radians per pixel.
         */
-      void
+      PCL_EXPORTS void
       setDepthImage (const float* depth_image, int di_width, int di_height, float di_center_x, float di_center_y,
                      float di_focal_length_x, float di_focal_length_y, float desired_angular_resolution=-1);
       /** Create the image from an existing point cloud.
@@ -162,12 +162,12 @@ namespace pcl
         *                         is combine_pixels times the old one
         * \param sub_image - the output image
         */
-      virtual void
+      PCL_EXPORTS virtual void
       getSubImage (int sub_image_image_offset_x, int sub_image_image_offset_y, int sub_image_width,
                    int sub_image_height, int combine_pixels, RangeImage& sub_image) const;
       
       //! Get a range image with half the resolution
-      virtual void 
+      PCL_EXPORTS virtual void 
       getHalfImage(RangeImage& half_image) const;
       
     protected:
