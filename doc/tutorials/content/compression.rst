@@ -25,108 +25,9 @@ The code:
 
 First, create a file, let's say, ``point_cloud_compression.cpp`` and place the following inside it:
 
-
-.. code-block:: cpp
-
-	#include <pcl/point_cloud.h>
-	#include <pcl/point_types.h>
-	#include <pcl/io/openni_grabber.h>
-	#include <pcl/visualization/cloud_viewer.h>
-	
-	#include "pcl/compression/octree_pointcloud_compression.h"
-	
-	#include <stdio.h>
-	#include <sstream>
-	#include <stdlib.h>
-	
-	using namespace std;
-	using namespace pcl;
-	using namespace pcl::octree;
-	
-	class SimpleOpenNIViewer
-	{
-	public:
-	  SimpleOpenNIViewer () :
-	    viewer (" Point Cloud Compression Example")
-	  {
-	  }
-	
-	  void
-	  cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
-	  {
-	    if (!viewer.wasStopped ())
-	    {
-	      // stringstream to store compressed point cloud
-	      std::stringstream compressedData;
-	      // output pointcloud
-	      PointCloud<PointXYZRGB>::Ptr cloudOut (new PointCloud<PointXYZRGB> ());
-	
-	      // compress point cloud
-	      PointCloudEncoder->encodePointCloud (cloud, compressedData);
-	
-	      // decompress point cloud
-	      PointCloudDecoder->decodePointCloud (compressedData, cloudOut);
-	
-	      // show decompressed point cloud
-	      viewer.showCloud (cloudOut);
-	    }
-	  }
-	
-	  void
-	  run ()
-	  {
-	
-	    bool showStatistics = true;
-	
-	    // for a full list of profiles see: /io/include/pcl/compression/compression_profiles.h
-	    compression_Profiles_e compressionProfile = pcl::octree::MED_RES_ONLINE_COMPRESSION_WITH_COLOR;
-	
-	    // instantiate point cloud compression for encoding and decoding
-	    PointCloudEncoder = new PointCloudCompression<PointXYZRGB> (compressionProfile, showStatistics);
-	    PointCloudDecoder = new PointCloudCompression<PointXYZRGB> ();
-	
-	    // create a new grabber for OpenNI devices
-	    pcl::Grabber* interface = new pcl::OpenNIGrabber ();
-	
-	    // make callback function from member function
-	    boost::function<void
-	    (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
-	
-	    // connect callback function for desired signal. In this case its a point cloud with color values
-	    boost::signals2::connection c = interface->registerCallback (f);
-	
-	    // start receiving point clouds
-	    interface->start ();
-	
-	    while (!viewer.wasStopped ())
-	    {
-	      sleep (1);
-	    }
-	
-	    interface->stop ();
-	
-	    // delete point cloud compression instances
-	    delete (PointCloudEncoder);
-	    delete (PointCloudDecoder);
-	
-	  }
-	
-	  pcl::visualization::CloudViewer viewer;
-	
-	  PointCloudCompression<PointXYZRGB>* PointCloudEncoder;
-	  PointCloudCompression<PointXYZRGB>* PointCloudDecoder;
-	
-	};
-	
-	int
-	main (int argc, char **argv)
-	{
-	
-	  SimpleOpenNIViewer v;
-	  v.run ();
-	
-	  return 0;
-	}
+.. literalinclude:: sources/point_cloud_compression/point_cloud_compression.cpp
+   :language: cpp
+   :linenos:
 
 
 The explanation
@@ -134,18 +35,9 @@ The explanation
 
 Now, let's discuss the code in detail. Let's start at the main() function: First we create a new SimpleOpenNIViewer instance and call its run() method. 
 
-.. code-block:: cpp
-
-	int
-	main (int argc, char **argv)
-	{
-	
-	  SimpleOpenNIViewer v;
-	  v.run ();
-	
-	  return 0;
-	}
-
+.. literalinclude:: sources/point_cloud_compression/point_cloud_compression.cpp
+   :language: cpp
+   :lines: 95-103
 
 In the run() function, we create instances of the PointCloudCompression class for encoding and decoding.
 They can take compression profiles as an arguments for configuring the compression algorithm. The provided compression profiles predefine 
@@ -156,67 +48,23 @@ A full list of compression profiles including their configuration can be found i
 A full parametrization of the compression algorithm is also possible in the PointCloudCompression constructor using the MANUAL_CONFIGURATION profile. 
 For further details on advanced parametrization, please have a look at section "Advanced Parametrization".
 
-.. code-block:: cpp
+.. literalinclude:: sources/point_cloud_compression/point_cloud_compression.cpp
+   :language: cpp
+   :lines: 53-60
 
-    bool showStatistics = true;
-
-    // for a full list of profiles see: /io/include/pcl/compression/compression_profiles.h
-    compression_Profiles_e compressionProfile = pcl::octree::MED_RES_ONLINE_COMPRESSION_WITH_COLOR;
-
-    // instantiate point cloud compression for encoding and decoding
-    PointCloudEncoder = new PointCloudCompression<PointXYZRGB> (compressionProfile, showStatistics);
-    PointCloudDecoder = new PointCloudCompression<PointXYZRGB> ();
-	    
-The following code instantiates a new grabber for an OpenNI device and starts the interface callback loop. 
-	    
-.. code-block:: cpp	 
    
-    // create a new grabber for OpenNI devices
-    pcl::Grabber* interface = new pcl::OpenNIGrabber ();
+The following code instantiates a new grabber for an OpenNI device and starts the interface callback loop. 
 
-    // make callback function from member function
-    boost::function<void
-    (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
+.. literalinclude:: sources/point_cloud_compression/point_cloud_compression.cpp
+   :language: cpp
+   :lines: 62-80
 
-    // connect callback function for desired signal. In this case its a point cloud with color values
-    boost::signals2::connection c = interface->registerCallback (f);
-
-    // start receiving point clouds
-    interface->start ();
-
-    while (!viewer.wasStopped ())
-    {
-      sleep (1);
-    }
-
-    interface->stop ();	    
-	    
-	    
 In the callback function executed by the OpenNIGrabber capture loop, we first compress the captured point cloud into a stringstream buffer. That follows a
 decompression step, which decodes the compressed binary data into a new point cloud object. The decoded point cloud is then sent to the point cloud viewer.
  
-.. code-block:: cpp	
-
-  void
-  cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
-  {
-    if (!viewer.wasStopped ())
-    {
-      // stringstream to store compressed point cloud
-      std::stringstream compressedData;
-      // output pointcloud
-      PointCloud<PointXYZRGB>::Ptr cloudOut (new PointCloud<PointXYZRGB> ());
-
-      // compress point cloud
-      PointCloudEncoder->encodePointCloud (cloud, compressedData);
-
-      // decompress point cloud
-      PointCloudDecoder->decodePointCloud (compressedData, cloudOut);
-
-      // show decompressed point cloud
-      viewer.showCloud (cloudOut);
-    }
-  }
+.. literalinclude:: sources/point_cloud_compression/point_cloud_compression.cpp
+   :language: cpp
+   :lines: 28-47
 
 
 Compiling and running the program
@@ -224,11 +72,11 @@ Compiling and running the program
 
 Add the following lines to your CMakeLists.txt file:
 
-.. code-block:: cmake
-   
-   add_executable (point_cloud_compression  point_cloud_compression.cpp)
-   target_link_libraries(point_cloud_compression pcl_common pcl_io  pcl_octree  pcl_visualization )   
+.. literalinclude:: sources/point_cloud_compression/CMakeLists.txt
+   :language: cmake
+   :linenos:
 
+   
 After you have made the executable, you can run it. Simply do::
 
   $ ./point_cloud_compression

@@ -18,79 +18,10 @@ The code
 First, create a file, let's say, ``planar_segmentation.cpp`` in your favorite
 editor, and place the following inside it:
 
-.. code-block:: cpp
+.. literalinclude:: sources/planar_segmentation/planar_segmentation.cpp
+   :language: cpp
    :linenos:
 
-   #include <iostream>
-   #include "pcl/ModelCoefficients.h"
-   #include "pcl/io/pcd_io.h"
-   #include "pcl/point_types.h"
-   #include "pcl/sample_consensus/method_types.h"
-   #include "pcl/sample_consensus/model_types.h"
-   #include "pcl/segmentation/sac_segmentation.h"
-   
-   int
-     main (int argc, char** argv)
-   {
-     pcl::PointCloud<pcl::PointXYZ> cloud;
-   
-     // Fill in the cloud data
-     cloud.width  = 15;
-     cloud.height = 1;
-     cloud.points.resize (cloud.width * cloud.height);
-   
-     // Generate the data
-     for (size_t i = 0; i < cloud.points.size (); ++i)
-     {
-       cloud.points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-       cloud.points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-       cloud.points[i].z = 1.0;
-     }
-   
-     // Set a few outliers
-     cloud.points[0].z = 2.0;
-     cloud.points[3].z = -2.0;
-     cloud.points[6].z = 4.0;
-   
-     std::cerr << "Point cloud data: " << cloud.points.size () << " points" << std::endl;
-     for (size_t i = 0; i < cloud.points.size (); ++i)
-       std::cerr << "    " << cloud.points[i].x << " " 
-                           << cloud.points[i].y << " " 
-                           << cloud.points[i].z << std::endl;
-   
-     pcl::ModelCoefficients coefficients;
-     pcl::PointIndices inliers;
-     // Create the segmentation object
-     pcl::SACSegmentation<pcl::PointXYZ> seg;
-     // Optional
-     seg.setOptimizeCoefficients (true);
-     // Mandatory
-     seg.setModelType (pcl::SACMODEL_PLANE);
-     seg.setMethodType (pcl::SAC_RANSAC);
-     seg.setDistanceThreshold (0.01);
-   
-     seg.setInputCloud (cloud.makeShared ());
-     seg.segment (inliers, coefficients);
-   
-     if (inliers.indices.size () == 0)
-     {
-       PCL_ERROR ("Could not estimate a planar model for the given dataset.");
-       return (-1);
-     }
-   
-     std::cerr << "Model coefficients: " << coefficients.values[0] << " " 
-                                         << coefficients.values[1] << " "
-                                         << coefficients.values[2] << " " 
-                                         << coefficients.values[3] << std::endl;
-   
-     std::cerr << "Model inliers: " << inliers.indices.size () << std::endl;
-     for (size_t i = 0; i < inliers.indices.size (); ++i)
-       std::cerr << inliers.indices[i] << "    " << cloud.points[inliers.indices[i]].x << " "
-                                                 << cloud.points[inliers.indices[i]].y << " "
-                                                 << cloud.points[inliers.indices[i]].z << std::endl;
-   
-     return (0);
-   }
 
 The explanation
 ---------------
@@ -99,11 +30,9 @@ Now, let's break down the code piece by piece.
 
 Lines:
 
-.. code-block:: cpp
-
-   #include "pcl/sample_consensus/method_types.h"
-   #include "pcl/sample_consensus/model_types.h"
-   #include "pcl/segmentation/sac_segmentation.h"
+.. literalinclude:: sources/planar_segmentation/planar_segmentation.cpp
+   :language: cpp
+   :lines: 5-7
 
 import the Sample Consensus model fitting object, and the model and method
 types. As of PCL 0.1.3 (04/15/2010), the following models are supported:
@@ -136,68 +65,30 @@ and the following robust estimator methods:
 
 Lines:
 
-.. code-block:: cpp
+.. literalinclude:: sources/planar_segmentation/planar_segmentation.cpp
+   :language: cpp
+   :lines: 14-36
 
-  pcl::PointCloud<pcl::PointXYZ> cloud;
-  
-  // Fill in the cloud data
-  cloud.width  = 15;
-  cloud.height = 1;
-  cloud.points.resize (cloud.width * cloud.height);
-  
-  // Generate the data
-  for (size_t i = 0; i < cloud.points.size (); ++i)
-  {
-    cloud.points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-    cloud.points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-    cloud.points[i].z = 1.0;
-  }
-  
-  // Set a few outliers
-  cloud.points[0].z = 2.0;
-  cloud.points[3].z = -2.0;
-  cloud.points[6].z = 4.0;
-  
-  std::cerr << "Point cloud data: " << cloud.points.size () << " points" << std::endl;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
-     std::cerr << "    " << cloud.points[i].x << " " 
-                         << cloud.points[i].y << " " 
-                         << cloud.points[i].z << std::endl;
-   
 create the point cloud structure, fill in the respective values, and display
 the content on screen. Note that for the purpose of this tutorial, we manually
 added a few outliers in the data, by setting their z values different from 0.
 
 Then, lines:
 
-.. code-block:: cpp
+.. literalinclude:: sources/planar_segmentation/planar_segmentation.cpp
+   :language: cpp
+   :lines: 38-50
 
-  pcl::ModelCoefficients coefficients;
-  pcl::PointIndices inliers;
-  // Create the segmentation object
-  pcl::SACSegmentation<pcl::PointXYZ> seg;
-  // Optional
-  seg.setOptimizeCoefficients (true);
-  // Mandatory
-  seg.setModelType (pcl::SACMODEL_PLANE);
-  seg.setMethodType (pcl::SAC_RANSAC);
-  seg.setDistanceThreshold (0.01);
-
-  seg.setInputCloud (cloud.makeShared ());
-  seg.segment (inliers, coefficients);
-
+   
 create the SACSegmentation object and set the model and method type, together
 with the desired distance to the model threshold. In this tutorial, we will use
 the RANSAC method (pcl::SAC_RANSAC) as the robust estimator of choice.
 
 Finally:
 
-.. code-block:: cpp
-
-     std::cerr << "Model coefficients: " << coefficients.values[0] << " " 
-                                         << coefficients.values[1] << " "
-                                         << coefficients.values[2] << " " 
-                                         << coefficients.values[3] << std::endl;
+.. literalinclude:: sources/planar_segmentation/planar_segmentation.cpp
+   :language: cpp
+   :lines: 58-61
 
 are used to show the contents of the inlier set, together with the estimated
 model parameters.
@@ -207,11 +98,11 @@ Compiling and running the program
 
 Add the following lines to your CMakeLists.txt file:
 
-.. code-block:: cmake
-   
-   add_executable (planar_segmentation planar_segmentation.cpp)
-   target_link_libraries (planar_segmentation ${PCL_IO_LIBRARIES} ${PCL_FILTERS_LIBRARIES} ${PCL_SEGMENTATION_LIBRARIES})
+.. literalinclude:: sources/planar_segmentation/CMakeLists.txt
+   :language: cmake
+   :linenos:
 
+   
 After you have made the executable, you can run it. Simply do::
 
   $ ./planar_segmentation
