@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+
+project(point_cloud_compression)
+
+find_package(PCL 1.0 REQUIRED COMPONENTS io octree visualization)
+
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
+
+add_executable (point_cloud_compression point_cloud_compression.cpp)
+target_link_libraries (point_cloud_compression ${PCL_IO_LIBRARIES} ${PCL_OCTREE_LIBRARIES} ${PCL_VISUALIZATION_LIBRARIES})

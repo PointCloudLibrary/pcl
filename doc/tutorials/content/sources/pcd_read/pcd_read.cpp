@@ -11,7 +11,7 @@ main (int argc, char** argv)
 
   if (io::loadPCDFile<PointXYZ> ("test_pcd.pcd", *cloud) == -1) //* load the file
   {
-    std::cerr << "Couldn't read file test_pcd.pcd" << std::endl;
+    PCL_ERROR ("Couldn't read file test_pcd.pcd \n");
     return (-1);
   }
   std::cerr << "Loaded "

@@ -46,47 +46,9 @@ and save it somewhere to disk.
 Then, create a file, let's say, ``statistical_removal.cpp`` in your favorite
 editor, and place the following inside it:
 
-.. code-block:: cpp
+.. literalinclude:: sources/statistical_removal/statistical_removal.cpp
+   :language: cpp
    :linenos:
-
-   #include <iostream>
-   #include "pcl/io/pcd_io.h"
-   #include "pcl/point_types.h"
-   #include "pcl/filters/statistical_outlier_removal.h"
-    
-   int
-     main (int argc, char** argv)
-   {
-     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
-    
-     // Fill in the cloud data
-     pcl::PCDReader reader;
-      // Replace the path below with the path where you saved your file
-     reader.read<pcl::PointXYZ> ("table_scene_lms400.pcd", *cloud);
-    
-     std::cerr << "Cloud before filtering: " << std::endl;
-     std::cerr << *cloud << std::endl;
-    
-     // Create the filtering object
-     pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
-     sor.setInputCloud (cloud);
-     sor.setMeanK (50);
-     sor.setStddevMulThresh (1.0);
-     sor.filter (*cloud_filtered);
-    
-     std::cerr << "Cloud after filtering: " << std::endl;
-     std::cerr << *cloud_filtered << std::endl;
-    
-     pcl::PCDWriter writer;
-     writer.write<pcl::PointXYZ> ("table_scene_lms400_inliers.pcd", *cloud_filtered, false);
-    
-     sor.setNegative (true);
-     sor.filter (*cloud_filtered);
-     writer.write<pcl::PointXYZ> ("table_scene_lms400_outliers.pcd", *cloud_filtered, false);
-    
-     return (0);
-   }
 
 The explanation
 ---------------
@@ -95,13 +57,11 @@ Now, let's break down the code piece by piece.
 
 The following lines of code will read the point cloud data from disk.
 
-.. code-block:: cpp
+.. literalinclude:: sources/statistical_removal/statistical_removal.cpp
+   :language: cpp
+   :lines: 12-15
 
-     // Fill in the cloud data
-     pcl::PCDReader reader;
-      // Replace the path below with the path where you saved your file
-     reader.read<pcl::PointXYZ> ("table_scene_lms400.pcd", *cloud);
-
+   
 Then, a *pcl::StatisticalOutlierRemoval* filter is created. The number of
 neighbors to analyze for each point is set to 50, and the standard deviation
 multiplier to 1. What this means is that all points who have a distance larger
@@ -109,47 +69,42 @@ than 1 standard deviation of the mean distance to teh query point will be
 marked as outliers and removed. The output is computed and stored in
 *cloud_filtered*.
 
-.. code-block:: cpp
+.. literalinclude:: sources/statistical_removal/statistical_removal.cpp
+   :language: cpp
+   :lines: 20-25
 
-     // Create the filtering object
-     pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
-     sor.setInputCloud (cloud);
-     sor.setMeanK (50);
-     sor.setStddevMulThresh (1.0);
-     sor.filter (*cloud_filtered);
-
+   
 The remaining data (inliers) is written to disk for later inspection. 
 
-.. code-block:: cpp
+.. literalinclude:: sources/statistical_removal/statistical_removal.cpp
+   :language: cpp
+   :lines: 30-31
 
-     pcl::PCDWriter writer;
-     writer.write<pcl::PointXYZ> ("table_scene_lms400_inliers.pcd", *cloud_filtered, false);
-
+   
 Then, the filter is called with the same parameters, but with the output
 negated, to obtain the outliers (e.g., the points that were filtered).
 
-.. code-block:: cpp
+.. literalinclude:: sources/statistical_removal/statistical_removal.cpp
+   :language: cpp
+   :lines: 33-34
 
-     sor.setNegative (true);
-     sor.filter (*cloud_filtered);
-
+   
 And the data is written back to disk.
 
-.. code-block:: cpp
-
-     writer.write<pcl::PointXYZ> ("table_scene_lms400_outliers.pcd", *cloud_filtered, false);
-
+.. literalinclude:: sources/statistical_removal/statistical_removal.cpp
+   :language: cpp
+   :lines: 35
+   
 
 Compiling and running the program
 ---------------------------------
 
 Add the following lines to your CMakeLists.txt file:
 
-.. code-block:: cmake
+.. literalinclude:: sources/statistical_removal/CMakeLists.txt
+   :language: cmake
+   :linenos:
    
-   add_executable (statistical_removal statistical_removal.cpp)
-   target_link_libraries (statistical_removal ${PCL_IO_LIBRARIES} ${PCL_FILTERS_LIBRARIES})
-
 After you have made the executable, you can run it. Simply do::
 
   $ ./statistical_removal
