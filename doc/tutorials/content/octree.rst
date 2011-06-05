@@ -12,113 +12,9 @@ The code:
 --------------
 First, create a file, let's say, ``octree_search.cpp`` and place the following inside it:
 
-
-.. code-block:: cpp
+.. literalinclude:: sources/octree_search/octree_search.cpp
+   :language: cpp
    :linenos:
-
-   #include <pcl/point_cloud.h>
-   #include "pcl/octree/octree.h"
-   
-   #include <iostream>
-   #include <vector>
-   
-   using namespace pcl;
-   using namespace pcl::octree;
-   
-   int
-   main (int argc, char** argv)
-   {
-   
-     srand (time (NULL));
-   
-     PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
-   
-     // Generate pointcloud data
-     cloud->width = 1000;
-     cloud->height = 1;
-     cloud->points.resize (cloud->width * cloud->height);
-   
-     for (size_t i = 0; i < cloud->points.size (); ++i)
-     {
-       cloud->points[i].x = 1024.0f * rand () / (RAND_MAX + 1.0);
-       cloud->points[i].y = 1024.0f * rand () / (RAND_MAX + 1.0);
-       cloud->points[i].z = 1024.0f * rand () / (RAND_MAX + 1.0);
-     }
-   
-     float resolution = 128.0f;
-   
-     OctreePointCloud<PointXYZ> octree (resolution);
-   
-     octree.setInputCloud (cloud);
-     octree.addPointsFromInputCloud ();
-   
-     PointXYZ searchPoint;
-   
-     searchPoint.x = 1024.0f * rand () / (RAND_MAX + 1.0);
-     searchPoint.y = 1024.0f * rand () / (RAND_MAX + 1.0);
-     searchPoint.z = 1024.0f * rand () / (RAND_MAX + 1.0);
-   
-     // Neighbors within voxel search
-   
-     std::vector<int> pointIdxVec;
-   
-     if (octree.voxelSearch (searchPoint, pointIdxVec))
-     {
-       std::cerr << "Neighbors within voxel search at (" << searchPoint.x 
-                 << " " << searchPoint.y 
-                 << " " << searchPoint.z << ")" 
-                 << std::endl;
-                 
-       for (size_t i = 0; i < pointIdxVec.size (); ++i)
-         std::cerr << "    " << cloud->points[pointIdxVec[i]].x 
-                   << " " << cloud->points[pointIdxVec[i]].y 
-                   << " " << cloud->points[pointIdxVec[i]].z << std::endl;
-     }
-   
-     // K nearest neighbor search
-   
-     int K = 10;
-   
-     std::vector<int> pointIdxNKNSearch;
-     std::vector<float> pointNKNSquaredDistance;
-   
-     std::cerr << "K nearest neighbor search at (" << searchPoint.x 
-               << " " << searchPoint.y 
-               << " " << searchPoint.z
-               << ") with K=" << K << std::endl;
-   
-     if ( octree.nearestKSearch (searchPoint, K, pointIdxNKNSearch, pointNKNSquaredDistance) > 0 )
-     {
-       for (size_t i = 0; i < pointIdxNKNSearch.size (); ++i)
-         std::cerr << "    "  <<   cloud->points[ pointIdxNKNSearch[i] ].x 
-                   << " " << cloud->points[ pointIdxNKNSearch[i] ].y 
-                   << " " << cloud->points[ pointIdxNKNSearch[i] ].z 
-                   << " (squared distance: " << pointNKNSquaredDistance[i] << ")" << std::endl;
-     }
-   
-     // Neighbors within radius search
-   
-     std::vector<int> pointIdxRadiusSearch;
-     std::vector<float> pointRadiusSquaredDistance;
-   
-     float radius = 256.0f * rand () / (RAND_MAX + 1.0);
-   
-     std::cerr << "Neighbors within radius search at (" << searchPoint.x 
-               << " " << searchPoint.y 
-               << " " << searchPoint.z
-               << ") with radius=" << radius << std::endl;
-   
-   
-     if ( octree.radiusSearch (searchPoint, radius, pointIdxRadiusSearch, pointRadiusSquaredDistance) > 0 )
-     {
-       for (size_t i = 0; i < pointIdxRadiusSearch.size (); ++i)
-         std::cerr << "    "  <<   cloud->points[ pointIdxRadiusSearch[i] ].x 
-                   << " " << cloud->points[ pointIdxRadiusSearch[i] ].y 
-                   << " " << cloud->points[ pointIdxRadiusSearch[i] ].z 
-                   << " (squared distance: " << pointRadiusSquaredDistance[i] << ")" << std::endl;
-     }
-   
-   }
 
 
 The explanation
@@ -128,21 +24,9 @@ Now, let's explain the code in detail.
 
 We fist define and instantiate a shared PointCloud structure and fill it with random points.
 
-.. code-block:: cpp
-
-	  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
-	
-	  // Generate pointcloud data
-	  cloud->width = 1000;
-	  cloud->height = 1;
-	  cloud->points.resize (cloud->width * cloud->height);
-	
-	  for (size_t i = 0; i < cloud->points.size (); ++i)
-	  {
-	    cloud->points[i].x = 1024.0f * rand () / (RAND_MAX + 1.0);
-	    cloud->points[i].y = 1024.0f * rand () / (RAND_MAX + 1.0);
-	    cloud->points[i].z = 1024.0f * rand () / (RAND_MAX + 1.0);
-	  }
+.. literalinclude:: sources/octree_search/octree_search.cpp
+   :language: cpp
+   :lines: 17-29
 
 
 Then we create an octree instance which is initialized with its resolution. This octree keeps a vector of point indices within its leaf nodes.
@@ -150,101 +34,44 @@ The resolution parameter describes the length of the smalles voxels at lowest oc
 the spatial dimension of the pointcloud. If a bounding box of the pointcloud is know, it should be assigned to the octree by using the defineBoundingBox method. 
 Then we assign a pointer to the PointCloud and add all points to the octree.
 
-.. code-block:: cpp
-
-	  float resolution = 128.0f;
-	  
-	  OctreePointCloud<PointXYZ> octree (resolution);
-	
-	  octree.setInputCloud (cloud);
-	  octree.addPointsFromInputCloud ();
-
+.. literalinclude:: sources/octree_search/octree_search.cpp
+   :language: cpp
+   :lines: 31-36
 
 Once the PointCloud is associated with an octree, we can perform search operations. The fist search method used here is "Neighbors within Voxel Search". It assigns the search point to the corresponding 
 leaf node voxel and returns a vector of point indices. These indices relate to points which fall within the same voxel. The distance between 
 the search point and the search result depend therefore on the resolution parameter of the octree.
 
-.. code-block:: cpp
-	
-	  std::vector<int> pointIdxVec;
-	
-	  if (octree.voxelSearch (searchPoint, pointIdxVec))
-	  {
-	    std::cerr << "Neighbors within voxel search at (" << searchPoint.x 
-	              << " " << searchPoint.y 
-	              << " " << searchPoint.z << ")"
-	              << std::endl;
-	              
-	    for (size_t i = 0; i < pointIdxVec.size (); ++i)
-	      std::cerr << "    " << cloud->points[pointIdxVec[i]].x 
-	                << " " << cloud->points[pointIdxVec[i]].y 
-	                << " " << cloud->points[pointIdxVec[i]].z << std::endl;
-	  }
+.. literalinclude:: sources/octree_search/octree_search.cpp
+   :language: cpp
+   :lines: 46-59
 
 Next, a K nearest neighbor search is demonstrated. In this example, K is set to 10. The "K Nearest Neighbor Search" method writes the search results into two separate vectors. 
 The first one, pointIdxNKNSearch, will contain the search result (indices referring to the associated PointCloud data set). The second vector holds corresponding squared distances
 between the search point and the nearest neighbors.  
 
-.. code-block:: cpp
+.. literalinclude:: sources/octree_search/octree_search.cpp
+   :language: cpp
+   :lines: 61-80
 
-	  // K nearest neighbor search
-	
-	  int K = 10;
-	
-	  std::vector<int> pointIdxNKNSearch;
-	  std::vector<float> pointNKNSquaredDistance;
-	
-	  std::cerr << "K nearest neighbor search at (" << searchPoint.x 
-	            << " " << searchPoint.y 
-	            << " " << searchPoint.z
-	            << ") with K=" << K << std::endl;
-	
-	  if ( octree.nearestKSearch (searchPoint, K, pointIdxNKNSearch, pointNKNSquaredDistance) > 0 )
-	  {
-	    for (size_t i = 0; i < pointIdxNKNSearch.size (); ++i)
-	      std::cerr << "    "  <<   cloud->points[ pointIdxNKNSearch[i] ].x 
-	                << " " << cloud->points[ pointIdxNKNSearch[i] ].y 
-	                << " " << cloud->points[ pointIdxNKNSearch[i] ].z 
-	                << " (squared distance: " << pointNKNSquaredDistance[i] << ")" << std::endl;
-	  }
 
 The "Neighbors within Radius Search" works very similar to the "K Nearest Neighbor Search". Its search results are written to two separate vectors describing 
 point indices and squares search point distances. 
 
-.. code-block:: cpp
+.. literalinclude:: sources/octree_search/octree_search.cpp
+   :language: cpp
+   :lines: 84-102
 
-	  std::vector<int> pointIdxRadiusSearch;
-	  std::vector<float> pointRadiusSquaredDistance;
-	
-	  float radius = 256.0f * rand () / (RAND_MAX + 1.0);
-	
-
-	  std::cerr << "Neighbors within radius search at (" << searchPoint.x 
-	            << " " << searchPoint.y 
-	            << " " << searchPoint.z
-	            << ") with radius=" << radius << std::endl;
-	
-	
-	  if ( octree.radiusSearch (searchPoint, radius, pointIdxRadiusSearch, pointRadiusSquaredDistance) > 0 )
-	  {
-	    for (size_t i = 0; i < pointIdxRadiusSearch.size (); ++i)
-	      std::cerr << "    "  <<   cloud->points[ pointIdxRadiusSearch[i] ].x 
-	               << " " << cloud->points[ pointIdxRadiusSearch[i] ].y 
-	               << " " << cloud->points[ pointIdxRadiusSearch[i] ].z 
-	               << " (squared distance: " << pointRadiusSquaredDistance[i] << ")" << std::endl;
-	  }
-
-
+   
 Compiling and running the program
 ---------------------------------
 
 Add the following lines to your CMakeLists.txt file:
 
-.. code-block:: cmake
+.. literalinclude:: sources/octree_search/CMakeLists.txt
+   :language: cmake
+   :linenos:
    
-   add_executable (octreesearch octree_search.cpp)
-   target_link_libraries (octreesearch ${PCL_COMMON_LIBRARIES})
-
 After you have made the executable, you can run it. Simply do::
 
   $ ./octreesearch

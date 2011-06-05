@@ -48,58 +48,10 @@ The code
 First, create a file, let's say, ``resampling.cpp`` in your favorite
 editor, and place the following inside it:
 
-.. code-block:: cpp
+
+.. literalinclude:: sources/resampling/resampling.cpp
+   :language: cpp
    :linenos:
-
-   #include <pcl/point_types.h>
-   #include <pcl/io/pcd_io.h>
-   #include <pcl/kdtree/kdtree_flann.h>
-   #include <pcl/surface/mls.h>
-
-   using namespace pcl;
-   using namespace pcl::io;
-   using namespace std;
-
-   int
-     main (int argc, char** argv)
-   {
-     // Load input file into a PointCloud<T> with an appropriate type
-     PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
-     sensor_msgs::PointCloud2 cloud_blob;
-     // Load bun0.pcd -- should be available with the PCL archive in test 
-     loadPCDFile ("bun0.pcd", cloud_blob);
-     fromROSMsg (cloud_blob, *cloud);
-
-     // Create a KD-Tree
-     KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
-     tree->setInputCloud (cloud);
-
-     // Output has the same type as the input one, it will be only smoothed
-     PointCloud<PointXYZ> mls_points;
-
-     // Init object (second point type is for the normals, even if unused)
-     MovingLeastSquares<PointXYZ, Normal> mls;
-
-     // Optionally, a pointer to a cloud can be provided, to be set by MLS
-     PointCloud<Normal>::Ptr mls_normals (new PointCloud<Normal> ());
-     mls.setOutputNormals (mls_normals);
-
-     // Set parameters
-     mls.setInputCloud (cloud);
-     mls.setPolynomialFit (true);
-     mls.setSearchMethod (tree);
-     mls.setSearchRadius (0.03);
-
-     // Reconstruct
-     mls.reconstruct (mls_points);
-     
-     // Concatenate fields for saving
-     PointCloud<PointNormal> mls_cloud;
-     pcl::concatenateFields (mls_points, *mls_normals, mls_cloud);
-
-     // Save output
-     savePCDFile ("bun0-mls.pcd", mls_cloud);
-   }
 
 You should be able to find the input file at *pcl/test/bun0.pcd*.
 
@@ -108,46 +60,45 @@ The explanation
 
 Now, let's break down the code piece by piece.
 
-.. code-block:: cpp
+.. literalinclude:: sources/resampling/resampling.cpp
+   :language: cpp
+   :lines: 21-22
 
-   KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
-   tree->setInputCloud (cloud);
-
+   
 as the example PCD has only XYZ coordinates, we load it into a
 PointCloud<PointXYZ>. These fields are mandatory for the method, other ones are
 allowed and will be preserved.
 
-.. code-block:: cpp
+.. literalinclude:: sources/resampling/resampling.cpp
+   :language: cpp
+   :lines: 27-28
 
-  // Init object (second point type is for the normals, even if unused)
-  MovingLeastSquares<PointXYZ, Normal> mls;
-
+   
 if normal estimation is not required, this step can be skipped.
 
-.. code-block:: cpp
 
-   mls.setInputCloud (cloud);
-   mls.setPolynomialFit (true);
+.. literalinclude:: sources/resampling/resampling.cpp
+   :language: cpp
+   :lines: 35-36
 
 the first template type is used for the input and output cloud. Only the XYZ
 dimensions of the input are smoothed in the output.
 
-.. code-block:: cpp
 
-    mls.setSearchRadius (0.03);
+.. literalinclude:: sources/resampling/resampling.cpp
+   :language: cpp
+   :lines: 38-41
 
-    // Reconstruct
-    mls.reconstruct (mls_points);
-
+   
 polynomial fitting could be disabled for speeding up smoothing. Please consult
 the code API (constructor and setter) for default values and additional
 parameters to control the smoothing process.
 
-.. code-block:: cpp
+.. literalinclude:: sources/resampling/resampling.cpp
+   :language: cpp
+   :lines: 47-48
 
-    // Save output
-    savePCDFile ("bun0-mls.pcd", mls_cloud);
-
+   
 if the normals and the original dimensions need to be in the same cloud, the
 fields have to be concatenated.
 
@@ -156,10 +107,9 @@ Compiling and running the program
 
 Add the following lines to your CMakeLists.txt file:
 
-.. code-block:: cmake
-   
-   add_executable (resampling resampling.cpp)
-   target_link_libraries (resampling ${PCL_IO_LIBRARIES} ${PCL_SURFACE_LIBRARIES})
+.. literalinclude:: sources/resampling/CMakeLists.txt
+   :language: cmake
+   :linenos:
 
 After you have made the executable, you can run it. Simply do::
 

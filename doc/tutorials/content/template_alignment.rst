@@ -186,10 +186,10 @@ Compiling and running the program
 
 Add the following lines to your `CMakeLists.txt <http://..building_pcl.html>`_ file:
 
-.. code-block:: cmake
-   
-   add_executable (template_alignment template_alignment_tutorial.cpp)
-   target_link_libraries (template_alignment pcl_io pcl_filters pcl_kdtree pcl_features pcl_registration)
+
+.. literalinclude:: sources/template_alignment/template_alignment.txt
+   :language: cmake
+   :linenos:
 
 After you have made the executable, you can run it like so::
 

@@ -13,83 +13,9 @@ The code:
 
 First, create a file, let's say, ``octree_change_detection.cpp`` and place the following inside it:
 
-
-.. code-block:: cpp
-
-  #include <pcl/point_cloud.h>
-  #include "pcl/octree/octree.h"
-  
-  #include <iostream>
-  #include <vector>
-  
-  using namespace pcl;
-  using namespace pcl::octree;
-  
-  int
-  main (int argc, char** argv)
-  {
-  
-    srand (time (NULL));
-  
-    // Octree resolution - side length of octree voxels
-    float resolution = 32.0f;
-  
-    // Instantiate octree-based point cloud change detection class
-    OctreePointCloudChangeDetector<PointXYZ> octree (resolution);
-  
-    PointCloud<PointXYZ>::Ptr cloudA (new PointCloud<PointXYZ> );
-  
-    // Generate pointcloud data for cloudA
-    cloudA->width = 128;
-    cloudA->height = 1;
-    cloudA->points.resize (cloudA->width * cloudA->height);
-  
-    for (size_t i = 0; i < cloudA->points.size (); ++i)
-    {
-      cloudA->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0);
-      cloudA->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0);
-      cloudA->points[i].z = 64.0f * rand () / (RAND_MAX + 1.0);
-    }
-  
-    // Add points from cloudA to octree
-    octree.setInputCloud (cloudA);
-    octree.addPointsFromInputCloud ();
-  
-    // Switch octree buffers: This resets octree but keeps previous tree structure in memory.
-    octree.switchBuffers ();
-  
-    PointCloud<PointXYZ>::Ptr cloudB (new PointCloud<PointXYZ> );
-     
-    // Generate pointcloud data for cloudB 
-    cloudB->width = 128;
-    cloudB->height = 1;
-    cloudB->points.resize (cloudB->width * cloudB->height);
-  
-    for (size_t i = 0; i < cloudB->points.size (); ++i)
-    {
-      cloudB->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0);
-      cloudB->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0);
-      cloudB->points[i].z = 64.0f * rand () / (RAND_MAX + 1.0);
-    }
-  
-    // Add points from cloudB to octree
-    octree.setInputCloud (cloudB);
-    octree.addPointsFromInputCloud ();
-  
-    std::vector<int> newPointIdxVector;
-  
-    // Get vector of point indices from octree voxels which did not exist in previous buffer
-    octree.getPointIndicesFromNewVoxels (newPointIdxVector);
-  
-    // Output points
-    std::cerr << "Output from getPointIndicesFromNewVoxels:" << std::endl;
-    for (size_t i = 0; i < newPointIdxVector.size (); ++i)
-      std::cerr << i << "# Index:" << newPointIdxVector[i]
-                     << "  Point:" << cloudB->points[newPointIdxVector[i]].x << " "
-                                   << cloudB->points[newPointIdxVector[i]].y << " "
-                                   << cloudB->points[newPointIdxVector[i]].z << std::endl;
-  
-  }
+.. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
+   :language: cpp
+   :linenos:
 
 
 The explanation
@@ -99,103 +25,63 @@ Now, let's discuss the code in detail.
 
 We fist instantiate the OctreePointCloudChangeDetector class and define its voxel resolution. 
 
-.. code-block:: cpp
-
-  srand (time (NULL));
-
-  // Octree resolution - side length of octree voxels
-  float resolution = 32.0f;
-
-  // Instantiate octree-based point cloud change detection class
-  OctreePointCloudChangeDetector<PointXYZ> octree (resolution);
+.. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
+   :language: cpp
+   :lines: 15-21
 
 Then we create a point cloud instance cloudA which is initialized with random point data. The generated point data is used to build an octree structure. 
 
-.. code-block:: cpp
 
-  PointCloud<PointXYZ>::Ptr cloudA (new PointCloud<PointXYZ> );
+.. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
+   :language: cpp
+   :lines: 23-39
 
-  // Generate pointcloud data for cloudA
-  cloudA->width = 128;
-  cloudA->height = 1;
-  cloudA->points.resize (cloudA->width * cloudA->height);
-
-  for (size_t i = 0; i < cloudA->points.size (); ++i)
-  {
-    cloudA->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0);
-    cloudA->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0);
-    cloudA->points[i].z = 64.0f * rand () / (RAND_MAX + 1.0);
-  }
-
-  // Add points from cloudA to octree
-  octree.setInputCloud (cloudA);
-  octree.addPointsFromInputCloud ();
-
+   
 Point cloud cloudA is our reference point cloud and the octree structure describe its spatial distribution. The class OctreePointCloudChangeDetector inherits from 
 class Octree2BufBase which enables to keep and manage two octrees in the memory at the same time. In addition, it implements a memory pool that reuses 
 already allocated node objects and therefore reduces expensive memory allocation and deallocation operations when generating octrees of multiple point clouds. By calling "octree.switchBuffers()", we reset the 
 octree class while keeping the previous octree structure in memory.
 
-.. code-block:: cpp
-	
-  // Switch octree buffers: This resets octree but keeps previous tree structure in memory.
-  octree.switchBuffers ();
 
+.. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
+   :language: cpp
+   :lines: 41-42
+
+   
 Now we instantiate a second point cloud "cloudB" and fill it with random point data. This point cloud is used to build a new octree structure. 
 
-.. code-block:: cpp
 
-  PointCloud<PointXYZ>::Ptr cloudB (new PointCloud<PointXYZ> );
+.. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
+   :language: cpp
+   :lines: 44-60
    
-  // Generate pointcloud data for cloudB 
-  cloudB->width = 100;
-  cloudB->height = 1;
-  cloudB->points.resize (cloudB->width * cloudB->height);
-
-  for (size_t i = 0; i < cloudB->points.size (); ++i)
-  {
-    cloudB->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0);
-    cloudB->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0);
-    cloudB->points[i].z = 64.0f * rand () / (RAND_MAX + 1.0);
-  }
-
-  // Add points from cloudB to octree
-  octree.setInputCloud (cloudB);
-  octree.addPointsFromInputCloud ();
 
 In order to retrieve points that are stored at voxels of the current octree structure (based on cloudB) which did not exist in the previous octree structure 
 (based on cloudA), we can call the method "getPointIndicesFromNewVoxels" which return a vector of the result point indices. 
 
-.. code-block:: cpp
 
-  std::vector<int> newPointIdxVector;
-
-  // Get vector of point indices from octree voxels which did not exist in previous buffer
-  octree.getPointIndicesFromNewVoxels (newPointIdxVector);
-
+.. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
+   :language: cpp
+   :lines: 62-65
   
 Finally, we output the results to the std::cout stream.
 
-.. code-block:: cpp
-   
-   // Output points
-   std::cout << "Output from getPointIndicesFromNewVoxels:" << std::endl;
-   for (size_t i = 0; i < newPointIdxVector.size (); ++i)
-     std::cout << i << "# Index:" << newPointIdxVector[i]
-                    << "  Point:" << cloudB->points[newPointIdxVector[i]].x << " "
-                                  << cloudB->points[newPointIdxVector[i]].y << " "
-                                  << cloudB->points[newPointIdxVector[i]].z << std::endl;
+
+.. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
+   :language: cpp
+   :lines: 67-73
 
 Compiling and running the program
 ---------------------------------
 
 Add the following lines to your CMakeLists.txt file:
 
-.. code-block:: cmake
-   
-   add_executable (octree_change_detection  octree_change_detection.cpp)
-   target_link_libraries (octreesearch ${PCL_COMMON_LIBRARIES})
 
+.. literalinclude:: sources/octree_change_detection/CMakeLists.txt
+   :language: cmake
+   :linenos:
+   
+   
 After you have made the executable, you can run it. Simply do::
 
   $ ./octree_change_detection

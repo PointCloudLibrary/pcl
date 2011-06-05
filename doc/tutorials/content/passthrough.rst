@@ -13,53 +13,9 @@ The code
 First, create a file, let's say, ``passthrough.cpp`` in your favorite
 editor, and place the following inside it:
 
-.. code-block:: cpp
+.. literalinclude:: sources/passthrough/passthrough.cpp
+   :language: cpp
    :linenos:
-
-   #include <iostream>
-   #include "pcl/point_types.h"
-   #include "pcl/filters/passthrough.h"
-  
-   int
-     main (int argc, char** argv)
-   {
-     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
-  
-     // Fill in the cloud data
-     cloud->width  = 5;
-     cloud->height = 1;
-     cloud->points.resize (cloud->width * cloud->height);
-  
-     for (size_t i = 0; i < cloud->points.size (); ++i)
-     {
-       cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-       cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-       cloud->points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
-     }
-  
-     std::cerr << "Cloud before filtering: " << std::endl;
-     for (size_t i = 0; i < cloud->points.size (); ++i)
-       std::cerr << "    " << cloud->points[i].x << " " 
-                           << cloud->points[i].y << " " 
-                           << cloud->points[i].z << std::endl;
-  
-     // Create the filtering object
-     pcl::PassThrough<pcl::PointXYZ> pass;
-     pass.setInputCloud (cloud);
-     pass.setFilterFieldName ("z");
-     pass.setFilterLimits (0.0, 1.0);
-     //pass.setFilterLimitsNegative (true);
-     pass.filter (*cloud_filtered);
-  
-     std::cerr << "Cloud after filtering: " << std::endl;
-     for (size_t i = 0; i < cloud_filtered->points.size (); ++i)
-       std::cerr << "    " << cloud_filtered->points[i].x << " " 
-                           << cloud_filtered->points[i].y << " " 
-                           << cloud_filtered->points[i].z << std::endl;
-   
-     return (0);
-   }
 
 The explanation
 ---------------
@@ -69,59 +25,35 @@ Now, let's break down the code piece by piece.
 In the following lines, we define the Point Clouds structures, fill in the
 input cloud, and display its content to screen.
 
-.. code-block:: cpp
-
-     // Fill in the cloud data
-     cloud->width  = 5;
-     cloud->height = 1;
-     cloud->points.resize (cloud->width * cloud->height);
-  
-     for (size_t i = 0; i < cloud->points.size (); ++i)
-     {
-       cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-       cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-       cloud->points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
-     }
-  
-     std::cerr << "Cloud before filtering: " << std::endl;
-     for (size_t i = 0; i < cloud->points.size (); ++i)
-       std::cerr << "    " << cloud->points[i].x << " " 
-                           << cloud->points[i].y << " " 
-                           << cloud->points[i].z << std::endl;
-
+.. literalinclude:: sources/passthrough/passthrough.cpp
+   :language: cpp
+   :lines: 11-27
 
 Then, we create the PassThrough filter object, and set its parameters. The
 filter field name is set to the z coordinate, and the accepted interval values
 are set to (0.0;1.0).
 
-.. code-block:: cpp
+.. literalinclude:: sources/passthrough/passthrough.cpp
+   :language: cpp
+   :lines: 30-35
 
-     pcl::PassThrough<pcl::PointXYZ> pass;
-     pass.setInputCloud (cloud);
-     pass.setFilterFieldName ("z");
-     pass.setFilterLimits (0.0, 1.0);
-     //pass.setFilterLimitsNegative (true);
-     pass.filter (*cloud_filtered);
-
+   
 Finally we show the content of the filtered cloud.
 
-.. code-block:: cpp
+.. literalinclude:: sources/passthrough/passthrough.cpp
+   :language: cpp
+   :lines: 37-41
 
-     std::cerr << "Cloud after filtering: " << std::endl;
-     for (size_t i = 0; i < cloud_filtered->points.size (); ++i)
-       std::cerr << "    " << cloud_filtered->points[i].x << " " 
-                           << cloud_filtered->points[i].y << " " 
-                           << cloud_filtered->points[i].z << std::endl;
-
+   
 Compiling and running the program
 ---------------------------------
 
 Add the following lines to your CMakeLists.txt file:
 
-.. code-block:: cmake
-   
-   add_executable (passthrough passthrough.cpp)
-   target_link_libraries (passthrough ${PCL_COMMON_LIBRARIES} ${PCL_FILTERS_LIBRARIES})
+.. literalinclude:: sources/passthrough/CMakeLists.txt
+   :language: cmake
+   :linenos:
+
 
 After you have made the executable, you can run it. Simply do::
 
@@ -147,9 +79,11 @@ Note that the coordinate axis are represented as red (x), green (y), and blue
 (z). The five points are represented with green as the points remaining after
 filtering and red as the points that have been removed by the filter.
 
-As an exercise, try uncommenting line::
+As an exercise, try uncommenting this line
 
-  //pass.setFilterLimitsNegative (true);
+.. literalinclude:: sources/passthrough/passthrough.cpp
+   :language: cpp
+   :lines: 34
 
 and run the program again.
 

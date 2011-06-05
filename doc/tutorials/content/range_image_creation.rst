@@ -11,82 +11,29 @@ The code
 First, create a file called, let's say, ``range_image_creation.cpp`` in your favorite
 editor, and place the following code inside it:
 
-.. code-block:: cpp
+.. literalinclude:: sources/range_image_creation/range_image_creation.cpp
+   :language: cpp
    :linenos:
 
-    #include "pcl/range_image/range_image.h"
-
-    int main (int argc, char** argv) {
-      pcl::PointCloud<pcl::PointXYZ> pointCloud;
-      
-      // Generate the data
-      for (float y=-0.5f; y<=0.5f; y+=0.01f) {
-        for (float z=-0.5f; z<=0.5f; z+=0.01f) {
-          pcl::PointXYZ point;
-          point.x = 2.0f - y;
-          point.y = y;
-          point.z = z;
-          pointCloud.points.push_back(point);
-        }
-      }
-      pointCloud.width = pointCloud.points.size();
-      pointCloud.height = 1;
-      
-      // We now want to create a range image from the above point cloud, with a 1° angular resolution
-      float angularResolution =   1.0f * (M_PI/180.0f);  //   1.0 degree in radians
-      float maxAngleWidth     = 360.0f * (M_PI/180.0f);  // 360.0 degree in radians
-      float maxAngleHeight    = 180.0f * (M_PI/180.0f);  // 180.0 degree in radians
-      Eigen::Affine3f sensorPose = (Eigen::Affine3f)Eigen::Translation3f(0.0f, 0.0f, 0.0f);
-      pcl::RangeImage::CoordinateFrame coordinate_frame = pcl::RangeImage::CAMERA_FRAME;
-      float noiseLevel=0.00;
-      float minRange = 0.0f;
-      int borderSize = 1;
-      
-      pcl::RangeImage rangeImage;
-      rangeImage.createFromPointCloud(pointCloud, angularResolution, maxAngleWidth, maxAngleHeight,
-                                      sensorPose, coordinate_frame, noiseLevel, minRange, borderSize);
-      
-      std::cout << rangeImage << "\n";
-    }
-
+   
 Explanation
 -----------
 
 Lets look at this in parts:
 
-.. code-block:: cpp
+.. literalinclude:: sources/range_image_creation/range_image_creation.cpp
+   :language: cpp
+   :lines: 1-17
 
-    #include "pcl/range_image/range_image.h"
-
-    int main (int argc, char** argv) {
-      pcl::PointCloud<pcl::PointXYZ> pointCloud;
-      
-      // Generate the data
-      for (float y=-0.5f; y<=0.5f; y+=0.01f) {
-        for (float z=-0.5f; z<=0.5f; z+=0.01f) {
-          pcl::PointXYZ point;
-          point.x = 2.0f - y;
-          point.y = y;
-          point.z = z;
-          pointCloud.points.push_back(point);
-        }
-      }
-      pointCloud.width = pointCloud.points.size();
-      pointCloud.height = 1;
-
+   
 This includes the necessary range image header, starts the main and generates a point cloud that represents a rectangle.  
 
-.. code-block:: cpp
 
-      float angularResolution =   1.0f * (M_PI/180.0f);  //   1.0 degree in radians
-      float maxAngleWidth     = 360.0f * (M_PI/180.0f);  // 360.0 degree in radians
-      float maxAngleHeight    = 180.0f * (M_PI/180.0f);  // 180.0 degree in radians
-      Eigen::Affine3f sensorPose = (Eigen::Affine3f)Eigen::Translation3f(0.0f, 0.0f, 0.0f);
-      pcl::RangeImage::CoordinateFrame coordinate_frame = pcl::RangeImage::CAMERA_FRAME;
-      float noiseLevel=0.00;
-      float minRange = 0.0f;
-      int borderSize = 1;
+.. literalinclude:: sources/range_image_creation/range_image_creation.cpp
+   :language: cpp
+   :lines: 20-27
 
+   
 This part defines the parameters for the range image we want to create.
 
 The angular resolution is supposed to be 1 degree, meaning the beams represented by neighboring pixels differ by one degree.
@@ -103,14 +50,10 @@ If minRange is greater 0 all points that are closer will be ignored.
 
 borderSize greater 0 will leave a border of unobserved points around the image when cropping it.
 
-.. code-block:: cpp
 
-      pcl::RangeImage rangeImage;
-      rangeImage.createFromPointCloud(pointCloud, angularResolution, maxAngleWidth, maxAngleHeight,
-                                      sensorPose, coordinate_frame, noiseLevel, minRange, borderSize);
-      
-      std::cout << rangeImage << "\n";
-    }
+.. literalinclude:: sources/range_image_creation/range_image_creation.cpp
+   :language: cpp
+   :lines: 29-33
 
 The remaining code creates the range image from the point cloud with the given paramters and outputs some information on the terminal.
 
@@ -121,11 +64,12 @@ Compiling and running the program
 
 Add the following lines to your CMakeLists.txt file:
 
-.. code-block:: cmake
 
-  add_executable (range_image_creation range_image_creation.cpp)
-  target_link_libraries (range_image_creation ${PCL_RANGE_IMAGE_LIBRARIES})
-
+.. literalinclude:: sources/range_image_creation/CMakeLists.txt
+   :language: cmake
+   :linenos:
+   
+   
 After you have made the executable, you can run it. Simply do::
 
   $ ./range_image_creation 
