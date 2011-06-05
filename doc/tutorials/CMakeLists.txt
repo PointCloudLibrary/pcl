@@ -20,6 +20,7 @@ if(BUILD_tutorials)
             COMPONENT pcl_docs)
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/content/sources"
             DESTINATION share/doc/pcl/tutorials
-            COMPONENT pcl_docs)
+            COMPONENT pcl_docs
+            PATTERN ".svn" EXCLUDE)
   endif(SPHINX_FOUND)
 endif(BUILD_tutorials)
