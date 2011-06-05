@@ -55,7 +55,7 @@ namespace pcl
     * \author Bastian Steder
     * \ingroup range_image
     */
-  class /*RANGE_IMAGE_API*/ RangeImage : public pcl::PointCloud<PointWithRange>
+  class RangeImage : public pcl::PointCloud<PointWithRange>
   {
     public:
       // =====TYPEDEFS=====
@@ -73,7 +73,7 @@ namespace pcl
       
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */
-      RangeImage ();
+      PCL_EXPORTS RangeImage ();
       /** Destructor */
       PCL_EXPORTS ~RangeImage ();
       
@@ -99,7 +99,7 @@ namespace pcl
         * \param coordinate_frame the input coordinate frame
         * \param transformation the resulting transformation that warps \a coordinate_frame into CAMERA_FRAME
         */
-      static void
+      PCL_EXPORTS static void
       getCoordinateFrameTransformation (RangeImage::CoordinateFrame coordinate_frame,
                                         Eigen::Affine3f& transformation);
       
@@ -115,7 +115,7 @@ namespace pcl
         * \param point_cloud_data a PointCloud2 message containing the input cloud
         * \param far_ranges the resulting cloud containing those points with far ranges
         */
-      static void
+      PCL_EXPORTS static void
       extractFarRanges (const sensor_msgs::PointCloud2& point_cloud_data, PointCloud<PointWithViewpoint>& far_ranges);
       
       // =====METHODS=====
@@ -124,7 +124,7 @@ namespace pcl
       makeShared () { return Ptr (new RangeImage (*this)); } 
       
       /** \brief Reset all values to an empty range image */
-      void 
+      PCL_EXPORTS void 
       reset ();
       
       /** \brief Create the depth image from a point cloud
@@ -188,7 +188,7 @@ namespace pcl
                                           CoordinateFrame coordinate_frame=CAMERA_FRAME, float noise_level=0.0f,
                                           float min_range=0.0f, int border_size=0);
       
-      void
+      PCL_EXPORTS void
       integrateFarRanges (const PointCloud<PointWithViewpoint>& far_ranges);
       
       /** \brief Cut the range image to the minimal size so that it still contains all actual range readings.
@@ -198,7 +198,7 @@ namespace pcl
         * \param bottom if positive, this value overrides the position of the bottom edge (defaults to -1)
         * \param left if positive, this value overrides the position of the left edge (defaults to -1)
         */
-      void
+      PCL_EXPORTS void
       cropImage (int border_size=0, int top=-1, int right=-1, int bottom=-1, int left=-1);
       
       /** \brief Get all the range values in one float array of size width*height  
@@ -310,7 +310,7 @@ namespace pcl
       calculate3DPoint (float image_x, float image_y, Eigen::Vector3f& point) const;
       
       /** Recalculate all 3D point positions according to their pixel position and range */
-      void
+      PCL_EXPORTS void
       recalculate3DPointPositions ();
       
       /** Get imagePoint from 3D point in world coordinates */
@@ -433,7 +433,7 @@ namespace pcl
       inline float
       getImpactAngleBasedOnLocalNormal (int x, int y, int radius) const;
       /** Uses the above function for every point in the image */
-      float*
+      PCL_EXPORTS float*
       getImpactAngleImageBasedOnLocalNormals (int radius) const;
 
       /** Calculate a score [0,1] that tells how acute the impact angle is (1.0f - getImpactAngle/90deg)
@@ -451,7 +451,7 @@ namespace pcl
       getAcutenessValue (int x1, int y1, int x2, int y2) const;
       
       /** Calculate getAcutenessValue for every point */
-      void
+      PCL_EXPORTS void
       getAcutenessValueImages (int pixel_distance, float*& acuteness_value_image_x,
                                float*& acuteness_value_image_y) const;
       
@@ -462,11 +462,11 @@ namespace pcl
       //                   const PointWithRange& neighbor2) const;
       
       /** Calculates, how much the surface changes at a point. 1 meaning a 90deg angle and 0 a flat suface */
-      float
+      PCL_EXPORTS float
       getSurfaceChange (int x, int y, int radius) const;
       
       /** Uses the above function for every point in the image */
-      float*
+      PCL_EXPORTS float*
       getSurfaceChangeImage (int radius) const;
       
       /** Calculates, how much the surface changes at a point. Returns an angle [0.0f, PI] for x and y direction.
@@ -475,7 +475,7 @@ namespace pcl
       getSurfaceAngleChange (int x, int y, int radius, float& angle_change_x, float& angle_change_y) const;
       
       /** Uses the above function for every point in the image */
-      void
+      PCL_EXPORTS void
       getSurfaceAngleChangeImages (int radius, float*& angle_change_image_x, float*& angle_change_image_y) const;
       
       /** Calculates the curvature in a point using pca */
@@ -487,18 +487,18 @@ namespace pcl
       getSensorPos () const;
       
       /** Sets all -INFINITY values to INFINITY */
-      void
+      PCL_EXPORTS void
       setUnseenToMaxRange ();
       
       //! Getter for image_offset_x_
-      int
+      inline int
       getImageOffsetX () const { return image_offset_x_;}
       //! Getter for image_offset_y_
-      int
+      inline int
       getImageOffsetY () const { return image_offset_y_;}
       
       //! Setter for image offsets
-      void
+      inline void
       setImageOffsets (int offset_x, int offset_y) { image_offset_x_=offset_x; image_offset_y_=offset_y;}
  
 
@@ -525,11 +525,11 @@ namespace pcl
       getHalfImage(RangeImage& half_image) const;
       
       //! Find the minimum and maximum range in the image
-      void
+      PCL_EXPORTS void
       getMinMaxRanges (float& min_range, float& max_range) const;
       
       //! This function sets the sensor pose to 0 and transforms all point positions to this local coordinate frame
-      void
+      PCL_EXPORTS void
       change3dPointsToLocalCoordinateFrame ();
       
       /** Calculate a range patch as the z values of the coordinate frame given by pose.
@@ -561,16 +561,16 @@ namespace pcl
       
       /** Get the integral image of the range values (used for fast blur operations).
        *  You are responsible for deleting it after usage! */
-      void
+      PCL_EXPORTS void
       getIntegralImage (float*& integral_image, int*& valid_points_num_image) const;
       
       /** Get a blurred version of the range image using box filters on the provided integral image*/
-      void
+      PCL_EXPORTS void
       getBlurredImageUsingIntegralImage (int blur_radius, float* integral_image, int* valid_points_num_image,
                                          RangeImage& range_image) const;
       
       /** Get a blurred version of the range image using box filters */
-      void
+      PCL_EXPORTS void
       getBlurredImage (int blur_radius, RangeImage& range_image) const;
       
       /** Get the squared euclidean distance between the two image points.
@@ -582,7 +582,7 @@ namespace pcl
       getAverageEuclideanDistance (int x, int y, int offset_x, int offset_y, int max_steps) const;
       
       //! Project all points on the local plane approximation, thereby smoothing the surface of the scan
-      void
+      PCL_EXPORTS void
       getRangeImageWithSmoothedSurface (int radius, RangeImage& smoothed_range_image) const;
       //void getLocalNormals(int radius) const;
       
@@ -595,7 +595,7 @@ namespace pcl
                          PointWithRange& average_point) const;
       
       /** Perform ICP (Iterative closest point) on the given data */
-      Eigen::Affine3f
+      PCL_EXPORTS Eigen::Affine3f
       doIcp (const VectorOfEigenVector3f& points,
              const Eigen::Affine3f& initial_guess, int search_radius,
              float max_distance_start, float max_distance_end, int num_iterations) const;
