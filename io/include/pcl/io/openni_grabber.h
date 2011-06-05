@@ -83,7 +83,18 @@ public:
   typedef void (sig_cb_openni_point_cloud_rgb)(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&);
 
 public:
-  OpenNIGrabber (const std::string& device_id = "") throw (openni_wrapper::OpenNIException);
+  //enable using some openni parameters in the constructor.
+  struct Params
+  {
+    Params(int image_mode = -1, int depth_mode = -1) :
+      image_mode(image_mode), depth_mode(depth_mode)
+    {
+    }
+    int image_mode, depth_mode;
+  };
+
+  OpenNIGrabber (const std::string& device_id = "",const Params& params= Params()) throw (openni_wrapper::OpenNIException);
+
   virtual ~OpenNIGrabber ();
   virtual void start ();
   virtual void stop ();
@@ -169,6 +180,7 @@ private:
   openni_wrapper::OpenNIDevice::CallbackHandle depth_callback_handle;
   openni_wrapper::OpenNIDevice::CallbackHandle image_callback_handle;
   bool running_;
+  Params params_;
 };
 } // namespace pcl
 #endif // __PCL_IO_OPENNI_GRABBER__

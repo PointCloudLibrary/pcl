@@ -59,11 +59,12 @@ namespace pcl
     long long_value;
   } RGBValue;
 
-  OpenNIGrabber::OpenNIGrabber (const std::string& device_id) throw (openni_wrapper::OpenNIException)
+  OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Params& params) throw (openni_wrapper::OpenNIException)
     : image_required_(false)
     , depth_required_(false)
     , sync_required_(false)
     , running_(false)
+    , params_(params)
   {
     // initialize driver
     if (!onInit (device_id))
@@ -286,7 +287,17 @@ namespace pcl
 
     if (device_->hasImageStream ())
     {
-      int image_mode = mapXnMode2ConfigMode (device_->getDefaultImageMode ());
+      int image_mode = params_.image_mode;
+      if (image_mode != -1)
+      {
+        //check if the image mode is supporte
+        if (!isImageModeSupported(image_mode))
+          image_mode = -1;
+      }
+      //default image mode
+      if (image_mode == -1)
+       image_mode = mapXnMode2ConfigMode (device_->getDefaultImageMode ());
+      //if its still -1 one we are FAIL
       if (image_mode == -1)
         return (false);
 
@@ -297,7 +308,17 @@ namespace pcl
       image_height_ = image_md.nYRes;
     }
 
-    int depth_mode = mapXnMode2ConfigMode (device_->getDefaultDepthMode ());
+
+    int depth_mode = params_.depth_mode;
+    if (depth_mode != -1)
+    {
+      //check if the depth mode is supported
+      if (!isDepthModeSupported(depth_mode))
+          depth_mode = -1; //not supported so try default
+    }
+    //default image mode
+    if (depth_mode == -1)
+      depth_mode = mapXnMode2ConfigMode(device_->getDefaultDepthMode());
     if (depth_mode == -1)
       return (false);
 
