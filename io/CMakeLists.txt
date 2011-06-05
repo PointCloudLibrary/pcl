@@ -50,13 +50,16 @@ if(build)
         include/pcl/${SUBSYS_NAME}/io.h
         include/pcl/${SUBSYS_NAME}/pcd_io.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
+        ${OPENNI_GRABBER_INCLUDES}
+        )
+
+    set(compression_incs
         include/pcl/compression/octree_pointcloud_compression.h
         include/pcl/compression/color_coding.h
         include/pcl/compression/compression_profiles.h
         include/pcl/compression/entropy_range_coder.h
         include/pcl/compression/point_coding.h
-        ${OPENNI_GRABBER_INCLUDES}
-        )
+       )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/io.hpp
                   include/pcl/compression/impl/entropy_range_coder.hpp
@@ -65,7 +68,7 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs} ${OPENNI_INCLUDES})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} pcl_common)
     if(OPENNI_FOUND)
@@ -81,6 +84,7 @@ if(build)
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+	PCL_ADD_INCLUDES(${SUBSYS_NAME} compression ${compression_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openni_camera ${OPENNI_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
