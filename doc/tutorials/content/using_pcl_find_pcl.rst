@@ -22,35 +22,35 @@ contains a lonely cpp file name ``pcd_write.cpp`` (copy it from the
 
   $ cd /PATH/TO/MY/GRAND/PROJECT
 
-  $ cp /PATH/TO/WHERE/YOU/BUILT/PCL/FindPCL.cmake .
+  $ cp /PATH/TO/WHERE/YOU/DOWNLOADED/FindPCL.cmake .
 
 And create a file named CMakeLists.txt that contains:
 
 .. code-block:: cmake
-	 
-	 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-	 project(MY_GRAND_PROJECT)
-	 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
-	 find_package(PCL 1.0 REQUIRED COMPONENTS io)
-	 include_directories(${PCL_INCLUDE_DIRS})
-	 add_executable(pcd_write_test pcd_write.cpp)
-	 target_link_libraries(pcd_write_test ${PCL_IO_LIBRARIES})
-	 
+   
+   cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+   project(MY_GRAND_PROJECT)
+   list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+   find_package(PCL 1.0 REQUIRED COMPONENTS io)
+   include_directories(${PCL_INCLUDE_DIRS})
+   add_executable(pcd_write_test pcd_write.cpp)
+   target_link_libraries(pcd_write_test ${PCL_IO_LIBRARIES})
+   
 The explanation
 ---------------
 
 Now, let's see what we did.
 
 .. code-block:: cmake
-	 
-	 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-	 
+   
+   cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+   
 This is mandatory for cmake, and since we are making very basic
 project we don't need features from cmake 2.8 or higher.
 
 .. code-block:: cmake
-	 
-	 project(MY_GRAND_PROJECT)	
+   
+   project(MY_GRAND_PROJECT)  
 
 This line names your project and sets some useful cmake variables
 such as those to refer to the source directory
@@ -59,7 +59,7 @@ invoking cmake (MY_GRAND_PROJECT_BINARY_DIR).
 
 .. code-block:: cmake
 
-	 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+   list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 We have placed FindPCL.cmake right on the project directory, so we need
 to append the current source directory to the list of paths that cmake
@@ -67,7 +67,7 @@ will seek for any file named FindXXX.cmake.
 
 .. code-block:: cmake
 
-	 find_package(PCL 1.0 REQUIRED COMPONENTS io)
+   find_package(PCL 1.0 REQUIRED COMPONENTS io)
 
 We are requesting to find the PCL package at minimum version 1.0. We
 also says that it is ``REQUIRED`` meaning that cmake will fail
@@ -79,7 +79,7 @@ gracefully if it can't be found. As PCL is modular one can request:
 
 .. code-block:: cmake
 
- 	 include_directories(${PCL_INCLUDE_DIRS})
+   include_directories(${PCL_INCLUDE_DIRS})
 
 When PCL is found, several related variables are set:
 
@@ -96,7 +96,7 @@ to search the paths it contains for a header potentially included.
 
 .. code-block:: cmake
 
-	 add_executable(pcd_write_test pcd_write.cpp)
+   add_executable(pcd_write_test pcd_write.cpp)
 
 Here, we tell cmake that we are trying to make an executable file
 named ``pcd_write_test`` from one single source file
@@ -105,7 +105,7 @@ Windows platform and blank on UNIX) and the permissions.
 
 .. code-block:: cmake
 
-	 target_link_libraries(pcd_write_test ${PCL_IO_LIBRARIES})
+   target_link_libraries(pcd_write_test ${PCL_IO_LIBRARIES})
 
 The executable we are building makes call to PCL functions. So far, we
 have only included the PCL headers so the compilers knows about the
