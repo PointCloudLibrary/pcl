@@ -76,6 +76,38 @@ TEST (PCL, PointXYZRGB)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, PointXYZRGBNormal)
+{
+  pcl::PointXYZRGBNormal p;
+
+  uint8_t r = 127, g = 64, b = 254;
+  uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+  p.rgb = *reinterpret_cast<float*>(&rgb);
+
+  rgb = *reinterpret_cast<int*>(&p.rgb);
+  uint8_t rr = (rgb >> 16) & 0x0000ff;
+  uint8_t gg = (rgb >> 8)  & 0x0000ff;
+  uint8_t bb = (rgb)       & 0x0000ff;
+
+  EXPECT_EQ (r, rr);
+  EXPECT_EQ (g, gg);
+  EXPECT_EQ (b, bb);
+  EXPECT_EQ (rr, 127);
+  EXPECT_EQ (gg, 64);
+  EXPECT_EQ (bb, 254);
+
+  p.r = 0; p.g = 127; p.b = 0;
+  rgb = *reinterpret_cast<int*>(&p.rgb);
+  rr = (rgb >> 16) & 0x0000ff;
+  gg = (rgb >> 8)  & 0x0000ff;
+  bb = (rgb)       & 0x0000ff;
+
+  EXPECT_EQ (rr, 0);
+  EXPECT_EQ (gg, 127);
+  EXPECT_EQ (bb, 0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Common)
 {
   PointXYZ p1, p2, p3;

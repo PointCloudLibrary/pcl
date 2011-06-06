@@ -243,7 +243,7 @@ struct _PointXYZRGB
       uint8_t _unused;
     };
     float rgb;
-    uint32_t data_c;
+    uint32_t rgba;
   };
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 } EIGEN_ALIGN16;
@@ -386,9 +386,35 @@ inline std::ostream& operator << (std::ostream& os, const PointNormal& p)
 
 
 /** \brief A point structure representing Euclidean xyz coordinates, and the RGB color, together with normal coordinates and the surface curvature estimate. 
+  * Due to historical reasons (PCL was first developed as a ROS package), the
+  * RGB information is packed into an integer and casted to a float. This is
+  * something we wish to remove in the near future, but in the meantime, the
+  * following code snippet should help you pack and unpack RGB colors in your
+  * PointXYZRGB structure:
+  *
+  * \code
+  * // pack r/g/b into rgb
+  * uint8_t r = 255, g = 0, b = 0;    // Example: Red color
+  * uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+  * p.rgb = *reinterpret_cast<float*>(&rgb);
+  * \endcode
+  *
+  * To unpack the data into separate values, use:
+  *
+  * \code
+  * PointXYZRGB p;
+  * // unpack rgb into r/g/b
+  * uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);
+  * uint8_t r = (rgb >> 16) & 0x0000ff;
+  * uint8_t g = (rgb >> 8)  & 0x0000ff;
+  * uint8_t b = (rgb)       & 0x0000ff;
+  * \endcode
+  *
+  *
+  * Alternatively, from 1.1.0 onwards, you can use p.r, p.g, and p.b directly.
   * \ingroup common
   */
-struct PointXYZRGBNormal
+struct _PointXYZRGBNormal
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   PCL_ADD_NORMAL4D;   // This adds the member normal[3] which can also be accessed using the point (which is float[4])
@@ -396,16 +422,37 @@ struct PointXYZRGBNormal
   {
     struct
     {
-      float rgb;
+      // RGB union
+      union
+      {
+        struct 
+        {
+          uint8_t b;
+          uint8_t g;
+          uint8_t r;
+          uint8_t _unused;
+        };
+        float rgb;
+        uint32_t rgba;
+      };
       float curvature;
     };
     float data_c[4];
   };
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 } EIGEN_ALIGN16;
+struct PointXYZRGBNormal : public _PointXYZRGBNormal
+{
+  inline PointXYZRGBNormal ()
+  {
+    _unused = 0;
+    data[3] = 1.0f;
+    data_n[3] = 0.0f;
+  }
+};
 inline std::ostream& operator << (std::ostream& os, const PointXYZRGBNormal& p)
 {
-  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.rgb << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
+  os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.rgb << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.r << ", " << p.g << ", " << p.b << " - " << p.curvature << ")";
   return (os);
 }
 
