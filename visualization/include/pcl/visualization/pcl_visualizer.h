@@ -160,7 +160,7 @@ namespace pcl
           *         y
           */
         void 
-        addCoordinateSystem (double scale, Eigen::Matrix4f t, int viewport = 0);
+        addCoordinateSystem (double scale, const Eigen::Matrix4f& t, int viewport = 0);
 
         /** \brief Removes a previously added 3D axes (coordinate system)
           * \param viewport view port where the 3D axes should be removed from (default: all)

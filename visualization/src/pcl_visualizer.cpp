@@ -306,7 +306,7 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, f
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, Eigen::Matrix4f t, int viewport)
+pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const Eigen::Matrix4f& t, int viewport)
 {
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
   axes->SetOrigin (0, 0, 0);
