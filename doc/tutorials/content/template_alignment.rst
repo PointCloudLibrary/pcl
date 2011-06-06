@@ -184,10 +184,9 @@ Finally, we take the best fitting template, apply the transform that aligns it t
 Compiling and running the program
 ---------------------------------
 
-Add the following lines to your `CMakeLists.txt <http://..building_pcl.html>`_ file:
+Add the following lines to your `CMakeLists.txt` file:
 
-
-.. literalinclude:: sources/template_alignment/template_alignment.txt
+.. literalinclude:: sources/template_alignment/CMakeLists.txt
    :language: cmake
    :linenos:
 
