@@ -82,6 +82,8 @@ namespace pcl
     typedef boost::shared_ptr<std::map<std::string, CloudActor> > CloudActorMapPtr;
 
     typedef std::map<std::string, vtkSmartPointer<vtkProp> > ShapeActorMap;
+
+    typedef std::map<int, vtkSmartPointer<vtkProp> > CoordinateActorMap;
   }
 }
 

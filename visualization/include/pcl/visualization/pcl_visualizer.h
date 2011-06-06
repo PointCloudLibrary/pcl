@@ -127,10 +127,45 @@ namespace pcl
         void 
         addCoordinateSystem (double scale, float x, float y, float z, int viewport = 0);
 
-        /** \brief Removes a previously added 3D axes (coordinate system)
-          * \param viewport view port where the 3D axes should be removed from (default: all)
+         /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z, Roll,Pitch,Yaw
+          * \
+          * \param scale the scale of the axes (default: 1)
+          * \param t transformation matrix
+          * \param tube_size the size of tube(radius of each orthogonal axies ,default: 1)
+          * \param viewport the view port where the 3D axes should be added (default: all)
+          *
+          * RPY Angles
+          * Rotate the reference frame by the angle roll about axis x
+          * Rotate the reference frame by the angle pitch about axis y
+          * Rotate the reference frame by the angle yaw about axis z
+          *
+          * Description:
+          * Sets the orientation of the Prop3D.  Orientation is specified as
+          * X,Y and Z rotations in that order, but they are performed as
+          * RotateZ, RotateX, and finally RotateY.
+          *
+          * All axies use right hand rule. x=red axis, y=green axis, z=blue axis
+          * z direction is point into the screen.
+          *     z
+          *      \
+          *       \
+          *        \
+          *         -----------> x
+          *         |
+          *         |
+          *         |
+          *         |
+          *         |
+          *         |
+          *         y
           */
         void 
+        addCoordinateSystem (double scale, Eigen::Matrix4f t, int viewport = 0);
+
+        /** \brief Removes a previously added 3D axes (coordinate system)
+          * \param viewport view port where the 3D axes should be removed from (default: all)
+          */ 
+        bool 
         removeCoordinateSystem (int viewport = 0);
 
         /** \brief Removes a Point Cloud from screen, based on a given ID.
@@ -755,6 +790,9 @@ namespace pcl
         /** \brief Internal list with actor pointers and name IDs for shapes. */
         ShapeActorMap shape_actor_map_;
 
+        /** \brief Internal list with actor pointers and viewpoint for coordinates. */
+        CoordinateActorMap coordinate_actor_map_;
+        
         /** \brief Internal method. Removes a vtk actor from the screen.
           * \param actor a pointer to the vtk actor object
           * \param viewport the view port where the actor should be removed from (default: all)

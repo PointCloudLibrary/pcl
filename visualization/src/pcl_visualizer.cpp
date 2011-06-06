@@ -232,9 +232,9 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, int viewpo
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
   axes->SetOrigin (0, 0, 0);
   axes->SetScaleFactor (scale);
-                                                                                            
+
   vtkSmartPointer<vtkFloatArray> axes_colors = vtkSmartPointer<vtkFloatArray>::New ();
-  axes_colors->Allocate (6);           
+  axes_colors->Allocate (6);
   axes_colors->InsertNextValue (0.0);
   axes_colors->InsertNextValue (0.0);
   axes_colors->InsertNextValue (0.5);
@@ -244,19 +244,22 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, int viewpo
 
   vtkSmartPointer<vtkPolyData> axes_data = axes->GetOutput ();
   axes_data->Update ();
-  axes_data->GetPointData ()->SetScalars (axes_colors);            
+  axes_data->GetPointData ()->SetScalars (axes_colors);
 
   vtkSmartPointer<vtkTubeFilter> axes_tubes = vtkSmartPointer<vtkTubeFilter>::New ();
   axes_tubes->SetInput (axes_data);
   axes_tubes->SetRadius (axes->GetScaleFactor () / 50.0);
   axes_tubes->SetNumberOfSides (6);
-  
+
   vtkSmartPointer<vtkPolyDataMapper> axes_mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
   axes_mapper->SetScalarModeToUsePointData ();
   axes_mapper->SetInput (axes_tubes->GetOutput ());
-                                                                                            
+
   vtkSmartPointer<vtkLODActor> axes_actor = vtkSmartPointer<vtkLODActor>::New ();
   axes_actor->SetMapper (axes_mapper);
+
+  // Save the ID and actor pair to the global actor map
+  coordinate_actor_map_[viewport] = axes_actor;
 
   addActorToRenderer (axes_actor, viewport);
 }
@@ -268,9 +271,9 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, f
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
   axes->SetOrigin (0, 0, 0);
   axes->SetScaleFactor (scale);
-                                                                                            
+
   vtkSmartPointer<vtkFloatArray> axes_colors = vtkSmartPointer<vtkFloatArray>::New ();
-  axes_colors->Allocate (6);           
+  axes_colors->Allocate (6);
   axes_colors->InsertNextValue (0.0);
   axes_colors->InsertNextValue (0.0);
   axes_colors->InsertNextValue (0.5);
@@ -280,34 +283,37 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, f
 
   vtkSmartPointer<vtkPolyData> axes_data = axes->GetOutput ();
   axes_data->Update ();
-  axes_data->GetPointData ()->SetScalars (axes_colors);            
+  axes_data->GetPointData ()->SetScalars (axes_colors);
 
   vtkSmartPointer<vtkTubeFilter> axes_tubes = vtkSmartPointer<vtkTubeFilter>::New ();
   axes_tubes->SetInput (axes_data);
   axes_tubes->SetRadius (axes->GetScaleFactor () / 50.0);
   axes_tubes->SetNumberOfSides (6);
-  
+
   vtkSmartPointer<vtkPolyDataMapper> axes_mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
   axes_mapper->SetScalarModeToUsePointData ();
   axes_mapper->SetInput (axes_tubes->GetOutput ());
-                                                                                            
+
   vtkSmartPointer<vtkLODActor> axes_actor = vtkSmartPointer<vtkLODActor>::New ();
   axes_actor->SetMapper (axes_mapper);
   axes_actor->SetPosition (x, y, z);
+
+  // Save the ID and actor pair to the global actor map
+  coordinate_actor_map_[viewport] = axes_actor;
 
   addActorToRenderer (axes_actor, viewport);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::removeCoordinateSystem (int viewport)
+pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, Eigen::Matrix4f t, int viewport)
 {
-/*  vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
+  vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
   axes->SetOrigin (0, 0, 0);
   axes->SetScaleFactor (scale);
-                                                                                            
+
   vtkSmartPointer<vtkFloatArray> axes_colors = vtkSmartPointer<vtkFloatArray>::New ();
-  axes_colors->Allocate (6);           
+  axes_colors->Allocate (6);
   axes_colors->InsertNextValue (0.0);
   axes_colors->InsertNextValue (0.0);
   axes_colors->InsertNextValue (0.5);
@@ -317,21 +323,79 @@ pcl::visualization::PCLVisualizer::removeCoordinateSystem (int viewport)
 
   vtkSmartPointer<vtkPolyData> axes_data = axes->GetOutput ();
   axes_data->Update ();
-  axes_data->GetPointData ()->SetScalars (axes_colors);            
+  axes_data->GetPointData ()->SetScalars (axes_colors);
 
   vtkSmartPointer<vtkTubeFilter> axes_tubes = vtkSmartPointer<vtkTubeFilter>::New ();
   axes_tubes->SetInput (axes_data);
   axes_tubes->SetRadius (axes->GetScaleFactor () / 50.0);
   axes_tubes->SetNumberOfSides (6);
-  
+
   vtkSmartPointer<vtkPolyDataMapper> axes_mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
   axes_mapper->SetScalarModeToUsePointData ();
   axes_mapper->SetInput (axes_tubes->GetOutput ());
-                                                                                            
+
   vtkSmartPointer<vtkLODActor> axes_actor = vtkSmartPointer<vtkLODActor>::New ();
   axes_actor->SetMapper (axes_mapper);
 
-  addActorToRenderer (axes_actor, viewport);*/
+  // All Input values are radian.
+  // To avoid singularity when inversion from Rotation matrix to angles.
+  double pitch,yaw,roll;
+  // pitch = 90 degree
+  if (t(1,0) > 0.998)
+  { // singularity at north pole
+    pitch = atan2 (t (0, 2), t (2, 2));
+    yaw = M_PI/2.0;
+    roll = 0;
+  }
+  else
+  {
+    pitch = atan2(-t(2,0),t(0,0));
+    roll = atan2(-t(1,2),t(1,1));
+    yaw = asin(t(1,0));
+  }
+
+  // pitch = -90 degree
+  if (t (1, 0) < -0.998)
+  { // singularity at south pole
+    pitch = atan2(t(0,2),t(2,2));
+    yaw = -M_PI/2.0;
+    roll = 0;
+  }
+  else
+  {
+    pitch = atan2(-t(2,0),t(0,0));
+    roll = atan2(-t(1,2),t(1,1));
+    yaw = asin(t(1,0));
+  }
+
+  // Convert from radian to degree.
+  pitch = pitch * 180.0 / (double)M_PI;
+  roll  = roll  * 180.0 / (double)M_PI;
+  yaw   = yaw   * 180.0 / (double)M_PI;
+
+  axes_actor->SetPosition (t (0, 3), t(1, 3), t(2, 3));
+  axes_actor->SetOrientation (roll, pitch, yaw);
+
+  // Save the ID and actor pair to the global actor map
+  coordinate_actor_map_[viewport] = axes_actor;
+  addActorToRenderer (axes_actor, viewport);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::removeCoordinateSystem (int viewport)
+{
+  // Check to see if the given ID entry exists
+  CoordinateActorMap::iterator am_it = coordinate_actor_map_.find (viewport);
+
+  if (am_it == coordinate_actor_map_.end ())
+    return (false);
+
+  // Remove it from all renderers
+  removeActorFromRenderer (am_it->second, viewport);
+  // Remove the ID pair to the global actor map
+  coordinate_actor_map_.erase (am_it);
+  return (true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1002,7 +1066,7 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
         }
         fs.close ();
       }
-      
+
       // look for '/' as a separator
       if (camera.size () != 6)
       {
@@ -1016,7 +1080,7 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
       std::string view_str  = camera.at (3);
       std::string win_size_str = camera.at (4);
       std::string win_pos_str  = camera.at (5);
-      
+
       // Get each camera setting separately and parse for ','
       std::vector<std::string> clip_st;
       boost::split (clip_st, clip_str, boost::is_any_of (","), boost::token_compress_on);
