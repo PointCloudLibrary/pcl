@@ -45,7 +45,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) : 
     rens_ (vtkSmartPointer<vtkRendererCollection>::New ()),
-    style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ())
+    style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ()),
+    cloud_actor_map_ (new CloudActorMap)
 {
   // FPS callback
   vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
@@ -78,7 +79,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   // Create the interactor style
   style_->Initialize ();
   style_->setRendererCollection (rens_);
-  style_->setCloudActorMap (boost::make_shared<CloudActorMap> (cloud_actor_map_));
+  style_->setCloudActorMap (cloud_actor_map_);
   style_->UseTimersOn ();
 
   // Create the interactor
@@ -107,7 +108,8 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const std::string &name, PCLVisualizerInteractorStyle* style) : 
-    rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
+    rens_ (vtkSmartPointer<vtkRendererCollection>::New ()), 
+    cloud_actor_map_ (new CloudActorMap)
 {
   style_ = style;
 
@@ -152,7 +154,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   // Create the interactor style
   style_->Initialize ();
   style_->setRendererCollection (rens_);
-  style_->setCloudActorMap (boost::make_shared<CloudActorMap> (cloud_actor_map_));
+  style_->setCloudActorMap (cloud_actor_map_);
   style_->UseTimersOn ();
 
   // Create the interactor
@@ -337,16 +339,16 @@ bool
 pcl::visualization::PCLVisualizer::removePointCloud (const std::string &id, int viewport)
 {
   // Check to see if the given ID entry exists
-  CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
 
-  if (am_it == cloud_actor_map_.end ())
+  if (am_it == cloud_actor_map_->end ())
     return (false);
 
   // Remove it from all renderers
   removeActorFromRenderer (am_it->second.actor, viewport);
 
   // Remove the pointer/ID pair to the global actor map
-  cloud_actor_map_.erase (am_it);
+  cloud_actor_map_->erase (am_it);
   return (true);
 }
 
@@ -385,9 +387,9 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::
     return (false);
   }
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
 
-  if (am_it != cloud_actor_map_.end ())
+  if (am_it != cloud_actor_map_->end ())
   {
     pcl::console::print_warn ("[addPointCloudPrincipalCurvatures] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
@@ -470,7 +472,7 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::
   // Save the pointer/ID pair to the global actor map
   CloudActor act;
   act.actor = actor;
-  cloud_actor_map_[id] = act;
+  (*cloud_actor_map_)[id] = act;
   return (true);
 }
 
@@ -480,9 +482,9 @@ pcl::visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<pcl::Poi
                                                   const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
 
-  if (am_it != cloud_actor_map_.end ())
+  if (am_it != cloud_actor_map_->end ())
   {
     pcl::console::print_warn ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
@@ -490,7 +492,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<pcl::Poi
   vtkSmartPointer<vtkPolyData> polydata;
   
   // Convert the PointCloud to VTK PolyData
-  convertPointCloudToVTKPolyData (cloud, polydata);
+  convertPointCloudToVTKPolyData<pcl::PointXYZ> (cloud, polydata);
   polydata->Update ();
 
   // Get the colors from the handler
@@ -510,27 +512,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (const pcl::PointCloud<pcl::Poi
   CloudActor act;
   //act.color_handlers.push_back (handler);
   act.actor = actor;
-  cloud_actor_map_[id] = act;
-  return (true);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-bool
-pcl::visualization::PCLVisualizer::updatePointCloud (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
-                                                     const std::string &id)
-{
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
-
-  if (am_it == cloud_actor_map_.end ())
-    return (false);
-
-  vtkSmartPointer<vtkPolyData> polydata;
-  // Convert the PointCloud to VTK PolyData
-  convertPointCloudToVTKPolyData (cloud, polydata);
-  polydata->Update ();
-  // Update the mapper
-  reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
+  (*cloud_actor_map_)[id] = act;
   return (true);
 }
 
@@ -638,36 +620,6 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
-                                                                   vtkSmartPointer<vtkPolyData> &polydata)
-{
-  if (!polydata)
-    polydata = vtkSmartPointer<vtkPolyData>::New ();
-
-  // Create the supporting structures
-  vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New ();
-  vtkSmartPointer<vtkIdTypeArray> cells  = vtkSmartPointer<vtkIdTypeArray>::New ();
-  cells->SetNumberOfValues ((vtkIdType)cloud->points.size () * 2);
-  vtkSmartPointer<vtkPoints> points      = vtkSmartPointer<vtkPoints>::New ();
-
-  // Set the points
-  points->SetDataTypeToFloat ();
-  points->SetNumberOfPoints (cloud->points.size ());
-
-  vtkIdType *cell = cells->GetPointer (0);
-  for (vtkIdType i = 0; i < (int)cloud->points.size (); ++i)
-  {
-    points->SetPoint (i, cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
-    *cell++ = 1;
-    *cell++ = i;
-  }
-  vertices->SetCells ((vtkIdType)cloud->points.size (), (vtkIdTypeArray*)cells);
-  polydata->SetPoints (points);
-  polydata->SetVerts (vertices);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
     const GeometryHandlerConstPtr &geometry_handler, vtkSmartPointer<vtkPolyData> &polydata)
@@ -727,9 +679,9 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
     int property, double val1, double val2, double val3, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
 
-  if (am_it == cloud_actor_map_.end ())
+  if (am_it == cloud_actor_map_->end ())
   {
     pcl::console::print_error ("[setPointCloudRenderingProperties] Could not find any PointCloud datasets with id <%s>!\n", id.c_str ());
     return (false);
@@ -759,9 +711,9 @@ bool
 pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (int property, double &value, const std::string &id)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
 
-  if (am_it == cloud_actor_map_.end ())
+  if (am_it == cloud_actor_map_->end ())
     return (false);
   // Get the actor pointer
   vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second.actor);
@@ -801,9 +753,9 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
     int property, double value, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
 
-  if (am_it == cloud_actor_map_.end ())
+  if (am_it == cloud_actor_map_->end ())
   {
     pcl::console::print_error ("[setPointCloudRenderingProperties] Could not find any PointCloud datasets with id <%s>!\n", id.c_str ());
     return (false);
@@ -1505,8 +1457,8 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
 bool
 pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &id, int index)
 {
-  CloudActorMap::iterator am_it = cloud_actor_map_.find (id);
-  if (am_it == cloud_actor_map_.end ())
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+  if (am_it == cloud_actor_map_->end ())
   {
     pcl::console::print_warn ("[updateColorHandlerIndex] PointCloud with id <%s> doesn't exist!\n", id.c_str ());
     return (false);
@@ -1538,7 +1490,7 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
   am_it->second.actor->Modified ();
   am_it->second.color_handler_index_ = index;
   
-  style_->setCloudActorMap (boost::make_shared<CloudActorMap> (cloud_actor_map_));
+  //style_->setCloudActorMap (cloud_actor_map_);
 
   return (true);
 }
@@ -1675,6 +1627,52 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (const pcl::Polygo
   // Save the pointer/ID pair to the global actor map
   shape_actor_map_[id] = actor;
 
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::fromHandlersToScreen (
+    const GeometryHandlerConstPtr &geometry_handler,
+    const ColorHandlerConstPtr &color_handler, 
+    const std::string &id,
+    int viewport)
+{
+  if (!geometry_handler->isCapable ())
+  {
+    PCL_WARN ("[fromHandlersToScreen] PointCloud <%s> requested with an invalid geometry handler (%s)!\n", id.c_str (), geometry_handler->getName ().c_str ());
+    return (false);
+  }
+
+  if (!color_handler->isCapable ())
+  {
+    PCL_WARN ("[fromHandlersToScreen] PointCloud <%s> requested with an invalid color handler (%s)!\n", id.c_str (), color_handler->getName ().c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkPolyData> polydata;
+  // Convert the PointCloud to VTK PolyData
+  convertPointCloudToVTKPolyData (geometry_handler, polydata);
+  // use the given geometry handler
+  polydata->Update ();
+
+  // Get the colors from the handler
+  vtkSmartPointer<vtkDataArray> scalars;
+  color_handler->getColor (scalars);
+  polydata->GetPointData ()->SetScalars (scalars);
+
+  // Create an Actor
+  vtkSmartPointer<vtkLODActor> actor;
+  createActorFromVTKDataSet (polydata, actor);
+
+  // Add it to all renderers
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  (*cloud_actor_map_)[id].actor = actor;
+  (*cloud_actor_map_)[id].geometry_handlers.push_back (geometry_handler);
+  (*cloud_actor_map_)[id].color_handlers.push_back (color_handler);
+  //style_->setCloudActorMap (cloud_actor_map_);
   return (true);
 }
 

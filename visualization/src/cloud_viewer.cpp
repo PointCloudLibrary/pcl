@@ -1,39 +1,39 @@
-/*
- * Software License Agreement (BSD License)
- *
- *  Copyright (c) 2011, Willow Garage, Inc.
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
- *
- */
+/**
+  * Software License Agreement (BSD License)
+  *
+  *  Copyright (c) 2011, Willow Garage, Inc.
+  *  All rights reserved.
+  *
+  *  Redistribution and use in source and binary forms, with or without
+  *  modification, are permitted provided that the following conditions
+  *  are met:
+  *
+  *   * Redistributions of source code must retain the above copyright
+  *     notice, this list of conditions and the following disclaimer.
+  *   * Redistributions in binary form must reproduce the above
+  *     copyright notice, this list of conditions and the following
+  *     disclaimer in the documentation and/or other materials provided
+  *     with the distribution.
+  *   * Neither the name of Willow Garage, Inc. nor the names of its
+  *     contributors may be used to endorse or promote products derived
+  *     from this software without specific prior written permission.
+  *
+  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  *  POSSIBILITY OF SUCH DAMAGE.
+  *
+  * $Id$
+  *
+  */
 
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -41,63 +41,75 @@
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/foreach.hpp>
+
 namespace
 {
   struct cloud_show_base
   {
-    virtual void pop() = 0;
-    virtual bool popped() const = 0;
+    virtual void pop () = 0;
+    virtual bool popped () const = 0;
     typedef boost::shared_ptr<cloud_show_base> Ptr;
   };
 
-  template<typename CloudT>
-    struct cloud_show : cloud_show_base
+  template <typename CloudT> 
+  struct cloud_show : cloud_show_base
+  {
+    cloud_show (const std::string &cloud_name, typename CloudT::ConstPtr cloud,
+      boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer) :
+      cloud_name (cloud_name), cloud (cloud), viewer (viewer),popped_ (false)
+    {}
+
+    template <typename Handler> void
+    pop (const Handler &handler)
     {
-      cloud_show(const std::string& cloud_name,typename CloudT::ConstPtr cloud, boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer) :
-        cloud_name(cloud_name), cloud(cloud), viewer(viewer),popped_(false)
-      {
-      }
-      template<typename Handler>
-      void pop(Handler handler)
-      {
-        double psize = 1.0,opacity = 1.0,linesize =1.0;
-        viewer->getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-        viewer->getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-        viewer->getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
-        viewer->removePointCloud(cloud_name);
-        viewer->addPointCloud(cloud, handler, cloud_name);
-        viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-        viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-        viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
-        popped_ = true;
-      }
-      virtual void pop();
-      virtual bool popped() const
-      {
-        return popped_;
-      }
-      std::string cloud_name;
-      typename CloudT::ConstPtr cloud;
-      boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
-      bool popped_;
-    };
-    typedef pcl::PointCloud<pcl::PointXYZRGB> cc;
-    typedef pcl::PointCloud<pcl::PointXYZ> gc;
+      double psize = 1.0, opacity = 1.0, linesize =1.0;
+      viewer->getPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+      viewer->getPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+      viewer->getPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
+
+      if (!viewer->updatePointCloud (cloud, handler, cloud_name))
+        viewer->addPointCloud (cloud, handler, cloud_name);
+
+      // viewer->removePointCloud (cloud_name);
+      viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+      viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+      viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
+      popped_ = true;
+    }
+
+    virtual void pop ();
+    
+    virtual bool
+    popped () const
+    {
+      return popped_;
+    }
+    
+    std::string cloud_name;
+    typename CloudT::ConstPtr cloud;
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+    bool popped_;
+  };
+  
+  typedef pcl::PointCloud<pcl::PointXYZRGB> cc;
+  typedef pcl::PointCloud<pcl::PointXYZ> gc;
 
 
-    template<>
-    void cloud_show<cc>::pop()
-    {
-      pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> handler(cloud);
-      pop(handler);
-    }
-    template<>
-    void cloud_show<gc>::pop()
-    {
-      pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PointXYZ> handler(cloud);
-      pop(handler);
-    }
+  template <> void
+  cloud_show<cc>::pop ()
+  {
+    pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> handler (cloud);
+    pop (handler);
+  }
+  
+  template <> void
+  cloud_show<gc>::pop ()
+  {
+    pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PointXYZ> handler (cloud);
+    pop (handler);
+  }
 }
+
 struct pcl::visualization::CloudViewer::CloudViewer_impl
 {
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,6 +122,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
       boost::thread::yield ();
     }
   }
+
   ~CloudViewer_impl ()
   {
     quit_ = true;
@@ -117,32 +130,30 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  template<typename T>
-  void
-  block_post_cloud (const typename T::ConstPtr &cloud, const std::string& name)
+  template <typename T> void
+  block_post_cloud (const typename T::ConstPtr &cloud, const std::string &name)
   {
-    cloud_show_base::Ptr cs(new cloud_show< T > ( name,cloud,viewer_));
+    cloud_show_base::Ptr cs (new cloud_show<T>(name,cloud,viewer_));
     {
-      boost::mutex::scoped_lock lock( mtx_);
+      boost::mutex::scoped_lock lock (mtx_);
 
-      cloud_shows_.push_back(cs);
+      cloud_shows_.push_back (cs);
 
     }
-    while (!cs->popped())
+    while (!cs->popped ())
     {
       boost::thread::yield ();
     }
   }
-  
-  template<typename T>
-  void
-  nonblock_post_cloud (const typename T::ConstPtr &cloud, const std::string& name)
-  {
-    cloud_show_base::Ptr cs(new cloud_show< T > ( name,cloud,viewer_));
-    {
-      boost::mutex::scoped_lock lock( mtx_);
 
-      cloud_shows_.push_back(cs);
+  template <typename T> void
+  nonblock_post_cloud (const typename T::ConstPtr &cloud, const std::string &name)
+  {
+    cloud_show_base::Ptr cs (new cloud_show<T>(name,cloud,viewer_));
+    {
+      boost::mutex::scoped_lock lock (mtx_);
+
+      cloud_shows_.push_back (cs);
     }
   }
 
@@ -152,7 +163,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     using namespace pcl::visualization;
 
-    viewer_ = boost::shared_ptr<PCLVisualizer> (new PCLVisualizer (window_name_));
+    viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_));
     viewer_->setBackgroundColor (0.1, 0.1, 0.1);
     viewer_->addCoordinateSystem (0.1);
 
@@ -160,25 +171,25 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
     {
       {
         boost::mutex::scoped_lock lock (mtx_);
-        while(!cloud_shows_.empty())
+        while (!cloud_shows_.empty ())
         {
-          cloud_shows_.back()->pop();
-          cloud_shows_.pop_back();
+          cloud_shows_.back ()->pop ();
+          cloud_shows_.pop_back ();
         }
       }
       {
-        boost::mutex::scoped_lock lock(once_mtx);
-        BOOST_FOREACH(CallableList::value_type& x, callables_once)
+        boost::mutex::scoped_lock lock (once_mtx);
+        BOOST_FOREACH (CallableList::value_type& x, callables_once)
         {
-          (x) (*viewer_);
+          (x)(*viewer_);
         }
-        callables_once.clear();
+        callables_once.clear ();
       }
       {
-        boost::mutex::scoped_lock lock(c_mtx);
-        BOOST_FOREACH(CallableMap::value_type& x, callables)
+        boost::mutex::scoped_lock lock (c_mtx);
+        BOOST_FOREACH (CallableMap::value_type& x, callables)
         {
-          (x.second) (*viewer_);
+          (x.second)(*viewer_);
         }
       }
       if (viewer_->wasStopped ())
@@ -186,7 +197,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
         return; //todo handle this better
       }
       {
-        boost::mutex::scoped_lock lock(spin_mtx_);
+        boost::mutex::scoped_lock lock (spin_mtx_);
         //TODO some smart waitkey like stuff here, so that wasStoped() can hold for a long time
         //maybe a counter
         viewer_->spinOnce (10); // Give the GUI millis to handle events, then return
@@ -196,25 +207,25 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   void
-  post (VizCallable x, const std::string& key)
+  post (VizCallable x, const std::string &key)
   {
-    boost::mutex::scoped_lock lock(c_mtx);
+    boost::mutex::scoped_lock lock (c_mtx);
     callables[key] = x;
   }
 
   void
   post (VizCallable x)
   {
-    boost::mutex::scoped_lock lock(once_mtx);
-    callables_once.push_back(x);
+    boost::mutex::scoped_lock lock (once_mtx);
+    callables_once.push_back (x);
 
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   void
-  remove (const std::string& key)
+  remove (const std::string &key)
   {
-    boost::mutex::scoped_lock lock(c_mtx);
+    boost::mutex::scoped_lock lock (c_mtx);
     if (callables.find (key) != callables.end ())
     {
       callables.erase (key);
@@ -234,28 +245,25 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   CallableList callables_once;
 };
 
-pcl::visualization::CloudViewer::CloudViewer (const std::string& window_name) :
+pcl::visualization::CloudViewer::CloudViewer (const std::string &window_name) :
   impl_ (new CloudViewer_impl (window_name))
-{
-
-}
+{}
 
 pcl::visualization::CloudViewer::~CloudViewer ()
-{
-}
+{}
 
 void
 pcl::visualization::CloudViewer::showCloud (const ColorCloud::ConstPtr &cloud,
-                                           const std::string& cloudname)
+                                            const std::string &cloudname)
 {
   if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
     return;
-  impl_->block_post_cloud<ColorCloud> (cloud, cloudname);
+  impl_->block_post_cloud<ColorCloud>(cloud, cloudname);
 }
 
 void
 pcl::visualization::CloudViewer::showCloud (const GrayCloud::ConstPtr &cloud,
-                                           const std::string& cloudname)
+                                            const std::string &cloudname)
 {
   if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
     return;
@@ -263,7 +271,7 @@ pcl::visualization::CloudViewer::showCloud (const GrayCloud::ConstPtr &cloud,
 }
 
 void
-pcl::visualization::CloudViewer::showCloudNonBlocking (const ColorCloud::ConstPtr &cloud, const std::string& cloudname)
+pcl::visualization::CloudViewer::showCloudNonBlocking (const ColorCloud::ConstPtr &cloud, const std::string &cloudname)
 {
   if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
     return;
@@ -271,7 +279,7 @@ pcl::visualization::CloudViewer::showCloudNonBlocking (const ColorCloud::ConstPt
 }
 
 void
-pcl::visualization::CloudViewer::showCloudNonBlocking (const GrayCloud::ConstPtr &cloud, const std::string& cloudname)
+pcl::visualization::CloudViewer::showCloudNonBlocking (const GrayCloud::ConstPtr &cloud, const std::string &cloudname)
 {
   if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
     return;
@@ -279,7 +287,7 @@ pcl::visualization::CloudViewer::showCloudNonBlocking (const GrayCloud::ConstPtr
 }
 
 void
-pcl::visualization::CloudViewer::runOnVisualizationThread (VizCallable x, const std::string& key)
+pcl::visualization::CloudViewer::runOnVisualizationThread (VizCallable x, const std::string &key)
 {
   impl_->post (x, key);
 }
@@ -292,7 +300,7 @@ pcl::visualization::CloudViewer::runOnVisualizationThreadOnce (VizCallable x)
 
 
 void
-pcl::visualization::CloudViewer::removeVisualizationCallable (const std::string& key)
+pcl::visualization::CloudViewer::removeVisualizationCallable (const std::string &key)
 {
   impl_->remove (key);
 }
@@ -306,3 +314,4 @@ pcl::visualization::CloudViewer::wasStopped (int millis)
   else
     return false;
 }
+

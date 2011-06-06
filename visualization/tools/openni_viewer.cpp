@@ -165,7 +165,7 @@ main (int argc, char** argv)
           p->addPointCloud (g_cloud, "OpenNICloud");
           first = false;
         }
-        p->updatePointCloud (g_cloud, "OpenNICloud");
+        p->updatePointCloud<pcl::PointXYZ> (g_cloud, "OpenNICloud");
       }
       mutex_.unlock ();
     }

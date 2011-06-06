@@ -139,7 +139,8 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
       // Copy the value at the specified field
-      if (!pcl_isfinite (cloud_->points[cp].x) || !pcl_isfinite (cloud_->points[cp].rgb))
+      if (!pcl_isfinite (cloud_->points[cp].x) || !pcl_isfinite (cloud_->points[cp].rgb) ||
+          !pcl_isfinite (cloud_->points[cp].y) || !pcl_isfinite (cloud_->points[cp].z))
         continue;
 
       // Copy the value at the specified field

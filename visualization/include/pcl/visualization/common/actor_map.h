@@ -59,7 +59,6 @@ namespace pcl
       typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
       public:
-
         CloudActor () : color_handler_index_ (0), geometry_handler_index_ (0) {}
 
         virtual ~CloudActor ()
@@ -78,7 +77,9 @@ namespace pcl
         /** \brief The active geometry handler. */
         int geometry_handler_index_;
     };
+
     typedef std::map<std::string, CloudActor> CloudActorMap;
+    typedef boost::shared_ptr<std::map<std::string, CloudActor> > CloudActorMapPtr;
 
     typedef std::map<std::string, vtkSmartPointer<vtkProp> > ShapeActorMap;
   }
