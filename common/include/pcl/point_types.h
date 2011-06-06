@@ -234,7 +234,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointNormal,
                                    (float, normal_z, normal_z)
                                    (float, curvature, curvature)
 )
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZRGBNormal,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGBNormal,
                                    (float, x, x)
                                    (float, y, y)
                                    (float, z, z)
@@ -244,6 +244,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZRGBNormal,
                                    (float, normal_z, normal_z)
                                    (float, curvature, curvature)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGBNormal, pcl::_PointXYZRGBNormal)
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZINormal,
                                    (float, x, x)
                                    (float, y, y)
