@@ -21,6 +21,10 @@
 # For compatibility reason we also provide PCL_XXX_LIBRARY, PCL_XXX_LIBRARY_DEBUG
 # and PCL_XXX_LIBRARIES where XXX is upper cased xxx from the components above.
 #
+# PCL_INCLUDE_DIRS is filled with PCL and available 3rdparty headers
+# PCL_LIBRARY_DIRS is filled with PCL components libraries install directory and
+# 3rdparty libraries paths
+# 
 # Tested with:
 # - PCL 1.0
 # - PCL 1.0.1
@@ -160,10 +164,12 @@ if("@wxWidgets_FOUND@" STREQUAL "TRUE")
   list(APPEND PCL_LIBRARY_DIRS "@wxWidgets_LIBRARY_DIRS@")
 endif ("@wxWidgets_FOUND@" STREQUAL "TRUE")
 
-list(APPEND PCL_INCLUDE_DIRS "@VTK_INCLUDE_DIRS@")
-list(APPEND PCL_LIBRARY_DIRS "@VTK_LIBRARY_DIRS@")
-set(VTK_CMAKE_DIR "@VTK_CMAKE_DIR@")
-include ("@VTK_USE_FILE@")
+if("@VTK_FOUND@" STREQUAL "TRUE")
+	find_package(VTK REQUIRED)
+	include ("@VTK_USE_FILE@")
+	list(APPEND PCL_INCLUDE_DIRS "@VTK_INCLUDE_DIRS@")
+	list(APPEND PCL_LIBRARY_DIRS "@VTK_LIBRARY_DIRS@")
+endif("@VTK_FOUND@" STREQUAL "TRUE")
 
 list(SORT PCL_INCLUDE_DIRS)
 list(REMOVE_DUPLICATES PCL_INCLUDE_DIRS)
