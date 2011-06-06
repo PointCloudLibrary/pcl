@@ -18,15 +18,8 @@
 # - surface
 # - visualization
 #
-# For compatibility reason we also provide PCL_XXX_LIBRARY, PCL_XXX_LIBRARY_CONFIG
-# and PCL_XXX_LIBRARIES where : 
-# * XXX is upper cased xxx from the components above
-# * CONFIG is a valid CMAKE_BUILD_TYPE listed in CMAKE_CONFIGURATION_TYPES
-# But they are really a burden so please use the above notation because:
-# - If there is no built for a given configuration then the found build type is
-#   used to fill the libraries.
-# - PCL_XXX_LIBRARY corresponds either to Release or MinSizeRel build types or default 
-#   to the CMAKE_BUILD_TYPE of PCL so the behavior can be unpredictable.
+# For compatibility reason we also provide PCL_XXX_LIBRARY, PCL_XXX_LIBRARY_DEBUG
+# and PCL_XXX_LIBRARIES where XXX is upper cased xxx from the components above.
 #
 # Tested with:
 # - PCL 1.0
@@ -37,8 +30,6 @@
 
 set(PCL_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_ROOT@")
 set(PCL_LIBRARY_DIRS "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@")
-string(TOUPPER "@CMAKE_BUILD_TYPE@" PCL_BUILD_TYPE)
-string(TOUPPER "@CMAKE_CONFIGURATION_TYPES@" PCL_CONFIGURATION_TYPES)
 include("@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/pcl/PCLDepends.cmake")
 
 if("@PCL_SUBSYS_STATUS_common@" STREQUAL "TRUE")
@@ -98,10 +89,6 @@ if("@PCL_SUBSYS_STATUS_cuda@" STREQUAL "TRUE")
   list(APPEND PCL_COMPONENTS cuda)
 endif("@PCL_SUBSYS_STATUS_cuda@" STREQUAL "TRUE")
 
-###
-# For windows users (and to be consistent with FindPCL.cmake?) we try to locate 
-# the debug and the release versions of same library
-###
 if(PCL_FIND_COMPONENTS)
   foreach(comp ${PCL_FIND_COMPONENTS})
     list(FIND PCL_COMPONENTS ${comp} found)
@@ -109,52 +96,38 @@ if(PCL_FIND_COMPONENTS)
       message(FATAL_ERROR "requested components ${comp} not found")
     else(found EQUAL -1)
       string(TOUPPER "${comp}" COMP)
-      foreach(CONFIG ${PCL_CONFIGURATION_TYPES})
-				if(NOT MSVC)
-					get_target_property(PCL_${COMP}_LIBRARY_${CONFIG} pcl_${comp} IMPORTED_LOCATION_${CONFIG})
-					if(NOT PCL_${COMP}_LIBRARY_${CONFIG})
-						get_target_property(PCL_${COMP}_LIBRARY_${CONFIG} pcl_${comp} IMPORTED_LOCATION_${PCL_BUILD_TYPE})
-					endif(NOT PCL_${COMP}_LIBRARY_${CONFIG})
-				else(NOT MSVC)
-					get_target_property(PCL_${COMP}_LIBRARY_${CONFIG} pcl_${comp} IMPORTED_IMPLIB_${CONFIG})
-					if(NOT PCL_${COMP}_LIBRARY_${CONFIG})
-						get_target_property(PCL_${COMP}_LIBRARY_${CONFIG} pcl_${comp} IMPORTED_IMPLIB_${PCL_BUILD_TYPE})
-					endif(NOT PCL_${COMP}_LIBRARY_${CONFIG})					
-				endif(NOT MSVC)
-        string(TOLOWER "${CONFIG}" config)
-        if(("${config}" STREQUAL "release") OR ("${config}" STREQUAL "minsizerel"))
-          set(PCL_${COMP}_LIBRARY ${PCL_${COMP}_LIBRARY_RELEASE})
-          list(APPEND PCL_${COMP}_LIBRARIES optimized ${PCL_${COMP}_LIBRARY})
-        else(("${config}" STREQUAL "release") OR ("${config}" STREQUAL "minsizerel"))
-          list(APPEND PCL_${COMP}_LIBRARIES ${config} ${PCL_${COMP}_LIBRARY_${CONFIG}})
-        endif(("${config}" STREQUAL "release") OR ("${config}" STREQUAL "minsizerel"))
-			endforeach(CONFIG)
-			list(APPEND PCL_LIBRARIES ${PCL_${COMP}_LIBRARIES})
+      set(PCL_${COMP}_LIBRARY pcl_${comp})
+      set(PCL_${COMP}_LIBRARY_DEBUG pcl_${comp})
+      get_target_property(CONFIGURATIONS pcl_${comp} IMPORTED_CONFIGURATIONS)
+      list(FIND CONFIGURATIONS DEBUG debug_found)
+      if(debug_found EQUAL -1)
+        message("${comp} not installed in Debug configuration, using default!")
+      endif(debug_found EQUAL -1)
+      list(FIND CONFIGURATIONS RELEASE release_found)
+      list(FIND CONFIGURATIONS MINSIZEREL minsizerel_found)
+      if((release_found EQUAL -1) AND (minsizerel_found EQUAL -1))
+        message("${comp} not installed in Release nor in MinSizeRel configuration, using default!")
+      endif((release_found EQUAL -1) AND (minsizerel_found EQUAL -1))
+      set(PCL_${COMP}_LIBRARIES optimized pcl_${comp} debug pcl_${comp})
+      list(APPEND PCL_LIBRARIES ${PCL_${COMP}_LIBRARIES})
     endif(found EQUAL -1)
   endforeach(comp)
 else(PCL_FIND_COMPONENTS)
   foreach(comp ${PCL_COMPONENTS})
     string(TOUPPER "${comp}" COMP)
-    foreach(CONFIG ${PCL_CONFIGURATION_TYPES})
-			if(NOT MSVC)
-				get_target_property(PCL_${COMP}_LIBRARY_${CONFIG} pcl_${comp} IMPORTED_LOCATION_${CONFIG})
-				if(NOT PCL_${COMP}_LIBRARY_${CONFIG})
-					get_target_property(PCL_${COMP}_LIBRARY_${CONFIG} pcl_${comp} IMPORTED_LOCATION_${PCL_BUILD_TYPE})
-				endif(NOT PCL_${COMP}_LIBRARY_${CONFIG})
-			else(NOT MSVC)
-				get_target_property(PCL_${COMP}_LIBRARY_${CONFIG} pcl_${comp} IMPORTED_IMPLIB_${CONFIG})
-				if(NOT PCL_${COMP}_LIBRARY_${CONFIG})
-					get_target_property(PCL_${COMP}_LIBRARY_${CONFIG} pcl_${comp} IMPORTED_IMPLIB_${PCL_BUILD_TYPE})
-				endif(NOT PCL_${COMP}_LIBRARY_${CONFIG})
-			endif(NOT MSVC)
-      string(TOLOWER "${CONFIG}" config)
-      if(("${config}" STREQUAL "release") OR ("${config}" STREQUAL "minsizerel"))
-        set(PCL_${COMP}_LIBRARY ${PCL_${COMP}_LIBRARY_RELEASE})
-        list(APPEND PCL_${COMP}_LIBRARIES optimized ${PCL_${COMP}_LIBRARY})
-      else(("${config}" STREQUAL "release") OR ("${config}" STREQUAL "minsizerel"))
-        list(APPEND PCL_${COMP}_LIBRARIES ${config} ${PCL_${COMP}_LIBRARY_${CONFIG}})
-      endif(("${config}" STREQUAL "release") OR ("${config}" STREQUAL "minsizerel"))
-    endforeach(CONFIG)
+    set(PCL_${COMP}_LIBRARY pcl_${comp})
+    set(PCL_${COMP}_LIBRARY_DEBUG pcl_${comp})
+    get_target_property(CONFIGURATIONS pcl_${comp} IMPORTED_CONFIGURATIONS)
+    list(FIND CONFIGURATIONS DEBUG debug_found)
+    if(debug_found EQUAL -1)
+      message("${comp} not installed in Debug configuration, using default!")
+    endif(debug_found EQUAL -1)
+    list(FIND CONFIGURATIONS RELEASE release_found)
+    list(FIND CONFIGURATIONS MINSIZEREL minsizerel_found)
+    if((release_found EQUAL -1) AND (minsizerel_found EQUAL -1))
+      message("${comp} not installed in Release nor in MinSizeReal configuration, using default!")
+    endif((release_found EQUAL -1) AND (minsizerel_found EQUAL -1))
+    set(PCL_${COMP}_LIBRARIES optimized pcl_${comp} debug pcl_${comp})
     list(APPEND PCL_LIBRARIES ${PCL_${COMP}_LIBRARIES})
   endforeach(comp)
 endif(PCL_FIND_COMPONENTS)
@@ -199,17 +172,17 @@ list(REMOVE_DUPLICATES PCL_INCLUDE_DIRS)
 # Add some definitions for eigen sake
 ##
 add_definitions(-DEIGEN_USE_NEW_STDVECTOR 
-	              -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
+                -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
 
 ##
-# those are windows sake
+# those are for windows sake
 ##
 if(MSVC)
   add_definitions(-DBOOST_ALL_NO_LIB)
-	if("@FLANN_IS_STATIC@" STREQUAL "ON")
-		add_definitions(-DFLANN_STATIC)
-	endif("@FLANN_IS_STATIC@" STREQUAL "ON")
-	if("@CMINPACK_IS_STATIC@" STREQUAL "ON")
-		add_definitions(-DCMINPACK_NO_DLL)
-	endif("@CMINPACK_IS_STATIC@" STREQUAL "ON")
+  if("@FLANN_IS_STATIC@" STREQUAL "ON")
+    add_definitions(-DFLANN_STATIC)
+  endif("@FLANN_IS_STATIC@" STREQUAL "ON")
+  if("@CMINPACK_IS_STATIC@" STREQUAL "ON")
+    add_definitions(-DCMINPACK_NO_DLL)
+  endif("@CMINPACK_IS_STATIC@" STREQUAL "ON")
 endif(MSVC)
