@@ -122,13 +122,13 @@ pcl::PCDGrabberBase::PCDGrabberBase (const std::vector<std::string>& pcd_files, 
 {
 }
 
-pcl::PCDGrabberBase::~PCDGrabberBase ()
+pcl::PCDGrabberBase::~PCDGrabberBase () throw ()
 {
   stop ();
   delete impl_;
 }
 
-void pcl::PCDGrabberBase::start ()
+void pcl::PCDGrabberBase::start () throw (pcl::PCLIOException)
 {
   if (impl_->frames_per_second_ > 0)
   {
@@ -141,7 +141,7 @@ void pcl::PCDGrabberBase::start ()
   }
 }
 
-void pcl::PCDGrabberBase::stop ()
+void pcl::PCDGrabberBase::stop () throw (pcl::PCLIOException)
 {
   if (impl_->frames_per_second_ > 0)
   {
@@ -150,7 +150,7 @@ void pcl::PCDGrabberBase::stop ()
   }
 }
 
-bool pcl::PCDGrabberBase::isRunning () const
+bool pcl::PCDGrabberBase::isRunning () const throw (pcl::PCLIOException)
 {
   return impl_->running_;
 }

@@ -72,9 +72,9 @@ namespace pcl
       OpenNI_QVGA_25Hz = 4,  /*Supported by PSDK and Xtion*/
       OpenNI_QVGA_30Hz = 5,  /*Supported by PSDK, Xtion and Kinect*/
       OpenNI_QVGA_60Hz = 6,  /*Supported by PSDK and Xtion*/
-      OpenNI_QQVGA_25Hz = 7, /*Not supported -> using software downsampling*/
-      OpenNI_QQVGA_30Hz = 8, /*Not supported -> using software downsampling*/
-      OpenNI_QQVGA_60Hz = 9  /*Not supported -> using software downsampling*/
+      OpenNI_QQVGA_25Hz = 7, /*Not supported -> using software downsampling (only for integer scale factor and only NN)*/
+      OpenNI_QQVGA_30Hz = 8, /*Not supported -> using software downsampling (only for integer scale factor and only NN)*/
+      OpenNI_QQVGA_60Hz = 9  /*Not supported -> using software downsampling (only for integer scale factor and only NN)*/
     } Mode;
 
     //define callback signature typedefs
@@ -88,18 +88,18 @@ namespace pcl
     //enable using some openni parameters in the constructor.
     OpenNIGrabber (const std::string& device_id = "", const Mode& depth_mode = OpenNI_Default_Mode, const Mode& image_mode = OpenNI_Default_Mode) throw (openni_wrapper::OpenNIException);
 
-    virtual ~OpenNIGrabber ();
-    virtual void start ();
-    virtual void stop ();
-    virtual bool isRunning () const;
+    virtual ~OpenNIGrabber () throw ();
+    virtual void start () throw (pcl::PCLIOException);
+    virtual void stop () throw (pcl::PCLIOException);
+    virtual bool isRunning () const throw (pcl::PCLIOException);
     virtual std::string getName () const;
 
     inline const openni_wrapper::OpenNIDevice& getDevice () const;
     std::vector<std::pair<int, XnMapOutputMode> > getAvailableDepthModes () const;
     std::vector<std::pair<int, XnMapOutputMode> > getAvailableImageModes () const;
   private:
-    bool onInit (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode);
-    bool setupDevice (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode);
+    void onInit (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode);
+    void setupDevice (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode);
     void updateModeMaps ();
     void startSynchronization ();
     void stopSynchronization ();

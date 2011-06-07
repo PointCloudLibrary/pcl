@@ -68,8 +68,7 @@ OpenNIGrabber::OpenNIGrabber(const std::string& device_id, const Mode& depth_mod
 , running_(false)
 {
   // initialize driver
-  if (!onInit(device_id, depth_mode, image_mode))
-    THROW_PCL_IO_EXCEPTION("Device could not be initialized or no devices found.");
+  onInit(device_id, depth_mode, image_mode);
 
   if (!device_->hasDepthStream())
     THROW_PCL_IO_EXCEPTION("Device does not provide 3D information.");
@@ -93,7 +92,7 @@ OpenNIGrabber::OpenNIGrabber(const std::string& device_id, const Mode& depth_mod
   depth_callback_handle = device_->registerDepthCallback(&OpenNIGrabber::depthCallback, *this);
 }
 
-OpenNIGrabber::~OpenNIGrabber()
+OpenNIGrabber::~OpenNIGrabber() throw ()
 {
   stop();
   // unregister callbacks
@@ -150,56 +149,67 @@ void OpenNIGrabber::checkDepthStreamRequired()
     depth_required_ = false;
 }
 
-void OpenNIGrabber::start()
+void OpenNIGrabber::start() throw (pcl::PCLIOException)
 {
-  // check if we need to start/stop any stream
-  if (image_required_ && !device_->isImageStreamRunning())
+  try
   {
-    device_->startImageStream();
-    //startSynchronization ();
-  }
-
-  if (depth_required_ && !device_->isDepthStreamRunning())
-  {
-    // TODO: turn this only on if needed ...
-    if (device_->hasImageStream() && !device_->isDepthRegistered())
+    // check if we need to start/stop any stream
+    if (image_required_ && !device_->isImageStreamRunning())
     {
-      device_->setDepthRegistration(true);
+      device_->startImageStream();
+      //startSynchronization ();
     }
-    device_->startDepthStream();
-    //startSynchronization ();
+
+    if (depth_required_ && !device_->isDepthStreamRunning())
+    {
+      // TODO: turn this only on if needed ...
+      if (device_->hasImageStream() && !device_->isDepthRegistered())
+      {
+        device_->setDepthRegistration(true);
+      }
+      device_->startDepthStream();
+      //startSynchronization ();
+    }
+
+    running_ = true;
   }
-
-  running_ = true;
+  catch (openni_wrapper::OpenNIException& ex)
+  {
+    THROW_PCL_IO_EXCEPTION("Could not start streams. Reason: %s", ex.what ());
+  }
 }
 
-void OpenNIGrabber::stop()
+void OpenNIGrabber::stop() throw (pcl::PCLIOException)
 {
-  // stopSynchronization ();
-  if (device_->hasDepthStream() && device_->isDepthStreamRunning())
-    device_->stopDepthStream();
+  try
+  {
+    if (device_->hasDepthStream() && device_->isDepthStreamRunning())
+      device_->stopDepthStream();
 
-  if (device_->hasImageStream() && device_->isImageStreamRunning())
-    device_->stopImageStream();
+    if (device_->hasImageStream() && device_->isImageStreamRunning())
+      device_->stopImageStream();
 
-  running_ = false;
+    running_ = false;
+  }
+  catch (openni_wrapper::OpenNIException& ex)
+  {
+    THROW_PCL_IO_EXCEPTION("Could not stop streams. Reason: %s", ex.what ());
+  }
 }
 
-bool OpenNIGrabber::isRunning() const
+bool OpenNIGrabber::isRunning() const throw (pcl::PCLIOException)
 {
   return running_;
 }
 
-bool OpenNIGrabber::onInit(const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
+void OpenNIGrabber::onInit(const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
 {
   updateModeMaps(); // registering mapping from config modes to XnModes and vice versa
-  if (!setupDevice(device_id, depth_mode, image_mode))
-    return (false);
+  setupDevice(device_id, depth_mode, image_mode);
 
   rgb_frame_id_ = "/openni_rgb_optical_frame";
 
   depth_frame_id_ = "/openni_depth_optical_frame";
-  return (true);
 }
 
 void OpenNIGrabber::signalsChanged()
@@ -217,17 +227,14 @@ std::string OpenNIGrabber::getName() const
   return std::string("OpenNIGrabber");
 }
 
-bool OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
+void OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
 {
   // Initialize the openni device
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
 
   if (driver.getNumberDevices() == 0)
-  {
-    printf("[%s] No devices connected.\n", getName().c_str());
-    return (false);
-  }
-
+    THROW_PCL_IO_EXCEPTION ("No devices connected.");
+/*
   printf("[%s] Number devices connected: %d\n", getName().c_str(), driver.getNumberDevices());
   for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx)
   {
@@ -236,13 +243,13 @@ bool OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
       , driver.getProductName(deviceIdx), driver.getProductID(deviceIdx), driver.getVendorName(deviceIdx)
       , driver.getVendorID(deviceIdx), driver.getSerialNumber(deviceIdx));
   }
-
+*/
   try
   {
     if (device_id[0] == '#')
     {
       unsigned index = atoi(device_id.c_str() + 1);
-      printf("[%s] searching for device with index = %d\n", getName().c_str(), index);
+      //printf("[%s] searching for device with index = %d\n", getName().c_str(), index);
       device_ = driver.getDeviceByIndex(index - 1);
     }
 #ifndef _WIN32
@@ -251,54 +258,44 @@ bool OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
       size_t pos = device_id.find('@');
       unsigned bus = atoi(device_id.substr(0, pos).c_str());
       unsigned address = atoi(device_id.substr(pos + 1, device_id.length() - pos - 1).c_str());
-      printf("[%s] searching for device with bus@address = %d@%d\n", getName().c_str(), bus, address);
+      //printf("[%s] searching for device with bus@address = %d@%d\n", getName().c_str(), bus, address);
       device_ = driver.getDeviceByAddress(bus, address);
     }
     else if (!device_id.empty())
     {
-      printf("[%s] searching for device with serial number = %s\n", getName().c_str(), device_id.c_str());
+      //printf("[%s] searching for device with serial number = %s\n", getName().c_str(), device_id.c_str());
       device_ = driver.getDeviceBySerialNumber(device_id);
     }
 #endif
     else
     {
-      printf("[%s] device_id is not set or has unknown format: %s! Using first device.\n", getName().c_str(), device_id.c_str());
+      //printf("[%s] device_id is not set or has unknown format: %s! Using first device.\n", getName().c_str(), device_id.c_str());
       device_ = driver.getDeviceByIndex(0);
     }
   }
   catch (const openni_wrapper::OpenNIException& exception)
   {
     if (!device_)
-    {
-      printf("[%s] No matching device found. %s\n", getName().c_str(), exception.what());
-      return (false);
-    }
+      THROW_PCL_IO_EXCEPTION("No matching device found. %s", exception.what ());
     else
-    {
-      printf("[%s] could not retrieve device. Reason %s\n", getName().c_str(), exception.what());
-      return (false);
-    }
+      THROW_PCL_IO_EXCEPTION("could not retrieve device. Reason %s", exception.what ());
   }
   catch (...)
   {
-    printf("[%s] unknown error occured\n", getName().c_str());
-    return (false);
+    THROW_PCL_IO_EXCEPTION ("unknown error occured");
   }
-  printf("[%s] Opened '%s' on bus %d:%d with serial number '%s'\n", getName().c_str(),
-    device_->getProductName(), device_->getBus(), device_->getAddress(), device_->getSerialNumber());
+  //printf("[%s] Opened '%s' on bus %d:%d with serial number '%s'\n", getName().c_str(),
+  //device_->getProductName(), device_->getBus(), device_->getAddress(), device_->getSerialNumber());
 
   // Set the selected output mode
   if (depth_mode != OpenNI_Default_Mode)
   {
     XnMapOutputMode depth_md, actual_depth_md;
     if (!mapConfigMode2XnMode(depth_mode, depth_md) || !device_->findCompatibleDepthMode(depth_md, actual_depth_md))
-    {
-      printf("[%s] could not find compatible depth stream mode %d\n", getName().c_str(), (int) depth_mode);
-      return (false);
-    }
+      THROW_PCL_IO_EXCEPTION ("could not find compatible depth stream mode %d", (int) depth_mode);
 
-    printf("[%s] requested depth mode  : %dx%d@%dHz", getName().c_str(), depth_md.nXRes, depth_md.nYRes, depth_md.nFPS);
-    printf(" -> compatible depth mode : %dx%d@%dHz\n", actual_depth_md.nXRes, actual_depth_md.nYRes, actual_depth_md.nFPS);
+   // printf("[%s] requested depth mode  : %dx%d@%dHz", getName().c_str(), depth_md.nXRes, depth_md.nYRes, depth_md.nFPS);
+    //printf(" -> compatible depth mode : %dx%d@%dHz\n", actual_depth_md.nXRes, actual_depth_md.nYRes, actual_depth_md.nFPS);
 
     device_->setDepthOutputMode(actual_depth_md);
     depth_width_ = depth_md.nXRes;
@@ -318,12 +315,10 @@ bool OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
     {
       XnMapOutputMode image_md;
       if (!mapConfigMode2XnMode(image_mode, image_md) || !device_->findCompatibleImageMode(image_md, actual_image_md))
-      {
-        printf("[%s] could not find compatible image stream mode %d\n", getName().c_str(), (int) image_mode);
-        return (false);
-      }
-      printf("[%s] requested image mode  : %dx%d@%dHz", getName().c_str(), image_md.nXRes, image_md.nYRes, image_md.nFPS);
-      printf(" -> compatible image mode : %dx%d@%dHz\n", actual_image_md.nXRes, actual_image_md.nYRes, actual_image_md.nFPS);
+        THROW_PCL_IO_EXCEPTION ("could not find compatible image stream mode %d", (int) image_mode);
+
+      //printf("[%s] requested image mode  : %dx%d@%dHz", getName().c_str(), image_md.nXRes, image_md.nYRes, image_md.nFPS);
+      //printf(" -> compatible image mode : %dx%d@%dHz\n", actual_image_md.nXRes, actual_image_md.nYRes, actual_image_md.nFPS);
       device_->setImageOutputMode(actual_image_md);
     }
     else
@@ -332,10 +327,7 @@ bool OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
     }
 
     if (actual_image_md.nXRes < depth_width_ || actual_image_md.nYRes < depth_height_)
-    {
-      printf("[%s] image size may not be smaller than depth image size (%dx%d) < (%dx%d)\n", getName().c_str(), actual_image_md.nXRes, actual_image_md.nYRes, depth_width_, depth_height_);
-      return (false);
-    }
+      THROW_PCL_IO_EXCEPTION ("image size may not be smaller than depth image size (%dx%d) < (%dx%d)", actual_image_md.nXRes, actual_image_md.nYRes, depth_width_, depth_height_);
 
     // get smallest possible image that is at least as big as depth
     // e.g. 1280x1024 -> 640x512 > 640x480
@@ -345,8 +337,6 @@ bool OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
     image_width_ = actual_image_md.nXRes / scaleX;
     image_height_ = actual_image_md.nYRes / scaleY;
   }
-
-  return (true);
 }
 
 void OpenNIGrabber::startSynchronization()
@@ -595,7 +585,6 @@ OpenNIGrabber::mapConfigMode2XnMode(int mode, XnMapOutputMode &xnmode) const
   }
   else
   {
-    printf("mode %d could not be found\n", mode);
     return (false);
   }
 }
