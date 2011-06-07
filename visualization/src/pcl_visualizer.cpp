@@ -675,7 +675,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
     mapper->SetScalarRange (minmax);
   mapper->SetScalarModeToUsePointData ();
   mapper->ScalarVisibilityOn ();
-  mapper->ImmediateModeRenderingOn ();
+  mapper->ImmediateModeRenderingOff ();
 
   actor->SetNumberOfCloudPoints (data->GetNumberOfPoints () / 10);
   actor->GetProperty ()->SetInterpolationToFlat ();

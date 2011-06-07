@@ -854,56 +854,56 @@ namespace pcl
           * all the required information to the internal cloud_actor_map_ object.
           * \param geometry_handler the geometric handler that contains the XYZ data
           * \param color_handler the color handler that contains the "RGB" (scalar) data
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param id the point cloud object id
+          * \param viewport the view port where the Point Cloud should be added
           */
         template <typename PointT> bool
         fromHandlersToScreen (const PointCloudGeometryHandler<PointT> &geometry_handler,
                               const PointCloudColorHandler<PointT> &color_handler,
-                              const std::string &id = "cloud", 
-                              int viewport = 0);
+                              const std::string &id,
+                              int viewport);
 
         /** \brief Internal function which converts the information present in the geometric
           * and color handlers into VTK PolyData+Scalars, constructs a vtkActor object, and adds
           * all the required information to the internal cloud_actor_map_ object.
           * \param geometry_handler the geometric handler that contains the XYZ data
           * \param color_handler the color handler that contains the "RGB" (scalar) data
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param id the point cloud object id
+          * \param viewport the view port where the Point Cloud should be added
           */
         template <typename PointT> bool
         fromHandlersToScreen (const PointCloudGeometryHandler<PointT> &geometry_handler,
                               const ColorHandlerConstPtr &color_handler,
-                              const std::string &id = "cloud", 
-                              int viewport = 0);
+                              const std::string &id, 
+                              int viewport);
 
         /** \brief Internal function which converts the information present in the geometric
           * and color handlers into VTK PolyData+Scalars, constructs a vtkActor object, and adds
           * all the required information to the internal cloud_actor_map_ object.
           * \param geometry_handler the geometric handler that contains the XYZ data
           * \param color_handler the color handler that contains the "RGB" (scalar) data
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param id the point cloud object id
+          * \param viewport the view port where the Point Cloud should be added
           */
         bool
         fromHandlersToScreen (const GeometryHandlerConstPtr &geometry_handler,
                               const ColorHandlerConstPtr &color_handler,
-                              const std::string &id = "cloud", 
-                              int viewport = 0);
+                              const std::string &id, 
+                              int viewport);
 
         /** \brief Internal function which converts the information present in the geometric
           * and color handlers into VTK PolyData+Scalars, constructs a vtkActor object, and adds
           * all the required information to the internal cloud_actor_map_ object.
           * \param geometry_handler the geometric handler that contains the XYZ data
           * \param color_handler the color handler that contains the "RGB" (scalar) data
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param id the point cloud object id
+          * \param viewport the view port where the Point Cloud should be added
           */
         template <typename PointT> bool
         fromHandlersToScreen (const GeometryHandlerConstPtr &geometry_handler,
                               const PointCloudColorHandler<PointT> &color_handler,
-                              const std::string &id = "cloud", 
-                              int viewport = 0);
+                              const std::string &id, 
+                              int viewport);
     };
   }
 }
