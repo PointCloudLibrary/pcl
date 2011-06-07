@@ -21,6 +21,8 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
     if(CUDA_FOUND)
+        include(CudaComputeTargetFlags.cmake)
+        APPEND_TARGET_ARCH_FLAGS()
         add_subdirectory (common)
         add_subdirectory (io)
         add_subdirectory (features)
