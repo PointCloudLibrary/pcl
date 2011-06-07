@@ -9,25 +9,29 @@
 
 set(QHULL_MAJOR_VERSION 6)
 
-find_path(QHULL_INCLUDE_DIR_PRE2011
-          NAMES qhull.h
-          HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
+find_file(QHULL_HEADER
+          NAMES libqhull/libqhull.h qhull.h
+          HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}" "${QHULL_INCLUDE_DIR}"
           PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
           PATH_SUFFIXES qhull src/libqhull libqhull include)
 
-find_path(QHULL_INCLUDE_DIR_2011
-          NAMES libqhull/libqhull.h
-          HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
-          PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
-          PATH_SUFFIXES qhull src/libqhull libqhull include)
+set(QHULL_HEADER "${QHULL_HEADER}" CACHE INTERNAL "QHull header" FORCE )
 
-if(QHULL_INCLUDE_DIR_PRE2011)
-   set(HAVE_QHULL_2011 OFF)
-   set(QHULL_INCLUDE_DIR "${QHULL_INCLUDE_DIR_PRE2011}")
-elseif(QHULL_INCLUDE_DIR_2011)
-   set(HAVE_QHULL_2011 ON)
-   set(QHULL_INCLUDE_DIR "${QHULL_INCLUDE_DIR_2011}")
-endif()
+if(QHULL_HEADER)
+    get_filename_component(qhull_header ${QHULL_HEADER} NAME_WE)
+    if("${qhull_header}" STREQUAL "qhull")
+        set(HAVE_QHULL_2011 OFF)
+        get_filename_component(QHULL_INCLUDE_DIR ${QHULL_HEADER} PATH)
+    elseif("${qhull_header}" STREQUAL "libqhull")
+        set(HAVE_QHULL_2011 ON)
+        get_filename_component(QHULL_INCLUDE_DIR ${QHULL_HEADER} PATH)
+        get_filename_component(QHULL_INCLUDE_DIR ${QHULL_INCLUDE_DIR} PATH)
+    endif()
+else(QHULL_HEADER)
+    set(QHULL_INCLUDE_DIR "QHULL_INCLUDE_DIR-NOTFOUND")
+endif(QHULL_HEADER)
+
+set(QHULL_INCLUDE_DIR "${QHULL_INCLUDE_DIR}" CACHE PATH "QHull include dir." FORCE)
 
 # Prefer static libraries in Windows over shared ones
 if(WIN32)
