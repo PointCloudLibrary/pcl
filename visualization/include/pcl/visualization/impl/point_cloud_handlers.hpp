@@ -143,14 +143,9 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
           !pcl_isfinite (cloud_->points[cp].y) || !pcl_isfinite (cloud_->points[cp].z))
         continue;
 
-      // Copy the value at the specified field
-      if (!pcl_isfinite (cloud_->points[cp].rgb))
-        continue;
-
-      int rgb = *reinterpret_cast<const int*>(&cloud_->points[cp].rgb);
-      colors[j * 3 + 0] = ((rgb >> 16) & 0xff);
-      colors[j * 3 + 1] = ((rgb >> 8) & 0xff);
-      colors[j * 3 + 2] = (rgb & 0xff);
+      colors[j * 3 + 0] = cloud_->points[cp].r;
+      colors[j * 3 + 1] = cloud_->points[cp].g;
+      colors[j * 3 + 2] = cloud_->points[cp].b;
       j++;
     }
   }
@@ -163,10 +158,9 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
       if (!pcl_isfinite (cloud_->points[cp].rgb))
         continue;
 
-      int rgb = *reinterpret_cast<const int*>(&cloud_->points[cp].rgb);
-      colors[j * 3 + 0] = ((rgb >> 16) & 0xff);
-      colors[j * 3 + 1] = ((rgb >> 8) & 0xff);
-      colors[j * 3 + 2] = (rgb & 0xff);
+      colors[j * 3 + 0] = cloud_->points[cp].r;
+      colors[j * 3 + 1] = cloud_->points[cp].g;
+      colors[j * 3 + 2] = cloud_->points[cp].b;
       j++;
     }
   }

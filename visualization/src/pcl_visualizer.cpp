@@ -88,6 +88,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
 
   interactor_->SetRenderWindow (win_);
   interactor_->SetInteractorStyle (style_);
+  //interactor_->SetStillUpdateRate (30.0);
   interactor_->SetDesiredUpdateRate (30.0);
   // Initialize and create timer
   interactor_->Initialize ();
@@ -163,6 +164,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
 
   interactor_->SetRenderWindow (win_);
   interactor_->SetInteractorStyle (style_);
+  //interactor_->SetStillUpdateRate (30.0);
   interactor_->SetDesiredUpdateRate (30.0);
   // Initialize and create timer
   interactor_->Initialize ();

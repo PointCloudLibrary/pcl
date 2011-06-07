@@ -83,27 +83,27 @@ public:
   }
 
   void
-  cloud_cb_(const CloudConstPtr& cloud)
+  cloud_cb_ (const CloudConstPtr& cloud)
   {
-    FPS_CALC("callback");
-    set(cloud);
+    FPS_CALC ("callback");
+    set (cloud);
   }
 
   void
-  set(const CloudConstPtr& cloud)
+  set (const CloudConstPtr& cloud)
   {
     //lock while we set our cloud;
-    boost::mutex::scoped_lock lock(mtx_);
+    boost::mutex::scoped_lock lock (mtx_);
     cloud_ = cloud;
   }
 
   CloudConstPtr
-  get()
+  get ()
   {
     //lock while we swap our cloud and reset it.
     boost::mutex::scoped_lock lock(mtx_);
     CloudConstPtr temp_cloud;
-    temp_cloud.swap(cloud_); //here we set cloud_ to null, so that
+    temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
     //it is safe to set it again from our
     //callback
     return (temp_cloud);
@@ -114,19 +114,19 @@ public:
   {
     //pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id_, pcl::OpenNIGrabber::OpenNI_QQVGA_30Hz, pcl::OpenNIGrabber::OpenNI_VGA_30Hz);
 
-    boost::function<void (const CloudConstPtr&) > f = boost::bind(&SimpleOpenNIViewer::cloud_cb_, this, _1);
+    boost::function<void (const CloudConstPtr&) > f = boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
 
-    boost::signals2::connection c = grabber_.registerCallback(f);
+    boost::signals2::connection c = grabber_.registerCallback (f);
 
     grabber_.start();
 
-    while (!viewer.wasStopped())
+    while (!viewer.wasStopped ())
     {
       if (cloud_)
       {
-        FPS_CALC("drawing");
+        FPS_CALC ("drawing");
         //the call to get() sets the cloud_ to null;
-        viewer.showCloud(get());
+        viewer.showCloud (get ());
       }
     }
 
