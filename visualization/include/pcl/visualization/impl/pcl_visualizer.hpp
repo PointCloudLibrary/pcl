@@ -68,7 +68,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   }
   
   PointCloudColorHandlerRandom<PointT> color_handler (cloud);
-  return (fromHandlersToScreen (geometry_handler, color_handler));
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,13 +85,12 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   {
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
-    (*cloud_actor_map_)[id].geometry_handlers.push_back (geometry_handler);
-    //style_->setCloudActorMap (cloud_actor_map_);
+    am_it->second.geometry_handlers.push_back (geometry_handler);
     return (true);
   }
 
   PointCloudColorHandlerRandom<PointT> color_handler (cloud);
-  return (fromHandlersToScreen (geometry_handler, color_handler));
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +115,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   }
   // Convert the PointCloud to VTK PolyData
   PointCloudGeometryHandlerXYZ<PointT> geometry_handler (cloud);
-  return (fromHandlersToScreen (geometry_handler, color_handler));
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,14 +131,12 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   {
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
-    (*cloud_actor_map_)[id].color_handlers.push_back (color_handler);
-    //style_->setCloudActorMap (cloud_actor_map_);
-
+    am_it->second.color_handlers.push_back (color_handler);
     return (true);
   }
 
   PointCloudGeometryHandlerXYZ<PointT> geometry_handler (cloud);
-  return (fromHandlersToScreen (geometry_handler, color_handler));
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,13 +153,11 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   {
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
-    (*cloud_actor_map_)[id].geometry_handlers.push_back (geometry_handler);
-    (*cloud_actor_map_)[id].color_handlers.push_back (color_handler);
-    //style_->setCloudActorMap (cloud_actor_map_);
-
+    am_it->second.geometry_handlers.push_back (geometry_handler);
+    am_it->second.color_handlers.push_back (color_handler);
     return (true);
   }
-  return (fromHandlersToScreen (geometry_handler, color_handler));
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -186,7 +181,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
     //style_->setCloudActorMap (boost::make_shared<CloudActorMap> (cloud_actor_map_));
     return (false);
   }
-  return (fromHandlersToScreen (geometry_handler, color_handler));
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
