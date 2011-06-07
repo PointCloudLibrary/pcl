@@ -39,6 +39,7 @@
 #ifndef __PCL_IO_EXCEPTION__
 #define __PCL_IO_EXCEPTION__
 #include <pcl/exceptions.h>
+#include <pcl/win32_macros.h>
 #include <cstdarg>
 #include <stdio.h>
 
