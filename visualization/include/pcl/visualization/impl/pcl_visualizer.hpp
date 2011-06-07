@@ -213,15 +213,13 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   {
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
-      pts[i * 3 + 0] = cloud->points[i].x;
-      pts[i * 3 + 1] = cloud->points[i].y;
-      pts[i * 3 + 2] = cloud->points[i].z;
+      memcpy (&pts[j * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
       *cell++ = 1;
       *cell++ = i;
     }
     data->SetArray (&pts[0], nr_points * 3, 0);
     points->SetData (data);
-    vertices->SetCells (nr_points, (vtkIdTypeArray*)cells);
+    vertices->SetCells (nr_points, cells);
   }
   else
   {
@@ -231,9 +229,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
       if (!pcl_isfinite (cloud->points[i].x) || !pcl_isfinite (cloud->points[i].y) || !pcl_isfinite (cloud->points[i].z))
         continue;
 
-      pts[j * 3 + 0] = cloud->points[i].x;
-      pts[j * 3 + 1] = cloud->points[i].y;
-      pts[j * 3 + 2] = cloud->points[i].z;
+      memcpy (&pts[j * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
       *cell++ = 1;
       *cell++ = j;
       j++;
@@ -241,10 +237,11 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
     data->SetArray (&pts[0], j * 3, 0);
     points->SetData (data);
     cells->SetNumberOfValues (j * 2);
-    vertices->SetCells (j, (vtkIdTypeArray*)cells);
+    vertices->SetCells (j, cells);
   }
   polydata->SetPoints (points);
   polydata->SetVerts (vertices);
+  //delete [] pts;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -697,9 +694,56 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   if (am_it == cloud_actor_map_->end ())
     return (false);
 
-  vtkSmartPointer<vtkPolyData> polydata;
+  // Get the current poly data
+  vtkPolyData* polydata = (vtkPolyData*)am_it->second.actor->GetMapper ()->GetInput ();
+  vtkCellArray* vertices = polydata->GetVerts ();
+  vtkIdTypeArray* cells  = vertices->GetData ();
+  vtkPoints* points      = polydata->GetPoints ();
+  vtkFloatArray* data    = (vtkFloatArray*)points->GetData ();
+
+  // Copy the new point array in
+  vtkIdType nr_points = cloud->points.size ();
+  vtkIdType j = 0;    // true point index
+  float* pts = new float[nr_points * 3];
+
+  cells->SetNumberOfValues (nr_points * 2);
+  vtkIdType *cell = cells->GetPointer (0);
+  // If the dataset is dense (no NaNs)
+  if (cloud->is_dense)
+  {
+    for (vtkIdType i = 0; i < nr_points; ++i)
+    {
+      memcpy (&pts[j * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      *cell++ = 1;
+      *cell++ = i;
+    }
+    data->SetArray (&pts[0], nr_points * 3, 0);
+    points->SetData (data);
+    vertices->SetCells (nr_points, cells);
+  }
+  else
+  {
+    for (vtkIdType i = 0; i < nr_points; ++i)
+    {
+      // Check if the point is invalid
+      if (!pcl_isfinite (cloud->points[i].x) || !pcl_isfinite (cloud->points[i].y) || !pcl_isfinite (cloud->points[i].z))
+        continue;
+
+      memcpy (&pts[j * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      *cell++ = 1;
+      *cell++ = j;
+      j++;
+    }
+    data->SetArray (&pts[0], j * 3, 0);
+    points->SetData (data);
+    cells->SetNumberOfValues (j * 2);
+    vertices->SetCells (j, cells);
+  }
+  ////polydata->SetPoints (points);
+  ////polydata->SetVerts (vertices);
+
   // Convert the PointCloud to VTK PolyData
-  convertPointCloudToVTKPolyData<PointT> (cloud, polydata);
+  //convertPointCloudToVTKPolyData<PointT> (cloud, polydata);
 
   // Get the colors from the handler
   vtkSmartPointer<vtkDataArray> scalars;
@@ -709,6 +753,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
 
   // Update the mapper
   reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
+  //delete [] pts;
   return (true);
 }
 
