@@ -111,7 +111,7 @@ Now hit the "Configure" button. You will be asked for a `generator`. A generator
 	In this tutorial, we will be using Microsoft Visual C++ 2010 compiler. If you want to build 32bit PCL, then pick the
 	"**Visual Studio 10**" generator. If you want to build 64bit PCL, then pick the "**Visual Studio 10 Win64**".
 
-	Make sure you have installed the right third party dependencies. You can not mix 32bit and 64bit code, and it is 
+	Make sure you have installed the right third party dependencies. You cannot mix 32bit and 64bit code, and it is 
 	highly recommanded to not mix codes compiled with different compilers.
 	
 .. image:: images/windows/cmake_generator.png
@@ -185,6 +185,10 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		If you rather want to use the **shared** CMinpack libraries (those without the `_s` suffix), you need to manually edit the 
 		**CMINPACK_LIBRARY** and **CMINPACK_LIBRARY_DEBUG** variables to remove the `_s` suffix and do not forget to uncheck 
 		**CMINPACK_IS_STATIC**. Make sure the CMinpack dlls are either in your PATH or in the same folder as your executables.
+
+	.. note::
+		
+		In recent PCL, the **CMINPACK_IS_STATIC** checkbox no longer exists.
 		
 - **FLANN** :
 
@@ -201,6 +205,10 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		**FLANN_LIBRARY** and **FLANN_LIBRARY_DEBUG** variables to remove the `_s` suffix and do not forget to uncheck 
 		**FLANN_IS_STATIC**. Make sure the FLANN dlls are either in your PATH or in the same folder as your executables.
 
+	.. note::
+		
+		In recent PCL, the **FLANN_IS_STATIC** checkbox no longer exists.
+		
 - **VTK** :
 
 	CMake did not find my VTK installation. There is only one VTK related CMake variable called **VTK_DIR**. We have to set it
@@ -260,7 +268,7 @@ Once CMake has found all the needed dependencies, let's see the PCL specific CMa
 	
 If you have the Pro version of Microsoft Visual Studio, you can check **USE_PROJECT_FOLDERS** checkbox to organize PCL
 projects in folders within the PCL solution. If you have an express edition, it is recommended to keep it unchecked, as in
-express editions, the use of project folders are disabled.
+express editions, project folders are disabled.
 
 Once PCL configuration is ok, hit the `Generate` button. CMake will then generate Visual Studio project files (vcproj files) 
 and the main solution file (PCL.sln) in C:\\PCL directory.
@@ -297,6 +305,48 @@ CMake variable.
 
 .. note::
 	Make sure to build the "INSTALL" project in both **debug** and **release** mode.
+
+.. note::
+
+	It is highly recommanded to add the bin folder in PCL installation tree (e.g. C:\\Program Files\\PCL\\bin)
+	to your **PATH** environment variable.
+
+Advanced topics
+---------------
+
+- **Building PCL Tests** :
+
+	If you want to build PCL tests, you need to download `GTest` 1.6 (http://code.google.com/p/googletest/) and build it yourself. 
+	Make sure, when you configure GTest via CMake to check the **gtest_force_shared_crt** checkbox. You need, as usual, to build
+	`GTest` in both **release** and **debug**.
+	
+	Back to PCL's CMake settings, you have to fill the **GTEST_*** CMake entries (include directory, gtest libraries (debug and release)
+	and gtestmain libraries (debug and release)). Then, you have to check **BUILD_TEST** and **BUILD_global_tests** CMake checkboxes,
+	and hit `Configure` and `Generate`.
+	
+- **Building the documentation** :
+ 
+	You can build the doxygen documentation of PCL in order to have a local up-to-date api documentation. For this, you need
+	Doxygen (http://www.doxygen.org). You will need also the Graph Visualization Software (GraphViz, http://www.graphviz.org/)
+	to get the doxygen graphics, specifically the `dot` executable.
+	
+	Once you installed these two packages, hit `Configure`. Three CMake variables should be set (if CMake cannot find them, 
+	you can fill them manually) :
+	
+	* *DOXYGEN_EXECUTABLE* : path to `doxygen.exe` (e.g. C:/Program Files (x86)/doxygen/bin/doxygen.exe)
+	* *DOXYGEN_DOT_EXECUTABLE* : path to `dot.exe` from GraphViz (e.g. C:/Program Files (x86)/Graphviz2.26.3/bin/dot.exe)
+	* *DOXYGEN_DOT_PATH* : path of the folder containing `dot.exe` from GraphViz (e.g. C:/Program Files (x86)/Graphviz2.26.3/bin)
+	
+	Then, you need to enable the `documentation` project in Visual Studio by checking the **BUILD_DOCUMENTATION** checkbox in CMake.
+	
+	You can also build one single CHM file that will gather all the generated html files into one file. You need the `Microsoft
+	HTML HELP Workshop <http://www.microsoft.com/downloads/en/details.aspx?familyid=00535334-c8a6-452f-9aa0-d597d16580cc&displaylang=en>`_.
+	After you install the `Microsoft HTML HELP Workshop`, hit `Configure`. If CMake is not able to find **HTML_HEL_COMPILER**, then fill
+	it manually with the path to `hhc.exe` (e.g. C:/Program Files (x86)/HTML Help Workshop/hhc.exe), then click `Configure` and `Generate`.
+	
+	Now, in PCL Visual Studio solution, you will have a new project called `doc`. To generate the documentation files, right click on it, 
+	and choose `Build`. Then, you can build the `INSTALL` project so that the generated documentation files get copied to 
+	**CMAKE_INSTALL_PREFIX**/PCL/share/doc/pcl/html folder (e.g. C:\\Program Files\\PCL\\share\\doc\\pcl\\html).
 	
 Using PCL
 ---------
