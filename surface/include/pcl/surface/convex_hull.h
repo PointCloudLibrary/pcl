@@ -90,11 +90,14 @@ namespace pcl
       };
 
       /** \brief Compute a convex hull for all points given 
-       * \param points the resultant convex hull vertices
-       * \param polygons the resultant convex hull polygons (vertex indices)
-       */
+        *
+        * \param points the resultant points lying on the convex hull 
+        * \param polygons the resultant convex hull polygons, as a set of
+        * vertices. The Vertices structure contains an array of point indices.
+        */
       void
-      reconstruct (PointCloud &points, std::vector<pcl::Vertices> &polygons);
+      reconstruct (PointCloud &points, 
+                   std::vector<pcl::Vertices> &polygons);
 
       /** \brief Compute a convex hull for all points given 
        * \param output the resultant convex hull vertices
@@ -114,12 +117,16 @@ namespace pcl
 
     private:
       /** \brief The actual reconstruction method. 
-       * \param points the resultant convex hull vertices
-       * \param polygons the resultant convex hull polygons (vertex indices)
-       * \param fill_polygon_data true if polygons should be filled, false otherwise
-       */
+        * 
+        * \param points the resultant points lying on the convex hull 
+        * \param polygons the resultant convex hull polygons, as a set of
+        * vertices. The Vertices structure contains an array of point indices.
+        * \param fill_polygon_data true if polygons should be filled, false otherwise
+        */
       void
-      performReconstruction (PointCloud &points, std::vector<pcl::Vertices> &polygons, bool fill_polygon_data = false);
+      performReconstruction (PointCloud &points, 
+                             std::vector<pcl::Vertices> &polygons, 
+                             bool fill_polygon_data = false);
 
       bool keep_information_;
 

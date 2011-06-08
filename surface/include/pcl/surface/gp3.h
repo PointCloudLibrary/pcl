@@ -307,7 +307,7 @@ namespace pcl
 
       // Variables made global to decrease the number of parameters to helper functions
 
-      /** \brief Temporary variable to store a triangle **/
+      /** \brief Temporary variable to store a triangle (as a set of point indices) **/
       pcl::Vertices triangle_;
       /** \brief Temporary variable to store point coordinates **/
       std::vector<Eigen::Vector3f> coords_;
