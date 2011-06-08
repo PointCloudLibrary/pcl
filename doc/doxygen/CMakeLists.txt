@@ -25,10 +25,10 @@ if(BUILD_documentation)
     else(DOCUMENTATION_HTML_HELP STREQUAL YES)
       install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html" 
               DESTINATION share/doc/pcl
+              COMPONENT pcl_docs
               PATTERN "*.md5" EXCLUDE
               PATTERN "*.map" EXCLUDE
-              PATTERN "*.chm" EXCLUDE
-              COMPONENT pcl_docs)
+              PATTERN "*.chm" EXCLUDE)
     endif(DOCUMENTATION_HTML_HELP STREQUAL YES)
   endif(DOXYGEN_FOUND)
 endif(BUILD_documentation)
