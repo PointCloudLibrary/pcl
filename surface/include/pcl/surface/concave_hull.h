@@ -70,11 +70,14 @@ namespace pcl
       };
 
       /** \brief Compute a concave hull for all points given 
-       * \param points the resultant concave hull vertices
-       * \param polygons the resultant concave hull polygons (vertex indices)
-       */
+        *
+        * \param points the resultant points lying on the concave hull 
+        * \param polygons the resultant concave hull polygons, as a set of
+        * vertices. The Vertices structure contains an array of point indices.
+        */
       void
-      reconstruct (PointCloud &points, std::vector<pcl::Vertices> &polygons);
+      reconstruct (PointCloud &points, 
+                   std::vector<pcl::Vertices> &polygons);
 
       /** \brief Compute a concave hull for all points given 
        * \param output the resultant concave hull vertices
@@ -82,9 +85,12 @@ namespace pcl
       void
       reconstruct (PointCloud &output);
 
-      /** \brief Set the alpha value, which limits the size of the resultant hull segments (the smaller the more detailed the hull).
-       * \param alpha positive, non-zero value, defining the maximum length from a vertex to the facet center (center of the voronoi cell).
-       */
+      /** \brief Set the alpha value, which limits the size of the resultant
+        * hull segments (the smaller the more detailed the hull).  
+        *
+        * \param alpha  positive, non-zero value, defining the maximum length
+        * from a vertex to the facet center (center of the voronoi cell).
+        */
       inline void
       setAlpha (double alpha)
       {
@@ -135,12 +141,15 @@ namespace pcl
       /** \brief describe voronoi_centers here.. */
       PointCloudPtr voronoi_centers_;
 
-      /** \brief The actual reconstruction method. 
-       * \param points the resultant concave hull vertices
-       * \param polygons the resultant concave hull polygons (vertex indices)
-       */
+      /** \brief The actual reconstruction method.
+        * 
+        * \param points the resultant points lying on the concave hull 
+        * \param polygons the resultant concave hull polygons, as a set of
+        * vertices. The Vertices structure contains an array of point indices.
+        */
       void
-      performReconstruction (PointCloud &points, std::vector<pcl::Vertices> &polygons);
+      performReconstruction (PointCloud &points, 
+                             std::vector<pcl::Vertices> &polygons);
     };
 
 }

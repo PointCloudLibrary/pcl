@@ -7,6 +7,9 @@
 
 namespace pcl
 {
+  /** \brief Describes a set of vertices in a polygon mesh, by basically
+    * storing an array of indices.
+    */
   struct Vertices
   {
     Vertices () : vertices ()
@@ -15,12 +18,12 @@ namespace pcl
     std::vector<int> vertices;
 
   public:
-    typedef boost::shared_ptr< ::pcl::Vertices > Ptr;
-    typedef boost::shared_ptr< ::pcl::Vertices const> ConstPtr;
+    typedef boost::shared_ptr<Vertices> Ptr;
+    typedef boost::shared_ptr<Vertices const> ConstPtr;
   }; // struct Vertices
 
-  typedef boost::shared_ptr< ::pcl::Vertices> VerticesPtr;
-  typedef boost::shared_ptr< ::pcl::Vertices const> VerticesConstPtr;
+  typedef boost::shared_ptr<Vertices> VerticesPtr;
+  typedef boost::shared_ptr<Vertices const> VerticesConstPtr;
 
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::Vertices & v)
   {
