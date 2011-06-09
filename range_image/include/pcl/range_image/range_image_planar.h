@@ -32,11 +32,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
-\author Bastian Steder
-**/
-
-
 #ifndef PCL_RANGE_IMAGE_PLANAR_H_
 #define PCL_RANGE_IMAGE_PLANAR_H_
 
