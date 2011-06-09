@@ -34,13 +34,6 @@
  * $Id$
  *
  */
-/**
-
-\author Patrick Mihelich
-
-Point Cloud conversions to/from sensor_msgs::PointCloud2.
-
-**/
 
 #ifndef PCL_ROS_CONVERSIONS_H_ 
 #define PCL_ROS_CONVERSIONS_H_
