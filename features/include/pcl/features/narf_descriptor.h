@@ -32,11 +32,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
-\author Bastian Steder
-**/
-
-
 #ifndef PCL_NARF_DESCRIPTOR_H_
 #define PCL_NARF_DESCRIPTOR_H_
 
