@@ -33,8 +33,6 @@
  *
  */
 
-/* \author Bastian Steder */
-
 #ifndef PCL_NARF_H_
 #define PCL_NARF_H_
 
@@ -54,6 +52,7 @@ namespace pcl
   /**
    * \brief NARF (Normal Aligned Radial Features) is a point feature descriptor type for 3D data.
    *        Please refer to pcl/features/narf_descriptor.h if you want the class derived from pcl Feature.
+   * \author Bastian Steder
    * \ingroup features
    */
   class PCL_EXPORTS Narf
