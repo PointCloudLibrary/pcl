@@ -3,7 +3,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-#include <pcl/io/octree_pointcloud_compression.h>
+#include <pcl/compression/octree_pointcloud_compression.h>
 
 #include <stdio.h>
 #include <sstream>
