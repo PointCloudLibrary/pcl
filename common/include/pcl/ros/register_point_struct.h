@@ -34,13 +34,6 @@
  * $Id$
  *
  */
-/**
-
-\author Patrick Mihelich
-
-Point structure registration methods.
-
-**/
 
 #ifndef PCL_REGISTER_POINT_STRUCT_H_
 #define PCL_REGISTER_POINT_STRUCT_H_
