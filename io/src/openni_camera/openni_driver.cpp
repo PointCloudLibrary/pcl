@@ -115,22 +115,26 @@ unsigned OpenNIDriver::updateDeviceList () throw ()
   // enumerate image nodes
   static xn::NodeInfoList image_nodes;
   status = context_.EnumerateProductionTrees (XN_NODE_TYPE_IMAGE, NULL, image_nodes, NULL);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("enumerating image generators failed. Reason: %s", xnGetStatusString (status));
+  
 
-  for (xn::NodeInfoList::Iterator nodeIt = image_nodes.Begin (); nodeIt != image_nodes.End (); ++nodeIt)
+  // Suat: This is an ugly ASUS Xtion workaround.
+  if (status == XN_STATUS_OK)
   {
-    // check if to which device this node is assigned to
-    for (xn::NodeInfoList::Iterator neededIt = (*nodeIt).GetNeededNodes ().Begin (); neededIt != (*nodeIt).GetNeededNodes ().End (); ++neededIt)
+    //THROW_OPENNI_EXCEPTION ("enumerating image generators failed. Reason: %s", xnGetStatusString (status));
+
+    for (xn::NodeInfoList::Iterator nodeIt = image_nodes.Begin (); nodeIt != image_nodes.End (); ++nodeIt)
     {
-      if ( connection_string_map_.count ((*neededIt).GetCreationInfo ()) )
+      // check if to which device this node is assigned to
+      for (xn::NodeInfoList::Iterator neededIt = (*nodeIt).GetNeededNodes ().Begin (); neededIt != (*nodeIt).GetNeededNodes ().End (); ++neededIt)
       {
-        unsigned device_index = connection_string_map_[(*neededIt).GetCreationInfo ()];
-        device_context_[device_index].image_node.reset (new xn::NodeInfo(*nodeIt));
+        if ( connection_string_map_.count ((*neededIt).GetCreationInfo ()) )
+        {
+          unsigned device_index = connection_string_map_[(*neededIt).GetCreationInfo ()];
+          device_context_[device_index].image_node.reset (new xn::NodeInfo(*nodeIt));
+        }
       }
     }
   }
-
 #ifndef _WIN32
   // add context object for each found device
   for (unsigned deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)

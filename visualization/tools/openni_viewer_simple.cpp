@@ -139,30 +139,36 @@ public:
   CloudConstPtr cloud_;
 };
 
-unsigned
+void
 usage(char ** argv)
 {
-  std::cout << "usage: " << argv[0] << " [<device_id> [<depth-mode> [<image-mode>] ] ]\n";
+  cout << "usage: " << argv[0] << " [<device_id> [<depth-mode> [<image-mode>] ] ]\n";
+  cout << argv[0] << " -h | --help : shows this help" << endl;
+  cout << argv[0] << " -l : list all available devices" << endl;
+  cout << argv[0] << " -l <device-id> : list all available modes for specified device" << endl;
 
-  openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
-  if (driver.getNumberDevices() > 0)
-  {
-    for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx)
-    {
-      cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName(deviceIdx) << ", product: " << driver.getProductName(deviceIdx)
-        << ", connected: " << (int) driver.getBus(deviceIdx) << " @ " << (int) driver.getAddress(deviceIdx) << ", serial number: \'" << driver.getSerialNumber(deviceIdx) << "\'" << endl;
-      cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << endl
-        << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << endl
-        << "                 <serial-number> (only in Linux and for devices which provide serial numbers)" << endl;
-    }
-
-    cout << argv[0] << "-h | --help : shows this help" << endl;
-    cout << argv[0] << "-l <device-id> : list all available modes for specified device" << endl;
-  }
-  else
-    cout << "No devices connected." << endl;
-
-  return driver.getNumberDevices();
+  cout << "                 device_id may be #1, #2, ... for the first, second etc device in the list"
+#ifndef _WIN32
+       << " or" << endl
+       << "                 bus@address for the device connected to a specific usb-bus / address combination or" << endl
+       << "                 <serial-number>"
+#endif
+       << endl;
+  cout << endl;
+  cout << "examples:" << endl;
+  cout << argv[0] << " \"#1\"" << endl;
+  cout << "    uses the first device." << endl;
+  cout << argv[0] << " -l" << endl;
+  cout << "    lists all available devices." << endl;
+  cout << argv[0] << " -l \"#2\"" << endl;
+  cout << "    lists all available modes for the second device" << endl;
+  #ifndef _WIN32
+  cout << argv[0] << " A00361800903049A" << endl;
+  cout << "    uses the device with the serial number \'A00361800903049A\'." << endl;
+  cout << argv[0] << " 1@16" << endl;
+  cout << "    uses the device on address 16 at usb bus 1." << endl;
+  #endif
+  return;
 }
 
 int
@@ -204,9 +210,19 @@ main(int argc, char ** argv)
       }
       else
       {
-        cout << argv[0] << " -l <device-id>" << endl;
-        cout << "for valid <device-id> type \"" << argv[0] << " -h\"" << endl;
-        return 1;
+        openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
+        if (driver.getNumberDevices() > 0)
+        {
+          for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx)
+          {
+            cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName(deviceIdx) << ", product: " << driver.getProductName(deviceIdx)
+              << ", connected: " << (int) driver.getBus(deviceIdx) << " @ " << (int) driver.getAddress(deviceIdx) << ", serial number: \'" << driver.getSerialNumber(deviceIdx) << "\'" << endl;
+          }
+
+        }
+        else
+          cout << "No devices connected." << endl;
+        return 0;
       }
     }
 
@@ -221,8 +237,9 @@ main(int argc, char ** argv)
   }
   else
   {
-    if (usage(argv));
-    cout << "Device Id not set, using first device." << endl;
+    openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
+    if (driver.getNumberDevices() > 0)
+      cout << "Device Id not set, using first device." << endl;
   }
 
   pcl::OpenNIGrabber grabber(arg, depth_mode, image_mode);

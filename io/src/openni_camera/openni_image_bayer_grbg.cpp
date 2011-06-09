@@ -1421,5 +1421,5 @@ void ImageBayerGRBG::fillRGB (unsigned width, unsigned height, unsigned char* rg
     }
   }
 }
-} //namespace
+}//namespace
 #endif

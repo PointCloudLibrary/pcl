@@ -72,20 +72,20 @@ namespace pcl
       /**
        * @brief virtual destructor
        */
-      virtual ~PCDGrabberBase ();
+      virtual ~PCDGrabberBase () throw ();
       /**
        * @brief starts playing the list of PCD files if frames_per_second is > 0. Otherwise it works as a trigger: publishes only the next PCD file in the list.
        */
-      virtual void start ();
+      virtual void start () throw (pcl::PCLIOException);
       /**
        * @brief stops playing the list of PCD files if frames_per_second is > 0. Otherwise the method has no effect.
        */
-      virtual void stop ();
+      virtual void stop () throw (pcl::PCLIOException);
       /**
        * @brief wheter the grabber is started (publishing) or not.
        * @return true only if publishing.
        */
-      virtual bool isRunning () const;
+      virtual bool isRunning () const throw (pcl::PCLIOException);
       /**
        *
        * @return name of the grabber

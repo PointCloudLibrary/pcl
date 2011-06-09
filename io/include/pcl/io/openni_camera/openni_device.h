@@ -50,6 +50,8 @@
 #include <boost/thread.hpp>
 #include <boost/thread/condition.hpp>
 
+#include <pcl/pcl_macros.h>
+
 /// @todo Get rid of all exception-specifications, these are useless and soon to be deprecated
 
 #ifndef _WIN32
@@ -66,7 +68,7 @@ class DepthImage;
  * @date 02.january 2011
  * @ingroup io
  */
-class OpenNIDevice : public boost::noncopyable
+class PCL_EXPORTS OpenNIDevice : public boost::noncopyable
 {
 public:
   typedef boost::function<void(boost::shared_ptr<Image>, void* cookie) > ImageCallbackFunction;

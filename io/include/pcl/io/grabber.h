@@ -48,23 +48,25 @@
 #include <boost/signals2/slot.hpp>
 #include <typeinfo>
 #include <vector>
+#include <sstream>
+#include <pcl/io/pcl_io_exception.h>
 
 namespace pcl
 {
 
-/** \brief
+/** \brief Grabber interface for PCL 1.x
   * \ingroup io
   */
 class Grabber
 {
   public:
-    virtual inline ~Grabber ();
-    template<typename T> boost::signals2::connection registerCallback (const boost::function<T>& callback);
+    virtual inline ~Grabber () throw ();
+    template<typename T> boost::signals2::connection registerCallback (const boost::function<T>& callback) throw (pcl::PCLIOException);
     template<typename T> bool providesCallback () const;
-    virtual void start () = 0;
-    virtual void stop () = 0;  
+    virtual void start () throw (pcl::PCLIOException) = 0 ;
+    virtual void stop () throw (pcl::PCLIOException) = 0;  
     virtual std::string getName () const = 0;
-    virtual bool isRunning () const = 0;
+    virtual bool isRunning () const throw (pcl::PCLIOException) = 0;
   protected:
     virtual void signalsChanged () {}
     template<typename T> boost::signals2::signal<T>* find_signal () const;
@@ -75,7 +77,7 @@ class Grabber
     std::map<std::string, boost::signals2::signal_base*> signals_;
 };
 
-Grabber::~Grabber ()
+Grabber::~Grabber () throw ()
 {
   for (std::map<std::string, boost::signals2::signal_base*>::iterator signal_it = signals_.begin (); signal_it != signals_.end (); ++signal_it)
     delete signal_it->second;
@@ -130,19 +132,24 @@ template<typename T> boost::signals2::signal<T>* Grabber::createSignal ()
   return (0);
 }
 
-template<typename T> boost::signals2::connection Grabber::registerCallback (const boost::function<T> & callback)
+template<typename T> boost::signals2::connection Grabber::registerCallback (const boost::function<T> & callback) throw (pcl::PCLIOException)
 {
   typedef boost::signals2::signal<T> Signal;
   if (signals_.find (typeid(T).name()) == signals_.end ())
   {
-    std::cout << "no callback for type:" << typeid(T).name() << std::endl;
-    std::cout << "registered Callbacks are:" << std::endl;
+    std::stringstream sstream;
+    
+    sstream << "no callback for type:" << typeid(T).name();
+    /*
+    sstream << "registered Callbacks are:" << std::endl;
     for( std::map<std::string, boost::signals2::signal_base*>::const_iterator cIt = signals_.begin (); 
          cIt != signals_.end (); ++cIt)
     {
-      std::cout << cIt->first << std::endl;
-    }
-    return (boost::signals2::connection ());
+      sstream << cIt->first << std::endl;
+    }*/
+    
+    THROW_PCL_IO_EXCEPTION ("[%s] %s", getName ().c_str (), sstream.str ().c_str ());
+    //return (boost::signals2::connection ());
   }
   Signal* signal = dynamic_cast<Signal*> (signals_[typeid(T).name()]);
   boost::signals2::connection ret = signal->connect (callback);

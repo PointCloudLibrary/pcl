@@ -47,99 +47,105 @@
 
 namespace openni_wrapper
 {
-/**
- * @brief This class provides methods to fill a depth or disparity image.
- * @author Suat Gedikli
- * @date 02.january 2011
- * @ingroup io
- */
-class DepthImage
-{
-public:
-  typedef boost::shared_ptr<DepthImage> Ptr;
-  typedef boost::shared_ptr<const DepthImage> ConstPtr;
 
-  inline DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ();
-  inline virtual ~DepthImage () throw ();
+  /**
+   * @brief This class provides methods to fill a depth or disparity image.
+   * @author Suat Gedikli
+   * @date 02.january 2011
+   * @ingroup io
+   */
+  class DepthImage
+  {
+  public:
+    typedef boost::shared_ptr<DepthImage> Ptr;
+    typedef boost::shared_ptr<const DepthImage> ConstPtr;
 
-  inline const xn::DepthMetaData& getDepthMetaData () const throw ();
-  void fillDisparityImage (unsigned width, unsigned height, float* disparity_buffer, unsigned line_step = 0) const throw (OpenNIException);
-  void fillDepthImage (unsigned width, unsigned height, float* depth_buffer, unsigned line_step = 0) const throw (OpenNIException);
-  void fillDepthImageRaw (unsigned width, unsigned height, short* depth_buffer, unsigned line_step = 0) const throw (OpenNIException);
+    inline DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ();
+    inline virtual ~DepthImage () throw ();
 
-  inline float getBaseline () const throw ();
-  inline float getFocalLength () const throw ();
-  inline XnUInt64 getShadowValue () const throw ();
-  inline XnUInt64 getNoSampleValue () const throw ();
-  inline unsigned getWidth () const throw ();
-  inline unsigned getHeight () const throw ();
-  inline unsigned getFrameID () const throw ();
-  inline unsigned long getTimeStamp () const throw ();
-protected:
-  boost::shared_ptr<xn::DepthMetaData> depth_md_;
-  float baseline_;
-  float focal_length_;
-  XnUInt64 shadow_value_;
-  XnUInt64 no_sample_value_;
-};
+    inline const xn::DepthMetaData& getDepthMetaData () const throw ();
+    void fillDisparityImage (unsigned width, unsigned height, float* disparity_buffer, unsigned line_step = 0) const throw (OpenNIException);
+    void fillDepthImage (unsigned width, unsigned height, float* depth_buffer, unsigned line_step = 0) const throw (OpenNIException);
+    void fillDepthImageRaw (unsigned width, unsigned height, unsigned short* depth_buffer, unsigned line_step = 0) const throw (OpenNIException);
 
-DepthImage::DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ()
-: depth_md_ (depth_meta_data)
-, baseline_ (baseline)
-, focal_length_ (focal_length)
-, shadow_value_ (shadow_value)
-, no_sample_value_ (no_sample_value)
-{
-}
+    inline float getBaseline () const throw ();
+    inline float getFocalLength () const throw ();
+    inline XnUInt64 getShadowValue () const throw ();
+    inline XnUInt64 getNoSampleValue () const throw ();
+    inline unsigned getWidth () const throw ();
+    inline unsigned getHeight () const throw ();
+    inline unsigned getFrameID () const throw ();
+    inline unsigned long getTimeStamp () const throw ();
+  protected:
+    boost::shared_ptr<xn::DepthMetaData> depth_md_;
+    float baseline_;
+    float focal_length_;
+    XnUInt64 shadow_value_;
+    XnUInt64 no_sample_value_;
+  } ;
 
-DepthImage::~DepthImage () throw ()
-{
-}
+  DepthImage::DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ()
+  : depth_md_ (depth_meta_data)
+  , baseline_ (baseline)
+  , focal_length_ (focal_length)
+  , shadow_value_ (shadow_value)
+  , no_sample_value_ (no_sample_value) { }
 
-const xn::DepthMetaData& DepthImage::getDepthMetaData () const throw ()
-{
-  return *depth_md_;
-}
+  DepthImage::~DepthImage () throw () { }
 
-float DepthImage::getBaseline () const throw ()
-{
-  return baseline_;
-}
+  const xn::DepthMetaData&
+  DepthImage::getDepthMetaData () const throw ()
+  {
+    return *depth_md_;
+  }
 
-float DepthImage::getFocalLength () const throw ()
-{
-  return focal_length_;
-}
+  float
+  DepthImage::getBaseline () const throw ()
+  {
+    return baseline_;
+  }
 
-XnUInt64 DepthImage::getShadowValue () const throw ()
-{
-  return shadow_value_;
-}
+  float
+  DepthImage::getFocalLength () const throw ()
+  {
+    return focal_length_;
+  }
 
-XnUInt64 DepthImage::getNoSampleValue () const throw ()
-{
-  return no_sample_value_;
-}
+  XnUInt64
+  DepthImage::getShadowValue () const throw ()
+  {
+    return shadow_value_;
+  }
 
-unsigned DepthImage::getWidth () const throw ()
-{
-  return depth_md_->XRes ();
-}
+  XnUInt64
+  DepthImage::getNoSampleValue () const throw ()
+  {
+    return no_sample_value_;
+  }
 
-unsigned DepthImage::getHeight () const throw ()
-{
-  return depth_md_->YRes ();
-}
+  unsigned
+  DepthImage::getWidth () const throw ()
+  {
+    return depth_md_->XRes ();
+  }
 
-unsigned DepthImage::getFrameID () const throw ()
-{
-  return depth_md_->FrameID ();
-}
+  unsigned
+  DepthImage::getHeight () const throw ()
+  {
+    return depth_md_->YRes ();
+  }
 
-unsigned long DepthImage::getTimeStamp () const throw ()
-{
-  return depth_md_->Timestamp ();
-}
+  unsigned
+  DepthImage::getFrameID () const throw ()
+  {
+    return depth_md_->FrameID ();
+  }
+
+  unsigned long
+  DepthImage::getTimeStamp () const throw ()
+  {
+    return depth_md_->Timestamp ();
+  }
 } // namespace
 #endif
 #endif //__OPENNI_DEPTH_IMAGE
