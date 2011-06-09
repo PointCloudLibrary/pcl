@@ -34,13 +34,6 @@
  * $Id$
  *
  */
-/**
-
-\author Patrick Mihelich
-
-Helper class.
-
-**/
 
 #ifndef PCL_FOR_EACH_TYPE_H_
 #define PCL_FOR_EACH_TYPE_H_

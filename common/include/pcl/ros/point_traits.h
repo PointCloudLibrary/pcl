@@ -34,13 +34,6 @@
  * $Id$
  *
  */
-/**
-
-\author Patrick Mihelich
-
-Point traits.
-
-**/
 
 #ifndef PCL_ROS_POINT_TRAITS_H_
 #define PCL_ROS_POINT_TRAITS_H_
