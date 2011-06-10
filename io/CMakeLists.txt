@@ -49,6 +49,7 @@ if(build)
     set(incs 
         include/pcl/${SUBSYS_NAME}/io.h
         include/pcl/${SUBSYS_NAME}/pcd_io.h
+        include/pcl/${SUBSYS_NAME}/pcl_io_exception.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
         ${OPENNI_GRABBER_INCLUDES}
         )
