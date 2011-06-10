@@ -51,12 +51,12 @@ namespace pcl
    * \ingroup surface
    */
   template<typename PointInT>
-    class ConcaveHull : public PCLBase<PointInT>
-    {
-      using PCLBase<PointInT>::input_;
-      using PCLBase<PointInT>::indices_;
-      using PCLBase<PointInT>::initCompute;
-      using PCLBase<PointInT>::deinitCompute;
+  class ConcaveHull : public PCLBase<PointInT>
+  {
+    using PCLBase<PointInT>::input_;
+    using PCLBase<PointInT>::indices_;
+    using PCLBase<PointInT>::initCompute;
+    using PCLBase<PointInT>::deinitCompute;
 
     public:
       typedef pcl::PointCloud<PointInT> PointCloud;
@@ -105,8 +105,8 @@ namespace pcl
       }
 
       /** \brief If set, the voronoi cells center will be saved in _voronoi_centers_
-       * \param voronoi_centers
-       */
+        * \param voronoi_centers
+        */
       inline void
       setVoronoiCenters (PointCloudPtr voronoi_centers)
       {
@@ -114,9 +114,9 @@ namespace pcl
       }
 
       /** \brief If keep_information_is set to true the convex hull
-       * points keep other information like rgb, normals, ...
-       * \param value where to keep the information or not, default is false
-       */
+        * points keep other information like rgb, normals, ...
+        * \param value where to keep the information or not, default is false
+        */
       void
       setKeepInformation (bool value)
       {
@@ -150,8 +150,7 @@ namespace pcl
       void
       performReconstruction (PointCloud &points, 
                              std::vector<pcl::Vertices> &polygons);
-    };
-
+  };
 }
 
 #endif  //#ifndef PCL_CONCAVE_HULL

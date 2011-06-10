@@ -53,10 +53,10 @@
 namespace pcl
 {
   /** \brief Sort 2D points in a vector structure
-   * \param p1 the first point
-   * \param p2 the second point
-   * \ingroup surface
-   */
+    * \param p1 the first point
+    * \param p2 the second point
+    * \ingroup surface
+    */
   inline bool
   comparePoints2D (const std::pair<int, Eigen::Vector4f> & p1, const std::pair<int, Eigen::Vector4f> & p2)
   {
@@ -67,16 +67,16 @@ namespace pcl
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b ConvexHull using libqhull library.
-   * \author Aitor Aldoma
-   * \ingroup surface
-   */
+    * \author Aitor Aldoma
+    * \ingroup surface
+    */
   template<typename PointInT>
-    class ConvexHull : public PCLBase<PointInT>
-    {
-      using PCLBase<PointInT>::input_;
-      using PCLBase<PointInT>::indices_;
-      using PCLBase<PointInT>::initCompute;
-      using PCLBase<PointInT>::deinitCompute;
+  class ConvexHull : public PCLBase<PointInT>
+  {
+    using PCLBase<PointInT>::input_;
+    using PCLBase<PointInT>::indices_;
+    using PCLBase<PointInT>::initCompute;
+    using PCLBase<PointInT>::deinitCompute;
 
     public:
       typedef pcl::PointCloud<PointInT> PointCloud;
@@ -100,15 +100,15 @@ namespace pcl
                    std::vector<pcl::Vertices> &polygons);
 
       /** \brief Compute a convex hull for all points given 
-       * \param output the resultant convex hull vertices
-       */
+        * \param output the resultant convex hull vertices
+        */
       void
       reconstruct (PointCloud &output);
 
       /** \brief If keep_information_is set to true the convex hull
-       * points keep other information like rgb, normals, ...
-       * \param value where to keep the information or not, default is false
-       */
+        * points keep other information like rgb, normals, ...
+        * \param value where to keep the information or not, default is false
+        */
       void
       setKeepInformation (bool value)
       {
