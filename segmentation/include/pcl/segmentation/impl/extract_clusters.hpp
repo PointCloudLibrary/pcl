@@ -203,11 +203,13 @@ pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clu
   }
 
   // Initialize the spatial locator
-  initTree (spatial_locator_, tree_);
-  // Send the input dataset to the spatial locator
+  if (!tree_)
+    initTree (spatial_locator_, tree_);
 
+  // Send the input dataset to the spatial locator
   tree_->setInputCloud (input_, indices_);
   extractEuclideanClusters (*input_, *indices_, tree_, cluster_tolerance_, clusters, min_pts_per_cluster_, max_pts_per_cluster_);
+
   //tree_->setInputCloud (input_);
   //extractEuclideanClusters (*input_, tree_, cluster_tolerance_, clusters, min_pts_per_cluster_, max_pts_per_cluster_);
 
