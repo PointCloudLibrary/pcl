@@ -92,8 +92,8 @@ namespace
   };
   
   typedef pcl::PointCloud<pcl::PointXYZRGB> cc;
-  typedef pcl::PointCloud<pcl::PointXYZ> gc;
-
+  typedef pcl::PointCloud<pcl::PointXYZI> gc;
+  typedef pcl::PointCloud<pcl::PointXYZ> mc;
 
   template <> void
   cloud_show<cc>::pop ()
@@ -104,6 +104,13 @@ namespace
   
   template <> void
   cloud_show<gc>::pop ()
+  {
+    pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PointXYZI> handler (cloud);
+    pop (handler);
+  }
+  
+  template <> void
+  cloud_show<mc>::pop ()
   {
     pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PointXYZ> handler (cloud);
     pop (handler);
@@ -271,6 +278,15 @@ pcl::visualization::CloudViewer::showCloud (const GrayCloud::ConstPtr &cloud,
 }
 
 void
+pcl::visualization::CloudViewer::showCloud (const MonochromeCloud::ConstPtr &cloud,
+                                            const std::string &cloudname)
+{
+  if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
+    return;
+  impl_->block_post_cloud<MonochromeCloud>(cloud, cloudname);
+}
+
+void
 pcl::visualization::CloudViewer::showCloudNonBlocking (const ColorCloud::ConstPtr &cloud, const std::string &cloudname)
 {
   if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
@@ -284,6 +300,14 @@ pcl::visualization::CloudViewer::showCloudNonBlocking (const GrayCloud::ConstPtr
   if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
     return;
   impl_->nonblock_post_cloud<GrayCloud>(cloud, cloudname);
+}
+
+void
+pcl::visualization::CloudViewer::showCloudNonBlocking (const MonochromeCloud::ConstPtr &cloud, const std::string &cloudname)
+{
+  if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
+    return;
+  impl_->nonblock_post_cloud<MonochromeCloud>(cloud, cloudname);
 }
 
 void

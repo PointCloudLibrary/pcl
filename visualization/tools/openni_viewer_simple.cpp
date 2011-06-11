@@ -250,7 +250,7 @@ main(int argc, char ** argv)
   }
   else
   {
-    SimpleOpenNIViewer<pcl::PointXYZ> v(grabber);
+    SimpleOpenNIViewer<pcl::PointXYZI> v(grabber);
     v.run();
   }
 
