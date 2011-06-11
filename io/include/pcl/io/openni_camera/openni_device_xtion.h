@@ -57,7 +57,7 @@ class DeviceXtionPro : public OpenNIDevice
 {
   friend class OpenNIDriver;
 public:
-  DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node) throw (OpenNIException);
+  DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException);
   virtual ~DeviceXtionPro () throw ();
   //virtual void setImageOutputMode (const XnMapOutputMode& output_mode) throw (OpenNIException);
 

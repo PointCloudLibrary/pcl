@@ -57,7 +57,7 @@ class DevicePrimesense : public OpenNIDevice
 {
   friend class OpenNIDriver;
 public:
-  DevicePrimesense (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node) throw (OpenNIException);
+  DevicePrimesense (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException);
   virtual ~DevicePrimesense () throw ();
   //virtual void setImageOutputMode (const XnMapOutputMode& output_mode) throw (OpenNIException);
 

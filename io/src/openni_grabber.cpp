@@ -74,15 +74,19 @@ OpenNIGrabber::OpenNIGrabber(const std::string& device_id, const Mode& depth_mod
     THROW_PCL_IO_EXCEPTION("Device does not provide 3D information.");
 
   depth_image_signal_ = createSignal <sig_cb_openni_depth_image > ();
+  ir_image_signal_ = createSignal <sig_cb_openni_ir_image > ();
   point_cloud_signal_ = createSignal <sig_cb_openni_point_cloud > ();
+  point_cloud_i_signal_ = createSignal <sig_cb_openni_point_cloud_i > ();
+  ir_depth_image_signal_ = createSignal <sig_cb_openni_ir_depth_image > ();
 
+  ir_sync_.addCallback(boost::bind(&OpenNIGrabber::irDepthImageCallback, this, _1, _2));
   if (device_->hasImageStream())
   {
     // create callback signals
     image_signal_ = createSignal <sig_cb_openni_image > ();
     image_depth_image_signal_ = createSignal <sig_cb_openni_image_depth_image > ();
     point_cloud_rgb_signal_ = createSignal <sig_cb_openni_point_cloud_rgb > ();
-    sync_.addCallback(boost::bind(&OpenNIGrabber::imageDepthImageCallback, this, _1, _2));
+    rgb_sync_.addCallback(boost::bind(&OpenNIGrabber::imageDepthImageCallback, this, _1, _2));
     openni_wrapper::DeviceKinect* kinect = dynamic_cast<openni_wrapper::DeviceKinect*> (device_.get());
     if (kinect)
       kinect->setDebayeringMethod(openni_wrapper::ImageBayerGRBG::EdgeAware);
@@ -90,6 +94,7 @@ OpenNIGrabber::OpenNIGrabber(const std::string& device_id, const Mode& depth_mod
 
   image_callback_handle = device_->registerImageCallback(&OpenNIGrabber::imageCallback, *this);
   depth_callback_handle = device_->registerDepthCallback(&OpenNIGrabber::depthCallback, *this);
+  ir_callback_handle    = device_->registerIRCallback(&OpenNIGrabber::irCallback, *this);
 }
 
 OpenNIGrabber::~OpenNIGrabber() throw ()
@@ -98,13 +103,16 @@ OpenNIGrabber::~OpenNIGrabber() throw ()
   // unregister callbacks
   device_->unregisterDepthCallback(depth_callback_handle);
   device_->unregisterImageCallback(image_callback_handle);
+  device_->unregisterIRCallback(image_callback_handle);
 
   // disconnect all listeeners
   disconnect_all_slots <sig_cb_openni_image > ();
   disconnect_all_slots <sig_cb_openni_depth_image > ();
+  disconnect_all_slots <sig_cb_openni_ir_image > ();
   disconnect_all_slots <sig_cb_openni_image_depth_image > ();
   disconnect_all_slots <sig_cb_openni_point_cloud > ();
   disconnect_all_slots <sig_cb_openni_point_cloud_rgb > ();
+  disconnect_all_slots <sig_cb_openni_point_cloud_i > ();
 
   try
   {
@@ -142,11 +150,23 @@ void OpenNIGrabber::checkDepthStreamRequired()
   // do we have anyone listening to depth images or (color) point clouds?
   if (num_slots<sig_cb_openni_depth_image > () > 0 ||
       num_slots<sig_cb_openni_image_depth_image > () > 0 ||
+      num_slots<sig_cb_openni_ir_depth_image > () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgb > () > 0 ||
-      num_slots<sig_cb_openni_point_cloud > () > 0)
+      num_slots<sig_cb_openni_point_cloud > () > 0 ||
+      num_slots<sig_cb_openni_point_cloud_i > () > 0 )
     depth_required_ = true;
   else
     depth_required_ = false;
+}
+
+void OpenNIGrabber::checkIRStreamRequired()
+{
+  if (num_slots<sig_cb_openni_ir_image > () > 0 ||
+      num_slots<sig_cb_openni_point_cloud_i > () > 0 ||
+      num_slots<sig_cb_openni_ir_depth_image > () > 0)
+    ir_required_ = true;
+  else
+    ir_required_ = false;
 }
 
 void OpenNIGrabber::start() throw (pcl::PCLIOException)
@@ -171,11 +191,15 @@ void OpenNIGrabber::start() throw (pcl::PCLIOException)
       //startSynchronization ();
     }
 
+    if (ir_required_ && !device_->isIRStreamRunning())
+    {
+      device_->startIRStream();
+    }
     running_ = true;
   }
   catch (openni_wrapper::OpenNIException& ex)
   {
-    THROW_PCL_IO_EXCEPTION("Could not start streams. Reason: %s", ex.what ());
+    THROW_PCL_IO_EXCEPTION("Could not start streams. Reason: %s", ex.what());
   }
 }
 
@@ -189,11 +213,14 @@ void OpenNIGrabber::stop() throw (pcl::PCLIOException)
     if (device_->hasImageStream() && device_->isImageStreamRunning())
       device_->stopImageStream();
 
+    if (device_->hasIRStream() && device_->isIRStreamRunning())
+      device_->stopIRStream();
+    
     running_ = false;
   }
   catch (openni_wrapper::OpenNIException& ex)
   {
-    THROW_PCL_IO_EXCEPTION("Could not stop streams. Reason: %s", ex.what ());
+    THROW_PCL_IO_EXCEPTION("Could not stop streams. Reason: %s", ex.what());
   }
 }
 
@@ -217,6 +244,10 @@ void OpenNIGrabber::signalsChanged()
   // reevaluate which streams are required
   checkImageStreamRequired();
   checkDepthStreamRequired();
+  checkIRStreamRequired();
+  if (ir_required_ && image_required_)
+    THROW_PCL_IO_EXCEPTION("Can not provide IR stream and RGB stream at the same time.");
+
   checkImageAndDepthSynchronizationRequired();
   if (running_)
     start();
@@ -233,17 +264,17 @@ void OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
 
   if (driver.getNumberDevices() == 0)
-    THROW_PCL_IO_EXCEPTION ("No devices connected.");
-/*
-  printf("[%s] Number devices connected: %d\n", getName().c_str(), driver.getNumberDevices());
-  for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx)
-  {
-    printf("[%s] %u. device on bus %03u:%02u is a %s (%03x) from %s (%03x) with serial id \'%s\'\n"
-      , getName().c_str(), deviceIdx + 1, driver.getBus(deviceIdx), driver.getAddress(deviceIdx)
-      , driver.getProductName(deviceIdx), driver.getProductID(deviceIdx), driver.getVendorName(deviceIdx)
-      , driver.getVendorID(deviceIdx), driver.getSerialNumber(deviceIdx));
-  }
-*/
+    THROW_PCL_IO_EXCEPTION("No devices connected.");
+  /*
+    printf("[%s] Number devices connected: %d\n", getName().c_str(), driver.getNumberDevices());
+    for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx)
+    {
+      printf("[%s] %u. device on bus %03u:%02u is a %s (%03x) from %s (%03x) with serial id \'%s\'\n"
+        , getName().c_str(), deviceIdx + 1, driver.getBus(deviceIdx), driver.getAddress(deviceIdx)
+        , driver.getProductName(deviceIdx), driver.getProductID(deviceIdx), driver.getVendorName(deviceIdx)
+        , driver.getVendorID(deviceIdx), driver.getSerialNumber(deviceIdx));
+    }
+   */
   try
   {
     if (device_id[0] == '#')
@@ -276,13 +307,13 @@ void OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
   catch (const openni_wrapper::OpenNIException& exception)
   {
     if (!device_)
-      THROW_PCL_IO_EXCEPTION("No matching device found. %s", exception.what ());
+      THROW_PCL_IO_EXCEPTION("No matching device found. %s", exception.what());
     else
-      THROW_PCL_IO_EXCEPTION("could not retrieve device. Reason %s", exception.what ());
+      THROW_PCL_IO_EXCEPTION("could not retrieve device. Reason %s", exception.what());
   }
   catch (...)
   {
-    THROW_PCL_IO_EXCEPTION ("unknown error occured");
+    THROW_PCL_IO_EXCEPTION("unknown error occured");
   }
   //printf("[%s] Opened '%s' on bus %d:%d with serial number '%s'\n", getName().c_str(),
   //device_->getProductName(), device_->getBus(), device_->getAddress(), device_->getSerialNumber());
@@ -292,9 +323,9 @@ void OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
   {
     XnMapOutputMode depth_md, actual_depth_md;
     if (!mapConfigMode2XnMode(depth_mode, depth_md) || !device_->findCompatibleDepthMode(depth_md, actual_depth_md))
-      THROW_PCL_IO_EXCEPTION ("could not find compatible depth stream mode %d", (int) depth_mode);
+      THROW_PCL_IO_EXCEPTION("could not find compatible depth stream mode %d", (int) depth_mode);
 
-   // printf("[%s] requested depth mode  : %dx%d@%dHz", getName().c_str(), depth_md.nXRes, depth_md.nYRes, depth_md.nFPS);
+    // printf("[%s] requested depth mode  : %dx%d@%dHz", getName().c_str(), depth_md.nXRes, depth_md.nYRes, depth_md.nFPS);
     //printf(" -> compatible depth mode : %dx%d@%dHz\n", actual_depth_md.nXRes, actual_depth_md.nYRes, actual_depth_md.nFPS);
 
     device_->setDepthOutputMode(actual_depth_md);
@@ -315,7 +346,7 @@ void OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
     {
       XnMapOutputMode image_md;
       if (!mapConfigMode2XnMode(image_mode, image_md) || !device_->findCompatibleImageMode(image_md, actual_image_md))
-        THROW_PCL_IO_EXCEPTION ("could not find compatible image stream mode %d", (int) image_mode);
+        THROW_PCL_IO_EXCEPTION("could not find compatible image stream mode %d", (int) image_mode);
 
       //printf("[%s] requested image mode  : %dx%d@%dHz", getName().c_str(), image_md.nXRes, image_md.nYRes, image_md.nFPS);
       //printf(" -> compatible image mode : %dx%d@%dHz\n", actual_image_md.nXRes, actual_image_md.nYRes, actual_image_md.nFPS);
@@ -327,7 +358,7 @@ void OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
     }
 
     if (actual_image_md.nXRes < depth_width_ || actual_image_md.nYRes < depth_height_)
-      THROW_PCL_IO_EXCEPTION ("image size may not be smaller than depth image size (%dx%d) < (%dx%d)", actual_image_md.nXRes, actual_image_md.nYRes, depth_width_, depth_height_);
+      THROW_PCL_IO_EXCEPTION("image size may not be smaller than depth image size (%dx%d) < (%dx%d)", actual_image_md.nXRes, actual_image_md.nYRes, depth_width_, depth_height_);
 
     // get smallest possible image that is at least as big as depth
     // e.g. 1280x1024 -> 640x512 > 640x480
@@ -355,9 +386,10 @@ void OpenNIGrabber::stopSynchronization()
 
 void OpenNIGrabber::imageCallback(boost::shared_ptr<openni_wrapper::Image> image, void* cookie)
 {
+  //std::cout << "imageCallback: " << image->getTimeStamp() << std::endl;
   if (num_slots<sig_cb_openni_point_cloud_rgb > () > 0 ||
       num_slots<sig_cb_openni_image_depth_image > () > 0)
-    sync_.add0(image, image->getTimeStamp());
+    rgb_sync_.add0(image, image->getTimeStamp());
 
   if (image_signal_->num_slots() > 0)
     image_signal_->operator()(image);
@@ -367,9 +399,14 @@ void OpenNIGrabber::imageCallback(boost::shared_ptr<openni_wrapper::Image> image
 
 void OpenNIGrabber::depthCallback(boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie)
 {
+  //std::cout << "depthCallback: " << depth_image->getTimeStamp() << std::endl;
   if (num_slots<sig_cb_openni_point_cloud_rgb > () > 0 ||
       num_slots<sig_cb_openni_image_depth_image > () > 0)
-    sync_.add1(depth_image, depth_image->getTimeStamp());
+    rgb_sync_.add1(depth_image, depth_image->getTimeStamp());
+
+  if (num_slots<sig_cb_openni_point_cloud_i > () > 0 ||
+      num_slots<sig_cb_openni_ir_depth_image > () > 0)
+    ir_sync_.add1(depth_image, depth_image->getTimeStamp());
 
   if (depth_image_signal_->num_slots() > 0)
     depth_image_signal_->operator()(depth_image);
@@ -380,8 +417,22 @@ void OpenNIGrabber::depthCallback(boost::shared_ptr<openni_wrapper::DepthImage> 
   return;
 }
 
+void OpenNIGrabber::irCallback(boost::shared_ptr<openni_wrapper::IRImage> ir_image, void* cookie)
+{
+  //std::cout << "irCallback: " << ir_image->getTimeStamp() << std::endl;
+  if (num_slots<sig_cb_openni_point_cloud_i > () > 0 ||
+      num_slots<sig_cb_openni_ir_depth_image > () > 0)
+    ir_sync_.add0(ir_image, ir_image->getTimeStamp());
+
+  if (ir_image_signal_->num_slots() > 0)
+    ir_image_signal_->operator()(ir_image);
+
+  return;
+}
+
 void OpenNIGrabber::imageDepthImageCallback(const boost::shared_ptr<openni_wrapper::Image> &image, const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image)
 {
+  //std::cout << "imageDepthImageCallback: " << image->getTimeStamp() << " - " << depth_image->getTimeStamp() << std::endl;
   // check if we have color point cloud slots
   if (point_cloud_rgb_signal_->num_slots() > 0)
     point_cloud_rgb_signal_->operator()(convertToXYZRGBPointCloud(image, depth_image));
@@ -390,6 +441,20 @@ void OpenNIGrabber::imageDepthImageCallback(const boost::shared_ptr<openni_wrapp
   {
     float constant = 1.0f / device_->getDepthFocalLength(depth_width_);
     image_depth_image_signal_->operator()(image, depth_image, constant);
+  }
+}
+
+void OpenNIGrabber::irDepthImageCallback(const boost::shared_ptr<openni_wrapper::IRImage> &ir_image, const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image)
+{
+  //std::cout << "irDepthImageCallback: " << ir_image->getTimeStamp() << " - " << depth_image->getTimeStamp() << std::endl;
+  // check if we have color point cloud slots
+  if (point_cloud_i_signal_->num_slots() > 0)
+    point_cloud_i_signal_->operator()(convertToXYZIPointCloud(ir_image, depth_image));
+
+  if (ir_depth_image_signal_->num_slots() > 0)
+  {
+    float constant = 1.0f / device_->getDepthFocalLength(depth_width_);
+    ir_depth_image_signal_->operator()(ir_image, depth_image, constant);
   }
 }
 
@@ -537,6 +602,80 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr OpenNIGrabber::convertToXYZRGBPointCloud(
   return (cloud);
 }
 
+pcl::PointCloud<pcl::PointXYZI>::Ptr OpenNIGrabber::convertToXYZIPointCloud(const boost::shared_ptr<openni_wrapper::IRImage> &ir_image,
+  const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
+{
+  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > cloud(new pcl::PointCloud<pcl::PointXYZI > ());
+
+  cloud->header.frame_id = rgb_frame_id_;
+  cloud->height = depth_height_;
+  cloud->width = depth_width_;
+  cloud->is_dense = false;
+
+  cloud->points.resize(cloud->height * cloud->width);
+
+  float constant = 1.0f / device_->getImageFocalLength(cloud->width);
+  register int centerX = (cloud->width >> 1);
+  int centerY = (cloud->height >> 1);
+
+  register const XnDepthPixel* depth_map = depth_image->getDepthMetaData().Data();
+  register const XnIRPixel* ir_map = ir_image->getMetaData().Data();
+
+  if (depth_image->getWidth() != depth_width_ || depth_image->getHeight() != depth_height_)
+  {
+    static unsigned buffer_size = 0;
+    static boost::shared_array<unsigned short> depth_buffer(0);
+    static boost::shared_array<unsigned short> ir_buffer(0);
+
+    if (buffer_size < depth_width_ * depth_height_)
+    {
+      buffer_size = depth_width_ * depth_height_;
+      depth_buffer.reset(new unsigned short [buffer_size]);
+      ir_buffer.reset(new unsigned short [buffer_size]);
+    }
+
+    depth_image->fillDepthImageRaw(depth_width_, depth_height_, depth_buffer.get());
+    depth_map = depth_buffer.get();
+
+    ir_image->fillRaw(depth_width_, depth_height_, ir_buffer.get());
+    ir_map = ir_buffer.get ();
+  }
+
+  register int depth_idx = 0;
+  float bad_point = std::numeric_limits<float>::quiet_NaN();
+
+  for (int v = -centerY; v < centerY; ++v)
+  {
+    for (register int u = -centerX; u < centerX; ++u, ++depth_idx)
+    {
+      pcl::PointXYZI& pt = cloud->points[depth_idx];
+      /// @todo Different values for these cases
+      // Check for invalid measurements
+      if (depth_map[depth_idx] == 0 ||
+          depth_map[depth_idx] == depth_image->getNoSampleValue() ||
+          depth_map[depth_idx] == depth_image->getShadowValue())
+      {
+        pt.x = pt.y = pt.z = bad_point;
+      }
+      else
+      {
+        pt.z = depth_map[depth_idx] * 0.001f;
+        pt.x = u * pt.z * constant;
+        pt.y = v * pt.z * constant;
+      }
+
+      pt.data_c[0] = pt.data_c[1] = pt.data_c[2] = pt.data_c[3] = 0;
+      pt.intensity = (float) ir_map[depth_idx] / 1024.0;
+      
+      
+//      static int ctr = 0;
+//      if (++ctr % 100 == 0)
+//        std::cout << pt.intensity << std::endl;
+    }
+  }
+  
+  return (cloud);
+}
 // TODO: delete me?
 
 void OpenNIGrabber::updateModeMaps()

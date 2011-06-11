@@ -58,7 +58,7 @@ class DeviceKinect : public OpenNIDevice
 {
   friend class OpenNIDriver;
 public:
-  DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node) throw (OpenNIException);
+  DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException);
   virtual ~DeviceKinect () throw ();
 
   inline void setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) throw ();

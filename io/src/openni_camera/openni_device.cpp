@@ -40,6 +40,7 @@
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_camera/openni_device.h>
 #include <pcl/io/openni_camera/openni_depth_image.h>
+#include <pcl/io/openni_camera/openni_ir_image.h>
 #include <iostream>
 #include <limits>
 #include <sstream>
@@ -53,103 +54,69 @@ using namespace boost;
 namespace openni_wrapper
 {
 
-OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node,
-                            const xn::NodeInfo& depth_node) throw (OpenNIException)
+OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException)
 : device_node_info_ (device_node)
 , context_ (context)
 {
-   XnStatus status = XN_STATUS_OK;
-   
-#ifndef MAC 
   // create the production nodes
-  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
+  XnStatus status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating depth generator failed. Reason: %s", xnGetStatusString (status));
-    // get production node instances
-  
-  status = depth_node.GetInstance (depth_generator_);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("creating depth generator instance failed. Reason: %s", xnGetStatusString (status));
-  
+
   status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(image_node));
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating image generator failed. Reason: %s", xnGetStatusString (status));
-  
-  status = image_node.GetInstance (image_generator_);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("creating image generator instance failed. Reason: %s", xnGetStatusString (status));
-#else
-  xn::Query device_query;
-  device_query.SetCreationInfo(device_node.GetCreationInfo());
 
-  status = device_.Create(context_, &device_query );
+  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(ir_node));
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("creating device instance failed. Reason: %s", xnGetStatusString (status));
-  
-  xn::Query query;
-  query.SetName(image_node.GetInstanceName());
-  status = image_generator_.Create(context_, &query);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("creating image generator instance failed. Reason: %s", xnGetStatusString (status));
-  
-  query.SetName(depth_node.GetInstanceName());
-  status = depth_generator_.Create(context_, &query);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("creating depth generator instance failed. Reason: %s", xnGetStatusString (status));
-  
-  xn::NodeInfoList node_info_list;
-  context_.EnumerateExistingNodes (node_info_list);
-  for (xn::NodeInfoList::Iterator nodeIt = node_info_list.Begin (); nodeIt != node_info_list.End (); ++nodeIt)
-  {
-    xn::NodeInfoList needed = (*nodeIt).GetNeededNodes();
-    cout << "existing nodes: " << (*nodeIt).GetInstanceName () << endl;
-    if (!needed.IsEmpty())
-        for (xn::NodeInfoList::Iterator neededIt = needed.Begin (); neededIt != needed.End (); ++neededIt)
-        {
-          cout << "needs: " <<(*neededIt).GetInstanceName () << " : " << (*neededIt).GetCreationInfo() << endl;
-        }
-  }
-#endif
-  // we have to start the threads after initializing OpenNI.
-  running_  = true;
-  image_thread_ = boost::thread (&OpenNIDevice::ImageDataThreadFunction, this);
-  depth_thread_ = boost::thread (&OpenNIDevice::DepthDataThreadFunction, this);
-}
-
-OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node) throw (OpenNIException)
-: device_node_info_ (device_node)
-, context_ (context)
-{
-  XnStatus status = XN_STATUS_OK;
-  
-  #ifndef MAC
-  // create the production nodes
-  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("creating depth generator failed. Reason: %s", xnGetStatusString (status));
+    THROW_OPENNI_EXCEPTION ("creating IR generator failed. Reason: %s", xnGetStatusString (status));
 
   // get production node instances
   status = depth_node.GetInstance (depth_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating depth generator instance failed. Reason: %s", xnGetStatusString (status));
 
-#else
-  xn::Query device_query;
-  device_query.SetCreationInfo(device_node.GetCreationInfo());
-
-  status = device_.Create(context_, &device_query );
+  status = image_node.GetInstance (image_generator_);
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("creating device instance failed. Reason: %s", xnGetStatusString (status));
-  
-  xn::Query query;
-  query.SetName(depth_node.GetInstanceName());
-  status = depth_generator_.Create(context_, &query);
+    THROW_OPENNI_EXCEPTION ("creating image generator instance failed. Reason: %s", xnGetStatusString (status));
+
+  status = ir_node.GetInstance (ir_generator_);
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION ("creating IR generator instance failed. Reason: %s", xnGetStatusString (status));
+
+  // we have to start the threads after initializing OpenNI.
+  running_  = true;
+  image_thread_ = boost::thread (&OpenNIDevice::ImageDataThreadFunction, this);
+  depth_thread_ = boost::thread (&OpenNIDevice::DepthDataThreadFunction, this);
+  ir_thread_ = boost::thread (&OpenNIDevice::IRDataThreadFunction, this);
+}
+
+OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException)
+: device_node_info_ (device_node)
+, context_ (context)
+{
+    // create the production nodes
+  XnStatus status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION ("creating depth generator failed. Reason: %s", xnGetStatusString (status));
+
+  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(ir_node));
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION ("creating IR generator failed. Reason: %s", xnGetStatusString (status));
+
+  // get production node instances
+  status = depth_node.GetInstance (depth_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating depth generator instance failed. Reason: %s", xnGetStatusString (status));
-#endif
+
+  status = ir_node.GetInstance (ir_generator_);
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION ("creating IR generator instance failed. Reason: %s", xnGetStatusString (status));
+
   // we have to start the threads after initializing OpenNI.
   running_  = true;
   depth_thread_ = boost::thread (&OpenNIDevice::DepthDataThreadFunction, this);
+  ir_thread_ = boost::thread (&OpenNIDevice::IRDataThreadFunction, this);
 }
 
 OpenNIDevice::~OpenNIDevice () throw ()
@@ -161,21 +128,30 @@ OpenNIDevice::~OpenNIDevice () throw ()
   if (hasDepthStream () && depth_generator_.IsGenerating ())
     depth_generator_.StopGenerating ();
 
+  if (hasIRStream () && ir_generator_.IsGenerating ())
+    ir_generator_.StopGenerating ();
+
   // lock before changing running flag
   image_mutex_.lock ();
   depth_mutex_.lock ();
+  ir_mutex_.lock ();
   running_ = false;
 
   depth_condition_.notify_all ();
   image_condition_.notify_all ();
+  ir_condition_.notify_all ();
   depth_mutex_.unlock ();
   image_mutex_.unlock ();
+  ir_mutex_.unlock ();
 
   if (hasImageStream ())
     image_thread_.join ();
 
   if (hasDepthStream ())
     depth_thread_.join ();
+
+  if (hasIRStream ())
+    ir_thread_.join ();
 }
 
 void OpenNIDevice::Init () throw (OpenNIException)
@@ -230,6 +206,13 @@ void OpenNIDevice::Init () throw (OpenNIException)
     setImageOutputMode (getDefaultImageMode ());
     lock_guard<mutex> image_lock (image_mutex_);
     image_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewImageDataAvailable, this, image_callback_handle_);
+  }
+
+  if (hasIRStream ())
+  {
+    setIROutputMode (getDefaultIRMode ());
+    lock_guard<mutex> ir_lock (ir_mutex_);
+    ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewIRDataAvailable, this, ir_callback_handle_);
   }
 }
 
@@ -299,6 +282,40 @@ void OpenNIDevice::stopDepthStream () throw (OpenNIException)
     THROW_OPENNI_EXCEPTION ("Device does not provide a depth stream");
 }
 
+void OpenNIDevice::startIRStream () throw (OpenNIException)
+{
+  if (hasIRStream ())
+  {
+    lock_guard<mutex> ir_lock (ir_mutex_);
+    if (!ir_generator_.IsGenerating ())
+    {
+      XnStatus status = ir_generator_.StartGenerating ();
+
+      if (status != XN_STATUS_OK)
+        THROW_OPENNI_EXCEPTION ("starting IR stream failed. Reason: %s", xnGetStatusString (status));
+    }
+  }
+  else
+    THROW_OPENNI_EXCEPTION ("Device does not provide an IR stream");
+}
+
+void OpenNIDevice::stopIRStream () throw (OpenNIException)
+{
+  if (hasIRStream ())
+  {
+    lock_guard<mutex> ir_lock (ir_mutex_);
+    if (ir_generator_.IsGenerating ())
+    {
+      XnStatus status = ir_generator_.StopGenerating ();
+
+      if (status != XN_STATUS_OK)
+        THROW_OPENNI_EXCEPTION ("stopping IR stream failed. Reason: %s", xnGetStatusString (status));
+    }
+  }
+  else
+    THROW_OPENNI_EXCEPTION ("Device does not provide an IR stream");
+}
+
 bool OpenNIDevice::isImageStreamRunning () const throw (OpenNIException)
 {
   lock_guard<mutex> image_lock (image_mutex_);
@@ -311,6 +328,12 @@ bool OpenNIDevice::isDepthStreamRunning () const throw (OpenNIException)
   return ( hasDepthStream () && depth_generator_.IsGenerating ());
 }
 
+bool OpenNIDevice::isIRStreamRunning () const throw (OpenNIException)
+{
+  lock_guard<mutex> ir_lock (ir_mutex_);
+  return ( hasIRStream () && ir_generator_.IsGenerating ());
+}
+
 bool OpenNIDevice::hasImageStream () const throw ()
 {
   return (available_image_modes_.size() != 0);
@@ -319,6 +342,12 @@ bool OpenNIDevice::hasImageStream () const throw ()
 bool OpenNIDevice::hasDepthStream () const throw ()
 {
   return (available_depth_modes_.size() != 0);
+}
+
+bool OpenNIDevice::hasIRStream () const throw ()
+{
+  /// @todo Do actual check
+  return true;
 }
 
 void OpenNIDevice::setDepthRegistration (bool on_off) throw (OpenNIException)
@@ -505,6 +534,33 @@ void OpenNIDevice::DepthDataThreadFunction () throw (OpenNIException)
   }
 }
 
+void OpenNIDevice::IRDataThreadFunction () throw (OpenNIException)
+{
+  while (running_)
+  {
+    // lock before checking running flag
+    unique_lock<mutex> ir_lock (ir_mutex_);
+    if (!running_)
+      return;
+    ir_condition_.wait (ir_lock);
+    if (!running_)
+      return;
+
+    ir_generator_.WaitAndUpdateData ();
+    boost::shared_ptr<xn::IRMetaData> ir_data (new xn::IRMetaData);
+    ir_generator_.GetMetaData (*ir_data);
+    ir_lock.unlock ();
+
+    boost::shared_ptr<IRImage> ir_image ( new IRImage (ir_data) );
+
+    for (map< OpenNIDevice::CallbackHandle, ActualIRImageCallbackFunction >::iterator callbackIt = ir_callback_.begin ();
+         callbackIt != ir_callback_.end (); ++callbackIt)
+    {
+      callbackIt->second.operator()(ir_image);
+    }
+  }
+}
+
 void __stdcall OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
 {
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
@@ -515,6 +571,12 @@ void __stdcall OpenNIDevice::NewImageDataAvailable (xn::ProductionNode& node, vo
 {
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
   device->image_condition_.notify_all ();
+}
+
+void __stdcall OpenNIDevice::NewIRDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
+{
+  OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
+  device->ir_condition_.notify_all ();
 }
 
 OpenNIDevice::CallbackHandle OpenNIDevice::registerImageCallback (const ImageCallbackFunction& callback, void* custom_data) throw ()
@@ -550,6 +612,23 @@ bool OpenNIDevice::unregisterDepthCallback (const OpenNIDevice::CallbackHandle& 
   else
     THROW_OPENNI_EXCEPTION ("Device does not provide a depth image");
   return false;
+}
+
+OpenNIDevice::CallbackHandle OpenNIDevice::registerIRCallback (const IRImageCallbackFunction& callback, void* custom_data) throw ()
+{
+  if (!hasDepthStream ())
+    THROW_OPENNI_EXCEPTION ("Device does not provide an IR stream");
+
+  ir_callback_[ir_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
+  return ir_callback_handle_counter_++;
+}
+
+bool OpenNIDevice::unregisterIRCallback (const OpenNIDevice::CallbackHandle& callbackHandle) throw ()
+{
+  if (!hasDepthStream ())
+    THROW_OPENNI_EXCEPTION ("Device does not provide an IR stream");
+
+  return (ir_callback_.erase (callbackHandle) != 0);
 }
 
 const char* OpenNIDevice::getSerialNumber () const throw ()
@@ -756,6 +835,12 @@ const XnMapOutputMode& OpenNIDevice::getDefaultDepthMode () const throw ()
   return available_depth_modes_[0];
 }
 
+const XnMapOutputMode&  OpenNIDevice::getDefaultIRMode () const throw ()
+{
+  /// @todo Something else here?
+  return available_depth_modes_[0];
+}
+
 void OpenNIDevice::setImageOutputMode (const XnMapOutputMode& output_mode) throw (OpenNIException)
 {
   if (hasImageStream ())
@@ -782,6 +867,19 @@ void OpenNIDevice::setDepthOutputMode (const XnMapOutputMode& output_mode) throw
     THROW_OPENNI_EXCEPTION ("Device does not provide a depth stream");
 }
 
+void OpenNIDevice::setIROutputMode (const XnMapOutputMode& output_mode) throw (OpenNIException)
+{
+  if (hasIRStream ())
+  {
+    lock_guard<mutex> ir_lock (ir_mutex_);
+    XnStatus status = ir_generator_.SetMapOutputMode (output_mode);
+    if (status != XN_STATUS_OK)
+      THROW_OPENNI_EXCEPTION ("Could not set IR stream output mode to %dx%d@%d. Reason: %s", output_mode.nXRes, output_mode.nYRes, output_mode.nFPS, xnGetStatusString (status));
+  }
+  else
+    THROW_OPENNI_EXCEPTION ("Device does not provide an IR stream");
+}
+
 XnMapOutputMode OpenNIDevice::getImageOutputMode () const throw (OpenNIException)
 {
   if (!hasImageStream ())
@@ -805,6 +903,19 @@ XnMapOutputMode OpenNIDevice::getDepthOutputMode () const throw (OpenNIException
   XnStatus status = depth_generator_.GetMapOutputMode (output_mode);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("Could not get depth stream output mode. Reason: %s", xnGetStatusString (status));
+  return output_mode;
+}
+
+XnMapOutputMode OpenNIDevice::getIROutputMode () const throw (OpenNIException)
+{
+  if (!hasIRStream ())
+    THROW_OPENNI_EXCEPTION ("Device does not provide an IR stream");
+
+  XnMapOutputMode output_mode;
+  lock_guard<mutex> ir_lock (ir_mutex_);
+  XnStatus status = ir_generator_.GetMapOutputMode (output_mode);
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION ("Could not get IR stream output mode. Reason: %s", xnGetStatusString (status));
   return output_mode;
 }
 

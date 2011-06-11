@@ -70,9 +70,21 @@ class SimpleOpenNIProcessor
       // start receiving point clouds
       interface->start ();
 
-      // wait until user quits program with Ctrl-C, but no busy-waiting -> sleep (1);
-      while (true)
-        boost::this_thread::sleep (boost::posix_time::seconds (1));
+      std::cout << "<Esc>, \'q\', \'Q\': quit the program" << std::endl;
+      std::cout << "\' \': pause" << std::endl;
+      char key;
+      do
+      {
+        key = getchar ();
+        switch (key)
+        {
+          case ' ':
+            if (interface->isRunning())
+              interface->stop();
+            else
+              interface->start();
+        }
+      } while (key != 27 && key != 'q' && key != 'Q');
 
       // stop the grabber
       interface->stop ();

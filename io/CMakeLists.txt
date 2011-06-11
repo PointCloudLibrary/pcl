@@ -24,11 +24,13 @@ if(build)
             include/pcl/io/openni_camera/openni_image.h
             include/pcl/io/openni_camera/openni_image_bayer_grbg.h
             include/pcl/io/openni_camera/openni_image_yuv_422.h
+            include/pcl/io/openni_camera/openni_ir_image.h
             )
         set(OPENNI_GRABBER_SOURCES src/openni_camera/openni_device.cpp
             src/openni_camera/openni_device_primesense.cpp
             src/openni_camera/openni_image_bayer_grbg.cpp
             src/openni_camera/openni_depth_image.cpp
+            src/openni_camera/openni_ir_image.cpp
             src/openni_camera/openni_device_kinect.cpp
             src/openni_camera/openni_device_xtion.cpp
             src/openni_camera/openni_driver.cpp

@@ -38,7 +38,7 @@
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/openni_camera/openni_device_xtion.h>
-#include <iostream>
+//#include <iostream>
 #include <sstream>
 #include <boost/thread/mutex.hpp>
 
@@ -48,8 +48,8 @@ using namespace boost;
 namespace openni_wrapper
 {
 
-DeviceXtionPro::DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node) throw (OpenNIException)
-: OpenNIDevice (context, device_node, depth_node)
+DeviceXtionPro::DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException)
+: OpenNIDevice (context, device_node, depth_node, ir_node)
 {
   Init ();
   lock_guard<mutex> depth_lock(depth_mutex_);

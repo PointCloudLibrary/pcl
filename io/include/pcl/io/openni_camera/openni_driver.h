@@ -93,12 +93,13 @@ public:
 protected:
   struct DeviceContext
   {
-    DeviceContext (const xn::NodeInfo& device_node, xn::NodeInfo* image_node, xn::NodeInfo* depth_node);
+    DeviceContext (const xn::NodeInfo& device_node, xn::NodeInfo* image_node, xn::NodeInfo* depth_node, xn::NodeInfo* ir_node);
     DeviceContext (const xn::NodeInfo& device_node);
     DeviceContext (const DeviceContext&);
     xn::NodeInfo device_node;
     boost::shared_ptr<xn::NodeInfo> image_node;
     boost::shared_ptr<xn::NodeInfo> depth_node;
+    boost::shared_ptr<xn::NodeInfo> ir_node;
     boost::weak_ptr<OpenNIDevice> device;
   };
 

@@ -45,6 +45,7 @@
 #include <pcl/io/openni_camera/openni_device_kinect.h>
 #include <pcl/io/openni_camera/openni_image.h>
 #include <pcl/io/openni_camera/openni_depth_image.h>
+#include <pcl/io/openni_camera/openni_ir_image.h>
 #include <string>
 #include <deque>
 #include <boost/thread/mutex.hpp>
@@ -54,6 +55,7 @@ namespace pcl
 {
   struct PointXYZ;
   struct PointXYZRGB;
+  struct PointXYZI;
   template <typename T> class PointCloud;
 
   /** /brief
@@ -80,10 +82,13 @@ namespace pcl
     //define callback signature typedefs
     typedef void (sig_cb_openni_image) (const boost::shared_ptr<openni_wrapper::Image>&);
     typedef void (sig_cb_openni_depth_image) (const boost::shared_ptr<openni_wrapper::DepthImage>&);
+    typedef void (sig_cb_openni_ir_image) (const boost::shared_ptr<openni_wrapper::IRImage>&);
     typedef void (sig_cb_openni_image_depth_image) (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant) ;
+    typedef void (sig_cb_openni_ir_depth_image) (const boost::shared_ptr<openni_wrapper::IRImage>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant) ;
     typedef void (sig_cb_openni_point_cloud) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&);
     typedef void (sig_cb_openni_point_cloud_rgb) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&);
-
+    typedef void (sig_cb_openni_point_cloud_i) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
+    
   public:
     //enable using some openni parameters in the constructor.
     OpenNIGrabber (const std::string& device_id = "", const Mode& depth_mode = OpenNI_Default_Mode, const Mode& image_mode = OpenNI_Default_Mode) throw (openni_wrapper::OpenNIException);
@@ -109,8 +114,11 @@ namespace pcl
     // callback methods
     void imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie);
     void depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie);
+    void irCallback (boost::shared_ptr<openni_wrapper::IRImage> ir_image, void* cookie);
     void imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image> &image,
                                   const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image);
+    void irDepthImageCallback (const boost::shared_ptr<openni_wrapper::IRImage> &image,
+                               const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image);
 
     virtual void signalsChanged ();
 
@@ -119,11 +127,15 @@ namespace pcl
     virtual inline void checkImageAndDepthSynchronizationRequired ();
     virtual inline void checkImageStreamRequired ();
     virtual inline void checkDepthStreamRequired ();
+    virtual inline void checkIRStreamRequired();
     boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> > convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage> &depth) const;
     boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
                                                                                      const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
+    boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > convertToXYZIPointCloud (const boost::shared_ptr<openni_wrapper::IRImage> &image,
+                                                                                 const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
 
-    Synchronizer<boost::shared_ptr<openni_wrapper::Image>, boost::shared_ptr<openni_wrapper::DepthImage> > sync_;
+    Synchronizer<boost::shared_ptr<openni_wrapper::Image>, boost::shared_ptr<openni_wrapper::DepthImage> > rgb_sync_;
+    Synchronizer<boost::shared_ptr<openni_wrapper::IRImage>, boost::shared_ptr<openni_wrapper::DepthImage> > ir_sync_;
 
     /** \brief the actual openni device*/
     boost::shared_ptr<openni_wrapper::OpenNIDevice> device_;
@@ -137,12 +149,16 @@ namespace pcl
 
     bool image_required_;
     bool depth_required_;
+    bool ir_required_;
     bool sync_required_;
 
     boost::signals2::signal<sig_cb_openni_image >* image_signal_;
     boost::signals2::signal<sig_cb_openni_depth_image >* depth_image_signal_;
+    boost::signals2::signal<sig_cb_openni_ir_image >* ir_image_signal_;
     boost::signals2::signal<sig_cb_openni_image_depth_image>* image_depth_image_signal_;
+    boost::signals2::signal<sig_cb_openni_ir_depth_image>* ir_depth_image_signal_;
     boost::signals2::signal<sig_cb_openni_point_cloud >* point_cloud_signal_;
+    boost::signals2::signal<sig_cb_openni_point_cloud_i >* point_cloud_i_signal_;
     boost::signals2::signal<sig_cb_openni_point_cloud_rgb >* point_cloud_rgb_signal_;
 
     struct modeComp
@@ -168,6 +184,7 @@ namespace pcl
 
     openni_wrapper::OpenNIDevice::CallbackHandle depth_callback_handle;
     openni_wrapper::OpenNIDevice::CallbackHandle image_callback_handle;
+    openni_wrapper::OpenNIDevice::CallbackHandle ir_callback_handle;
     bool running_;
   } ;
 

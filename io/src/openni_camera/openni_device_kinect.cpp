@@ -49,8 +49,8 @@ using namespace boost;
 namespace openni_wrapper
 {
 
-DeviceKinect::DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node) throw (OpenNIException)
-: OpenNIDevice (context, device_node, image_node, depth_node)
+DeviceKinect::DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException)
+: OpenNIDevice (context, device_node, image_node, depth_node, ir_node)
 , debayering_method_ (ImageBayerGRBG::EdgeAwareWeighted)
 {
   // initilize devices... done in Base::Init, since we need DeviceKinect to be constructed.
