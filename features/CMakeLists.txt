@@ -1,6 +1,6 @@
 set(SUBSYS_NAME features)
 set(SUBSYS_DESC "Point cloud features library")
-set(SUBSYS_DEPS common kdtree range_image)
+set(SUBSYS_DEPS common kdtree range_image filters)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -26,6 +26,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/principal_curvatures.h
         include/pcl/${SUBSYS_NAME}/rift.h
         include/pcl/${SUBSYS_NAME}/rsd.h
+		include/pcl/${SUBSYS_NAME}/surflet.h
         include/pcl/${SUBSYS_NAME}/vfh.h
         )
 
@@ -45,6 +46,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/principal_curvatures.hpp
         include/pcl/${SUBSYS_NAME}/impl/rift.hpp
         include/pcl/${SUBSYS_NAME}/impl/rsd.hpp
+		include/pcl/${SUBSYS_NAME}/impl/surflet.hpp
         include/pcl/${SUBSYS_NAME}/impl/vfh.hpp
         )
 
@@ -63,7 +65,8 @@ if(build)
         src/pfh.cpp
         src/principal_curvatures.cpp
         src/rift.cpp
-        src/rsd.cpp
+        src/rsd.cpp                                
+		src/surflet.cpp
         src/vfh.cpp
         )
 
@@ -72,7 +75,7 @@ if(build)
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
     PCL_LINK_OPENMP(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_range_image pcl_kdtree)
+    target_link_libraries(${LIB_NAME} pcl_range_image pcl_kdtree pcl_filters)
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
         "${EXT_DEPS}" "" "" "")
