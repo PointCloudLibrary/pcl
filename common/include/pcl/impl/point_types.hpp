@@ -155,7 +155,8 @@ struct PointXYZ : public _PointXYZ
     data[3] = 1.0f;
   }
   inline PointXYZ (float _x, float _y, float _z) { x = _x; y = _y; z = _z; data[3] = 1.0f; }
-};
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+} EIGEN_ALIGN16;
 
 inline std::ostream& operator << (std::ostream& os, const PointXYZ& p)
 {
@@ -292,7 +293,8 @@ struct PointXYZRGB : public _PointXYZRGB
     b = _b;
     _unused = 0;
   }
-};
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+} EIGEN_ALIGN16;
 inline std::ostream& operator << (std::ostream& os, const PointXYZRGB& p)
 {
   os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.rgb << ")";
