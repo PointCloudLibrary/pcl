@@ -665,8 +665,11 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   convertPointCloudToVTKPolyData<PointT> (cloud, polydata, am_it->second.cells);
   polydata->Update ();
 
-  // Since scalars cannot be updated, we will set the immediate rendering mode ON here
-  am_it->second.actor->GetMapper ()->ImmediateModeRenderingOn ();
+  // Set scalars to blank, since there is no way we can update them here. 
+  vtkSmartPointer<vtkDataArray> scalars;
+  polydata->GetPointData ()->SetScalars (scalars);
+  polydata->Update ();
+  am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
 
   // Update the mapper
   reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
@@ -688,10 +691,12 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   vtkSmartPointer<vtkPolyData> polydata = reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
   // Convert the PointCloud to VTK PolyData
   convertPointCloudToVTKPolyData (geometry_handler, polydata, am_it->second.cells);
-  polydata->Update ();
 
-  // Since scalars cannot be updated, we will set the immediate rendering mode ON here
-  am_it->second.actor->GetMapper ()->ImmediateModeRenderingOn ();
+  // Set scalars to blank, since there is no way we can update them here. 
+  vtkSmartPointer<vtkDataArray> scalars;
+  polydata->GetPointData ()->SetScalars (scalars);
+  polydata->Update ();
+  am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
 
   // Update the mapper
   reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
@@ -757,6 +762,8 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   color_handler.getColor (scalars);
   polydata->GetPointData ()->SetScalars (scalars);
   polydata->Update ();
+  
+  am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
 
   // Update the mapper
   reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
