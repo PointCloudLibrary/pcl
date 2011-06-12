@@ -40,6 +40,7 @@
 #include <pcl/common/distances.h>
 #include <pcl/common/eigen.h>
 #include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
 
 using pcl::PointXYZ;
 
@@ -150,6 +151,20 @@ TEST (PCL, Eigen)
   EXPECT_NEAR (eivals (0), 2.86806e-06, 1e-4); EXPECT_NEAR (eivals (1), 0.00037165, 1e-4); EXPECT_NEAR (eivals (2), 0.000556858, 1e-4);
   
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, PointCloud)
+{
+  pcl::PointCloud<PointXYZ> cloud;
+  cloud.width = 640;
+  cloud.height = 480;
+
+  EXPECT_EQ (cloud.isOrganized (), true);
+  
+  cloud.height = 1;
+  EXPECT_EQ (cloud.isOrganized (), false);
+}
+
 
 /* ---[ */
 int
