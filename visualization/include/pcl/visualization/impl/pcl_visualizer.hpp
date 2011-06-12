@@ -770,5 +770,81 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   return (true);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+                                                     const PointCloudColorHandlerRGBField<PointT> &color_handler,
+                                                     const std::string &id)
+{
+  win_->SetAbortRender (1);
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+
+  if (am_it == cloud_actor_map_->end ())
+    return (false);
+
+  // Get the current poly data
+  vtkSmartPointer<vtkPolyData> polydata = reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
+  vtkSmartPointer<vtkCellArray> vertices = polydata->GetVerts ();
+  vtkSmartPointer<vtkPoints> points      = polydata->GetPoints ();
+//  vtkUnsignedCharArray* scalars = vtkUnsignedCharArray::SafeDownCast (polydata->GetPointData ()->GetScalars ());
+  vtkSmartPointer<vtkUnsignedCharArray> scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  // Copy the new point array in
+  vtkIdType nr_points = cloud->points.size ();
+  points->SetNumberOfPoints (nr_points);
+  scalars->SetNumberOfComponents (3);
+  scalars->SetNumberOfTuples (nr_points);
+  polydata->GetPointData ()->SetScalars (scalars);
+  unsigned char* colors = scalars->GetPointer (0);
+ 
+  // Get a pointer to the beginning of the data array
+  float *data = ((vtkFloatArray*)points->GetData ())->GetPointer (0);
+
+  // If the dataset is dense (no NaNs)
+  if (cloud->is_dense)
+  {
+    for (vtkIdType i = 0; i < nr_points; ++i)
+    {
+      memcpy (&data[i * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      int idx = i * 3;
+      colors[idx    ] = cloud->points[i].r;
+      colors[idx + 1] = cloud->points[i].g;
+      colors[idx + 2] = cloud->points[i].b;
+    }
+  }
+  else
+  {
+    vtkIdType j = 0;    // true point index
+    for (vtkIdType i = 0; i < nr_points; ++i)
+    {
+      // Check if the point is invalid
+      if (!pcl_isfinite (cloud->points[i].x) || 
+          !pcl_isfinite (cloud->points[i].y) || 
+          !pcl_isfinite (cloud->points[i].z))
+        continue;
+
+      memcpy (&data[j * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      int idx = j * 3;
+      colors[idx    ] = cloud->points[i].r;
+      colors[idx + 1] = cloud->points[i].g;
+      colors[idx + 2] = cloud->points[i].b;
+      j++;
+    }
+    nr_points = j;
+    points->SetNumberOfPoints (nr_points);
+    scalars->SetNumberOfTuples (nr_points);
+  }
+
+  vtkSmartPointer<vtkIdTypeArray> cells = vertices->GetData ();
+  updateCells (cells, am_it->second.cells, nr_points);
+
+  // Set the cells and the vertices
+  vertices->SetCells (nr_points, cells);
+
+  // Update the mapper
+  reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
+  return (true);
+}
+
 
 #endif

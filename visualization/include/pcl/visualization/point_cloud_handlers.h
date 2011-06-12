@@ -558,16 +558,16 @@ namespace pcl
         virtual std::string 
         getFieldName () const { return ("rgb"); }
 
-      protected:
-        /** \brief Class getName method. */
-        virtual inline std::string 
-        getName () const { return ("PointCloudColorHandlerRGBField"); }
-
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
           * \param scalars the resultant scalars containing the color for the input dataset
           */
         virtual void 
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+      protected:
+        /** \brief Class getName method. */
+        virtual inline std::string 
+        getName () const { return ("PointCloudColorHandlerRGBField"); }
 
       private:
         // Members derived from the base class
@@ -599,16 +599,16 @@ namespace pcl
         /** \brief Get the name of the field used. */
         virtual std::string getFieldName () const { return (field_name_); }
 
-      protected:
-        /** \brief Class getName method. */
-        virtual inline std::string 
-        getName () const { return ("PointCloudColorHandlerGenericField"); }
-
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
           * \param scalars the resultant scalars containing the color for the input dataset
           */
         virtual void 
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+      protected:
+        /** \brief Class getName method. */
+        virtual inline std::string 
+        getName () const { return ("PointCloudColorHandlerGenericField"); }
 
       private:
         using PointCloudColorHandler<PointT>::cloud_;
@@ -768,6 +768,12 @@ namespace pcl
         /** \brief Constructor. */
         PointCloudColorHandlerRGBField (const PointCloudConstPtr &cloud);
 
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param scalars the resultant scalars containing the color for the input dataset
+          */
+        virtual void 
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
       protected:
         /** \brief Get the name of the class. */
         virtual inline std::string 
@@ -776,12 +782,6 @@ namespace pcl
         /** \brief Get the name of the field used. */
         virtual std::string 
         getFieldName () const { return ("rgb"); }
-
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param scalars the resultant scalars containing the color for the input dataset
-          */
-        virtual void 
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -803,6 +803,12 @@ namespace pcl
         PointCloudColorHandlerGenericField (const PointCloudConstPtr &cloud, 
                                             const std::string &field_name);
 
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param scalars the resultant scalars containing the color for the input dataset
+          */
+        virtual void 
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
       protected:
         /** \brief Get the name of the class. */
         virtual inline std::string 
@@ -811,12 +817,6 @@ namespace pcl
         /** \brief Get the name of the field used. */
         virtual std::string 
         getFieldName () const { return (field_name_); }
-
-        /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param scalars the resultant scalars containing the color for the input dataset
-          */
-        virtual void 
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
 
       private:
         /** \brief Name of the field used to create the color handler. */

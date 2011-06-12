@@ -63,6 +63,11 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
   win_->SetWindowName (name.c_str ());
+  win_->AlphaBitPlanesOff ();
+  win_->PointSmoothingOff ();
+  win_->LineSmoothingOff ();
+  win_->PolygonSmoothingOff ();
+  win_->SwapBuffersOn ();
   win_->SetStereoTypeToAnaglyph ();
 
   // Get screen size
@@ -129,6 +134,11 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
   win_->SetWindowName (name.c_str ());
+  win_->AlphaBitPlanesOff ();
+  win_->PointSmoothingOff ();
+  win_->LineSmoothingOff ();
+  win_->PolygonSmoothingOff ();
+  win_->SwapBuffersOn ();
   win_->SetStereoTypeToAnaglyph ();
 
   // Get screen size
