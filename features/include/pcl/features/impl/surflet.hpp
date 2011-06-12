@@ -1,3 +1,41 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2011, Alexandru Ichim
+ *                      Willow Garage, Inc
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id$
+ *
+ */
+
 #ifndef PCL_FEATURES_IMPL_SURFLET_HPP_
 #define PCL_FEATURES_IMPL_SURFLET_HPP_
 
@@ -15,7 +53,7 @@ using namespace std;
 template <typename PointInT, typename PointOutT> typename pcl::SurfletEstimation<PointInT, PointOutT>::FeatureHashMapTypePtr
 pcl::SurfletEstimation<PointInT, PointOutT>::computeSurfletModel (
     const pcl::PointCloud<PointInT> &cloud /* output goes here */)
-    {
+{
   cerr << "Computing Surflet Model function called" << endl;
 
   cerr << "Subsampling ..." << endl;
@@ -47,37 +85,45 @@ pcl::SurfletEstimation<PointInT, PointOutT>::computeSurfletModel (
   int d1, d2, d3, d4;
   FeatureHashMapTypePtr feature_hash_map (new FeatureHashMapType);
   for (size_t i = 0; i < cloud_subsampled.width; ++i)
-    for(size_t j = 0; j < cloud_subsampled.width; ++j) if (i != j) {
-      /// create Vector4f's from point clouds
-      Eigen::Vector4f point1 (cloud_subsampled.points[i].x, cloud_subsampled.points[i].y, cloud_subsampled.points[i].z, 0),
-          point2 (cloud_subsampled.points[j].x, cloud_subsampled.points[j].y, cloud_subsampled.points[j].z, 0),
-          normal1 (cloud_subsampled_normals.points[i].normal_x, cloud_subsampled_normals.points[i].normal_y, cloud_subsampled_normals.points[i].normal_z, 0),
-          normal2 (cloud_subsampled_normals.points[j].normal_x, cloud_subsampled_normals.points[j].normal_y, cloud_subsampled_normals.points[j].normal_z, 0);
-      if (pcl::computePairFeatures (point1, normal1, point2, normal2, f1, f2, f3, f4)) {
+  {
+    for (size_t j = 0; j < cloud_subsampled.width; ++j) 
+    {
+      if (i == j)
+        continue;
+
+      // Use Eigen aligned maps directly to avoid data copies
+      if (pcl::computePairFeatures (cloud_subsampled.points[i].getVector4fMap (), 
+                                    cloud_subsampled_normals.points[i].getNormalVector4fMap (),
+                                    cloud_subsampled.points[j].getVector4fMap (),
+                                    cloud_subsampled_normals.points[j].getNormalVector4fMap (),
+                                    f1, f2, f3, f4)) 
+      {
         /// discretize feature vector
-        d1 = floor(f1 / angle_discretization_step);
-        d2 = floor(f2 / angle_discretization_step);
-        d3 = floor(f3 / angle_discretization_step);
-        d4 = floor(f4 / distance_discretization_step);
+        d1 = floor (f1 / angle_discretization_step);
+        d2 = floor (f2 / angle_discretization_step);
+        d3 = floor (f3 / angle_discretization_step);
+        d4 = floor (f4 / distance_discretization_step);
 
         /// add feature to hash map
-        feature_hash_map->insert( pair <HashKeyStruct, pair <size_t, size_t> > (HashKeyStruct (d1, d2, d3, d4), pair<size_t, size_t> (i, j)));
+        feature_hash_map->insert (std::pair<HashKeyStruct, pair<size_t, size_t> > (HashKeyStruct (d1, d2, d3, d4), pair<size_t, size_t> (i, j)));
         //     cerr << d1 << " " << d2 << " " << d3 << " " << d4 << endl;
         //     cerr << f1 << " " << f2 << " " << f3 << " " << f4 << endl << "------" << endl;
       }
-      else {
-        cerr << "Computing pair feature vector between points " << i << " and " << j << " went wrong." << endl;
+      else 
+      {
+        PCL_ERROR ("Computing pair feature vector between points %zu and %zu went wrong.\n", i, j);
         /// @TODO do something if fail
       }
     }
+  }
 
-  return feature_hash_map;
-    }
+  return (feature_hash_map);
+}
 
 
-
-
-bool resultsCompareFunction (std::pair <Eigen::Affine3f, float> a, std::pair <Eigen::Affine3f, float> b )
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+resultsCompareFunction (std::pair <Eigen::Affine3f, float> a, std::pair <Eigen::Affine3f, float> b)
 {
   return (a.second > b.second);
 }
@@ -85,8 +131,13 @@ bool resultsCompareFunction (std::pair <Eigen::Affine3f, float> a, std::pair <Ei
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 /// @TODO !!! cloud_model should be subsampled as before!!
-template <typename PointInT, typename PointOutT> std::vector <std::pair <Eigen::Affine3f, float> > /// @todo very ugly hack with PointOutT = normals
-pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (const pcl::PointCloud<PointInT> &cloud_model, const pcl::PointCloud<PointOutT> &cloud_model_normals, const pcl::PointCloud<PointInT> &cloud_scene, typename pcl::SurfletEstimation<PointInT, PointOutT>::FeatureHashMapTypePtr feature_hashmap_model)
+template <typename PointInT, typename PointOutT> std::vector <std::pair <Eigen::Affine3f, float> > 
+/// @todo very ugly hack with PointOutT = normals
+pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (
+    const pcl::PointCloud<PointInT> &cloud_model, 
+    const pcl::PointCloud<PointOutT> &cloud_model_normals, 
+    const pcl::PointCloud<PointInT> &cloud_scene, 
+    typename pcl::SurfletEstimation<PointInT, PointOutT>::FeatureHashMapTypePtr feature_hashmap_model)
 {
   std::vector <std::pair <Eigen::Affine3f, float> > results;
   std::vector <std::vector <unsigned int> > accumulator_array;
@@ -179,7 +230,9 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (const pcl::Po
     unsigned int max_votes = 0;
     Eigen::Affine3f max_transform;
     for (size_t i = 0; i < accumulator_array.size(); ++i)
-      for (size_t j = 0; j < accumulator_array.back().size(); ++j) {
+    {
+      for (size_t j = 0; j < accumulator_array.back().size(); ++j) 
+      {
         unsigned int val = accumulator_array[i][j];
         if (val > max_votes)
         {
@@ -195,6 +248,7 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (const pcl::Po
         /// reset accumulator_array for the next set of iterations with a new scene reference point
         accumulator_array[i][j] = 0;
       }
+    }
 
 //    cerr << "max_votes: " << max_votes << endl;
     results.push_back (pair <Eigen::Affine3f, float> (max_transform, max_votes));
@@ -207,7 +261,7 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (const pcl::Po
   /// @todo should also add pose clustering part for filtering out outliers and improving transformation
 
 
-  return results;
+  return (results);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
