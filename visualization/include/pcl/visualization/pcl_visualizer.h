@@ -269,6 +269,18 @@ namespace pcl
         addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
                        const std::string &id = "cloud", int viewport = 0);
 
+        /** \brief Add a Point Cloud (templated) to screen. 
+          * \param cloud the input point cloud dataset
+          * \param id the point cloud object id (default: cloud)
+          * \param viewport the view port where the Point Cloud should be added (default: all)
+          */
+        inline bool 
+        addPointCloud (const typename pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
+                       const std::string &id = "cloud", int viewport = 0)
+        {
+          return (addPointCloud<pcl::PointXYZ> (cloud, id, viewport));
+        }
+
         /** \brief Updates the XYZ data for an existing cloud object id on screen. 
           * \param cloud the input point cloud dataset
           * \param id the point cloud object id to update (default: cloud)
