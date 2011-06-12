@@ -196,7 +196,9 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 template <typename PointT> void 
 pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clusters)
 {
-  if (!initCompute ()) 
+  if (!initCompute () || 
+      (input_ != 0   && input_->points.empty ()) ||
+      (indices_ != 0 && indices_->empty ()))
   {
     clusters.clear ();
     return;
