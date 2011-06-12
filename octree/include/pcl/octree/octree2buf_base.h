@@ -48,19 +48,21 @@ namespace pcl
   {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b Octree double buffer class
-     *  \note This octree implementation keeps two separate octree structures in memory. This enables to create octree structures at high rate due to an advanced memory management.
-     *  \note Furthermore, it allows for detecting and differentially compare the adjacent octree structures.
-     *  \note The tree depth defines the maximum amount of octree voxels / leaf nodes (should be initially defined).
-     *  \note All leaf nodes are addressed by integer indices.
-     *  \note Note: The tree depth equates to the bit length of the voxel indices.
-     *  \ingroup octree
-     *  \author Julius Kammerl (julius@kammerl.de)
-     */
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      * 
+      * \note This octree implementation keeps two separate octree structures
+      * in memory. This enables to create octree structures at high rate due to
+      * an advanced memory management.
+      *
+      * \note Furthermore, it allows for detecting and differentially compare the adjacent octree structures.
+      * \note The tree depth defines the maximum amount of octree voxels / leaf nodes (should be initially defined).
+      * \note All leaf nodes are addressed by integer indices.
+      * \note Note: The tree depth equates to the bit length of the voxel indices.
+      * \ingroup octree
+      * \author Julius Kammerl (julius@kammerl.de)
+      */
     template<typename DataT, typename LeafT = OctreeLeafDataT<DataT> >
-      class Octree2BufBase
-      {
-
+    class Octree2BufBase
+    {
       public:
 
         /** \brief Empty constructor. */
@@ -157,6 +159,15 @@ namespace pcl
         deletePreviousBuffer ()
         {
           treeCleanUpRecursive (rootNode_);
+        }
+
+        /** \brief Delete the octree structure in the current buffer. */
+        inline void
+        deleteCurrentBuffer ()
+        {
+          bufferSelector_ = !bufferSelector_;
+          treeCleanUpRecursive (rootNode_);
+          leafCount_ = 0;
         }
 
         /** \brief Switch buffers and reset current octree structure. */
