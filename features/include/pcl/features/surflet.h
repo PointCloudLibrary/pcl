@@ -44,6 +44,13 @@
 
 namespace pcl
 {
+  bool 
+  resultsCompareFunction (std::pair <Eigen::Affine3f, float> a, std::pair <Eigen::Affine3f, float> b)
+  {
+    return (a.second > b.second);
+  }
+
+
   /** \brief Estimate 3D Surflet features.
     *
     * paper...

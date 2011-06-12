@@ -26,7 +26,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/principal_curvatures.h
         include/pcl/${SUBSYS_NAME}/rift.h
         include/pcl/${SUBSYS_NAME}/rsd.h
-		include/pcl/${SUBSYS_NAME}/surflet.h
+        include/pcl/${SUBSYS_NAME}/surflet.h
         include/pcl/${SUBSYS_NAME}/vfh.h
         )
 
@@ -46,7 +46,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/principal_curvatures.hpp
         include/pcl/${SUBSYS_NAME}/impl/rift.hpp
         include/pcl/${SUBSYS_NAME}/impl/rsd.hpp
-		include/pcl/${SUBSYS_NAME}/impl/surflet.hpp
+        include/pcl/${SUBSYS_NAME}/impl/surflet.hpp
         include/pcl/${SUBSYS_NAME}/impl/vfh.hpp
         )
 
@@ -66,7 +66,7 @@ if(build)
         src/principal_curvatures.cpp
         src/rift.cpp
         src/rsd.cpp                                
-		src/surflet.cpp
+#src/surflet.cpp
         src/vfh.cpp
         )
 
