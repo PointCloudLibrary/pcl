@@ -52,7 +52,12 @@ File format header
 ------------------
 
 Each PCD file contains a header that identifies and declares certain properties
-of the point cloud data stored in the file.
+of the point cloud data stored in the file. 
+
+.. note::
+
+  Each header entry as well as ascii point data (see below) specified in a PCD
+  file, is separated using new lines (\n).
 
 As of version 0.7, the PCD header contains the following entries:
 
@@ -125,6 +130,15 @@ As of version 0.7, the PCD header contains the following entries:
     WIDTH 307200
     HEIGHT 1        # unorganized point cloud dataset with 307200 points
 
+* **VIEWPOINT** - specifies an acquisition viewpoint for the points in the
+  dataset. This could potentially be later on used for building transforms
+  between different coordinate systems, or for aiding with features such as
+  surface normals, that need a consistent orientation.
+
+  The viewpoint information is specified as a quaternion (qx qy qz qw) +
+  translation (tx ty tz). The default value is::
+
+    VIEWPOINT 0 0 0 1 0 0 0
 
 * **POINTS** - specifies the total number of points in the cloud. As of version
   0.7, its purpose is a bit redundant, so we're expecting this to be removed in
@@ -144,6 +158,21 @@ As of version 0.7, the PCD header contains the following entries:
 
   The next bytes directly after the header's last line (**DATA**) are
   considered part of the point cloud data, and will be interpreted as such.
+
+.. warning::
+
+  The header entries must be specified **precisely** in the above order, that is::
+
+    VERSION .7
+    FIELDS x y z rgb
+    SIZE 4 4 4 4
+    TYPE F F F F
+    COUNT 1 1 1 1
+    WIDTH 213
+    HEIGHT 1
+    VIEWPOINT 0 0 0 1 0 0 0
+    POINTS 213
+    DATA ascii
 
 Data storage types
 ------------------
