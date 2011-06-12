@@ -67,8 +67,13 @@ namespace pcl
           color_handlers.clear ();
         }
 
+        /** \brief The actor holding the data to render. */
         vtkSmartPointer<vtkLODActor> actor;
+
+        /** \brief A vector of geometry handlers that can be used for rendering the data. */
         std::vector<GeometryHandlerConstPtr> geometry_handlers;
+
+        /** \brief A vector of color handlers that can be used for rendering the data. */
         std::vector<ColorHandlerConstPtr> color_handlers;
 
         /** \brief The active color handler. */
@@ -76,6 +81,9 @@ namespace pcl
 
         /** \brief The active geometry handler. */
         int geometry_handler_index_;
+
+        /** \brief Internal cell array. Used for optimizing updatePointCloud. */
+        vtkSmartPointer<vtkIdTypeArray> cells;
     };
 
     typedef std::map<std::string, CloudActor> CloudActorMap;

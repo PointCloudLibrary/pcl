@@ -68,7 +68,10 @@ namespace
       viewer->getPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
 
       if (!viewer->updatePointCloud (cloud, handler, cloud_name))
+      {
         viewer->addPointCloud (cloud, handler, cloud_name);
+        viewer->resetCameraViewpoint (cloud_name);
+      }
 
       // viewer->removePointCloud (cloud_name);
       viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);

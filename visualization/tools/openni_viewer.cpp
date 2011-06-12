@@ -149,7 +149,6 @@ main (int argc, char** argv)
   boost::function<void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
   boost::signals2::connection c1 = interface->registerCallback (f);
 
-  bool first = true;
   interface->start ();
   while (!p->wasStopped ())
   {
@@ -160,12 +159,11 @@ main (int argc, char** argv)
       if (g_cloud)
       {
         FPS_CALC ("drawing");
-        if (first)
+        if (!p->updatePointCloud<pcl::PointXYZ> (g_cloud, "OpenNICloud"))
         {
-          p->addPointCloud (g_cloud, "OpenNICloud");
-          first = false;
+          p->addPointCloud<pcl::PointXYZ> (g_cloud, "OpenNICloud");
+          p->resetCameraViewpoint ("OpenNICloud");
         }
-        p->updatePointCloud<pcl::PointXYZ> (g_cloud, "OpenNICloud");
       }
       mutex_.unlock ();
     }

@@ -260,15 +260,6 @@ namespace pcl
             int level = 100, double scale = 1.0,
             const std::string &id = "cloud", int viewport = 0);
    
-        /** \brief Add a Point Cloud to screen. 
-          * \param cloud the input point cloud dataset
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
-          */
-        bool 
-        addPointCloud (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
-                       const std::string &id = "cloud", int viewport = 0);
-
         /** \brief Add a Point Cloud (templated) to screen. 
           * \param cloud the input point cloud dataset
           * \param id the point cloud object id (default: cloud)
@@ -721,6 +712,12 @@ namespace pcl
         void 
         resetCamera ();
 
+        /** \brief Reset the camera direction from {0, 0, 0} to the center_{x, y, z} of a given dataset.
+          * \param id the point cloud object id (default: cloud)
+          */
+        void
+        resetCameraViewpoint (const std::string &id = "cloud");
+
         /** \brief Get the current camera parameters. */
         void
         getCameras (std::vector<Camera>& cameras);
@@ -828,26 +825,48 @@ namespace pcl
         /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
           * \param cloud the input PCL PointCloud dataset
           * \param polydata the resultant polydata containing the cloud
+          * \param initcells a list of cell indices used for the conversion. This can be set once and then passed
+          * around to speed up the conversion.
           */
         template <typename PointT> void 
         convertPointCloudToVTKPolyData (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
-                                        vtkSmartPointer<vtkPolyData> &polydata);
+                                        vtkSmartPointer<vtkPolyData> &polydata,
+                                        vtkSmartPointer<vtkIdTypeArray> &initcells);
 
         /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
           * \param geometry_handler the geometry handler object used to extract the XYZ data
           * \param polydata the resultant polydata containing the cloud
+          * \param initcells a list of cell indices used for the conversion. This can be set once and then passed
+          * around to speed up the conversion.
           */
         template <typename PointT> void 
         convertPointCloudToVTKPolyData (const PointCloudGeometryHandler<PointT> &geometry_handler, 
-                                        vtkSmartPointer<vtkPolyData> &polydata);
+                                        vtkSmartPointer<vtkPolyData> &polydata,
+                                        vtkSmartPointer<vtkIdTypeArray> &initcells);
 
         /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
           * \param geometry_handler the geometry handler object used to extract the XYZ data
           * \param polydata the resultant polydata containing the cloud
+          * \param initcells a list of cell indices used for the conversion. This can be set once and then passed
+          * around to speed up the conversion.
           */
         void 
         convertPointCloudToVTKPolyData (const GeometryHandlerConstPtr &geometry_handler, 
-                                        vtkSmartPointer<vtkPolyData> &polydata);
+                                        vtkSmartPointer<vtkPolyData> &polydata,
+                                        vtkSmartPointer<vtkIdTypeArray> &initcells);
+
+        /** \brief Updates a set of cells (vtkIdTypeArray) if the number of points in a cloud changes
+          * \param cells the vtkIdTypeArray object (set of cells) to update
+          * \param initcells a previously saved set of cells. If the number of points in the current cloud is
+          * higher than the number of cells in \a cells, and initcells contains enough data, then a copy from it 
+          * will be made instead of regenerating the entire array.
+          * \param nr_points the number of points in the new cloud. This dictates how many cells we need to 
+          * generate
+          */
+        void 
+        updateCells (vtkSmartPointer<vtkIdTypeArray> &cells, 
+                     vtkSmartPointer<vtkIdTypeArray> &initcells,
+                     vtkIdType nr_points);
 
         /** \brief Internal function which converts the information present in the geometric
           * and color handlers into VTK PolyData+Scalars, constructs a vtkActor object, and adds
