@@ -122,9 +122,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
 
   vtkIdType nr_points = cloud_->points.size ();
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
-
-  // Allocate enough memory to hold all colors
-  unsigned char* colors = new unsigned char[nr_points * 3];
+  unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer (0);
 
   int j = 0;
   // If XYZ present, check if the points are invalid
@@ -139,13 +137,15 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
       // Copy the value at the specified field
-      if (!pcl_isfinite (cloud_->points[cp].x) || !pcl_isfinite (cloud_->points[cp].rgb) ||
-          !pcl_isfinite (cloud_->points[cp].y) || !pcl_isfinite (cloud_->points[cp].z))
+      if (!pcl_isfinite (cloud_->points[cp].x) ||
+          !pcl_isfinite (cloud_->points[cp].y) || 
+          !pcl_isfinite (cloud_->points[cp].z))
         continue;
 
-      colors[j * 3 + 0] = cloud_->points[cp].r;
-      colors[j * 3 + 1] = cloud_->points[cp].g;
-      colors[j * 3 + 2] = cloud_->points[cp].b;
+      int idx = j * 3;
+      colors[idx    ] = cloud_->points[cp].r;
+      colors[idx + 1] = cloud_->points[cp].g;
+      colors[idx + 2] = cloud_->points[cp].b;
       j++;
     }
   }
@@ -154,18 +154,12 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
     // Color every point
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
-      // Copy the value at the specified field
-      if (!pcl_isfinite (cloud_->points[cp].rgb))
-        continue;
-
-      colors[j * 3 + 0] = cloud_->points[cp].r;
-      colors[j * 3 + 1] = cloud_->points[cp].g;
-      colors[j * 3 + 2] = cloud_->points[cp].b;
-      j++;
+      int idx = cp * 3;
+      colors[idx    ] = cloud_->points[cp].r;
+      colors[idx + 1] = cloud_->points[cp].g;
+      colors[idx + 2] = cloud_->points[cp].b;
     }
   }
-  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * j, 0);
-  //delete [] colors;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
