@@ -149,6 +149,15 @@ namespace pcl
         return (points[v * this->width + u]);
       }
 
+      ////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Return whether a dataset is organized (e.g., arranged in a structured grid).
+        */
+      inline bool
+      isOrganized ()
+      {
+        return (this->height != 1);
+      }
+
       /** \brief The point cloud header. It contains information about the acquisition time, as well as a transform
         * frame (see \a tf). */
       std_msgs::Header header;
