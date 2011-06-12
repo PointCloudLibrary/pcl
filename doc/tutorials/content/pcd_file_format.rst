@@ -57,7 +57,7 @@ of the point cloud data stored in the file.
 .. note::
 
   Each header entry as well as ascii point data (see below) specified in a PCD
-  file, is separated using new lines (\n).
+  file, is separated using new lines (\\n).
 
 As of version 0.7, the PCD header contains the following entries:
 
@@ -163,16 +163,16 @@ As of version 0.7, the PCD header contains the following entries:
 
   The header entries must be specified **precisely** in the above order, that is::
 
-    VERSION .7
-    FIELDS x y z rgb
-    SIZE 4 4 4 4
-    TYPE F F F F
-    COUNT 1 1 1 1
-    WIDTH 213
-    HEIGHT 1
-    VIEWPOINT 0 0 0 1 0 0 0
-    POINTS 213
-    DATA ascii
+    VERSION
+    FIELDS
+    SIZE
+    TYPE
+    COUNT
+    WIDTH
+    HEIGHT
+    VIEWPOINT
+    POINTS
+    DATA
 
 Data storage types
 ------------------
