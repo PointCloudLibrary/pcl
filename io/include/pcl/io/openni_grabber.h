@@ -267,6 +267,9 @@ namespace pcl
       openni_wrapper::OpenNIDevice::CallbackHandle image_callback_handle;
       openni_wrapper::OpenNIDevice::CallbackHandle ir_callback_handle;
       bool running_;
+
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   } ;
 
   const openni_wrapper::OpenNIDevice&
