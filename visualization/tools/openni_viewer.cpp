@@ -86,7 +86,7 @@ using pcl::console::TT_GREEN;
 using pcl::console::TT_BLUE;
 
 boost::mutex mutex_;
-pcl::PointCloud<pcl::PointXYZ>::ConstPtr g_cloud;
+pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr g_cloud;
 bool new_cloud = false;
 
 void
@@ -108,7 +108,7 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
 struct EventHelper
 {
   void 
-  cloud_cb (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr & cloud)
+  cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr & cloud)
   {
     FPS_CALC ("callback");
     if (mutex_.try_lock ())
@@ -146,7 +146,7 @@ main (int argc, char** argv)
   pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
 
   EventHelper h;
-  boost::function<void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
+  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
   boost::signals2::connection c1 = interface->registerCallback (f);
 
   interface->start ();
@@ -159,9 +159,10 @@ main (int argc, char** argv)
       if (g_cloud)
       {
         FPS_CALC ("drawing");
-        if (!p->updatePointCloud<pcl::PointXYZ> (g_cloud, "OpenNICloud"))
+        pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> handler (g_cloud);
+        if (!p->updatePointCloud<pcl::PointXYZRGB> (g_cloud, handler, "OpenNICloud"))
         {
-          p->addPointCloud<pcl::PointXYZ> (g_cloud, "OpenNICloud");
+          p->addPointCloud<pcl::PointXYZRGB> (g_cloud, handler, "OpenNICloud");
           p->resetCameraViewpoint ("OpenNICloud");
         }
       }
