@@ -2,15 +2,12 @@
 #define PCL_SURFLET_H_
 
 #include <pcl/features/feature.h>
-
-/// @TODO: use forward declaration for unordered_multimap ??
 #include <boost/unordered_map.hpp>
-
 
 namespace pcl
 {
   template <typename PointInT, typename PointOutT>
-  class SurfletModelEstimation : public Feature<PointInT, PointOutT>
+  class SurfletEstimation : public Feature<PointInT, PointOutT>
   {
   public:
     typedef typename PointCloud<PointInT>::ConstPtr PointCloudIn;
@@ -31,7 +28,7 @@ namespace pcl
     typedef boost::shared_ptr<FeatureHashMapType> FeatureHashMapTypePtr;
 
 
-    SurfletModelEstimation (float a_angle_discretization_step = 30.0 / 180 * M_PI, float a_distance_discretization_step = 0.05)
+    SurfletEstimation (float a_angle_discretization_step = 12.0 / 180 * M_PI, float a_distance_discretization_step = 0.01)
     {
       angle_discretization_step = a_angle_discretization_step;
       distance_discretization_step = a_distance_discretization_step;
@@ -41,7 +38,7 @@ namespace pcl
     computeSurfletModel (const pcl::PointCloud<PointInT> &cloud /* output goes here */);
 
     std::vector < std::pair <Eigen::Affine3f, float> >
-    registerModelToScene (const pcl::PointCloud<PointInT> &cloud_model, const pcl::PointCloud<PointInT> &cloud_scene, FeatureHashMapTypePtr feature_hashmap_model);
+    registerModelToScene (const pcl::PointCloud<PointInT> &cloud_model, const pcl::PointCloud<PointOutT> &cloud_model_normals, const pcl::PointCloud<PointInT> &cloud_scene, FeatureHashMapTypePtr feature_hashmap_model);
 
 
     protected:
