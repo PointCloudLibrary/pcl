@@ -275,7 +275,7 @@ namespace pcl
           * \param viewport the view port where the Point Cloud should be added (default: all)
           */
         inline bool 
-        addPointCloud (const typename pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
+        addPointCloud (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
                        const std::string &id = "cloud", int viewport = 0)
         {
           return (addPointCloud<pcl::PointXYZ> (cloud, id, viewport));
