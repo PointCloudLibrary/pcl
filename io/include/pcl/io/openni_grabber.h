@@ -269,7 +269,7 @@ namespace pcl
       bool running_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
   } ;
 
   const openni_wrapper::OpenNIDevice&
