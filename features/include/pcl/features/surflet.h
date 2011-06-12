@@ -54,7 +54,7 @@ namespace pcl
   class SurfletEstimation : public Feature<PointInT, PointOutT>
   {
     public:
-      typedef typename PointCloud<PointInT>::ConstPtr PointCloudIn;
+      typedef typename Feature<PointInT, PointOutT>::PointCloudConstPtr PointCloudIn;
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /// slight hack to enable the usage of the boost::hash <pair <A, B> >
