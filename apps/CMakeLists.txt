@@ -24,8 +24,8 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
   if (VTK_FOUND)
-    PCL_ADD_EXECUTABLE(surflet_feature_object_recognition ${SUBSYS_NAME} src/surflet_feature_object_recognition.cpp)
-    target_link_libraries(surflet_feature_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_visualization)
+    #PCL_ADD_EXECUTABLE(surflet_feature_object_recognition ${SUBSYS_NAME} src/surflet_feature_object_recognition.cpp)
+    #target_link_libraries(surflet_feature_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_visualization)
     
 	PCL_ADD_EXECUTABLE(openni_voxel_grid ${SUBSYS_NAME} src/openni_voxel_grid.cpp)
 	target_link_libraries(openni_voxel_grid pcl_common pcl_io pcl_filters pcl_visualization)
