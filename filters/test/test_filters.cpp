@@ -139,6 +139,40 @@ TEST (ExtractIndices, Filters)
   EXPECT_EQ (cloud_.points[cloud_.points.size () - 2].x, output.points[output.points.size () - 1].x);
   EXPECT_EQ (cloud_.points[cloud_.points.size () - 2].y, output.points[output.points.size () - 1].y);
   EXPECT_EQ (cloud_.points[cloud_.points.size () - 2].z, output.points[output.points.size () - 1].z);
+
+  // Test setNegative on empty datasets
+  PointCloud<PointXYZ> empty, result;
+  ExtractIndices<PointXYZ> eie;
+  eie.setInputCloud (empty.makeShared ());
+  eie.setNegative (false);
+  eie.filter (result);
+
+  EXPECT_EQ ((int)result.points.size (), 0);
+  eie.setNegative (true);
+  eie.filter (result);
+  EXPECT_EQ ((int)result.points.size (), 0);
+
+  boost::shared_ptr<vector<int> > idx (new vector<int> (10));
+  eie.setIndices (idx);
+  eie.setNegative (false);
+  eie.filter (result);
+  EXPECT_EQ ((int)result.points.size (), 0);
+  eie.setNegative (true);
+  eie.filter (result);
+  EXPECT_EQ ((int)result.points.size (), 0);
+
+  empty.points.resize (10);
+  empty.width = 10; empty.height = 1;
+  eie.setInputCloud (empty.makeShared ());
+  for (size_t i = 0; i < 10; ++i)
+    (*idx)[i] = i;
+  eie.setIndices (idx);
+  eie.setNegative (false);
+  eie.filter (result);
+  EXPECT_EQ ((int)result.points.size (), 0);
+  eie.setNegative (true);
+  eie.filter (result);
+  EXPECT_EQ ((int)result.points.size (), 10);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -45,7 +45,7 @@
 template <typename PointT> void
 pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
 {
-  if (indices_->empty ())
+  if (indices_->empty () || input_->points.empty ())
   {
     output.width = output.height = 0;
     output.points.clear ();
@@ -54,12 +54,24 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
       output = *input_;
     return;
   }
-  if (indices_->size () == (input_->width * input_->height))
+
+  // If the set of indices equals the number of points in the input dataset
+  if (indices_->size () == (input_->width * input_->height) ||
+      indices_->size () == input_->points.size ())
   {
-    output = *input_;
+    // If negative, then we need to return all points
+    if (negative_)
+      output = *input_;
+    // else, return an empty cloud 
+    else
+    {
+      output.width = output.height = 0;
+      output.points.clear ();
+    }
     return;
   }
 
+  // We have a set of indices which is a subset of cloud, so let's start processing
   if (negative_)
   {
     // Prepare a vector holding all indices
