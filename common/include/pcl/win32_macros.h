@@ -76,9 +76,15 @@ namespace pcl
 # define pcl_isfinite(x) std::isfinite(x)
 # define pcl_isinf(x)    std::isinf(x)
 
+#elif __PATHCC__
+# include <cmath>
+# define pcl_isnan(x)    std::isnan(x)
+# define pcl_isfinite(x) std::isfinite(x)
+# define pcl_isinf(x)    std::isinf(x)
+
 #else
 // Use the math.h macros
-# include<math.h>
+# include <math.h>
 # define pcl_isnan(x)    isnan(x)
 # define pcl_isfinite(x) isfinite(x)
 # define pcl_isinf(x)    isinf(x)

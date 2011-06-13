@@ -13,9 +13,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
     "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 # ---[ Release/Debug specific flags
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
+if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
   add_definitions("-DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
-endif(CMAKE_BUILD_TYPE STREQUAL "Release")
+endif()
 if(WIN32)
   set(CMAKE_DEBUG_POSTFIX "-gd")
 endif()
@@ -34,7 +34,10 @@ else(UNIX OR APPLE)
       add_definitions("-DBOOST_LIB_DIAGNOSTIC -DBOOST_THREAD_USE_LIB")
     endif(PCL_SHARED_LIBS)
   endif(MSVC)
-endif(UNIX OR APPLE)
+endif()
+if (__COMPILER_PATHSCALE)
+  add_definitions("-Wno-uninitialized -zerouv -pthread -ffast-stdlib -fstrict-stl")
+endif()
 
 # ---[ Project folders
 option(USE_PROJECT_FOLDERS "Use folders to organize PCL projects in an IDE." OFF)

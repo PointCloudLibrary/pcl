@@ -210,13 +210,12 @@ namespace pcl
         output_->points.clear ();
         output_->points.reserve (pointCount_);
 
-        if (iFrame_) {
+        if (iFrame_)
           // i-frame decoding - decode tree structure without referencing previous buffer
           this->deserializeTree (binaryTreeDataVector_, false);
-        } else {
+        else
           // p-frame decoding - decode XOR encoded tree structure
           this->deserializeTree (binaryTreeDataVector_, true);
-        }
 
         // assign point cloud properties
         output_->height = 1;
@@ -234,30 +233,28 @@ namespace pcl
           std::cerr << "*** POINTCLOUD DECODING ***" << std::endl;
           std::cerr << "Frame ID: " << frameID_ << std::endl;
           if (iFrame_)
-          {
             std::cerr << "Encoding Frame: Intra frame" << std::endl;
-          }
           else
-          {
             std::cerr << "Encoding Frame: Prediction frame" << std::endl;
-          }
           std::cerr << "Number of encoded points: " << pointCount_ << std::endl;
           std::cerr << "XYZ compression percentage: " << bytesPerXYZ / (3.0f * sizeof(float)) * 100.0f
-              << "%" << std::endl;
+                    << "%" << std::endl;
           std::cerr << "XYZ bytes per point: " << bytesPerXYZ << " bytes" << std::endl;
-          std::cerr << "Color compression percentage: " << bytesPerColor / (sizeof(int)) * 100.0f << "%" << std::endl;
+          std::cerr << "Color compression percentage: " << bytesPerColor / (sizeof(int)) * 100.0f 
+                    << "%" << std::endl;
           std::cerr << "Color bytes per point: " << bytesPerColor << " bytes" << std::endl;
-          std::cerr << "Size of uncompressed point cloud: " <<
-              pointCount_* (sizeof(int) + 3.0f  * sizeof(float))  / (1024) << " kBytes" << std::endl;
-          std::cerr << "Size of compressed point cloud: " <<
-              (compressedPointDataLen_ + compressedColorDataLen_) / (1024) << " kBytes" << std::endl;
+          std::cerr << "Size of uncompressed point cloud: " 
+                    << pointCount_* (sizeof(int) + 3.0f  * sizeof(float))  / (1024) << " kBytes" << std::endl;
+          std::cerr << "Size of compressed point cloud: " 
+                    << (compressedPointDataLen_ + compressedColorDataLen_) / (1024) << " kBytes" << std::endl;
           std::cerr << "Total bytes per point: " << bytesPerXYZ + bytesPerColor << " bytes" << std::endl;
-          std::cerr << "Total compression percentage: " << (bytesPerXYZ + bytesPerColor) / (sizeof(int) + 3.0f
-              * sizeof(float)) * 100.0f << "%" << std::endl;
-          std::cerr << "Compression ratio: " << (float)(sizeof(int) + 3.0f  * sizeof(float))
-              / (float)(bytesPerXYZ + bytesPerColor)  << std::endl << std::endl;
+          std::cerr << "Total compression percentage: " 
+                    << (bytesPerXYZ + bytesPerColor) / (sizeof(int) + 3.0f * sizeof(float)) * 100.0f 
+                    << "%" << std::endl;
+          std::cerr << "Compression ratio: " 
+                    << (float)(sizeof(int) + 3.0f  * sizeof(float)) / (float)(bytesPerXYZ + bytesPerColor) 
+                    << std::endl << std::endl;
         }
-
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
