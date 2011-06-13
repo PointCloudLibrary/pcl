@@ -40,7 +40,7 @@
 #ifndef __PCL_IO_OPENNI_GRABBER__
 #define __PCL_IO_OPENNI_GRABBER__
 
-#include <Eigen/StdVector>
+#include <Eigen/Core>
 #include <pcl/io/grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_camera/openni_device_kinect.h>

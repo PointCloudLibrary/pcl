@@ -122,3 +122,4 @@ void pcl::TimeTrigger::thread_function ()
     }
   }
 }
+

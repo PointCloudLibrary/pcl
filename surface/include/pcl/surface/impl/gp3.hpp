@@ -421,7 +421,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
         }
 
       // Sorting angles
-      sort (angles_.begin (), angles_.end (), GreedyProjectionTriangulation<PointInT>::nnAngleSortAsc);
+      std::sort (angles_.begin (), angles_.end (), GreedyProjectionTriangulation<PointInT>::nnAngleSortAsc);
 
       // Triangulating
       if (angles_[2].visible == false)
@@ -984,8 +984,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
     PCL_WARN ("Number of automatic maximum distance increases: %d\n", increase_dist);
 
   // sorting and removing doubles from fringe queue 
-  sort(fringe_queue_.begin(), fringe_queue_.end());
-  fringe_queue_.erase(unique(fringe_queue_.begin(), fringe_queue_.end()), fringe_queue_.end());
+  std::sort (fringe_queue_.begin (), fringe_queue_.end ());
+  fringe_queue_.erase (std::unique (fringe_queue_.begin (), fringe_queue_.end ()), fringe_queue_.end ());
   PCL_DEBUG ("Number of processed points: %d / %d\n", (int)fringe_queue_.size(), (int)indices_->size ());
 }
 

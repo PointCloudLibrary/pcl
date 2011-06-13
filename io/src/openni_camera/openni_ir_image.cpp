@@ -90,3 +90,4 @@ void IRImage::fillRaw (unsigned width, unsigned height, unsigned short* ir_buffe
 } // namespace openni_wrapper
 
 #endif //HAVE_OPENNI
+
