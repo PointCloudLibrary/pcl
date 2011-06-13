@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Alexandru Ichim
+ *  Copyright (c) 2011, Alexandru-Eugen Ichim
  *                      Willow Garage, Inc.
  *  All rights reserved.
  *

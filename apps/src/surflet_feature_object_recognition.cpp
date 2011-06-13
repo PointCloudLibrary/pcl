@@ -50,22 +50,22 @@ main (int argc, char** argv)
   normal_estimation_filter.setRadiusSearch(0.05); // @TODO another parameter
   normal_estimation_filter.compute (cloud_model_subsampled_normals);
 
-  vector < pair<Eigen::Affine3f, float> > registration_results = surflet_model_estimation.registerModelToScene(cloud_model_subsampled, cloud_model_subsampled_normals, cloud_scene, feature_hash_map);
+  pcl::SurfletEstimation<pcl::PointXYZ, pcl::Normal>::PoseWithVotesList registration_results = surflet_model_estimation.registerModelToScene(cloud_model_subsampled, cloud_model_subsampled_normals, cloud_scene, feature_hash_map);
   for(size_t i_res = 0; i_res < 10 /*registration_results.size()*/; ++ i_res)
   {
-    cerr << "registration #" << i_res << " received votes: " << registration_results[i_res].second << endl;
+    cerr << "registration #" << i_res << " received votes: " << registration_results[i_res].votes << endl;
     pcl::PointCloud<PointXYZ> cloud_output;
     for(size_t i = 0; i < cloud_model.width; ++i)
     {
       /// @TODO find some native pcl way of doing this - too many conversions
       Eigen::Vector3f point (cloud_model.points[i].x, cloud_model.points[i].y, cloud_model.points[i].z);
-      point = registration_results[i_res].first * point;
+      point = registration_results[i_res].pose * point;
       cloud_output.points.push_back (PointXYZ(point[0], point[1], point[2]));
     }
     stringstream output_pcd_name; output_pcd_name << "output_aligned_" << i_res << ".pcd";
     pcl::io::savePCDFileASCII (output_pcd_name.str (), cloud_output);
     cerr << "Output pcl written to file: " << output_pcd_name.str () << endl;
-    cerr << "Transform: " << registration_results[i_res].first.translation() << "     " << registration_results[i_res].first.rotation() << endl;
+    cerr << "Transform: " << registration_results[i_res].pose.translation() << "     " << registration_results[i_res].pose.rotation() << endl;
   }
 
 

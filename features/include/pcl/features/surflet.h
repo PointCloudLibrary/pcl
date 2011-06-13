@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Alexandru Ichim
+ *  Copyright (c) 2011, Alexandru-Eugen Ichim
  *                      Willow Garage, Inc
  *  All rights reserved.
  *
@@ -52,56 +52,82 @@ namespace pcl
 
 
   /** \brief Estimate 3D Surflet features.
-    *
-    * paper...
-    *
-    * \author Alexandru Ichim
-    */
+   *
+   * paper...
+   *
+   * \author Alexandru-Eugen Ichim
+   */
   template <typename PointInT, typename PointOutT>
   class SurfletEstimation : public Feature<PointInT, PointOutT>
   {
-    public:
-      typedef typename Feature<PointInT, PointOutT>::PointCloudConstPtr PointCloudIn;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+  public:
+    typedef typename Feature<PointInT, PointOutT>::PointCloudConstPtr PointCloudIn;
+    typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
-      /// slight hack to enable the usage of the boost::hash <pair <A, B> >
-      struct HashKeyStruct : public std::pair <int, std::pair <int, std::pair <int, int> > > 
-      {
-        HashKeyStruct(int a, int b, int c, int d)
+    /// slight hack to enable the usage of the boost::hash <pair <A, B> >
+    struct HashKeyStruct : public std::pair <int, std::pair <int, std::pair <int, int> > >
+    {
+      HashKeyStruct(int a, int b, int c, int d)
+            {
+        this->first = a;
+        this->second.first = b;
+        this->second.second.first = c;
+        this->second.second.second = d;
+            }
+    };
+
+        /// this is needed to replace std::pair as it seems to have problems using Eigen structures in MsWindows
+        struct PoseWithVotes
         {
-          this->first = a;
-          this->second.first = b;
-          this->second.second.first = c;
-          this->second.second.second = d;
-        }
-      };
-
-      typedef boost::unordered_multimap<HashKeyStruct, std::pair<size_t, size_t> > FeatureHashMapType;
-      typedef boost::shared_ptr<FeatureHashMapType> FeatureHashMapTypePtr;
-
-
-      SurfletEstimation (float a_angle_discretization_step = 12.0 / 180 * M_PI, 
-                         float a_distance_discretization_step = 0.01)
+      PoseWithVotes(Eigen::Affine3f &a_pose, unsigned int &a_votes)
+      : pose (a_pose),
+        votes (a_votes)
       {
-        angle_discretization_step = a_angle_discretization_step;
-        distance_discretization_step = a_distance_discretization_step;
       }
 
-      FeatureHashMapTypePtr
-      computeSurfletModel (const pcl::PointCloud<PointInT> &cloud /* output goes here */);
+      Eigen::Affine3f pose;
+      unsigned int votes;
+        };
 
-      std::vector < std::pair <Eigen::Affine3f, float> >
-      registerModelToScene (const pcl::PointCloud<PointInT> &cloud_model, 
-                            const pcl::PointCloud<PointOutT> &cloud_model_normals, 
-                            const pcl::PointCloud<PointInT> &cloud_scene, FeatureHashMapTypePtr feature_hashmap_model);
+    typedef boost::unordered_multimap<HashKeyStruct, std::pair<size_t, size_t> > FeatureHashMapType;
+    typedef boost::shared_ptr<FeatureHashMapType> FeatureHashMapTypePtr;
+    typedef std::vector<PoseWithVotes, Eigen::aligned_allocator<PoseWithVotes> > PoseWithVotesList;
 
 
-      protected:
-        void
-        computeFeature (PointCloudOut &output);
+    SurfletEstimation (float a_angle_discretization_step = 12.0 / 180 * M_PI,
+                       float a_distance_discretization_step = 0.01)
+    {
+      angle_discretization_step = a_angle_discretization_step;
+      distance_discretization_step = a_distance_discretization_step;
+    }
 
-      private:
-        float angle_discretization_step, distance_discretization_step;
+    FeatureHashMapTypePtr
+    computeSurfletModel (const pcl::PointCloud<PointInT> &cloud /* output goes here */);
+
+    PoseWithVotesList
+    registerModelToScene (const pcl::PointCloud<PointInT> &cloud_model,
+                          const pcl::PointCloud<PointOutT> &cloud_model_normals,
+                          const pcl::PointCloud<PointInT> &cloud_scene,
+                          FeatureHashMapTypePtr feature_hashmap_model);
+
+
+    protected:
+    void
+    computeFeature (PointCloudOut &output);
+
+
+    private:
+    float angle_discretization_step, distance_discretization_step;
+    float clustering_position_diff_threshold, clustering_rotation_diff_threshold;
+
+    static bool
+    resultsCompareFunction (const PoseWithVotes &a, const PoseWithVotes &b);
+
+    void
+    clusterPoses (PoseWithVotesList &poses, PoseWithVotesList &result);
+
+    bool
+    posesWithinErrorBounds (Eigen::Affine3f &pose1, Eigen::Affine3f &pose2);
   };
 }
 
