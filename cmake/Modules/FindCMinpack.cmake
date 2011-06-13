@@ -14,7 +14,8 @@ set(CMINPACK_DEFINITIONS ${PC_CMINPACK_CFLAGS_OTHER})
 
 find_path(CMINPACK_INCLUDE_DIR cminpack.h
           HINTS ${PC_CMINPACK_INCLUDEDIR} ${PC_CMINPACK_INCLUDE_DIRS} "${CMINPACK_ROOT}" "$ENV{CMINPACK_ROOT}"
-          PATHS "$ENV{PROGRAMFILES}/CMINPACK 1.1.3" "$ENV{PROGRAMW6432}/CMINPACK 1.1.3" 
+          PATHS "$ENV{PROGRAMFILES}/CMinpack" "$ENV{PROGRAMW6432}/CMinpack" 
+                "$ENV{PROGRAMFILES}/CMINPACK 1.1.3" "$ENV{PROGRAMW6432}/CMINPACK 1.1.3" 
           PATH_SUFFIXES include/cminpack-1)
 
 # Prefer static libraries in Windows over shared ones
@@ -22,13 +23,15 @@ if(WIN32)
   find_library(CMINPACK_LIBRARY 
                NAMES cminpack_s cminpack
                HINTS ${PC_CMINPACK_LIBDIR} ${PC_CMINPACK_LIBRARY_DIRS} "${CMINPACK_ROOT}" "$ENV{CMINPACK_ROOT}"
-               PATHS "$ENV{PROGRAMFILES}/CMINPACK 1.1.3" "$ENV{PROGRAMW6432}/CMINPACK 1.1.3" 
+               PATHS "$ENV{PROGRAMFILES}/CMinpack" "$ENV{PROGRAMW6432}/CMinpack" 
+                     "$ENV{PROGRAMFILES}/CMINPACK 1.1.3" "$ENV{PROGRAMW6432}/CMINPACK 1.1.3" 
                PATH_SUFFIXES lib)
 
   find_library(CMINPACK_LIBRARY_DEBUG 
                NAMES cminpack_s-gd cminpack-gd cminpack_s cminpack
                HINTS ${PC_CMINPACK_LIBDIR} ${PC_CMINPACK_LIBRARY_DIRS} "${CMINPACK_ROOT}" "$ENV{CMINPACK_ROOT}"
-               PATHS "$ENV{PROGRAMFILES}/CMINPACK 1.1.3" "$ENV{PROGRAMW6432}/CMINPACK 1.1.3" 
+               PATHS "$ENV{PROGRAMFILES}/CMinpack" "$ENV{PROGRAMW6432}/CMinpack" 
+                     "$ENV{PROGRAMFILES}/CMINPACK 1.1.3" "$ENV{PROGRAMW6432}/CMINPACK 1.1.3" 
                PATH_SUFFIXES lib)
 else(WIN32)
   find_library(CMINPACK_LIBRARY 
