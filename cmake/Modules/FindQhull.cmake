@@ -12,7 +12,8 @@ set(QHULL_MAJOR_VERSION 6)
 find_file(QHULL_HEADER
           NAMES libqhull/libqhull.h qhull.h
           HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}" "${QHULL_INCLUDE_DIR}"
-          PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
+          PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull" 
+                "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
           PATH_SUFFIXES qhull src/libqhull libqhull include)
 
 set(QHULL_HEADER "${QHULL_HEADER}" CACHE INTERNAL "QHull header" FORCE )
@@ -38,13 +39,15 @@ if(WIN32)
   find_library(QHULL_LIBRARY 
                NAMES qhullstatic qhull qhull${QHULL_MAJOR_VERSION}
                HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
-               PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
+               PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull" 
+                     "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
                PATH_SUFFIXES project build bin lib)
 
   find_library(QHULL_LIBRARY_DEBUG 
                NAMES qhullstatic_d qhull_d qhull_d${QHULL_MAJOR_VERSION} qhull qhull${QHULL_MAJOR_VERSION}
                HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
-               PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
+               PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull" 
+                     "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
                PATH_SUFFIXES project build bin lib)
 else(WIN32)
   find_library(QHULL_LIBRARY 
