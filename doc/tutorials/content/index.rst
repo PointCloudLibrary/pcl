@@ -512,6 +512,22 @@ contributions on any tutorial.
      .. |ri_1| image:: images/range_image_visualization.png
                :height: 100px
 
+  * :ref:`range_image_border_extraction`
+
+     ======  ======
+     |ri_2|  Title: **Extracting borders from Range Images**
+
+             Author: *Bastian Steder*
+
+             Compatibility: > PCL 1.0
+             
+             This tutorial demonstrates how to extract borders (traversals from foreground to background) from a range image. 
+     ======  ======
+
+     .. |ri_2| image:: images/range_image_border_points.gif
+               :height: 100px
+
+
 
 * Visualization
 
