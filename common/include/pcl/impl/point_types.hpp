@@ -220,7 +220,7 @@ struct PointXYZRGBA
       uint8_t _unused;
     };
     uint32_t rgba;
-  };
+  } EIGEN_ALIGN16;
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 } EIGEN_ALIGN16;
 inline std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p)
@@ -245,7 +245,7 @@ struct _PointXYZRGB
     };
     float rgb;
     uint32_t rgba;
-  };
+  } EIGEN_ALIGN16;
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 } EIGEN_ALIGN16;
 
