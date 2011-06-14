@@ -41,21 +41,59 @@ namespace pcl
 {
   namespace cuda
   {
+
     template <typename InputIteratorT, typename OutputIteratorT, template <typename> class Storage>
       void computePointNormals (InputIteratorT begin, InputIteratorT end, OutputIteratorT output, float focallength, const boost::shared_ptr <const PointCloudAOS <Storage> > &input, float radius, int desired_number_neighbors)
     {
       NormalEstimationKernel<Storage> ne = NormalEstimationKernel<Storage> (input, focallength, radius*radius, sqrt ((float)desired_number_neighbors));
       thrust::transform (begin, end, output, ne);
-    };
+    }
   
     template <template <typename> class Storage, typename InputIteratorT>
-      typename Storage<float4>::type computePointNormals (InputIteratorT begin, InputIteratorT end, float focallength, const boost::shared_ptr <const PointCloudAOS <Storage> > &input, float radius, int desired_number_neighbors)
+      boost::shared_ptr<typename Storage<float4>::type> computePointNormals (InputIteratorT begin, InputIteratorT end, float focallength, const boost::shared_ptr <const PointCloudAOS <Storage> > &input, float radius, int desired_number_neighbors)
     {
-      typename Storage<float4>::type normals;
-      normals.resize (end - begin);
-      computePointNormals (begin, end, normals.begin(), focallength, input, radius, desired_number_neighbors);
+      boost::shared_ptr<typename Storage<float4>::type> normals (new typename Storage<float4>::type);
+      normals->resize (end - begin);
+      computePointNormals (begin, end, normals->begin(), focallength, input, radius, desired_number_neighbors);
       return normals;
-    };
+    }
+
+    template <typename OutputIteratorT, template <typename> class Storage> 
+      void computeFastPointNormals (OutputIteratorT output, const boost::shared_ptr <const PointCloudAOS <Storage> > &input)
+    {
+      FastNormalEstimationKernel<Storage> ne = FastNormalEstimationKernel<Storage> (input, input->width, input->height);
+      thrust::transform (thrust::counting_iterator<int>(0), thrust::counting_iterator<int>(0) + input->width * input->height, output, ne);
+    }
+
+    template <template <typename> class Storage>
+      boost::shared_ptr<typename Storage<float4>::type> computeFastPointNormals (const boost::shared_ptr <const PointCloudAOS <Storage> > &input)
+    {
+      boost::shared_ptr<typename Storage<float4>::type> normals (new typename Storage<float4>::type);
+      normals->resize (input->points.size());
+      computeFastPointNormals (normals->begin(), input);
+      return normals;
+    }
+
+    template <typename InputIteratorT, typename OutputIteratorT, template <typename> class Storage>
+      void computeWeirdPointNormals (InputIteratorT begin, InputIteratorT end, OutputIteratorT output, float focallength, const boost::shared_ptr <const PointCloudAOS <Storage> > &input, float radius, int desired_number_neighbors)
+    {
+      NormalEstimationKernel<Storage> ne = NormalEstimationKernel<Storage> (input, focallength, radius*radius, sqrt ((float)desired_number_neighbors));
+      thrust::transform (begin, end, output, ne);
+      
+      // we have normals now.
+
+      NormalDeviationKernel<Storage> nd = NormalDeviationKernel<Storage> (input, focallength, radius*radius, sqrt ((float)desired_number_neighbors));
+      thrust::transform (thrust::make_zip_iterator (thrust::make_tuple (begin, output)), thrust::make_zip_iterator (thrust::make_tuple (begin, output)) + (end-begin), output, nd);
+    }
+  
+    template <template <typename> class Storage, typename InputIteratorT>
+      boost::shared_ptr<typename Storage<float4>::type> computeWeirdPointNormals (InputIteratorT begin, InputIteratorT end, float focallength, const boost::shared_ptr <const PointCloudAOS <Storage> > &input, float radius, int desired_number_neighbors)
+    {
+      boost::shared_ptr<typename Storage<float4>::type> normals (new typename Storage<float4>::type);
+      normals->resize (end - begin);
+      computeWeirdPointNormals (begin, end, normals->begin(), focallength, input, radius, desired_number_neighbors);
+      return normals;
+    }
   
   
     // Aaaand, a couple of instantiations
@@ -77,7 +115,7 @@ namespace pcl
                    float radius,
                    int desired_number_neighbors);
     
-    template typename Device<float4>::type computePointNormals<Device, typename PointIterator<Device,PointXYZRGB>::type >
+    template boost::shared_ptr<typename Device<float4>::type> computePointNormals<Device, typename PointIterator<Device,PointXYZRGB>::type >
                   (typename PointIterator<Device,PointXYZRGB>::type begin,
                    typename PointIterator<Device,PointXYZRGB>::type end,
                    float focallength,
@@ -85,7 +123,57 @@ namespace pcl
                    float radius,
                    int desired_number_neighbors);
     
-    template typename Host<float4>::type computePointNormals<Host, typename PointIterator<Host,PointXYZRGB>::type >
+    template boost::shared_ptr<typename Host<float4>::type> computePointNormals<Host, typename PointIterator<Host,PointXYZRGB>::type >
+                  (typename PointIterator<Host,PointXYZRGB>::type begin,
+                   typename PointIterator<Host,PointXYZRGB>::type end,
+                   float focallength,
+                   const boost::shared_ptr <const PointCloudAOS <Host> > &input,
+                   float radius,
+                   int desired_number_neighbors);
+
+    // Aaaand, a couple of instantiations
+    template void computeFastPointNormals<typename Device<float4>::type::iterator, Device>
+                  (typename Device<float4>::type::iterator output,
+                   const boost::shared_ptr <const PointCloudAOS <Device> > &input);
+    
+    template void computeFastPointNormals<typename Host<float4>::type::iterator, Host>
+                  (typename Host<float4>::type::iterator output,
+                   const boost::shared_ptr <const PointCloudAOS <Host> > &input);
+    
+    template boost::shared_ptr<typename Device<float4>::type> computeFastPointNormals<Device>
+                  (const boost::shared_ptr <const PointCloudAOS <Device> > &input);
+    
+    template boost::shared_ptr<typename Host<float4>::type> computeFastPointNormals<Host>
+                  (const boost::shared_ptr <const PointCloudAOS <Host> > &input);
+
+    // Aaaand, a couple of instantiations
+    template void computeWeirdPointNormals<typename Device<PointXYZRGB>::type::const_iterator, typename Device<float4>::type::iterator, Device>
+                  (typename Device<PointXYZRGB>::type::const_iterator begin,
+                   typename Device<PointXYZRGB>::type::const_iterator end,
+                   typename Device<float4>::type::iterator output,
+                   float focallength,
+                   const boost::shared_ptr <const PointCloudAOS <Device> > &input,
+                   float radius,
+                   int desired_number_neighbors);
+    
+    template void computeWeirdPointNormals<typename Host<PointXYZRGB>::type::const_iterator, typename Host<float4>::type::iterator, Host>
+                  (typename Host<PointXYZRGB>::type::const_iterator begin,
+                   typename Host<PointXYZRGB>::type::const_iterator end,
+                   typename Host<float4>::type::iterator output,
+                   float focallength,
+                   const boost::shared_ptr <const PointCloudAOS <Host> > &input,
+                   float radius,
+                   int desired_number_neighbors);
+    
+    template boost::shared_ptr<typename Device<float4>::type> computeWeirdPointNormals<Device, typename PointIterator<Device,PointXYZRGB>::type >
+                  (typename PointIterator<Device,PointXYZRGB>::type begin,
+                   typename PointIterator<Device,PointXYZRGB>::type end,
+                   float focallength,
+                   const boost::shared_ptr <const PointCloudAOS <Device> > &input,
+                   float radius,
+                   int desired_number_neighbors);
+    
+    template boost::shared_ptr<typename Host<float4>::type> computeWeirdPointNormals<Host, typename PointIterator<Host,PointXYZRGB>::type >
                   (typename PointIterator<Host,PointXYZRGB>::type begin,
                    typename PointIterator<Host,PointXYZRGB>::type end,
                    float focallength,
