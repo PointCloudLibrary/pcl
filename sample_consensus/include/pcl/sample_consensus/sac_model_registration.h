@@ -232,7 +232,7 @@ namespace pcl
       PointCloudConstPtr target_;
 
       /** \brief A pointer to the vector of target point indices to use. */
-      IndicesPtr indices_tgt_;
+      boost::shared_ptr <std::vector<int> > indices_tgt_;
 
       /** \brief Given the index in the original point cloud, give the matching original index in the target cloud */
       boost::unordered_map<int, int> original_index_mapping_;
