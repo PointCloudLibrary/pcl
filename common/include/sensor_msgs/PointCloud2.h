@@ -35,6 +35,9 @@ namespace sensor_msgs
 #endif
     }
 
+#undef PCL_BIG_ENDIAN
+#undef PCL_LITTLE_ENDIAN
+
     ::std_msgs::Header header;
 
     pcl::uint32_t height;
