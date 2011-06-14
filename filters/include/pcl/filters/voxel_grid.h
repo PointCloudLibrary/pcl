@@ -320,7 +320,7 @@ namespace pcl
       };
 
       /** \brief The 3D grid leaves. */
-      std::map<size_t, Leaf> leaves_;
+      boost::unordered_map<size_t, Leaf> leaves_;
 
       /** \brief The size of a leaf. */
       Eigen::Vector4f leaf_size_;
@@ -547,7 +547,7 @@ namespace pcl
       };
 
       /** \brief The 3D grid leaves. */
-      std::map<size_t, Leaf> leaves_;
+      boost::unordered_map<size_t, Leaf> leaves_;
 
       /** \brief The size of a leaf. */
       Eigen::Vector4f leaf_size_;

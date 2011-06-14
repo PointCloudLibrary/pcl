@@ -449,7 +449,7 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     leaf_layout_.resize (div_b_[0] * div_b_[1] * div_b_[2], -1);
 
   int cp = 0;
-  for (std::map<size_t, Leaf>::const_iterator it = leaves_.begin (); it != leaves_.end (); ++it)
+  for (boost::unordered_map<size_t, Leaf>::const_iterator it = leaves_.begin (); it != leaves_.end (); ++it)
   {
     // Save leaf layout information for fast access to cells relative to current position
     if (save_leaf_layout_)

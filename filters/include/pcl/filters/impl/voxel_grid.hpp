@@ -284,7 +284,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   int cp = 0, i = 0;
     leaf_layout_.resize (div_b_[0]*div_b_[1]*div_b_[2], -1);
   
-  for (typename std::map<size_t, Leaf>::const_iterator it = leaves_.begin (); it != leaves_.end (); ++it)
+  for (typename boost::unordered_map<size_t, Leaf>::const_iterator it = leaves_.begin (); it != leaves_.end (); ++it)
   {
     // Save leaf layout information for fast access to cells relative to current position
     if (save_leaf_layout_)
