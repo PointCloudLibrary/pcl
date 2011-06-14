@@ -158,7 +158,7 @@ usage (char ** argv)
 int 
 main (int argc, char ** argv)
 {
-  if (argv[1] == "--help" || argv[1] == "-h")
+  if ((strcmp ("--help", argv[1]) == 0) || (strcmp ("-h", argv[1]) == 0))
   {
     usage (argv);
     return 1;
