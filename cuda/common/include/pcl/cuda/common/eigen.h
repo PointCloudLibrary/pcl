@@ -624,13 +624,13 @@ namespace pcl
       {
         // bounds.x = min_x, .y = max_x, .z = min_y, .w = max_y
         //
-        sqr_radius_ = query_pt.z * (0.2f / 4.0f);
-        sqr_radius_ *= sqr_radius_;
+        //sqr_radius_ = query_pt.z * (0.2f / 4.0f);
+        //sqr_radius_ *= sqr_radius_;
         int4 bounds = getProjectedRadiusSearchBox(query_pt);
 
         // This implements a fixed window size in image coordinates (pixels)
         //int2 proj_point = make_int2 ( query_pt.x/(query_pt.z/focalLength_)+width_/2.0f, query_pt.y/(query_pt.z/focalLength_)+height_/2.0f);
-        //int window_size = 10;
+        //int window_size = 1;
         //int4 bounds = make_int4 (
         //    proj_point.x - window_size,
         //    proj_point.x + window_size,
@@ -650,6 +650,8 @@ namespace pcl
         //float skip = max (sqrtf ((float)boundsarea) / sqrt_desired_nr_neighbors, 1.0);
         float skipX = max (sqrtf ((float)bounds.y-bounds.x) / sqrt_desired_nr_neighbors, 1.0);
         float skipY = max (sqrtf ((float)bounds.w-bounds.z) / sqrt_desired_nr_neighbors, 1.0);
+        skipX = 1;
+        skipY = 1;
   
         cov.data[0] = make_float3(0,0,0);
         cov.data[1] = make_float3(0,0,0);
@@ -697,6 +699,68 @@ namespace pcl
         cov.data[1] /= nnn; 
         cov.data[2] /= nnn;
         return nnn;
+      }
+
+      //////////////////////////////////////////////////////////////////////////////////////////////
+      inline __host__ __device__
+      float3 computeCentroid (const float3 &query_pt, CovarianceMatrix &cov, float sqrt_desired_nr_neighbors)
+      {
+        // bounds.x = min_x, .y = max_x, .z = min_y, .w = max_y
+        //
+        //sqr_radius_ = query_pt.z * (0.2f / 4.0f);
+        //sqr_radius_ *= sqr_radius_;
+        int4 bounds = getProjectedRadiusSearchBox(query_pt);
+
+        // This implements a fixed window size in image coordinates (pixels)
+        //int2 proj_point = make_int2 ( query_pt.x/(query_pt.z/focalLength_)+width_/2.0f, query_pt.y/(query_pt.z/focalLength_)+height_/2.0f);
+        //int window_size = 1;
+        //int4 bounds = make_int4 (
+        //    proj_point.x - window_size,
+        //    proj_point.x + window_size,
+        //    proj_point.y - window_size,
+        //    proj_point.y + window_size
+        //    );
+        
+        // clamp the coordinates to fit to depth image size
+        bounds.x = clamp (bounds.x, 0, width_-1);
+        bounds.y = clamp (bounds.y, 0, width_-1);
+        bounds.z = clamp (bounds.z, 0, height_-1);
+        bounds.w = clamp (bounds.w, 0, height_-1);
+  
+        // number of points in rectangular area
+        //int boundsarea = (bounds.y-bounds.x) * (bounds.w-bounds.z);
+        //float skip = max (sqrtf ((float)boundsarea) / sqrt_desired_nr_neighbors, 1.0);
+        float skipX = max (sqrtf ((float)bounds.y-bounds.x) / sqrt_desired_nr_neighbors, 1.0);
+        float skipY = max (sqrtf ((float)bounds.w-bounds.z) / sqrt_desired_nr_neighbors, 1.0);
+ 
+        skipX = 1;
+        skipY = 1;
+        float3 centroid = make_float3(0,0,0);
+        int nnn = 0;
+        // iterate over all pixels in the rectangular region
+        for (float y = bounds.z; y <= bounds.w; y += skipY)
+        {
+          for (float x = bounds.x; x <= bounds.y; x += skipX)
+          {
+            // find index in point cloud from x,y pixel positions
+            int idx = ((int)y) * width_ + ((int)x);
+  
+            // ignore invalid points
+            if (isnan (points_[idx].x) | isnan (points_[idx].y) | isnan (points_[idx].z))
+              continue;
+  
+            float3 point_dif = points_[idx] - query_pt;
+            
+            // check distance and update covariance matrix
+            if (dot (point_dif, point_dif) <= sqr_radius_)
+            {
+              centroid += points_[idx];
+              ++nnn;
+            }
+          }
+        }
+  
+        return centroid / nnn;
       }
   
       float focalLength_;

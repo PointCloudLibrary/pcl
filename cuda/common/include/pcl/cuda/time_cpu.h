@@ -40,7 +40,11 @@
 #include <cmath>
 #include <string>
 
-#include <sys/time.h>
+#ifdef WIN32
+# include <time.h>
+#else
+# include <sys/time.h>
+#endif
 
 /////////////////////////////////////////////////////////////////////
 // Note: this file is here because NVCC can't deal with all boost
@@ -65,7 +69,7 @@ namespace pcl
         inline ~ScopeTimeCPU ();
       private:
         std::string title_;
-        timeval start_time_;
+        double start_time_;
     };
 
 
@@ -105,22 +109,29 @@ if (1) {\
 inline double 
   pcl::cuda::getTime ()
 {
+#ifdef WIN32
+  LARGE_INTEGER frequency;
+  LARGE_INTEGER timer_tick;
+  QueryPerformanceFrequency(&frequency);
+  QueryPerformanceCounter(&timer_tick);
+  return (double)(timer_tick.QuadPart)/(double)frequency.QuadPart;
+#else
   timeval current_time;
   gettimeofday (&current_time, NULL);
   return (current_time.tv_sec + 1e-6 * current_time.tv_usec);
+#endif
 }
 
 inline pcl::cuda::ScopeTimeCPU::ScopeTimeCPU (const char* title) : title_ (title)
 {
-  gettimeofday (&start_time_, NULL);
+  start_time_ = pcl::cuda::getTime ();
 }
 
 inline pcl::cuda::ScopeTimeCPU::~ScopeTimeCPU ()
 {
-  timeval end_time;
-  gettimeofday (&end_time, NULL);
-  double duration = end_time.tv_sec - start_time_.tv_sec + 1e-6 * (end_time.tv_usec - start_time_.tv_usec);
-  std::cerr << title_ << " took " << 1000 * duration << "ms.\n";
+  double end_time = pcl::cuda::getTime ();
+  double duration = end_time - start_time_;
+  std::cerr << title_ << " took " << 1000 * duration << "ms. ";
 }
 
 #endif  //#ifndef PCL_NORMS_H_
