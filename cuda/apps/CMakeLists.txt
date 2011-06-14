@@ -1,6 +1,6 @@
 set(SUBSYS_NAME cuda_apps)
 set(SUBSYS_DESC "Point cloud library CUDA apps")
-set(SUBSYS_DEPS cuda cuda_common cuda_io cuda_features common io visualization)
+set(SUBSYS_DEPS cuda cuda_common cuda_io cuda_features cuda_segmentation cuda_sample_consensus common io visualization)
 
 # ---[ Point Cloud Library - pcl/cuda/apps
 
@@ -24,6 +24,8 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 mark_as_advanced("BUILD_${SUBSYS_NAME}")
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
+FIND_PACKAGE (OpenCV)
+
 if(build)
   if(VTK_FOUND)
 
@@ -32,6 +34,17 @@ if(build)
 
     PCL_CUDA_ADD_EXECUTABLE(kinect_normals_cuda ${SUBSYS_NAME} src/kinect_normals_cuda.cpp)
     target_link_libraries (kinect_normals_cuda pcl_io pcl_cuda_io pcl_cuda_features pcl_visualization pcl_common pcl_kdtree pcl_range_image)
+
+    if (OpenCV_FOUND)
+      PCL_CUDA_ADD_EXECUTABLE(kinect_segmentation_cuda ${SUBSYS_NAME} src/kinect_segmentation_cuda.cpp)
+      target_link_libraries (kinect_segmentation_cuda pcl_io pcl_cuda_io pcl_cuda_features pcl_cuda_segmentation pcl_cuda_sample_consensus pcl_visualization pcl_common pcl_kdtree pcl_range_image ${OpenCV_LIBS})
+
+      PCL_CUDA_ADD_EXECUTABLE(kinect_segmentation_planes_cuda ${SUBSYS_NAME} src/kinect_segmentation_planes_cuda.cpp)
+      target_link_libraries (kinect_segmentation_planes_cuda pcl_io pcl_cuda_io pcl_cuda_features pcl_cuda_segmentation pcl_visualization pcl_common pcl_kdtree pcl_range_image ${OpenCV_LIBS})
+    endif(OpenCV_FOUND)
+
+    PCL_CUDA_ADD_EXECUTABLE(kinect_planes_cuda ${SUBSYS_NAME} src/kinect_planes_cuda.cpp)
+    target_link_libraries (kinect_planes_cuda pcl_io pcl_cuda_io pcl_cuda_features pcl_cuda_sample_consensus pcl_cuda_segmentation pcl_visualization pcl_common pcl_kdtree pcl_range_image)
 
   endif(VTK_FOUND)
 endif(build)
