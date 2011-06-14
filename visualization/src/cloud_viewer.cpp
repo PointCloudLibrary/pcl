@@ -42,7 +42,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/foreach.hpp>
 
-namespace
+namespace pcl
 {
   struct cloud_show_base
   {

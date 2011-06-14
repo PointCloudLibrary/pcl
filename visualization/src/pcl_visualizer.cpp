@@ -1020,7 +1020,6 @@ pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
   if (am_it == cloud_actor_map_->end ())
     return;
 
-  vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second.actor);
   // Get all the data
   double bounds[6];
   reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ()->GetBounds (bounds);

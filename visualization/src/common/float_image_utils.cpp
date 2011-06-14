@@ -37,13 +37,11 @@
 
 #include <pcl/visualization/common/float_image_utils.h>
 #include <cmath>
+#include <algorithm>
 #include <pcl/win32_macros.h>
 
 using std::cout;
 using std::cerr;
-using std::min;
-using std::max;
-
 
 void 
 pcl::visualization::FloatImageUtils::getColorForFloat (float value, unsigned char& r, unsigned char& g, unsigned char& b) 
@@ -181,8 +179,8 @@ pcl::visualization::FloatImageUtils::getVisualImage (const float* floatImage, in
     {
       float value = floatImage[i];
       if (!pcl_isfinite(value)) continue;
-      if (recalculateMinValue)  minValue=min(minValue, value);
-      if (recalculateMaxValue)  maxValue=max(maxValue, value);
+      if (recalculateMinValue)  minValue = (std::min)(minValue, value);
+      if (recalculateMaxValue)  maxValue = (std::max)(maxValue, value);
     }
   }
   //cout << "minValue is "<<minValue<<" and maxValue is "<<maxValue<<".\n";
@@ -200,7 +198,7 @@ pcl::visualization::FloatImageUtils::getVisualImage (const float* floatImage, in
     }
     
     // Normalize value to [0, 1]
-    value = max(0.0f, min(1.0f, factor*(value + offset)));
+    value = std::max (0.0f, std::min (1.0f, factor * (value + offset)));
     
     // Get a color from the value in [0, 1]
     if (grayScale) 
