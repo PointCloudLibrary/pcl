@@ -42,6 +42,22 @@
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/console/parse.h>
+#include <pcl/common/time.h>
+
+#define FPS_CALC(_WHAT_) \
+do \
+{ \
+    static unsigned count = 0;\
+    static double last = pcl::getTime ();\
+    if (++count == 100) \
+    { \
+      double now = pcl::getTime (); \
+      std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
+      count = 0; \
+      last = now; \
+    } \
+}while(false)
+
 
 template <typename PointType>
 class OpenNIPassthrough
@@ -100,6 +116,7 @@ class OpenNIPassthrough
       {
         if (cloud_)
         {
+          FPS_CALC ("drawing");
           //the call to get() sets the cloud_ to null;
           viewer.showCloud (get ());
         }
