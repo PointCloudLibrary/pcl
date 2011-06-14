@@ -38,7 +38,6 @@
 #ifndef PCL_SAMPLE_CONSENSUS_H_
 #define PCL_SAMPLE_CONSENSUS_H_
 
-#include "pcl/pcl_base.h"
 #include "pcl/sample_consensus/sac_model.h"
 #include <set>
 
@@ -117,7 +116,9 @@ namespace pcl
         * \param indices_subset the resultant output set of randomly selected indices
         */
       inline void
-        getRandomSamples (const IndicesPtr &indices, size_t nr_samples, std::set<int> &indices_subset)
+      getRandomSamples (const boost::shared_ptr <std::vector<int> > &indices, 
+                        size_t nr_samples, 
+                        std::set<int> &indices_subset)
       {
         indices_subset.clear ();
         while (indices_subset.size () < nr_samples)
