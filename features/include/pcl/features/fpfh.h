@@ -139,7 +139,7 @@ namespace pcl
         * \param indices a pointer to the vector of indices that represents the input data.
         */
       inline void
-      setIndices (const IndicesConstPtr &indices)
+      setIndices (const IndicesPtr &indices)
       {
         indices_ = indices;
         size_t data_size = indices_->size ();
