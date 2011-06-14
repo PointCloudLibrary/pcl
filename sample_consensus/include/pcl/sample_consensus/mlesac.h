@@ -112,7 +112,10 @@ namespace pcl
         * \param indices the set of point indices to use
         * \param sigma the sigma value
         */
-      double computeMedianAbsoluteDeviation (const PointCloudConstPtr &cloud, const IndicesPtr &indices, double sigma);
+      double 
+      computeMedianAbsoluteDeviation (const PointCloudConstPtr &cloud, 
+                                      const boost::shared_ptr <std::vector<int> > &indices, 
+                                      double sigma);
 
       /** \brief Determine the minimum and maximum 3D bounding box coordinates for a given set of points
         * \param cloud the point cloud message
@@ -120,14 +123,21 @@ namespace pcl
         * \param min_p the resultant minimum bounding box coordinates
         * \param max_p the resultant maximum bounding box coordinates
         */
-      void getMinMax (const PointCloudConstPtr &cloud, const IndicesPtr &indices, Eigen::Vector4f &min_p, Eigen::Vector4f &max_p);
+      void 
+      getMinMax (const PointCloudConstPtr &cloud, 
+                 const boost::shared_ptr <std::vector<int> > &indices, 
+                 Eigen::Vector4f &min_p, 
+                 Eigen::Vector4f &max_p);
 
       /** \brief Compute the median value of a 3D point cloud using a given set point indices and return it as a Point32.
         * \param cloud the point cloud data message
         * \param indices the point indices
         * \param median the resultant median value
         */
-      void computeMedian (const PointCloudConstPtr &cloud, const IndicesPtr &indices, Eigen::Vector4f &median);
+      void 
+      computeMedian (const PointCloudConstPtr &cloud, 
+                     const boost::shared_ptr <std::vector<int> > &indices, 
+                     Eigen::Vector4f &median);
 
     private:
       /** \brief Maximum number of EM (Expectation Maximization) iterations. */
