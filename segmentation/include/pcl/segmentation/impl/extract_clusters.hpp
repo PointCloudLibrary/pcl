@@ -100,8 +100,8 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
       for (size_t j = 0; j < seed_queue.size (); ++j)
         r.indices[j] = seed_queue[j];
 
-      sort (r.indices.begin (), r.indices.end ());
-      r.indices.erase (unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
+      std::sort (r.indices.begin (), r.indices.end ());
+      r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 
       r.header = cloud.header;
       clusters.push_back (r);   // We could avoid a copy by working directly in the vector
@@ -180,8 +180,8 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
         r.indices[j] = indices[seed_queue[j]];
 
       //r.indices.assign(seed_queue.begin(), seed_queue.end());
-      sort (r.indices.begin (), r.indices.end ());
-      r.indices.erase (unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
+      std::sort (r.indices.begin (), r.indices.end ());
+      r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 
       r.header = cloud.header;
       clusters.push_back (r);   // We could avoid a copy by working directly in the vector

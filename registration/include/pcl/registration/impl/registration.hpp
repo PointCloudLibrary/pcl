@@ -186,9 +186,9 @@ pcl::Registration<PointSource, PointTarget>::findFeatureCorrespondences (int ind
     feature_itr->second->findFeatureCorrespondences (index, nn_indices, nn_dists);
 
     std::sort (nn_indices.begin (), nn_indices.end ());
-    correspondence_indices_end = set_intersection (nn_indices.begin (), nn_indices.end (),
-                                                   correspondence_indices.begin (), correspondence_indices_end, 
-                                                   correspondence_indices.begin ());
+    correspondence_indices_end = std::set_intersection (nn_indices.begin (), nn_indices.end (),
+                                                        correspondence_indices.begin (), correspondence_indices_end, 
+                                                        correspondence_indices.begin ());
   }
 
   // 'corresponding_indices' now contains the indices of the points that corresponded to 'index' for *all* features
