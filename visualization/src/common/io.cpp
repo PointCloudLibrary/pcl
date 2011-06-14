@@ -69,8 +69,8 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
     indices.push_back (nn_indices[0]);
   }
   // Sort and remove duplicate indices
-  sort (indices.begin (), indices.end ());
-  indices.erase (unique (indices.begin (), indices.end ()), indices.end ()); 
+  std::sort (indices.begin (), indices.end ());
+  indices.erase (std::unique (indices.begin (), indices.end ()), indices.end ()); 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
