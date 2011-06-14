@@ -80,7 +80,11 @@ namespace pcl
       PCLBase () : input_ (), indices_ (), use_indices_ (false), fake_indices_ (false) {}
 
       /** \brief destructor. */
-      virtual ~PCLBase() {}
+      virtual ~PCLBase() 
+      {
+        input_.reset ();
+        indices_.reset ();
+      }
       
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
@@ -96,7 +100,7 @@ namespace pcl
         * \param indices a pointer to the vector of indices that represents the input data.
         */
       inline void
-      setIndices (const IndicesConstPtr &indices)
+      setIndices (const IndicesPtr &indices)
       {
         indices_ = indices;
         fake_indices_ = false;
@@ -123,7 +127,7 @@ namespace pcl
       PointCloudConstPtr input_;
 
       /** \brief A pointer to the vector of point indices to use. */
-      IndicesConstPtr indices_;
+      IndicesPtr indices_;
 
       /** \brief Set to true if point indices are used. */
       bool use_indices_;
@@ -131,8 +135,19 @@ namespace pcl
       /** \brief If no set of indices are given, we construct a set of fake indices that mimic the input PointCloud. */
       bool fake_indices_;
 
-      /** \brief This method should get called before starting the actual computation. */
-      bool
+      /** \brief This method should get called before starting the actual computation. 
+        *
+        * Internally, initCompute() does the following:
+        * <ul>
+        *   <li>checks if an input dataset is given, and returns false otherwise
+        *   <li>checks whether a set of input indices has been given. Returns true if yes.
+        *   <li>if no input indices have been given, a fake set is created, which will be used until:
+        *   <ul><li>either a new set is given via setIndices(), or 
+        *       <li>a new cloud is given that has a different set of points. This will trigger an update on the set of fake indices
+        *   </ul>
+        * </ul>
+        */
+      inline bool
       initCompute ()
       {
         // Check if input was set
@@ -143,31 +158,35 @@ namespace pcl
         if (!indices_)
         {
           fake_indices_ = true;
-          std::vector<int> *indices = NULL;
+          indices_.reset (new std::vector<int>);
           try
           {
-            indices = new std::vector<int> (input_->points.size ());
+            indices_->resize (input_->points.size ());
           }
           catch (std::bad_alloc)
           {
             PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", (unsigned long)input_->points.size ());
           }
-          for (size_t i = 0; i < indices->size (); ++i) { (*indices)[i] = i; }
-          indices_.reset (indices);
+          for (size_t i = 0; i < indices_->size (); ++i) { (*indices_)[i] = i; }
         }
+
+        // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
+        if (fake_indices_ && indices_->size () != input_->points.size ())
+        {
+          size_t indices_size = indices_->size ();
+          indices_->resize (input_->points.size ());
+          for (size_t i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = i; }
+        }
+
         return (true);
       }
 
-      /** \brief This method should get called after finishing the actual computation. */
-      bool
+      /** \brief This method should get called after finishing the actual computation. 
+        *
+        */
+      inline bool
       deinitCompute ()
       {
-        // Reset the indices
-        if (fake_indices_)
-        {
-          indices_.reset ();
-          fake_indices_ = false;
-        }
         return (true);
       }
     public:
