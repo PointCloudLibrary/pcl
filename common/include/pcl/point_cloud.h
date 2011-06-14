@@ -193,7 +193,8 @@ namespace pcl
 
       //capacity
       inline size_t size () const { return (points.size ()); }
-      inline void reserve(size_t n) { points.resize (n); }
+      inline void reserve(size_t n) { points.reserve (n); }
+      inline void resize(size_t n) { points.resize (n); }
       inline bool empty() { return points.empty (); }
 
       //element access
