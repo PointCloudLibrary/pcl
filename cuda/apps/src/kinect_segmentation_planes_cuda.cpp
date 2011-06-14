@@ -47,19 +47,53 @@
 #include <pcl/cuda/io/extract_indices.h>
 #include <pcl/cuda/io/disparity_to_cloud.h>
 #include <pcl/cuda/io/host_device.h>
+#include <pcl/cuda/segmentation/connected_components.h>
+#include <pcl/cuda/segmentation/mssegmentation.h>
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 
+#include "opencv2/opencv.hpp"
+#include "opencv2/gpu/gpu.hpp"
+
 #include <iostream>
+#include <fstream>
 
 using namespace pcl::cuda;
 
-class NormalEstimation
+template <template <typename> class Storage>
+struct ImageType
+{
+  typedef void type;
+};
+
+template <>
+struct ImageType<Device>
+{
+  typedef cv::gpu::GpuMat type;
+  static void createContinuous (int h, int w, int typ, type &mat)
+  {
+    cv::gpu::createContinuous (h, w, typ, mat);
+  }
+};
+
+template <>
+struct ImageType<Host>
+{
+  typedef cv::Mat type;
+  static void createContinuous (int h, int w, int typ, type &mat)
+  {
+    mat = cv::Mat (h, w, typ); // assume no padding at the end of line
+  }
+};
+
+class Segmentation
 {
   public:
-    NormalEstimation () : viewer ("PCL CUDA - NormalEstimation"), new_cloud(false), go_on(true) {}
+    Segmentation () 
+      : viewer ("PCL CUDA - Segmentation"),
+      new_cloud(false), go_on(true) {}
 
     void viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
@@ -110,7 +144,7 @@ class NormalEstimation
       boost::shared_ptr<typename Storage<float4>::type> normals;
       float focallength = 580/2.0;
       {
-        ScopeTimeCPU time ("Normal Estimation");
+        ScopeTimeCPU time ("TIMING: Normal Estimation");
         normals = computePointNormals<Storage, typename PointIterator<Storage,PointXYZRGB>::type > (data->points.begin (), data->points.end (), focallength, data, 0.05, 30);
       }
       go_on = false;
@@ -139,21 +173,59 @@ class NormalEstimation
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
       typename PointCloudAOS<Storage>::Ptr data;
 
-      ScopeTimeCPU timer ("All: ");
+      //ScopeTimeCPU timer ("All: ");
+      ScopeTimeCPU time ("TIMING: everything");
       // Compute the PointCloud on the device
       d2c.compute<Storage> (depth_image, image, constant, data, true, 2);
 
       boost::shared_ptr<typename Storage<float4>::type> normals;
       float focallength = 580/2.0;
       {
-        ScopeTimeCPU time ("Normal Estimation");
-        normals = computePointNormals<Storage, typename PointIterator<Storage,PointXYZRGB>::type > (data->points.begin (), data->points.end (), focallength, data, 0.05, 30);
+        ScopeTimeCPU time ("TIMING: Normal Estimation");
+        normals = computeFastPointNormals<Storage> (data);
       }
+
+      // retrieve normals as an image..
+      // typename StoragePointer<Storage,char4>::type ptr = StorageAllocator<Storage,char4>::alloc (data->width * data->height);
+      // createNormalsImage<Storage> (ptr, normals);
+      // typename ImageType<Storage>::type normal_image (data->height, data->width, CV_8UC4, thrust::raw_pointer_cast<char4>(ptr), data->width);
+      typename ImageType<Storage>::type normal_image;
+      typename StoragePointer<Storage,char4>::type ptr;
+      {
+        ScopeTimeCPU time ("TIMING: Matrix Creation");
+      ImageType<Storage>::createContinuous ((int)data->height, (int)data->width, CV_8UC4, normal_image);
+      ptr = typename StoragePointer<Storage,char4>::type ((char4*)normal_image.data);
+      createNormalsImage<Storage> (ptr, *normals);
+      }
+
+      //TODO: this breaks for pcl::cuda::Host
+      pcl::cuda::detail::DjSets comps(0);
+      cv::Mat seg;
+      {
+        ScopeTimeCPU time ("TIMING: Mean Shift");
+        pcl::cuda::meanShiftSegmentation (normal_image, seg, 8, 20, 100, comps);
+      }
+      std::cerr << "time since callback: " << getTime () - now << std::endl;
+//      std::cout << "comps " << comps.parent.size () << " " << comps.rank.size () << " " << comps.size.size () << std::endl;
+//      std::cout << "parent" << std::endl;
+//      std::copy (comps.parent.begin (), comps.parent.end (), std::ostream_iterator<int>(std::cout, " "));
+//      std::cout << "rank"   << std::endl;
+//      std::copy (comps.rank.begin (), comps.rank.end (), std::ostream_iterator<int>(std::cout, " "));
+//      std::cout << "size"   << std::endl;
+//      std::copy (comps.size.begin (), comps.size.end (), std::ostream_iterator<int>(std::cout, " "));
+
+      {
+        ScopeTimeCPU time ("TIMING: Vis");
+      cv::namedWindow("NormalImage", CV_WINDOW_NORMAL);
+      //cv::imshow ("NormalImage", cv::Mat(normal_image));
+      cv::imshow ("NormalImage", seg);
+      cv::waitKey (2);
 
       boost::mutex::scoped_lock l(m_mutex);
       normal_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
       toPCL (*data, *normals, *normal_cloud);
       new_cloud = true;
+      }
     }
     
     void 
@@ -171,15 +243,15 @@ class NormalEstimation
         
         if (use_device)
         {
-          std::cerr << "[NormalEstimation] Using GPU..." << std::endl;
-          boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&NormalEstimation::file_cloud_cb<Device>, this, _1);
+          std::cerr << "[Segmentation] Using GPU..." << std::endl;
+          boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&Segmentation::file_cloud_cb<Device>, this, _1);
           filegrabber->registerCallback (f);
         }
         else
         {
-          std::cerr << "[NormalEstimation] Using CPU..." << std::endl;
-          boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&NormalEstimation::file_cloud_cb<Host>, this, _1);
-          filegrabber->registerCallback (f);
+//          std::cerr << "[Segmentation] Using CPU..." << std::endl;
+//          boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&Segmentation::file_cloud_cb<Host>, this, _1);
+//          filegrabber->registerCallback (f);
         }
 
         filegrabber->start ();
@@ -196,18 +268,18 @@ class NormalEstimation
         boost::signals2::connection c;
         if (use_device)
         {
-          std::cerr << "[NormalEstimation] Using GPU..." << std::endl;
-          boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&NormalEstimation::cloud_cb<Device>, this, _1, _2, _3);
+          std::cerr << "[Segmentation] Using GPU..." << std::endl;
+          boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&Segmentation::cloud_cb<Device>, this, _1, _2, _3);
           c = interface->registerCallback (f);
         }
         else
         {
-          std::cerr << "[NormalEstimation] Using CPU..." << std::endl;
-          boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&NormalEstimation::cloud_cb<Host>, this, _1, _2, _3);
-          c = interface->registerCallback (f);
+//          std::cerr << "[Segmentation] Using CPU..." << std::endl;
+//          boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&Segmentation::cloud_cb<Host>, this, _1, _2, _3);
+//          c = interface->registerCallback (f);
         }
 
-        viewer.runOnVisualizationThread (boost::bind(&NormalEstimation::viz_cb, this, _1), "viz_cb");
+        viewer.runOnVisualizationThread (boost::bind(&Segmentation::viz_cb, this, _1), "viz_cb");
 
         interface->start ();
         
@@ -236,8 +308,8 @@ main (int argc, char **argv)
     use_device = true;
   if (argc >= 3)
     use_file = true;
-  NormalEstimation v;
-  v.run (use_device, use_file);
+  Segmentation s;
+  s.run (use_device, use_file);
   return 0;
 }
 
