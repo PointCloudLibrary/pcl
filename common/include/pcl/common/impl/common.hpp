@@ -35,6 +35,9 @@
  *
  */
 
+#ifndef PCL_COMMON_IMPL_H_
+#define PCL_COMMON_IMPL_H_
+
 #include <pcl/point_types.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -375,4 +378,6 @@ pcl::getMinMax (const PointT &histogram, int len, float &min_p, float &max_p)
     max_p = (histogram[i] < max_p) ? max_p : histogram[i]; 
   }
 }
+
+#endif  //#ifndef PCL_COMMON_IMPL_H_
 

@@ -48,14 +48,14 @@
 
 namespace pcl 
 {
-  template< bool done = true >
+  template <bool done = true>
   struct for_each_type_impl
   {
     template<typename Iterator, typename LastIterator, typename F>
     static void execute (F) {}
   };
 
-  template<>
+  template <>
   struct for_each_type_impl<false>
   {
     template<typename Iterator, typename LastIterator, typename F>
@@ -64,9 +64,9 @@ namespace pcl
       typedef typename boost::mpl::deref<Iterator>::type arg;
 
 #if (defined _WIN32 && defined _MSC_VER)
-      boost::mpl::aux::unwrap(f, 0).operator()<arg> ();
+      boost::mpl::aux::unwrap (f, 0).operator()<arg> ();
 #else
-      boost::mpl::aux::unwrap(f, 0).template operator()<arg> ();
+      boost::mpl::aux::unwrap (f, 0).template operator()<arg> ();
 #endif
 
       typedef typename boost::mpl::next<Iterator>::type iter;
@@ -76,7 +76,7 @@ namespace pcl
   };
 
   template<typename Sequence, typename F>
-  void for_each_type (F f)
+  inline void for_each_type (F f)
   {
     BOOST_MPL_ASSERT (( boost::mpl::is_sequence<Sequence> ));
     typedef typename boost::mpl::begin<Sequence>::type first;
