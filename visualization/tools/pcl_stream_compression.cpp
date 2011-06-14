@@ -40,6 +40,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
+#include <pcl/common/time.h>
 
 #include "pcl/compression/octree_pointcloud_compression.h"
 
@@ -100,6 +101,20 @@ char usage[] = "\n"
   "  example:\n"
   "      ./pcl_stream_compression -x -p highC -t -f pc_compressed.pcc \n"
   "\n";
+
+#define FPS_CALC(_WHAT_) \
+do \
+{ \
+    static unsigned count = 0;\
+    static double last = pcl::getTime ();\
+    if (++count == 100) \
+    { \
+      double now = pcl::getTime (); \
+      std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
+      count = 0; \
+      last = now; \
+    } \
+}while(false)
 
 void
 print_usage (std::string msg)
@@ -488,7 +503,9 @@ main (int argc, char **argv)
 
         pcl::visualization::CloudViewer viewer ("Decoded Point Cloud - PCL Compression Viewer");
 
-        while (!socketStream.fail()) {
+        while (!socketStream.fail()) 
+        {
+          FPS_CALC ("drawing");
           PointCloud<PointXYZRGB>::Ptr cloudOut (new PointCloud<PointXYZRGB> ());
           octreeCoder->decodePointCloud (socketStream, cloudOut);
           viewer.showCloud (cloudOut);
