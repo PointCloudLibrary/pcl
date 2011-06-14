@@ -125,7 +125,7 @@ namespace pcl
           is_dense = false;
         return (*this);
       }
-
+      
       ////////////////////////////////////////////////////////////////////////////////////////
       inline PointT
       at (int u, int v) const
@@ -191,9 +191,45 @@ namespace pcl
       inline const_iterator begin () const { return (points.begin ()); }
       inline const_iterator end () const  { return (points.end ()); }
 
+      //capacity
       inline size_t size () const { return (points.size ()); }
-      inline void push_back (const PointT& p) { points.push_back (p); }
+      inline void reserve(size_t n) { points.resize (n); }
+      inline bool empty() { return points.empty (); }
 
+      //element access
+      inline const PointT& operator[] (size_t n) const { return points[n]; }
+      inline PointT& operator[] (size_t n) { return points[n]; }
+      inline const PointT& at (size_t n) const { return points.at (n); }
+      inline PointT& at (size_t n) { return points.at (n); }
+      inline const PointT& front () const { return points.front (); }
+      inline PointT& front () { return points.front (); }
+      inline const PointT& back () const { return points.back (); }
+      inline PointT& back () { return points.back (); }
+
+      //modifiers
+      inline void push_back (const PointT& p) { points.push_back (p); }
+      inline iterator insert ( iterator position, const PointT& x )
+      {
+        return points.insert (position, x);
+      }
+      inline void insert ( iterator position, size_t n, const PointT& x )
+      {
+        points.insert (position, n, x);
+      }
+      template <class InputIterator>
+      inline void insert ( iterator position, InputIterator first, InputIterator last )
+      {
+        points.insert(position, first, last);
+      }
+      inline iterator erase ( iterator position ) { return points.erase (position); }
+      inline iterator erase ( iterator first, iterator last )
+      {
+        return points.erase (first, last);
+      }
+      inline void swap (PointCloud<PointT> &rhs) { this->points.swap (rhs.points); }
+      inline void clear () { points.clear (); }
+
+      //shared pointer
       inline Ptr makeShared () { return Ptr (new PointCloud<PointT> (*this)); }
 
     protected:
