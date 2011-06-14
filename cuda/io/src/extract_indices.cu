@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: io.h 35810 2011-02-08 00:03:46Z rusu $
+ * $Id$
  *
  */
 
@@ -108,6 +108,32 @@ void colorIndices  (typename PointCloudAOS<Storage>::Ptr &input,
   thrust::transform_if (input->points.begin (), input->points.end (), indices->begin (), input->points.begin (), ChangeColor (color), isInlier());
 }
 
+struct ColorCloudFromImage
+{
+  ColorCloudFromImage (char4* colors) : colors_(colors)
+  {}
+  char4 * colors_;
+
+  template <typename Tuple>
+  inline __host__ __device__
+  PointXYZRGB operator () (Tuple &t)
+  {
+    PointXYZRGB &pt = thrust::get<0>(t);
+    char4 rgb = colors_[thrust::get<1>(t)];
+    pt.rgb = ((unsigned char)rgb.x << 16) + ((unsigned char)rgb.y << 8) + (unsigned char)rgb.z;
+    return pt;
+  }
+};
+
+
+template <template <typename> class Storage>
+void colorCloud  (typename PointCloudAOS<Storage>::Ptr &input,
+                  typename Storage<char4>::type &colors)
+{
+  thrust::transform (thrust::make_zip_iterator(thrust::make_tuple (input->points.begin(), thrust::counting_iterator<int>(0))),
+                     thrust::make_zip_iterator(thrust::make_tuple (input->points.begin(), thrust::counting_iterator<int>(0))) + input->width * input->height,
+                     input->points.begin (), ColorCloudFromImage (thrust::raw_pointer_cast<char4>(&colors[0])));
+}
 
 template void extractIndices<Host>(const PointCloudAOS<Host>::Ptr &input,
                                                        Host<int>::type& indices, 
@@ -143,6 +169,9 @@ template void colorIndices<Host>(PointCloudAOS<Host>::Ptr &input,
 template void colorIndices<Device> (PointCloudAOS<Device>::Ptr &input,
                                                           boost::shared_ptr<Device<int>::type> indices, 
                                                           const OpenNIRGB& color);
+template void colorCloud<Host>  (PointCloudAOS<Host>::Ptr &input, Host<char4>::type &colors);
+template void colorCloud<Device>(PointCloudAOS<Device>::Ptr &input, Device<char4>::type &colors);
+
 } // namespace
 } // namespace
 

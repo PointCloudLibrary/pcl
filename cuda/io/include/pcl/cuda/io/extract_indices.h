@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: io.h 35810 2011-02-08 00:03:46Z rusu $
+ * $Id$
  *
  */
 
@@ -67,6 +67,9 @@ namespace cuda
   void colorIndices  (typename PointCloudAOS<Storage>::Ptr &input,
                        boost::shared_ptr<typename Storage<int>::type> indices, 
                        const OpenNIRGB& color);
+  template <template <typename> class Storage>
+  void colorCloud  (typename PointCloudAOS<Storage>::Ptr &input,
+                    typename Storage<char4>::type &colors);
 } // namespace 
 } // namespace
 
