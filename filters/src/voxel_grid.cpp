@@ -182,10 +182,6 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     output.data.clear ();
     return;
   }
-  // Avoid division errors
-  if (leaf_size_[3] == 0)
-    leaf_size_[3] = 1;
-
   int nr_points  = input_->width * input_->height;
 
   // Copy the header (and thus the frame_id) + allocate enough space for points
@@ -225,19 +221,15 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   else
     getMinMax3D (input_, x_idx_, y_idx_, z_idx_, min_p, max_p);
 
-  // Use multiplications instead of divisions
-  Eigen::Array4f inverse_leaf_size = Eigen::Array4f::Ones () / leaf_size_.array ();
-
-  // @todo fix floor
-  //min_b = (min_p.cwise () * leaf_size).cast<int> ();
-  //max_b = (max_p.cwise () * leaf_size).cast<int> ();
   // Compute the minimum and maximum bounding box values
-  min_b_[0] = (int)(floor (min_p[0] * inverse_leaf_size[0]));
-  max_b_[0] = (int)(floor (max_p[0] * inverse_leaf_size[0]));
-  min_b_[1] = (int)(floor (min_p[1] * inverse_leaf_size[1]));
-  max_b_[1] = (int)(floor (max_p[1] * inverse_leaf_size[1]));
-  min_b_[2] = (int)(floor (min_p[2] * inverse_leaf_size[2]));
-  max_b_[2] = (int)(floor (max_p[2] * inverse_leaf_size[2]));
+  min_b_[0] = (int)(floor (min_p[0] * inverse_leaf_size_[0]));
+  max_b_[0] = (int)(floor (max_p[0] * inverse_leaf_size_[0]));
+  min_b_[1] = (int)(floor (min_p[1] * inverse_leaf_size_[1]));
+  max_b_[1] = (int)(floor (max_p[1] * inverse_leaf_size_[1]));
+  min_b_[2] = (int)(floor (min_p[2] * inverse_leaf_size_[2]));
+  max_b_[2] = (int)(floor (max_p[2] * inverse_leaf_size_[2]));
+//  min_b_ = (min_p.array () * inverse_leaf_size_).cast<int> ();
+//  max_b_ = (max_p.array () * inverse_leaf_size_).cast<int> ();
 
   // Compute the number of divisions needed along all axis
   div_b_ = max_b_ - min_b_ + Eigen::Vector4i::Ones ();
@@ -253,7 +245,6 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
                              0);
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
   Eigen::Vector4f pt  = Eigen::Vector4f::Zero ();
-  Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
 
   int centroid_size = 4;
   if (downsample_all_data_)
@@ -329,14 +320,13 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
         continue;
       }
 
-      // @todo fix floor
-      //ijk = (pt.cwise () / leaf_size_).cast<int> ();
-      ijk[0] = (int)(floor (pt[0] * inverse_leaf_size[0]));
-      ijk[1] = (int)(floor (pt[1] * inverse_leaf_size[1]));
-      ijk[2] = (int)(floor (pt[2] * inverse_leaf_size[2]));
-
+      Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
+      ijk[0] = (int)(floor (pt[0] * inverse_leaf_size_[0]));
+      ijk[1] = (int)(floor (pt[1] * inverse_leaf_size_[1]));
+      ijk[2] = (int)(floor (pt[2] * inverse_leaf_size_[2]));
       // Compute the centroid leaf index
       int idx = (ijk - min_b_).dot (divb_mul_);
+      //int idx = (((pt.array () * inverse_leaf_size_).cast<int> ()).matrix () - min_b_).dot (divb_mul_);
       Leaf& leaf = leaves_[idx];
 
       if (leaf.nr_points == 0)
@@ -393,15 +383,13 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
         continue;
       }
 
-      // @todo fix floor
-      //ijk = (pt.cwise () / leaf_size_).cast<int> ();
-      ijk[0] = (int)(floor (pt[0] * inverse_leaf_size[0]));
-      ijk[1] = (int)(floor (pt[1] * inverse_leaf_size[1]));
-      ijk[2] = (int)(floor (pt[2] * inverse_leaf_size[2]));
-
+      Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
+      ijk[0] = (int)(floor (pt[0] * inverse_leaf_size_[0]));
+      ijk[1] = (int)(floor (pt[1] * inverse_leaf_size_[1]));
+      ijk[2] = (int)(floor (pt[2] * inverse_leaf_size_[2]));
       // Compute the centroid leaf index
       int idx = (ijk - min_b_).dot (divb_mul_);
-
+      //int idx = (((pt.array () * inverse_leaf_size_).cast<int> ()).matrix () - min_b_).dot (divb_mul_);
       Leaf& leaf = leaves_[idx];
 
       if (leaf.nr_points == 0)
@@ -457,7 +445,6 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   output.row_step = output.point_step * output.width;
   output.data.resize (output.width * output.point_step);
 
-  leaf_layout_.clear ();
   if (save_leaf_layout_)
     leaf_layout_.resize (div_b_[0] * div_b_[1] * div_b_[2], -1);
 
@@ -470,8 +457,7 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 
     // Normalize the centroid
     const Leaf& leaf = it->second;
-    float norm_pts = 1.0f / leaf.nr_points;
-    centroid = leaf.centroid * norm_pts;
+    centroid = leaf.centroid / leaf.nr_points;
 
     // Do we need to process all the fields?
     if (!downsample_all_data_)

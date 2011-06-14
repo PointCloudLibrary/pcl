@@ -100,9 +100,6 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     output.points.clear ();
     return;
   }
-  // Avoid division errors
-  if (leaf_size_[3] == 0)
-    leaf_size_[3] = 1;
 
   // Copy the header (and thus the frame_id) + allocate enough space for points
   output.height       = 1;                    // downsampling breaks the organized structure
@@ -115,30 +112,25 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   else
     getMinMax3D<PointT>(*input_, min_p, max_p);
 
-  // Use multiplications instead of divisions
-  Eigen::Array4f inverse_leaf_size = Eigen::Array4f::Ones () / leaf_size_.array ();
-
-  // @todo fix floor
-  //min_b = (min_p.cwise () * leaf_size).cast<int> ();
-  //max_b = (max_p.cwise () * leaf_size).cast<int> ();
   // Compute the minimum and maximum bounding box values
-  min_b_[0] = (int)(floor (min_p[0] * inverse_leaf_size[0]));
-  max_b_[0] = (int)(floor (max_p[0] * inverse_leaf_size[0]));
-  min_b_[1] = (int)(floor (min_p[1] * inverse_leaf_size[1]));
-  max_b_[1] = (int)(floor (max_p[1] * inverse_leaf_size[1]));
-  min_b_[2] = (int)(floor (min_p[2] * inverse_leaf_size[2]));
-  max_b_[2] = (int)(floor (max_p[2] * inverse_leaf_size[2]));
+//  min_b_ = (min_p.array () * inverse_leaf_size_).template cast<int> ();
+//  max_b_ = (max_p.array () * inverse_leaf_size_).template cast<int> ();
+  min_b_[0] = (int)(floor (min_p[0] * inverse_leaf_size_[0]));
+  max_b_[0] = (int)(floor (max_p[0] * inverse_leaf_size_[0]));
+  min_b_[1] = (int)(floor (min_p[1] * inverse_leaf_size_[1]));
+  max_b_[1] = (int)(floor (max_p[1] * inverse_leaf_size_[1]));
+  min_b_[2] = (int)(floor (min_p[2] * inverse_leaf_size_[2]));
+  max_b_[2] = (int)(floor (max_p[2] * inverse_leaf_size_[2]));
 
   // Compute the number of divisions needed along all axis
   div_b_ = max_b_ - min_b_ + Eigen::Vector4i::Ones ();
   div_b_[3] = 0;
 
   // Clear the leaves
-  leaves_.clear();
+  leaves_.clear ();
 
   // Set up the division multiplier
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
-  Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
 
   int centroid_size = 4;
   if (downsample_all_data_)
@@ -149,9 +141,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   int rgba_index = -1;
   rgba_index = pcl::getFieldIndex (*input_, "rgb", fields);
   if (rgba_index == -1)
-  {
     rgba_index = pcl::getFieldIndex (*input_, "rgba", fields);
-  }
   if (rgba_index >= 0)
   {
     rgba_index = fields[rgba_index].offset;
@@ -194,16 +184,14 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
           continue;
       }
 
-      Eigen::Vector4f pt (input_->points[cp].x, input_->points[cp].y, input_->points[cp].z, 0);
-
-      // @todo fix floor
-      //ijk = (pt.cwise () / leaf_size_).cast<int> ();
-      ijk[0] = (int)(floor (pt[0] * inverse_leaf_size[0]));
-      ijk[1] = (int)(floor (pt[1] * inverse_leaf_size[1]));
-      ijk[2] = (int)(floor (pt[2] * inverse_leaf_size[2]));
+      Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
+      ijk[0] = (int)(floor (input_->points[cp].x * inverse_leaf_size_[0]));
+      ijk[1] = (int)(floor (input_->points[cp].y * inverse_leaf_size_[1]));
+      ijk[2] = (int)(floor (input_->points[cp].z * inverse_leaf_size_[2]));
 
       // Compute the centroid leaf index
       int idx = (ijk - min_b_).dot (divb_mul_);
+//      int idx = (((input_->points[cp].getArray4fMap () * inverse_leaf_size_).template cast<int> ()).matrix () - min_b_).dot (divb_mul_);
       Leaf& leaf = leaves_[idx];
       if (leaf.nr_points == 0)
       {
@@ -214,6 +202,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
       // Do we need to process all the fields?
       if (!downsample_all_data_)
       {
+        Eigen::Vector4f pt (input_->points[cp].x, input_->points[cp].y, input_->points[cp].z, 0);
         leaf.centroid.template head<4> () += pt;
       }
       else
@@ -248,16 +237,14 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
           !pcl_isfinite (input_->points[cp].z))
         continue;
 
-      Eigen::Vector4f pt (input_->points[cp].x, input_->points[cp].y, input_->points[cp].z, 0);
-
-      // @todo fix floor
-      //ijk = (pt.cwise () / leaf_size_).cast<int> ();
-      ijk[0] = (int)(floor (pt[0] * inverse_leaf_size[0]));
-      ijk[1] = (int)(floor (pt[1] * inverse_leaf_size[1]));
-      ijk[2] = (int)(floor (pt[2] * inverse_leaf_size[2]));
+      Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
+      ijk[0] = (int)(floor (input_->points[cp].x * inverse_leaf_size_[0]));
+      ijk[1] = (int)(floor (input_->points[cp].y * inverse_leaf_size_[1]));
+      ijk[2] = (int)(floor (input_->points[cp].z * inverse_leaf_size_[2]));
 
       // Compute the centroid leaf index
       int idx = (ijk - min_b_).dot (divb_mul_);
+      //int idx = (((input_->points[cp].getArray4fMap () * inverse_leaf_size_).template cast<int> ()).matrix () - min_b_).dot (divb_mul_);
       Leaf& leaf = leaves_[idx];
       if (leaf.nr_points == 0)
       {
@@ -268,6 +255,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
       // Do we need to process all the fields?
       if (!downsample_all_data_)
       {
+        Eigen::Vector4f pt (input_->points[cp].x, input_->points[cp].y, input_->points[cp].z, 0);
         leaf.centroid.template head<4> () += pt;
       }
       else
@@ -277,7 +265,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
         // ---[ RGB special case
         if (rgba_index >= 0)
         {
-          // fill r/g/b data
+          // Fill r/g/b data, assuming that the order is BGRA
           int rgb;
           memcpy (&rgb, ((char *)&(input_->points[cp])) + rgba_index, sizeof (int));
           centroid[centroid_size-3] = (rgb>>16) & 0x0000ff;
@@ -292,12 +280,10 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   }
 
   // Second pass: go over all leaves and compute centroids
-  output.points.clear ();
-  output.points.reserve (leaves_.size ());
-  int cp = 0;
-  leaf_layout_.clear ();
-  if (save_leaf_layout_)
+  output.points.resize (leaves_.size ());
+  int cp = 0, i = 0;
     leaf_layout_.resize (div_b_[0]*div_b_[1]*div_b_[2], -1);
+  
   for (typename std::map<size_t, Leaf>::const_iterator it = leaves_.begin (); it != leaves_.end (); ++it)
   {
     // Save leaf layout information for fast access to cells relative to current position
@@ -306,32 +292,30 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
 
     // Normalize the centroid
     const Leaf& leaf = it->second;
-    output.points.push_back (PointT ());
-    PointT& point = output.points.back ();
 
     // Normalize the centroid
-    float norm_pts = 1.0f / leaf.nr_points;
-    Eigen::VectorXf centroid = leaf.centroid * norm_pts;
+    Eigen::VectorXf centroid = leaf.centroid / leaf.nr_points;
 
     // Do we need to process all the fields?
     if (!downsample_all_data_)
     {
-      point.x = centroid[0];
-      point.y = centroid[1];
-      point.z = centroid[2];
+      output.points[i].x = centroid[0];
+      output.points[i].y = centroid[1];
+      output.points[i].z = centroid[2];
     }
     else
     {
-      pcl::for_each_type <FieldList> (pcl::NdCopyEigenPointFunctor <PointT> (centroid, point));
+      pcl::for_each_type <FieldList> (pcl::NdCopyEigenPointFunctor <PointT> (centroid, output.points[i]));
       // ---[ RGB special case
       if (rgba_index >= 0)
       {
         // pack r/g/b into rgb
         float r = centroid[centroid_size-3], g = centroid[centroid_size-2], b = centroid[centroid_size-1];
         int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
-        memcpy (((char *)&point) + rgba_index, &rgb, sizeof (float));
+        memcpy (((char *)&output.points[i]) + rgba_index, &rgb, sizeof (float));
       }
     }
+    i++;
   }
   output.width = output.points.size ();
 }

@@ -40,6 +40,7 @@
 
 #include "pcl/filters/filter.h"
 #include <map>
+#include <boost/unordered_map.hpp>
 #include <boost/mpl/size.hpp>
 #include <boost/fusion/sequence/intrinsic/at_key.hpp>
 
@@ -156,11 +157,25 @@ namespace pcl
         filter_name_ = "VoxelGrid";
       }
 
+      /** \brief Destructor. */
+      virtual ~VoxelGrid ()
+      {
+        leaves_.clear();
+      }
+
       /** \brief Set the voxel grid leaf size.
         * \param leaf_size the voxel grid leaf size
         */
       inline void 
-      setLeafSize (const Eigen::Vector4f &leaf_size) { leaf_size_ = leaf_size; }
+      setLeafSize (const Eigen::Vector4f &leaf_size) 
+      { 
+        leaf_size_ = leaf_size; 
+        // Avoid division errors
+        if (leaf_size_[3] == 0)
+          leaf_size_[3] = 1;
+        // Use multiplications instead of divisions
+        inverse_leaf_size_ = Eigen::Array4f::Ones () / leaf_size_.array ();
+      }
 
       /** \brief Set the voxel grid leaf size.
         * \param lx the leaf size for X
@@ -171,6 +186,11 @@ namespace pcl
       setLeafSize (float lx, float ly, float lz)
       {
         leaf_size_[0] = lx; leaf_size_[1] = ly; leaf_size_[2] = lz;
+        // Avoid division errors
+        if (leaf_size_[3] == 0)
+          leaf_size_[3] = 1;
+        // Use multiplications instead of divisions
+        inverse_leaf_size_ = Eigen::Array4f::Ones () / leaf_size_.array ();
       }
 
       /** \brief Get the voxel grid leaf size. */
@@ -224,8 +244,12 @@ namespace pcl
       getDivisionMultiplier () { return (divb_mul_.head<3> ()); }
 
       /** \brief Returns the index in the resulting downsampled cloud of the specified point.
-        * \note for efficiency, user must make sure that the saving of the leaf layout is enabled and filtering performed,
-        * and that the point is inside the grid, to avoid invalid access (or use getGridCoordinates+getCentroidIndexAt)
+        *
+        * \note for efficiency, user must make sure that the saving of the leaf layout is enabled and filtering 
+        * performed, and that the point is inside the grid, to avoid invalid access (or use
+        * getGridCoordinates+getCentroidIndexAt)
+        *
+        * \param p the point to get the index at
         */
       inline int 
       getCentroidIndex (PointT p)
@@ -301,6 +325,9 @@ namespace pcl
       /** \brief The size of a leaf. */
       Eigen::Vector4f leaf_size_;
 
+      /** \brief Internal leaf sizes stored as 1/leaf_size_ for efficiency reasons. */ 
+      Eigen::Array4f inverse_leaf_size_;
+
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
       bool downsample_all_data_;
 
@@ -358,7 +385,15 @@ namespace pcl
         * \param leaf_size the voxel grid leaf size
         */
       inline void 
-      setLeafSize (const Eigen::Vector4f &leaf_size) { leaf_size_ = leaf_size; }
+      setLeafSize (const Eigen::Vector4f &leaf_size) 
+      { 
+        leaf_size_ = leaf_size; 
+        // Avoid division errors
+        if (leaf_size_[3] == 0)
+          leaf_size_[3] = 1;
+        // Use multiplications instead of divisions
+        inverse_leaf_size_ = Eigen::Array4f::Ones () / leaf_size_.array ();
+      }
 
       /** \brief Set the voxel grid leaf size.
         * \param lx the leaf size for X
@@ -369,6 +404,11 @@ namespace pcl
       setLeafSize (float lx, float ly, float lz)
       {
         leaf_size_[0] = lx; leaf_size_[1] = ly; leaf_size_[2] = lz;
+        // Avoid division errors
+        if (leaf_size_[3] == 0)
+          leaf_size_[3] = 1;
+        // Use multiplications instead of divisions
+        inverse_leaf_size_ = Eigen::Array4f::Ones () / leaf_size_.array ();
       }
 
       /** \brief Get the voxel grid leaf size. */
@@ -511,6 +551,9 @@ namespace pcl
 
       /** \brief The size of a leaf. */
       Eigen::Vector4f leaf_size_;
+
+      /** \brief Internal leaf sizes stored as 1/leaf_size_ for efficiency reasons. */ 
+      Eigen::Array4f inverse_leaf_size_;
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
       bool downsample_all_data_;
