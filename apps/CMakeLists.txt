@@ -1,6 +1,6 @@
 set(SUBSYS_NAME apps)
 set(SUBSYS_DESC "Application examples/samples that show how PCL works")
-set(SUBSYS_DEPS common io filters sample_consensus segmentation visualization kdtree features surface)
+set(SUBSYS_DEPS common io filters sample_consensus segmentation visualization kdtree features surface octree)
 
 if(NOT wxWidgets_FOUND)
   set(DEFAULT TRUE)   # wxWidgets is optional
@@ -30,8 +30,11 @@ if(build)
 	PCL_ADD_EXECUTABLE(openni_voxel_grid ${SUBSYS_NAME} src/openni_voxel_grid.cpp)
 	target_link_libraries(openni_voxel_grid pcl_common pcl_io pcl_filters pcl_visualization)
 
-	PCL_ADD_EXECUTABLE(openni_passthrough ${SUBSYS_NAME} src/openni_passthrough.cpp)
+  PCL_ADD_EXECUTABLE(openni_passthrough ${SUBSYS_NAME} src/openni_passthrough.cpp)
 	target_link_libraries(openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization)
+
+  PCL_ADD_EXECUTABLE(openni_stream_compression ${SUBSYS_NAME} src/openni_stream_compression.cpp)
+  target_link_libraries(openni_stream_compression pcl_common pcl_io pcl_filters pcl_visualization pcl_octree)
 
 	PCL_ADD_EXECUTABLE(openni_planar_segmentation ${SUBSYS_NAME} src/openni_planar_segmentation.cpp)
 	target_link_libraries(openni_planar_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus)
