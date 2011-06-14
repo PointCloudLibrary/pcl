@@ -63,7 +63,7 @@ pcl::SurfletEstimation<PointInT, PointOutT>::computeSurfletModel (
   /// @todo don't make a copy here - use input_ from feature
   PointCloudIn cloud_ptr = pcl::PointCloud<PointInT> (cloud).makeShared ();
   subsampling_filter.setInputCloud (cloud_ptr);
-  subsampling_filter.setLeafSize (0.01, 0.01, 0.01); /// @TODO parameter goes here
+  subsampling_filter.setLeafSize (subsampling_leaf_size.x (), subsampling_leaf_size.y (), subsampling_leaf_size.z ());
   subsampling_filter.filter (cloud_subsampled);
   cerr << "After subsampling model, points: " << cloud_subsampled.width << " / " << cloud.width << endl;
 
@@ -75,7 +75,7 @@ pcl::SurfletEstimation<PointInT, PointOutT>::computeSurfletModel (
 
   typename pcl::KdTreeFLANN<PointInT>::Ptr search_tree (new pcl::KdTreeFLANN<PointInT>);
   normal_estimation_filter.setSearchMethod (search_tree);
-  normal_estimation_filter.setRadiusSearch(0.05); // @TODO another parameter
+  normal_estimation_filter.setRadiusSearch (normal_estimation_search_radius);
   normal_estimation_filter.compute (cloud_subsampled_normals);
 
   cerr << "Computing feature hash map" << endl;
@@ -112,7 +112,6 @@ pcl::SurfletEstimation<PointInT, PointOutT>::computeSurfletModel (
       else 
       {
         PCL_ERROR ("Computing pair feature vector between points %zu and %zu went wrong.\n", i, j);
-        /// @TODO do something if fail
       }
     }
   }
@@ -123,10 +122,18 @@ pcl::SurfletEstimation<PointInT, PointOutT>::computeSurfletModel (
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> bool
-pcl::SurfletEstimation<PointInT, PointOutT>::resultsCompareFunction (const typename pcl::SurfletEstimation<PointInT, PointOutT>::PoseWithVotes &a,
+pcl::SurfletEstimation<PointInT, PointOutT>::poseWithVotesCompareFunction (const typename pcl::SurfletEstimation<PointInT, PointOutT>::PoseWithVotes &a,
                                                                      const typename pcl::SurfletEstimation<PointInT, PointOutT>::PoseWithVotes &b )
 {
   return (a.votes > b.votes);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> bool
+pcl::SurfletEstimation<PointInT, PointOutT>::clusterVotesCompareFunction (const std::pair<size_t, unsigned int> &a,
+                                                                          const std::pair<size_t, unsigned int> &b)
+{
+  return (a.second > b.second);
 }
 
 
@@ -150,8 +157,6 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (
   }
   cerr << "Accumulator array size: " << accumulator_array.size() << " x " << accumulator_array.back ().size () << endl;
 
-  //  unsigned int accumulator_array [cloud_model.width][ (size_t)floor(2*M_PI / angle_discretization_step )];
-
   /// subsample scene cloud with same rate as the model cloud
   pcl::PointCloud<PointInT> cloud_scene_subsampled;
   /// subsample point cloud such that min dist between points is d_dist (+parameter)
@@ -159,8 +164,10 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (
   /// @todo don't make a copy here
   PointCloudIn cloud_scene_ptr = pcl::PointCloud<PointInT> (cloud_scene).makeShared ();
   subsampling_filter.setInputCloud (cloud_scene_ptr);
-  subsampling_filter.setLeafSize (0.01, 0.01, 0.01); /// @TODO parameter goes here
+  subsampling_filter.setLeafSize (subsampling_leaf_size.x (), subsampling_leaf_size.y (), subsampling_leaf_size.z ());
   subsampling_filter.filter (cloud_scene_subsampled);
+
+  cerr << "Scene cloud after subsampling: " << cloud_scene_subsampled.width << " / " << cloud_scene.width * cloud_scene.height << endl;
 
   /// calculate subsampled scene cloud normals
   pcl::PointCloud<Normal> cloud_scene_subsampled_normals;
@@ -169,19 +176,23 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (
   normal_estimation_filter.setInputCloud (cloud_scene_subsampled.makeShared());
   typename pcl::KdTreeFLANN<PointInT>::Ptr search_tree (new pcl::KdTreeFLANN<PointInT>);
   normal_estimation_filter.setSearchMethod (search_tree);
-  normal_estimation_filter.setRadiusSearch(0.05); // @TODO another parameter
+  normal_estimation_filter.setRadiusSearch (normal_estimation_search_radius);
   normal_estimation_filter.compute (cloud_scene_subsampled_normals);
 
 
-  /// consider every N/5-th point in the scene as a reference point s_r @TODO parameter here
+  /// consider every <scene_reference_point_sampling_rate> point as the reference point
   float f1, f2, f3, f4;
   int d1, d2, d3, d4;
-  for (size_t scene_reference_index = 0; scene_reference_index < cloud_scene_subsampled.width; scene_reference_index += 5)
+  for (size_t scene_reference_index = 0; scene_reference_index < cloud_scene_subsampled.width; scene_reference_index += scene_reference_point_sampling_rate)
   {
     Eigen::Vector3f scene_reference_point = cloud_scene_subsampled.points[scene_reference_index].getVector3fMap (),
         scene_reference_normal = cloud_scene_subsampled_normals.points[scene_reference_index].getNormalVector3fMap ();
-    Eigen::AngleAxisf rotation_sg (acos (scene_reference_normal.dot (Eigen::Vector3f::UnitX ())), scene_reference_normal.cross (Eigen::Vector3f::UnitX ()));
+    Eigen::AngleAxisf rotation_sg (acos (scene_reference_normal.normalized ().dot (Eigen::Vector3f::UnitX ())), scene_reference_normal.normalized ().cross (Eigen::Vector3f::UnitX ()). normalized());
     Eigen::Affine3f transform_sg = Eigen::Translation3f ( rotation_sg* ((-1)*scene_reference_point)) * rotation_sg;
+    //transform_sg.translation () = rotation_sg * ((-1)*scene_reference_point);
+    //transform_sg.linear () = rotation_sg.toRotationMatrix ();
+
+    /// @todo optimization - search only in max_dist found in the model point cloud
 
     for (size_t scene_point_index = 0; scene_point_index < cloud_scene_subsampled.width; ++ scene_point_index)
       if (scene_reference_index != scene_point_index)
@@ -210,13 +221,15 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (
                 model_reference_normal = cloud_model_normals.points[model_reference_index].getNormalVector3fMap (), //(cloud_model_normals.points[model_reference_index].normal),
                 scene_point = cloud_scene_subsampled.points[scene_point_index].getVector3fMap (), //(cloud_scene_subsampled.points[scene_point_index].x, cloud_scene_subsampled.points[scene_point_index].y, cloud_scene_subsampled.points[scene_point_index].z),
                 model_point = cloud_model.points[model_point_index].getVector3fMap (); //(cloud_model.points[model_point_index].x, cloud_model.points[model_point_index].y, cloud_model.points[model_point_index].z);
-            Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())), model_reference_normal.cross (Eigen::Vector3f::UnitX ()));
+            Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.normalized ().dot (Eigen::Vector3f::UnitX ())), model_reference_normal.normalized ().cross (Eigen::Vector3f::UnitX ()).normalized ());
             Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
+            //transform_mg.translation () = rotation_mg * ((-1) * model_reference_point);
+            //transform_mg.linear () = rotation_mg.toRotationMatrix ();
 
-            //            cerr << "Test - should be origin " << transform_mg * model_reference_point << "     " << transform_sg * scene_reference_point << endl;
+            //cerr << "Test - should be origin " << transform_mg * model_reference_point << "     " << transform_sg * scene_reference_point << endl;
 
-            float alpha = acos ((transform_sg * scene_point).dot (transform_mg * model_point));
-            Eigen::Vector3f axis_test = ((transform_sg*scene_point).normalized().cross( (transform_mg*model_point).normalized())).normalized();
+            float alpha = acos ((transform_sg * scene_point).normalized ().dot ((transform_mg * model_point).normalized ()));
+            //Eigen::Vector3f axis_test = ((transform_sg*scene_point).normalized().cross( (transform_mg*model_point).normalized())).normalized();
             //            cerr << "axis should be UnitX: " << axis_test << endl;
 
             unsigned int alpha_discretized = floor(alpha) + floor(M_PI / angle_discretization_step);
@@ -225,8 +238,7 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (
 
         }
         else {
-          cerr << "Computing pair feature vector between points " << scene_reference_index << " and " << scene_point_index << " went wrong." << endl;
-          /// @TODO do something if fail
+          PCL_ERROR ("Computing pair feature vector between points %zu and %zu went wrong.\n", scene_reference_index, scene_point_index);
         }
       }
 
@@ -243,8 +255,10 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (
 
           Eigen::Vector3f model_reference_point = cloud_model.points[i].getVector3fMap (),
               model_reference_normal = cloud_model_normals.points[i].getNormalVector3fMap ();
-          Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())), model_reference_normal.cross (Eigen::Vector3f::UnitX ()));
+          Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.normalized ().dot (Eigen::Vector3f::UnitX ())), model_reference_normal.normalized ().cross (Eigen::Vector3f::UnitX ()).normalized ());
           Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
+          //transform_mg.translation () = rotation_mg * ((-1) * model_reference_point);
+          //transform_mg.linear () = rotation_mg.toRotationMatrix ();
           max_transform = transform_sg.inverse () * Eigen::AngleAxisf ( (j - floor(M_PI / angle_discretization_step)) * angle_discretization_step, Eigen::Vector3f::UnitX ()) * transform_mg;
         }
 
@@ -256,6 +270,8 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (
 //    cerr << "max_votes: " << max_votes << endl;
     voted_poses.push_back (PoseWithVotes (max_transform, max_votes));
   }
+  cerr << "Done with the Hough Transform ..." << endl;
+
 
 
   /// cluster poses for filtering out outliers and obtaining more precise results
@@ -270,22 +286,25 @@ template <typename PointInT, typename PointOutT> void
 pcl::SurfletEstimation<PointInT, PointOutT>::clusterPoses (typename pcl::SurfletEstimation<PointInT, PointOutT>::PoseWithVotesList &poses,
                                                            typename pcl::SurfletEstimation<PointInT, PointOutT>::PoseWithVotesList &result)
 {
+  cerr << "Clustering poses ..." << endl;
   /// start off by sorting the poses by the number of votes
-  sort(poses.begin (), poses.end (), resultsCompareFunction);
+  sort(poses.begin (), poses.end (), poseWithVotesCompareFunction);
 
   std::vector<PoseWithVotesList> clusters;
-  std::vector<unsigned int> cluster_votes;
+  std::vector<std::pair<size_t, unsigned int> > cluster_votes;
   for (size_t poses_i = 0; poses_i < poses.size(); ++ poses_i)
   {
     bool found_cluster = false;
     for (size_t clusters_i = 0; clusters_i < clusters.size(); ++ clusters_i)
+    {
       if (posesWithinErrorBounds (poses[poses_i].pose, clusters[clusters_i].front ().pose))
       {
         found_cluster = true;
         clusters[clusters_i].push_back (poses[poses_i]);
-        cluster_votes[clusters_i] += poses[poses_i].votes;
+        cluster_votes[clusters_i].second += poses[poses_i].votes;
         break;
       }
+    }
 
     if (found_cluster == false)
     {
@@ -293,13 +312,43 @@ pcl::SurfletEstimation<PointInT, PointOutT>::clusterPoses (typename pcl::Surflet
       PoseWithVotesList new_cluster;
       new_cluster.push_back (poses[poses_i]);
       clusters.push_back (new_cluster);
-      cluster_votes.push_back (poses[poses_i].votes);
+      cluster_votes.push_back (std::pair<size_t, unsigned int> (clusters.size () - 1, poses[poses_i].votes));
     }
  }
 
+  /// sort clusters by total number of votes
+  std::sort (cluster_votes.begin (), cluster_votes.end (), clusterVotesCompareFunction);
   /// compute pose average and put them in result vector
+  /// @todo some kind of threshold for determining whether a cluster has enough votes or not...
+  /// now just taking the first three clusters
+  result.clear ();
+  size_t max_clusters = (clusters.size () < 3) ? clusters.size () : 3;
+  for (size_t cluster_i = 0; cluster_i < max_clusters; ++ cluster_i)
+  {
+    cerr << "Winning cluster has #votes: " << cluster_votes[cluster_i].second << " and #poses voted: " << clusters[cluster_votes[cluster_i].first].size () << endl;
+    Eigen::Vector3f translation_average (0.0, 0.0, 0.0);
+    Eigen::Vector4f rotation_average (0.0, 0.0, 0.0, 0.0);
+    for (typename PoseWithVotesList::iterator v_it = clusters[cluster_votes[cluster_i].first].begin (); v_it != clusters[cluster_votes[cluster_i].first].end (); ++ v_it)
+    {
+      translation_average += v_it->pose.translation ();
+      /// averaging rotations by just averaging the quaternions in 4D space - reference "On Averaging Rotations" by CLAUS GRAMKOW
+      rotation_average += Eigen::Quaternionf (v_it->pose.rotation ()).coeffs ();
+    }
 
+    translation_average /= clusters[cluster_votes[cluster_i].first].size ();
+    rotation_average /= clusters[cluster_votes[cluster_i].first].size ();
 
+    Eigen::Affine3f transform_average;
+    transform_average.translation () = translation_average;
+    transform_average.linear () = Eigen::Quaternionf (rotation_average).normalized().toRotationMatrix ();
+
+    cerr << "Compare results translation: " << transform_average.translation() << "    " << translation_average << endl;
+    cerr << "Compare results quaternion: " << Eigen::Quaternionf (transform_average.rotation()).coeffs() << "    " << rotation_average << endl;
+
+    result.push_back (PoseWithVotes (transform_average, cluster_votes[cluster_i].second));
+  }
+
+  cerr << "#Poses: " << poses.size() << "   #Clusters: " << clusters.size() << endl;
 }
 
 
@@ -308,9 +357,9 @@ template <typename PointInT, typename PointOutT> bool
 pcl::SurfletEstimation<PointInT, PointOutT>::posesWithinErrorBounds (Eigen::Affine3f &pose1, Eigen::Affine3f &pose2)
 {
   float position_diff = (pose1.translation () - pose2.translation ()).norm ();
-  //// !!!!!!!!!!!!!!!!!!!!
-  Eigen::AngleAxisf rotation_diff_mat; //= pose1.rotation().inverse() * pose2.rotation();
-  float rotation_diff_angle = rotation_diff_mat.angle ();
+  Eigen::AngleAxisf rotation_diff_mat (pose1.rotation ().inverse () * pose2.rotation ());
+
+  float rotation_diff_angle = fabs (rotation_diff_mat.angle ());
 
   if (position_diff < clustering_position_diff_threshold && rotation_diff_angle < clustering_rotation_diff_threshold)
     return true;

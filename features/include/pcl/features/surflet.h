@@ -68,17 +68,17 @@ namespace pcl
     struct HashKeyStruct : public std::pair <int, std::pair <int, std::pair <int, int> > >
     {
       HashKeyStruct(int a, int b, int c, int d)
-            {
+      {
         this->first = a;
         this->second.first = b;
         this->second.second.first = c;
         this->second.second.second = d;
-            }
+      }
     };
 
         /// this is needed to replace std::pair as it seems to have problems using Eigen structures in MsWindows
-        struct PoseWithVotes
-        {
+    struct PoseWithVotes
+    {
       PoseWithVotes(Eigen::Affine3f &a_pose, unsigned int &a_votes)
       : pose (a_pose),
         votes (a_votes)
@@ -87,7 +87,7 @@ namespace pcl
 
       Eigen::Affine3f pose;
       unsigned int votes;
-        };
+    };
 
     typedef boost::unordered_multimap<HashKeyStruct, std::pair<size_t, size_t> > FeatureHashMapType;
     typedef boost::shared_ptr<FeatureHashMapType> FeatureHashMapTypePtr;
@@ -95,10 +95,20 @@ namespace pcl
 
 
     SurfletEstimation (float a_angle_discretization_step = 12.0 / 180 * M_PI,
-                       float a_distance_discretization_step = 0.01)
+                       float a_distance_discretization_step = 0.01,
+                       float a_clustering_position_diff_threshold = 0.01,
+                       float a_clustering_rotation_diff_threshold = 20.0 / 180 * M_PI,
+                       unsigned int a_scene_reference_point_sampling_rate = 5,
+                       Eigen::Vector3f a_subsampling_leaf_size = Eigen::Vector3f (0.01, 0.01, 0.01),
+                       float a_normal_estimation_search_radius = 0.05)
+    :  angle_discretization_step (a_angle_discretization_step),
+       distance_discretization_step (a_distance_discretization_step),
+       clustering_position_diff_threshold (a_clustering_position_diff_threshold),
+       clustering_rotation_diff_threshold (a_clustering_rotation_diff_threshold),
+       scene_reference_point_sampling_rate (a_scene_reference_point_sampling_rate),
+       subsampling_leaf_size (a_subsampling_leaf_size),
+       normal_estimation_search_radius (a_normal_estimation_search_radius)
     {
-      angle_discretization_step = a_angle_discretization_step;
-      distance_discretization_step = a_distance_discretization_step;
     }
 
     FeatureHashMapTypePtr
@@ -119,9 +129,15 @@ namespace pcl
     private:
     float angle_discretization_step, distance_discretization_step;
     float clustering_position_diff_threshold, clustering_rotation_diff_threshold;
+    unsigned int scene_reference_point_sampling_rate;
+    Eigen::Vector3f subsampling_leaf_size;
+    float normal_estimation_search_radius;
 
     static bool
-    resultsCompareFunction (const PoseWithVotes &a, const PoseWithVotes &b);
+    poseWithVotesCompareFunction (const PoseWithVotes &a, const PoseWithVotes &b);
+
+    static bool
+    clusterVotesCompareFunction (const std::pair<size_t, unsigned int> &a, const std::pair<size_t, unsigned int> &b);
 
     void
     clusterPoses (PoseWithVotesList &poses, PoseWithVotesList &result);

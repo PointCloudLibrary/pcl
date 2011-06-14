@@ -22,7 +22,10 @@ main (int argc, char** argv)
   PCDReader reader;
   reader.read (argv[1], cloud_model);
 
-  SurfletEstimation<PointXYZ, Normal> surflet_model_estimation;
+  SurfletEstimation<PointXYZ, Normal> surflet_model_estimation (12.0 / 180 * M_PI,
+                                                                0.01,
+                                                                0.05,
+                                                                25.0 / 180 * M_PI);
   pcl::SurfletEstimation<pcl::PointXYZ, pcl::Normal>::FeatureHashMapTypePtr feature_hash_map = surflet_model_estimation.computeSurfletModel(cloud_model);
 
   /// read scene point cloud and extract MGML feature model hash map
@@ -51,14 +54,13 @@ main (int argc, char** argv)
   normal_estimation_filter.compute (cloud_model_subsampled_normals);
 
   pcl::SurfletEstimation<pcl::PointXYZ, pcl::Normal>::PoseWithVotesList registration_results = surflet_model_estimation.registerModelToScene(cloud_model_subsampled, cloud_model_subsampled_normals, cloud_scene, feature_hash_map);
-  for(size_t i_res = 0; i_res < 10 /*registration_results.size()*/; ++ i_res)
+  for(size_t i_res = 0; i_res < registration_results.size (); ++ i_res)
   {
     cerr << "registration #" << i_res << " received votes: " << registration_results[i_res].votes << endl;
     pcl::PointCloud<PointXYZ> cloud_output;
     for(size_t i = 0; i < cloud_model.width; ++i)
     {
-      /// @TODO find some native pcl way of doing this - too many conversions
-      Eigen::Vector3f point (cloud_model.points[i].x, cloud_model.points[i].y, cloud_model.points[i].z);
+      Eigen::Vector3f point = cloud_model.points[i].getVector3fMap ();
       point = registration_results[i_res].pose * point;
       cloud_output.points.push_back (PointXYZ(point[0], point[1], point[2]));
     }
@@ -66,6 +68,13 @@ main (int argc, char** argv)
     pcl::io::savePCDFileASCII (output_pcd_name.str (), cloud_output);
     cerr << "Output pcl written to file: " << output_pcd_name.str () << endl;
     cerr << "Transform: " << registration_results[i_res].pose.translation() << "     " << registration_results[i_res].pose.rotation() << endl;
+
+
+    //// debugging
+    Eigen::Affine3f test_trans = registration_results[i_res].pose,
+        test_trans2 = Eigen::AngleAxisf (test_trans.rotation()) * Eigen::Translation3f (test_trans.translation());
+    cerr << "TEST: " << test_trans * Eigen::Vector3f(1, 1, 1) << "    ----     "
+        << test_trans2 * Eigen::Vector3f(1, 1, 1) << endl;
   }
 
 
