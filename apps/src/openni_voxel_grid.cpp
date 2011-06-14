@@ -42,6 +42,22 @@
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/console/parse.h>
+#include <pcl/common/time.h>
+
+#define FPS_CALC(_WHAT_) \
+do \
+{ \
+    static unsigned count = 0;\
+    static double last = pcl::getTime ();\
+    if (++count == 100) \
+    { \
+      double now = pcl::getTime (); \
+      std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
+      count = 0; \
+      last = now; \
+    } \
+}while(false)
+
 
 template <typename PointType>
 class OpenNIVoxelGrid
@@ -83,6 +99,7 @@ class OpenNIVoxelGrid
 
       grid_.setInputCloud (cloud_);
       grid_.filter (*temp_cloud);
+      //temp_cloud.swap (cloud_);
       return (temp_cloud);
     }
 
@@ -100,6 +117,7 @@ class OpenNIVoxelGrid
       {
         if (cloud_)
         {
+          FPS_CALC ("drawing");
           //the call to get() sets the cloud_ to null;
           viewer.showCloud (get ());
         }
@@ -140,32 +158,25 @@ usage (char ** argv)
 int 
 main (int argc, char ** argv)
 {
-  if (argc < 2)
+  if (argv[1] == "--help" || argv[1] == "-h")
   {
     usage (argv);
     return 1;
   }
 
-  std::string arg (argv[1]);
-  
-  if (arg == "--help" || arg == "-h")
-  {
-    usage (argv);
-    return 1;
-  }
-
-  double leaf_x = 0.01, leaf_y = 0.01, leaf_z = 0.01;
+  double leaf_x = 0.025, leaf_y = 0.025, leaf_z = 0.025;
   pcl::console::parse_3x_arguments (argc, argv, "-leaf", leaf_x, leaf_y, leaf_z, false);
+  PCL_INFO ("Using %f, %f, %f as a leaf size for VoxelGrid.\n", leaf_x, leaf_y, leaf_z);
 
-  pcl::OpenNIGrabber grabber (arg);
+  pcl::OpenNIGrabber grabber ("");
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {
-    OpenNIVoxelGrid<pcl::PointXYZRGB> v (arg, leaf_x, leaf_y, leaf_z);
+    OpenNIVoxelGrid<pcl::PointXYZRGB> v ("", leaf_x, leaf_y, leaf_z);
     v.run ();
   }
   else
   {
-    OpenNIVoxelGrid<pcl::PointXYZ> v (arg, leaf_x, leaf_y, leaf_z);
+    OpenNIVoxelGrid<pcl::PointXYZ> v ("", leaf_x, leaf_y, leaf_z);
     v.run ();
   }
 
