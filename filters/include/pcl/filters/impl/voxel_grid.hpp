@@ -55,34 +55,64 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   int distance_idx = pcl::getFieldIndex (*cloud, distance_field_name, fields);
 
   float distance_value;
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  // If dense, no need to check for NaNs
+  if (cloud->is_dense)
   {
-    // Get the distance value
-    uint8_t* pt_data = (uint8_t*)&cloud->points[i];
-    memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
-
-    if (limit_negative)
+    for (size_t i = 0; i < cloud->points.size (); ++i)
     {
-      // Use a threshold for cutting out points which inside the interval
-      if ((distance_value < max_distance) && (distance_value > min_distance))
-        continue;
-    }
-    else
-    {
-      // Use a threshold for cutting out points which are too close/far away
-      if ((distance_value > max_distance) || (distance_value < min_distance))
-        continue;
-    }
+      // Get the distance value
+      uint8_t* pt_data = (uint8_t*)&cloud->points[i];
+      memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
-    // Check if the point is invalid
-    if (!pcl_isfinite (cloud->points[i].x) || 
-        !pcl_isfinite (cloud->points[i].y) || 
-        !pcl_isfinite (cloud->points[i].z))
-      continue;
-    // Create the point structure and get the min/max
-    pcl::Array4fMapConst pt = cloud->points[i].getArray4fMap ();
-    min_p = min_p.min (pt);
-    max_p = max_p.max (pt);
+      if (limit_negative)
+      {
+        // Use a threshold for cutting out points which inside the interval
+        if ((distance_value < max_distance) && (distance_value > min_distance))
+          continue;
+      }
+      else
+      {
+        // Use a threshold for cutting out points which are too close/far away
+        if ((distance_value > max_distance) || (distance_value < min_distance))
+          continue;
+      }
+      // Create the point structure and get the min/max
+      pcl::Array4fMapConst pt = cloud->points[i].getArray4fMap ();
+      min_p = min_p.min (pt);
+      max_p = max_p.max (pt);
+    }
+  }
+  else
+  {
+    for (size_t i = 0; i < cloud->points.size (); ++i)
+    {
+      // Get the distance value
+      uint8_t* pt_data = (uint8_t*)&cloud->points[i];
+      memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
+
+      if (limit_negative)
+      {
+        // Use a threshold for cutting out points which inside the interval
+        if ((distance_value < max_distance) && (distance_value > min_distance))
+          continue;
+      }
+      else
+      {
+        // Use a threshold for cutting out points which are too close/far away
+        if ((distance_value > max_distance) || (distance_value < min_distance))
+          continue;
+      }
+
+      // Check if the point is invalid
+      if (!pcl_isfinite (cloud->points[i].x) || 
+          !pcl_isfinite (cloud->points[i].y) || 
+          !pcl_isfinite (cloud->points[i].z))
+        continue;
+      // Create the point structure and get the min/max
+      pcl::Array4fMapConst pt = cloud->points[i].getArray4fMap ();
+      min_p = min_p.min (pt);
+      max_p = max_p.max (pt);
+    }
   }
   min_pt = min_p;
   max_pt = max_p;
@@ -160,11 +190,12 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     // First pass: go over all points and insert them into the right leaf
     for (size_t cp = 0; cp < input_->points.size (); ++cp)
     {
-      // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[cp].x) || 
-          !pcl_isfinite (input_->points[cp].y) || 
-          !pcl_isfinite (input_->points[cp].z))
-        continue;
+      if (!input_->is_dense)
+        // Check if the point is invalid
+        if (!pcl_isfinite (input_->points[cp].x) || 
+            !pcl_isfinite (input_->points[cp].y) || 
+            !pcl_isfinite (input_->points[cp].z))
+          continue;
 
       // Get the distance value
       uint8_t* pt_data = (uint8_t*)&input_->points[cp];
@@ -231,11 +262,12 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     // First pass: go over all points and insert them into the right leaf
     for (size_t cp = 0; cp < input_->points.size (); ++cp)
     {
-      // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[cp].x) || 
-          !pcl_isfinite (input_->points[cp].y) || 
-          !pcl_isfinite (input_->points[cp].z))
-        continue;
+      if (!input_->is_dense)
+        // Check if the point is invalid
+        if (!pcl_isfinite (input_->points[cp].x) || 
+            !pcl_isfinite (input_->points[cp].y) || 
+            !pcl_isfinite (input_->points[cp].z))
+          continue;
 
       Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
       ijk[0] = (int)(floor (input_->points[cp].x * inverse_leaf_size_[0]));
