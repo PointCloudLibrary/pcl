@@ -43,11 +43,15 @@
 #include <boost/mpl/next_prior.hpp>
 #include <boost/mpl/deref.hpp>
 #include <boost/mpl/assert.hpp>
+#include <boost/mpl/remove_if.hpp>
+#include <boost/mpl/contains.hpp>
+#include <boost/mpl/not.hpp>
 #include <boost/mpl/aux_/unwrap.hpp>
 #include <boost/type_traits/is_same.hpp>
 
 namespace pcl 
 {
+  //////////////////////////////////////////////////////////////////////////////////////////////
   template <bool done = true>
   struct for_each_type_impl
   {
@@ -55,6 +59,7 @@ namespace pcl
     static void execute (F) {}
   };
 
+  //////////////////////////////////////////////////////////////////////////////////////////////
   template <>
   struct for_each_type_impl<false>
   {
@@ -75,6 +80,7 @@ namespace pcl
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////////////////////
   template<typename Sequence, typename F>
   inline void for_each_type (F f)
   {
@@ -83,6 +89,13 @@ namespace pcl
     typedef typename boost::mpl::end<Sequence>::type last;
     for_each_type_impl< boost::is_same<first, last>::value >::template execute<first, last, F> (f);
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  template<typename Sequence1, typename Sequence2>
+  struct intersect 
+  { 
+    typedef typename boost::mpl::remove_if<Sequence1, boost::mpl::not_<boost::mpl::contains<Sequence2, boost::mpl::_1> > >::type type; 
+  }; 
 }
 
 #endif  //#ifndef PCL_FOR_EACH_TYPE_H_

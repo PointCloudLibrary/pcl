@@ -86,13 +86,16 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, pcl::PointCloud<
   cloud_out.width    = cloud_in.points.size ();
   cloud_out.height   = 1;
   cloud_out.is_dense = cloud_in.is_dense;
-
   // Copy all the data fields from the input cloud to the output one
-  typedef typename pcl::traits::fieldList<PointInT>::type FieldList;
+  typedef typename pcl::traits::fieldList<PointInT>::type FieldListInT;
+  typedef typename pcl::traits::fieldList<PointOutT>::type FieldListOutT;
+  typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList; 
   // Iterate over each point
   for (size_t i = 0; i < cloud_in.points.size (); ++i)
+  {
     // Iterate over each dimension
     pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (cloud_in.points[i], cloud_out.points[i]));
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,6 +124,33 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, const std::vector<
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
+pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, const std::vector<int> &indices,
+                     pcl::PointCloud<PointOutT> &cloud_out)
+{
+  // Allocate enough space and copy the basics
+  cloud_out.points.resize (indices.size ());
+  cloud_out.header   = cloud_in.header;
+  cloud_out.width    = indices.size ();
+  cloud_out.height   = 1;
+  if (cloud_in.is_dense)
+    cloud_out.is_dense = true;
+  else
+    // It's not necessarily true that is_dense is false if cloud_in.is_dense is false
+    // To verify this, we would need to iterate over all points and check for NaNs
+    cloud_out.is_dense = false;
+
+  // Copy all the data fields from the input cloud to the output one
+  typedef typename pcl::traits::fieldList<PointInT>::type FieldListInT;
+  typedef typename pcl::traits::fieldList<PointOutT>::type FieldListOutT;
+  typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList; 
+  // Iterate over each point
+  for (size_t i = 0; i < indices.size (); ++i)
+    // Iterate over each dimension
+    pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (cloud_in.points[indices[i]], cloud_out.points[i]));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, const pcl::PointIndices &indices,
                      pcl::PointCloud<PointT> &cloud_out)
@@ -143,6 +173,33 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, const pcl::PointIn
   for (size_t i = 0; i < indices.indices.size (); ++i)
     // Iterate over each dimension
     pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (cloud_in.points[indices.indices[i]], cloud_out.points[i]));
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
+pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, const pcl::PointIndices &indices,
+                     pcl::PointCloud<PointOutT> &cloud_out)
+{
+  // Allocate enough space and copy the basics
+  cloud_out.points.resize (indices.indices.size ());
+  cloud_out.header   = cloud_in.header;
+  cloud_out.width    = indices.indices.size ();
+  cloud_out.height   = 1;
+  if (cloud_in.is_dense)
+    cloud_out.is_dense = true;
+  else
+    // It's not necessarily true that is_dense is false if cloud_in.is_dense is false
+    // To verify this, we would need to iterate over all points and check for NaNs
+    cloud_out.is_dense = false;
+
+  // Copy all the data fields from the input cloud to the output one
+  typedef typename pcl::traits::fieldList<PointInT>::type FieldListInT;
+  typedef typename pcl::traits::fieldList<PointOutT>::type FieldListOutT;
+  typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList; 
+  // Iterate over each point
+  for (size_t i = 0; i < indices.indices.size (); ++i)
+    // Iterate over each dimension
+    pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (cloud_in.points[indices.indices[i]], cloud_out.points[i]));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,6 +235,45 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, const std::vector<
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (cloud_in.points[indices[cc].indices[i]], cloud_out.points[cp]));
       cp++;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
+pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, const std::vector<pcl::PointIndices> &indices,
+                     pcl::PointCloud<PointOutT> &cloud_out)
+{
+  int nr_p = 0;
+  for (size_t i = 0; i < indices.size (); ++i)
+    nr_p += indices[i].indices.size ();
+
+  // Allocate enough space and copy the basics
+  cloud_out.points.resize (nr_p);
+  cloud_out.header   = cloud_in.header;
+  cloud_out.width    = nr_p;
+  cloud_out.height   = 1;
+  if (cloud_in.is_dense)
+    cloud_out.is_dense = true;
+  else
+    // It's not necessarily true that is_dense is false if cloud_in.is_dense is false
+    // To verify this, we would need to iterate over all points and check for NaNs
+    cloud_out.is_dense = false;
+
+  // Copy all the data fields from the input cloud to the output one
+  typedef typename pcl::traits::fieldList<PointInT>::type FieldListInT;
+  typedef typename pcl::traits::fieldList<PointOutT>::type FieldListOutT;
+  typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList; 
+  // Iterate over each cluster
+  int cp = 0;
+  for (size_t cc = 0; cc < indices.size (); ++cc)
+  {
+    // Iterate over each idx
+    for (size_t i = 0; i < indices[cc].indices.size (); ++i)
+    {
+      // Iterate over each dimension
+      pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (cloud_in.points[indices[cc].indices[i]], cloud_out.points[cp]));
+      ++cp;
     }
   }
 }
