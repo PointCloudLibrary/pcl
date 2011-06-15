@@ -983,7 +983,7 @@ TEST (ConditionalRemoval, Filters)
   }
 
   EXPECT_EQ ((int)output.points.size (), (int)cloud_ptr_->points.size ());
-  EXPECT_EQ ((int)output.width, (int)cloud_ptr_->width);
+  EXPECT_EQ ((int)output.width, 28);
   EXPECT_EQ ((int)output.height, (int)cloud_ptr_->height);
   EXPECT_EQ (num_not_nan, 28);
 
@@ -1015,7 +1015,7 @@ TEST (ConditionalRemoval, Filters)
   }
 
   EXPECT_EQ ((int)output.points.size (), (int)cloud_ptr_->points.size ());
-  EXPECT_EQ ((int)output.width, (int)cloud_ptr_->width);
+  EXPECT_EQ ((int)output.width, 28);
   EXPECT_EQ ((int)output.height, (int)cloud_ptr_->height);
   EXPECT_EQ (num_not_nan, 28);
   EXPECT_EQ ((int)num_not_nan, cloud_ptr_->points.size()-condrem_.getRemovedIndices()->size());
