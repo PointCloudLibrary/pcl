@@ -39,6 +39,8 @@
 #define PCL_IO_PCD_IO_H_
 
 #include "pcl/io/io.h"
+#include <boost/numeric/conversion/cast.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace pcl
 {
@@ -142,6 +144,36 @@ namespace pcl
           return res;
         pcl::fromROSMsg (blob, cloud);
         return 0;
+      }
+
+      /** \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
+        * \param st the string containing the value to convert and copy
+        * \param cloud the cloud to copy it to
+        * \param point_index the index of the point
+        * \param field_idx the index of the dimension/field
+        * \param fields_count the current fields count
+        */
+      template <typename Type> inline void
+      copyValue (const std::string &st, sensor_msgs::PointCloud2 &cloud, 
+                 int point_index, int field_idx, int fields_count)
+      {
+        //char value = (char)atoi (st.at (d + c).c_str ());
+        Type value;
+        try
+        {
+          value = boost::numeric_cast<Type>(boost::lexical_cast<double>(st));
+        }
+        catch (...)
+        {
+          value = std::numeric_limits<Type>::quiet_NaN ();
+          cloud.is_dense = false;
+        }
+        if (!pcl_isfinite (value))
+          cloud.is_dense = false;
+
+        memcpy (&cloud.data[point_index * cloud.point_step + 
+                            cloud.fields[field_idx].offset + 
+                            fields_count * sizeof (Type)], &value, sizeof (Type));
       }
   };
 

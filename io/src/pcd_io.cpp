@@ -40,7 +40,6 @@
 #include <string>
 #include <stdlib.h>
 #include <boost/algorithm/string.hpp>
-#include <boost/numeric/conversion/cast.hpp>
 #include "pcl/io/io.h"
 #include "pcl/io/pcd_io.h"
 
@@ -381,6 +380,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
           break;
         }
 
+
         // Copy data
         for (size_t d = 0; d < cloud.fields.size (); ++d)
         {
@@ -390,66 +390,42 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
             {
               case sensor_msgs::PointField::INT8:
               {
-                char value = (char)atoi (st.at (d + c).c_str ());
-                if (!pcl_isfinite (value))
-                  cloud.is_dense = false;
-                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (char)], &value, sizeof (char));
+                copyValue<pcl::traits::asType<sensor_msgs::PointField::INT8>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::UINT8:
               {
-                unsigned char value = atoi (st.at (d + c).c_str ());
-                if (!pcl_isfinite (value))
-                  cloud.is_dense = false;
-                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (unsigned char)], &value, sizeof (unsigned char));
+                copyValue<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::INT16:
               {
-                short value = atoi (st.at (d + c).c_str ());
-                if (!pcl_isfinite (value))
-                  cloud.is_dense = false;
-                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (short)], &value, sizeof (short));
+                copyValue<pcl::traits::asType<sensor_msgs::PointField::INT16>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::UINT16:
               {
-                unsigned short value = atoi (st.at (d + c).c_str ());
-                if (!pcl_isfinite (value))
-                  cloud.is_dense = false;
-                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (unsigned short)], &value, sizeof (unsigned short));
+                copyValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::INT32:
               {
-                int value = atoi (st.at (d + c).c_str ());
-                if (!pcl_isfinite (value))
-                  cloud.is_dense = false;
-                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (int)], &value, sizeof (int));
+                copyValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::UINT32:
               {
-                unsigned int value = atoi (st.at (d + c).c_str ());
-                if (!pcl_isfinite (value))
-                  cloud.is_dense = false;
-                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (unsigned int)], &value, sizeof (unsigned int));
+                copyValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::FLOAT32:
               {
-                float value = atof (st.at (d + c).c_str ());
-                if (!pcl_isfinite (value))
-                  cloud.is_dense = false;
-                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (float)], &value, sizeof (float));
+                copyValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::FLOAT64:
               {
-                double value = atof (st.at (d + c).c_str ());
-                if (!pcl_isfinite (value))
-                  cloud.is_dense = false;
-                memcpy (&cloud.data[idx * cloud.point_step + cloud.fields[d].offset + c * sizeof (double)], &value, sizeof (double));
+                copyValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               default:
