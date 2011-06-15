@@ -52,7 +52,7 @@ namespace pcl
       * \author Ethan Rublee
       * \ingroup visualization
       */
-    class PCL_EXPORTS CloudViewer
+    class PCL_EXPORTS CloudViewer : boost::noncopyable
     {
       public:
         typedef pcl::PointCloud<pcl::PointXYZRGB> ColorCloud;
@@ -122,37 +122,9 @@ namespace pcl
         void
         removeVisualizationCallable (const std::string& key = "callable");
       private:
-
-        //these aren't ready for prime time.
-        /** \brief Show a cloud, with an optional key for multiple clouds.
-          * \param cloud RGB point cloud
-          * \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-          */
-         void
-         showCloudNonBlocking (const ColorCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
-
-         /** \brief Show a cloud, with an optional key for multiple clouds.
-          *  \param cloud XYZI point cloud
-          *  \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-          */
-         void
-         showCloudNonBlocking (const GrayCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
-
-         /** \brief Show a cloud, with an optional key for multiple clouds.
-          *  \param cloud XYZ point cloud
-          *  \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-          */
-         void
-         showCloudNonBlocking (const MonochromeCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
-         
-        CloudViewer (const CloudViewer &rhs);//don't copy me for now!
-
-        void
-        operator= (const CloudViewer &rhs);//don't copy me for now!
-
         /** \brief Private implementation. */
         class CloudViewer_impl;
-        boost::shared_ptr<CloudViewer_impl> impl_;
+        std::auto_ptr<CloudViewer_impl> impl_;
     };
   }
 }

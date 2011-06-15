@@ -135,8 +135,6 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
 
   ~CloudViewer_impl ()
   {
-    quit_ = true;
-    viewer_thread_.join ();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,9 +144,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
     cloud_show_base::Ptr cs (new cloud_show<T>(name,cloud,viewer_));
     {
       boost::mutex::scoped_lock lock (mtx_);
-
       cloud_shows_.push_back (cs);
-
     }
     while (!cs->popped ())
     {
@@ -204,15 +200,17 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
       }
       if (viewer_->wasStopped ())
       {
-        return; //todo handle this better
-      }
+          quit_ = true;
+      }else
       {
         boost::mutex::scoped_lock lock (spin_mtx_);
         //TODO some smart waitkey like stuff here, so that wasStoped() can hold for a long time
         //maybe a counter
         viewer_->spinOnce (10); // Give the GUI millis to handle events, then return
       }
+
     }
+    viewer_.reset();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -260,7 +258,10 @@ pcl::visualization::CloudViewer::CloudViewer (const std::string &window_name) :
 {}
 
 pcl::visualization::CloudViewer::~CloudViewer ()
-{}
+{
+  impl_->quit_ = true;
+  impl_->viewer_thread_.join();
+}
 
 void
 pcl::visualization::CloudViewer::showCloud (const ColorCloud::ConstPtr &cloud,
@@ -290,30 +291,6 @@ pcl::visualization::CloudViewer::showCloud (const MonochromeCloud::ConstPtr &clo
 }
 
 void
-pcl::visualization::CloudViewer::showCloudNonBlocking (const ColorCloud::ConstPtr &cloud, const std::string &cloudname)
-{
-  if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
-    return;
-  impl_->nonblock_post_cloud<ColorCloud>(cloud, cloudname);
-}
-
-void
-pcl::visualization::CloudViewer::showCloudNonBlocking (const GrayCloud::ConstPtr &cloud, const std::string &cloudname)
-{
-  if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
-    return;
-  impl_->nonblock_post_cloud<GrayCloud>(cloud, cloudname);
-}
-
-void
-pcl::visualization::CloudViewer::showCloudNonBlocking (const MonochromeCloud::ConstPtr &cloud, const std::string &cloudname)
-{
-  if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
-    return;
-  impl_->nonblock_post_cloud<MonochromeCloud>(cloud, cloudname);
-}
-
-void
 pcl::visualization::CloudViewer::runOnVisualizationThread (VizCallable x, const std::string &key)
 {
   impl_->post (x, key);
@@ -336,9 +313,6 @@ bool
 pcl::visualization::CloudViewer::wasStopped (int millis)
 {
   boost::thread::yield (); //allow this to be called in a loop
-  if (impl_->viewer_)
-    return (impl_->viewer_->wasStopped ());
-  else
-    return false;
+  return !impl_->viewer_;
 }
 
