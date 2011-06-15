@@ -50,15 +50,14 @@ using namespace std;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> typename pcl::SurfletEstimation<PointInT, PointOutT>::FeatureHashMapTypePtr
-pcl::SurfletEstimation<PointInT, PointOutT>::computeSurfletModel (
-    const pcl::PointCloud<PointInT> &cloud /* output goes here */)
+template <typename PointInT, typename PointOutT> void
+pcl::SurfletEstimation<PointInT, PointOutT>::computeSurfletModel (const pcl::PointCloud<PointInT> &cloud,
+                                                                  typename pcl::SurfletEstimation<PointInT, PointOutT>::SurfletModel &surflet_model)
 {
   cerr << "Computing Surflet Model function called" << endl;
 
   cerr << "Subsampling ..." << endl;
   pcl::PointCloud<PointInT> cloud_subsampled;
-  /// subsample point cloud such that min dist between points is d_dist (+parameter)
   pcl::VoxelGrid<PointInT> subsampling_filter;
   /// @todo don't make a copy here - use input_ from feature
   PointCloudIn cloud_ptr = pcl::PointCloud<PointInT> (cloud).makeShared ();
@@ -78,15 +77,18 @@ pcl::SurfletEstimation<PointInT, PointOutT>::computeSurfletModel (
   normal_estimation_filter.setRadiusSearch (normal_estimation_search_radius);
   normal_estimation_filter.compute (cloud_subsampled_normals);
 
-  cerr << "Computing feature hash map" << endl;
+  cerr << "Computing feature hash map and alpha_m values ..." << endl;
+  /// initialize alpha_m matrix
+  surflet_model.alpha_m.clear();
+  surflet_model.alpha_m = std::vector <std::vector <float> > (cloud_subsampled.points.size (), std::vector<float> (cloud_subsampled.points.size ()));
+
   /// compute feature vector for each pair of points in the subsampled point cloud
-  /// @TODO currently considering only unorganized pointclouds
   float f1, f2, f3, f4;
   int d1, d2, d3, d4;
-  FeatureHashMapTypePtr feature_hash_map (new FeatureHashMapType);
-  for (size_t i = 0; i < cloud_subsampled.width; ++i)
+  surflet_model.feature_hash_map = FeatureHashMapTypePtr (new FeatureHashMapType);
+  for (size_t i = 0; i < cloud_subsampled.points.size (); ++i)
   {
-    for (size_t j = 0; j < cloud_subsampled.width; ++j) 
+    for (size_t j = 0; j < cloud_subsampled.points.size (); ++j)
     {
       if (i == j)
         continue;
@@ -105,25 +107,27 @@ pcl::SurfletEstimation<PointInT, PointOutT>::computeSurfletModel (
         d4 = floor (f4 / distance_discretization_step);
 
         /// add feature to hash map
-        feature_hash_map->insert (std::pair<HashKeyStruct, pair<size_t, size_t> > (HashKeyStruct (d1, d2, d3, d4), pair<size_t, size_t> (i, j)));
-        //     cerr << d1 << " " << d2 << " " << d3 << " " << d4 << endl;
-        //     cerr << f1 << " " << f2 << " " << f3 << " " << f4 << endl << "------" << endl;
+        surflet_model.feature_hash_map->insert (std::pair<HashKeyStruct, pair<size_t, size_t> > (HashKeyStruct (d1, d2, d3, d4), pair<size_t, size_t> (i, j)));
+
+        /// calculate alpha_m angle
+        Eigen::Vector3f model_reference_point = cloud_subsampled.points[i].getVector3fMap (),
+            model_reference_normal = cloud_subsampled_normals.points[i].getNormalVector3fMap (),
+            model_point = cloud_subsampled.points[j].getVector3fMap ();
+        Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())),
+                                       model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
+        Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
+        surflet_model.alpha_m[i][j] = acos (Eigen::Vector3f::UnitY ().dot ((transform_mg * model_point).normalized ()));
       }
-      else 
-      {
-        PCL_ERROR ("Computing pair feature vector between points %zu and %zu went wrong.\n", i, j);
-      }
+      else PCL_ERROR ("Computing pair feature vector between points %zu and %zu went wrong.\n", i, j);
     }
   }
-
-  return (feature_hash_map);
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> bool
 pcl::SurfletEstimation<PointInT, PointOutT>::poseWithVotesCompareFunction (const typename pcl::SurfletEstimation<PointInT, PointOutT>::PoseWithVotes &a,
-                                                                     const typename pcl::SurfletEstimation<PointInT, PointOutT>::PoseWithVotes &b )
+                                                                           const typename pcl::SurfletEstimation<PointInT, PointOutT>::PoseWithVotes &b )
 {
   return (a.votes > b.votes);
 }
@@ -140,34 +144,32 @@ pcl::SurfletEstimation<PointInT, PointOutT>::clusterVotesCompareFunction (const 
 //////////////////////////////////////////////////////////////////////////////////////////////
 /// @TODO !!! cloud_model should be subsampled as before!!
 /// @todo very ugly hack with PointOutT = normals
-template <typename PointInT, typename PointOutT> typename pcl::SurfletEstimation<PointInT, PointOutT>::PoseWithVotesList
-pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (
-    const pcl::PointCloud<PointInT> &cloud_model,
-    const pcl::PointCloud<PointOutT> &cloud_model_normals,
-    const pcl::PointCloud<PointInT> &cloud_scene,
-    typename pcl::SurfletEstimation<PointInT, PointOutT>::FeatureHashMapTypePtr feature_hashmap_model)
+template <typename PointInT, typename PointOutT> void
+pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (const pcl::PointCloud<PointInT> &cloud_model,
+                                                                   const pcl::PointCloud<PointOutT> &cloud_model_normals,
+                                                                   const pcl::PointCloud<PointInT> &cloud_scene,
+                                                                   typename pcl::SurfletEstimation<PointInT, PointOutT>::SurfletModel &surflet_model,
+                                                                   typename pcl::SurfletEstimation<PointInT, PointOutT>::PoseWithVotesList &results)
 {
   PoseWithVotesList voted_poses;
   std::vector <std::vector <unsigned int> > accumulator_array;
-  accumulator_array.resize (cloud_model.width);
-  for (size_t i = 0; i < cloud_model.width; ++i)
+  accumulator_array.resize (cloud_model.points.size ());
+  for (size_t i = 0; i < cloud_model.points.size (); ++i)
   {
     std::vector <unsigned int> aux ((size_t)floor(2*M_PI / angle_discretization_step ), 0);
     accumulator_array[i] = aux;
   }
-  cerr << "Accumulator array size: " << accumulator_array.size() << " x " << accumulator_array.back ().size () << endl;
+  cerr << "Accumulator array size: " << accumulator_array.size () << " x " << accumulator_array.back ().size () << endl;
 
   /// subsample scene cloud with same rate as the model cloud
   pcl::PointCloud<PointInT> cloud_scene_subsampled;
-  /// subsample point cloud such that min dist between points is d_dist (+parameter)
   pcl::VoxelGrid<PointInT> subsampling_filter;
   /// @todo don't make a copy here
   PointCloudIn cloud_scene_ptr = pcl::PointCloud<PointInT> (cloud_scene).makeShared ();
   subsampling_filter.setInputCloud (cloud_scene_ptr);
   subsampling_filter.setLeafSize (subsampling_leaf_size.x (), subsampling_leaf_size.y (), subsampling_leaf_size.z ());
   subsampling_filter.filter (cloud_scene_subsampled);
-
-  cerr << "Scene cloud after subsampling: " << cloud_scene_subsampled.width << " / " << cloud_scene.width * cloud_scene.height << endl;
+  cerr << "Scene cloud after subsampling: " << cloud_scene_subsampled.points.size () << " / " << cloud_scene.points.size () << endl;
 
   /// calculate subsampled scene cloud normals
   pcl::PointCloud<Normal> cloud_scene_subsampled_normals;
@@ -180,20 +182,20 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (
   normal_estimation_filter.compute (cloud_scene_subsampled_normals);
 
 
-  /// consider every <scene_reference_point_sampling_rate> point as the reference point
+  /// consider every <scene_reference_point_sampling_rate>-th point as the reference point => fix s_r
   float f1, f2, f3, f4;
   int d1, d2, d3, d4;
   for (size_t scene_reference_index = 0; scene_reference_index < cloud_scene_subsampled.width; scene_reference_index += scene_reference_point_sampling_rate)
   {
     Eigen::Vector3f scene_reference_point = cloud_scene_subsampled.points[scene_reference_index].getVector3fMap (),
         scene_reference_normal = cloud_scene_subsampled_normals.points[scene_reference_index].getNormalVector3fMap ();
-    Eigen::AngleAxisf rotation_sg (acos (scene_reference_normal.normalized ().dot (Eigen::Vector3f::UnitX ())), scene_reference_normal.normalized ().cross (Eigen::Vector3f::UnitX ()). normalized());
+
+    Eigen::AngleAxisf rotation_sg (acos (scene_reference_normal.dot (Eigen::Vector3f::UnitX ())),
+                                   scene_reference_normal.cross (Eigen::Vector3f::UnitX ()). normalized());
     Eigen::Affine3f transform_sg = Eigen::Translation3f ( rotation_sg* ((-1)*scene_reference_point)) * rotation_sg;
-    //transform_sg.translation () = rotation_sg * ((-1)*scene_reference_point);
-    //transform_sg.linear () = rotation_sg.toRotationMatrix ();
 
     /// @todo optimization - search only in max_dist found in the model point cloud
-
+    /// for every other point in the scene => now have pair (s_r, s_i) fixed
     for (size_t scene_point_index = 0; scene_point_index < cloud_scene_subsampled.width; ++ scene_point_index)
       if (scene_reference_index != scene_point_index)
       {
@@ -210,75 +212,57 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (
           d3 = floor(f3 / angle_discretization_step);
           d4 = floor(f4 / distance_discretization_step);
 
+          /// compute alpha_s angle
+          Eigen::Vector3f scene_point = cloud_scene_subsampled.points[scene_point_index].getVector3fMap ();
+          Eigen::AngleAxisf rotation_sg (acos (scene_reference_normal.dot (Eigen::Vector3f::UnitX ())),
+                                         scene_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
+          Eigen::Affine3f transform_sg = Eigen::Translation3f ( rotation_sg * ((-1) * scene_reference_point)) * rotation_sg;
+          float alpha_s = acos (Eigen::Vector3f::UnitY ().dot ((transform_sg * scene_point).normalized ()));
+
+          /// find point pairs in the model with the same discretized feature
           HashKeyStruct key = HashKeyStruct (d1, d2, d3, d4);
-          pair <typename FeatureHashMapType::iterator, typename FeatureHashMapType::iterator> map_iterator_pair = feature_hashmap_model->equal_range (key);
+          pair <typename FeatureHashMapType::iterator, typename FeatureHashMapType::iterator> map_iterator_pair = surflet_model.feature_hash_map->equal_range (key);
           for (; map_iterator_pair.first != map_iterator_pair.second; ++ map_iterator_pair.first)
           {
             size_t model_reference_index = map_iterator_pair.first->second.first,
                 model_point_index = map_iterator_pair.first->second.second;
-            /// calculate angle alpha
-            Eigen::Vector3f model_reference_point = cloud_model.points[model_reference_index].getVector3fMap (), //(cloud_model.points[model_reference_index].x, cloud_model.points[model_reference_index].y, cloud_model.points[model_reference_index].z),
-                model_reference_normal = cloud_model_normals.points[model_reference_index].getNormalVector3fMap (), //(cloud_model_normals.points[model_reference_index].normal),
-                scene_point = cloud_scene_subsampled.points[scene_point_index].getVector3fMap (), //(cloud_scene_subsampled.points[scene_point_index].x, cloud_scene_subsampled.points[scene_point_index].y, cloud_scene_subsampled.points[scene_point_index].z),
-                model_point = cloud_model.points[model_point_index].getVector3fMap (); //(cloud_model.points[model_point_index].x, cloud_model.points[model_point_index].y, cloud_model.points[model_point_index].z);
-            Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.normalized ().dot (Eigen::Vector3f::UnitX ())), model_reference_normal.normalized ().cross (Eigen::Vector3f::UnitX ()).normalized ());
-            Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
-            //transform_mg.translation () = rotation_mg * ((-1) * model_reference_point);
-            //transform_mg.linear () = rotation_mg.toRotationMatrix ();
-
-            //cerr << "Test - should be origin " << transform_mg * model_reference_point << "     " << transform_sg * scene_reference_point << endl;
-
-            float alpha = acos ((transform_sg * scene_point).normalized ().dot ((transform_mg * model_point).normalized ()));
-            //Eigen::Vector3f axis_test = ((transform_sg*scene_point).normalized().cross( (transform_mg*model_point).normalized())).normalized();
-            //            cerr << "axis should be UnitX: " << axis_test << endl;
-
+            /// calculate angle alpha = alpha_m - alpha_s
+            float alpha = surflet_model.alpha_m[model_reference_index][model_point_index] - alpha_s;
             unsigned int alpha_discretized = floor(alpha) + floor(M_PI / angle_discretization_step);
             accumulator_array[model_reference_index][alpha_discretized] ++;
           }
-
         }
-        else {
-          PCL_ERROR ("Computing pair feature vector between points %zu and %zu went wrong.\n", scene_reference_index, scene_point_index);
-        }
+        else PCL_ERROR ("Computing pair feature vector between points %zu and %zu went wrong.\n", scene_reference_index, scene_point_index);
       }
 
+    size_t max_votes_i = 0, max_votes_j = 0;
     unsigned int max_votes = 0;
-    Eigen::Affine3f max_transform;
-    for (size_t i = 0; i < accumulator_array.size(); ++i)
-    {
-      for (size_t j = 0; j < accumulator_array.back().size(); ++j) 
+
+    for (size_t i = 0; i < accumulator_array.size (); ++i)
+      for (size_t j = 0; j < accumulator_array.back ().size (); ++j)
       {
-        unsigned int val = accumulator_array[i][j];
-        if (val > max_votes)
+        if (accumulator_array[i][j] > max_votes)
         {
-          max_votes = val;
-
-          Eigen::Vector3f model_reference_point = cloud_model.points[i].getVector3fMap (),
-              model_reference_normal = cloud_model_normals.points[i].getNormalVector3fMap ();
-          Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.normalized ().dot (Eigen::Vector3f::UnitX ())), model_reference_normal.normalized ().cross (Eigen::Vector3f::UnitX ()).normalized ());
-          Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
-          //transform_mg.translation () = rotation_mg * ((-1) * model_reference_point);
-          //transform_mg.linear () = rotation_mg.toRotationMatrix ();
-          max_transform = transform_sg.inverse () * Eigen::AngleAxisf ( (j - floor(M_PI / angle_discretization_step)) * angle_discretization_step, Eigen::Vector3f::UnitX ()) * transform_mg;
+          max_votes = accumulator_array[i][j];
+          max_votes_i = i;
+          max_votes_j = j;
         }
-
         /// reset accumulator_array for the next set of iterations with a new scene reference point
         accumulator_array[i][j] = 0;
       }
-    }
 
-//    cerr << "max_votes: " << max_votes << endl;
+    Eigen::Vector3f model_reference_point = cloud_model.points[max_votes_i].getVector3fMap (),
+        model_reference_normal = cloud_model_normals.points[max_votes_i].getNormalVector3fMap ();
+    Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())), model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
+    Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
+    Eigen::Affine3f max_transform = transform_sg.inverse () * Eigen::AngleAxisf ( (max_votes_j - floor(M_PI / angle_discretization_step)) * angle_discretization_step, Eigen::Vector3f::UnitX ()) * transform_mg;
+
     voted_poses.push_back (PoseWithVotes (max_transform, max_votes));
   }
   cerr << "Done with the Hough Transform ..." << endl;
 
-
-
   /// cluster poses for filtering out outliers and obtaining more precise results
-  PoseWithVotesList results;
   clusterPoses (voted_poses, results);
-
-  return results;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -25,8 +25,12 @@ main (int argc, char** argv)
   SurfletEstimation<PointXYZ, Normal> surflet_model_estimation (12.0 / 180 * M_PI,
                                                                 0.01,
                                                                 0.05,
-                                                                25.0 / 180 * M_PI);
-  pcl::SurfletEstimation<pcl::PointXYZ, pcl::Normal>::FeatureHashMapTypePtr feature_hash_map = surflet_model_estimation.computeSurfletModel(cloud_model);
+                                                                25.0 / 180 * M_PI,
+                                                                5,
+                                                                Eigen::Vector3f (0.01, 0.01, 0.01),
+                                                                0.05);
+  pcl::SurfletEstimation<pcl::PointXYZ, pcl::Normal>::SurfletModel surflet_model;
+  surflet_model_estimation.computeSurfletModel(cloud_model, surflet_model);
 
   /// read scene point cloud and extract MGML feature model hash map
   PointCloud<PointXYZ> cloud_scene;
@@ -53,7 +57,8 @@ main (int argc, char** argv)
   normal_estimation_filter.setRadiusSearch(0.05); // @TODO another parameter
   normal_estimation_filter.compute (cloud_model_subsampled_normals);
 
-  pcl::SurfletEstimation<pcl::PointXYZ, pcl::Normal>::PoseWithVotesList registration_results = surflet_model_estimation.registerModelToScene(cloud_model_subsampled, cloud_model_subsampled_normals, cloud_scene, feature_hash_map);
+  pcl::SurfletEstimation<pcl::PointXYZ, pcl::Normal>::PoseWithVotesList registration_results;
+  surflet_model_estimation.registerModelToScene(cloud_model_subsampled, cloud_model_subsampled_normals, cloud_scene, surflet_model, registration_results);
   for(size_t i_res = 0; i_res < registration_results.size (); ++ i_res)
   {
     cerr << "registration #" << i_res << " received votes: " << registration_results[i_res].votes << endl;
