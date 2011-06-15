@@ -313,12 +313,14 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
       const float depthDependendDepthChange = (max_depth_change_factor_ * depth)/(500.0f*0.001f);
 
-      if (abs (depth - depthR) > depthDependendDepthChange)
+      if (abs (depth - depthR) > depthDependendDepthChange
+        || !pcl_isfinite (depth) || !pcl_isfinite (depthR))
       { 
         depthChangeMap[row_index*input_->width + col_index] = 0;
         depthChangeMap[row_index*input_->width + col_index+1] = 0;
       }
-      if (abs (depth - depthD) > depthDependendDepthChange)
+      if (abs (depth - depthD) > depthDependendDepthChange
+        || !pcl_isfinite (depth) || !pcl_isfinite (depthD))
       {
         depthChangeMap[row_index*input_->width + col_index] = 0;
         depthChangeMap[(row_index+1)*input_->width + col_index] = 0;
