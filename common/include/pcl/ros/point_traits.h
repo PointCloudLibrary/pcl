@@ -65,6 +65,17 @@ namespace pcl
     template<> struct asEnum<float>    { static const uint8_t value = sensor_msgs::PointField::FLOAT32; };
     template<> struct asEnum<double>   { static const uint8_t value = sensor_msgs::PointField::FLOAT64; };
 
+    // Metafunction to return type of enum value 
+    template<int> struct asType {};
+    template<> struct asType<sensor_msgs::PointField::INT8>    { typedef int8_t   type; };
+    template<> struct asType<sensor_msgs::PointField::UINT8>   { typedef uint8_t  type; };
+    template<> struct asType<sensor_msgs::PointField::INT16>   { typedef int16_t  type; };
+    template<> struct asType<sensor_msgs::PointField::UINT16>  { typedef uint16_t type; };
+    template<> struct asType<sensor_msgs::PointField::INT32>   { typedef int32_t  type; };
+    template<> struct asType<sensor_msgs::PointField::UINT32>  { typedef uint32_t type; };
+    template<> struct asType<sensor_msgs::PointField::FLOAT32> { typedef float    type; };
+    template<> struct asType<sensor_msgs::PointField::FLOAT64> { typedef double   type; };
+
     // Metafunction to decompose a type (possibly of array of any number of dimensions) into
     // its scalar type and total number of elements.
     template<typename T> struct decomposeArray
