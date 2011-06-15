@@ -100,7 +100,7 @@ class OpenNIIntegralImageNormalEstimation
       boost::mutex::scoped_lock lock (mtx_);
       if (!cloud_)
       {
-        usleep (10);
+        sleep (1);
         return;
       }
 
@@ -135,7 +135,7 @@ class OpenNIIntegralImageNormalEstimation
       
       while (!viewer.wasStopped ())
       {
-        usleep (10);
+        sleep (10);
       }
 
       interface->stop ();
