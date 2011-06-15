@@ -66,7 +66,7 @@ namespace pcl
       typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
 
       /** \brief Constructor. */
-      SurfaceReconstruction () : tree_() {}
+      SurfaceReconstruction () : tree_(), check_tree_(true) {}
 
       /** \brief Base method for surface reconstruction for all points given in
         * <setInputCloud (), setIndices ()> 
@@ -95,6 +95,10 @@ namespace pcl
 
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;
+
+      /** \brief A flag specifying whether or not the derived reconstruction
+       * algorithm needs the search object \a tree.*/
+      bool check_tree_;
 
       /** \brief Abstract surface reconstruction method. */
       virtual void performReconstruction (pcl::PolygonMesh &output) = 0;
