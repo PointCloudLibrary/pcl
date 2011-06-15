@@ -81,9 +81,10 @@ namespace pcl
 
     struct SurfletModel
     {
-      SurfletModel (FeatureHashMapTypePtr &a_feature_hash_map, std::vector <std::vector <float> > &a_alpha_m)
+      SurfletModel (FeatureHashMapTypePtr &a_feature_hash_map, std::vector <std::vector <float> > &a_alpha_m, float &a_max_dist)
       : feature_hash_map (a_feature_hash_map),
-        alpha_m (a_alpha_m)
+        alpha_m (a_alpha_m),
+        max_dist (a_max_dist)
       {
       }
 
@@ -93,6 +94,7 @@ namespace pcl
 
       FeatureHashMapTypePtr feature_hash_map;
       std::vector <std::vector <float> > alpha_m;
+      float max_dist;
     };
 
 

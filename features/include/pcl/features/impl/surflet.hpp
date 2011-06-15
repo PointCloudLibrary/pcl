@@ -86,6 +86,7 @@ pcl::SurfletEstimation<PointInT, PointOutT>::computeSurfletModel (const pcl::Poi
   float f1, f2, f3, f4;
   int d1, d2, d3, d4;
   surflet_model.feature_hash_map = FeatureHashMapTypePtr (new FeatureHashMapType);
+  surflet_model.max_dist = -1;
   for (size_t i = 0; i < cloud_subsampled.points.size (); ++i)
   {
     for (size_t j = 0; j < cloud_subsampled.points.size (); ++j)
@@ -117,6 +118,10 @@ pcl::SurfletEstimation<PointInT, PointOutT>::computeSurfletModel (const pcl::Poi
                                        model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
         Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
         surflet_model.alpha_m[i][j] = acos (Eigen::Vector3f::UnitY ().dot ((transform_mg * model_point).normalized ()));
+
+        /// update max_dist of the SurfletModel
+        if (f4 > surflet_model.max_dist)
+          surflet_model.max_dist = f4;
       }
       else PCL_ERROR ("Computing pair feature vector between points %zu and %zu went wrong.\n", i, j);
     }
@@ -182,6 +187,11 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (const pcl::Po
   normal_estimation_filter.compute (cloud_scene_subsampled_normals);
 
 
+  /// use a kd-tree with range searches of range max_dist to skip an O(N) pass through the point cloud
+  typename pcl::KdTreeFLANN<PointInT>::Ptr scene_search_tree (new pcl::KdTreeFLANN<PointInT>);
+  scene_search_tree->setInputCloud (cloud_scene_subsampled.makeShared ());
+
+
   /// consider every <scene_reference_point_sampling_rate>-th point as the reference point => fix s_r
   float f1, f2, f3, f4;
   int d1, d2, d3, d4;
@@ -196,7 +206,16 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (const pcl::Po
 
     /// @todo optimization - search only in max_dist found in the model point cloud
     /// for every other point in the scene => now have pair (s_r, s_i) fixed
-    for (size_t scene_point_index = 0; scene_point_index < cloud_scene_subsampled.width; ++ scene_point_index)
+    ///for (size_t scene_point_index = 0; scene_point_index < cloud_scene_subsampled.width; ++ scene_point_index)
+    std::vector<int> indices;
+    std::vector<float> distances;
+    scene_search_tree->radiusSearch (cloud_scene_subsampled.points[scene_reference_index],
+                                     surflet_model.max_dist,
+                                     indices,
+                                     distances);
+    for(size_t i = 0; i < indices.size (); ++i)
+    {
+      size_t scene_point_index = indices[i];
       if (scene_reference_index != scene_point_index)
       {
         if (pcl::computePairFeatures (
@@ -234,6 +253,7 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (const pcl::Po
         }
         else PCL_ERROR ("Computing pair feature vector between points %zu and %zu went wrong.\n", scene_reference_index, scene_point_index);
       }
+    }
 
     size_t max_votes_i = 0, max_votes_j = 0;
     unsigned int max_votes = 0;
