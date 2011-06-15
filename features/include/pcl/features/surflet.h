@@ -44,16 +44,13 @@
 
 namespace pcl
 {
-  bool 
-  resultsCompareFunction (std::pair <Eigen::Affine3f, float> a, std::pair <Eigen::Affine3f, float> b)
-  {
-    return (a.second > b.second);
-  }
-
-
-  /** \brief Estimate 3D Surflet features.
+  /** \brief Estimate 3D Surflet features and registers model to data clouds using the Surflet Model
+   *  Based on the publication:
+   *    B. Drost, M. Ulrich, N. Navab, S. Ilic
+   *    Model Globally, Match Locally: Efficient and Robust 3D Object Recognition
+   *    2010 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)
+   *    13-18 June 2010, San Francisco, CA
    *
-   * paper...
    *
    * \author Alexandru-Eugen Ichim
    */
@@ -65,7 +62,11 @@ namespace pcl
     typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
 
-    /// slight hack to enable the usage of the boost::hash <pair <A, B> >
+    /**
+     * \brief Data structure to hold the information for the key in the feature hash map
+     * \note It uses multiple pair levels in order to enable the usage of the boost::hash function
+     * which has the std::pair implementation (i.e., does not require a custom hash function)
+     */
     struct HashKeyStruct : public std::pair <int, std::pair <int, std::pair <int, int> > >
     {
       HashKeyStruct(int a, int b, int c, int d)
@@ -79,6 +80,10 @@ namespace pcl
     typedef boost::unordered_multimap<HashKeyStruct, std::pair<size_t, size_t> > FeatureHashMapType;
     typedef boost::shared_ptr<FeatureHashMapType> FeatureHashMapTypePtr;
 
+
+    /**
+     * \brief The data structure for storing the Surflet feature information for the model clouds
+     */
     struct SurfletModel
     {
       SurfletModel (FeatureHashMapTypePtr &a_feature_hash_map, std::vector <std::vector <float> > &a_alpha_m, float &a_max_dist)
@@ -92,13 +97,18 @@ namespace pcl
       {
       }
 
+      /** \brief  */
       FeatureHashMapTypePtr feature_hash_map;
+      /** \brief */
       std::vector <std::vector <float> > alpha_m;
       float max_dist;
     };
 
 
-    /// this is needed to replace std::pair as it seems to have problems using Eigen structures in MsWindows
+    /**
+     * \note initially used std::pair<Eigen::Affine3f, unsigned int>, but it proved problematic
+     * because of the Eigen structures alignment problems - std::pair does not have a custom allocator
+     */
     struct PoseWithVotes
     {
       PoseWithVotes(Eigen::Affine3f &a_pose, unsigned int &a_votes)
