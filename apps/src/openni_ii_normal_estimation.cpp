@@ -107,9 +107,9 @@ class OpenNIIntegralImageNormalEstimation
       CloudConstPtr temp_cloud;
       temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
 
-      if (!viz.updatePointCloud (temp_cloud, "OpenNICloud"))
+      if (!viz.updatePointCloud<PointType> (temp_cloud, "OpenNICloud"))
       {
-        viz.addPointCloud (temp_cloud, "OpenNICloud");
+        viz.addPointCloud<PointType> (temp_cloud, "OpenNICloud");
         viz.resetCameraViewpoint ("OpenNICloud");
       }
       // Render the data 
