@@ -242,6 +242,17 @@ namespace pcl
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param cloud_in the input point cloud dataset
+    * \param indices the vector of indices representing the points to be copied from \a cloud_in
+    * \param cloud_out the resultant output point cloud dataset
+    * \ingroup io
+    */
+  template <typename PointInT, typename PointOutT> void 
+  copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
+                  const std::vector<int> &indices, 
+                  pcl::PointCloud<PointOutT> &cloud_out);
+
+  /** \brief Extract the indices of a given point cloud as a new point cloud
+    * \param cloud_in the input point cloud dataset
     * \param indices the PointIndices structure representing the points to be copied from \a cloud_in
     * \param cloud_out the resultant output point cloud dataset
     * \ingroup io
@@ -253,6 +264,17 @@ namespace pcl
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param cloud_in the input point cloud dataset
+    * \param indices the PointIndices structure representing the points to be copied from \a cloud_in
+    * \param cloud_out the resultant output point cloud dataset
+    * \ingroup io
+    */
+  template <typename PointInT, typename PointOutT> void 
+  copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
+                  const PointIndices &indices, 
+                  pcl::PointCloud<PointOutT> &cloud_out);
+
+  /** \brief Extract the indices of a given point cloud as a new point cloud
+    * \param cloud_in the input point cloud dataset
     * \param indices the vector of indices representing the points to be copied from \a cloud_in
     * \param cloud_out the resultant output point cloud dataset
     * \ingroup io
@@ -261,6 +283,17 @@ namespace pcl
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
                   const std::vector<pcl::PointIndices> &indices, 
                   pcl::PointCloud<PointT> &cloud_out);
+
+  /** \brief Extract the indices of a given point cloud as a new point cloud
+    * \param cloud_in the input point cloud dataset
+    * \param indices the vector of indices representing the points to be copied from \a cloud_in
+    * \param cloud_out the resultant output point cloud dataset
+    * \ingroup io
+    */
+  template <typename PointInT, typename PointOutT> void 
+  copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
+                  const std::vector<pcl::PointIndices> &indices, 
+                  pcl::PointCloud<PointOutT> &cloud_out);
 
   /** \brief Concatenate two datasets representing different fields.
     * \param cloud1_in the first input dataset
