@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2011, Dirk Holz, University of Bonn.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,49 +35,10 @@
  *
  */
 
-#ifndef PCL_SURFACE_RECONSTRUCTION_IMPL_H_
-#define PCL_SURFACE_RECONSTRUCTION_IMPL_H_
+#include "pcl/surface/impl/organized_fast_mesh.hpp"
+#include "pcl/impl/instantiate.hpp"
+#include "pcl/point_types.h"
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> void
-pcl::SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
-{
-  // Copy the header
-  output.header = input_->header;
-
-  if (!initCompute ()) 
-  {
-    output.cloud.width = output.cloud.height = 0;
-    output.cloud.data.clear ();
-    output.polygons.clear ();
-    return;
-  }
-
-  // Check if a space search locator was given
-  if (check_tree_)
-  {
-    if (!tree_)
-    {
-      PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!\n", getClassName ().c_str ());
-      output.cloud.width = output.cloud.height = 0;
-      output.cloud.data.clear ();
-      output.polygons.clear ();
-      return;
-    }
-
-    // Send the surface dataset to the spatial locator
-    tree_->setInputCloud (input_, indices_);
-  }
-
-  // Set up the output dataset
-  pcl::toROSMsg (*input_, output.cloud); /// NOTE: passing in boost shared pointer with * as const& should be OK here
-  output.polygons.clear ();
-  output.polygons.reserve (2*indices_->size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
-  // Perform the actual surface reconstruction
-  performReconstruction (output);
-
-  deinitCompute ();
-}
-
-#endif  // PCL_SURFACE_RECONSTRUCTION_IMPL_H_
+// Instantiations of specific point types
+PCL_INSTANTIATE(OrganizedFastMesh, (pcl::PointXYZ)(pcl::PointXYZRGB));
 

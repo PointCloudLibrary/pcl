@@ -1603,6 +1603,35 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
   for (i = 0; i < point_cloud.points.size (); ++i)
     poly_points->InsertPoint (i, point_cloud.points[i].x, point_cloud.points[i].y, point_cloud.points[i].z);
 
+  bool has_color = false;
+  vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  if (pcl::getFieldIndex(poly_mesh.cloud, "rgb") != -1)
+  {
+    has_color = true;
+    colors->SetNumberOfComponents (3);
+    colors->SetName ("Colors");
+    pcl::PointCloud<pcl::PointXYZRGB> cloud;
+    pcl::fromROSMsg(poly_mesh.cloud, cloud);
+    for (i = 0; i < cloud.points.size (); ++i)
+    {
+      const unsigned char color[3] = {cloud.points[i].r, cloud.points[i].g, cloud.points[i].b};
+      colors->InsertNextTupleValue(color);
+    }
+  }
+  if (pcl::getFieldIndex(poly_mesh.cloud, "rgba") != -1)
+  {
+    has_color = true;
+    colors->SetNumberOfComponents (3);
+    colors->SetName ("Colors");
+    pcl::PointCloud<pcl::PointXYZRGBA> cloud;
+    pcl::fromROSMsg(poly_mesh.cloud, cloud);
+    for (i = 0; i < cloud.points.size (); ++i)
+    {
+      const unsigned char color[3] = {cloud.points[i].r, cloud.points[i].g, cloud.points[i].b};
+      colors->InsertNextTupleValue(color);
+    }
+  }
+
   vtkSmartPointer<vtkLODActor> actor;
   if (poly_mesh.polygons.size() > 1) 
   {
@@ -1620,6 +1649,9 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     vtkPolyData* polydata = vtkPolyData::New ();
     polydata->SetStrips (cell_array);
     polydata->SetPoints (poly_points);
+
+    if (has_color)
+      polydata->GetPointData()->SetScalars(colors);
 
     createActorFromVTKDataSet (polydata, actor);
   } 

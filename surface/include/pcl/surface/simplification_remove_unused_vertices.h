@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2011, Dirk Holz, University of Bonn.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,49 +35,30 @@
  *
  */
 
-#ifndef PCL_SURFACE_RECONSTRUCTION_IMPL_H_
-#define PCL_SURFACE_RECONSTRUCTION_IMPL_H_
+#ifndef PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
+#define PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> void
-pcl::SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
+#include <pcl/PolygonMesh.h>
+
+namespace pcl
 {
-  // Copy the header
-  output.header = input_->header;
-
-  if (!initCompute ()) 
+  namespace surface
   {
-    output.cloud.width = output.cloud.height = 0;
-    output.cloud.data.clear ();
-    output.polygons.clear ();
-    return;
-  }
-
-  // Check if a space search locator was given
-  if (check_tree_)
-  {
-    if (!tree_)
+    class SimplificationRemoveUnusedVertices
     {
-      PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!\n", getClassName ().c_str ());
-      output.cloud.width = output.cloud.height = 0;
-      output.cloud.data.clear ();
-      output.polygons.clear ();
-      return;
-    }
 
-    // Send the surface dataset to the spatial locator
-    tree_->setInputCloud (input_, indices_);
+      public:
+
+        SimplificationRemoveUnusedVertices(){};
+        ~SimplificationRemoveUnusedVertices(){};
+
+        /** \brief Perform simplification (remove unused vertices).
+         * \param
+         */
+        void
+        simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output);
+    };
   }
-
-  // Set up the output dataset
-  pcl::toROSMsg (*input_, output.cloud); /// NOTE: passing in boost shared pointer with * as const& should be OK here
-  output.polygons.clear ();
-  output.polygons.reserve (2*indices_->size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
-  // Perform the actual surface reconstruction
-  performReconstruction (output);
-
-  deinitCompute ();
 }
 
-#endif  // PCL_SURFACE_RECONSTRUCTION_IMPL_H_
-
+#endif /* PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_ */

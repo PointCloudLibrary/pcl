@@ -27,13 +27,17 @@ if(build)
 
     set(srcs src/gp3.cpp
         src/grid_projection.cpp
+        src/organized_fast_mesh.cpp
         src/mls.cpp
+        src/simplification_remove_unused_vertices.cpp
         ${HULL_SOURCES}
         )
 
     set(incs include/pcl/${SUBSYS_NAME}/gp3.h
         include/pcl/${SUBSYS_NAME}/grid_projection.h
         include/pcl/${SUBSYS_NAME}/mls.h
+        include/pcl/${SUBSYS_NAME}/organized_fast_mesh.h
+        include/pcl/${SUBSYS_NAME}/simplification_remove_unused_vertices.h
         include/pcl/${SUBSYS_NAME}/reconstruction.h
         ${HULL_INCLUDES}
         )
@@ -41,6 +45,7 @@ if(build)
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/gp3.hpp
         include/pcl/${SUBSYS_NAME}/impl/grid_projection.hpp
         include/pcl/${SUBSYS_NAME}/impl/mls.hpp
+        include/pcl/${SUBSYS_NAME}/impl/organized_fast_mesh.hpp
         include/pcl/${SUBSYS_NAME}/impl/reconstruction.hpp
         ${HULL_IMPLS}
         )
