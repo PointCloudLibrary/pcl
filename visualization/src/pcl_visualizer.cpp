@@ -1022,7 +1022,13 @@ pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
 
   // Get all the data
   double bounds[6];
-  reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ()->GetBounds (bounds);
+  vtkPolyDataMapper *mapper = reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ());
+  if (!mapper)
+    return;
+  vtkPolyData *data = mapper->GetInput ();
+  if (!data)
+    return;
+  data->GetBounds (bounds);
 
   double focal[3];
   focal[0] = (bounds[0] + bounds[1]) / 2.0;
