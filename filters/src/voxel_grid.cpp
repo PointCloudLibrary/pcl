@@ -264,6 +264,7 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     }
   }
 
+  Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
   // If we don't want to process the entire cloud, but rather filter points far away from the viewpoint first...
   if (!filter_field_name_.empty ())
   {
@@ -320,7 +321,6 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
         continue;
       }
 
-      Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
       ijk[0] = (int)(floor (pt[0] * inverse_leaf_size_[0]));
       ijk[1] = (int)(floor (pt[1] * inverse_leaf_size_[1]));
       ijk[2] = (int)(floor (pt[2] * inverse_leaf_size_[2]));
@@ -383,7 +383,6 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
         continue;
       }
 
-      Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
       ijk[0] = (int)(floor (pt[0] * inverse_leaf_size_[0]));
       ijk[1] = (int)(floor (pt[1] * inverse_leaf_size_[1]));
       ijk[2] = (int)(floor (pt[2] * inverse_leaf_size_[2]));
