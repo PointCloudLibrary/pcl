@@ -44,7 +44,7 @@ if(build)
     set(srcs src/io.cpp
         src/pcd_io.cpp
         src/vtk_io.cpp
-				src/ply_io.cpp
+        #				src/ply_io.cpp
         src/compression.cpp
         ${OPENNI_GRABBER_SOURCES}
         )

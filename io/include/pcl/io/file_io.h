@@ -136,7 +136,7 @@ namespace pcl
         */
       template <typename Type> inline void
       copyValue (const std::string &st, sensor_msgs::PointCloud2 &cloud, 
-                 int point_index, int field_idx, int fields_count)
+                 unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
       {
         //char value = (char)atoi (st.at (d + c).c_str ());
         Type value;
