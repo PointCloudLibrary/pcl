@@ -3,6 +3,7 @@
 #include <iostream>
 using namespace std;
 
+#include <boost/thread/thread.hpp>
 #include "pcl/range_image/range_image.h"
 #include "pcl/io/pcd_io.h"
 #include "pcl/visualization/range_image_visualizer.h"
@@ -185,6 +186,6 @@ int main (int argc, char** argv)
   {
     ImageWidgetWX::spinOnce ();
     viewer.spinOnce (100);
-    usleep (100000);
+    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
   }
 }
