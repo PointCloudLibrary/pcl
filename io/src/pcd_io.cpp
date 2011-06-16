@@ -384,6 +384,9 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
         // Copy data
         for (size_t d = 0; d < cloud.fields.size (); ++d)
         {
+          // Ignore invalid padded dimensions that are inherited from binary data
+          if (cloud.fields[d].name == "_")
+            continue;
           for (size_t c = 0; c < cloud.fields[d].count; ++c)
           {
             switch (cloud.fields[d].datatype)
@@ -531,33 +534,84 @@ pcl::PCDWriter::generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud,
          "\nVERSION .7"
          "\nFIELDS ";
 
-  oss << getFieldsList (cloud);
-  oss << "\nSIZE ";
+  std::ostringstream stream;
+  std::string result;
 
+  for (size_t d = 0; d < cloud.fields.size () - 1; ++d)
+  {
+    // Ignore invalid padded dimensions that are inherited from binary data
+    if (cloud.fields[d].name != "_")
+      result += cloud.fields[d].name + " ";
+  }
+  // Ignore invalid padded dimensions that are inherited from binary data
+  if (cloud.fields[cloud.fields.size () - 1].name != "_")
+    result += cloud.fields[cloud.fields.size () - 1].name;
+
+  // Remove trailing spaces
+  boost::trim (result);
+  oss << result << "\nSIZE ";
+
+  stream.str ("");
   // Write the SIZE of each field
   for (size_t d = 0; d < cloud.fields.size () - 1; ++d)
-    oss << pcl::getFieldSize (cloud.fields[d].datatype) << " ";
-  oss << pcl::getFieldSize (cloud.fields[cloud.fields.size () - 1].datatype) << "\nTYPE ";
+  {
+    // Ignore invalid padded dimensions that are inherited from binary data
+    if (cloud.fields[d].name != "_")
+      stream << pcl::getFieldSize (cloud.fields[d].datatype) << " ";
+  }
+  // Ignore invalid padded dimensions that are inherited from binary data
+  if (cloud.fields[cloud.fields.size () - 1].name != "_")
+    stream << pcl::getFieldSize (cloud.fields[cloud.fields.size () - 1].datatype);
 
-  // Write the TYPE of each field
-  for (size_t d = 0; d < cloud.fields.size () - 1; ++d)
-    oss << pcl::getFieldType (cloud.fields[d].datatype) << " ";
-  oss << pcl::getFieldType (cloud.fields[cloud.fields.size () - 1].datatype) << "\nCOUNT ";
-  
+  // Remove trailing spaces
+  result = stream.str ();
+  boost::trim (result);
+  oss << result << "\nTYPE ";
+
+  stream.str ("");
   // Write the TYPE of each field
   for (size_t d = 0; d < cloud.fields.size () - 1; ++d)
   {
-    int count = cloud.fields[d].count;
+    // Ignore invalid padded dimensions that are inherited from binary data
+    if (cloud.fields[d].name != "_")
+      stream << pcl::getFieldType (cloud.fields[d].datatype) << " ";
+  }
+  // Ignore invalid padded dimensions that are inherited from binary data
+  if (cloud.fields[cloud.fields.size () - 1].name != "_")
+    stream << pcl::getFieldType (cloud.fields[cloud.fields.size () - 1].datatype);
+
+  // Remove trailing spaces
+  result = stream.str ();
+  boost::trim (result);
+  oss << result << "\nCOUNT ";
+  
+  stream.str ("");
+  // Write the TYPE of each field
+  for (size_t d = 0; d < cloud.fields.size () - 1; ++d)
+  {
+    // Ignore invalid padded dimensions that are inherited from binary data
+    if (cloud.fields[d].name == "_")
+      continue;
+    int count = abs (cloud.fields[d].count);
     if (count == 0) 
       count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
   
-    oss << count << " ";
+    stream << count << " ";
   }
-  int count = cloud.fields[cloud.fields.size () - 1].count;
-  if (count == 0)
-    count = 1;
+  // Ignore invalid padded dimensions that are inherited from binary data
+  if (cloud.fields[cloud.fields.size () - 1].name != "_")
+  {
+    int count = abs (cloud.fields[cloud.fields.size () - 1].count);
+    if (count == 0)
+      count = 1;
 
-  oss << count << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
+    stream << count;
+  }
+
+  // Remove trailing spaces
+  result = stream.str ();
+  boost::trim (result);
+  oss << result << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
 
   oss << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " << 
                          orientation.x () << " " << orientation.y () << " " << orientation.z () << "\n";
@@ -621,7 +675,7 @@ pcl::PCDWriter::generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud,
     field_names << " " << cloud.fields[i].name;
     field_sizes << " " << pcl::getFieldSize (cloud.fields[i].datatype);
     field_types << " " << pcl::getFieldType (cloud.fields[i].datatype);
-    int count = cloud.fields[i].count;
+    int count = abs (cloud.fields[i].count);
     if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
     field_counts << " " << count;
   }
@@ -669,11 +723,17 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
   // Write the header information
   fs << generateHeaderASCII (cloud, origin, orientation) << "DATA ascii\n";
 
+  std::ostringstream stream;
+
   // Iterate through the points
   for (int i = 0; i < nr_points; ++i)
   {
     for (size_t d = 0; d < cloud.fields.size (); ++d)
     {
+      // Ignore invalid padded dimensions that are inherited from binary data
+      if (cloud.fields[d].name == "_")
+        continue;
+
       int count = cloud.fields[d].count;
       if (count == 0) 
         count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
@@ -686,56 +746,56 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
           {
             char value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (char)], sizeof (char));
-            fs << boost::numeric_cast<int>(value);
+            stream << boost::numeric_cast<int>(value);
             break;
           }
           case sensor_msgs::PointField::UINT8:
           {
             unsigned char value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned char)], sizeof (unsigned char));
-            fs << boost::numeric_cast<int>(value);
+            stream << boost::numeric_cast<int>(value);
             break;
           }
           case sensor_msgs::PointField::INT16:
           {
             short value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (short)], sizeof (short));
-            fs << boost::numeric_cast<int>(value);
+            stream << boost::numeric_cast<int>(value);
             break;
           }
           case sensor_msgs::PointField::UINT16:
           {
             unsigned short value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned short)], sizeof (unsigned short));
-            fs << boost::numeric_cast<int>(value);
+            stream << boost::numeric_cast<int>(value);
             break;
           }
           case sensor_msgs::PointField::INT32:
           {
             int value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (int)], sizeof (int));
-            fs << value;
+            stream << value;
             break;
           }
           case sensor_msgs::PointField::UINT32:
           {
             unsigned int value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned int)], sizeof (unsigned int));
-            fs << value;
+            stream << value;
             break;
           }
           case sensor_msgs::PointField::FLOAT32:
           {
             float value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
-            fs << value;
+            stream << value;
             break;
           }
           case sensor_msgs::PointField::FLOAT64:
           {
             double value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (double)], sizeof (double));
-            fs << value;
+            stream << value;
             break;
           }
           default:
@@ -744,10 +804,14 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
         }
 
         if (d < cloud.fields.size () - 1 || c < (int)cloud.fields[d].count - 1)
-          fs << " ";
+          stream << " ";
       }
     }
-    fs << std::endl;
+    // Copy the stream, trim it, and write it to disk
+    std::string result = stream.str ();
+    boost::trim (result);
+    stream.str ("");
+    fs << result << std::endl;
   }
   fs.close ();              // Close file
   return (0);
