@@ -58,7 +58,7 @@ Now we can start the main loop to keep the visualization alive, until one of the
   {
     ImageWidgetWX::spinOnce ();  // process GUI events
     viewer.spinOnce (100);
-    usleep (100000);
+    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
   ...
 
 ImageWidgetWX::spinOnce() handles the current events of the RangeImageVisualizer and viewer.spinOnce(100) does the same for the 3D viewer (giving it 100ms time).
