@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef PCL_IO_IMPL_IO_H_
-#define PCL_IO_IMPL_IO_H_
+#ifndef PCL_IO_IMPL_IO_HPP_
+#define PCL_IO_IMPL_IO_HPP_
 
 #include "pcl/common/concatenate.h"
 
