@@ -71,9 +71,9 @@ class OpenNIIntegralImageNormalEstimation
       : viewer ("PCL OpenNI NormalEstimation Viewer") 
     , device_id_(device_id)
     {
-      ne_.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointType, pcl::Normal>::AVERAGE_3D_GRADIENT);
-//      ne_.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointType, pcl::Normal>::COVARIANCE_MATRIX);
-      ne_.setRectSize (2, 2);
+//      ne_.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointType, pcl::Normal>::AVERAGE_3D_GRADIENT);
+      ne_.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointType, pcl::Normal>::COVARIANCE_MATRIX);
+      ne_.setRectSize (50, 50);
       new_cloud_ = false;
     }
 
@@ -107,16 +107,16 @@ class OpenNIIntegralImageNormalEstimation
       CloudConstPtr temp_cloud;
       temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
 
-      if (!viz.updatePointCloud<PointType> (temp_cloud, "OpenNICloud"))
+      if (!viz.updatePointCloud (temp_cloud, "OpenNICloud"))
       {
-        viz.addPointCloud<PointType> (temp_cloud, "OpenNICloud");
+        viz.addPointCloud (temp_cloud, "OpenNICloud");
         viz.resetCameraViewpoint ("OpenNICloud");
       }
       // Render the data 
       if (new_cloud_ && normals_)
       {
         viz.removePointCloud ("normalcloud");
-        viz.addPointCloudNormals<PointType, pcl::Normal> (temp_cloud, normals_, 200, 0.1, "normalcloud");
+        viz.addPointCloudNormals<PointType, pcl::Normal> (temp_cloud, normals_, 200, 0.05, "normalcloud");
         new_cloud_ = false;
       }
     }
@@ -175,13 +175,9 @@ usage (char ** argv)
 int 
 main (int argc, char ** argv)
 {
-  if (argc < 2)
-  {
-    usage (argv);
-    return 1;
-  }
-
-  std::string arg (argv[1]);
+  std::string arg;
+  if (argc > 1)
+    arg = std::string (argv[1]);
   
   if (arg == "--help" || arg == "-h")
   {
@@ -189,15 +185,17 @@ main (int argc, char ** argv)
     return 1;
   }
 
-  pcl::OpenNIGrabber grabber (arg);
+  pcl::OpenNIGrabber grabber ("");
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {
-    OpenNIIntegralImageNormalEstimation<pcl::PointXYZRGB> v (arg);
+    PCL_INFO ("PointXYZRGB mode enabled.\n");
+    OpenNIIntegralImageNormalEstimation<pcl::PointXYZRGB> v ("");
     v.run ();
   }
   else
   {
-    OpenNIIntegralImageNormalEstimation<pcl::PointXYZ> v (arg);
+    PCL_INFO ("PointXYZ mode enabled.\n");
+    OpenNIIntegralImageNormalEstimation<pcl::PointXYZ> v ("");
     v.run ();
   }
 
