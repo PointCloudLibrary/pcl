@@ -34,13 +34,14 @@
  * $Id$
  *
  */
-/** \author Stefan Holzer */
 
 #include <gtest/gtest.h>
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/features/integral_image_normal.h>
+#include <pcl/kdtree/kdtree_flann.h>
 
 #include <iostream>
 
@@ -48,48 +49,75 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
+typedef KdTree<PointXYZ>::Ptr KdTreePtr;
 PointCloud<PointXYZ> cloud;
-IntegralImageNormalEstimation<PointXYZ, Normal> normalEstimator;
+KdTreePtr tree;
 
+NormalEstimation<PointXYZ, Normal> n;
+IntegralImageNormalEstimation<PointXYZ, Normal> ne;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, NormalEstimation)
+{
+  tree.reset (new KdTreeFLANN<PointXYZ> (false));
+  n.setSearchMethod (tree);
+  n.setKSearch (10);
+
+  n.setInputCloud (cloud.makeShared ());
+
+  PointCloud<Normal> output;
+  n.compute (output);
+
+  EXPECT_EQ (output.points.size (), cloud.points.size ());
+  EXPECT_EQ (output.width, cloud.width);
+  EXPECT_EQ (output.height, cloud.height);
+
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+  {
+    EXPECT_NEAR (fabs (output.points[i].normal_x),   0, 1e-2);
+    EXPECT_NEAR (fabs (output.points[i].normal_y),   0, 1e-2);
+    EXPECT_NEAR (fabs (output.points[i].normal_z), 1.0, 1e-2);
+  }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, IINormalEstimation)
 {
-  Normal normal;
-//  normalEstimator.computePointNormal (cloud.width/2, cloud.height/2, normal);
-//  
-//  EXPECT_NEAR (fabs (normal.normal_x), 0.0662114, 1e-2);
-//  EXPECT_NEAR (fabs (normal.normal_y), 0.599297,  1e-2);
-//  EXPECT_NEAR (fabs (normal.normal_z), 0.797792,  1e-2);
+  ne.setInputCloud (cloud.makeShared ());
+  ne.setRectSize (2, 2);
+  ne.setNormalEstimationMethod (IntegralImageNormalEstimation<PointXYZ, Normal>::AVERAGE_3D_GRADIENT);
+
+  PointCloud<Normal> output;
+  ne.compute (output);
+
+  EXPECT_EQ (output.points.size (), cloud.points.size ());
+  EXPECT_EQ (output.width, cloud.width);
+  EXPECT_EQ (output.height, cloud.height);
+
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+  {
+    EXPECT_NEAR (fabs (output.points[i].normal_x),   0, 1e-2);
+    EXPECT_NEAR (fabs (output.points[i].normal_y),   0, 1e-2);
+    EXPECT_NEAR (fabs (output.points[i].normal_z), 1.0, 1e-2);
+  }
 }
 
 
 /* ---[ */
 int
-  main (int argc, char** argv)
+main (int argc, char** argv)
 {
-  if (argc < 2)
+  cloud.points.resize (320 * 240);
+  cloud.width = 320;
+  cloud.height = 240;
+  cloud.is_dense = true;
+  for (size_t i = 0; i < cloud.points.size (); ++i)
   {
-    std::cerr << "No test file given. Please download `table_scene_mug_stereo_textured.pcd` and pass its path to the test." << std::endl;
-    return (-1);
+    cloud.points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
+    cloud.points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
+    cloud.points[i].z = 10;
   }
 
-  sensor_msgs::PointCloud2 cloud_blob;
-  if (loadPCDFile (argv[1], cloud_blob) < 0)
-  {
-    std::cerr << "Failed to read test file. Please download `table_scene_mug_stereo_textured.pcd` and pass its path to the test." << std::endl;
-    return (-1);
-  }
-
-  fromROSMsg (cloud_blob, cloud);
-
-//  normalEstimator.setInputData(
-//    reinterpret_cast<float*>(&(cloud.points[0])),
-//    cloud.width, cloud.height,
-//    3, sizeof(cloud.points[0])/sizeof(float), (sizeof(cloud.points[0])/sizeof(float))*cloud.width, 10.0f);
-  
-//  normalEstimator.setRectSize(2, 2);
-  
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
   
