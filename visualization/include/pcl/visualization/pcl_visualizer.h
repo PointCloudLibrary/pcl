@@ -269,18 +269,6 @@ namespace pcl
         addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
                        const std::string &id = "cloud", int viewport = 0);
 
-        /** \brief Add a Point Cloud (templated) to screen. 
-          * \param cloud the input point cloud dataset
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
-          */
-        inline bool 
-        addPointCloud (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
-                       const std::string &id = "cloud", int viewport = 0)
-        {
-          return (addPointCloud<pcl::PointXYZ> (cloud, id, viewport));
-        }
-
         /** \brief Updates the XYZ data for an existing cloud object id on screen. 
           * \param cloud the input point cloud dataset
           * \param id the point cloud object id to update (default: cloud)
@@ -311,16 +299,16 @@ namespace pcl
                           const PointCloudColorHandler<PointT> &color_handler,
                           const std::string &id = "cloud");
 
-         /** \brief Updates the XYZ data for an existing cloud object id on screen. 
+         /** \brief Updates the XYZRGB data for an existing cloud object id on screen. 
            * \param cloud the input point cloud dataset
            * \param color_handler the RGB color handler to use 
            * \param id the point cloud object id to update (default: cloud)
            * \return false if no cloud with the specified ID was found
            */
-        template <typename PointT> bool 
-        updatePointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
-                          const PointCloudColorHandlerRGBField<PointT> &color_handler,
-                          const std::string &id = "cloud");
+/*        bool 
+        updatePointCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud, 
+                          const PointCloudColorHandlerRGBField<pcl::PointXYZRGB> &color_handler,
+                          const std::string &id = "cloud");*/
 
         /** \brief Add a Point Cloud (templated) to screen. 
           * \param cloud the input point cloud dataset
@@ -409,6 +397,57 @@ namespace pcl
                        const PointCloudColorHandler<PointT> &color_handler,
                        const PointCloudGeometryHandler<PointT> &geometry_handler,
                        const std::string &id = "cloud", int viewport = 0);
+
+        /** \brief Add a PointXYZ Point Cloud to screen. 
+          * \param cloud the input point cloud dataset
+          * \param id the point cloud object id (default: cloud)
+          * \param viewport the view port where the Point Cloud should be added (default: all)
+          */
+        inline bool 
+        addPointCloud (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
+                       const std::string &id = "cloud", int viewport = 0)
+        {
+          return (addPointCloud<pcl::PointXYZ> (cloud, id, viewport));
+        }
+
+
+        /** \brief Add a PointXYZRGB Point Cloud to screen. 
+          * \param cloud the input point cloud dataset
+          * \param id the point cloud object id (default: cloud)
+          * \param viewport the view port where the Point Cloud should be added (default: all)
+          */
+        inline bool 
+        addPointCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud, 
+                       const std::string &id = "cloud", int viewport = 0)
+        {
+          pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler (cloud);
+          return (addPointCloud<pcl::PointXYZRGB> (cloud, color_handler, id, viewport));
+        }
+
+        /** \brief Updates the XYZ data for an existing cloud object id on screen. 
+          * \param cloud the input point cloud dataset
+          * \param id the point cloud object id to update (default: cloud)
+          * \return false if no cloud with the specified ID was found
+          */
+        inline bool 
+        updatePointCloud (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
+                          const std::string &id = "cloud")
+        {
+          return (updatePointCloud<pcl::PointXYZ> (cloud, id));
+        }
+
+        /** \brief Updates the XYZRGB data for an existing cloud object id on screen. 
+          * \param cloud the input point cloud dataset
+          * \param id the point cloud object id to update (default: cloud)
+          * \return false if no cloud with the specified ID was found
+          */
+        inline bool 
+        updatePointCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud, 
+                          const std::string &id = "cloud")
+        {
+          pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler (cloud);
+          return (updatePointCloud<pcl::PointXYZRGB> (cloud, color_handler, id));
+        }
 
         /** \brief Add a PolygonMesh object to screen
           * \param polymesh the polygonal mesh
@@ -784,8 +823,10 @@ namespace pcl
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
-            //cout << "Exit event called.\n";
+            cout << "Exit event called.\n";
             pcl_visualizer->interactor_->stopped = true;
+            //this tends to close the window...
+            pcl_visualizer->interactor_->stopLoop ();
           }
           PCLVisualizer* pcl_visualizer;
         };
