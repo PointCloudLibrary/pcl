@@ -41,6 +41,7 @@
 #include <iostream>
 using namespace std;
 
+#include <boost/thread/thread.hpp>
 #include "pcl/common/common_headers.h"
 #include "pcl/common/common_headers.h"
 #include "pcl/range_image/range_image.h"
@@ -194,7 +195,7 @@ int main (int argc, char** argv)
   {
     ImageWidgetWX::spinOnce ();  // process GUI events
     viewer.spinOnce (100);
-    usleep (100000);
+    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
     
     if (live_update)
     {
