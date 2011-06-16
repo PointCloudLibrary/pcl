@@ -94,11 +94,16 @@ TEST (PCL, IINormalEstimation)
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (size_t v = 0; v < cloud.height; ++v)
   {
-    EXPECT_NEAR (fabs (output.points[i].normal_x),   0, 1e-2);
-    EXPECT_NEAR (fabs (output.points[i].normal_y),   0, 1e-2);
-    EXPECT_NEAR (fabs (output.points[i].normal_z), 1.0, 1e-2);
+    for (size_t u = 0; u < cloud.width; ++u)
+    {
+      if (!pcl_isfinite(output.points[v*cloud.width+u].normal_x) && !pcl_isfinite(output.points[v*cloud.width+u].normal_y) && !pcl_isfinite(output.points[v*cloud.width+u].normal_z)) continue;
+
+      EXPECT_NEAR (fabs (output.points[v*cloud.width+u].normal_x),   0, 1e-2);
+      EXPECT_NEAR (fabs (output.points[v*cloud.width+u].normal_y),   0, 1e-2);
+      EXPECT_NEAR (fabs (output.points[v*cloud.width+u].normal_z), 1.0, 1e-2);
+    }
   }
 }
 
@@ -111,12 +116,21 @@ main (int argc, char** argv)
   cloud.width = 320;
   cloud.height = 240;
   cloud.is_dense = true;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (size_t v = 0; v < cloud.height; ++v)
   {
-    cloud.points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-    cloud.points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-    cloud.points[i].z = 10;
+    for (size_t u = 0; u < cloud.width; ++u)
+    {
+      cloud.points[v*cloud.width+u].x = u;
+      cloud.points[v*cloud.width+u].y = v;
+      cloud.points[v*cloud.width+u].z = 10;
+    }
   }
+  //for (size_t i = 0; i < cloud.points.size (); ++i)
+  //{
+  //  cloud.points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
+  //  cloud.points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
+  //  cloud.points[i].z = 10;
+  //}
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

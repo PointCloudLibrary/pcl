@@ -203,7 +203,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     normal.normal_x = normal_x*scale;
     normal.normal_y = normal_y*scale;
     normal.normal_z = normal_z*scale;
-    normal.curvature = 0.0f;
+    normal.curvature = std::numeric_limits<float>::quiet_NaN ();
     return;
   }
   else if (normal_estimation_method_ == AVERAGE_3D_GRADIENT)
@@ -224,10 +224,10 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     
     if (normal_length == 0.0f)
     {
-      normal.normal_x = 0.0f;
-      normal.normal_y = 0.0f;
-      normal.normal_z = 0.0f;
-      normal.curvature = 0.0f;
+      normal.normal_x = std::numeric_limits<float>::quiet_NaN ();
+      normal.normal_y = std::numeric_limits<float>::quiet_NaN ();
+      normal.normal_z = std::numeric_limits<float>::quiet_NaN ();
+      normal.curvature = std::numeric_limits<float>::quiet_NaN ();
       return;
     }
     
@@ -236,7 +236,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     normal.normal_x = normal_x * scale;
     normal.normal_y = normal_y * scale;
     normal.normal_z = normal_z * scale;
-    normal.curvature = 0.0f;
+    normal.curvature = std::numeric_limits<float>::quiet_NaN ();
     return;
   }
   else if (normal_estimation_method_ == AVERAGE_DEPTH_CHANGE)
@@ -267,10 +267,10 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     
     if (normal_length == 0.0f)
     {
-      normal.normal_x = 0.0f;
-      normal.normal_y = 0.0f;
-      normal.normal_z = 0.0f;
-      normal.curvature = 0.0f;
+      normal.normal_x = std::numeric_limits<float>::quiet_NaN ();
+      normal.normal_y = std::numeric_limits<float>::quiet_NaN ();
+      normal.normal_z = std::numeric_limits<float>::quiet_NaN ();
+      normal.curvature = std::numeric_limits<float>::quiet_NaN ();
       return;
     }
     
@@ -279,14 +279,14 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     normal.normal_x = normal_x*scale;
     normal.normal_y = normal_y*scale;
     normal.normal_z = normal_z*scale;
-    normal.curvature = 0.0f;
+    normal.curvature = std::numeric_limits<float>::quiet_NaN ();
     
     return;
   }
-  normal.normal_x = 0.0f;
-  normal.normal_y = 0.0f;
-  normal.normal_z = 0.0f;
-  normal.curvature = 0.0f;
+  normal.normal_x = std::numeric_limits<float>::quiet_NaN ();
+  normal.normal_y = std::numeric_limits<float>::quiet_NaN ();
+  normal.normal_z = std::numeric_limits<float>::quiet_NaN ();
+  normal.curvature = std::numeric_limits<float>::quiet_NaN ();
   return;
 }
 
@@ -377,16 +377,21 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
 
   // Estimate normals
+  PointOutT zero_normal;
+  zero_normal.normal_x = std::numeric_limits<float>::quiet_NaN ();
+  zero_normal.normal_y = std::numeric_limits<float>::quiet_NaN ();
+  zero_normal.normal_z = std::numeric_limits<float>::quiet_NaN ();
+  zero_normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+
   output.width  = input_->width;
   output.height = input_->height;
   output.points.resize (input_->width * input_->height);
 
-  PointOutT zero_normal;
-  zero_normal.normal_x = 0;
-  zero_normal.normal_y = 0;
-  zero_normal.normal_z = 0;
+  for (size_t i = 0; i < output.points.size(); ++i)
+  {
+    output.points[i] = zero_normal;
+  }
 
-  int i = 0;
   if (use_depth_dependent_smoothing_)
   {
     for (int row_index = normal_smoothing_size_; row_index < input_->height-normal_smoothing_size_; ++row_index)
@@ -403,15 +408,14 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
           if (smoothing > 2.0f)
           {
             setRectSize (smoothing, smoothing);
-            computePointNormal (col_index, row_index, output.points[i]);
+            computePointNormal (col_index, row_index, output.points[row_index*input_->width + col_index]);
           }
           else
-            output.points[i] = zero_normal;
+            output.points[row_index*input_->width + col_index] = zero_normal;
         }
         else
-          output.points[i] = zero_normal;
+          output.points[row_index*input_->width + col_index] = zero_normal;
       }
-      ++i;
     }
   }
   else
@@ -423,7 +427,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
         const float depth = input_->points[row_index*input_->width + col_index].z;
         if (!pcl_isfinite (depth))
         {
-          output.points[i] = zero_normal;
+          output.points[row_index*input_->width + col_index] = zero_normal;
           continue;
         }
 
@@ -435,14 +439,13 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
           if (smoothing > 2.0f)
           {
             setRectSize (smoothing, smoothing);
-            computePointNormal (col_index, row_index, output.points[i]);
+            computePointNormal (col_index, row_index, output.points[row_index*input_->width + col_index]);
           }
           else
-            output.points[i] = zero_normal;
+            output.points[row_index*input_->width + col_index] = zero_normal;
         }
         else
-          output.points[i] = zero_normal;
-        ++i;
+          output.points[row_index*input_->width + col_index] = zero_normal;
       }
     }
   }
