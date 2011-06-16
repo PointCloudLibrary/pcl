@@ -160,9 +160,9 @@ main (int argc, char** argv)
       {
         FPS_CALC ("drawing");
         pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> handler (g_cloud);
-        if (!p->updatePointCloud<pcl::PointXYZRGB> (g_cloud, handler, "OpenNICloud"))
+        if (!p->updatePointCloud (g_cloud, handler, "OpenNICloud"))
         {
-          p->addPointCloud<pcl::PointXYZRGB> (g_cloud, handler, "OpenNICloud");
+          p->addPointCloud (g_cloud, handler, "OpenNICloud");
           p->resetCameraViewpoint ("OpenNICloud");
         }
       }

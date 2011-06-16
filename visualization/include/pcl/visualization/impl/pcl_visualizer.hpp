@@ -775,9 +775,10 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool
-pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
-                                                     const PointCloudColorHandlerRGBField<PointT> &color_handler,
+/* Optimized function: need to do something with the signature as it colides with the general T one
+bool
+pcl::visualization::PCLVisualizer::updatePointCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud, 
+                                                     const PointCloudColorHandlerRGBField<pcl::PointXYZRGB> &color_handler,
                                                      const std::string &id)
 {
   win_->SetAbortRender (1);
@@ -850,7 +851,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   // Update the mapper
   reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
   return (true);
-}
+}*/
 
 
 #endif
