@@ -236,16 +236,19 @@ struct _PointXYZRGB
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   union
   {
-    struct 
+    union
     {
-      uint8_t b;
-      uint8_t g;
-      uint8_t r;
-      uint8_t _unused;
+      struct 
+      {
+        uint8_t b;
+        uint8_t g;
+        uint8_t r;
+        uint8_t _unused;
+      };
+      float rgb;
     };
-    float rgb;
     uint32_t rgba;
-  } EIGEN_ALIGN16;
+  };
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 } EIGEN_ALIGN16;
 
