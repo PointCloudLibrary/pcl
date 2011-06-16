@@ -19,11 +19,21 @@ else(NOT VTK_FOUND)
     set(REASON)
     include (${VTK_USE_FILE})
 endif(NOT VTK_FOUND)
+
+# OpenNI found?
+if(NOT OPENNI_FOUND)
+    set(DEFAULT FALSE)
+    set(REASON "OpenNI was not found.")
+else(NOT OPENNI_FOUND)
+    set(DEFAULT TRUE)
+    set(REASON)
+endif(NOT OPENNI_FOUND)
+
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
-  if (VTK_FOUND)
+  if (VTK_FOUND AND OPENNI_FOUND)
     #PCL_ADD_EXECUTABLE(surflet_feature_object_recognition ${SUBSYS_NAME} src/surflet_feature_object_recognition.cpp)
     #target_link_libraries(surflet_feature_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_visualization)
     
