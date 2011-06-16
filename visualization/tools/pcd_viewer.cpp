@@ -47,18 +47,7 @@
 #include <pcl/console/time.h>
 #include <vtkPolyDataReader.h>
 
-using pcl::console::print_color;
-using pcl::console::print_error;
-using pcl::console::print_error;
-using pcl::console::print_warn;
-using pcl::console::print_info;
-using pcl::console::print_debug;
-using pcl::console::print_value;
-using pcl::console::print_highlight;
-using pcl::console::TT_BRIGHT;
-using pcl::console::TT_RED;
-using pcl::console::TT_GREEN;
-using pcl::console::TT_BLUE;
+using namespace pcl::console;
 
 typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
 typedef ColorHandler::Ptr ColorHandlerPtr;
@@ -83,7 +72,7 @@ isValidFieldName (const std::string &field)
 }
 
 bool
-  isMultiDimensionalFeatureField (const sensor_msgs::PointField &field)
+isMultiDimensionalFeatureField (const sensor_msgs::PointField &field)
 {
   if (field.count > 1) 
     return (true);
@@ -91,7 +80,7 @@ bool
 }
 
 void
-  printHelp (int argc, char **argv)
+printHelp (int argc, char **argv)
 {
   print_error ("Syntax is: %s <file_name 1..N>.<pcd or vtk> <options>\n", argv[0]);
   print_info ("  where options are:\n");
@@ -126,7 +115,7 @@ void
 
 /* ---[ */
 int
-  main (int argc, char** argv)
+main (int argc, char** argv)
 {
   srand (time (0));
 
@@ -171,7 +160,7 @@ int
   vtk_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".vtk");
   if (p_file_indices.size () == 0 && vtk_file_indices.size () == 0)
   {
-    print_error ("No .PCDor .VTK file given. Nothing to visualize.\n");
+    print_error ("No .PCD or .VTK file given. Nothing to visualize.\n");
     return (-1);
   }
 
