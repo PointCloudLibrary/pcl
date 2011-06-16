@@ -260,6 +260,23 @@ contributions on any tutorial.
      .. |fi_5| image:: images/extract_indices.jpg
                :height: 100px
 
+* Keypoints
+
+  * :ref:`narf_keypoint_extraction`
+    
+     ======  ======
+     |kp_1|  Title: **How to extract NARF keypoints from a range image**
+
+             Author: *Bastian Steder*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial, we will learn how to extract NARF keypoints from a range image.
+     ======  ======
+     
+     .. |kp_1| image:: images/narf_keypoint_extraction.png
+               :height: 100px
+
 * Features
 
   * :ref:`features_tutorial`
