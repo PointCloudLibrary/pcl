@@ -143,7 +143,6 @@ namespace pcl
         try
         {
           value = boost::numeric_cast<Type>(boost::lexical_cast<double>(st));
-          std::cout << "value " << value << std::endl;
         }
         catch (...)
         {
