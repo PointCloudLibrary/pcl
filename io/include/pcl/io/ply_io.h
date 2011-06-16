@@ -161,13 +161,6 @@ namespace pcl
         * \param file_name the output file name
         * \param cloud the point cloud data message
         * \param precision the specified output numeric stream precision (default: 7)
-        *
-        * Caution: PointCloud structures containing an RGB field have
-        * traditionally used packed float values to store RGB data. Storing a
-        * float as ASCII can introduce variations to the smallest bits, and
-        * thus significantly alter the data. This is a known issue, and the fix
-        * involves switching RGB data to be stored as a packed integer in
-        * future versions of PCL.
         */
       int writeASCII (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
                       const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
@@ -189,13 +182,6 @@ namespace pcl
         * \param orientation the sensor acquisition orientation
         * \param binary set to true if the file is to be written in a binary
         * PLY format, false (default) for ASCII
-        *
-        * Caution: PointCloud structures containing an RGB field have
-        * traditionally used packed float values to store RGB data. Storing a
-        * float as ASCII can introduce variations to the smallest bits, and
-        * thus significantly alter the data. This is a known issue, and the fix
-        * involves switching RGB data to be stored as a packed integer in
-        * future versions of PCL.
         */
       inline int
       write (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
@@ -214,13 +200,6 @@ namespace pcl
         * \param cloud the point cloud data message (boost shared pointer)
         * \param binary set to true if the file is to be written in a binary
         * PLY format, false (default) for ASCII
-        *
-        * Caution: PointCloud structures containing an RGB field have
-        * traditionally used packed float values to store RGB data. Storing a
-        * float as ASCII can introduce variations to the smallest bits, and
-        * thus significantly alter the data. This is a known issue, and the fix
-        * involves switching RGB data to be stored as a packed integer in
-        * future versions of PCL.
         */
       inline int
       write (const std::string &file_name, const sensor_msgs::PointCloud2::ConstPtr &cloud, 
@@ -236,13 +215,6 @@ namespace pcl
         * \param cloud the pcl::PointCloud data
         * \param binary set to true if the file is to be written in a binary
         * PLY format, false (default) for ASCII
-        *
-        * Caution: PointCloud structures containing an RGB field have
-        * traditionally used packed float values to store RGB data. Storing a
-        * float as ASCII can introduce variations to the smallest bits, and
-        * thus significantly alter the data. This is a known issue, and the fix
-        * involves switching RGB data to be stored as a packed integer in
-        * future versions of PCL.
         */
       template<typename PointT> inline int
       write (const std::string &file_name, 
@@ -271,7 +243,7 @@ namespace pcl
   {
     /* /\** \brief Load a PLY v.6 file into a templated PointCloud type. */
     /*   * */
-    /*   * Any PLY files > v.6 will generate a warning as a */
+    /*   * Any PLY files containg sensor data will generate a warning as a */
     /*   * sensor_msgs/PointCloud2 message cannot hold the sensor origin. */
     /*   * */
     /*   * \param file_name the name of the file to load */
@@ -289,8 +261,8 @@ namespace pcl
     /*   * \param file_name the name of the file to load */
     /*   * \param cloud the resultant templated point cloud */
     /*   * \param origin the sensor acquisition origin (only for > PLY_V7 - null if not present) */
-    /*   * \param orientation the sensor acquisition orientation (only for > */
-    /*   * PLY_V7 - identity if not present) */
+    /*   * \param orientation the sensor acquisition orientation if availble, 
+    /*   * identity if not present */
     /*   * \ingroup io */
     /*   *\/ */
     /* inline int */
@@ -318,13 +290,6 @@ namespace pcl
       * \param file_name the output file name
       * \param cloud the point cloud data message
       * \param binary_mode true for binary mode, false (default) for ASCII
-      *
-      * Caution: PointCloud structures containing an RGB field have
-      * traditionally used packed float values to store RGB data. Storing a
-      * float as ASCII can introduce variations to the smallest bits, and
-      * thus significantly alter the data. This is a known issue, and the fix
-      * involves switching RGB data to be stored as a packed integer in
-      * future versions of PCL.
       * \ingroup io
       */
     inline int 
@@ -342,13 +307,6 @@ namespace pcl
       * \param file_name the output file name
       * \param cloud the point cloud data message
       * \param binary_mode true for binary mode, false (default) for ASCII
-      *
-      * Caution: PointCloud structures containing an RGB field have
-      * traditionally used packed float values to store RGB data. Storing a
-      * float as ASCII can introduce variations to the smallest bits, and
-      * thus significantly alter the data. This is a known issue, and the fix
-      * involves switching RGB data to be stored as a packed integer in
-      * future versions of PCL.
       * \ingroup io
       */
     template<typename PointT> inline int
@@ -361,17 +319,8 @@ namespace pcl
     /** 
       * \brief Templated version for saving point cloud data to a PLY file
       * containing a specific given cloud format.
-      *
-      *      This version is to retain backwards compatibility.
       * \param file_name the output file name
       * \param cloud the point cloud data message
-      *
-      * Caution: PointCloud structures containing an RGB field have
-      * traditionally used packed float values to store RGB data. Storing a
-      * float as ASCII can introduce variations to the smallest bits, and
-      * thus significantly alter the data. This is a known issue, and the fix
-      * involves switching RGB data to be stored as a packed integer in
-      * future versions of PCL.
       * \ingroup io
       */
     template<typename PointT> inline int
@@ -384,10 +333,6 @@ namespace pcl
     /** 
       * \brief Templated version for saving point cloud data to a PLY file
       * containing a specific given cloud format.
-      *
-      *      This version is to retain backwards compatibility.
-      * \param file_name the output file name
-      * \param cloud the point cloud data message
       * \ingroup io
       */
     template<typename PointT> inline int
@@ -406,13 +351,6 @@ namespace pcl
       * \param cloud the point cloud data message
       * \param indices the set of indices to save
       * \param binary_mode true for binary mode, false (default) for ASCII
-      *
-      * Caution: PointCloud structures containing an RGB field have
-      * traditionally used packed float values to store RGB data. Storing a
-      * float as ASCII can introduce variations to the smallest bits, and
-      * thus significantly alter the data. This is a known issue, and the fix
-      * involves switching RGB data to be stored as a packed integer in
-      * future versions of PCL.
       * \ingroup io
       */
     template<typename PointT> int
