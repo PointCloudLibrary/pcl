@@ -174,14 +174,11 @@ int main (int argc, char** argv)
   PointCloudColorHandlerCustom<pcl::PointWithRange> range_image_color_handler (range_image_ptr, 0, 0, 0);
   viewer.addPointCloud (range_image_ptr, range_image_color_handler, "range image");
   viewer.setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 1, "range image");
-  viewer.initCameraParameters ();
-  setViewerPose(viewer, range_image.getTransformationToWorldSystem ());
-  cout << PVARN(range_image.getTransformationToWorldSystem ());
-  cout << PVARN(viewer.getViewerPose());
-  
-  viewer.addCoordinateSystem (1.0f);
+  //viewer.addCoordinateSystem (1.0f);
   //PointCloudColorHandlerCustom<PointType> point_cloud_color_handler (point_cloud_ptr, 150, 150, 150);
   //viewer.addPointCloud (point_cloud_ptr, point_cloud_color_handler, "original point cloud");
+  viewer.initCameraParameters ();
+  setViewerPose(viewer, range_image.getTransformationToWorldSystem ());
   
   // --------------------------
   // -----Show range image-----

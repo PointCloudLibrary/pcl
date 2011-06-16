@@ -28,19 +28,20 @@ The interesting part begins here:
   ...
   PCLVisualizer viewer ("3D Viewer");
   viewer.setBackgroundColor (1, 1, 1);
-  PointCloudColorHandlerCustom<pcl::PointWithRange> range_image_color_handler (range_image_ptr, 150, 150, 150);
+  PointCloudColorHandlerCustom<pcl::PointWithRange> range_image_color_handler (range_image_ptr, 0, 0, 0);
   viewer.addPointCloud (range_image_ptr, range_image_color_handler, "range image");
   viewer.setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 1, "range image");
+  //viewer.addCoordinateSystem (1.0f);
+  //PointCloudColorHandlerCustom<PointType> point_cloud_color_handler (point_cloud_ptr, 150, 150, 150);
+  //viewer.addPointCloud (point_cloud_ptr, point_cloud_color_handler, "original point cloud");
   viewer.initCameraParameters ();
   setViewerPose(viewer, range_image.getTransformationToWorldSystem ());
-  //viewer.addCoordinateSystem (1.0f);
-  //PointCloudColorHandlerCustom<PointType> point_cloud_color_handler (point_cloud_ptr, 0, 0, 0);
-  //viewer.addPointCloud (point_cloud_ptr, point_cloud_color_handler, "original point cloud");
   ...
 
 This creates the 3D viewer object, sets the background color to white, adds the range image (as a point cloud) with color black and point size 1 and sets the viewing position in the viewer to the sensor position from the range image (using a function defined above the main). The commented part can be used to add a coordinate system and also visualize the original point cloud.
 
 The next part visualizes the range image in 2D, using color coding for the range values:
+
 .. code-block:: cpp
 
   ...
