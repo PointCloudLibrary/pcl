@@ -59,7 +59,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::setInputData (
   const int row_stride, const float distance_threshold,
   const NormalEstimationMethod normal_estimation_method )
 {
-  float *data_ = reinterpret_cast<float*>(const_cast<PointInT*>(&(input_->points[0])));
+  float *data_ = reinterpret_cast<float*>((PointInT*)(&(input_->points[0])));
   width_ = width;
   height_ = height;
   dimensions_ = dimensions;
