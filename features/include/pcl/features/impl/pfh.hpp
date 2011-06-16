@@ -55,7 +55,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePairFeatures (
 
   if (distance_sqr == 0)
   {
-    PCL_ERROR ("Euclidean distance between points %d and %d is 0!\n", p_idx, q_idx);
+    PCL_DEBUG ("Euclidean distance between points %d and %d is 0!\n", p_idx, q_idx);
     f1 = f2 = f3 = f4 = 0;
     return (false);
   }
@@ -78,7 +78,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePairFeatures (
   distance_sqr = v.squaredNorm ();
   if (distance_sqr == 0)
   {
-    PCL_ERROR ("Norm of Delta x U is 0 for point %d and %d!\n", p_idx, q_idx);
+    PCL_DEBUG ("Norm of Delta x U is 0 for point %d and %d!\n", p_idx, q_idx);
     f1 = f2 = f3 = f4 = 0;
     return (false);
   }
