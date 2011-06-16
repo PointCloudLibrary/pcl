@@ -36,7 +36,10 @@ else(UNIX OR APPLE)
   endif(MSVC)
 endif()
 if (__COMPILER_PATHSCALE)
-  add_definitions("-Wno-uninitialized -zerouv -pthread -ffast-stdlib -fstrict-stl")
+  add_definitions("-Wno-uninitialized -zerouv -pthread")
+endif()
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  add_definitions("-std=gnu++0x")
 endif()
 
 # ---[ Project folders
