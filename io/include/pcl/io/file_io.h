@@ -40,10 +40,68 @@
 
 #include "pcl/io/io.h"
 #include <boost/numeric/conversion/cast.hpp>
-#include <boost/lexical_cast.hpp>
+#include <cmath>
 
 namespace pcl
 {
+
+  /** templated atoi() / atof() wrapper
+    * \param nptr the string to convert
+    */
+  template <typename T> inline T
+  pcl_atoa(const char *nptr)
+  {
+    T::unimplemented_function;
+  }
+
+  template <> inline char
+  pcl_atoa<char>(const char *nptr)
+  {
+    return atoi(nptr);
+  }
+
+  template <> inline unsigned char
+  pcl_atoa<unsigned char>(const char *nptr)
+  {
+    return atoi(nptr);
+  }
+
+  template <> inline signed char
+  pcl_atoa<signed char>(const char *nptr)
+  {
+    return atoi(nptr);
+  }
+
+  template <> inline short int
+  pcl_atoa<short int>(const char *nptr)
+  {
+    return atoi(nptr);
+  }
+
+  template <> inline short unsigned int
+  pcl_atoa<short unsigned int>(const char *nptr)
+  {
+    return atoi(nptr);
+  }
+
+  template <> inline unsigned int
+  pcl_atoa<unsigned int>(const char *nptr)
+  {
+    return atoi(nptr);
+  }
+
+  template <> inline float
+  pcl_atoa<float>(const char *nptr)
+  {
+    return atof(nptr);
+  }
+
+  template <> inline double
+  pcl_atoa<double>(const char *nptr)
+  {
+    return atof(nptr);
+  }
+
   /** \brief Point Cloud Data (FILE) file format reader interface.
     * Any (FILE) format file reader should implement its virtual methodes.
     * \author Nizar Sallem
@@ -128,6 +186,10 @@ namespace pcl
       }
 
       /** \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
+        * 
+        * Uses aoti/atof to do the conversion.
+        * Checks if the st is "nan" and converts it accordingly.
+        *
         * \param st the string containing the value to convert and copy
         * \param cloud the cloud to copy it to
         * \param point_index the index of the point
@@ -140,17 +202,13 @@ namespace pcl
       {
         //char value = (char)atoi (st.at (d + c).c_str ());
         Type value;
-        try
-        {
-          value = boost::numeric_cast<Type>(boost::lexical_cast<double>(st));
-        }
-        catch (...)
+        if (st == "nan")
         {
           value = std::numeric_limits<Type>::quiet_NaN ();
           cloud.is_dense = false;
         }
-        if (!pcl_isfinite (value))
-          cloud.is_dense = false;
+        else
+          value = pcl_atoa<Type>(st.c_str ());
 
         memcpy (&cloud.data[point_index * cloud.point_step + 
                             cloud.fields[field_idx].offset + 
@@ -221,6 +279,29 @@ namespace pcl
 
         // Save the data
         return (write (file_name, blob, origin, orientation, binary));
+      }
+
+      /** \brief insers a value of type Type (uchar, char, uint, int, float, double, ...) into a stringstream
+        *
+        * if the value is NaN, it inserst "nan".
+        *
+        * \param cloud the cloud to copy from
+        * \param point_index the index of the point
+        * \param point_size the size of the point in the cloud
+        * \param field_idx the index of the dimension/field
+        * \param fields_count the current fields count
+        * \param stream the ostringstream to copy into
+        */
+      template <typename Type>
+        inline void
+      copyValueString (const sensor_msgs::PointCloud2 &cloud, unsigned int point_index, int point_size, unsigned int field_idx, unsigned int fields_count, std::ostringstream &stream)
+      {
+        Type value;
+        memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
+        if (pcd_isnan(value))
+          stream << "nan";
+        else
+          stream << boost::numeric_cast<Type>(value);
       }
   };
 }
