@@ -723,8 +723,6 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
   // Write the header information
   fs << generateHeaderASCII (cloud, origin, orientation) << "DATA ascii\n";
 
-  std::ostringstream stream;
-
   // Iterate through the points
   for (int i = 0; i < nr_points; ++i)
   {
@@ -744,42 +742,42 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
         {
           case sensor_msgs::PointField::INT8:
           {
-            copyValueString<pcl::traits::asType<sensor_msgs::PointField::INT8>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::INT8>::type>(cloud, i, point_size, d, c, fs);
             break;
           }
           case sensor_msgs::PointField::UINT8:
           {
-            copyValueString<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type>(cloud, i, point_size, d, c, fs);
             break;
           }
           case sensor_msgs::PointField::INT16:
           {
-            copyValueString<pcl::traits::asType<sensor_msgs::PointField::INT16>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::INT16>::type>(cloud, i, point_size, d, c, fs);
             break;
           }
           case sensor_msgs::PointField::UINT16:
           {
-            copyValueString<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type>(cloud, i, point_size, d, c, fs);
             break;
           }
           case sensor_msgs::PointField::INT32:
           {
-            copyValueString<pcl::traits::asType<sensor_msgs::PointField::INT32>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::INT32>::type>(cloud, i, point_size, d, c, fs);
             break;
           }
           case sensor_msgs::PointField::UINT32:
           {
-            copyValueString<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type>(cloud, i, point_size, d, c, fs);
             break;
           }
           case sensor_msgs::PointField::FLOAT32:
           {
-            copyValueString<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type>(cloud, i, point_size, d, c, fs);
             break;
           }
           case sensor_msgs::PointField::FLOAT64:
           {
-            copyValueString<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type>(cloud, i, point_size, d, c, fs);
             break;
           }
           default:
@@ -788,14 +786,10 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
         }
 
         if (d < cloud.fields.size () - 1 || c < (int)cloud.fields[d].count - 1)
-          stream << " ";
+          fs << " ";
       }
     }
-    // Copy the stream, trim it, and write it to disk
-    std::string result = stream.str ();
-    boost::trim (result);
-    stream.str ("");
-    fs << result << std::endl;
+    fs << std::endl;
   }
   fs.close ();              // Close file
   return (0);
