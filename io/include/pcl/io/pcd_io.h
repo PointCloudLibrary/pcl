@@ -233,29 +233,6 @@ namespace pcl
                             cloud.fields[field_idx].offset + 
                             fields_count * sizeof (Type)], &value, sizeof (Type));
       }
-
-      /** \brief insers a value of type Type (uchar, char, uint, int, float, double, ...) into a stringstream
-        *
-        * if the value is NaN, it inserst "nan".
-        *
-        * \param cloud the cloud to copy from
-        * \param point_index the index of the point
-        * \param point_size the size of the point in the cloud
-        * \param field_idx the index of the dimension/field
-        * \param fields_count the current fields count
-        * \param stream the ostringstream to copy into
-        */
-      template <typename Type>
-        inline void
-      copyValueString (const sensor_msgs::PointCloud2 &cloud, unsigned int point_index, int point_size, unsigned int field_idx, unsigned int fields_count, std::ostringstream &stream)
-      {
-        Type value;
-        memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
-        if (pcl_isnan(value))
-          stream << "nan";
-        else
-          stream << boost::numeric_cast<Type>(value);
-      }
   };
 
   /** \brief Point Cloud Data (PCD) file format writer.
@@ -392,6 +369,29 @@ namespace pcl
 
         // Save the data
         return (write (file_name, blob, origin, orientation, binary));
+      }
+
+      /** \brief insers a value of type Type (uchar, char, uint, int, float, double, ...) into a stringstream
+        *
+        * if the value is NaN, it inserst "nan".
+        *
+        * \param cloud the cloud to copy from
+        * \param point_index the index of the point
+        * \param point_size the size of the point in the cloud
+        * \param field_idx the index of the dimension/field
+        * \param fields_count the current fields count
+        * \param stream the ostringstream to copy into
+        */
+      template <typename Type>
+        inline void
+      copyValueString (const sensor_msgs::PointCloud2 &cloud, unsigned int point_index, int point_size, unsigned int field_idx, unsigned int fields_count, std::ostringstream &stream)
+      {
+        Type value;
+        memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
+        if (pcl_isnan(value))
+          stream << "nan";
+        else
+          stream << boost::numeric_cast<Type>(value);
       }
   };
 
