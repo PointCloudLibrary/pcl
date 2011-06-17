@@ -294,7 +294,7 @@ namespace pcl
         */
       template <typename Type>
         inline void
-      copyValueString (const sensor_msgs::PointCloud2 &cloud, unsigned int point_index, int point_size, unsigned int field_idx, unsigned int fields_count, std::ostringstream &stream)
+      copyValueString (const sensor_msgs::PointCloud2 &cloud, unsigned int point_index, int point_size, unsigned int field_idx, unsigned int fields_count, std::ostream &stream)
       {
         Type value;
         memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
