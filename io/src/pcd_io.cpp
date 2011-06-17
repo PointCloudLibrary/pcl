@@ -393,42 +393,42 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
             {
               case sensor_msgs::PointField::INT8:
               {
-                copyValue<pcl::traits::asType<sensor_msgs::PointField::INT8>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT8>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::UINT8:
               {
-                copyValue<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::INT16:
               {
-                copyValue<pcl::traits::asType<sensor_msgs::PointField::INT16>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT16>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::UINT16:
               {
-                copyValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::INT32:
               {
-                copyValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::UINT32:
               {
-                copyValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::FLOAT32:
               {
-                copyValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::FLOAT64:
               {
-                copyValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type> (st.at (d + c), cloud, idx, d, c);
                 break;
               }
               default:

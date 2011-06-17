@@ -135,7 +135,7 @@ namespace pcl
         * \param fields_count the current fields count
         */
       template <typename Type> inline void
-      copyValue (const std::string &st, sensor_msgs::PointCloud2 &cloud, 
+      copyStringValue (const std::string &st, sensor_msgs::PointCloud2 &cloud,
                  unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
       {
         //char value = (char)atoi (st.at (d + c).c_str ());
