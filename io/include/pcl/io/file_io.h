@@ -298,7 +298,7 @@ namespace pcl
       {
         Type value;
         memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
-        if (pcd_isnan(value))
+        if (pcl_isnan(value))
           stream << "nan";
         else
           stream << boost::numeric_cast<Type>(value);
