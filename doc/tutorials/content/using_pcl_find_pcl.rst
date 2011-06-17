@@ -33,6 +33,8 @@ And create a file named CMakeLists.txt that contains:
    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
    find_package(PCL 1.0 REQUIRED COMPONENTS io)
    include_directories(${PCL_INCLUDE_DIRS})
+   link_directories(${PCL_LIBRARY_DIRS})
+   add_definitions(${PCL_DEFINITIONS})
    add_executable(pcd_write_test pcd_write.cpp)
    target_link_libraries(pcd_write_test ${PCL_IO_LIBRARIES})
    
@@ -80,14 +82,17 @@ gracefully if it can't be found. As PCL is modular one can request:
 .. code-block:: cmake
 
    include_directories(${PCL_INCLUDE_DIRS})
+   link_directories(${PCL_LIBRARY_DIRS})
+   add_definitions(${PCL_DEFINITIONS})
 
 When PCL is found, several related variables are set:
 
 * `PCL_FOUND`: set to 1 if PCL is found, otherwise unset
 * `PCL_INCLUDE_DIRS`: set to the paths to PCL installed headers
 * `PCL_LIBRARIES`: set to the file names of the built and installed PCL libraries
-* `PCL_LINK_DIRECTORIES`: set to the paths to where PCL libraries reside
+* `PCL_LIBRARY_DIRS`: set to the paths to where PCL libraries reside
 * `PCL_VERSION`: the version of the found PCL 
+* `PCL_DEFINITIONS`: lists the needed preprocessor definitions and compiler flags
 
 To let cmake know about external headers you include in your project,
 one needs to use ``include_directories()`` macro. In our case
