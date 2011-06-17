@@ -594,6 +594,21 @@ contributions on any tutorial.
      .. |vi_2| image:: images/range_image_visualization.png
                :height: 100px
 
+  * :ref:`narf_descriptor_visualization`
+    
+     ======  ======
+     |vi_3|  Title: **Visualization of how the NARF descriptor is calculated**
+
+             Author: *Bastian Steder*
+
+             Compatibility: > PCL 1.0
+
+             This tutorial is about the visualization of how the NARF descriptor is calculated and to test how the descriptor distances between certain points in a range image behave.
+     ======  ======
+     
+     .. |vi_3| image:: images/narf_descriptor.jpg
+               :height: 100px
+
 * Applications
 
   * :ref:`template_alignment`
