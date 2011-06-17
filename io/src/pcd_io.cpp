@@ -744,58 +744,42 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
         {
           case sensor_msgs::PointField::INT8:
           {
-            char value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (char)], sizeof (char));
-            stream << boost::numeric_cast<int>(value);
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::INT8>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
           case sensor_msgs::PointField::UINT8:
           {
-            unsigned char value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned char)], sizeof (unsigned char));
-            stream << boost::numeric_cast<int>(value);
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
           case sensor_msgs::PointField::INT16:
           {
-            short value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (short)], sizeof (short));
-            stream << boost::numeric_cast<int>(value);
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::INT16>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
           case sensor_msgs::PointField::UINT16:
           {
-            unsigned short value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned short)], sizeof (unsigned short));
-            stream << boost::numeric_cast<int>(value);
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
           case sensor_msgs::PointField::INT32:
           {
-            int value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (int)], sizeof (int));
-            stream << value;
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::INT32>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
           case sensor_msgs::PointField::UINT32:
           {
-            unsigned int value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned int)], sizeof (unsigned int));
-            stream << value;
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
           case sensor_msgs::PointField::FLOAT32:
           {
-            float value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
-            stream << value;
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
           case sensor_msgs::PointField::FLOAT64:
           {
-            double value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (double)], sizeof (double));
-            stream << value;
+            copyValueString<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
           default:
