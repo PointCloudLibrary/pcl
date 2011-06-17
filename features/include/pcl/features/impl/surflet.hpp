@@ -36,8 +36,8 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_SURFLET_HPP_
-#define PCL_FEATURES_IMPL_SURFLET_HPP_
+#ifndef PCL_FEATURES_IMPL_SURFLET_H_
+#define PCL_FEATURES_IMPL_SURFLET_H_
 
 #include "pcl/features/surflet.h"
 #include <pcl/features/pfh.h>
@@ -195,7 +195,7 @@ pcl::SurfletEstimation<PointInT, PointOutT>::registerModelToScene (const pcl::Po
   /// consider every <scene_reference_point_sampling_rate>-th point as the reference point => fix s_r
   float f1, f2, f3, f4;
   int d1, d2, d3, d4;
-  for (size_t scene_reference_index = 0; scene_reference_index < cloud_scene_subsampled.width; scene_reference_index += scene_reference_point_sampling_rate)
+  for (size_t scene_reference_index = 0; scene_reference_index < cloud_scene_subsampled.points.size (); scene_reference_index += scene_reference_point_sampling_rate)
   {
     Eigen::Vector3f scene_reference_point = cloud_scene_subsampled.points[scene_reference_index].getVector3fMap (),
         scene_reference_normal = cloud_scene_subsampled_normals.points[scene_reference_index].getNormalVector3fMap ();
@@ -384,4 +384,4 @@ pcl::SurfletEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &outp
 #define PCL_INSTANTIATE_SurfletEstimation(T,OutT) template class PCL_EXPORTS pcl::SurfletEstimation<T,OutT>;
 
 
-#endif /* PCL_FEATURES_IMPL_SURFLET_HPP_ */
+#endif /* PCL_FEATURES_IMPL_SURFLET_H_ */

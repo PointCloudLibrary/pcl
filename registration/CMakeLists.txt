@@ -1,6 +1,6 @@
 set(SUBSYS_NAME registration)
 set(SUBSYS_DESC "Point cloud registration library")
-set(SUBSYS_DEPS common io kdtree sample_consensus)
+set(SUBSYS_DEPS common io kdtree sample_consensus features)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -20,6 +20,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ia_ransac.h
         include/pcl/${SUBSYS_NAME}/icp.h
         include/pcl/${SUBSYS_NAME}/icp_nl.h
+        include/pcl/${SUBSYS_NAME}/ppf_registration.h
         include/pcl/${SUBSYS_NAME}/registration.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h
@@ -38,18 +39,21 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/ia_ransac.hpp
         include/pcl/${SUBSYS_NAME}/impl/icp.hpp
         include/pcl/${SUBSYS_NAME}/impl/icp_nl.hpp
+        include/pcl/${SUBSYS_NAME}/impl/ppf_registration.hpp
         include/pcl/${SUBSYS_NAME}/impl/registration.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd.hpp
         include/pcl/${SUBSYS_NAME}/impl/transforms.hpp
         )
 
-    set(srcs src/registration.cpp)
+    set(srcs
+    	src/registration.cpp
+    	src/ppf_registration.cpp)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_kdtree pcl_sample_consensus)
+    target_link_libraries(${LIB_NAME} pcl_kdtree pcl_sample_consensus pcl_features)
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
                        "${EXT_DEPS}" "" "" "")

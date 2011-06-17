@@ -57,6 +57,7 @@
   (pcl::Boundary)             \
   (pcl::PrincipalCurvatures)  \
   (pcl::PFHSignature125)      \
+  (pcl::PPFSignature)         \
   (pcl::FPFHSignature33)      \
   (pcl::VFHSignature308)      \
   (pcl::Narf36)               \
@@ -614,6 +615,20 @@ inline std::ostream& operator << (std::ostream& os, const PFHSignature125& p)
 {
   for (int i = 0; i < 125; ++i) 
     os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 124 ? ", " : ")");
+  return (os);
+}
+
+/** \brief A point structure for storing the Point Pair Feature (PPF) values
+ * \ingroup common
+ */
+struct PPFSignature
+{
+  float f1, f2, f3, f4;
+  float alpha_m;
+};
+inline std::ostream& operator << (std::ostream& os, const PPFSignature& p)
+{
+  os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.alpha_m << ")";
   return (os);
 }
 
