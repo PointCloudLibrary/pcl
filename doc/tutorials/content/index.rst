@@ -369,6 +369,22 @@ contributions on any tutorial.
      
      .. |fe_6| image:: images/vfh_estimation.png
                :height: 100px
+  
+  * :ref:`narf_feature_extraction`
+    
+     ======  ======
+     |fe_7|  Title: **How to extract NARF features from a range image**
+
+             Author: *Bastian Steder*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial, we will learn how to extract NARF features from a range image.
+     ======  ======
+     
+     .. |fe_7| image:: images/narf_keypoint_extraction.png
+               :height: 100px
+
 
   
 * Segmentation
