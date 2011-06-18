@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: VFHClassifierNN.h 593 2011-04-19 15:52:09Z marton $
+ * $Id$
  *
  */
 
@@ -238,8 +238,8 @@ namespace pcl
 
       /** \brief Utility function for the default classification process.
         * \param testing_data the point clouds to be classified
-        * \param radius the maximum search radius in feature space
-        * \param minimum_score the score to be given to matches at maximum distance (>0)
+        * \param radius the maximum search radius in feature space -- 300 by default
+        * \param minimum_score the score to be given to matches at maximum distance (>0) -- 0.002 by default
         * \return pair of label and score for each relevant training class
         */
       ResultPtr classify (const sensor_msgs::PointCloud2 &testing_data, double radius = 300, double min_score = 0.002)
@@ -254,7 +254,7 @@ namespace pcl
 
       /** \brief Extract the VFH feature describing the given point cloud.
         * \param points point cloud for feature extraction
-        * \param radius search radius for normal estimation
+        * \param radius search radius for normal estimation -- 0.03 m by default
         * \return point cloud containing the extracted feature
         */
       FeatureCloudPtr computeFeature (const sensor_msgs::PointCloud2 &points, double radius = 0.03)

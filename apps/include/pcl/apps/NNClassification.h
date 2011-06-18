@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: NNClassification.h 593 2011-04-19 15:52:09Z marton $
+ * $Id$
  *
  */
 
@@ -71,7 +71,7 @@ namespace pcl
       typedef std::pair<std::vector<std::string>, std::vector<float> > Result;
       typedef boost::shared_ptr<Result> ResultPtr;
 
-      // TODO setIndices method and reset tree
+      // TODO setIndices method, distance metrics and reset tree
 
       /** \brief Setting the training features.
         * \param features the training features
@@ -80,7 +80,6 @@ namespace pcl
       {
         // Do not limit the number of dimensions used in the tree
         typename pcl::CustomPointRepresentation<PointT>::Ptr cpr (new pcl::CustomPointRepresentation<PointT> (INT_MAX, 0));
-        //boost::shared_ptr<pcl::CustomPointRepresentation<PointT> > cpr (new pcl::CustomPointRepresentation<PointT> (INT_MAX, 0));
         tree_.reset (new pcl::KdTreeFLANN<PointT>);
         tree_->setPointRepresentation (cpr);
         tree_->setInputCloud (features);
