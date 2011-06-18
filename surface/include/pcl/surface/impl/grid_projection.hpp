@@ -178,7 +178,7 @@ pcl::GridProjection<PointNT>::createSurfaceForCell (const Eigen::Vector3i &index
 
   // Given the index of cell, caluate the coordinates of the eight vertices of the cell
   // index the index of the cell in (x,y,z) 3d format
-  Eigen::Vector4f cell_center;
+  Eigen::Vector4f cell_center = Eigen::Vector4f::Zero ();
   getCellCenterFromIndex (index, cell_center);
   getVertexFromCellCenter (cell_center, vertices);
 
@@ -404,7 +404,6 @@ pcl::GridProjection<PointNT>::getMagAtPoint (const Eigen::Vector4f &p,
 {
   std::vector <double> pt_union_dist (pt_union_indices.size ());
   std::vector <double> pt_union_weight (pt_union_indices.size ());
-  Eigen::Vector3f out_vector;
   double sum = 0.0;
   for (size_t i = 0; i < pt_union_indices.size (); ++i)
   {
@@ -460,7 +459,7 @@ pcl::GridProjection<PointNT>::isIntersected (const std::vector<Eigen::Vector4f, 
   {
     double ratio = length[0] / (length[0] + length[1]);
     Eigen::Vector4f start_pt = end_pts[0] + (end_pts[1] - end_pts[0]) * ratio;
-    Eigen::Vector4f intersection_pt;
+    Eigen::Vector4f intersection_pt = Eigen::Vector4f::Zero ();
     findIntersection (0, end_pts, vect_at_end_pts, start_pt, pt_union_indices, intersection_pt);
     
     Eigen::Vector3f vec;
