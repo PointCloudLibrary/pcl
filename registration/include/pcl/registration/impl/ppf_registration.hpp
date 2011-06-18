@@ -90,7 +90,7 @@ pcl::PPFHashMapSearch::nearestNeighborSearch (float &f1, float &f2, float &f3, f
 
   indices.clear ();
   HashKeyStruct key = HashKeyStruct (d1, d2, d3, d4);
-  std::pair <typename FeatureHashMapType::iterator, typename FeatureHashMapType::iterator> map_iterator_pair = feature_hash_map->equal_range (key);
+  std::pair <FeatureHashMapType::iterator, FeatureHashMapType::iterator> map_iterator_pair = feature_hash_map->equal_range (key);
   for (; map_iterator_pair.first != map_iterator_pair.second; ++ map_iterator_pair.first)
     indices.push_back (std::pair<size_t, size_t> (map_iterator_pair.first->second.first,
                                                   map_iterator_pair.first->second.second));
