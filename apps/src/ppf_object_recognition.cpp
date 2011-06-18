@@ -44,7 +44,7 @@ main (int argc, char** argv)
       cloud_scene_subsampled_normals (new PointCloud<Normal> ());
   NormalEstimation<PointXYZ, Normal> normal_estimation_filter;
   normal_estimation_filter.setInputCloud (cloud_model_subsampled);
-  typename KdTreeFLANN<PointXYZ>::Ptr search_tree (new KdTreeFLANN<PointXYZ>);
+  KdTreeFLANN<PointXYZ>::Ptr search_tree (new KdTreeFLANN<PointXYZ>);
   normal_estimation_filter.setSearchMethod (search_tree);
   normal_estimation_filter.setRadiusSearch (normal_estimation_search_radius);
   normal_estimation_filter.compute (*cloud_model_subsampled_normals);
