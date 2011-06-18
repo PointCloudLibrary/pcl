@@ -171,7 +171,7 @@ pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloud<PointT>
   accumulator_array.resize (cloud_model->points.size ());
   for (size_t i = 0; i < cloud_model->points.size (); ++i)
   {
-    std::vector <unsigned int> aux ((size_t)floor(2*M_PI / search_method->angle_discretization_step ), 0);
+    std::vector <unsigned int> aux ((size_t)floor(2*M_PI / search_method->getAngleDiscretizationStep ()), 0);
     accumulator_array[i] = aux;
   }
   PCL_INFO ("Accumulator array size: %u x %u.\n", accumulator_array.size (), accumulator_array.back ().size ());
@@ -232,7 +232,7 @@ pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloud<PointT>
                 model_point_index = v_it->second;
             /// calculate angle alpha = alpha_m - alpha_s
             float alpha = search_method->alpha_m[model_reference_index][model_point_index] - alpha_s;
-            unsigned int alpha_discretized = floor(alpha) + floor(M_PI / search_method->angle_discretization_step);
+            unsigned int alpha_discretized = floor(alpha) + floor(M_PI / search_method->getAngleDiscretizationStep ());
             accumulator_array[model_reference_index][alpha_discretized] ++;
           }
         }
@@ -260,7 +260,7 @@ pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloud<PointT>
         model_reference_normal = cloud_model_normals->points[max_votes_i].getNormalVector3fMap ();
     Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())), model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
     Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
-    Eigen::Affine3f max_transform = transform_sg.inverse () * Eigen::AngleAxisf ( (max_votes_j - floor(M_PI / search_method->angle_discretization_step)) * search_method->angle_discretization_step, Eigen::Vector3f::UnitX ()) * transform_mg;
+    Eigen::Affine3f max_transform = transform_sg.inverse () * Eigen::AngleAxisf ( (max_votes_j - floor(M_PI / search_method->getAngleDiscretizationStep ())) * search_method->getAngleDiscretizationStep (), Eigen::Vector3f::UnitX ()) * transform_mg;
 
     voted_poses.push_back (PoseWithVotes (max_transform, max_votes));
   }

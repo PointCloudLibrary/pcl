@@ -91,14 +91,20 @@ namespace pcl
       return Ptr (new PPFHashMapSearch (*this));
     }
 
-    float angle_discretization_step, distance_discretization_step;
     std::vector <std::vector <float> > alpha_m;
+
+    float
+    getAngleDiscretizationStep () { return angle_discretization_step; }
+
+    float
+    getDistanceDiscretizationStep () { return distance_discretization_step; }
 
     private:
     FeatureHashMapTypePtr feature_hash_map;
     bool internals_initialized;
 
     /// parameters
+    float angle_discretization_step, distance_discretization_step;
   };
 
 
