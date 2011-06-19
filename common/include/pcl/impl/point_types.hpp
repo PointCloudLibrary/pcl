@@ -60,9 +60,7 @@
   (pcl::FPFHSignature33)      \
   (pcl::VFHSignature308)      \
   (pcl::Narf36)               \
-  (pcl::BorderDescription)    \
   (pcl::IntensityGradient)    \
-  (pcl::Histogram<2>)         \
   (pcl::PointWithScale)
 
 // Define all point types that include XYZ data
@@ -140,12 +138,6 @@ struct _PointXYZ
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 };
 
-/*struct PointXYZ
-{
-  ADD_4D_POINT_WITH_XYZ;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-  //inline PointXYZ() {}
-  //inline PointXYZ(float x, float y, float z) : x(x), y(y), z(z) {}
-};*/
 /** \brief A point structure representing Euclidean xyz coordinates. (SSE friendly) 
   * \ingroup common
   */

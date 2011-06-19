@@ -428,7 +428,8 @@ namespace pcl
         * \param extract_removed_indices extract filtered indices from indices vector
         */
       ConditionalRemoval (int extract_removed_indices = false) :
-        Filter<PointT>::Filter (extract_removed_indices), keep_organized_ (false), condition_ ()
+        Filter<PointT>::Filter (extract_removed_indices), keep_organized_ (false), condition_ (),
+        user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
         filter_name_ = "ConditionalRemoval";
       }
@@ -439,7 +440,8 @@ namespace pcl
         * \param extract_removed_indices extract filtered indices from indices vector
         */
       ConditionalRemoval (ConditionBasePtr condition, bool extract_removed_indices = false) :
-        Filter<PointT>::Filter (extract_removed_indices), keep_organized_ (false), condition_ ()
+        Filter<PointT>::Filter (extract_removed_indices), keep_organized_ (false), condition_ (),
+        user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
         filter_name_ = "ConditionalRemoval";
         setCondition (condition);
@@ -463,6 +465,17 @@ namespace pcl
       getKeepOrganized ()
       {
         return (keep_organized_);
+      }
+
+      /** \brief Provide a value that the filtered points should be set to
+        * instead of removing them.  Used in conjunction with \a
+        * setKeepOrganized ().
+        * \param val the user given value that the filtered point dimensions should be set to
+        */
+      inline void
+      setUserFilterValue (float val)
+      {
+        user_filter_value_ = val;
       }
 
       /** \brief Set the condition that the filter will use.  
@@ -493,6 +506,11 @@ namespace pcl
 
       /** \brief The condition to use for filtering */
       ConditionBasePtr condition_;
+
+      /** \brief User given value to be set to any filtered point. Casted to
+        * the correct field type. 
+        */
+      float user_filter_value_;
   };
 }
 

@@ -534,7 +534,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 
   // Copy the header (and thus the frame_id) + allocate enough space for points
   output.header       = input_->header;
-  if (keep_organized_)
+  if (!keep_organized_)
   {
     output.height    = 1;   // filtering breaks the organized structure
     output.is_dense  = true;
@@ -551,7 +551,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
   int nr_p = 0;
   int nr_removed_p = 0;
 
-  if (keep_organized_ == true)
+  if (keep_organized_)
   {
     for (size_t cp = 0; cp < input_->points.size (); ++cp)
     {
@@ -588,15 +588,13 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
   } 
   else 
   {
-    float bad_point = std::numeric_limits<float>::quiet_NaN ();
-
     for (size_t cp = 0; cp < input_->points.size (); ++cp)
     {
       // copy all the fields
       pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[cp]));
       if (!condition_->evaluate (input_->points[cp]))
       {
-        output.points[cp].getVector4fMap ().setConstant (bad_point);
+        output.points[cp].getVector4fMap ().setConstant (user_filter_value_);
 
         if (extract_removed_indices_)
         {
@@ -606,7 +604,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
       }
     }
   }
-  removed_indices_->resize(nr_removed_p);
+  removed_indices_->resize (nr_removed_p);
 }
 
 #define PCL_INSTANTIATE_PointDataAtOffset(T) template class PCL_EXPORTS pcl::PointDataAtOffset<T>;

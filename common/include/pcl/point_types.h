@@ -203,6 +203,12 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZRGB,
                                    (float, z, z)
                                    (float, rgb, rgb)
 )
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXY,
+                                   (float, x, x)
+                                   (float, y, y)
+)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::InterestPoint,
                                    (float, x, x)
                                    (float, y, y)
