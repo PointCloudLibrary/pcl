@@ -108,7 +108,7 @@ namespace pcl
   template <> void
   cloud_show<gc>::pop ()
   {
-    pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PointXYZI> handler (cloud);
+    pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZI> handler (cloud, "intensity");
     pop (handler);
   }
   
