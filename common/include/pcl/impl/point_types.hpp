@@ -166,7 +166,7 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZ& p)
 /** \brief A point structure representing Euclidean xyz coordinates, and the intensity value.
   * \ingroup common
   */ 
-struct PointXYZI 
+struct EIGEN_ALIGN16 PointXYZI 
 { 
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   union
@@ -178,7 +178,7 @@ struct PointXYZI
     float data_c[4];
   };
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW 
-} EIGEN_ALIGN16; 
+}; 
 inline std::ostream& operator << (std::ostream& os, const PointXYZI& p)
 {
   os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.intensity << ")";
@@ -189,7 +189,7 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZI& p)
 /** \brief A point structure representing Euclidean xyz coordinates, and the RGBA color. 
   * \ingroup common
   */
-struct PointXYZRGBA
+struct EIGEN_ALIGN16 PointXYZRGBA
 {
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   union
@@ -201,7 +201,7 @@ struct PointXYZRGBA
     float data_c[4];
   };
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-} EIGEN_ALIGN16;
+};
 inline std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p)
 {
   unsigned char* rgba_ptr = (unsigned char*)&p.rgba;
@@ -213,7 +213,7 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p)
 /** \brief A point structure representing Euclidean xyz coordinates, and the RGB color. 
   * \ingroup common
   */
-struct PointXYZRGB
+struct EIGEN_ALIGN16 PointXYZRGB
 {
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   union
@@ -225,7 +225,7 @@ struct PointXYZRGB
     float data_c[4];
   };
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-} EIGEN_ALIGN16;
+};
 inline std::ostream& operator << (std::ostream& os, const PointXYZRGB& p)
 {
   os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.rgb << ")";

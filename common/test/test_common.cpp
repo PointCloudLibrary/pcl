@@ -41,7 +41,7 @@
 #include <pcl/common/eigen.h>
 #include <pcl/point_types.h>
 
-using pcl::PointXYZ;
+using namespace pcl;
 
 TEST (PCL, Common)
 {
@@ -53,7 +53,7 @@ TEST (PCL, Common)
   EXPECT_NEAR (radius, 0.816497, 1e-4);
 
   Eigen::Vector4f pt (1,0,0,0), line_pt (0,0,0,0), line_dir (1,1,0,0);
-  double point2line_disance = sqrt (pcl::sqrPointToLineDistance (pt, line_pt, line_dir));
+  double point2line_disance = sqrt (sqrPointToLineDistance (pt, line_pt, line_dir));
   EXPECT_NEAR (point2line_disance, sqrt(2.0)/2, 1e-4);
 }
 
@@ -63,7 +63,7 @@ TEST (PCL, Eigen)
   mat << 0.000536227, -1.56178e-05, -9.47391e-05, -1.56178e-05, 0.000297322, -0.000148785, -9.47391e-05, -0.000148785, 9.7827e-05;
   Eigen::Vector3f val;
 
-  pcl::eigen33 (mat, vec, val);
+  eigen33 (mat, vec, val);
   
   EXPECT_NEAR (fabs (vec (0, 0)), 0.168841, 1e-4); EXPECT_NEAR (fabs (vec (0, 1)), 0.161623, 1e-4); EXPECT_NEAR (fabs (vec (0, 2)), 0.972302, 1e-4);
   EXPECT_NEAR (fabs (vec (1, 0)), 0.451632, 1e-4); EXPECT_NEAR (fabs (vec (1, 1)), 0.889498, 1e-4); EXPECT_NEAR (fabs (vec (1, 2)), 0.0694328, 1e-4);
@@ -85,9 +85,28 @@ TEST (PCL, Eigen)
   
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, PointTypes)
+{
+  EXPECT_EQ (sizeof (PointXYZ), 16); 
+  EXPECT_EQ (__alignof (PointXYZ), 16);
+  EXPECT_EQ (sizeof (PointXYZI), 32); 
+  EXPECT_EQ (__alignof (PointXYZI), 16);
+  EXPECT_EQ (sizeof (PointXYZRGB), 32); 
+  EXPECT_EQ (__alignof (PointXYZRGB), 16);
+  EXPECT_EQ (sizeof (PointXYZRGBA), 32); 
+  EXPECT_EQ (__alignof (PointXYZRGBA), 16);
+  EXPECT_EQ (sizeof (Normal), 32); 
+  EXPECT_EQ (__alignof (Normal), 16);
+  EXPECT_EQ (sizeof (PointNormal), 48); 
+  EXPECT_EQ (__alignof (PointNormal), 16);
+  EXPECT_EQ (sizeof (PointXYZRGBNormal), 48); 
+  EXPECT_EQ (__alignof (PointXYZRGBNormal), 16);
+}
+ 
 /* ---[ */
 int
-  main (int argc, char** argv)
+main (int argc, char** argv)
 {
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
