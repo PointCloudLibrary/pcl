@@ -168,8 +168,20 @@ TEST (PCL, PointCloud)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointTypes)
 {
-  EXPECT_EQ (sizeof (PointXYZ), 16); EXPECT_EQ (__alignof (PointXYZ), 16);
-  EXPECT_EQ (sizeof (PointXYZRGB), 32); EXPECT_EQ (__alignof (PointXYZRGB), 16);
+  EXPECT_EQ (sizeof (PointXYZ), 16); 
+  EXPECT_EQ (__alignof (PointXYZ), 16);
+  EXPECT_EQ (sizeof (PointXYZI), 32); 
+  EXPECT_EQ (__alignof (PointXYZI), 16);
+  EXPECT_EQ (sizeof (PointXYZRGB), 32); 
+  EXPECT_EQ (__alignof (PointXYZRGB), 16);
+  EXPECT_EQ (sizeof (PointXYZRGBA), 32); 
+  EXPECT_EQ (__alignof (PointXYZRGBA), 16);
+  EXPECT_EQ (sizeof (Normal), 32); 
+  EXPECT_EQ (__alignof (Normal), 16);
+  EXPECT_EQ (sizeof (PointNormal), 48); 
+  EXPECT_EQ (__alignof (PointNormal), 16);
+  EXPECT_EQ (sizeof (PointXYZRGBNormal), 48); 
+  EXPECT_EQ (__alignof (PointXYZRGBNormal), 16);
 }
  
 /* ---[ */

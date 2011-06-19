@@ -208,7 +208,7 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZI& p)
   *
   * \ingroup common
   */
-struct PointXYZRGBA
+struct EIGEN_ALIGN16 PointXYZRGBA
 {
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   union
@@ -223,7 +223,7 @@ struct PointXYZRGBA
     uint32_t rgba;
   } EIGEN_ALIGN16;
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-} EIGEN_ALIGN16;
+};
 inline std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p)
 {
   unsigned char* rgba_ptr = (unsigned char*)&p.rgba;
@@ -232,7 +232,7 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p)
 }
 
 
-struct _PointXYZRGB 
+struct EIGEN_ALIGN16 _PointXYZRGB 
 {
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   union
@@ -251,7 +251,7 @@ struct _PointXYZRGB
     uint32_t rgba;
   };
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-} EIGEN_ALIGN16;
+};
 
 /** \brief A point structure representing Euclidean xyz coordinates, and the RGB color. 
   * 
@@ -284,7 +284,7 @@ struct _PointXYZRGB
   *
   * \ingroup common
   */
-struct PointXYZRGB : public _PointXYZRGB
+struct EIGEN_ALIGN16 PointXYZRGB : public _PointXYZRGB
 {
   inline PointXYZRGB ()
   {
@@ -298,7 +298,7 @@ struct PointXYZRGB : public _PointXYZRGB
     _unused = 0;
   }
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-} EIGEN_ALIGN16;
+};
 inline std::ostream& operator << (std::ostream& os, const PointXYZRGB& p)
 {
   os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.rgb << ")";
@@ -370,7 +370,7 @@ inline std::ostream& operator << (std::ostream& os, const Normal& p)
 /** \brief A point structure representing Euclidean xyz coordinates, together with normal coordinates and the surface curvature estimate. (SSE friendly) 
   * \ingroup common
   */
-struct PointNormal
+struct EIGEN_ALIGN16 PointNormal
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   PCL_ADD_NORMAL4D;   // This adds the member normal[3] which can also be accessed using the point (which is float[4])
@@ -383,7 +383,7 @@ struct PointNormal
     float data_c[4];
   };
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-} EIGEN_ALIGN16;
+};
 inline std::ostream& operator << (std::ostream& os, const PointNormal& p)
 {
   os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
