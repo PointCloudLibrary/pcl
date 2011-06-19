@@ -41,6 +41,7 @@
 #include <pcl/io/openni_camera/openni_device_kinect.h>
 #include <pcl/io/openni_camera/openni_device_primesense.h>
 #include <pcl/io/openni_camera/openni_device_xtion.h>
+#include <pcl/io/openni_camera/openni_device_oni.h>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
@@ -226,7 +227,12 @@ OpenNIDriver::~OpenNIDriver () throw ()
   context_.Shutdown ();
 }
 
-  boost::shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) const throw (OpenNIException)
+boost::shared_ptr<OpenNIDevice> OpenNIDriver::createVirtualDevice (const string& path) const throw (OpenNIException)
+{
+  return boost::shared_ptr<OpenNIDevice> (new DeviceONI (context_, path));
+}
+ 
+boost::shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) const throw (OpenNIException)
 {
   using namespace std;
 

@@ -43,7 +43,6 @@
 
 #include "openni_device.h"
 #include "openni_driver.h"
-#include "openni_image_yuv_422.h"
 
 namespace openni_wrapper
 {
@@ -63,7 +62,7 @@ public:
 
 protected:
   virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
-  virtual void getAvailableModes () throw (OpenNIException);
+  virtual void enumAvailableModes () throw (OpenNIException);
   virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
 
   virtual void startImageStream () throw (OpenNIException);

@@ -64,18 +64,9 @@ public:
   inline void setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) throw ();
   inline const ImageBayerGRBG::DebayeringMethod& getDebayeringMethod () const throw ();
   
-  // these capabilities are not supported for kinect
-  virtual void setSynchronization (bool on_off) throw (OpenNIException);
-  virtual bool isSynchronized () const throw (OpenNIException);
-  virtual bool isSynchronizationSupported () const throw ();
-
-  virtual bool isDepthCropped () const throw (OpenNIException);
-  virtual void setDepthCropping (unsigned x, unsigned y, unsigned width, unsigned height) throw (OpenNIException);
-  virtual bool isDepthCroppingSupported () const throw ();
-
 protected:
   virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
-  virtual void getAvailableModes () throw (OpenNIException);
+  virtual void enumAvailableModes () throw (OpenNIException);
   virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
   ImageBayerGRBG::DebayeringMethod debayering_method_;
 };

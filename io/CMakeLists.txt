@@ -19,11 +19,13 @@ if(build)
             include/pcl/io/openni_camera/openni_device_kinect.h
             include/pcl/io/openni_camera/openni_device_primesense.h
             include/pcl/io/openni_camera/openni_device_xtion.h
+            include/pcl/io/openni_camera/openni_device_oni.h
             include/pcl/io/openni_camera/openni_driver.h
             include/pcl/io/openni_camera/openni_exception.h
             include/pcl/io/openni_camera/openni_image.h
             include/pcl/io/openni_camera/openni_image_bayer_grbg.h
             include/pcl/io/openni_camera/openni_image_yuv_422.h
+            include/pcl/io/openni_camera/openni_image_rgb24.h
             include/pcl/io/openni_camera/openni_ir_image.h
             )
         set(OPENNI_GRABBER_SOURCES src/openni_camera/openni_device.cpp
@@ -33,9 +35,11 @@ if(build)
             src/openni_camera/openni_ir_image.cpp
             src/openni_camera/openni_device_kinect.cpp
             src/openni_camera/openni_device_xtion.cpp
+            src/openni_camera/openni_device_oni.cpp
             src/openni_camera/openni_driver.cpp
             src/openni_camera/openni_exception.cpp
             src/openni_camera/openni_image_yuv_422.cpp
+            src/openni_camera/openni_image_rgb24.cpp
             src/openni_grabber.cpp
             src/pcd_grabber.cpp
             )

@@ -52,7 +52,11 @@ namespace openni_wrapper
 DevicePrimesense::DevicePrimesense (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException)
 : OpenNIDevice (context, device_node, image_node, depth_node, ir_node)
 {
-  Init ();
+  // setup stream modes
+  enumAvailableModes ();
+  setDepthOutputMode (getDefaultDepthMode ());
+  setImageOutputMode (getDefaultImageMode ());
+  setIROutputMode (getDefaultIRMode ());
 
   unique_lock<mutex> image_lock(image_mutex_);
   XnStatus status = image_generator_.SetIntProperty ("InputFormat", 5);
@@ -131,7 +135,7 @@ bool DevicePrimesense::isImageResizeSupported (unsigned input_width, unsigned in
 //  OpenNIDevice::setImageOutputMode (output_mode);
 //}
 
-void DevicePrimesense::getAvailableModes () throw (OpenNIException)
+void DevicePrimesense::enumAvailableModes () throw (OpenNIException)
 {
   XnMapOutputMode output_mode;
   available_image_modes_.clear();

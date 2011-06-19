@@ -34,41 +34,46 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
-#ifndef __OPENNI_DEVICE_XTION_PRO__
-#define __OPENNI_DEVICE_XTION_PRO__
-
-#include "openni_device.h"
-#include "openni_driver.h"
-#include "openni_image_yuv_422.h"
+#ifndef __OPENNI_IMAGE_RGB__
+#define __OPENNI_IMAGE_RGB__
+#include "openni_image.h"
 
 namespace openni_wrapper
 {
 /**
- * @brief Concrete implementation of the interface OpenNIDevice for a Asus Xtion Pro device.
+ * @brief This class provides methods to fill a RGB or Grayscale image buffer from underlying Bayer pattern image.
  * @author Suat Gedikli
  * @date 02.january 2011
  * @ingroup io
  */
-class DeviceXtionPro : public OpenNIDevice
+class ImageRGB24 : public Image
 {
-  friend class OpenNIDriver;
 public:
-  DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException);
-  virtual ~DeviceXtionPro () throw ();
-  //virtual void setImageOutputMode (const XnMapOutputMode& output_mode) throw (OpenNIException);
 
-protected:
-  virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
-  virtual void enumAvailableModes () throw (OpenNIException);
-  virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
+  ImageRGB24 (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ();
+  virtual ~ImageRGB24 () throw ();
 
-  virtual void startDepthStream () throw (OpenNIException);
+  inline virtual Encoding 
+  getEncoding () const
+  {
+    return (RGB);
+  }
+
+  virtual void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const throw (OpenNIException);
+  virtual void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const throw (OpenNIException);
+  virtual bool isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const;
+  inline static bool resizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height);
 };
-} // namespace
 
-#endif
-#endif // __OPENNI_DEVICE_PRIMESENSE__
+bool ImageRGB24::resizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height)
+{
+  return (output_width <= input_width && output_height <= input_height && input_width % output_width == 0 && input_height % output_height == 0 );
+}
+
+} // namespace openni_wrapper
+
+#endif // __OPENNI_IMAGE_RGB__
+#endif // HAVE_OPENNI

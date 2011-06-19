@@ -43,7 +43,9 @@
 #include <pcl/common/time.h>
 #include <pcl/io/pcl_io_exception.h>
 #include <boost/shared_array.hpp>
-
+#define BOOST_FILESYSTEM_VERSION 2
+#include <boost/filesystem.hpp>
+#include <iostream>
 namespace pcl
 {
 
@@ -99,28 +101,29 @@ OpenNIGrabber::OpenNIGrabber(const std::string& device_id, const Mode& depth_mod
 
 OpenNIGrabber::~OpenNIGrabber() throw ()
 {
-  stop();
-  // unregister callbacks
-  device_->unregisterDepthCallback(depth_callback_handle);
-  device_->unregisterImageCallback(image_callback_handle);
-  device_->unregisterIRCallback(image_callback_handle);
-
-  // disconnect all listeeners
-  disconnect_all_slots <sig_cb_openni_image > ();
-  disconnect_all_slots <sig_cb_openni_depth_image > ();
-  disconnect_all_slots <sig_cb_openni_ir_image > ();
-  disconnect_all_slots <sig_cb_openni_image_depth_image > ();
-  disconnect_all_slots <sig_cb_openni_point_cloud > ();
-  disconnect_all_slots <sig_cb_openni_point_cloud_rgb > ();
-  disconnect_all_slots <sig_cb_openni_point_cloud_i > ();
-
   try
   {
+    stop();
+    // unregister callbacks
+    device_->unregisterDepthCallback(depth_callback_handle);
+    device_->unregisterImageCallback(image_callback_handle);
+    device_->unregisterIRCallback(image_callback_handle);
+
+    // disconnect all listeners
+    disconnect_all_slots <sig_cb_openni_image > ();
+    disconnect_all_slots <sig_cb_openni_depth_image > ();
+    disconnect_all_slots <sig_cb_openni_ir_image > ();
+    disconnect_all_slots <sig_cb_openni_image_depth_image > ();
+    disconnect_all_slots <sig_cb_openni_point_cloud > ();
+    disconnect_all_slots <sig_cb_openni_point_cloud_rgb > ();
+    disconnect_all_slots <sig_cb_openni_point_cloud_i > ();
+
     openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
     driver.stopAll();
   }
   catch (...)
   {
+    // destructor never throws
   }
 }
 
@@ -182,8 +185,7 @@ void OpenNIGrabber::start() throw (pcl::PCLIOException)
 
     if (depth_required_ && !device_->isDepthStreamRunning())
     {
-      // TODO: turn this only on if needed ...
-      if (device_->hasImageStream() && !device_->isDepthRegistered())
+      if (device_->hasImageStream() && !device_->isDepthRegistered() && device_->isDepthRegistrationSupported())
       {
         device_->setDepthRegistration(true);
       }
@@ -265,19 +267,18 @@ void OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
 
   if (driver.getNumberDevices() == 0)
     THROW_PCL_IO_EXCEPTION("No devices connected.");
-  /*
-    printf("[%s] Number devices connected: %d\n", getName().c_str(), driver.getNumberDevices());
-    for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx)
-    {
-      printf("[%s] %u. device on bus %03u:%02u is a %s (%03x) from %s (%03x) with serial id \'%s\'\n"
-        , getName().c_str(), deviceIdx + 1, driver.getBus(deviceIdx), driver.getAddress(deviceIdx)
-        , driver.getProductName(deviceIdx), driver.getProductID(deviceIdx), driver.getVendorName(deviceIdx)
-        , driver.getVendorID(deviceIdx), driver.getSerialNumber(deviceIdx));
-    }
-   */
+
   try
   {
-    if (device_id[0] == '#')
+    if (boost::filesystem::exists(device_id))
+    {
+      device_ = driver.createVirtualDevice(device_id);
+    }
+    else if (driver.getNumberDevices() == 0)
+    {
+      THROW_PCL_IO_EXCEPTION("No devices connected.");
+    }
+    else if (device_id[0] == '#')
     {
       unsigned index = atoi(device_id.c_str() + 1);
       //printf("[%s] searching for device with index = %d\n", getName().c_str(), index);
@@ -300,7 +301,6 @@ void OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
 #endif
     else
     {
-      //printf("[%s] device_id is not set or has unknown format: %s! Using first device.\n", getName().c_str(), device_id.c_str());
       device_ = driver.getDeviceByIndex(0);
     }
   }
@@ -386,7 +386,6 @@ void OpenNIGrabber::stopSynchronization()
 
 void OpenNIGrabber::imageCallback(boost::shared_ptr<openni_wrapper::Image> image, void* cookie)
 {
-  //std::cout << "imageCallback: " << image->getTimeStamp() << std::endl;
   if (num_slots<sig_cb_openni_point_cloud_rgb > () > 0 ||
       num_slots<sig_cb_openni_image_depth_image > () > 0)
     rgb_sync_.add0(image, image->getTimeStamp());
@@ -399,7 +398,6 @@ void OpenNIGrabber::imageCallback(boost::shared_ptr<openni_wrapper::Image> image
 
 void OpenNIGrabber::depthCallback(boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie)
 {
-  //std::cout << "depthCallback: " << depth_image->getTimeStamp() << std::endl;
   if (num_slots<sig_cb_openni_point_cloud_rgb > () > 0 ||
       num_slots<sig_cb_openni_image_depth_image > () > 0)
     rgb_sync_.add1(depth_image, depth_image->getTimeStamp());
@@ -419,7 +417,6 @@ void OpenNIGrabber::depthCallback(boost::shared_ptr<openni_wrapper::DepthImage> 
 
 void OpenNIGrabber::irCallback(boost::shared_ptr<openni_wrapper::IRImage> ir_image, void* cookie)
 {
-  //std::cout << "irCallback: " << ir_image->getTimeStamp() << std::endl;
   if (num_slots<sig_cb_openni_point_cloud_i > () > 0 ||
       num_slots<sig_cb_openni_ir_depth_image > () > 0)
     ir_sync_.add0(ir_image, ir_image->getTimeStamp());
@@ -432,7 +429,6 @@ void OpenNIGrabber::irCallback(boost::shared_ptr<openni_wrapper::IRImage> ir_ima
 
 void OpenNIGrabber::imageDepthImageCallback(const boost::shared_ptr<openni_wrapper::Image> &image, const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image)
 {
-  //std::cout << "imageDepthImageCallback: " << image->getTimeStamp() << " - " << depth_image->getTimeStamp() << std::endl;
   // check if we have color point cloud slots
   if (point_cloud_rgb_signal_->num_slots() > 0)
     point_cloud_rgb_signal_->operator()(convertToXYZRGBPointCloud(image, depth_image));
@@ -446,7 +442,6 @@ void OpenNIGrabber::imageDepthImageCallback(const boost::shared_ptr<openni_wrapp
 
 void OpenNIGrabber::irDepthImageCallback(const boost::shared_ptr<openni_wrapper::IRImage> &ir_image, const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image)
 {
-  //std::cout << "irDepthImageCallback: " << ir_image->getTimeStamp() << " - " << depth_image->getTimeStamp() << std::endl;
   // check if we have color point cloud slots
   if (point_cloud_i_signal_->num_slots() > 0)
     point_cloud_i_signal_->operator()(convertToXYZIPointCloud(ir_image, depth_image));
@@ -665,15 +660,9 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr OpenNIGrabber::convertToXYZIPointCloud(cons
       }
 
       pt.data_c[0] = pt.data_c[1] = pt.data_c[2] = pt.data_c[3] = 0;
-      pt.intensity = (float) ir_map[depth_idx] / 1024.0;
-      
-      
-//      static int ctr = 0;
-//      if (++ctr % 100 == 0)
-//        std::cout << pt.intensity << std::endl;
+      pt.intensity = (float) ir_map[depth_idx];
     }
   }
-  
   return (cloud);
 }
 // TODO: delete me?

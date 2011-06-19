@@ -38,37 +38,60 @@
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
-#ifndef __OPENNI_DEVICE_XTION_PRO__
-#define __OPENNI_DEVICE_XTION_PRO__
+#ifndef __OPENNI_DEVICE_ONI__
+#define __OPENNI_DEVICE_ONI__
 
 #include "openni_device.h"
 #include "openni_driver.h"
-#include "openni_image_yuv_422.h"
 
 namespace openni_wrapper
 {
+
 /**
- * @brief Concrete implementation of the interface OpenNIDevice for a Asus Xtion Pro device.
+ * @brief Concrete implementation of the interface OpenNIDevice for a MS Kinect device.
  * @author Suat Gedikli
  * @date 02.january 2011
  * @ingroup io
  */
-class DeviceXtionPro : public OpenNIDevice
+class DeviceONI : public OpenNIDevice
 {
   friend class OpenNIDriver;
 public:
-  DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException);
-  virtual ~DeviceXtionPro () throw ();
-  //virtual void setImageOutputMode (const XnMapOutputMode& output_mode) throw (OpenNIException);
-
-protected:
-  virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
-  virtual void enumAvailableModes () throw (OpenNIException);
-  virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
+  DeviceONI (xn::Context& context, const std::string& file_name, bool repeat = false) throw (OpenNIException);
+  virtual ~DeviceONI () throw ();
+    
+  virtual void startImageStream () throw (OpenNIException);
+  virtual void stopImageStream () throw (OpenNIException);
 
   virtual void startDepthStream () throw (OpenNIException);
-};
-} // namespace
+  virtual void stopDepthStream () throw (OpenNIException);
 
-#endif
-#endif // __OPENNI_DEVICE_PRIMESENSE__
+  virtual void startIRStream () throw (OpenNIException);
+  virtual void stopIRStream () throw (OpenNIException);
+  
+  virtual bool isImageStreamRunning () const throw (OpenNIException);
+  virtual bool isDepthStreamRunning () const throw (OpenNIException);
+  virtual bool isIRStreamRunning () const throw (OpenNIException);
+  
+  virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
+  
+protected:
+  virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
+  
+  void PlayerThreadFunction () throw (OpenNIException);
+  static void __stdcall NewONIDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
+  static void __stdcall NewONIImageDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
+  static void __stdcall NewONIIRDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
+
+  xn::Player player_;
+  boost::thread player_thread_;
+  mutable boost::mutex player_mutex_;
+  boost::condition_variable player_condition_;
+  bool depth_stream_running_;
+  bool image_stream_running_;
+  bool ir_stream_running_;
+};
+
+} //namespace openni_wrapper
+#endif //__OPENNI_DEVICE_ONI__
+#endif //HAVE_OPENNI

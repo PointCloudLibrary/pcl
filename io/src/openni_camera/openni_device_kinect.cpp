@@ -53,9 +53,12 @@ DeviceKinect::DeviceKinect (xn::Context& context, const xn::NodeInfo& device_nod
 : OpenNIDevice (context, device_node, image_node, depth_node, ir_node)
 , debayering_method_ (ImageBayerGRBG::EdgeAwareWeighted)
 {
-  // initilize devices... done in Base::Init, since we need DeviceKinect to be constructed.
-  Init ();
-
+  // setup stream modes
+  enumAvailableModes ();
+  setDepthOutputMode (getDefaultDepthMode ());
+  setImageOutputMode (getDefaultImageMode ());
+  setIROutputMode (getDefaultIRMode ());
+  
   // device specific initialization
   XnStatus status;
 
@@ -94,7 +97,7 @@ bool DeviceKinect::isImageResizeSupported (unsigned input_width, unsigned input_
   return ImageBayerGRBG::resizingSupported (input_width, input_height, output_width, output_height);
 }
 
-void DeviceKinect::getAvailableModes () throw (OpenNIException)
+void DeviceKinect::enumAvailableModes () throw (OpenNIException)
 {
   XnMapOutputMode output_mode;
   available_image_modes_.clear();
@@ -115,38 +118,6 @@ void DeviceKinect::getAvailableModes () throw (OpenNIException)
 boost::shared_ptr<Image> DeviceKinect::getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_data) const throw ()
 {
   return boost::shared_ptr<Image> (new ImageBayerGRBG (image_data, debayering_method_));
-}
-
-void DeviceKinect::setSynchronization (bool on_off) throw (OpenNIException)
-{
-  if (on_off)
-    THROW_OPENNI_EXCEPTION ("Microsoft Kinect does not support Hardware synchronization.");
-}
-
-bool DeviceKinect::isSynchronized () const throw (OpenNIException)
-{
-  return false;
-}
-
-bool DeviceKinect::isSynchronizationSupported () const throw ()
-{
-  return false;
-}
-
-bool DeviceKinect::isDepthCropped () const throw (OpenNIException)
-{
-  return false;
-}
-
-void DeviceKinect::setDepthCropping (unsigned x, unsigned y, unsigned width, unsigned height) throw (OpenNIException)
-{
-  if (width != 0 && height != 0)
-    THROW_OPENNI_EXCEPTION ("Microsoft Kinect does not support cropping for the depth stream.");
-}
-
-bool DeviceKinect::isDepthCroppingSupported () const throw ()
-{
-  return false;
 }
 
 }//namespace

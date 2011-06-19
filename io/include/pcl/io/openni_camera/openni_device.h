@@ -98,9 +98,10 @@ public:
   XnMapOutputMode getDepthOutputMode () const throw (OpenNIException);
   XnMapOutputMode getIROutputMode () const throw (OpenNIException);
 
-  void setDepthRegistration (bool on_off) throw (OpenNIException);
+  virtual void setDepthRegistration (bool on_off) throw (OpenNIException);
   bool isDepthRegistered () const throw (OpenNIException);
-
+  virtual bool isDepthRegistrationSupported () const throw (OpenNIException);
+  
   virtual void setSynchronization (bool on_off) throw (OpenNIException);
   virtual bool isSynchronized () const throw (OpenNIException);
   virtual bool isSynchronizationSupported () const throw ();
@@ -130,13 +131,13 @@ public:
   virtual void startIRStream () throw (OpenNIException);
   virtual void stopIRStream () throw (OpenNIException);
 
-  virtual bool hasImageStream () const throw ();
-  virtual bool hasDepthStream () const throw ();
-  virtual bool hasIRStream () const throw ();
+  bool hasImageStream () const throw ();
+  bool hasDepthStream () const throw ();
+  bool hasIRStream () const throw ();
 
-  bool isImageStreamRunning () const throw (OpenNIException);
-  bool isDepthStreamRunning () const throw (OpenNIException);
-  bool isIRStreamRunning () const throw (OpenNIException);
+  virtual bool isImageStreamRunning () const throw (OpenNIException);
+  virtual bool isDepthStreamRunning () const throw (OpenNIException);
+  virtual bool isIRStreamRunning () const throw (OpenNIException);
 
   CallbackHandle registerImageCallback (const ImageCallbackFunction& callback, void* cookie = NULL) throw ();
   template<typename T> CallbackHandle registerImageCallback (void (T::*callback)(boost::shared_ptr<Image>, void* cookie), T& instance, void* cookie = NULL) throw ();
@@ -170,6 +171,7 @@ protected:
 
   OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException);
   OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException);
+  OpenNIDevice (xn::Context& context) throw (OpenNIException);
   static void __stdcall NewDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
   static void __stdcall NewImageDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
   static void __stdcall NewIRDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
@@ -179,15 +181,14 @@ protected:
   void ImageDataThreadFunction () throw (OpenNIException);
   void DepthDataThreadFunction () throw (OpenNIException);
   void IRDataThreadFunction () throw (OpenNIException);
-  //static void NewImageDataAvailable ( xn::ProductionNode& node, void* cookie );
 
   virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const  throw () = 0;
 
   void setRegistration (bool on_off) throw (OpenNIException);
   virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_data) const throw () = 0;
 
-  virtual void getAvailableModes () throw (OpenNIException);
-  void Init () throw (OpenNIException);
+  virtual void enumAvailableModes () throw (OpenNIException);
+  void Init () throw (OpenNIException); 
   // holds the callback functions together with custom data
   // since same callback function can be registered multiple times with e.g. different custom data
   // we use a map structure with a handle as the key
@@ -199,9 +200,11 @@ protected:
   std::vector<XnMapOutputMode> available_depth_modes_;
 
   /** \brief node object for current device */
-  const xn::NodeInfo& device_node_info_;
+  //xn::NodeInfo device_node_info_;
   
-  xn::Device device_;
+  /** \brief node for device objects*/
+  xn::ProductionNode device_;
+  
   /** \brief Depth generator object. */
   xn::DepthGenerator depth_generator_;
   /** \brief Image generator object. */
@@ -230,7 +233,7 @@ protected:
   OpenNIDevice::CallbackHandle depth_callback_handle_counter_;
   OpenNIDevice::CallbackHandle ir_callback_handle_counter_;
 
-  bool running_;
+  bool quit_;
   mutable boost::mutex image_mutex_;
   mutable boost::mutex depth_mutex_;
   mutable boost::mutex ir_mutex_;
