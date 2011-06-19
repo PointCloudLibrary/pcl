@@ -189,6 +189,10 @@ As of version 0.7, the **.PCD** file format uses two different modes for storing
 
     p_n
 
+.. note::
+
+  Starting with PCL version 1.0.1 the string representation for NaN is "nan".
+
 * in **binary** form, where the data is a complete memory copy of the
   `pcl::PointCloud.points` array/vector. On Linux systems, we use `mmap`/`munmap`
   operations for the fastest possible read/write access to the data.
