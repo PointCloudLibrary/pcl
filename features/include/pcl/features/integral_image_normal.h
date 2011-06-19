@@ -77,7 +77,8 @@ namespace pcl
         diff_x_(NULL), diff_y_(NULL), depth_data_(NULL),
         use_depth_dependent_smoothing_(false),
         max_depth_change_factor_(20.0f*0.001f),
-        normal_smoothing_size_(10.0f)
+        normal_smoothing_size_(10.0f),
+        init_covariance_matrix_(false), init_average_3d_gradient_(false), init_depth_change_(false)
       {
         feature_name_ = "IntegralImagesNormalEstimation";
         tree_.reset (new pcl::OrganizedDataIndex<PointInT>);
@@ -150,6 +151,19 @@ namespace pcl
         use_depth_dependent_smoothing_ = use_depth_dependent_smoothing;
       }
 
+       /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
+        * \param cloud the const boost shared pointer to a PointCloud message
+        */
+      virtual inline void 
+      setInputCloud (const typename PointCloudIn::ConstPtr &cloud) 
+      { 
+        input_ = cloud; 
+
+        init_covariance_matrix_ = init_average_3d_gradient_ = init_depth_change_ = false;
+
+        // Initialize the correct data structure based on the normal estimation method chosen 
+        initData ();
+      }
 
     protected:
 
@@ -159,23 +173,11 @@ namespace pcl
       void 
       computeFeature (PointCloudOut &output);
 
-      /**
-        * Sets the input data.
-        *
-        * \param width the width of the 2d input data array.
-        * \param height the height of the 2d input data array. 
-        * \param dimensions number of dimensions of each element.
-        * \param element_stride number of DataType entries per element (equal or bigger than dimensions).
-        * \param row_stride number of DataType entries per row (equal or bigger than element_stride * number of 
-        *          elements per row).
-        * \param distance_threshold threshold for detecting depth discontinuities
-        * \param normal_estimation_method the normal estimation method. Select between: COVARIANCE_MATRIX, AVERAGE_3D_GRADIENT, AVERAGE_DEPTH_CHANGE
+      /** \brief Initialize the data structures, based on the normal estimation method chosen.
         */
       void 
-      setInputData (const int width, const int height, const int dimensions,
-                    const int element_stride, const int row_stride, const float distance_threshold,
-                    const NormalEstimationMethod normal_estimation_method = AVERAGE_3D_GRADIENT);
-
+      initData ();
+      
     private:
       /** \brief The normal estimation method to use. Currently, 3 implementations are provided:
         *
@@ -189,17 +191,6 @@ namespace pcl
       int rect_width_;
       /** The height of the neighborhood region used for computing the normal. */
       int rect_height_;
-
-      /** the width of the 2d input data array */
-      int width_;
-      /** the height of the 2d input data array */
-      int height_;
-      /** number of dimensions of each element */
-      int dimensions_;
-      /** number of DataType entries per element */
-      int element_stride_;
-      /** number of DataType entries per row */
-      int row_stride_;
 
       /** the threshold used to detect depth discontinuities */
       float distance_threshold_;
@@ -224,11 +215,32 @@ namespace pcl
       /** \brief Smooth data based on depth (true/false). */
       bool use_depth_dependent_smoothing_;
 
-      /** \brief */
+      /** \brief Threshold for detecting depth discontinuities */
       float max_depth_change_factor_;
 
       /** \brief */
       float normal_smoothing_size_;
+
+      /** \brief True when a dataset has been received and the covariance_matrix data has been initialized. */
+      bool init_covariance_matrix_;
+      
+      /** \brief True when a dataset has been received and the average 3d gradient data has been initialized. */
+      bool init_average_3d_gradient_;
+
+      /** \brief True when a dataset has been received and the depth change data has been initialized. */
+      bool init_depth_change_;
+
+      /** \brief Internal initialization method for COVARIANCE_MATRIX estimation. */
+      void
+      initCovarianceMatrixMethod ();
+
+      /** \brief Internal initialization method for AVERAGE_3D_GRADIENT estimation. */
+      void
+      initAverage3DGradientMethod ();
+
+      /** \brief Internal initialization method for AVERAGE_DEPTH_CHANGE estimation. */
+      void
+      initAverageDepthChangeMethod ();
   };
 }
 

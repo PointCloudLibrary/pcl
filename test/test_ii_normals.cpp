@@ -38,7 +38,6 @@
 #include <gtest/gtest.h>
 
 #include <pcl/point_types.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -46,7 +45,6 @@
 #include <iostream>
 
 using namespace pcl;
-using namespace pcl::io;
 using namespace std;
 
 typedef KdTree<PointXYZ>::Ptr KdTreePtr;
@@ -83,9 +81,15 @@ TEST (PCL, NormalEstimation)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, IINormalEstimation)
 {
+  Normal normal;
   ne.setInputCloud (cloud.makeShared ());
   ne.setRectSize (2, 2);
-  ne.setNormalEstimationMethod (IntegralImageNormalEstimation<PointXYZ, Normal>::AVERAGE_3D_GRADIENT);
+  ne.computePointNormal (160, 120, normal);
+  ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
+
+  EXPECT_NEAR (fabs (normal.normal_x),   0, 1e-2);
+  EXPECT_NEAR (fabs (normal.normal_y),   0, 1e-2);
+  EXPECT_NEAR (fabs (normal.normal_z), 1.0, 1e-2);
 
   PointCloud<Normal> output;
   ne.compute (output);
@@ -98,11 +102,40 @@ TEST (PCL, IINormalEstimation)
   {
     for (size_t u = 0; u < cloud.width; ++u)
     {
-      if (!pcl_isfinite(output.points[v*cloud.width+u].normal_x) && !pcl_isfinite(output.points[v*cloud.width+u].normal_y) && !pcl_isfinite(output.points[v*cloud.width+u].normal_z)) continue;
+      if (!pcl_isfinite(output (u, v).normal_x) && 
+          !pcl_isfinite(output (u, v).normal_y) && 
+          !pcl_isfinite(output (u, v).normal_z)) 
+        continue;
 
-      EXPECT_NEAR (fabs (output.points[v*cloud.width+u].normal_x),   0, 1e-2);
-      EXPECT_NEAR (fabs (output.points[v*cloud.width+u].normal_y),   0, 1e-2);
-      EXPECT_NEAR (fabs (output.points[v*cloud.width+u].normal_z), 1.0, 1e-2);
+      EXPECT_NEAR (fabs (output (u, v).normal_x),   0, 1e-2);
+      EXPECT_NEAR (fabs (output (u, v).normal_y),   0, 1e-2);
+      EXPECT_NEAR (fabs (output (u, v).normal_z), 1.0, 1e-2);
+    }
+  }
+  EXPECT_NEAR (fabs (output (160, 120).normal_x),   0, 1e-2);
+  EXPECT_NEAR (fabs (output (160, 120).normal_y),   0, 1e-2);
+  EXPECT_NEAR (fabs (output (160, 120).normal_z), 1.0, 1e-2);
+
+
+  ne.setNormalEstimationMethod (ne.AVERAGE_3D_GRADIENT);
+  ne.compute (output);
+
+  EXPECT_EQ (output.points.size (), cloud.points.size ());
+  EXPECT_EQ (output.width, cloud.width);
+  EXPECT_EQ (output.height, cloud.height);
+
+  for (size_t v = 0; v < cloud.height; ++v)
+  {
+    for (size_t u = 0; u < cloud.width; ++u)
+    {
+      if (!pcl_isfinite(output (u, v).normal_x) && 
+          !pcl_isfinite(output (u, v).normal_y) && 
+          !pcl_isfinite(output (u, v).normal_z)) 
+        continue;
+
+      EXPECT_NEAR (fabs (output (u, v).normal_x),   0, 1e-2);
+      EXPECT_NEAR (fabs (output (u, v).normal_y),   0, 1e-2);
+      EXPECT_NEAR (fabs (output (u, v).normal_z), 1.0, 1e-2);
     }
   }
 }
@@ -120,17 +153,11 @@ main (int argc, char** argv)
   {
     for (size_t u = 0; u < cloud.width; ++u)
     {
-      cloud.points[v*cloud.width+u].x = u;
-      cloud.points[v*cloud.width+u].y = v;
-      cloud.points[v*cloud.width+u].z = 10;
+      cloud (u, v).x = u;
+      cloud (u, v).y = v;
+      cloud (u, v).z = 10;
     }
   }
-  //for (size_t i = 0; i < cloud.points.size (); ++i)
-  //{
-  //  cloud.points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-  //  cloud.points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-  //  cloud.points[i].z = 10;
-  //}
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

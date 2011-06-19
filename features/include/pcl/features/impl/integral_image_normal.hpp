@@ -53,23 +53,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::~IntegralImageNormalEst
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::setInputData (
-  const int width, const int height,
-  const int dimensions, const int element_stride,
-  const int row_stride, const float distance_threshold,
-  const NormalEstimationMethod normal_estimation_method )
+pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initData ()
 {
-  float *data_ = reinterpret_cast<float*>((PointInT*)(&(input_->points[0])));
-  width_ = width;
-  height_ = height;
-  dimensions_ = dimensions;
-  element_stride_ = element_stride;
-  row_stride_ = row_stride;
-
-  distance_threshold_ = distance_threshold;
-
-  normal_estimation_method_ = normal_estimation_method;
-
   // compute derivatives
   if (integral_image_x_ != NULL) delete integral_image_x_;
   if (integral_image_y_ != NULL) delete integral_image_y_;
@@ -79,66 +64,12 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::setInputData (
   if (diff_y_ != NULL) delete diff_y_;
   if (depth_data_ != NULL) delete depth_data_;
 
-  if (normal_estimation_method == COVARIANCE_MATRIX)
-  {
-    // compute integral images
-    integral_image_xyz_ = new pcl::IntegralImage2D<float, double>(data_, input_->width, input_->height, 3, true, element_stride, row_stride);
-  }
-  else if (normal_estimation_method == AVERAGE_3D_GRADIENT)
-  {
-    size_t nr_points = 4 * input_->points.size ();
-    diff_x_ = new float[nr_points];
-    diff_y_ = new float[nr_points];
-
-    memset (diff_x_, 0, sizeof(float) * nr_points);
-    memset (diff_y_, 0, sizeof(float) * nr_points);
-
-    for (int row_index = 1; row_index < height_-1; ++row_index)
-    {
-      float *data_pointer_y_up    = data_ + (row_index-1)*row_stride_ + element_stride_;
-      float *data_pointer_y_down  = data_ + (row_index+1)*row_stride_ + element_stride_;
-      float *data_pointer_x_left  = data_ + row_index*row_stride_;
-      float *data_pointer_x_right = data_ + row_index*row_stride_ + 2*element_stride_;
-
-      float * diff_x_pointer = diff_x_ + row_index*4*width_ + 4;
-      float * diff_y_pointer = diff_y_ + row_index*4*width_ + 4;
-
-      for (int col_index = 1; col_index < width_-1; ++col_index)
-      {
-        diff_x_pointer[0] = data_pointer_x_right[0] - data_pointer_x_left[0];
-        diff_x_pointer[1] = data_pointer_x_right[1] - data_pointer_x_left[1];
-        diff_x_pointer[2] = data_pointer_x_right[2] - data_pointer_x_left[2];    
-
-        diff_y_pointer[0] = data_pointer_y_down[0] - data_pointer_y_up[0];
-        diff_y_pointer[1] = data_pointer_y_down[1] - data_pointer_y_up[1];
-        diff_y_pointer[2] = data_pointer_y_down[2] - data_pointer_y_up[2];
-
-        diff_x_pointer += 4;
-        diff_y_pointer += 4;
-
-        data_pointer_y_up    += element_stride_;
-        data_pointer_y_down  += element_stride_;
-        data_pointer_x_left  += element_stride_;
-        data_pointer_x_right += element_stride_;
-      }
-    }
-
-    // Compute integral images
-    integral_image_x_ = new pcl::IntegralImage2D<float, double>(diff_x_, input_->width, input_->height, 3, false, 4, 4 * input_->width);
-    integral_image_y_ = new pcl::IntegralImage2D<float, double>(diff_y_, input_->width, input_->height, 3, false, 4, 4 * input_->width);
-  }
-  else if (normal_estimation_method == AVERAGE_DEPTH_CHANGE)
-  {
-    // compute integral image
-    integral_image_ = new pcl::IntegralImage2D<float, double>(
-      &(data_[2]),
-      width_,
-      height_,
-      1,
-      false,
-      element_stride,
-      row_stride);
-  }
+  if (normal_estimation_method_ == COVARIANCE_MATRIX)
+    initCovarianceMatrixMethod ();
+  else if (normal_estimation_method_ == AVERAGE_3D_GRADIENT)
+    initAverage3DGradientMethod ();
+  else if (normal_estimation_method_ == AVERAGE_DEPTH_CHANGE)
+    initAverageDepthChangeMethod ();
 }
 
 
@@ -152,11 +83,106 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::setRectSize (const int 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
+pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMethod ()
+{
+  // number of DataType entries per element (equal or bigger than dimensions)
+  int element_stride = sizeof (input_->points[0]) / sizeof (float);
+  // number of DataType entries per row (equal or bigger than element_stride number of elements per row)
+  int row_stride     = element_stride * input_->width;
+  
+  float *data_ = reinterpret_cast<float*>((PointInT*)(&(input_->points[0])));
+  // compute integral images
+  integral_image_xyz_ = new pcl::IntegralImage2D<float, double>(data_, input_->width, input_->height, 3, true, element_stride, row_stride);
+      
+  init_covariance_matrix_ = true;
+  init_average_3d_gradient_ = init_depth_change_ = false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
+pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMethod ()
+{
+  float *data_ = reinterpret_cast<float*>((PointInT*)(&(input_->points[0])));
+  size_t nr_points = 4 * input_->points.size ();
+  diff_x_ = new float[nr_points];
+  diff_y_ = new float[nr_points];
+  
+  // number of DataType entries per element (equal or bigger than dimensions)
+  int element_stride = sizeof (input_->points[0]) / sizeof (float);
+  // number of DataType entries per row (equal or bigger than element_stride number of elements per row)
+  int row_stride     = element_stride * input_->width;
+
+  memset (diff_x_, 0, sizeof(float) * nr_points);
+  memset (diff_y_, 0, sizeof(float) * nr_points);
+
+  for (size_t ri = 1; ri < input_->height - 1; ++ri)
+  {
+    float *data_pointer_y_up    = data_ + (ri-1)*row_stride + element_stride;
+    float *data_pointer_y_down  = data_ + (ri+1)*row_stride + element_stride;
+    float *data_pointer_x_left  = data_ + ri*row_stride;
+    float *data_pointer_x_right = data_ + ri*row_stride + 2*element_stride;
+
+    float * diff_x_pointer = diff_x_ + ri * 4 * input_->width + 4;
+    float * diff_y_pointer = diff_y_ + ri * 4 * input_->width + 4;
+
+    for (size_t ci = 1; ci < input_->width - 1; ++ci)
+    {
+      diff_x_pointer[0] = data_pointer_x_right[0] - data_pointer_x_left[0];
+      diff_x_pointer[1] = data_pointer_x_right[1] - data_pointer_x_left[1];
+      diff_x_pointer[2] = data_pointer_x_right[2] - data_pointer_x_left[2];    
+
+      diff_y_pointer[0] = data_pointer_y_down[0] - data_pointer_y_up[0];
+      diff_y_pointer[1] = data_pointer_y_down[1] - data_pointer_y_up[1];
+      diff_y_pointer[2] = data_pointer_y_down[2] - data_pointer_y_up[2];
+
+      diff_x_pointer += 4;
+      diff_y_pointer += 4;
+
+      data_pointer_y_up    += element_stride;
+      data_pointer_y_down  += element_stride;
+      data_pointer_x_left  += element_stride;
+      data_pointer_x_right += element_stride;
+    }
+  }
+
+  // Compute integral images
+  integral_image_x_ = new pcl::IntegralImage2D<float, double>(diff_x_, input_->width, input_->height, 3, false, 4, 4 * input_->width);
+  integral_image_y_ = new pcl::IntegralImage2D<float, double>(diff_y_, input_->width, input_->height, 3, false, 4, 4 * input_->width);
+      
+  init_covariance_matrix_ = init_depth_change_ = false;
+  init_average_3d_gradient_ = true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
+pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverageDepthChangeMethod ()
+{
+  // number of DataType entries per element (equal or bigger than dimensions)
+  int element_stride = sizeof (input_->points[0]) / sizeof (float);
+  // number of DataType entries per row (equal or bigger than element_stride number of elements per row)
+  int row_stride     = element_stride * input_->width;
+
+  float *data_ = reinterpret_cast<float*>((PointInT*)(&(input_->points[0])));
+  // compute integral image
+  integral_image_ = new pcl::IntegralImage2D<float, double>(
+    &(data_[2]), input_->width, input_->height, 1, false, element_stride, row_stride);
+
+  init_depth_change_ = true;
+  init_covariance_matrix_ = init_average_3d_gradient_ = false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     const int pos_x, const int pos_y, PointOutT &normal)
 {
+  float bad_point = std::numeric_limits<float>::quiet_NaN ();
+
   if (normal_estimation_method_ == COVARIANCE_MATRIX)
   {
+    if (!init_covariance_matrix_)
+      initCovarianceMatrixMethod ();
+
     const float mean_x = integral_image_xyz_->getSum(pos_x-rect_width_/2, pos_y-rect_height_/2, rect_width_, rect_height_, 0);
     const float mean_y = integral_image_xyz_->getSum(pos_x-rect_width_/2, pos_y-rect_height_/2, rect_width_, rect_height_, 1);
     const float mean_z = integral_image_xyz_->getSum(pos_x-rect_width_/2, pos_y-rect_height_/2, rect_width_, rect_height_, 2);
@@ -186,28 +212,25 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
     pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
   
-    float normal_x = eigen_vectors(0, 0);
-    float normal_y = eigen_vectors(1, 0);
-    float normal_z = eigen_vectors(2, 0);
+    Eigen::Vector4f n (eigen_vectors (0, 0), eigen_vectors (1, 0), eigen_vectors (2, 0), 0);
 
-    if (normal_z > 0.0f)
-    {
-      normal_x *= -1.0f;
-      normal_y *= -1.0f;
-      normal_z *= -1.0f;
-    }
-
-    const float normal_length = sqrt(normal_x * normal_x + normal_y * normal_y + normal_z * normal_z);
-    const float scale = 1.0f/normal_length;
+    if (n[2] > 0.0f)
+      n *= -1.0f;
     
-    normal.normal_x = normal_x*scale;
-    normal.normal_y = normal_y*scale;
-    normal.normal_z = normal_z*scale;
-    normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+    normal.getNormalVector4fMap () = n;
+
+    // Compute the curvature surface change
+    float eig_sum = eigen_values.sum ();
+    if (eig_sum != 0)
+      normal.curvature = fabs ( eigen_values[0] / eig_sum );
+    else
+      normal.curvature = 0;
     return;
   }
   else if (normal_estimation_method_ == AVERAGE_3D_GRADIENT)
   {
+    if (!init_average_3d_gradient_)
+      initAverage3DGradientMethod ();
     const float mean_x_x = integral_image_x_->getSum (pos_x-rect_width_/2, pos_y-rect_height_/2, rect_width_, rect_height_, 0);
     const float mean_x_y = integral_image_x_->getSum (pos_x-rect_width_/2, pos_y-rect_height_/2, rect_width_, rect_height_, 1);
     const float mean_x_z = integral_image_x_->getSum (pos_x-rect_width_/2, pos_y-rect_height_/2, rect_width_, rect_height_, 2);
@@ -224,10 +247,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     
     if (normal_length == 0.0f)
     {
-      normal.normal_x = std::numeric_limits<float>::quiet_NaN ();
-      normal.normal_y = std::numeric_limits<float>::quiet_NaN ();
-      normal.normal_z = std::numeric_limits<float>::quiet_NaN ();
-      normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+      normal.getNormalVector4fMap ().setConstant (bad_point);
+      normal.curvature = bad_point;
       return;
     }
     
@@ -236,15 +257,18 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     normal.normal_x = normal_x * scale;
     normal.normal_y = normal_y * scale;
     normal.normal_z = normal_z * scale;
-    normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+    normal.curvature = bad_point;
     return;
   }
   else if (normal_estimation_method_ == AVERAGE_DEPTH_CHANGE)
   {
-    PointInT pointL = input_->points[pos_y*width_+pos_x-rect_width_/2];
-    PointInT pointR = input_->points[pos_y*width_+pos_x+rect_width_/2];
-    PointInT pointU = input_->points[(pos_y-rect_height_/2)*width_+pos_x];
-    PointInT pointD = input_->points[(pos_y+rect_height_/2)*width_+pos_x];
+    if (!init_depth_change_)
+      initAverageDepthChangeMethod ();
+
+    PointInT pointL = input_->points[pos_y * input_->width + pos_x-rect_width_/2];
+    PointInT pointR = input_->points[pos_y * input_->width + pos_x+rect_width_/2];
+    PointInT pointU = input_->points[(pos_y-rect_height_/2) * input_->width+pos_x];
+    PointInT pointD = input_->points[(pos_y+rect_height_/2) * input_->width+pos_x];
 
     const float mean_L_z = integral_image_->getSum(pos_x-1-rect_width_/2, pos_y-rect_height_/2, rect_width_-1, rect_height_-1, 0)/((rect_width_-1)*(rect_height_-1));
     const float mean_R_z = integral_image_->getSum(pos_x+1-rect_width_/2, pos_y-rect_height_/2, rect_width_-1, rect_height_-1, 0)/((rect_width_-1)*(rect_height_-1));
@@ -263,30 +287,26 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     const float normal_y = mean_x_z * mean_y_x - mean_x_x * mean_y_z;
     const float normal_z = mean_x_x * mean_y_y - mean_x_y * mean_y_x;
 
-    const float normal_length = sqrt(normal_x * normal_x + normal_y * normal_y + normal_z * normal_z);
+    const float normal_length = sqrt (normal_x * normal_x + normal_y * normal_y + normal_z * normal_z);
     
     if (normal_length == 0.0f)
     {
-      normal.normal_x = std::numeric_limits<float>::quiet_NaN ();
-      normal.normal_y = std::numeric_limits<float>::quiet_NaN ();
-      normal.normal_z = std::numeric_limits<float>::quiet_NaN ();
-      normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+      normal.getNormalVector4fMap ().setConstant (bad_point);
+      normal.curvature = bad_point;
       return;
     }
     
-    const float scale = -1.0f/normal_length;
-    
+    const float scale = -1.0f / normal_length;
+
     normal.normal_x = normal_x*scale;
     normal.normal_y = normal_y*scale;
     normal.normal_z = normal_z*scale;
-    normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+    normal.curvature = bad_point;
     
     return;
   }
-  normal.normal_x = std::numeric_limits<float>::quiet_NaN ();
-  normal.normal_y = std::numeric_limits<float>::quiet_NaN ();
-  normal.normal_z = std::numeric_limits<float>::quiet_NaN ();
-  normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+  normal.getNormalVector4fMap ().setConstant (bad_point);
+  normal.curvature = bad_point;
   return;
 }
 
@@ -294,36 +314,33 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
 {
-  // setup normal estimation
-  setInputData (input_->width, input_->height, 3, 
-                sizeof(input_->points[0])/sizeof(float), (sizeof(input_->points[0])/sizeof(float))*input_->width, 10.0f,
-                normal_estimation_method_ );
+  float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   // compute depth-change map
   unsigned char * depthChangeMap = new unsigned char[input_->points.size ()];
   memset (depthChangeMap, 255, input_->points.size ());
 
-  for (unsigned int row_index = 0; row_index < input_->height-1; ++row_index)
+  for (unsigned int ri = 0; ri < input_->height-1; ++ri)
   {
-    for (unsigned int col_index = 0; col_index < input_->width-1; ++col_index)
+    for (unsigned int ci = 0; ci < input_->width-1; ++ci)
     {
-      const float depth = input_->points[row_index*input_->width + col_index].z;
-      const float depthR = input_->points[row_index*input_->width + col_index+1].z;
-      const float depthD = input_->points[(row_index+1)*input_->width + col_index].z;
+      const float depth  = (*input_)(ci,     ri    ).z;
+      const float depthR = (*input_)(ci + 1, ri    ).z;
+      const float depthD = (*input_)(ci,     ri + 1).z;
 
       const float depthDependendDepthChange = (max_depth_change_factor_ * depth)/(500.0f*0.001f);
 
       if (abs (depth - depthR) > depthDependendDepthChange
         || !pcl_isfinite (depth) || !pcl_isfinite (depthR))
       { 
-        depthChangeMap[row_index*input_->width + col_index] = 0;
-        depthChangeMap[row_index*input_->width + col_index+1] = 0;
+        depthChangeMap[ri*input_->width + ci] = 0;
+        depthChangeMap[ri*input_->width + ci+1] = 0;
       }
       if (abs (depth - depthD) > depthDependendDepthChange
         || !pcl_isfinite (depth) || !pcl_isfinite (depthD))
       {
-        depthChangeMap[row_index*input_->width + col_index] = 0;
-        depthChangeMap[(row_index+1)*input_->width + col_index] = 0;
+        depthChangeMap[ri*input_->width + ci] = 0;
+        depthChangeMap[(ri+1)*input_->width + ci] = 0;
       }
     }
   }
@@ -331,121 +348,164 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
     
   // compute distance map
   float *distanceMap = new float[input_->points.size ()];
-  for (unsigned int index = 0; index < (input_->points.size ()); ++index)
+  for (size_t index = 0; index < input_->points.size (); ++index)
   {
-    if (depthChangeMap[index] == 0 || !pcl_isfinite (depthChangeMap[index]))
+    if (depthChangeMap[index] == 0)
       distanceMap[index] = 0.0f;
     else
       distanceMap[index] = 640.0f;
   }
 
   // first pass
-  for (unsigned int row_index = 1; row_index < input_->height; ++row_index)
+  for (size_t ri = 1; ri < input_->height; ++ri)
   {
-    for (unsigned int col_index = 1; col_index < input_->width; ++col_index)
+    for (size_t ci = 1; ci < input_->width; ++ci)
     {
-      const float upLeft = distanceMap[(row_index-1)*input_->width + col_index-1] + 1.4f;
-      const float up = distanceMap[(row_index-1)*input_->width + col_index] + 1.0f;
-      const float upRight = distanceMap[(row_index-1)*input_->width + col_index+1] + 1.4f;
-      const float left = distanceMap[row_index*input_->width + col_index-1] + 1.0f;
-      const float center = distanceMap[row_index*input_->width + col_index];
+      const float upLeft = distanceMap[(ri-1)*input_->width + ci-1] + 1.4f;
+      const float up = distanceMap[(ri-1)*input_->width + ci] + 1.0f;
+      const float upRight = distanceMap[(ri-1)*input_->width + ci+1] + 1.4f;
+      const float left = distanceMap[ri*input_->width + ci-1] + 1.0f;
+      const float center = distanceMap[ri*input_->width + ci];
 
       const float minValue = std::min (std::min (upLeft, up), std::min (left, upRight));
 
       if (minValue < center)
-        distanceMap[row_index * input_->width + col_index] = minValue;
+        distanceMap[ri * input_->width + ci] = minValue;
     }
   }
 
   // second pass
-  for (int row_index = input_->height-2; row_index >= 0; --row_index)
+  for (int ri = input_->height-2; ri >= 0; --ri)
   {
-    for (int col_index = input_->width-2; col_index >= 0; --col_index)
+    for (int ci = input_->width-2; ci >= 0; --ci)
     {
-      const float lowerLeft = distanceMap[(row_index+1)*input_->width + col_index-1] + 1.4f;
-      const float lower = distanceMap[(row_index+1)*input_->width + col_index] + 1.0f;
-      const float lowerRight = distanceMap[(row_index+1)*input_->width + col_index+1] + 1.4f;
-      const float right = distanceMap[row_index*input_->width + col_index+1] + 1.0f;
-      const float center = distanceMap[row_index*input_->width + col_index];
+      const float lowerLeft = distanceMap[(ri+1)*input_->width + ci-1] + 1.4f;
+      const float lower = distanceMap[(ri+1)*input_->width + ci] + 1.0f;
+      const float lowerRight = distanceMap[(ri+1)*input_->width + ci+1] + 1.4f;
+      const float right = distanceMap[ri*input_->width + ci+1] + 1.0f;
+      const float center = distanceMap[ri*input_->width + ci];
 
       const float minValue = std::min (std::min (lowerLeft, lower), std::min (right, lowerRight));
 
       if (minValue < center)
-        distanceMap[row_index*input_->width + col_index] = minValue;
+        distanceMap[ri*input_->width + ci] = minValue;
     }
   }
 
-
   // Estimate normals
-  PointOutT zero_normal;
-  zero_normal.normal_x = std::numeric_limits<float>::quiet_NaN ();
-  zero_normal.normal_y = std::numeric_limits<float>::quiet_NaN ();
-  zero_normal.normal_z = std::numeric_limits<float>::quiet_NaN ();
-  zero_normal.curvature = std::numeric_limits<float>::quiet_NaN ();
-
   output.width  = input_->width;
   output.height = input_->height;
   output.points.resize (input_->width * input_->height);
 
-  for (size_t i = 0; i < output.points.size(); ++i)
+  // Set all normals that we do not touch to NaN
+  for (size_t ri = 0; ri < normal_smoothing_size_; ++ri)
   {
-    output.points[i] = zero_normal;
+    for (size_t ci = 0; ci < input_->width; ++ci)
+    {
+      output (ci, ri).getNormalVector4fMap ().setConstant (bad_point);
+      output (ci, ri).curvature = bad_point;
+    }
+  }
+  for (size_t ri = normal_smoothing_size_; ri < input_->height; ++ri)
+  {
+    for (size_t ci = 0; ci < normal_smoothing_size_; ++ci)
+    {
+      output (ci, ri).getNormalVector4fMap ().setConstant (bad_point);
+      output (ci, ri).curvature = bad_point;
+    }
+  }
+
+  for (size_t ri = input_->height - normal_smoothing_size_; ri < input_->height; ++ri)
+  {
+    for (size_t ci = normal_smoothing_size_; ci < input_->width; ++ci)
+    {
+      output (ci, ri).getNormalVector4fMap ().setConstant (bad_point);
+      output (ci, ri).curvature = bad_point;
+    }
+  }
+
+  for (size_t ri = normal_smoothing_size_; ri < input_->height - normal_smoothing_size_; ++ri)
+  {
+    for (size_t ci = input_->width - normal_smoothing_size_; ci < input_->width; ++ci)
+    {
+      output (ci, ri).getNormalVector4fMap ().setConstant (bad_point);
+      output (ci, ri).curvature = bad_point;
+    }
   }
 
   if (use_depth_dependent_smoothing_)
   {
-    for (int row_index = normal_smoothing_size_; row_index < input_->height-normal_smoothing_size_; ++row_index)
+    for (int ri = normal_smoothing_size_; ri < input_->height-normal_smoothing_size_; ++ri)
     {
-      for (int col_index = normal_smoothing_size_; col_index < input_->width-normal_smoothing_size_; ++col_index)
+      for (int ci = normal_smoothing_size_; ci < input_->width-normal_smoothing_size_; ++ci)
       {
-        const float depth = input_->points[row_index*input_->width + col_index].z;
+        const float depth = (*input_)(ci, ri).z;
+        if (!pcl_isfinite (depth))
+        {
+          output (ci, ri).getNormalVector4fMap ().setConstant (bad_point);
+          output (ci, ri).curvature = bad_point;
+          continue;
+        }
 
         if (depth != 0)
         {
           float smoothing = normal_smoothing_size_ * static_cast<float>(depth)/(500.0f*0.001f);
-          smoothing = ::std::min(distanceMap[row_index*input_->width + col_index], smoothing);
+          smoothing = ::std::min(distanceMap[ri*input_->width + ci], smoothing);
 
           if (smoothing > 2.0f)
           {
             setRectSize (smoothing, smoothing);
-            computePointNormal (col_index, row_index, output.points[row_index*input_->width + col_index]);
+            computePointNormal (ci, ri, output (ci, ri));
           }
           else
-            output.points[row_index*input_->width + col_index] = zero_normal;
+          {
+            output (ci, ri).getNormalVector4fMap ().setConstant (bad_point);
+            output (ci, ri).curvature = bad_point;
+          }
         }
         else
-          output.points[row_index*input_->width + col_index] = zero_normal;
+        {
+          output (ci, ri).getNormalVector4fMap ().setConstant (bad_point);
+          output (ci, ri).curvature = bad_point;
+        }
       }
     }
   }
   else
   {
-    for (int row_index = normal_smoothing_size_; row_index < input_->height-normal_smoothing_size_; ++row_index)
+    for (int ri = normal_smoothing_size_; ri < input_->height-normal_smoothing_size_; ++ri)
     {
-      for (int col_index = normal_smoothing_size_; col_index < input_->width-normal_smoothing_size_; ++col_index)
+      for (int ci = normal_smoothing_size_; ci < input_->width-normal_smoothing_size_; ++ci)
       {
-        const float depth = input_->points[row_index*input_->width + col_index].z;
+        const float depth = (*input_)(ci, ri).z;
         if (!pcl_isfinite (depth))
         {
-          output.points[row_index*input_->width + col_index] = zero_normal;
+          output (ci, ri).getNormalVector4fMap ().setConstant (bad_point);
+          output (ci, ri).curvature = bad_point;
           continue;
         }
 
         if (depth != 0)
         {
           float smoothing = normal_smoothing_size_*static_cast<float>(1.0f)/(500.0f*0.001f);
-          smoothing = std::min (distanceMap[row_index*input_->width + col_index], smoothing);
+          smoothing = std::min (distanceMap[ri*input_->width + ci], smoothing);
 
           if (smoothing > 2.0f)
           {
             setRectSize (smoothing, smoothing);
-            computePointNormal (col_index, row_index, output.points[row_index*input_->width + col_index]);
+            computePointNormal (ci, ri, output (ci, ri));
           }
           else
-            output.points[row_index*input_->width + col_index] = zero_normal;
+          {
+            output (ci, ri).getNormalVector4fMap ().setConstant (bad_point);
+            output (ci, ri).curvature = bad_point;
+          }
         }
         else
-          output.points[row_index*input_->width + col_index] = zero_normal;
+        {
+          output (ci, ri).getNormalVector4fMap ().setConstant (bad_point);
+          output (ci, ri).curvature = bad_point;
+        }
       }
     }
   }
