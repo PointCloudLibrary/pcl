@@ -98,15 +98,4 @@ pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   output.row_step = output.point_step * output.width;
 }
 
-PCL_INSTANTIATE(ExtractIndices, PCL_XYZ_POINT_TYPES);
-PCL_INSTANTIATE(ExtractIndices, (pcl::Normal));
-PCL_INSTANTIATE(ExtractIndices, (pcl::MomentInvariants)(pcl::Boundary)(pcl::PrincipalCurvatures)(pcl::IntensityGradient));
-
-/* the following types to not work. TODO: fix this.
-//template class pcl::ExtractIndices<pcl::PointXY>;
-//template class pcl::ExtractIndices<pcl::PFHSignature125>;
-//template class pcl::ExtractIndices<pcl::FPFHSignature33>;
-//template class pcl::ExtractIndices<pcl::VFHSignature308>;
-//template class pcl::ExtractIndices<pcl::Narf36>;
-//template class pcl::ExtractIndices<pcl::BorderDescription>;
-*/
+PCL_INSTANTIATE(ExtractIndices, PCL_POINT_TYPES);
