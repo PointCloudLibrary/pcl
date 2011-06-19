@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 
 project(narf_keypoint_extraction)
 
-set(PCL_DIR "$ENV{PCL_ROOT}")
 find_package(PCL 1.0 REQUIRED COMPONENTS io range_image visualization keypoints range_image_border_extractor)
 
 if(WXWIDGETS_FOUND)

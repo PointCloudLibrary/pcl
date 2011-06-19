@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 
 project(range_image_border_extraction)
 
-set(PCL_DIR "$ENV{PCL_ROOT}")
 find_package(PCL 1.0 REQUIRED COMPONENTS range_image visualization keypoints)
 
 if(WXWIDGETS_FOUND)
