@@ -109,12 +109,6 @@ pcl::PCLBase<sensor_msgs::PointCloud2>::setInputCloud (const PointCloud2ConstPtr
 bool
 pcl::PCLBase<sensor_msgs::PointCloud2>::deinitCompute ()
 {
-  // Reset the indices
-  if (fake_indices_)
-  {
-    indices_.reset ();
-    fake_indices_ = false;
-  }
   return (true);
 }
 
@@ -130,10 +124,25 @@ pcl::PCLBase<sensor_msgs::PointCloud2>::initCompute ()
   if (!indices_)
   {
     fake_indices_ = true;
-    std::vector<int> *indices = new std::vector<int> (input_->width * input_->height);
-    for (size_t i = 0; i < indices->size (); ++i) { (*indices)[i] = i; }
-    indices_.reset (indices);
+    indices_.reset (new std::vector<int>);
+    try
+    {
+      indices_->resize (input_->width * input_->height);
+    }
+    catch (std::bad_alloc)
+    {
+      PCL_ERROR ("[initCompute] Failed to allocate %zu indices.\n", input_->width * input_->height);
+    }
+    for (size_t i = 0; i < indices_->size (); ++i) { (*indices_)[i] = i; }
   }
+  // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
+  if (fake_indices_ && indices_->size () != (input_->width * input_->height))
+  {
+    size_t indices_size = indices_->size ();
+    indices_->resize (input_->width * input_->height);
+    for (size_t i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = i; }
+  }
+
   return (true);
 }
 

@@ -107,6 +107,9 @@ namespace pcl
   struct PFHSignature125;
   // Members: float pfh[125];
 
+  struct PPFSignature;
+  // Members: float f1, f2, f3, f4, alpha_m;
+
   struct FPFHSignature33;
   // Members: float fpfh[33];
 
@@ -205,6 +208,11 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGB,
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGB, pcl::_PointXYZRGB)
   
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXY,
+                                   (float, x, x)
+                                   (float, y, y)
+)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::InterestPoint,
                                    (float, x, x)
                                    (float, y, y)
@@ -301,6 +309,14 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PFHSignature125,
                                    (float[125], histogram, pfh)
 )
 
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFSignature,
+                                   (float, f1, f1)
+                                   (float, f2, f2)
+                                   (float, f3, f3)
+                                   (float, f4, f4)
+                                   (float, alpha_m, alpha_m)
+)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::FPFHSignature33,
                                    (float[33], histogram, fpfh)
 )
@@ -339,10 +355,10 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::PointSurfel,
                                    (float, curvature, curvature)
 )
 
-//POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::BorderDescription,
-                                   //(int, x, x)
-                                   //(int, y, y)
-                                   //(uint32_t, traits_int, traits)
+//POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::BorderDescription,
+//                                  (int, x, x)
+//                                  (int, y, y)
+//                                  (uint32_t, traits, traits)
 //)
 
 

@@ -48,6 +48,9 @@
 #include "pcl/registration/icp_nl.h"
 #include "pcl/registration/ia_ransac.h"
 
+// We need Histogram<2> to function, so we'll explicitely add kdtree_flann.hpp here
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
+//(pcl::Histogram<2>)
 
 using namespace pcl;
 using namespace pcl::io;
