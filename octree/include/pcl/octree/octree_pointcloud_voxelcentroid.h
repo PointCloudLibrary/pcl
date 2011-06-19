@@ -85,7 +85,7 @@ namespace pcl
          * \return number of occupied voxels
          */
         unsigned int
-        getVoxelCentroids (std::vector<PointT> &voxelCentroidList_arg)
+        getVoxelCentroids (std::vector<PointT, Eigen::aligned_allocator<PointT> > &voxelCentroidList_arg)
         {
 
           size_t i;

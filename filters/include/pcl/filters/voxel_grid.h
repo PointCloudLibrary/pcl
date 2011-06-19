@@ -228,7 +228,7 @@ namespace pcl
         * and that the point is inside the grid, to avoid invalid access (or use getGridCoordinates+getCentroidIndexAt)
         */
       inline int 
-      getCentroidIndex (PointT p)
+      getCentroidIndex (const PointT &p)
       {
         return leaf_layout_.at ((Eigen::Vector4i (floor (p.x / leaf_size_[0]), floor (p.y / leaf_size_[1]), floor (p.z / leaf_size_[2]), 0) - min_b_).dot (divb_mul_));
       }
@@ -240,7 +240,7 @@ namespace pcl
         * \note for efficiency, user must make sure that the saving of the leaf layout is enabled and filtering performed
         */
       inline std::vector<int> 
-      getNeighborCentroidIndices (PointT reference_point, Eigen::MatrixXi relative_coordinates)
+      getNeighborCentroidIndices (const PointT &reference_point, const Eigen::MatrixXi &relative_coordinates)
       {
         Eigen::Vector4i ijk (floor (reference_point.x / leaf_size_[0]), floor (reference_point.y / leaf_size_[1]), floor (reference_point.z / leaf_size_[2]), 0);
         Eigen::Array4i diff2min = min_b_ - ijk;
@@ -273,7 +273,7 @@ namespace pcl
 
       /** \brief Returns the index in the downsampled cloud corresponding to coordinates (i,j,k) in the grid (-1 if empty) */
       inline int 
-      getCentroidIndexAt (Eigen::Vector3i ijk, bool verbose = true)
+      getCentroidIndexAt (const Eigen::Vector3i& ijk, bool verbose = true)
       {
         int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot (divb_mul_);
         if (idx < 0 || idx >= (int)leaf_layout_.size ()) // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as needed
@@ -440,7 +440,7 @@ namespace pcl
         * \note for efficiency, user must make sure that the saving of the leaf layout is enabled and filtering performed
         */
       inline std::vector<int> 
-      getNeighborCentroidIndices (float x, float y, float z, Eigen::MatrixXi relative_coordinates)
+      getNeighborCentroidIndices (float x, float y, float z, const Eigen::MatrixXi &relative_coordinates)
       {
         Eigen::Vector4i ijk (floor (x / leaf_size_[0]), floor (y / leaf_size_[1]), floor (z / leaf_size_[2]), 0);
         Eigen::Array4i diff2min = min_b_ - ijk;
@@ -484,7 +484,7 @@ namespace pcl
 
       /** \brief Returns the index in the downsampled cloud corresponding to coordinates (i,j,k) in the grid (-1 if empty) */
       inline int 
-      getCentroidIndexAt (Eigen::Vector3i ijk, bool verbose = true)
+      getCentroidIndexAt (const Eigen::Vector3i &ijk, bool verbose = true)
       {
         int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot (divb_mul_);
         if (idx < 0 || idx >= (int)leaf_layout_.size ()) // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as needed

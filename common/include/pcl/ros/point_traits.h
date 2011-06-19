@@ -108,7 +108,7 @@ namespace pcl
       
       // Avoid infinite compile-time recursion
       BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
-                           POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT));
+                           POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
 
     // offset
@@ -120,7 +120,7 @@ namespace pcl
       
       // Avoid infinite compile-time recursion
       BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
-                           POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT));
+                           POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
 
     // datatype
@@ -134,7 +134,7 @@ namespace pcl
       
       // Avoid infinite compile-time recursion
       BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
-                           POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT));
+                           POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
 
     // fields
@@ -146,7 +146,7 @@ namespace pcl
       
       // Avoid infinite compile-time recursion
       BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
-                           POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT));
+                           POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
 
   } //namespace traits
