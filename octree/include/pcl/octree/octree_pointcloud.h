@@ -361,7 +361,7 @@ namespace pcl
          * \return number of occupied voxels
          */
         int
-        getOccupiedVoxelCenters (std::vector<PointT> &voxelCenterList_arg) const;
+        getOccupiedVoxelCenters (std::vector<PointT, Eigen::aligned_allocator<PointT> > &voxelCenterList_arg) const;
 
         /** \brief Delete leaf node / voxel at given point
          *  \param point_arg point addressing the voxel to be deleted.
@@ -701,7 +701,7 @@ namespace pcl
          */
         int
         getOccupiedVoxelCentersRecursive (const OctreeBranch* node_arg, const OctreeKey& key_arg,
-                                          std::vector<PointT> &voxelCenterList_arg) const;
+                                          std::vector<PointT, Eigen::aligned_allocator<PointT> > &voxelCenterList_arg) const;
 
 
 

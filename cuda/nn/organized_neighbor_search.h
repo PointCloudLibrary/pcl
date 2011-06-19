@@ -294,7 +294,7 @@ namespace pcl
       generateRadiusLookupTable (unsigned int width, unsigned int height);
 
       inline void
-      pointPlaneProjection (PointT point, int& xpos, int& ypos) const
+      pointPlaneProjection (const PointT& point, int& xpos, int& ypos) const
       {
         xpos = (int) pcl_round(point.x / (point.z * focalLength_));
         ypos = (int) pcl_round(point.y / (point.z * focalLength_));

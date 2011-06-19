@@ -412,7 +412,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
       int
-      OctreePointCloud<PointT, LeafT, OctreeT>::getOccupiedVoxelCenters (std::vector<PointT> &voxelCenterList_arg) const
+      OctreePointCloud<PointT, LeafT, OctreeT>::getOccupiedVoxelCenters (std::vector<PointT, Eigen::aligned_allocator<PointT> > &voxelCenterList_arg) const
       {
         OctreeKey key;
         key.x = key.y = key.z = 0;
@@ -1259,7 +1259,7 @@ namespace pcl
       OctreePointCloud<PointT, LeafT, OctreeT>::getOccupiedVoxelCentersRecursive (
                                                                                   const OctreeBranch* node_arg,
                                                                                   const OctreeKey& key_arg,
-                                                                                  std::vector<PointT> &voxelCenterList_arg) const
+                                                                                  std::vector<PointT, Eigen::aligned_allocator<PointT> > &voxelCenterList_arg) const
       {
         // child iterator
         unsigned char childIdx;

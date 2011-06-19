@@ -55,7 +55,7 @@ GetCuboid (double minX, double maxX, double minY, double maxY, double minZ, doub
 /////////////////////////////////////////////////////////////////////////////
 // Create vtkActorCollection of vtkSmartPointers describing octree cubes
 void
-GetOctreeActors (std::vector<pcl::PointXYZ>& voxelCenters, double voxelSideLen, vtkSmartPointer<vtkActorCollection> coll)
+GetOctreeActors (std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> >& voxelCenters, double voxelSideLen, vtkSmartPointer<vtkActorCollection> coll)
 {
 
   vtkSmartPointer < vtkAppendPolyData > treeWireframe = vtkSmartPointer<vtkAppendPolyData>::New ();
@@ -168,7 +168,7 @@ int
 
   // get vector of voxel centers from octree
   double voxelSideLen;
-  std::vector<pcl::PointXYZ> voxelCenters;
+  std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> > voxelCenters;
   octree.getOccupiedVoxelCenters (voxelCenters);
   voxelSideLen = sqrt (octree.getVoxelSquaredSideLen ());
 
