@@ -82,23 +82,24 @@ public:
   {
   }
 
+  /**
+   * @brief Callback method for the grabber interface
+   * @param cloud The new point cloud from Grabber
+   */
   void
   cloud_cb_ (const CloudConstPtr& cloud)
   {
     FPS_CALC ("callback");
-    set (cloud);
-  }
-
-  void
-  set (const CloudConstPtr& cloud)
-  {
-    //lock while we set our cloud;
     boost::mutex::scoped_lock lock (mtx_);
     cloud_ = cloud;
   }
 
+  /**
+   * @brief swaps the pointer to the point cloud with Null pointer and returns the cloud pointer
+   * @return boost shared pointer to point cloud
+   */
   CloudConstPtr
-  get ()
+  getLatestCloud ()
   {
     //lock while we swap our cloud and reset it.
     boost::mutex::scoped_lock lock(mtx_);
@@ -109,6 +110,9 @@ public:
     return (temp_cloud);
   }
 
+  /**
+   * @brief starts the main loop
+   */
   void
   run()
   {
@@ -126,7 +130,7 @@ public:
       {
         FPS_CALC ("drawing");
         //the call to get() sets the cloud_ to null;
-        viewer.showCloud (get ());
+        viewer.showCloud (getLatestCloud ());
       }
     }
 
@@ -142,7 +146,7 @@ public:
 void
 usage(char ** argv)
 {
-  cout << "usage: " << argv[0] << " [<device_id> [<depth-mode> [<image-mode>] ] ]\n";
+  cout << "usage: " << argv[0] << " [<device_id> [<depth-mode> [<image-mode>] ] ] | [path-to-oni-file]\n";
   cout << argv[0] << " -h | --help : shows this help" << endl;
   cout << argv[0] << " -l : list all available devices" << endl;
   cout << argv[0] << " -l <device-id> : list all available modes for specified device" << endl;
@@ -158,6 +162,8 @@ usage(char ** argv)
   cout << "examples:" << endl;
   cout << argv[0] << " \"#1\"" << endl;
   cout << "    uses the first device." << endl;
+  cout << argv[0] << " \"./temp/test.oni\"" << endl;
+  cout << "    uses the oni-player device to play back oni file given by path." << endl;
   cout << argv[0] << " -l" << endl;
   cout << "    lists all available devices." << endl;
   cout << argv[0] << " -l \"#2\"" << endl;
@@ -222,6 +228,8 @@ main(int argc, char ** argv)
         }
         else
           cout << "No devices connected." << endl;
+        
+        cout <<"Virtual Devices available: ONI player" << endl;
         return 0;
       }
     }
