@@ -37,8 +37,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-//#include "apps/NNClassification.h"
-#include "apps/VFHClassifierNN.h"
+#include <apps/vfh_nn_classifier.h>
 
 int main (int argc, char* argv[])
 {

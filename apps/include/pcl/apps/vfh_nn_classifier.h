@@ -43,7 +43,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/vfh.h>
 #include <pcl/features/normal_3d.h>
-#include <apps/NNClassification.h>
+#include <pcl/apps/nn_classification.h>
 #include <sensor_msgs/PointCloud2.h>
 
 namespace pcl
