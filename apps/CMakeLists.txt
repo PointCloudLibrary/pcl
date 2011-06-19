@@ -33,6 +33,12 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
+
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+  PCL_ADD_EXECUTABLE(nn_classification_example ${SUBSYS_NAME} src/nn_classification_example.cpp)
+  target_link_libraries(nn_classification_example pcl_common pcl_io pcl_features pcl_kdtree)
+
   if (VTK_FOUND AND OPENNI_FOUND)
     
     PCL_ADD_EXECUTABLE(openni_voxel_grid ${SUBSYS_NAME} src/openni_voxel_grid.cpp)
