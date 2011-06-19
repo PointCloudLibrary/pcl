@@ -208,6 +208,11 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGB,
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGB, pcl::_PointXYZRGB)
   
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXY,
+                                   (float, x, x)
+                                   (float, y, y)
+)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::InterestPoint,
                                    (float, x, x)
                                    (float, y, y)
@@ -350,10 +355,10 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::PointSurfel,
                                    (float, curvature, curvature)
 )
 
-//POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::BorderDescription,
-                                   //(int, x, x)
-                                   //(int, y, y)
-                                   //(uint32_t, traits_int, traits)
+//POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::BorderDescription,
+//                                  (int, x, x)
+//                                  (int, y, y)
+//                                  (uint32_t, traits, traits)
 //)
 
 

@@ -61,9 +61,7 @@
   (pcl::FPFHSignature33)      \
   (pcl::VFHSignature308)      \
   (pcl::Narf36)               \
-  (pcl::BorderDescription)    \
   (pcl::IntensityGradient)    \
-  (pcl::Histogram<2>)         \
   (pcl::PointWithScale)
 
 // Define all point types that include XYZ data
@@ -150,8 +148,7 @@ struct _PointXYZ
 /** \brief A point structure representing Euclidean xyz coordinates. (SSE friendly) 
   * \ingroup common
   */
-EIGEN_ALIGN16
-struct PointXYZ : public _PointXYZ
+struct EIGEN_ALIGN16 PointXYZ : public _PointXYZ
 {
   inline PointXYZ()
   {
@@ -171,8 +168,7 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZ& p)
 /** \brief A point structure representing Euclidean xyz coordinates, and the intensity value.
   * \ingroup common
   */ 
-EIGEN_ALIGN16
-struct PointXYZI 
+struct EIGEN_ALIGN16 PointXYZI 
 { 
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   union
@@ -212,8 +208,7 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZI& p)
   *
   * \ingroup common
   */
-EIGEN_ALIGN16
-struct PointXYZRGBA
+struct EIGEN_ALIGN16 PointXYZRGBA
 {
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   EIGEN_ALIGN16
@@ -237,8 +232,7 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p)
   return (os);
 }
 
-EIGEN_ALIGN16
-struct _PointXYZRGB 
+struct EIGEN_ALIGN16 _PointXYZRGB 
 {
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   union
@@ -290,8 +284,7 @@ struct _PointXYZRGB
   *
   * \ingroup common
   */
-EIGEN_ALIGN16
-struct PointXYZRGB : public _PointXYZRGB
+struct EIGEN_ALIGN16 PointXYZRGB : public _PointXYZRGB
 {
   inline PointXYZRGB ()
   {
@@ -331,8 +324,7 @@ inline std::ostream& operator << (std::ostream& os, const PointXY& p)
 /** \brief A point structure representing an interest point with Euclidean xyz coordinates, and an interest value. 
   * \ingroup common
   */
-EIGEN_ALIGN16
-struct InterestPoint
+struct EIGEN_ALIGN16 InterestPoint
 {
   PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   union
@@ -355,8 +347,7 @@ inline std::ostream& operator << (std::ostream& os, const InterestPoint& p)
 /** \brief A point structure representing normal coordinates and the surface curvature estimate. (SSE friendly) 
   * \ingroup common
   */
-EIGEN_ALIGN16
-struct Normal
+struct EIGEN_ALIGN16 Normal 
 {
   PCL_ADD_NORMAL4D;  // This adds the member normal[3] which can also be accessed using the point (which is float[4])
   union
@@ -379,8 +370,7 @@ inline std::ostream& operator << (std::ostream& os, const Normal& p)
 /** \brief A point structure representing Euclidean xyz coordinates, together with normal coordinates and the surface curvature estimate. (SSE friendly) 
   * \ingroup common
   */
-EIGEN_ALIGN16
-struct PointNormal
+struct EIGEN_ALIGN16 PointNormal
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   PCL_ADD_NORMAL4D;   // This adds the member normal[3] which can also be accessed using the point (which is float[4])
@@ -430,8 +420,7 @@ inline std::ostream& operator << (std::ostream& os, const PointNormal& p)
   * Alternatively, from 1.1.0 onwards, you can use p.r, p.g, and p.b directly.
   * \ingroup common
   */
-EIGEN_ALIGN16
-struct _PointXYZRGBNormal
+struct EIGEN_ALIGN16 _PointXYZRGBNormal
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   PCL_ADD_NORMAL4D;   // This adds the member normal[3] which can also be accessed using the point (which is float[4])
@@ -476,8 +465,7 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZRGBNormal& p)
 /** \brief A point structure representing Euclidean xyz coordinates, intensity, together with normal coordinates and the surface curvature estimate. 
   * \ingroup common
   */
-EIGEN_ALIGN16
-struct PointXYZINormal
+struct EIGEN_ALIGN16 PointXYZINormal
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   PCL_ADD_NORMAL4D;   // This adds the member normal[3] which can also be accessed using the point (which is float[4])
@@ -501,8 +489,7 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZINormal& p)
 /** \brief A point structure representing Euclidean xyz coordinates, padded with an extra range float. 
   * \ingroup common
   */
-EIGEN_ALIGN16
-struct PointWithRange 
+struct EIGEN_ALIGN16 PointWithRange 
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   union
@@ -521,8 +508,7 @@ inline std::ostream& operator << (std::ostream& os, const PointWithRange& p)
   return (os);
 }
 
-EIGEN_ALIGN16
-struct _PointWithViewpoint 
+struct EIGEN_ALIGN16 _PointWithViewpoint 
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   union
@@ -541,7 +527,7 @@ struct _PointWithViewpoint
 /** \brief A point structure representing Euclidean xyz coordinates together with the viewpoint from which it was seen. 
   * \ingroup common
   */
-struct PointWithViewpoint : public _PointWithViewpoint
+struct EIGEN_ALIGN16 PointWithViewpoint : public _PointWithViewpoint
 {
   PointWithViewpoint(float _x=0.0f, float _y=0.0f, float _z=0.0f, float _vp_x=0.0f, float _vp_y=0.0f, float _vp_z=0.0f)
   {
@@ -747,8 +733,7 @@ inline std::ostream& operator << (std::ostream& os, const Histogram<N>& p)
 /** \brief A point structure representing a 3-D position and scale. 
   * \ingroup common
   */
-EIGEN_ALIGN16
-struct PointWithScale
+struct EIGEN_ALIGN16 PointWithScale
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   float scale;
@@ -763,8 +748,7 @@ inline std::ostream& operator << (std::ostream& os, const PointWithScale& p)
 /** \brief A surfel, that is, a point structure representing Euclidean xyz coordinates, together with normal coordinates, a RGBA color, a radius, a confidence value and the surface curvature estimate. 
   * \ingroup common
   */
-EIGEN_ALIGN16
-struct PointSurfel
+struct EIGEN_ALIGN16 PointSurfel
 {
   PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
   PCL_ADD_NORMAL4D;   // This adds the member normal[3] which can also be accessed using the point (which is float[4])

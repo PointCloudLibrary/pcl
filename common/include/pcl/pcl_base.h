@@ -119,7 +119,7 @@ namespace pcl
       }
 
       /** \brief Get a pointer to the vector of indices used. */
-      inline IndicesConstPtr const 
+      inline IndicesPtr const 
       getIndices () { return (indices_); }
 
     protected:
@@ -210,6 +210,13 @@ namespace pcl
                    x_field_name_ ("x"), y_field_name_ ("y"), z_field_name_ ("z")
       {};
 
+      /** \brief destructor. */
+      virtual ~PCLBase() 
+      {
+        input_.reset ();
+        indices_.reset ();
+      }
+
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
         */
@@ -224,7 +231,7 @@ namespace pcl
         * \param indices a pointer to the vector of indices that represents the input data.
         */
       inline void
-      setIndices (const IndicesConstPtr &indices)
+      setIndices (const IndicesPtr &indices)
       {
         indices_ = indices;
         fake_indices_ = false;
@@ -243,7 +250,7 @@ namespace pcl
       }
 
       /** \brief Get a pointer to the vector of indices used. */
-      inline IndicesConstPtr const 
+      inline IndicesPtr const 
       getIndices () { return (indices_); }
 
     protected:
@@ -251,7 +258,7 @@ namespace pcl
       PointCloud2ConstPtr input_;
 
       /** \brief A pointer to the vector of point indices to use. */
-      IndicesConstPtr indices_;
+      IndicesPtr indices_;
 
       /** \brief Set to true if point indices are used. */
       bool use_indices_;
