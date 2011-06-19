@@ -435,6 +435,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
   if (use_depth_dependent_smoothing_)
   {
+    float smoothing_constant = normal_smoothing_size_ / (500.0f * 0.001f);
     for (int ri = normal_smoothing_size_; ri < input_->height-normal_smoothing_size_; ++ri)
     {
       for (int ci = normal_smoothing_size_; ci < input_->width-normal_smoothing_size_; ++ci)
@@ -447,21 +448,12 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
           continue;
         }
 
-        if (depth != 0)
-        {
-          float smoothing = normal_smoothing_size_ * static_cast<float>(depth)/(500.0f*0.001f);
-          smoothing = ::std::min(distanceMap[ri*input_->width + ci], smoothing);
+        float smoothing = (std::min)(distanceMap[ri*input_->width + ci], smoothing_constant * static_cast<float>(depth));
 
-          if (smoothing > 2.0f)
-          {
-            setRectSize (smoothing, smoothing);
-            computePointNormal (ci, ri, output (ci, ri));
-          }
-          else
-          {
-            output (ci, ri).getNormalVector4fMap ().setConstant (bad_point);
-            output (ci, ri).curvature = bad_point;
-          }
+        if (smoothing > 2.0f)
+        {
+          setRectSize (smoothing, smoothing);
+          computePointNormal (ci, ri, output (ci, ri));
         }
         else
         {
@@ -473,33 +465,24 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   }
   else
   {
+    float smoothing_constant = normal_smoothing_size_ * static_cast<float>(1.0f) / (500.0f * 0.001f);
     for (int ri = normal_smoothing_size_; ri < input_->height-normal_smoothing_size_; ++ri)
     {
       for (int ci = normal_smoothing_size_; ci < input_->width-normal_smoothing_size_; ++ci)
       {
-        const float depth = (*input_)(ci, ri).z;
-        if (!pcl_isfinite (depth))
+        if (!pcl_isfinite ((*input_) (ci, ri).z))
         {
           output (ci, ri).getNormalVector4fMap ().setConstant (bad_point);
           output (ci, ri).curvature = bad_point;
           continue;
         }
 
-        if (depth != 0)
-        {
-          float smoothing = normal_smoothing_size_*static_cast<float>(1.0f)/(500.0f*0.001f);
-          smoothing = std::min (distanceMap[ri*input_->width + ci], smoothing);
+        float smoothing = (std::min)(distanceMap[ri*input_->width + ci], smoothing_constant);
 
-          if (smoothing > 2.0f)
-          {
-            setRectSize (smoothing, smoothing);
-            computePointNormal (ci, ri, output (ci, ri));
-          }
-          else
-          {
-            output (ci, ri).getNormalVector4fMap ().setConstant (bad_point);
-            output (ci, ri).curvature = bad_point;
-          }
+        if (smoothing > 2.0f)
+        {
+          setRectSize (smoothing, smoothing);
+          computePointNormal (ci, ri, output (ci, ri));
         }
         else
         {
