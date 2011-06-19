@@ -58,7 +58,7 @@
   /***/
 
 #define POINT_CLOUD_REGISTER_POINT_WRAPPER(wrapper, pod)    \
-  BOOST_MPL_ASSERT_MSG(sizeof(wrapper) == sizeof(pod), POINT_WRAPPER_AND_POD_TYPES_HAVE_DIFFERENT_SIZES, (wrapper, pod)); \
+  BOOST_MPL_ASSERT_MSG(sizeof(wrapper) == sizeof(pod), POINT_WRAPPER_AND_POD_TYPES_HAVE_DIFFERENT_SIZES, (wrapper&, pod&)); \
   namespace pcl {                                           \
     namespace traits {                                      \
       template<> struct POD<wrapper> { typedef pod type; }; \
