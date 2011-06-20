@@ -121,7 +121,7 @@ namespace pcl
       getName () const;
 
       /** \brief ... */
-      inline const openni_wrapper::OpenNIDevice& 
+      inline boost::shared_ptr<openni_wrapper::OpenNIDevice> 
       getDevice () const;
 
       /** \brief ... */
@@ -273,10 +273,10 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
   } ;
 
-  const openni_wrapper::OpenNIDevice&
+  boost::shared_ptr<openni_wrapper::OpenNIDevice>
   OpenNIGrabber::getDevice () const
   {
-    return (*device_);
+    return device_;
   }
 
 } // namespace pcl

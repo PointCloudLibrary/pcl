@@ -227,9 +227,9 @@ OpenNIDriver::~OpenNIDriver () throw ()
   context_.Shutdown ();
 }
 
-boost::shared_ptr<OpenNIDevice> OpenNIDriver::createVirtualDevice (const string& path) const throw (OpenNIException)
+boost::shared_ptr<OpenNIDevice> OpenNIDriver::createVirtualDevice (const string& path, bool repeat, bool stream) const throw (OpenNIException)
 {
-  return boost::shared_ptr<OpenNIDevice> (new DeviceONI (context_, path));
+  return boost::shared_ptr<OpenNIDevice> (new DeviceONI (context_, path, repeat, stream));
 }
  
 boost::shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) const throw (OpenNIException)

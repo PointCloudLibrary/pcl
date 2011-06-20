@@ -39,9 +39,6 @@
 
 #include <pcl/io/openni_camera/openni_device_kinect.h>
 #include <pcl/io/openni_camera/openni_image_bayer_grbg.h>
-#include <iostream>
-#include <sstream>
-#include <boost/thread/mutex.hpp>
 
 using namespace std;
 using namespace boost;

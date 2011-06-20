@@ -57,7 +57,7 @@ class DeviceONI : public OpenNIDevice
 {
   friend class OpenNIDriver;
 public:
-  DeviceONI (xn::Context& context, const std::string& file_name, bool repeat = false) throw (OpenNIException);
+  DeviceONI (xn::Context& context, const std::string& file_name, bool repeat = false, bool streaming = true) throw (OpenNIException);
   virtual ~DeviceONI () throw ();
     
   virtual void startImageStream () throw (OpenNIException);
@@ -75,6 +75,8 @@ public:
   
   virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
   
+  bool trigger () throw (OpenNIException);
+  bool isStreaming () const throw (OpenNIException);
 protected:
   virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
   
@@ -87,6 +89,7 @@ protected:
   boost::thread player_thread_;
   mutable boost::mutex player_mutex_;
   boost::condition_variable player_condition_;
+  bool streaming_;
   bool depth_stream_running_;
   bool image_stream_running_;
   bool ir_stream_running_;

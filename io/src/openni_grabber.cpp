@@ -265,14 +265,11 @@ void OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
   // Initialize the openni device
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
 
-  if (driver.getNumberDevices() == 0)
-    THROW_PCL_IO_EXCEPTION("No devices connected.");
-
   try
   {
     if (boost::filesystem::exists(device_id))
     {
-      device_ = driver.createVirtualDevice(device_id);
+      device_ = driver.createVirtualDevice(device_id, true, true);
     }
     else if (driver.getNumberDevices() == 0)
     {

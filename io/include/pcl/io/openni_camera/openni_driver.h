@@ -70,7 +70,7 @@ public:
   unsigned updateDeviceList () throw ();
   inline unsigned getNumberDevices () const throw ();
   
-  boost::shared_ptr<OpenNIDevice> createVirtualDevice (const std::string& path) const throw (OpenNIException);
+  boost::shared_ptr<OpenNIDevice> createVirtualDevice (const std::string& path, bool repeat, bool stream) const throw (OpenNIException);
   boost::shared_ptr<OpenNIDevice> getDeviceByIndex (unsigned index) const throw (OpenNIException);
 #ifndef _WIN32
   boost::shared_ptr<OpenNIDevice> getDeviceBySerialNumber (const std::string& serial_number) const throw (OpenNIException);

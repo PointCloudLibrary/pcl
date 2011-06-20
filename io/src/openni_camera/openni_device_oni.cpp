@@ -39,13 +39,6 @@
 
 #include <pcl/io/openni_camera/openni_device_oni.h>
 #include <pcl/io/openni_camera/openni_image_rgb24.h>
-#include <iostream>
-#include <sstream>
-#include <boost/thread/mutex.hpp>
-#include <openni/XnTypes.h>
-#include <openni/XnCppWrapper.h>
-#include <boost/thread/pthread/condition_variable_fwd.hpp>
-#include <boost/thread/detail/thread.hpp>
 
 using namespace std;
 using namespace boost;
@@ -53,8 +46,9 @@ using namespace boost;
 namespace openni_wrapper
 {
 
-DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool repeat) throw (OpenNIException)
+DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool repeat, bool streaming) throw (OpenNIException)
   : OpenNIDevice(context)
+  , streaming_ (streaming)
   , depth_stream_running_ (false)
   , image_stream_running_ (false)
   , ir_stream_running_ (false)
@@ -93,13 +87,17 @@ DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool re
   Init ();
 
   player_.SetRepeat(repeat);
-  player_thread_ = boost::thread (&DeviceONI::PlayerThreadFunction, this);
+  if (streaming_)
+    player_thread_ = boost::thread (&DeviceONI::PlayerThreadFunction, this);
 }
 
 DeviceONI::~DeviceONI() throw ()
 {
-  quit_ = true;
-  player_thread_.join();
+  if (streaming_)
+  {
+    quit_ = true;
+    player_thread_.join();
+  }
 }
 
 void DeviceONI::startImageStream () throw (OpenNIException)
@@ -153,16 +151,28 @@ bool DeviceONI::isIRStreamRunning () const throw (OpenNIException)
   return ir_stream_running_;
 }
 
+bool DeviceONI::trigger () throw (OpenNIException)
+{
+  if (player_.IsEOF())
+    return false;
+  
+  if (streaming_)
+    THROW_OPENNI_EXCEPTION ("Virtual device is in streaming mode. Trigger not available.");
+  
+  player_.ReadNext();
+  return true;
+}
+
+bool DeviceONI::isStreaming () const throw (OpenNIException)
+{
+  return streaming_;
+}
+
 void DeviceONI::PlayerThreadFunction() throw (OpenNIException)
 {
   quit_ = false;
   while (!quit_)
-  {
-    if (depth_stream_running_ || image_stream_running_ || ir_stream_running_)
-      player_.ReadNext();
-    else
-      boost::this_thread::sleep (boost::posix_time::millisec (5));
-  }
+    player_.ReadNext();
 }
 
 void __stdcall DeviceONI::NewONIDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
