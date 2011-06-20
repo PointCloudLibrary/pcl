@@ -52,7 +52,8 @@ File format header
 ------------------
 
 Each PCD file contains a header that identifies and declares certain properties
-of the point cloud data stored in the file. 
+of the point cloud data stored in the file. The header of a PCD must be encoded
+in ASCII.
 
 .. note::
 
