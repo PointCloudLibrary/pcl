@@ -435,7 +435,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
   if (use_depth_dependent_smoothing_)
   {
-    float smoothing_constant = normal_smoothing_size_ / (500.0f * 0.001f);
     for (int ri = normal_smoothing_size_; ri < input_->height-normal_smoothing_size_; ++ri)
     {
       for (int ci = normal_smoothing_size_; ci < input_->width-normal_smoothing_size_; ++ci)
