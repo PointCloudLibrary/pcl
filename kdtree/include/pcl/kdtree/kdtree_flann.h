@@ -41,7 +41,15 @@
 #include <cstdio>
 #include <pcl/kdtree/kdtree.h>
 #include <boost/thread/mutex.hpp>
-#include <flann/flann.hpp>
+
+namespace flann
+{
+  template <typename Distance>
+  class Index;
+
+  template <class T>
+  struct L2_Simple;
+}
 
 namespace pcl
 {
@@ -68,7 +76,7 @@ namespace pcl
     typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
     typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
 
-    typedef flann::Index< flann::L2_Simple<float> > FLANNIndex;
+    typedef flann::Index <flann::L2_Simple<float> > FLANNIndex;
 
     public:
       // Boost shared pointers
@@ -112,7 +120,8 @@ namespace pcl
       }
 
 
-      inline void shallowCopy (const KdTreeFLANN& tree)
+      inline void 
+      shallowCopy (const KdTreeFLANN& tree)
       {
         flann_index_ = tree.flann_index_;
         cloud_ = tree.cloud_;
@@ -122,7 +131,9 @@ namespace pcl
       }
 
 
-      /** \brief Destructor for KdTreeFLANN. Deletes all allocated data arrays and destroys the kd-tree structures. */
+      /** \brief Destructor for KdTreeFLANN. 
+        * Deletes all allocated data arrays and destroys the kd-tree structures. 
+        */
       virtual ~KdTreeFLANN ()
       {
         cleanup ();
@@ -132,7 +143,8 @@ namespace pcl
         * \param cloud the const boost shared pointer to a PointCloud message
         * \param indices the point indices subset that is to be used from \a cloud - if NULL the whole cloud is used
         */
-      void setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr &indices=IndicesConstPtr());
+      void 
+      setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr &indices = IndicesConstPtr ());
 
       /** \brief Search for k-nearest neighbors for the given query point.
         * \param point the given query point
@@ -199,8 +211,9 @@ namespace pcl
         * \param max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radius
         */
-      int radiusSearch (const PointT &point, double radius, std::vector<int> &k_indices,
-                        std::vector<float> &k_distances, int max_nn = -1) const;
+      int 
+      radiusSearch (const PointT &point, double radius, std::vector<int> &k_indices,
+                    std::vector<float> &k_distances, int max_nn = -1) const;
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
         * \param cloud the point cloud data
@@ -262,7 +275,8 @@ namespace pcl
         * of points.
         * \param ros_cloud the ROS PointCloud message
         */
-      void convertCloudToArray (const PointCloud &ros_cloud);
+      void 
+      convertCloudToArray (const PointCloud &ros_cloud);
 
       /** \brief Converts a ROS PointCloud message with a given set of indices to the internal FLANN point array
        * representation. Returns the number of points.
@@ -272,11 +286,13 @@ namespace pcl
        * \param ros_cloud the ROS PointCloud message
        * \param indices the point cloud indices
        */
-      void convertCloudToArray (const PointCloud &ros_cloud, const std::vector<int> &indices);
+      void 
+      convertCloudToArray (const PointCloud &ros_cloud, const std::vector<int> &indices);
 
     private:
       /** \brief Class getName method. */
-      virtual std::string getName () const { return ("KdTreeFLANN"); }
+      virtual std::string 
+      getName () const { return ("KdTreeFLANN"); }
 
       boost::mutex m_lock_;
 
@@ -295,7 +311,6 @@ namespace pcl
       /** \brief Tree dimensionality (i.e. the number of dimensions per point). */
       int dim_;
   };
-
 }
 
 #endif

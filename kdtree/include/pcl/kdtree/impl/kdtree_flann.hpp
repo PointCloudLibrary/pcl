@@ -38,6 +38,7 @@
 
 #include "pcl/kdtree/kdtree_flann.h"
 #include <pcl/console/print.h>
+#include <flann/flann.hpp>
 
 namespace pcl
 {
