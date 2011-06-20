@@ -40,7 +40,7 @@
 
 #include "pcl/search/generic_search.h"
 #include "pcl/search/kdtree.h"
-#include "pcl/search/organized_data.h"
+//#include "pcl/search/organized_data.h"
 #include "pcl/search/organized_neighbor_search.h"
 
 using namespace std;

@@ -10,21 +10,18 @@ if(build)
     set(srcs 
         src/generic_search.cpp
         src/kdtree.cpp
-        src/organized_data.cpp
         src/organized_neighbor_search.cpp
         )
 
     set(incs 
         include/pcl/${SUBSYS_NAME}/generic_search.h
         include/pcl/${SUBSYS_NAME}/kdtree.h
-        include/pcl/${SUBSYS_NAME}/organized_data.h
         include/pcl/${SUBSYS_NAME}/organized_neighbor_search.h
         )
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/generic_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp
-        include/pcl/${SUBSYS_NAME}/impl/organized_data.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_neighbor_search.hpp
         )
 
@@ -42,7 +39,6 @@ if(build)
     set(incs 
         include/pcl/${SUBSYS_NAME}/generic_search.h
         include/pcl/${SUBSYS_NAME}/kdtree.h
-        include/pcl/${SUBSYS_NAME}/organized_data.h
         include/pcl/${SUBSYS_NAME}/organized_neighbor_search.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
@@ -50,7 +46,6 @@ if(build)
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/generic_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp
-        include/pcl/${SUBSYS_NAME}/impl/organized_data.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_neighbor_search.hpp
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
