@@ -216,6 +216,8 @@ void OpenNIDevice::Init () throw (OpenNIException)
     lock_guard<mutex> ir_lock (ir_mutex_);
     ir_thread_ = boost::thread (&OpenNIDevice::IRDataThreadFunction, this);
   }
+  
+  quit_ = false;
 }
 
 void OpenNIDevice::startImageStream () throw (OpenNIException)
