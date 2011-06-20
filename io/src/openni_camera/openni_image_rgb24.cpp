@@ -2,7 +2,6 @@
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/openni_camera/openni_image_rgb24.h>
-#include <openni/XnCppWrapper.h>
 
 namespace openni_wrapper
 {
