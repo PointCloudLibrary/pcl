@@ -41,6 +41,7 @@
 #include "pcl/sample_consensus/sac_model_cylinder.h"
 #include "pcl/common/distances.h"
 #include "pcl/common/concatenate.h"
+#include <cminpack.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
