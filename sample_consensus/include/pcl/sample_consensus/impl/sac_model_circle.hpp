@@ -40,6 +40,7 @@
 
 #include "pcl/sample_consensus/sac_model_circle.h"
 #include "pcl/common/concatenate.h"
+#include <cminpack.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
