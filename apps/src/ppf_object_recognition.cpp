@@ -9,8 +9,8 @@ using namespace pcl;
 #include <iostream>
 using namespace std;
 
-const Eigen::Vector4f subsampling_leaf_size (9.0, 9.0, 9.0, 0.0);
-const float normal_estimation_search_radius = 25.0;
+const Eigen::Vector4f subsampling_leaf_size (8.0, 8.0, 8.0, 0.0);
+const float normal_estimation_search_radius = 16.0;
 
 int
 main (int argc, char** argv)
@@ -73,10 +73,16 @@ main (int argc, char** argv)
   ppf_registration.setInputTarget (cloud_scene_subsampled);
   ppf_registration.setInputTargetNormals (cloud_scene_subsampled_normals);
 
-  PointCloud<PointXYZ> cloud_output;
-  ppf_registration.computeTransformation (cloud_output);
+  PointCloud<PointXYZ> cloud_output_subsampled, cloud_output;
+  ppf_registration.align (cloud_output_subsampled);
 
-  io::savePCDFileASCII("output_registered.pcd", cloud_output);
+  Eigen::Matrix4f mat = ppf_registration.getFinalTransformation ();
+  Eigen::Affine3f final_transformation (mat);
+
+
+  io::savePCDFileASCII ("output_subsampled_registered.pcd", cloud_output_subsampled);
+  getTransformedPointCloud (*cloud_model, final_transformation, cloud_output);
+  io::savePCDFileASCII ("output_registered.pcd", cloud_output);
 
   return 0;
 }

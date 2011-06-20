@@ -132,7 +132,11 @@ namespace pcl
 
     typedef typename PointCloud<PointT>::ConstPtr PointCloudInputConstPtr;
     typedef typename PointCloud<PointNT>::ConstPtr PointCloudInputNormalsConstPtr;
+    using Registration<PointT, PointT>::input_;
     using Registration<PointT, PointT>::target_;
+    using Registration<PointT, PointT>::converged_;
+    using Registration<PointT, PointT>::final_transformation_;
+    using Registration<PointT, PointT>::transformation_;
 
 
 
@@ -183,11 +187,13 @@ namespace pcl
                           boost::unordered_map<std::string, std::pair<PointCloudInputConstPtr, PointCloudInputNormalsConstPtr> > &out_cloud_model_map);
      */
 
-    void
-    computeTransformation (PointCloud<PointT> &output);
+
 
   private:
 
+
+    void
+    computeTransformation (PointCloud<PointT> &output);
 
     PPFHashMapSearch::Ptr search_method;
     unsigned int scene_reference_point_sampling_rate;

@@ -130,6 +130,9 @@ pcl::PPFRegistration<PointT, PointNT>::setSourceClouds (const PointCloudInputCon
   cloud_model = cloud;
   cloud_model_normals = normals;
   cloud_model_set = cloud_model_normals_set = true;
+
+  /// let PCLBase know there is input set
+  input_ = cloud_model;
 }
 
 template <typename PointT, typename PointNT> void
@@ -271,6 +274,9 @@ pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloud<PointT>
   clusterPoses (voted_poses, results);
 
   getTransformedPointCloud (*cloud_model, results.front ().pose, output);
+
+  transformation_ = final_transformation_ = results.front ().pose.matrix ();
+  converged_ = true;
 }
 
 
