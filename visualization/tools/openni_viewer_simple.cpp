@@ -198,15 +198,15 @@ main(int argc, char ** argv)
       if (argc >= 3)
       {
         pcl::OpenNIGrabber grabber(argv[2]);
-        const openni_wrapper::OpenNIDevice& device = grabber.getDevice();
-        cout << "Supported depth modes for device: " << device.getVendorName() << " , " << device.getProductName() << endl;
+        boost::shared_ptr<openni_wrapper::OpenNIDevice> device = grabber.getDevice();
+        cout << "Supported depth modes for device: " << device->getVendorName() << " , " << device->getProductName() << endl;
         std::vector<std::pair<int, XnMapOutputMode > > modes = grabber.getAvailableDepthModes();
         for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
         {
           cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
         }
 
-        cout << endl << "Supported image modes for device: " << device.getVendorName() << " , " << device.getProductName() << endl;
+        cout << endl << "Supported image modes for device: " << device->getVendorName() << " , " << device->getProductName() << endl;
         modes = grabber.getAvailableImageModes();
         for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
         {
