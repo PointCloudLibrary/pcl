@@ -80,8 +80,12 @@ const static int OCTREE                 = 2;
     ~Search(){}
 
     void initSearchDS(int spatial_locator);
+    
     virtual void 
-    setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices = IndicesConstPtr ());
+    setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices);
+    
+    virtual void 
+    setInputCloud (const PointCloudConstPtr& cloud);
 
     virtual int
     nearestKSearch (const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
@@ -93,7 +97,14 @@ const static int OCTREE                 = 2;
     nearestKSearch (int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
 
     virtual int 
-    radiusSearch (const PointT& point, double radius, std::vector<int>& k_indices,    std::vector<float>& k_distances, int max_nn = -1);
+    radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices,    std::vector<float>& k_distances, int max_nn ) const;
+
+//    virtual int 
+  //  radiusSearch (const PointT& point, double radius,
+    //              std::vector<int>& k_indices, std::vector<float> &k_sqr_distances_arg);
+
+//    virtual int 
+//    radiusSearch (const PointT& point, double radius, std::vector<int>& k_indices,    std::vector<float>& k_distances);
 
     virtual int
     radiusSearch (const PointCloud& cloud, int index, double radius,
@@ -102,14 +113,14 @@ const static int OCTREE                 = 2;
 
     virtual int
     radiusSearch (int index, double radius, std::vector<int>& k_indices,
-                  std::vector<float>& k_distances, int max_nn = -1);
+                  std::vector<float>& k_distances, int max_nn = -1) const;
 
 
 
 
   private:
     SearchPtr _searchptr;
-
+    int spatial_loc;
   };
 
 }

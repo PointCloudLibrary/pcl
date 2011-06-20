@@ -7,7 +7,7 @@ using namespace std;
 #include <pcl/common/time.h>
 //#include <pcl/kdtree/kdtree_ann.h>
 #include <pcl/search/generic_search.h>
-#include <pcl/search/kdtree_flann.h>
+#include <pcl/search/kdtree.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -41,12 +41,12 @@ void
 
 
 
-TEST (PCL, KdTreeFLANN_nearestKSearch)
+TEST (PCL, KdTree_nearestKSearch)
 {
 
-  Search<PointXYZ> kdtree(KDTREE_FLANN);
+  Search<PointXYZ>* kdtree = new KdTree<PointXYZ>();
 //  kdtree.initSearchDS();
-  kdtree.setInputCloud (cloud.makeShared ());
+  kdtree->setInputCloud (cloud.makeShared ());
   PointXYZ test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
   multimap<float, int> sorted_brute_force_result;
@@ -67,7 +67,9 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   k_indices.resize (no_of_neighbors);
   vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
-  kdtree.nearestKSearch (test_point, no_of_neighbors, k_indices, k_distances);
+
+  kdtree->nearestKSearch (test_point, no_of_neighbors, k_indices, k_distances);
+
   //if (k_indices.size() != no_of_neighbors)  cerr << "Found "<<k_indices.size()<<" instead of "<<no_of_neighbors<<" neighbors.\n";
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
@@ -86,11 +88,11 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
 
   ScopeTime scopeTime ("FLANN nearestKSearch");
   {
-    Search<PointXYZ> kdtree(KDTREE_FLANN);
+    Search<PointXYZ>* kdtree = new KdTree<PointXYZ>();
 //    kdtree.initSearchDS();
-    kdtree.setInputCloud (cloud_big.makeShared ());
+    kdtree->setInputCloud (cloud_big.makeShared ());
     for (size_t i = 0; i < cloud_big.points.size (); ++i)
-      kdtree.nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+      kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
   }
 #endif
 
@@ -106,8 +108,12 @@ int main(int argc, char** argv)
   init ();
 
 /* Testing using explicit instantiation of inherited class */
-  Search<PointXYZ>* kdtree = new KdTreeFLANN<PointXYZ>();
+  Search<PointXYZ>* kdtree = new KdTree<PointXYZ>();
   kdtree->setInputCloud (cloud.makeShared ());
+
+
+   Search<PointXYZ> orgtree(KDTREE_FLANN);
+   orgtree.setInputCloud (cloud_big.makeShared ());
 
 
   return (RUN_ALL_TESTS ());

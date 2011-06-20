@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2011, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,15 +31,14 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: kdtree_flann.cpp 34690 2010-12-12 05:05:16Z rusu $
- *
+ * Author: Julius Kammerl (julius@kammerl.de)
  */
 
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
-#include "pcl/search/kdtree_flann.h"
-#include "pcl/search/impl/kdtree_flann.hpp"
+#include "pcl/search/organized_neighbor_search.h"
+#include "pcl/search/impl/organized_neighbor_search.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(KdTreeFLANN, PCL_POINT_TYPES);
+PCL_INSTANTIATE(OrganizedNeighborSearch, PCL_XYZ_POINT_TYPES);
 

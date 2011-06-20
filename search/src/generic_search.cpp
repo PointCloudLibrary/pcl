@@ -41,5 +41,5 @@
 #include "pcl/search/impl/generic_search.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(Search, PCL_POINT_TYPES);
+PCL_INSTANTIATE(Search, PCL_XYZ_POINT_TYPES);
 
