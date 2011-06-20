@@ -11,7 +11,6 @@ if(build)
         set(OPENNI_GRABBER_INCLUDES
             include/pcl/io/grabber.h
             include/pcl/io/openni_grabber.h
-            include/pcl/io/oni_grabber.h
             include/pcl/io/pcd_grabber.h
             )
         set(OPENNI_INCLUDES
@@ -42,7 +41,6 @@ if(build)
             src/openni_camera/openni_image_yuv_422.cpp
             src/openni_camera/openni_image_rgb24.cpp
             src/openni_grabber.cpp
-            src/oni_grabber.cpp
             src/pcd_grabber.cpp
             )
     endif(OPENNI_FOUND)
