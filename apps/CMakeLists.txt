@@ -42,10 +42,10 @@ if(build)
  #  PCL_ADD_EXECUTABLE(surflet_feature_object_recognition ${SUBSYS_NAME} src/surflet_feature_object_recognition.cpp)
  #  target_link_libraries(surflet_feature_object_recognition pcl_common pcl_io pcl_filters pcl_features)
 
-  PCL_ADD_EXECUTABLE(ppf_object_recognition ${SUBSYS_NAME} src/ppf_object_recognition.cpp)
-  target_link_libraries(ppf_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_registration)
-
-  if (VTK_FOUND AND OPENNI_FOUND)    
+  if (VTK_FOUND AND OPENNI_FOUND)
+    PCL_ADD_EXECUTABLE(ppf_object_recognition ${SUBSYS_NAME} src/ppf_object_recognition.cpp)
+    target_link_libraries(ppf_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_registration pcl_visualization)
+      
     PCL_ADD_EXECUTABLE(openni_voxel_grid ${SUBSYS_NAME} src/openni_voxel_grid.cpp)
     target_link_libraries(openni_voxel_grid pcl_common pcl_io pcl_filters pcl_visualization)
 
