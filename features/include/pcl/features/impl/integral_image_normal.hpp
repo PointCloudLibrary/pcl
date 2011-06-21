@@ -328,7 +328,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
       const float depthR = (*input_)(ci + 1, ri    ).z;
       const float depthD = (*input_)(ci,     ri + 1).z;
 
-      const float depthDependendDepthChange = (max_depth_change_factor_ * depth)/(500.0f*0.001f);
+      const float depthDependendDepthChange = (max_depth_change_factor_ * (fabs(depth)+1.0f))/(500.0f*0.001f);
 
       if (abs (depth - depthR) > depthDependendDepthChange
         || !pcl_isfinite (depth) || !pcl_isfinite (depthR))
@@ -448,7 +448,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
           continue;
         }
 
-        float smoothing = (std::min)(distanceMap[ri*input_->width + ci], smoothing_constant * static_cast<float>(depth));
+        float smoothing = (std::min)(distanceMap[ri*input_->width + ci], normal_smoothing_size_ + static_cast<float>(depth)/10.0f);
 
         if (smoothing > 2.0f)
         {
