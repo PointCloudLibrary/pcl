@@ -98,3 +98,4 @@ protected:
 } //namespace openni_wrapper
 #endif //__OPENNI_DEVICE_ONI__
 #endif //HAVE_OPENNI
+

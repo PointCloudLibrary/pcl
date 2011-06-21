@@ -209,3 +209,4 @@ bool DeviceONI::isImageResizeSupported(unsigned input_width, unsigned input_heig
 }
 
 #endif //HAVE_OPENNI
+

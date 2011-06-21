@@ -35,3 +35,4 @@ bool ImageRGB24::isResizingSupported (unsigned input_width, unsigned input_heigh
 }
 
 #endif //HAVE_OPENNI
+
