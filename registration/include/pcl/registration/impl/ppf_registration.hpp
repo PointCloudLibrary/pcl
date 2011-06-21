@@ -102,7 +102,6 @@ template <typename PointSource, typename PointTarget> void
 pcl::PPFRegistration<PointSource, PointTarget>::setSearchMethod (PPFHashMapSearch::Ptr a_search_method)
 {
   search_method = a_search_method;
-  search_method_set = true;
 }
 
 
