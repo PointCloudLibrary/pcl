@@ -459,6 +459,18 @@ namespace pcl
                         const std::string &id = "polygon", 
                         int viewport = 0);
 
+        /** \brief Add a PolygonMesh object to screen
+          * \param cloud the polygonal mesh point cloud
+          * \param vertices the polygonal mesh vertices
+          * \param id the polygon object id (default: "polygon")
+          * \param viewport the view port where the PolygonMesh should be added (default: all)
+          */
+        template <typename PointT> bool
+        addPolygonMesh (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+                        const std::vector<pcl::Vertices> &vertices,
+                        const std::string &id = "polygon", 
+                        int viewport = 0);
+
         /** \brief Add a Polygonline from a polygonMesh object to screen
           * \param polymesh the polygonal mesh from where the polylines will be extracted
           * \param id the polygon object id (default: "polygon")
