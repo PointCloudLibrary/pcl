@@ -1992,7 +1992,7 @@ std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & pose
     cloud->height = 1;
 
     double coords[3];
-    float depth[xres*yres];
+    float * depth = new float [xres*yres];
     render_win->GetZbufferData(0,0,xres-1,yres-1,&(depth[0]));
 
     int count_valid_depth_pixels=0;
@@ -2012,6 +2012,7 @@ std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & pose
       }
     }
 
+    delete [] depth;
     //////////////////////////////
     // * Compute area of the mesh
     //////////////////////////////
@@ -2146,7 +2147,7 @@ pcl::visualization::PCLVisualizer::renderView(int xres, int yres, pcl::PointClou
   cloud->height = 1;
 
   double coords[3];
-  float depth[xres*yres];
+  float * depth = new float [xres*yres];
   render_win->GetZbufferData(0,0,xres-1,yres-1,&(depth[0]));
 
   int count_valid_depth_pixels=0;
@@ -2164,6 +2165,8 @@ pcl::visualization::PCLVisualizer::renderView(int xres, int yres, pcl::PointClou
       }
     }
   }
+
+  delete [] depth;
 
   cloud->points.resize(count_valid_depth_pixels);
   cloud->width = count_valid_depth_pixels;
