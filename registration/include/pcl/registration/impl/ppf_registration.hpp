@@ -97,68 +97,19 @@ pcl::PPFHashMapSearch::nearestNeighborSearch (float &f1, float &f2, float &f3, f
 }
 
 
-/*
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::PPFRegistration<PointT, PointNT>::setSourceClouds (const PointCloudInputConstPtr &cloud,
-                                                        const PointCloudInputNormalsConstPtr &normals,
-                                                        std::string &key)
-{
-  cloud_model_map[key] = std::pair<PointCloudInputConstPtr, PointCloudInputNormalsConstPtr> (cloud, normals));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::PPFRegistration<PointT, PointNT>::getSourceClouds (std::string &key,
-                                                        boost::unordered_map<std::string, std::pair<PointCloudInputConstPtr, PointCloudInputNormalsConstPtr> > &out_cloud_model_map)
-{
-  out_cloud_model_map = cloud_model_map;
-}
- */
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::PPFRegistration<PointT, PointNT>::setSearchMethod (PPFHashMapSearch::Ptr a_search_method)
+template <typename PointSource, typename PointTarget> void
+pcl::PPFRegistration<PointSource, PointTarget>::setSearchMethod (PPFHashMapSearch::Ptr a_search_method)
 {
   search_method = a_search_method;
   search_method_set = true;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::PPFRegistration<PointT, PointNT>::setSourceClouds (const PointCloudInputConstPtr &cloud,
-                                                        const PointCloudInputNormalsConstPtr &normals)
-{
-  cloud_model = cloud;
-  cloud_model_normals = normals;
-  cloud_model_set = cloud_model_normals_set = true;
-
-  /// let PCLBase know there is input set
-  input_ = cloud_model;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::PPFRegistration<PointT, PointNT>::getSourceClouds (PointCloudInputConstPtr &out_cloud,
-                                                        PointCloudInputNormalsConstPtr &out_normals)
-{
-  out_cloud = cloud_model;
-  out_normals = cloud_model_normals;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::PPFRegistration<PointT, PointNT>::setInputTargetNormals (const PointCloudInputNormalsConstPtr &target_normals)
-{
-  cloud_scene_normals = target_normals;
-  cloud_scene_normals_set = true;
-}
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloudInput &output)
+template <typename PointSource, typename PointTarget> void
+pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointCloudSource &output)
 {
   if (search_method_set == false)
   {
@@ -166,17 +117,11 @@ pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloudInput &o
     return;
   }
 
-  if (cloud_model_set == false || cloud_model_normals_set == false || cloud_scene_normals_set == false)
-  {
-    PCL_ERROR("PPFRegistration: one of the following point clouds was not initialized: model cloud, normals of model cloud or normals of scene cloud - skipping computeTransformation!\n");
-    return;
-  }
-
-  PointCloudInputConstPtr cloud_scene = target_;
+  PointCloudTargetConstPtr cloud_scene = target_;
   PoseWithVotesList voted_poses;
   std::vector <std::vector <unsigned int> > accumulator_array;
-  accumulator_array.resize (cloud_model->points.size ());
-  for (size_t i = 0; i < cloud_model->points.size (); ++i)
+  accumulator_array.resize (input_->points.size ());
+  for (size_t i = 0; i < input_->points.size (); ++i)
   {
     std::vector <unsigned int> aux ((size_t)floor(2*M_PI / search_method->getAngleDiscretizationStep ()), 0);
     accumulator_array[i] = aux;
@@ -192,8 +137,8 @@ pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloudInput &o
   float f1, f2, f3, f4;
   for (size_t scene_reference_index = 0; scene_reference_index < cloud_scene->points.size (); scene_reference_index += scene_reference_point_sampling_rate)
   {
-    Eigen::Vector3f scene_reference_point = cloud_scene->points[scene_reference_index].getVector3fMap (),
-        scene_reference_normal = cloud_scene_normals->points[scene_reference_index].getNormalVector3fMap ();
+    Eigen::Vector3f scene_reference_point = target_->points[scene_reference_index].getVector3fMap (),
+        scene_reference_normal = target_->points[scene_reference_index].getNormalVector3fMap ();
 
     Eigen::AngleAxisf rotation_sg (acos (scene_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                    scene_reference_normal.cross (Eigen::Vector3f::UnitX ()). normalized());
@@ -215,10 +160,10 @@ pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloudInput &o
       if (scene_reference_index != scene_point_index)
       {
         if (pcl::computePairFeatures (
-            cloud_scene->points[scene_reference_index].getVector4fMap (),
-            cloud_scene_normals->points[scene_reference_index].getNormalVector4fMap (),
-            cloud_scene->points[scene_point_index].getVector4fMap (),
-            cloud_scene_normals->points[scene_point_index].getNormalVector4fMap (),
+            target_->points[scene_reference_index].getVector4fMap (),
+            target_->points[scene_reference_index].getNormalVector4fMap (),
+            target_->points[scene_point_index].getVector4fMap (),
+            target_->points[scene_point_index].getNormalVector4fMap (),
             f1, f2, f3, f4))
         {
 
@@ -226,7 +171,7 @@ pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloudInput &o
           search_method->nearestNeighborSearch (f1, f2, f3, f4, nearest_indices);
 
           /// compute alpha_s angle
-          Eigen::Vector3f scene_point = cloud_scene->points[scene_point_index].getVector3fMap ();
+          Eigen::Vector3f scene_point = target_->points[scene_point_index].getVector3fMap ();
           Eigen::AngleAxisf rotation_sg (acos (scene_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                          scene_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
           Eigen::Affine3f transform_sg = Eigen::Translation3f ( rotation_sg * ((-1) * scene_reference_point)) * rotation_sg;
@@ -263,8 +208,8 @@ pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloudInput &o
         accumulator_array[i][j] = 0;
       }
 
-    Eigen::Vector3f model_reference_point = cloud_model->points[max_votes_i].getVector3fMap (),
-        model_reference_normal = cloud_model_normals->points[max_votes_i].getNormalVector3fMap ();
+    Eigen::Vector3f model_reference_point = input_->points[max_votes_i].getVector3fMap (),
+        model_reference_normal = input_->points[max_votes_i].getNormalVector3fMap ();
     Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())), model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
     Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
     Eigen::Affine3f max_transform = transform_sg.inverse () * Eigen::AngleAxisf ( (max_votes_j - floor(M_PI / search_method->getAngleDiscretizationStep ())) * search_method->getAngleDiscretizationStep (), Eigen::Vector3f::UnitX ()) * transform_mg;
@@ -277,7 +222,7 @@ pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloudInput &o
   PoseWithVotesList results;
   clusterPoses (voted_poses, results);
 
-  getTransformedPointCloud (*cloud_model, results.front ().pose, output);
+  getTransformedPointCloud (*input_, results.front ().pose, output);
 
   transformation_ = final_transformation_ = results.front ().pose.matrix ();
   converged_ = true;
@@ -285,9 +230,9 @@ pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloudInput &o
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> void
-pcl::PPFRegistration<PointT, PointNT>::clusterPoses (typename pcl::PPFRegistration<PointT, PointNT>::PoseWithVotesList &poses,
-                                                     typename pcl::PPFRegistration<PointT, PointNT>::PoseWithVotesList &result)
+template <typename PointSource, typename PointTarget> void
+pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses (typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotesList &poses,
+                                                     typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotesList &result)
 {
   PCL_INFO ("Clustering poses ...\n");
   /// start off by sorting the poses by the number of votes
@@ -351,8 +296,8 @@ pcl::PPFRegistration<PointT, PointNT>::clusterPoses (typename pcl::PPFRegistrati
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> bool
-pcl::PPFRegistration<PointT, PointNT>::posesWithinErrorBounds (Eigen::Affine3f &pose1,
+template <typename PointSource, typename PointTarget> bool
+pcl::PPFRegistration<PointSource, PointTarget>::posesWithinErrorBounds (Eigen::Affine3f &pose1,
                                                                Eigen::Affine3f &pose2)
 {
   float position_diff = (pose1.translation () - pose2.translation ()).norm ();
@@ -367,21 +312,21 @@ pcl::PPFRegistration<PointT, PointNT>::posesWithinErrorBounds (Eigen::Affine3f &
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> bool
-pcl::PPFRegistration<PointT, PointNT>::poseWithVotesCompareFunction (const typename pcl::PPFRegistration<PointT, PointNT>::PoseWithVotes &a,
-                                                                     const typename pcl::PPFRegistration<PointT, PointNT>::PoseWithVotes &b )
+template <typename PointSource, typename PointTarget> bool
+pcl::PPFRegistration<PointSource, PointTarget>::poseWithVotesCompareFunction (const typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotes &a,
+                                                                     const typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotes &b )
 {
   return (a.votes > b.votes);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> bool
-pcl::PPFRegistration<PointT, PointNT>::clusterVotesCompareFunction (const std::pair<size_t, unsigned int> &a,
+template <typename PointSource, typename PointTarget> bool
+pcl::PPFRegistration<PointSource, PointTarget>::clusterVotesCompareFunction (const std::pair<size_t, unsigned int> &a,
                                                                     const std::pair<size_t, unsigned int> &b)
 {
   return (a.second > b.second);
 }
 
-//#define PCL_INSTANTIATE_PPFRegistration(PointT,PointNT) template class PCL_EXPORTS pcl::PPFRegistration<PointT, PointNT>;
+//#define PCL_INSTANTIATE_PPFRegistration(PointSource,PointTarget) template class PCL_EXPORTS pcl::PPFRegistration<PointSource, PointTarget>;
 
 #endif // PCL_REGISTRATION_IMPL_PPF_REGISTRATION_H_

@@ -242,7 +242,9 @@ pcl::Registration<PointSource, PointTarget>::getFitnessScore (double max_range)
 template <typename PointSource, typename PointTarget> inline void
 pcl::Registration<PointSource, PointTarget>::align (PointCloudSource &output)
 {
+  PCL_INFO("ALIGN ...");
   if (!initCompute ()) return;
+  PCL_INFO("ALIGN2 ...");
 
   if (!target_)
   {
@@ -295,7 +297,6 @@ template <typename PointSource, typename PointTarget> inline void
 pcl::Registration<PointSource, PointTarget>::align (PointCloudSource &output, const Eigen::Matrix4f& guess)
 {
   if (!initCompute ()) return;
-
   if (!target_)
   {
     PCL_WARN ("[pcl::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());

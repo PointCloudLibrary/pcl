@@ -108,8 +108,8 @@ namespace pcl
   /** \brief 
     * \author Alex Ichim
     */
-  template <typename PointT, typename PointNT>
-  class PPFRegistration : public Registration<PointT, PointT>
+  template <typename PointSource, typename PointTarget>
+  class PPFRegistration : public Registration<PointSource, PointTarget>
   {
     public:
       /** \note initially used std::pair<Eigen::Affine3f, unsigned int>, but it proved problematic
@@ -128,17 +128,22 @@ namespace pcl
       };
       typedef std::vector<PoseWithVotes, Eigen::aligned_allocator<PoseWithVotes> > PoseWithVotesList;
 
-      typedef typename Registration<PointT, PointNT>::PointCloudSource PointCloudInput;
-      typedef typename PointCloudInput::ConstPtr PointCloudInputConstPtr;
+      /// input_ is the model cloud
+      using Registration<PointSource, PointTarget>::input_;
+      /// target_ is the scene cloud
+      using Registration<PointSource, PointTarget>::target_;
+      using Registration<PointSource, PointTarget>::converged_;
+      using Registration<PointSource, PointTarget>::final_transformation_;
+      using Registration<PointSource, PointTarget>::transformation_;
 
-      typedef typename Registration<PointT, PointNT>::PointCloudTarget PointCloudInputNormals;
-      typedef typename PointCloudInputNormals::ConstPtr PointCloudInputNormalsConstPtr;
+      typedef pcl::PointCloud<PointSource> PointCloudSource;
+      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
+      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
 
-      using Registration<PointT, PointT>::input_;
-      using Registration<PointT, PointT>::target_;
-      using Registration<PointT, PointT>::converged_;
-      using Registration<PointT, PointT>::final_transformation_;
-      using Registration<PointT, PointT>::transformation_;
+      typedef pcl::PointCloud<PointTarget> PointCloudTarget;
+      typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
+      typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
+
 
       /** \brief Constructor
         * \param a_scene_reference_point_sampling_rate
@@ -153,9 +158,6 @@ namespace pcl
          clustering_rotation_diff_threshold (a_clustering_rotation_diff_threshold)
       {
         search_method_set = false;
-        cloud_model_set = false;
-        cloud_model_normals_set = false;
-        cloud_scene_normals_set = false;
       }
 
       /** \brief
@@ -164,49 +166,12 @@ namespace pcl
       void
       setSearchMethod (PPFHashMapSearch::Ptr a_search_method);
 
-      /** \brief */
-      void
-      setInputCloud (const PointCloudInputConstPtr &cloud)
-      {
-        PCL_WARN("PPFRegistration: setInputCloud(...) method disabled - use setSourceClouds instead.\n");
-      }
-
-      /** \brief */
-      void
-      getInputCloud ()
-      {
-        PCL_WARN("PPFRegistration: getInputCloud(...) method disabled - use getSourceClouds(...) instead.\n");
-      }
-
-      /** \brief */
-      void
-      setSourceClouds (const PointCloudInputConstPtr &cloud,
-                       const PointCloudInputNormalsConstPtr &normals);
-
-      /** \brief */
-      void
-      getSourceClouds (PointCloudInputConstPtr &out_cloud,
-                       PointCloudInputNormalsConstPtr &out_normals);
-
-      /** \brief */
-      void
-      setInputTargetNormals (const PointCloudInputNormalsConstPtr &target_normals);
-
-      /*    void setSourceClouds (const PointCloudInputConstPtr &cloud,
-                            const PointCloudInputNormalsConstPtr &normals,
-                            std::string &key);
-
-      void getSourceClouds (std::string &key,
-                            boost::unordered_map<std::string, std::pair<PointCloudInputConstPtr, PointCloudInputNormalsConstPtr> > &out_cloud_model_map);
-       */
-
-
 
     private:
 
       /** \brief */
       void
-      computeTransformation (PointCloudInput &output);
+      computeTransformation (PointCloudSource &output);
 
 
       /** \brief */
@@ -217,13 +182,9 @@ namespace pcl
       float clustering_position_diff_threshold, clustering_rotation_diff_threshold;
 
       //boost::unordered_map<std::string, std::pair<PointCloudInputConstPtr, PointCloudInputNormalsConstPtr> > cloud_model_map;
-      /** \brief */
-      PointCloudInputConstPtr cloud_model;
-      /** \brief */
-      PointCloudInputNormalsConstPtr cloud_model_normals, cloud_scene_normals;
 
       /** \brief */
-      bool search_method_set, cloud_model_set, cloud_model_normals_set, cloud_scene_normals_set;
+      bool search_method_set;
 
 
       /** \brief */
