@@ -44,9 +44,9 @@
 namespace openni_wrapper
 {
 /**
- * @brief This class provides methods to fill a RGB or Grayscale image buffer from underlying Bayer pattern image.
+ * @brief This class provides methods to fill a RGB or Grayscale image buffer from underlying RGB24 image.
  * @author Suat Gedikli
- * @date 02.january 2011
+ * @date 19. June 2011
  * @ingroup io
  */
 class ImageRGB24 : public Image

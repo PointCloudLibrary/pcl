@@ -111,9 +111,10 @@ do \
 { \
     static unsigned count = 0;\
     static double last = pcl::getTime ();\
-    if (++count == 100) \
+    double now = pcl::getTime (); \
+    ++count; \
+    if (now - last >= 1.0) \
     { \
-      double now = pcl::getTime (); \
       std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
       count = 0; \
       last = now; \

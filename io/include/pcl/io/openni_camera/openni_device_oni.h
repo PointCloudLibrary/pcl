@@ -48,9 +48,9 @@ namespace openni_wrapper
 {
 
 /**
- * @brief Concrete implementation of the interface OpenNIDevice for a MS Kinect device.
+ * @brief Concrete implementation of the interface OpenNIDevice for a virtual device playing back an ONI file.
  * @author Suat Gedikli
- * @date 02.january 2011
+ * @date 19. june 2011
  * @ingroup io
  */
 class DeviceONI : public OpenNIDevice
