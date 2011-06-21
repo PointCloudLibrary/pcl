@@ -45,7 +45,7 @@
 namespace pcl
 {
   /// @TODO should be placed somewhere else
-  class PPFHashMapSearch
+  class PCL_EXPORTS PPFHashMapSearch
   {
     public:
       /** \brief Data structure to hold the information for the key in the feature hash map
