@@ -38,7 +38,7 @@
 #ifndef PCL_REGISTRATION_IMPL_PPF_REGISTRATION_H_
 #define PCL_REGISTRATION_IMPL_PPF_REGISTRATION_H_
 
-#include "pcl/registration/ppf_registration.h"
+//#include "pcl/registration/ppf_registration.h"
 #include <pcl/features/ppf.h>
 #include <pcl/features/pfh.h>
 #include <pcl/common/transform.h>
@@ -139,8 +139,8 @@ pcl::PPFRegistration<PointT, PointNT>::setSourceClouds (const PointCloudInputCon
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
-pcl::PPFRegistration<PointT, PointNT>::getSourceClouds (const PointCloudInputConstPtr &out_cloud,
-                                                        const PointCloudInputNormalsConstPtr &out_normals)
+pcl::PPFRegistration<PointT, PointNT>::getSourceClouds (PointCloudInputConstPtr &out_cloud,
+                                                        PointCloudInputNormalsConstPtr &out_normals)
 {
   out_cloud = cloud_model;
   out_normals = cloud_model_normals;
@@ -158,7 +158,7 @@ pcl::PPFRegistration<PointT, PointNT>::setInputTargetNormals (const PointCloudIn
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
-pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloud<PointT> &output)
+pcl::PPFRegistration<PointT, PointNT>::computeTransformation (PointCloudInput &output)
 {
   if (search_method_set == false)
   {
@@ -382,6 +382,6 @@ pcl::PPFRegistration<PointT, PointNT>::clusterVotesCompareFunction (const std::p
   return (a.second > b.second);
 }
 
-
+//#define PCL_INSTANTIATE_PPFRegistration(PointT,PointNT) template class PCL_EXPORTS pcl::PPFRegistration<PointT, PointNT>;
 
 #endif // PCL_REGISTRATION_IMPL_PPF_REGISTRATION_H_

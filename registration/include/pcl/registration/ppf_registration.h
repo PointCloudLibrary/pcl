@@ -128,8 +128,12 @@ namespace pcl
       };
       typedef std::vector<PoseWithVotes, Eigen::aligned_allocator<PoseWithVotes> > PoseWithVotesList;
 
-      typedef typename Registration<PointT, PointNT>::PointCloudSourceConstPtr PointCloudInputConstPtr;
-      typedef typename Registration<PointT, PointNT>::PointCloudTargetConstPtr PointCloudInputNormalsConstPtr;
+      typedef typename Registration<PointT, PointNT>::PointCloudSource PointCloudInput;
+      typedef typename PointCloudInput::ConstPtr PointCloudInputConstPtr;
+
+      typedef typename Registration<PointT, PointNT>::PointCloudTarget PointCloudInputNormals;
+      typedef typename PointCloudInputNormals::ConstPtr PointCloudInputNormalsConstPtr;
+
       using Registration<PointT, PointT>::input_;
       using Registration<PointT, PointT>::target_;
       using Registration<PointT, PointT>::converged_;
@@ -181,8 +185,8 @@ namespace pcl
 
       /** \brief */
       void
-      getSourceClouds (const PointCloudInputConstPtr &out_cloud,
-                       const PointCloudInputNormalsConstPtr &out_normals);
+      getSourceClouds (PointCloudInputConstPtr &out_cloud,
+                       PointCloudInputNormalsConstPtr &out_normals);
 
       /** \brief */
       void
@@ -202,7 +206,7 @@ namespace pcl
 
       /** \brief */
       void
-      computeTransformation (PointCloud<PointT> &output);
+      computeTransformation (PointCloudInput &output);
 
 
       /** \brief */
