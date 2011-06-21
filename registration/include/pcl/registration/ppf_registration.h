@@ -73,6 +73,7 @@ namespace pcl
       {
         feature_hash_map = FeatureHashMapTypePtr (new FeatureHashMapType);
         internals_initialized = false;
+        max_dist = -1.0;
       }
 
 
@@ -94,12 +95,17 @@ namespace pcl
       float
       getDistanceDiscretizationStep () { return distance_discretization_step; }
 
+      float
+      getModelDiameter () { return max_dist; }
+
     private:
       FeatureHashMapTypePtr feature_hash_map;
       bool internals_initialized;
 
       /// parameters
       float angle_discretization_step, distance_discretization_step;
+
+      float max_dist;
   };
 
   /** \brief 
@@ -166,7 +172,13 @@ namespace pcl
        * \param a_search_method smart pointer to the search method to be set
        */
       void
-      setSearchMethod (PPFHashMapSearch::Ptr a_search_method);
+      setSearchMethod (PPFHashMapSearch::Ptr a_search_method) { search_method = a_search_method; }
+
+      /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)
+       * \param cloud the input point cloud target
+       */
+      void
+      setInputTarget (const PointCloudTargetConstPtr &cloud);
 
 
     private:
@@ -185,7 +197,8 @@ namespace pcl
         * poses are considered to be in the same cluster (for the clustering phase of the algorithm) */
       float clustering_position_diff_threshold, clustering_rotation_diff_threshold;
 
-      //boost::unordered_map<std::string, std::pair<PointCloudInputConstPtr, PointCloudInputNormalsConstPtr> > cloud_model_map;
+      /** \brief use a kd-tree with range searches of range max_dist to skip an O(N) pass through the point cloud */
+      typename pcl::KdTreeFLANN<PointTarget>::Ptr scene_search_tree;
 
 
       /** \brief static method used for the std::sort function to order two PoseWithVotes

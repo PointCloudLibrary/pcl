@@ -52,6 +52,7 @@ pcl::PPFHashMapSearch::setInputFeatureCloud (PointCloud<PPFSignature>::ConstPtr 
   feature_hash_map->clear ();
   unsigned int n = sqrt ((float)feature_cloud->points.size ());
   int d1, d2, d3, d4;
+  max_dist = -1.0;
   for (size_t i = 0; i < n; ++i)
   {
     std::vector <float> alpha_m_row;
@@ -62,8 +63,10 @@ pcl::PPFHashMapSearch::setInputFeatureCloud (PointCloud<PPFSignature>::ConstPtr 
       d3 = floor (feature_cloud->points[i*n+j].f3 / angle_discretization_step);
       d4 = floor (feature_cloud->points[i*n+j].f4 / distance_discretization_step);
       feature_hash_map->insert (std::pair<HashKeyStruct, std::pair<size_t, size_t> > (HashKeyStruct (d1, d2, d3, d4), std::pair<size_t, size_t> (i, j)));
-      //alpha_m[i][j] = feature_cloud->points[i*n+j].alpha_m;
       alpha_m_row.push_back (feature_cloud->points[i*n+j].alpha_m);
+
+      if (max_dist < feature_cloud->points[i*n+j].f4)
+        max_dist = feature_cloud->points[i*n+j].f4;
     }
     alpha_m.push_back (alpha_m_row);
   }
@@ -96,14 +99,15 @@ pcl::PPFHashMapSearch::nearestNeighborSearch (float &f1, float &f2, float &f3, f
                                                   map_iterator_pair.first->second.second));
 }
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
-pcl::PPFRegistration<PointSource, PointTarget>::setSearchMethod (PPFHashMapSearch::Ptr a_search_method)
+pcl::PPFRegistration<PointSource, PointTarget>::setInputTarget (const PointCloudTargetConstPtr &cloud)
 {
-  search_method = a_search_method;
-}
+  Registration<PointSource, PointTarget>::setInputTarget (cloud);
 
+  PCL_INFO ("Scene KdTree init ...\n");
+//  scene_search_tree = typename pcl::KdTreeFLANN<PointTarget>::Ptr (new pcl::KdTreeFLANN<PointTarget>);
+//  scene_search_tree->setInputCloud (target_);
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +120,6 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
     return;
   }
 
-  PointCloudTargetConstPtr cloud_scene = target_;
   PoseWithVotesList voted_poses;
   std::vector <std::vector <unsigned int> > accumulator_array;
   accumulator_array.resize (input_->points.size ());
@@ -127,14 +130,9 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
   }
   PCL_INFO ("Accumulator array size: %u x %u.\n", accumulator_array.size (), accumulator_array.back ().size ());
 
-  /// @todo use a kd-tree with range searches of range max_dist to skip an O(N) pass through the point cloud
-  //    typename pcl::KdTreeFLANN<PointInT>::Ptr scene_search_tree (new pcl::KdTreeFLANN<PointInT>);
-  //    scene_search_tree->setInputCloud (cloud_scene_subsampled.makeShared ());
-
-
   /// consider every <scene_reference_point_sampling_rate>-th point as the reference point => fix s_r
   float f1, f2, f3, f4;
-  for (size_t scene_reference_index = 0; scene_reference_index < cloud_scene->points.size (); scene_reference_index += scene_reference_point_sampling_rate)
+  for (size_t scene_reference_index = 0; scene_reference_index < target_->points.size (); scene_reference_index += scene_reference_point_sampling_rate)
   {
     Eigen::Vector3f scene_reference_point = target_->points[scene_reference_index].getVector3fMap (),
         scene_reference_normal = target_->points[scene_reference_index].getNormalVector3fMap ();
@@ -143,17 +141,15 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
                                    scene_reference_normal.cross (Eigen::Vector3f::UnitX ()). normalized());
     Eigen::Affine3f transform_sg = Eigen::Translation3f ( rotation_sg* ((-1)*scene_reference_point)) * rotation_sg;
 
-    /// @todo optimization - search only in max_dist found in the model point cloud
     /// for every other point in the scene => now have pair (s_r, s_i) fixed
-    ///for (size_t scene_point_index = 0; scene_point_index < cloud_scene_subsampled.width; ++ scene_point_index)
-    /*    std::vector<int> indices;
+/*    std::vector<int> indices;
     std::vector<float> distances;
-    scene_search_tree->radiusSearch (cloud_scene->points[scene_reference_index],
-                                     surflet_model.max_dist,
+    scene_search_tree->radiusSearch (target_->points[scene_reference_index],
+                                     search_method->getModelDiameter (),
                                      indices,
                                      distances);
     for(size_t i = 0; i < indices.size (); ++i)*/
-    for(size_t i = 0; i < cloud_scene->points.size (); ++i)
+    for(size_t i = 0; i < target_->points.size (); ++i)
     {
       size_t scene_point_index = i;//indices[i];
       if (scene_reference_index != scene_point_index)
