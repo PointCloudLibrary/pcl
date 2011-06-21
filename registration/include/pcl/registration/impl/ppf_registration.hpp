@@ -50,7 +50,7 @@ pcl::PPFHashMapSearch::setInputFeatureCloud (PointCloud<PPFSignature>::ConstPtr 
   alpha_m.clear ();
   /// discretize the feature cloud and insert it in the hash map
   feature_hash_map->clear ();
-  unsigned int n = sqrt (feature_cloud->points.size ());
+  unsigned int n = sqrt ((float)feature_cloud->points.size ());
   int d1, d2, d3, d4;
   for (size_t i = 0; i < n; ++i)
   {
