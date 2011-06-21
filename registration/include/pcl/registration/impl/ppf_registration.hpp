@@ -116,6 +116,7 @@ pcl::PPFRegistration<PointT, PointNT>::getSourceClouds (std::string &key,
 }
  */
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::PPFRegistration<PointT, PointNT>::setSearchMethod (PPFHashMapSearch::Ptr a_search_method)
 {
@@ -123,6 +124,7 @@ pcl::PPFRegistration<PointT, PointNT>::setSearchMethod (PPFHashMapSearch::Ptr a_
   search_method_set = true;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::PPFRegistration<PointT, PointNT>::setSourceClouds (const PointCloudInputConstPtr &cloud,
                                                         const PointCloudInputNormalsConstPtr &normals)
@@ -135,6 +137,7 @@ pcl::PPFRegistration<PointT, PointNT>::setSourceClouds (const PointCloudInputCon
   input_ = cloud_model;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::PPFRegistration<PointT, PointNT>::getSourceClouds (const PointCloudInputConstPtr &out_cloud,
                                                         const PointCloudInputNormalsConstPtr &out_normals)
@@ -143,6 +146,7 @@ pcl::PPFRegistration<PointT, PointNT>::getSourceClouds (const PointCloudInputCon
   out_normals = cloud_model_normals;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::PPFRegistration<PointT, PointNT>::setInputTargetNormals (const PointCloudInputNormalsConstPtr &target_normals)
 {
