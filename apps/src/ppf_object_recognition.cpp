@@ -61,19 +61,22 @@ main (int argc, char** argv)
   PCL_INFO("Model cloud size: %u\nsubsampled cloud size: %u\nppf cloud size: %u\n",
            cloud_model->points.size (), cloud_model_subsampled->points.size (), cloud_model_ppf->points.size ());
 
-  PPFRegistration<PointXYZ, Normal> ppf_registration (5,
+  PointCloud<PointNormal>::Ptr cloud_model_input (new PointCloud<PointNormal> ()),
+      cloud_scene_input (new PointCloud<PointNormal> ());
+  concatenateFields (*cloud_model_subsampled, *cloud_model_subsampled_normals, *cloud_model_input);
+  concatenateFields (*cloud_scene_subsampled, *cloud_scene_subsampled_normals, *cloud_scene_input);
+
+  PPFRegistration<PointNormal, PointNormal> ppf_registration (5,
                                                       50,
                                                       25.0 / 180 * M_PI);
   PPFHashMapSearch::Ptr hashmap_search (new PPFHashMapSearch (12.0 / 180 * M_PI,
                                                               20));
   hashmap_search->setInputFeatureCloud (cloud_model_ppf);
   ppf_registration.setSearchMethod (hashmap_search);
-  ppf_registration.setSourceClouds (cloud_model_subsampled->makeShared (),
-                                    cloud_model_subsampled_normals->makeShared ());
-  ppf_registration.setInputTarget (cloud_scene_subsampled);
-  ppf_registration.setInputTargetNormals (cloud_scene_subsampled_normals);
+  ppf_registration.setInputCloud (cloud_model_input);
+  ppf_registration.setInputTarget (cloud_scene_input);
 
-  PointCloud<PointXYZ> cloud_output_subsampled, cloud_output;
+  PointCloud<PointNormal> cloud_output_subsampled;
   ppf_registration.align (cloud_output_subsampled);
 
   Eigen::Matrix4f mat = ppf_registration.getFinalTransformation ();
@@ -81,6 +84,8 @@ main (int argc, char** argv)
 
 
   io::savePCDFileASCII ("output_subsampled_registered.pcd", cloud_output_subsampled);
+
+  PointCloud<PointXYZ> cloud_output;
   getTransformedPointCloud (*cloud_model, final_transformation, cloud_output);
   io::savePCDFileASCII ("output_registered.pcd", cloud_output);
 
