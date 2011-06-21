@@ -38,11 +38,17 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
+#include <pcl/io/pcd_io.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
-#include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/passthrough.h>
+#include <pcl/surface/convex_hull.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
+
+using namespace pcl;
+using namespace pcl::visualization;
+using namespace std;
 
 #define FPS_CALC(_WHAT_) \
 do \
@@ -58,51 +64,71 @@ do \
     } \
 }while(false)
 
-
 template <typename PointType>
-class OpenNIVoxelGrid
+class OpenNI3DConvexHull
 {
   public:
     typedef pcl::PointCloud<PointType> Cloud;
     typedef typename Cloud::Ptr CloudPtr;
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
-    OpenNIVoxelGrid (const std::string& device_id = "", 
-                     const std::string& field_name = "z", float min_v = 0, float max_v = 5.0,
-                     float leaf_size_x = 0.01, float leaf_size_y = 0.01, float leaf_size_z = 0.01)
-    : viewer ("PCL OpenNI VoxelGrid Viewer")
+    OpenNI3DConvexHull (const std::string& device_id = "")
+      : viewer ("PCL OpenNI 3D Convex Hull Viewer") 
     , device_id_(device_id)
     {
-      grid_.setLeafSize (leaf_size_x, leaf_size_y, leaf_size_z);
-      grid_.setFilterFieldName (field_name);
-      grid_.setFilterLimits (min_v, max_v);
+      pass.setFilterFieldName ("z");
+      pass.setFilterLimits (0.0, 1.0);
     }
     
     void 
-    cloud_cb_ (const CloudConstPtr& cloud)
+    cloud_cb (const CloudConstPtr& cloud)
     {
-      set (cloud);
+      boost::mutex::scoped_lock lock (mtx_);
+      FPS_CALC ("computation");
+
+      cloud_pass_.reset (new Cloud);
+      // Computation goes here
+      pass.setInputCloud (cloud);
+      pass.filter (*cloud_pass_);
+
+      // Estimate 3D convex hull
+      pcl::ConvexHull<PointType> hr;
+      hr.setInputCloud (cloud_pass_);
+      cloud_hull_.reset (new Cloud);
+      hr.reconstruct (*cloud_hull_, vertices_);
+
+      cloud_ = cloud;
+      new_cloud_ = true;
     }
 
     void
-    set (const CloudConstPtr& cloud)
+    viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
-      //lock while we set our cloud;
-      boost::mutex::scoped_lock lock (mtx_);
-      cloud_  = cloud;
-    }
+      if (!cloud_ || !new_cloud_)
+      {
+        boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+        return;
+      }
 
-    CloudPtr
-    get ()
-    {
-      //lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock (mtx_);
-      CloudPtr temp_cloud (new Cloud);
-     
-      grid_.setInputCloud (cloud_);
-      grid_.filter (*temp_cloud);
+      {
+        boost::mutex::scoped_lock lock (mtx_);
+        FPS_CALC ("visualization");
+        CloudPtr temp_cloud;
+        temp_cloud.swap (cloud_pass_);
 
-      return (temp_cloud);
+        if (!viz.updatePointCloud (temp_cloud, "OpenNICloud"))
+        {
+          viz.addPointCloud (temp_cloud, "OpenNICloud");
+          viz.resetCameraViewpoint ("OpenNICloud");
+        }
+        // Render the data 
+        if (new_cloud_ && cloud_hull_)
+        {
+          viz.removeShape ("hull");
+          viz.addPolygonMesh<PointType> (cloud_hull_, vertices_, "hull");
+        }
+        new_cloud_ = false;
+      }
     }
 
     void
@@ -110,39 +136,37 @@ class OpenNIVoxelGrid
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIVoxelGrid::cloud_cb_, this, _1);
+      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNI3DConvexHull::cloud_cb, this, _1);
       boost::signals2::connection c = interface->registerCallback (f);
-      
+     
+      viewer.runOnVisualizationThread (boost::bind(&OpenNI3DConvexHull::viz_cb, this, _1), "viz_cb");
+
       interface->start ();
       
       while (!viewer.wasStopped ())
       {
-        if (cloud_)
-        {
-          FPS_CALC ("drawing");
-          //the call to get() sets the cloud_ to null;
-          viewer.showCloud (get ());
-        }
+        boost::this_thread::sleep(boost::posix_time::milliseconds(1));
       }
 
       interface->stop ();
     }
 
-    pcl::VoxelGrid<PointType> grid_;
+    pcl::PassThrough<PointType> pass;
     pcl::visualization::CloudViewer viewer;
+
     std::string device_id_;
     boost::mutex mtx_;
+    // Data
     CloudConstPtr cloud_;
+    CloudPtr cloud_pass_, cloud_hull_;
+    std::vector<pcl::Vertices> vertices_;
+    bool new_cloud_;
 };
 
 void
 usage (char ** argv)
 {
-  std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n"
-            << "where options are:\n         -minmax min-max  :: set the PassThrough min-max cutting values (default: 0-5.0)\n"
-            <<                     "         -field  X        :: use field/dimension 'X' to filter data on (default: 'z')\n"
-
-            << "                             -leaf x, y, z  :: set the VoxelGrid leaf size (default: 0.01)\n";
+  std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
   if (driver.getNumberDevices () > 0)
@@ -160,37 +184,31 @@ usage (char ** argv)
     cout << "No devices connected." << endl;
 }
 
-int 
+int
 main (int argc, char ** argv)
 {
-  bool help = false;
-  pcl::console::parse_argument (argc, argv, "-h", help);
-  if (help)
+  std::string arg;
+  if (argc > 1)
+    arg = std::string (argv[1]);
+  
+  if (arg == "--help" || arg == "-h")
   {
     usage (argv);
-    return (1);
+    return 1;
   }
-
-  double min_v = 0, max_v = 5.0;
-  pcl::console::parse_2x_arguments (argc, argv, "-minmax", min_v, max_v, false);
-  std::string field_name ("z");
-  pcl::console::parse_argument (argc, argv, "-field", field_name);
-  PCL_INFO ("Filtering data on %s between %f -> %f.\n", field_name.c_str (), min_v, max_v);
-  double leaf_x = 0.025, leaf_y = 0.025, leaf_z = 0.025;
-  pcl::console::parse_3x_arguments (argc, argv, "-leaf", leaf_x, leaf_y, leaf_z, false);
-  PCL_INFO ("Using %f, %f, %f as a leaf size for VoxelGrid.\n", leaf_x, leaf_y, leaf_z);
 
   pcl::OpenNIGrabber grabber ("");
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {
-    OpenNIVoxelGrid<pcl::PointXYZRGB> v ("", field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
+    PCL_INFO ("PointXYZRGB mode enabled.\n");
+    OpenNI3DConvexHull<pcl::PointXYZRGB> v ("");
     v.run ();
   }
   else
   {
-    OpenNIVoxelGrid<pcl::PointXYZ> v ("", field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
+    PCL_INFO ("PointXYZ mode enabled.\n");
+    OpenNI3DConvexHull<pcl::PointXYZ> v ("");
     v.run ();
   }
-
   return (0);
 }
