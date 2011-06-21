@@ -77,11 +77,13 @@ if(build)
     PCL_ADD_EXECUTABLE(openni_ii_normal_estimation ${SUBSYS_NAME} src/openni_ii_normal_estimation.cpp)
     target_link_libraries(openni_ii_normal_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
 
-    PCL_ADD_EXECUTABLE(openni_3d_convex_hull ${SUBSYS_NAME} src/openni_3d_convex_hull.cpp)
-    target_link_libraries(openni_3d_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
-
-    PCL_ADD_EXECUTABLE(openni_3d_concave_hull ${SUBSYS_NAME} src/openni_3d_concave_hull.cpp)
-    target_link_libraries(openni_3d_concave_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
+    if (QHULL_FOUND)
+      PCL_ADD_EXECUTABLE(openni_3d_convex_hull ${SUBSYS_NAME} src/openni_3d_convex_hull.cpp)
+      target_link_libraries(openni_3d_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
+  
+      PCL_ADD_EXECUTABLE(openni_3d_concave_hull ${SUBSYS_NAME} src/openni_3d_concave_hull.cpp)
+      target_link_libraries(openni_3d_concave_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
+    endif()
 
     #PCL_ADD_EXECUTABLE(openni_planar_convex_hull ${SUBSYS_NAME} src/openni_planar_convex_hull.cpp)
     #target_link_libraries(openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
