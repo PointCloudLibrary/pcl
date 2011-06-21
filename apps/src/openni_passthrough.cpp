@@ -68,7 +68,7 @@ class OpenNIPassthrough
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
     OpenNIPassthrough (const std::string& device_id = "", 
-                       const std::string& field_name = "z", float min_v = 0, float max_v = 3.0)
+                       const std::string& field_name = "z", float min_v = 0, float max_v = 5.0)
     : viewer ("PCL OpenNI PassThrough Viewer")
     , device_id_(device_id)
     {
@@ -79,27 +79,14 @@ class OpenNIPassthrough
     void 
     cloud_cb_ (const CloudConstPtr& cloud)
     {
-      set (cloud);
-    }
-
-    void
-    set (const CloudConstPtr& cloud)
-    {
-      //lock while we set our cloud;
       boost::mutex::scoped_lock lock (mtx_);
+      FPS_CALC ("computation");
+
+      cloud_pass_.reset (new Cloud);
+      // Computation goes here
+      pass_.setInputCloud (cloud);
+      pass_.filter (*cloud_pass_);
       cloud_  = cloud;
-    }
-
-    CloudPtr
-    get ()
-    {
-      //lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock (mtx_);
-      CloudPtr temp_cloud (new Cloud);
-
-      pass_.setInputCloud (cloud_);
-      pass_.filter (*temp_cloud);
-      return (temp_cloud);
     }
 
     void
@@ -114,11 +101,14 @@ class OpenNIPassthrough
       
       while (!viewer.wasStopped ())
       {
-        if (cloud_)
+        if (cloud_pass_)
         {
-          FPS_CALC ("drawing");
-          //the call to get() sets the cloud_ to null;
-          viewer.showCloud (get ());
+          boost::mutex::scoped_lock lock (mtx_);
+
+          FPS_CALC ("visualization");
+          CloudPtr temp_cloud;
+          temp_cloud.swap (cloud_pass_); //here we set cloud_ to null, so that
+          viewer.showCloud (temp_cloud);
         }
       }
 
@@ -130,13 +120,14 @@ class OpenNIPassthrough
     std::string device_id_;
     boost::mutex mtx_;
     CloudConstPtr cloud_;
+    CloudPtr cloud_pass_;
 };
 
 void
 usage (char ** argv)
 {
   std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n"
-            << "where options are:\n         -minmax min-max  :: set the PassThrough min-max cutting values (default: 0-3.0)\n"
+            << "where options are:\n         -minmax min-max  :: set the PassThrough min-max cutting values (default: 0-5.0)\n"
             <<                     "         -field  X        :: use field/dimension 'X' to filter data on (default: 'z')\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
@@ -172,7 +163,7 @@ main (int argc, char ** argv)
     return 1;
   }
 
-  double min_v = 0, max_v = 3.0;
+  double min_v = 0, max_v = 5.0;
   pcl::console::parse_2x_arguments (argc, argv, "-minmax", min_v, max_v, false);
   std::string field_name ("z");
   pcl::console::parse_argument (argc, argv, "-field", field_name);
