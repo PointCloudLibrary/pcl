@@ -146,19 +146,16 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
 
   if (exitcode != 0)
   {
-    PCL_ERROR ("ERROR: qhull was unable to compute a convex hull for the given point cloud\n");
+    PCL_ERROR ("[pcl::%s::performReconstrution] ERROR: qhull was unable to compute a convex hull for the given point cloud (%zu)!\n", getClassName ().c_str (), input_->points.size ());
 
     //check if it fails because of NaN values...
     if (!cloud_transformed.is_dense)
     {
-
-      PCL_WARN ("Checking for Nans");
-
       bool NaNvalues = false;
       for (size_t i = 0; i < cloud_transformed.size (); ++i)
       {
-        if (!pcl_isfinite (cloud_transformed.points[i].x) || !pcl_isfinite (cloud_transformed.points[i].y)
-            ||
+        if (!pcl_isfinite (cloud_transformed.points[i].x) || 
+            !pcl_isfinite (cloud_transformed.points[i].y) ||
             !pcl_isfinite (cloud_transformed.points[i].z))
         {
           NaNvalues = true;
@@ -167,8 +164,7 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
       }
 
       if (NaNvalues)
-        PCL_ERROR ("ERROR: point cloud contains NaN values, consider running pcl::PassThrough filter first to remove NaNs.\n");
-
+        PCL_ERROR ("[pcl::%s::performReconstruction] ERROR: point cloud contains NaN values, consider running pcl::PassThrough filter first to remove NaNs!\n", getClassName ().c_str ());
     }
 
     hull.points.resize (0);
@@ -339,7 +335,6 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
   //if keep_information_
   if (keep_information_)
   {
-    PCL_INFO ("[ConvexHull] Keep information is true, points in hull created from the original input cloud\n");
     //build a tree with the original points
     pcl::KdTreeFLANN<PointInT> tree (true);
     tree.setInputCloud (input_, indices_);
