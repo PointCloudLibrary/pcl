@@ -111,7 +111,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::setSearchMethod (PPFHashMapSearc
 template <typename PointSource, typename PointTarget> void
 pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointCloudSource &output)
 {
-  if (search_method_set == false)
+  if (!search_method)
   {
     PCL_ERROR("PPFRegistration: search method not set - skipping computeTransformation!\n");
     return;

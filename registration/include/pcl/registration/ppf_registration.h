@@ -44,11 +44,11 @@
 
 namespace pcl
 {
-  /// @TODO should be placed somewhere else
   class PCL_EXPORTS PPFHashMapSearch
   {
     public:
-      /** \brief Data structure to hold the information for the key in the feature hash map
+      /** \brief Data structure to hold the information for the key in the feature hash map of the
+        * PPFHashMapSearch class
         * \note It uses multiple pair levels in order to enable the usage of the boost::hash function
         * which has the std::pair implementation (i.e., does not require a custom hash function)
         */
@@ -84,10 +84,7 @@ namespace pcl
                              std::vector<std::pair<size_t, size_t> > &indices);
 
       Ptr
-      makeShared()
-      {
-        return Ptr (new PPFHashMapSearch (*this));
-      }
+      makeShared() { return Ptr (new PPFHashMapSearch (*this)); }
 
       std::vector <std::vector <float> > alpha_m;
 
@@ -97,22 +94,23 @@ namespace pcl
       float
       getDistanceDiscretizationStep () { return distance_discretization_step; }
 
-      private:
+    private:
       FeatureHashMapTypePtr feature_hash_map;
       bool internals_initialized;
 
       /// parameters
-    float angle_discretization_step, distance_discretization_step;
+      float angle_discretization_step, distance_discretization_step;
   };
 
   /** \brief 
-    * \author Alex Ichim
+    * \author Alexandru-Eugen Ichim
     */
   template <typename PointSource, typename PointTarget>
   class PPFRegistration : public Registration<PointSource, PointTarget>
   {
     public:
-      /** \note initially used std::pair<Eigen::Affine3f, unsigned int>, but it proved problematic
+      /** \brief Structure for storing a pose (represented as an Eigen::Affine3f) and an integer for counting votes
+        * \note initially used std::pair<Eigen::Affine3f, unsigned int>, but it proved problematic
         * because of the Eigen structures alignment problems - std::pair does not have a custom allocator
         */
       struct PoseWithVotes
@@ -120,8 +118,7 @@ namespace pcl
         PoseWithVotes(Eigen::Affine3f &a_pose, unsigned int &a_votes)
         : pose (a_pose),
           votes (a_votes)
-        {
-        }
+        {}
 
         Eigen::Affine3f pose;
         unsigned int votes;
@@ -145,64 +142,72 @@ namespace pcl
       typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
 
 
-      /** \brief Constructor
-        * \param a_scene_reference_point_sampling_rate
-        * \param a_clustering_position_diff_threshold
-        * \param a_clustering_rotation_diff_threshold
+      /** \brief Constructor that initializes all the parameters of the algorithm
+        * \param a_scene_reference_point_sampling_rate sampling rate for the scene reference point
+        * \param a_clustering_position_diff_threshold distance threshold below which two poses are
+        * considered close enough to be in the same cluster (for the clustering phase of the algorithm)
+        * \param a_clustering_rotation_diff_threshold rotation difference threshold below which two
+        * poses are considered to be in the same cluster (for the clustering phase of the algorithm)
         */
       PPFRegistration (unsigned int a_scene_reference_point_sampling_rate = 5,
                        float a_clustering_position_diff_threshold = 0.01,
                        float a_clustering_rotation_diff_threshold = 20.0 / 180 * M_PI)
-      :  scene_reference_point_sampling_rate (a_scene_reference_point_sampling_rate),
+      :  Registration<PointSource, PointTarget> (),
+         scene_reference_point_sampling_rate (a_scene_reference_point_sampling_rate),
          clustering_position_diff_threshold (a_clustering_position_diff_threshold),
          clustering_rotation_diff_threshold (a_clustering_rotation_diff_threshold)
       {
-        search_method_set = false;
+        search_method = PPFHashMapSearch::Ptr ();
       }
 
-      /** \brief
-        * \param a_search_method
-        */
+      /** \brief Function that sets the search method for the algorithm
+       * \note Right now, the only available method is the one initially proposed by
+       * the authors - by using a hash map with discretized feature vectors
+       * \param a_search_method smart pointer to the search method to be set
+       */
       void
       setSearchMethod (PPFHashMapSearch::Ptr a_search_method);
 
 
     private:
 
-      /** \brief */
+      /** \brief Method that calculates the transformation between the input_ and target_
+       * point clouds, based on the PPF features */
       void
       computeTransformation (PointCloudSource &output);
 
 
-      /** \brief */
+      /** \brief the search method that is going to be used to find matching feature pairs */
       PPFHashMapSearch::Ptr search_method;
-      /** \brief */
+      /** \brief parameter for the sampling rate of the scene reference points */
       unsigned int scene_reference_point_sampling_rate;
-      /** \brief */
+      /** \brief position and rotation difference thresholds below which two
+        * poses are considered to be in the same cluster (for the clustering phase of the algorithm) */
       float clustering_position_diff_threshold, clustering_rotation_diff_threshold;
 
       //boost::unordered_map<std::string, std::pair<PointCloudInputConstPtr, PointCloudInputNormalsConstPtr> > cloud_model_map;
 
-      /** \brief */
-      bool search_method_set;
 
-
-      /** \brief */
+      /** \brief static method used for the std::sort function to order two PoseWithVotes
+       * instances by their number of votes*/
       static bool
       poseWithVotesCompareFunction (const PoseWithVotes &a,
                                     const PoseWithVotes &b);
 
-      /** \brief */
+      /** \brief static method used for the std::sort function to order two pairs <index, votes>
+       * by the number of votes (unsigned integer value) */
       static bool
       clusterVotesCompareFunction (const std::pair<size_t, unsigned int> &a,
                                    const std::pair<size_t, unsigned int> &b);
 
-      /** \brief */
+      /** \brief Method that clusters a set of given poses by using the clustering thresholds
+       * and their corresponding number of votes (see publication for more details) */
       void
       clusterPoses (PoseWithVotesList &poses,
                     PoseWithVotesList &result);
 
-      /** \brief */
+      /** \brief Method that checks whether two poses are close together - based on the clustering threshold parameters
+       * of the class */
       bool
       posesWithinErrorBounds (Eigen::Affine3f &pose1,
                               Eigen::Affine3f &pose2);
