@@ -34,12 +34,11 @@
  *
  */
 
-/*///@todo PCL_INSTANTIATE does not work; error: expected constructor, destructor, or type conversion before PCL_INSTANTIATE_PPFRegistration
-#include "pcl/point_types.h"
-#include "pcl/impl/instantiate.hpp"
-
-#include "pcl/registration/ppf_registration.h"
-#include "pcl/registration/impl/ppf_registration.hpp"
-
-PCL_INSTANTIATE_PRODUCT(PPFRegistration, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
-*/
+/** Re-enable these once all of registration is separated into H/HPP correctly. */
+//#include "pcl/point_types.h"
+//#include "pcl/impl/instantiate.hpp"
+//#include "pcl/registration/ppf_registration.h"
+//#include "pcl/registration/impl/ppf_registration.hpp"
+//
+//PCL_INSTANTIATE_PRODUCT(PPFRegistration, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
+//
