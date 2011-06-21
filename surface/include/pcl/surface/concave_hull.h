@@ -64,9 +64,8 @@ namespace pcl
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
       /** \brief Empty constructor. */
-      ConcaveHull ()
+      ConcaveHull () : keep_information_ (false), voronoi_centers_ ()
       {
-        keep_information_ = false;
       };
 
       /** \brief Compute a concave hull for all points given 
