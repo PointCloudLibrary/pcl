@@ -46,8 +46,6 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   /// initialize output container
   output.clear ();
   output.resize (input_->points.size () * input_->points.size ());
-  PCL_INFO ("PPFEstimation input size: %u\nOutput PPF size: %u\n",
-           input_->points.size (), output.size ());
 
   /// compute point pair features for every pair of points in the cloud
   for (size_t i = 0; i < input_->points.size (); ++i)
