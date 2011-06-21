@@ -43,4 +43,4 @@
 
 // Instantiations of specific point types
 /// @TODO add some kind of output point type for the surflet feature hash map
-PCL_INSTANTIATE_PRODUCT(SurfletEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
+//PCL_INSTANTIATE_PRODUCT(SurfletEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
