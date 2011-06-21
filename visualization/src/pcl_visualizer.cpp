@@ -41,9 +41,17 @@
 #include <vtkTextActor.h>
 #include <vtkTextProperty.h>
 #include <vtkCellData.h>
+#include <vtkWorldPointPicker.h>
+#include <vtkPropPicker.h>
+#include <vtkPlatonicSolidSource.h>
+#include <vtkLoopSubdivisionFilter.h>
+#include <vtkTriangle.h>
+#include <vtkTransform.h>
+#include <vtkVisibleCellSelector.h>
+#include <vtkSelection.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) : 
+pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
     rens_ (vtkSmartPointer<vtkRendererCollection>::New ()),
     style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ()),
     cloud_actor_map_ (new CloudActorMap)
@@ -59,7 +67,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   ren->AddActor (txt);
   // Add it to the list of renderers
   rens_->AddItem (ren);
-  
+
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
   win_->SetWindowName (name.c_str ());
@@ -74,7 +82,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   int *scr_size = win_->GetScreenSize ();
   // Set the window size as 1/2 of the screen size
   win_->SetSize (scr_size[0] / 2, scr_size[1] / 2);
-  
+
   // Add all renderers to the window
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
@@ -108,7 +116,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
   exit_callback_->pcl_visualizer = this;
   interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
-  
+
   resetStoppedFlag ();
 }
 
@@ -646,6 +654,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
   if (scalars)
     mapper->SetScalarRange (minmax);
   mapper->SetScalarModeToUsePointData ();
+  mapper->InterpolateScalarsBeforeMappingOn();
   mapper->ScalarVisibilityOn ();
   mapper->ImmediateModeRenderingOff ();
 
@@ -1688,6 +1697,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
   return (true);
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (const pcl::PolygonMesh &polymesh, const std::string &id,
@@ -1747,6 +1757,436 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (const pcl::Polygo
   shape_actor_map_[id] = actor;
 
   return (true);
+}
+
+void
+pcl::visualization::PCLVisualizer::setRepresentationToSurfaceForAllActors() {
+  ShapeActorMap::iterator am_it;
+
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    vtkActorCollection * actors = renderer->GetActors();
+    actors->InitTraversal();
+    vtkActor * actor;
+    while( (actor = actors->GetNextActor()) != NULL) {
+      actor->GetProperty()->SetRepresentationToSurface();
+    }
+  }
+}
+
+void
+pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (int xres, int yres,
+std::vector<pcl::PointCloud<pcl::PointXYZ>,Eigen::aligned_allocator< pcl::PointCloud<pcl::PointXYZ> > > & clouds,
+std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level) {
+
+  if(rens_->GetNumberOfItems() > 1) {
+    PCL_WARN("Method works only with one renderer\n");
+    return;
+  }
+
+  rens_->InitTraversal ();
+  vtkRenderer* renderer_pcl_vis = rens_->GetNextItem ();
+  vtkActorCollection * actors = renderer_pcl_vis->GetActors();
+
+  if(actors->GetNumberOfItems() > 1) {
+    PCL_INFO("Method only consider the first actor on the scene, more than one found!!\n");
+  }
+
+  //get vtk object from the visualizer
+  actors->InitTraversal();
+  vtkActor * actor = actors->GetNextActor();
+  vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
+  polydata->CopyStructure(actor->GetMapper()->GetInput());
+
+  //center object
+  double CoM[3];
+  vtkIdType npts_com = 0, *ptIds_com = NULL;
+  vtkSmartPointer < vtkCellArray > cells_com = polydata->GetPolys ();
+
+  double center[3], p1_com[3], p2_com[3], p3_com[3], area_com, totalArea_com = 0;
+  double comx = 0, comy = 0, comz = 0;
+  for (cells_com->InitTraversal (); cells_com->GetNextCell (npts_com, ptIds_com);)
+  {
+    polydata->GetPoint (ptIds_com[0], p1_com);
+    polydata->GetPoint (ptIds_com[1], p2_com);
+    polydata->GetPoint (ptIds_com[2], p3_com);
+    vtkTriangle::TriangleCenter (p1_com, p2_com, p3_com, center);
+    area_com = vtkTriangle::TriangleArea (p1_com, p2_com, p3_com);
+    comx += center[0] * area_com;
+    comy += center[1] * area_com;
+    comz += center[2] * area_com;
+    totalArea_com += area_com;
+  }
+
+  CoM[0] = comx / totalArea_com;
+  CoM[1] = comy / totalArea_com;
+  CoM[2] = comz / totalArea_com;
+
+  vtkSmartPointer<vtkTransform> trans_center = vtkSmartPointer<vtkTransform>::New();
+  trans_center->Translate(-CoM[0],-CoM[1],-CoM[2]);
+  vtkSmartPointer<vtkMatrix4x4> matrixCenter = trans_center->GetMatrix();
+
+  vtkSmartPointer<vtkTransformFilter> trans_filter_center = vtkSmartPointer<vtkTransformFilter>::New();
+  trans_filter_center->SetTransform(trans_center);
+  trans_filter_center->SetInput(polydata);
+  trans_filter_center->Update();
+
+  vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+  mapper->SetInputConnection(trans_filter_center->GetOutputPort());
+  mapper->Update();
+
+  //scale so it fits in the unit sphere!
+  double bb[6];
+  mapper->GetBounds(bb);
+  double ms = (std::max)( (std::fabs)(bb[0] - bb[1]) , (std::max)( (std::fabs)(bb[2] - bb[3]), (std::fabs)(bb[4] - bb[5]) ));
+  double max_side = 0.4;
+  double scale_factor = max_side / ms;
+
+  vtkSmartPointer<vtkTransform> trans_scale = vtkSmartPointer<vtkTransform>::New();
+  trans_scale->Scale(scale_factor,scale_factor,scale_factor);
+  vtkSmartPointer<vtkMatrix4x4> matrixScale = trans_scale->GetMatrix();
+
+  vtkSmartPointer<vtkTransformFilter> trans_filter_scale = vtkSmartPointer<vtkTransformFilter>::New();
+  trans_filter_scale->SetTransform(trans_scale);
+  trans_filter_scale->SetInputConnection(trans_filter_center->GetOutputPort());
+  trans_filter_scale->Update();
+
+  mapper->SetInputConnection(trans_filter_scale->GetOutputPort());
+  mapper->Update();
+
+  //////////////////////////////
+  // * Compute area of the mesh
+  //////////////////////////////
+  vtkSmartPointer < vtkCellArray > cells = mapper->GetInput()->GetPolys ();
+  vtkIdType npts = 0, *ptIds = NULL;
+
+  double p1[3], p2[3], p3[3], area, totalArea = 0;
+  for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds);)
+  {
+    polydata->GetPoint (ptIds[0], p1);
+    polydata->GetPoint (ptIds[1], p2);
+    polydata->GetPoint (ptIds[2], p3);
+    area = vtkTriangle::TriangleArea (p1, p2, p3);
+    totalArea += area;
+  }
+
+  //create icosahedron
+  vtkSmartPointer<vtkPlatonicSolidSource> ico = vtkSmartPointer<vtkPlatonicSolidSource>::New();
+  ico->SetSolidTypeToIcosahedron();
+  ico->Update();
+
+  //tesselate cells from icosahedron
+  vtkSmartPointer<vtkLoopSubdivisionFilter> subdivide = vtkSmartPointer<vtkLoopSubdivisionFilter>::New ();
+  subdivide->SetNumberOfSubdivisions (tesselation_level);
+  subdivide->SetInputConnection (ico->GetOutputPort ());
+
+  // Get camera positions
+  vtkPolyData *sphere = subdivide->GetOutput ();
+  sphere->Update ();
+
+  double camera_radius=1;
+  double cam_pos[3];
+  double first_cam_pos[3];
+
+  sphere->GetPoint (0, first_cam_pos);
+
+  //create renderer and window
+  vtkSmartPointer<vtkRenderWindow> render_win = vtkSmartPointer<vtkRenderWindow>::New();
+  vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New ();
+  render_win->AddRenderer(renderer);
+  render_win->SetSize(xres, yres);
+  renderer->SetBackground(1.0,0,0);
+
+  //create picker
+  vtkSmartPointer<vtkWorldPointPicker> worldPicker = vtkSmartPointer<vtkWorldPointPicker>::New();
+
+  vtkSmartPointer<vtkCamera> cam = vtkSmartPointer<vtkCamera>::New();
+  cam->SetFocalPoint(0,0,0);
+  cam->SetViewUp(0,1,0);
+  cam->SetPosition(first_cam_pos);
+  cam->SetViewAngle(45);
+  cam->Modified();
+
+  //For each camera position, traposesnsform the object and render view
+  for (int i = 0; i < sphere->GetNumberOfPoints (); i++)
+  {
+    sphere->GetPoint (i, cam_pos);
+
+    //create temporal virtual camera
+    vtkSmartPointer<vtkCamera> cam_tmp = vtkSmartPointer<vtkCamera>::New();
+    cam_tmp->SetViewAngle(45);
+    cam_tmp->SetViewUp(0,1,0);
+
+    for(int k=0; k < 3; k++) {
+      cam_pos[k] = cam_pos[k] * camera_radius;
+    }
+
+    cam_tmp->SetPosition(cam_pos);
+    cam_tmp->Modified();
+
+    //rotate model so it looks the same as if we would look from the new position
+    vtkSmartPointer<vtkMatrix4x4> view_trans_inverted = vtkSmartPointer<vtkMatrix4x4>::New();
+    vtkMatrix4x4::Invert(cam->GetViewTransformMatrix(), view_trans_inverted);
+    vtkSmartPointer<vtkTransform> trans_rot_pose = vtkSmartPointer<vtkTransform>::New();
+    trans_rot_pose->Identity();
+    trans_rot_pose->Concatenate(view_trans_inverted);
+    trans_rot_pose->Concatenate(cam_tmp->GetViewTransformMatrix());
+    vtkSmartPointer<vtkTransformFilter> trans_rot_pose_filter = vtkSmartPointer<vtkTransformFilter>::New();
+    trans_rot_pose_filter->SetTransform(trans_rot_pose);
+    trans_rot_pose_filter->SetInputConnection(trans_filter_scale->GetOutputPort());
+
+    //translate model so we can place camera at (0,0,0)
+    vtkSmartPointer<vtkTransform> translation = vtkSmartPointer<vtkTransform>::New();
+    translation->Translate(first_cam_pos[0]*-1,first_cam_pos[1]*-1,first_cam_pos[2]*-1);
+    vtkSmartPointer<vtkTransformFilter> translation_filter = vtkSmartPointer<vtkTransformFilter>::New();
+    translation_filter->SetTransform(translation);
+    translation_filter->SetInputConnection(trans_rot_pose_filter->GetOutputPort());
+
+    //modify camera
+    cam_tmp->SetPosition(0,0,0);
+    cam_tmp->SetFocalPoint(first_cam_pos[0]*-1,first_cam_pos[1]*-1,first_cam_pos[2]*-1);
+    cam_tmp->Modified();
+
+    //notice transformations for final pose
+    vtkSmartPointer<vtkMatrix4x4> matrixRotModel = trans_rot_pose->GetMatrix();
+    vtkSmartPointer<vtkMatrix4x4> matrixTranslation = translation->GetMatrix();
+
+    mapper->SetInputConnection(translation_filter->GetOutputPort());
+    mapper->Update();
+
+    //render view
+    vtkSmartPointer < vtkActor > actor_view = vtkSmartPointer<vtkActor>::New ();
+    actor_view->SetMapper (mapper);
+    renderer->SetActiveCamera(cam_tmp);
+    renderer->AddActor(actor_view);
+    renderer->Modified();
+    renderer->ResetCameraClippingRange();
+    render_win->Render();
+
+    //back to real scale transform
+    vtkSmartPointer<vtkTransform> backToRealScale = vtkSmartPointer<vtkTransform>::New();
+    backToRealScale->PostMultiply();
+    backToRealScale->Identity();
+    backToRealScale->Concatenate(matrixScale);
+    backToRealScale->Concatenate(matrixTranslation);
+    backToRealScale->Inverse();
+    backToRealScale->Modified();
+    backToRealScale->Concatenate(matrixTranslation);
+    backToRealScale->Modified();
+
+    Eigen::Matrix4f backToRealScale_eigen;
+    backToRealScale_eigen.setIdentity();
+
+    for(size_t x=0; x < 4; x++) {
+      for(size_t y=0; y < 4; y++) {
+        backToRealScale_eigen(x,y) = backToRealScale->GetMatrix()->GetElement(x,y);
+      }
+    }
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+
+    cloud->points.resize(xres * yres);
+    cloud->width = xres * yres;
+    cloud->height = 1;
+
+    double coords[3];
+    float depth[xres*yres];
+    render_win->GetZbufferData(0,0,xres-1,yres-1,&(depth[0]));
+
+    int count_valid_depth_pixels=0;
+    for(size_t x=0; x < (size_t)xres; x++) {
+      for(size_t y=0; y < (size_t)yres; y++) {
+        float value = depth[y*xres+x];
+        if (value != 1.0) {
+          worldPicker->Pick(x,y,value,renderer);
+          worldPicker->GetPickPosition(coords);
+          cloud->points[count_valid_depth_pixels].x = coords[0];
+          cloud->points[count_valid_depth_pixels].y = coords[1];
+          cloud->points[count_valid_depth_pixels].z = coords[2];
+          cloud->points[count_valid_depth_pixels].getVector4fMap() = backToRealScale_eigen * cloud->points[count_valid_depth_pixels].getVector4fMap();
+          count_valid_depth_pixels++;
+
+        }
+      }
+    }
+
+    //////////////////////////////
+    // * Compute area of the mesh
+    //////////////////////////////
+    vtkSmartPointer < vtkCellArray > cells = mapper->GetInput()->GetPolys ();
+    vtkIdType npts = 0, *ptIds = NULL;
+
+    double p1[3], p2[3], p3[3], area, totalArea = 0;
+    for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds);)
+    {
+      polydata->GetPoint (ptIds[0], p1);
+      polydata->GetPoint (ptIds[1], p2);
+      polydata->GetPoint (ptIds[2], p3);
+      area = vtkTriangle::TriangleArea (p1, p2, p3);
+      totalArea += area;
+    }
+
+    /////////////////////////////////////
+    // * Select visible cells (triangles)
+    /////////////////////////////////////
+    vtkSmartPointer<vtkVisibleCellSelector> selector = vtkSmartPointer<vtkVisibleCellSelector>::New();
+    vtkSmartPointer<vtkIdTypeArray> selection = vtkSmartPointer<vtkIdTypeArray>::New();
+
+    selector->SetRenderer(renderer);
+    selector->SetArea(0,0,xres-1,yres-1);
+    selector->Select();
+    selector->GetSelectedIds(selection);
+
+    vtkSmartPointer < vtkPolyData > polydata = mapper->GetInput ();
+    polydata->BuildCells();
+
+    double visible_area = 0;
+    for(int sel_id=0; sel_id < selection->GetNumberOfTuples(); sel_id++) {
+      int id_mesh = selection->GetValue(sel_id);
+
+      if (id_mesh != 0) {
+        vtkCell * cell = polydata->GetCell(selection->GetValue(sel_id));
+        vtkTriangle* triangle = dynamic_cast<vtkTriangle*>(cell);
+        double p0[3];
+        double p1[3];
+        double p2[3];
+        triangle->GetPoints()->GetPoint(0, p0);
+        triangle->GetPoints()->GetPoint(1, p1);
+        triangle->GetPoints()->GetPoint(2, p2);
+        visible_area += vtkTriangle::TriangleArea(p0, p1, p2);
+      }
+    }
+
+    enthropies.push_back(visible_area / totalArea);
+
+    cloud->points.resize(count_valid_depth_pixels);
+    cloud->width = count_valid_depth_pixels;
+
+    //transform cloud to give camera coordinates instead of world coordinates!
+    vtkSmartPointer<vtkMatrix4x4> view_transform = cam_tmp->GetViewTransformMatrix();
+    Eigen::Matrix4f trans_view;
+    trans_view.setIdentity();
+
+    for(size_t x=0; x < 4; x++) {
+      for(size_t y=0; y < 4; y++) {
+        trans_view(x,y) = view_transform->GetElement(x,y);
+      }
+    }
+
+    //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
+    //thus, the fliping in y and z
+    for(size_t i = 0; i < cloud->points.size(); i++) {
+      cloud->points[i].getVector4fMap() = trans_view * cloud->points[i].getVector4fMap();
+      cloud->points[i].y *= -1.0;
+      cloud->points[i].z *= -1.0;
+    }
+
+    renderer->RemoveActor(actor_view);
+
+    clouds.push_back(*cloud);
+
+    //create pose, from OBJECT coordinates to CAMERA coordinates!
+    vtkSmartPointer<vtkTransform> transOCtoCC = vtkSmartPointer<vtkTransform>::New();
+    transOCtoCC->PostMultiply();
+    transOCtoCC->Identity();
+    transOCtoCC->Concatenate(matrixCenter);
+    transOCtoCC->Concatenate(matrixRotModel);
+    transOCtoCC->Concatenate(matrixTranslation);
+    transOCtoCC->Concatenate(cam_tmp->GetViewTransformMatrix());
+
+    //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
+    //thus, the fliping in y and z
+    vtkSmartPointer<vtkMatrix4x4> cameraSTD = vtkSmartPointer<vtkMatrix4x4>::New();
+    cameraSTD->Identity();
+    cameraSTD->SetElement(0,0,1);
+    cameraSTD->SetElement(1,1,-1);
+    cameraSTD->SetElement(2,2,-1);
+
+    transOCtoCC->Concatenate(cameraSTD);
+    transOCtoCC->Modified();
+
+    Eigen::Matrix4f pose_view;
+    pose_view.setIdentity();
+
+    for(size_t x=0; x < 4; x++) {
+      for(size_t y=0; y < 4; y++) {
+        pose_view(x,y) = transOCtoCC->GetMatrix()->GetElement(x,y);
+      }
+    }
+
+    poses.push_back(pose_view);
+
+  }
+}
+
+void
+pcl::visualization::PCLVisualizer::renderView(int xres, int yres, pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud) {
+
+  if(rens_->GetNumberOfItems() > 1) {
+    PCL_WARN("Method will render only the first viewport\n");
+    return;
+  }
+
+  //create render window with first element of rens_ (viewport 0)
+  vtkSmartPointer<vtkRenderWindow> render_win = vtkSmartPointer<vtkRenderWindow>::New();
+  rens_->InitTraversal ();
+  vtkSmartPointer<vtkRenderer> renderer = rens_->GetNextItem();
+  render_win->AddRenderer(renderer);
+  render_win->SetSize(xres, yres);
+  renderer->SetBackground(1.0,0.5,0.5);
+
+  vtkSmartPointer<vtkWorldPointPicker> worldPicker = vtkSmartPointer<vtkWorldPointPicker>::New();
+
+  render_win->Render();
+
+  cloud->points.resize(xres * yres);
+  cloud->width = xres * yres;
+  cloud->height = 1;
+
+  double coords[3];
+  float depth[xres*yres];
+  render_win->GetZbufferData(0,0,xres-1,yres-1,&(depth[0]));
+
+  int count_valid_depth_pixels=0;
+  for(size_t x=0; x < (size_t)xres; x++) {
+    for(size_t y=0; y < (size_t)yres; y++) {
+      float value = depth[y*xres+x];
+      if (value != 1.0) {
+        worldPicker->Pick(x,y,value,renderer);
+        worldPicker->GetPickPosition(coords);
+        cloud->points[count_valid_depth_pixels].x = coords[0];
+        cloud->points[count_valid_depth_pixels].y = coords[1];
+        cloud->points[count_valid_depth_pixels].z = coords[2];
+        count_valid_depth_pixels++;
+
+      }
+    }
+  }
+
+  cloud->points.resize(count_valid_depth_pixels);
+  cloud->width = count_valid_depth_pixels;
+
+  //transform cloud to give camera coordinates instead of world coordinates!
+  vtkSmartPointer<vtkCamera> active_camera = renderer->GetActiveCamera();
+  vtkSmartPointer<vtkMatrix4x4> view_transform = active_camera->GetViewTransformMatrix();
+  Eigen::Matrix4f trans_view;
+  trans_view.setIdentity();
+
+  for(size_t x=0; x < 4; x++) {
+    for(size_t y=0; y < 4; y++) {
+      trans_view(x,y) = view_transform->GetElement(x,y);
+    }
+  }
+
+  //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
+  //thus, the fliping in y and z
+  for(size_t i = 0; i < cloud->points.size(); i++) {
+    cloud->points[i].getVector4fMap() = trans_view * cloud->points[i].getVector4fMap();
+    cloud->points[i].y *= -1.0;
+    cloud->points[i].z *= -1.0;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1854,4 +2294,3 @@ pcl::visualization::FPSCallback::Execute (vtkObject *caller, unsigned long, void
   sprintf (buf, "%.1f FPS", fps);
   actor_->SetInput (buf);
 }
-
