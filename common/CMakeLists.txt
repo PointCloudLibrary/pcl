@@ -3,7 +3,7 @@ set(SUBSYS_DESC "Point cloud common library")
 set(SUBSYS_DEPS)
 
 set(build TRUE)
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON ${SUBSYS_DEPS})
+PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
