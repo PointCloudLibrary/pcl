@@ -5,3 +5,4 @@ if(OPENNI_FOUND)
   target_link_libraries(convert_pcd_ascii_binary pcl_common pcl_io)
 endif(OPENNI_FOUND)
 
+PCL_ADD_EXECUTABLE(pcd_convert_NaN_nan ${SUBSYS_NAME} pcd_convert_NaN_nan.cpp)
