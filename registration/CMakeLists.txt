@@ -20,8 +20,10 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ia_ransac.h
         include/pcl/${SUBSYS_NAME}/icp.h
         include/pcl/${SUBSYS_NAME}/icp_nl.h
+        include/pcl/${SUBSYS_NAME}/incremental_registration.h
         include/pcl/${SUBSYS_NAME}/ppf_registration.h
         include/pcl/${SUBSYS_NAME}/registration.h
+        include/pcl/${SUBSYS_NAME}/stanford_gicp.h
         include/pcl/${SUBSYS_NAME}/stanford_gicp/gicp.h
         include/pcl/${SUBSYS_NAME}/stanford_gicp/optimize.h
         include/pcl/${SUBSYS_NAME}/stanford_gicp/scan.h
@@ -45,6 +47,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/icp_nl.hpp
         include/pcl/${SUBSYS_NAME}/impl/ppf_registration.hpp
         include/pcl/${SUBSYS_NAME}/impl/registration.hpp
+        include/pcl/${SUBSYS_NAME}/impl/stanford_gicp.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd.hpp
         include/pcl/${SUBSYS_NAME}/impl/transforms.hpp
         )
