@@ -864,7 +864,6 @@ namespace pcl
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
-            cout << "Exit event called.\n";
             pcl_visualizer->interactor_->stopped = true;
             //this tends to close the window...
             pcl_visualizer->interactor_->stopLoop ();
