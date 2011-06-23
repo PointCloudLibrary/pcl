@@ -36,7 +36,7 @@
 
 
 
-#include "optimize.h"
+#include <pcl/registration/stanford_gicp/optimize.h>
 
 #include <iostream>
 #include <assert.h>

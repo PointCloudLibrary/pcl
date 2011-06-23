@@ -36,8 +36,8 @@
 
 
 
-#include "gicp.h"
-#include "optimize.h"
+#include <pcl/registration/stanford_gicp/gicp.h>
+#include <pcl/registration/stanford_gicp/optimize.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_blas.h>
 #include <fstream>

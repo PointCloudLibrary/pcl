@@ -39,7 +39,7 @@
 #ifndef GICP_H_
 #define GICP_H_
 
-#include <ANN.h>
+#include <ANN/ANN.h>
 #include <vector>
 #include <iostream>
 //#include <gsl/gsl.h>

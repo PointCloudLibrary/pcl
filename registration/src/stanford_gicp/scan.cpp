@@ -36,7 +36,7 @@
 
 
 
-#include "scan.h"
+#include <pcl/registration/stanford_gicp/scan.h>
 #include <stdio.h>
 
 

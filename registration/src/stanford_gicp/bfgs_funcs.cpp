@@ -34,7 +34,7 @@
   DAMAGE.
 *************************************************************/
 
-#include "optimize.h"
+#include <pcl/registration/stanford_gicp/optimize.h>
 
 namespace dgc {
   namespace gicp {

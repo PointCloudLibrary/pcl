@@ -3,7 +3,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdarg.h>
-#include "transform.h"
+#include <pcl/registration/stanford_gicp/transform.h>
 
 static void dgc_warning(const char *fmt, ...)
 {

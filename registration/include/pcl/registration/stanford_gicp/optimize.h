@@ -38,7 +38,7 @@
 #ifndef OPTIMIZE_H_
 #define OPTIMIZE_H_
 
-#include <ANN.h>
+#include <ANN/ANN.h>
 #include "gicp.h"
 #include <vector>
 #include <gsl/gsl_linalg.h>
