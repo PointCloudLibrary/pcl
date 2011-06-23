@@ -85,7 +85,7 @@ main (int argc, char** argv)
     ppf_estimator.computeFeature (*cloud_model_ppf);
 
     PPFHashMapSearch::Ptr hashmap_search (new PPFHashMapSearch (12.0 / 180 * M_PI,
-                                                                 15));
+                                                                 30));
     hashmap_search->setInputFeatureCloud (cloud_model_ppf);
     hashmap_search_vector.push_back (hashmap_search);
   }
@@ -99,8 +99,8 @@ main (int argc, char** argv)
   {
 
     PPFRegistration<PointNormal, PointNormal> ppf_registration (5,
-                                                                20,
-                                                                15.0 / 180 * M_PI);
+                                                                15,
+                                                                10.0 / 180 * M_PI);
     ppf_registration.setSearchMethod (hashmap_search_vector[model_i]);
     ppf_registration.setInputCloud (cloud_models_with_normals[model_i]);
     ppf_registration.setInputTarget (cloud_scene_input);

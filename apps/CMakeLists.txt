@@ -43,9 +43,6 @@ if(build)
   PCL_ADD_EXECUTABLE(nn_classification_example ${SUBSYS_NAME} src/nn_classification_example.cpp)
   target_link_libraries(nn_classification_example pcl_common pcl_io pcl_features pcl_kdtree)
 
- #  PCL_ADD_EXECUTABLE(surflet_feature_object_recognition ${SUBSYS_NAME} src/surflet_feature_object_recognition.cpp)
- #  target_link_libraries(surflet_feature_object_recognition pcl_common pcl_io pcl_filters pcl_features)
-
   if (VTK_FOUND AND OPENNI_FOUND)
     PCL_ADD_EXECUTABLE(ppf_object_recognition ${SUBSYS_NAME} src/ppf_object_recognition.cpp)
     target_link_libraries(ppf_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_registration pcl_visualization)
