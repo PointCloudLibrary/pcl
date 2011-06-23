@@ -104,10 +104,15 @@ OpenNIGrabber::~OpenNIGrabber() throw ()
   try
   {
     stop();
+    
     // unregister callbacks
     device_->unregisterDepthCallback(depth_callback_handle);
-    device_->unregisterImageCallback(image_callback_handle);
-    device_->unregisterIRCallback(image_callback_handle);
+    
+    if (device_->hasImageStream ())
+      device_->unregisterImageCallback(image_callback_handle);
+    
+    if (device_->hasIRStream ())
+      device_->unregisterIRCallback(image_callback_handle);
 
     // disconnect all listeners
     disconnect_all_slots <sig_cb_openni_image > ();
@@ -322,10 +327,10 @@ void OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
     if (!mapConfigMode2XnMode(depth_mode, depth_md) || !device_->findCompatibleDepthMode(depth_md, actual_depth_md))
       THROW_PCL_IO_EXCEPTION("could not find compatible depth stream mode %d", (int) depth_mode);
 
-    // printf("[%s] requested depth mode  : %dx%d@%dHz", getName().c_str(), depth_md.nXRes, depth_md.nYRes, depth_md.nFPS);
-    //printf(" -> compatible depth mode : %dx%d@%dHz\n", actual_depth_md.nXRes, actual_depth_md.nYRes, actual_depth_md.nFPS);
-
-    device_->setDepthOutputMode(actual_depth_md);
+    XnMapOutputMode current_depth_md =  device_->getDepthOutputMode();
+    if (current_depth_md.nXRes != actual_depth_md.nXRes || current_depth_md.nYRes != actual_depth_md.nYRes )
+      device_->setDepthOutputMode(actual_depth_md);
+    
     depth_width_ = depth_md.nXRes;
     depth_height_ = depth_md.nYRes;
   }
@@ -345,9 +350,9 @@ void OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
       if (!mapConfigMode2XnMode(image_mode, image_md) || !device_->findCompatibleImageMode(image_md, actual_image_md))
         THROW_PCL_IO_EXCEPTION("could not find compatible image stream mode %d", (int) image_mode);
 
-      //printf("[%s] requested image mode  : %dx%d@%dHz", getName().c_str(), image_md.nXRes, image_md.nYRes, image_md.nFPS);
-      //printf(" -> compatible image mode : %dx%d@%dHz\n", actual_image_md.nXRes, actual_image_md.nYRes, actual_image_md.nFPS);
-      device_->setImageOutputMode(actual_image_md);
+      XnMapOutputMode current_image_md =  device_->getImageOutputMode();
+      if (current_image_md.nXRes != actual_image_md.nXRes || current_image_md.nYRes != actual_image_md.nYRes )
+        device_->setImageOutputMode(actual_image_md);
     }
     else
     {

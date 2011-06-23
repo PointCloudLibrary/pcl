@@ -82,7 +82,7 @@ DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool re
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION("Failed to find player node: %s\n", xnGetStatusString(status));
 
-  device_ = player_;
+  device_node_info_ = player_.GetInfo();
 
   Init ();
 
@@ -203,7 +203,7 @@ boost::shared_ptr<Image> DeviceONI::getCurrentImage(boost::shared_ptr<xn::ImageM
 
 bool DeviceONI::isImageResizeSupported(unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ()
 {
-  return false;
+  return ImageRGB24::resizingSupported (input_width, input_height, output_width, output_height);
 }
 
 }

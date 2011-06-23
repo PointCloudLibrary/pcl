@@ -45,6 +45,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
+#include <pcl/console/parse.h>
 #include <vector>
 
 #define SHOW_FPS 1
@@ -147,7 +148,7 @@ public:
 void
 usage(char ** argv)
 {
-  cout << "usage: " << argv[0] << " [<device_id> [<depth-mode> [<image-mode>] ] ] | [path-to-oni-file]\n";
+  cout << "usage: " << argv[0] << " [((<device_id> | <path-to-oni-file>) [-depthmode <mode>] [-imagemode <mode>] [-xyz] | -l [<device_id>]| -h | --help)]" << endl;
   cout << argv[0] << " -h | --help : shows this help" << endl;
   cout << argv[0] << " -l : list all available devices" << endl;
   cout << argv[0] << " -l <device-id> : list all available modes for specified device" << endl;
@@ -173,7 +174,7 @@ usage(char ** argv)
   cout << argv[0] << " A00361800903049A" << endl;
   cout << "    uses the device with the serial number \'A00361800903049A\'." << endl;
   cout << argv[0] << " 1@16" << endl;
-  cout << "    uses the device on address 16 at usb bus 1." << endl;
+  cout << "    uses the device on address 16 at USB bus 1." << endl;
   #endif
   return;
 }
@@ -181,20 +182,21 @@ usage(char ** argv)
 int
 main(int argc, char ** argv)
 {
-  std::string arg("");
+  std::string device_id("");
   pcl::OpenNIGrabber::Mode depth_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
-
+  bool gray_value = false;
+  bool xyz = false;
+  
   if (argc >= 2)
   {
-    arg = argv[1];
-
-    if (arg == "--help" || arg == "-h")
+    device_id = argv[1];
+    if (device_id == "--help" || device_id == "-h")
     {
       usage(argv);
-      return 1;
+      return 0;
     }
-    else if (arg == "-l")
+    else if (device_id == "-l")
     {
       if (argc >= 3)
       {
@@ -207,13 +209,15 @@ main(int argc, char ** argv)
           cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
         }
 
-        cout << endl << "Supported image modes for device: " << device->getVendorName() << " , " << device->getProductName() << endl;
-        modes = grabber.getAvailableImageModes();
-        for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
+        if (device->hasImageStream ())
         {
-          cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
+          cout << endl << "Supported image modes for device: " << device->getVendorName() << " , " << device->getProductName() << endl;
+          modes = grabber.getAvailableImageModes();
+          for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
+          {
+            cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
+          }
         }
-        return 0;
       }
       else
       {
@@ -231,17 +235,8 @@ main(int argc, char ** argv)
           cout << "No devices connected." << endl;
         
         cout <<"Virtual Devices available: ONI player" << endl;
-        return 0;
       }
-    }
-
-    if (argc >= 3)
-    {
-      depth_mode = (pcl::OpenNIGrabber::Mode) atoi(argv[2]);
-      if (argc == 4)
-      {
-        image_mode = (pcl::OpenNIGrabber::Mode) atoi(argv[3]);
-      }
+      return 0;
     }
   }
   else
@@ -250,9 +245,25 @@ main(int argc, char ** argv)
     if (driver.getNumberDevices() > 0)
       cout << "Device Id not set, using first device." << endl;
   }
+  
+  unsigned mode;
+  if (pcl::console::parse(argc, argv, "-depthmode", mode) != -1)
+    depth_mode = (pcl::OpenNIGrabber::Mode) mode;
 
-  pcl::OpenNIGrabber grabber(arg, depth_mode, image_mode);
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb > ())
+  if (pcl::console::parse(argc, argv, "-imagemode", mode) != -1)
+    image_mode = (pcl::OpenNIGrabber::Mode) mode;
+  
+  if (pcl::console::find_argument(argc, argv, "-xyz") != -1)
+    xyz = true;
+  
+  pcl::OpenNIGrabber grabber(device_id, depth_mode, image_mode);
+  
+  if (xyz) // only if xzy flag is set, since grabber provides at least XYZ and XYZI pointclouds
+  {
+    SimpleOpenNIViewer<pcl::PointXYZ> v(grabber);
+    v.run();
+  }
+  else if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb > ())
   {
     SimpleOpenNIViewer<pcl::PointXYZRGB> v(grabber);
     v.run();

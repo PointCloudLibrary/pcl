@@ -199,11 +199,10 @@ protected:
   std::vector<XnMapOutputMode> available_image_modes_;
   std::vector<XnMapOutputMode> available_depth_modes_;
 
+  /** \brief context to OpenNI driver*/
+  xn::Context& context_;
   /** \brief node object for current device */
-  //xn::NodeInfo device_node_info_;
-  
-  /** \brief node for device objects*/
-  xn::ProductionNode device_;
+  xn::NodeInfo device_node_info_;
   
   /** \brief Depth generator object. */
   xn::DepthGenerator depth_generator_;
@@ -223,7 +222,6 @@ protected:
   /** \brief focal length for regular camera producing color images in native SXGA mode*/
   static const float rgb_focal_length_SXGA_;
 
-  xn::Context& context_;
   /** the value for shadow (occluded pixels) */
   XnUInt64 shadow_value_;
   /** the value for pixels without a valid disparity measurement */

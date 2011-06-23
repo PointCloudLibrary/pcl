@@ -55,7 +55,8 @@ namespace openni_wrapper
 {
 
 OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException)
-: context_ (context)
+  : context_ (context)
+  , device_node_info_ (device_node)
 {
   // create the production nodes
   XnStatus status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
@@ -91,7 +92,8 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
 }
 
 OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException)
-: context_ (context)
+  : context_ (context)
+  , device_node_info_ (device_node)
 {
   XnStatus status;
   
@@ -105,11 +107,6 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
     THROW_OPENNI_EXCEPTION ("creating IR generator failed. Reason: %s", xnGetStatusString (status));
 
   // get production node instances
-  
-  status = device_node.GetInstance (device_);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("creating device instance failed. Reason: %s", xnGetStatusString (status));
-  
   status = depth_node.GetInstance (depth_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating depth generator instance failed. Reason: %s", xnGetStatusString (status));
@@ -127,7 +124,8 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
 
 // For ONI Player devices
 OpenNIDevice::OpenNIDevice (xn::Context& context) throw (OpenNIException)
-: context_ (context)
+  : context_ (context)
+  , device_node_info_ (0)
 {
 }
 
@@ -650,27 +648,27 @@ bool OpenNIDevice::unregisterIRCallback (const OpenNIDevice::CallbackHandle& cal
 
 const char* OpenNIDevice::getSerialNumber () const throw ()
 {
-  return device_.GetName();
-  //return device_node_info_.GetInstanceName ();
+  return device_node_info_.GetInstanceName ();
 }
 
 const char* OpenNIDevice::getConnectionString () const throw ()
 {
-  return device_.GetInfo().GetCreationInfo();
-  //return device_node_info_.GetCreationInfo ();
+  return device_node_info_.GetCreationInfo ();
 }
 
 unsigned short OpenNIDevice::getVendorID () const throw ()
 {
   unsigned short vendor_id;
   unsigned short product_id;
+  
 #ifndef _WIN32
   unsigned char bus;
   unsigned char address;
-  sscanf (device_.GetInfo().GetCreationInfo (), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
+  
+  sscanf (device_node_info_.GetCreationInfo(), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
 
 #else
-  OpenNIDriver::getDeviceType (device_.GetInfo().GetCreationInfo (), vendor_id, product_id);
+  OpenNIDriver::getDeviceType (device_node_info_.GetCreationInfo(), vendor_id, product_id);
 #endif
   return vendor_id;
 }
@@ -682,10 +680,10 @@ unsigned short OpenNIDevice::getProductID () const throw ()
 #ifndef _WIN32
   unsigned char bus;
   unsigned char address;
-  sscanf (device_.GetInfo().GetCreationInfo (), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
+  sscanf (device_node_info_.GetCreationInfo(), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
 
 #else
-  OpenNIDriver::getDeviceType (device_.GetInfo().GetCreationInfo (), vendor_id, product_id);
+  OpenNIDriver::getDeviceType (device_node_info_.GetCreationInfo(), vendor_id, product_id);
 #endif
   return product_id;
 }
@@ -697,7 +695,7 @@ unsigned char OpenNIDevice::getBus () const throw ()
   unsigned short vendor_id;
   unsigned short product_id;
   unsigned char address;
-  sscanf (device_.GetInfo().GetCreationInfo (), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
+  sscanf (device_node_info_.GetCreationInfo(), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
 #endif
   return bus;
 }
@@ -709,20 +707,20 @@ unsigned char OpenNIDevice::getAddress () const throw ()
   unsigned short vendor_id;
   unsigned short product_id;
   unsigned char bus;
-  sscanf (device_.GetInfo().GetCreationInfo (), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
+  sscanf (device_node_info_.GetCreationInfo(), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
 #endif
   return address;
 }
 
 const char* OpenNIDevice::getVendorName () const throw ()
 {
-  XnProductionNodeDescription& description = const_cast<XnProductionNodeDescription&>(device_.GetInfo().GetDescription ());
+  XnProductionNodeDescription& description = const_cast<XnProductionNodeDescription&>(device_node_info_.GetDescription ());
   return description.strVendor;
 }
 
 const char* OpenNIDevice::getProductName () const throw ()
 {
-  XnProductionNodeDescription& description = const_cast<XnProductionNodeDescription&>(device_.GetInfo().GetDescription ());
+  XnProductionNodeDescription& description = const_cast<XnProductionNodeDescription&>(device_node_info_.GetDescription ());
   return description.strName;
 }
 
