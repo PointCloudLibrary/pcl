@@ -22,6 +22,10 @@ if(build)
         include/pcl/${SUBSYS_NAME}/icp_nl.h
         include/pcl/${SUBSYS_NAME}/ppf_registration.h
         include/pcl/${SUBSYS_NAME}/registration.h
+        include/pcl/${SUBSYS_NAME}/stanford_gicp/gicp.h
+        include/pcl/${SUBSYS_NAME}/stanford_gicp/optimize.h
+        include/pcl/${SUBSYS_NAME}/stanford_gicp/scan.h
+        include/pcl/${SUBSYS_NAME}/stanford_gicp/transform.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h
         include/pcl/${SUBSYS_NAME}/transforms.h
@@ -46,8 +50,13 @@ if(build)
         )
 
     set(srcs
-    	src/registration.cpp
-    	src/ppf_registration.cpp)
+      src/registration.cpp
+      src/stanford_gicp/bfgs_funcs.cpp
+      src/stanford_gicp/gicp.cpp
+      src/stanford_gicp/optimize.cpp
+      src/stanford_gicp/scan.cpp
+      src/stanford_gicp/transform.cpp
+      src/ppf_registration.cpp)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
