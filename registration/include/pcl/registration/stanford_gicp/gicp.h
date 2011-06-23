@@ -84,7 +84,7 @@ namespace dgc {
       // returns number of iterations it took to converge
       int AlignScan(GICPPointSet *scan, dgc_transform_t base_t, dgc_transform_t t, double max_match_dist, bool save_error_plot = 0);
 
-    private:
+    //private:
       std::vector <GICPPoint> point_;
       ANNpointArray kdtree_points_;
       ANNkd_tree *kdtree_;
