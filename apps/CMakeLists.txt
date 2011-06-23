@@ -92,8 +92,8 @@ if(build)
     #PCL_ADD_EXECUTABLE(openni_range_image_viewer ${SUBSYS_NAME} src/openni_range_image_viewer.cpp)
     #target_link_libraries(openni_range_image_viewer pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
 
-    PCL_ADD_EXECUTABLE(openni_icp_reg ${SUBSYS_NAME} src/openni_icp_reg.cpp)
-    target_link_libraries(openni_icp_reg pcl_common pcl_kdtree pcl_registration pcl_visualization gsl gslcblas ann)
+    #PCL_ADD_EXECUTABLE(openni_icp_reg ${SUBSYS_NAME} src/openni_icp_reg.cpp)
+    #target_link_libraries(openni_icp_reg pcl_common pcl_kdtree pcl_registration pcl_visualization gsl gslcblas ann)
   endif()
 
 endif(build)
