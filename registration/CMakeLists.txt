@@ -23,16 +23,18 @@ if(build)
         #include/pcl/${SUBSYS_NAME}/incremental_registration.h
         include/pcl/${SUBSYS_NAME}/ppf_registration.h
         include/pcl/${SUBSYS_NAME}/registration.h
-        #include/pcl/${SUBSYS_NAME}/stanford_gicp.h
-        #include/pcl/${SUBSYS_NAME}/stanford_gicp/gicp.h
-        #include/pcl/${SUBSYS_NAME}/stanford_gicp/optimize.h
-        #include/pcl/${SUBSYS_NAME}/stanford_gicp/scan.h
-        #include/pcl/${SUBSYS_NAME}/stanford_gicp/transform.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h
         include/pcl/${SUBSYS_NAME}/transforms.h
         )
 
+#    set(stanford_gicp_incs
+#        include/pcl/${SUBSYS_NAME}/stanford_gicp.h
+#        include/pcl/${SUBSYS_NAME}/stanford_gicp/gicp.h
+#        include/pcl/${SUBSYS_NAME}/stanford_gicp/optimize.h
+#        include/pcl/${SUBSYS_NAME}/stanford_gicp/scan.h
+#        include/pcl/${SUBSYS_NAME}/stanford_gicp/transform.h
+#        )
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation.hpp
@@ -71,5 +73,6 @@ if(build)
                        "${EXT_DEPS}" "" "" "")
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+    #PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/stanford_gicp ${stanford_gicp_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 endif(build)
