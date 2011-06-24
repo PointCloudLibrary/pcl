@@ -287,6 +287,8 @@ void NarfKeypoint::calculateInterestImage ()
   {
     const RangeImage& range_image = *range_image_scale_space_[scale_idx];
     RangeImageBorderExtractor& border_extractor = *border_extractor_scale_space_[scale_idx];
+    int original_max_no_of_threads = border_extractor.getParameters().max_no_of_threads;
+    border_extractor.getParameters().max_no_of_threads = parameters_.max_no_of_threads;
     const ::pcl::PointCloud<BorderDescription>& border_descriptions = border_extractor.getBorderDescriptions ();
     const float* surface_change_scores = border_extractor.getSurfaceChangeScores ();
     const Eigen::Vector3f* surface_change_directions = border_extractor.getSurfaceChangeDirections ();
@@ -468,6 +470,8 @@ void NarfKeypoint::calculateInterestImage ()
       }
     }
     delete[] angle_histograms;
+    
+    border_extractor.getParameters().max_no_of_threads = original_max_no_of_threads;
   }
   
   if (interest_image_scale_space_.empty())
