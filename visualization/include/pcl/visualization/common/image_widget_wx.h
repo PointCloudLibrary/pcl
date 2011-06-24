@@ -69,65 +69,76 @@ namespace pcl
         
         // =====STATIC METHODS=====
         // Handle the GUI events and return immediately
-        static void spinOnce ();
+        static void
+          spinOnce ();
         // Start loop that handles the GUI events
-        static void spin ();
+        static void
+          spin ();
         
         // =====TYPEDEFS=====
         typedef void (*PixelClickedHandler)(float pixel_x, float pixel_y);
         
         // =====PUBLIC METHODS=====
         //! Set the name (caption) of the widget
-        void setName (const std::string& name);
+        void
+          setName (const std::string& name);
         
         //! Visualize a RGB image
-        void setRGBImage (const unsigned char* data, unsigned int width, unsigned int height, const char* name="RGB image");
+        void
+          setRGBImage (const unsigned char* data, unsigned int width, unsigned int height, const char* name="RGB image");
         
         //! Visualize a float image
         void 
-        setFloatImage (const float* float_image, 
-                       unsigned int width, unsigned int height, 
-                       const char* name="float image", 
-                       float min_value = -std::numeric_limits<float>::infinity (), 
-                       float max_value =  std::numeric_limits<float>::infinity (), bool grayscale=false);
+          setFloatImage (const float* float_image, 
+                         unsigned int width, unsigned int height, 
+                         const char* name="float image", 
+                         float min_value = -std::numeric_limits<float>::infinity (), 
+                         float max_value =  std::numeric_limits<float>::infinity (), bool grayscale=false);
         
         //! Visualize an angle image (values in rad!)
-        void setAngleImage (const float* angle_image, unsigned int width, unsigned int height, const char* name="angle image");
+        void
+          setAngleImage (const float* angle_image, unsigned int width, unsigned int height, const char* name="angle image");
         
         //! Visualize an angle image with a -90,90deg wrap-around (values in rad!)
-        void setHalfAngleImage (const float* angle_image, unsigned int width, unsigned int height, const char* name="angle image");
+        void
+          setHalfAngleImage (const float* angle_image, unsigned int width, unsigned int height, const char* name="angle image");
         
         //! Marks a point in the image by drawing a small circle around it
-        void markPoint (float x, float y, const wxPen* color=wxGREEN_PEN, const wxBrush* background=wxTRANSPARENT_BRUSH);
+        void
+          markPoint (float x, float y, const wxPen* color=wxGREEN_PEN, const wxBrush* background=wxTRANSPARENT_BRUSH);
         
-        //! Marks a line in the image by
-        void markLine (float x1, float y1, float x2, float y2, const wxPen* color=wxGREEN_PEN);
+        //! Marks a line in the image
+        void
+          markLine (float x1, float y1, float x2, float y2, const wxPen* color=wxGREEN_PEN);
 
         
         //! Returns false if the widget is still active and true if it was closed
-        bool isShown () const;
+        bool
+          isShown () const;
 
         //! Show or hide the widget
-        void show (bool show_widget=true);
-        
-        //! Save a snapshot of the widget to disc as a png
-        //void savePng (std::string filename) const;
+        void
+          show (bool show_widget=true);
         
         /** Subscribe a handler that will be called, when a point in the image is (left) clicked. The
          * E.g.: void pixelClickedHandler(float pixel_x, float pixel_y) { doSomething(); }
          * The pixel is in the original image, not in the scaled one! */
-        void addPixelClickedHandler (PixelClickedHandler pixel_clicked_handler);
+        void
+          addPixelClickedHandler (PixelClickedHandler pixel_clicked_handler);
         
         /** Set the size of the window. If you give no values it will resize to the original image size and if you
          *  leave one value -1 it will keep the aspect ratio (The latter will always be the case if keepAspectRatio is true) */
-        void setSize (int width=-1, int height=-1);
+        void
+          setSize (int width=-1, int height=-1);
 
         //! Just ignore this function. For internal use only
-        void informAboutImageFrameDestruction ();
+        void
+          informAboutImageFrameDestruction ();
         
         // =====PUBLIC MEMBER VARIABLES=====
         //! Set this to false if you want to scale your window without keeping the original aspect ratio of the image
         bool keepAspectRatio;
+        
         /** This value is set to true every time the image was clicked.
          *  The pixel position (in the original image, not the scaled one!)
          *  is written into last_clicked_point_x, last_clicked_point_y.
@@ -139,7 +150,8 @@ namespace pcl
         
         // =====EVENTS=====
         //! Do not call this! For internal use only
-        void OnClose (wxCloseEvent& event);
+        void
+          OnClose (wxCloseEvent& event);
 
       protected:
         // =====CLASSES / STRUCTS=====
@@ -165,12 +177,18 @@ namespace pcl
             ~ImagePanel ();
             
             // =====EVENTS=====
-            void paintEvent (wxPaintEvent & evt);
-            void paintNow ();
-            void OnSize (wxSizeEvent& event);
-            void mouseReleased (wxMouseEvent& event);
-            void render (wxDC& dc);
-            void resizeImage (int newWidth=-1, int newHeight=-1);
+            void
+              paintEvent (wxPaintEvent & evt);
+            void
+              paintNow ();
+            void
+              OnSize (wxSizeEvent& event);
+            void
+              mouseReleased (wxMouseEvent& event);
+            void
+              render (wxDC& dc);
+            void
+              resizeImage (int newWidth=-1, int newHeight=-1);
             /* some useful events
              void mouseMoved(wxMouseEvent& event);
              void mouseDown(wxMouseEvent& event);
@@ -192,7 +210,8 @@ namespace pcl
             // =====PROTECTED MEMBER VARIABLES=====
             wxBitmap resized_;
             // =====PROTECTED METHODS=====
-            ImageWidgetWX* getParentImageWidget () { return ((ImageFrame*)GetParent ())->parentImageWidget; }
+            ImageWidgetWX*
+              getParentImageWidget () { return ((ImageFrame*)GetParent ())->parentImageWidget; }
             
           DECLARE_EVENT_TABLE ();
         };
@@ -207,13 +226,16 @@ namespace pcl
             ~ImageFrame ();
             
             // =====EVENTS=====
-            void OnSize (wxSizeEvent& event);
+            void
+              OnSize (wxSizeEvent& event);
             
             // =====METHODS=====
-            void updateImage (unsigned char* data, unsigned int width, unsigned int height);
+            void
+              updateImage (unsigned char* data, unsigned int width, unsigned int height);
             
             // =====EVENTS=====
-            void OnClose (wxCloseEvent& event);
+            void
+              OnClose (wxCloseEvent& event);
             
             // =====PUBLIC MEMBER VARIABLES=====
             ImagePanel* image_panel;
@@ -227,23 +249,16 @@ namespace pcl
             DECLARE_EVENT_TABLE ();
         };
         
-        //class StopMainLoopTimer : public wxTimer {
-          //void Notify() { 
-            //wxTheApp->ExitMainLoop();
-          //}
-        //};
-        
-        
         // =====PROTECTED METHODS=====
-        void reset ();
+        void
+          reset ();
         
         // =====PROTECTED MEMBER VARIABLES=====
         ImageFrame* image_frame;
         unsigned char* image_data;
     };
-
   }  // namespace end
 }
 
 #endif  //#ifndef PCL_VISUALIZATION_IMAGE_WIDGET_WX_H_
-#endif
+#endif  //#ifdef HAVE_WXWIDGETS
