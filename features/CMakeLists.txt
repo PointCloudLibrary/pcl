@@ -18,6 +18,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/intensity_gradient.h
         include/pcl/${SUBSYS_NAME}/intensity_spin.h
         include/pcl/${SUBSYS_NAME}/moment_invariants.h
+        include/pcl/${SUBSYS_NAME}/multiscale_feature_persistence.h
         include/pcl/${SUBSYS_NAME}/narf.h
         include/pcl/${SUBSYS_NAME}/narf_descriptor.h
         include/pcl/${SUBSYS_NAME}/normal_3d.h
@@ -39,6 +40,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/intensity_gradient.hpp
         include/pcl/${SUBSYS_NAME}/impl/intensity_spin.hpp
         include/pcl/${SUBSYS_NAME}/impl/moment_invariants.hpp
+        include/pcl/${SUBSYS_NAME}/impl/multiscale_feature_persistence.hpp
         include/pcl/${SUBSYS_NAME}/impl/narf.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d_omp.hpp
@@ -58,6 +60,7 @@ if(build)
         src/intensity_gradient.cpp
         src/intensity_spin.cpp
         src/moment_invariants.cpp
+        src/multiscale_feature_persistence.cpp
         src/narf.cpp
         src/narf_descriptor.cpp
         src/normal_3d.cpp

@@ -267,6 +267,9 @@ namespace pcl
     typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
     public:
+      typedef boost::shared_ptr< FeatureFromNormals<PointInT, PointNT, PointOutT> > Ptr;
+      typedef boost::shared_ptr< const FeatureFromNormals<PointInT, PointNT, PointOutT> > ConstPtr;
+
       // Members derived from the base class
       using Feature<PointInT, PointOutT>::input_;
 
