@@ -230,8 +230,18 @@ namespace pcl
       inline void swap (PointCloud<PointT> &rhs) { this->points.swap (rhs.points); }
       inline void clear () { points.clear (); }
 
-      //shared pointer
+      /** \brief Copy the cloud to the heap and return a smart pointer
+        * Note that deep copy is performed, so avoid using this function on non-empty clouds.
+        * The changes of the returned cloud are not mirrored back to this one.
+        * \return shared pointer to the copy of the cloud
+        */
       inline Ptr makeShared () { return Ptr (new PointCloud<PointT> (*this)); }
+
+      /** \brief Copy the cloud to the heap and return a constant smart pointer
+        * Note that deep copy is performed, so avoid using this function on non-empty clouds.
+        * \return const shared pointer to the copy of the cloud
+        */
+      inline ConstPtr makeShared () const { return ConstPtr (new PointCloud<PointT> (*this)); }
 
     protected:
       // This is motivated by ROS integration. Users should not need to access mapping_.
