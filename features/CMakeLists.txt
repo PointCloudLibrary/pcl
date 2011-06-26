@@ -62,7 +62,7 @@ if(build)
         src/intensity_gradient.cpp
         src/intensity_spin.cpp
         src/moment_invariants.cpp
-        src/multiscale_feature_persistence.cpp
+#        src/multiscale_feature_persistence.cpp
         src/narf.cpp
         src/narf_descriptor.cpp
         src/normal_3d.cpp
@@ -72,7 +72,7 @@ if(build)
         src/principal_curvatures.cpp
         src/rift.cpp
         src/rsd.cpp 
-        src/statistical_multiscale_interest_region_extraction.cpp                               
+#        src/statistical_multiscale_interest_region_extraction.cpp                               
         src/vfh.cpp
         )
 
