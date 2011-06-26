@@ -52,10 +52,9 @@ namespace pcl
                                                    std::vector<float> &k_sqr_distances_arg, int max_nn_arg) 
     {
 
-
       this->setInputCloud (cloud_arg);
+        return radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
 
-      return radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
     }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,9 +65,17 @@ namespace pcl
                                                    std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const
     {
 
+     if(precision_ == 1)
+     {
       const PointT searchPoint = getPointByIndex (index_arg);
-
+       
       return radiusSearch (searchPoint, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
+     }
+     else
+     {
+
+      return radiusSearchLP (input_,index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
+     }
 
     }
 
@@ -134,9 +141,15 @@ namespace pcl
                                                      std::vector<float> &k_sqr_distances_arg) 
     {
 
+      if(precision_ == 1)
+       {
       const PointT searchPoint = getPointByIndex (index_arg);
-
       return nearestKSearch (searchPoint, k_arg, k_indices_arg, k_sqr_distances_arg);
+       }
+      else
+      {
+      return nearestKSearchLP (input_,index_arg, k_arg, k_indices_arg, k_sqr_distances_arg); 
+      }
     }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +160,6 @@ namespace pcl
                                                      std::vector<float> &k_sqr_distances_arg)  
     {
       this->setInputCloud (cloud_arg);
-
       return nearestKSearch (index_arg, k_arg, k_indices_arg, k_sqr_distances_arg);
     }
 
@@ -446,6 +458,156 @@ OrganizedNeighborSearch<PointT>::getPointByIndex (const unsigned int index_arg) 
   return this->input_->points[index_arg];
 
 }
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> int 
+OrganizedNeighborSearch<PointT>::radiusSearchLP (
+    const PointCloudConstPtr &cloud, int index, double radius, std::vector<int> &k_indices, 
+    std::vector<float> &k_distances, int max_nn) const
+{
+
+  k_indices.clear ();
+  k_distances.clear ();
+
+  if (cloud->height == 1)
+  {
+    PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not organized!\n", getName ().c_str ());
+    return 0;
+  }
+  int data_size = cloud->points.size ();
+  if (index >= data_size)
+    return 0;
+
+  // Get the cloud's dimensions width
+  int width = cloud->width,
+      height = cloud->height;
+
+  int y=index/width, x=index-y*width;
+  
+  const std::vector<PointT, Eigen::aligned_allocator<PointT> >& points = cloud->points;
+  const PointT& point = points[index];
+  if (!pcl_isfinite(point.x))
+    return 0;
+  
+  // Put point itself into results
+  k_indices.push_back(index);
+  k_distances.push_back(0.0f);
+  
+  float max_dist_squared = radius*radius;
+  bool still_in_range = true,
+       done = false;
+  for (int radius=1;  !done;  ++radius) 
+  {
+    int x2=x-radius-1, y2=y-radius;  // Top left - 1
+    still_in_range = false;
+    for (int i=0; i<8*radius; ++i)
+    {
+      if (i<=2*radius) ++x2; else if (i<=4*radius) ++y2; else if (i<=6*radius) --x2; else --y2;
+      if (x2<0 || x2>=width || y2<0 || y2>=height)
+        continue;
+      int neighbor_index = y2*width + x2;
+      const PointT& neighbor = points[neighbor_index];
+      if (!pcl_isfinite(neighbor.x))
+        continue;
+      float distance_squared = squaredEuclideanDistance(point, neighbor);
+      if (distance_squared > max_dist_squared)
+        continue;
+      //cout << "Radius "<<radius<<": found "<<neighbor_index << " with distance "<<sqrtf(distance_squared)<<"\n";
+      still_in_range = true;
+      k_indices.push_back(neighbor_index);
+      k_distances.push_back(distance_squared);
+      if ((int)k_indices.size() >= max_nn)
+      {
+        done = true;
+        break;
+      }
+    }
+    if (!still_in_range)
+      done = true;
+  }
+  
+  return (int(k_indices.size ()));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> int 
+OrganizedNeighborSearch<PointT>::nearestKSearchLP (const PointCloudConstPtr &cloud, int index, int k, 
+    std::vector<int> &k_indices, std::vector<float> &k_distances)
+{
+  k_indices.resize (k);
+  if (cloud->height == 1)
+  {
+    PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not dense!\n", getName ().c_str ());
+    return 0;
+  }
+  int data_size = cloud->points.size ();
+  if (index >= data_size)
+    return 0;
+
+  // Get the cloud width
+  int width = cloud->width;
+
+  // Obtain the <u,v> pixel values
+  int u = index / width;
+  int v = index % width;
+
+  int l = -1, idx, uwv = u * width + v, uwvx;
+
+  // Save the query point as the first neighbor (*ANN compatibility)
+  k_indices[++l] = index;
+
+  if (horizontal_window_==0 || vertical_window_)
+    setSearchWindowAsK (k);
+
+  // Get all point neighbors in a H x V window
+
+std::cout << horizontal_window_ << '\t' << vertical_window_ << '\t' << k << std::endl;
+  for (int x = -horizontal_window_; x != horizontal_window_; ++x)
+  {
+    uwvx = uwv + x * width;     // Get the correct index
+
+    for (int y = -vertical_window_; y != vertical_window_; ++y)
+    {
+      // idx = (u+x) * cloud.width + (v+y);
+      idx = uwvx + y;
+
+      // If the index is not in the point cloud, continue
+      if (idx == index || idx < 0 || idx >= data_size)
+        continue;
+
+      if (max_distance_ != 0)
+      {
+        if (fabs (cloud->points[index].z - cloud->points[idx].z) < max_distance_)
+          k_indices[++l] = idx;
+      }
+      else
+        k_indices[++l] = idx;
+    }
+  }
+  // We need at least min_pts_ nearest neighbors to do something useful with them
+  if (l < min_pts_)
+    return 0;
+  return k;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void 
+OrganizedNeighborSearch<PointT>::setSearchWindowAsK (int k)
+{
+  int hw = 0, vw = 0;
+  while ( (2 * hw + 1 ) * (2 * vw + 1) < k)
+  {
+    ++hw; ++vw;
+  }
+  horizontal_window_ = hw - 1;
+  vertical_window_ = vw - 1;
+
+//std::cout << horizontal_window_ <<std::endl;
+//getchar();
+
+}
+
 
 }
 

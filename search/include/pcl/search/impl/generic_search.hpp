@@ -139,6 +139,11 @@ Search<PointT>::radiusSearch (int index, double radius, std::vector<int>& k_indi
 }
 
 
+template <typename PointT> void 
+Search<PointT>::setMethod(int k)
+{
+    _searchptr->setMethod(k);
+}
 
 }
 #define PCL_INSTANTIATE_Search(T) template class PCL_EXPORTS pcl::Search<T>;

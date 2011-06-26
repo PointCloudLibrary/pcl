@@ -116,7 +116,8 @@ const static int OCTREE                 = 2;
                   std::vector<float>& k_distances, int max_nn = -1) const;
 
 
-
+    virtual void
+    setMethod( int k );
 
   private:
     SearchPtr _searchptr;

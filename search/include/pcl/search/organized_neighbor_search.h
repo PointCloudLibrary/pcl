@@ -72,6 +72,9 @@ namespace pcl
         max_distance_ = std::numeric_limits<double>::max ();
 
         oneOverFocalLength_ = 1.0f;
+	precision_ = 1;
+	horizontal_window_ = 0;
+	vertical_window_ = 0;
       }
 
       /** \brief Empty deconstructor. */
@@ -95,12 +98,22 @@ namespace pcl
 
         if (input_ != cloud_arg)
         {
-          input_ = cloud_arg;
+		input_ = cloud_arg;
 
-          estimateFocalLengthFromInputCloud ();
-          generateRadiusLookupTable (input_->width, input_->height);
-        }
+	}
+	if(precision_ == 1)
+	{
+		estimateFocalLengthFromInputCloud ();
+		generateRadiusLookupTable (input_->width, input_->height);
+	}
+
       }
+
+     inline void
+     setMethod (int k)
+     {
+       precision_ = k;
+     }
 
      void check();
 
@@ -145,6 +158,19 @@ namespace pcl
       radiusSearch (const PointT &p_q_arg, const double radius_arg, std::vector<int> &k_indices_arg,
                     std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const;
 
+
+      /** \brief Approximate search for neighbors around the given query point within radius.
+        * \param cloud the point cloud data.
+        * \param index the index in \a cloud representing the query point.
+        * \param radius the maximum distance to search for neighbors in.
+        * \param k_indices the resultant point indices
+        * \param k_distances the resultant !squared! point distances
+        * \param max_nn maximum number of points to return
+        */
+      int radiusSearchLP (const PointCloudConstPtr &cloud, int index, double radius, std::vector<int> &k_indices,
+                         std::vector<float> &k_distances, int max_nn = INT_MAX) const;
+
+
       /** \brief Search for k-nearest neighbors at the query point.
        * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
        * \param cloud_arg the point cloud data
@@ -185,6 +211,18 @@ namespace pcl
       nearestKSearch (const PointT &p_q_arg, int k_arg, std::vector<int> &k_indices_arg,
                       std::vector<float> &k_sqr_distances_arg) ;
 
+
+      /** \brief Search for k-nearest neighbors for the given query point.
+        * \param cloud the point cloud data
+        * \param index the index in \a cloud representing the query point
+        * \param k the number of neighbors to search for (not used)
+        * \param k_indices the resultant point indices (must be resized to \a k beforehand!)
+        * \param k_distances \note this function does not return distances
+        */
+      int nearestKSearchLP (const PointCloudConstPtr &cloud, int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances);
+
+
+
       /** \brief Get the maximum allowed distance between the query point and its nearest neighbors. */
       inline double
       getMaxDistance () const
@@ -198,6 +236,26 @@ namespace pcl
       {
         max_distance_ = max_dist;
       }
+
+      inline void
+      setSearchWindow (int horizontal, int vertical)
+      {
+        horizontal_window_ = horizontal;
+        vertical_window_ = vertical;
+      }
+
+      /** \brief Estimate the search window (horizontal, vertical) in pixels in order to get up to k-neighbors.
+        * \param k the number of neighbors requested
+        */
+      void setSearchWindowAsK (int k);
+
+      /** \brief Get the horizontal search window in pixels. */
+      int getHorizontalSearchWindow () const { return (horizontal_window_); }
+
+      /** \brief Get the vertical search window in pixels. */
+      int getVerticalSearchWindow () const { return (vertical_window_); }
+
+
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Protected methods
@@ -328,6 +386,12 @@ namespace pcl
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Globals
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      int horizontal_window_;
+
+      /** \brief The horizontal search window. */
+      int vertical_window_;
+      int min_pts_;
+      int precision_;
 
       /** \brief Pointer to input point cloud dataset. */
       PointCloudConstPtr input_;

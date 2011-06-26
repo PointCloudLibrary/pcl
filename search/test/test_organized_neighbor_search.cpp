@@ -195,6 +195,129 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
 
 }
 
+
+TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search_LP)
+{
+
+  const unsigned int test_runs = 2;
+  unsigned int test_id;
+
+  // instantiate point cloud
+  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+
+  size_t i;
+
+  srand (time (NULL));
+
+  unsigned int K;
+
+  // create organized search
+  Search<PointXYZ>* organizedNeighborSearch = new OrganizedNeighborSearch<PointXYZ>();
+
+  std::vector<int> k_indices;
+  std::vector<float> k_sqr_distances;
+
+  std::vector<int> k_indices_bruteforce;
+  std::vector<float> k_sqr_distances_bruteforce;
+
+  // typical focal length from kinect
+  const double oneOverFocalLength = 0.0018;
+  double x,y,z;
+
+  int xpos, ypos, centerX, centerY;
+
+  for (test_id = 0; test_id < test_runs; test_id++)
+  {
+    // define a random search point
+
+//    K = (rand () % 10)+1;
+     K = 16;
+    // generate point cloud
+    cloudIn->width = 128;
+    cloudIn->height = 32;
+    cloudIn->points.clear();
+    cloudIn->points.reserve (cloudIn->width * cloudIn->height);
+
+    centerX = cloudIn->width>>1;
+    centerY = cloudIn->height>>1;
+
+    for (ypos = -centerY; ypos < centerY; ypos++)
+      for (xpos = -centerX; xpos < centerX; xpos++)
+      {
+        z = 15.0 * ((double)rand () / (double)(RAND_MAX+1.0))+20;
+        y = (double)ypos*oneOverFocalLength*(double)z;
+        x = (double)xpos*oneOverFocalLength*(double)z;
+
+        cloudIn->points.push_back(PointXYZ (x, y, z));
+      }
+
+    unsigned int searchIdx = rand()%(cloudIn->width * cloudIn->height);
+    const PointXYZ& searchPoint = cloudIn->points[searchIdx];
+
+    k_indices.clear();
+    k_sqr_distances.clear();
+
+    // organized nearest neighbor search
+    organizedNeighborSearch->setInputCloud (cloudIn);
+    organizedNeighborSearch->setMethod (1);
+    organizedNeighborSearch->nearestKSearch (searchIdx, (int)K, k_indices, k_sqr_distances);
+ 
+
+
+    double pointDist;
+
+    k_indices_bruteforce.clear();
+    k_sqr_distances_bruteforce.clear();
+
+    std::priority_queue<prioPointQueueEntry> pointCandidates;
+
+
+    // push all points and their distance to the search point into a priority queue - bruteforce approach.
+    for (i = 0; i < cloudIn->points.size (); i++)
+    {
+      pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x) +
+             /*+*/ (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y) +
+                   (cloudIn->points[i].z - searchPoint.z) * (cloudIn->points[i].z - searchPoint.z));
+
+      prioPointQueueEntry pointEntry (cloudIn->points[i], pointDist, i);
+
+      pointCandidates.push (pointEntry);
+    }
+
+    // pop priority queue until we have the nearest K elements
+    while (pointCandidates.size () > K)
+      pointCandidates.pop ();
+
+    // copy results into vectors
+    while (pointCandidates.size ())
+    {
+      k_indices_bruteforce.push_back (pointCandidates.top ().pointIdx_);
+      k_sqr_distances_bruteforce.push_back (pointCandidates.top ().pointDistance_);
+
+      pointCandidates.pop ();
+    }
+
+
+
+    ASSERT_EQ ( k_indices.size() , k_indices_bruteforce.size() );
+    //std::cout << k_indices.size() << '\t' << k_indices_bruteforce.size() << std::endl;
+
+#if 1
+    // compare nearest neighbor results of organized search  with bruteforce search
+    for (i = 0; i < k_indices.size (); i++)
+    {
+      ASSERT_EQ ( k_indices[i] , k_indices_bruteforce.back() );
+//      EXPECT_NEAR (k_sqr_distances[i], k_sqr_distances_bruteforce.back(), 1e-4);
+
+      k_indices_bruteforce.pop_back();
+      k_sqr_distances_bruteforce.pop_back();
+    }
+#endif
+
+  }
+
+}
+
 TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
 {
 
@@ -251,7 +374,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     const PointXYZ& searchPoint = cloudIn->points[randomIdx];
 
     double pointDist;
-    double searchRadius = 1.0 * ((double)rand () / (double)RAND_MAX);
+   double searchRadius = 1.0 * ((double)rand () / (double)RAND_MAX);
+//   double searchRadius = 1/10;
 
     int minX = cloudIn->width;
     int minY = cloudIn->height;
@@ -285,7 +409,9 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     vector<float> cloudNWRRadius;
 
     organizedNeighborSearch.setInputCloud (cloudIn);
-    organizedNeighborSearch.radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, INT_MAX); //,INT_MAX);
+    organizedNeighborSearch.setMethod (0);
+
+    organizedNeighborSearch.radiusSearch (randomIdx, searchRadius, cloudNWRSearch, cloudNWRRadius, INT_MAX); //,INT_MAX);
 
     // check if result from organized radius search can be also found in bruteforce search
     std::vector<int>::const_iterator current = cloudNWRSearch.begin();
@@ -333,6 +459,121 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
   }
 
 }
+
+
+TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_Benchmark_Test)
+{
+
+  const unsigned int test_runs = 10;
+  unsigned int test_id;
+
+  size_t i,j;
+
+  srand (time (NULL));
+
+  Search<PointXYZ>* organizedNeighborSearch = new OrganizedNeighborSearch<PointXYZ>();
+//  organizedNeighborSearch->check();
+
+//  OrganizedNeighborSearch<PointXYZ> organizedNeighborSearch;
+
+  std::vector<int> k_indices;
+  std::vector<float> k_sqr_distances;
+
+  std::vector<int> k_indices_bruteforce;
+  std::vector<float> k_sqr_distances_bruteforce;
+
+  // typical focal length from kinect
+  const double oneOverFocalLength = 0.0018;
+  double x,y,z;
+
+  int xpos, ypos, centerX, centerY, idx;
+  
+  double radiusSearchTime = 0, radiusSearchLPTime = 0;
+
+  for (test_id = 0; test_id < test_runs; test_id++)
+  {
+    // generate point cloud
+
+    PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+
+    cloudIn->width = 1024;
+    cloudIn->height = 768;
+    cloudIn->points.clear();
+    cloudIn->points.resize (cloudIn->width * cloudIn->height);
+
+    centerX = cloudIn->width>>1;
+    centerY = cloudIn->height>>1;
+
+    idx = 0;
+    for (ypos = -centerY; ypos < centerY; ypos++)
+      for (xpos = -centerX; xpos < centerX; xpos++)
+      {
+        z = 5.0 * ( ((double)rand () / (double)RAND_MAX))+5;
+        y = ypos*oneOverFocalLength*z;
+        x = xpos*oneOverFocalLength*z;
+
+        cloudIn->points[idx++]= PointXYZ (x, y, z);
+      }
+
+    unsigned int randomIdx = rand()%(cloudIn->width * cloudIn->height);
+
+    const PointXYZ& searchPoint = cloudIn->points[randomIdx];
+
+    double pointDist;
+    double searchRadius = 1.0 * ((double)rand () / (double)RAND_MAX);
+
+    int minX = cloudIn->width;
+    int minY = cloudIn->height;
+    int maxX = 0;
+    int maxY = 0;
+
+    // bruteforce radius search
+    vector<int> cloudSearchBruteforce;
+    cloudSearchBruteforce.clear();
+
+    for (i = 0; i < cloudIn->points.size (); i++)
+    {
+      pointDist = sqrt (
+                        (cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x)
+                      + (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y)
+                      + (cloudIn->points[i].z - searchPoint.z) * (cloudIn->points[i].z - searchPoint.z));
+
+      if (pointDist <= searchRadius)
+      {
+        // add point candidates to vector list
+        cloudSearchBruteforce.push_back ((int)i);
+
+        minX = std::min<int>(minX, i%cloudIn->width);
+        minY = std::min<int>(minY, i/cloudIn->width);
+        maxX = std::max<int>(maxX, i%cloudIn->width);
+        maxY = std::max<int>(maxY, i/cloudIn->width);
+      }
+    }
+
+
+    vector<int> cloudNWRSearch;
+    vector<float> cloudNWRRadius;
+    
+    double check_time = getTime();
+    organizedNeighborSearch->setMethod (0);  // For Organized Data Index
+    organizedNeighborSearch->setInputCloud (cloudIn);
+    organizedNeighborSearch->radiusSearch (randomIdx, searchRadius, cloudNWRSearch, cloudNWRRadius, INT_MAX); //,INT_MAX);
+    
+    double check_time2 = getTime();
+    
+    radiusSearchLPTime += check_time2 - check_time;
+
+    organizedNeighborSearch->setMethod (1);  // For Organized Neighbor Search
+    organizedNeighborSearch->setInputCloud (cloudIn);
+    organizedNeighborSearch->radiusSearch (randomIdx, searchRadius, cloudNWRSearch, cloudNWRRadius, INT_MAX); //,INT_MAX);
+
+    radiusSearchTime += getTime() - check_time2;
+
+  }
+    std::cout << " Time taken " << "OrganizedNeighborSearch: " << radiusSearchTime << "\t OrganizedDataIndex: " << radiusSearchLPTime <<  std::endl;
+
+}
+
 
 /* ---[ */
 int
