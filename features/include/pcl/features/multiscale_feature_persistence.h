@@ -164,10 +164,6 @@ namespace pcl
       typedef FPFHEstimation<PointT, PointNT, PointFeature> FeatureEstimator;
       typedef typename FPFHEstimation<PointT, PointNT, PointFeature>::Ptr FeatureEstimatorPtr;
 
-      FPFHMultiscaleFeaturePersistence (float a_alpha = 1.0)
-        : alpha (a_alpha)
-      {};
-
       FPFHMultiscaleFeaturePersistence (std::vector<float> &a_scale_values,
                                         float a_alpha = 1.0)
         : scale_values (a_scale_values),

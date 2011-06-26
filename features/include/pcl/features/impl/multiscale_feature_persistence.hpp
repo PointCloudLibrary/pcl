@@ -141,6 +141,7 @@ pcl::FPFHMultiscaleFeaturePersistence<PointT, PointNT, PointFeature>::calculateM
   /// reset mean point
   for (size_t i = 0; i < 33; ++i)
     mean.histogram[i] = 0.0;
+
   for (typename std::vector<FeatureCloudPtr>::iterator cloud_it = features_at_scale.begin (); cloud_it != features_at_scale.end (); ++cloud_it)
   {
     for (typename FeatureCloud::iterator point_it = (*cloud_it)->begin (); point_it != (*cloud_it)->end (); ++point_it)
@@ -214,6 +215,7 @@ pcl::FPFHMultiscaleFeaturePersistence<PointT, PointNT, PointFeature>::determineP
   }
 
   // compute features at all scales
+  features_at_scale.clear ();
   for (std::vector<float>::iterator scale_it = scale_values.begin (); scale_it != scale_values.end (); ++scale_it)
   {
     FeatureCloudPtr feature_cloud;
@@ -230,7 +232,9 @@ pcl::FPFHMultiscaleFeaturePersistence<PointT, PointNT, PointFeature>::determineP
   // determine persistent features between scales
   output_features = FeatureCloudPtr (new FeatureCloud ());
   output_locations = InputCloudPtr (new InputCloud ());
-  for (size_t scale_i = 0; scale_i < features_at_scale.size () - 1; ++scale_i)
+
+  // method 1: a feature is considered persistent if it is 'unique' in at least 2 different scales
+/*  for (size_t scale_i = 0; scale_i < features_at_scale.size () - 1; ++scale_i)
   {
     for (std::list<size_t>::iterator feature_it = unique_features_indices[scale_i].begin (); feature_it != unique_features_indices[scale_i].end (); ++feature_it)
     {
@@ -239,6 +243,20 @@ pcl::FPFHMultiscaleFeaturePersistence<PointT, PointNT, PointFeature>::determineP
         output_features->points.push_back (features_at_scale[scale_i]->points[*feature_it]);
         output_locations->points.push_back (input_->points[*feature_it]);
       }
+    }
+  }*/
+
+  // method 2: a feature is considered persistent if it is 'unique' in all the scales
+  for (std::list<size_t>::iterator feature_it = unique_features_indices.front ().begin (); feature_it != unique_features_indices.front ().end (); ++feature_it)
+  {
+    bool present_in_all = true;
+    for (size_t scale_i = 0; scale_i < features_at_scale.size (); ++scale_i)
+      present_in_all = present_in_all && unique_features_table[scale_i][*feature_it];
+
+    if (present_in_all)
+    {
+      output_features->points.push_back (features_at_scale.front ()->points[*feature_it]);
+      output_locations->points.push_back (input_->points[*feature_it]);
     }
   }
 }
