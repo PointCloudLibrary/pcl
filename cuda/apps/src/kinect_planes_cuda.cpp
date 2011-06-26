@@ -323,7 +323,7 @@ class MultiRansac
     DisparityToCloud d2c;
     pcl::visualization::CloudViewer viewer;
    
-    boost::mutex::mutex m_mutex;
+    boost::mutex m_mutex;
     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr normal_cloud;
     bool new_cloud;
     bool use_viewer;
