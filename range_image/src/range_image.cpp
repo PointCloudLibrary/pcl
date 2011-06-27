@@ -1113,7 +1113,7 @@ RangeImage::getNormalBasedUprightTransformation (const Eigen::Vector3f& point, f
   }
   //RangeImage::getTransformationFromTwoUnitVectorsAndOrigin (Eigen::Vector3f (0.0f, -1.0f, 0.0f),
   //                                                          normal, point, transformation);
-  getTransformationFromTwoUnitVectorsAndOrigin (Eigen::Vector3f (0.0f, -1.0f, 0.0f),
+  getTransformationFromTwoUnitVectorsAndOrigin (Eigen::Vector3f (0.0f, 1.0f, 0.0f),
                                                 normal, point_on_plane, transformation);
   
   return true;

@@ -48,7 +48,7 @@ endif(USE_PROJECT_FOLDERS)
 
 include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
 include(${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake)
-set(PCL_VERSION 1.0.1 CACHE STRING "PCL version")
+set(PCL_VERSION 1.0.0 CACHE STRING "PCL version")
 DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()
