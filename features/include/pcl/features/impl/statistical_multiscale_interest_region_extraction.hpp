@@ -39,20 +39,57 @@
 #define PCL_FEATURES_IMPL_STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_
 
 #include "pcl/features/statistical_multiscale_interest_region_extraction.h"
+#include <pcl/kdtree/kdtree_flann.h>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/property_map/property_map.hpp>
+#include <boost/graph/johnson_all_pairs_shortest.hpp>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::generateCloudGraph ()
 {
+  // generate a K-NNG (K-nearest neighbors graph)
+  pcl::KdTreeFLANN<PointT> kdtree;
+  kdtree.setInputCloud (input_);
 
+  using namespace boost;
+  typedef property<edge_weight_t, float> Weight;
+  typedef adjacency_list<vecS, vecS, undirectedS, no_property, Weight> Graph;
+  Graph cloud_graph;
+
+  for (size_t point_i = 0; point_i < input_->points.size (); ++point_i)
+  {
+    std::vector<int> k_indices (10);
+    std::vector<float> k_distances (10);
+    kdtree.nearestKSearch (point_i, 10, k_indices, k_distances);
+
+    for (size_t k_i = 0; k_i < k_indices.size (); ++k_i)
+      add_edge (point_i, k_indices[k_i], Weight (k_distances[k_i]), cloud_graph);
+  }
+
+  const int E = num_edges (cloud_graph),
+      V = num_vertices (cloud_graph);
+  PCL_INFO ("The graph has %d vertices and %d edges.\n", V, E);
+  geodesic_distances.clear ();
+  for (size_t i = 0; i < V; ++i)
+  {
+    std::vector<float> aux (V);
+    geodesic_distances.push_back (aux);
+  }
+  johnson_all_pairs_shortest_paths (cloud_graph, geodesic_distances);
+
+  PCL_INFO("some distances: %f %f %f\n", geodesic_distances[1][3], geodesic_distances[100][200], geodesic_distances[400][401]);
+
+
+  PCL_INFO ("Done generating the graph\n");
 }
 
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeRegionsOfInterest ()
+pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeRegionsOfInterest (typename pcl::PointCloud<PointT>::Ptr &output)
 {
   if (!initCompute ())
   {
@@ -60,26 +97,33 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeRegionsOfInte
     return;
   }
 
+  generateCloudGraph ();
+
+  PCL_INFO ("Calculating statistical information\n");
+  output = typename pcl::PointCloud<PointT>::Ptr (new pcl::PointCloud<PointT> ());
+
   for (std::vector<float>::iterator scale_it = scale_values.begin (); scale_it != scale_values.end (); ++scale_it)
   {
     float scale_squared = (*scale_it) * (*scale_it);
 
     // calculate point density for each point x_i
-    float point_density[input_->points.size ()];
-    float phi[input_->points.size ()][input_->points.size ()];
-    float F[input_->points.size ()];
+    std::vector<float> point_density (input_->points.size ()),
+        F (input_->points.size ());
+    std::vector<std::vector<float> > phi;
     for (size_t point_i = 0; point_i < input_->points.size (); ++point_i)
     {
       float point_density_i = 0.0;
+      std::vector<float> phi_row;
       for (size_t point_j = 0; point_j < input_->points.size (); ++point_j)
       {
         float d_g = geodesic_distances[point_i][point_j];
         float phi_i_j = 1.0 / sqrt(2.0*M_PI*scale_squared) * exp( (-1) * d_g*d_g / (2.0*scale_squared));
 
         point_density_i += phi_i_j;
-        phi[point_i][point_j] = phi_i_j;
+        phi_row.push_back (phi_i_j);
       }
       point_density[point_i] = point_density_i;
+      phi.push_back (phi_row);
     }
 
     // compute weights for each pair (x_i, x_j), evaluate the operator A_hat
@@ -104,6 +148,13 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeRegionsOfInte
       F[point_i] = aux * exp (-aux);
     }
 
+
+    /// just test out - find maximum F
+    size_t max_f_i = 0;
+    for (size_t f_i = 0; f_i < F.size (); ++f_i)
+      if (F[f_i] > F[max_f_i])
+        max_f_i = f_i;
+    output->points.push_back (input_->points[max_f_i]);
   }
 }
 

@@ -58,7 +58,7 @@ namespace pcl
       generateCloudGraph ();
 
       void
-      computeRegionsOfInterest ();
+      computeRegionsOfInterest (typename pcl::PointCloud<PointT>::Ptr &output);
 
 
     private:
