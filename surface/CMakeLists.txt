@@ -30,6 +30,8 @@ if(build)
         src/organized_fast_mesh.cpp
         src/mls.cpp
         src/simplification_remove_unused_vertices.cpp
+        src/marching_cubes.cpp
+        src/marching_cubes_greedy.cpp
         ${HULL_SOURCES}
         )
 
@@ -39,6 +41,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/organized_fast_mesh.h
         include/pcl/${SUBSYS_NAME}/simplification_remove_unused_vertices.h
         include/pcl/${SUBSYS_NAME}/reconstruction.h
+        include/pcl/${SUBSYS_NAME}/marching_cubes.h
+        include/pcl/${SUBSYS_NAME}/marching_cubes_greedy.h
         ${HULL_INCLUDES}
         )
 
@@ -47,6 +51,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/mls.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_fast_mesh.hpp
         include/pcl/${SUBSYS_NAME}/impl/reconstruction.hpp
+        include/pcl/${SUBSYS_NAME}/impl/marching_cubes.hpp
+        include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy.hpp
         ${HULL_IMPLS}
         )
 
