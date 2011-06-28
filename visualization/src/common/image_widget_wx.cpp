@@ -854,12 +854,9 @@ void
 pcl::visualization::ImageWidgetWX::ImagePanel::OnSize (wxSizeEvent& event) 
 {
   event.Skip ();
-  if (getParentImageWidget ()->keepAspectRatio) 
-  {
-    float aspectRatio = (float)image->GetWidth () / (float)image->GetHeight ();
-    SetSize (wxDefaultCoord, wxDefaultCoord, event.GetSize ().GetWidth (),
-             pcl_lrint((float)event.GetSize ().GetWidth () / aspectRatio));
-  }
+  
+  resizeImage(GetParent()->GetSize ().GetWidth (), GetParent()->GetSize ().GetHeight ());
+  
   Refresh ();
 }
 
@@ -867,7 +864,25 @@ void
 pcl::visualization::ImageWidgetWX::ImagePanel::resizeImage (int newWidth, int newHeight) 
 {
   if (newWidth<=0 || newHeight<=0)  // No size given => Use current widget size
-    this->GetSize (&newWidth, &newHeight);
+    GetSize (&newWidth, &newHeight);
+
+  int new_image_width  = GetParent()->GetSize ().GetWidth (),
+      new_image_height = GetParent()->GetSize ().GetHeight ();
+  if (getParentImageWidget ()->keepAspectRatio) 
+  {
+    float image_aspect_ratio = (float)image->GetWidth () / (float)image->GetHeight (),
+          widget_aspect_ratio = float(new_image_width) / float(new_image_height);
+    if (image_aspect_ratio >= widget_aspect_ratio)
+      new_image_height = pcl_lrint(float(new_image_width) / image_aspect_ratio);
+    else
+      new_image_width  = pcl_lrint(float(new_image_height) * image_aspect_ratio);
+    
+    SetSize (wxDefaultCoord, wxDefaultCoord, new_image_width, new_image_height);
+    //cout << GetParent()->GetSize ().GetWidth ()<<", "<<GetParent()->GetSize ().GetHeight ()<<", "
+         //<< GetSize ().GetWidth ()<<", "<<GetSize ().GetHeight ()<<", "
+         //<< new_image_width <<", "<<new_image_height<<"\n";
+  }
+
   
   resized_ = wxBitmap (image->Scale (newWidth, newHeight));
   //resized_ = wxBitmap(image->Scale (newWidth, newHeight, wxIMAGE_QUALITY_HIGH));
