@@ -159,6 +159,398 @@ pcl::visualization::ImageWidgetWX::setRGBImage (const unsigned char* data,
   image_frame->Show ();
 }
 
+inline int avg2(int a, int b) { return (((int)(a) + (int)(b)) >> 1); }
+inline int avg3(int a, int b, int c) { return (((int)(a) + (int)(b) + (int)(c)) / 3); }
+inline int avg4(int a, int b, int c, int d) { return (((int)(a) + (int)(b) + (int)(c) + (int)(d)) >> 2); }
+
+void 
+pcl::visualization::ImageWidgetWX::setBayerGRBGImage (const unsigned char* data,
+                                                      unsigned int width, unsigned int height, const char* name)
+{
+  //cout << __PRETTY_FUNCTION__<<" called.\n";
+  reset ();
+  
+  if (width==0 || height==0)
+  {
+    std::cerr << __PRETTY_FUNCTION__ << ": image has size 0.\n";
+    return;
+  }
+  
+  unsigned int arraySize = 3*width*height;
+  if (data == NULL) arraySize=0;
+  
+  image_data = (unsigned char*)realloc(image_data, arraySize);
+  unsigned char* rgb_buffer = image_data;
+
+  int rgb_line_step = width * 3;
+
+  // padding skip for destination image
+  unsigned rgb_line_skip = rgb_line_step - width * 3;
+
+  register const unsigned char* bayer_pixel = data;
+  register unsigned yIdx, xIdx;
+
+  int bayer_line_step = width;
+  int bayer_line_step2 = width << 1;
+
+  // first two pixel values for first two lines
+  // Bayer         0 1 2
+  //         0     G r g
+  // line_step     b g b
+  // line_step2    g r g
+
+  rgb_buffer[3] = rgb_buffer[0] = bayer_pixel[1]; // red pixel
+  rgb_buffer[1] = bayer_pixel[0]; // green pixel
+  rgb_buffer[rgb_line_step + 2] = rgb_buffer[2] = bayer_pixel[bayer_line_step]; // blue;
+
+  // Bayer         0 1 2
+  //         0     g R g
+  // line_step     b g b
+  // line_step2    g r g
+  //rgb_pixel[3] = bayer_pixel[1];
+  rgb_buffer[4] = avg3 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1]);
+  rgb_buffer[rgb_line_step + 5] = rgb_buffer[5] = avg2 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
+
+  // BGBG line
+  // Bayer         0 1 2
+  //         0     g r g
+  // line_step     B g b
+  // line_step2    g r g
+  rgb_buffer[rgb_line_step + 3] = rgb_buffer[rgb_line_step ] = avg2 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
+  rgb_buffer[rgb_line_step + 1] = avg3 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1], bayer_pixel[bayer_line_step2]);
+  //rgb_pixel[rgb_line_step + 2] = bayer_pixel[line_step];
+
+  // pixel (1, 1)  0 1 2
+  //         0     g r g
+  // line_step     b G b
+  // line_step2    g r g
+  //rgb_pixel[rgb_line_step + 3] = avg2( bayer_pixel[1] , bayer_pixel[line_step2+1] );
+  rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
+  //rgb_pixel[rgb_line_step + 5] = avg2( bayer_pixel[line_step] , bayer_pixel[line_step+2] );
+
+  rgb_buffer += 6;
+  bayer_pixel += 2;
+  // rest of the first two lines
+
+  for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
+  {
+    // GRGR line
+    // Bayer        -1 0 1 2
+    //           0   r G r g
+    //   line_step   g b g b
+    // line_step2    r g r g
+    rgb_buffer[0] = avg2 (bayer_pixel[1], bayer_pixel[-1]);
+    rgb_buffer[1] = bayer_pixel[0];
+    rgb_buffer[2] = bayer_pixel[bayer_line_step + 1];
+
+    // Bayer        -1 0 1 2
+    //          0    r g R g
+    //  line_step    g b g b
+    // line_step2    r g r g
+    rgb_buffer[3] = bayer_pixel[1];
+    rgb_buffer[4] = avg3 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1]);
+    rgb_buffer[rgb_line_step + 5] = rgb_buffer[5] = avg2 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
+
+    // BGBG line
+    // Bayer         -1 0 1 2
+    //         0      r g r g
+    // line_step      g B g b
+    // line_step2     r g r g
+    rgb_buffer[rgb_line_step ] = avg4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
+    rgb_buffer[rgb_line_step + 1] = avg4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
+    rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
+
+    // Bayer         -1 0 1 2
+    //         0      r g r g
+    // line_step      g b G b
+    // line_step2     r g r g
+    rgb_buffer[rgb_line_step + 3] = avg2 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
+    rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
+    //rgb_pixel[rgb_line_step + 5] = avg2( bayer_pixel[line_step] , bayer_pixel[line_step+2] );
+  }
+
+  // last two pixel values for first two lines
+  // GRGR line
+  // Bayer        -1 0 1
+  //           0   r G r
+  //   line_step   g b g
+  // line_step2    r g r
+  rgb_buffer[0] = avg2 (bayer_pixel[1], bayer_pixel[-1]);
+  rgb_buffer[1] = bayer_pixel[0];
+  rgb_buffer[rgb_line_step + 5] = rgb_buffer[rgb_line_step + 2] = rgb_buffer[5] = rgb_buffer[2] = bayer_pixel[bayer_line_step];
+
+  // Bayer        -1 0 1
+  //          0    r g R
+  //  line_step    g b g
+  // line_step2    r g r
+  rgb_buffer[3] = bayer_pixel[1];
+  rgb_buffer[4] = avg2 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1]);
+  //rgb_pixel[5] = bayer_pixel[line_step];
+
+  // BGBG line
+  // Bayer        -1 0 1
+  //          0    r g r
+  //  line_step    g B g
+  // line_step2    r g r
+  rgb_buffer[rgb_line_step ] = avg4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
+  rgb_buffer[rgb_line_step + 1] = avg4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
+  //rgb_pixel[rgb_line_step + 2] = bayer_pixel[line_step];
+
+  // Bayer         -1 0 1
+  //         0      r g r
+  // line_step      g b G
+  // line_step2     r g r
+  rgb_buffer[rgb_line_step + 3] = avg2 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
+  rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
+  //rgb_pixel[rgb_line_step + 5] = bayer_pixel[line_step];
+
+  bayer_pixel += bayer_line_step + 2;
+  rgb_buffer += rgb_line_step + 6 + rgb_line_skip;
+
+  // main processing
+
+  for (yIdx = 2; yIdx < height - 2; yIdx += 2)
+  {
+    // first two pixel values
+    // Bayer         0 1 2
+    //        -1     b g b
+    //         0     G r g
+    // line_step     b g b
+    // line_step2    g r g
+
+    rgb_buffer[3] = rgb_buffer[0] = bayer_pixel[1]; // red pixel
+    rgb_buffer[1] = bayer_pixel[0]; // green pixel
+    rgb_buffer[2] = avg2 (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]); // blue;
+
+    // Bayer         0 1 2
+    //        -1     b g b
+    //         0     g R g
+    // line_step     b g b
+    // line_step2    g r g
+    //rgb_pixel[3] = bayer_pixel[1];
+    rgb_buffer[4] = avg4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
+    rgb_buffer[5] = avg4 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2], bayer_pixel[-bayer_line_step], bayer_pixel[2 - bayer_line_step]);
+
+    // BGBG line
+    // Bayer         0 1 2
+    //         0     g r g
+    // line_step     B g b
+    // line_step2    g r g
+    rgb_buffer[rgb_line_step + 3] = rgb_buffer[rgb_line_step ] = avg2 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
+    rgb_buffer[rgb_line_step + 1] = avg3 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1], bayer_pixel[bayer_line_step2]);
+    rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
+
+    // pixel (1, 1)  0 1 2
+    //         0     g r g
+    // line_step     b G b
+    // line_step2    g r g
+    //rgb_pixel[rgb_line_step + 3] = avg2( bayer_pixel[1] , bayer_pixel[line_step2+1] );
+    rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
+    rgb_buffer[rgb_line_step + 5] = avg2 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
+
+    rgb_buffer += 6;
+    bayer_pixel += 2;
+    // continue with rest of the line
+    for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
+    {
+      // GRGR line
+      // Bayer        -1 0 1 2
+      //          -1   g b g b
+      //           0   r G r g
+      //   line_step   g b g b
+      // line_step2    r g r g
+      rgb_buffer[0] = avg2 (bayer_pixel[1], bayer_pixel[-1]);
+      rgb_buffer[1] = bayer_pixel[0];
+      rgb_buffer[2] = avg2 (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]);
+
+      // Bayer        -1 0 1 2
+      //          -1   g b g b
+      //          0    r g R g
+      //  line_step    g b g b
+      // line_step2    r g r g
+      rgb_buffer[3] = bayer_pixel[1];
+      rgb_buffer[4] = avg4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
+      rgb_buffer[5] = avg4 (bayer_pixel[-bayer_line_step], bayer_pixel[2 - bayer_line_step], bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
+
+      // BGBG line
+      // Bayer         -1 0 1 2
+      //         -1     g b g b
+      //          0     r g r g
+      // line_step      g B g b
+      // line_step2     r g r g
+      rgb_buffer[rgb_line_step ] = avg4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
+      rgb_buffer[rgb_line_step + 1] = avg4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
+      rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
+
+      // Bayer         -1 0 1 2
+      //         -1     g b g b
+      //          0     r g r g
+      // line_step      g b G b
+      // line_step2     r g r g
+      rgb_buffer[rgb_line_step + 3] = avg2 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
+      rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
+      rgb_buffer[rgb_line_step + 5] = avg2 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
+    }
+
+    // last two pixels of the line
+    // last two pixel values for first two lines
+    // GRGR line
+    // Bayer        -1 0 1
+    //           0   r G r
+    //   line_step   g b g
+    // line_step2    r g r
+    rgb_buffer[0] = avg2 (bayer_pixel[1], bayer_pixel[-1]);
+    rgb_buffer[1] = bayer_pixel[0];
+    rgb_buffer[rgb_line_step + 5] = rgb_buffer[rgb_line_step + 2] = rgb_buffer[5] = rgb_buffer[2] = bayer_pixel[bayer_line_step];
+
+    // Bayer        -1 0 1
+    //          0    r g R
+    //  line_step    g b g
+    // line_step2    r g r
+    rgb_buffer[3] = bayer_pixel[1];
+    rgb_buffer[4] = avg2 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1]);
+    //rgb_pixel[5] = bayer_pixel[line_step];
+
+    // BGBG line
+    // Bayer        -1 0 1
+    //          0    r g r
+    //  line_step    g B g
+    // line_step2    r g r
+    rgb_buffer[rgb_line_step ] = avg4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
+    rgb_buffer[rgb_line_step + 1] = avg4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
+    //rgb_pixel[rgb_line_step + 2] = bayer_pixel[line_step];
+
+    // Bayer         -1 0 1
+    //         0      r g r
+    // line_step      g b G
+    // line_step2     r g r
+    rgb_buffer[rgb_line_step + 3] = avg2 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
+    rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
+    //rgb_pixel[rgb_line_step + 5] = bayer_pixel[line_step];
+
+    bayer_pixel += bayer_line_step + 2;
+    rgb_buffer += rgb_line_step + 6 + rgb_line_skip;
+  }
+
+  //last two lines
+  // Bayer         0 1 2
+  //        -1     b g b
+  //         0     G r g
+  // line_step     b g b
+
+  rgb_buffer[rgb_line_step + 3] = rgb_buffer[rgb_line_step ] = rgb_buffer[3] = rgb_buffer[0] = bayer_pixel[1]; // red pixel
+  rgb_buffer[1] = bayer_pixel[0]; // green pixel
+  rgb_buffer[rgb_line_step + 2] = rgb_buffer[2] = bayer_pixel[bayer_line_step]; // blue;
+
+  // Bayer         0 1 2
+  //        -1     b g b
+  //         0     g R g
+  // line_step     b g b
+  //rgb_pixel[3] = bayer_pixel[1];
+  rgb_buffer[4] = avg4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
+  rgb_buffer[5] = avg4 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2], bayer_pixel[-bayer_line_step], bayer_pixel[2 - bayer_line_step]);
+
+  // BGBG line
+  // Bayer         0 1 2
+  //        -1     b g b
+  //         0     g r g
+  // line_step     B g b
+  //rgb_pixel[rgb_line_step    ] = bayer_pixel[1];
+  rgb_buffer[rgb_line_step + 1] = avg2 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1]);
+  rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
+
+  // Bayer         0 1 2
+  //        -1     b g b
+  //         0     g r g
+  // line_step     b G b
+  //rgb_pixel[rgb_line_step + 3] = avg2( bayer_pixel[1] , bayer_pixel[line_step2+1] );
+  rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
+  rgb_buffer[rgb_line_step + 5] = avg2 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
+
+  rgb_buffer += 6;
+  bayer_pixel += 2;
+  // rest of the last two lines
+  for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
+  {
+    // GRGR line
+    // Bayer       -1 0 1 2
+    //        -1    g b g b
+    //         0    r G r g
+    // line_step    g b g b
+    rgb_buffer[0] = avg2 (bayer_pixel[1], bayer_pixel[-1]);
+    rgb_buffer[1] = bayer_pixel[0];
+    rgb_buffer[2] = avg2 (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]);
+
+    // Bayer       -1 0 1 2
+    //        -1    g b g b
+    //         0    r g R g
+    // line_step    g b g b
+    rgb_buffer[rgb_line_step + 3] = rgb_buffer[3] = bayer_pixel[1];
+    rgb_buffer[4] = avg4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
+    rgb_buffer[5] = avg4 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2], bayer_pixel[-bayer_line_step], bayer_pixel[-bayer_line_step + 2]);
+
+    // BGBG line
+    // Bayer       -1 0 1 2
+    //        -1    g b g b
+    //         0    r g r g
+    // line_step    g B g b
+    rgb_buffer[rgb_line_step ] = avg2 (bayer_pixel[-1], bayer_pixel[1]);
+    rgb_buffer[rgb_line_step + 1] = avg3 (bayer_pixel[0], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
+    rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
+
+
+    // Bayer       -1 0 1 2
+    //        -1    g b g b
+    //         0    r g r g
+    // line_step    g b G b
+    //rgb_pixel[rgb_line_step + 3] = bayer_pixel[1];
+    rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
+    rgb_buffer[rgb_line_step + 5] = avg2 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
+  }
+
+  // last two pixel values for first two lines
+  // GRGR line
+  // Bayer       -1 0 1
+  //        -1    g b g
+  //         0    r G r
+  // line_step    g b g
+  rgb_buffer[rgb_line_step ] = rgb_buffer[0] = avg2 (bayer_pixel[1], bayer_pixel[-1]);
+  rgb_buffer[1] = bayer_pixel[0];
+  rgb_buffer[5] = rgb_buffer[2] = avg2 (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]);
+
+  // Bayer       -1 0 1
+  //        -1    g b g
+  //         0    r g R
+  // line_step    g b g
+  rgb_buffer[rgb_line_step + 3] = rgb_buffer[3] = bayer_pixel[1];
+  rgb_buffer[4] = avg3 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1], bayer_pixel[-bayer_line_step + 1]);
+  //rgb_pixel[5] = avg2( bayer_pixel[line_step], bayer_pixel[-line_step] );
+
+  // BGBG line
+  // Bayer       -1 0 1
+  //        -1    g b g
+  //         0    r g r
+  // line_step    g B g
+  //rgb_pixel[rgb_line_step    ] = AVG2( bayer_pixel[-1], bayer_pixel[1] );
+  rgb_buffer[rgb_line_step + 1] = avg3 (bayer_pixel[0], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
+  rgb_buffer[rgb_line_step + 5] = rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
+
+  // Bayer       -1 0 1
+  //        -1    g b g
+  //         0    r g r
+  // line_step    g b G
+  //rgb_pixel[rgb_line_step + 3] = bayer_pixel[1];
+  rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
+  //rgb_pixel[rgb_line_step + 5] = bayer_pixel[line_step];
+  
+  image_frame->updateImage (image_data, width, height);
+  image_frame->SetTitle (wxString (name, wxConvUTF8));
+  image_frame->image_panel->resizeImage ();
+  image_frame->Refresh ();
+  image_frame->Show ();
+}
+
+
 void 
 pcl::visualization::ImageWidgetWX::setName (const std::string& name)
 {
@@ -175,6 +567,17 @@ pcl::visualization::ImageWidgetWX::setFloatImage (const float* float_image, unsi
   setRGBImage (rgb_image, width, height, name);
   delete[] rgb_image;
 }
+
+void 
+pcl::visualization::ImageWidgetWX::setShortImage (const unsigned short* short_image, unsigned int width, unsigned int height, 
+                                                  const char* name, unsigned short min_value, unsigned short max_value, bool grayscale)
+{
+  unsigned char* rgb_image = FloatImageUtils::getVisualImage (short_image, width, height,
+                                                              min_value, max_value, grayscale);
+  setRGBImage (rgb_image, width, height, name);
+  delete[] rgb_image;
+}
+
 
 void 
 pcl::visualization::ImageWidgetWX::setAngleImage (const float* angle_image, unsigned int width, unsigned int height,

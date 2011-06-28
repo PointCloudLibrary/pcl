@@ -71,11 +71,21 @@ namespace pcl
         /** Use getColorForFloat for all elements of the given arrays, whereas the values are first normalized to [0,1],
          * either using the given min/max values or based on the actual minimal and maximal values existing in the array.
          * The output is a byte array of size 3*width*height containing the colors in RGB order.
-         * If grayScale is true, the outcome will still be an RGB image, but all colors apart for the special colors of
+         * If gray_scale is true, the outcome will still be an RGB image, but all colors apart for the special colors of
          * non-finite numbers, will be gray values */
         static unsigned char* 
-        getVisualImage (const float* floatImage, int width, int height, float minValue=-std::numeric_limits<float>::infinity (), float maxValue=std::numeric_limits<float>::infinity (), bool grayScale=false);
-
+        getVisualImage (const float* float_image, int width, int height, float min_value=-std::numeric_limits<float>::infinity (), float max_value=std::numeric_limits<float>::infinity (), bool gray_scale=false);
+        
+        /** Use getColorForFloat for all elements of the given arrays, whereas the values are normalized to [0,1]
+         *  with the given min/max values.
+         *  The output is a byte array of size 3*width*height containing the colors in RGB order.
+         *  If gray_scale is true, the outcome will still be an RGB image, but all colors will be gray values. */
+        static unsigned char* 
+        getVisualImage (const unsigned short* float_image, int width, int height,
+                        unsigned short min_value=0,
+                        unsigned short max_value=std::numeric_limits<unsigned short>::max (),
+                        bool gray_scale=false);
+        
         /** Use getColorForAngle for all elements of the given arrays. */
         static unsigned char* 
         getVisualAngleImage (const float* angle_image, int width, int height);

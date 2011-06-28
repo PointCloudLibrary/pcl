@@ -86,6 +86,10 @@ namespace pcl
         //! Visualize a RGB image
         void
           setRGBImage (const unsigned char* data, unsigned int width, unsigned int height, const char* name="RGB image");
+
+        //! Visualize a Bayer GRBG image
+        void 
+        setBayerGRBGImage (const unsigned char* data, unsigned int width, unsigned int height, const char* name="Bayer GRBG image");
         
         //! Visualize a float image
         void 
@@ -94,6 +98,15 @@ namespace pcl
                          const char* name="float image", 
                          float min_value = -std::numeric_limits<float>::infinity (), 
                          float max_value =  std::numeric_limits<float>::infinity (), bool grayscale=false);
+        
+        //! Visualize a short image
+        void 
+          setShortImage (const unsigned short* short_image, 
+                         unsigned int width, unsigned int height, 
+                         const char* name="short image", 
+                         unsigned short min_value = 0, 
+                         unsigned short max_value = std::numeric_limits<unsigned short>::max (), bool grayscale=false);
+
         
         //! Visualize an angle image (values in rad!)
         void
