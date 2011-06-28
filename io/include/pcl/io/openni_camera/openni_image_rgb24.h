@@ -49,7 +49,7 @@ namespace openni_wrapper
  * @date 19. June 2011
  * @ingroup io
  */
-class ImageRGB24 : public Image
+class PCL_EXPORTS ImageRGB24 : public Image
 {
 public:
 
