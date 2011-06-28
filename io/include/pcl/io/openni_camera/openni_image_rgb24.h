@@ -40,6 +40,7 @@
 #ifndef __OPENNI_IMAGE_RGB__
 #define __OPENNI_IMAGE_RGB__
 #include "openni_image.h"
+#include <pcl/pcl_macros.h>
 
 namespace openni_wrapper
 {
