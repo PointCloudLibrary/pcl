@@ -999,6 +999,9 @@ namespace pcl
                               const PointCloudColorHandler<PointT> &color_handler,
                               const std::string &id, 
                               int viewport);
+        void
+        allocVtkPolyData (vtkSmartPointer<vtkPolyData> &polydata);
+
     };
   }
 }

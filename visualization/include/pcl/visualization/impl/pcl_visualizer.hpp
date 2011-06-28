@@ -194,7 +194,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   vtkSmartPointer<vtkCellArray> vertices;
   if (!polydata)
   {
-    polydata = vtkSmartPointer<vtkPolyData>::New ();
+    allocVtkPolyData (polydata);
     vertices = vtkSmartPointer<vtkCellArray>::New ();
     polydata->SetVerts (vertices);
   }
@@ -259,7 +259,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   vtkSmartPointer<vtkCellArray> vertices;
   if (!polydata)
   {
-    polydata = vtkSmartPointer<vtkPolyData>::New ();
+    allocVtkPolyData (polydata);
     vertices = vtkSmartPointer<vtkCellArray>::New ();
     polydata->SetVerts (vertices);
   }
