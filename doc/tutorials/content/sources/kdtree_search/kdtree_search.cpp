@@ -27,8 +27,6 @@ main (int argc, char** argv)
     cloud->points[i].z = 1024.0f * rand () / (RAND_MAX + 1.0);
   }
 
-  float resolution = 128.0f;
-
   KdTreeFLANN<PointXYZ> kdtree;
 
   kdtree.setInputCloud (cloud);
