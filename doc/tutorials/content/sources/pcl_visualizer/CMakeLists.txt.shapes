@@ -4,14 +4,10 @@ project(pcl_visualizer_shapes)
 
 find_package(PCL 1.0 REQUIRED COMPONENTS visualization)
 
-if(WXWIDGETS_FOUND)
-  include_directories(${PCL_INCLUDE_DIRS})
-  link_directories(${PCL_LIBRARY_DIRS})
-  add_definitions(${PCL_DEFINITIONS})
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
-  add_executable (pcl_visualizer_shapes pcl_visualizer_shapes.cpp)
-  target_link_libraries (pcl_visualizer_shapes ${PCL_VISUALIZATION_LIBRARIES})
-else(WXWIDGETS_FOUND)
-  message("WxWidgets is required to build ${PROJECT_NAME}.")
-endif(WXWIDGETS_FOUND)
+add_executable (pcl_visualizer_shapes pcl_visualizer_shapes.cpp)
+target_link_libraries (pcl_visualizer_shapes ${PCL_VISUALIZATION_LIBRARIES})
 

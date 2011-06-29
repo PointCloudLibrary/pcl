@@ -4,17 +4,13 @@ project(pcl_visualizer_color)
 
 find_package(PCL 1.0 REQUIRED COMPONENTS visualization)
 
-if(WXWIDGETS_FOUND)
-  include_directories(${PCL_INCLUDE_DIRS})
-  link_directories(${PCL_LIBRARY_DIRS})
-  add_definitions(${PCL_DEFINITIONS})
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
-  add_executable (pcl_visualizer_color_custom pcl_visualizer_color_custom.cpp)
-  target_link_libraries (pcl_visualizer_color_custom ${PCL_VISUALIZATION_LIBRARIES})
+add_executable (pcl_visualizer_color_custom pcl_visualizer_color_custom.cpp)
+target_link_libraries (pcl_visualizer_color_custom ${PCL_VISUALIZATION_LIBRARIES})
 
-  add_executable (pcl_visualizer_color_rgb pcl_visualizer_color_rgb.cpp)
-  target_link_libraries (pcl_visualizer_color_rgb ${PCL_VISUALIZATION_LIBRARIES})
-else(WXWIDGETS_FOUND)
-  message("WxWidgets is required to build ${PROJECT_NAME}.")
-endif(WXWIDGETS_FOUND)
+add_executable (pcl_visualizer_color_rgb pcl_visualizer_color_rgb.cpp)
+target_link_libraries (pcl_visualizer_color_rgb ${PCL_VISUALIZATION_LIBRARIES})
 
