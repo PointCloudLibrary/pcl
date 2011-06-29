@@ -796,7 +796,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
     std::string result = stream.str ();
     boost::trim (result);
     stream.str ("");
-    fs << result << std::endl;
+    fs << result << "\n";
   }
   fs.close ();              // Close file
   return (0);
