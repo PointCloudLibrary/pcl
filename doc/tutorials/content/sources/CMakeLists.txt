@@ -23,6 +23,7 @@ foreach(subdir
           passthrough
           pcd_read 
           pcd_write
+          pcl_visualizer
           planar_segmentation
           point_cloud_compression
           project_inliers
