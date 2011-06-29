@@ -8,40 +8,73 @@ complex to use than the CloudViewer, it is also more powerful, offering
 features such as displaying normals, drawing shapes and multiple
 viewports.
 
-This tutorial will use several code samples to illustrate some of the
-features of PCLVisualizer, beginning with displaying a single point
-cloud.
+This tutorial will use a code sample to illustrate some of the features
+of PCLVisualizer, beginning with displaying a single point cloud. Most
+of the code sample is boilerplate to set up the point clouds that will
+be visualised. The relevant code for each sample is contained in a
+function specific to that sample. The code is shown below. Copy it into
+a file named ``pcl_visualizer_demo.cpp``.
+
+.. literalinclude:: sources/pcl_visualizer/pcl_visualizer_demo.cpp
+    :language: cpp
+    :linenos:
+
+
+Compiling and running the program
+---------------------------------
+
+Create a `CMakeLists.txt` file with the following contents:
+
+.. literalinclude:: sources/pcl_visualizer/CMakeLists.txt
+   :language: cmake
+   :linenos:
+
+After you have made the executable, you can run it like so::
+
+  $ ./pcl_visualizer_demo -h
+
+Change the option to change which demo is executed. See the help output
+for details.
+
+To exit the viewer application, press ``q``. Press ``r`` to centre and
+zoom the viewer so that the entire cloud is visible. Use the mouse to
+rotate the viewpoint by clicking and dragging. You can use the scroll
+wheel, or right-click and drag up and down, to zoom in and out.
+Middle-clicking and dragging will move the camera.
+
+
 
 Visualising a single cloud
 ==========================
 
-This code sample uses PCLVisualizer to display a single PointXYZ cloud.
-It also illustrates changing the background colour and displaying the
-axes.
+This sample uses PCLVisualizer to display a single PointXYZ cloud. It
+also illustrates changing the background colour and displaying the axes.
+The code is in the function ``simpleVis``.
 
-.. literalinclude:: sources/pcl_visualizer/pcl_visualizer_simple.cpp
-    :language: cpp
-    :linenos:
+.. image:: images/pcl_visualizer_simple.png
+  :width: 838
 
 Explanation
 -----------
 
-Most of the sample code is boilerplate to set up the point cloud that
-will be displayed. Let's take a look at the relevant part, line-by-line.
+The ``simpleVis`` function shows how to perform the most basic
+visualisation of a point cloud. Let's take a look at the function,
+line-by-line.
 
 .. code-block:: cpp
 
     ...
-    PCLVisualizer viewer ("3D Viewer");
+    boost::shared_ptr<PCLVisualizer> viewer (new PCLVisualizer("3D Viewer"));
     ...
 
 This creates the viewer object, giving it a nice name to display in the
-title bar.
+title bar. We are storing it in a boost::shared_ptr only so it can be
+passed around the demo program. Usually, you do not need to do this.
 
 .. code-block:: cpp
 
     ...
-    viewer.setBackgroundColor (0, 0, 0);
+    viewer->setBackgroundColor (0, 0, 0);
     ...
 
 The background colour of the viewer can be set to any RGB colour you
@@ -50,7 +83,7 @@ like. In this case, we are setting it to black.
 .. code-block:: cpp
 
     ...
-    viewer.addPointCloud (point_cloud_ptr, "sample cloud");
+    viewer->addPointCloud (point_cloud_ptr, "sample cloud");
     ...
 
 This is the most important line. We add the point cloud to the viewer,
@@ -74,7 +107,7 @@ or you can see the `PCLVisualizer documentation`_ for more details.
 .. code-block:: cpp
 
     ...
-    viewer.setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+    viewer->setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
     ...
 
 This next line changes the size of the rendered points. You can control
@@ -83,7 +116,7 @@ the way any point cloud is rendered in the viewer using this method.
 .. code-block:: cpp
 
     ...
-    viewer.addCoordinateSystem (1.0);
+    viewer->addCoordinateSystem (1.0);
     ...
 
 Viewing complex point clouds can often be disorientating. To keep
@@ -97,33 +130,28 @@ be used to place the axes at any point in the world.
 .. code-block:: cpp
 
     ...
-    viewer.initCameraParameters ();
+    viewer->initCameraParameters ();
     ...
 
 This final call sets up some handy camera parameters to make things look
 nice.
 
-Compiling and running the program
----------------------------------
+There is one final piece of code relevant to all the samples. It can be
+found at the bottom of the sample::
 
-Create a `CMakeLists.txt` file with the following contents:
+.. code-block:: cpp
 
-.. literalinclude:: sources/pcl_visualizer/CMakeLists.txt.simple
-   :language: cmake
-   :linenos:
+    ...
+    while (!viewer->wasStopped ())
+    {
+      viewer->spinOnce (100);
+      boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    }
+    ...
 
-After you have made the executable, you can run it like so::
-
-  $ ./pcl_visualizer_simple
-
-.. image:: images/pcl_visualizer_simple.png
-  :width: 838
-
-To exit the viewer application, press ``q``. Press ``r`` to centre and
-zoom the viewer so that the entire cloud is visible. Use the mouse to
-rotate the viewpoint by clicking and dragging. You can use the scroll
-wheel, or right-click and drag up and down, to zoom in and out.
-Middle-clicking and dragging will move the camera.
+These lines are running an event loop. Each call to ``spinOnce`` gives
+the viewer time to process events, allowing it to be interactive. There
+is also a ``spin`` method, which only needs to be called once.
 
 
 Adding some colour
@@ -134,8 +162,7 @@ point type is PointXYZRGB, which also contains colour data. Aside from
 that, you may wish to colour specific point clouds to make them
 distinguishable in the viewer. PCLVizualizer provides facilities for
 displaying point clouds with the colour data stored within them, or for
-assigning colours to point clouds. This code sample illustrates these
-features.
+assigning colours to point clouds.
 
 
 RGB point clouds
@@ -143,11 +170,10 @@ RGB point clouds
 
 Many devices, such as the Microsoft Kinect, produce point clouds with
 RGB data. PCLVisualizer can display the cloud using this data to colour
-each point.
+each point. The code in the ``rgbVis`` function shows how to do this.
 
-.. literalinclude:: sources/pcl_visualizer/pcl_visualizer_color_rgb.cpp
-    :language: cpp
-    :linenos:
+.. image:: images/pcl_visualizer_color_rgb.png
+  :width: 838
 
 Explanation
 -----------
@@ -157,7 +183,7 @@ Not much of the code in this sample has changed from the earlier sample.
 .. code-block:: cpp
 
     ...
-    typedef PointXYZRGB PointType;
+    boost::shared_ptr<PCLVisualizer> rgbVis(PointCloud<PointXYZRGB>::ConstPtr cloud)
     ...
 
 First, notice that the point type has changed from the simple example.
@@ -169,7 +195,7 @@ colour fields), PCLVisualizer would not know what colours to use.
 .. code-block:: cpp
 
     ...
-    PointCloudColorHandlerRGB<PointType> rgb(point_cloud_ptr);
+    PointCloudColorHandlerRGB<PointXYZRGB> rgb(point_cloud_ptr);
     ...
 
 Next, after setting the viewer's background colour, we create a colour
@@ -187,7 +213,7 @@ clouds. See the documentation_ for details.
 .. code-block:: cpp
 
     ...
-    viewer.addPointCloud<PointType> (point_cloud_ptr, rgb, "sample cloud");
+    viewer->addPointCloud<PointXYZRGB> (point_cloud_ptr, rgb, "sample cloud");
     ...
 
 Finally, when we add the point cloud, we specify the colour handler when
@@ -202,15 +228,15 @@ type.
 Custom colours
 --------------
 
-The second code sample demonstrates giving a point cloud a single colour.
-We can use this technique to give specific point clouds their own
-colours, allowing us to distinguish individual point clouds. In this
-sample, we have set the point cloud's colour to green. (We have also
-increased the size of the points to make the colour more visible.)
+The second code sample demonstrates giving a point cloud a single
+colour. We can use this technique to give specific point clouds their
+own colours, allowing us to distinguish individual point clouds. In this
+sample, given in the ``customColourVis`` function, we have set the point
+cloud's colour to green. (We have also increased the size of the points
+to make the colour more visible.)
 
-.. literalinclude:: sources/pcl_visualizer/pcl_visualizer_color_custom.cpp
-    :language: cpp
-    :linenos:
+.. image:: images/pcl_visualizer_color_custom.png
+  :width: 838
 
 Explanation
 -----------
@@ -221,7 +247,7 @@ sample.
 .. code-block:: cpp
 
     ...
-    typedef PointXYZ PointType;
+    boost::shared_ptr<PCLVisualizer> customColourVis(PointCloud<PointXYZ>::ConstPtr cloud)
     ...
 
 The point type in use this time is back to PointXYZ again. When setting
@@ -232,7 +258,7 @@ colour with the custom colour handler.
 .. code-block:: cpp
 
     ...
-    PointCloudColorHandlerCustom<PointType> single_color(point_cloud_ptr, 0, 255, 0);
+    PointCloudColorHandlerCustom<PointXYZ> single_color(cloud, 0, 255, 0);
     ...
 
 We create a custom colour handler and assign it a nice, bright shade of
@@ -241,33 +267,11 @@ green.
 .. code-block:: cpp
 
     ...
-    viewer.addPointCloud<PointType> (point_cloud_ptr, single_color, "sample cloud");
+    viewer->addPointCloud<PointXYZ> (cloud, single_color, "sample cloud");
     ...
 
 As with the previous example, we pass the colour handler in when we call
 ``addPointCloud<>()``.
-
-
-Compiling and running the programs
-----------------------------------
-
-Create a `CMakeLists.txt` file with the following contents:
-
-.. literalinclude:: sources/pcl_visualizer/CMakeLists.txt.color
-   :language: cmake
-   :linenos:
-
-After you have made the executables, you can run them like so::
-
-  $ ./pcl_visualizer_color_custom
-
-.. image:: images/pcl_visualizer_color_custom.png
-  :width: 838
-
-  $ ./pcl_visualizer_color_rgb
-
-.. image:: images/pcl_visualizer_color_rgb.png
-  :width: 838
 
 
 Normals and other information
@@ -278,9 +282,13 @@ The PCLVisualizer class has the ability to draw normals, as well as
 other interesting point cloud information, such as principal curvatures
 and geometries.
 
-The code sample below shows how to display the normals of a point
-cloud. The code for calculating the normals will not be explained in
-this tutorial. See the normals calculation tutorial for details.
+The code sample in the ``normalsVis`` function shows how to display the
+normals of a point cloud. The code for calculating the normals will not
+be explained in this tutorial. See the normals calculation tutorial for
+details.
+
+.. image:: images/pcl_visualizer_normals.png
+  :width: 838
 
 Explanation
 -----------
@@ -291,30 +299,13 @@ cloud.
 .. code-block:: cpp
 
     ...
-    viewer.addPointCloudNormals<PointType, Normal> (point_cloud_ptr, cloud_normals, 10, 0.05, "normals");
+    viewer->addPointCloudNormals<PointXYZRGB, Normal> (cloud, normals, 10, 0.05, "normals");
     ...
 
 Once you have your normals, one extra line is all it takes to display
 them in the viewer. The parameters to this method set the number of
 normals to display (here, every tenth normal is displayed) and the
 length of the line to draw for each normal (0.05, in this case).
-
-
-Compiling and running the program
----------------------------------
-
-Create a `CMakeLists.txt` file with the following contents:
-
-.. literalinclude:: sources/pcl_visualizer/CMakeLists.txt.normals
-   :language: cmake
-   :linenos:
-
-After you have made the executable, you can run it like so::
-
-  $ ./pcl_visualizer_normals
-
-.. image:: images/pcl_visualizer_normals.png
-  :width: 838
 
 
 Drawing Shapes
@@ -325,14 +316,17 @@ This is often used to visualise the results of point cloud processing
 algorithms, for example, visualising which clusters of points have been
 recognised as landmarks by drawing transparent spheres around them.
 
-The sample code below illustrates some of the methods used to add shapes
-to a viewer. It adds four shapes:
+The sample code in the ``shapesVis`` function illustrates some of the
+methods used to add shapes to a viewer. It adds four shapes:
 
 - A line from the first point in the cloud to the last point in the
   cloud.
 - A plane at the origin.
 - A sphere centred on the first point in the cloud.
 - A cone along the Y-axis.
+
+.. image:: images/pcl_visualizer_shapes.png
+  :width: 838
 
 Explanation
 -----------
@@ -343,7 +337,7 @@ point cloud is added to the viewer.
 .. code-block:: cpp
 
     ...
-    viewer.addLine<PointType>(point_cloud.points[0], point_cloud.points[point_cloud.size() - 1], "line");
+    viewer->addLine<PointXYZRGB> (cloud->points[0], cloud->points[cloud->size() - 1], "line");
     ...
 
 This line (of code) adds a line (in space) from the first point in the
@@ -356,7 +350,7 @@ shapes are available.
 .. code-block:: cpp
 
     ...
-    viewer.addSphere(point_cloud.points[0], 0.2, 0.5, 0.5, 0.0, "sphere");
+    viewer->addSphere (cloud->points[0], 0.2, 0.5, 0.5, 0.0, "sphere");
     ...
 
 This next line adds a sphere centred on the first point in the cloud
@@ -370,7 +364,7 @@ with a radius of 0.2. It also gives the sphere a colour.
     coeffs.values.push_back(0.0);
     coeffs.values.push_back(1.0);
     coeffs.values.push_back(0.0);
-    viewer.addPlane(coeffs, "plane");
+    viewer->addPlane (coeffs, "plane");
     ...
 
 Next, we add a plane to the drawing. In this case, we are specifying the
@@ -389,28 +383,11 @@ of the shape drawing functions take coefficients in this way.
     coeffs.values.push_back(1.0);
     coeffs.values.push_back(0.0);
     coeffs.values.push_back(5.0);
-    viewer.addCone(coeffs, "cone");
+    viewer->addCone (coeffs, "cone");
     ...
 
 Finally, we add a cone. We are again using model coefficients to specify
 the cone's parameters.
-
-
-Compiling and running the program
----------------------------------
-
-Create a `CMakeLists.txt` file with the following contents:
-
-.. literalinclude:: sources/pcl_visualizer/CMakeLists.txt.shapes
-   :language: cmake
-   :linenos:
-
-After you have made the executable, you can run it like so::
-
-  $ ./pcl_visualizer_shapes
-
-.. image:: images/pcl_visualizer_shapes.png
-  :width: 838
 
 
 Multiple viewports
@@ -421,19 +398,21 @@ you could draw them in the same view port, this can get confusing.
 PCLVisualizer allows you to draw multiple point clouds in separate
 viewports, making comparison easy.
 
-This code sample uses viewports to demonstrate comparing the normals
-calculated for a point cloud. Two sets of normals are calculated for the
-same cloud but using a different search radius. The first time, the
-search radius is 0.05. The second time, it is 0.1. The normals for the
-0.05 radius search are displayed in the viewport with the black
-background. The normals for the 0.1 radius search are displayed in the
-viewport with the grey background.
+The code in the ``viewportsVis`` function uses viewports to demonstrate
+comparing the normals calculated for a point cloud. Two sets of normals
+are calculated for the same cloud but using a different search radius.
+The first time, the search radius is 0.05. The second time, it is 0.1.
+The normals for the 0.05 radius search are displayed in the viewport
+with the black background. The normals for the 0.1 radius search are
+displayed in the viewport with the grey background.
 
 Comparing the two sets of normals side-by-side makes it immediately
 obvious what the effects of the different algorithm parameter are. In
 this way, you can experiment with the parameters for algorithms to find
 good settings, quickly viewing the results.
 
+.. image:: images/pcl_visualizer_viewports.png
+  :width: 838
 
 Explanation
 -----------
@@ -441,8 +420,8 @@ Explanation
 .. code-block:: cpp
 
     ...
-    PCLVisualizer viewer ("3D Viewer");
-    viewer.initCameraParameters ();
+    boost::shared_ptr<PCLVisualizer> viewer (new PCLVisualizer("3D Viewer"));
+    viewer->initCameraParameters ();
     ...
 
 This is our standard code for creating a viewer.
@@ -451,11 +430,11 @@ This is our standard code for creating a viewer.
 
     ...
     int v1(0);
-    viewer.createViewPort(0.0, 0.0, 0.5, 1.0, v1);
-    viewer.setBackgroundColor (0, 0, 0, v1);
-    viewer.addText("Radius: 0.01", 10, 10, "v1 text", v1);
-    PointCloudColorHandlerRGBField<PointType> rgb(point_cloud_ptr);
-    viewer.addPointCloud<PointType> (point_cloud_ptr, rgb, "sample cloud1", v1);
+    viewer->createViewPort(0.0, 0.0, 0.5, 1.0, v1);
+    viewer->setBackgroundColor (0, 0, 0, v1);
+    viewer->addText("Radius: 0.01", 10, 10, "v1 text", v1);
+    PointCloudColorHandlerRGBField<PointXYZRGB> rgb(cloud);
+    viewer->addPointCloud<PointXYZRGB> (cloud, rgb, "sample cloud1", v1);
     ...
 
 The next step is to create a new viewport. The four parameters are the
@@ -473,11 +452,11 @@ point cloud to it, using an RGB colour handler.
 
     ...
     int v2(0);
-    viewer.createViewPort(0.5, 0.0, 1.0, 1.0, v2);
-    viewer.setBackgroundColor (0.3, 0.3, 0.3, v2);
-    viewer.addText("Radius: 0.1", 10, 10, "v2 text", v2);
-    PointCloudColorHandlerCustom<PointType> single_color(point_cloud_ptr, 0, 255, 0);
-    viewer.addPointCloud<PointType> (point_cloud_ptr, single_color, "sample cloud2", v2);
+    viewer->createViewPort(0.5, 0.0, 1.0, 1.0, v2);
+    viewer->setBackgroundColor (0.3, 0.3, 0.3, v2);
+    viewer->addText("Radius: 0.1", 10, 10, "v2 text", v2);
+    PointCloudColorHandlerCustom<PointXYZRGB> single_color(cloud, 0, 255, 0);
+    viewer->addPointCloud<PointXYZRGB> (cloud, single_color, "sample cloud2", v2);
     ...
 
 Then we do the same thing again for the second viewport, making it take
@@ -488,9 +467,9 @@ same point cloud, but this time we give it a custom colour handler.
 .. code-block:: cpp
 
     ...
-    viewer.setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud1");
-    viewer.setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud2");
-    viewer.addCoordinateSystem (1.0);
+    viewer->setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud1");
+    viewer->setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud2");
+    viewer->addCoordinateSystem (1.0);
     ...
 
 These two lines set some properties globally for all viewports. Most of
@@ -501,26 +480,9 @@ this case, they affect all viewports.
 .. code-block:: cpp
 
     ...
-    viewer.addPointCloudNormals<PointType, Normal> (point_cloud_ptr, cloud_normals1, 10, 0.05, "normals1", v1);
-    viewer.addPointCloudNormals<PointType, Normal> (point_cloud_ptr, cloud_normals2, 10, 0.05, "normals2", v2);
+    viewer->addPointCloudNormals<PointXYZRGB, Normal> (cloud, normals1, 10, 0.05, "normals1", v1);
+    viewer->addPointCloudNormals<PointXYZRGB, Normal> (cloud, normals2, 10, 0.05, "normals2", v2);
     ...
 
 Finally, we add the normals, one to each viewport.
-
-
-Compiling and running the program
----------------------------------
-
-Create a `CMakeLists.txt` file with the following contents:
-
-.. literalinclude:: sources/pcl_visualizer/CMakeLists.txt.viewports
-   :language: cmake
-   :linenos:
-
-After you have made the executable, you can run it like so::
-
-  $ ./pcl_visualizer_viewports
-
-.. image:: images/pcl_visualizer_viewports.png
-  :width: 838
 
