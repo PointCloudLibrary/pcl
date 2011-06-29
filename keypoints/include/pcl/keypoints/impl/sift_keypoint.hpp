@@ -33,8 +33,9 @@
  *
  */
 
-template <typename PointInT, typename PointOutT> void
-pcl::SIFTKeypoint<PointInT, PointOutT>::setScales (float min_scale, int nr_octaves, int nr_scales_per_octave)
+template <typename PointInT, typename PointOutT>
+void pcl::SIFTKeypoint<PointInT, PointOutT>::
+setScales (float min_scale, int nr_octaves, int nr_scales_per_octave)
 {
   if (min_scale <= 0)
   {
@@ -62,8 +63,9 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::setScales (float min_scale, int nr_octav
 }
 
 
-template <typename PointInT, typename PointOutT> void
-pcl::SIFTKeypoint<PointInT, PointOutT>::setMinimumContrast (float min_contrast)
+template <typename PointInT, typename PointOutT>
+void pcl::SIFTKeypoint<PointInT, PointOutT>::
+setMinimumContrast (float min_contrast)
 {
   if (min_contrast < 0)
   {
@@ -74,8 +76,9 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::setMinimumContrast (float min_contrast)
   min_contrast_ = min_contrast;
 }
 
-template <typename PointInT, typename PointOutT> void
-pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
+template <typename PointInT, typename PointOutT>
+void pcl::SIFTKeypoint<PointInT, PointOutT>::
+detectKeypoints (PointCloudOut &output)
 {
   // Check for valid inputs
   if (min_scale_ == 0 || nr_octaves_ == 0 || nr_scales_per_octave_ == 0)
@@ -124,11 +127,10 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 }
 
 
-template <typename PointInT, typename PointOutT> void
-pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
-  const PointCloudIn &input,
-  KdTree &tree,
-  float base_scale, int nr_scales_per_octave, PointCloudOut &output)
+template <typename PointInT, typename PointOutT>
+void pcl::SIFTKeypoint<PointInT, PointOutT>::
+detectKeypointsForOctave (const PointCloudIn &input, KdTree &tree, float base_scale, int nr_scales_per_octave, 
+                          PointCloudOut &output)
 {
   // Compute the difference of Gaussians (DoG) scale space
   std::vector<float> scales (nr_scales_per_octave + 3);
@@ -159,10 +161,10 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
 }
 
 
-template <typename PointInT, typename PointOutT> void
-pcl::SIFTKeypoint<PointInT, PointOutT>::computeScaleSpace (
-    const PointCloudIn &input, KdTree &tree, const std::vector<float> &scales, 
-    Eigen::MatrixXf &diff_of_gauss)
+template <typename PointInT, typename PointOutT> 
+void pcl::SIFTKeypoint<PointInT, PointOutT>::
+computeScaleSpace (const PointCloudIn &input, KdTree &tree, const std::vector<float> &scales, 
+                   Eigen::MatrixXf &diff_of_gauss)
 {
   std::vector<int> nn_indices;
   std::vector<float> nn_dist;
@@ -189,12 +191,12 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::computeScaleSpace (
       float denominator = 0.0;
       for (size_t i_neighbor = 0; i_neighbor < nn_indices.size (); ++i_neighbor)
       {
-        const float &intensity = input.points[nn_indices[i_neighbor]].intensity;
+        const float &value = getFieldValue_ (input.points[nn_indices[i_neighbor]]);
         const float &dist_sqr = nn_dist[i_neighbor];
         if (dist_sqr <= 9*sigma_sqr)
         {
           float w = exp (-0.5 * dist_sqr / sigma_sqr);
-          numerator += intensity * w;
+          numerator += value * w;
           denominator += w;
         }
         else break; // i.e. if dist > 3 standard deviations, then terminate early
@@ -212,12 +214,10 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::computeScaleSpace (
   }
 }
 
-
-template <typename PointInT, typename PointOutT> void
-pcl::SIFTKeypoint<PointInT, PointOutT>::findScaleSpaceExtrema (
-  const PointCloudIn &input, 
-  KdTree &tree, const Eigen::MatrixXf &diff_of_gauss, 
-  std::vector<int> &extrema_indices, std::vector<int> &extrema_scales)
+template <typename PointInT, typename PointOutT>
+void pcl::SIFTKeypoint<PointInT, PointOutT>::
+findScaleSpaceExtrema (const PointCloudIn &input, KdTree &tree, const Eigen::MatrixXf &diff_of_gauss, 
+                       std::vector<int> &extrema_indices, std::vector<int> &extrema_scales)
 {
   const int k = 25;
   std::vector<int> nn_indices (k);
