@@ -597,7 +597,7 @@ contributions on any tutorial.
   * :ref:`pcl_visualizer`
 
      ======  ======
-     |vi_2|  Title: **PCLVisualizer**
+     |vi_3|  Title: **PCLVisualizer**
 
              Author: *Geoffrey Biggs*
 
@@ -608,13 +608,13 @@ contributions on any tutorial.
              related data.
      ======  ======
 
-     .. |vi_2| image:: images/pcl_visualizer_viewports.png
+     .. |vi_3| image:: images/pcl_visualizer_viewports.png
                :height: 100px
 
   * :ref:`narf_descriptor_visualization`
     
      ======  ======
-     |vi_3|  Title: **Visualization of how the NARF descriptor is calculated**
+     |vi_4|  Title: **Visualization of how the NARF descriptor is calculated**
 
              Author: *Bastian Steder*
 
@@ -623,7 +623,7 @@ contributions on any tutorial.
              This tutorial is about the visualization of how the NARF descriptor is calculated and to test how the descriptor distances between certain points in a range image behave.
      ======  ======
      
-     .. |vi_3| image:: images/narf_descriptor.jpg
+     .. |vi_4| image:: images/narf_descriptor.jpg
                :height: 100px
 
 * Applications
