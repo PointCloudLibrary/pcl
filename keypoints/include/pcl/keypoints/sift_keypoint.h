@@ -42,6 +42,34 @@
 
 namespace pcl
 {
+
+  template<typename PointT>
+  struct SIFTKeypointFieldSelector
+  {
+    inline float operator ()(const PointT & p) const
+    {
+      return p.intensity;
+    }
+  };
+  template<>
+  struct SIFTKeypointFieldSelector<PointNormal>
+  {
+    inline float operator ()(const PointNormal & p) const
+    {
+      return p.curvature;
+    }
+  };
+  template<>
+  struct SIFTKeypointFieldSelector<PointXYZRGB>
+  {
+    inline float operator ()(const PointXYZRGB & p) const
+    {
+      return ((299*p.r + 587*p.g + 114*p.b)/1000.0);
+    }
+  };
+
+
+
   /** \brief @b SIFTKeypoint detects the Scale Invariant Feature Transform keypoints for a given point cloud dataset 
     * containing points and intensity.  This implementation adapts the original algorithm from images to point clouds. 
     * For more information about the image-based SIFT interest operator, see:
@@ -137,6 +165,8 @@ namespace pcl
 
       /** \brief The minimum contrast required for detection.*/
       float min_contrast_;
+
+      SIFTKeypointFieldSelector<PointInT> getFieldValue_;
 
   };
 }
