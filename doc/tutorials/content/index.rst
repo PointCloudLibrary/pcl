@@ -603,9 +603,7 @@ contributions on any tutorial.
 
              Compatibility: >= PCL 1.0
 
-             This tutorial demonstrates how to use the PCLVisualizer
-             class for powerful visualisation of point clouds and
-             related data.
+             This tutorial demonstrates how to use the PCLVisualizer class for powerful visualisation of point clouds and related data.
      ======  ======
 
      .. |vi_3| image:: images/pcl_visualizer_viewports.png
