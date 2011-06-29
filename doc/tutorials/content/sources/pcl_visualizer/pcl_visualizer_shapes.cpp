@@ -50,7 +50,7 @@ using namespace std;
 
 using namespace pcl;
 using namespace pcl::visualization;
-typedef PointXYZ PointType;
+typedef PointXYZRGB PointType;
 
 // --------------
 // -----Help-----
@@ -97,16 +97,31 @@ int main (int argc, char** argv)
   else
   {
     cout << "\nNo *.pcd file given => Genarating example point cloud.\n\n";
-    // We're going to make an ellipse extruded along the z-axis.
+    // We're going to make an ellipse extruded along the z-axis. The
+    // colour will gradually go from red to green to blue.
+    uint8_t r(255), g(15), b(15);
     for (float z(-1.0); z <= 1.0; z += 0.05)
     {
         for (float angle(0.0); angle <= 360.0; angle += 5.0)
         {
             PointType point;
-            point.x = 0.5 * cosf(deg2rad(angle));
-            point.y = sinf(deg2rad(angle));
+            point.x = 0.5 * cosf (deg2rad (angle));
+            point.y = sinf (deg2rad (angle));
             point.z = z;
+            uint32_t rgb = (static_cast<uint32_t>(r) << 16 |
+                    static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b));
+            point.rgb = *reinterpret_cast<float*>(&rgb);
             point_cloud.points.push_back (point);
+        }
+        if (z < 0.0)
+        {
+            r -= 12;
+            g += 12;
+        }
+        else
+        {
+            g -= 12;
+            b += 12;
         }
     }
     point_cloud.width = point_cloud.points.size ();
@@ -118,10 +133,37 @@ int main (int argc, char** argv)
   // --------------------------------------------
   PCLVisualizer viewer ("3D Viewer");
   viewer.setBackgroundColor (0, 0, 0);
-  viewer.addPointCloud (point_cloud_ptr, "sample cloud");
-  viewer.setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+  PointCloudColorHandlerRGBField<PointType> rgb(point_cloud_ptr);
+  viewer.addPointCloud<PointType> (point_cloud_ptr, rgb, "sample cloud");
+  viewer.setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
   viewer.addCoordinateSystem (1.0);
   viewer.initCameraParameters ();
+
+  //------------------------------------
+  //-----Add shapes at cloud points-----
+  //------------------------------------
+  viewer.addLine<PointType> (point_cloud.points[0],
+          point_cloud.points[point_cloud.size() - 1], "line");
+  viewer.addSphere (point_cloud.points[0], 0.2, 0.5, 0.5, 0.0, "sphere");
+
+  //---------------------------------------
+  //-----Add shapes at other locations-----
+  //---------------------------------------
+  pcl::ModelCoefficients coeffs;
+  coeffs.values.push_back (0.0);
+  coeffs.values.push_back (0.0);
+  coeffs.values.push_back (1.0);
+  coeffs.values.push_back (0.0);
+  viewer.addPlane (coeffs, "plane");
+  coeffs.values.clear ();
+  coeffs.values.push_back (0.3);
+  coeffs.values.push_back (0.3);
+  coeffs.values.push_back (0.0);
+  coeffs.values.push_back (0.0);
+  coeffs.values.push_back (1.0);
+  coeffs.values.push_back (0.0);
+  coeffs.values.push_back (5.0);
+  viewer.addCone (coeffs, "cone");
 
   //--------------------
   // -----Main loop-----

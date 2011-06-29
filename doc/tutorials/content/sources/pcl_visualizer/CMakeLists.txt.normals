@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+
+project(pcl_visualizer_normals)
+
+find_package(PCL 1.0 REQUIRED COMPONENTS features visualization)
+
+if(WXWIDGETS_FOUND)
+  include_directories(${PCL_INCLUDE_DIRS})
+  link_directories(${PCL_LIBRARY_DIRS})
+  add_definitions(${PCL_DEFINITIONS})
+
+  add_executable (pcl_visualizer_normals pcl_visualizer_normals.cpp)
+  target_link_libraries (pcl_visualizer_normals
+    ${PCL_FEATURES_LIBRARIES} ${PCL_VISUALIZATION_LIBRARIES})
+else(WXWIDGETS_FOUND)
+  message("WxWidgets is required to build ${PROJECT_NAME}.")
+endif(WXWIDGETS_FOUND)
+

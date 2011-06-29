@@ -118,8 +118,9 @@ int main (int argc, char** argv)
   // --------------------------------------------
   PCLVisualizer viewer ("3D Viewer");
   viewer.setBackgroundColor (0, 0, 0);
-  viewer.addPointCloud (point_cloud_ptr, "sample cloud");
-  viewer.setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+  PointCloudColorHandlerCustom<PointType> single_color(point_cloud_ptr, 0, 255, 0);
+  viewer.addPointCloud<PointType> (point_cloud_ptr, single_color, "sample cloud");
+  viewer.setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
   viewer.addCoordinateSystem (1.0);
   viewer.initCameraParameters ();
 

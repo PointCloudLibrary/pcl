@@ -594,6 +594,23 @@ contributions on any tutorial.
      .. |vi_2| image:: images/range_image_visualization.png
                :height: 100px
 
+  * :ref:`pcl_visualizer`
+
+     ======  ======
+     |vi_2|  Title: **PCLVisualizer**
+
+             Author: *Geoffrey Biggs*
+
+             Compatibility: >= PCL 1.0
+
+             This tutorial demonstrates how to use the PCLVisualizer
+             class for powerful visualisation of point clouds and
+             related data.
+     ======  ======
+
+     .. |vi_2| image:: images/pcl_visualizer_viewports.png
+               :height: 100px
+
   * :ref:`narf_descriptor_visualization`
     
      ======  ======
