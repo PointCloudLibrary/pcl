@@ -50,10 +50,10 @@ namespace pcl
     using PCLBase<PointT>::initCompute;
 
     public:
-      typedef PointCloud<PointT> PointCloudIn;
-      typedef typename PointCloud<PointT>::Ptr PointCloudInPtr;
-      typedef PointCloud<PointNT> NormalCloud;
-      typedef typename PointCloud<PointNT>::Ptr NormalCloudPtr;
+      typedef pcl::PointCloud<PointT> PointCloudIn;
+      typedef typename pcl::PointCloud<PointT>::Ptr PointCloudInPtr;
+      typedef pcl::PointCloud<PointNT> NormalCloud;
+      typedef typename pcl::PointCloud<PointNT>::Ptr NormalCloudPtr;
       typedef KdTree<PointT> CloudKdTree;
       typedef typename KdTree<PointT>::Ptr CloudKdTreePtr;
 
