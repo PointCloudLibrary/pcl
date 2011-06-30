@@ -103,7 +103,7 @@ Usage examples
 
 .. code-block:: bash
 
-  $ pcd_viewer -multiview 1 data/partial_cup_model.pcd rospack data/partial_cup_model.pcd data/partial_cup_model.pcd
+  $ pcd_viewer -multiview 1 data/partial_cup_model.pcd data/partial_cup_model.pcd data/partial_cup_model.pcd
 
 
 The above will load the ``partial_cup_model.pcd`` file 3 times, and will create a
