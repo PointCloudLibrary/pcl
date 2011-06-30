@@ -16,7 +16,7 @@ int main (int argc, char** argv) {
   pointCloud.width = pointCloud.points.size();
   pointCloud.height = 1;
   
-  // We now want to create a range image from the above point cloud, with a 1° angular resolution
+  // We now want to create a range image from the above point cloud, with a 1deg angular resolution
   float angularResolution =   1.0f * (M_PI/180.0f);  //   1.0 degree in radians
   float maxAngleWidth     = 360.0f * (M_PI/180.0f);  // 360.0 degree in radians
   float maxAngleHeight    = 180.0f * (M_PI/180.0f);  // 180.0 degree in radians
