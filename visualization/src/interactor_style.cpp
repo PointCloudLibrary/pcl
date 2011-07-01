@@ -82,6 +82,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
   snapshot_writer_->SetInputConnection (wif_->GetOutputPort ());
 
   init_ = true;
+
+  stereo_anaglyph_mask_default_ = true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -465,6 +467,19 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
       if (alt)
       {
         int stereo_render = Interactor->GetRenderWindow ()->GetStereoRender ();
+        if (!stereo_render)
+        {
+          if (stereo_anaglyph_mask_default_)
+          {
+            Interactor->GetRenderWindow ()->SetAnaglyphColorMask (4, 3);
+            stereo_anaglyph_mask_default_ = false;
+          }
+          else
+          {
+            Interactor->GetRenderWindow ()->SetAnaglyphColorMask (2, 5);
+            stereo_anaglyph_mask_default_ = true;
+          }
+        }
         Interactor->GetRenderWindow ()->SetStereoRender (!stereo_render);
         Interactor->GetRenderWindow ()->Render ();
         Interactor->Render ();
