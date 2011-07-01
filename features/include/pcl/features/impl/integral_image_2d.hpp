@@ -151,15 +151,37 @@ pcl::IntegralImage2D<DataType, IIDataType>::computeIntegralImages (DataType *dat
     {
       const IIDataType data_value = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_ + dimension_index]);
 
-      first_order_integral_images_[dimension_index][row_index*width_ + col_index] = data_value;
-
-      if (are_second_order_ii_available_)
+      if (!pcl_isfinite (data_value))
       {
-        for (int dimension_index2 = 0; dimension_index2 < dimensions_; ++dimension_index2)
-        {
-          const IIDataType data_value2 = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_ + dimension_index2]);
+        first_order_integral_images_[dimension_index][row_index*width_ + col_index] = 0.0f;
 
-          second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = data_value*data_value2;
+        if (are_second_order_ii_available_)
+        {
+          for (int dimension_index2 = 0; dimension_index2 < dimensions_; ++dimension_index2)
+          {
+            second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = 0.0f;
+          }
+        }
+      }
+      else
+      {
+        first_order_integral_images_[dimension_index][row_index*width_ + col_index] = data_value;
+
+        if (are_second_order_ii_available_)
+        {
+          for (int dimension_index2 = 0; dimension_index2 < dimensions_; ++dimension_index2)
+          {
+            const IIDataType data_value2 = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_ + dimension_index2]);
+
+            if (!pcl_isfinite (data_value2))
+            {
+              second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = 0.0f;
+            }
+            else
+            {
+              second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = data_value*data_value2;
+            }
+          }
         }
       }
     }
@@ -174,17 +196,42 @@ pcl::IntegralImage2D<DataType, IIDataType>::computeIntegralImages (DataType *dat
       {
         const IIDataType data_value = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_ + dimension_index]);
 
-        first_order_integral_images_[dimension_index][row_index*width_ + col_index] = data_value
-          + first_order_integral_images_[dimension_index][row_index*width_ + (col_index-1)];
-
-        if (are_second_order_ii_available_)
+        if (!pcl_isfinite (data_value))
         {
-          for (int dimension_index2 = 0; dimension_index2 < dimensions_; ++dimension_index2)
-          {
-            const IIDataType data_value2 = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_ + dimension_index2]);
+          first_order_integral_images_[dimension_index][row_index*width_ + col_index] = 
+            first_order_integral_images_[dimension_index][row_index*width_ + (col_index-1)];
 
-            second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = data_value*data_value2
-              + second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + (col_index-1)];
+          if (are_second_order_ii_available_)
+          {
+            for (int dimension_index2 = 0; dimension_index2 < dimensions_; ++dimension_index2)
+            {
+              second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = 
+                second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + (col_index-1)];
+            }
+          }
+        }
+        else
+        {
+          first_order_integral_images_[dimension_index][row_index*width_ + col_index] = data_value
+            + first_order_integral_images_[dimension_index][row_index*width_ + (col_index-1)];
+
+          if (are_second_order_ii_available_)
+          {
+            for (int dimension_index2 = 0; dimension_index2 < dimensions_; ++dimension_index2)
+            {
+              const IIDataType data_value2 = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_ + dimension_index2]);
+
+              if (!pcl_isfinite (data_value2))
+              {
+                second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = 
+                  second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + (col_index-1)];
+              }
+              else
+              {
+                second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = data_value*data_value2
+                  + second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + (col_index-1)];
+              }
+            }
           }
         }
       }
@@ -200,17 +247,41 @@ pcl::IntegralImage2D<DataType, IIDataType>::computeIntegralImages (DataType *dat
       {
         const IIDataType data_value = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_ + dimension_index]);
 
-        first_order_integral_images_[dimension_index][row_index*width_ + col_index] = data_value
-          + first_order_integral_images_[dimension_index][(row_index-1)*width_ + col_index];
-
-        if (are_second_order_ii_available_)
+        if (!pcl_isfinite (data_value))
         {
-          for (int dimension_index2 = 0; dimension_index2 < dimensions_; ++dimension_index2)
-          {
-            const IIDataType data_value2 = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_ + dimension_index2]);
+          first_order_integral_images_[dimension_index][row_index*width_ + col_index] = 
+            first_order_integral_images_[dimension_index][(row_index-1)*width_ + col_index];
 
-            second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = data_value*data_value2
-              + second_order_integral_images_[dimension_index][dimension_index2][(row_index-1)*width_ + col_index];
+          if (are_second_order_ii_available_)
+          {
+            for (int dimension_index2 = 0; dimension_index2 < dimensions_; ++dimension_index2)
+            {
+              second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = 
+                second_order_integral_images_[dimension_index][dimension_index2][(row_index-1)*width_ + col_index];
+            }
+          }
+        }
+        else
+        {
+          first_order_integral_images_[dimension_index][row_index*width_ + col_index] = data_value
+            + first_order_integral_images_[dimension_index][(row_index-1)*width_ + col_index];
+
+          if (are_second_order_ii_available_)
+          {
+            for (int dimension_index2 = 0; dimension_index2 < dimensions_; ++dimension_index2)
+            {
+              const IIDataType data_value2 = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_ + dimension_index2]);
+
+              if (!pcl_isfinite (data_value))
+              {
+                second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = second_order_integral_images_[dimension_index][dimension_index2][(row_index-1)*width_ + col_index];
+              }
+              else
+              {
+                second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = data_value*data_value2
+                  + second_order_integral_images_[dimension_index][dimension_index2][(row_index-1)*width_ + col_index];
+              }
+            }
           }
         }
       }
@@ -226,21 +297,52 @@ pcl::IntegralImage2D<DataType, IIDataType>::computeIntegralImages (DataType *dat
       {
         const IIDataType data_value = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_ + dimension_index]);
 
-        first_order_integral_images_[dimension_index][row_index*width_ + col_index] = data_value
-          + first_order_integral_images_[dimension_index][row_index*width_ + (col_index-1)]
-          + first_order_integral_images_[dimension_index][(row_index-1)*width_ + col_index]
-          - first_order_integral_images_[dimension_index][(row_index-1)*width_ + (col_index-1)];
-
-        if (are_second_order_ii_available_)
+        if (!pcl_isfinite (data_value))
         {
-          for (int dimension_index2 = 0; dimension_index2 < dimensions_; ++dimension_index2)
-          {
-            const IIDataType data_value2 = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_ + dimension_index2]);
+          first_order_integral_images_[dimension_index][row_index*width_ + col_index] = 
+            first_order_integral_images_[dimension_index][row_index*width_ + (col_index-1)]
+            + first_order_integral_images_[dimension_index][(row_index-1)*width_ + col_index]
+            - first_order_integral_images_[dimension_index][(row_index-1)*width_ + (col_index-1)];
 
-            second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = data_value*data_value2
-              + second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + (col_index-1)]
-              + second_order_integral_images_[dimension_index][dimension_index2][(row_index-1)*width_ + col_index]
-              - second_order_integral_images_[dimension_index][dimension_index2][(row_index-1)*width_ + (col_index-1)];
+          if (are_second_order_ii_available_)
+          {
+            for (int dimension_index2 = 0; dimension_index2 < dimensions_; ++dimension_index2)
+            {
+              second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = 
+                second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + (col_index-1)]
+                + second_order_integral_images_[dimension_index][dimension_index2][(row_index-1)*width_ + col_index]
+                - second_order_integral_images_[dimension_index][dimension_index2][(row_index-1)*width_ + (col_index-1)];
+            }
+          }
+        }
+        else
+        {
+          first_order_integral_images_[dimension_index][row_index*width_ + col_index] = data_value
+            + first_order_integral_images_[dimension_index][row_index*width_ + (col_index-1)]
+            + first_order_integral_images_[dimension_index][(row_index-1)*width_ + col_index]
+            - first_order_integral_images_[dimension_index][(row_index-1)*width_ + (col_index-1)];
+
+          if (are_second_order_ii_available_)
+          {
+            for (int dimension_index2 = 0; dimension_index2 < dimensions_; ++dimension_index2)
+            {
+              const IIDataType data_value2 = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_ + dimension_index2]);
+
+              if (!pcl_isfinite (data_value2))
+              {
+                second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = 
+                  second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + (col_index-1)]
+                  + second_order_integral_images_[dimension_index][dimension_index2][(row_index-1)*width_ + col_index]
+                  - second_order_integral_images_[dimension_index][dimension_index2][(row_index-1)*width_ + (col_index-1)];
+              }
+              else
+              {
+                second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + col_index] = data_value*data_value2
+                  + second_order_integral_images_[dimension_index][dimension_index2][row_index*width_ + (col_index-1)]
+                  + second_order_integral_images_[dimension_index][dimension_index2][(row_index-1)*width_ + col_index]
+                  - second_order_integral_images_[dimension_index][dimension_index2][(row_index-1)*width_ + (col_index-1)];
+              }
+            }
           }
         }
       }
@@ -267,11 +369,18 @@ pcl::IntegralImage2D<DataType, IIDataType>::computeIntegralImagesOneDimensional 
 
     const IIDataType data_value = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_]);
 
-    first_order_integral_image[row_index*width_ + col_index] = data_value;
-
-    if (are_second_order_ii_available_)
+    if (!pcl_isfinite (data_value))
     {
-      second_order_integral_image[row_index*width_ + col_index] = data_value*data_value;
+      first_order_integral_image[row_index*width_ + col_index] = 0.0;
+
+      if (are_second_order_ii_available_)
+      {
+        second_order_integral_image[row_index*width_ + col_index] = 0.0;
+      }
+    }
+    else
+    {
+      first_order_integral_image[row_index*width_ + col_index] = data_value;
     }
   }
 
@@ -282,13 +391,25 @@ pcl::IntegralImage2D<DataType, IIDataType>::computeIntegralImagesOneDimensional 
     {
       const IIDataType data_value = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_]);
 
-      first_order_integral_image[row_index*width_ + col_index] = data_value
-        + first_order_integral_image[row_index*width_ + (col_index-1)];
-
-      if (are_second_order_ii_available_)
+      if (!pcl_isfinite (data_value))
       {
-        second_order_integral_image[row_index*width_ + col_index] = data_value*data_value
-          + second_order_integral_image[row_index*width_ + (col_index-1)];
+        first_order_integral_image[row_index*width_ + col_index] = first_order_integral_image[row_index*width_ + (col_index-1)];
+
+        if (are_second_order_ii_available_)
+        {
+          second_order_integral_image[row_index*width_ + col_index] = second_order_integral_image[row_index*width_ + (col_index-1)];
+        }
+      }
+      else
+      {
+        first_order_integral_image[row_index*width_ + col_index] = data_value
+          + first_order_integral_image[row_index*width_ + (col_index-1)];
+
+        if (are_second_order_ii_available_)
+        {
+          second_order_integral_image[row_index*width_ + col_index] = data_value*data_value
+            + second_order_integral_image[row_index*width_ + (col_index-1)];
+        }
       }
     }
   }
@@ -300,13 +421,25 @@ pcl::IntegralImage2D<DataType, IIDataType>::computeIntegralImagesOneDimensional 
     {
       const IIDataType data_value = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_]);
 
-      first_order_integral_image[row_index*width_ + col_index] = data_value
-        + first_order_integral_image[(row_index-1)*width_ + col_index];
-
-      if (are_second_order_ii_available_)
+      if (!pcl_isfinite (data_value))
       {
-        second_order_integral_image[row_index*width_ + col_index] = data_value*data_value
-          + second_order_integral_image[(row_index-1)*width_ + col_index];
+        first_order_integral_image[row_index*width_ + col_index] = first_order_integral_image[(row_index-1)*width_ + col_index];
+
+        if (are_second_order_ii_available_)
+        {
+          second_order_integral_image[row_index*width_ + col_index] = second_order_integral_image[(row_index-1)*width_ + col_index];
+        }
+      }
+      else
+      {
+        first_order_integral_image[row_index*width_ + col_index] = data_value
+          + first_order_integral_image[(row_index-1)*width_ + col_index];
+
+        if (are_second_order_ii_available_)
+        {
+          second_order_integral_image[row_index*width_ + col_index] = data_value*data_value
+            + second_order_integral_image[(row_index-1)*width_ + col_index];
+        }
       }
     }
   }
@@ -318,17 +451,33 @@ pcl::IntegralImage2D<DataType, IIDataType>::computeIntegralImagesOneDimensional 
     {
       const IIDataType data_value = static_cast<IIDataType>(data[row_index*row_stride_ + col_index*element_stride_]);
 
-      first_order_integral_image[row_index*width_ + col_index] = data_value
-        - first_order_integral_image[(row_index-1)*width_ + (col_index-1)]
-        + first_order_integral_image[(row_index-1)*width_ + col_index]
-        + first_order_integral_image[row_index*width_ + (col_index-1)];
-
-      if (are_second_order_ii_available_)
+      if (!pcl_isfinite (data_value))
       {
-        second_order_integral_image[row_index*width_ + col_index] = data_value*data_value
-          + second_order_integral_image[row_index*width_ + (col_index-1)]
-          + second_order_integral_image[(row_index-1)*width_ + col_index]
-          - second_order_integral_image[(row_index-1)*width_ + (col_index-1)];
+        first_order_integral_image[row_index*width_ + col_index] = first_order_integral_image[(row_index-1)*width_ + (col_index-1)]
+          + first_order_integral_image[(row_index-1)*width_ + col_index]
+          + first_order_integral_image[row_index*width_ + (col_index-1)];
+
+        if (are_second_order_ii_available_)
+        {
+          second_order_integral_image[row_index*width_ + col_index] = second_order_integral_image[row_index*width_ + (col_index-1)]
+            + second_order_integral_image[(row_index-1)*width_ + col_index]
+            - second_order_integral_image[(row_index-1)*width_ + (col_index-1)];
+        }
+      }
+      else
+      {
+        first_order_integral_image[row_index*width_ + col_index] = data_value
+          - first_order_integral_image[(row_index-1)*width_ + (col_index-1)]
+          + first_order_integral_image[(row_index-1)*width_ + col_index]
+          + first_order_integral_image[row_index*width_ + (col_index-1)];
+
+        if (are_second_order_ii_available_)
+        {
+          second_order_integral_image[row_index*width_ + col_index] = data_value*data_value
+            + second_order_integral_image[row_index*width_ + (col_index-1)]
+            + second_order_integral_image[(row_index-1)*width_ + col_index]
+            - second_order_integral_image[(row_index-1)*width_ + (col_index-1)];
+        }
       }
     }
   }
