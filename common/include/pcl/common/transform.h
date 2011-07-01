@@ -131,7 +131,7 @@ namespace pcl
     * \ingroup common
     */
   inline Eigen::Affine3f
-  getRotation (const Eigen::Affine3f& transformation);
+  getRotationOnly (const Eigen::Affine3f& transformation);
 
   /** \brief Get only the translation part of the transformation 
     * \param transformation the input transformation matrix

@@ -59,13 +59,13 @@ if(build)
         include/pcl/common/polynomial_calculations.h
         include/pcl/common/poses_from_matches.h
         include/pcl/common/rigid_transforms.h
-        include/pcl/common/synchronizer.h
         include/pcl/common/time.h
         include/pcl/common/time_trigger.h
         include/pcl/common/transform.h
         include/pcl/common/transformation_from_correspondences.h
         include/pcl/common/vector_average.h
         include/pcl/common/pca.h
+        include/pcl/common/synchronizer.h
         )
 
     set(common_incs_impl

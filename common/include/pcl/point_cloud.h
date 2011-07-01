@@ -243,7 +243,6 @@ namespace pcl
         */
       inline ConstPtr makeShared () const { return ConstPtr (new PointCloud<PointT> (*this)); }
 
-
     protected:
       // This is motivated by ROS integration. Users should not need to access mapping_.
       boost::shared_ptr<MsgFieldMap> mapping_;
