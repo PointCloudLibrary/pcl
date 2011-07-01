@@ -57,9 +57,10 @@ do \
 { \
     static unsigned count = 0;\
     static double last = pcl::getTime ();\
-    if (++count == 100) \
+    double now = pcl::getTime (); \
+    ++count; \
+    if (now - last >= 1.0) \
     { \
-      double now = pcl::getTime (); \
       std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
       count = 0; \
       last = now; \
@@ -111,12 +112,10 @@ struct EventHelper
   cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr & cloud)
   {
     FPS_CALC ("callback");
-    if (mutex_.try_lock ())
-    {
-      g_cloud = cloud;
-      new_cloud = true;
-      mutex_.unlock ();
-    }
+    mutex_.lock ();
+    g_cloud = cloud;
+    new_cloud = true;
+    mutex_.unlock ();
   }
 };
 
@@ -160,9 +159,9 @@ main (int argc, char** argv)
       {
         FPS_CALC ("drawing");
         pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> handler (g_cloud);
-        if (!p->updatePointCloud<pcl::PointXYZRGB> (g_cloud, handler, "OpenNICloud"))
+        if (!p->updatePointCloud (g_cloud, handler, "OpenNICloud"))
         {
-          p->addPointCloud<pcl::PointXYZRGB> (g_cloud, handler, "OpenNICloud");
+          p->addPointCloud (g_cloud, handler, "OpenNICloud");
           p->resetCameraViewpoint ("OpenNICloud");
         }
       }

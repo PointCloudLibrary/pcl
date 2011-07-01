@@ -155,10 +155,8 @@ pcl::visualization::FloatImageUtils::getColorForHalfAngle (float value, unsigned
   getColorForAngle(2.0f*value, r, g, b);
 }
 
-
-
 unsigned char* 
-pcl::visualization::FloatImageUtils::getVisualImage (const float* floatImage, int width, int height, float minValue, float maxValue, bool grayScale) 
+pcl::visualization::FloatImageUtils::getVisualImage (const float* float_image, int width, int height, float min_value, float max_value, bool gray_scale) 
 {
   //MEASURE_FUNCTION_TIME;
   
@@ -168,28 +166,28 @@ pcl::visualization::FloatImageUtils::getVisualImage (const float* floatImage, in
   unsigned char* data = new unsigned char[arraySize];
   unsigned char* dataPtr = data;
   
-  bool recalculateMinValue = pcl_isinf (minValue),
-       recalculateMaxValue = pcl_isinf (maxValue);
-  if (recalculateMinValue) minValue = std::numeric_limits<float>::infinity ();
-  if (recalculateMaxValue) maxValue = -std::numeric_limits<float>::infinity ();
+  bool recalculateMinValue = pcl_isinf (min_value),
+       recalculateMaxValue = pcl_isinf (max_value);
+  if (recalculateMinValue) min_value = std::numeric_limits<float>::infinity ();
+  if (recalculateMaxValue) max_value = -std::numeric_limits<float>::infinity ();
   
   if (recalculateMinValue || recalculateMaxValue) 
   {
     for (int i=0; i<size; ++i) 
     {
-      float value = floatImage[i];
+      float value = float_image[i];
       if (!pcl_isfinite(value)) continue;
-      if (recalculateMinValue)  minValue = (std::min)(minValue, value);
-      if (recalculateMaxValue)  maxValue = (std::max)(maxValue, value);
+      if (recalculateMinValue)  min_value = (std::min)(min_value, value);
+      if (recalculateMaxValue)  max_value = (std::max)(max_value, value);
     }
   }
-  //cout << "minValue is "<<minValue<<" and maxValue is "<<maxValue<<".\n";
-  float factor = 1.0 / (maxValue-minValue), offset = -minValue;
+  //cout << "min_value is "<<min_value<<" and max_value is "<<max_value<<".\n";
+  float factor = 1.0 / (max_value-min_value), offset = -min_value;
   
   for (int i=0; i<size; ++i) 
   {
     unsigned char& r=*(dataPtr++), & g=*(dataPtr++), & b=*(dataPtr++);
-    float value = floatImage[i];
+    float value = float_image[i];
     
     if (!pcl_isfinite(value)) 
     {
@@ -201,7 +199,45 @@ pcl::visualization::FloatImageUtils::getVisualImage (const float* floatImage, in
     value = std::max (0.0f, std::min (1.0f, factor * (value + offset)));
     
     // Get a color from the value in [0, 1]
-    if (grayScale) 
+    if (gray_scale) 
+    {
+      r = g = b = pcl_lrint(value*255);
+    }
+    else 
+    {
+      getColorForFloat(value, r, g, b);
+    }
+    //cout << "Setting pixel "<<i<<" to "<<(int)r<<", "<<(int)g<<", "<<(int)b<<".\n";
+  }
+  
+  return data;
+}
+
+unsigned char* 
+pcl::visualization::FloatImageUtils::getVisualImage (const unsigned short* short_image, int width, int height,
+                                                     unsigned short min_value, unsigned short max_value,
+                                                     bool gray_scale)
+{
+  //MEASURE_FUNCTION_TIME;
+  
+  //cout << "Image is of size "<<width<<"x"<<height<<"\n";
+  int size = width*height;
+  int arraySize = 3 * size;
+  unsigned char* data = new unsigned char[arraySize];
+  unsigned char* dataPtr = data;
+  
+  float factor = 1.0f / float(max_value-min_value), offset = -min_value;
+  
+  for (int i=0; i<size; ++i) 
+  {
+    unsigned char& r=*(dataPtr++), & g=*(dataPtr++), & b=*(dataPtr++);
+    float value = short_image[i];
+    
+    // Normalize value to [0, 1]
+    value = std::max (0.0f, std::min (1.0f, factor * (value + offset)));
+    
+    // Get a color from the value in [0, 1]
+    if (gray_scale) 
     {
       r = g = b = pcl_lrint(value*255);
     }

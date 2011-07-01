@@ -94,7 +94,7 @@ if(build)
 #    else(MSVC)
        target_link_libraries(${LIB_NAME} pcl_io pcl_kdtree pcl_range_image 
                                         ${wxWidgets_LIBRARIES} 
-                                        vtkCommon vtkWidgets vtkHybrid)
+                                        vtkCommon vtkWidgets)
 #    endif(MSVC)
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     if(OPENNI_FOUND)

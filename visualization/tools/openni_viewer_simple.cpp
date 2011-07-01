@@ -45,6 +45,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
+#include <pcl/console/parse.h>
 #include <vector>
 
 #define SHOW_FPS 1
@@ -54,9 +55,10 @@ do \
 { \
     static unsigned count = 0;\
     static double last = pcl::getTime ();\
-    if (++count == 100) \
+    double now = pcl::getTime (); \
+    ++count; \
+    if (now - last >= 1.0) \
     { \
-      double now = pcl::getTime (); \
       std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
       count = 0; \
       last = now; \
@@ -82,23 +84,24 @@ public:
   {
   }
 
+  /**
+   * @brief Callback method for the grabber interface
+   * @param cloud The new point cloud from Grabber
+   */
   void
   cloud_cb_ (const CloudConstPtr& cloud)
   {
     FPS_CALC ("callback");
-    set (cloud);
-  }
-
-  void
-  set (const CloudConstPtr& cloud)
-  {
-    //lock while we set our cloud;
     boost::mutex::scoped_lock lock (mtx_);
     cloud_ = cloud;
   }
 
+  /**
+   * @brief swaps the pointer to the point cloud with Null pointer and returns the cloud pointer
+   * @return boost shared pointer to point cloud
+   */
   CloudConstPtr
-  get ()
+  getLatestCloud ()
   {
     //lock while we swap our cloud and reset it.
     boost::mutex::scoped_lock lock(mtx_);
@@ -109,6 +112,9 @@ public:
     return (temp_cloud);
   }
 
+  /**
+   * @brief starts the main loop
+   */
   void
   run()
   {
@@ -126,7 +132,7 @@ public:
       {
         FPS_CALC ("drawing");
         //the call to get() sets the cloud_ to null;
-        viewer.showCloud (get ());
+        viewer.showCloud (getLatestCloud ());
       }
     }
 
@@ -142,7 +148,7 @@ public:
 void
 usage(char ** argv)
 {
-  cout << "usage: " << argv[0] << " [<device_id> [<depth-mode> [<image-mode>] ] ]\n";
+  cout << "usage: " << argv[0] << " [((<device_id> | <path-to-oni-file>) [-depthmode <mode>] [-imagemode <mode>] [-xyz] | -l [<device_id>]| -h | --help)]" << endl;
   cout << argv[0] << " -h | --help : shows this help" << endl;
   cout << argv[0] << " -l : list all available devices" << endl;
   cout << argv[0] << " -l <device-id> : list all available modes for specified device" << endl;
@@ -158,6 +164,8 @@ usage(char ** argv)
   cout << "examples:" << endl;
   cout << argv[0] << " \"#1\"" << endl;
   cout << "    uses the first device." << endl;
+  cout << argv[0] << " \"./temp/test.oni\"" << endl;
+  cout << "    uses the oni-player device to play back oni file given by path." << endl;
   cout << argv[0] << " -l" << endl;
   cout << "    lists all available devices." << endl;
   cout << argv[0] << " -l \"#2\"" << endl;
@@ -166,7 +174,7 @@ usage(char ** argv)
   cout << argv[0] << " A00361800903049A" << endl;
   cout << "    uses the device with the serial number \'A00361800903049A\'." << endl;
   cout << argv[0] << " 1@16" << endl;
-  cout << "    uses the device on address 16 at usb bus 1." << endl;
+  cout << "    uses the device on address 16 at USB bus 1." << endl;
   #endif
   return;
 }
@@ -174,39 +182,42 @@ usage(char ** argv)
 int
 main(int argc, char ** argv)
 {
-  std::string arg("");
+  std::string device_id("");
   pcl::OpenNIGrabber::Mode depth_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
-
+  bool gray_value = false;
+  bool xyz = false;
+  
   if (argc >= 2)
   {
-    arg = argv[1];
-
-    if (arg == "--help" || arg == "-h")
+    device_id = argv[1];
+    if (device_id == "--help" || device_id == "-h")
     {
       usage(argv);
-      return 1;
+      return 0;
     }
-    else if (arg == "-l")
+    else if (device_id == "-l")
     {
       if (argc >= 3)
       {
         pcl::OpenNIGrabber grabber(argv[2]);
-        const openni_wrapper::OpenNIDevice& device = grabber.getDevice();
-        cout << "Supported depth modes for device: " << device.getVendorName() << " , " << device.getProductName() << endl;
+        boost::shared_ptr<openni_wrapper::OpenNIDevice> device = grabber.getDevice();
+        cout << "Supported depth modes for device: " << device->getVendorName() << " , " << device->getProductName() << endl;
         std::vector<std::pair<int, XnMapOutputMode > > modes = grabber.getAvailableDepthModes();
         for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
         {
           cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
         }
 
-        cout << endl << "Supported image modes for device: " << device.getVendorName() << " , " << device.getProductName() << endl;
-        modes = grabber.getAvailableImageModes();
-        for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
+        if (device->hasImageStream ())
         {
-          cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
+          cout << endl << "Supported image modes for device: " << device->getVendorName() << " , " << device->getProductName() << endl;
+          modes = grabber.getAvailableImageModes();
+          for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
+          {
+            cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
+          }
         }
-        return 0;
       }
       else
       {
@@ -222,17 +233,10 @@ main(int argc, char ** argv)
         }
         else
           cout << "No devices connected." << endl;
-        return 0;
+        
+        cout <<"Virtual Devices available: ONI player" << endl;
       }
-    }
-
-    if (argc >= 3)
-    {
-      depth_mode = (pcl::OpenNIGrabber::Mode) atoi(argv[2]);
-      if (argc == 4)
-      {
-        image_mode = (pcl::OpenNIGrabber::Mode) atoi(argv[3]);
-      }
+      return 0;
     }
   }
   else
@@ -241,16 +245,32 @@ main(int argc, char ** argv)
     if (driver.getNumberDevices() > 0)
       cout << "Device Id not set, using first device." << endl;
   }
+  
+  unsigned mode;
+  if (pcl::console::parse(argc, argv, "-depthmode", mode) != -1)
+    depth_mode = (pcl::OpenNIGrabber::Mode) mode;
 
-  pcl::OpenNIGrabber grabber(arg, depth_mode, image_mode);
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb > ())
+  if (pcl::console::parse(argc, argv, "-imagemode", mode) != -1)
+    image_mode = (pcl::OpenNIGrabber::Mode) mode;
+  
+  if (pcl::console::find_argument(argc, argv, "-xyz") != -1)
+    xyz = true;
+  
+  pcl::OpenNIGrabber grabber(device_id, depth_mode, image_mode);
+  
+  if (xyz) // only if xzy flag is set, since grabber provides at least XYZ and XYZI pointclouds
+  {
+    SimpleOpenNIViewer<pcl::PointXYZ> v(grabber);
+    v.run();
+  }
+  else if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb > ())
   {
     SimpleOpenNIViewer<pcl::PointXYZRGB> v(grabber);
     v.run();
   }
   else
   {
-    SimpleOpenNIViewer<pcl::PointXYZ> v(grabber);
+    SimpleOpenNIViewer<pcl::PointXYZI> v(grabber);
     v.run();
   }
 
