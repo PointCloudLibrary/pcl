@@ -14,6 +14,7 @@ foreach(subdir
           cylinder_segmentation
           extract_indices
           greedy_projection
+          narf_descriptor_visualization
           narf_feature_extraction
           narf_keypoint_extraction
           octree_change_detection
