@@ -47,7 +47,8 @@ macro(PCL_SUBSYS_DEPEND _var _name)
                 set(${_var} FALSE)
                 PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires ${_dep}")
             else(NOT _status)
-                include_directories(${PROJECT_SOURCE_DIR}/${_dep}/include)
+                PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
+                include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
             endif(NOT _status)
         endforeach(_dep)
     endif(${_var})
@@ -90,13 +91,49 @@ macro(PCL_ADD_LIBRARY _name _component)
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
-    endif(USE_PROJECT_FOLDERS)		
+    endif(USE_PROJECT_FOLDERS)
+
     install(TARGETS ${_name} EXPORT pcl
         RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component}
         LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component})
     install(EXPORT pcl DESTINATION ${LIB_INSTALL_DIR}/pcl FILE PCLDepends.cmake)
 endmacro(PCL_ADD_LIBRARY)
+
+
+###############################################################################
+# Add a cuda library target.
+# _name The library name.
+# _component The part of PCL that this library belongs to.
+# ARGN The source files for the library.
+macro(PCL_CUDA_ADD_LIBRARY _name _component)
+    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
+    # must link explicitly against boost.
+    target_link_libraries(${_name} ${Boost_LIBRARIES})
+    #
+    # Only link if needed
+    if(WIN32 AND MSVC)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
+    else()
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
+    endif()
+    #
+    set_target_properties(${_name} PROPERTIES
+        VERSION ${PCL_VERSION}
+        SOVERSION ${PCL_MAJOR_VERSION}
+        DEFINE_SYMBOL "PCLAPI_EXPORTS")
+    if(USE_PROJECT_FOLDERS)
+      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+    endif(USE_PROJECT_FOLDERS)
+
+    install(TARGETS ${_name} EXPORT pcl
+        RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component}
+        LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component}
+        ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component})
+    install(EXPORT pcl DESTINATION ${LIB_INSTALL_DIR}/pcl FILE PCLDepends.cmake)
+endmacro(PCL_CUDA_ADD_LIBRARY)
 
 
 ###############################################################################
@@ -121,10 +158,40 @@ macro(PCL_ADD_EXECUTABLE _name _component)
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
     endif(USE_PROJECT_FOLDERS)
+
     set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
         COMPONENT ${_component})
 endmacro(PCL_ADD_EXECUTABLE)
+
+
+###############################################################################
+# Add an executable target.
+# _name The executable name.
+# _component The part of PCL that this library belongs to.
+# ARGN the source files for the library.
+macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
+    cuda_add_executable(${_name} ${ARGN})
+    # must link explicitly against boost.
+    target_link_libraries(${_name} ${Boost_LIBRARIES})
+    #
+    # Only link if needed
+    if(WIN32 AND MSVC)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX})
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
+    else()
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
+    endif()
+    #
+    if(USE_PROJECT_FOLDERS)
+      set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
+    endif(USE_PROJECT_FOLDERS)
+	
+    set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
+    install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+        COMPONENT ${_component})
+endmacro(PCL_CUDA_ADD_EXECUTABLE)
 
 ###############################################################################
 # Add a test target.
@@ -162,6 +229,7 @@ macro(PCL_ADD_TEST _name _exename)
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_exename} PROPERTIES FOLDER "Tests")
     endif(USE_PROJECT_FOLDERS)
+
     if(${CMAKE_VERSION} VERSION_LESS 2.8.4)
       add_test(${_name} ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
     else(${CMAKE_VERSION} VERSION_LESS 2.8.4)
@@ -285,6 +353,28 @@ endmacro(PCL_SET_SUBSYS_STATUS)
 macro(PCL_GET_SUBSYS_STATUS _var _name)
     GET_IN_MAP(${_var} PCL_SUBSYS_STATUS ${_name})
 endmacro(PCL_GET_SUBSYS_STATUS)
+
+
+###############################################################################
+# Set the include directory name of a subsystem.
+# _name Subsystem name.
+# _includedir Name of subdirectory for includes 
+# ARGN[0] Reason for not building.
+macro(PCL_SET_SUBSYS_INCLUDE_DIR _name _includedir)
+    SET_IN_GLOBAL_MAP(PCL_SUBSYS_INCLUDE ${_name} ${_includedir})
+endmacro(PCL_SET_SUBSYS_INCLUDE_DIR)
+
+
+###############################################################################
+# Get the include directory name of a subsystem - return _name if not set
+# _var Destination variable.
+# _name Name of the subsystem.
+macro(PCL_GET_SUBSYS_INCLUDE_DIR _var _name)
+    GET_IN_MAP(${_var} PCL_SUBSYS_INCLUDE ${_name})
+    if(NOT ${_var})
+      set (${_var} ${_name})
+    endif(NOT ${_var})
+endmacro(PCL_GET_SUBSYS_INCLUDE_DIR)
 
 
 ###############################################################################

@@ -106,7 +106,9 @@ detectKeypoints (PointCloudOut &output)
     float s = 1.0 * scale; // note: this can be adjusted
     voxel_grid.setLeafSize (s, s, s);
     voxel_grid.setInputCloud (cloud);
-    voxel_grid.filter (*cloud);
+    boost::shared_ptr<pcl::PointCloud<PointInT> > temp (new pcl::PointCloud<PointInT>);    
+    voxel_grid.filter (*temp);
+    cloud = temp;
 
     // Make sure the downsampled cloud still has enough points
     const size_t min_nr_points = 25;
