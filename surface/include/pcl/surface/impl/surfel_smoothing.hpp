@@ -79,7 +79,6 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothCloudIteration (PointCloudInPtr &ou
                                                              NormalCloudPtr &output_normals)
 {
   PCL_INFO ("SurfelSmoothing: cloud smoothing iteration starting ...\n");
-  float scale_squared = scale_ * scale_;
   tree_->setInputCloud (interm_cloud_);
 
   output_positions = PointCloudInPtr (new PointCloudIn ());

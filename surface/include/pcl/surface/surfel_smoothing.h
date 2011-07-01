@@ -87,8 +87,8 @@ namespace pcl
                                            boost::shared_ptr<std::vector<int> > &output_features);
 
     private:
-      NormalCloudPtr normals_;
       float scale_;
+      NormalCloudPtr normals_;
 
       PointCloudInPtr interm_cloud_;
       NormalCloudPtr interm_normals_;
