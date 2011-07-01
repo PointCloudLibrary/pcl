@@ -47,6 +47,7 @@
 #include <pcl/surface/grid_projection.h>
 #include <pcl/surface/convex_hull.h>
 #include <pcl/surface/concave_hull.h>
+#include <pcl/surface/organized_fast_mesh.h>
 #include <pcl/common/common.h>
 
 using namespace pcl;
