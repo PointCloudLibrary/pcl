@@ -1,0 +1,75 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2011, Alexandru-Eugen Ichim
+ *                      Willow Garage, Inc
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id$
+ */
+
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+#include "pcl/registration/pyramid_feature_matching.h"
+#include "pcl/registration/impl/pyramid_feature_matching.hpp"
+
+void
+pcl::PyramidHistogram::initializeHistogram ()
+{
+  dimensions = bins_per_dimension.size ();
+  size_t total_vector_size = 1;
+  for (std::vector<size_t>::iterator dim_it = bins_per_dimension.begin (); dim_it != bins_per_dimension.end (); ++dim_it)
+    total_vector_size *= *dim_it;
+
+  hist.resize (total_vector_size, 0);
+}
+
+unsigned int&
+pcl::PyramidHistogram::at (std::vector<size_t>& access)
+{
+  if (access.size () != dimensions)
+  {
+    PCL_ERROR ("PyramidHistogram: cannot access histogram position because the access point does not have the right number of dimensions\n");
+    return hist[0];
+  }
+
+  size_t vector_position = 0;
+  size_t dim_accumulator = 1;
+
+  for (size_t i = access.size ()-1; i >= 0; --i)
+  {
+    vector_position += access[i] * dim_accumulator;
+    dim_accumulator *= bins_per_dimension[i];
+  }
+
+  return hist [vector_position];
+}
+
+PCL_INSTANTIATE_PRODUCT(PyramidFeatureMatching, (PCL_POINT_TYPES));
