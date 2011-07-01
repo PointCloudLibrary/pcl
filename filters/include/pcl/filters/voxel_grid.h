@@ -297,7 +297,7 @@ namespace pcl
 
       /** \brief Returns the index in the downsampled cloud corresponding to coordinates (i,j,k) in the grid (-1 if empty) */
       inline int 
-      getCentroidIndexAt (const Eigen::Vector3i& ijk, bool verbose = true)
+      getCentroidIndexAt (const Eigen::Vector3i &ijk, bool verbose = true)
       {
         int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot (divb_mul_);
         if (idx < 0 || idx >= (int)leaf_layout_.size ()) // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as needed
@@ -499,12 +499,12 @@ namespace pcl
       }
       
       inline std::vector<int> 
-      getNeighborCentroidIndices (float x, float y, float z, std::vector<Eigen::Vector3i> relative_coordinates)
+      getNeighborCentroidIndices (float x, float y, float z, const std::vector<Eigen::Vector3i> &relative_coordinates)
       {
         Eigen::Vector4i ijk (floor (x / leaf_size_[0]), floor (y / leaf_size_[1]), floor (z / leaf_size_[2]), 0);
         std::vector<int> neighbors;
         neighbors.reserve (relative_coordinates.size ());
-        for (std::vector<Eigen::Vector3i>::iterator it = relative_coordinates.begin (); it != relative_coordinates.end (); it++)
+        for (std::vector<Eigen::Vector3i>::const_iterator it = relative_coordinates.begin (); it != relative_coordinates.end (); it++)
           neighbors.push_back (leaf_layout_[(ijk + (Eigen::Vector4i() << *it, 0).finished() - min_b_).dot (divb_mul_)]);
         return neighbors;
       }
