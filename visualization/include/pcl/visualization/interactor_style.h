@@ -138,6 +138,9 @@ namespace pcl
 
         /** \brief Interactor style internal method. Zoom out. */
         void zoomOut ();
+
+        /** \brief True if we're using red-blue colors for anaglyphic stereo, false if magenta-green. */
+        bool stereo_anaglyph_mask_default_;
     };
 
     /** \brief PCL histogram visualizer interactory style class.
