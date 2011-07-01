@@ -322,6 +322,60 @@ namespace pcl
     */
   PCL_EXPORTS bool 
   getEigenAsPointCloud (Eigen::MatrixXf &in, sensor_msgs::PointCloud2 &out);
+  
+  namespace io 
+  {
+    /** \brief swap bytes order of a char array of length N
+      * \param bytes char array to swap
+      * \ingroup io
+      */
+    template <std::size_t N>
+    void swapByte(char* bytes);
+
+   /** \brief specialization of swapByte for dimension 1
+     * \param bytes char array to swap
+     **/
+    template <>
+    inline void swapByte<1>(char* bytes) {}
+
+  
+   /** \brief specialization of swapByte for dimension 2
+     * \param bytes char array to swap
+     **/
+    template <>
+    inline void swapByte<2>(char* bytes) { std::swap(bytes[0], bytes[1]); }
+  
+   /** \brief specialization of swapByte for dimension 4
+     * \param bytes char array to swap
+     **/
+    template <> 
+    inline void swapByte<4>(char* bytes)
+    {
+      std::swap(bytes[0], bytes[3]);
+      std::swap(bytes[1], bytes[2]);
+    }
+  
+   /** \brief specialization of swapByte for dimension 8
+     * \param bytes char array to swap
+     **/
+    template <>
+    inline void swapByte<8>(char* bytes)
+    {
+      std::swap(bytes[0], bytes[7]);
+      std::swap(bytes[1], bytes[6]);
+      std::swap(bytes[2], bytes[5]);
+      std::swap(bytes[3], bytes[4]);
+    }
+  
+    /** \brief swaps byte of an arbitrary type T casting it to char*
+      * \param value the data you want its bytes swapped
+      */
+    template <typename T>
+    void swapByte(T& value)
+    {
+      pcl::io::swapByte<sizeof(T)>(reinterpret_cast<char*>(&value));
+    }
+  }
 }
 
 #include "pcl/io/impl/io.hpp"

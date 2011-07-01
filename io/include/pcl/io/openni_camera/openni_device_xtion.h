@@ -57,13 +57,13 @@ class DeviceXtionPro : public OpenNIDevice
 {
   friend class OpenNIDriver;
 public:
-  DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node) throw (OpenNIException);
+  DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException);
   virtual ~DeviceXtionPro () throw ();
   //virtual void setImageOutputMode (const XnMapOutputMode& output_mode) throw (OpenNIException);
 
 protected:
   virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
-  virtual void getAvailableModes () throw (OpenNIException);
+  virtual void enumAvailableModes () throw (OpenNIException);
   virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
 
   virtual void startDepthStream () throw (OpenNIException);

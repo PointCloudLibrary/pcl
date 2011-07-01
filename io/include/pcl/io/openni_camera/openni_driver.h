@@ -70,6 +70,7 @@ public:
   unsigned updateDeviceList () throw ();
   inline unsigned getNumberDevices () const throw ();
   
+  boost::shared_ptr<OpenNIDevice> createVirtualDevice (const std::string& path, bool repeat, bool stream) const throw (OpenNIException);
   boost::shared_ptr<OpenNIDevice> getDeviceByIndex (unsigned index) const throw (OpenNIException);
 #ifndef _WIN32
   boost::shared_ptr<OpenNIDevice> getDeviceBySerialNumber (const std::string& serial_number) const throw (OpenNIException);
@@ -93,12 +94,13 @@ public:
 protected:
   struct DeviceContext
   {
-    DeviceContext (const xn::NodeInfo& device_node, xn::NodeInfo* image_node, xn::NodeInfo* depth_node);
+    DeviceContext (const xn::NodeInfo& device_node, xn::NodeInfo* image_node, xn::NodeInfo* depth_node, xn::NodeInfo* ir_node);
     DeviceContext (const xn::NodeInfo& device_node);
     DeviceContext (const DeviceContext&);
     xn::NodeInfo device_node;
     boost::shared_ptr<xn::NodeInfo> image_node;
     boost::shared_ptr<xn::NodeInfo> depth_node;
+    boost::shared_ptr<xn::NodeInfo> ir_node;
     boost::weak_ptr<OpenNIDevice> device;
   };
 

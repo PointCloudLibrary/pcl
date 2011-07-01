@@ -44,7 +44,7 @@
 #define AVG(a,b) (((int)(a) + (int)(b)) >> 1)
 #define AVG3(a,b,c) (((int)(a) + (int)(b) + (int)(c)) / 3)
 #define AVG4(a,b,c,d) (((int)(a) + (int)(b) + (int)(c) + (int)(d)) >> 2)
-#define WAVG4(a,b,c,d,x,y)  ( ( ((int)(a) + (int)(b)) * (int)(x) + ((int)(c) + (int)(d)) * (int)(y) ) / ( 2 * ((int)(x) + (int(y))) ) )
+#define WAVG4(a,b,c,d,x,y)  ( ( ((int)(a) + (int)(b)) * (int)(x) + ((int)(c) + (int)(d)) * (int)(y) ) / ( ((int)(x) + (int(y))) << 1 ) )
 using namespace std;
 
 namespace openni_wrapper
@@ -265,7 +265,6 @@ void ImageBayerGRBG::fillGrayscale (unsigned width, unsigned height, unsigned ch
     else
       THROW_OPENNI_EXCEPTION ("Unknown Debayering method: %d", (int)debayering_method_);
 
-    // if (method)
   }
   else // downsampling
   {

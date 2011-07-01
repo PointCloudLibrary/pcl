@@ -41,6 +41,7 @@
 #include <pcl/io/openni_camera/openni_device_kinect.h>
 #include <pcl/io/openni_camera/openni_device_primesense.h>
 #include <pcl/io/openni_camera/openni_device_xtion.h>
+#include <pcl/io/openni_camera/openni_device_oni.h>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
@@ -124,7 +125,7 @@ unsigned OpenNIDriver::updateDeviceList () throw ()
 
     for (xn::NodeInfoList::Iterator nodeIt = image_nodes.Begin (); nodeIt != image_nodes.End (); ++nodeIt)
     {
-      // check if to which device this node is assigned to
+      // check to which device this node is assigned to
       for (xn::NodeInfoList::Iterator neededIt = (*nodeIt).GetNeededNodes ().Begin (); neededIt != (*nodeIt).GetNeededNodes ().End (); ++neededIt)
       {
         if ( connection_string_map_.count ((*neededIt).GetCreationInfo ()) )
@@ -135,6 +136,26 @@ unsigned OpenNIDriver::updateDeviceList () throw ()
       }
     }
   }
+
+  // enumerate IR nodes
+  static xn::NodeInfoList ir_nodes;
+  status = context_.EnumerateProductionTrees (XN_NODE_TYPE_IR, NULL, ir_nodes, NULL);
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION ("enumerating IR generators failed. Reason: %s", xnGetStatusString (status));
+
+  for (xn::NodeInfoList::Iterator nodeIt = ir_nodes.Begin (); nodeIt != ir_nodes.End (); ++nodeIt)
+  {
+    // check if to which device this node is assigned to
+    for (xn::NodeInfoList::Iterator neededIt = (*nodeIt).GetNeededNodes ().Begin (); neededIt != (*nodeIt).GetNeededNodes ().End (); ++neededIt)
+    {
+      if ( connection_string_map_.count ((*neededIt).GetCreationInfo ()) )
+      {
+        unsigned device_index = connection_string_map_[(*neededIt).GetCreationInfo ()];
+        device_context_[device_index].ir_node.reset (new xn::NodeInfo(*nodeIt));
+      }
+    }
+  }
+
 #ifndef _WIN32
   // add context object for each found device
   for (unsigned deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)
@@ -206,7 +227,12 @@ OpenNIDriver::~OpenNIDriver () throw ()
   context_.Shutdown ();
 }
 
-  boost::shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) const throw (OpenNIException)
+boost::shared_ptr<OpenNIDevice> OpenNIDriver::createVirtualDevice (const string& path, bool repeat, bool stream) const throw (OpenNIException)
+{
+  return boost::shared_ptr<OpenNIDevice> (new DeviceONI (context_, path, repeat, stream));
+}
+ 
+boost::shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) const throw (OpenNIException)
 {
   using namespace std;
 
@@ -222,17 +248,19 @@ OpenNIDriver::~OpenNIDriver () throw ()
     if (vendor_id == 0x45e)
     {
       device = boost::shared_ptr<OpenNIDevice > (new DeviceKinect (context_, device_context_[index].device_node,
-                                                                   *device_context_[index].image_node, *device_context_[index].depth_node));
+                                                                   *device_context_[index].image_node, *device_context_[index].depth_node,
+                                                                   *device_context_[index].ir_node));
       device_context_[index].device = device;
     }
     else if (vendor_id == 0x1d27)
     {
       if (device_context_[index].image_node.get())
         device = boost::shared_ptr<OpenNIDevice > (new DevicePrimesense (context_, device_context_[index].device_node,
-                                                                         *device_context_[index].image_node, *device_context_[index].depth_node));
+                                                                         *device_context_[index].image_node, *device_context_[index].depth_node,
+                                                                         *device_context_[index].ir_node));
       else
         device = boost::shared_ptr<OpenNIDevice > (new DeviceXtionPro (context_, device_context_[index].device_node,
-                                                                         *device_context_[index].depth_node));
+                                                                       *device_context_[index].depth_node, *device_context_[index].ir_node));
       device_context_[index].device = device;
     }
     else
@@ -462,10 +490,11 @@ unsigned char OpenNIDriver::getAddress (unsigned index) const throw ()
   return address;
 }
 
-OpenNIDriver::DeviceContext::DeviceContext (const xn::NodeInfo& device, xn::NodeInfo* image, xn::NodeInfo* depth)
+OpenNIDriver::DeviceContext::DeviceContext (const xn::NodeInfo& device, xn::NodeInfo* image, xn::NodeInfo* depth, xn::NodeInfo* ir)
 : device_node (device)
 , image_node (image)
 , depth_node (depth)
+, ir_node (ir)
 {
 }
 
@@ -473,6 +502,7 @@ OpenNIDriver::DeviceContext::DeviceContext (const xn::NodeInfo& device)
 : device_node (device)
 , image_node ((xn::NodeInfo*)0)
 , depth_node ((xn::NodeInfo*)0)
+, ir_node ((xn::NodeInfo*)0)
 {
 }
 
@@ -480,6 +510,7 @@ OpenNIDriver::DeviceContext::DeviceContext (const DeviceContext& other)
 : device_node (other.device_node)
 , image_node (other.image_node)
 , depth_node (other.depth_node)
+, ir_node (other.ir_node)
 , device (other.device)
 {
 }

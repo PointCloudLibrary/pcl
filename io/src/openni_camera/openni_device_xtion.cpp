@@ -38,7 +38,7 @@
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/openni_camera/openni_device_xtion.h>
-#include <iostream>
+//#include <iostream>
 #include <sstream>
 #include <boost/thread/mutex.hpp>
 
@@ -48,10 +48,14 @@ using namespace boost;
 namespace openni_wrapper
 {
 
-DeviceXtionPro::DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node) throw (OpenNIException)
-: OpenNIDevice (context, device_node, depth_node)
+DeviceXtionPro::DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException)
+: OpenNIDevice (context, device_node, depth_node, ir_node)
 {
-  Init ();
+  // setup stream modes
+  enumAvailableModes ();
+  setDepthOutputMode (getDefaultDepthMode ());
+  setIROutputMode (getDefaultIRMode ());
+  
   lock_guard<mutex> depth_lock(depth_mutex_);
   XnStatus status = depth_generator_.SetIntProperty ("RegistrationType", 1);
   if (status != XN_STATUS_OK)
@@ -70,7 +74,7 @@ bool DeviceXtionPro::isImageResizeSupported (unsigned input_width, unsigned inpu
   return false;
 }
 
-void DeviceXtionPro::getAvailableModes () throw (OpenNIException)
+void DeviceXtionPro::enumAvailableModes () throw (OpenNIException)
 {
   XnMapOutputMode output_mode;
   available_image_modes_.clear();

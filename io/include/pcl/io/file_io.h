@@ -38,6 +38,7 @@
 #ifndef PCL_IO_FILE_IO_H_
 #define PCL_IO_FILE_IO_H_
 
+#include "pcl/win32_macros.h"
 #include "pcl/io/io.h"
 #include <boost/numeric/conversion/cast.hpp>
 #include <cmath>
@@ -292,13 +293,12 @@ namespace pcl
         * \param fields_count the current fields count
         * \param stream the ostringstream to copy into
         */
-      template <typename Type>
-        inline void
+      template <typename Type> inline void
       copyValueString (const sensor_msgs::PointCloud2 &cloud, unsigned int point_index, int point_size, unsigned int field_idx, unsigned int fields_count, std::ostream &stream)
       {
         Type value;
         memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
-        if (pcl_isnan(value))
+        if (pcl_isnan (value))
           stream << "nan";
         else
           stream << boost::numeric_cast<Type>(value);

@@ -64,7 +64,8 @@ public:
   typedef enum
   {
     BAYER_GRBG,
-    YUV422
+    YUV422,
+    RGB
   } Encoding;
 
   inline Image (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ();
