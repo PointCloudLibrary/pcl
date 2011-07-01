@@ -208,8 +208,8 @@ namespace pcl
       
       /** Getter for the transformation from the world system into the range image system
        *  (the sensor coordinate frame) */
-      inline Eigen::Affine3f&
-      getTransformationToRangeImageSystem () { return (to_range_image_system_); }
+      inline const Eigen::Affine3f&
+      getTransformationToRangeImageSystem () const { return (to_range_image_system_); }
       
       /** Setter for the transformation from the range image system
        *  (the sensor coordinate frame) into the world system */
