@@ -9,8 +9,8 @@ if(BUILD_TESTS)
                  FILES test_organized_index.cpp
                  LINK_WITH pcl_search pcl_io pcl_filters)
 	
-     PCL_ADD_TEST(octree octree 
-                 FILES test_octree.cpp
-                 LINK_WITH pcl_search pcl_io pcl_filters)
+   #  PCL_ADD_TEST(octree octree 
+    #             FILES test_octree.cpp
+     #            LINK_WITH pcl_search pcl_io pcl_filters)
 endif(BUILD_TESTS)
 
