@@ -100,6 +100,9 @@ namespace pcl
 #define M_E 2.7182818284590452354
 #endif
 
+#ifndef M_LN2
+#define M_LN2 0.693147180559945309417
+#endif
 
 /** Win32 doesn't seem to have rounding functions.
   * Therefore implement our own versions of these functions here.

@@ -38,12 +38,24 @@
 #ifndef PCL_REGISTRATION_IMPL_PYRAMID_FEATURE_MATCHING_H_
 #define PCL_REGISTRATION_IMPL_PYRAMID_FEATURE_MATCHING_H_
 
+#include <pcl/win32_macros.h>
+
 #include "pcl/registration/pyramid_feature_matching.h"
+
+/** \brief Helper function to calculate the binary logarithm
+  * \param n_arg: some value
+  * \return binary logarithm (log2) of argument n_arg
+  */
+__inline double
+Log2 (double n_arg)
+{
+  return log (n_arg) / M_LN2;
+}
 
 template <typename PointFeature> void
 pcl::PyramidFeatureMatching<PointFeature>::initialize ()
 {
-  float D = 0.0;
+  float D = 0.0f;
   for (std::vector<std::pair<float, float> >::iterator range_it = dimension_range.begin (); range_it != dimension_range.end (); ++range_it)
   {
     float aux = range_it->first - range_it->second;
@@ -51,15 +63,15 @@ pcl::PyramidFeatureMatching<PointFeature>::initialize ()
     dimension_length.push_back (aux);
   }
   D = sqrt (D);
-  levels = ceil (log2 (D));
+  levels = ceil (Log2 (D));
   PCL_INFO ("PyramidFeatureMatching: pyramid will have %u levels with a hyper-parallelepiped diagonal size of %f\n", levels, D);
 
   for (size_t level_i = 0; level_i < levels; ++level_i)
   {
     std::vector<size_t> bins_per_dimension;
     for (size_t dim_i = 0; dim_i < dimensions; ++dim_i) {
-      bins_per_dimension.push_back (ceil (dimension_length[dim_i] / (pow (2, level_i) * sqrt (dimensions))));
-      bin_step.push_back (pow (2, level_i) * sqrt (dimensions));
+      bins_per_dimension.push_back (ceil (dimension_length[dim_i] / (pow (2.0f, (int) level_i) * sqrt ((float) dimensions))));
+      bin_step.push_back (pow (2.0f, (int) level_i) * sqrt ((float) dimensions));
     }
     hist_levels.push_back (PyramidHistogram (bins_per_dimension));
   }
@@ -89,7 +101,7 @@ pcl::PyramidFeatureMatching<PointFeature>::at (std::vector<float>& feature,
 
 
 template <typename PointFeature> void
-pcl::PyramidFeatureMatching<PointFeature>::setInputCloud (const PyramidFeatureMatching<PointFeature>::FeatureCloudConstPtr &a_feature_cloud)
+pcl::PyramidFeatureMatching<PointFeature>::setInputCloud (const FeatureCloudConstPtr &a_feature_cloud)
 {
 
 }

@@ -66,8 +66,8 @@ namespace pcl
   class PyramidFeatureMatching : public PCLBase<PointFeature>
   {
     public:
-      typedef PointCloud<PointFeature> FeatureCloud;
-      typedef typename PointCloud<PointFeature>::ConstPtr FeatureCloudConstPtr;
+      typedef pcl::PointCloud<PointFeature> FeatureCloud;
+      typedef typename pcl::PointCloud<PointFeature>::ConstPtr FeatureCloudConstPtr;
 
       using PCLBase<PointFeature>::input_;
 
