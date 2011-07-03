@@ -146,7 +146,7 @@ namespace pcl
           * \param model the resultant model
           */
         inline void 
-        getModel (std::vector<int> &model) { model = model_; }
+        getModel (Indices &model) { model = model_; }
 
         /** \brief Return the best set of inliers found so far for this model. 
           * \param inliers the resultant set of inliers

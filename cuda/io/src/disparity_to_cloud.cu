@@ -417,17 +417,17 @@ DisparityToCloud::compute (const boost::shared_ptr<openni_wrapper::DepthImage>& 
   //*output << *data;
 }
 
-template void
+template PCL_EXPORTS void
 DisparityToCloud::compute<Host> (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image,
                                      const boost::shared_ptr<openni_wrapper::Image>& rgb_image,
                                      float constant,
-                                     typename PointCloudAOS<Host>::Ptr &output,
+                                     PointCloudAOS<Host>::Ptr &output,
                                      bool downsample, int stride, int, int);
-template void
+template PCL_EXPORTS void
 DisparityToCloud::compute<Device> (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image,
                                      const boost::shared_ptr<openni_wrapper::Image>& rgb_image,
                                      float constant,
-                                     typename PointCloudAOS<Device>::Ptr &output,
+                                     PointCloudAOS<Device>::Ptr &output,
                                      bool downsample, int stridem, int, int);
 } // namespace
 } // namespace

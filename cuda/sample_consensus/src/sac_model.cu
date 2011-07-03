@@ -35,6 +35,12 @@
  *
  */
 
+#ifdef WIN32
+# define WIN32_LEAN_AND_MEAN
+#endif
+
+#include <pcl/pcl_macros.h>
+
 #include "pcl/cuda/sample_consensus/sac_model.h"
 #include "pcl/cuda/time_gpu.h"
 
@@ -136,9 +142,9 @@ namespace pcl
                          thrust::make_zip_iterator (thrust::make_tuple (indices_stencil_->begin(), indices_stencil->begin ())) + indices_stencil_->size(),
                          indices_stencil_->begin (),
                          DeleteIndices ());
-      int pts_deleted = thrust::count (indices_stencil_->begin (), indices_stencil_->end (), -1);
+      int pts_deleted = (int) thrust::count (indices_stencil_->begin (), indices_stencil_->end (), -1);
 
-      return indices_stencil_->size ()- pts_deleted;
+      return (int) indices_stencil_->size ()- pts_deleted;
     }
 
     template <template <typename> class Storage> int
@@ -151,7 +157,7 @@ namespace pcl
                          thrust::make_zip_iterator (thrust::make_tuple (inliers->begin(), inliers_delete->begin ())) + inliers_delete->size(),
                          inliers->begin (),
                          DeleteIndices ());
-      int i = thrust::count (inliers->begin (), inliers->end (), -1);
+      int i = (int) thrust::count (inliers->begin (), inliers->end (), -1);
       return (int)inliers->size() - i;
     }
 
@@ -169,8 +175,8 @@ namespace pcl
     }
 
 
-    template class SampleConsensusModel<Device>;
-    template class SampleConsensusModel<Host>;
+    template class PCL_EXPORTS SampleConsensusModel<Device>;
+    template class PCL_EXPORTS SampleConsensusModel<Host>;
 
   } // namespace
 } // namespace

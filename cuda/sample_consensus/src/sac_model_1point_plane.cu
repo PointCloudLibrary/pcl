@@ -35,6 +35,8 @@
  *
  */
 
+#include <pcl/pcl_macros.h>
+
 #include <pcl/cuda/sample_consensus/sac_model_1point_plane.h>
 #include <pcl/cuda/common/eigen.h>
 #include <pcl/cuda/cutil_math.h>
@@ -942,8 +944,8 @@ namespace pcl
 
 
     // explicit template instantiation for device and host
-    template class SampleConsensusModel1PointPlane<Device>;
-    template class SampleConsensusModel1PointPlane<Host>;
+    template class PCL_EXPORTS SampleConsensusModel1PointPlane<Device>;
+    template class PCL_EXPORTS SampleConsensusModel1PointPlane<Host>;
 
   } // namespace
 } // namespace

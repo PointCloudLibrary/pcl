@@ -38,6 +38,7 @@
 // pcl::cuda includes
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/win32_macros.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
@@ -312,7 +313,7 @@ class MultiRansac
       //
       while (!viewer.wasStopped ())
       {
-        sleep (1);
+        pcl_sleep (1);
       }
 
       //filegrabber->stop ();
@@ -332,7 +333,7 @@ class MultiRansac
 int 
 main (int argc, char **argv)
 {
-  sleep (1);
+  pcl_sleep (1);
   bool use_device = false;
   bool use_viewer = true;
   if (argc >= 2)

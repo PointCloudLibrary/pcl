@@ -82,7 +82,7 @@ class KinectViewerCuda
       
       while (true)
       {
-        sleep (1);
+        pcl_sleep (1);
       }
 
       interface->stop ();

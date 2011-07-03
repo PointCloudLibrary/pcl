@@ -257,38 +257,38 @@ class Segmentation
         filegrabber->start ();
         while (go_on)//!viewer.wasStopped () && go_on)
         {
-          sleep (1);
+          pcl_sleep (1);
         }
         filegrabber->stop ();
       }
       else
       {
-        pcl::Grabber* interface = new pcl::OpenNIGrabber();
+        pcl::Grabber* grabber = new pcl::OpenNIGrabber();
 
         boost::signals2::connection c;
         if (use_device)
         {
           std::cerr << "[Segmentation] Using GPU..." << std::endl;
           boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&Segmentation::cloud_cb<Device>, this, _1, _2, _3);
-          c = interface->registerCallback (f);
+          c = grabber->registerCallback (f);
         }
         else
         {
 //          std::cerr << "[Segmentation] Using CPU..." << std::endl;
 //          boost::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = boost::bind (&Segmentation::cloud_cb<Host>, this, _1, _2, _3);
-//          c = interface->registerCallback (f);
+//          c = grabber->registerCallback (f);
         }
 
         viewer.runOnVisualizationThread (boost::bind(&Segmentation::viz_cb, this, _1), "viz_cb");
 
-        interface->start ();
+        grabber->start ();
         
         while (!viewer.wasStopped ())
         {
-          sleep (1);
+          pcl_sleep (1);
         }
 
-        interface->stop ();
+        grabber->stop ();
       }
     }
 

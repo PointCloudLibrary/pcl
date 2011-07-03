@@ -46,6 +46,8 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
+
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include <opencv2/gpu/gpu.hpp>
@@ -238,7 +240,7 @@ inline int dist2(const cv::Vec2s& lhs, const cv::Vec2s& rhs)
 
 } // namespace
 
-void meanShiftSegmentation(const cv::gpu::GpuMat& src, cv::Mat& dst, int sp, int sr, int minsize, detail::DjSets &comps, cv::TermCriteria criteria = cv::TermCriteria(cv::TermCriteria::MAX_ITER + cv::TermCriteria::EPS, 5, 1) );
+PCL_EXPORTS void meanShiftSegmentation(const cv::gpu::GpuMat& src, cv::Mat& dst, int sp, int sr, int minsize, detail::DjSets &comps, cv::TermCriteria criteria = cv::TermCriteria(cv::TermCriteria::MAX_ITER + cv::TermCriteria::EPS, 5, 1) );
 
 } // namespace
 } // namespace

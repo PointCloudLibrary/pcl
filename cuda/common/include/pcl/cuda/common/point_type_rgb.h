@@ -39,6 +39,10 @@
 #include <cuda.h>
 #include <pcl/cuda/cutil_math.h>
 
+#ifdef RGB
+# undef RGB
+#endif
+
 namespace pcl
 {
 namespace cuda

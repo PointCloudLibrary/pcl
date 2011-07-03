@@ -41,6 +41,8 @@
 #include <string>
 
 #ifdef WIN32
+# define NOMINMAX
+# include <Windows.h>
 # include <time.h>
 #else
 # include <sys/time.h>
@@ -131,7 +133,7 @@ inline pcl::cuda::ScopeTimeCPU::~ScopeTimeCPU ()
 {
   double end_time = pcl::cuda::getTime ();
   double duration = end_time - start_time_;
-  std::cerr << title_ << " took " << 1000 * duration << "ms. ";
+  std::cerr << title_ << " took " << 1000 * duration << "ms. " << std::endl;
 }
 
 #endif  //#ifndef PCL_NORMS_H_

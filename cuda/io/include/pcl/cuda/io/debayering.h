@@ -96,17 +96,18 @@ namespace pcl
     class DebayeringDownsampling
     {
       public:
+        typedef typename Storage<OpenNIRGB>::type RGBImageType;
         void
-        compute (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, typename Storage<OpenNIRGB>::type& rgb_image) const;
+        compute (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, RGBImageType& rgb_image) const;
     };
   
     template<template <typename> class Storage>
     class Debayering
     {
       public:
-      	
+        typedef typename Storage<OpenNIRGB>::type RGBImageType;
         void
-        computeBilinear (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, typename Storage<OpenNIRGB>::type& rgb_image) const;
+        computeBilinear (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, RGBImageType& rgb_image) const;
         
         //void
         //computeEdgeAware (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, thrust::host_vector<OpenNIRGB>& rgb_image) const;

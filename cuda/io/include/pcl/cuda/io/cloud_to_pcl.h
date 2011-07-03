@@ -40,6 +40,8 @@
 
 #include "pcl/cuda/point_cloud.h"
 
+#include <pcl/pcl_macros.h>
+
 namespace pcl
 {
   template <typename T>
@@ -51,21 +53,21 @@ namespace pcl
   namespace cuda
   {
     // convert point cloud with color and normals
-    void
+    PCL_EXPORTS void
     toPCL (const PointCloudAOS<Host> &input, const thrust::host_vector<float4> &normals, pcl::PointCloud<pcl::PointXYZRGBNormal> &output);
-    void
+    PCL_EXPORTS void
     toPCL (const PointCloudAOS<Device> &input, const thrust::device_vector<float4> &normals, pcl::PointCloud<pcl::PointXYZRGBNormal> &output);
   
     // convert point cloud with color
-    void
+    PCL_EXPORTS void
     toPCL (const PointCloudAOS<Host> &input, pcl::PointCloud<pcl::PointXYZRGB> &output);
-    void
+    PCL_EXPORTS void
     toPCL (const PointCloudAOS<Device> &input, pcl::PointCloud<pcl::PointXYZRGB> &output);
   
     // convert pcl point cloud with color to pcl::cuda cloud
-    void
+    PCL_EXPORTS void
     fromPCL (const pcl::PointCloud<pcl::PointXYZRGB> &input, PointCloudAOS<Host> &output);
-    void                                                                                  
+    PCL_EXPORTS void
     fromPCL (const pcl::PointCloud<pcl::PointXYZRGB> &input, PointCloudAOS<Device> &output);
   } // namespace
 } // namespace

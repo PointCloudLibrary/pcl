@@ -120,5 +120,10 @@ __inline float pcl_round(float number)
 #define pcl_lrint(x) ((long int) pcl_round(x))
 #define pcl_lrintf(x) ((long int) pcl_round(x))
 
+#ifdef WIN32
+#define pcl_sleep(x) Sleep(1000*(x))
+#else
+#define pcl_sleep(x) sleep(x)
+#endif
 
 #endif  //#ifndef PCL_WIN32_MACROS_H_

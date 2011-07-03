@@ -63,7 +63,7 @@ namespace pcl
     SampleConsensusModelPlane<Storage>::getSamples (int &iterations, Indices &samples)
     {
       samples.resize (3);
-      float trand = indices_->size () / (RAND_MAX + 1.0);
+      float trand = indices_->size () / (RAND_MAX + 1.0f);
       for (int i = 0; i < 3; ++i)
       {
         int idx = (int)(rngl_ () * trand);
@@ -116,7 +116,7 @@ namespace pcl
       coeff.x = coeff.y = coeff.z = coeff.w = bad_value;
 
       int3 samples;
-      float trand = nr_indices / (RAND_MAX + 1.0);
+      float trand = nr_indices / (RAND_MAX + 1.0f);
       thrust::default_random_engine rng (t);
     //  rng.discard (10);
       samples.x = indices[(int)(rng () * trand)];
@@ -174,7 +174,7 @@ namespace pcl
       thrust::transform (index_sequence_begin, 
                          index_sequence_begin + max_iterations, 
                          randoms.begin (), 
-                         parallel_random_generator (time (0)));
+                         parallel_random_generator ((int) time (0)));
       
       thrust::counting_iterator<int> first (0);
       // Input: Point Cloud, Indices
@@ -184,7 +184,7 @@ namespace pcl
                  h.begin (), 
                  CreatePlaneHypothesis<Storage> (thrust::raw_pointer_cast (&input_->points[0]), 
                                                  thrust::raw_pointer_cast (&(*indices_)[0]),
-                                                 indices_->size (), std::numeric_limits<float>::quiet_NaN ()));
+                                                 (int) indices_->size (), std::numeric_limits<float>::quiet_NaN ()));
       return (true);
     }
 
@@ -242,7 +242,7 @@ namespace pcl
       coefficients.z = model_coefficients[2];
       coefficients.w = model_coefficients[3];
 
-      return count_if (
+      return (int) count_if (
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
                              indices_->size (),
@@ -257,7 +257,7 @@ namespace pcl
       if (isnan (((float4)h[idx]).x))
         return (0);
 
-      return 
+      return (int)
         (thrust::count_if (
           thrust::make_zip_iterator (thrust::make_tuple (input_->points.begin (), indices_->begin ())),
           thrust::make_zip_iterator (thrust::make_tuple (input_->points.begin (), indices_->begin ())) + 
@@ -279,7 +279,7 @@ namespace pcl
         return 0;
       }
 
-      int nr_points = indices_->size ();
+      int nr_points = (int) indices_->size ();
       if (!inliers_stencil)
         inliers_stencil.reset (new Indices());
 
@@ -308,7 +308,7 @@ namespace pcl
       //it = remove_copy (inliers_stencil->begin (), inliers_stencil->end (), inliers->begin (), -1);
       
       inliers->resize (it - inliers->begin ());
-      return inliers->size();
+      return (int) inliers->size();
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -325,7 +325,7 @@ namespace pcl
         return;
       }*/
 
-      int nr_points = indices_->size ();
+      int nr_points = (int) indices_->size ();
 
       if (!inliers_stencil)
         inliers_stencil.reset (new Indices());
@@ -353,7 +353,7 @@ namespace pcl
       // Copy data
       typename Indices::iterator it = copy_if (inliers_stencil->begin (), inliers_stencil->end (), inliers->begin (), isInlier ());
       inliers->resize (it - inliers->begin ());
-      return inliers->size ();
+      return (int) inliers->size ();
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -370,7 +370,7 @@ namespace pcl
         return;
       }*/
 
-      int nr_points = indices_->size ();
+      int nr_points = (int) indices_->size ();
 
       if (!inliers_stencil)
         inliers_stencil.reset (new Indices());
@@ -388,7 +388,7 @@ namespace pcl
                              nr_points,
           inliers_stencil->begin (), 
           CheckPlanarInlier (coefficients, threshold));
-      return nr_points - thrust::count (inliers_stencil->begin (), inliers_stencil->end (), -1);
+      return nr_points - (int) thrust::count (inliers_stencil->begin (), inliers_stencil->end (), -1);
     }
 
     template class SampleConsensusModelPlane<Device>;

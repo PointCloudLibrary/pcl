@@ -35,8 +35,10 @@
  *
  */
 
+#include <pcl/pcl_macros.h>
+
 #include "pcl/cuda/point_cloud.h"
-#include "pcl/cuda/io/extract_indices.h"
+//#include "pcl/cuda/io/extract_indices.h"
 #include "pcl/cuda/io/predicate.h"
 #include <thrust/copy.h>
 
@@ -135,42 +137,44 @@ void colorCloud  (typename PointCloudAOS<Storage>::Ptr &input,
                      input->points.begin (), ColorCloudFromImage (thrust::raw_pointer_cast<char4>(&colors[0])));
 }
 
-template void extractIndices<Host>(const PointCloudAOS<Host>::Ptr &input,
+
+
+template PCL_EXPORTS void extractIndices<Host>(const PointCloudAOS<Host>::Ptr &input,
                                                        Host<int>::type& indices, 
                                                        PointCloudAOS<Host>::Ptr &output);
-template void extractIndices<Device> (const PointCloudAOS<Device>::Ptr &input,
+template PCL_EXPORTS void extractIndices<Device> (const PointCloudAOS<Device>::Ptr &input,
                                                           Device<int>::type& indices, 
                                                           PointCloudAOS<Device>::Ptr &output);
 
-template void removeIndices<Host>(const PointCloudAOS<Host>::Ptr &input,
+template PCL_EXPORTS void removeIndices<Host>(const PointCloudAOS<Host>::Ptr &input,
                                                        Host<int>::type& indices, 
                                                        PointCloudAOS<Host>::Ptr &output);
-template void removeIndices<Device> (const PointCloudAOS<Device>::Ptr &input,
+template PCL_EXPORTS void removeIndices<Device> (const PointCloudAOS<Device>::Ptr &input,
                                                           Device<int>::type& indices, 
                                                           PointCloudAOS<Device>::Ptr &output);
 
-template void extractIndices<Host>(const PointCloudAOS<Host>::Ptr &input,
+template PCL_EXPORTS void extractIndices<Host>(const PointCloudAOS<Host>::Ptr &input,
                                                        Host<int>::type& indices, 
                                                        PointCloudAOS<Host>::Ptr &output, const OpenNIRGB& color);
-template void extractIndices<Device> (const PointCloudAOS<Device>::Ptr &input,
+template PCL_EXPORTS void extractIndices<Device> (const PointCloudAOS<Device>::Ptr &input,
                                                           Device<int>::type& indices, 
                                                           PointCloudAOS<Device>::Ptr &output, const OpenNIRGB& color);
 
-template void removeIndices<Host>(const PointCloudAOS<Host>::Ptr &input,
+template PCL_EXPORTS void removeIndices<Host>(const PointCloudAOS<Host>::Ptr &input,
                                                        Host<int>::type& indices, 
                                                        PointCloudAOS<Host>::Ptr &output, const OpenNIRGB& color);
-template void removeIndices<Device> (const PointCloudAOS<Device>::Ptr &input,
+template PCL_EXPORTS void removeIndices<Device> (const PointCloudAOS<Device>::Ptr &input,
                                                           Device<int>::type& indices, 
                                                           PointCloudAOS<Device>::Ptr &output, const OpenNIRGB& color);
 
-template void colorIndices<Host>(PointCloudAOS<Host>::Ptr &input,
+template PCL_EXPORTS void colorIndices<Host> (PointCloudAOS<Host>::Ptr &input,
                                                        boost::shared_ptr<Host<int>::type> indices, 
                                                        const OpenNIRGB& color);
-template void colorIndices<Device> (PointCloudAOS<Device>::Ptr &input,
+template PCL_EXPORTS void colorIndices<Device> (PointCloudAOS<Device>::Ptr &input,
                                                           boost::shared_ptr<Device<int>::type> indices, 
                                                           const OpenNIRGB& color);
-template void colorCloud<Host>  (PointCloudAOS<Host>::Ptr &input, Host<char4>::type &colors);
-template void colorCloud<Device>(PointCloudAOS<Device>::Ptr &input, Device<char4>::type &colors);
+template PCL_EXPORTS void colorCloud<Host>  (PointCloudAOS<Host>::Ptr &input, Host<char4>::type &colors);
+template PCL_EXPORTS void colorCloud<Device>(PointCloudAOS<Device>::Ptr &input, Device<char4>::type &colors);
 
 } // namespace
 } // namespace

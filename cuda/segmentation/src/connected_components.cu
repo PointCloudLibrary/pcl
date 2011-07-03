@@ -35,9 +35,10 @@
  *
  */
 
+#include <pcl/pcl_macros.h>
 
 #include <pcl/cuda/point_cloud.h>
-#include <pcl/cuda/segmentation/connected_components.h>
+//#include <pcl/cuda/segmentation/connected_components.h>
 #include <thrust/transform.h>
 
 //struct ConnectedComponentSegmentation
@@ -169,25 +170,25 @@ namespace pcl
     }
 
 
-    template void markInliers<Device> (const typename PointCloudAOS<Device>::ConstPtr &input, Device<int>::type &region_mask, std::vector<boost::shared_ptr<Device<int>::type> > inlier_stencils);
-    template void markInliers<Host>   (const typename PointCloudAOS<Host>  ::ConstPtr &input, Host<int>::type &region_mask, std::vector<boost::shared_ptr<Host<int>::type> > inlier_stencils);
+    template PCL_EXPORTS void markInliers<Device> (const typename PointCloudAOS<Device>::ConstPtr &input, Device<int>::type &region_mask, std::vector<boost::shared_ptr<Device<int>::type> > inlier_stencils);
+    template PCL_EXPORTS void markInliers<Host>   (const typename PointCloudAOS<Host>  ::ConstPtr &input, Host<int>::type &region_mask, std::vector<boost::shared_ptr<Host<int>::type> > inlier_stencils);
 
 
-    template void createIndicesImage<Device,
+    template PCL_EXPORTS void createIndicesImage<Device,
                                      StoragePointer<Device,unsigned char>::type,
                                      Device<int>::type>
       (StoragePointer<Device,unsigned char>::type &dst, typename Device<int>::type&region_mask);
-    template void createIndicesImage<Host,
+    template PCL_EXPORTS void createIndicesImage<Host,
                                      typename StoragePointer<Host,unsigned char>::type,
                                      typename Host<int>::type>
       (typename StoragePointer<Host,unsigned char>::type &dst, typename Host<int>::type &region_mask);
 
 
-    template void createNormalsImage<Device,
+    template PCL_EXPORTS void createNormalsImage<Device,
                                      StoragePointer<Device,char4>::type,
                                      Device<float4>::type>
       (const StoragePointer<Device,char4>::type &dst, typename Device<float4>::type&region_mask);
-    template void createNormalsImage<Host,
+    template PCL_EXPORTS void createNormalsImage<Host,
                                      typename StoragePointer<Host,char4>::type,
                                      typename Host<float4>::type>
       (const typename StoragePointer<Host,char4>::type &dst, typename Host<float4>::type &region_mask);

@@ -35,6 +35,8 @@
  *
  */
 
+#include <pcl/pcl_macros.h>
+
 #include "pcl/cuda/io/debayering.h"
 #include <thrust/sequence.h>
 #include <iostream>
@@ -212,7 +214,7 @@ namespace pcl
     }*/
     
     template<template <typename> class Storage>
-    void Debayering<Storage>::computeBilinear (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, typename Storage<OpenNIRGB>::type& rgb_image) const
+    void Debayering<Storage>::computeBilinear (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, RGBImageType& rgb_image) const
     {
     	//pcl::ScopeTime t ("computeBilinear");
     	typename Storage<unsigned char>::type bayer_data (bayer_image->getWidth () * bayer_image->getHeight ());
@@ -256,7 +258,7 @@ namespace pcl
     
     
     template<template <typename> class Storage>
-    void DebayeringDownsampling<Storage>::compute (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, typename Storage<OpenNIRGB>::type& rgb_image) const
+    void DebayeringDownsampling<Storage>::compute (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, RGBImageType& rgb_image) const
     {
     	//pcl::ScopeTime t ("computeBilinear");
     	typename Storage<unsigned char>::type bayer_data (bayer_image->getWidth () * bayer_image->getHeight ());
@@ -294,10 +296,10 @@ namespace pcl
     	thrust::transform ( indices.begin(), indices.end(), rgb_image.begin(), DebayerEdgeAware (bayer_image) );
     }*/
     
-    template class Debayering<Device>;
-    template class Debayering<Host>;
-    template class DebayeringDownsampling<Device>;
-    template class DebayeringDownsampling<Host>;
+    template class PCL_EXPORTS Debayering<Device>;
+    template class PCL_EXPORTS Debayering<Host>;
+    template class PCL_EXPORTS DebayeringDownsampling<Device>;
+    template class PCL_EXPORTS DebayeringDownsampling<Host>;
   
   } // namespace
 } // namespace

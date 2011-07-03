@@ -45,6 +45,8 @@
 #include "pcl/cuda/point_cloud.h"
 #include <thrust/random/linear_congruential_engine.h>
 
+#include <pcl/win32_macros.h>
+
 namespace pcl
 {
   namespace cuda
@@ -69,7 +71,14 @@ namespace pcl
     struct isNaNPoint
     {
         __inline__ __host__ __device__ bool 
-        operator ()(PointXYZRGB pt) { return (isnan (pt.x) | isnan (pt.y) | isnan (pt.z)); }
+        operator ()(PointXYZRGB pt) 
+        { 
+#ifdef __CUDA_ARCH__
+            return (isnan (pt.x) | isnan (pt.y) | isnan (pt.z)); 
+#else
+            return (pcl_isnan (pt.x) | pcl_isnan (pt.y) | pcl_isnan (pt.z)) == 1; 
+#endif
+        }
     };
 
     /** \brief @b SampleConsensusModel represents the base model class. All sample consensus models must inherit from 
@@ -108,7 +117,7 @@ namespace pcl
           * \param cloud the input point cloud dataset
           */
         SampleConsensusModel (const PointCloudConstPtr &cloud) : 
-          radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX)
+          radius_min_ (-FLT_MAX), radius_max_ (FLT_MAX)
         {
           // Sets the input cloud and creates a vector of "fake" indices
           setInputCloud (cloud);

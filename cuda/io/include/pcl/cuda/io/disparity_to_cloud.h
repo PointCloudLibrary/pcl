@@ -87,7 +87,7 @@ namespace cuda
 
   /** \brief Disparity to PointCloudAOS generator.
     */
-  class DisparityToCloud
+  class PCL_EXPORTS DisparityToCloud
   {
     public:
 //      // compute using ROS images, Device output

@@ -13,20 +13,24 @@ PCL_SET_SUBSYS_INCLUDE_DIR(${SUBSYS_NAME} ${SUBSYS_PATH})
 
 find_package(OpenCV)
 
-if (OpenCV_FOUND)
-set(srcs
-    src/connected_components.cu
-    src/mssegmentation.cpp
-    )
-else (OpenCV_FOUND)
-set(srcs
-    src/connected_components.cu
-    )
-endif (OpenCV_FOUND)
-
 set(incs 
     include/pcl/cuda/segmentation/connected_components.h
     )
+
+set(srcs
+    src/connected_components.cu
+    )
+
+if (OpenCV_FOUND)
+    set(incs 
+        ${incs}
+        include/pcl/cuda/segmentation/mssegmentation.h
+    )
+    set(srcs
+        ${srcs}
+        src/mssegmentation.cpp
+    )
+endif (OpenCV_FOUND)
 
 set(LIB_NAME pcl_${SUBSYS_NAME})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)

@@ -98,10 +98,13 @@ namespace pcl
       float operator () (int idx)
       {
         float depth = data_ [idx];
-        
+#ifdef __CUDA_ARCH__        
         if (depth == 0 | isnan(depth) | isinf(depth))
           return 0;
-
+#else
+        if (depth == 0 | pcl_isnan(depth) | pcl_isinf(depth))
+          return 0;
+#endif
         int xIdx = idx % width_;
         int yIdx = idx / width_;
         // TODO: test median
@@ -169,10 +172,13 @@ namespace pcl
         int nr = dhel.x;
         float min_d = dhel.y;
         float max_d = dhel.z;
-        
+#ifdef __CUDA_ARCH__        
         if (depth == 0 | isnan(depth) | isinf(depth))
           return 0.0f;
-
+#else
+        if (depth == 0 | pcl_isnan(depth) | pcl_isinf(depth))
+          return 0.0f;
+#endif
         int xIdx = idx % width_;
         int yIdx = idx / width_;
 
@@ -237,10 +243,13 @@ namespace pcl
         float3 operator () (int idx)
       {
         float disparity = depth2disparity (data_ [idx]);
-        
+#ifdef __CUDA_ARCH__         
         if (disparity == 0 | isnan(disparity) | isinf(disparity))
           return make_float3 (0,0,0);
-
+#else
+        if (disparity == 0 | pcl_isnan(disparity) | pcl_isinf(disparity))
+          return make_float3 (0,0,0);
+#endif
         int xIdx = idx % width_;
         int yIdx = idx / width_;
 

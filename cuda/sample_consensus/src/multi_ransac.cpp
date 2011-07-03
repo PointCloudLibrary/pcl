@@ -35,6 +35,8 @@
  *
  */
 
+#include <pcl/pcl_macros.h>
+
 #include "pcl/cuda/sample_consensus/multi_ransac.h"
 #include "pcl/cuda/time_gpu.h"
 #include <stdio.h>
@@ -340,8 +342,8 @@ namespace pcl
       return (false);
     }
 
-    template class MultiRandomSampleConsensus<Device>;
-    template class MultiRandomSampleConsensus<Host>;
+    template class PCL_EXPORTS MultiRandomSampleConsensus<Device>;
+    template class PCL_EXPORTS MultiRandomSampleConsensus<Host>;
 
   } // namespace
 } // namespace

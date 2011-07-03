@@ -38,6 +38,8 @@
 #include <pcl/cuda/point_cloud.h>
 #include "pcl/cuda/io/host_device.h"
 
+#include <pcl/pcl_macros.h>
+
 namespace pcl
 {
   namespace cuda
@@ -64,12 +66,12 @@ namespace pcl
     {
       output << input;
     }
-    
-    template typename PointCloudAOS<Device>::Ptr toStorage <Host, Device> (const PointCloudAOS<Host> &input);
-    template typename PointCloudAOS<Device>::Ptr toStorage <Device, Device> (const PointCloudAOS<Device> &input);
-    template typename PointCloudAOS<Host>::Ptr toStorage <Host, Host> (const PointCloudAOS<Host> &input);
-    template typename PointCloudAOS<Host>::Ptr toStorage <Device, Host> (const PointCloudAOS<Device> &input);
-  
+
+    template PCL_EXPORTS PointCloudAOS<Device>::Ptr toStorage <Host, Device> (const PointCloudAOS<Host> &input);
+    template PCL_EXPORTS PointCloudAOS<Device>::Ptr toStorage <Device, Device> (const PointCloudAOS<Device> &input);
+    template PCL_EXPORTS PointCloudAOS<Host>::Ptr toStorage <Host, Host> (const PointCloudAOS<Host> &input);
+    template PCL_EXPORTS PointCloudAOS<Host>::Ptr toStorage <Device, Host> (const PointCloudAOS<Device> &input);
+
   } // namespace
 } // namespace
 
