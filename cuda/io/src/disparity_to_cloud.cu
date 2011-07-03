@@ -265,7 +265,7 @@ DisparityToCloud::compute (const boost::shared_ptr<openni_wrapper::DepthImage>& 
 
     int output_size = output->width * output->height;
     float baseline = 0.075f;
-    float disp_thresh = 0.001/8.0f;
+    float disp_thresh = 0.001f/8.0f;
 
     if (smoothing_nr_iterations > 0)
     {

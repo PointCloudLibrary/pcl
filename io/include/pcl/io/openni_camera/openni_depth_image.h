@@ -137,7 +137,7 @@ unsigned DepthImage::getFrameID () const throw ()
 
 unsigned long DepthImage::getTimeStamp () const throw ()
 {
-  return depth_md_->Timestamp ();
+  return (unsigned long) depth_md_->Timestamp ();
 }
 } // namespace
 #endif

@@ -61,7 +61,7 @@ void extractIndices (const typename PointCloudAOS<Storage>::Ptr &input,
   typename PointCloudAOS<Storage>::iterator it = thrust::copy_if (input->points.begin (), input->points.end (), indices.begin (), output->points.begin (), isInlier ());
   output->points.resize (it - output->points.begin ());
 
-  output->width = output->points.size();
+  output->width = (unsigned int) output->points.size();
   output->height = 1;
   output->is_dense = false;
 }
@@ -79,7 +79,7 @@ void removeIndices  (const typename PointCloudAOS<Storage>::Ptr &input,
   typename PointCloudAOS<Storage>::iterator it = thrust::copy_if (input->points.begin (), input->points.end (), indices.begin (), output->points.begin (), isNotInlier ());
   output->points.resize (it - output->points.begin ());
 
-  output->width = output->points.size();
+  output->width = (unsigned int) output->points.size();
   output->height = 1;
   output->is_dense = false;
 }

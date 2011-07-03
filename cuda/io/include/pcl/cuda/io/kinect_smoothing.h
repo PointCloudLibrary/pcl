@@ -169,7 +169,7 @@ namespace pcl
         float depth = thrust::get<0> (t);
         int idx = thrust::get<1> (t);
         float3 dhel = disparity_helper_map_[idx];
-        int nr = dhel.x;
+        int nr = (int) dhel.x;
         float min_d = dhel.y;
         float max_d = dhel.z;
 #ifdef __CUDA_ARCH__        
@@ -283,7 +283,7 @@ namespace pcl
           }
         }
         
-        return make_float3 (counter, 
+        return make_float3 ((float) counter, 
                             disparity2depth (disparity + disp_thresh_),
                             disparity2depth (disparity - disp_thresh_));
       }

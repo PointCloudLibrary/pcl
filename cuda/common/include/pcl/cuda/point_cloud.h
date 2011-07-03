@@ -168,7 +168,7 @@ namespace pcl
         at (int u, int v) const
         {
           if (this->height > 1)
-            return (points.at (v * this->width + u));
+            return (points[v * this->width + u]);
           else
             return (PointXYZRGB (std::numeric_limits<float>::quiet_NaN (),
                                  std::numeric_limits<float>::quiet_NaN (),

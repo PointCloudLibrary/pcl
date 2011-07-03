@@ -493,7 +493,7 @@ namespace pcl
       centroid.x = centroid.y = centroid.z = 0;
       // we need a way to iterate over the inliers in the point cloud.. permutation_iterator to the rescue
       centroid = transform_reduce (begin, end, convert_point_to_float3 (), centroid, AddPoints ());
-      centroid /= (end - begin);
+      centroid /= (float) (end - begin);
     }
   
     /** \brief Computes a covariance matrix for a given range of points. */
@@ -515,9 +515,9 @@ namespace pcl
       cov.data[2].y = cov.data[1].z; 
   
       // divide by number of inliers
-      cov.data[0] /= (end - begin);
-      cov.data[1] /= (end - begin);
-      cov.data[2] /= (end - begin);
+      cov.data[0] /= (float) (end - begin);
+      cov.data[1] /= (float) (end - begin);
+      cov.data[2] /= (float) (end - begin);
     }
   
     /** Kernel to compute a radius neighborhood given a organized point cloud (aka range image cloud) */
@@ -555,7 +555,7 @@ namespace pcl
         sqrt_term_x = sqrt (point_arg.x * point_arg.x * sqr_radius_ + z_sqr * sqr_radius_ - r_quadr);
         //sqrt_term_y = sqrt (point_arg.y * point_arg.y * sqr_radius_ + z_sqr * sqr_radius_ - r_quadr);
         //sqrt_term_x = sqrt (point_arg.x * point_arg.x * sqr_radius_ + z_sqr * sqr_radius_ - r_quadr);
-        norm = 1.0 / (z_sqr - sqr_radius_);
+        norm = 1.0f / (z_sqr - sqr_radius_);
   
         x_times_z = point_arg.x * point_arg.z;
         y_times_z = point_arg.y * point_arg.z;
@@ -648,8 +648,8 @@ namespace pcl
         // number of points in rectangular area
         //int boundsarea = (bounds.y-bounds.x) * (bounds.w-bounds.z);
         //float skip = max (sqrtf ((float)boundsarea) / sqrt_desired_nr_neighbors, 1.0);
-        float skipX = max (sqrtf ((float)bounds.y-bounds.x) / sqrt_desired_nr_neighbors, 1.0);
-        float skipY = max (sqrtf ((float)bounds.w-bounds.z) / sqrt_desired_nr_neighbors, 1.0);
+        float skipX = max (sqrtf ((float)bounds.y-bounds.x) / sqrt_desired_nr_neighbors, 1.0f);
+        float skipY = max (sqrtf ((float)bounds.w-bounds.z) / sqrt_desired_nr_neighbors, 1.0f);
         skipX = 1;
         skipY = 1;
   
@@ -659,9 +659,9 @@ namespace pcl
         float3 centroid = make_float3(0,0,0);
         int nnn = 0;
         // iterate over all pixels in the rectangular region
-        for (float y = bounds.z; y <= bounds.w; y += skipY)
+        for (float y = (float) bounds.z; y <= bounds.w; y += skipY)
         {
-          for (float x = bounds.x; x <= bounds.y; x += skipX)
+          for (float x = (float) bounds.x; x <= bounds.y; x += skipX)
           {
             // find index in point cloud from x,y pixel positions
             int idx = ((int)y) * width_ + ((int)x);
@@ -677,7 +677,7 @@ namespace pcl
             {
               ++nnn;
               float3 demean_old = points_[idx] - centroid;
-              centroid += demean_old / nnn;
+              centroid += demean_old / (float) nnn;
               float3 demean_new = points_[idx] - centroid;
   
               cov.data[1].y += demean_new.y * demean_old.y; 
@@ -695,9 +695,9 @@ namespace pcl
         cov.data[1].x = cov.data[0].y; 
         cov.data[2].x = cov.data[0].z; 
         cov.data[2].y = cov.data[1].z;
-        cov.data[0] /= nnn; 
-        cov.data[1] /= nnn; 
-        cov.data[2] /= nnn;
+        cov.data[0] /= (float) nnn; 
+        cov.data[1] /= (float) nnn; 
+        cov.data[2] /= (float) nnn;
         return nnn;
       }
 
@@ -730,17 +730,17 @@ namespace pcl
         // number of points in rectangular area
         //int boundsarea = (bounds.y-bounds.x) * (bounds.w-bounds.z);
         //float skip = max (sqrtf ((float)boundsarea) / sqrt_desired_nr_neighbors, 1.0);
-        float skipX = max (sqrtf ((float)bounds.y-bounds.x) / sqrt_desired_nr_neighbors, 1.0);
-        float skipY = max (sqrtf ((float)bounds.w-bounds.z) / sqrt_desired_nr_neighbors, 1.0);
+        float skipX = max (sqrtf ((float)bounds.y-bounds.x) / sqrt_desired_nr_neighbors, 1.0f);
+        float skipY = max (sqrtf ((float)bounds.w-bounds.z) / sqrt_desired_nr_neighbors, 1.0f);
  
         skipX = 1;
         skipY = 1;
         float3 centroid = make_float3(0,0,0);
         int nnn = 0;
         // iterate over all pixels in the rectangular region
-        for (float y = bounds.z; y <= bounds.w; y += skipY)
+        for (float y = (float) bounds.z; y <= bounds.w; y += skipY)
         {
-          for (float x = bounds.x; x <= bounds.y; x += skipX)
+          for (float x = (float) bounds.x; x <= bounds.y; x += skipX)
           {
             // find index in point cloud from x,y pixel positions
             int idx = ((int)y) * width_ + ((int)x);
@@ -760,7 +760,7 @@ namespace pcl
           }
         }
   
-        return centroid / nnn;
+        return centroid / (float) nnn;
       }
   
       float focalLength_;

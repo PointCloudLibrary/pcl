@@ -130,7 +130,7 @@ namespace pcl
       float4 coeff;
       coeff.x = coeff.y = coeff.z = coeff.w = 5;
 
-      float trand = (float)nr_indices / (thrust::default_random_engine::max + 1.0);
+      float trand = (float) nr_indices / (thrust::default_random_engine::max + 1.0f);
       //rng.seed (hash (t));
 
       //int sample_point = indices[(int)(rng () * trand)];
@@ -230,7 +230,7 @@ namespace pcl
       float4 coeff;
       coeff.x = coeff.y = coeff.z = coeff.w = bad_value;
 
-      float trand = nr_indices / (RAND_MAX + 1.0);
+      float trand = nr_indices / (RAND_MAX + 1.0f);
       thrust::default_random_engine rng (t);
 
       int sample_point = indices[(int)(rng () * trand)];
