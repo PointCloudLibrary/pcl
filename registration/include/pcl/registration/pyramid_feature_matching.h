@@ -44,8 +44,12 @@ namespace pcl
 {
   struct PyramidHistogram
   {
-    PyramidHistogram (std::vector<size_t> &a_bins_per_dimension)
-      : bins_per_dimension (a_bins_per_dimension)
+    typedef boost::shared_ptr<PyramidHistogram> Ptr;
+
+    PyramidHistogram (std::vector<std::pair<float, float> > &a_dimension_range,
+                      size_t &a_nr_levels)
+      : dimension_range (a_dimension_range),
+        nr_levels (a_nr_levels)
     {
       initializeHistogram ();
     }
@@ -53,12 +57,39 @@ namespace pcl
     void
     initializeHistogram ();
 
-    unsigned int&
-    at (std::vector<size_t>& access);
+    void
+    addFeature (std::vector<float> &feature);
 
-    std::vector<unsigned int> hist;
-    std::vector<size_t> bins_per_dimension;
-    size_t dimensions;
+    unsigned int&
+    at (std::vector<size_t> &access,
+        size_t &level);
+
+    unsigned int&
+    at (std::vector<float> &feature,
+        size_t &level);
+
+    size_t dimensions, nr_levels;
+    std::vector<std::pair<float, float> > dimension_range;
+
+    struct PyramidHistogramLevel
+    {
+      PyramidHistogramLevel (std::vector<size_t> &a_bins_per_dimension,
+                             std::vector<float> &a_bin_step)
+        : bins_per_dimension (a_bins_per_dimension),
+          bin_step (a_bin_step)
+      {
+        initializeHistogramLevel ();
+      }
+
+      void
+      initializeHistogramLevel ();
+
+      std::vector<unsigned int> hist;
+      std::vector<size_t> bins_per_dimension;
+      std::vector<float> bin_step;
+    };
+
+    std::vector<PyramidHistogramLevel> hist_levels;
   };
 
 
@@ -83,17 +114,20 @@ namespace pcl
       initialize ();
 
       void
-      setInputCloud (const FeatureCloudConstPtr &a_feature_cloud);
+      computePyramidHistogram (const FeatureCloudConstPtr &feature_cloud,
+                               PyramidHistogram::Ptr &pyramid);
 
-      unsigned int&
-      at (std::vector<float>& feature,
-          size_t& level);
+      virtual void
+      convertFeatureToVector (const PointFeature& feature,
+                              std::vector<float>& feature_vector) = 0;
+
+      float
+      comparePyramidHistograms (const pcl::PyramidHistogram::Ptr &pyramid_a,
+                                const pcl::PyramidHistogram::Ptr &pyramid_b);
 
     protected:
-      std::vector<PyramidHistogram> hist_levels;
       size_t dimensions, levels;
       std::vector<std::pair<float, float> > dimension_range;
-      std::vector<float> dimension_length, bin_step;
   };
 }
 

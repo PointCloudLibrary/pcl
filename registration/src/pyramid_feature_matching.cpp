@@ -40,10 +40,10 @@
 #include "pcl/registration/pyramid_feature_matching.h"
 #include "pcl/registration/impl/pyramid_feature_matching.hpp"
 
+
 void
-pcl::PyramidHistogram::initializeHistogram ()
+pcl::PyramidHistogram::PyramidHistogramLevel::initializeHistogramLevel ()
 {
-  dimensions = bins_per_dimension.size ();
   size_t total_vector_size = 1;
   for (std::vector<size_t>::iterator dim_it = bins_per_dimension.begin (); dim_it != bins_per_dimension.end (); ++dim_it)
     total_vector_size *= *dim_it;
@@ -51,13 +51,34 @@ pcl::PyramidHistogram::initializeHistogram ()
   hist.resize (total_vector_size, 0);
 }
 
+void
+pcl::PyramidHistogram::initializeHistogram ()
+{
+  for (size_t level_i = 0; level_i < nr_levels; ++level_i)
+  {
+    std::vector<size_t> bins_per_dimension;
+    std::vector<float> bin_step;
+    for (size_t dim_i = 0; dim_i < dimensions; ++dim_i) {
+      bins_per_dimension.push_back (ceil ( (dimension_range[dim_i].second - dimension_range[dim_i].first) / (pow (2.0f, (int) level_i) * sqrt ((float) dimensions))));
+      bin_step.push_back (pow (2.0f, (int) level_i) * sqrt ((float) dimensions));
+    }
+    hist_levels.push_back (PyramidHistogramLevel (bins_per_dimension, bin_step));
+  }
+}
+
 unsigned int&
-pcl::PyramidHistogram::at (std::vector<size_t>& access)
+pcl::PyramidHistogram::at (std::vector<size_t> &access,
+                           size_t &level)
 {
   if (access.size () != dimensions)
   {
     PCL_ERROR ("PyramidHistogram: cannot access histogram position because the access point does not have the right number of dimensions\n");
-    return hist[0];
+    return hist_levels.front ().hist.front ();
+  }
+  if (level >= hist_levels.size ())
+  {
+    PCL_ERROR ("PyramidFeatureMatching: trying to access a too large level\n");
+    return hist_levels.front ().hist.front ();
   }
 
   size_t vector_position = 0;
@@ -66,10 +87,39 @@ pcl::PyramidHistogram::at (std::vector<size_t>& access)
   for (size_t i = access.size ()-1; i >= 0; --i)
   {
     vector_position += access[i] * dim_accumulator;
-    dim_accumulator *= bins_per_dimension[i];
+    dim_accumulator *= hist_levels[level].bins_per_dimension[i];
   }
 
-  return hist [vector_position];
+  return hist_levels[level].hist[vector_position];
+}
+
+unsigned int&
+pcl::PyramidHistogram::at (std::vector<float> &feature,
+                           size_t &level)
+{
+  if (feature.size () != dimensions)
+  {
+    PCL_ERROR ("PyramidFeatureMatching: the given feature vector does not match the feature dimensions of the pyramid histogram\n");
+    return hist_levels.front ().hist.front ();
+  }
+  if (level >= hist_levels.size ())
+  {
+    PCL_ERROR ("PyramidFeatureMatching: trying to access a too large level\n");
+    return hist_levels.front ().hist.front ();
+  }
+
+  std::vector<size_t> access;
+  for (size_t dim_i = 0; dim_i < dimensions; ++dim_i)
+    access.push_back ( floor ((feature[dim_i] - dimension_range[dim_i].first) / hist_levels[level].bin_step[dim_i]));
+
+  return at (access, level);
+}
+
+void
+pcl::PyramidHistogram::addFeature (std::vector<float> &feature)
+{
+  for (size_t level_i = 0; level_i < nr_levels; ++level_i)
+    at (feature, level_i) ++;
 }
 
 PCL_INSTANTIATE_PRODUCT(PyramidFeatureMatching, (PCL_POINT_TYPES));

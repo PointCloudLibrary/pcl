@@ -52,6 +52,7 @@ Log2 (double n_arg)
   return log (n_arg) / M_LN2;
 }
 
+
 template <typename PointFeature> void
 pcl::PyramidFeatureMatching<PointFeature>::initialize ()
 {
@@ -60,50 +61,75 @@ pcl::PyramidFeatureMatching<PointFeature>::initialize ()
   {
     float aux = range_it->first - range_it->second;
     D += aux * aux;
-    dimension_length.push_back (aux);
   }
   D = sqrt (D);
   levels = ceil (Log2 (D));
   PCL_INFO ("PyramidFeatureMatching: pyramid will have %u levels with a hyper-parallelepiped diagonal size of %f\n", levels, D);
-
-  for (size_t level_i = 0; level_i < levels; ++level_i)
-  {
-    std::vector<size_t> bins_per_dimension;
-    for (size_t dim_i = 0; dim_i < dimensions; ++dim_i) {
-      bins_per_dimension.push_back (ceil (dimension_length[dim_i] / (pow (2.0f, (int) level_i) * sqrt ((float) dimensions))));
-      bin_step.push_back (pow (2.0f, (int) level_i) * sqrt ((float) dimensions));
-    }
-    hist_levels.push_back (PyramidHistogram (bins_per_dimension));
-  }
-}
-
-template <typename PointFeature> unsigned int&
-pcl::PyramidFeatureMatching<PointFeature>::at (std::vector<float>& feature,
-                                               size_t& level)
-{
-  if (feature.size () != dimensions)
-  {
-    PCL_ERROR ("PyramidFeatureMatching: the given feature vector does not match the feature dimensions of the pyramid histogram\n");
-    return hist_levels.front ().hist.front ();
-  }
-  if (level >= hist_levels.size ())
-  {
-    PCL_ERROR ("PyramidFeatureMatching: trying to access a too large level\n");
-    return hist_levels.front ().hist.front ();
-  }
-
-  std::vector<size_t> access;
-  for (size_t dim_i = 0; dim_i < dimensions; ++dim_i)
-    access.push_back ( floor ((feature[dim_i] - dimension_range[dim_i].first) / bin_step[dim_i]));
-
-  return hist_levels[level].at (access);
 }
 
 
 template <typename PointFeature> void
-pcl::PyramidFeatureMatching<PointFeature>::setInputCloud (const FeatureCloudConstPtr &a_feature_cloud)
+pcl::PyramidFeatureMatching<PointFeature>::computePyramidHistogram (const FeatureCloudConstPtr &feature_cloud,
+                                                                    pcl::PyramidHistogram::Ptr &pyramid)
 {
+  pyramid = pcl::PyramidHistogram::Ptr (new PyramidHistogram (dimension_range, levels));
+  for (size_t feature_i = 0; feature_i < feature_cloud->points.size (); ++feature_i)
+  {
+    std::vector<float> feature_vector;
+    convertFeatureToVector (feature_cloud->points[feature_i], feature_vector);
+    pyramid->addFeature (feature_vector);
+  }
+}
 
+
+template <typename PointFeature> float
+pcl::PyramidFeatureMatching<PointFeature>::comparePyramidHistograms (const pcl::PyramidHistogram::Ptr &pyramid_a,
+                                                                     const pcl::PyramidHistogram::Ptr &pyramid_b)
+{
+  // do a few consistency checks before and during the computation
+  if (pyramid_a->dimensions != pyramid_b->dimensions)
+  {
+    PCL_ERROR ("PyramidFeatureMatching: the two given pyramids have different numbers of dimensions: %u vs %u\n", pyramid_a->dimensions, pyramid_b->dimensions);
+    return -1;
+  }
+  if (pyramid_a->nr_levels != pyramid_b->nr_levels)
+  {
+    PCL_ERROR ("PyramidFeatureMatching: the two given pyramids have different numbers of levels: %u vs %u\n", pyramid_a->nr_levels, pyramid_b->nr_levels);
+    return -1;
+  }
+
+  float match_count = 0.0f, self_similarity_a = 0.0f, self_similarity_b = 0.0f;
+  for (size_t level_i = 0; level_i < pyramid_a->nr_levels; ++level_i)
+  {
+    if (pyramid_a->hist_levels[level_i].hist.size () != pyramid_b->hist_levels[level_i].hist.size ())
+    {
+      PCL_ERROR ("PyramidFeatureMatching: the two given pyramids have different numbers of bins on level %u: %u vs %u\n", level_i, pyramid_a->hist_levels[level_i].hist.size (), pyramid_b->hist_levels[level_i].hist.size ());
+      return -1;
+    }
+
+    float match_count_level = 0.0f, self_similarity_a_level = 0.0f, self_similarity_b_level = 0.0f;
+    for (size_t bin_i = 0; bin_i < pyramid_a->hist_levels[level_i].hist.size (); ++bin_i)
+    {
+      if (pyramid_a->hist_levels[level_i].hist[bin_i] < pyramid_b->hist_levels[level_i].hist[bin_i])
+        match_count_level += pyramid_a->hist_levels[level_i].hist[bin_i];
+      else
+        match_count_level += pyramid_b->hist_levels[level_i].hist[bin_i];
+
+      self_similarity_a_level += pyramid_a->hist_levels[level_i].hist[bin_i];
+      self_similarity_b_level += pyramid_b->hist_levels[level_i].hist[bin_i];
+    }
+
+    float level_normalization_factor = pow(2, (int) level_i);
+    match_count += match_count_level / level_normalization_factor;
+    self_similarity_a += self_similarity_a_level / level_normalization_factor;
+    self_similarity_b += self_similarity_b_level / level_normalization_factor;
+  }
+
+
+  // include self-similarity factors
+  match_count /= (self_similarity_a * self_similarity_b);
+
+  return match_count;
 }
 
 
