@@ -38,7 +38,7 @@
 #ifndef OPTIMIZE_H_
 #define OPTIMIZE_H_
 
-#include <ANN/ANN.h>
+//#include <ANN/ANN.h>
 #include "gicp.h"
 #include <vector>
 #include <gsl/gsl_linalg.h>
@@ -62,7 +62,8 @@ namespace dgc {
     struct GICPOptData {
       GICPPointSet *p1;
       GICPPointSet *p2;
-      ANNidx *nn_indecies; // nearest point indecies
+      //ANNidx *nn_indecies; // nearest point indecies
+      std::vector<int> *nn_indecies;
       gicp_mat_t *M;      // mahalanobis matrices for each pair
       dgc_transform_t base_t;
       int num_matches;

@@ -39,7 +39,8 @@
 #ifndef GICP_H_
 #define GICP_H_
 
-#include <ANN/ANN.h>
+//#include <ANN/ANN.h>
+#include <pcl/kdtree/kdtree_flann.h>
 #include <vector>
 #include <iostream>
 //#include <gsl/gsl.h>
@@ -86,8 +87,10 @@ namespace dgc {
 
     //private:
       std::vector <GICPPoint> point_;
-      ANNpointArray kdtree_points_;
-      ANNkd_tree *kdtree_;
+      //ANNpointArray kdtree_points_;
+      pcl::PointCloud<pcl::PointXYZ> kdtree_points_;
+      //ANNkd_tree *kdtree_;
+      pcl::KdTree<pcl::PointXYZ> *kdtree_;
       int max_iteration_;
       int max_iteration_inner_;
       double epsilon_;

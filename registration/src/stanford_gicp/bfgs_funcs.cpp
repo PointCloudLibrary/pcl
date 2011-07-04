@@ -45,8 +45,8 @@ namespace dgc {
       double pt2[3]; 
       double res[3]; // residual
       double temp[3];
-      gsl_vector_view gsl_pt1 = gsl_vector_view_array(pt1, 3);
-      gsl_vector_view gsl_pt2 = gsl_vector_view_array(pt2, 3);
+      //gsl_vector_view gsl_pt1 = gsl_vector_view_array(pt1, 3);
+      //gsl_vector_view gsl_pt2 = gsl_vector_view_array(pt2, 3);
       gsl_vector_view gsl_res = gsl_vector_view_array(res, 3);
       gsl_vector_view gsl_temp = gsl_vector_view_array(temp, 3);
       gsl_matrix_view gsl_M;
@@ -67,7 +67,7 @@ namespace dgc {
       double temp_double = 0;
       int N = opt_data->p1->Size();
       for(int i = 0; i < N; i++) {
-	int j = opt_data->nn_indecies[i];	
+	int j = (*opt_data->nn_indecies)[i];	
 	if(j != -1) {
 	  // get point 1
 	  pt1[0] = (*opt_data->p1)[i].x;
@@ -114,7 +114,7 @@ namespace dgc {
       double temp[3]; // temp local vector
       double temp_mat[9]; // temp matrix used for accumulating the rotation gradient
       gsl_vector_view gsl_pt1 = gsl_vector_view_array(pt1, 3);
-      gsl_vector_view gsl_pt2 = gsl_vector_view_array(pt2, 3);
+      //gsl_vector_view gsl_pt2 = gsl_vector_view_array(pt2, 3);
       gsl_vector_view gsl_res = gsl_vector_view_array(res, 3);
       gsl_vector_view gsl_temp = gsl_vector_view_array(temp, 3);
       gsl_vector_view gsl_gradient_t = gsl_vector_subvector(g, 0, 3); // translation comp. of gradient
@@ -134,7 +134,7 @@ namespace dgc {
       gsl_matrix_set_zero(&gsl_temp_mat_r.matrix);
             
       for(int i = 0; i < opt_data->p1->Size(); i++) {
-	int j = opt_data->nn_indecies[i];	
+	int j = (*opt_data->nn_indecies)[i];	
 	if(j != -1) {
 	  // get point 1
 	  pt1[0] = (*opt_data->p1)[i].x;
@@ -216,7 +216,7 @@ namespace dgc {
       gsl_matrix_set_zero(&gsl_temp_mat_r.matrix);
       
       for(int i = 0; i < opt_data->p1->Size(); i++) {
-	int j = opt_data->nn_indecies[i];	
+	int j = (*opt_data->nn_indecies)[i];	
 	if(j != -1) {
 	  // get point 1
 	  pt1[0] = (*opt_data->p1)[i].x;

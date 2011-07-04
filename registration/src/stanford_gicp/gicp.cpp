@@ -38,6 +38,7 @@
 
 #include <pcl/registration/stanford_gicp/gicp.h>
 #include <pcl/registration/stanford_gicp/optimize.h>
+#include <pcl/kdtree/kdtree_flann.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_blas.h>
 #include <fstream>
@@ -54,7 +55,7 @@ namespace dgc {
 
     GICPPointSet::GICPPointSet()
     {
-      kdtree_points_ = NULL;
+      //kdtree_points_ = NULL;
       kdtree_ = NULL;
       max_iteration_ = 200; // default value
       max_iteration_inner_ = 20; // default value for inner loop
@@ -73,8 +74,8 @@ namespace dgc {
     {
       if (kdtree_ != NULL)
 	delete kdtree_;
-      if (kdtree_points_ != NULL)
-	annDeallocPts(kdtree_points_);
+  //    if (kdtree_points_ != NULL)
+	//annDeallocPts(kdtree_points_);
     }
     
     void GICPPointSet::Clear(void) {
@@ -85,10 +86,10 @@ namespace dgc {
 	delete kdtree_;
 	kdtree_ = NULL;
       }
-      if (kdtree_points_ != NULL) {
-	annDeallocPts(kdtree_points_);
-	kdtree_points_ = NULL;
-      }
+  //    if (kdtree_points_ != NULL) {
+	//annDeallocPts(kdtree_points_);
+	//kdtree_points_ = NULL;
+  //    }
       point_.clear();
      pthread_mutex_unlock(&mutex_);
 
@@ -109,13 +110,16 @@ namespace dgc {
 	return;
       }
 
-      kdtree_points_ = annAllocPts(n, 3);
+      //kdtree_points_ = annAllocPts(n, 3);
+      kdtree_points_.points.resize(n);
       for(i = 0; i < n; i++) {
-	kdtree_points_[i][0] = point_[i].x;
-	kdtree_points_[i][1] = point_[i].y;
-	kdtree_points_[i][2] = point_[i].z;
+	kdtree_points_.points[i].x = point_[i].x;
+	kdtree_points_.points[i].y = point_[i].y;
+	kdtree_points_.points[i].z = point_[i].z;
       }
-      kdtree_ = new ANNkd_tree(kdtree_points_, n, 3, 10);
+      //kdtree_ = new ANNkd_tree(kdtree_points_, n, 3, 10);
+      kdtree_ = new pcl::KdTreeFLANN<pcl::PointXYZ>();
+      kdtree_->setInputCloud(kdtree_points_.makeShared());
     }
     
     void GICPPointSet::ComputeMatrices() {
@@ -133,16 +137,19 @@ namespace dgc {
       int K = 20; // number of closest points to use for local covariance estimate
       double mean[3];
       
-      ANNpoint query_point = annAllocPt(3);
+      //ANNpoint query_point = annAllocPt(3);
+      pcl::PointXYZ query_point;
       
-      ANNdist *nn_dist_sq = new ANNdist[K];
-      if(nn_dist_sq == NULL) {
-	//TODO: handle this
-      }      
-      ANNidx *nn_indecies = new ANNidx[K];
-      if(nn_indecies == NULL) {
-	//TODO: handle this
-      }
+      //ANNdist *nn_dist_sq = new ANNdist[K];
+      vector<float> nn_dist_sq(K);
+//      if(nn_dist_sq == NULL) {
+//	//TODO: handle this
+//      }      
+      //ANNidx *nn_indecies = new ANNidx[K];
+      vector<int> nn_indecies(K);
+//      if(nn_indecies == NULL) {
+//	//TODO: handle this
+//      }
       gsl_vector *work = gsl_vector_alloc(3);
       if(work == NULL) {
 	//TODO: handle
@@ -157,9 +164,9 @@ namespace dgc {
       }
       
       for(int i = 0; i < N; i++) {
-	query_point[0] = point_[i].x;
-	query_point[1] = point_[i].y;
-	query_point[2] = point_[i].z;
+	query_point.x = point_[i].x;
+	query_point.y = point_[i].y;
+	query_point.z = point_[i].z;
 	
 	gicp_mat_t &cov = point_[i].C;
 	// zero out the cov and mean
@@ -170,7 +177,8 @@ namespace dgc {
 	  }
 	}
 	
-	kdtree_->annkSearch(query_point, K, nn_indecies, nn_dist_sq, 0.0);
+	//kdtree_->annkSearch(query_point, K, nn_indecies, nn_dist_sq, 0.0);
+  kdtree_->nearestKSearch(query_point, K, nn_indecies, nn_dist_sq);
 	
 	// find the covariance matrix
 	for(int j = 0; j < K; j++) {
@@ -226,12 +234,12 @@ namespace dgc {
 	}
       }
 
-      if(nn_dist_sq != NULL) {
-	delete [] nn_dist_sq;
-      }
-      if(nn_indecies != NULL) {
-	delete [] nn_indecies;
-      }
+//      if(nn_dist_sq != NULL) {
+//	delete [] nn_dist_sq;
+//      }
+//      if(nn_indecies != NULL) {
+//	delete [] nn_indecies;
+//      }
       if(work != NULL) {
 	gsl_vector_free(work);
       }
@@ -241,7 +249,7 @@ namespace dgc {
       if(gsl_singulars != NULL) {
 	gsl_vector_free(gsl_singulars);
       }
-       query_point;
+       //query_point;
     }
 
     int GICPPointSet::AlignScan(GICPPointSet *scan, dgc_transform_t base_t, dgc_transform_t t, double max_match_dist, bool save_error_plot)
@@ -252,13 +260,16 @@ namespace dgc {
       double delta = 0.;
       dgc_transform_t t_last;
       ofstream fout_corresp;
-      ANNdist nn_dist_sq;
-      ANNidx *nn_indecies = new ANNidx[n];
-      ANNpoint query_point = annAllocPt(3);
+      //ANNdist nn_dist_sq;
+      float nn_dist_sq;
+      //ANNidx *nn_indecies = new ANNidx[n];
+      vector<int> *nn_indecies = new vector<int>(n);
+      //ANNpoint query_point = annAllocPt(3);
+      pcl::PointXYZ query_point;
       
-      if(nn_indecies == NULL) {
-	//TODO: fail here
-      }      
+//      if(nn_indecies == NULL) {
+//	//TODO: fail here
+//      }      
 
       gicp_mat_t *mahalanobis = new gicp_mat_t[n];
       if(mahalanobis == NULL) {
@@ -320,26 +331,35 @@ namespace dgc {
 	}
 	/* find correpondences */
 	num_matches = 0;
+  double tmp_point[3];
 	for (int i = 0; i < n; i++) {
-	  query_point[0] = scan->point_[i].x;
-	  query_point[1] = scan->point_[i].y;
-	  query_point[2] = scan->point_[i].z;
+	  tmp_point[0] = query_point.x = scan->point_[i].x;
+	  tmp_point[1] = query_point.y = scan->point_[i].y;
+	  tmp_point[2] = query_point.z = scan->point_[i].z;
 	  
-	  dgc_transform_point(&query_point[0], &query_point[1], 
-			      &query_point[2], base_t);
-	  dgc_transform_point(&query_point[0], &query_point[1], 
-			      &query_point[2], t);
+	  dgc_transform_point(&tmp_point[0], &tmp_point[1], 
+			      &tmp_point[2], base_t);
+	  dgc_transform_point(&tmp_point[0], &tmp_point[1], 
+			      &tmp_point[2], t);
+    query_point.x = tmp_point[0];
+    query_point.y = tmp_point[1];
+    query_point.z = tmp_point[2];
 	  
-	  kdtree_->annkSearch(query_point, 1, &nn_indecies[i], &nn_dist_sq, 0.0);
+	  //kdtree_->annkSearch(query_point, 1, &nn_indecies[i], &nn_dist_sq, 0.0);
+    vector<int> tmp_indices(1);
+    vector<float> tmp_dist_sq(1);
+	  kdtree_->nearestKSearch(query_point, 1, tmp_indices, tmp_dist_sq);
+    (*nn_indecies)[i] = tmp_indices[0];
+    nn_dist_sq = tmp_dist_sq[0];
 	  
 	  if (nn_dist_sq < max_d_sq) {
 	    if(debug_) {
-	      fout_corresp << i << "\t" << nn_indecies[i] << endl;
+	      fout_corresp << i << "\t" << (*nn_indecies)[i] << endl;
 	    }
 
 	    // set up the updated mahalanobis matrix here
 	    gsl_matrix_view C1 = gsl_matrix_view_array(&scan->point_[i].C[0][0], 3, 3);
-	    gsl_matrix_view C2 = gsl_matrix_view_array(&point_[nn_indecies[i]].C[0][0], 3, 3);
+	    gsl_matrix_view C2 = gsl_matrix_view_array(&point_[(*nn_indecies)[i]].C[0][0], 3, 3);
 	    gsl_matrix_view M = gsl_matrix_view_array(&mahalanobis[i][0][0], 3, 3);
 	    gsl_matrix_set_zero(&M.matrix);	    
 	    gsl_matrix_set_zero(gsl_temp);
@@ -364,7 +384,7 @@ namespace dgc {
 	    num_matches++;
 	  }
 	  else {
-	    nn_indecies[i] = -1; // no match
+	    (*nn_indecies)[i] = -1; // no match
 	  }
 	}
 	
@@ -435,19 +455,19 @@ namespace dgc {
 	  opt.PlotError(t, opt_data, "error_func");
 	}
       }
-      if(nn_indecies != NULL) {
-	delete [] nn_indecies;
-      }
-      if(mahalanobis != NULL) {
-	delete [] mahalanobis;
-      }
+//      if(nn_indecies != NULL) {
+//	delete [] nn_indecies;
+//      }
+//      if(mahalanobis != NULL) {
+//	delete [] mahalanobis;
+//      }
       if(gsl_R != NULL) {
 	gsl_matrix_free(gsl_R);
       }
       if(gsl_temp != NULL) {
 	gsl_matrix_free(gsl_temp);
       }
-      annDeallocPt(query_point);
+      //annDeallocPt(query_point);
 
       return iteration;
     }
