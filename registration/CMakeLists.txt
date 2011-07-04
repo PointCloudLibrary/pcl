@@ -27,10 +27,10 @@ if(build)
         include/pcl/${SUBSYS_NAME}/transformation_estimation.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h
         include/pcl/${SUBSYS_NAME}/transforms.h
+#        include/pcl/${SUBSYS_NAME}/stanford_gicp.h
         )
 
 #    set(stanford_gicp_incs
-#        include/pcl/${SUBSYS_NAME}/stanford_gicp.h
 #        include/pcl/${SUBSYS_NAME}/stanford_gicp/gicp.h
 #        include/pcl/${SUBSYS_NAME}/stanford_gicp/optimize.h
 #        include/pcl/${SUBSYS_NAME}/stanford_gicp/scan.h
