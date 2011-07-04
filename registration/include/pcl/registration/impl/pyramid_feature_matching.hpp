@@ -119,7 +119,7 @@ pcl::PyramidFeatureMatching<PointFeature>::comparePyramidHistograms (const pcl::
       self_similarity_b_level += pyramid_b->hist_levels[level_i].hist[bin_i];
     }
 
-    float level_normalization_factor = pow(2, (int) level_i);
+    float level_normalization_factor = pow(2.0f, (int) level_i);
     match_count += match_count_level / level_normalization_factor;
     self_similarity_a += self_similarity_a_level / level_normalization_factor;
     self_similarity_b += self_similarity_b_level / level_normalization_factor;
