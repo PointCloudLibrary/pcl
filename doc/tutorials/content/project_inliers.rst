@@ -39,7 +39,7 @@ display the content on screen.
    :lines: 14-29
 
    
-We fill in the ModelCoefficients values. In this case, we use a planar model,
+We fill in the ModelCoefficients values. In this case, we use a plane model,
 with ax+by+cz+d=0, where a=b=d=0, and c=1, or said differently, the X-Y plane.
 
 .. literalinclude:: sources/project_inliers/project_inliers.cpp
