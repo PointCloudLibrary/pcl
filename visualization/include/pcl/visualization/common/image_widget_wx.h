@@ -145,12 +145,12 @@ namespace pcl
           setSize (int width=-1, int height=-1);
         
         /** Get the internal image buffer that contains the original image as RGB */
-        const
-          unsigned char* getImageData (int& width, int& height) const;
+        const unsigned char*
+          getImageData (int& width, int& height) const;
        
         /** Save the current image as a *.ppm */
         void
-          savePPM (const std::string& file_name, const std::string& comment) const;
+          savePPM (const std::string& file_name, const std::string& comment="") const;
 
         //! Just ignore this function. For internal use only
         void
