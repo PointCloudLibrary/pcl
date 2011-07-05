@@ -40,7 +40,7 @@
 
 #include "pcl/search/generic_search.h"
 #include "pcl/search/kdtree.h"
-//#include "pcl/search/organized_data.h"
+#include "pcl/search/octree_pointcloud.h"
 #include "pcl/search/organized_neighbor_search.h"
 
 using namespace std;
@@ -138,11 +138,36 @@ Search<PointT>::radiusSearch (int index, double radius, std::vector<int>& k_indi
     return _searchptr->radiusSearch(index,radius,k_indices,k_distances,max_nn);
 }
 
+template <typename PointT> void 
+        Search<PointT>::
+        approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
+                             float &sqr_distance_arg){}
+
+template <typename PointT> void 
+        Search<PointT>::
+        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg){};
+
+template <typename PointT> void 
+        Search<PointT>::
+        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg){};
+
 
 template <typename PointT> void 
 Search<PointT>::setMethod(int k)
 {
     _searchptr->setMethod(k);
+}
+
+template <typename PointT> void 
+       Search<PointT>::deleteTree ( bool freeMemory_arg)
+{
+
+}
+
+template <typename PointT> void 
+        Search<PointT>::
+        addPointsFromInputCloud ()
+{
 }
 
 }

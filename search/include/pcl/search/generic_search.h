@@ -97,7 +97,7 @@ const static int OCTREE                 = 2;
     nearestKSearch (int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
 
     virtual int 
-    radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices,    std::vector<float>& k_distances, int max_nn ) const;
+    radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices,    std::vector<float>& k_distances, int max_nn = -1) const;
 
 //    virtual int 
   //  radiusSearch (const PointT& point, double radius,
@@ -116,8 +116,26 @@ const static int OCTREE                 = 2;
                   std::vector<float>& k_distances, int max_nn = -1) const;
 
 
+
+        virtual void
+        approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
+                             float &sqr_distance_arg);
+
+        virtual void
+        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg);
+
+        virtual void
+        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg);
+
     virtual void
     setMethod( int k );
+
+        virtual void
+        deleteTree ( bool freeMemory_arg = false);
+        
+       virtual void
+        addPointsFromInputCloud ();
+
 
   private:
     SearchPtr _searchptr;

@@ -18,6 +18,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/generic_search.h
         include/pcl/${SUBSYS_NAME}/kdtree.h
         include/pcl/${SUBSYS_NAME}/organized_neighbor_search.h
+        include/pcl/${SUBSYS_NAME}/octree_pointcloud.h
+        include/pcl/${SUBSYS_NAME}/octree.h
 
         )
 
@@ -25,6 +27,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/generic_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_neighbor_search.hpp
+        include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud.hpp
+        include/pcl/${SUBSYS_NAME}/impl/octree.hpp
 
         )
 
@@ -43,6 +47,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/generic_search.h
         include/pcl/${SUBSYS_NAME}/kdtree.h
         include/pcl/${SUBSYS_NAME}/organized_neighbor_search.h
+        include/pcl/${SUBSYS_NAME}/octree_pointcloud.h
+        include/pcl/${SUBSYS_NAME}/octree.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
 
@@ -50,6 +56,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/generic_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_neighbor_search.hpp
+        include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud.hpp
+        include/pcl/${SUBSYS_NAME}/impl/octree.hpp
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
     
