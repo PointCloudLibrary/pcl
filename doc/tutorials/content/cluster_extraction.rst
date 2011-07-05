@@ -5,7 +5,7 @@ Euclidean Cluster Extraction
 
 In this tutorial we will learn how to **extract Euclidean clusters** with the
 ``pcl::EuclideanClusterExtraction`` class. In order to not complicate the
-tutorial, certain elements of it such as the planar segmentation algorithm,
+tutorial, certain elements of it such as the plane segmentation algorithm,
 will not be explained here. Please check the :ref:`planar_segmentation`
 tutorial for more information.
 
@@ -91,7 +91,7 @@ Now, let's break down the code piece by piece, skipping the obvious.
 		  .
 		  .
 
-		// Remove the planar inliers, extract the rest
+		// Remove the plane inliers, extract the rest
 	  extract.setNegative (true);
 	  extract.filter (*cloud_filtered); //*
 	}
