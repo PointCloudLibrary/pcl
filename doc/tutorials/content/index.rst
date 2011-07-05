@@ -392,13 +392,13 @@ contributions on any tutorial.
   * :ref:`planar_segmentation`
     
      ======  ======
-     |se_1|  Title: **Planar model segmentation**
+     |se_1|  Title: **Plane model segmentation**
 
              Author: *Radu B. Rusu*
 
              Compatibility: > PCL 0.5
 
-             In this tutorial, we will learn how to segment arbitrary planar models from a given point cloud dataset.
+             In this tutorial, we will learn how to segment arbitrary plane models from a given point cloud dataset.
      ======  ======
      
      .. |se_1| image:: images/planar_segmentation.jpg
@@ -454,7 +454,7 @@ contributions on any tutorial.
   * :ref:`convex_hull_2d`
 
      ======  ======
-     |su_2|  Title: **Construct a convex hull polygon for a planar model**
+     |su_2|  Title: **Construct a convex hull polygon for a plane model**
 
              Author: *Radu B. Rusu*
 

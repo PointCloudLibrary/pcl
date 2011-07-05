@@ -1,10 +1,10 @@
 .. _planar_segmentation:
 
-Planar model segmentation
+Plane model segmentation
 -------------------------
 
-In this tutorial we will learn how do a simple planar segmentation of a set of
-points, that is find all the points within a point cloud that support a planar
+In this tutorial we will learn how do a simple plane segmentation of a set of
+points, that is find all the points within a point cloud that support a plane
 model. This tutorial supports the :ref:`extract_indices` tutorial, presented in
 the **filtering** section.
 
@@ -147,5 +147,5 @@ A graphical display of the segmentation process is shown below.
 
 Note that the coordinate axis are represented as red (x), green (y), and blue
 (z). The points are represented with red as the outliers, and green as the
-inliers of the planar model found.
+inliers of the plane model found.
 

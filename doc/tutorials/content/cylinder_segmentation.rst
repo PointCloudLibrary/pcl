@@ -9,7 +9,7 @@ operations are applied to the input dataset (in order):
 
 * data points further away than 1.5 meters are filtered
 * surface normals at each point are estimated
-* a planar model (describing the table in our demo dataset) is segmented and saved to disk
+* a plane model (describing the table in our demo dataset) is segmented and saved to disk
 * a cylindrical model (describing the mug in our demo dataset) is segmented and saved to disk
 
 .. raw:: html
