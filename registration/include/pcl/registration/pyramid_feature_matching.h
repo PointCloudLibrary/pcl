@@ -51,6 +51,7 @@ namespace pcl
       : dimension_range (a_dimension_range),
         nr_levels (a_nr_levels)
     {
+      dimensions = dimension_range.size ();
       initializeHistogram ();
     }
 

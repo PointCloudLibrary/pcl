@@ -84,8 +84,10 @@ pcl::PyramidHistogram::at (std::vector<size_t> &access,
   size_t vector_position = 0;
   size_t dim_accumulator = 1;
 
-  for (size_t i = access.size ()-1; i >= 0; --i)
+//  PCL_INFO ("at access vector: %u\n", access.size ());
+  for (int i = access.size ()-1; i >= 0; --i)
   {
+//    PCL_INFO ("i = %u / %u\n", i, access.size ());
     vector_position += access[i] * dim_accumulator;
     dim_accumulator *= hist_levels[level].bins_per_dimension[i];
   }
@@ -99,7 +101,7 @@ pcl::PyramidHistogram::at (std::vector<float> &feature,
 {
   if (feature.size () != dimensions)
   {
-    PCL_ERROR ("PyramidFeatureMatching: the given feature vector does not match the feature dimensions of the pyramid histogram\n");
+    PCL_ERROR ("PyramidFeatureMatching: the given feature vector does not match the feature dimensions of the pyramid histogram: %u vs %u\n", feature.size (), dimensions);
     return hist_levels.front ().hist.front ();
   }
   if (level >= hist_levels.size ())
@@ -118,6 +120,7 @@ pcl::PyramidHistogram::at (std::vector<float> &feature,
 void
 pcl::PyramidHistogram::addFeature (std::vector<float> &feature)
 {
+//  PCL_INFO ("add feature called\n");
   for (size_t level_i = 0; level_i < nr_levels; ++level_i)
     at (feature, level_i) ++;
 }
