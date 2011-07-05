@@ -5,14 +5,18 @@
 #include <pcl/registration/ppf_registration.h>
 
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
 
 using namespace pcl;
 
 #include <iostream>
 using namespace std;
 
-const Eigen::Vector4f subsampling_leaf_size (6.0, 6.0, 6.0, 0.0);
-const float normal_estimation_search_radius = 10.0;
+const Eigen::Vector4f subsampling_leaf_size (0.02, 0.02, 0.02, 0.0);
+const float normal_estimation_search_radius = 0.05;
 
 
 PointCloud<PointNormal>::Ptr
@@ -34,6 +38,8 @@ subsampleAndCalculateNormals (PointCloud<PointXYZ>::Ptr cloud)
 
   PointCloud<PointNormal>::Ptr cloud_subsampled_with_normals (new PointCloud<PointNormal> ());
   concatenateFields (*cloud_subsampled, *cloud_subsampled_normals, *cloud_subsampled_with_normals);
+
+  cerr << "Cloud dimensions before / after subsampling: " << cloud->points.size () << " / " << cloud_subsampled->points.size () << endl;
   return cloud_subsampled_with_normals;
 }
 
@@ -67,6 +73,28 @@ main (int argc, char** argv)
     PCL_INFO ("Model read: %s\n", str);
   }
 
+  pcl::SACSegmentation<pcl::PointXYZ> seg;
+  pcl::ExtractIndices<pcl::PointXYZ> extract;
+  seg.setOptimizeCoefficients (true);
+  seg.setModelType (pcl::SACMODEL_PLANE);
+  seg.setMethodType (pcl::SAC_RANSAC);
+  seg.setMaxIterations (1000);
+  seg.setDistanceThreshold (0.05);
+  extract.setNegative (true);
+  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
+  pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
+  unsigned int nr_points = cloud_scene->points.size ();
+  while (cloud_scene->points.size () > 0.3 * nr_points)
+  {
+    seg.setInputCloud (cloud_scene);
+    seg.segment (*inliers, *coefficients);
+    PCL_INFO ("Plane inliers: %u\n", inliers->indices.size ());
+    if (inliers->indices.size () < 20000) break;
+
+    extract.setInputCloud (cloud_scene);
+    extract.setIndices (inliers);
+    extract.filter (*cloud_scene);
+  }
 
   PointCloud<PointNormal>::Ptr cloud_scene_input = subsampleAndCalculateNormals (cloud_scene);
   vector<PointCloud<PointNormal>::Ptr > cloud_models_with_normals;
@@ -85,7 +113,7 @@ main (int argc, char** argv)
     ppf_estimator.computeFeature (*cloud_model_ppf);
 
     PPFHashMapSearch::Ptr hashmap_search (new PPFHashMapSearch (12.0 / 180 * M_PI,
-                                                                 30));
+                                                                 0.05));
     hashmap_search->setInputFeatureCloud (cloud_model_ppf);
     hashmap_search_vector.push_back (hashmap_search);
   }
@@ -98,15 +126,20 @@ main (int argc, char** argv)
   for (size_t model_i = 0; model_i < cloud_models.size (); ++model_i)
   {
 
-    PPFRegistration<PointNormal, PointNormal> ppf_registration (5,
-                                                                15,
-                                                                10.0 / 180 * M_PI);
+    PPFRegistration<PointNormal, PointNormal> ppf_registration (10,
+                                                                0.2,
+                                                                30.0 / 180 * M_PI);
     ppf_registration.setSearchMethod (hashmap_search_vector[model_i]);
     ppf_registration.setInputCloud (cloud_models_with_normals[model_i]);
     ppf_registration.setInputTarget (cloud_scene_input);
 
     PointCloud<PointNormal> cloud_output_subsampled;
     ppf_registration.align (cloud_output_subsampled);
+
+    PointCloud<PointXYZ>::Ptr cloud_output_subsampled_xyz (new PointCloud<PointXYZ> ());
+    for (size_t i = 0; i < cloud_output_subsampled.points.size (); ++i) cloud_output_subsampled_xyz->points.push_back ( PointXYZ (cloud_output_subsampled.points[i].x, cloud_output_subsampled.points[i].y, cloud_output_subsampled.points[i].z));
+    viewer.showCloud (cloud_output_subsampled_xyz, "cloud_output");
+
 
     Eigen::Matrix4f mat = ppf_registration.getFinalTransformation ();
     Eigen::Affine3f final_transformation (mat);

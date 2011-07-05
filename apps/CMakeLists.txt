@@ -43,9 +43,12 @@ if(build)
   PCL_ADD_EXECUTABLE(nn_classification_example ${SUBSYS_NAME} src/nn_classification_example.cpp)
   target_link_libraries(nn_classification_example pcl_common pcl_io pcl_features pcl_kdtree)
 
+  PCL_ADD_EXECUTABLE(pyramid_surface_matching ${SUBSYS_NAME} src/pyramid_surface_matching.cpp)
+  target_link_libraries(pyramid_surface_matching pcl_common pcl_io pcl_features pcl_registration)
+
   if (VTK_FOUND AND OPENNI_FOUND)
     PCL_ADD_EXECUTABLE(ppf_object_recognition ${SUBSYS_NAME} src/ppf_object_recognition.cpp)
-    target_link_libraries(ppf_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_registration pcl_visualization)
+    target_link_libraries(ppf_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_registration pcl_visualization pcl_sample_consensus pcl_segmentation)
       
     PCL_ADD_EXECUTABLE(openni_voxel_grid ${SUBSYS_NAME} src/openni_voxel_grid.cpp)
     target_link_libraries(openni_voxel_grid pcl_common pcl_io pcl_filters pcl_visualization)
