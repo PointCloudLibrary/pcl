@@ -47,9 +47,11 @@ namespace pcl
     typedef boost::shared_ptr<PyramidHistogram> Ptr;
 
     PyramidHistogram (std::vector<std::pair<float, float> > &a_dimension_range,
-                      size_t &a_nr_levels)
+                      size_t &a_nr_levels,
+                      size_t a_nr_features)
       : dimension_range (a_dimension_range),
-        nr_levels (a_nr_levels)
+        nr_levels (a_nr_levels),
+        nr_features (a_nr_features)
     {
       dimensions = dimension_range.size ();
       initializeHistogram ();
@@ -69,7 +71,7 @@ namespace pcl
     at (std::vector<float> &feature,
         size_t &level);
 
-    size_t dimensions, nr_levels;
+    size_t dimensions, nr_levels, nr_features;
     std::vector<std::pair<float, float> > dimension_range;
 
     struct PyramidHistogramLevel

@@ -63,6 +63,11 @@ pcl::PyramidHistogram::initializeHistogram ()
       bin_step.push_back (pow (2.0f, (int) level_i) * sqrt ((float) dimensions));
     }
     hist_levels.push_back (PyramidHistogramLevel (bins_per_dimension, bin_step));
+
+    PCL_INFO ("PyramidHistogram: created vector of size %u at level %u\nwith #bins per dimension:", hist_levels.back ().hist.size (), level_i);
+    for (size_t dim_i = 0; dim_i < dimensions; ++dim_i)
+      PCL_INFO ("%u ", bins_per_dimension[dim_i]);
+    PCL_INFO ("\n");
   }
 }
 
@@ -84,10 +89,8 @@ pcl::PyramidHistogram::at (std::vector<size_t> &access,
   size_t vector_position = 0;
   size_t dim_accumulator = 1;
 
-//  PCL_INFO ("at access vector: %u\n", access.size ());
   for (int i = access.size ()-1; i >= 0; --i)
   {
-//    PCL_INFO ("i = %u / %u\n", i, access.size ());
     vector_position += access[i] * dim_accumulator;
     dim_accumulator *= hist_levels[level].bins_per_dimension[i];
   }
@@ -120,7 +123,6 @@ pcl::PyramidHistogram::at (std::vector<float> &feature,
 void
 pcl::PyramidHistogram::addFeature (std::vector<float> &feature)
 {
-//  PCL_INFO ("add feature called\n");
   for (size_t level_i = 0; level_i < nr_levels; ++level_i)
     at (feature, level_i) ++;
 }
