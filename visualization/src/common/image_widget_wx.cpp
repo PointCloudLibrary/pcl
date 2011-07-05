@@ -42,6 +42,7 @@
 #include <iostream>
 using std::cout;
 using std::cerr;
+#include <fstream>
 
 IMPLEMENT_APP_NO_MAIN (wxApp)
 
@@ -636,6 +637,38 @@ pcl::visualization::ImageWidgetWX::show (bool show_widget)
     image_frame->Show (show_widget);
 }
 
+const unsigned char* 
+pcl::visualization::ImageWidgetWX::getImageData (int& width, int& height) const
+{
+  width  = image_frame->image_panel->image->GetWidth ();
+  height = image_frame->image_panel->image->GetHeight ();
+  return image_data;
+}
+
+void
+pcl::visualization::ImageWidgetWX::savePPM (const std::string& file_name, const std::string& comment) const
+{
+  int width  = image_frame->image_panel->image->GetWidth (),
+      height = image_frame->image_panel->image->GetHeight ();
+  std::ofstream file (file_name.c_str ());
+  file << "P3\n"
+       << "# " << comment << "\n"
+       << width<<" "<<height<<"\n" 
+       << "255\n";
+  const unsigned char* data_ptr = image_data;
+  for (int y=0; y<height; ++y)
+  {
+    for (int x=0; x<width; ++x)
+    {
+      unsigned char r = *(data_ptr++),
+                    g  = *(data_ptr++),
+                    b  = *(data_ptr++);
+      file << (x>0 ? "  " : "") << int(r) << " " << int(g) << " " << int(b);
+    }
+    file << "\n";
+  }
+}
+
 
 //==================================
 //   IMAGE FRAME DEFINITION START
@@ -890,5 +923,6 @@ pcl::visualization::ImageWidgetWX::ImagePanel::resizeImage (int newWidth, int ne
   scaledHeight = newHeight;
   //cout << "Image has new size "<<scaledWidth<<"x"<<scaledHeight<<"\n";
 }
+
 
 #endif
