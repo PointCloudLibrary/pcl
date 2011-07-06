@@ -19,10 +19,6 @@ if(HDF5_FOUND)
   find_package(Flann)
   include_directories(${FLANN_INCLUDE_DIRS})
 
-  find_package(VTK REQUIRED)
-  include (${VTK_USE_FILE})
-  link_directories(${VTK_LIBRARY_DIRS})
-
   include_directories(${HDF5_INCLUDE_DIR})
 
   add_executable(build_tree build_tree.cpp)
@@ -32,5 +28,5 @@ if(HDF5_FOUND)
   add_executable(nearest_neighbors nearest_neighbors.cpp)
   target_link_libraries(nearest_neighbors ${PCL_LIBRARIES} 
                                         ${Boost_LIBRARIES} ${FLANN_LIBRARIES} ${HDF5_hdf5_LIBRARY} 
-                                        vtkCommon vtkRendering)
+                                        )
 endif(HDF5_FOUND)
