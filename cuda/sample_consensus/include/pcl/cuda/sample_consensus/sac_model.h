@@ -73,10 +73,10 @@ namespace pcl
         __inline__ __host__ __device__ bool 
         operator ()(PointXYZRGB pt) 
         { 
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
             return (isnan (pt.x) | isnan (pt.y) | isnan (pt.z)); 
 #else
-            return (pcl_isnan (pt.x) | pcl_isnan (pt.y) | pcl_isnan (pt.z)) == 1; 
+            return (pcl_isnan (pt.x) | pcl_isnan (pt.y) | pcl_isnan (pt.z)) == 1;
 #endif
         }
     };

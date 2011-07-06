@@ -40,6 +40,7 @@
 
 #include <pcl/io/openni_camera/openni_image.h>
 #include <thrust/tuple.h>
+#include <pcl/win32_macros.h>
 
 namespace pcl
 {
@@ -98,7 +99,7 @@ namespace pcl
       float operator () (int idx)
       {
         float depth = data_ [idx];
-#ifdef __CUDA_ARCH__        
+#ifdef __CUDACC__        
         if (depth == 0 | isnan(depth) | isinf(depth))
           return 0;
 #else
@@ -172,7 +173,7 @@ namespace pcl
         int nr = (int) dhel.x;
         float min_d = dhel.y;
         float max_d = dhel.z;
-#ifdef __CUDA_ARCH__        
+#ifdef __CUDACC__        
         if (depth == 0 | isnan(depth) | isinf(depth))
           return 0.0f;
 #else
@@ -243,7 +244,7 @@ namespace pcl
         float3 operator () (int idx)
       {
         float disparity = depth2disparity (data_ [idx]);
-#ifdef __CUDA_ARCH__         
+#ifdef __CUDACC__         
         if (disparity == 0 | isnan(disparity) | isinf(disparity))
           return make_float3 (0,0,0);
 #else

@@ -179,7 +179,6 @@ class Segmentation
       d2c.compute<Storage> (depth_image, image, constant, data, true, 2);
 
       boost::shared_ptr<typename Storage<float4>::type> normals;
-      float focallength = 580/2.0;
       {
         ScopeTimeCPU time ("TIMING: Normal Estimation");
         normals = computeFastPointNormals<Storage> (data);
