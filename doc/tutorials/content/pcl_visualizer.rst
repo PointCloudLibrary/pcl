@@ -137,7 +137,7 @@ This final call sets up some handy camera parameters to make things look
 nice.
 
 There is one final piece of code relevant to all the samples. It can be
-found at the bottom of the sample::
+found at the bottom of the sample:
 
 .. code-block:: cpp
 
