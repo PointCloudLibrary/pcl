@@ -41,7 +41,7 @@
 #include "pcl/features/normal_based_signature.h"
 
 template <typename PointT, typename PointNT, typename PointFeature> void
-pcl::NormalBasedSignature<PointT, PointNT, PointFeature>::computeFeature (pcl::NormalBasedSignature<PointT, PointNT, PointFeature>::FeatureCloud &output)
+pcl::NormalBasedSignature<PointT, PointNT, PointFeature>::computeFeature (FeatureCloud &output)
 {
   for (size_t point_i = 0; point_i < input_->points.size (); ++point_i)
   {

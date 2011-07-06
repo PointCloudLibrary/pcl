@@ -50,7 +50,7 @@ namespace pcl
       using FeatureFromNormals<PointT, PointNT, PointFeature>::normals_;
       using FeatureFromNormals<PointT, PointNT, PointFeature>::tree_;
 
-      typedef PointCloud<PointFeature> FeatureCloud;
+      typedef pcl::PointCloud<PointFeature> FeatureCloud;
 
       NormalBasedSignature ()
         : FeatureFromNormals<PointT, PointNT, PointFeature> ()

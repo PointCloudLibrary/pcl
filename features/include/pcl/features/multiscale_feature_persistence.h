@@ -155,12 +155,12 @@ namespace pcl
   {
     public:
       using PCLBase<PointT>::input_;
-      typedef PointCloud<PointT> InputCloud;
-      typedef typename PointCloud<PointT>::Ptr InputCloudPtr;
-      typedef PointCloud<PointNT> NormalCloud;
-      typedef typename PointCloud<PointNT>::Ptr NormalCloudPtr;
-      typedef PointCloud<PointFeature> FeatureCloud;
-      typedef typename PointCloud<PointFeature>::Ptr FeatureCloudPtr;
+      typedef pcl::PointCloud<PointT> InputCloud;
+      typedef typename pcl::PointCloud<PointT>::Ptr InputCloudPtr;
+      typedef pcl::PointCloud<PointNT> NormalCloud;
+      typedef typename pcl::PointCloud<PointNT>::Ptr NormalCloudPtr;
+      typedef pcl::PointCloud<PointFeature> FeatureCloud;
+      typedef typename pcl::PointCloud<PointFeature>::Ptr FeatureCloudPtr;
       typedef FPFHEstimation<PointT, PointNT, PointFeature> FeatureEstimator;
       typedef typename FPFHEstimation<PointT, PointNT, PointFeature>::Ptr FeatureEstimatorPtr;
 
