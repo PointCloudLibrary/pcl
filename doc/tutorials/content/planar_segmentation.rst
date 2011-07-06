@@ -82,7 +82,11 @@ Then, lines:
    
 create the SACSegmentation object and set the model and method type, together
 with the desired distance to the model threshold. In this tutorial, we will use
-the RANSAC method (pcl::SAC_RANSAC) as the robust estimator of choice.
+the RANSAC method (pcl::SAC_RANSAC) as the robust estimator of choice. Our
+decision is motivated by RANSAC's simplicity (other robust estimators use it as
+a base and add additional, more complicated concepts). For more information
+about RANSAC, check its `Wikipedia page
+<http://en.wikipedia.org/wiki/RANSAC>`_.
 
 Finally:
 
