@@ -1,7 +1,7 @@
 set(SUBSYS_NAME cuda_features)
 set(SUBSYS_PATH cuda/features)
 set(SUBSYS_DESC "Point Cloud CUDA Feature Estimation library")
-set(SUBSYS_DEPS cuda cuda_common io common)
+set(SUBSYS_DEPS cuda_common io common)
 
 # ---[ Point Cloud Library - pcl/cuda/io
 

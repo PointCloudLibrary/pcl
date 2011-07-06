@@ -1,7 +1,7 @@
 set(SUBSYS_NAME cuda_io)
 set(SUBSYS_PATH cuda/io)
 set(SUBSYS_DESC "Point cloud CUDA IO library")
-set(SUBSYS_DEPS cuda cuda_common io common)
+set(SUBSYS_DEPS cuda_common io common)
 
 # ---[ Point Cloud Library - pcl/cuda/io
 

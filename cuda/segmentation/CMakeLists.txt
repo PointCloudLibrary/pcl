@@ -1,7 +1,7 @@
 set(SUBSYS_NAME cuda_segmentation)
 set(SUBSYS_PATH cuda/segmentation)
 set(SUBSYS_DESC "Point cloud CUDA Segmentation library")
-set(SUBSYS_DEPS cuda cuda_common io common)
+set(SUBSYS_DEPS cuda_common io common)
 
 # ---[ Point Cloud Library - pcl/cuda/io
 

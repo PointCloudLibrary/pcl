@@ -15,10 +15,6 @@ else(NOT CUDA_FOUND)
     message(STATUS "CUDA found (include: ${CUDA_INCLUDE_DIRS}, lib: ${CUDA_LIBRARIES})")
 endif(NOT CUDA_FOUND)
 
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} FALSE ${REASON})
-mark_as_advanced("BUILD_${SUBSYS_NAME}")
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
-
 if(build)
     if(CUDA_FOUND)
         include(CudaComputeTargetFlags.cmake)

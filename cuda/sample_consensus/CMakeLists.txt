@@ -1,7 +1,7 @@
 set(SUBSYS_NAME cuda_sample_consensus)
 set(SUBSYS_PATH cuda/sample_consensus)
 set(SUBSYS_DESC "Point Cloud CUDA Sample Consensus library")
-set(SUBSYS_DEPS cuda cuda_common io common)
+set(SUBSYS_DEPS cuda_common io common)
 
 # ---[ Point Cloud Library - pcl/cuda/io
 
