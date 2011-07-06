@@ -30,7 +30,7 @@ set(incs
 
 set(LIB_NAME pcl_${SUBSYS_NAME})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-PCL_CUDA_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} OPTIONS -arch sm_20)
+PCL_CUDA_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs})
 target_link_libraries (${LIB_NAME} pcl_cuda_features)
 PCL_ADD_SSE_FLAGS(${LIB_NAME})
 

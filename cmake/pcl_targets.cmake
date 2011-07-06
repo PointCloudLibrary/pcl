@@ -107,7 +107,13 @@ endmacro(PCL_ADD_LIBRARY)
 # _component The part of PCL that this library belongs to.
 # ARGN The source files for the library.
 macro(PCL_CUDA_ADD_LIBRARY _name _component)
-    cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
+    if(PCL_SHARED_LIBS)
+        # to overcome a limitation in cuda_add_library, we add manually PCLAPI_EXPORTS macro
+        cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -arch sm_20 -DPCLAPI_EXPORTS)
+    elseif(PCL_SHARED_LIBS)
+        cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -arch sm_20)
+    endif(PCL_SHARED_LIBS)
+    
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
     #
