@@ -1644,5 +1644,50 @@ RangeImage::doIcp (const RangeImage& other_range_image,
   return ret;
 }
 
+float
+RangeImage::getOverlap (const RangeImage& other_range_image, const Eigen::Affine3f& relative_transformation,
+                        int search_radius, float max_distance, int pixel_step) const
+{
+  int hits_counter=0, valid_points_counter=0;
+  
+  float max_distance_squared = max_distance*max_distance;
+  
+  for (int other_y=0; other_y<int(other_range_image.height); other_y+=pixel_step)
+  {
+    for (int other_x=0; other_x<int(other_range_image.width); other_x+=pixel_step)
+    {
+      const PointWithRange& point = other_range_image.getPoint (other_x, other_y);
+      if (!pcl_isfinite (point.range))
+        continue;
+      ++valid_points_counter;
+      Eigen::Vector3f transformed_point = relative_transformation * point.getVector3fMap();
+      int x,y;
+      getImagePoint (transformed_point, x, y);
+      float closest_distance = max_distance_squared;
+      Eigen::Vector3f closest_point (0.0f, 0.0f, 0.0f);
+      bool found_neighbor = false;
+      for (int y2=y-pixel_step*search_radius; y2<=y+pixel_step*search_radius; y2+=pixel_step)
+      {
+        for (int x2=x-pixel_step*search_radius; x2<=x+pixel_step*search_radius; x2+=pixel_step)
+        {
+          const PointWithRange& neighbor = getPoint (x2, y2);
+          if (!pcl_isfinite (neighbor.range))
+            continue;
+          float distance = (transformed_point-neighbor.getVector3fMap ()).squaredNorm ();
+          if (distance < closest_distance)
+          {
+            closest_distance = distance;
+            closest_point = neighbor.getVector3fMap ();
+            found_neighbor = true;
+          }
+        }
+      }
+      if (found_neighbor)
+        ++hits_counter;
+    }
+  }
+  return float(hits_counter)/float(valid_points_counter);
+}
+
 }  // namespace end
 

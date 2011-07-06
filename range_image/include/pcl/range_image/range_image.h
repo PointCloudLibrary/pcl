@@ -607,6 +607,12 @@ namespace pcl
              float max_distance_start, float max_distance_end,
              int num_iterations, int pixel_step_start=1, int pixel_step_end=1) const;
       
+      /** Calculates the overlap of two range images given the relative transformation
+       *  (from the given image to *this) */
+      PCL_EXPORTS float
+      getOverlap (const RangeImage& other_range_image, const Eigen::Affine3f& relative_transformation,
+                  int search_radius, float max_distance, int pixel_step=1) const;
+      
       /** Get the viewing direction for the given point */
       inline bool
       getViewingDirection (int x, int y, Eigen::Vector3f& viewing_direction) const;
