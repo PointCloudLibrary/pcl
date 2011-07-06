@@ -116,7 +116,7 @@ namespace pcl
           PCL_ERROR ("[pcl::%s::setInputInput] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
           return;
         }
-        input_ = cloud.makeShared ();
+        input_ = cloud;
         input_tree_->setInputCloud (input_);
         input_covariances_.reserve (cloud->size ());
       }
@@ -158,11 +158,21 @@ namespace pcl
                                      Eigen::Matrix4f &transformation_matrix);
       
       /** \brief \return computed mahalanobis distance matrix for the given point index */
-      inline const Eigen::Matrix3f& mahalanbis(size_t index) const
+      inline const Eigen::Matrix3d& mahalanobis(size_t index) const
       {
         assert(is_mahalanobis_done_ && (index < mahalanobis_.size()));
         return mahalanobis_[index];
       }
+
+      /** \brief computes rotation matrix derivative.
+        * rotation matrix is obtainded from quaternion components x[3], x[4] and x[5]
+        * \return d/d_rx, d/d_ry and d/d_rz respectively in g[3], g[4] and g[5]
+        * param x array representing 3D transformation
+        * param R rotation matrix
+        * param g gradient vector
+        */
+      void
+      computeRDerivative(const double x[], const Eigen::Matrix3d &R, double g[]);
 
     private:
 
@@ -234,16 +244,6 @@ namespace pcl
                               std::vector<Eigen::Matrix3d>& cloud_covariances,
                               int K = 20);
 
-      /** \brief computes rotation matrix derivative.
-        * rotation matrix is obtainded from quaternion components x[3], x[4] and x[5]
-        * \return d/d_rx, d/d_ry and d/d_rz respectively in g[3], g[4] and g[5]
-        * param x array representing 3D transformation
-        * param R rotation matrix
-        * param g gradient vector
-        */
-      void
-      computeRDerivative(const double x[], const Eigen::Matrix3d &R, double g[]);
-
       /** \return trace of mat1^t . mat2 
         * \param mat1 matrix of dimension nxm
         * \param mat2 matrix of dimension pxn
@@ -262,7 +262,7 @@ namespace pcl
       }
 
       std::vector<int> nn_indices_;
-      std::vector<float> nn_dists_;
+      std::vector<float> nn_distances_;
       
       /** \brief Rigid transformation computation method.
         * \param output the transformed input point cloud dataset using the rigid transformation found
@@ -279,6 +279,27 @@ namespace pcl
         */
       void 
       computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess);
+
+      /** \brief Search for the closest nearest neighbor of a given point.
+        * \param cloud the point cloud dataset to use for nearest neighbor search
+        * \param index the index of the query point
+        * \param indices the resultant vector of indices representing the k-nearest neighbors
+        * \param distances the resultant distances from the query point to the k-nearest neighbors
+        */
+      inline bool
+      searchForNeighbors (const PointCloudSource &cloud, int point_index)
+      {
+        std::vector<int> index (1, -1);
+        std::vector<float> distance (1, std::numeric_limits<float>::max());
+        int k = tree_->nearestKSearch (cloud, point_index, 1, index, distance);
+        nn_indices_[point_index] = index[0];
+        nn_distances_[point_index] = distance[0];
+
+        if (k == 0)
+          return (false);
+        return (true);
+      }
+
   };
 }
 

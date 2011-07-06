@@ -99,11 +99,11 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovarian
     // compute the SVD
     Eigen::JacobiSVD<Eigen::Matrix3d> svd(cov, Eigen::ComputeThinU);
     cov.setZero ();
-    Eigen::Matrix3f U = svd.matrixU ();
+    Eigen::Matrix3d U = svd.matrixU ();
     // reconstitute the covariance matrix with modified singular values using the column vectors in V.
     for(int k = 0; k < 3; k++) {
-      Eigen::Vector3f col = U.col(k);
-      float v = 1.; // biggest 2 singular values replaced by 1
+      Eigen::Vector3d col = U.col(k);
+      double v = 1.; // biggest 2 singular values replaced by 1
       if(k == 2)   // smallest singular value replaced by gicp_epsilon
         v = gicp_epsilon_;
       cov+= v * col * col.transpose(); 
@@ -272,8 +272,8 @@ template <typename PointSource, typename PointTarget> void
   }
 
   int m = indices_src.size ();
-  double fvec = new double[m];
-  double fjac = new double[m][n_unknowns];
+  double* fvec = new double[m];
+  double* fjac = new double[m * n_unknowns];
   int *iwa = new int[n_unknowns];
   int lwa = m * n_unknowns + 5 * n_unknowns + m;
   double *wa = new double[lwa];
@@ -371,7 +371,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
         if (model->nn_indices_[i] != -1)
         {
           // Map the jacobian translation component
-          Eigen::Map<Eigen::Vector3d> g_t(fjac[i]);
+          Eigen::Map<Eigen::Vector3d> g_t(fjac[i*n]);
           // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
           Vector4fMapConst p_src = model->tmp_src_->points[i].getVector4fMap ();
           // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
@@ -387,9 +387,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
           // Increment translation gradient
           // g_t+= 2*M*res/num_matches
           g_t= 2 * model->mahalanobis(i) * res / m;
-          
-          Eigen::Matrix3d Ri = (2/m) * model->tmp_src_->points[i].getVector3fMap () * temp.transpose();
-          computeRDerivative(x, Ri, fjac[i]);
+          Eigen::Vector3f p_src3 = model->tmp_src_->points[i].getVector3fMap ();
+          Eigen::Matrix3d Ri = double(2/m) * (p_src3.cast<double>() * temp.transpose());
+          computeRDerivative(x, Ri, &fjac[i*n]);
         }
       }
     }
@@ -441,7 +441,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
       for (int i = 0; i < m; ++i)
       {
         // Map the jacobian translation component
-        Eigen::Map<Eigen::Vector3d> g_t(fjac[i]);
+        Eigen::Map<Eigen::Vector3d> g_t(&fjac[i*n]);
         // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
         Vector4fMapConst p_src = model->tmp_src_->points[(*model->tmp_idx_src_)[i]].getVector4fMap ();
         // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
@@ -457,8 +457,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
         // Increment translation gradient
         // g_t+= 2*M*res/num_matches
         g_t= 2 * model->mahalanobis((*model->tmp_idx_src_)[i]) * res / m;
-        Eigen::Matrix3d Ri = (2/m) * model->tmp_src_->points[(*model->tmp_idx_src_)[i]].getVector3fMap () * temp.transpose();
-        computeRDerivative(x, Ri, fjac[i]);
+        Eigen::Vector3f p_src3 = model->tmp_src_->points[(*model->tmp_idx_src_)[i]].getVector3fMap ();
+        Eigen::Matrix3d Ri = double(2/m) * p_src3.cast<double>() * temp.transpose();
+        model->computeRDerivative(x, Ri, &fjac[i*n]);
       }
     }
   }
@@ -478,33 +479,42 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
   // Compute input cloud covariance matrices
   computeCovariances (input_, input_tree_, input_covariances_);
 
+  nr_iterations_ = 0;
+  converged_ = false;
+  double dist_threshold = corr_dist_threshold_ * corr_dist_threshold_;
+  size_t num_matches = 0;
   while(!converged_)
   {
-    Eigen::Matrix4f transform_R = transformation_ * guess;
-    Eigen::Matrix3d R = transform_R.topLeftCorner<3,3>(0,0);
+    // guess corresponds to base_t and transformation_ to t
+    // dgc_transform_t transform_R;
+    // dgc_transform_copy(transform_R, base_t);
+    // dgc_transform_left_multiply(transform_R, t);
+    Eigen::Matrix4d transform_R = guess.cast<double> ();
+    Eigen::Matrix3d R = transform_R.topLeftCorner<3,3> ();
     for(size_t i = 0; i < N; i++)
     {
-      //PointSource& query = 
-      query.getVector3fMap () = guess * query.getVector3fMap ();
-      query.getVector3fMap () = transform * query.getVector3fMap ();
+      PointSource& query = output[i];
+      query.getVector4fMap () = guess * query.getVector4fMap ();
+      query.getVector4fMap () = transformation_ * query.getVector4fMap ();
 
-      if (!searchForNeighbors (output, i, nn_indices_, nn_dists_))
+      if (!searchForNeighbors (output, i))
       {
-        PCL_ERROR ("[pcl::%s::computeTransformation] Unable to find a nearest neighbor in the target dataset for point %d in the source!\n", getClassName ().c_str (), (*indices_)[idx]);
+        PCL_WARN ("[pcl::%s::computeTransformation] Unable to find a nearest neighbor in the target dataset for point %d in the source!\n", getClassName ().c_str (), (*indices_)[i]);
         return;
       }
+
       // Check if the distance to the nearest neighbor is smaller than the user imposed threshold
-      if (nn_dists_[0] < dist_threshold)
+      if (nn_distances_[i] < dist_threshold)
       {
-        Eigen::Matrix3d &C1 = target_covariances_[i];
-        Eigen::Matrix3d &C2 = input_covariances_[i];
+        Eigen::Matrix3d &C1 = input_covariances_[i];
+        Eigen::Matrix3d &C2 = target_covariances_[i];
         Eigen::Matrix3d &M = mahalanobis_[i];
         // M = R*C1
         M = R * C1;
         // tmp = M*R' + C2 = R*C1*R' + C2
         Eigen::Matrix3d tmp = M * R.transpose() + C2;
         // M = temp^-1
-        M = tmp.invert();
+        M = tmp.inverse();
         num_matches++;
       }
       else
