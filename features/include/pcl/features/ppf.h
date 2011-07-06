@@ -63,7 +63,7 @@ namespace pcl
     using FeatureFromNormals<PointInT, PointNT, PointOutT>::input_;
     using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
-    typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+    typedef pcl::PointCloud<PointOutT> PointCloudOut;
 
     /**
      * \brief Empty Constructor

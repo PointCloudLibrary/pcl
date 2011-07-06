@@ -234,7 +234,7 @@ pcl::FPFHMultiscaleFeaturePersistence<PointT, PointNT, PointFeature>::determineP
   output_locations = InputCloudPtr (new InputCloud ());
 
   // method 1: a feature is considered persistent if it is 'unique' in at least 2 different scales
-/*  for (size_t scale_i = 0; scale_i < features_at_scale.size () - 1; ++scale_i)
+  for (size_t scale_i = 0; scale_i < features_at_scale.size () - 1; ++scale_i)
   {
     for (std::list<size_t>::iterator feature_it = unique_features_indices[scale_i].begin (); feature_it != unique_features_indices[scale_i].end (); ++feature_it)
     {
@@ -244,10 +244,10 @@ pcl::FPFHMultiscaleFeaturePersistence<PointT, PointNT, PointFeature>::determineP
         output_locations->points.push_back (input_->points[*feature_it]);
       }
     }
-  }*/
+  }
 
   // method 2: a feature is considered persistent if it is 'unique' in all the scales
-  for (std::list<size_t>::iterator feature_it = unique_features_indices.front ().begin (); feature_it != unique_features_indices.front ().end (); ++feature_it)
+/*  for (std::list<size_t>::iterator feature_it = unique_features_indices.front ().begin (); feature_it != unique_features_indices.front ().end (); ++feature_it)
   {
     bool present_in_all = true;
     for (size_t scale_i = 0; scale_i < features_at_scale.size (); ++scale_i)
@@ -258,7 +258,7 @@ pcl::FPFHMultiscaleFeaturePersistence<PointT, PointNT, PointFeature>::determineP
       output_features->points.push_back (features_at_scale.front ()->points[*feature_it]);
       output_locations->points.push_back (input_->points[*feature_it]);
     }
-  }
+  }*/
 }
 
 
