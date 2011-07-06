@@ -1589,7 +1589,7 @@ RangeImage::doIcp (const RangeImage& other_range_image,
     transformation_from_correspondeces.reset ();
     
     float progress = float(iteration)/float(num_iterations);
-    int pixel_step = lrintf(float(pixel_step_start) + powf(progress, 3)*float(pixel_step_end-pixel_step_start));
+    int pixel_step = pcl_lrint (float(pixel_step_start) + powf(progress, 3)*float(pixel_step_end-pixel_step_start));
     //cout << PVARC(iteration) << PVARN(pixel_step);
     
     for (int other_y=0; other_y<int(other_range_image.height); other_y+=pixel_step)
