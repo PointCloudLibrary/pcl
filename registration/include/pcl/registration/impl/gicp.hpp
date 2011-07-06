@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: icp_nl.hpp 1370 2011-06-19 01:06:01Z jspricke $
+ * $Id$
  *
  */
 
@@ -452,8 +452,6 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
         Eigen::Vector3d res(pp[0] - p_tgt[0], pp[1] - p_tgt[1], pp[2] - p_tgt[2]);
         // temp = M*res
         Eigen::Vector3d temp = model->mahalanobis((*model->tmp_idx_src_)[i]) * res;
-        // temp_double = res'*temp = temp'*M*res
-        double temp_double = res.transpose() * temp;
         // Increment translation gradient
         // g_t+= 2*M*res/num_matches
         g_t= 2 * model->mahalanobis((*model->tmp_idx_src_)[i]) * res / m;
@@ -497,7 +495,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
       query.getVector4fMap () = guess * query.getVector4fMap ();
       query.getVector4fMap () = transformation_ * query.getVector4fMap ();
 
-      if (!searchForNeighbors (output, i))
+      if (!searchForNeighbors (query, i))
       {
         PCL_WARN ("[pcl::%s::computeTransformation] Unable to find a nearest neighbor in the target dataset for point %d in the source!\n", getClassName ().c_str (), (*indices_)[i]);
         return;

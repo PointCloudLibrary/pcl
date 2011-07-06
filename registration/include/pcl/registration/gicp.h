@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: icp_nl.h 1370 2011-06-19 01:06:01Z jspricke $
+ * $Id$
  *
  */
 
@@ -282,16 +282,14 @@ namespace pcl
 
       /** \brief Search for the closest nearest neighbor of a given point.
         * \param cloud the point cloud dataset to use for nearest neighbor search
-        * \param index the index of the query point
-        * \param indices the resultant vector of indices representing the k-nearest neighbors
-        * \param distances the resultant distances from the query point to the k-nearest neighbors
+        * \param point_index the index of the query point
         */
       inline bool
-      searchForNeighbors (const PointCloudSource &cloud, int point_index)
+        searchForNeighbors (const PointSource &query, int point_index)
       {
         std::vector<int> index (1, -1);
         std::vector<float> distance (1, std::numeric_limits<float>::max());
-        int k = tree_->nearestKSearch (cloud, point_index, 1, index, distance);
+        int k = tree_->nearestKSearch (query, 1, index, distance);
         nn_indices_[point_index] = index[0];
         nn_distances_[point_index] = distance[0];
 
