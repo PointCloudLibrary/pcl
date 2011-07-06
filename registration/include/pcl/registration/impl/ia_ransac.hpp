@@ -35,10 +35,10 @@
  *
  */
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename FeatureT> void
-pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setSourceFeatures (
-      const FeatureCloudConstPtr &features)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename FeatureT> 
+void pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::
+setSourceFeatures (const FeatureCloudConstPtr &features)
 {
   if (features == NULL || features->points.empty ())
   {
@@ -48,10 +48,10 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setSou
   input_features_ = features;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename FeatureT> void
-pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setTargetFeatures (
-      const FeatureCloudConstPtr &features)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename FeatureT> 
+void pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::
+setTargetFeatures (const FeatureCloudConstPtr &features)
 {
   if (features == NULL || features->points.empty ())
   {
@@ -62,15 +62,17 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setTar
   feature_tree_->setInputCloud (target_features_);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename FeatureT> void
-pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::selectSamples (
-      const PointCloudSource &cloud, int nr_samples, float min_sample_distance, std::vector<int> &sample_indices)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename FeatureT> 
+void pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::
+selectSamples (const PointCloudSource &cloud, int nr_samples, float min_sample_distance, 
+               std::vector<int> &sample_indices)
 {
   if (nr_samples > (int) cloud.points.size ())
   {
-    PCL_ERROR ("[pcl::%s::selectSamples] The number of samples (%d) must not be greater than the number of points (%d)!\n",
-               getClassName ().c_str (), nr_samples, (int) cloud.points.size ());
+    PCL_ERROR ("[pcl::%s::selectSamples] ", getClassName ().c_str ());
+    PCL_ERROR ("The number of samples (%d) must not be greater than the number of points (%d)!\n",
+               nr_samples, (int) cloud.points.size ());
     return;
   }
 
@@ -110,8 +112,10 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::select
     // If no valid samples can be found, relax the inter-sample distance requirements
     if (iterations_without_a_sample >= max_iterations_without_a_sample)
     {
-      PCL_WARN ("[pcl::%s::selectSamples] No valid sample found after %d iterations. Relaxing min_sample_distance_ to %f\n", 
-                getClassName ().c_str (), iterations_without_a_sample, 0.5*min_sample_distance);
+      PCL_WARN ("[pcl::%s::selectSamples] ", getClassName ().c_str ());
+      PCL_WARN ("No valid sample found after %d iterations. Relaxing min_sample_distance_ to %f\n",
+                iterations_without_a_sample, 0.5*min_sample_distance);
+
       min_sample_distance_ *= 0.5;
       min_sample_distance = min_sample_distance_;
       iterations_without_a_sample = 0;
@@ -121,31 +125,31 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::select
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename FeatureT> void
-pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::findSimilarFeatures (
-      const FeatureCloud &input_features, const std::vector<int> &sample_indices, std::vector<int> &corresponding_indices)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename FeatureT>
+void pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::
+findSimilarFeatures (const FeatureCloud &input_features, const std::vector<int> &sample_indices, 
+                     std::vector<int> &corresponding_indices)
 {
-  const int k = 10;
-  std::vector<int> nn_indices (k);
-  std::vector<float> nn_distances (k);
+  std::vector<int> nn_indices (k_correspondences_);
+  std::vector<float> nn_distances (k_correspondences_);
 
   corresponding_indices.resize (sample_indices.size ());
   for (size_t i = 0; i < sample_indices.size (); ++i)
   {
     // Find the k features nearest to input_features.points[sample_indices[i]]
-    feature_tree_->nearestKSearch (input_features, sample_indices[i], k, nn_indices, nn_distances);
+    feature_tree_->nearestKSearch (input_features, sample_indices[i], k_correspondences_, nn_indices, nn_distances);
 
     // Select one at random and add it to corresponding_indices
-    int random_correspondence = getRandomIndex (k);
+    int random_correspondence = getRandomIndex (k_correspondences_);
     corresponding_indices[i] = nn_indices[random_correspondence];
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename FeatureT> float
-pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeErrorMetric (
-      const PointCloudSource &cloud, float threshold)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename FeatureT>
+float pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::
+computeErrorMetric (const PointCloudSource &cloud, float threshold)
 {
   std::vector<int> nn_index (1);
   std::vector<float> nn_distance (1);
@@ -177,20 +181,21 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename FeatureT> void
-pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeTransformation (PointCloudSource &output)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename FeatureT> 
+void pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::
+computeTransformation (PointCloudSource &output)
 {
   if (!input_features_)
   {
-    PCL_ERROR ("[pcl::%s::computeTransformation] No source features were given! Call setSourceFeatures before aligning.\n", 
-               getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName ().c_str ());
+    PCL_ERROR ("No source features were given! Call setSourceFeatures before aligning.\n");
     return;
   }
   if (!target_features_)
   {
-    PCL_ERROR ("[pcl::%s::computeTransformation] No target features were given! Call setTargetFeatures before aligning.\n", 
-               getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName ().c_str ());
+    PCL_ERROR ("No target features were given! Call setTargetFeatures before aligning.\n");
     return;
   }
 

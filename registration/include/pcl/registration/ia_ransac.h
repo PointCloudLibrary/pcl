@@ -79,10 +79,11 @@ namespace pcl
 
     public:
       /** \brief Constructor. */
-      SampleConsensusInitialAlignment () : nr_samples_(3)
+      SampleConsensusInitialAlignment () : nr_samples_(3), min_sample_distance_ (0), k_correspondences_ (10)
       {
         reg_name_ = "SampleConsensusInitialAlignment";
         feature_tree_.reset (new pcl::KdTreeFLANN<FeatureT>);
+        max_iterations_ = 1000;
       };
 
       /** \brief Provide a boost shared pointer to the source point cloud's feature descriptors
@@ -121,19 +122,30 @@ namespace pcl
       void 
       setNumberOfSamples (int nr_samples) { nr_samples_ = nr_samples; }
 
-      /** \brief Set the number of samples to use during each iteration, as set by the user */
+      /** \brief Get the number of samples to use during each iteration, as set by the user */
       int 
       getNumberOfSamples () { return (nr_samples_); }
 
-    private:
+      /** \brief Set the number of neighbors to use when selecting a random feature correspondence.  A higher value will
+        * add more randomness to the feature matching.
+        * \param k the number of neighbors to use when selecting a random feature correspondence.
+        */
+      void
+      setCorrespondenceRandomness (int k) { k_correspondences_ = k; }
+
+      /** \brief Get the number of neighbors used when selecting a random feature correspondence, as set by the user */
+      void
+      getCorrespondenceRandomness () { return (k_correspondences_); }
+
+    protected:
       /** \brief Choose a random index between 0 and n-1
         * \param n the number of possible indices to choose from
         */
       inline int 
       getRandomIndex (int n) { return (n * (rand () / (RAND_MAX + 1.0))); };
       
-      /** \brief Select \a nr_samples sample points from cloud while making sure that their pairwise distances are greater 
-        * than a user-defined minimum distance, \a min_sample_distance.
+      /** \brief Select \a nr_samples sample points from cloud while making sure that their pairwise distances are 
+        * greater than a user-defined minimum distance, \a min_sample_distance.
         * \param cloud the input point cloud
         * \param nr_samples the number of samples to select
         * \param min_sample_distance the minimum distance between any two samples
@@ -161,7 +173,6 @@ namespace pcl
       float 
       computeErrorMetric (const PointCloudSource &cloud, float threshold);
 
-    protected:
       /** \brief Rigid transformation computation method.
         * \param output the transformed input point cloud dataset using the rigid transformation found
         */
@@ -179,6 +190,9 @@ namespace pcl
 
       /** \brief The minimum distances between samples. */
       float min_sample_distance_;
+
+      /** \brief The number of neighbors to use when selecting a random feature correspondence. */
+      int k_correspondences_;
      
       /** \brief The KdTree used to compare feature descriptors. */
       FeatureKdTreePtr feature_tree_;               
