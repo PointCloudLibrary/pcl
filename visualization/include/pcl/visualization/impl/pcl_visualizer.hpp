@@ -67,7 +67,8 @@ pcl::visualization::PCLVisualizer::addPointCloud (
     return (false);
   }
   
-  PointCloudColorHandlerRandom<PointT> color_handler (cloud);
+  //PointCloudColorHandlerRandom<PointT> color_handler (cloud);
+  PointCloudColorHandlerCustom<PointT> color_handler (cloud, 255, 255, 255);
   return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
 }
 
@@ -89,7 +90,8 @@ pcl::visualization::PCLVisualizer::addPointCloud (
     return (true);
   }
 
-  PointCloudColorHandlerRandom<PointT> color_handler (cloud);
+  //PointCloudColorHandlerRandom<PointT> color_handler (cloud);
+  PointCloudColorHandlerCustom<PointT> color_handler (cloud, 255, 255, 255);
   return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
 }
 
