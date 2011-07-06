@@ -598,6 +598,15 @@ namespace pcl
              const Eigen::Affine3f& initial_guess, int search_radius,
              float max_distance_start, float max_distance_end, int num_iterations) const;
       
+      /** Perform ICP (Iterative closest point) on the given data
+       *  pixel_step_start, pixel_step_end can be used to improve performance by starting with low
+       *  resolution and going to higher resolution with later iterations (not used for default values) */
+      PCL_EXPORTS Eigen::Affine3f
+      doIcp (const RangeImage& other_range_image,
+             const Eigen::Affine3f& initial_guess, int search_radius,
+             float max_distance_start, float max_distance_end,
+             int num_iterations, int pixel_step_start=1, int pixel_step_end=1) const;
+      
       /** Get the viewing direction for the given point */
       inline bool
       getViewingDirection (int x, int y, Eigen::Vector3f& viewing_direction) const;
