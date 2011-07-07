@@ -43,6 +43,8 @@
 #include "pcl/io/io.h"
 #include "pcl/io/pcd_io.h"
 
+#include <boost/filesystem.hpp>
+
 #ifdef _WIN32
 # include <io.h>
 # include <windows.h>
@@ -80,12 +82,17 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
 
   int specified_channel_count = 0;
 
+  if(file_name == "" || !boost::filesystem::exists (file_name))
+  {
+    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
+    return (-1);
+  }
   // Open file in binary mode to avoid problem of 
   // std::getline() corrupting the result of ifstream::tellg()
   fs.open (file_name.c_str (), std::ios::binary);
   if (!fs.is_open () || fs.fail ())
   {
-    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file %s.\n", file_name.c_str ());
+    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'.\n", file_name.c_str ());
     return (-1);
   }
 
