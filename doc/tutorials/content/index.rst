@@ -260,6 +260,38 @@ contributions on any tutorial.
      .. |fi_5| image:: images/extract_indices.jpg
                :height: 100px
 
+  * :ref:`conditional_removal`
+
+     ======  ======
+     |fi_6|  Title: **Removing outliers using a ConditionalRemoval filter**
+
+             Author: *Gabe O'Leary*
+
+             Compatibility: > PCL 0.5
+
+             This document demonstrates how to use the ConditionalRemoval filter to remove points from a PointCloud that do no statisfy a specific or multiple conditions.
+     ======  ======
+     
+     .. |fi_6| image:: images/extract_indices.jpg
+               :height: 100px
+
+  * :ref:`radius_outlier_removal`
+
+     ======  ======
+     |fi_7|  Title: **Removing outliers using a RadiusOutlierRemoval filter**
+
+             Author: *Gabe O'Leary*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial we will learn how to remove outlying indices with below a specific number of neighbors inside some range.
+     ======  ======
+     
+     .. |fi_7| image:: images/radius_outlier.png
+               :height: 100px
+
+
+
 * Keypoints
 
   * :ref:`narf_keypoint_extraction`
@@ -469,7 +501,7 @@ contributions on any tutorial.
   * :ref:`convex_hull_2d`
 
      ======  ======
-     |su_2|  Title: **Construct a convex hull polygon for a plane model**
+     |su_3|  Title: **Construct a convex hull polygon for a plane model**
 
              Author: *Radu B. Rusu*
 
@@ -478,13 +510,13 @@ contributions on any tutorial.
              In this tutorial we will learn how to calculate a simple 2D convex hull polygon for a set of points supported by a plane.
      ======  ======
      
-     .. |su_2| image:: images/convex_hull_2d.jpg
+     .. |su_3| image:: images/convex_hull_2d.jpg
                :height: 100px
 
   * :ref:`greedy_triangulation`
 
      ======  ======
-     |su_3|  Title: **Fast triangulation of unordered point clouds**
+     |su_4|  Title: **Fast triangulation of unordered point clouds**
 
              Author: *Zoltan-Csaba Marton*
 
@@ -493,7 +525,7 @@ contributions on any tutorial.
              In this tutorial we will learn how to run a greedy triangulation algorithm on a PointCloud with normals to obtain a triangle mesh based on projections of the local neighborhood.
      ======  ======
      
-     .. |su_3| image:: images/greedy_triangulation.png
+     .. |su_4| image:: images/greedy_triangulation.png
                :height: 100px
 
 * Octree
@@ -637,6 +669,23 @@ contributions on any tutorial.
      ======  ======
      
      .. |vi_4| image:: images/narf_descriptor.jpg
+               :height: 100px
+
+* Registration
+
+  * :ref:`iterative_closest_point`
+
+     ======  ======
+     |rg_1|  Title: **How to use iterative closest point algorithm**
+
+             Author: *Gabe O'Leary*
+
+             Compatibility: > PCL 1.0
+
+             This tutorial gives an example of how to use the iterative closest point algorithm to see if one PointCloud is just a rigid transformation of another PointCloud.
+     ======  ======
+
+     .. |rg_1| image:: images/template_alignment_1.png
                :height: 100px
 
 * Applications

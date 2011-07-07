@@ -1,7 +1,7 @@
 .. _conditional_removal:
 
-How to use conditional removal
-------------------------------
+Removing outliers using a ConditionalRemoval filter
+---------------------------------------------------
 
 This document demonstrates how to use the ConditionalRemoval filter to remove points from a PointCloud that do no statisfy a specific or multiple conditions.
 
