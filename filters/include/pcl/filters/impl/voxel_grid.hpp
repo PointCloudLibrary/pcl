@@ -314,7 +314,18 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   // Second pass: go over all leaves and compute centroids
   output.points.resize (leaves_.size ());
   int cp = 0, i = 0;
-    leaf_layout_.resize (div_b_[0]*div_b_[1]*div_b_[2], -1);
+  if (save_leaf_layout_)
+  {
+    try
+    {
+      leaf_layout_.resize (div_b_[0]*div_b_[1]*div_b_[2], -1);
+    }
+    catch (std::bad_alloc&)
+    {
+      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout", 
+        "voxel_grid.hpp", "applyFilter");	
+    }
+  }
   
   for (typename boost::unordered_map<size_t, Leaf>::const_iterator it = leaves_.begin (); it != leaves_.end (); ++it)
   {
