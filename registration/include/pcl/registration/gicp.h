@@ -95,11 +95,14 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      GeneralizedIterativeClosestPoint () : 
-      gicp_epsilon_(1e-5), input_covariances_(0), target_covariances_(0)
+      GeneralizedIterativeClosestPoint () : k_correspondences_(20), 
+      gicp_epsilon_(0.0004), rotation_epsilon_(2e-3),
+      input_covariances_(0), target_covariances_(0)
       {
         min_number_correspondences_ = 4;
         reg_name_ = "GeneralizedIterativeClosestPoint";
+        max_iterations_ = 200;
+        transformation_epsilon_ = 5e-4;
         rigid_transformation_estimation_ = 
           boost::bind (&GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationLM, 
               this, _1, _2, _3, _4, _5);
@@ -174,9 +177,50 @@ namespace pcl
       void
       computeRDerivative(const double x[], const Eigen::Matrix3d &R, double g[]);
 
+      /** \brief Set the rotation epsilon (maximum allowable difference between two 
+        * consecutive rotations) in order for an optimization to be considered as having 
+        * converged to the final solution.
+        * \param epsilon the rotation epsilon
+        */
+      inline void 
+      setRotationEpsilon (double epsilon) { rotation_epsilon_ = epsilon; }
+
+      /** \brief Get the rotation epsilon (maximum allowable difference between two 
+        * consecutive rotations) as set by the user.
+        */
+      inline double 
+      getRotationEpsilon () { return (rotation_epsilon_); }
+
+      /** \brief Set the number of neighbors used when selecting a point neighbourhood
+        * to compute covariances. 
+        * A higher value will bring more accurate covariance matrix but will make 
+        * covariances computation slower.
+        * \param k the number of neighbors to use when computing covariances
+        */
+      void
+      setCorrespondenceRandomness (int k) { k_correspondences_ = k; }
+
+      /** \brief Get the number of neighbors used when computing covariances as set by 
+        * the user 
+        */
+      void
+      getCorrespondenceRandomness () { return (k_correspondences_); }
+
     private:
 
+      /** \brief The number of neighbors used for covariances computation. 
+        * \default 20
+        */
+      int k_correspondences_;
+      /** epsilon constant for gicp paper; this is NOT the convergence tolerence 
+        * \default 0.0004
+        */
       double gicp_epsilon_;
+      /** epsilon constant for rotation error. (In GICP the transformation epsilon is 
+        * split in rotation part and translation part).
+        * \default 2e-3
+        */
+      double rotation_epsilon_;
       /** \brief Cost function to be minimized
         * \param p a pointer to our data structure array
         * \param m the number of functions
@@ -232,17 +276,16 @@ namespace pcl
       /** \brief tells if mahalanobis matrices were computed */
       bool is_mahalanobis_done_;
       
-      /** \brief compute points covariances matrices according to the K nearest neighbors
+      /** \brief compute points covariances matrices according to the K nearest 
+        * neighbors. K is set via setCorrespondenceRandomness() methode.
         * \param cloud pointer to point cloud
         * \param tree KD tree performer for nearest neighbors search
         * \return cloud_covariance covariances matrices for each point in the cloud
-        * \param K number of nearest neighbors to search for
         */
       template<typename PointT>
       void computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud, 
                               const typename pcl::KdTree<PointT>::Ptr tree,
-                              std::vector<Eigen::Matrix3d>& cloud_covariances,
-                              int K = 20);
+                              std::vector<Eigen::Matrix3d>& cloud_covariances);
 
       /** \return trace of mat1^t . mat2 
         * \param mat1 matrix of dimension nxm
@@ -285,7 +328,7 @@ namespace pcl
         * \param point_index the index of the query point
         */
       inline bool
-        searchForNeighbors (const PointSource &query, int point_index)
+      searchForNeighbors (const PointSource &query, int point_index)
       {
         std::vector<int> index (1, -1);
         std::vector<float> distance (1, std::numeric_limits<float>::max());

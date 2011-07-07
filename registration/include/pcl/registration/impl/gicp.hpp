@@ -42,8 +42,7 @@ template <typename PointSource, typename PointTarget>
 template<typename PointT> void
 pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud, 
                    const typename pcl::KdTree<PointT>::Ptr kdtree,
-                   std::vector<Eigen::Matrix3d>& cloud_covariances,
-                   int K)
+                   std::vector<Eigen::Matrix3d>& cloud_covariances)
 {
   Eigen::Vector3d mean;
   std::vector<int> nn_indecies; nn_indecies.reserve (cloud->size ());
@@ -66,11 +65,11 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovarian
     mean.setZero ();
 
     //search for the K nearest neighbours
-    kdtree->nearestKSearch(query_point, K, nn_indecies, nn_dist_sq);
+    kdtree->nearestKSearch(query_point, k_correspondences_, nn_indecies, nn_dist_sq);
     
     // find the covariance matrix
-    for(int j = 0; j < K; j++) {
-      PointT &pt = (*cloud)[nn_indecies[j]];
+    for(int j = 0; j < k_correspondences_; j++) {
+      const PointT &pt = (*cloud)[nn_indecies[j]];
       
       mean[0] += pt.x;
       mean[1] += pt.y;
@@ -86,11 +85,11 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovarian
       cov(2,2) += pt.z*pt.z;	  
     }
 	
-    mean/= (float)K;
+    mean/= (double)k_correspondences_;
     // get the actual covariance
     for(int k = 0; k < 3; k++) {
       for(int l = 0; l <= k; l++) {
-        cov(k,l) /= (float)K;
+        cov(k,l) /= (double)k_correspondences_;
         cov(k,l) -= mean[k]*mean[l];
         cov(l,k) = cov(k,l);
       }
@@ -468,14 +467,16 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
 template <typename PointSource, typename PointTarget> inline void
 pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess)
 {
+  // Difference between 
+  double delta = 0;
   // Get the size of the target
   const size_t N = indices_->size ();
   // Set the mahalanobis matrices to identity
   mahalanobis_.resize (N, Eigen::Matrix3d::Identity ());
   // Compute target cloud covariance matrices
-  computeCovariances (target_, tree_, target_covariances_);
+  computeCovariances<PointTarget> (target_, tree_, target_covariances_);
   // Compute input cloud covariance matrices
-  computeCovariances (input_, input_tree_, input_covariances_);
+  computeCovariances<PointSource> (input_, input_tree_, input_covariances_);
 
   nr_iterations_ = 0;
   converged_ = false;
@@ -521,11 +522,28 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
       }
     }
     is_mahalanobis_done_ = true;
-   
+    previous_transformation_ = transformation_;
+
+    delta = 0.;
+    for(int k = 0; k < 4; k++) {
+      for(int l = 0; l < 4; l++) {
+        double ratio = 1;
+
+        if(k < 3 && l < 3) // rotation part of the transform
+          ratio = 1./rotation_epsilon_;
+        else
+          ratio = 1./transformation_epsilon_;
+
+        double c_delta = ratio*fabs(previous_transformation_(k,l) - transformation_(k,l));
+        
+        if(c_delta > delta)
+          delta = c_delta;
+      }
+    }
+
     nr_iterations_++;
     // Check for convergence
-    if (nr_iterations_ >= max_iterations_ ||
-        fabs ((transformation_ - previous_transformation_).sum ()) < transformation_epsilon_)
+    if (nr_iterations_ >= max_iterations_ || delta < 1)
     {
       converged_ = true;
       PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f\n",
