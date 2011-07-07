@@ -58,7 +58,7 @@ class OpenNIGrabFrame
         if (filename.empty ())
         {
           std::stringstream ss;
-          ss << output_dir << "/frame_" << cloud->header.stamp << ".pcd";
+          ss << output_dir << "/frame_" << boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::local_time()) << ".pcd";
           filename = ss.str ();
         }
         pcl::io::savePCDFileASCII(filename, *cloud);
