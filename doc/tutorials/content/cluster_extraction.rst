@@ -78,7 +78,7 @@ Now, let's break down the code piece by piece, skipping the obvious.
 	PCDReader reader;
 	PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 	reader.read ("table_scene_lms400.pcd", *cloud);
-	cerr << "PointCloud before filtering has: " << cloud->points.size () << " data points." << endl; //*
+	std::cout << "PointCloud before filtering has: " << cloud->points.size () << " data points." << std::endl; //*
 
 		  .
 		  .

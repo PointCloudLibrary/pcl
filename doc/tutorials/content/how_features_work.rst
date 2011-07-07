@@ -119,24 +119,23 @@ The following code snippet will estimate a set of surface normals for all the po
 
    #include <pcl/point_types.h>
    #include <pcl/features/normal_3d.h>
-   using namespace pcl;
 
    {
-     PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
      ... read, pass in or create a point cloud ...
 
      // Create the normal estimation class, and pass the input dataset to it
-     NormalEstimation<PointXYZ, Normal> ne;
+     pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
      ne.setInputCloud (cloud);
 
      // Create an empty kdtree representation, and pass it to the normal estimation object. 
      // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-     KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
+     pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr tree (new pcl::KdTreeFLANN<pcl::PointXYZ> ());
      ne.setSearchMethod (tree);
 
      // Output datasets
-     PointCloud<Normal>::Ptr cloud_normals (new PointCloud<Normal>);
+     pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
 
      // Use all neighbors in a sphere of radius 3cm
      ne.setRadiusSearch (0.03);
@@ -154,10 +153,9 @@ The following code snippet will estimate a set of surface normals for a subset o
 
    #include <pcl/point_types.h>
    #include <pcl/features/normal_3d.h>
-   using namespace pcl;
 
    {
-     PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
      ... read, pass in or create a point cloud ...
 
@@ -166,7 +164,7 @@ The following code snippet will estimate a set of surface normals for a subset o
      for (size_t i = 0; indices.size (); ++i) indices[i] = i;
 
      // Create the normal estimation class, and pass the input dataset to it
-     NormalEstimation<PointXYZ, Normal> ne;
+     pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
      ne.setInputCloud (cloud);
 
      // Pass the indices
@@ -175,11 +173,11 @@ The following code snippet will estimate a set of surface normals for a subset o
 
      // Create an empty kdtree representation, and pass it to the normal estimation object. 
      // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-     KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
+     pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr tree (new pcl::KdTreeFLANN<pcl::PointXYZ> ());
      ne.setSearchMethod (tree);
 
      // Output datasets
-     PointCloud<Normal>::Ptr cloud_normals (new PointCloud<Normal>);
+     pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
 
      // Use all neighbors in a sphere of radius 3cm
      ne.setRadiusSearch (0.03);
@@ -198,18 +196,17 @@ Finally, the following code snippet will estimate a set of surface normals for a
 
    #include <pcl/point_types.h>
    #include <pcl/features/normal_3d.h>
-   using namespace pcl;
 
    {
-     PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
-     PointCloud<PointXYZ>::Ptr cloud_downsampled (new PointCloud<PointXYZ>);
+     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_downsampled (new pcl::PointCloud<pcl::PointXYZ>);
 
      ... read, pass in or create a point cloud ...
 
      ... create a downsampled version of it ...
 
      // Create the normal estimation class, and pass the input dataset to it
-     NormalEstimation<PointXYZ, Normal> ne;
+     pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
      ne.setInputCloud (cloud_downsampled);
 
      // Pass the original data (before downsampling) as the search surface
@@ -217,11 +214,11 @@ Finally, the following code snippet will estimate a set of surface normals for a
 
      // Create an empty kdtree representation, and pass it to the normal estimation object. 
      // Its content will be filled inside the object, based on the given surface dataset.
-     KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
+     pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr tree (new pcl::KdTreeFLANN<pcl::PointXYZ> ());
      ne.setSearchMethod (tree);
 
      // Output datasets
-     PointCloud<Normal>::Ptr cloud_normals (new PointCloud<Normal>);
+     pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
 
      // Use all neighbors in a sphere of radius 3cm
      ne.setRadiusSearch (0.03);
