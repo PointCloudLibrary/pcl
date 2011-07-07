@@ -71,8 +71,8 @@ namespace pcl
     at (std::vector<float> &feature,
         size_t &level);
 
-    size_t dimensions, nr_levels, nr_features;
     std::vector<std::pair<float, float> > dimension_range;
+    size_t dimensions, nr_levels, nr_features;
 
     struct PyramidHistogramLevel
     {
