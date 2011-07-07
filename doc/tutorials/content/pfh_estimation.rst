@@ -133,28 +133,27 @@ points in the input dataset.
 
    #include <pcl/point_types.h>
    #include <pcl/features/pfh.h>
-   using namespace pcl;
 
    {
-     PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
-     PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+     pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal> ());
      
      ... read, pass in or create a point cloud with normals ...
      ... (note: you can create a single PointCloud<PointNormal> if you want) ...
 
      // Create the PFH estimation class, and pass the input dataset+normals to it
-     PFHEstimation<PointXYZ, Normal, PFHSignature125> pfh;
+     pcl::PFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::PFHSignature125> pfh;
      pfh.setInputCloud (cloud);
      pfh.setInputNormals (normals);
      // alternatively, if cloud is of tpe PointNormal, do pfh.setInputNormals (cloud);
 
      // Create an empty kdtree representation, and pass it to the PFH estimation object. 
      // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-     KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
+     pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr tree (new pcl::KdTreeFLANN<pcl::PointXYZ> ());
      pfh.setSearchMethod (tree);
 
      // Output datasets
-     PointCloud<PFHSignature125>::Ptr pfhs (new PointCloud<PFHSignature125> ());
+     pcl::PointCloud<pcl::PFHSignature125>::Ptr pfhs (new pcl::PointCloud<pcl::PFHSignature125> ());
 
      // Use all neighbors in a sphere of radius 5cm
      // IMPORTANT: the radius used here has to be larger than the radius used to estimate the surface normals!!!
