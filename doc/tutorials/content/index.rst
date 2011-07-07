@@ -451,6 +451,21 @@ contributions on any tutorial.
      .. |su_1| image:: images/resampling.jpg
                :height: 100px
 
+  * :ref:`concave_hull_2d`
+
+     ======  ======
+     |su_2|  Title: **Construct a concave hull polygon for a plane model**
+
+             Author: *Gabe O'Leary*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial we will learn how to calculate a simple 2D concave hull polygon for a set of points supported by a plane.
+     ======  ======
+     
+     .. |su_2| image:: images/convex_hull_2d.jpg
+               :height: 100px
+
   * :ref:`convex_hull_2d`
 
      ======  ======
