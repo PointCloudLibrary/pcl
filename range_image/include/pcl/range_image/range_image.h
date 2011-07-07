@@ -75,6 +75,10 @@ namespace pcl
       /** Destructor */
       PCL_EXPORTS ~RangeImage ();
       
+      // =====STATIC VARIABLES=====
+      /** The maximum number of openmp threads that can be used in this class */
+      static int max_no_of_threads;
+      
       // =====STATIC METHODS=====
       /** \brief Get the size of a certain area when seen from the given pose
         * \param viewer_pose an affine matrix defining the pose of the viewer
