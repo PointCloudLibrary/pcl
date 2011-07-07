@@ -333,9 +333,6 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   if (res < 0)
     return (res);
 
-  // @todo fixme
-  cloud.is_bigendian = false;  
-
   int idx = 0;
 
   // Get the number of points the cloud should have
