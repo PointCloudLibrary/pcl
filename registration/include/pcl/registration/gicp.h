@@ -40,8 +40,6 @@
 
 // PCL includes
 #include "pcl/registration/icp.h"
-#include "pcl/sample_consensus/ransac.h"
-#include "pcl/sample_consensus/sac_model_registration.h"
 
 #include <cminpack.h>
 
@@ -160,14 +158,14 @@ namespace pcl
                                      const std::vector<int> &indices_tgt, 
                                      Eigen::Matrix4f &transformation_matrix);
       
-      /** \brief \return computed mahalanobis distance matrix for the given point index */
+      /** \brief \return Mahalanobis distance matrix for the given point index */
       inline const Eigen::Matrix3d& mahalanobis(size_t index) const
       {
         assert(is_mahalanobis_done_ && (index < mahalanobis_.size()));
         return mahalanobis_[index];
       }
 
-      /** \brief computes rotation matrix derivative.
+      /** \brief Computes rotation matrix derivative.
         * rotation matrix is obtainded from quaternion components x[3], x[4] and x[5]
         * \return d/d_rx, d/d_ry and d/d_rz respectively in g[3], g[4] and g[5]
         * param x array representing 3D transformation
@@ -212,12 +210,13 @@ namespace pcl
         * \default 20
         */
       int k_correspondences_;
-      /** epsilon constant for gicp paper; this is NOT the convergence tolerence 
+      /** \brief The epsilon constant for gicp paper; this is NOT the convergence 
+        * tolerence 
         * \default 0.0004
         */
       double gicp_epsilon_;
-      /** epsilon constant for rotation error. (In GICP the transformation epsilon is 
-        * split in rotation part and translation part).
+      /** The epsilon constant for rotation error. (In GICP the transformation epsilon 
+        * is split in rotation part and translation part).
         * \default 2e-3
         */
       double rotation_epsilon_;
@@ -227,6 +226,8 @@ namespace pcl
         * \param n the number of variables
         * \param x a pointer to the variables array
         * \param fvec a pointer to the resultant functions evaluations
+        * \param fjac a pointer to the resultant jacobians evaluations
+        * \param ldfjac the leading dimension of fjac
         * \param iflag set to -1 inside the function to terminate execution
         */
       static int 
@@ -238,6 +239,8 @@ namespace pcl
         * \param n the number of variables
         * \param x a pointer to the variables array
         * \param fvec a pointer to the resultant functions evaluations
+        * \param fjac a pointer to the resultant jacobians evaluations
+        * \param ldfjac the leading dimension of fjac
         * \param iflag set to -1 inside the function to terminate execution
         */
       static int 
@@ -290,7 +293,6 @@ namespace pcl
       /** \return trace of mat1^t . mat2 
         * \param mat1 matrix of dimension nxm
         * \param mat2 matrix of dimension pxn
-        * \remark mat1 
         */
       inline double matricesInnerProd(const Eigen::MatrixXd& mat1, 
                                       const Eigen::MatrixXd& mat2)
@@ -304,7 +306,9 @@ namespace pcl
         return r;
       }
 
+      /** Nearest neighbour indices */
       std::vector<int> nn_indices_;
+      /** Nearest neighbour distances */
       std::vector<float> nn_distances_;
       
       /** \brief Rigid transformation computation method.
