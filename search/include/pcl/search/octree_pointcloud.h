@@ -45,7 +45,7 @@
 #include <pcl/point_types.h>
 
 #include "octree_nodes.h"
-#include "pcl/search/generic_search.h"
+#include "pcl/search/search.h"
 #include <queue>
 #include <vector>
 #include <algorithm>

@@ -35,10 +35,10 @@
  *
  */
 
-#ifndef PCL_SEARCH_GENERIC_SEARCH_IMPL
-#define PCL_SEARCH_GENERIC_SEARCH_IMPL
+#ifndef PCL_SEARCH_AUTO_TUNED_SEARCH_IMPL
+#define PCL_SEARCH_AUTO_TUNED_SEARCH_IMPL
 
-#include "pcl/search/generic_search.h"
+#include "pcl/search/search.h"
 #include "pcl/search/kdtree.h"
 #include "pcl/search/octree_pointcloud.h"
 #include "pcl/search/organized_neighbor_search.h"
@@ -48,7 +48,7 @@ namespace pcl
 {
 
 template <typename PointT> void 
-Search<PointT>::initSearchDS (int spatial_locator)
+AutotunedSearch<PointT>::initSearchDS (int spatial_locator)
 {
         #if 1
 
@@ -74,7 +74,7 @@ Search<PointT>::initSearchDS (int spatial_locator)
 
 
 template <typename PointT> void 
-Search<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices)
+AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices)
 {
 
     /* for kdtree */
@@ -85,14 +85,14 @@ Search<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesCon
 }
 
 template <typename PointT> void 
-Search<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
+AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
 {
     _searchptr->setInputCloud(cloud);
 
 }
 
 template <typename PointT> int 
-Search<PointT>::nearestKSearch (const PointT& point,  int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances) 
+AutotunedSearch<PointT>::nearestKSearch (const PointT& point,  int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances) 
 {
 
     return _searchptr->nearestKSearch(point,k,k_indices,k_sqr_distances);
@@ -101,7 +101,7 @@ Search<PointT>::nearestKSearch (const PointT& point,  int k, std::vector<int>& k
 
 
 template <typename PointT> int 
-Search<PointT>::nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances) 
+AutotunedSearch<PointT>::nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances) 
 {
     return _searchptr->nearestKSearch(cloud,index,k,k_indices,k_sqr_distances);
 }
@@ -109,21 +109,21 @@ Search<PointT>::nearestKSearch (const PointCloud& cloud, int index, int k, std::
 
 
 template <typename PointT> int 
-Search<PointT>::nearestKSearch (int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
+AutotunedSearch<PointT>::nearestKSearch (int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
 {
     return _searchptr->nearestKSearch(index,k,k_indices,k_sqr_distances);
 }
 
 
 template <typename PointT> int 
-Search<PointT>::radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices, std::vector<float>& k_distances, int max_nn) const
+AutotunedSearch<PointT>::radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices, std::vector<float>& k_distances, int max_nn) const
 {
 
     return _searchptr->radiusSearch(point,radius,k_indices,k_distances,max_nn);
 }
 
 template <typename PointT> int 
-Search<PointT>::radiusSearch (const PointCloud& cloud, int index, double radius,
+AutotunedSearch<PointT>::radiusSearch (const PointCloud& cloud, int index, double radius,
                               std::vector<int>& k_indices, std::vector<float>& k_distances,
                               int max_nn) 
 {
@@ -131,7 +131,7 @@ Search<PointT>::radiusSearch (const PointCloud& cloud, int index, double radius,
 }
 
 template <typename PointT> int 
-Search<PointT>::radiusSearch (int index, double radius, std::vector<int>& k_indices,
+AutotunedSearch<PointT>::radiusSearch (int index, double radius, std::vector<int>& k_indices,
                               std::vector<float>& k_distances, int max_nn) const
 {
 
@@ -139,38 +139,38 @@ Search<PointT>::radiusSearch (int index, double radius, std::vector<int>& k_indi
 }
 
 template <typename PointT> void 
-        Search<PointT>::
+        AutotunedSearch<PointT>::
         approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
                              float &sqr_distance_arg){}
 
 template <typename PointT> void 
-        Search<PointT>::
+        AutotunedSearch<PointT>::
         approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg){};
 
 template <typename PointT> void 
-        Search<PointT>::
+        AutotunedSearch<PointT>::
         approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg){};
 
 
 template <typename PointT> void 
-Search<PointT>::setMethod(int k)
+AutotunedSearch<PointT>::setMethod(int k)
 {
     _searchptr->setMethod(k);
 }
 
 template <typename PointT> void 
-       Search<PointT>::deleteTree ( bool freeMemory_arg)
+       AutotunedSearch<PointT>::deleteTree ( bool freeMemory_arg)
 {
 
 }
 
 template <typename PointT> void 
-        Search<PointT>::
+        AutotunedSearch<PointT>::
         addPointsFromInputCloud ()
 {
 }
 
 }
-#define PCL_INSTANTIATE_Search(T) template class PCL_EXPORTS pcl::Search<T>;
+#define PCL_INSTANTIATE_AutotunedSearch(T) template class PCL_EXPORTS pcl::AutotunedSearch<T>;
 
-#endif  //#ifndef PCL_SEARCH_GENERIC_SEARCH_IMPL
+#endif  //#ifndef PCL_SEARCH_AUTO_TUNED_SEARCH_IMPL

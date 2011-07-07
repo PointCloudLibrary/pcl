@@ -35,13 +35,14 @@
  *
  */
 
-#ifndef PCL_SEARCH_GENERIC_SEARCH_H_
-#define PCL_SEARCH_GENERIC_SEARCH_H_
+#ifndef PCL_SEARCH_AUTO_TUNED_SEARCH_H_
+#define PCL_SEARCH_AUTO_TUNED_SEARCH_H_
 
 #include <limits.h>
 #include "pcl/pcl_macros.h"
 #include "pcl/point_cloud.h"
 #include "pcl/point_representation.h"
+#include "pcl/search/search.h"
 //#include "pcl/search/search_flann.h"
 
 namespace pcl
@@ -52,15 +53,16 @@ const static int ORGANIZED_INDEX        = 1;
 const static int OCTREE                 = 2;
 
   template <typename PointT>
-  class Search
+  class AutotunedSearch: public Search<PointT>
   {
 
   public:
     typedef pcl::PointCloud<PointT> PointCloud;
     typedef boost::shared_ptr<PointCloud> PointCloudPtr;
     typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
-    typedef boost::shared_ptr<pcl::Search<PointT> > SearchPtr;
-    typedef boost::shared_ptr<const pcl::Search<PointT> > SearchConstPtr;
+
+    typedef boost::shared_ptr<pcl::Search<PointT> > AutotunedSearchPtr;
+    typedef boost::shared_ptr<const pcl::Search<PointT> > AutotunedSearchConstPtr;
 
     typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
     typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
@@ -68,16 +70,16 @@ const static int OCTREE                 = 2;
 
 
 
-    Search(int spatial_locator)
+    AutotunedSearch(int spatial_locator)
     {
         initSearchDS(spatial_locator);
 
     }
 
-    Search(){}
+    AutotunedSearch(){}
 
 
-    ~Search(){}
+    ~AutotunedSearch(){}
 
     void initSearchDS(int spatial_locator);
     
@@ -138,10 +140,10 @@ const static int OCTREE                 = 2;
 
 
   private:
-    SearchPtr _searchptr;
+    AutotunedSearchPtr _searchptr;
     int spatial_loc;
   };
 
 }
 
-#endif  //#ifndef _PCL_SEARCH_GENERIC_SEARCH_H_
+#endif  //#ifndef _PCL_SEARCH_AUTO_TUNED_SEARCH_H_

@@ -39,7 +39,7 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/search/generic_search.h>
+#include <pcl/search/search.h>
 
 #include <algorithm>
 #include <math.h>

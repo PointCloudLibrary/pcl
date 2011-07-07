@@ -53,7 +53,7 @@ using namespace pcl;
 
 #include "pcl/search/organized_neighbor_search.h"
 #include "pcl/search/impl/organized_neighbor_search.hpp"
-#include "pcl/search/generic_search.h"
+#include "pcl/search/search.h"
 
 
 // helper class for priority queue
@@ -325,7 +325,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
 
   srand (time (NULL));
   
-  Search<PointXYZ> organizedNeighborSearch(ORGANIZED_INDEX);
+  Search<PointXYZ>* organizedNeighborSearch = new OrganizedNeighborSearch<PointXYZ>();
 //  organizedNeighborSearch->check();
 
 //  OrganizedNeighborSearch<PointXYZ> organizedNeighborSearch;
@@ -405,10 +405,10 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     vector<int> cloudNWRSearch;
     vector<float> cloudNWRRadius;
 
-    organizedNeighborSearch.setInputCloud (cloudIn);
-    organizedNeighborSearch.setMethod (1);
+    organizedNeighborSearch->setInputCloud (cloudIn);
+    organizedNeighborSearch->setMethod (1);
 
-    organizedNeighborSearch.radiusSearch (randomIdx, searchRadius, cloudNWRSearch, cloudNWRRadius, INT_MAX); //,INT_MAX);
+    organizedNeighborSearch->radiusSearch (randomIdx, searchRadius, cloudNWRSearch, cloudNWRRadius, INT_MAX); //,INT_MAX);
    
       
     // check if result from organized radius search can be also found in bruteforce search
@@ -452,7 +452,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     ASSERT_EQ (cloudNWRRadius.size() , cloudSearchBruteforce.size ());
 
     // check if result limitation works
-    organizedNeighborSearch.radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
+    organizedNeighborSearch->radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
 
     ASSERT_EQ (cloudNWRRadius.size () <= 5, true);
   }

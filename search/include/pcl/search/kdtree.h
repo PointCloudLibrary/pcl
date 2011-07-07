@@ -39,7 +39,7 @@
 #define PCL_SEARCH_KDTREE_FLANN_H_
 
 #include <cstdio>
-#include <pcl/search/generic_search.h>
+#include <pcl/search/search.h>
 #include <boost/thread/mutex.hpp>
 #include <flann/flann.hpp>
 

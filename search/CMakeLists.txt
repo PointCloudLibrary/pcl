@@ -8,14 +8,16 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
     set(srcs 
-        src/generic_search.cpp
+        src/auto_tuned_search.cpp
+        src/search.cpp
         src/kdtree.cpp
         src/organized_neighbor_search.cpp
         src/octree_impl.cpp
         )
 
     set(incs 
-        include/pcl/${SUBSYS_NAME}/generic_search.h
+        include/pcl/${SUBSYS_NAME}/auto_tuned_search.h
+        include/pcl/${SUBSYS_NAME}/search.h
         include/pcl/${SUBSYS_NAME}/kdtree.h
         include/pcl/${SUBSYS_NAME}/organized_neighbor_search.h
         include/pcl/${SUBSYS_NAME}/octree_pointcloud.h
@@ -24,7 +26,8 @@ if(build)
         )
 
     set(impl_incs 
-        include/pcl/${SUBSYS_NAME}/impl/generic_search.hpp
+        include/pcl/${SUBSYS_NAME}/impl/auto_tuned_search.hpp
+        include/pcl/${SUBSYS_NAME}/impl/search.hpp
         include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_neighbor_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud.hpp
@@ -44,7 +47,8 @@ if(build)
 
     # Install include files
     set(incs 
-        include/pcl/${SUBSYS_NAME}/generic_search.h
+        include/pcl/${SUBSYS_NAME}/auto_tuned_search.h
+        include/pcl/${SUBSYS_NAME}/search.h
         include/pcl/${SUBSYS_NAME}/kdtree.h
         include/pcl/${SUBSYS_NAME}/organized_neighbor_search.h
         include/pcl/${SUBSYS_NAME}/octree_pointcloud.h
@@ -53,7 +57,8 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
 
     set(impl_incs 
-        include/pcl/${SUBSYS_NAME}/impl/generic_search.hpp
+        include/pcl/${SUBSYS_NAME}/impl/auto_tuned_search.hpp
+        include/pcl/${SUBSYS_NAME}/impl/search.hpp
         include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_neighbor_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud.hpp
