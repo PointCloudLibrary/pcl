@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: ply_io.h 768 2011-04-29 22:16:20Z mdixon $
+ * $Id$
  *
  */
 
@@ -47,92 +47,113 @@ namespace pcl
     * \author Nizar Sallem
     * \ingroup io
     */
-  /* class PCL_EXPORTS PLYReader : public FileReader */
-  /* { */
-  /*   public: */
-  /*     enum */
-  /*     { */
-  /*       PLY_V0 = 0, */
-  /*       PLY_V1 = 1 */
-  /*     }; */
-  /*     /\** \brief Various PLY file versions. */
-  /*       * */
-  /*       * PLY represents PLY files with. The are organised this way: */
-  /*       * <ul> */
-  /*       *  <li> lines beginning with "comment" are treated as comments</li> */
-  /*       *  <li> ply </li> */
-  /*       *  <li> format [ascii|binary_little_endian|binary_big_endian] 1.0 </li> */
-  /*       *  <li> element vertex COUNT </li> */
-  /*       *  <li> [ascii/binary] poinst coordinates </li> */
-  /*       * </ul> */
-  /*       *\/ */
-  /*     /\** \brief Read a point cloud data header from a PLY file. */
-  /*       * */
-  /*       * Load only the meta information (number of points, their types, etc), */
-  /*       * and not the points themselves, from a given PLY file. Useful for fast */
-  /*       * evaluation of the underlying data structure. */
-  /*       * */
-  /*       * Returns: */
-  /*       *  * < 0 (-1) on error */
-  /*       *  * > 0 on success */
-  /*       * \param file_name the name of the file to load */
-  /*       * \param cloud the resultant point cloud dataset (only the header will be filled) */
-  /*       *\/ */
-  /*     int readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,  */
-  /*                     Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, */
-  /*                     int &ply_version, bool &binary_data, int &data_idx); */
+  class PCL_EXPORTS PLYReader : public FileReader
+  {
+    public:
+      enum
+      {
+        PLY_V0 = 0,
+        PLY_V1 = 1
+      };
+      /** \brief Various PLY file versions.
+        *
+        * PLY represents PLY files with. The are organised this way:
+        * <ul>
+        *  <li> lines beginning with "comment" are treated as comments</li>
+        *  <li> ply </li>
+        *  <li> format [ascii|binary_little_endian|binary_big_endian] 1.0 </li>
+        *  <li> element vertex COUNT </li>
+        *  <li> [ascii/binary] poinst coordinates </li>
+        * </ul>
+        */
+      /** \brief Read a point cloud data header from a PLY file.
+        *
+        * Load only the meta information (number of points, their types, etc),
+        * and not the points themselves, from a given PLY file. Useful for fast
+        * evaluation of the underlying data structure.
+        *
+        * Returns:
+        *  * < 0 (-1) on error
+        *  * > 0 on success
+        * \param file_name the name of the file to load
+        * \param cloud the resultant point cloud dataset (only the header will be filled)
+        */
+      int readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
+                      Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+                      int &ply_version, bool &binary_data, int &data_idx);
 
-  /*     /\** \brief Read a point cloud data from a PLY file and store it into a sensor_msgs/PointCloud2. */
-  /*       * \param file_name the name of the file containing the actual PointCloud data */
-  /*       * \param cloud the resultant PointCloud message read from disk */
-  /*       *\/ */
-  /*     int read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, */
-  /*               Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int& ply_version); */
+      /** \brief Read a point cloud data from a PLY file and store it into a sensor_msgs/PointCloud2.
+        * \param file_name the name of the file containing the actual PointCloud data
+        * \param cloud the resultant PointCloud message read from disk
+        */
+      int read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
+                Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int& ply_version);
 
-  /*     /\** \brief Read a point cloud data from a PLY file (PLY_V6 only!) and store it into a sensor_msgs/PointCloud2. */
-  /*       * */
-  /*       * \note This function is provided for backwards compatibility only and */
-  /*       * it can only read PLY_V6 files correctly, as sensor_msgs::PointCloud2 */
-  /*       * does not contain a sensor origin/orientation. Reading any file */
-  /*       * > PLY_V6 will generate a warning. */
-  /*       * */
-  /*       * \param file_name the name of the file containing the actual PointCloud data */
-  /*       * \param cloud the resultant PointCloud message read from disk */
-  /*       *\/ */
-  /*     inline int read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud) */
-  /*     { */
-  /*       Eigen::Vector4f origin;  */
-  /*       Eigen::Quaternionf orientation;  */
-  /*       int ply_version; */
-  /*       return read (file_name, cloud, origin, orientation, ply_version); */
-  /*     } */
+      /** \brief Read a point cloud data from a PLY file (PLY_V6 only!) and store it into a sensor_msgs/PointCloud2.
+        *
+        * \note This function is provided for backwards compatibility only and
+        * it can only read PLY_V6 files correctly, as sensor_msgs::PointCloud2
+        * does not contain a sensor origin/orientation. Reading any file
+        * > PLY_V6 will generate a warning.
+        *
+        * \param file_name the name of the file containing the actual PointCloud data
+        * \param cloud the resultant PointCloud message read from disk
+        */
+      inline int read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud)
+      {
+        Eigen::Vector4f origin;
+        Eigen::Quaternionf orientation;
+        int ply_version;
+        return read (file_name, cloud, origin, orientation, ply_version);
+      }
 
-  /*     /\** \brief Read a point cloud data from any PLY file, and convert it to the given template format. */
-  /*       * \param file_name the name of the file containing the actual PointCloud data */
-  /*       * \param cloud the resultant PointCloud message read from disk */
-  /*       *\/ */
-  /*     template<typename PointT> inline int */
-  /*       read (const std::string &file_name, pcl::PointCloud<PointT> &cloud) */
-  /*     { */
-  /*       sensor_msgs::PointCloud2 blob; */
-  /*       int ply_version; */
-  /*       int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_, */
-  /*                       ply_version); */
+      /** \brief Read a point cloud data from any PLY file, and convert it to the given template format.
+        * \param file_name the name of the file containing the actual PointCloud data
+        * \param cloud the resultant PointCloud message read from disk
+        */
+      template<typename PointT> inline int
+        read (const std::string &file_name, pcl::PointCloud<PointT> &cloud)
+      {
+        sensor_msgs::PointCloud2 blob;
+        int ply_version;
+        int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_,
+                        ply_version);
 
-  /*       // Exit in case of error */
-  /*       if (res < 0) */
-  /*         return res; */
-  /*       pcl::fromROSMsg (blob, cloud); */
-  /*       return 0; */
-  /*     } */
+        // Exit in case of error
+        if (res < 0)
+          return res;
+        pcl::fromROSMsg (blob, cloud);
+        return 0;
+      }
       
-  /*   private: */
-  /*     pcl::io::ply::parser parser_; */
-  /*     bool swap_bytes_;  */
-  /* }; */
+    private:
+      pcl::io::ply::parser parser_;
+      bool swap_bytes_;
+      /** \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
+        *
+        * Uses atoi/atof to do the conversion.
+        * Checks if the st is "nan" and converts it accordingly.
+        *
+        * \param st the string containing the value to convert and copy
+        * \param cloud the cloud to copy it to
+        * \param point_index the index of the point
+        * \param property_name the index of the dimension/field
+        * \param list_count the current fields count
+        */
+      template <typename Type> inline void
+      copyStringValue (const std::string &string_value, void* data, size_t offset = 0)
+      {
+        //char value = (char)atoi (st.at (d + c).c_str ());
+        static char* char_ptr;
+        char_ptr = (char*) data;
+        Type value;
+        value = pcl_atoa<Type>(string_value.c_str ());
+        memcpy (char_ptr+offset, &value, sizeof (Type));
+      }
+  };
 
   /** \brief Point Cloud Data (PLY) file format writer.
-    * \author Radu Bogdan Rusu
+    * \author Nizar Sallem
     * \ingroup io
     */
   class PCL_EXPORTS PLYWriter : public FileWriter
@@ -241,50 +262,50 @@ namespace pcl
 
   namespace io
   {
-    /* /\** \brief Load a PLY v.6 file into a templated PointCloud type. */
-    /*   * */
-    /*   * Any PLY files containg sensor data will generate a warning as a */
-    /*   * sensor_msgs/PointCloud2 message cannot hold the sensor origin. */
-    /*   * */
-    /*   * \param file_name the name of the file to load */
-    /*   * \param cloud the resultant templated point cloud */
-    /*   * \ingroup io */
-    /*   *\/ */
-    /* inline int */
-    /* loadPLYFile (const std::string &file_name, sensor_msgs::PointCloud2 &cloud) */
-    /* { */
-    /*   pcl::PLYReader p; */
-    /*   return (p.read (file_name, cloud)); */
-    /* } */
+    /** \brief Load a PLY v.6 file into a templated PointCloud type.
+      *
+      * Any PLY files containg sensor data will generate a warning as a
+      * sensor_msgs/PointCloud2 message cannot hold the sensor origin.
+      *
+      * \param file_name the name of the file to load
+      * \param cloud the resultant templated point cloud
+      * \ingroup io
+      */
+    inline int
+    loadPLYFile (const std::string &file_name, sensor_msgs::PointCloud2 &cloud)
+    {
+      pcl::PLYReader p;
+      return (p.read (file_name, cloud));
+    }
 
-    /* /\** \brief Load any PLY file into a templated PointCloud type. */
-    /*   * \param file_name the name of the file to load */
-    /*   * \param cloud the resultant templated point cloud */
-    /*   * \param origin the sensor acquisition origin (only for > PLY_V7 - null if not present) */
-    /*   * \param orientation the sensor acquisition orientation if availble, 
-    /*   * identity if not present */
-    /*   * \ingroup io */
-    /*   *\/ */
-    /* inline int */
-    /* loadPLYFile (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, */
-    /*              Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) */
-    /* { */
-    /*   pcl::PLYReader p; */
-    /*   int ply_version; */
-    /*   return (p.read (file_name, cloud, origin, orientation, ply_version)); */
-    /* } */
+    /** \brief Load any PLY file into a templated PointCloud type.
+      * \param file_name the name of the file to load
+      * \param cloud the resultant templated point cloud
+      * \param origin the sensor acquisition origin (only for > PLY_V7 - null if not present)
+      * \param orientation the sensor acquisition orientation if availble, 
+      * identity if not present
+      * \ingroup io
+      */
+    inline int
+    loadPLYFile (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
+                 Eigen::Vector4f &origin, Eigen::Quaternionf &orientation)
+    {
+      pcl::PLYReader p;
+      int ply_version;
+      return (p.read (file_name, cloud, origin, orientation, ply_version));
+    }
 
-    /* /\** \brief Load any PLY file into a templated PointCloud type */
-    /*   * \param file_name the name of the file to load */
-    /*   * \param cloud the resultant templated point cloud */
-    /*   * \ingroup io */
-    /*   *\/ */
-    /* template<typename PointT> inline int */
-    /* loadPLYFile (const std::string &file_name, pcl::PointCloud<PointT> &cloud) */
-    /* { */
-    /*   pcl::PLYReader p; */
-    /*   return (p.read (file_name, cloud)); */
-    /* } */
+    /** \brief Load any PLY file into a templated PointCloud type
+      * \param file_name the name of the file to load
+      * \param cloud the resultant templated point cloud
+      * \ingroup io
+      */
+    template<typename PointT> inline int
+    loadPLYFile (const std::string &file_name, pcl::PointCloud<PointT> &cloud)
+    {
+      pcl::PLYReader p;
+      return (p.read (file_name, cloud));
+    }
 
     /** \brief Save point cloud data to a PLY file containing n-D points
       * \param file_name the output file name

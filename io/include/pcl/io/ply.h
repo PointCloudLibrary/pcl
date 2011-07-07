@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: ply.h 827 2011-05-04 02:00:04Z nizar $
+ * $Id$
  *
  */
 
@@ -159,35 +159,34 @@ namespace pcl
       struct list_property : public property
       {
         int size_type_;
-        int data_type_;
         list_property(const std::string& name, int size_type, int data_type) : 
-          property(name), size_type_(size_type), data_type_(data_type) 
+        property(name, data_type), size_type_(size_type) 
         {
           offset_ = pcl::getFieldSize(size_type_) + 
                     getMaximumCapacity(size_type_) * pcl::getFieldSize(data_type_);
         }
         
-        inline void set_size(char* size)
+        inline void set_size(const void* size)
         {
           offset_ = pcl::getFieldSize(size_type_);
           switch(size_type_)
           {
             case sensor_msgs::PointField::UINT8 : 
             {
-              unsigned char size_ = (unsigned char) *size;
-              offset_ += size_ * pcl::getFieldSize(size_type_);
+              const unsigned char *size_; size_ = (unsigned char*) size;
+              offset_ += (*size_) * pcl::getFieldSize(size_type_);
             }
             break;
             case sensor_msgs::PointField::UINT16 : 
             {
-              unsigned short size_ = (unsigned short) *size;
-              offset_ += size_ * pcl::getFieldSize(size_type_);
+              const unsigned short *size_; size_ = (unsigned short*) size;
+              offset_ += (*size_) * pcl::getFieldSize(size_type_);
             }
             break;
             case sensor_msgs::PointField::UINT32 : 
             {
-              unsigned int size_ = (unsigned int) *size;
-              offset_ += size_ * pcl::getFieldSize(size_type_);
+              const unsigned int *size_; size_ = (unsigned int*) size;
+              offset_ += (*size_) * pcl::getFieldSize(size_type_);
             }
             break;
           }
@@ -350,6 +349,70 @@ namespace pcl
           element* last_element_;
       };
 
+      /** Wrapper for PLY camera structure to ease read/write */
+      struct camera
+      {
+        float view_px; float view_py; float view_pz;
+        float x_axisx; float x_axisy; float x_axisz;
+        float y_axisx; float y_axisy; float y_axisz;
+        float z_axisx; float z_axisy; float z_axisz;
+        float focal; float scalex; float scaley; float centerx; float centery;
+        int viewportx; int viewporty; float k1; float k2;
+        /**constructor 
+          *\param origin: sensor origin to store in view_p[x,y,z]
+          *\param orientation: sensor orientation to store in [x,y,z]_axis[x,y,z]
+          *\remark instrinsics are set to 0 cause they are unused
+          */
+        camera() :
+          view_px(0), view_py(0), view_pz(0),
+          x_axisx(0), x_axisy(0), x_axisz(0),
+          y_axisx(0), y_axisy(0), y_axisz(0),
+          z_axisx(0), z_axisy(0), z_axisz(0),
+          focal(0), scalex(0), centerx(0), centery(0), viewportx(0), viewporty(0),
+            k1(0), k2(0) {}
+
+        camera(const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation) :
+          view_px(origin[0]), view_py(origin[1]), view_pz(origin[2]),
+          focal(0), scalex(0), centerx(0), centery(0), viewportx(0), viewporty(0),
+          k1(0), k2(0)
+        {
+          Eigen::Matrix3f R = orientation.toRotationMatrix ();
+          x_axisx = R(0,0); x_axisy = R(0,1); x_axisz = R(0,2);
+          y_axisx = R(1,0); y_axisy = R(1,1); y_axisz = R(1,2);
+          z_axisx = R(2,0); z_axisy = R(2,1); z_axisz = R(2,2);
+        }
+        
+        /** converts extrinsics camera parameters to eigen structures */
+        void ext_to_eigen(Eigen::Vector4f &origin, Eigen::Quaternionf &orientation)
+        {
+          origin[0] = view_px; origin[1] = view_py;  origin[2] = view_pz;
+          Eigen::Matrix3f R;
+          R << x_axisx, x_axisy, x_axisz,
+               y_axisx, y_axisy, y_axisz,
+               z_axisx, z_axisy, z_axisz;
+          orientation = Eigen::Quaternionf(R);
+        }
+      };
+      
+      /** write out a pcl::io::ply::camera structure to an ostream */
+      void write(const pcl::io::ply::camera& c, std::ostream& out, bool binary)
+      {
+        if(!binary)
+        {
+          out << c.view_px << " " << c.view_py << " " << c.view_pz << " ";
+          out << c.x_axisx << " " << c.x_axisy << " " << c.x_axisz << " ";
+          out << c.y_axisx << " " << c.y_axisy << " " << c.y_axisz << " ";
+          out << c.z_axisx << " " << c.z_axisy << " " << c.z_axisz << " ";
+          out << c.focal << " ";
+          out << c.scalex << " " << c.scaley << " ";
+          out << c.centerx << " " << c.centery << " ";
+          out << c.viewportx << " " << c.viewporty << " ";
+          out << c.k1 << " " << c.k2;
+        }
+        else {
+          out.write ((const char*) &c, sizeof(camera));
+        }
+      };
     } //namespace ply
   } //namespace io
 }//namespace pcl
