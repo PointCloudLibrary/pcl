@@ -105,9 +105,11 @@ namespace pcl
       computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess);
 
       /** \brief function to call to estimate the rigid transform */
-      boost::function<void(const pcl::PointCloud<PointSource> &cloud_src, const std::vector<int> &indices_src,
-                         const pcl::PointCloud<PointTarget> &cloud_tgt, const std::vector<int> &indices_tgt,
-                         Eigen::Matrix4f &transformation_matrix)> rigid_transformation_estimation_;
+      boost::function<void(const pcl::PointCloud<PointSource> &cloud_src, 
+                           const std::vector<int> &indices_src,
+                           const pcl::PointCloud<PointTarget> &cloud_tgt, 
+                           const std::vector<int> &indices_tgt,
+                           Eigen::Matrix4f &transformation_matrix)> rigid_transformation_estimation_;
   };
 }
 
