@@ -33,8 +33,8 @@
  *
  */
 
-#ifndef PCL_GICP_H_
-#define PCL_GICP_H_
+#ifndef PCL_STANFORD_GICP_H_
+#define PCL_STANFORD_GICP_H_
 
 #include <pcl/io/pcd_io.h>
 // PCL includes
