@@ -29,7 +29,7 @@ There is only one slight deviation. To extract the border information, it is imp
 .. code-block:: cpp
 
   ...
-  std::string far_ranges_filename = getFilenameWithoutExtension (filename)+"_far_ranges.pcd";
+  std::string far_ranges_filename = pcl::getFilenameWithoutExtension (filename)+"_far_ranges.pcd";
   if (pcl::io::loadPCDFile(far_ranges_filename.c_str(), far_ranges) == -1)
     std::cout << "Far ranges file \""<<far_ranges_filename<<"\" does not exists.\n";
   ...
@@ -57,8 +57,8 @@ Now we come to the relevant part for the actual border extraction:
 .. code-block:: cpp
 
   ...
-  RangeImageBorderExtractor border_extractor (&range_image);
-  PointCloud<BorderDescription> border_descriptions;
+  pcl::RangeImageBorderExtractor border_extractor (&range_image);
+  pcl::PointCloud<pcl::BorderDescription> border_descriptions;
   border_extractor.compute (border_descriptions);
   ...
 

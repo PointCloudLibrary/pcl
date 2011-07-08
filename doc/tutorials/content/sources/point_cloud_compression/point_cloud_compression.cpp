@@ -9,10 +9,6 @@
 #include <sstream>
 #include <stdlib.h>
 
-using namespace std;
-using namespace pcl;
-using namespace pcl::octree;
-
 #ifdef WIN32
 # define sleep(x) Sleep((x)*1000)
 #endif
@@ -33,13 +29,14 @@ public:
       // stringstream to store compressed point cloud
       std::stringstream compressedData;
       // output pointcloud
-      PointCloud<PointXYZRGB>::Ptr cloudOut (new PointCloud<PointXYZRGB> ());
+      pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudOut (new pcl::PointCloud<pcl::PointXYZRGB> ());
 
       // compress point cloud
       PointCloudEncoder->encodePointCloud (cloud, compressedData);
 
       // decompress point cloud
       PointCloudDecoder->decodePointCloud (compressedData, cloudOut);
+
 
       // show decompressed point cloud
       viewer.showCloud (cloudOut);
@@ -53,11 +50,11 @@ public:
     bool showStatistics = true;
 
     // for a full list of profiles see: /io/include/pcl/compression/compression_profiles.h
-    compression_Profiles_e compressionProfile = pcl::octree::MED_RES_ONLINE_COMPRESSION_WITH_COLOR;
+    pcl::octree::compression_Profiles_e compressionProfile = pcl::octree::MED_RES_ONLINE_COMPRESSION_WITH_COLOR;
 
     // instantiate point cloud compression for encoding and decoding
-    PointCloudEncoder = new PointCloudCompression<PointXYZRGB> (compressionProfile, showStatistics);
-    PointCloudDecoder = new PointCloudCompression<PointXYZRGB> ();
+    PointCloudEncoder = new pcl::octree::PointCloudCompression<pcl::PointXYZRGB> (compressionProfile, showStatistics);
+    PointCloudDecoder = new pcl::octree::PointCloudCompression<pcl::PointXYZRGB> ();
 
     // create a new grabber for OpenNI devices
     pcl::Grabber* interface = new pcl::OpenNIGrabber ();
@@ -87,17 +84,16 @@ public:
 
   pcl::visualization::CloudViewer viewer;
 
-  PointCloudCompression<PointXYZRGB>* PointCloudEncoder;
-  PointCloudCompression<PointXYZRGB>* PointCloudDecoder;
+  pcl::octree::PointCloudCompression<pcl::PointXYZRGB>* PointCloudEncoder;
+  pcl::octree::PointCloudCompression<pcl::PointXYZRGB>* PointCloudDecoder;
 
 };
 
 int
 main (int argc, char **argv)
 {
-
   SimpleOpenNIViewer v;
   v.run ();
 
-  return 0;
+  return (0);
 }

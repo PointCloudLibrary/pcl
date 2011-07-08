@@ -10,91 +10,89 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
 
-using namespace std;
-using namespace pcl;
 
 int 
 main (int argc, char** argv)
 {
-    // Read in the cloud data
-    PCDReader reader;
-    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
-    reader.read ("table_scene_lms400.pcd", *cloud);
-    cerr << "PointCloud before filtering has: " << cloud->points.size () << " data points." << endl; //*
+  // Read in the cloud data
+  pcl::PCDReader reader;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  reader.read ("table_scene_lms400.pcd", *cloud);
+  std::cout << "PointCloud before filtering has: " << cloud->points.size () << " data points." << std::endl; //*
 
-    // Create the filtering object: downsample the dataset using a leaf size of 1cm
-    VoxelGrid<PointXYZ> vg;
-    PointCloud<PointXYZ>::Ptr cloud_filtered (new PointCloud<PointXYZ>);
-    vg.setInputCloud (cloud);
-    vg.setLeafSize (0.01, 0.01, 0.01);
-    vg.filter (*cloud_filtered);
-    cerr << "PointCloud after filtering has: " << cloud_filtered->points.size ()  << " data points." << endl; //*
+  // Create the filtering object: downsample the dataset using a leaf size of 1cm
+  pcl::VoxelGrid<pcl::PointXYZ> vg;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+  vg.setInputCloud (cloud);
+  vg.setLeafSize (0.01, 0.01, 0.01);
+  vg.filter (*cloud_filtered);
+  std::cout << "PointCloud after filtering has: " << cloud_filtered->points.size ()  << " data points." << std::endl; //*
 
-    // Create the segmentation object for the planar model and set all the parameters
-    SACSegmentation<PointXYZ> seg;
-    PointIndices::Ptr inliers (new PointIndices);
-    ModelCoefficients::Ptr coefficients (new ModelCoefficients);
-    PointCloud<PointXYZ>::Ptr cloud_plane (new PointCloud<PointXYZ> ());
-    PCDWriter writer;
-    seg.setOptimizeCoefficients (true);
-    seg.setModelType (SACMODEL_PLANE);
-    seg.setMethodType (SAC_RANSAC);
-    seg.setMaxIterations (100);
-    seg.setDistanceThreshold (0.02);
+  // Create the segmentation object for the planar model and set all the parameters
+  pcl::SACSegmentation<pcl::PointXYZ> seg;
+  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane (new pcl::PointCloud<pcl::PointXYZ> ());
+  pcl::PCDWriter writer;
+  seg.setOptimizeCoefficients (true);
+  seg.setModelType (pcl::SACMODEL_PLANE);
+  seg.setMethodType (pcl::SAC_RANSAC);
+  seg.setMaxIterations (100);
+  seg.setDistanceThreshold (0.02);
 
-    int i=0, nr_points = cloud_filtered->points.size ();
-    while (cloud_filtered->points.size () > 0.3 * nr_points)
+  int i=0, nr_points = cloud_filtered->points.size ();
+  while (cloud_filtered->points.size () > 0.3 * nr_points)
+  {
+    // Segment the largest planar component from the remaining cloud
+    seg.setInputCloud(cloud_filtered);
+    seg.segment (*inliers, *coefficients); //*
+    if (inliers->indices.size () == 0)
     {
-        // Segment the largest planar component from the remaining cloud
-        seg.setInputCloud(cloud_filtered);
-        seg.segment (*inliers, *coefficients); //*
-        if (inliers->indices.size () == 0)
-        {
-            cout << "Could not estimate a planar model for the given dataset." << endl;
-            break;
-        }
-
-        // Extract the planar inliers from the input cloud
-        ExtractIndices<PointXYZ> extract;
-        extract.setInputCloud (cloud_filtered);
-        extract.setIndices (inliers);
-        extract.setNegative (false);
-
-        // Write the planar inliers to disk
-        extract.filter (*cloud_plane); //*
-        cerr << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points." << endl;
-
-        // Remove the planar inliers, extract the rest
-        extract.setNegative (true);
-        extract.filter (*cloud_filtered); //*
-    }
-  
-    // Creating the KdTree object for the search method of the extraction
-    KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
-    tree->setInputCloud (cloud_filtered);
-  
-    vector<PointIndices> cluster_indices;
-    EuclideanClusterExtraction<PointXYZ> ec;
-    ec.setClusterTolerance (0.02); // 2cm
-    ec.setMinClusterSize (100);
-    ec.setMaxClusterSize (25000);
-    ec.setSearchMethod (tree);
-    ec.setInputCloud( cloud_filtered);
-    ec.extract (cluster_indices);
-
-    int j = 0;
-    for (vector<PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
-    {
-        PointCloud<PointXYZ>::Ptr cloud_cluster (new PointCloud<PointXYZ>);
-        for (vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); pit++)
-            cloud_cluster->points.push_back (cloud_filtered->points[*pit]); //*
-
-        cerr << "PointCloud representing the Cluster: " << cloud_cluster->points.size () << " data points." << endl;
-        stringstream ss;
-        ss << "cloud_cluster_" << j << ".pcd";
-        writer.write<PointXYZ> (ss.str (), *cloud_cluster, false); //*
-        j++;
+      std::cout << "Could not estimate a planar model for the given dataset." << std::endl;
+      break;
     }
 
-    return (0);
+    // Extract the planar inliers from the input cloud
+    pcl::ExtractIndices<pcl::PointXYZ> extract;
+    extract.setInputCloud (cloud_filtered);
+    extract.setIndices (inliers);
+    extract.setNegative (false);
+
+    // Write the planar inliers to disk
+    extract.filter (*cloud_plane); //*
+    std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points." << std::endl;
+
+    // Remove the planar inliers, extract the rest
+    extract.setNegative (true);
+    extract.filter (*cloud_filtered); //*
+  }
+
+  // Creating the KdTree object for the search method of the extraction
+  pcl::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::KdTreeFLANN<pcl::PointXYZ>);
+  tree->setInputCloud (cloud_filtered);
+
+  std::vector<pcl::PointIndices> cluster_indices;
+  pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+  ec.setClusterTolerance (0.02); // 2cm
+  ec.setMinClusterSize (100);
+  ec.setMaxClusterSize (25000);
+  ec.setSearchMethod (tree);
+  ec.setInputCloud( cloud_filtered);
+  ec.extract (cluster_indices);
+
+  int j = 0;
+  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+  {
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
+    for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); pit++)
+      cloud_cluster->points.push_back (cloud_filtered->points[*pit]); //*
+
+    std::cout << "PointCloud representing the Cluster: " << cloud_cluster->points.size () << " data points." << std::endl;
+    std::stringstream ss;
+    ss << "cloud_cluster_" << j << ".pcd";
+    writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); //*
+    j++;
+  }
+
+  return (0);
 }

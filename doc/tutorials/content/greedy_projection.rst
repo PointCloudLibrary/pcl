@@ -82,14 +82,14 @@ Now, let's break down the code piece by piece.
 
 .. literalinclude:: sources/greedy_projection/greedy_projection.cpp
    :language: cpp
-   :lines: 14-19
+   :lines: 10-15
 
 as the example PCD has only XYZ coordinates, we load it into a
 PointCloud<PointXYZ>.
 
 .. literalinclude:: sources/greedy_projection/greedy_projection.cpp
    :language: cpp
-   :lines: 21-30
+   :lines: 17-26
 
 
 the method requires normals, so they are estimated using the standard method
@@ -97,31 +97,31 @@ from PCL.
 
 .. literalinclude:: sources/greedy_projection/greedy_projection.cpp
    :language: cpp
-   :lines: 32-35
+   :lines: 28-31
 
 Since coordinates and normals need to be in the same PointCloud, we create a PointNormal type point cloud.
 
 .. literalinclude:: sources/greedy_projection/greedy_projection.cpp
    :language: cpp
-   :lines: 37-43
+   :lines: 33-39
 
 The above lines deal with the initialization of the required objects.
 
 .. literalinclude:: sources/greedy_projection/greedy_projection.cpp
    :language: cpp
-   :lines: 45-54
+   :lines: 41-50
 
 The above lines set the parameters, as explained above.
 
 .. literalinclude:: sources/greedy_projection/greedy_projection.cpp
    :language: cpp
-   :lines: 56-59
+   :lines: 52-55
 
 The lines above set the input objects and perform the actual triangulation.
 
 .. literalinclude:: sources/greedy_projection/greedy_projection.cpp
    :language: cpp
-   :lines: 61-63
+   :lines: 56-59
    
 
 for each point, the ID of the containing connected component and its "state"

@@ -1,5 +1,4 @@
 #include <iostream>
-using namespace std;
 
 #include <boost/thread/thread.hpp>
 #include "pcl/common/common_headers.h"
@@ -10,37 +9,37 @@ using namespace std;
 #include "pcl/visualization/pcl_visualizer.h"
 #include <pcl/console/parse.h>
 
-using namespace pcl;
-using namespace pcl::visualization;
-typedef PointXYZ PointType;
+typedef pcl::PointXYZ PointType;
 
 // --------------------
 // -----Parameters-----
 // --------------------
 float angular_resolution = 0.5f;
-RangeImage::CoordinateFrame coordinate_frame = RangeImage::CAMERA_FRAME;
+pcl::RangeImage::CoordinateFrame coordinate_frame = pcl::RangeImage::CAMERA_FRAME;
 bool live_update = false;
 
 // --------------
 // -----Help-----
 // --------------
-void printUsage (const char* progName)
+void 
+printUsage (const char* progName)
 {
-  cout << "\n\nUsage: "<<progName<<" [options] <scene.pcd>\n\n"
-       << "Options:\n"
-       << "-------------------------------------------\n"
-       << "-r <float>   angular resolution in degrees (default "<<angular_resolution<<")\n"
-       << "-c <int>     coordinate frame (default "<< (int)coordinate_frame<<")\n"
-       << "-l           live update - update the range image according to the selected view in the 3D viewer.\n"
-       << "-h           this help\n"
-       << "\n\n";
+  std::cout << "\n\nUsage: "<<progName<<" [options] <scene.pcd>\n\n"
+            << "Options:\n"
+            << "-------------------------------------------\n"
+            << "-r <float>   angular resolution in degrees (default "<<angular_resolution<<")\n"
+            << "-c <int>     coordinate frame (default "<< (int)coordinate_frame<<")\n"
+            << "-l           live update - update the range image according to the selected view in the 3D viewer.\n"
+            << "-h           this help\n"
+            << "\n\n";
 }
 
-void setViewerPose (PCLVisualizer& viewer, const Eigen::Affine3f& viewer_pose)
+void 
+setViewerPose (pcl::visualization::PCLVisualizer& viewer, const Eigen::Affine3f& viewer_pose)
 {
   Eigen::Vector3f pos_vector = viewer_pose * Eigen::Vector3f(0, 0, 0);
-  Eigen::Vector3f look_at_vector = getRotationOnly(viewer_pose) * Eigen::Vector3f(0, 0, 1) + pos_vector;
-  Eigen::Vector3f up_vector = getRotationOnly(viewer_pose) * Eigen::Vector3f(0, -1, 0);
+  Eigen::Vector3f look_at_vector = pcl::getRotationOnly(viewer_pose) * Eigen::Vector3f(0, 0, 1) + pos_vector;
+  Eigen::Vector3f up_vector = pcl::getRotationOnly(viewer_pose) * Eigen::Vector3f(0, -1, 0);
   viewer.camera_.pos[0] = pos_vector[0];
   viewer.camera_.pos[1] = pos_vector[1];
   viewer.camera_.pos[2] = pos_vector[2];
@@ -56,7 +55,8 @@ void setViewerPose (PCLVisualizer& viewer, const Eigen::Affine3f& viewer_pose)
 // --------------
 // -----Main-----
 // --------------
-int main (int argc, char** argv)
+int 
+main (int argc, char** argv)
 {
   // --------------------------------------
   // -----Parse Command Line Arguments-----
@@ -69,17 +69,17 @@ int main (int argc, char** argv)
   if (pcl::console::find_argument (argc, argv, "-l") >= 0)
   {
     live_update = true;
-    cout << "Live update is on.\n";
+    std::cout << "Live update is on.\n";
   }
   if (pcl::console::parse (argc, argv, "-r", angular_resolution) >= 0)
-    cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
+    std::cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
   int tmp_coordinate_frame;
   if (pcl::console::parse (argc, argv, "-c", tmp_coordinate_frame) >= 0)
   {
     coordinate_frame = pcl::RangeImage::CoordinateFrame (tmp_coordinate_frame);
-    cout << "Using coordinate frame "<< (int)coordinate_frame<<".\n";
+    std::cout << "Using coordinate frame "<< (int)coordinate_frame<<".\n";
   }
-  angular_resolution = deg2rad (angular_resolution);
+  angular_resolution = pcl::deg2rad (angular_resolution);
   
   // ------------------------------------------------------------------
   // -----Read pcd file or create example point cloud if not given-----
@@ -93,7 +93,7 @@ int main (int argc, char** argv)
     std::string filename = argv[pcd_filename_indices[0]];
     if (pcl::io::loadPCDFile (filename, point_cloud) == -1)
     {
-      cerr << "Was not able to open file \""<<filename<<"\".\n";
+      std::cout << "Was not able to open file \""<<filename<<"\".\n";
       printUsage (argv[0]);
       return 0;
     }
@@ -104,7 +104,7 @@ int main (int argc, char** argv)
   }
   else
   {
-    cout << "\nNo *.pcd file given => Genarating example point cloud.\n\n";
+    std::cout << "\nNo *.pcd file given => Genarating example point cloud.\n\n";
     for (float x=-0.5f; x<=0.5f; x+=0.01f)
     {
       for (float y=-0.5f; y<=0.5f; y+=0.01f)
@@ -122,19 +122,19 @@ int main (int argc, char** argv)
   float noise_level = 0.0;
   float min_range = 0.0f;
   int border_size = 1;
-  boost::shared_ptr<RangeImage> range_image_ptr(new RangeImage);
-  RangeImage& range_image = *range_image_ptr;   
-  range_image.createFromPointCloud (point_cloud, angular_resolution, deg2rad (360.0f), deg2rad (180.0f),
+  boost::shared_ptr<pcl::RangeImage> range_image_ptr(new pcl::RangeImage);
+  pcl::RangeImage& range_image = *range_image_ptr;   
+  range_image.createFromPointCloud (point_cloud, angular_resolution, pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),
                                     scene_sensor_pose, coordinate_frame, noise_level, min_range, border_size);
   
   // --------------------------------------------
   // -----Open 3D viewer and add point cloud-----
   // --------------------------------------------
-  PCLVisualizer viewer ("3D Viewer");
+  pcl::visualization::PCLVisualizer viewer ("3D Viewer");
   viewer.setBackgroundColor (1, 1, 1);
-  PointCloudColorHandlerCustom<pcl::PointWithRange> range_image_color_handler (range_image_ptr, 0, 0, 0);
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointWithRange> range_image_color_handler (range_image_ptr, 0, 0, 0);
   viewer.addPointCloud (range_image_ptr, range_image_color_handler, "range image");
-  viewer.setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 1, "range image");
+  viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "range image");
   //viewer.addCoordinateSystem (1.0f);
   //PointCloudColorHandlerCustom<PointType> point_cloud_color_handler (point_cloud_ptr, 150, 150, 150);
   //viewer.addPointCloud (point_cloud_ptr, point_cloud_color_handler, "original point cloud");
@@ -144,7 +144,7 @@ int main (int argc, char** argv)
   // --------------------------
   // -----Show range image-----
   // --------------------------
-  RangeImageVisualizer range_image_widget ("Range image");
+  pcl::visualization::RangeImageVisualizer range_image_widget ("Range image");
   range_image_widget.setRangeImage (range_image);
   //range_image_widget.savePPM("range_image.ppm", "Range Image Visualization");
   
@@ -154,15 +154,15 @@ int main (int argc, char** argv)
   std::vector<pcl::visualization::Camera> cameras;
   while (!viewer.wasStopped () && range_image_widget.isShown ())
   {
-    ImageWidgetWX::spinOnce ();  // process GUI events
+    pcl::visualization::ImageWidgetWX::spinOnce ();  // process GUI events
     viewer.spinOnce (100);
     boost::this_thread::sleep (boost::posix_time::microseconds (100000));
     
     if (live_update)
     {
       scene_sensor_pose = viewer.getViewerPose();
-      range_image.createFromPointCloud (point_cloud, angular_resolution, deg2rad (360.0f), deg2rad (180.0f),
-                                        scene_sensor_pose, RangeImage::LASER_FRAME, noise_level, min_range, border_size);
+      range_image.createFromPointCloud (point_cloud, angular_resolution, pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),
+                                        scene_sensor_pose, pcl::RangeImage::LASER_FRAME, noise_level, min_range, border_size);
       range_image_widget.setRangeImage (range_image);
     }
   }

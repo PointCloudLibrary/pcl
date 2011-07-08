@@ -4,24 +4,20 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/gp3.h>
 
-using namespace pcl;
-using namespace pcl::io;
-using namespace std;
-
 int
- main (int argc, char** argv)
+main (int argc, char** argv)
 {
   // Load input file into a PointCloud<T> with an appropriate type
-  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   sensor_msgs::PointCloud2 cloud_blob;
-  loadPCDFile ("bun0.pcd", cloud_blob);
-  fromROSMsg (cloud_blob, *cloud);
+  pcl::io::loadPCDFile ("bun0.pcd", cloud_blob);
+  pcl::fromROSMsg (cloud_blob, *cloud);
   //* the data should be available in cloud
 
   // Normal estimation*
-  NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal>);
-  KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
+  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> n;
+  pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
+  pcl::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::KdTreeFLANN<pcl::PointXYZ>);
   tree->setInputCloud (cloud);
   n.setInputCloud (cloud);
   n.setSearchMethod (tree);
@@ -30,17 +26,17 @@ int
   //* normals should not contain the point normals + surface curvatures
 
   // Concatenate the XYZ and normal fields*
-  PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
+  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_with_normals (new pcl::PointCloud<pcl::PointNormal>);
   pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
   //* cloud_with_normals = cloud + normals
 
   // Create search tree*
-  KdTree<PointNormal>::Ptr tree2 (new KdTreeFLANN<PointNormal>);
+  pcl::KdTree<pcl::PointNormal>::Ptr tree2 (new pcl::KdTreeFLANN<pcl::PointNormal>);
   tree2->setInputCloud (cloud_with_normals);
 
   // Initialize objects
-  GreedyProjectionTriangulation<PointNormal> gp3;
-  PolygonMesh triangles;
+  pcl::GreedyProjectionTriangulation<pcl::PointNormal> gp3;
+  pcl::PolygonMesh triangles;
 
   // Set the maximum distance between connected points (maximum edge length)
   gp3.setSearchRadius (0.025);

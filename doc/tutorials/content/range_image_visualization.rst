@@ -26,13 +26,13 @@ The interesting part begins here:
 .. code-block:: cpp
 
   ...
-  PCLVisualizer viewer ("3D Viewer");
+  pcl::visualization::PCLVisualizer viewer ("3D Viewer");
   viewer.setBackgroundColor (1, 1, 1);
-  PointCloudColorHandlerCustom<pcl::PointWithRange> range_image_color_handler (range_image_ptr, 0, 0, 0);
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointWithRange> range_image_color_handler (range_image_ptr, 0, 0, 0);
   viewer.addPointCloud (range_image_ptr, range_image_color_handler, "range image");
-  viewer.setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 1, "range image");
+  viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "range image");
   //viewer.addCoordinateSystem (1.0f);
-  //PointCloudColorHandlerCustom<PointType> point_cloud_color_handler (point_cloud_ptr, 150, 150, 150);
+  //pcl::visualization::PointCloudColorHandlerCustom<PointType> point_cloud_color_handler (point_cloud_ptr, 150, 150, 150);
   //viewer.addPointCloud (point_cloud_ptr, point_cloud_color_handler, "original point cloud");
   viewer.initCameraParameters ();
   setViewerPose(viewer, range_image.getTransformationToWorldSystem ());
@@ -45,7 +45,7 @@ The next part visualizes the range image in 2D, using color coding for the range
 .. code-block:: cpp
 
   ...
-  RangeImageVisualizer range_image_widget ("Range image");
+  pcl::visualization::RangeImageVisualizer range_image_widget ("Range image");
   range_image_widget.setRangeImage (range_image);
   ...
 
@@ -64,7 +64,7 @@ Now we can start the main loop to keep the visualization alive, until one of the
   ...
   while (!viewer.wasStopped () || range_image_widget.isShown ())
   {
-    ImageWidgetWX::spinOnce ();  // process GUI events
+    pcl::visualization::ImageWidgetWX::spinOnce ();  // process GUI events
     viewer.spinOnce (100);
     boost::this_thread::sleep (boost::posix_time::microseconds (100000));
   ...
@@ -79,8 +79,8 @@ Additionally there is the possibility to always update the 2D range image to cor
     if (live_update)
     {
       scene_sensor_pose = viewer.getViewerPose();
-      range_image.createFromPointCloud (point_cloud, angular_resolution, deg2rad (360.0f), deg2rad (180.0f),
-                                     scene_sensor_pose, RangeImage::LASER_FRAME, noise_level, min_range, border_size);
+      range_image.createFromPointCloud (point_cloud, angular_resolution, pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),
+                                        scene_sensor_pose, pcl::RangeImage::LASER_FRAME, noise_level, min_range, border_size);
       range_image_widget.setRangeImage (range_image);
     }
   }

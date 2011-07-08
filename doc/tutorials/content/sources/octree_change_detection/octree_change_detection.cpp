@@ -5,22 +5,18 @@
 #include <vector>
 #include <ctime>
 
-using namespace pcl;
-using namespace pcl::octree;
-
 int
 main (int argc, char** argv)
 {
-
   srand (time (NULL));
 
   // Octree resolution - side length of octree voxels
   float resolution = 32.0f;
 
   // Instantiate octree-based point cloud change detection class
-  OctreePointCloudChangeDetector<PointXYZ> octree (resolution);
+  pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZ> octree (resolution);
 
-  PointCloud<PointXYZ>::Ptr cloudA (new PointCloud<PointXYZ> );
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudA (new pcl::PointCloud<pcl::PointXYZ> );
 
   // Generate pointcloud data for cloudA
   cloudA->width = 128;
@@ -41,7 +37,7 @@ main (int argc, char** argv)
   // Switch octree buffers: This resets octree but keeps previous tree structure in memory.
   octree.switchBuffers ();
 
-  PointCloud<PointXYZ>::Ptr cloudB (new PointCloud<PointXYZ> );
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudB (new pcl::PointCloud<pcl::PointXYZ> );
    
   // Generate pointcloud data for cloudB 
   cloudB->width = 128;
@@ -65,11 +61,11 @@ main (int argc, char** argv)
   octree.getPointIndicesFromNewVoxels (newPointIdxVector);
 
   // Output points
-  std::cerr << "Output from getPointIndicesFromNewVoxels:" << std::endl;
+  std::cout << "Output from getPointIndicesFromNewVoxels:" << std::endl;
   for (size_t i = 0; i < newPointIdxVector.size (); ++i)
-    std::cerr << i << "# Index:" << newPointIdxVector[i]
-           << "  Point:" << cloudB->points[newPointIdxVector[i]].x << " "
-                   << cloudB->points[newPointIdxVector[i]].y << " "
-                   << cloudB->points[newPointIdxVector[i]].z << std::endl;
+    std::cout << i << "# Index:" << newPointIdxVector[i]
+              << "  Point:" << cloudB->points[newPointIdxVector[i]].x << " "
+              << cloudB->points[newPointIdxVector[i]].y << " "
+              << cloudB->points[newPointIdxVector[i]].z << std::endl;
 
 }

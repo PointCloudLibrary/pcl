@@ -64,7 +64,7 @@ line-by-line.
 .. code-block:: cpp
 
     ...
-    boost::shared_ptr<PCLVisualizer> viewer (new PCLVisualizer("3D Viewer"));
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     ...
 
 This creates the viewer object, giving it a nice name to display in the
@@ -107,7 +107,7 @@ or you can see the `PCLVisualizer documentation`_ for more details.
 .. code-block:: cpp
 
     ...
-    viewer->setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
     ...
 
 This next line changes the size of the rendered points. You can control
@@ -183,7 +183,7 @@ Not much of the code in this sample has changed from the earlier sample.
 .. code-block:: cpp
 
     ...
-    boost::shared_ptr<PCLVisualizer> rgbVis(PointCloud<PointXYZRGB>::ConstPtr cloud)
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> rgbVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
     ...
 
 First, notice that the point type has changed from the simple example.
@@ -195,7 +195,7 @@ colour fields), PCLVisualizer would not know what colours to use.
 .. code-block:: cpp
 
     ...
-    PointCloudColorHandlerRGB<PointXYZRGB> rgb(point_cloud_ptr);
+    pcl::PointCloudColorHandlerRGB<pcl::PointXYZRGB> rgb(point_cloud_ptr);
     ...
 
 Next, after setting the viewer's background colour, we create a colour
@@ -213,7 +213,7 @@ clouds. See the documentation_ for details.
 .. code-block:: cpp
 
     ...
-    viewer->addPointCloud<PointXYZRGB> (point_cloud_ptr, rgb, "sample cloud");
+    viewer->addPointCloud<pcl::PointXYZRGB> (point_cloud_ptr, rgb, "sample cloud");
     ...
 
 Finally, when we add the point cloud, we specify the colour handler when
@@ -247,7 +247,7 @@ sample.
 .. code-block:: cpp
 
     ...
-    boost::shared_ptr<PCLVisualizer> customColourVis(PointCloud<PointXYZ>::ConstPtr cloud)
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> customColourVis (pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud)
     ...
 
 The point type in use this time is back to PointXYZ again. When setting
@@ -258,7 +258,7 @@ colour with the custom colour handler.
 .. code-block:: cpp
 
     ...
-    PointCloudColorHandlerCustom<PointXYZ> single_color(cloud, 0, 255, 0);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> single_color (cloud, 0, 255, 0);
     ...
 
 We create a custom colour handler and assign it a nice, bright shade of
@@ -267,7 +267,7 @@ green.
 .. code-block:: cpp
 
     ...
-    viewer->addPointCloud<PointXYZ> (cloud, single_color, "sample cloud");
+    viewer->addPointCloud<pcl::PointXYZ> (cloud, single_color, "sample cloud");
     ...
 
 As with the previous example, we pass the colour handler in when we call
@@ -299,7 +299,7 @@ cloud.
 .. code-block:: cpp
 
     ...
-    viewer->addPointCloudNormals<PointXYZRGB, Normal> (cloud, normals, 10, 0.05, "normals");
+    viewer->addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal> (cloud, normals, 10, 0.05, "normals");
     ...
 
 Once you have your normals, one extra line is all it takes to display
@@ -337,7 +337,7 @@ point cloud is added to the viewer.
 .. code-block:: cpp
 
     ...
-    viewer->addLine<PointXYZRGB> (cloud->points[0], cloud->points[cloud->size() - 1], "line");
+    viewer->addLine<pcl::PointXYZRGB> (cloud->points[0], cloud->points[cloud->size() - 1], "line");
     ...
 
 This line (of code) adds a line (in space) from the first point in the
@@ -420,7 +420,7 @@ Explanation
 .. code-block:: cpp
 
     ...
-    boost::shared_ptr<PCLVisualizer> viewer (new PCLVisualizer("3D Viewer"));
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     viewer->initCameraParameters ();
     ...
 
@@ -430,11 +430,11 @@ This is our standard code for creating a viewer.
 
     ...
     int v1(0);
-    viewer->createViewPort(0.0, 0.0, 0.5, 1.0, v1);
+    viewer->createViewPort (0.0, 0.0, 0.5, 1.0, v1);
     viewer->setBackgroundColor (0, 0, 0, v1);
-    viewer->addText("Radius: 0.01", 10, 10, "v1 text", v1);
-    PointCloudColorHandlerRGBField<PointXYZRGB> rgb(cloud);
-    viewer->addPointCloud<PointXYZRGB> (cloud, rgb, "sample cloud1", v1);
+    viewer->addText ("Radius: 0.01", 10, 10, "v1 text", v1);
+    pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb (cloud);
+    viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "sample cloud1", v1);
     ...
 
 The next step is to create a new viewport. The four parameters are the
@@ -452,11 +452,11 @@ point cloud to it, using an RGB colour handler.
 
     ...
     int v2(0);
-    viewer->createViewPort(0.5, 0.0, 1.0, 1.0, v2);
+    viewer->createViewPort (0.5, 0.0, 1.0, 1.0, v2);
     viewer->setBackgroundColor (0.3, 0.3, 0.3, v2);
-    viewer->addText("Radius: 0.1", 10, 10, "v2 text", v2);
-    PointCloudColorHandlerCustom<PointXYZRGB> single_color(cloud, 0, 255, 0);
-    viewer->addPointCloud<PointXYZRGB> (cloud, single_color, "sample cloud2", v2);
+    viewer->addText ("Radius: 0.1", 10, 10, "v2 text", v2);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> single_color (cloud, 0, 255, 0);
+    viewer->addPointCloud<pcl::PointXYZRGB> (cloud, single_color, "sample cloud2", v2);
     ...
 
 Then we do the same thing again for the second viewport, making it take
@@ -467,8 +467,8 @@ same point cloud, but this time we give it a custom colour handler.
 .. code-block:: cpp
 
     ...
-    viewer->setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud1");
-    viewer->setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud2");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud1");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud2");
     viewer->addCoordinateSystem (1.0);
     ...
 
@@ -480,8 +480,8 @@ this case, they affect all viewports.
 .. code-block:: cpp
 
     ...
-    viewer->addPointCloudNormals<PointXYZRGB, Normal> (cloud, normals1, 10, 0.05, "normals1", v1);
-    viewer->addPointCloudNormals<PointXYZRGB, Normal> (cloud, normals2, 10, 0.05, "normals2", v2);
+    viewer->addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal> (cloud, normals1, 10, 0.05, "normals1", v1);
+    viewer->addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal> (cloud, normals2, 10, 0.05, "normals2", v2);
     ...
 
 Finally, we add the normals, one to each viewport.
