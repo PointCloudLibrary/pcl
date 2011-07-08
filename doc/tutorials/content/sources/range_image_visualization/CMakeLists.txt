@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 
 project(range_image_visualization)
 
-find_package(PCL 1.0 REQUIRED COMPONENTS range_image visualization)
+find_package(PCL 1.1 REQUIRED COMPONENTS range_image visualization)
 
 if(WXWIDGETS_FOUND)
   include_directories(${PCL_INCLUDE_DIRS})
