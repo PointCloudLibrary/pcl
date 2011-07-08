@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 
 project(openni_narf_keypoint_extraction)
 
-find_package(PCL 1.0 REQUIRED COMPONENTS io range_image visualization keypoints)
+find_package(PCL 1.1 REQUIRED COMPONENTS io range_image visualization keypoints)
 
 if(WXWIDGETS_FOUND)
   include_directories(${PCL_INCLUDE_DIRS})
