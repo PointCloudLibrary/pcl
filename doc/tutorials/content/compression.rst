@@ -37,7 +37,7 @@ Now, let's discuss the code in detail. Let's start at the main() function: First
 
 .. literalinclude:: sources/point_cloud_compression/point_cloud_compression.cpp
    :language: cpp
-   :lines: 95-103
+   :lines: 92-99
 
 In the run() function, we create instances of the PointCloudCompression class for encoding and decoding.
 They can take compression profiles as an arguments for configuring the compression algorithm. The provided compression profiles predefine 
@@ -50,21 +50,21 @@ For further details on advanced parametrization, please have a look at section "
 
 .. literalinclude:: sources/point_cloud_compression/point_cloud_compression.cpp
    :language: cpp
-   :lines: 53-60
+   :lines: 50-57
 
    
 The following code instantiates a new grabber for an OpenNI device and starts the interface callback loop. 
 
 .. literalinclude:: sources/point_cloud_compression/point_cloud_compression.cpp
    :language: cpp
-   :lines: 62-80
+   :lines: 59-77
 
 In the callback function executed by the OpenNIGrabber capture loop, we first compress the captured point cloud into a stringstream buffer. That follows a
 decompression step, which decodes the compressed binary data into a new point cloud object. The decoded point cloud is then sent to the point cloud viewer.
  
 .. literalinclude:: sources/point_cloud_compression/point_cloud_compression.cpp
    :language: cpp
-   :lines: 28-47
+   :lines: 24-44
 
 
 Compiling and running the program
@@ -264,13 +264,4 @@ Conclusion
 ----------
 
 This PCL point cloud compression enables to efficiently compress point clouds of any type and point cloud streams.      
-
-
-
-
-
-     
-
-
-
 

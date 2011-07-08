@@ -110,21 +110,21 @@ Once all VFH features have been loaded, we convert them to FLANN format, using:
 
 .. literalinclude:: sources/vfh_recognition/build_tree.cpp
    :language: cpp
-   :lines: 118-125
+   :lines: 113-120
 
 
 Since we're lazy, and we want to use this data (and not reload it again by crawling the directory structure in the testing phase), we dump the data to disk:
 
 .. literalinclude:: sources/vfh_recognition/build_tree.cpp
    :language: cpp
-   :lines: 127-133
+   :lines: 122-128
 
 
 Finally, we create the KdTree, and save its structure to disk:
 
 .. literalinclude:: sources/vfh_recognition/build_tree.cpp
    :language: cpp
-   :lines: 137-140
+   :lines: 132-135
 
 
 Here we will use a ``LinearIndex``, which does a brute-force search using a
@@ -164,7 +164,7 @@ In lines:
 
 .. literalinclude:: sources/vfh_recognition/nearest_neighbors.cpp
    :language: cpp
-   :lines: 139-145
+   :lines: 135-141
 
 
 we load the first given user histogram (and ignore the rest). Then we proceed
@@ -177,7 +177,7 @@ In lines:
 
 .. literalinclude:: sources/vfh_recognition/nearest_neighbors.cpp
    :language: cpp
-   :lines: 168-169
+   :lines: 165-166
 
    
 we load the training data from disk, together with the list of file names that
@@ -185,7 +185,7 @@ we previously stored in ``build_tree.cpp``. Then, we read the kd-tree and rebuil
 
 .. literalinclude:: sources/vfh_recognition/nearest_neighbors.cpp
    :language: cpp
-   :lines: 181-182
+   :lines: 179-180
 
    
 Here we need to make sure that we use the **exact** distance metric
@@ -194,53 +194,53 @@ the tree. The most important part of the code comes here:
 
 .. literalinclude:: sources/vfh_recognition/nearest_neighbors.cpp
    :language: cpp
-   :lines: 183
+   :lines: 181
 
 Inside ``nearestKSearch``, we first convert the query point to FLANN format:
 
 
 .. literalinclude:: sources/vfh_recognition/nearest_neighbors.cpp
    :language: cpp
-   :lines: 82-83
+   :lines: 75-76
 
 Followed by obtaining the resultant nearest neighbor indices and distances for the query in:
 
 .. literalinclude:: sources/vfh_recognition/nearest_neighbors.cpp
    :language: cpp
-   :lines: 85-87
+   :lines: 77-80
 
 
 Lines:
 
 .. literalinclude:: sources/vfh_recognition/nearest_neighbors.cpp
    :language: cpp
-   :lines: 192-196
+   :lines: 190-194
 
 create a ``PCLVisualizer`` object, and sets up a set of different viewports (e.g., splits the screen into different chunks), which will be enabled in:
 
 .. literalinclude:: sources/vfh_recognition/nearest_neighbors.cpp
    :language: cpp
-   :lines: 207
+   :lines: 214
 
 Using the file names representing the models that we previously obtained in
 ``loadFileList``, we proceed at loading the model file names using:
 
 .. literalinclude:: sources/vfh_recognition/nearest_neighbors.cpp
    :language: cpp
-   :lines: 215-222
+   :lines: 222-229
 
 For visualization purposes, we demean the point cloud by computing its centroid and then subtracting it:
 
 .. literalinclude:: sources/vfh_recognition/nearest_neighbors.cpp
    :language: cpp
-   :lines: 231-236
+   :lines: 241-246
 
    
 Finally we check if the distance obtained by ``nearestKSearch`` is larger than the user given threshold, and if it is, we display a red line over the cloud that is being rendered in the viewport:
 
 .. literalinclude:: sources/vfh_recognition/nearest_neighbors.cpp
    :language: cpp
-   :lines: 245-251
+   :lines: 255-261
 
 
 Compiling and running the code

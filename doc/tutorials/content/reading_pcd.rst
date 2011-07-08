@@ -22,13 +22,13 @@ Now, let's break down the code piece by piece.
 
 .. literalinclude:: sources/pcd_read/pcd_read.cpp
    :language: cpp
-   :lines: 10
+   :lines: 8
    
 creates a PointCloud<PointXYZ> boost shared pointer and initializes it.
 
 .. literalinclude:: sources/pcd_read/pcd_read.cpp
    :language: cpp
-   :lines: 12-16
+   :lines: 10-14
    
 loads the PointCloud data from disk (we assume that test_pcd.pcd has already
 been created from the previous tutorial) into the binary blob.
@@ -40,8 +40,8 @@ and then convert to the actual representation that we want to use.
 .. code-block:: cpp
 
    sensor_msgs::PointCloud2 cloud_blob;
-   io::loadPCDFile ("test_pcd.pcd", cloud_blob);
-   fromROSMsg (cloud_blob, *cloud); //* convert from sensor_msgs/PointCloud2 to pcl::PointCloud<T>
+   pcl::io::loadPCDFile ("test_pcd.pcd", cloud_blob);
+   pcl::fromROSMsg (cloud_blob, *cloud); //* convert from sensor_msgs/PointCloud2 to pcl::PointCloud<T>
 
 reads and converts the binary blob into the templated PointCloud format, here
 using pcl::PointXYZ as the underlying point type.
@@ -50,7 +50,7 @@ Finally:
 
 .. literalinclude:: sources/pcd_read/pcd_read.cpp
    :language: cpp
-   :lines: 21-24
+   :lines: 19-22
    
 is used to show the data that was loaded from file.
 

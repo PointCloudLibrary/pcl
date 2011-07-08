@@ -26,7 +26,7 @@ We fist define and instantiate a shared PointCloud structure and fill it with ra
 
 .. literalinclude:: sources/octree_search/octree_search.cpp
    :language: cpp
-   :lines: 17-29
+   :lines: 13-25
 
 
 Then we create an octree instance which is initialized with its resolution. This octree keeps a vector of point indices within its leaf nodes.
@@ -36,7 +36,7 @@ Then we assign a pointer to the PointCloud and add all points to the octree.
 
 .. literalinclude:: sources/octree_search/octree_search.cpp
    :language: cpp
-   :lines: 31-36
+   :lines: 27-32
 
 Once the PointCloud is associated with an octree, we can perform search operations. The fist search method used here is "Neighbors within Voxel Search". It assigns the search point to the corresponding 
 leaf node voxel and returns a vector of point indices. These indices relate to points which fall within the same voxel. The distance between 
@@ -44,7 +44,7 @@ the search point and the search result depend therefore on the resolution parame
 
 .. literalinclude:: sources/octree_search/octree_search.cpp
    :language: cpp
-   :lines: 46-59
+   :lines: 42-55
 
 Next, a K nearest neighbor search is demonstrated. In this example, K is set to 10. The "K Nearest Neighbor Search" method writes the search results into two separate vectors. 
 The first one, pointIdxNKNSearch, will contain the search result (indices referring to the associated PointCloud data set). The second vector holds corresponding squared distances
@@ -52,7 +52,7 @@ between the search point and the nearest neighbors.
 
 .. literalinclude:: sources/octree_search/octree_search.cpp
    :language: cpp
-   :lines: 61-80
+   :lines: 57-76
 
 
 The "Neighbors within Radius Search" works very similar to the "K Nearest Neighbor Search". Its search results are written to two separate vectors describing 
@@ -60,7 +60,7 @@ point indices and squares search point distances.
 
 .. literalinclude:: sources/octree_search/octree_search.cpp
    :language: cpp
-   :lines: 84-102
+   :lines: 80-98
 
    
 Compiling and running the program
