@@ -56,24 +56,25 @@ namespace pcl
     * \ingroup registration
     */
   template <typename PointSource, typename PointTarget>
-  class GeneralizedIterativeClosestPoint : public Registration<PointSource, PointTarget>
+  class GeneralizedIterativeClosestPoint : public IterativeClosestPoint<PointSource, PointTarget>
   {
-    using Registration<PointSource, PointTarget>::reg_name_;
-    using Registration<PointSource, PointTarget>::getClassName;
-    using Registration<PointSource, PointTarget>::indices_;
-    using Registration<PointSource, PointTarget>::target_;
-    using Registration<PointSource, PointTarget>::input_;
-    using Registration<PointSource, PointTarget>::tree_;
-    using Registration<PointSource, PointTarget>::nr_iterations_;
-    using Registration<PointSource, PointTarget>::max_iterations_;
-    using Registration<PointSource, PointTarget>::previous_transformation_;
-    using Registration<PointSource, PointTarget>::final_transformation_;
-    using Registration<PointSource, PointTarget>::transformation_;
-    using Registration<PointSource, PointTarget>::transformation_epsilon_;
-    using Registration<PointSource, PointTarget>::converged_;
-    using Registration<PointSource, PointTarget>::corr_dist_threshold_;
-    using Registration<PointSource, PointTarget>::inlier_threshold_;
-    using Registration<PointSource, PointTarget>::min_number_correspondences_;
+    using IterativeClosestPoint<PointSource, PointTarget>::reg_name_;
+    using IterativeClosestPoint<PointSource, PointTarget>::getClassName;
+    using IterativeClosestPoint<PointSource, PointTarget>::indices_;
+    using IterativeClosestPoint<PointSource, PointTarget>::target_;
+    using IterativeClosestPoint<PointSource, PointTarget>::input_;
+    using IterativeClosestPoint<PointSource, PointTarget>::tree_;
+    using IterativeClosestPoint<PointSource, PointTarget>::nr_iterations_;
+    using IterativeClosestPoint<PointSource, PointTarget>::max_iterations_;
+    using IterativeClosestPoint<PointSource, PointTarget>::previous_transformation_;
+    using IterativeClosestPoint<PointSource, PointTarget>::final_transformation_;
+    using IterativeClosestPoint<PointSource, PointTarget>::transformation_;
+    using IterativeClosestPoint<PointSource, PointTarget>::transformation_epsilon_;
+    using IterativeClosestPoint<PointSource, PointTarget>::converged_;
+    using IterativeClosestPoint<PointSource, PointTarget>::corr_dist_threshold_;
+    using IterativeClosestPoint<PointSource, PointTarget>::inlier_threshold_;
+    using IterativeClosestPoint<PointSource, PointTarget>::min_number_correspondences_;
+    using IterativeClosestPoint<PointSource, PointTarget>::rigid_transformation_estimation_;
 
     typedef pcl::PointCloud<PointSource> PointCloudSource;
     typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -99,12 +100,9 @@ namespace pcl
         reg_name_ = "GeneralizedIterativeClosestPoint";
         max_iterations_ = 200;
         transformation_epsilon_ = 5e-4;
-        void (GeneralizedIterativeClosestPoint::*rigid_transformation)(
-          const pcl::PointCloud<PointSource> &cloud_src,
-          const pcl::PointCloud<PointTarget> &cloud_tgt,
-          Eigen::Matrix4f &transformation_matrix) = &GeneralizedIterativeClosestPoint::estimateRigidTransformationLM;
         rigid_transformation_estimation_ = 
-          boost::bind (rigid_transformation, this, _1, _2, _3);
+          boost::bind (&GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationLM, 
+              this, _1, _2, _3, _4, _5); 
       }
 
       /** \brief Provide a pointer to the input dataset
@@ -306,11 +304,6 @@ namespace pcl
         return r;
       }
 
-      /** Nearest neighbour indices */
-      std::vector<int> nn_indices_;
-      /** Nearest neighbour distances */
-      std::vector<float> nn_distances_;
-      
       /** \brief Rigid transformation computation method.
         * \param output the transformed input point cloud dataset using the rigid transformation found
         */
@@ -328,26 +321,20 @@ namespace pcl
       computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess);
 
       /** \brief Search for the closest nearest neighbor of a given point.
-        * \param cloud the point cloud dataset to use for nearest neighbor search
-        * \param point_index the index of the query point
+        * \param query the point to search a nearest neighbour for
+        * \param index vector of size 1 to store the index of the nearest neighbour found
+        * \param distance vector of size 1 to store the distance to nearest neighbour found
         */
       inline bool
-      searchForNeighbors (const PointSource &query, int point_index)
+        searchForNeighbors (const PointSource &query, 
+                            std::vector<int>& index, 
+                            std::vector<float>& distance)
       {
-        std::vector<int> index (1, -1);
-        std::vector<float> distance (1, std::numeric_limits<float>::max());
         int k = tree_->nearestKSearch (query, 1, index, distance);
-        nn_indices_[point_index] = index[0];
-        nn_distances_[point_index] = distance[0];
-
         if (k == 0)
           return (false);
         return (true);
       }
-      /** \brief function to call to estimate the rigid transform */
-      boost::function<void(const pcl::PointCloud<PointSource> &cloud_src, 
-                           const pcl::PointCloud<PointTarget> &cloud_tgt, 
-                           Eigen::Matrix4f &transformation_matrix)> rigid_transformation_estimation_;
 
       /** \brief Compute heteregenious product result = mat1 * mat2
         * This function is here cause eigen doesnt allow double = float * float

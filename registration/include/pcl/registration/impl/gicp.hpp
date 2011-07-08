@@ -352,21 +352,18 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
   {
     for (int i = 0; i < m; i++)
     {
-      if (model->nn_indices_[i] != -1)
-      {
-        // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
-        Vector4fMapConst p_src = model->tmp_src_->points[i].getVector4fMap ();
-        // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
-        Vector4fMapConst p_tgt = model->tmp_tgt_->points[i].getVector4fMap ();
-        
-        Eigen::Vector4f pp = transformation_matrix * p_src;
-        // The last coordiante is still guaranteed to be set to 1.0
-        Eigen::Vector3d res(pp[0] - p_tgt[0], pp[1] - p_tgt[1], pp[2] - p_tgt[2]);
-        Eigen::Vector3d temp = model->mahalanobis(i) * res;
-        // Cost function
-        // Originally this is divided by m but as we are using LM it is discarded
-        fvec[i] = double(res.transpose() * temp);
-      }
+      // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
+      Vector4fMapConst p_src = model->tmp_src_->points[i].getVector4fMap ();
+      // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
+      Vector4fMapConst p_tgt = model->tmp_tgt_->points[i].getVector4fMap ();
+      
+      Eigen::Vector4f pp = transformation_matrix * p_src;
+      // The last coordiante is still guaranteed to be set to 1.0
+      Eigen::Vector3d res(pp[0] - p_tgt[0], pp[1] - p_tgt[1], pp[2] - p_tgt[2]);
+      Eigen::Vector3d temp = model->mahalanobis(i) * res;
+      // Cost function
+      // Originally this is divided by m but as we are using LM it is discarded
+      fvec[i] = double(res.transpose() * temp);
     }
   }
   else {
@@ -375,32 +372,29 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
     {
       for (int i = 0; i < m; i++)
       {
-        if (model->nn_indices_[i] != -1)
-        {
-          // Map the jacobian translation component
-          Eigen::Map<Eigen::Vector3d> g_t(&fjac[i*n]);
-          // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
-          Vector4fMapConst p_src = model->tmp_src_->points[i].getVector4fMap ();
-          // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
-          Vector4fMapConst p_tgt = model->tmp_tgt_->points[i].getVector4fMap ();
-          
-          Eigen::Vector4f pp = transformation_matrix * p_src;
-          // The last coordiante is still guaranteed to be set to 1.0
-          Eigen::Vector3d res(pp[0] - p_tgt[0], pp[1] - p_tgt[1], pp[2] - p_tgt[2]);
-          // temp = M*res
-          Eigen::Vector3d temp = model->mahalanobis(i) * res;
-          // temp_double = res'*temp = temp'*M*res
-          //double temp_double = res.transpose() * temp;
-          // Increment translation gradient
-          // orignally g_t+= 2*M*res/m
-          g_t= 2 * model->mahalanobis(i) * res;
-          pp = model->base_transformation_ * p_src;
-          Eigen::Vector3d p_src3(pp[0], pp[1], pp[2]);
-          // R = 2/m*pt1*temp^T + R with R set to zeros originally i.e.
-          // R = 2/m*pt1*temp^T, we discard the /m
-          Eigen::Matrix3d Ri = 2.0 * (p_src3 * temp.transpose());
-          model->computeRDerivative(x, Ri, &fjac[i*n]);
-        }
+        // Map the jacobian translation component
+        Eigen::Map<Eigen::Vector3d> g_t(&fjac[i*n]);
+        // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
+        Vector4fMapConst p_src = model->tmp_src_->points[i].getVector4fMap ();
+        // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
+        Vector4fMapConst p_tgt = model->tmp_tgt_->points[i].getVector4fMap ();
+        
+        Eigen::Vector4f pp = transformation_matrix * p_src;
+        // The last coordiante is still guaranteed to be set to 1.0
+        Eigen::Vector3d res(pp[0] - p_tgt[0], pp[1] - p_tgt[1], pp[2] - p_tgt[2]);
+        // temp = M*res
+        Eigen::Vector3d temp = model->mahalanobis(i) * res;
+        // temp_double = res'*temp = temp'*M*res
+        //double temp_double = res.transpose() * temp;
+        // Increment translation gradient
+        // orignally g_t+= 2*M*res/m
+        g_t= 2 * model->mahalanobis(i) * res;
+        pp = model->base_transformation_ * p_src;
+        Eigen::Vector3d p_src3(pp[0], pp[1], pp[2]);
+        // R = 2/m*pt1*temp^T + R with R set to zeros originally i.e.
+        // R = 2/m*pt1*temp^T, we discard the /m
+        Eigen::Matrix3d Ri = 2.0 * (p_src3 * temp.transpose());
+        model->computeRDerivative(x, Ri, &fjac[i*n]);
       }
     }
   }
@@ -480,7 +474,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
 template <typename PointSource, typename PointTarget> inline void
 pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess)
 {
-  // Difference between 
+  // Difference between consecutive transforms
   double delta = 0;
   // Get the size of the target
   const size_t N = indices_->size ();
@@ -494,9 +488,14 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
   nr_iterations_ = 0;
   converged_ = false;
   double dist_threshold = corr_dist_threshold_ * corr_dist_threshold_;
-  size_t num_matches = 0;
+  std::vector<int> nn_indices (1);
+  std::vector<float> nn_dists (1);
   while(!converged_)
   {
+    size_t cnt = 0;
+    std::vector<int> source_indices (indices_->size ());
+    std::vector<int> target_indices (indices_->size ());
+
     // guess corresponds to base_t and transformation_ to t
     // dgc_transform_t transform_R;
     // dgc_transform_copy(transform_R, base_t);
@@ -510,14 +509,14 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
       query.getVector4fMap () = guess * query.getVector4fMap ();
       query.getVector4fMap () = transformation_ * query.getVector4fMap ();
 
-      if (!searchForNeighbors (query, i))
+      if (!searchForNeighbors (query, nn_indices, nn_dists))
       {
         PCL_ERROR ("[pcl::%s::computeTransformation] Unable to find a nearest neighbor in the target dataset for point %d in the source!\n", getClassName ().c_str (), (*indices_)[i]);
         return;
       }
 
       // Check if the distance to the nearest neighbor is smaller than the user imposed threshold
-      if (nn_distances_[i] < dist_threshold)
+      if (nn_dists[0] < dist_threshold)
       {
         Eigen::Matrix3d &C1 = input_covariances_[i];
         Eigen::Matrix3d &C2 = target_covariances_[i];
@@ -528,17 +527,17 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
         Eigen::Matrix3d tmp = M * R.transpose() + C2;
         // M = temp^-1
         M = tmp.inverse();
-        num_matches++;
-      }
-      else
-      {
-        nn_indices_[i] = -1;
+        source_indices[cnt] = i;
+        target_indices[cnt] = nn_indices[0];
+        cnt++;
       }
     }
+    // Resize to the actual number of valid correspondences
+    source_indices.resize(cnt); target_indices.resize(cnt);
     /* optimize transformation using the current assignment and Mahalanobis metrics*/
     previous_transformation_ = transformation_;
     //optimization right here
-    rigid_transformation_estimation_(output, *target_, transformation_);
+    rigid_transformation_estimation_(output, source_indices, *target_, target_indices, transformation_);
     /* compute the delta from this iteration */
     delta = 0.;
     for(int k = 0; k < 4; k++) {
