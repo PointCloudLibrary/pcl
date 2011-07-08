@@ -2,8 +2,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 
-//using namespace pcl;
-
 int
 main (int argc, char** argv)
 {
