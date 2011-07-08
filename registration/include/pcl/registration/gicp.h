@@ -56,26 +56,24 @@ namespace pcl
     * \ingroup registration
     */
   template <typename PointSource, typename PointTarget>
-  class GeneralizedIterativeClosestPoint : public IterativeClosestPoint<PointSource, PointTarget>
+  class GeneralizedIterativeClosestPoint : public Registration<PointSource, PointTarget>
   {
-    using IterativeClosestPoint<PointSource, PointTarget>::reg_name_;
-    using IterativeClosestPoint<PointSource, PointTarget>::getClassName;
-    using IterativeClosestPoint<PointSource, PointTarget>::indices_;
-    using IterativeClosestPoint<PointSource, PointTarget>::target_;
-    using IterativeClosestPoint<PointSource, PointTarget>::input_;
-    using IterativeClosestPoint<PointSource, PointTarget>::tree_;
-    using IterativeClosestPoint<PointSource, PointTarget>::nr_iterations_;
-    using IterativeClosestPoint<PointSource, PointTarget>::max_iterations_;
-    using IterativeClosestPoint<PointSource, PointTarget>::previous_transformation_;
-    using IterativeClosestPoint<PointSource, PointTarget>::final_transformation_;
-    using IterativeClosestPoint<PointSource, PointTarget>::transformation_;
-    using IterativeClosestPoint<PointSource, PointTarget>::transformation_epsilon_;
-    using IterativeClosestPoint<PointSource, PointTarget>::converged_;
-    using IterativeClosestPoint<PointSource, PointTarget>::corr_dist_threshold_;
-    using IterativeClosestPoint<PointSource, PointTarget>::inlier_threshold_;
-    using IterativeClosestPoint<PointSource, PointTarget>::min_number_correspondences_;
-
-    using IterativeClosestPoint<PointSource, PointTarget>::rigid_transformation_estimation_;
+    using Registration<PointSource, PointTarget>::reg_name_;
+    using Registration<PointSource, PointTarget>::getClassName;
+    using Registration<PointSource, PointTarget>::indices_;
+    using Registration<PointSource, PointTarget>::target_;
+    using Registration<PointSource, PointTarget>::input_;
+    using Registration<PointSource, PointTarget>::tree_;
+    using Registration<PointSource, PointTarget>::nr_iterations_;
+    using Registration<PointSource, PointTarget>::max_iterations_;
+    using Registration<PointSource, PointTarget>::previous_transformation_;
+    using Registration<PointSource, PointTarget>::final_transformation_;
+    using Registration<PointSource, PointTarget>::transformation_;
+    using Registration<PointSource, PointTarget>::transformation_epsilon_;
+    using Registration<PointSource, PointTarget>::converged_;
+    using Registration<PointSource, PointTarget>::corr_dist_threshold_;
+    using Registration<PointSource, PointTarget>::inlier_threshold_;
+    using Registration<PointSource, PointTarget>::min_number_correspondences_;
 
     typedef pcl::PointCloud<PointSource> PointCloudSource;
     typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -95,15 +93,18 @@ namespace pcl
       /** \brief Empty constructor. */
       GeneralizedIterativeClosestPoint () : k_correspondences_(20), 
       gicp_epsilon_(0.0004), rotation_epsilon_(2e-3),
-      input_covariances_(0), target_covariances_(0)
+      input_covariances_(0), target_covariances_(0), mahalanobis_(0)
       {
         min_number_correspondences_ = 4;
         reg_name_ = "GeneralizedIterativeClosestPoint";
         max_iterations_ = 200;
         transformation_epsilon_ = 5e-4;
+        void (GeneralizedIterativeClosestPoint::*rigid_transformation)(
+          const pcl::PointCloud<PointSource> &cloud_src,
+          const pcl::PointCloud<PointTarget> &cloud_tgt,
+          Eigen::Matrix4f &transformation_matrix) = &GeneralizedIterativeClosestPoint::estimateRigidTransformationLM;
         rigid_transformation_estimation_ = 
-          boost::bind (&GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationLM, 
-              this, _1, _2, _3, _4, _5);
+          boost::bind (rigid_transformation, this, _1, _2, _3);
       }
 
       /** \brief Provide a pointer to the input dataset
@@ -161,7 +162,7 @@ namespace pcl
       /** \brief \return Mahalanobis distance matrix for the given point index */
       inline const Eigen::Matrix3d& mahalanobis(size_t index) const
       {
-        assert(is_mahalanobis_done_ && (index < mahalanobis_.size()));
+        assert(index < mahalanobis_.size());
         return mahalanobis_[index];
       }
 
@@ -220,6 +221,8 @@ namespace pcl
         * \default 2e-3
         */
       double rotation_epsilon_;
+      /** \brief base transformation */
+      Eigen::Matrix4f base_transformation_;
       /** \brief Cost function to be minimized
         * \param p a pointer to our data structure array
         * \param m the number of functions
@@ -275,9 +278,6 @@ namespace pcl
 
       /** \brief Mahalanobis matrices holder. */
       std::vector<Eigen::Matrix3d> mahalanobis_;
-      
-      /** \brief tells if mahalanobis matrices were computed */
-      bool is_mahalanobis_done_;
       
       /** \brief compute points covariances matrices according to the K nearest 
         * neighbors. K is set via setCorrespondenceRandomness() methode.
@@ -344,7 +344,24 @@ namespace pcl
           return (false);
         return (true);
       }
+      /** \brief function to call to estimate the rigid transform */
+      boost::function<void(const pcl::PointCloud<PointSource> &cloud_src, 
+                           const pcl::PointCloud<PointTarget> &cloud_tgt, 
+                           Eigen::Matrix4f &transformation_matrix)> rigid_transformation_estimation_;
 
+      /** \brief Compute heteregenious product result = mat1 * mat2
+        * This function is here cause eigen doesnt allow double = float * float
+        */
+      void heteregenious_product(const Eigen::Matrix4f& mat1, 
+                                 const Eigen::Matrix4f& mat2, 
+                                 Eigen::Matrix4d& result)
+      {
+        result.setZero();
+        for(size_t i = 0; i < 4; i++)
+          for(size_t j = 0; j < 4; j++)
+            for(size_t k = 0; k < 4; k++)
+              result(i,j)+= double(mat1(i,k)) * double(mat2(k,j));
+      }
   };
 }
 
