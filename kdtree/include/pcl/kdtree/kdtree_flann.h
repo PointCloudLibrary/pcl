@@ -313,4 +313,6 @@ namespace pcl
   };
 }
 
+#include "pcl/kdtree/impl/kdtree_flann.hpp"
+
 #endif
