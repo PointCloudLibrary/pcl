@@ -12,151 +12,62 @@ The code
    :language: cpp
    :linenos:
 
-   .. code-block:: cpp
-
-		#include <iostream>
-		#include <pcl/io/pcd_io.h>
-		#include <pcl/point_types.h>
-		#include <pcl/registration/icp.h>
-
-		int
-		 main (int argc, char** argv)
-		{
-		  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in (new
-		    pcl::PointCloud<pcl::PointXYZ>);
-		  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new
-		    pcl::PointCloud<pcl::PointXYZ>);
-		
-		  // Fill in the CloudIn data
-		  cloud_in->width    = 5;
-		  cloud_in->height   = 1;
-		  cloud_in->is_dense = false;
-		  cloud_in->points.resize (cloud_in->width * cloud_in->height);
-		  for (size_t i = 0; i < cloud_in->points.size (); ++i)
-		  {
-		    cloud_in->points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-		    cloud_in->points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-		    cloud_in->points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
-		  }
-		  std::cout << "Saved " << cloud_in->points.size () <<
-		    " data points to input:" << std::endl;
-		  for (size_t i = 0; i < cloud_in->points.size (); ++i) std::cout <<
-		    "    " << cloud_in->points[i].x << " " << cloud_in->points[i].y <<
-		    " " << cloud_in->points[i].z << std::endl;
-		  *cloud_out = *cloud_in;
-		  std::cout << "size:" << cloud_out->points.size() << std::endl;
-		  for (size_t i = 0; i < cloud_in->points.size (); ++i)
-		    cloud_out->points[i].x = cloud_in->points[i].x + .7;
-		  std::cout << "Transformed " << cloud_in->points.size () <<
-		    " data points:" << std::endl;
-		  for (size_t i = 0; i < cloud_out->points.size (); ++i)
-		    std::cout << "    " << cloud_out->points[i].x << " " <<
-		    cloud_out->points[i].y << " " << cloud_out->points[i].z << std::endl;
-		  pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
-		  icp.setInputCloud(cloud_in);
-		  icp.setInputTarget(cloud_out);
-		  pcl::PointCloud<pcl::PointXYZ> Final;
-		  icp.align(Final);
-		  std::cout << "has converged:" << icp.hasConverged() << " score: " <<
-		  icp.getFitnessScore() << std::endl;
-		  std::cout << icp.getFinalTransformation() << std::endl;
-
-		 return (0);
-		}
-
-
-
 The explanation
 ---------------
 
-   Now, let's breakdown this code piece by piece.
+Now, let's breakdown this code piece by piece.
 
-   .. code-block:: cpp
+.. literalinclude:: sources/iterative_closest_point/iterative_closest_point.cpp
+   :language: cpp
+   :lines: 1-4
 
-      #include <iostream>
-      #include <pcl/io/pcd_io.h>
-      #include <pcl/point_types.h>
-      #include <pcl/registration/icp.h>
+these are the header files that contain the definitions for all of the classes which we will use.
 
-   these are the header files that contain the definitions for all of the classes which we will use.
+.. literalinclude:: sources/iterative_closest_point/iterative_closest_point.cpp
+   :language: cpp
+   :lines: 11-12
 
-   .. code-block:: cpp
+Creates two pcl::PointCloud<pcl::PointXYZ> boost shared pointers and initializes them. The type of each point is set to PointXYZ in the pcl namespace which is:
 
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in (new
-		  pcl::PointCloud<pcl::PointXYZ>);
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new
-		  pcl::PointCloud<pcl::PointXYZ>);
+.. code-block:: cpp
 
-   Creates two pcl::PointCloud<pcl::PointXYZ> boost shared pointers and initializes them. The type of each point is set to PointXYZ in the pcl namespace which is:
+  // \brief A point structure representing Euclidean xyz coordinates.
+  struct PointXYZ
+  {
+    float x;
+    float y;
+    float z;
+  };
 
-   .. code-block:: cpp
+The lines:
 
-      // \brief A point structure representing Euclidean xyz coordinates.
-      struct PointXYZ
-      {
-        float x;
-        float y;
-        float z;
-      };
+.. literalinclude:: sources/iterative_closest_point/iterative_closest_point.cpp
+   :language: cpp
+   :lines: 14-31
 
-   The lines:
-
-   .. code-block:: cpp
-
-		// Fill in the cloud_in data
-		cloud_in->width    = 5;
-		cloud_in->height   = 1;
-		cloud_in->is_dense = false;
-		cloud_in->points.resize (cloud_in->width * cloud_in->height);
-		for (size_t i = 0; i < cloud_in->points.size (); ++i)
-		{
-		  cloud_in->points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-		  cloud_in->points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-		  cloud_in->points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
-		}
- 		std::cout << "Saved " << cloud_in->points.size () <<
-		" data points to input:" << std::endl;
-  		for (size_t i = 0; i < cloud_in->points.size (); ++i)
-		  std::cout <<"    " << cloud_in->points[i].x << " " <<
-		  cloud_in->points[i].y << " " << cloud_in->points[i].z <<
-		  std::endl;
-
-   fills in the PointCloud structure with random point values, and sets the appropriate parameters (width, height, is_dense).  Also, outputs the number of points saved, and their actual data values.
+fills in the PointCloud structure with random point values, and sets the appropriate parameters (width, height, is_dense).  Also, outputs the number of points saved, and their actual data values.
    
-   Then:
+Then:
 
-   .. code-block:: cpp
+.. literalinclude:: sources/iterative_closest_point/iterative_closest_point.cpp
+   :language: cpp
+   :lines: 32-38
 
-		for (size_t i = 0; i < cloud_in->points.size (); ++i)
-		  cloud_out->points[i].x = cloud_in->points[i].x + .7;
-		std::cout << "Transformed " << cloud_in->points.size () <<
-		  " datapoints:"<< std::endl;
-		for (size_t i = 0; i < cloud_out->points.size (); ++i)
-		std::cout << "    " << cloud_out->points[i].x << " " <<
-		  cloud_out->points[i].y << " " << cloud_out->points[i].z <<
-		  std::endl;
+performs a simple rigid transform on the pointcloud and then again outputs the data values.
 
-   performs a simple rigid transform on the pointcloud and then again outputs the data values.
+.. literalinclude:: sources/iterative_closest_point/iterative_closest_point.cpp
+   :language: cpp
+   :lines: 39-41
 
-   .. code-block:: cpp
+This creates an instance of an IterativeClosestPoint and gives it some useful information.  "icp.setInputCloud(cloud_in);" sets cloud_in as the PointCloud to begin from and "icp.setInputTarget(cloud_out);" sets cloud_out as the PointCloud which we want cloud_in to look like.
 
-		pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
-		icp.setInputCloud(cloud_in);
-		icp.setInputTarget(cloud_out);
+Next,
 
-   This creates an instance of an IterativeClosestPoint and gives it some useful information.  "icp.setInputCloud(cloud_in);" sets cloud_in as the PointCloud to begin from and "icp.setInputTarget(cloud_out);" sets cloud_out as the PointCloud which we want cloud_in to look like.
+.. literalinclude:: sources/iterative_closest_point/iterative_closest_point.cpp
+   :language: cpp
+   :lines: 42-46
 
-   Next,
-
-   .. code-block:: cpp
-
-		pcl::PointCloud<pcl::PointXYZ> Final;
-		icp.align(Final);
-		std::cout << "has converged:" << icp.hasConverged() << " score: " <<
-		icp.getFitnessScore() << std::endl;
-		std::cout << icp.getFinalTransformation() << std::endl;
-
-   Creates a pcl::PointCloud<pcl::PointXYZ> to which the IterativeClosestPoint can save the resultant cloud after applying the algorithm.  If the two PointClouds align correctly (meaning they are both the same cloud merely with some kind of rigid transformation applied to one of them) then icp.hasConverged() = 1 (true).  It then outputs the fitness score of the final transformation and some information about it.
+Creates a pcl::PointCloud<pcl::PointXYZ> to which the IterativeClosestPoint can save the resultant cloud after applying the algorithm.  If the two PointClouds align correctly (meaning they are both the same cloud merely with some kind of rigid transformation applied to one of them) then icp.hasConverged() = 1 (true).  It then outputs the fitness score of the final transformation and some information about it.
 
 Compiling and running the program
 ---------------------------------
