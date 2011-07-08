@@ -483,40 +483,25 @@ contributions on any tutorial.
      .. |su_1| image:: images/resampling.jpg
                :height: 100px
 
-  * :ref:`concave_hull_2d`
+  * :ref:`hull_2d`
 
      ======  ======
-     |su_2|  Title: **Construct a concave hull polygon for a plane model**
+     |su_2|  Title: **Construct a concave or convex hull polygon for a plane model**
 
-             Author: *Gabe O'Leary*
+             Author: *Gabe O'Leary/Radu B. Rusu*
 
              Compatibility: > PCL 1.0
 
-             In this tutorial we will learn how to calculate a simple 2D concave hull polygon for a set of points supported by a plane.
+             In this tutorial we will learn how to calculate a simple 2D concave or convex hull polygon for a set of points supported by a plane.
      ======  ======
      
-     .. |su_2| image:: images/concave_hull_2d.gif
-               :height: 100px
-
-  * :ref:`convex_hull_2d`
-
-     ======  ======
-     |su_3|  Title: **Construct a convex hull polygon for a plane model**
-
-             Author: *Radu B. Rusu*
-
-             Compatibility: > PCL 1.0
-
-             In this tutorial we will learn how to calculate a simple 2D convex hull polygon for a set of points supported by a plane.
-     ======  ======
-     
-     .. |su_3| image:: images/convex_hull_2d.jpg
+     .. |su_2| image:: images/convex_hull_2d.jpg
                :height: 100px
 
   * :ref:`greedy_triangulation`
 
      ======  ======
-     |su_4|  Title: **Fast triangulation of unordered point clouds**
+     |su_3|  Title: **Fast triangulation of unordered point clouds**
 
              Author: *Zoltan-Csaba Marton*
 
@@ -525,7 +510,7 @@ contributions on any tutorial.
              In this tutorial we will learn how to run a greedy triangulation algorithm on a PointCloud with normals to obtain a triangle mesh based on projections of the local neighborhood.
      ======  ======
      
-     .. |su_4| image:: images/greedy_triangulation.png
+     .. |su_3| image:: images/greedy_triangulation.png
                :height: 100px
 
 * Octree
