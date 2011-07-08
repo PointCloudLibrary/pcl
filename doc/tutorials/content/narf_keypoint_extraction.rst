@@ -31,14 +31,14 @@ The interesting part begins here:
 .. code-block:: cpp
 
   ...
-  RangeImageBorderExtractor range_image_border_extractor;
-  NarfKeypoint narf_keypoint_detector (&range_image_border_extractor);
+  pcl::RangeImageBorderExtractor range_image_border_extractor;
+  pcl::NarfKeypoint narf_keypoint_detector (&range_image_border_extractor);
   narf_keypoint_detector.setRangeImage (&range_image);
   narf_keypoint_detector.getParameters ().support_size = support_size;
   //narf_keypoint_detector.getParameters ().add_points_on_straight_edges = true;
   //narf_keypoint_detector.getParameters ().distance_for_additional_points = 0.5;
   
-  PointCloud<int> keypoint_indices;
+  pcl::PointCloud<int> keypoint_indices;
   narf_keypoint_detector.compute (keypoint_indices);
   std::cout << "Found "<<keypoint_indices.points.size ()<<" key points.\n";
   ...

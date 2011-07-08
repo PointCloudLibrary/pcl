@@ -27,14 +27,14 @@ We fist instantiate the OctreePointCloudChangeDetector class and define its voxe
 
 .. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
    :language: cpp
-   :lines: 15-21
+   :lines: 11-17
 
 Then we create a point cloud instance cloudA which is initialized with random point data. The generated point data is used to build an octree structure. 
 
 
 .. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
    :language: cpp
-   :lines: 23-39
+   :lines: 19-35
 
    
 Point cloud cloudA is our reference point cloud and the octree structure describe its spatial distribution. The class OctreePointCloudChangeDetector inherits from 
@@ -45,7 +45,7 @@ octree class while keeping the previous octree structure in memory.
 
 .. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
    :language: cpp
-   :lines: 41-42
+   :lines: 37-38
 
    
 Now we instantiate a second point cloud "cloudB" and fill it with random point data. This point cloud is used to build a new octree structure. 
@@ -53,7 +53,7 @@ Now we instantiate a second point cloud "cloudB" and fill it with random point d
 
 .. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
    :language: cpp
-   :lines: 44-60
+   :lines: 40-56
    
 
 In order to retrieve points that are stored at voxels of the current octree structure (based on cloudB) which did not exist in the previous octree structure 
@@ -62,14 +62,14 @@ In order to retrieve points that are stored at voxels of the current octree stru
 
 .. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
    :language: cpp
-   :lines: 62-65
+   :lines: 58-61
   
 Finally, we output the results to the std::cout stream.
 
 
 .. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
    :language: cpp
-   :lines: 67-73
+   :lines: 63-69
 
 Compiling and running the program
 ---------------------------------

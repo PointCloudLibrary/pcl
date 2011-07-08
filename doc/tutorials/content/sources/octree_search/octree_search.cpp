@@ -5,16 +5,12 @@
 #include <vector>
 #include <ctime>
 
-using namespace pcl;
-using namespace pcl::octree;
-
 int
 main (int argc, char** argv)
 {
-
   srand (time (NULL));
 
-  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
   // Generate pointcloud data
   cloud->width = 1000;
@@ -30,12 +26,12 @@ main (int argc, char** argv)
 
   float resolution = 128.0f;
 
-  OctreePointCloud<PointXYZ> octree (resolution);
+  pcl::octree::OctreePointCloud<pcl::PointXYZ> octree (resolution);
 
   octree.setInputCloud (cloud);
   octree.addPointsFromInputCloud ();
 
-  PointXYZ searchPoint;
+  pcl::PointXYZ searchPoint;
 
   searchPoint.x = 1024.0f * rand () / (RAND_MAX + 1.0);
   searchPoint.y = 1024.0f * rand () / (RAND_MAX + 1.0);
@@ -47,13 +43,13 @@ main (int argc, char** argv)
 
   if (octree.voxelSearch (searchPoint, pointIdxVec))
   {
-    std::cerr << "Neighbors within voxel search at (" << searchPoint.x 
+    std::cout << "Neighbors within voxel search at (" << searchPoint.x 
      << " " << searchPoint.y 
      << " " << searchPoint.z << ")" 
      << std::endl;
               
     for (size_t i = 0; i < pointIdxVec.size (); ++i)
-   std::cerr << "    " << cloud->points[pointIdxVec[i]].x 
+   std::cout << "    " << cloud->points[pointIdxVec[i]].x 
        << " " << cloud->points[pointIdxVec[i]].y 
        << " " << cloud->points[pointIdxVec[i]].z << std::endl;
   }
@@ -65,18 +61,18 @@ main (int argc, char** argv)
   std::vector<int> pointIdxNKNSearch;
   std::vector<float> pointNKNSquaredDistance;
 
-  std::cerr << "K nearest neighbor search at (" << searchPoint.x 
-      << " " << searchPoint.y 
-      << " " << searchPoint.z
-      << ") with K=" << K << std::endl;
+  std::cout << "K nearest neighbor search at (" << searchPoint.x 
+            << " " << searchPoint.y 
+            << " " << searchPoint.z
+            << ") with K=" << K << std::endl;
 
-  if ( octree.nearestKSearch (searchPoint, K, pointIdxNKNSearch, pointNKNSquaredDistance) > 0 )
+  if (octree.nearestKSearch (searchPoint, K, pointIdxNKNSearch, pointNKNSquaredDistance) > 0)
   {
     for (size_t i = 0; i < pointIdxNKNSearch.size (); ++i)
-   std::cerr << "    "  <<   cloud->points[ pointIdxNKNSearch[i] ].x 
-       << " " << cloud->points[ pointIdxNKNSearch[i] ].y 
-       << " " << cloud->points[ pointIdxNKNSearch[i] ].z 
-       << " (squared distance: " << pointNKNSquaredDistance[i] << ")" << std::endl;
+      std::cout << "    "  <<   cloud->points[ pointIdxNKNSearch[i] ].x 
+                << " " << cloud->points[ pointIdxNKNSearch[i] ].y 
+                << " " << cloud->points[ pointIdxNKNSearch[i] ].z 
+                << " (squared distance: " << pointNKNSquaredDistance[i] << ")" << std::endl;
   }
 
   // Neighbors within radius search
@@ -86,19 +82,19 @@ main (int argc, char** argv)
 
   float radius = 256.0f * rand () / (RAND_MAX + 1.0);
 
-  std::cerr << "Neighbors within radius search at (" << searchPoint.x 
+  std::cout << "Neighbors within radius search at (" << searchPoint.x 
       << " " << searchPoint.y 
       << " " << searchPoint.z
       << ") with radius=" << radius << std::endl;
 
 
-  if ( octree.radiusSearch (searchPoint, radius, pointIdxRadiusSearch, pointRadiusSquaredDistance) > 0 )
+  if (octree.radiusSearch (searchPoint, radius, pointIdxRadiusSearch, pointRadiusSquaredDistance) > 0)
   {
     for (size_t i = 0; i < pointIdxRadiusSearch.size (); ++i)
-   std::cerr << "    "  <<   cloud->points[ pointIdxRadiusSearch[i] ].x 
-       << " " << cloud->points[ pointIdxRadiusSearch[i] ].y 
-       << " " << cloud->points[ pointIdxRadiusSearch[i] ].z 
-       << " (squared distance: " << pointRadiusSquaredDistance[i] << ")" << std::endl;
+      std::cout << "    "  <<   cloud->points[ pointIdxRadiusSearch[i] ].x 
+                << " " << cloud->points[ pointIdxRadiusSearch[i] ].y 
+                << " " << cloud->points[ pointIdxRadiusSearch[i] ].z 
+                << " (squared distance: " << pointRadiusSquaredDistance[i] << ")" << std::endl;
   }
 
 }

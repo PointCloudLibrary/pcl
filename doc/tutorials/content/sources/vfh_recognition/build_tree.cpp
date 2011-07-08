@@ -8,9 +8,6 @@
 #include <flann/io/hdf5.h>
 #include <fstream>
 
-using namespace pcl;
-using namespace pcl::console;
-
 typedef std::pair<std::string, std::vector<float> > vfh_model;
 
 /** \brief Loads an n-D histogram file as a VFH signature
@@ -20,8 +17,6 @@ typedef std::pair<std::string, std::vector<float> > vfh_model;
 bool
 loadHist (const boost::filesystem::path &path, vfh_model &vfh)
 {
-  using namespace std;
-
   int vfh_idx;
   // Load the file as a PCD
   try
@@ -30,11 +25,11 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
     int version;
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
-    PCDReader r;
+    pcl::PCDReader r;
     bool binary; int idx;
     r.readHeader (path.string (), cloud, origin, orientation, version, binary, idx);
 
-    vfh_idx = getFieldIndex (cloud, "vfh");
+    vfh_idx = pcl::getFieldIndex (cloud, "vfh");
     if (vfh_idx == -1)
       return (false);
     if ((int)cloud.width * cloud.height != 1)
@@ -46,12 +41,12 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
   }
 
   // Treat the VFH signature as a single Point Cloud
-  PointCloud <VFHSignature308> point;
-  io::loadPCDFile (path.string (), point);
+  pcl::PointCloud <pcl::VFHSignature308> point;
+  pcl::io::loadPCDFile (path.string (), point);
   vfh.second.resize (308);
 
   std::vector <sensor_msgs::PointField> fields;
-  getFieldIndex (point, "vfh", fields);
+  pcl::getFieldIndex (point, "vfh", fields);
 
   for (size_t i = 0; i < fields[vfh_idx].count; ++i)
   {
@@ -80,7 +75,7 @@ loadFeatureModels (const boost::filesystem::path &base_dir, const std::string &e
     {
       std::stringstream ss;
       ss << it->path ();
-      print_highlight ("Loading %s (%lu models loaded so far).\n", ss.str ().c_str (), (unsigned long)models.size ());
+      pcl::console::print_highlight ("Loading %s (%lu models loaded so far).\n", ss.str ().c_str (), (unsigned long)models.size ());
       loadFeatureModels (it->path (), extension, models);
     }
     if (boost::filesystem::is_regular_file (it->status ()) && boost::filesystem::extension (it->path ()) == extension)
@@ -113,7 +108,8 @@ main (int argc, char** argv)
 
   // Load the model histograms
   loadFeatureModels (argv[1], extension, models);
-  print_highlight ("Loaded %d VFH models. Creating training data %s/%s.\n", (int)models.size (), training_data_h5_file_name.c_str (), training_data_list_file_name.c_str ());
+  pcl::console::print_highlight ("Loaded %d VFH models. Creating training data %s/%s.\n", 
+      (int)models.size (), training_data_h5_file_name.c_str (), training_data_list_file_name.c_str ());
 
   // Convert data into FLANN format
   data.rows = models.size ();
@@ -133,7 +129,7 @@ main (int argc, char** argv)
   fs.close ();
  
   // Build the tree index and save it to disk
-  print_error ("Building the kdtree index (%s) for %d elements...\n", kdtree_idx_file_name.c_str (), (int)data.rows);
+  pcl::console::print_error ("Building the kdtree index (%s) for %d elements...\n", kdtree_idx_file_name.c_str (), (int)data.rows);
   flann::Index<flann::ChiSquareDistance<float> > index (data, flann::LinearIndexParams ());
   //flann::Index<flann::ChiSquareDistance<float> > index (data, flann::KDTreeIndexParams (4));
   index.buildIndex ();

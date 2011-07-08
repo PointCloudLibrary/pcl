@@ -75,8 +75,8 @@ Now, let's break down the code piece by piece, skipping the obvious.
 .. code-block:: cpp
 
 	// Read in the cloud data
-	PCDReader reader;
-	PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+	pcl::PCDReader reader;
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 	reader.read ("table_scene_lms400.pcd", *cloud);
 	std::cout << "PointCloud before filtering has: " << cloud->points.size () << " data points." << std::endl; //*
 
@@ -102,14 +102,14 @@ explanation there (in particular :ref:`planar_segmentation` and
 
 .. literalinclude:: sources/cluster_extraction/cluster_extraction.cpp
    :language: cpp
-   :lines: 73-74
+   :lines: 71-72
 
 There we are creating a KdTree object for the search method of our extraction
 algorithm.
 
 .. literalinclude:: sources/cluster_extraction/cluster_extraction.cpp
    :language: cpp
-   :lines: 76
+   :lines: 74
 
 Here we are creating a vector of `PointIndices`, which contain the actual index information in a `vector<int>`. The indices of each detected
 cluster are saved here - please take note of the fact that `cluster_indices` is a
@@ -118,7 +118,7 @@ vector containing one instance of PointIndices for each detected cluster. So
 
 .. literalinclude:: sources/cluster_extraction/cluster_extraction.cpp
    :language: cpp
-   :lines: 77-83
+   :lines: 75-81
 
 Here we are creating a EuclideanClusterExtraction object with point type
 PointXYZ since our point cloud is of type PointXYZ. We are also setting the
@@ -139,7 +139,7 @@ each entry and write all points of the current cluster in the `PointCloud`.
 
 .. literalinclude:: sources/cluster_extraction/cluster_extraction.cpp
    :language: cpp
-   :lines: 85-97
+   :lines: 83-95
 
 Compiling and running the program
 ---------------------------------

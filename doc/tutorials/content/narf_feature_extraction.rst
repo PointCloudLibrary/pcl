@@ -32,7 +32,7 @@ The interesting part begins here:
 .. code-block:: cpp
 
   ...
-  vector<int> keypoint_indices2;
+  std::vector<int> keypoint_indices2;
   keypoint_indices2.resize(keypoint_indices.points.size());
   for (unsigned int i=0; i<keypoint_indices.size(); ++i) // This step is necessary to get the right vector type
     keypoint_indices2[i]=keypoint_indices.points[i];
@@ -43,10 +43,10 @@ Here we copy the indices to the vector used as input for the feature.
 .. code-block:: cpp
 
   ...
-  NarfDescriptor narf_descriptor(&range_image, &keypoint_indices2);
+  pcl::NarfDescriptor narf_descriptor(&range_image, &keypoint_indices2);
   narf_descriptor.getParameters().support_size = support_size;
   narf_descriptor.getParameters().rotation_invariant = rotation_invariant;
-  PointCloud<Narf36> narf_descriptors;
+  pcl::PointCloud<pcl::Narf36> narf_descriptors;
   narf_descriptor.compute(narf_descriptors);
   cout << "Extracted "<<narf_descriptors.size()<<" descriptors for "<<keypoint_indices.points.size()<< " keypoints.\n";
   ...
@@ -99,3 +99,4 @@ You can also try it with a point cloud file from your hard drive::
 The output should look similar to this:
 
 .. image:: images/narf_keypoint_extraction.png
+
