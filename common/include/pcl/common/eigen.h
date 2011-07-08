@@ -90,6 +90,8 @@
 #ifndef PCL_EIGEN_H_
 #define PCL_EIGEN_H_
 
+#define NOMINMAX
+
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
 #include <Eigen/Geometry>

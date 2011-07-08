@@ -23,15 +23,16 @@ if(build)
         include/pcl/${SUBSYS_NAME}/narf_descriptor.h
         include/pcl/${SUBSYS_NAME}/normal_3d.h
         include/pcl/${SUBSYS_NAME}/normal_3d_omp.h
-        include/pcl/${SUBSYS_NAME}/normal_based_signature.h
         include/pcl/${SUBSYS_NAME}/pfh.h
         include/pcl/${SUBSYS_NAME}/ppf.h
+        include/pcl/${SUBSYS_NAME}/shot.h
+        include/pcl/${SUBSYS_NAME}/shot_omp.h
         include/pcl/${SUBSYS_NAME}/principal_curvatures.h
         include/pcl/${SUBSYS_NAME}/rift.h
         include/pcl/${SUBSYS_NAME}/rsd.h
         include/pcl/${SUBSYS_NAME}/statistical_multiscale_interest_region_extraction.h
         include/pcl/${SUBSYS_NAME}/vfh.h
-        )
+		)
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/feature.hpp
@@ -46,9 +47,10 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/narf.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d_omp.hpp
-        include/pcl/${SUBSYS_NAME}/impl/normal_based_signature.hpp
         include/pcl/${SUBSYS_NAME}/impl/pfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/ppf.hpp
+        include/pcl/${SUBSYS_NAME}/impl/shot.hpp
+        include/pcl/${SUBSYS_NAME}/impl/shot_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/principal_curvatures.hpp
         include/pcl/${SUBSYS_NAME}/impl/rift.hpp
         include/pcl/${SUBSYS_NAME}/impl/rsd.hpp
@@ -64,18 +66,19 @@ if(build)
         src/intensity_gradient.cpp
         src/intensity_spin.cpp
         src/moment_invariants.cpp
-        src/multiscale_feature_persistence.cpp
+#        src/multiscale_feature_persistence.cpp
         src/narf.cpp
         src/narf_descriptor.cpp
         src/normal_3d.cpp
         src/normal_3d_omp.cpp
-        src/normal_based_signature.cpp
         src/pfh.cpp
         src/ppf.cpp
-        src/principal_curvatures.cpp
+        src/shot.cpp
+		src/shot_omp.cpp
+		src/principal_curvatures.cpp
         src/rift.cpp
         src/rsd.cpp 
-        src/statistical_multiscale_interest_region_extraction.cpp                               
+#        src/statistical_multiscale_interest_region_extraction.cpp                               
         src/vfh.cpp
         )
 

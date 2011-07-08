@@ -632,6 +632,62 @@ inline std::ostream& operator << (std::ostream& os, const PPFSignature& p)
   return (os);
 }
 
+/** \brief A point structure representing the Signature of Histograms of OrienTations (SHOT). 
+  * \ingroup common
+  */
+struct SHOT352
+{
+	SHOT352() : descriptor(352) { };
+
+	std::vector<float> descriptor;
+	float rf[9];
+};
+inline std::ostream& operator << (std::ostream& os, const SHOT352& p)
+{
+	for (int i = 0; i < 9; ++i) 
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+  for (int i = 0; i < 352; ++i) 
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 351 ? ", " : ")");
+  return (os);
+}
+
+/** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT). 
+  * \ingroup common
+  */
+struct SHOT
+{
+    std::vector<float> descriptor;
+	float rf[9];
+};
+
+inline std::ostream& operator << (std::ostream& os, const SHOT& p)
+{
+	for (int i = 0; i < 9; ++i) 
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+  for (int i = 0; i < p.descriptor.size(); ++i) 
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < p.descriptor.size()-1 ? ", " : ")");
+  return (os);
+}
+
+/** \brief A point structure representing the Signature of Histograms of OrienTations (SHOT) with shape and color information. 
+  * \ingroup common
+  */
+struct SHOT1344
+{
+	SHOT1344() : descriptor(1344) { };
+  
+	std::vector<float> descriptor;
+	float rf[9];
+};
+inline std::ostream& operator << (std::ostream& os, const SHOT1344& p)
+{
+	for (int i = 0; i < 9; ++i) 
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+  for (int i = 0; i < 1344; ++i) 
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1343 ? ", " : ")");
+  return (os);
+}
+
 /** \brief A point structure representing the Fast Point Feature Histogram (FPFH). 
   * \ingroup common
   */

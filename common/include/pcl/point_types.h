@@ -104,6 +104,12 @@ namespace pcl
   struct PrincipalCurvatures;
   // Members: float principal_curvature[3], pc1, pc2;
 
+  struct SHOT352;
+  // Members: float descriptor[352], rf[9];
+
+  struct SHOT1344;
+  // Members: float descriptor[1344], rf[9];
+
   struct PFHSignature125;
   // Members: float pfh[125];
 
@@ -317,6 +323,15 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFSignature,
                                    (float, alpha_m, alpha_m)
 )
 
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SHOT352,
+                                   (float[352], descriptor, shot)
+																	 (float[9], rf, rf)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SHOT1344,
+                                   (float[1344], descriptor, shot)
+																	 (float[9], rf, rf)
+)
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::FPFHSignature33,
                                    (float[33], histogram, fpfh)
 )
