@@ -68,9 +68,9 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::generateCloudGraph (
       add_edge (point_i, k_indices[k_i], Weight (k_distances[k_i]), cloud_graph);
   }
 
-  const int E = num_edges (cloud_graph),
+  const size_t E = num_edges (cloud_graph),
       V = num_vertices (cloud_graph);
-  PCL_INFO ("The graph has %d vertices and %d edges.\n", V, E);
+  PCL_INFO ("The graph has %lu vertices and %lu edges.\n", V, E);
   geodesic_distances.clear ();
   for (size_t i = 0; i < V; ++i)
   {
