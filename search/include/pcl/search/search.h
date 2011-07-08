@@ -122,7 +122,7 @@ namespace pcl
         approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg);
 
     virtual void
-    setMethod( int k );
+    setPrecision( int k );
 
         virtual void
         deleteTree ( bool freeMemory_arg = false);

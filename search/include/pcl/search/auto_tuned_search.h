@@ -51,6 +51,7 @@ namespace pcl
 const static int KDTREE_FLANN           = 0;
 const static int ORGANIZED_INDEX        = 1;
 const static int OCTREE                 = 2;
+const static int AUTO_TUNED             = 3;
 
   template <typename PointT>
   class AutotunedSearch: public Search<PointT>
@@ -130,7 +131,7 @@ const static int OCTREE                 = 2;
         approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg);
 
     virtual void
-    setMethod( int k );
+    setPrecision( int k );
 
         virtual void
         deleteTree ( bool freeMemory_arg = false);

@@ -110,7 +110,7 @@ namespace pcl
       }
 
      inline void
-     setMethod (int k)
+     setPrecision (int k)
      {
        precision_ = k;
      }

@@ -61,9 +61,13 @@ AutotunedSearch<PointT>::initSearchDS (int spatial_locator)
     }
     else if(spatial_locator == OCTREE) {
 
-        printf("OCTREE NOT YET IMPLEMENTED");
-	exit(0);
+      _searchptr.reset(new OctreePointCloud<PointT>(0.1f));
 	
+    }
+    else if(spatial_locator == AUTO_TUNED)
+    {
+	std::cerr << "AUTO_TUNED Not yet implemented\n" << std::endl;
+	exit(0);
     }
 
    spatial_loc = spatial_locator;
@@ -141,33 +145,94 @@ AutotunedSearch<PointT>::radiusSearch (int index, double radius, std::vector<int
 template <typename PointT> void 
         AutotunedSearch<PointT>::
         approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
-                             float &sqr_distance_arg){}
-
-template <typename PointT> void 
-        AutotunedSearch<PointT>::
-        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg){};
-
-template <typename PointT> void 
-        AutotunedSearch<PointT>::
-        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg){};
-
-
-template <typename PointT> void 
-AutotunedSearch<PointT>::setMethod(int k)
+                             float &sqr_distance_arg)
 {
-    _searchptr->setMethod(k);
+     if(spatial_loc == OCTREE)
+     {
+     _searchptr->approxNearestSearch(cloud_arg,query_index_arg,result_index_arg,sqr_distance_arg);
+     }
+    else
+    {
+     
+	std::cerr << "approxNearestSearch() works only for OCTREE structure\n" << std::endl;
+    }
+}
+
+template <typename PointT> void 
+        AutotunedSearch<PointT>::
+        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg)
+{
+     if(spatial_loc == OCTREE)
+     {
+     _searchptr->approxNearestSearch(p_q_arg,result_index_arg,sqr_distance_arg);
+     }
+    else
+    {
+     
+	std::cerr << "approxNearestSearch() works only for OCTREE structure\n" << std::endl;
+    }
+
+};
+
+template <typename PointT> void 
+        AutotunedSearch<PointT>::
+        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg)
+{
+
+     if(spatial_loc == OCTREE)
+     {
+     _searchptr->approxNearestSearch(query_index_arg,result_index_arg,sqr_distance_arg);
+     }
+    else
+    {
+     
+	std::cerr << "approxNearestSearch() works only for OCTREE structure\n" << std::endl;
+    }
+
+};
+
+
+template <typename PointT> void 
+AutotunedSearch<PointT>::setPrecision(int k)
+{
+     if(spatial_loc == ORGANIZED_INDEX)
+   {
+    _searchptr->setPrecision(k);  // k = 1 for OrganizedDataIndex based search and k = 0 for OrganizedNeighborSearch based search
+     }
+    else
+    {
+     
+	std::cerr << "setPrecision() works only for ORGANIZED_INDEX structure\n" << std::endl;
+    }
 }
 
 template <typename PointT> void 
        AutotunedSearch<PointT>::deleteTree ( bool freeMemory_arg)
 {
-
+     if(spatial_loc == OCTREE)
+   {
+   _searchptr->deleteTree(freeMemory_arg);
+     }
+    else
+    {
+     
+	std::cerr << "deleteTree() works only for OCTREE structure\n" << std::endl;
+    }
 }
 
 template <typename PointT> void 
         AutotunedSearch<PointT>::
         addPointsFromInputCloud ()
 {
+     if(spatial_loc == OCTREE)
+   {
+   _searchptr->addPointsFromInputCloud();
+     }
+    else
+    {
+     
+	std::cerr << "addPointsFromInputCloud() works only for OCTREE structure\n" << std::endl;
+    }
 }
 
 }

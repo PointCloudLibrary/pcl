@@ -114,7 +114,7 @@ template <typename PointT> void
 
 
 template <typename PointT> void 
-Search<PointT>::setMethod(int k)
+Search<PointT>::setPrecision(int k)
 {
 }
 
