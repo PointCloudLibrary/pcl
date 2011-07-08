@@ -45,6 +45,9 @@
 
 #include <boost/filesystem.hpp>
 
+#include <cstring>
+#include <cerrno>
+
 #ifdef _WIN32
 # include <io.h>
 # include <windows.h>
@@ -92,7 +95,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   fs.open (file_name.c_str (), std::ios::binary);
   if (!fs.is_open () || fs.fail ())
   {
-    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'.\n", file_name.c_str ());
+    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror(errno)); 
     return (-1);
   }
 
@@ -720,6 +723,11 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
   std::ofstream fs;
   fs.precision (precision);
   fs.open (file_name.c_str ());      // Open file
+  if (!fs.is_open () || fs.fail ())
+  {
+    PCL_ERROR("[pcl::PCDWriter::writeASCII] Could not open file '%s' for writing! Error : %s\n", file_name.c_str (), strerror(errno)); 
+    return (-1);
+  }
 
   int nr_points  = cloud.width * cloud.height;
   int point_size = cloud.data.size () / nr_points;
