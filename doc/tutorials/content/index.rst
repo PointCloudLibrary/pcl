@@ -495,7 +495,7 @@ contributions on any tutorial.
              In this tutorial we will learn how to calculate a simple 2D concave hull polygon for a set of points supported by a plane.
      ======  ======
      
-     .. |su_2| image:: images/convex_hull_2d.jpg
+     .. |su_2| image:: images/concave_hull_2d.gif
                :height: 100px
 
   * :ref:`convex_hull_2d`
@@ -608,6 +608,23 @@ contributions on any tutorial.
                :height: 100px
 
 
+* Registration
+
+  * :ref:`iterative_closest_point`
+
+     ======  ======
+     |re_1|  Title: **How to use iterative closest point algorithm**
+
+             Author: *Gabe O'Leary*
+
+             Compatibility: > PCL 1.0
+
+             This tutorial gives an example of how to use the iterative closest point algorithm to see if one PointCloud is just a rigid transformation of another PointCloud.
+     ======  ======
+
+     .. |re_1| image:: images/iterative_closest_point.gif
+               :height: 100px
+
 
 * Visualization
 
@@ -669,23 +686,6 @@ contributions on any tutorial.
      ======  ======
      
      .. |vi_4| image:: images/narf_descriptor.jpg
-               :height: 100px
-
-* Registration
-
-  * :ref:`iterative_closest_point`
-
-     ======  ======
-     |rg_1|  Title: **How to use iterative closest point algorithm**
-
-             Author: *Gabe O'Leary*
-
-             Compatibility: > PCL 1.0
-
-             This tutorial gives an example of how to use the iterative closest point algorithm to see if one PointCloud is just a rigid transformation of another PointCloud.
-     ======  ======
-
-     .. |rg_1| image:: images/template_alignment_1.png
                :height: 100px
 
 * Applications
