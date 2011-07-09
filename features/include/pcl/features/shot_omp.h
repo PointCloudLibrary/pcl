@@ -37,6 +37,7 @@
 #ifndef PCL_SHOT_OMP_H_
 #define PCL_SHOT_OMP_H_
 
+#include <pcl/point_types.h>
 #include <pcl/features/feature.h>
 #include <pcl/features/shot.h>
 
@@ -112,7 +113,7 @@ namespace pcl
 
 
   template <typename PointNT, typename PointOutT> 
-  class SHOTEstimationOMP<pcl::PointXYZRGBA, typename PointNT, typename PointOutT> : public SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>
+  class SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT> : public SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>
   {
     public:
       using Feature<pcl::PointXYZRGBA, PointOutT>::feature_name_;
