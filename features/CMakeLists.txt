@@ -25,8 +25,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/normal_3d_omp.h
         include/pcl/${SUBSYS_NAME}/pfh.h
         include/pcl/${SUBSYS_NAME}/ppf.h
-        include/pcl/${SUBSYS_NAME}/shot.h
-        include/pcl/${SUBSYS_NAME}/shot_omp.h
+        #include/pcl/${SUBSYS_NAME}/shot.h
+        #include/pcl/${SUBSYS_NAME}/shot_omp.h
         include/pcl/${SUBSYS_NAME}/principal_curvatures.h
         include/pcl/${SUBSYS_NAME}/rift.h
         include/pcl/${SUBSYS_NAME}/rsd.h
@@ -49,8 +49,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/normal_3d_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/pfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/ppf.hpp
-        include/pcl/${SUBSYS_NAME}/impl/shot.hpp
-        include/pcl/${SUBSYS_NAME}/impl/shot_omp.hpp
+        #include/pcl/${SUBSYS_NAME}/impl/shot.hpp
+        #include/pcl/${SUBSYS_NAME}/impl/shot_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/principal_curvatures.hpp
         include/pcl/${SUBSYS_NAME}/impl/rift.hpp
         include/pcl/${SUBSYS_NAME}/impl/rsd.hpp
@@ -73,8 +73,8 @@ if(build)
         src/normal_3d_omp.cpp
         src/pfh.cpp
         src/ppf.cpp
-        src/shot.cpp
-		    src/shot_omp.cpp
+        #src/shot.cpp
+        #src/shot_omp.cpp
         src/principal_curvatures.cpp
         src/rift.cpp
         src/rsd.cpp 

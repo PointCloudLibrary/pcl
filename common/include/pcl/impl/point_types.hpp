@@ -635,19 +635,26 @@ inline std::ostream& operator << (std::ostream& os, const PPFSignature& p)
 /** \brief A point structure representing the Signature of Histograms of OrienTations (SHOT). 
   * \ingroup common
   */
-struct SHOT352
+struct _SHOT352
 {
-//  SHOT352() : descriptor(352) { };
 
 //  std::vector<float> descriptor;
   float descriptor[352];
 	float rf[9];
+  uint32_t size;
+};
+struct SHOT352 : public _SHOT352
+{
+  SHOT352 ()
+  {
+    size = 352;
+  }
 };
 inline std::ostream& operator << (std::ostream& os, const SHOT352& p)
 {
 	for (int i = 0; i < 9; ++i) 
     os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-  for (int i = 0; i < 352; ++i) 
+  for (uint32_t i = 0; i < p.size; ++i) 
     os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 351 ? ", " : ")");
   return (os);
 }
@@ -659,6 +666,7 @@ struct SHOT
 {
   std::vector<float> descriptor;
 	float rf[9];
+  uint32_t size;
 };
 
 inline std::ostream& operator << (std::ostream& os, const SHOT& p)
@@ -673,18 +681,25 @@ inline std::ostream& operator << (std::ostream& os, const SHOT& p)
 /** \brief A point structure representing the Signature of Histograms of OrienTations (SHOT) with shape and color information. 
   * \ingroup common
   */
-struct SHOT1344
+struct _SHOT1344
 {
-//  SHOT1344() : descriptor(1344) { };
 //  std::vector<float> descriptor;
   float descriptor[1344];
 	float rf[9];
+  uint32_t size;
+};
+struct SHOT1344 : public _SHOT1344
+{
+  SHOT1344 ()
+  { 
+    size = 1344;
+  }
 };
 inline std::ostream& operator << (std::ostream& os, const SHOT1344& p)
 {
 	for (int i = 0; i < 9; ++i) 
     os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-  for (int i = 0; i < 1344; ++i) 
+  for (uint32_t i = 0; i < p.size; ++i) 
     os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1343 ? ", " : ")");
   return (os);
 }

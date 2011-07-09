@@ -524,7 +524,7 @@ TEST (PCL, PrincipalCurvaturesEstimation)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, SHOTShapeEstimation)
+/*TEST (PCL, SHOTShapeEstimation)
 {
   // Estimate normals first
   double mr = 0.002;
@@ -551,11 +551,6 @@ TEST (PCL, SHOTShapeEstimation)
 	EXPECT_NEAR (normals->points[140].normal_y,  -0.19499126,  1e-4);
 	EXPECT_NEAR (normals->points[140].normal_z,  -0.87091631,  1e-4);
 
-	
-	
-	
-
-	
   SHOTEstimation<PointXYZ, Normal, SHOT352> shot;
 	shot.setInputNormals (normals);
 	EXPECT_EQ (shot.getInputNormals (), normals);
@@ -684,9 +679,6 @@ TEST (PCL, SHOTShapeAndColorEstimation)
 
 		
 		p.rgba = ( (i%255) << 16 ) +  ( ( (255 - i ) %255) << 8)  + ( ( i*37 ) %255);
-		/*falseColor[i*3] = cvRound(255.0 / (i+1) );
-		falseColor[i*3+1] = cvRound(128.0 / (i+1) );
-		falseColor[i*3+2] = cvRound(64.0 / (i+1) );*/
 		cloudWithColors.push_back(p);
 	
 	}
@@ -818,9 +810,6 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
 
 		
 		p.rgba = ( (i%255) << 16 ) +  ( ( (255 - i ) %255) << 8)  + ( ( i*37 ) %255);
-		/*falseColor[i*3] = cvRound(255.0 / (i+1) );
-		falseColor[i*3+1] = cvRound(128.0 / (i+1) );
-		falseColor[i*3+2] = cvRound(64.0 / (i+1) );*/
 		cloudWithColors.push_back(p);
 	
 	}
@@ -861,7 +850,7 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
   EXPECT_NEAR (shots->points[103].descriptor[482],  0.012025614, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[511],  0.0057367259, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[512],  0.048357654, 1e-5);
-}
+}*/
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

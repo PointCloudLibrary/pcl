@@ -323,15 +323,20 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFSignature,
                                    (float, alpha_m, alpha_m)
 )
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SHOT352,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_SHOT352,
                                    (float[352], descriptor, shot)
 																	 (float[9], rf, rf)
+                                   (uint32_t, size, size)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::SHOT352, pcl::_SHOT352)
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SHOT1344,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_SHOT1344,
                                    (float[1344], descriptor, shot)
 																	 (float[9], rf, rf)
+                                   (uint32_t, size, size)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::SHOT1344, pcl::_SHOT1344)
+  
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::FPFHSignature33,
                                    (float[33], histogram, fpfh)
 )
