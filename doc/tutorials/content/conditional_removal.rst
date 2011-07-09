@@ -8,7 +8,7 @@ This document demonstrates how to use the ConditionalRemoval filter to remove po
 The code
 --------
 
-First, create a file, let's say, conditinoal_removal.cpp in you favorite editor, and place the following inside it:
+First, create a file, let's say, conditional_removal.cpp in you favorite editor, and place the following inside it:
 
 .. literalinclude:: sources/conditional_removal/conditional_removal.cpp
    :language: cpp

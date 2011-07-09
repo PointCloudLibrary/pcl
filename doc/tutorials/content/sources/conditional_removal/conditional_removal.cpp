@@ -38,9 +38,10 @@ int
   condrem.setInputCloud (cloud);
   condrem.setKeepOrganized(true);
 
-  // apply the filter
-  condrem.filter (*cloud_filtered);
+  // apply filter
+  outrem.filter (*cloud_filtered);
 
+  // display pointcloud after filtering
   std::cerr << "Cloud after filtering: " << std::endl;
   for (size_t i = 0; i < cloud_filtered->points.size (); ++i)
     std::cerr << "    " << cloud_filtered->points[i].x << " "

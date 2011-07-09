@@ -215,16 +215,16 @@ contributions on any tutorial.
                :height: 100px
     
 
-  * :ref:`statistical_outlier_removal` 
+  * :ref:`remove_outliers` 
     
      ======  ======
-     |fi_3|  Title: **Removing outliers using a StatisticalOutlierRemoval filter**
+     |fi_3|  Title: **Removing outliers using a filter**
 
-             Author: *Radu B. Rusu*
+             Author: *Gabe O'Leary/Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
-             In this tutorial, we will learn how to remove sparse outliers from noisy data, using statistical analysis.
+             In this tutorial, we will learn how to remove sparse outliers from noisy data, using ConditionalRemoval, RadiusOutlierRemoval and StatisticalRemoval.
      ======  ======
      
      .. |fi_3| image:: images/statistical_removal.jpg
@@ -259,38 +259,6 @@ contributions on any tutorial.
      
      .. |fi_5| image:: images/extract_indices.jpg
                :height: 100px
-
-  * :ref:`conditional_removal`
-
-     ======  ======
-     |fi_6|  Title: **Removing outliers using a ConditionalRemoval filter**
-
-             Author: *Gabe O'Leary*
-
-             Compatibility: > PCL 0.5
-
-             This document demonstrates how to use the ConditionalRemoval filter to remove points from a PointCloud that do no statisfy a specific or multiple conditions.
-     ======  ======
-     
-     .. |fi_6| image:: images/extract_indices.jpg
-               :height: 100px
-
-  * :ref:`radius_outlier_removal`
-
-     ======  ======
-     |fi_7|  Title: **Removing outliers using a RadiusOutlierRemoval filter**
-
-             Author: *Gabe O'Leary*
-
-             Compatibility: > PCL 0.5
-
-             In this tutorial we will learn how to remove outlying indices with below a specific number of neighbors inside some range.
-     ======  ======
-     
-     .. |fi_7| image:: images/radius_outlier.png
-               :height: 100px
-
-
 
 * Keypoints
 
