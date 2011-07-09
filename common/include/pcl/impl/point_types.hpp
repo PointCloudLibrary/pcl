@@ -637,9 +637,10 @@ inline std::ostream& operator << (std::ostream& os, const PPFSignature& p)
   */
 struct SHOT352
 {
-	SHOT352() : descriptor(352) { };
+//  SHOT352() : descriptor(352) { };
 
-	std::vector<float> descriptor;
+//  std::vector<float> descriptor;
+  float descriptor[352];
 	float rf[9];
 };
 inline std::ostream& operator << (std::ostream& os, const SHOT352& p)
@@ -656,7 +657,7 @@ inline std::ostream& operator << (std::ostream& os, const SHOT352& p)
   */
 struct SHOT
 {
-    std::vector<float> descriptor;
+  std::vector<float> descriptor;
 	float rf[9];
 };
 
@@ -664,7 +665,7 @@ inline std::ostream& operator << (std::ostream& os, const SHOT& p)
 {
 	for (int i = 0; i < 9; ++i) 
     os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-  for (size_t i = 0; i < p.descriptor.size(); ++i) 
+  for (size_t i = 0; i < p.descriptor.size (); ++i) 
     os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < p.descriptor.size()-1 ? ", " : ")");
   return (os);
 }
@@ -674,9 +675,9 @@ inline std::ostream& operator << (std::ostream& os, const SHOT& p)
   */
 struct SHOT1344
 {
-	SHOT1344() : descriptor(1344) { };
-  
-	std::vector<float> descriptor;
+//  SHOT1344() : descriptor(1344) { };
+//  std::vector<float> descriptor;
+  float descriptor[1344];
 	float rf[9];
 };
 inline std::ostream& operator << (std::ostream& os, const SHOT1344& p)
