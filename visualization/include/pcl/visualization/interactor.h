@@ -72,8 +72,10 @@ namespace pcl
     {
       public:
         static PCLVisualizerInteractor *New ();
-        //void TerminateApp (void);
+        
+        void TerminateApp (void); // do nothing -> disable exit(0) on keys 'q', 'Q' or Esc
         void stopLoop ();
+        
         bool stopped;
         int timer_id_;
 

@@ -98,6 +98,31 @@ namespace pcl
         /** \brief PCL Visualizer destructor. */
         virtual ~PCLVisualizer ();
 
+        boost::signals2::connection registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = NULL)
+        {
+          return registerKeyboardCallback (boost::bind (callback, _1, cookie));
+        }
+        
+        template<typename T>
+        boost::signals2::connection registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = NULL)
+        {
+          return registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie));
+        }
+        
+        boost::signals2::connection registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)>);
+
+        boost::signals2::connection registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)>);
+        
+        boost::signals2::connection registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = NULL)
+        {
+          return registerMouseCallback (boost::bind (callback, _1, cookie));
+        }
+        
+        template<typename T>
+        boost::signals2::connection registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = NULL)
+        {
+          return registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie));
+        }
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
         void 
         spin ();
@@ -1029,7 +1054,6 @@ namespace pcl
                               int viewport);
         void
         allocVtkPolyData (vtkSmartPointer<vtkPolyData> &polydata);
-
     };
   }
 }

@@ -46,7 +46,11 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
+#include <pcl/visualization/mouse_event.h>
 #include <vector>
+#include <string>
+
+using namespace std;
 
 #define SHOW_FPS 1
 #if SHOW_FPS
@@ -71,6 +75,20 @@ do \
 }while(false)
 #endif
 
+void keyCallback (const pcl::visualization::KeyboardEvent& event, void* cookie)
+{
+      string* message = (string*)cookie;
+    cout << (*message) << " :: ";
+    if (event.getKeyCode())
+      cout << "the key \'" << event.getKeyCode() << "\' (" << (int)event.getKeyCode() << ") was";
+    else
+      cout << "the special key \'" << event.getKeySym() << "\' was";
+    if (event.keyDown())
+      cout << " pressed" << endl;
+    else
+      cout << " released" << endl;
+}
+
 template <typename PointType>
 class SimpleOpenNIViewer
 {
@@ -82,6 +100,7 @@ public:
     : viewer("PCL OpenNI Viewer")
     , grabber_(grabber)
   {
+    
   }
 
   /**
@@ -91,11 +110,33 @@ public:
   void
   cloud_cb_ (const CloudConstPtr& cloud)
   {
-    FPS_CALC ("callback");
+    //FPS_CALC ("callback");
     boost::mutex::scoped_lock lock (mtx_);
     cloud_ = cloud;
   }
 
+  void keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
+  {
+    string* message = (string*)cookie;
+    cout << (*message) << " :: ";
+    if (event.getKeyCode())
+      cout << "the key \'" << event.getKeyCode() << "\' (" << (int)event.getKeyCode() << ") was";
+    else
+      cout << "the special key \'" << event.getKeySym() << "\' was";
+    if (event.keyDown())
+      cout << " pressed" << endl;
+    else
+      cout << " released" << endl;
+  }
+  
+  void mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
+  {
+    string* message = (string*) cookie;
+    if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
+    {
+      cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
+    }
+  }
   /**
    * @brief swaps the pointer to the point cloud with Null pointer and returns the cloud pointer
    * @return boost shared pointer to point cloud
@@ -120,6 +161,17 @@ public:
   {
     //pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id_, pcl::OpenNIGrabber::OpenNI_QQVGA_30Hz, pcl::OpenNIGrabber::OpenNI_VGA_30Hz);
 
+    string msg("Mouse coordinates");
+    string msg1("Hello");
+    string msg2("World");
+    string msg3("Member function");
+    viewer.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&msg));
+    
+    // registering same callback function twice but with different custom data (cookies)
+    viewer.registerKeyboardCallback(keyCallback, (void*)(&msg1));
+    viewer.registerKeyboardCallback(keyCallback, (void*)(&msg2));
+    viewer.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&msg3));
+
     boost::function<void (const CloudConstPtr&) > f = boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
 
     boost::signals2::connection c = grabber_.registerCallback (f);
@@ -130,7 +182,7 @@ public:
     {
       if (cloud_)
       {
-        FPS_CALC ("drawing");
+        //FPS_CALC ("drawing");
         //the call to get() sets the cloud_ to null;
         viewer.showCloud (getLatestCloud ());
       }

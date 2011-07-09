@@ -63,6 +63,10 @@
 #include <pcl/visualization/common/actor_map.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
 #include <boost/shared_ptr.hpp>
+#include <boost/signals2.hpp>
+//#include <boost/signals2/slot.hpp>
+#include <pcl/visualization/keyboard_event.h>
+#include <pcl/visualization/mouse_event.h>
 
 namespace pcl
 {
@@ -78,7 +82,9 @@ namespace pcl
 
       public:
         static PCLVisualizerInteractorStyle *New ();
-
+        // this macro defines Superclass, the isA functionality and the safe downcast method
+        vtkTypeMacro(PCLVisualizerInteractorStyle,vtkInteractorStyleTrackballCamera);
+        
         /** \brief Initialization routine. Must be called before anything else. */
         virtual void Initialize ();
         
@@ -93,6 +99,8 @@ namespace pcl
           */
         void setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { rens_ = rens; }
 
+        boost::signals2::connection registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> );
+        boost::signals2::connection registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> );
       protected:
         /** \brief Set to true after initialization is complete. */
         bool init_;
@@ -127,9 +135,27 @@ namespace pcl
         /** \brief Internal window to image filter. Needed by \a snapshot_writer_. */
         vtkSmartPointer<vtkWindowToImageFilter> wif_;
 
+        boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
+        boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)> keyboard_signal_;
         /** \brief Interactor style internal method. Gets called whenever a key is pressed. */
         virtual void OnChar ();
 
+        // Keyboard events
+        virtual void OnKeyDown ();
+        virtual void OnKeyUp ();
+        
+        // mouse button events
+        virtual void 	OnMouseMove ();
+        virtual void 	OnLeftButtonDown ();
+        virtual void 	OnLeftButtonUp ();
+        virtual void 	OnMiddleButtonDown ();
+        virtual void 	OnMiddleButtonUp ();
+        virtual void 	OnRightButtonDown ();
+        virtual void 	OnRightButtonUp ();
+        virtual void 	OnMouseWheelForward ();
+        virtual void 	OnMouseWheelBackward ();
+        
+        // mouse move event
         /** \brief Interactor style internal method. Gets called periodically if a timer is set. */
         virtual void OnTimer ();
 

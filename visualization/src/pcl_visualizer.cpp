@@ -209,6 +209,17 @@ pcl::visualization::PCLVisualizer::~PCLVisualizer ()
   rens_->RemoveAllItems ();
 }
 
+boost::signals2::connection
+pcl::visualization::PCLVisualizer::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
+{
+  return style_->registerKeyboardCallback (callback);
+}
+
+boost::signals2::connection
+pcl::visualization::PCLVisualizer::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
+{
+  return style_->registerMouseCallback (callback);
+}
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::spin ()
