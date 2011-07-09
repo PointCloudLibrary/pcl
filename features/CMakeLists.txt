@@ -73,9 +73,9 @@ if(build)
         src/normal_3d_omp.cpp
         src/pfh.cpp
         src/ppf.cpp
-        src/shot.cpp
-		src/shot_omp.cpp
-		src/principal_curvatures.cpp
+        # src/shot.cpp
+		    # src/shot_omp.cpp
+        src/principal_curvatures.cpp
         src/rift.cpp
         src/rsd.cpp 
 #        src/statistical_multiscale_interest_region_extraction.cpp                               
