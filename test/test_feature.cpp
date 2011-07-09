@@ -596,7 +596,7 @@ TEST (PCL, GenericSHOTShapeEstimation)
 {
 	// SHOT length
 	const int shapeStep_ = 20;
-	const int dim = 32*(shapeStep_+1);
+	//const int dim = 32*(shapeStep_+1);
   
   // Estimate normals first
   double mr = 0.002;
@@ -675,7 +675,7 @@ TEST (PCL, SHOTShapeAndColorEstimation)
 
 	// Create fake point cloud with colors
 	pcl::PointCloud<pcl::PointXYZRGBA> cloudWithColors;
-	for (int i = 0; i < cloud.points.size(); i++)
+	for (size_t i = 0; i < cloud.points.size (); ++i)
 	{
 		pcl::PointXYZRGBA p;
 		p.x = cloud.points[i].x;
@@ -800,7 +800,7 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
   
 
 	// Object
-  SHOTEstimationOMP<PointXYZRGBA, Normal, SHOT1344> shot(true, true);
+  SHOTEstimationOMP<pcl::PointXYZRGBA, Normal, SHOT1344> shot (true, true, -1);
 	shot.setInputNormals (normals);
   
 	EXPECT_EQ (shot.getInputNormals (), normals);
@@ -809,7 +809,7 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
 
 	// Create fake point cloud with colors
 	pcl::PointCloud<pcl::PointXYZRGBA> cloudWithColors;
-	for (int i = 0; i < cloud.points.size(); i++)
+	for (size_t i = 0; i < cloud.points.size (); ++i)
 	{
 		pcl::PointXYZRGBA p;
 		p.x = cloud.points[i].x;

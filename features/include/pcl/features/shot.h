@@ -52,19 +52,19 @@ namespace pcl
     *      In Proceedings of the 11th European Conference on Computer Vision (ECCV),
     *      Heraklion, Greece, September 5-11 2010.
     * </li>
-		* <li> F. Tombari, S. Salti, L. Di Stefano
+    * <li> F. Tombari, S. Salti, L. Di Stefano
     *      A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
     *      In Proceedings of the 18th International Conference on Image Processing (ICIP),
     *      Brussels, Belgium, September 11-14 2011.
     * </li>
     * </ul>
     *
-    * \author Samuele Salti, Federico Tombari 
+    * \author Samuele Salti, Federico Tombari
     * \ingroup features
     */
 
 
-	template <typename PointInT, typename PointNT, typename PointOutT>
+  template <typename PointInT, typename PointNT, typename PointOutT> 
   class SHOTEstimationBase : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
@@ -77,35 +77,45 @@ namespace pcl
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
+      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
 
-		protected:
-			 /** \brief Empty constructor. */
-      SHOTEstimationBase (int nr_shape_bins = 10) : 
-                          nr_shape_bins_(nr_shape_bins), 
-                          nr_grid_sector_(32), 
-                          maxAngularSectors_(28),
-                          descLength_(0)
+    protected:
+      /** \brief Empty constructor. */
+      SHOTEstimationBase (int nr_shape_bins = 10) :
+        nr_shape_bins_ (nr_shape_bins),
+        nr_grid_sector_ (32),
+        maxAngularSectors_ (28),
+        descLength_ (0)
       {
         feature_name_ = "SHOTEstimation";
       };
-		public:
-			/** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
+
+    public:
+      /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
         * \param cloud the dataset containing the XYZ Cartesian coordinates of the points
         * \param normals the dataset containing the surface normals at each point in \a cloud
         * \param index the index of the point
-				* \param indices the k-neighborhood point indices in the dataset
+        * \param indices the k-neighborhood point indices in the dataset
         * \param nr_bins the number of bins in each histogram
         * \param shot the resultant SHOT descriptor representing the feature at the query point
         */
       virtual void 
-      computePointSHOT (const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals, 
-                                const int index, const std::vector<int> &indices, const std::vector<float> &dists, Eigen::VectorXf &shot, Eigen::Vector3f *rf) = 0;
+      computePointSHOT (const pcl::PointCloud<PointInT> &cloud, 
+                        const pcl::PointCloud<PointNT> &normals,
+                        const int index, 
+                        const std::vector<int> &indices, 
+                        const std::vector<float> &dists, 
+                        Eigen::VectorXf &shot,
+                        Eigen::Vector3f *rf) = 0;
 
 
-			float
-			getSHOTLocalRF( const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
-																const int index, const std::vector<int> &indices, const std::vector<float> &dists, Eigen::Vector3f* rf);
+      float 
+      getSHOTLocalRF (const pcl::PointCloud<PointInT> &cloud, 
+                      const pcl::PointCloud<PointNT> &normals, 
+                      const int index, 
+                      const std::vector<int> &indices, 
+                      const std::vector<float> &dists, 
+                      Eigen::Vector3f *rf);
 
     protected:
 
@@ -117,12 +127,15 @@ namespace pcl
       void 
       computeFeature (PointCloudOut &output);
 
-    protected:
-
-			void
-			interpolateSingleChannel(const pcl::PointCloud<PointInT> & cloud, const std::vector<int> &indices, const std::vector<float> &dists, const Eigen::Vector3f & centralPoint, const Eigen::Vector3f rf[3], std::vector<double> & binDistance, const int nr_bins, Eigen::VectorXf &shot);
-
-
+      void 
+      interpolateSingleChannel (const pcl::PointCloud<PointInT> &cloud, 
+                                const std::vector<int> &indices,
+                                const std::vector<float> &dists, 
+                                const Eigen::Vector3f &centralPoint, 
+                                const Eigen::Vector3f rf[3],
+                                std::vector<double> &binDistance, 
+                                const int nr_bins,
+                                Eigen::VectorXf &shot);
 
       /** \brief The number of bins in each shape histogram. */
       const int nr_shape_bins_;
@@ -130,35 +143,35 @@ namespace pcl
       /** \brief Placeholder for a point's SHOT. */
       Eigen::VectorXf shot_;
 
-			 /** \brief Placeholder for a point's RF. */
+      /** \brief Placeholder for a point's RF. */
       Eigen::Vector3f rf_[3];
 
-			/** \brief The squared search radius.*/
+      /** \brief The squared search radius.*/
       double sqradius_;
-			
-			/** \brief 1/4 of the squared search radius. */
-      double sqradius4_; 
-			
-			/** \brief 3/4 of the search radius. */
-      double radius3_4_; 
-			
-			/** \brief 1/4 of the search radius. */
-      double radius1_4_; 
 
-			/** \brief 1/2 of the search radius. */
-			double radius1_2_; 
-			
-			/** \brief One SHOT length. */
-      int descLength_;
-			
-			/** \brief . */
-      const int maxAngularSectors_;
-			
-			/** \brief Number of azimuthal sectors. */
+      /** \brief 1/4 of the squared search radius. */
+      double sqradius4_;
+
+      /** \brief 3/4 of the search radius. */
+      double radius3_4_;
+
+      /** \brief 1/4 of the search radius. */
+      double radius1_4_;
+
+      /** \brief 1/2 of the search radius. */
+      double radius1_2_;
+
+      /** \brief Number of azimuthal sectors. */
       const int nr_grid_sector_;
+
+      /** \brief . */
+      const int maxAngularSectors_;
+
+      /** \brief One SHOT length. */
+      int descLength_;
   };
 
-  template <typename PointInT, typename PointNT, typename PointOutT>
+  template <typename PointInT, typename PointNT, typename PointOutT> 
   class SHOTEstimation : public SHOTEstimationBase<PointInT, PointNT, PointOutT>
   {
     public:
@@ -171,32 +184,33 @@ namespace pcl
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
+      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
 
-			 /** \brief Empty constructor. */
-      SHOTEstimation (int nr_shape_bins = 10) : SHOTEstimationBase(nr_shape_bins)
+      /** \brief Empty constructor. */
+      SHOTEstimation (int nr_shape_bins = 10) : SHOTEstimationBase<PointInT, PointNT, PointOutT> (nr_shape_bins)
       {
         feature_name_ = "SHOTEstimation";
       };
 
-			/** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
+      /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
         * \param cloud the dataset containing the XYZ Cartesian coordinates of the points
         * \param normals the dataset containing the surface normals at each point in \a cloud
         * \param index the index of the point
-				* \param indices the k-neighborhood point indices in the dataset
+        * \param indices the k-neighborhood point indices in the dataset
         * \param nr_bins the number of bins in each histogram
         * \param shot the resultant SHOT descriptor representing the feature at the query point
         */
       void 
-      computePointSHOT (const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals, 
-                                const int index, const std::vector<int> &indices, const std::vector<float> &dists, Eigen::VectorXf &shot, Eigen::Vector3f *rf);
-
+      computePointSHOT (const pcl::PointCloud<PointInT> &cloud, 
+                        const pcl::PointCloud<PointNT> &normals,
+                        const int index, 
+                        const std::vector<int> &indices, 
+                        const std::vector<float> &dists, 
+                        Eigen::VectorXf &shot,
+                        Eigen::Vector3f *rf);
   };
 
-
-
-
-	template <typename PointNT, typename PointOutT>
+  template <typename PointNT, typename PointOutT> 
   class SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT> : public SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>
   {
     public:
@@ -209,29 +223,37 @@ namespace pcl
       using FeatureFromNormals<pcl::PointXYZRGBA, PointNT, PointOutT>::normals_;
 
       typedef typename Feature<pcl::PointXYZRGBA, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename Feature<pcl::PointXYZRGBA, PointOutT>::PointCloudIn  PointCloudIn;
+      typedef typename Feature<pcl::PointXYZRGBA, PointOutT>::PointCloudIn PointCloudIn;
 
-			 /** \brief Empty constructor. */
-      SHOTEstimation (bool describeShape = true, bool describeColor = false, const int nr_shape_bins = 10, const int nr_color_bins = 30) : 
-													SHOTEstimationBase(nr_shape_bins),
-                          b_describe_shape_(describeShape), 
-                          b_describe_color_(describeColor), 
-                          nr_color_bins_(nr_color_bins)
+      /** \brief Empty constructor. */
+      SHOTEstimation (bool describeShape = true, 
+                      bool describeColor = false, 
+                      const int nr_shape_bins = 10, 
+                      const int nr_color_bins = 30) 
+        : SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT> (nr_shape_bins),
+          b_describe_shape_ (describeShape),
+          b_describe_color_ (describeColor),
+          nr_color_bins_ (nr_color_bins)
       {
         feature_name_ = "SHOTEstimation";
       };
 
-			/** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
+      /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
         * \param cloud the dataset containing the XYZ Cartesian coordinates of the points
         * \param normals the dataset containing the surface normals at each point in \a cloud
         * \param index the index of the point
-				* \param indices the k-neighborhood point indices in the dataset
+        * \param indices the k-neighborhood point indices in the dataset
         * \param nr_bins the number of bins in each histogram
         * \param shot the resultant SHOT descriptor representing the feature at the query point
         */
       void 
-      computePointSHOT (const pcl::PointCloud<pcl::PointXYZRGBA> &cloud, const pcl::PointCloud<PointNT> &normals, 
-                                const int index, const std::vector<int> &indices, const std::vector<float> &dists, Eigen::VectorXf &shot, Eigen::Vector3f *rf);
+      computePointSHOT (const pcl::PointCloud<pcl::PointXYZRGBA> &cloud, 
+                        const pcl::PointCloud<PointNT> &normals, 
+                        const int index, 
+                        const std::vector<int> &indices, 
+                        const std::vector<float> &dists, 
+                        Eigen::VectorXf &shot,
+                        Eigen::Vector3f *rf);
 
     protected:
 
@@ -243,28 +265,34 @@ namespace pcl
       void 
       computeFeature (PointCloudOut &output);
 
-			
-			void
-			interpolateDoubleChannel(const pcl::PointCloud<pcl::PointXYZRGBA> & cloud, const std::vector<int> &indices, const std::vector<float> &dists, const Eigen::Vector3f & centralPoint, const Eigen::Vector3f rf[3], std::vector<double> & binDistanceShape, std::vector<double> & binDistanceColor, const int nr_bins_shape, const int nr_bins_color, Eigen::VectorXf &shot );
+      void 
+      interpolateDoubleChannel (const pcl::PointCloud<pcl::PointXYZRGBA> &cloud, 
+                                const std::vector<int> &indices,
+                                const std::vector<float> &dists, 
+                                const Eigen::Vector3f &centralPoint, 
+                                const Eigen::Vector3f rf[3], 
+                                std::vector<double> &binDistanceShape, 
+                                std::vector<double> &binDistanceColor, 
+                                const int nr_bins_shape,
+                                const int nr_bins_color,
+                                Eigen::VectorXf &shot);
 
-
-			static void 
-			RGB2CIELAB(unsigned char R, unsigned char G, unsigned char B, float &L, float &A, float &B2);
-
+      static void 
+      RGB2CIELAB (unsigned char R, unsigned char G, unsigned char B, float &L, float &A, float &B2);
 
       /** \brief Compute shape descriptor. */
       bool b_describe_shape_;
-			/** \brief Compute color descriptor. */
+      /** \brief Compute color descriptor. */
       bool b_describe_color_;
-			 
-			/** \brief The number of bins in each color histogram. */
+
+      /** \brief The number of bins in each color histogram. */
       int nr_color_bins_;
 
-	public :
-			static float sRGB_LUT[256];
-			static float sXYZ_LUT[4000];
+    public:
+      static float sRGB_LUT[256];
+      static float sXYZ_LUT[4000];
   };
-} 
+}
 
 #endif  //#ifndef PCL_SHOT_H_
 
