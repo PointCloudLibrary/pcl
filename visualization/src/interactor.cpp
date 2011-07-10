@@ -45,12 +45,12 @@ namespace pcl
     // Standard VTK macro for *New () 
     vtkStandardNewMacro (PCLVisualizerInteractor);
     
-    void
+/*    void
     PCLVisualizerInteractor::TerminateApp ()
     {
       stopped = true;
     }
-    
+*/    
     //////////////////////////////////////////////////////////////////////////
     void 
     PCLVisualizerInteractor::stopLoop ()
