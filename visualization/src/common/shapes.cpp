@@ -151,3 +151,38 @@ pcl::visualization::createCone (const pcl::ModelCoefficients &coefficients)
   return (cone->GetOutput ());
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+vtkSmartPointer<vtkDataSet> 
+pcl::visualization::createSphere (const Eigen::Vector4f &center, double radius, int res)
+{
+  // Set the sphere origin
+  vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New ();
+  t->Identity (); 
+  t->Translate (center[0], center[1], center[2]);
+
+  vtkSmartPointer<vtkSphereSource> s_sphere = vtkSmartPointer<vtkSphereSource>::New ();
+  s_sphere->SetRadius (radius);
+  s_sphere->SetPhiResolution (res);
+  s_sphere->SetThetaResolution (res);
+  s_sphere->LatLongTessellationOff ();
+  
+  vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
+  tf->SetTransform (t);
+  tf->SetInputConnection (s_sphere->GetOutputPort ());
+  tf->Update ();
+
+  return (tf->GetOutput ());
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+vtkSmartPointer<vtkDataSet>
+pcl::visualization::createLine (const Eigen::Vector4f &pt1, const Eigen::Vector4f &pt2)
+{
+  vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();
+  line->SetPoint1 (pt1.x (), pt1.y (), pt1.z ());
+  line->SetPoint2 (pt2.x (), pt2.y (), pt2.z ());
+  line->Update ();
+
+  return (line->GetOutput ());
+}
+
