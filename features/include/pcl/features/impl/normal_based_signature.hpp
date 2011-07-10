@@ -57,22 +57,29 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
     return;
   }
 
+  std::vector<int> k_indices;
+  std::vector<float> k_sqr_distances;
 
   tree_->setInputCloud (input_);
-  output.points.clear ();
+  output.points.resize (indices_->size ());
+
   //for (size_t point_i = 0; point_i < input_->points.size (); ++point_i)
   for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
-    size_t point_i = indices_->at (index_i);
+    size_t point_i = (*indices_)[index_i];
     Eigen::MatrixXf s_matrix (N, M);
-    Eigen::Vector3f center_point = input_->points[point_i].getVector3fMap ();
+
+    Eigen::Vector4f center_point = input_->points[point_i].getVector4fMap ();
+
     for (size_t k = 0; k < N; ++k) 
     {
       Eigen::VectorXf s_row (M);
+
       for (size_t l = 0; l < M; ++l)
       {
-        Eigen::Vector3f normal = normals_->points[point_i].getNormalVector3fMap ();
-        Eigen::Vector3f normal_u, normal_v;
+        Eigen::Vector4f normal = normals_->points[point_i].getNormalVector4fMap ();
+        Eigen::Vector4f normal_u = Eigen::Vector4f::Zero ();
+        Eigen::Vector4f normal_v = Eigen::Vector4f::Zero ();
 
         if (fabs (normal.x ()) > 0.0001f)
         {
@@ -95,49 +102,45 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
           normal_u.y () = 1.0f;
           normal_u.z () = - normal.y () / normal.z ();
         }
-        normal_v = normal.cross (normal_u);
+        normal_v = normal.cross3 (normal_u);
 
-        Eigen::Vector3f zeta_point = 2.0f*(l+1)*scale_h / M * (cos (2.0f*M_PI*(k+1) / N) * normal_u + sin (2.0f*M_PI*(k+1) / N) * normal_v);
+        Eigen::Vector4f zeta_point = 2.0f * (l+1) * scale_h / M * (cos (2.0f * M_PI * (k+1) / N) * normal_u + sin (2.0f * M_PI * (k+1) / N) * normal_v);
 
-        // compute normal by using the neighbors
-        Eigen::Vector3f zeta_point_plus_center = zeta_point + center_point;
+        // Compute normal by using the neighbors
+        Eigen::Vector4f zeta_point_plus_center = zeta_point + center_point;
         PointT zeta_point_pcl;
         zeta_point_pcl.x = zeta_point_plus_center.x (); zeta_point_pcl.y = zeta_point_plus_center.y (); zeta_point_pcl.z = zeta_point_plus_center.z ();
-        std::vector<int> k_indices;
-        std::vector<float> k_sqr_distances;
-        tree_->radiusSearch (zeta_point_pcl,
-                             normal_search_radius,
-                             k_indices,
-                             k_sqr_distances);
-        // do k nearest search if there are no neighbors nearby
+
+        tree_->radiusSearch (zeta_point_pcl, normal_search_radius, k_indices, k_sqr_distances);
+
+        // Do k nearest search if there are no neighbors nearby
         if (k_indices.size () == 0)
         {
           k_indices.resize (5);
           k_sqr_distances.resize (5);
-          tree_->nearestKSearch (zeta_point_pcl,
-                                 5,
-                                 k_indices,
-                                 k_sqr_distances);
+          tree_->nearestKSearch (zeta_point_pcl, 5, k_indices, k_sqr_distances);
         }
-        Eigen::Vector3f average_normal (0.0f, 0.0f, 0.0f);
+        
+        Eigen::Vector4f average_normal = Eigen::Vector4f::Zero ();
+
         float average_normalization_factor = 0.0f;
-        // normals weighted by 1/squared_distances
+
+        // Normals weighted by 1/squared_distances
         for (size_t nn_i = 0; nn_i < k_indices.size (); ++nn_i)
         {
           if (k_sqr_distances[nn_i] < 0.0000001f)
           {
-            average_normal = normals_->points[k_indices[nn_i]].getNormalVector3fMap ();
+            average_normal = normals_->points[k_indices[nn_i]].getNormalVector4fMap ();
             average_normalization_factor = 1.0f;
             break;
           }
-          average_normal += normals_->points[k_indices[nn_i]].getNormalVector3fMap () / k_sqr_distances[nn_i];
+          average_normal += normals_->points[k_indices[nn_i]].getNormalVector4fMap () / k_sqr_distances[nn_i];
           average_normalization_factor += 1.0f / k_sqr_distances[nn_i];
         }
         average_normal /= average_normalization_factor;
         float s = zeta_point.dot (average_normal) / zeta_point.norm ();
         s_row[l] = s;
       }
-
 
       // do DCT on the s_matrix row-wise
       Eigen::VectorXf dct_row (M);
@@ -176,7 +179,8 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
     for (size_t i = 0; i < N_prime; ++i)
       for (size_t j = 0; j < M_prime; ++j)
         feature_point.values[i*M_prime + j] = final_matrix (i, j);
-    output.points.push_back (feature_point);
+
+    output.points[index_i] = feature_point;
   }
 }
 
