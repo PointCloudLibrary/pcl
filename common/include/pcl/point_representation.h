@@ -268,6 +268,23 @@ namespace pcl
       }
   };
 
+  template <>
+  class DefaultPointRepresentation <NormalBasedSignature12> : public PointRepresentation <NormalBasedSignature12>
+  {
+    public:
+      DefaultPointRepresentation ()
+      {
+        nr_dimensions_ = 12;
+      }
+
+      virtual void
+        copyToFloatArray (const NormalBasedSignature12 &p, float * out) const
+      {
+        for (int i = 0; i < nr_dimensions_; ++i)
+          out[i] = p.values[i];
+      }
+  };
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b CustomPointRepresentation extends PointRepresentation to allow for sub-part selection on the point.
    */

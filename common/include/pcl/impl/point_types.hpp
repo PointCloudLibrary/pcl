@@ -39,29 +39,30 @@
 #define PCL_IMPL_POINT_TYPES_HPP_
 
 // Define all PCL point types
-#define PCL_POINT_TYPES       \
-  (pcl::PointXYZ)             \
-  (pcl::PointXYZI)            \
-  (pcl::PointXYZRGBA)         \
-  (pcl::PointXYZRGB)          \
-  (pcl::PointXY)              \
-  (pcl::InterestPoint)        \
-  (pcl::Normal)               \
-  (pcl::PointNormal)          \
-  (pcl::PointXYZRGBNormal)    \
-  (pcl::PointXYZINormal)      \
-  (pcl::PointWithRange)       \
-  (pcl::PointWithViewpoint)   \
-  (pcl::MomentInvariants)     \
-  (pcl::PrincipalRadiiRSD)    \
-  (pcl::Boundary)             \
-  (pcl::PrincipalCurvatures)  \
-  (pcl::PFHSignature125)      \
-  (pcl::PPFSignature)         \
-  (pcl::FPFHSignature33)      \
-  (pcl::VFHSignature308)      \
-  (pcl::Narf36)               \
-  (pcl::IntensityGradient)    \
+#define PCL_POINT_TYPES         \
+  (pcl::PointXYZ)               \
+  (pcl::PointXYZI)              \
+  (pcl::PointXYZRGBA)           \
+  (pcl::PointXYZRGB)            \
+  (pcl::PointXY)                \
+  (pcl::InterestPoint)          \
+  (pcl::Normal)                 \
+  (pcl::PointNormal)            \
+  (pcl::PointXYZRGBNormal)      \
+  (pcl::PointXYZINormal)        \
+  (pcl::PointWithRange)         \
+  (pcl::PointWithViewpoint)     \
+  (pcl::MomentInvariants)       \
+  (pcl::PrincipalRadiiRSD)      \
+  (pcl::Boundary)               \
+  (pcl::PrincipalCurvatures)    \
+  (pcl::PFHSignature125)        \
+  (pcl::PPFSignature)           \
+  (pcl::NormalBasedSignature12) \
+  (pcl::FPFHSignature33)        \
+  (pcl::VFHSignature308)        \
+  (pcl::Narf36)                 \
+  (pcl::IntensityGradient)      \
   (pcl::PointWithScale)
 
 // Define all point types that include XYZ data
@@ -629,6 +630,21 @@ struct PPFSignature
 inline std::ostream& operator << (std::ostream& os, const PPFSignature& p)
 {
   os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.alpha_m << ")";
+  return (os);
+}
+
+/** \brief A point structure representing the Normal Based Signature for
+ * a feature matrix of 4-by-3
+ * \ingroup common
+ */
+struct NormalBasedSignature12
+{
+  float values[12];
+};
+inline std::ostream& operator << (std::ostream& os, const NormalBasedSignature12& p)
+{
+  for (int i = 0; i < 12; ++i)
+    os << (i == 0 ? "(" : "") << p.values[i] << (i < 11 ? ", " : ")");
   return (os);
 }
 

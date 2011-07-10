@@ -116,6 +116,9 @@ namespace pcl
   struct PPFSignature;
   // Members: float f1, f2, f3, f4, alpha_m;
 
+  struct NormalBasedSignature12;
+  // Members: float values[12];
+
   struct FPFHSignature33;
   // Members: float fpfh[33];
 
@@ -321,6 +324,10 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFSignature,
                                    (float, f3, f3)
                                    (float, f4, f4)
                                    (float, alpha_m, alpha_m)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::NormalBasedSignature12,
+                                   (float[12], values, values)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_SHOT352,
