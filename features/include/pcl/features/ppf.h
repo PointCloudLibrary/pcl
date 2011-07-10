@@ -62,6 +62,7 @@ namespace pcl
   public:
     using FeatureFromNormals<PointInT, PointNT, PointOutT>::input_;
     using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+    using FeatureFromNormals<PointInT, PointNT, PointOutT>::feature_name_;
 
     typedef pcl::PointCloud<PointOutT> PointCloudOut;
 
@@ -70,7 +71,11 @@ namespace pcl
      */
     PPFEstimation ()
     : FeatureFromNormals <PointInT, PointNT, PointOutT> ()
-      {};
+      {
+        feature_name_ = "PPFEstimation";
+      };
+
+
 
     //  private: /// @todo base class needs search tree!!!
     /** \brief The method called for actually doing the computations
