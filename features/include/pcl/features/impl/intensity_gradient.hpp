@@ -40,6 +40,7 @@
 
 #include "pcl/features/intensity_gradient.h"
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
@@ -73,6 +74,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT>::computeFeature (
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT>::computePointIntensityGradient (
   const pcl::PointCloud <PointInT> &cloud, const std::vector <int> &indices, 

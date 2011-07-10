@@ -97,7 +97,6 @@ namespace pcl
   template <typename PointInT, typename PointOutT>
   class Feature : public PCLBase<PointInT>
   {
-    using PCLBase<PointInT>::initCompute;
     using PCLBase<PointInT>::deinitCompute;
 
     public:
@@ -237,6 +236,10 @@ namespace pcl
       inline const std::string& 
       getClassName () const { return (feature_name_); }
 
+      /** \brief This method should get called before starting the actual computation. */
+      virtual bool
+      initCompute ();
+
     private:
       /** \brief If no surface is given, we use the input PointCloud as the surface. */
       bool fake_surface_;
@@ -272,6 +275,8 @@ namespace pcl
 
       // Members derived from the base class
       using Feature<PointInT, PointOutT>::input_;
+      using Feature<PointInT, PointOutT>::surface_;
+      using Feature<PointInT, PointOutT>::getClassName;
 
       /** \brief Empty constructor. */
       FeatureFromNormals () {};
@@ -292,6 +297,11 @@ namespace pcl
         * dataset. 
         */
       PointCloudNConstPtr normals_;
+
+      /** \brief This method should get called before starting the actual computation. */
+      virtual bool
+      initCompute ();
+
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
