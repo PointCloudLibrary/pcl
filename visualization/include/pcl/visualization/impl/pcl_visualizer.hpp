@@ -38,8 +38,6 @@
 #ifndef PCL_PCL_VISUALIZER_IMPL_H_
 #define PCL_PCL_VISUALIZER_IMPL_H_
 
-#include <boost/make_shared.hpp>
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool 
 pcl::visualization::PCLVisualizer::addPointCloud (
@@ -423,7 +421,7 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
     return (false);
   }
 
-  vtkSmartPointer<vtkDataSet> data = createSphere<PointT> (center, radius);
+  vtkSmartPointer<vtkDataSet> data = createSphere (center.getVector4fMap (), radius);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;

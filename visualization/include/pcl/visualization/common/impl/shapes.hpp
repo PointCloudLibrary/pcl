@@ -73,25 +73,3 @@ pcl::visualization::createLine (const P1 &pt1, const P2 &pt2)
   return (line->GetOutput ());
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> vtkSmartPointer<vtkDataSet> 
-pcl::visualization::createSphere (const PointT &center, double radius, int res)
-{
-  // Set the sphere origin
-  vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New ();
-  t->Identity (); t->Translate (center.x, center.y, center.z);
-
-  vtkSmartPointer<vtkSphereSource> s_sphere = vtkSmartPointer<vtkSphereSource>::New ();
-  s_sphere->SetRadius (radius);
-  s_sphere->SetPhiResolution (res);
-  s_sphere->SetThetaResolution (res);
-  s_sphere->LatLongTessellationOff ();
-  
-  vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
-  tf->SetTransform (t);
-  tf->SetInputConnection (s_sphere->GetOutputPort ());
-  tf->Update ();
-
-  return (tf->GetOutput ());
-}
-

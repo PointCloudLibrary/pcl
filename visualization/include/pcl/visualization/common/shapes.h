@@ -80,13 +80,13 @@ namespace pcl
     createLine (const P1 &pt1, const P2 &pt2);
 
     /** \brief Create a sphere shape from a point and a radius
-      * \param center the center of the sphere
+      * \param center the center of the sphere (as an Eigen Vector4f, with only the first 3 coordinates used)
       * \param radius the radius of the sphere
       * \param res (optional) the resolution used for rendering the model
       * \ingroup visualization
       */
-    template <typename PointT> vtkSmartPointer<vtkDataSet> inline 
-    createSphere (const PointT &center, double radius, int res = 10);
+    vtkSmartPointer<vtkDataSet>
+    createSphere (const Eigen::Vector4f &center, double radius, int res = 10);
 
     /** \brief Create a cylinder shape from a set of model coefficients.
       * \param coefficients the model coefficients (point_on_axis, axis_direction, radius)
