@@ -134,38 +134,31 @@ pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> void
-pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
+template <typename PointInT, typename PointOutT> bool
+pcl::Feature<PointInT, PointOutT>::initCompute ()
 {
-  if (!initCompute ()) 
+  if (!PCLBase<PointInT>::initCompute ())
   {
-    PCL_ERROR ("[pcl::%s::compute] Init failed.\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
-    return;
+    PCL_ERROR ("[pcl::%s::initCompute] Init failed.\n", getClassName ().c_str ());
+    return (false);
   }
-
-  // Copy the header
-  output.header = input_->header;
 
   // If the dataset is empty, just return
   if (input_->points.empty ())
   {
     PCL_ERROR ("[pcl::%s::compute] input_ is empty!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    // Cleanup
     deinitCompute ();
-    return;
+    return (false);
   }
 
   // Check if a space search locator was given
   if (!tree_)
   {
     PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    // Cleanup
     deinitCompute ();
-    return;
+    return (false);
   }
 
   // If no search surface has been defined, use the input dataset as the search surface itself
@@ -184,9 +177,6 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
     if (k_ != 0)
     {
       PCL_ERROR ("[pcl::%s::compute] Both radius (%f) and K (%d) defined! Set one of them to zero first and then re-run compute ().\n", getClassName ().c_str (), search_radius_, k_);
-      output.width = output.height = 0;
-      output.points.clear ();
-
       // Cleanup
       deinitCompute ();
       // Reset the surface
@@ -195,7 +185,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
         surface_.reset ();
         fake_surface_ = false;
       }
-      return;
+      return (false);
     }
     else                  // Use the radiusSearch () function
     {
@@ -237,9 +227,6 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
     else
     {
       PCL_ERROR ("[pcl::%s::compute] Neither radius nor K defined! Set one of them to a positive number first and then re-run compute ().\n", getClassName ().c_str ());
-      output.width = output.height = 0;
-      output.points.clear ();
-
       // Cleanup
       deinitCompute ();
       // Reset the surface
@@ -248,9 +235,25 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
         surface_.reset ();
         fake_surface_ = false;
       }
-      return;
+      return (false);
     }
   }
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
+pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
+{
+  if (!initCompute ())
+  {
+    output.width = output.height = 0;
+    output.points.clear ();
+    return;
+  }
+
+  // Copy the header
+  output.header = input_->header;
 
   // Resize the output dataset
   if (output.points.size () != indices_->size ())
@@ -279,6 +282,35 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
     surface_.reset ();
     fake_surface_ = false;
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointNT, typename PointOutT> bool
+pcl::FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
+{
+  if (!Feature<PointInT, PointOutT>::initCompute ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] Init failed.\n", getClassName ().c_str ());
+    return (false);
+  }
+
+  // Check if input normals are set
+  if (!normals_)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] No input dataset containing normals was given!\n", getClassName ().c_str ());
+    return (false);
+  }
+
+  // Check if the size of normals is the same as the size of the surfae
+  if (normals_->points.size () != surface_->points.size ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
+    return (false);
+  }
+
+  return (true);
 }
 
 #endif  //#ifndef PCL_FEATURES_IMPL_FEATURE_H_
