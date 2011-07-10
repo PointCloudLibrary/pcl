@@ -103,7 +103,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothCloudIteration (PointCloudInPtr &ou
     for (std::vector<int>::iterator nn_index_it = nn_indices.begin (); nn_index_it != nn_indices.end (); ++nn_index_it)
     {
       float dist = pcl::squaredEuclideanDistance (interm_cloud_->points[point_i], interm_cloud_->points[*nn_index_it]);
-      float theta_i = dist; //exp ( (-1) * dist / scale_squared);
+      float theta_i = exp ( (-1) * dist / scale_squared_);
       theta_normalization_factor += theta_i;
 
       smoothed_normal += theta_i * interm_normals_->points[*nn_index_it].getNormalVector3fMap ();
@@ -150,7 +150,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::computeSmoothedCloud (PointCloudInPtr &ou
     return;
   }
 
-  for (size_t iteration = 0; iteration < 500; ++iteration)
+  for (size_t iteration = 0; iteration < 250; ++iteration)
   {
     smoothCloudIteration (output_positions, output_normals);
     interm_cloud_ = output_positions;

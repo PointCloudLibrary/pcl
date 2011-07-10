@@ -62,7 +62,9 @@ namespace pcl
           scale_ (a_scale),
           normals_ (),
           tree_ ()
-      {}
+      {
+        scale_squared_ = scale_ * scale_;
+      }
 
       void
       setInputNormals (NormalCloudPtr &a_normals) { normals_ = a_normals; };
@@ -87,7 +89,7 @@ namespace pcl
                                            boost::shared_ptr<std::vector<int> > &output_features);
 
     private:
-      float scale_;
+      float scale_, scale_squared_;
       NormalCloudPtr normals_;
 
       PointCloudInPtr interm_cloud_;
