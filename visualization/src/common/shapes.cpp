@@ -174,3 +174,15 @@ pcl::visualization::createSphere (const Eigen::Vector4f &center, double radius, 
   return (tf->GetOutput ());
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+vtkSmartPointer<vtkDataSet>
+pcl::visualization::createLine (const Eigen::Vector4f &pt1, const Eigen::Vector4f &pt2)
+{
+  vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();
+  line->SetPoint1 (pt1.x (), pt1.y (), pt1.z ());
+  line->SetPoint2 (pt2.x (), pt2.y (), pt2.z ());
+  line->Update ();
+
+  return (line->GetOutput ());
+}
+

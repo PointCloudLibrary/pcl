@@ -337,7 +337,7 @@ pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, const 
     return (false);
   }
 
-  vtkSmartPointer<vtkDataSet> data = createLine<P1, P2> (pt1, pt2);
+  vtkSmartPointer<vtkDataSet> data = createLine (pt1.getVector4fMap (), pt2.getVector4fMap ());
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;

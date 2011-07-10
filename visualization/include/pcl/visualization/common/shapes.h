@@ -76,8 +76,8 @@ namespace pcl
       * \param pt2 the end point on the line
       * \ingroup visualization
       */
-    template <typename P1, typename P2> inline vtkSmartPointer<vtkDataSet> 
-    createLine (const P1 &pt1, const P2 &pt2);
+    PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
+    createLine (const Eigen::Vector4f &pt1, const Eigen::Vector4f &pt2);
 
     /** \brief Create a sphere shape from a point and a radius
       * \param center the center of the sphere (as an Eigen Vector4f, with only the first 3 coordinates used)

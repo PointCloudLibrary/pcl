@@ -61,15 +61,3 @@ pcl::visualization::createPolygon (const typename pcl::PointCloud<PointT>::Const
   return (poly_grid);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-template <typename P1, typename P2> vtkSmartPointer<vtkDataSet>
-pcl::visualization::createLine (const P1 &pt1, const P2 &pt2)
-{
-  vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();
-  line->SetPoint1 (pt1.x, pt1.y, pt1.z);
-  line->SetPoint2 (pt2.x, pt2.y, pt2.z);
-  line->Update ();
-
-  return (line->GetOutput ());
-}
-
