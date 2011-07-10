@@ -23,6 +23,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/narf_descriptor.h
         include/pcl/${SUBSYS_NAME}/normal_3d.h
         include/pcl/${SUBSYS_NAME}/normal_3d_omp.h
+        include/pcl/${SUBSYS_NAME}/normal_based_signature.h
         include/pcl/${SUBSYS_NAME}/pfh.h
         include/pcl/${SUBSYS_NAME}/ppf.h
         #include/pcl/${SUBSYS_NAME}/shot.h
@@ -47,6 +48,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/narf.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d_omp.hpp
+        include/pcl/${SUBSYS_NAME}/impl/normal_based_signature.hpp
         include/pcl/${SUBSYS_NAME}/impl/pfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/ppf.hpp
         #include/pcl/${SUBSYS_NAME}/impl/shot.hpp
@@ -71,6 +73,7 @@ if(build)
         src/narf_descriptor.cpp
         src/normal_3d.cpp
         src/normal_3d_omp.cpp
+        src/normal_based_signature.cpp
         src/pfh.cpp
         src/ppf.cpp
         #src/shot.cpp

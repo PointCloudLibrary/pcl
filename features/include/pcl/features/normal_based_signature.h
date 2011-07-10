@@ -43,25 +43,41 @@
 namespace pcl
 {
   template <typename PointT, typename PointNT, typename PointFeature>
-  class NormalBasedSignature : public FeatureFromNormals<PointT, PointNT, PointFeature>
+  class NormalBasedSignatureEstimation : public FeatureFromNormals<PointT, PointNT, PointFeature>
   {
     public:
-      using FeatureFromNormals<PointT, PointNT, PointFeature>::input_;
+      using Feature<PointT, PointFeature>::input_;
+      using Feature<PointT, PointFeature>::tree_;
+      using Feature<PointT, PointFeature>::search_radius_;
+      using PCLBase<PointT>::indices_;
       using FeatureFromNormals<PointT, PointNT, PointFeature>::normals_;
-      using FeatureFromNormals<PointT, PointNT, PointFeature>::tree_;
 
       typedef pcl::PointCloud<PointFeature> FeatureCloud;
 
-      NormalBasedSignature ()
-        : FeatureFromNormals<PointT, PointNT, PointFeature> ()
+
+      NormalBasedSignatureEstimation (float a_scale_h,
+                            float a_normal_search_radius,
+                            size_t a_N = 32,
+                            size_t a_M = 8,
+                            size_t a_N_prime = 4,
+                            size_t a_M_prime = 3)
+        : FeatureFromNormals<PointT, PointNT, PointFeature> (),
+          scale_h (a_scale_h),
+          normal_search_radius (a_normal_search_radius),
+          N (a_N),
+          M (a_M),
+          N_prime (a_N_prime),
+          M_prime (a_M_prime)
       {
+        search_radius_ = a_normal_search_radius;
       }
 
-    private:
+    protected:
       void
       computeFeature (FeatureCloud &output);
 
-      size_t N, M;
+    private:
+      size_t N, M, N_prime, M_prime;
       float scale_h, normal_search_radius;
   };
 }

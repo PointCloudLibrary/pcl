@@ -43,4 +43,4 @@
 
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(NormalBasedSignature, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
+PCL_INSTANTIATE_PRODUCT(NormalBasedSignatureEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::NormalBasedSignature12)));

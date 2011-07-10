@@ -53,7 +53,6 @@ namespace pcl
       {};
 
 
-      /// @todo look into boost graph for this
       void
       generateCloudGraph ();
 
