@@ -733,6 +733,27 @@ namespace pcl
           * \param coefficients the model coefficients (point_on_axis, axis_direction, radius)
           * \param id the cylinder id/name (default: "cylinder")
           * \param viewport (optional) the id of the new viewport (default: 0)
+          *
+          * \code
+          * // The following are given (or computed using sample consensus techniques)
+          * // See SampleConsensusModelCylinder for more information.
+          * // Eigen::Vector3f pt_on_axis, axis_direction;
+          * // float radius;
+          *
+          * pcl::ModelCoefficients cylinder_coeff;
+          * cylinder_coeff.values.resize (7);    // We need 7 values
+          * cylinder_coeff.values[0] = pt_on_axis.x ();
+          * cylinder_coeff.values[1] = pt_on_axis.y ();
+          * cylinder_coeff.values[2] = pt_on_axis.z ();
+          *
+          * cylinder_coeff.values[3] = axis_direction.x ();
+          * cylinder_coeff.values[4] = axis_direction.y ();
+          * cylinder_coeff.values[5] = axis_direction.z ();
+          *
+          * cylinder_coeff.values[6] = radius;
+          *
+          * addCylinder (cylinder_coeff);
+          * \endcode
           */
         bool 
         addCylinder (const pcl::ModelCoefficients &coefficients, 
@@ -743,6 +764,23 @@ namespace pcl
           * \param coefficients the model coefficients (sphere center, radius)
           * \param id the sphere id/name (default: "sphere")
           * \param viewport (optional) the id of the new viewport (default: 0)
+          *
+          * \code
+          * // The following are given (or computed using sample consensus techniques)
+          * // See SampleConsensusModelSphere for more information
+          * // Eigen::Vector3f sphere_center;
+          * // float radius;
+          *
+          * pcl::ModelCoefficients sphere_coeff;
+          * sphere_coeff.values.resize (4);    // We need 4 values
+          * sphere_coeff.values[0] = sphere_center.x ();
+          * sphere_coeff.values[1] = sphere_center.y ();
+          * sphere_coeff.values[2] = sphere_center.z ();
+          *
+          * sphere_coeff.values[3] = radius;
+          *
+          * addSphere (sphere_coeff);
+          * \endcode
           */
         bool 
         addSphere (const pcl::ModelCoefficients &coefficients, 
@@ -753,6 +791,24 @@ namespace pcl
           * \param coefficients the model coefficients (point_on_line, direction)
           * \param id the line id/name (default: "line")
           * \param viewport (optional) the id of the new viewport (default: 0)
+          *
+          * \code
+          * // The following are given (or computed using sample consensus techniques)
+          * // See SampleConsensusModelLine for more information
+          * // Eigen::Vector3f point_on_line, line_direction;
+          *
+          * pcl::ModelCoefficients line_coeff;
+          * line_coeff.values.resize (6);    // We need 6 values
+          * line_coeff.values[0] = point_on_line.x ();
+          * line_coeff.values[1] = point_on_line.y ();
+          * line_coeff.values[2] = point_on_line.z ();
+          *
+          * line_coeff.values[3] = line_direction.x ();
+          * line_coeff.values[4] = line_direction.y ();
+          * line_coeff.values[5] = line_direction.z ();
+          *
+          * addLine (line_coeff);
+          * \endcode
           */
         bool 
         addLine (const pcl::ModelCoefficients &coefficients, 
@@ -763,6 +819,21 @@ namespace pcl
           * \param coefficients the model coefficients (a, b, c, d with ax+by+cz+d=0)
           * \param id the plane id/name (default: "plane")
           * \param viewport (optional) the id of the new viewport (default: 0)
+          *
+          * \code
+          * // The following are given (or computed using sample consensus techniques)
+          * // See SampleConsensusModelPlane for more information
+          * // Eigen::Vector4f plane_parameters;
+          *
+          * pcl::ModelCoefficients plane_coeff;
+          * plane_coeff.values.resize (4);    // We need 4 values
+          * plane_coeff.values[0] = plane_parameters.x ();
+          * plane_coeff.values[1] = plane_parameters.y ();
+          * plane_coeff.values[2] = plane_parameters.z ();
+          * plane_coeff.values[3] = plane_parameters.w ();
+          *
+          * addPlane (plane_coeff);
+          * \endcode
           */
         bool 
         addPlane (const pcl::ModelCoefficients &coefficients, 
@@ -773,7 +844,21 @@ namespace pcl
           * \param coefficients the model coefficients (x, y, radius)
           * \param id the circle id/name (default: "circle")
           * \param viewport (optional) the id of the new viewport (default: 0)
-          */
+          *
+          * \code
+          * // The following are given (or computed using sample consensus techniques)
+          * // See SampleConsensusModelCircle2D for more information
+          * // float x, y, radius;
+          *
+          * pcl::ModelCoefficients circle_coeff;
+          * circle_coeff.values.resize (3);    // We need 3 values
+          * circle_coeff.values[0] = x;
+          * circle_coeff.values[1] = y;
+          * circle_coeff.values[2] = radius;
+          *
+          * vtkSmartPointer<vtkDataSet> data = pcl::visualization::create2DCircle (circle_coeff, z);
+          * \endcode
+           */
         bool 
         addCircle (const pcl::ModelCoefficients &coefficients, 
                    const std::string &id = "circle", 

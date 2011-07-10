@@ -42,6 +42,8 @@
 
 namespace pcl
 {
+  /** \brief ...
+    */
   template <typename PointT, typename PointNT, typename PointFeature>
   class NormalBasedSignatureEstimation : public FeatureFromNormals<PointT, PointNT, PointFeature>
   {
@@ -55,12 +57,14 @@ namespace pcl
       typedef pcl::PointCloud<PointFeature> FeatureCloud;
 
 
+      /** \brief Constructor
+        */
       NormalBasedSignatureEstimation (float a_scale_h,
-                            float a_normal_search_radius,
-                            size_t a_N = 32,
-                            size_t a_M = 8,
-                            size_t a_N_prime = 4,
-                            size_t a_M_prime = 3)
+                                      float a_normal_search_radius,
+                                      size_t a_N = 32,
+                                      size_t a_M = 8,
+                                      size_t a_N_prime = 4,
+                                      size_t a_M_prime = 3)
         : FeatureFromNormals<PointT, PointNT, PointFeature> (),
           scale_h (a_scale_h),
           normal_search_radius (a_normal_search_radius),
