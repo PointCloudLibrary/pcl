@@ -111,23 +111,6 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
-  // Check if input was set
-  if (!normals_)
-  {
-    PCL_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
-    return;
-  }
-  if (normals_->points.size () != surface_->points.size ())
-  {
-    PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset (%lu) differs from the number of points in the dataset containing the normals (%lu)!\n",
-               getClassName ().c_str (), (unsigned long)surface_->points.size (), (unsigned long)normals_->points.size ());
-    output.width = output.height = 0;
-    output.points.clear ();
-    return;
-  }
-
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
   std::vector<int> nn_indices (k_);

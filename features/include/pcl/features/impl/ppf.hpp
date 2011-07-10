@@ -41,6 +41,7 @@
 #include "pcl/features/ppf.h"
 #include <pcl/features/pfh.h>
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
 pcl::PPFEstimation<PointInT, PointNT, PointOutT>::PPFEstimation ()
     : FeatureFromNormals <PointInT, PointNT, PointOutT> ()
@@ -58,9 +59,9 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   // initialize output container
-  output.resize (indices_->size () * input_->points.size ());
+  output.points.resize (indices_->size () * input_->points.size ());
   output.height = 1;
-  output.width = (indices_->size () * input_->points.size ());
+  output.width = output.points.size ();
 
   // compute point pair features for every pair of points in the cloud
   for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
@@ -79,8 +80,8 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
         {
           // calculate alpha_m angle
           Eigen::Vector3f model_reference_point = input_->points[i].getVector3fMap (),
-              model_reference_normal = normals_->points[i].getNormalVector3fMap (),
-              model_point = input_->points[j].getVector3fMap ();
+                          model_reference_normal = normals_->points[i].getNormalVector3fMap (),
+                          model_point = input_->points[j].getVector3fMap ();
           Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                          model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
           Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
@@ -88,7 +89,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
         }
         else
         {
-          PCL_ERROR ("[pcl::PPFEstimation::computeFeature] Computing pair feature vector between points %zu and %zu went wrong.\n", i, j);
+          PCL_ERROR ("[pcl::%s::computeFeature] Computing pair feature vector between points %zu and %zu went wrong.\n", getClassName ().c_str (), i, j);
           p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = 0.0;
         }
       }
@@ -97,6 +98,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
       else
         p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = 0.0;
 
+      // Alex is this correct?
       output.points[index_i*input_->points.size () + j] = p;
     }
   }
