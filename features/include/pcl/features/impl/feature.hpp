@@ -137,9 +137,6 @@ pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
 template <typename PointInT, typename PointOutT> void
 pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
 {
-  // Copy the header
-  output.header = input_->header;
-
   if (!initCompute ()) 
   {
     PCL_ERROR ("[pcl::%s::compute] Init failed.\n", getClassName ().c_str ());
@@ -147,6 +144,9 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
     output.points.clear ();
     return;
   }
+
+  // Copy the header
+  output.header = input_->header;
 
   // If the dataset is empty, just return
   if (input_->points.empty ())
