@@ -83,7 +83,7 @@ namespace pcl
       public:
         static PCLVisualizerInteractorStyle *New ();
         // this macro defines Superclass, the isA functionality and the safe downcast method
-//        vtkTypeMacro(PCLVisualizerInteractorStyle,vtkInteractorStyleTrackballCamera);
+        vtkTypeMacro(PCLVisualizerInteractorStyle,vtkInteractorStyleTrackballCamera);
         
         /** \brief Initialization routine. Must be called before anything else. */
         virtual void Initialize ();
