@@ -22,7 +22,7 @@ endif()
 
 # ---[ Unix/Darwin/Windows specific flags
 if(UNIX OR APPLE)
-  add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing")
+  add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing -pthread")
 else(UNIX OR APPLE)
   if(MSVC)
     add_definitions ("-W0 -DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS /bigobj -DNOMINMAX")
