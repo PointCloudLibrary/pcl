@@ -35,5 +35,6 @@ int
   p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5, "sphere");
 //  p.removePolygon ("poly");
 
+  p.addText ("text", 200, 200, 1.0, 0, 0, "text");
   p.spin ();
 }
