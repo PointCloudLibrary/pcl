@@ -110,7 +110,7 @@ main (int argc, char** argv)
     PPFEstimation<PointNormal, PointNormal, PPFSignature> ppf_estimator;
     ppf_estimator.setInputCloud (cloud_model_input);
     ppf_estimator.setInputNormals (cloud_model_input);
-    ppf_estimator.computeFeature (*cloud_model_ppf);
+    ppf_estimator.compute (*cloud_model_ppf);
 
     PPFHashMapSearch::Ptr hashmap_search (new PPFHashMapSearch (12.0 / 180 * M_PI,
                                                                  0.05));
@@ -149,10 +149,12 @@ main (int argc, char** argv)
 
     PointCloud<PointXYZ>::Ptr cloud_output (new PointCloud<PointXYZ> ());
     getTransformedPointCloud (*cloud_models[model_i], final_transformation, *cloud_output);
-    //  io::savePCDFileASCII ("output_registered.pcd", cloud_output);
+
 
     stringstream ss; ss << "model_" << model_i;
     viewer.showCloud (cloud_output, ss.str ());
+    io::savePCDFileASCII (ss.str ().c_str (), *cloud_output);
+    PCL_INFO ("Showing model %s\n", ss.str ().c_str ());
   }
 
   PCL_INFO ("All models have been registered!\n");

@@ -111,10 +111,10 @@ main (int argc, char **argv)
   PPFEstimation<PointNormal, PointNormal, PPFSignature> ppf_estimator;
   ppf_estimator.setInputCloud (cloud_subsampled_with_normals_a);
   ppf_estimator.setInputNormals (cloud_subsampled_with_normals_a);
-  ppf_estimator.computeFeature (*ppf_signature_a);
+  ppf_estimator.compute (*ppf_signature_a);
   ppf_estimator.setInputCloud (cloud_subsampled_with_normals_b);
   ppf_estimator.setInputNormals (cloud_subsampled_with_normals_b);
-  ppf_estimator.computeFeature (*ppf_signature_b);
+  ppf_estimator.compute (*ppf_signature_b);
 
   cerr << "Feature cloud sizes: " << ppf_signature_a->points.size () << " " << ppf_signature_b->points.size () << endl;
 
