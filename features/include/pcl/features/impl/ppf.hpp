@@ -41,15 +41,31 @@
 #include "pcl/features/ppf.h"
 #include <pcl/features/pfh.h>
 
+template <typename PointInT, typename PointNT, typename PointOutT>
+pcl::PPFEstimation<PointInT, PointNT, PointOutT>::PPFEstimation ()
+    : FeatureFromNormals <PointInT, PointNT, PointOutT> ()
+{
+  feature_name_ = "PPFEstimation";
+  // slight hack in order to pass the check for the presence of a search method
+  // in Feature::initCompute ()
+  Feature<PointInT, PointOutT>::tree_.reset (new KdTreeFLANN <PointInT> ());
+  Feature<PointInT, PointOutT>::search_radius_ = 1.0f;
+};
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   // initialize output container
-  output.clear ();
-  output.resize (input_->points.size () * input_->points.size ());
+  output.resize (indices_->size () * input_->points.size ());
+  output.height = 1;
+  output.width = (indices_->size () * input_->points.size ());
 
   // compute point pair features for every pair of points in the cloud
-  for (size_t i = 0; i < input_->points.size (); ++i)
+  for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
+  {
+    size_t i = (*indices_)[index_i];
     for (size_t j = 0 ; j < input_->points.size (); ++j)
     {
       PointOutT p;
@@ -72,7 +88,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
         }
         else
         {
-          PCL_ERROR ("Computing pair feature vector between points %zu and %zu went wrong.\n", i, j);
+          PCL_ERROR ("[pcl::PPFEstimation::computeFeature] Computing pair feature vector between points %zu and %zu went wrong.\n", i, j);
           p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = 0.0;
         }
       }
@@ -81,8 +97,9 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
       else
         p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = 0.0;
 
-      output.points[i*input_->points.size () + j] = p;
+      output.points[index_i*input_->points.size () + j] = p;
     }
+  }
 }
 
 #define PCL_INSTANTIATE_PPFEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PPFEstimation<T,NT,OutT>;

@@ -60,24 +60,19 @@ namespace pcl
   class PPFEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
   public:
-    using FeatureFromNormals<PointInT, PointNT, PointOutT>::input_;
+    using PCLBase<PointInT>::indices_;
+    using Feature<PointInT, PointOutT>::input_;
+    using Feature<PointInT, PointOutT>::feature_name_;
     using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
-    using FeatureFromNormals<PointInT, PointNT, PointOutT>::feature_name_;
 
     typedef pcl::PointCloud<PointOutT> PointCloudOut;
 
     /**
      * \brief Empty Constructor
      */
-    PPFEstimation ()
-    : FeatureFromNormals <PointInT, PointNT, PointOutT> ()
-      {
-        feature_name_ = "PPFEstimation";
-      };
+    PPFEstimation ();
 
-
-
-    //  private: /// @todo base class needs search tree!!!
+  private:
     /** \brief The method called for actually doing the computations
      * \param output the resulting point cloud (which should be of type pcl::PPFSignature);
      * its size is the size of the input cloud, squared (i.e., one point for each pair in
