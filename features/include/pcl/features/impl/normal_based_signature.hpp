@@ -66,7 +66,8 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
     size_t point_i = indices_->at (index_i);
     Eigen::MatrixXf s_matrix (N, M);
     Eigen::Vector3f center_point = input_->points[point_i].getVector3fMap ();
-    for (size_t k = 0; k < N; ++k) {
+    for (size_t k = 0; k < N; ++k) 
+    {
       Eigen::VectorXf s_row (M);
       for (size_t l = 0; l < M; ++l)
       {
@@ -140,12 +141,12 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
 
       // do DCT on the s_matrix row-wise
       Eigen::VectorXf dct_row (M);
-      for (size_t k = 0; k < s_row.size (); ++k)
+      for (int m = 0; m < s_row.size (); ++m)
       {
         float Xk = 0.0f;
-        for (size_t n = 0; n < s_row.size (); ++n)
+        for (int n = 0; n < s_row.size (); ++n)
           Xk += s_row[n] * cos (M_PI / M * (n + 0.5f) * k);
-        dct_row[k] = Xk;
+        dct_row[m] = Xk;
       }
       s_row = dct_row;
       s_matrix.row (k) = dct_row;
@@ -172,7 +173,6 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
     Eigen::MatrixXf final_matrix = dft_matrix.block (0, 0, N_prime, M_prime);
 
     PointFeature feature_point;
-    float feature[N_prime * M_prime];
     for (size_t i = 0; i < N_prime; ++i)
       for (size_t j = 0; j < M_prime; ++j)
         feature_point.values[i*M_prime + j] = final_matrix (i, j);

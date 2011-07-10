@@ -77,8 +77,8 @@ namespace pcl
       computeFeature (FeatureCloud &output);
 
     private:
-      size_t N, M, N_prime, M_prime;
       float scale_h, normal_search_radius;
+      size_t N, M, N_prime, M_prime;
   };
 }
 
