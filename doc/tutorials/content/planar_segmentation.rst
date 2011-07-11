@@ -57,10 +57,11 @@ Then, lines:
    :lines: 38-50
 
    
-create the SACSegmentation object and set the model and method type, together
-with the desired distance to the model threshold. In this tutorial, we will use
-the RANSAC method (pcl::SAC_RANSAC) as the robust estimator of choice. Our
-decision is motivated by RANSAC's simplicity (other robust estimators use it as
+create the :pcl:`SACSegmentation <pcl::SACSegmentation>` object and set the model and method type.  
+This is also where we specify the "distance threshold", which  determines how close a point must be to the model 
+in order to be considered an inlier. 
+In this tutorial, we will use the RANSAC method (pcl::SAC_RANSAC) as the robust estimator of choice. 
+Our decision is motivated by RANSAC's simplicity (other robust estimators use it as
 a base and add additional, more complicated concepts). For more information
 about RANSAC, check its `Wikipedia page
 <http://en.wikipedia.org/wiki/RANSAC>`_.
@@ -72,7 +73,7 @@ Finally:
    :lines: 58-61
 
 are used to show the contents of the inlier set, together with the estimated
-model parameters.
+plane parameters (in :math:`ax + by + cz + d = 0` form).
 
 Compiling and running the program
 ---------------------------------

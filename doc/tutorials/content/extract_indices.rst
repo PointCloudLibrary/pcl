@@ -3,8 +3,8 @@
 Extracting indices from a PointCloud
 ------------------------------------
 
-In this tutorial we will learn how to extract a set of indices given by a
-segmentation algorithm from a point cloud. In order to not complicate the
+In this tutorial we will learn how to use an :pcl:`ExtractIndices <pcl::ExtractIndices>` filter to extract a subset of 
+points from a point cloud based on the indices output by a segmentation algorithm. In order to not complicate the
 tutorial, the segmentation algorithm is not explained here. Please check
 the :ref:`planar_segmentation` tutorial for more information.
 
@@ -34,7 +34,7 @@ The explanation
 Now, let's break down the code piece by piece, skipping the obvious.
 
 After the data has been loaded from the input .PCD file, we create a
-*VoxelGrid* filter, to downsample the data. The rationale behind data
+:pcl:`VoxelGrid<pcl::VoxelGrid>` filter, to downsample the data. The rationale behind data
 downsampling here is just to speed things up -- less points means less time
 needed to spend within the segmentation loop.
 
@@ -65,7 +65,7 @@ and
    :language: cpp
    :lines: 67-70
 
-represent the actual indices extraction filter. To process multiple models, we
+represent the actual indices :pcl:`extraction filter <pcl::ExtractIndices>`. To process multiple models, we
 run the process in a loop, and after each model is extracted, we go back to
 obtain the remaining points, and iterate. The *inliers* are obtained from the segmentation process, as follows:
 
