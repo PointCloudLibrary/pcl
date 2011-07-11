@@ -93,7 +93,7 @@ Testing the modified API documentation
 If you want to test it locally on your machine, make sure you have Doxygen
 installed, and go into the build system (here we assume that you followed the
 source installation instructions from
-http://www.pointclouds.org/downloasds.html) and run::
+http://www.pointclouds.org/downloads) and run::
 
   make doc
 
