@@ -101,8 +101,8 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovarian
       }
     }
     
-    // Compute the SVD
-    Eigen::JacobiSVD<Eigen::Matrix3d> svd(cov, Eigen::ComputeThinU);
+    // Compute the SVD (covariance matrix is symmetric so U = V')
+    Eigen::JacobiSVD<Eigen::Matrix3d> svd(cov, Eigen::ComputeFullU);
     cov.setZero ();
     Eigen::Matrix3d U = svd.matrixU ();
     // Reconstitute the covariance matrix with modified singular values using the column     // vectors in V.

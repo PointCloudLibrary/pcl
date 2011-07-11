@@ -103,22 +103,28 @@ namespace pcl
         rigid_transformation_estimation_ = 
           boost::bind (&GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationLM, 
               this, _1, _2, _3, _4, _5); 
+        input_tree_.reset (new pcl::KdTreeFLANN<PointSource>);
       }
 
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
         */
       inline void
-      setInputCloud (const PointCloudTargetConstPtr &cloud)
+      setInputCloud (const PointCloudSourceConstPtr &cloud)
       {
         if (cloud->points.empty ())
         {
           PCL_ERROR ("[pcl::%s::setInputInput] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
           return;
         }
-        input_ = cloud;
+        PointCloudSource input = *cloud;
+        // Set all the point.data[3] values to 1 to aid the rigid transformation
+        for (size_t i = 0; i < input.size (); ++i)
+          input[i].data[3] = 1.0;
+        
+        input_ = input.makeShared ();
         input_tree_->setInputCloud (input_);
-        input_covariances_.reserve (cloud->size ());
+        input_covariances_.reserve (input_->size ());
       }
 
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)
@@ -128,7 +134,7 @@ namespace pcl
       setInputTarget (const PointCloudTargetConstPtr &target)
       {
         pcl::Registration<PointSource, PointTarget>::setInputTarget(target);
-        target_covariances_.reserve (target->size ());
+        target_covariances_.reserve (target_->size ());
       }
 
       /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative
