@@ -44,9 +44,15 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusModelCircle2D defines a model for 2D circle segmentation on the X-Y plane.
-   * \author Radu Bogdan Rusu
+    *
+    * The model coefficients are defined as:
+    * <ul>
+    * <li><b>center.x</b> : the X coordinate of the circle's center
+    * <li><b>center.y</b> : the Y coordinate of the circle's center
+    * <li><b>radius</b>   : the circle's radius
+    * </ul>
+    * \author Radu Bogdan Rusu
     * \ingroup sample_consensus
    */
   template <typename PointT>
