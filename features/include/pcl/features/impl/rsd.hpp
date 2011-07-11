@@ -97,9 +97,7 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
     {
       double p_min = min_max_angle_by_dist[di][0];
       double p_max = min_max_angle_by_dist[di][1];
-      //cerr << p_min << " " << p_max << endl;
       double f = (di+0.5)*max_dist/nr_subdiv;
-      //cerr << f << endl;
       Amint_Amin += p_min * p_min;
       Amint_d += p_min * f;
       Amaxt_Amax += p_max * p_max;
