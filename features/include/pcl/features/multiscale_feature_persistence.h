@@ -39,114 +39,136 @@
 #define PCL_MULTISCALE_FEATURE_PERSISTENCE_H_
 
 #include "pcl/features/fpfh.h"
+#include "pcl/point_representation.h"
 #include <list>
 
 namespace pcl
 {
-//  template <typename PointInT, typename PointFeature>
-//  class MultiscaleFeaturePersistence : public PCLBase<PointInT>
-//  {
-//    public:
-//      typedef PointCloud<PointFeature> FeatureCloud;
-//      typedef typename PointCloud<PointFeature>::Ptr FeatureCloudPtr;
-//      typedef typename Feature<PointInT, PointFeature>::Ptr FeatureEstimatorPtr;
-//
-//      using PCLBase<PointInT>::input_;
-//
-//      /** \brief Empty constructor */
-//      MultiscaleFeaturePersistence ()
-//      {
-//        feature_estimator = FeatureEstimatorPtr ();
-//      };
-//
-//      /** \brief Constructor for setting the scales
-//       * \param a_scale_values vector of scales to determine the characteristic of each scaling step
-//       * \note this parameter will have to be individualized for each implementation of the class
-//       * */
-//      MultiscaleFeaturePersistence (std::vector<float>& a_scale_values)
-//        : scale_values (a_scale_values)
-//      {
-//        feature_estimator = FeatureEstimatorPtr ();
-//      };
-//
-//      /** \brief Setter method for the scale vector
-//       * \param a_scale_values vector of scales to determine the characteristic of each scaling step
-//       * \note this parameter will have to be individualized for each implementation of the class
-//       */
-//      void
-//      setScalesVector (std::vector<float>& a_scale_values) { scale_values = a_scale_values; };
-//
-//      /** \brief Setter method for the feature estimator
-//       * \param a_feature_estimator pointer to the feature estimator instance that will be used
-//       * \note the feature estimator instance should already have the input data given beforehand
-//       * and everything set, ready to be given the compute () command
-//       */
-//      void
-//      setFeatureEstimator (FeatureEstimatorPtr a_feature_estimator)
-//      { feature_estimator = a_feature_estimator; };
-//
-//      /** \brief Method that calls computeFeatureAtScale () for each scale parameter */
-//      void
-//      computeFeaturesAtAllScales ();
-//
-//      virtual void
-//      computeFeatureAtScale (float &scale,
-//                             FeatureCloudPtr &features) = 0;
-//
-//      /**
-//       * @todo find a way of dealing with these
-//       * void determinePersistentFeatures (output something ???)
-//       */
-//
-//
-//    protected:
-//      /** \brief checks if all the necessary input was given and the computations can
-//       * successfully start
-//       */
-//      bool
-//      initCompute ();
-//
-//      /** \brief function that calculates the scalar difference between two features
-//       * \return the difference as a floating point type
-//       */
-//      virtual float
-//      featureDifference (const PointFeature &a,
-//                         const PointFeature &b) = 0;
-//
-//
-//      /** \brief the general parameter for determining each scale level */
-//      std::vector<float> scale_values;
-//
-//      /** \brief the feature estimator that will be used to determine the feature set at each scale level */
-//      FeatureEstimatorPtr feature_estimator;
-//
-//      std::vector<FeatureCloudPtr> features_at_scale;
-//  };
-//
-//
-//  template <typename PointInT, typename PointFeature>
-//  class MultiscaleLocalFeaturePersistence : public MultiscaleFeaturePersistence<PointInT, PointFeature>
-//  {
-//    public:
-//      using MultiscaleFeaturePersistence<PointInT, PointFeature>::feature_estimator;
-//      using MultiscaleFeaturePersistence<PointInT, PointFeature>::features_at_scale;
-//      typedef typename PointCloud<PointFeature>::Ptr FeatureCloudPtr;
-//      MultiscaleLocalFeaturePersistence ();
-//
-//    protected:
-//      void
-//      extractUniqueFeatures ();
-//
-//      void
-//      calculateMeanFeature (PointFeature &mean);
-//
-//      void
-//      computeFeatureAtScale (float &scale,
-//                             FeatureCloudPtr &features);
-//
-//      void
-//      determinePersistentFeatures ();
-//  };
+  /** \brief Generic class for extracting the persistent features from an input point cloud
+   * It can be given any Feature estimator instance and will compute the features of the input
+   * over a multiscale representation of the cloud and output the unique ones over those scales.
+   *
+   * Please refer to the following publication for more details:
+   *    Radu Bogdan Rusu, Zoltan Csaba Marton, Nico Blodow, and Michael Beetz
+   *    Persistent Point Feature Histograms for 3D Point Clouds
+   *    Proceedings of the 10th International Conference on Intelligent Autonomous Systems (IAS-10)
+   *    2008, Baden-Baden, Germany
+   *
+   * \author Alexandru-Eugen Ichim
+   */
+  template <typename PointSource, typename PointFeature>
+  class MultiscaleFeaturePersistence : public PCLBase<PointSource>
+  {
+    public:
+      typedef PointCloud<PointFeature> FeatureCloud;
+      typedef typename PointCloud<PointFeature>::Ptr FeatureCloudPtr;
+      typedef typename Feature<PointSource, PointFeature>::Ptr FeatureEstimatorPtr;
+      typedef boost::shared_ptr<const PointRepresentation <PointFeature> > FeatureRepresentationConstPtr;
+
+      using PCLBase<PointSource>::input_;
+
+      /** \brief Empty constructor */
+      MultiscaleFeaturePersistence ()
+        : feature_estimator_ ()
+      {
+        feature_representation_.reset (new DefaultPointRepresentation<PointFeature>);
+        // No input is needed, hack around the initCompute () check from PCLBase
+        input_.reset (new PointCloud<PointSource> ());
+      };
+
+      /** \brief Method that calls computeFeatureAtScale () for each scale parameter */
+      void
+      computeFeaturesAtAllScales ();
+
+      /** \brief Central function that computes the persistent features
+       * \param output_features a cloud containing the persistent features
+       * \param output_indices vector containing the indices of the points in the input cloud
+       * that have persistent features, under a one-to-one correspondence with the output_features cloud
+       */
+      void
+      determinePersistentFeatures (FeatureCloud &output_features,
+                                   boost::shared_ptr<std::vector<int> > &output_indices);
+
+
+      /** \brief Method for setting the scale parameters for the algorithm
+       * \param scale_values vector of scales to determine the characteristic of each scaling step
+       */
+      void
+      setScalesVector (std::vector<float> &scale_values) { scale_values_ = scale_values; };
+
+      /** \brief Setter method for the feature estimator
+       * \param feature_estimator pointer to the feature estimator instance that will be used
+       * \note the feature estimator instance should already have the input data given beforehand
+       * and everything set, ready to be given the compute () command
+       */
+      void
+      setFeatureEstimator (FeatureEstimatorPtr feature_estimator) { feature_estimator_ = feature_estimator; };
+
+      /** \brief Provide a pointer to the feature representation to use to convert features to k-D vectors.
+       * \param feature_representation the const boost shared pointer to a PointRepresentation
+       */
+      inline void
+      setPointRepresentation (const FeatureRepresentationConstPtr& feature_representation) { feature_representation_ = feature_representation; }
+
+      /** \brief Get a pointer to the feature representation used when converting features into k-D vectors. */
+      inline FeatureRepresentationConstPtr const
+      getPointRepresentation () { return feature_representation_; }
+
+      /** \brief Sets the alpha parameter
+       * \param alpha value to replace the current alpha with
+       */
+      inline void
+      setAlpha (float alpha) { alpha_ = alpha; }
+
+      /** \brief Get the value of the alpha parameter */
+      inline float
+      getAlpha () { return alpha_; }
+
+    protected:
+      /** \brief checks if all the necessary input was given and the computations can successfully start */
+      bool
+      initCompute ();
+
+    private:
+      /** \brief Method to compute the features for the point cloud at the given scale */
+      virtual void
+      computeFeatureAtScale (float &scale,
+                             FeatureCloudPtr &features);
+
+
+      /** \brief function that calculates the scalar difference between two features
+       * \return the difference as a floating point type
+       */
+      float
+      distanceBetweenFeatures (const std::vector<float> &a,
+                               const std::vector<float> &b);
+
+      void
+      calculateMeanFeature ();
+
+      void
+      extractUniqueFeatures ();
+
+
+      /** \brief the general parameter for determining each scale level */
+      std::vector<float> scale_values_;
+
+      float alpha_;
+
+      /** \brief the feature estimator that will be used to determine the feature set at each scale level */
+      FeatureEstimatorPtr feature_estimator_;
+
+      std::vector<FeatureCloudPtr> features_at_scale;
+      std::vector<std::vector<std::vector<float> > > features_at_scale_vectorized;
+      std::vector<float> mean_feature;
+      FeatureRepresentationConstPtr feature_representation_;
+
+      /// two structures in which to hold the results of the unique feature extraction process
+      /// they are superfluous wrt to each other, but improve the time performance of the algorithm
+      std::vector <std::list<size_t> > unique_features_indices;
+      std::vector <std::vector<bool> > unique_features_table;
+  };
+
 
 
 

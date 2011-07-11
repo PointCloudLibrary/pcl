@@ -68,7 +68,7 @@ if(build)
         src/intensity_gradient.cpp
         src/intensity_spin.cpp
         src/moment_invariants.cpp
-#        src/multiscale_feature_persistence.cpp
+        src/multiscale_feature_persistence.cpp
         src/narf.cpp
         src/narf_descriptor.cpp
         src/normal_3d.cpp
