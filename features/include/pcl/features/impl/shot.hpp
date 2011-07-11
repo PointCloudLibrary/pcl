@@ -62,7 +62,7 @@ const float zeroFloatEps8 = 1E-8f;
 inline bool
 areEquals (double val1, double val2, double zeroDoubleEps = zeroDoubleEps15)
 {
-  return (abs (val1 - val2)<zeroDoubleEps); 
+  return (fabs (val1 - val2)<zeroDoubleEps);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ areEquals (double val1, double val2, double zeroDoubleEps = zeroDoubleEps15)
 inline bool
 areEquals (float val1, float val2, float zeroFloatEps = zeroFloatEps8)
 {
-  return (abs (val1 - val2)<zeroFloatEps); 
+  return (fabs (val1 - val2)<zeroFloatEps);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -328,11 +328,11 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
     double zInFeatRef = delta.dot (rf[2]); //(x * feat[i].rf[6] + y * feat[i].rf[7] + z * feat[i].rf[8]);
 
     // To avoid numerical problems afterwards
-    if (abs (yInFeatRef) < 1E-30)
+    if (fabs (yInFeatRef) < 1E-30)
       yInFeatRef  = 0;
-    if (abs (xInFeatRef) < 1E-30)
+    if (fabs (xInFeatRef) < 1E-30)
       xInFeatRef  = 0;
-    if (abs (zInFeatRef) < 1E-30)
+    if (fabs (zInFeatRef) < 1E-30)
       zInFeatRef  = 0;
 
 
@@ -346,9 +346,9 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
     desc_index = desc_index << 1;
 
     if ((xInFeatRef * yInFeatRef > 0) || (xInFeatRef == 0.0))
-      desc_index += (abs (xInFeatRef) >= abs (yInFeatRef)) ? 0 : 4;
+      desc_index += (fabs (xInFeatRef) >= fabs (yInFeatRef)) ? 0 : 4;
     else
-      desc_index += (abs (xInFeatRef) > abs (yInFeatRef)) ? 4 : 0;
+      desc_index += (fabs (xInFeatRef) > fabs (yInFeatRef)) ? 4 : 0;
 
     desc_index += zInFeatRef > 0 ? 1 : 0;
 
@@ -360,7 +360,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
 
     //Interpolation on the cosine (adjacent bins in the histogram)
     binDistance[i_idx] -= step_index;
-    double intWeight = (1- abs (binDistance[i_idx]));
+    double intWeight = (1- fabs (binDistance[i_idx]));
 
     if (binDistance[i_idx] > 0)
       shot[volume_index + ((step_index+1) % nr_bins)] += binDistance[i_idx];
@@ -406,7 +406,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
 
     assert (inclination >= 0.0 && inclination <= PST_RAD_180);
 
-    if (inclination > PST_RAD_90 || (abs (inclination - PST_RAD_90) < 1e-30 && zInFeatRef <= 0))
+    if (inclination > PST_RAD_90 || (fabs (inclination - PST_RAD_90) < 1e-30 && zInFeatRef <= 0))
     {
       double inclinationDistance = (inclination - PST_RAD_135) / PST_RAD_90;
       if (inclination > PST_RAD_135)
@@ -506,11 +506,11 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
     double zInFeatRef = delta.dot (rf[2]); //(x * feat[i].rf[6] + y * feat[i].rf[7] + z * feat[i].rf[8]);
 
     // To avoid numerical problems afterwards
-    if (abs (yInFeatRef) < 1E-30)
+    if (fabs (yInFeatRef) < 1E-30)
       yInFeatRef  = 0;
-    if (abs (xInFeatRef) < 1E-30)
+    if (fabs (xInFeatRef) < 1E-30)
       xInFeatRef  = 0;
-    if (abs (zInFeatRef) < 1E-30)
+    if (fabs (zInFeatRef) < 1E-30)
       zInFeatRef  = 0;
 
     unsigned char bit4 = ((yInFeatRef > 0) || ((yInFeatRef == 0.0) && (xInFeatRef < 0))) ? 1 : 0;
@@ -523,9 +523,9 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
     desc_index = desc_index << 1;
 
     if ((xInFeatRef * yInFeatRef > 0) || (xInFeatRef == 0.0))
-      desc_index += (abs (xInFeatRef) >= abs (yInFeatRef)) ? 0 : 4;
+      desc_index += (fabs (xInFeatRef) >= fabs (yInFeatRef)) ? 0 : 4;
     else
-      desc_index += (abs (xInFeatRef) > abs (yInFeatRef)) ? 4 : 0;
+      desc_index += (fabs (xInFeatRef) > fabs (yInFeatRef)) ? 4 : 0;
 
     desc_index += zInFeatRef > 0 ? 1 : 0;
 
@@ -542,8 +542,8 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
     binDistanceShape[i_idx] -= step_index_shape;
     binDistanceColor[i_idx] -= step_index_color;
 
-    double intWeightShape = (1- abs (binDistanceShape[i_idx]));
-    double intWeightColor = (1- abs (binDistanceColor[i_idx]));
+    double intWeightShape = (1- fabs (binDistanceShape[i_idx]));
+    double intWeightColor = (1- fabs (binDistanceColor[i_idx]));
 
     if (binDistanceShape[i_idx] > 0)
       shot[volume_index_shape + ((step_index_shape + 1) % nr_bins_shape)] += binDistanceShape[i_idx];
@@ -604,7 +604,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
 
     assert (inclination >= 0.0 && inclination <= PST_RAD_180);
 
-    if (inclination > PST_RAD_90 || (abs (inclination - PST_RAD_90) < 1e-30 && zInFeatRef <= 0))
+    if (inclination > PST_RAD_90 || (fabs (inclination - PST_RAD_90) < 1e-30 && zInFeatRef <= 0))
     {
       double inclinationDistance = (inclination - PST_RAD_135) / PST_RAD_90;
       if (inclination > PST_RAD_135)
@@ -759,7 +759,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
       a /= 120.0;
       b /= 120.0;   //normalized LAB components (0<L<1, -1<a<1, -1<b<1)
 
-      double colorDistance = (abs (LRef - L) + ((abs (aRef - a) + abs (bRef - b)) / 2)) /3;
+      double colorDistance = (fabs (LRef - L) + ((fabs (aRef - a) + fabs (bRef - b)) / 2)) /3;
 
       if (colorDistance > 1.0)
         colorDistance = 1.0;
@@ -868,14 +868,14 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (Poin
   rf_[1].setZero ();
   rf_[2].setZero ();
 
-  //if (output.points[0].descriptor.size () != (size_t)descLength_)
-  //  for (size_t idx = 0; idx < indices_->size (); ++idx)
-  //    output.points[idx].descriptor.resize (descLength_);
-  if (output.points[0].size != (size_t)descLength_)
-  {
-    PCL_ERROR ("[pcl::%s::computeFeature] The desired descriptor size (%zu) does not match the output point type feature (%zu)! Aborting...\n", getClassName ().c_str (), descLength_, output.points[0].size);
-    return;
-  }
+  if (output.points[0].descriptor.size () != (size_t)descLength_)
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+      output.points[idx].descriptor.resize (descLength_);
+//  if (output.points[0].size != (size_t)descLength_)
+//  {
+//    PCL_ERROR ("[pcl::%s::computeFeature] The desired descriptor size (%zu) does not match the output point type feature (%zu)! Aborting...\n", getClassName ().c_str (), descLength_, output.points[0].size);
+//    return;
+//  }
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
@@ -919,14 +919,14 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (PointClou
   rf_[1].setZero ();
   rf_[2].setZero ();
 
-//  if (output.points[0].descriptor.size () != (size_t)descLength_)
-//    for (size_t idx = 0; idx < indices_->size (); ++idx)
-//      output.points[idx].descriptor.resize (descLength_);
-  if (output.points[0].size != (size_t)descLength_)
-  {
-    PCL_ERROR ("[pcl::%s::computeFeature] The desired descriptor size (%zu) does not match the output point type feature (%zu)! Aborting...\n", getClassName ().c_str (), descLength_, output.points[0].size);
-    return;
-  }
+  if (output.points[0].descriptor.size () != (size_t)descLength_)
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+      output.points[idx].descriptor.resize (descLength_);
+//  if (output.points[0].size != (size_t)descLength_)
+//  {
+//    PCL_ERROR ("[pcl::%s::computeFeature] The desired descriptor size (%zu) does not match the output point type feature (%zu)! Aborting...\n", getClassName ().c_str (), descLength_, output.points[0].size);
+//    return;
+//  }
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().

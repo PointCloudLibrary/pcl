@@ -33,13 +33,12 @@
  *
  *
  */
-
 #include "pcl/point_types.h"
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/features/shot_omp.h"
 #include "pcl/features/impl/shot_omp.hpp"
-
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT352)));
-PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, ((pcl::PointXYZRGBA))(PCL_NORMAL_POINT_TYPES)((pcl::SHOT1344)));
+PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT)))
+;
+//PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, ((pcl::PointXYZRGBA))(PCL_NORMAL_POINT_TYPES)((pcl::SHOT1344)));
 
