@@ -50,9 +50,6 @@ if(build)
     PCL_ADD_EXECUTABLE(ppf_object_recognition ${SUBSYS_NAME} src/ppf_object_recognition.cpp)
     target_link_libraries(ppf_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_registration pcl_visualization pcl_sample_consensus pcl_segmentation)
     
-    PCL_ADD_EXECUTABLE(surfel_smoothing_test ${SUBSYS_NAME} src/surfel_smoothing_test.cpp)
-    target_link_libraries(surfel_smoothing_test pcl_common pcl_io pcl_filters pcl_features pcl_visualization pcl_surface) 
-
  	PCL_ADD_EXECUTABLE(multiscale_feature_persistence_example ${SUBSYS_NAME} src/multiscale_feature_persistence_example.cpp)
     target_link_libraries(multiscale_feature_persistence_example pcl_common pcl_io pcl_filters pcl_features pcl_visualization)
     
