@@ -44,7 +44,6 @@ inline float Narf::getDescriptorDistance(const Narf& other) const
   float ret = L1_Norm(descriptor_, other.descriptor_, descriptor_size_);
   //float ret = Sublinear_Norm(descriptor_, other.descriptor_, descriptor_size_);
   ret /= descriptor_size_;
-  //std::cerr << ret<<", ";;
   return ret;
 }
 
@@ -69,7 +68,6 @@ inline void Narf::copyToNarf36(Narf36& narf36) const
   //float ret = 0;
   //for (int i=0; i<descriptor_size_; ++i) {
     //float diff = fabsf(*(descriptor2_ptr++) - *(descriptor1_ptr++));
-    ////std::cerr << diff;
     //if (diff < middle_value)
     //{
       //diff = diff*normalization_factor1;
@@ -83,7 +81,6 @@ inline void Narf::copyToNarf36(Narf36& narf36) const
       ////diff = 0.5f + 0.5f*sqrtf(diff);
       ////diff = 0.5f + 0.5f*powf(diff, 0.3f);
     //}
-    ////std::cerr  << " -> " << diff <<"\n";
     //ret += diff;
   //}
   //ret /= descriptor_size_;
