@@ -833,7 +833,6 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
   }
 
   interpolateSingleChannel (cloud, indices, dists, cloud.points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
-  std::cerr << " > " << shot << std::endl;
 
   double accNorm = 0;
   for (int j=0; j< descLength_; j++)
