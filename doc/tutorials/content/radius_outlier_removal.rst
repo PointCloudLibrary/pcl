@@ -35,7 +35,7 @@ This final block of code just displays the contents of the resulting PointCloud 
 
 .. literalinclude:: sources/radius_outlier_removal/radius_outlier_removal.cpp
    :language: cpp
-   :linenos: 37-42
+   :lines: 37-42
 
 Compiling and running the program
 ---------------------------------

@@ -1,7 +1,7 @@
 .. _hull_2d:
 
 Construct a concave or convex hull polygon for a plane model
---------------------------------------------------
+------------------------------------------------------------
 
 In this tutorial we will learn how to calculate a simple 2D hull polygon (concave or convex) for a set of points supported by a plane.  
 
