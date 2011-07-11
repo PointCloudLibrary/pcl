@@ -86,6 +86,15 @@
   (pcl::PointXYZRGBNormal)      \
   (pcl::PointXYZINormal)
 
+// Define all point types that represent features
+#define PCL_FEATURE_POINT_TYPES \
+  (pcl::PFHSignature125)        \
+  (pcl::PPFSignature)           \
+  (pcl::NormalBasedSignature12) \
+  (pcl::FPFHSignature33)        \
+  (pcl::VFHSignature308)        \
+  (pcl::Narf36)
+
 namespace pcl
 {
 
