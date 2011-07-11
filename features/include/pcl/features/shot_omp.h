@@ -74,8 +74,19 @@ namespace pcl
       using Feature<PointInT, PointOutT>::indices_;
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_parameter_;
+      using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT>::descLength_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT>::nr_grid_sector_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT>::nr_shape_bins_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT>::sqradius_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT>::sqradius4_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT>::radius3_4_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT>::radius1_4_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT>::radius1_2_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT>::nr_grid_sector_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT>::rf_;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
@@ -121,8 +132,22 @@ namespace pcl
       using Feature<pcl::PointXYZRGBA, PointOutT>::indices_;
       using Feature<pcl::PointXYZRGBA, PointOutT>::k_;
       using Feature<pcl::PointXYZRGBA, PointOutT>::search_parameter_;
+      using Feature<pcl::PointXYZRGBA, PointOutT>::search_radius_;
       using Feature<pcl::PointXYZRGBA, PointOutT>::surface_;
       using FeatureFromNormals<pcl::PointXYZRGBA, PointNT, PointOutT>::normals_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::descLength_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_grid_sector_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_shape_bins_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::sqradius_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::sqradius4_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::radius3_4_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_4_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_2_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_grid_sector_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::rf_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::b_describe_shape_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::b_describe_color_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_color_bins_;
 
       typedef typename Feature<pcl::PointXYZRGBA, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Feature<pcl::PointXYZRGBA, PointOutT>::PointCloudIn PointCloudIn;

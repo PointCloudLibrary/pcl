@@ -805,8 +805,6 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
   if (b_describe_shape_)
   {
     binDistanceShape.resize (nNeighbors);
-    pcl::Vector3fMapConst normalOrigin = normals.points[index].getNormalVector3fMap ();
-
 
     for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
     {
@@ -917,8 +915,6 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
 
   getSHOTLocalRF (cloud, normals, index, indices, dists, rf);
 
-  pcl::Vector3fMapConst normalOrigin = normals.points[index].getNormalVector3fMap ();
-
   // Clear the resultant shot
   shot.setZero ();
 
@@ -991,7 +987,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (Poin
   rf_[1].setZero ();
   rf_[2].setZero ();
 
-  if (output.points[0].descriptor.size () != descLength_)
+  if (output.points[0].descriptor.size () != (size_t)descLength_)
     for (size_t idx = 0; idx < indices_->size (); ++idx)
       output.points[idx].descriptor.resize (descLength_);
 
@@ -1055,7 +1051,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (PointClou
   rf_[1].setZero ();
   rf_[2].setZero ();
 
-  if (output.points[0].descriptor.size () != descLength_)
+  if (output.points[0].descriptor.size () != (size_t)descLength_)
     for (size_t idx = 0; idx < indices_->size (); ++idx)
       output.points[idx].descriptor.resize (descLength_);
 

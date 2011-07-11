@@ -63,8 +63,6 @@ namespace pcl
     * \author Samuele Salti, Federico Tombari
     * \ingroup features
     */
-
-
   template <typename PointInT, typename PointNT, typename PointOutT> 
   class SHOTEstimationBase : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
@@ -74,6 +72,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::indices_;
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_parameter_;
+      using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
@@ -172,6 +171,27 @@ namespace pcl
       int descLength_;
   };
 
+  /** \brief @b SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
+    * containing points and normals.
+    *
+    * @note If you use this code in any academic work, please cite:
+    *
+    * <ul>
+    * <li> F. Tombari, S. Salti, L. Di Stefano
+    *      Unique Signatures of Histograms for Local Surface Description.
+    *      In Proceedings of the 11th European Conference on Computer Vision (ECCV),
+    *      Heraklion, Greece, September 5-11 2010.
+    * </li>
+    * <li> F. Tombari, S. Salti, L. Di Stefano
+    *      A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
+    *      In Proceedings of the 18th International Conference on Image Processing (ICIP),
+    *      Brussels, Belgium, September 11-14 2011.
+    * </li>
+    * </ul>
+    *
+    * \author Samuele Salti, Federico Tombari
+    * \ingroup features
+    */
   template <typename PointInT, typename PointNT, typename PointOutT> 
   class SHOTEstimation : public SHOTEstimationBase<PointInT, PointNT, PointOutT>
   {
@@ -181,8 +201,22 @@ namespace pcl
       using Feature<PointInT, PointOutT>::indices_;
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_parameter_;
+      using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::descLength_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::nr_grid_sector_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::nr_shape_bins_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::sqradius_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::sqradius4_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::radius3_4_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::radius1_4_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::radius1_2_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::nr_grid_sector_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::rf_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::maxAngularSectors_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::shot_;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
@@ -211,6 +245,27 @@ namespace pcl
                         Eigen::Vector3f *rf);
   };
 
+  /** \brief @b SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
+    * containing points and normals.
+    *
+    * @note If you use this code in any academic work, please cite:
+    *
+    * <ul>
+    * <li> F. Tombari, S. Salti, L. Di Stefano
+    *      Unique Signatures of Histograms for Local Surface Description.
+    *      In Proceedings of the 11th European Conference on Computer Vision (ECCV),
+    *      Heraklion, Greece, September 5-11 2010.
+    * </li>
+    * <li> F. Tombari, S. Salti, L. Di Stefano
+    *      A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
+    *      In Proceedings of the 18th International Conference on Image Processing (ICIP),
+    *      Brussels, Belgium, September 11-14 2011.
+    * </li>
+    * </ul>
+    *
+    * \author Samuele Salti, Federico Tombari
+    * \ingroup features
+    */
   template <typename PointNT, typename PointOutT> 
   class SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT> : public SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>
   {
@@ -220,8 +275,22 @@ namespace pcl
       using Feature<pcl::PointXYZRGBA, PointOutT>::indices_;
       using Feature<pcl::PointXYZRGBA, PointOutT>::k_;
       using Feature<pcl::PointXYZRGBA, PointOutT>::search_parameter_;
+      using Feature<pcl::PointXYZRGBA, PointOutT>::search_radius_;
       using Feature<pcl::PointXYZRGBA, PointOutT>::surface_;
       using FeatureFromNormals<pcl::PointXYZRGBA, PointNT, PointOutT>::normals_;
+      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::descLength_;
+      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_grid_sector_;
+      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_shape_bins_;
+      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::sqradius_;
+      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::sqradius4_;
+      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::radius3_4_;
+      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_4_;
+      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_2_;
+      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_grid_sector_;
+      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::rf_;
+      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::maxAngularSectors_;
+      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateSingleChannel;
+      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::shot_;
 
       typedef typename Feature<pcl::PointXYZRGBA, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Feature<pcl::PointXYZRGBA, PointOutT>::PointCloudIn PointCloudIn;
