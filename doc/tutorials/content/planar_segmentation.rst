@@ -34,34 +34,11 @@ Lines:
    :language: cpp
    :lines: 5-7
 
-import the Sample Consensus model fitting object, and the model and method
-types. As of PCL 0.1.3 (04/15/2010), the following models are supported:
+.. important::
 
-.. code-block:: cpp
-
-   const static int SACMODEL_PLANE          = 0;
-   const static int SACMODEL_LINE           = 1;
-   const static int SACMODEL_CIRCLE2D       = 2;
-   const static int SACMODEL_CIRCLE3D       = 3;
-   const static int SACMODEL_SPHERE         = 4;
-   const static int SACMODEL_CYLINDER       = 5;
-   const static int SACMODEL_CONE           = 6;
-   const static int SACMODEL_TORUS          = 7;
-   const static int SACMODEL_ORIENTED_LINE  = 8;
-   const static int SACMODEL_ORIENTED_PLANE = 9;
-   const static int SACMODEL_PARALLEL_LINES = 10;
-   const static int SACMODEL_NORMAL_PLANE   = 11;
-
-and the following robust estimator methods:
-
-.. code-block:: cpp
-
-   const static int SAC_RANSAC  = 0;
-   const static int SAC_LMEDS   = 1;
-   const static int SAC_MSAC    = 2;
-   const static int SAC_RRANSAC = 3;
-   const static int SAC_RMSAC   = 4;
-   const static int SAC_MLESAC  = 5;
+  Please visit http://docs.pointclouds.org/trunk/group__sample__consensus.html
+  for more information on various other implemented Sample Consensus models and
+  robust estimators.
 
 Lines:
 
