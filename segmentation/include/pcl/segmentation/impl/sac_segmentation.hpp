@@ -49,6 +49,7 @@
 #include "pcl/sample_consensus/ransac.h"
 #include "pcl/sample_consensus/rmsac.h"
 #include "pcl/sample_consensus/rransac.h"
+#include "pcl/sample_consensus/prosac.h"
 
 // Sample Consensus models
 #include "pcl/sample_consensus/model_types.h"
@@ -277,6 +278,12 @@ pcl::SACSegmentation<PointT>::initSAC (const int method_type)
     {
       PCL_DEBUG ("[pcl::%s::initSAC] Using a method of type: SAC_MLESAC with a model threshold of %f\n", getClassName ().c_str (), threshold_);
       sac_.reset (new MaximumLikelihoodSampleConsensus<PointT> (model_, threshold_));
+      break;
+    }
+    case SAC_PROSAC:
+    {
+      PCL_DEBUG ("[pcl::%s::initSAC] Using a method of type: SAC_PROSAC with a model threshold of %f\n", getClassName ().c_str (), threshold_);
+      sac_.reset (new ProgressiveSampleConsensus<PointT> (model_, threshold_));
       break;
     }
   }

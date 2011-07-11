@@ -46,6 +46,7 @@ namespace pcl
   const static int SAC_RRANSAC = 3;
   const static int SAC_RMSAC   = 4;
   const static int SAC_MLESAC  = 5;
+  const static int SAC_PROSAC  = 6;
 }
 
 #endif  //#ifndef PCL_SAMPLE_CONSENSUS_METHOD_TYPES_H_
