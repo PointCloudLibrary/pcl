@@ -186,14 +186,13 @@ bool RangeImageBorderExtractor::changeScoreAccordingToShadowBorderValue(int x, i
   if (border_score<parameters_.minimum_border_probability)
     return false;
   
-  if (border_score == 1.0f) {  // INF neighbor?
+  if (border_score == 1.0f) 
+  {  // INF neighbor?
     if (range_image_->isMaxRange(x+offset_x, y+offset_y))
     {
       shadow_border_idx = (y+offset_y)*range_image_->width + x+offset_x;
       return true;
     }
-    else
-      std::cerr << "WTF?\n";
   }
   
   float best_shadow_border_score = 0.0f;
