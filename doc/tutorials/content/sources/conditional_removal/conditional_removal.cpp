@@ -39,7 +39,7 @@ int
   condrem.setKeepOrganized(true);
 
   // apply filter
-  outrem.filter (*cloud_filtered);
+  condrem.filter (*cloud_filtered);
 
   // display pointcloud after filtering
   std::cerr << "Cloud after filtering: " << std::endl;
