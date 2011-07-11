@@ -42,8 +42,8 @@
 
 namespace pcl
 {
-  /** \brief @b SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
-    * containing points and normals.
+  /** \brief @b SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
+    * a given point cloud dataset containing points and normals.
     *
     * @note If you use this code in any academic work, please cite:
     *
@@ -83,6 +83,7 @@ namespace pcl
       /** \brief Empty constructor. */
       SHOTEstimationBase (int nr_shape_bins = 10) :
         nr_shape_bins_ (nr_shape_bins),
+        rf_ (3),                    // Initialize the placeholder for the point's RF
         nr_grid_sector_ (32),
         maxAngularSectors_ (28),
         descLength_ (0)
@@ -91,7 +92,8 @@ namespace pcl
       };
 
     public:
-      /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
+      /** \brief @b SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
+        * a given point cloud dataset containing points and normals.
         * \param cloud the dataset containing the XYZ Cartesian coordinates of the points
         * \param normals the dataset containing the surface normals at each point in \a cloud
         * \param index the index of the point
@@ -106,16 +108,17 @@ namespace pcl
                         const std::vector<int> &indices, 
                         const std::vector<float> &dists, 
                         Eigen::VectorXf &shot,
-                        Eigen::Vector3f *rf) = 0;
+                        std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf) = 0;
 
-
+      /** \brief
+        */
       float 
       getSHOTLocalRF (const pcl::PointCloud<PointInT> &cloud, 
                       const pcl::PointCloud<PointNT> &normals, 
                       const int index, 
                       const std::vector<int> &indices, 
                       const std::vector<float> &dists, 
-                      Eigen::Vector3f *rf);
+                      std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf);
 
     protected:
 
@@ -131,8 +134,9 @@ namespace pcl
       interpolateSingleChannel (const pcl::PointCloud<PointInT> &cloud, 
                                 const std::vector<int> &indices,
                                 const std::vector<float> &dists, 
-                                const Eigen::Vector3f &centralPoint, 
-                                const Eigen::Vector3f rf[3],
+                                const Eigen::Vector4f &centralPoint, 
+                                const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf
+,
                                 std::vector<double> &binDistance, 
                                 const int nr_bins,
                                 Eigen::VectorXf &shot);
@@ -144,7 +148,7 @@ namespace pcl
       Eigen::VectorXf shot_;
 
       /** \brief Placeholder for a point's RF. */
-      Eigen::Vector3f rf_[3];
+      std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > rf_;
 
       /** \brief The squared search radius.*/
       double sqradius_;
@@ -171,8 +175,8 @@ namespace pcl
       int descLength_;
   };
 
-  /** \brief @b SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
-    * containing points and normals.
+  /** \brief @b SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
+    * a given point cloud dataset containing points and normals.
     *
     * @note If you use this code in any academic work, please cite:
     *
@@ -242,7 +246,7 @@ namespace pcl
                         const std::vector<int> &indices, 
                         const std::vector<float> &dists, 
                         Eigen::VectorXf &shot,
-                        Eigen::Vector3f *rf);
+                        std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf);
   };
 
   /** \brief @b SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
@@ -323,7 +327,7 @@ namespace pcl
                         const std::vector<int> &indices, 
                         const std::vector<float> &dists, 
                         Eigen::VectorXf &shot,
-                        Eigen::Vector3f *rf);
+                        std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf);
 
     protected:
 
@@ -335,23 +339,28 @@ namespace pcl
       void 
       computeFeature (PointCloudOut &output);
 
+      /** \brief
+       */
       void 
       interpolateDoubleChannel (const pcl::PointCloud<pcl::PointXYZRGBA> &cloud, 
                                 const std::vector<int> &indices,
                                 const std::vector<float> &dists, 
-                                const Eigen::Vector3f &centralPoint, 
-                                const Eigen::Vector3f rf[3], 
+                                const Eigen::Vector4f &centralPoint, 
+                                const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf,
                                 std::vector<double> &binDistanceShape, 
                                 std::vector<double> &binDistanceColor, 
                                 const int nr_bins_shape,
                                 const int nr_bins_color,
                                 Eigen::VectorXf &shot);
 
+      /** \brief
+       */
       static void 
       RGB2CIELAB (unsigned char R, unsigned char G, unsigned char B, float &L, float &A, float &B2);
 
       /** \brief Compute shape descriptor. */
       bool b_describe_shape_;
+
       /** \brief Compute color descriptor. */
       bool b_describe_color_;
 

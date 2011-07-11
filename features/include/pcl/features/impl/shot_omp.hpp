@@ -56,7 +56,9 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
   int data_size = indices_->size ();
   Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
-  Eigen::Vector3f *rf = new Eigen::Vector3f[threads_*3];
+  std::vector<std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > > rfs (threads_);
+  for (size_t i = 0; i < rfs.size (); ++i)
+    rfs[i].resize (3);
 
   for (int i = 0; i < threads_; i++)
     shot[i].setZero (descLength_);
@@ -78,7 +80,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
     // Estimate the SHOT at each patch
     tid = omp_get_thread_num ();
-    computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], &rf[tid*3]);
+    computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], rfs[tid]);
 
     // Copy into the resultant cloud
     for (int d = 0; d < shot[tid].size (); ++d)
@@ -95,24 +97,6 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 template <typename PointNT, typename PointOutT> void
 pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
-  // Check if input was set
-  if (!normals_)
-  {
-    PCL_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
-    return;
-  }
-  if (normals_->points.size () != surface_->points.size ())
-  {
-    PCL_ERROR (
-      "[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n",
-      getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
-    return;
-  }
-
   if (threads_ < 0)
     threads_ = omp_get_max_threads ();
 
@@ -127,7 +111,9 @@ pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (P
 
   int data_size = indices_->size ();
   Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
-  Eigen::Vector3f *rf = new Eigen::Vector3f[threads_*3];
+  std::vector<std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > > rfs (threads_);
+  for (size_t i = 0; i < rfs.size (); ++i)
+    rfs[i].resize (3);
 
   for (int i = 0; i < threads_; i++)
     shot[i].setZero (descLength_);
@@ -149,7 +135,7 @@ pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (P
 
     // Estimate the SHOT at each patch
     tid = omp_get_thread_num ();
-    computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], &rf[tid*3]);
+    computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], rfs[tid]);
 
     // Copy into the resultant cloud
     for (int d = 0; d < shot[tid].size (); ++d)

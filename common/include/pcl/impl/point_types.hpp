@@ -648,6 +648,25 @@ inline std::ostream& operator << (std::ostream& os, const NormalBasedSignature12
   return (os);
 }
 
+/** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT). 
+  * \ingroup common
+  */
+struct SHOT
+{
+  std::vector<float> descriptor;
+	float rf[9];
+  uint32_t size;
+};
+
+inline std::ostream& operator << (std::ostream& os, const SHOT& p)
+{
+	for (int i = 0; i < 9; ++i) 
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+  for (size_t i = 0; i < p.descriptor.size (); ++i) 
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < p.descriptor.size()-1 ? ", " : ")");
+  return (os);
+}
+
 /** \brief A point structure representing the Signature of Histograms of OrienTations (SHOT). 
   * \ingroup common
   */
@@ -672,25 +691,6 @@ inline std::ostream& operator << (std::ostream& os, const SHOT352& p)
     os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
   for (uint32_t i = 0; i < p.size; ++i) 
     os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 351 ? ", " : ")");
-  return (os);
-}
-
-/** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT). 
-  * \ingroup common
-  */
-struct SHOT
-{
-  std::vector<float> descriptor;
-	float rf[9];
-  uint32_t size;
-};
-
-inline std::ostream& operator << (std::ostream& os, const SHOT& p)
-{
-	for (int i = 0; i < 9; ++i) 
-    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-  for (size_t i = 0; i < p.descriptor.size (); ++i) 
-    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < p.descriptor.size()-1 ? ", " : ")");
   return (os);
 }
 

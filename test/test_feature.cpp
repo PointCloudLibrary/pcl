@@ -535,50 +535,43 @@ TEST (PCL, PrincipalCurvaturesEstimation)
   boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
   n.setIndices (indicesptr);
   n.setSearchMethod (tree);
-  n.setRadiusSearch (20 * mr);    
+  n.setRadiusSearch (20 * mr);
   n.compute (*normals);
 
+  EXPECT_NEAR (normals->points[103].normal_x,  0.36683175,  1e-4);
+  EXPECT_NEAR (normals->points[103].normal_y,  -0.44696972,  1e-4);
+  EXPECT_NEAR (normals->points[103].normal_z,  -0.81587529,  1e-4);
+  EXPECT_NEAR (normals->points[200].normal_x,  -0.71414840,   1e-4);
+  EXPECT_NEAR (normals->points[200].normal_y,  -0.06002361,  1e-4);
+  EXPECT_NEAR (normals->points[200].normal_z,  -0.69741613,  1e-4);
 
-	EXPECT_NEAR (normals->points[103].normal_x,  0.36683175,  1e-4);
-	EXPECT_NEAR (normals->points[103].normal_y,  -0.44696972,  1e-4);
-	EXPECT_NEAR (normals->points[103].normal_z,  -0.81587529,  1e-4);
-
-	EXPECT_NEAR (normals->points[200].normal_x,  -0.71414840,   1e-4);
-	EXPECT_NEAR (normals->points[200].normal_y,  -0.06002361,  1e-4);
-	EXPECT_NEAR (normals->points[200].normal_z,  -0.69741613,  1e-4);
-
-	EXPECT_NEAR (normals->points[140].normal_x,  -0.45109111,   1e-4);
-	EXPECT_NEAR (normals->points[140].normal_y,  -0.19499126,  1e-4);
-	EXPECT_NEAR (normals->points[140].normal_z,  -0.87091631,  1e-4);
+  EXPECT_NEAR (normals->points[140].normal_x,  -0.45109111,   1e-4);
+  EXPECT_NEAR (normals->points[140].normal_y,  -0.19499126,  1e-4);
+  EXPECT_NEAR (normals->points[140].normal_z,  -0.87091631,  1e-4);
 
   SHOTEstimation<PointXYZ, Normal, SHOT352> shot;
-	shot.setInputNormals (normals);
-	EXPECT_EQ (shot.getInputNormals (), normals);
-	
-	shot.setRadiusSearch ( 20 * mr);
-	
-  
+  shot.setInputNormals (normals);
+  EXPECT_EQ (shot.getInputNormals (), normals);
+  shot.setRadiusSearch (20 * mr);
+
   // Object
   PointCloud<SHOT352>::Ptr shots (new PointCloud<SHOT352> ());
-	
+
   // set parameters
   shot.setInputCloud (cloud.makeShared ());
   shot.setIndices (indicesptr);
   shot.setSearchMethod (tree);
 
-	
   // estimate
-  
-	shot.compute (*shots);
+  shot.compute (*shots);
   EXPECT_EQ (shots->points.size (), indices.size ());
 
-
-	EXPECT_NEAR (shots->points[103].descriptor[9 ],  0.0072018504,  1e-4);
-	EXPECT_NEAR (shots->points[103].descriptor[10],  0.0023103887,  1e-4);
-	EXPECT_NEAR (shots->points[103].descriptor[11],  0.0024724449,  1e-4);
-	EXPECT_NEAR (shots->points[103].descriptor[19],  0.0031367359,  1e-4);
-	EXPECT_NEAR (shots->points[103].descriptor[20],  0.17439659,    1e-4);
-	EXPECT_NEAR (shots->points[103].descriptor[21],  0.070665278,   1e-4);
+  EXPECT_NEAR (shots->points[103].descriptor[9 ],  0.0072018504,  1e-4);
+  EXPECT_NEAR (shots->points[103].descriptor[10],  0.0023103887,  1e-4);
+  EXPECT_NEAR (shots->points[103].descriptor[11],  0.0024724449,  1e-4);
+  EXPECT_NEAR (shots->points[103].descriptor[19],  0.0031367359,  1e-4);
+  EXPECT_NEAR (shots->points[103].descriptor[20],  0.17439659,    1e-4);
+  EXPECT_NEAR (shots->points[103].descriptor[21],  0.070665278,   1e-4);
   EXPECT_NEAR (shots->points[103].descriptor[42],  0.013304681,   1e-4);
   EXPECT_NEAR (shots->points[103].descriptor[53],  0.0073520984,  1e-4);
   EXPECT_NEAR (shots->points[103].descriptor[54],  0.013584172,   1e-4);
@@ -587,12 +580,12 @@ TEST (PCL, PrincipalCurvaturesEstimation)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, GenericSHOTShapeEstimation)
+/*TEST (PCL, GenericSHOTShapeEstimation)
 {
-	// SHOT length
-	const int shapeStep_ = 20;
-	//const int dim = 32*(shapeStep_+1);
-  
+  // SHOT length
+  const int shapeStep_ = 20;
+  //const int dim = 32*(shapeStep_+1);
+
   // Estimate normals first
   double mr = 0.002;
   NormalEstimation<PointXYZ, Normal> n;
@@ -602,16 +595,15 @@ TEST (PCL, GenericSHOTShapeEstimation)
   boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
   n.setIndices (indicesptr);
   n.setSearchMethod (tree);
-  n.setRadiusSearch (20 * mr);    
+  n.setRadiusSearch (20 * mr);
   n.compute (*normals);
 
   SHOTEstimation<PointXYZ, Normal, SHOT> shot(shapeStep_);
-	shot.setInputNormals (normals);
-	EXPECT_EQ (shot.getInputNormals (), normals);
-	
-	shot.setRadiusSearch ( 20 * mr);
-	
-  
+  shot.setInputNormals (normals);
+  EXPECT_EQ (shot.getInputNormals (), normals);
+
+  shot.setRadiusSearch ( 20 * mr);
+
   PointCloud< SHOT >::Ptr shots (new PointCloud< SHOT > ());
 
   // set parameters
@@ -619,32 +611,28 @@ TEST (PCL, GenericSHOTShapeEstimation)
   shot.setIndices (indicesptr);
   shot.setSearchMethod (tree);
 
-	
   // estimate
-  
-	shot.compute (*shots);
+  shot.compute (*shots);
   EXPECT_EQ (shots->points.size (), indices.size ());
 
 
-	EXPECT_NEAR (shots->points[103].descriptor[18],  0.0077019366,  1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[19],  0.0024708188,  1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[21],  0.0079652183,  1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[38],  0.0067090928,  1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[39],  0.17498907,  1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[40],  0.078413926,  1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[18],  0.0077019366,  1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[19],  0.0024708188,  1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[21],  0.0079652183,  1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[38],  0.0067090928,  1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[39],  0.17498907,  1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[40],  0.078413926,  1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[81],  0.014228539,  1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[103],  0.022390056,  1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[105],  0.0058866320,  1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[123],  0.019105887,  1e-5);
-
-}
+}*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, SHOTShapeAndColorEstimation)
+/*TEST (PCL, SHOTShapeAndColorEstimation)
 {
-
-	double mr = 0.002;
-	 // Estimate normals first
+  double mr = 0.002;
+  // Estimate normals first
   NormalEstimation<PointXYZ, Normal> n;
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   // set parameters
@@ -654,73 +642,62 @@ TEST (PCL, SHOTShapeAndColorEstimation)
   n.setSearchMethod (tree);
   n.setRadiusSearch (20 * mr);    
   n.compute (*normals);
+
+  pcl::KdTreeFLANN<pcl::PointXYZRGBA>::Ptr rgbaTree;
+  rgbaTree.reset (new KdTreeFLANN<PointXYZRGBA> (false));
+
+  // Object
+  SHOTEstimation<PointXYZRGBA, Normal, SHOT1344> shot (true, true);
+  shot.setInputNormals (normals);
+  EXPECT_EQ (shot.getInputNormals (), normals);
   
-	pcl::KdTreeFLANN<pcl::PointXYZRGBA>::Ptr rgbaTree;
+  shot.setRadiusSearch ( 20 * mr);
 
-	rgbaTree.reset (new KdTreeFLANN<PointXYZRGBA> (false));
-  
+  // Create fake point cloud with colors
+  pcl::PointCloud<pcl::PointXYZRGBA> cloudWithColors;
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+  {
+    pcl::PointXYZRGBA p;
+    p.x = cloud.points[i].x;
+    p.y = cloud.points[i].y;
+    p.z = cloud.points[i].z;
 
-	// Object
-  SHOTEstimation<PointXYZRGBA, Normal, SHOT1344> shot(true, true);
-	shot.setInputNormals (normals);
-  
-	EXPECT_EQ (shot.getInputNormals (), normals);
-	
-	shot.setRadiusSearch ( 20 * mr);
+    p.rgba = ( (i%255) << 16 ) +  ( ( (255 - i ) %255) << 8)  + ( ( i*37 ) %255);
+    cloudWithColors.push_back(p);
+  }
 
-	// Create fake point cloud with colors
-	pcl::PointCloud<pcl::PointXYZRGBA> cloudWithColors;
-	for (size_t i = 0; i < cloud.points.size (); ++i)
-	{
-		pcl::PointXYZRGBA p;
-		p.x = cloud.points[i].x;
-		p.y = cloud.points[i].y;
-		p.z = cloud.points[i].z;
+  rgbaTree->setInputCloud (cloudWithColors.makeShared ());
+  PointCloud<SHOT1344>::Ptr shots (new PointCloud<SHOT1344>);
 
-		
-		p.rgba = ( (i%255) << 16 ) +  ( ( (255 - i ) %255) << 8)  + ( ( i*37 ) %255);
-		cloudWithColors.push_back(p);
-	
-	}
-
-
-	rgbaTree->setInputCloud (cloudWithColors.makeShared ());
-  
-	PointCloud<SHOT1344>::Ptr shots (new PointCloud<SHOT1344> ());
-	
-	shot.setInputCloud (cloudWithColors.makeShared ());
+  shot.setInputCloud (cloudWithColors.makeShared ());
   shot.setIndices (indicesptr);
   shot.setSearchMethod (rgbaTree);
-	
 
-	 // estimate
+  // estimate
   shot.compute (*shots);
   EXPECT_EQ (shots->points.size (), indices.size ());
 
-
-	EXPECT_NEAR (shots->points[103].descriptor[10],  0.0020453099, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[11],  0.0021887729, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[21],  0.062557608, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[42],  0.011778189, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[53],  0.0065085669, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[54],  0.012025614, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[10],  0.0020453099, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[11],  0.0021887729, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[21],  0.062557608, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[42],  0.011778189, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[53],  0.0065085669, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[54],  0.012025614, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[55],  0.0044803056, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[64],  0.064429596, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[65],  0.046486385, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[86],  0.011518310, 1e-5);
 
-	EXPECT_NEAR (shots->points[103].descriptor[357],  0.0020453099, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[360],  0.0027993850, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[386],  0.045115642, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[387],  0.059068538, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[389],  0.0047547864, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[453],  0.0051176427, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[357],  0.0020453099, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[360],  0.0027993850, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[386],  0.045115642, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[387],  0.059068538, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[389],  0.0047547864, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[453],  0.0051176427, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[481],  0.0053625242, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[482],  0.012025614, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[511],  0.0057367259, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[512],  0.048357654, 1e-5);
-	
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -742,40 +719,37 @@ TEST (PCL, SHOTShapeEstimationOpenMP)
   shot.setInputNormals (normals);
   EXPECT_EQ (shot.getInputNormals (), normals);
 
-	shot.setRadiusSearch ( 20 * mr);
+  shot.setRadiusSearch ( 20 * mr);
 
   // Object
-  PointCloud<SHOT352>::Ptr shots (new PointCloud<SHOT352> ());
+  PointCloud<SHOT352>::Ptr shots (new PointCloud<SHOT352>);
 
   // set parameters
   shot.setInputCloud (cloud.makeShared ());
   shot.setIndices (indicesptr);
   shot.setSearchMethod (tree);
-	
+
   // estimate
-	shot.compute (*shots);
+  shot.compute (*shots);
   EXPECT_EQ (shots->points.size (), indices.size ());
 
-	EXPECT_NEAR (shots->points[103].descriptor[9 ],  0.0072018504,  1e-4);
-	EXPECT_NEAR (shots->points[103].descriptor[10],  0.0023103887,  1e-4);
-	EXPECT_NEAR (shots->points[103].descriptor[11],  0.0024724449,  1e-4);
-	EXPECT_NEAR (shots->points[103].descriptor[19],  0.0031367359,  1e-4);
-	EXPECT_NEAR (shots->points[103].descriptor[20],  0.17439659,    1e-4);
-	EXPECT_NEAR (shots->points[103].descriptor[21],  0.070665278,   1e-4);
+  EXPECT_NEAR (shots->points[103].descriptor[9 ],  0.0072018504,  1e-4);
+  EXPECT_NEAR (shots->points[103].descriptor[10],  0.0023103887,  1e-4);
+  EXPECT_NEAR (shots->points[103].descriptor[11],  0.0024724449,  1e-4);
+  EXPECT_NEAR (shots->points[103].descriptor[19],  0.0031367359,  1e-4);
+  EXPECT_NEAR (shots->points[103].descriptor[20],  0.17439659,    1e-4);
+  EXPECT_NEAR (shots->points[103].descriptor[21],  0.070665278,   1e-4);
   EXPECT_NEAR (shots->points[103].descriptor[42],  0.013304681,   1e-4);
   EXPECT_NEAR (shots->points[103].descriptor[53],  0.0073520984,  1e-4);
   EXPECT_NEAR (shots->points[103].descriptor[54],  0.013584172,   1e-4);
   EXPECT_NEAR (shots->points[103].descriptor[55],  0.0050609680,  1e-4);
-
 }
-
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
 {
-	double mr = 0.002;
-	 // Estimate normals first
+  double mr = 0.002;
+  // Estimate normals first
   NormalEstimation<PointXYZ, Normal> n;
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   // set parameters
@@ -783,75 +757,70 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
   boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
   n.setIndices (indicesptr);
   n.setSearchMethod (tree);
-  n.setRadiusSearch (20 * mr);    
+  n.setRadiusSearch (20 * mr);
   n.compute (*normals);
-  
-	pcl::KdTreeFLANN<pcl::PointXYZRGBA>::Ptr rgbaTree;
 
-	rgbaTree.reset (new KdTreeFLANN<PointXYZRGBA> (false));
-  
+  pcl::KdTreeFLANN<pcl::PointXYZRGBA>::Ptr rgbaTree;
 
-	// Object
+  rgbaTree.reset (new KdTreeFLANN<PointXYZRGBA> (false));
+
+  // Object
   SHOTEstimationOMP<pcl::PointXYZRGBA, Normal, SHOT1344> shot (true, true, -1);
-	shot.setInputNormals (normals);
-  
-	EXPECT_EQ (shot.getInputNormals (), normals);
-	
-	shot.setRadiusSearch ( 20 * mr);
+  shot.setInputNormals (normals);
 
-	// Create fake point cloud with colors
-	pcl::PointCloud<pcl::PointXYZRGBA> cloudWithColors;
-	for (size_t i = 0; i < cloud.points.size (); ++i)
-	{
-		pcl::PointXYZRGBA p;
-		p.x = cloud.points[i].x;
-		p.y = cloud.points[i].y;
-		p.z = cloud.points[i].z;
+  EXPECT_EQ (shot.getInputNormals (), normals);
 
-		
-		p.rgba = ( (i%255) << 16 ) +  ( ( (255 - i ) %255) << 8)  + ( ( i*37 ) %255);
-		cloudWithColors.push_back(p);
-	
-	}
+  shot.setRadiusSearch ( 20 * mr);
 
+  // Create fake point cloud with colors
+  pcl::PointCloud<pcl::PointXYZRGBA> cloudWithColors;
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+  {
+    pcl::PointXYZRGBA p;
+    p.x = cloud.points[i].x;
+    p.y = cloud.points[i].y;
+    p.z = cloud.points[i].z;
 
-	rgbaTree->setInputCloud (cloudWithColors.makeShared ());
-  
-	PointCloud<SHOT1344>::Ptr shots (new PointCloud<SHOT1344> ());
-	
-	shot.setInputCloud (cloudWithColors.makeShared ());
+    p.rgba = ( (i%255) << 16 ) +  ( ( (255 - i ) %255) << 8)  + ( ( i*37 ) %255);
+    cloudWithColors.push_back(p);
+  }
+
+  rgbaTree->setInputCloud (cloudWithColors.makeShared ());
+
+  PointCloud<SHOT1344>::Ptr shots (new PointCloud<SHOT1344> ());
+
+  shot.setInputCloud (cloudWithColors.makeShared ());
   shot.setIndices (indicesptr);
   shot.setSearchMethod (rgbaTree);
-	
 
-	 // estimate
-	shot.compute (*shots);
+   // estimate
+  shot.compute (*shots);
   EXPECT_EQ (shots->points.size (), indices.size ());
 
 
-	EXPECT_NEAR (shots->points[103].descriptor[10],  0.0020453099, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[11],  0.0021887729, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[21],  0.062557608, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[42],  0.011778189, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[53],  0.0065085669, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[54],  0.012025614, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[10],  0.0020453099, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[11],  0.0021887729, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[21],  0.062557608, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[42],  0.011778189, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[53],  0.0065085669, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[54],  0.012025614, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[55],  0.0044803056, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[64],  0.064429596, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[65],  0.046486385, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[86],  0.011518310, 1e-5);
 
-	EXPECT_NEAR (shots->points[103].descriptor[357],  0.0020453099, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[360],  0.0027993850, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[386],  0.045115642, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[387],  0.059068538, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[389],  0.0047547864, 1e-5);
-	EXPECT_NEAR (shots->points[103].descriptor[453],  0.0051176427, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[357],  0.0020453099, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[360],  0.0027993850, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[386],  0.045115642, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[387],  0.059068538, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[389],  0.0047547864, 1e-5);
+  EXPECT_NEAR (shots->points[103].descriptor[453],  0.0051176427, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[481],  0.0053625242, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[482],  0.012025614, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[511],  0.0057367259, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[512],  0.048357654, 1e-5);
-}*/
-
+}
+*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PFHEstimation)

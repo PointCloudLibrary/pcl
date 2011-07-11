@@ -39,12 +39,8 @@
 #include "pcl/features/shot.h"
 #include "pcl/features/impl/shot.hpp"
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
 // Instantiations of specific point types
 PCL_INSTANTIATE_PRODUCT(SHOTEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT352)));
-PCL_INSTANTIATE_PRODUCT(SHOTEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT)));
 PCL_INSTANTIATE_PRODUCT(SHOTEstimation, ((pcl::PointXYZRGBA))(PCL_NORMAL_POINT_TYPES)((pcl::SHOT1344)));
+//PCL_INSTANTIATE_PRODUCT(SHOTEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT)));
 
