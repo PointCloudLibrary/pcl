@@ -44,6 +44,8 @@ template<typename PointInT, typename PointNT, typename PointOutT>
   void
   pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
   {
+
+	
     if (threads_ < 0)
       threads_ = omp_get_max_threads ();
 
@@ -54,6 +56,10 @@ template<typename PointInT, typename PointNT, typename PointOutT>
     radius3_4_ = (search_radius_ * 3) / 4;
     radius1_4_ = search_radius_ / 4;
     radius1_2_ = search_radius_ / 2;
+
+	if (output.points[0].descriptor.size () != (size_t)descLength_)
+		for (size_t idx = 0; idx < indices_->size (); ++idx)
+			output.points[idx].descriptor.resize (descLength_);
 
     int data_size = indices_->size ();
     Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
@@ -77,8 +83,6 @@ template<typename PointInT, typename PointNT, typename PointOutT>
 
       this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
-      this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
-
       // Estimate the SHOT at each patch
       tid = omp_get_thread_num ();
       computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], rfs[tid]);
@@ -87,7 +91,7 @@ template<typename PointInT, typename PointNT, typename PointOutT>
       for (int d = 0; d < shot[tid].size (); ++d)
         output.points[idx].descriptor[d] = shot[tid][d];
       for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = rf_[tid * 3 + d / 3][d % 3];
+        output.points[idx].rf[d] = rfs[tid][d/3][d % 3];
     }
 
     delete[] shot;
@@ -98,6 +102,7 @@ template<typename PointNT, typename PointOutT>
   void
   pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
   {
+
     if (threads_ < 0)
       threads_ = omp_get_max_threads ();
 
@@ -110,6 +115,10 @@ template<typename PointNT, typename PointOutT>
     radius1_4_ = search_radius_ / 4;
     radius1_2_ = search_radius_ / 2;
 
+	if (output.points[0].descriptor.size () != (size_t)descLength_)
+		for (size_t idx = 0; idx < indices_->size (); ++idx)
+			output.points[idx].descriptor.resize (descLength_);
+
     int data_size = indices_->size ();
     Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
     std::vector<std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > > rfs (threads_);
@@ -132,8 +141,6 @@ template<typename PointNT, typename PointOutT>
 
       this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
-      this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
-
       // Estimate the SHOT at each patch
       tid = omp_get_thread_num ();
       computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], rfs[tid]);
@@ -142,7 +149,7 @@ template<typename PointNT, typename PointOutT>
       for (int d = 0; d < shot[tid].size (); ++d)
         output.points[idx].descriptor[d] = shot[tid][d];
       for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = rf_[tid * 3 + d / 3][d % 3];
+        output.points[idx].rf[d] = rfs[tid][d / 3][d % 3];
     }
 
     delete[] shot;

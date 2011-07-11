@@ -85,7 +85,6 @@ namespace pcl
       using SHOTEstimation<PointInT, PointNT, PointOutT>::radius3_4_;
       using SHOTEstimation<PointInT, PointNT, PointOutT>::radius1_4_;
       using SHOTEstimation<PointInT, PointNT, PointOutT>::radius1_2_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT>::nr_grid_sector_;
       using SHOTEstimation<PointInT, PointNT, PointOutT>::rf_;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
@@ -143,7 +142,6 @@ namespace pcl
       using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::radius3_4_;
       using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_4_;
       using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_2_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_grid_sector_;
       using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::rf_;
       using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::b_describe_shape_;
       using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::b_describe_color_;

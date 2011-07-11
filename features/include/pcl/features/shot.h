@@ -216,7 +216,6 @@ namespace pcl
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::radius3_4_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::radius1_4_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::radius1_2_;
-      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::nr_grid_sector_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::rf_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::maxAngularSectors_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel;
@@ -290,7 +289,6 @@ namespace pcl
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::radius3_4_;
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_4_;
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_2_;
-      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_grid_sector_;
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::rf_;
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::maxAngularSectors_;
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateSingleChannel;
