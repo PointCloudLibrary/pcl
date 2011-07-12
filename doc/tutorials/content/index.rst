@@ -12,7 +12,28 @@ below is automatically generated from reST files located in our SVN repository.
 As always, we would be happy to hear your comments and receive your
 contributions on any tutorial.
 
-* Basic Usage
+Table of contents
+-----------------
+
+  * :ref:`basic_usage`
+  * :ref:`advanced_usage`
+  * :ref:`applications_tutorial`
+  * :ref:`features_tutorial`
+  * :ref:`filtering_tutorial`
+  * :ref:`i_o`
+  * :ref:`keypoints_tutorial`
+  * :ref:`octree_tutorial`
+  * :ref:`range_images`
+  * :ref:`registration_tutorial`
+  * :ref:`segmentation_tutorial`
+  * :ref:`surface_tutorial`
+  * :ref:`visualization_tutorial`
+
+
+.. _basic_usage:
+
+Basic Usage
+-----------
 
   * :ref:`using_pcl`
 
@@ -74,7 +95,10 @@ contributions on any tutorial.
      .. |mi_4| image:: images/windows_logo.png
                :height: 100px
 
-* Advanced Usage
+.. _advanced_usage:
+
+Advanced Usage
+--------------
 
   * :ref:`adding_custom_ptype`
 
@@ -90,210 +114,11 @@ contributions on any tutorial.
 
      .. |au_1| image:: images/pcl_logo.png
                :height: 75px
-* I/O
 
-  * :ref:`pcd_file_format`
+.. _features_tutorial:
 
-     ======  ======
-     |i_o0|  Title: **The PCD (Point Cloud Data) file format**
-
-             Author: *Radu B. Rusu*
-
-             Compatibility: > PCL 0.9
-
-             This document describes the PCD file format, and the way it is used inside PCL.
-     ======  ======
-     
-     .. |i_o0| image:: images/PCD_icon.png
-               :height: 100px
-
-  * :ref:`reading_pcd`
-
-     ======  ======
-     |i_o1|  Title: **Reading Point Cloud data from PCD files**
-
-             Author: *Radu B. Rusu*
-
-             Compatibility: > PCL 0.5
-
-             In this tutorial, we will learn how to read a Point Cloud from a PCD file.
-     ======  ======
-     
-     .. |i_o1| image:: images/read_pcd.jpg
-               :height: 100px
-
-  * :ref:`writing_pcd`
-
-     ======  ======
-     |i_o2|  Title: **Writing Point Cloud data to PCD files**
-
-             Author: *Radu B. Rusu*
-
-             Compatibility: > PCL 0.5
-
-             In this tutorial, we will learn how to write a Point Cloud to a PCD file.
-     ======  ======
-     
-     .. |i_o2| image:: images/write_pcd.jpg
-               :height: 100px
-
-  * :ref:`concatenate_fields`
-
-     ======  ======
-     |i_o3|  Title: **Concatenate the fields of two Point Clouds**
-
-             Author: *Radu B. Rusu*
-
-             Compatibility: > PCL 0.5
-
-             In this tutorial, we will learn how to concatenate the fields of two Point Clouds, one containing only *XYZ* data, and one containing *Surface Normal* information.
-     ======  ======
-
-     .. |i_o3| image:: images/concatenate_fields.jpg
-               :height: 100px
-
-  * :ref:`concatenate_points`
-
-     ======  ======
-     |i_o4|  Title: **Concatenate the points of two Point Clouds**
-
-             Author: *Radu B. Rusu*
-
-             Compatibility: > PCL 0.5
-
-             In this tutorial, we will learn how to concatenate the point data of two Point Clouds with the same fields.
-     ======  ======
-
-     .. |i_o4| image:: images/concatenate_data.jpg
-               :height: 100px
-
-  * :ref:`openni_grabber`
-
-     ======  ======
-     |i_o5|  Title: **Grabbing Point Clouds from an OpenNI camera**
-
-             Author: *Nico Blodow*
-
-             Compatibility: > PCL 1.0
-
-             In this tutorial, we will learn how to acquire point cloud data from an OpenNI camera.
-     ======  ======
-
-     .. |i_o5| image:: images/openni_grabber.png
-               :height: 100px
-
-* Filtering
-
-  * :ref:`passthrough`
-    
-     ======  ======
-     |fi_1|  Title: **Filtering a PointCloud using a PassThrough filter**
-
-             Author: *Radu B. Rusu*
-
-             Compatibility: > PCL 0.5
-
-             In this tutorial, we will learn how to remove points whose values fall inside/outside a user given interval along a specified dimension.
-     ======  ======
-     
-     .. |fi_1| image:: images/passthrough.jpg
-               :height: 100px
-
-  * :ref:`voxelgrid`
-    
-     ======  ======
-     |fi_2|  Title: **Downsampling a PointCloud using a VoxelGrid filter**
-
-             Author: *Radu B. Rusu*
-
-             Compatibility: > PCL 0.5
-
-             In this tutorial, we will learn how to downsample (i.e., reduce the number of points) a Point Cloud.
-     ======  ======
-     
-     .. |fi_2| image:: images/voxel_grid.jpg
-               :height: 100px
-    
-
-  * :ref:`statistical_outlier_removal` 
-    
-     ======  ======
-     |fi_3|  Title: **Removing sparse outliers using StatisticalOutlierRemoval**
-
-             Author: *Radu B. Rusu*
-
-             Compatibility: > PCL 1.0
-
-             In this tutorial, we will learn how to remove sparse outliers from noisy data, using StatisticalRemoval.
-     ======  ======
-     
-     .. |fi_3| image:: images/statistical_removal.jpg
-               :height: 100px
-
-  * :ref:`project_inliers`
-
-     ======  ======
-     |fi_4|  Title: **Projecting points using a parametric model**
-
-             Author: *Radu B. Rusu*
-
-             Compatibility: > PCL 0.5
-
-             In this tutorial, we will learn how to project points to a parametric model (i.e., plane).
-     ======  ======
-     
-     .. |fi_4| image:: images/project_inliers.jpg
-               :height: 100px
-
-  * :ref:`extract_indices`
-
-     ======  ======
-     |fi_5|  Title: **Extracting indices from a PointCloud**
-
-             Author: *Radu B. Rusu*
-
-             Compatibility: > PCL 0.5
-
-             In this tutorial, we will learn how to extract a set of indices given by a segmentation algorithm.
-     ======  ======
-     
-     .. |fi_5| image:: images/extract_indices.jpg
-               :height: 100px
-
-  * :ref:`remove_outliers` 
-    
-     ======  ======
-     |fi_6|  Title: **Removing outliers using a Conditional or RadiusOutlier removal**
-
-             Author: *Gabe O'Leary*
-
-             Compatibility: > PCL 1.0
-
-             In this tutorial, we will learn how to remove outliers from noisy data, using ConditionalRemoval, RadiusOutlierRemoval.
-     ======  ======
-     
-     .. |fi_6| image:: images/radius_outlier.png
-               :height: 100px
-
-
-* Keypoints
-
-  * :ref:`narf_keypoint_extraction`
-    
-     ======  ======
-     |kp_1|  Title: **How to extract NARF keypoints from a range image**
-
-             Author: *Bastian Steder*
-
-             Compatibility: > PCL 1.0
-
-             In this tutorial, we will learn how to extract NARF keypoints from a range image.
-     ======  ======
-     
-     .. |kp_1| image:: images/narf_keypoint_extraction.png
-               :height: 100px
-
-* Features
+Features
+--------
 
   * :ref:`features_tutorial`
     
@@ -401,103 +226,221 @@ contributions on any tutorial.
      .. |fe_7| image:: images/narf_keypoint_extraction.png
                :height: 100px
 
+.. _filtering_tutorial:
 
-  
-* Segmentation
+Filtering
+---------
 
-  * :ref:`planar_segmentation`
+  * :ref:`passthrough`
     
      ======  ======
-     |se_1|  Title: **Plane model segmentation**
+     |fi_1|  Title: **Filtering a PointCloud using a PassThrough filter**
 
              Author: *Radu B. Rusu*
 
              Compatibility: > PCL 0.5
 
-             In this tutorial, we will learn how to segment arbitrary plane models from a given point cloud dataset.
+             In this tutorial, we will learn how to remove points whose values fall inside/outside a user given interval along a specified dimension.
      ======  ======
      
-     .. |se_1| image:: images/planar_segmentation.jpg
+     .. |fi_1| image:: images/passthrough.jpg
                :height: 100px
 
-  * :ref:`cylinder_segmentation`
-
+  * :ref:`voxelgrid`
+    
      ======  ======
-     |se_2|  Title: **Cylinder model segmentation**
+     |fi_2|  Title: **Downsampling a PointCloud using a VoxelGrid filter**
 
              Author: *Radu B. Rusu*
 
              Compatibility: > PCL 0.5
 
-             In this tutorial, we will learn how to segment arbitrary cylindrical models from a given point cloud dataset.
+             In this tutorial, we will learn how to downsample (i.e., reduce the number of points) a Point Cloud.
      ======  ======
      
-     .. |se_2| image:: images/cylinder_segmentation.jpg
+     .. |fi_2| image:: images/voxel_grid.jpg
                :height: 100px
+    
 
-  * :ref:`cluster_extraction`
-
+  * :ref:`statistical_outlier_removal` 
+    
      ======  ======
-     |se_3|  Title: **Euclidean Cluster Extraction**
+     |fi_3|  Title: **Removing sparse outliers using StatisticalOutlierRemoval**
 
-             Author: *Serkan Tuerker*
-
-             Compatibility: > PCL 0.5
-
-             In this tutorial we will learn how to extract Euclidean clusters with the ``pcl::EuclideanClusterExtraction`` class.
-     ======  ======
-     
-     .. |se_3| image:: images/cluster_extraction.jpg
-               :height: 100px
-
-* Surface
-
-  * :ref:`moving_least_squares`
-
-     ======  ======
-     |su_1|  Title: **Smoothing and normal estimation based on polynomial reconstruction**
-
-             Author: *Zoltan-Csaba Marton*
-
-             Compatibility: > PCL 0.5
-
-             In this tutorial, we will learn how to construct and run a Moving Least Squares (MLS) algorithm to obtain smoothed XYZ coordinates and normals.
-     ======  ======
-     
-     .. |su_1| image:: images/resampling.jpg
-               :height: 100px
-
-  * :ref:`hull_2d`
-
-     ======  ======
-     |su_2|  Title: **Construct a concave or convex hull polygon for a plane model**
-
-             Author: *Gabe O'Leary/Radu B. Rusu*
+             Author: *Radu B. Rusu*
 
              Compatibility: > PCL 1.0
 
-             In this tutorial we will learn how to calculate a simple 2D concave or convex hull polygon for a set of points supported by a plane.
+             In this tutorial, we will learn how to remove sparse outliers from noisy data, using StatisticalRemoval.
      ======  ======
      
-     .. |su_2| image:: images/convex_hull_2d.jpg
+     .. |fi_3| image:: images/statistical_removal.jpg
                :height: 100px
 
-  * :ref:`greedy_triangulation`
+  * :ref:`project_inliers`
 
      ======  ======
-     |su_3|  Title: **Fast triangulation of unordered point clouds**
+     |fi_4|  Title: **Projecting points using a parametric model**
 
-             Author: *Zoltan-Csaba Marton*
+             Author: *Radu B. Rusu*
 
              Compatibility: > PCL 0.5
 
-             In this tutorial we will learn how to run a greedy triangulation algorithm on a PointCloud with normals to obtain a triangle mesh based on projections of the local neighborhood.
+             In this tutorial, we will learn how to project points to a parametric model (i.e., plane).
      ======  ======
      
-     .. |su_3| image:: images/greedy_triangulation.png
+     .. |fi_4| image:: images/project_inliers.jpg
                :height: 100px
 
-* Octree
+  * :ref:`extract_indices`
+
+     ======  ======
+     |fi_5|  Title: **Extracting indices from a PointCloud**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to extract a set of indices given by a segmentation algorithm.
+     ======  ======
+     
+     .. |fi_5| image:: images/extract_indices.jpg
+               :height: 100px
+
+  * :ref:`remove_outliers` 
+    
+     ======  ======
+     |fi_6|  Title: **Removing outliers using a Conditional or RadiusOutlier removal**
+
+             Author: *Gabe O'Leary*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial, we will learn how to remove outliers from noisy data, using ConditionalRemoval, RadiusOutlierRemoval.
+     ======  ======
+     
+     .. |fi_6| image:: images/radius_outlier.png
+               :height: 100px
+
+.. _i_o:
+
+I/O
+---
+
+  * :ref:`pcd_file_format`
+
+     ======  ======
+     |i_o0|  Title: **The PCD (Point Cloud Data) file format**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.9
+
+             This document describes the PCD file format, and the way it is used inside PCL.
+     ======  ======
+     
+     .. |i_o0| image:: images/PCD_icon.png
+               :height: 100px
+
+  * :ref:`reading_pcd`
+
+     ======  ======
+     |i_o1|  Title: **Reading Point Cloud data from PCD files**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to read a Point Cloud from a PCD file.
+     ======  ======
+     
+     .. |i_o1| image:: images/read_pcd.jpg
+               :height: 100px
+
+  * :ref:`writing_pcd`
+
+     ======  ======
+     |i_o2|  Title: **Writing Point Cloud data to PCD files**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to write a Point Cloud to a PCD file.
+     ======  ======
+     
+     .. |i_o2| image:: images/write_pcd.jpg
+               :height: 100px
+
+  * :ref:`concatenate_fields`
+
+     ======  ======
+     |i_o3|  Title: **Concatenate the fields of two Point Clouds**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to concatenate the fields of two Point Clouds, one containing only *XYZ* data, and one containing *Surface Normal* information.
+     ======  ======
+
+     .. |i_o3| image:: images/concatenate_fields.jpg
+               :height: 100px
+
+  * :ref:`concatenate_points`
+
+     ======  ======
+     |i_o4|  Title: **Concatenate the points of two Point Clouds**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to concatenate the point data of two Point Clouds with the same fields.
+     ======  ======
+
+     .. |i_o4| image:: images/concatenate_data.jpg
+               :height: 100px
+
+  * :ref:`openni_grabber`
+
+     ======  ======
+     |i_o5|  Title: **Grabbing Point Clouds from an OpenNI camera**
+
+             Author: *Nico Blodow*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial, we will learn how to acquire point cloud data from an OpenNI camera.
+     ======  ======
+
+     .. |i_o5| image:: images/openni_grabber.png
+               :height: 100px
+
+.. _keypoints_tutorial:
+
+Keypoints
+---------
+
+  * :ref:`narf_keypoint_extraction`
+    
+     ======  ======
+     |kp_1|  Title: **How to extract NARF keypoints from a range image**
+
+             Author: *Bastian Steder*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial, we will learn how to extract NARF keypoints from a range image.
+     ======  ======
+     
+     .. |kp_1| image:: images/narf_keypoint_extraction.png
+               :height: 100px
+
+.. _octree_tutorial:
+
+Octree
+------
 
   * :ref:`octree_compression`
   
@@ -544,7 +487,10 @@ contributions on any tutorial.
      .. |oc_3| image:: images/changedetectionThumb.png
                :height: 100px
 
-* Range Images
+.. _range_images:
+
+Range Images
+------------
 
   * :ref:`range_image_creation`
 
@@ -576,8 +522,10 @@ contributions on any tutorial.
      .. |ri_2| image:: images/range_image_border_points.gif
                :height: 100px
 
+.. _registration_tutorial:
 
-* Registration
+Registration
+------------
 
   * :ref:`iterative_closest_point`
 
@@ -594,8 +542,110 @@ contributions on any tutorial.
      .. |re_1| image:: images/iterative_closest_point.gif
                :height: 100px
 
+.. _segmentation_tutorial:
+  
+Segmentation
+------------
 
-* Visualization
+  * :ref:`planar_segmentation`
+    
+     ======  ======
+     |se_1|  Title: **Plane model segmentation**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to segment arbitrary plane models from a given point cloud dataset.
+     ======  ======
+     
+     .. |se_1| image:: images/planar_segmentation.jpg
+               :height: 100px
+
+  * :ref:`cylinder_segmentation`
+
+     ======  ======
+     |se_2|  Title: **Cylinder model segmentation**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to segment arbitrary cylindrical models from a given point cloud dataset.
+     ======  ======
+     
+     .. |se_2| image:: images/cylinder_segmentation.jpg
+               :height: 100px
+
+  * :ref:`cluster_extraction`
+
+     ======  ======
+     |se_3|  Title: **Euclidean Cluster Extraction**
+
+             Author: *Serkan Tuerker*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial we will learn how to extract Euclidean clusters with the ``pcl::EuclideanClusterExtraction`` class.
+     ======  ======
+     
+     .. |se_3| image:: images/cluster_extraction.jpg
+               :height: 100px
+
+.. _surface_tutorial:
+
+Surface
+-------
+
+  * :ref:`moving_least_squares`
+
+     ======  ======
+     |su_1|  Title: **Smoothing and normal estimation based on polynomial reconstruction**
+
+             Author: *Zoltan-Csaba Marton*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial, we will learn how to construct and run a Moving Least Squares (MLS) algorithm to obtain smoothed XYZ coordinates and normals.
+     ======  ======
+     
+     .. |su_1| image:: images/resampling.jpg
+               :height: 100px
+
+  * :ref:`hull_2d`
+
+     ======  ======
+     |su_2|  Title: **Construct a concave or convex hull polygon for a plane model**
+
+             Author: *Gabe O'Leary/Radu B. Rusu*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial we will learn how to calculate a simple 2D concave or convex hull polygon for a set of points supported by a plane.
+     ======  ======
+     
+     .. |su_2| image:: images/convex_hull_2d.jpg
+               :height: 100px
+
+  * :ref:`greedy_triangulation`
+
+     ======  ======
+     |su_3|  Title: **Fast triangulation of unordered point clouds**
+
+             Author: *Zoltan-Csaba Marton*
+
+             Compatibility: > PCL 0.5
+
+             In this tutorial we will learn how to run a greedy triangulation algorithm on a PointCloud with normals to obtain a triangle mesh based on projections of the local neighborhood.
+     ======  ======
+     
+     .. |su_3| image:: images/greedy_triangulation.png
+               :height: 100px
+
+.. _visualization_tutorial:
+
+Visualization
+-------------
 
   * :ref:`cloud_viewer`
 
@@ -657,7 +707,10 @@ contributions on any tutorial.
      .. |vi_4| image:: images/narf_descriptor.jpg
                :height: 100px
 
-* Applications
+.. _applications_tutorial:
+
+Applications
+------------
 
   * :ref:`template_alignment`
 
