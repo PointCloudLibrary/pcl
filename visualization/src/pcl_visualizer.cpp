@@ -470,6 +470,27 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
+pcl::visualization::PCLVisualizer::deleteText3D (const std::string &id, int viewport)
+{
+  // Check to see if the given ID entry exists
+  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
+
+  if (am_it == shape_actor_map_.end ())
+  {
+    //pcl::console::print_warn ("[removeSape] Could not find any shape with id <%s>!\n", id.c_str ());
+    return (false);
+  }
+
+  // Remove it from all renderers
+  removeActorFromRenderer (am_it->second, viewport);
+
+  // Remove the pointer/ID pair to the global actor map
+  shape_actor_map_.erase (am_it);
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
 pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
                                                                     const pcl::PointCloud<pcl::Normal>::ConstPtr &normals,
                                                                     const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,

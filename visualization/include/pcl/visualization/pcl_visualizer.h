@@ -62,6 +62,8 @@
 #include <vtkPLYReader.h>
 #include <vtkTransformFilter.h>
 #include <vtkPolyLine.h>
+#include <vtkVectorText.h>
+#include <vtkFollower.h>
 
 namespace pcl
 {
@@ -207,6 +209,13 @@ namespace pcl
         bool 
         removeShape (const std::string &id = "cloud", int viewport = 0);
 
+        /** \brief Removes an added 3D text from the scene, based on a given ID
+          * \param id the 3D text id (i.e., given on \a addText3D etc.)
+          * \param viewport view port from where the 3D text should be removed (default: all)
+          */
+        bool 
+        deleteText3D (const std::string &id = "cloud", int viewport = 0);
+
         /** \brief Set the viewport's background color.
           * \param r the red component of the RGB color
           * \param g the green component of the RGB color
@@ -240,6 +249,20 @@ namespace pcl
           */
         bool 
         addText (const std::string &text, int xpos, int ypos, double r, double g, double b, 
+                 const std::string &id = "", int viewport = 0);
+
+        /** \brief Add a 3d text to the scene
+          * \param text the text to add
+          * \param position the world position where the text should be added
+          * \param textScale the scale of the text to render
+          * \param r the red color value
+          * \param g the green color value
+          * \param b the blue color vlaue
+          * \param id the text object id (default: equal to the "text" parameter)
+          * \param viewport the view port (default: all)
+          */
+        template <typename PointT> bool  
+        addText3D (const std::string &text, const PointT &position, double textScale = 1.0, double r = 1.0, double g = 1.0, double b = 1.0, 
                  const std::string &id = "", int viewport = 0);
 
         /** \brief Add the estimated surface normals of a Point Cloud to screen. 
