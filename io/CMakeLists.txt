@@ -8,6 +8,7 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
     OPTION(BUILD_OPENNI "Build the OpenNI Grabber." ON)
+    MARK_AS_ADVANCED(BUILD_OPENNI)
     if(NOT BUILD_OPENNI)
       # Set OPENNI_FOUND to false locally to avoid building anything OpenNI related
       # Remember that other modules (libraries) need to check explicitly for BUILD_OPENNI
