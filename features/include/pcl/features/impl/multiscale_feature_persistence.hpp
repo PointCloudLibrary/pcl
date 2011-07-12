@@ -119,18 +119,18 @@ template <typename PointSource, typename PointFeature> void
 pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::calculateMeanFeature ()
 {
   // reset mean feature
-  for (size_t i = 0; i < feature_representation_->getNumberOfDimensions (); ++i)
+  for (int i = 0; i < feature_representation_->getNumberOfDimensions (); ++i)
     mean_feature[i] = 0.0f;
 
   float normalization_factor = 0.0f;
   for (std::vector<std::vector<std::vector<float> > >::iterator scale_it = features_at_scale_vectorized.begin (); scale_it != features_at_scale_vectorized.end(); ++scale_it) {
     normalization_factor += scale_it->size ();
     for (std::vector<std::vector<float> >::iterator feature_it = scale_it->begin (); feature_it != scale_it->end (); ++feature_it)
-      for (size_t dim_i = 0; dim_i < feature_representation_->getNumberOfDimensions (); ++dim_i)
+      for (int dim_i = 0; dim_i < feature_representation_->getNumberOfDimensions (); ++dim_i)
         mean_feature[dim_i] += (*feature_it)[dim_i];
   }
 
-  for (size_t dim_i = 0; dim_i < feature_representation_->getNumberOfDimensions (); ++dim_i)
+  for (int dim_i = 0; dim_i < feature_representation_->getNumberOfDimensions (); ++dim_i)
     mean_feature[dim_i] /= normalization_factor;
 }
 
