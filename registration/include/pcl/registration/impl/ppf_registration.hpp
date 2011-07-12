@@ -48,31 +48,31 @@
 void
 pcl::PPFHashMapSearch::setInputFeatureCloud (PointCloud<PPFSignature>::ConstPtr feature_cloud)
 {
-  alpha_m.clear ();
-  /// discretize the feature cloud and insert it in the hash map
-  feature_hash_map->clear ();
+  // Discretize the feature cloud and insert it in the hash map
+  feature_hash_map_->clear ();
   unsigned int n = sqrt ((float)feature_cloud->points.size ());
   int d1, d2, d3, d4;
-  max_dist = -1.0;
+  max_dist_ = -1.0;
+  alpha_m_.resize (n);
   for (size_t i = 0; i < n; ++i)
   {
-    std::vector <float> alpha_m_row;
+    std::vector <float> alpha_m_row (n);
     for (size_t j = 0; j < n; ++j)
     {
-      d1 = floor (feature_cloud->points[i*n+j].f1 / angle_discretization_step);
-      d2 = floor (feature_cloud->points[i*n+j].f2 / angle_discretization_step);
-      d3 = floor (feature_cloud->points[i*n+j].f3 / angle_discretization_step);
-      d4 = floor (feature_cloud->points[i*n+j].f4 / distance_discretization_step);
-      feature_hash_map->insert (std::pair<HashKeyStruct, std::pair<size_t, size_t> > (HashKeyStruct (d1, d2, d3, d4), std::pair<size_t, size_t> (i, j)));
-      alpha_m_row.push_back (feature_cloud->points[i*n+j].alpha_m);
+      d1 = floor (feature_cloud->points[i*n+j].f1 / angle_discretization_step_);
+      d2 = floor (feature_cloud->points[i*n+j].f2 / angle_discretization_step_);
+      d3 = floor (feature_cloud->points[i*n+j].f3 / angle_discretization_step_);
+      d4 = floor (feature_cloud->points[i*n+j].f4 / distance_discretization_step_);
+      feature_hash_map_->insert (std::pair<HashKeyStruct, std::pair<size_t, size_t> > (HashKeyStruct (d1, d2, d3, d4), std::pair<size_t, size_t> (i, j)));
+      alpha_m_row [j] = feature_cloud->points[i*n + j].alpha_m;
 
-      if (max_dist < feature_cloud->points[i*n+j].f4)
-        max_dist = feature_cloud->points[i*n+j].f4;
+      if (max_dist_ < feature_cloud->points[i*n + j].f4)
+        max_dist_ = feature_cloud->points[i*n + j].f4;
     }
-    alpha_m.push_back (alpha_m_row);
+    alpha_m_[i] = alpha_m_row;
   }
 
-  internals_initialized = true;
+  internals_initialized_ = true;
 }
 
 
@@ -81,33 +81,35 @@ void
 pcl::PPFHashMapSearch::nearestNeighborSearch (float &f1, float &f2, float &f3, float &f4,
                                               std::vector<std::pair<size_t, size_t> > &indices)
 {
-  if (!internals_initialized)
+  if (!internals_initialized_)
   {
-    PCL_ERROR("PFHHashMapSearch: input feature cloud has not been set - skipping search!\n");
+    PCL_ERROR("[pcl::PPFRegistration::nearestNeighborSearch]: input feature cloud has not been set - skipping search!\n");
     return;
   }
 
-  int d1 = floor (f1 / angle_discretization_step),
-      d2 = floor (f2 / angle_discretization_step),
-      d3 = floor (f3 / angle_discretization_step),
-      d4 = floor (f4 / distance_discretization_step);
+  int d1 = floor (f1 / angle_discretization_step_),
+      d2 = floor (f2 / angle_discretization_step_),
+      d3 = floor (f3 / angle_discretization_step_),
+      d4 = floor (f4 / distance_discretization_step_);
 
   indices.clear ();
   HashKeyStruct key = HashKeyStruct (d1, d2, d3, d4);
-  std::pair <FeatureHashMapType::iterator, FeatureHashMapType::iterator> map_iterator_pair = feature_hash_map->equal_range (key);
+  std::pair <FeatureHashMapType::iterator, FeatureHashMapType::iterator> map_iterator_pair = feature_hash_map_->equal_range (key);
   for (; map_iterator_pair.first != map_iterator_pair.second; ++ map_iterator_pair.first)
     indices.push_back (std::pair<size_t, size_t> (map_iterator_pair.first->second.first,
                                                   map_iterator_pair.first->second.second));
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
 pcl::PPFRegistration<PointSource, PointTarget>::setInputTarget (const PointCloudTargetConstPtr &cloud)
 {
   Registration<PointSource, PointTarget>::setInputTarget (cloud);
 
   PCL_INFO ("Scene KdTree init ...\n");
-  scene_search_tree = typename pcl::KdTreeFLANN<PointTarget>::Ptr (new pcl::KdTreeFLANN<PointTarget>);
-  scene_search_tree->setInputCloud (target_);
+  scene_search_tree_ = typename pcl::KdTreeFLANN<PointTarget>::Ptr (new pcl::KdTreeFLANN<PointTarget>);
+  scene_search_tree_->setInputCloud (target_);
 }
 
 
@@ -115,9 +117,9 @@ pcl::PPFRegistration<PointSource, PointTarget>::setInputTarget (const PointCloud
 template <typename PointSource, typename PointTarget> void
 pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointCloudSource &output)
 {
-  if (!search_method)
+  if (!search_method_)
   {
-    PCL_ERROR("PPFRegistration: search method not set - skipping computeTransformation!\n");
+    PCL_ERROR("[pcl::PPFRegistration::computeTransformation] Search method not set - skipping computeTransformation!\n");
     return;
   }
 
@@ -126,14 +128,14 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
   accumulator_array.resize (input_->points.size ());
   for (size_t i = 0; i < input_->points.size (); ++i)
   {
-    std::vector <unsigned int> aux ((size_t)floor(2*M_PI / search_method->getAngleDiscretizationStep ()), 0);
+    std::vector <unsigned int> aux ((size_t)floor(2*M_PI / search_method_->getAngleDiscretizationStep ()), 0);
     accumulator_array[i] = aux;
   }
   PCL_INFO ("Accumulator array size: %u x %u.\n", accumulator_array.size (), accumulator_array.back ().size ());
 
-  /// consider every <scene_reference_point_sampling_rate>-th point as the reference point => fix s_r
+  // Consider every <scene_reference_point_sampling_rate>-th point as the reference point => fix s_r
   float f1, f2, f3, f4;
-  for (size_t scene_reference_index = 0; scene_reference_index < target_->points.size (); scene_reference_index += scene_reference_point_sampling_rate)
+  for (size_t scene_reference_index = 0; scene_reference_index < target_->points.size (); scene_reference_index += scene_reference_point_sampling_rate_)
   {
     Eigen::Vector3f scene_reference_point = target_->points[scene_reference_index].getVector3fMap (),
         scene_reference_normal = target_->points[scene_reference_index].getNormalVector3fMap ();
@@ -142,11 +144,11 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
                                    scene_reference_normal.cross (Eigen::Vector3f::UnitX ()). normalized());
     Eigen::Affine3f transform_sg = Eigen::Translation3f ( rotation_sg* ((-1)*scene_reference_point)) * rotation_sg;
 
-    /// for every other point in the scene => now have pair (s_r, s_i) fixed
+    // For every other point in the scene => now have pair (s_r, s_i) fixed
     std::vector<int> indices;
     std::vector<float> distances;
-    scene_search_tree->radiusSearch (target_->points[scene_reference_index],
-                                     search_method->getModelDiameter () /2,
+    scene_search_tree_->radiusSearch (target_->points[scene_reference_index],
+                                     search_method_->getModelDiameter () /2,
                                      indices,
                                      distances);
     for(size_t i = 0; i < indices.size (); ++i)
@@ -165,27 +167,27 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
         {
 
           std::vector<std::pair<size_t, size_t> > nearest_indices;
-          search_method->nearestNeighborSearch (f1, f2, f3, f4, nearest_indices);
+          search_method_->nearestNeighborSearch (f1, f2, f3, f4, nearest_indices);
 
-          /// compute alpha_s angle
+          // Compute alpha_s angle
           Eigen::Vector3f scene_point = target_->points[scene_point_index].getVector3fMap ();
           Eigen::AngleAxisf rotation_sg (acos (scene_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                          scene_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
           Eigen::Affine3f transform_sg = Eigen::Translation3f ( rotation_sg * ((-1) * scene_reference_point)) * rotation_sg;
           float alpha_s = acos (Eigen::Vector3f::UnitY ().dot ((transform_sg * scene_point).normalized ()));
 
-          /// go through point pairs in the model with the same discretized feature
+          // Go through point pairs in the model with the same discretized feature
           for (std::vector<std::pair<size_t, size_t> >::iterator v_it = nearest_indices.begin (); v_it != nearest_indices.end (); ++ v_it)
           {
             size_t model_reference_index = v_it->first,
                 model_point_index = v_it->second;
-            /// calculate angle alpha = alpha_m - alpha_s
-            float alpha = search_method->alpha_m[model_reference_index][model_point_index] - alpha_s;
-            unsigned int alpha_discretized = floor(alpha) + floor(M_PI / search_method->getAngleDiscretizationStep ());
+            // Calculate angle alpha = alpha_m - alpha_s
+            float alpha = search_method_->alpha_m_[model_reference_index][model_point_index] - alpha_s;
+            unsigned int alpha_discretized = floor(alpha) + floor(M_PI / search_method_->getAngleDiscretizationStep ());
             accumulator_array[model_reference_index][alpha_discretized] ++;
           }
         }
-        else PCL_ERROR ("Computing pair feature vector between points %zu and %zu went wrong.\n", scene_reference_index, scene_point_index);
+        else PCL_ERROR ("[pcl::PPFRegistration::computeTransformation] Computing pair feature vector between points %zu and %zu went wrong.\n", scene_reference_index, scene_point_index);
       }
     }
 
@@ -201,7 +203,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
           max_votes_i = i;
           max_votes_j = j;
         }
-        /// reset accumulator_array for the next set of iterations with a new scene reference point
+        // Reset accumulator_array for the next set of iterations with a new scene reference point
         accumulator_array[i][j] = 0;
       }
 
@@ -209,13 +211,13 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
         model_reference_normal = input_->points[max_votes_i].getNormalVector3fMap ();
     Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())), model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
     Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
-    Eigen::Affine3f max_transform = transform_sg.inverse () * Eigen::AngleAxisf ( (max_votes_j - floor(M_PI / search_method->getAngleDiscretizationStep ())) * search_method->getAngleDiscretizationStep (), Eigen::Vector3f::UnitX ()) * transform_mg;
+    Eigen::Affine3f max_transform = transform_sg.inverse () * Eigen::AngleAxisf ( (max_votes_j - floor(M_PI / search_method_->getAngleDiscretizationStep ())) * search_method_->getAngleDiscretizationStep (), Eigen::Vector3f::UnitX ()) * transform_mg;
 
     voted_poses.push_back (PoseWithVotes (max_transform, max_votes));
   }
   PCL_INFO ("Done with the Hough Transform ...\n");
 
-  /// cluster poses for filtering out outliers and obtaining more precise results
+  // Cluster poses for filtering out outliers and obtaining more precise results
   PoseWithVotesList results;
   clusterPoses (voted_poses, results);
 
@@ -229,10 +231,10 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
 pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses (typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotesList &poses,
-                                                     typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotesList &result)
+                                                              typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotesList &result)
 {
   PCL_INFO ("Clustering poses ...\n");
-  /// start off by sorting the poses by the number of votes
+  // Start off by sorting the poses by the number of votes
   sort(poses.begin (), poses.end (), poseWithVotesCompareFunction);
 
   std::vector<PoseWithVotesList> clusters;
@@ -253,7 +255,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses (typename pcl::PPFR
 
     if (found_cluster == false)
     {
-      /// create a new cluster with the current pose
+      // Create a new cluster with the current pose
       PoseWithVotesList new_cluster;
       new_cluster.push_back (poses[poses_i]);
       clusters.push_back (new_cluster);
@@ -261,9 +263,9 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses (typename pcl::PPFR
     }
  }
 
-  /// sort clusters by total number of votes
+  // Sort clusters by total number of votes
   std::sort (cluster_votes.begin (), cluster_votes.end (), clusterVotesCompareFunction);
-  /// compute pose average and put them in result vector
+  // Compute pose average and put them in result vector
   /// @todo some kind of threshold for determining whether a cluster has enough votes or not...
   /// now just taking the first three clusters
   result.clear ();
@@ -295,14 +297,14 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses (typename pcl::PPFR
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> bool
 pcl::PPFRegistration<PointSource, PointTarget>::posesWithinErrorBounds (Eigen::Affine3f &pose1,
-                                                               Eigen::Affine3f &pose2)
+                                                                        Eigen::Affine3f &pose2)
 {
   float position_diff = (pose1.translation () - pose2.translation ()).norm ();
   Eigen::AngleAxisf rotation_diff_mat (pose1.rotation ().inverse () * pose2.rotation ());
 
   float rotation_diff_angle = fabs (rotation_diff_mat.angle ());
 
-  if (position_diff < clustering_position_diff_threshold && rotation_diff_angle < clustering_rotation_diff_threshold)
+  if (position_diff < clustering_position_diff_threshold_ && rotation_diff_angle < clustering_rotation_diff_threshold_)
     return true;
   else return false;
 }
@@ -311,15 +313,16 @@ pcl::PPFRegistration<PointSource, PointTarget>::posesWithinErrorBounds (Eigen::A
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> bool
 pcl::PPFRegistration<PointSource, PointTarget>::poseWithVotesCompareFunction (const typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotes &a,
-                                                                     const typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotes &b )
+                                                                              const typename pcl::PPFRegistration<PointSource, PointTarget>::PoseWithVotes &b )
 {
   return (a.votes > b.votes);
 }
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> bool
 pcl::PPFRegistration<PointSource, PointTarget>::clusterVotesCompareFunction (const std::pair<size_t, unsigned int> &a,
-                                                                    const std::pair<size_t, unsigned int> &b)
+                                                                             const std::pair<size_t, unsigned int> &b)
 {
   return (a.second > b.second);
 }

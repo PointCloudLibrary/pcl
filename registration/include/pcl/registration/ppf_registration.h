@@ -67,51 +67,75 @@ namespace pcl
       typedef boost::shared_ptr<FeatureHashMapType> FeatureHashMapTypePtr;
       typedef boost::shared_ptr<PPFHashMapSearch> Ptr;
 
-      PPFHashMapSearch (float a_angle_discretization_step = 12.0 / 180 * M_PI,
-                        float a_distance_discretization_step = 0.01)
-      :  angle_discretization_step (a_angle_discretization_step),
-         distance_discretization_step (a_distance_discretization_step)
+
+      /** \brief Constructor for the PPFHashMapSearch class which sets the two step parameters for the enclosed data structure
+       * \param angle_discretization_step the step value between each bin of the hash map for the angular values
+       * \param distance_discretization_step the step value between each bin of the hash map for the distance values
+       */
+      PPFHashMapSearch (float angle_discretization_step = 12.0 / 180 * M_PI,
+                        float distance_discretization_step = 0.01)
+      :  angle_discretization_step_ (angle_discretization_step),
+         distance_discretization_step_ (distance_discretization_step)
       {
-        feature_hash_map = FeatureHashMapTypePtr (new FeatureHashMapType);
-        internals_initialized = false;
-        max_dist = -1.0;
+        feature_hash_map_ = FeatureHashMapTypePtr (new FeatureHashMapType);
+        internals_initialized_ = false;
+        max_dist_ = -1.0;
       }
 
-
+      /** \brief Method that sets the feature cloud to be inserted in the hash map
+       * \param feature_cloud a const smart pointer to the PPFSignature feature cloud
+       */
       void
       setInputFeatureCloud (PointCloud<PPFSignature>::ConstPtr feature_cloud);
 
+      /** \brief Function for finding the nearest neighbors for the given feature inside the discretized hash map
+       * \param f1 The 1st value describing the query PPFSignature feature
+       * \param f2 The 2nd value describing the query PPFSignature feature
+       * \param f3 The 3rd value describing the query PPFSignature feature
+       * \param f4 The 4th value describing the query PPFSignature feature
+       * \param indices a vector of pair indices representing the feature pairs that have been found in the bin
+       * corresponding to the query feature
+       */
       void
       nearestNeighborSearch (float &f1, float &f2, float &f3, float &f4,
                              std::vector<std::pair<size_t, size_t> > &indices);
 
+      /** \brief Convenience method for returning a copy of the class instance as a boost::shared_ptr */
       Ptr
       makeShared() { return Ptr (new PPFHashMapSearch (*this)); }
 
-      std::vector <std::vector <float> > alpha_m;
+      /** \brief Returns the angle discretization step parameter (the step value between each bin of the hash map for the angular values) */
+      inline float
+      getAngleDiscretizationStep () { return angle_discretization_step_; }
 
-      float
-      getAngleDiscretizationStep () { return angle_discretization_step; }
+      /** \brief Returns the distance discretization step parameter (the step value between each bin of the hash map for the distance values) */
+      inline float
+      getDistanceDiscretizationStep () { return distance_discretization_step_; }
 
-      float
-      getDistanceDiscretizationStep () { return distance_discretization_step; }
+      /** \brief Returns the maximum distance found between any feature pair in the given input feature cloud */
+      inline float
+      getModelDiameter () { return max_dist_; }
 
-      float
-      getModelDiameter () { return max_dist; }
-
+      std::vector <std::vector <float> > alpha_m_;
     private:
-      FeatureHashMapTypePtr feature_hash_map;
-      bool internals_initialized;
+      FeatureHashMapTypePtr feature_hash_map_;
+      bool internals_initialized_;
 
-      /// parameters
-      float angle_discretization_step, distance_discretization_step;
-
-      float max_dist;
+      float angle_discretization_step_, distance_discretization_step_;
+      float max_dist_;
   };
 
-  /** \brief 
-    * \author Alexandru-Eugen Ichim
-    */
+  /** \brief Class that registers two point clouds based on their sets of PPFSignatures.
+   * Please refer to the following publication for more details:
+   *    B. Drost, M. Ulrich, N. Navab, S. Ilic
+   *    Model Globally, Match Locally: Efficient and Robust 3D Object Recognition
+   *    2010 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)
+   *    13-18 June 2010, San Francisco, CA
+   *
+   * \note This class works in tandem with the PPFEstimation class
+   *
+   * \author Alexandru-Eugen Ichim
+   */
   template <typename PointSource, typename PointTarget>
   class PPFRegistration : public Registration<PointSource, PointTarget>
   {
@@ -149,31 +173,62 @@ namespace pcl
       typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
 
 
-      /** \brief Constructor that initializes all the parameters of the algorithm
-        * \param a_scene_reference_point_sampling_rate sampling rate for the scene reference point
-        * \param a_clustering_position_diff_threshold distance threshold below which two poses are
-        * considered close enough to be in the same cluster (for the clustering phase of the algorithm)
-        * \param a_clustering_rotation_diff_threshold rotation difference threshold below which two
-        * poses are considered to be in the same cluster (for the clustering phase of the algorithm)
-        */
-      PPFRegistration (unsigned int a_scene_reference_point_sampling_rate = 5,
-                       float a_clustering_position_diff_threshold = 0.01,
-                       float a_clustering_rotation_diff_threshold = 20.0 / 180 * M_PI)
+      /** \brief Empty constructor that initializes all the parameters of the algorithm with default values */
+      PPFRegistration ()
       :  Registration<PointSource, PointTarget> (),
-         scene_reference_point_sampling_rate (a_scene_reference_point_sampling_rate),
-         clustering_position_diff_threshold (a_clustering_position_diff_threshold),
-         clustering_rotation_diff_threshold (a_clustering_rotation_diff_threshold)
-      {
-        search_method = PPFHashMapSearch::Ptr ();
-      }
+         search_method_ (),
+         scene_reference_point_sampling_rate_ (5),
+         clustering_position_diff_threshold_ (0.01),
+         clustering_rotation_diff_threshold_ (20.0 / 180 * M_PI)
+      {}
+
+      /** \brief Method for setting the position difference clustering parameter
+       * \param clustering_position_diff_threshold distance threshold below which two poses are
+       * considered close enough to be in the same cluster (for the clustering phase of the algorithm)
+       */
+      inline void
+      setPositionClusteringThreshold (float clustering_position_diff_threshold) { clustering_position_diff_threshold_ = clustering_position_diff_threshold; }
+
+      /** \brief Returns the parameter defining the position difference clustering parameter -
+       * distance threshold below which two poses are considered close enough to be in the same cluster
+       * (for the clustering phase of the algorithm)
+       */
+      inline float
+      getPositionClusteringThreshold () { return clustering_position_diff_threshold_; }
+
+      /** \brief Method for setting the rotation clustering parameter
+       * \param clustering_rotation_diff_threshold rotation difference threshold below which two
+       * poses are considered to be in the same cluster (for the clustering phase of the algorithm)
+       */
+      inline void
+      setRotationClusteringThreshold (float clustering_rotation_diff_threshold) { clustering_rotation_diff_threshold_ = clustering_rotation_diff_threshold; }
+
+      /** \brief Returns the parameter defining the rotation clustering threshold
+       */
+      inline float
+      getRotationClusteringThreshold () { return clustering_rotation_diff_threshold_; }
+
+      /** \brief Method for setting the scene reference point sampling rate
+       * \param scene_reference_point_sampling_rate sampling rate for the scene reference point
+       */
+      inline void
+      setSceneReferencePointSamplingRate (unsigned int scene_reference_point_sampling_rate) { scene_reference_point_sampling_rate_ = scene_reference_point_sampling_rate; }
+
+      /** \brief Returns the parameter for the scene reference point sampling rate of the algorithm */
+      inline unsigned int
+      getSceneReferencePointSamplingRate () { return scene_reference_point_sampling_rate_; }
 
       /** \brief Function that sets the search method for the algorithm
        * \note Right now, the only available method is the one initially proposed by
        * the authors - by using a hash map with discretized feature vectors
-       * \param a_search_method smart pointer to the search method to be set
+       * \param search_method smart pointer to the search method to be set
        */
-      void
-      setSearchMethod (PPFHashMapSearch::Ptr a_search_method) { search_method = a_search_method; }
+      inline void
+      setSearchMethod (PPFHashMapSearch::Ptr search_method) { search_method_ = search_method; }
+
+      /** \brief Getter function for the search method of the class */
+      inline PPFHashMapSearch::Ptr
+      getSearchMethod () { return search_method_; }
 
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)
        * \param cloud the input point cloud target
@@ -183,24 +238,23 @@ namespace pcl
 
 
     private:
-
-      /** \brief Method that calculates the transformation between the input_ and target_
-       * point clouds, based on the PPF features */
+      /** \brief Method that calculates the transformation between the input_ and target_ point clouds, based on the PPF features */
       void
       computeTransformation (PointCloudSource &output);
 
 
       /** \brief the search method that is going to be used to find matching feature pairs */
-      PPFHashMapSearch::Ptr search_method;
+      PPFHashMapSearch::Ptr search_method_;
+
       /** \brief parameter for the sampling rate of the scene reference points */
-      unsigned int scene_reference_point_sampling_rate;
+      unsigned int scene_reference_point_sampling_rate_;
+
       /** \brief position and rotation difference thresholds below which two
         * poses are considered to be in the same cluster (for the clustering phase of the algorithm) */
-      float clustering_position_diff_threshold, clustering_rotation_diff_threshold;
+      float clustering_position_diff_threshold_, clustering_rotation_diff_threshold_;
 
       /** \brief use a kd-tree with range searches of range max_dist to skip an O(N) pass through the point cloud */
-      typename pcl::KdTreeFLANN<PointTarget>::Ptr scene_search_tree;
-
+      typename pcl::KdTreeFLANN<PointTarget>::Ptr scene_search_tree_;
 
       /** \brief static method used for the std::sort function to order two PoseWithVotes
        * instances by their number of votes*/
@@ -225,7 +279,6 @@ namespace pcl
       bool
       posesWithinErrorBounds (Eigen::Affine3f &pose1,
                               Eigen::Affine3f &pose2);
-
   };
 }
 

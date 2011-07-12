@@ -126,9 +126,11 @@ main (int argc, char** argv)
   for (size_t model_i = 0; model_i < cloud_models.size (); ++model_i)
   {
 
-    PPFRegistration<PointNormal, PointNormal> ppf_registration (10,
-                                                                0.2,
-                                                                30.0 / 180 * M_PI);
+    PPFRegistration<PointNormal, PointNormal> ppf_registration;
+    // set parameters for the PPF registration procedure
+    ppf_registration.setSceneReferencePointSamplingRate (10);
+    ppf_registration.setPositionClusteringThreshold (0.2);
+    ppf_registration.setRotationClusteringThreshold (30.0 / 180 * M_PI);
     ppf_registration.setSearchMethod (hashmap_search_vector[model_i]);
     ppf_registration.setInputCloud (cloud_models_with_normals[model_i]);
     ppf_registration.setInputTarget (cloud_scene_input);
