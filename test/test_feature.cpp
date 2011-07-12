@@ -1142,6 +1142,7 @@ TEST (PCL, FPFHEstimationOpenMP)
   EXPECT_NEAR (fpfhs->points[0].histogram[32], 2.17815, 1e-4);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PPFEstimation)
 {
   // Estimate normals
