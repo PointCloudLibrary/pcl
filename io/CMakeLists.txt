@@ -10,7 +10,7 @@ if(build)
     OPTION(BUILD_OPENNI "Build the OpenNI Grabber." ON)
     if(NOT BUILD_OPENNI)
       # Set OPENNI_FOUND to false locally to avoid building anything OpenNI related
-      # Remember that other modules (libraries) need to check explicitely for BUILD_OPENNI
+      # Remember that other modules (libraries) need to check explicitly for BUILD_OPENNI
       set(OPENNI_FOUND FALSE) 
     endif()
     if(OPENNI_FOUND)
