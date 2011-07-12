@@ -3,8 +3,6 @@
 #include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
 
-//using namespace pcl;
-
 int
  main (int argc, char** argv)
 {

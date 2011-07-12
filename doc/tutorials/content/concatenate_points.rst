@@ -1,7 +1,7 @@
-.. _concatenate_points:
+.. _concatenate_clouds:
 
-Concatenate the points of two Point Clouds
-------------------------------------------
+Concatenate the points or the fields of two Point Clouds
+--------------------------------------------------------
 
 In this tutorial we will learn how to concatenating the points of two different
 point clouds. The constraint imposed here is that the type and number of fields

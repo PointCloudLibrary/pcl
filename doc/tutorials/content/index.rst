@@ -372,40 +372,25 @@ I/O
      .. |i_o2| image:: images/write_pcd.jpg
                :height: 100px
 
-  * :ref:`concatenate_fields`
+  * :ref:`concatenate_clouds`
 
      ======  ======
-     |i_o3|  Title: **Concatenate the fields of two Point Clouds**
+     |i_o3|  Title: **Concatenate the fields or points of two Point Clouds**
 
-             Author: *Radu B. Rusu*
+             Author: *Gabe O'Leary / Radu B. Rusu*
 
              Compatibility: > PCL 1.0
 
-             In this tutorial, we will learn how to concatenate the fields of two Point Clouds, one containing only *XYZ* data, and one containing *Surface Normal* information.
+             In this tutorial, we will learn how to concatenate both the fields and the point data of two Point Clouds.  When concatenating fields, one PointClouds contains only *XYZ* data, and the other contains *Surface Normal* information.
      ======  ======
 
      .. |i_o3| image:: images/concatenate_fields.jpg
                :height: 100px
 
-  * :ref:`concatenate_points`
-
-     ======  ======
-     |i_o4|  Title: **Concatenate the points of two Point Clouds**
-
-             Author: *Radu B. Rusu*
-
-             Compatibility: > PCL 1.0
-
-             In this tutorial, we will learn how to concatenate the point data of two Point Clouds with the same fields.
-     ======  ======
-
-     .. |i_o4| image:: images/concatenate_data.jpg
-               :height: 100px
-
   * :ref:`openni_grabber`
 
      ======  ======
-     |i_o5|  Title: **Grabbing Point Clouds from an OpenNI camera**
+     |i_o4|  Title: **Grabbing Point Clouds from an OpenNI camera**
 
              Author: *Nico Blodow*
 
@@ -414,7 +399,7 @@ I/O
              In this tutorial, we will learn how to acquire point cloud data from an OpenNI camera.
      ======  ======
 
-     .. |i_o5| image:: images/openni_grabber.png
+     .. |i_o4| image:: images/openni_grabber.png
                :height: 100px
 
 .. _keypoints_tutorial:

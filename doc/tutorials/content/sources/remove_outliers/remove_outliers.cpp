@@ -6,7 +6,8 @@
 int
  main (int argc, char** argv)
 {
-  if(argc != 2){
+  if (argc != 2)
+  {
     std::cerr << "please specify command line arg '-r' or '-c'" << std::endl;
     exit(0);
   }
