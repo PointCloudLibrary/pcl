@@ -52,6 +52,7 @@
 #include <pcl/features/shot_omp.h>
 #include <pcl/features/fpfh.h>
 #include <pcl/features/fpfh_omp.h>
+#include <pcl/features/ppf.h>
 #include <pcl/features/vfh.h>
 #include <pcl/features/rsd.h>
 #include <pcl/features/intensity_gradient.h>
@@ -1139,6 +1140,85 @@ TEST (PCL, FPFHEstimationOpenMP)
   EXPECT_NEAR (fpfhs->points[0].histogram[30], 19.1552, 1e-4);
   EXPECT_NEAR (fpfhs->points[0].histogram[31], 9.22763, 1e-4);
   EXPECT_NEAR (fpfhs->points[0].histogram[32], 2.17815, 1e-4);
+}
+
+TEST (PCL, PPFEstimation)
+{
+  // Estimate normals
+  NormalEstimation<PointXYZ, Normal> normal_estimation;
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+  normal_estimation.setInputCloud (cloud.makeShared ());
+  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+  normal_estimation.setIndices (indicesptr);
+  normal_estimation.setSearchMethod (tree);
+  normal_estimation.setKSearch (10); // Use 10 nearest neighbors to estimate the normals
+  normal_estimation.compute (*normals);
+
+  PPFEstimation <PointXYZ, Normal, PPFSignature> ppf_estimation;
+  ppf_estimation.setInputCloud (cloud.makeShared ());
+  ppf_estimation.setInputNormals (normals);
+  PointCloud<PPFSignature>::Ptr feature_cloud (new PointCloud<PPFSignature> ());
+  ppf_estimation.compute (*feature_cloud);
+
+  // Check for size of output
+  EXPECT_EQ (feature_cloud->points.size (), indices.size () * cloud.points.size ());
+
+  // Now check for a few values in the feature cloud
+  EXPECT_NEAR (feature_cloud->points[0].f1, 0.000000, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[0].f2, 0.000000, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[0].f3, 0.000000, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[0].f4, 0.000000, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[0].alpha_m, 0.000000, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[15127].f1, -2.516367, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[15127].f2, -0.003659, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[15127].f3, -0.521141, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[15127].f4, 0.010681, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[15127].alpha_m, 0.599302, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[30254].f1, 0.185318, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[30254].f2, 0.041717, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[30254].f3, 0.007314, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[30254].f4, 0.013851, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[30254].alpha_m, 2.429520, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[45381].f1, -1.962630, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[45381].f2, -0.431919, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[45381].f3, 0.868716, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[45381].f4, 0.140129, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[45381].alpha_m, 1.765807, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[60508].f1, -0.194574, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[60508].f2, 0.178250, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[60508].f3, 0.111666, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[60508].f4, 0.014890, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[60508].alpha_m, 2.472079, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[75635].f1, -0.804283, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[75635].f2, 0.130138, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[75635].f3, 0.349777, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[75635].f4, 0.046211, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[75635].alpha_m, 1.724448, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[90762].f1, -0.466671, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[90762].f2, -0.586353, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[90762].f3, 0.154188, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[90762].f4, 0.042224, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[90762].alpha_m, 2.698900, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[105889].f1, -0.181757, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[105889].f2, -0.762135, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[105889].f3, -0.395340, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[105889].f4, 0.086408, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[105889].alpha_m, 1.323804, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[121016].f1, 2.331794, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[121016].f2, -0.026870, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[121016].f3, 0.454418, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[121016].f4, 0.029501, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[121016].alpha_m, 2.551831, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[136143].f1, 2.996546, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[136143].f2, -0.959566, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[136143].f3, -0.331344, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[136143].f4, 0.138480, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[136143].alpha_m, 0.391546, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[151270].f1, -0.363375, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[151270].f2, -0.171086, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[151270].f3, 0.128483, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[151270].f4, 0.121589, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[151270].alpha_m, 1.115266, 1e-4);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
