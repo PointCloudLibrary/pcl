@@ -45,6 +45,13 @@
 namespace pcl
 {
   /** \brief @b SampleConsensusModelSphere defines a model for 3D sphere segmentation.
+    * The model coefficients are defined as:
+    * <ul>
+    * <li><b>center.x</b> : the X coordinate of the sphere's center
+    * <li><b>center.y</b> : the Y coordinate of the sphere's center
+    * <li><b>center.z</b> : the Z coordinate of the sphere's center
+    * <li><b>radius</b>   : the sphere's radius
+    * </ul>
     * \author Radu Bogdan Rusu
     * \ingroup sample_consensus
     */

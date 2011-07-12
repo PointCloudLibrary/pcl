@@ -47,6 +47,16 @@ namespace pcl
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusModelCylinder defines a model for 3D cylinder segmentation.
+    * The model coefficients are defined as:
+    * <ul>
+    * <li><b>point_on_axis.x</b>  : the X coordinate of a point located on the cylinder axis
+    * <li><b>point_on_axis.y</b>  : the Y coordinate of a point located on the cylinder axis
+    * <li><b>point_on_axis.z</b>  : the Z coordinate of a point located on the cylinder axis
+    * <li><b>axis_direction.x</b> : the X coordinate of the cylinder's axis direction
+    * <li><b>axis_direction.y</b> : the Y coordinate of the cylinder's axis direction
+    * <li><b>axis_direction.z</b> : the Z coordinate of the cylinder's axis direction
+    * <li><b>radius</b>           : the cylinder's radius
+    * </ul>
     * \author Radu Bogdan Rusu
     * \ingroup sample_consensus
     */

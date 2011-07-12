@@ -95,6 +95,13 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusModelPlane defines a model for 3D plane segmentation.
+    * The model coefficients are defined as:
+    * <ul>
+    * <li><b>a</b> : the X coordinate of the plane's normal (normalized)
+    * <li><b>b</b> : the Y coordinate of the plane's normal (normalized)
+    * <li><b>c</b> : the Z coordinate of the plane's normal (normalized)
+    * <li><b>d</b> : the fourth <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian component</a> of the plane's equation
+    * </ul>
     * \author Radu Bogdan Rusu
     * \ingroup sample_consensus
     */
