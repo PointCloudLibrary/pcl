@@ -54,6 +54,7 @@ namespace pcl
     * PointOutT is meant to be pcl::PPFSignature - contains the 4 values of the Surflet
     * feature and in addition, alpha_m for the respective pair - optimization proposed by
     * the authors (see above)
+    *
     * \author Alexandru-Eugen Ichim
     */
   template <typename PointInT, typename PointNT, typename PointOutT>

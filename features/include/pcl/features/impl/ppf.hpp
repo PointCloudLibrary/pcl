@@ -47,8 +47,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::PPFEstimation ()
     : FeatureFromNormals <PointInT, PointNT, PointOutT> ()
 {
   feature_name_ = "PPFEstimation";
-  // slight hack in order to pass the check for the presence of a search method
-  // in Feature::initCompute ()
+  // Slight hack in order to pass the check for the presence of a search method in Feature::initCompute ()
   Feature<PointInT, PointOutT>::tree_.reset (new KdTreeFLANN <PointInT> ());
   Feature<PointInT, PointOutT>::search_radius_ = 1.0f;
 };
@@ -58,12 +57,12 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::PPFEstimation ()
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
-  // initialize output container
+  // Initialize output container - overwrite the sizes done by Feature::initCompute ()
   output.points.resize (indices_->size () * input_->points.size ());
   output.height = 1;
   output.width = output.points.size ();
 
-  // compute point pair features for every pair of points in the cloud
+  // Compute point pair features for every pair of points in the cloud
   for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
     size_t i = (*indices_)[index_i];
@@ -78,7 +77,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
                                       normals_->points[j].getNormalVector4fMap (),
                                       p.f1, p.f2, p.f3, p.f4))
         {
-          // calculate alpha_m angle
+          // Calculate alpha_m angle
           Eigen::Vector3f model_reference_point = input_->points[i].getVector3fMap (),
                           model_reference_normal = normals_->points[i].getNormalVector3fMap (),
                           model_point = input_->points[j].getVector3fMap ();
@@ -93,12 +92,11 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
           p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = 0.0;
         }
       }
-      // do not calculate the feature for identity pairs (i, i) as they are not used
+      // Do not calculate the feature for identity pairs (i, i) as they are not used
       // in the following computations
       else
         p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = 0.0;
 
-      // Alex is this correct?
       output.points[index_i*input_->points.size () + j] = p;
     }
   }
