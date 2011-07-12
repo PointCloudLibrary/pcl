@@ -36,5 +36,7 @@ int
 //  p.removePolygon ("poly");
 
   p.addText ("text", 200, 200, 1.0, 0, 0, "text");
+  
+  p.addText3D ("text3D", cloud->points[0], 1.0, 1.0, 0.0, 0.0);
   p.spin ();
 }

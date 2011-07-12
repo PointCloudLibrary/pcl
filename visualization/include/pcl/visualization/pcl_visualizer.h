@@ -257,13 +257,16 @@ namespace pcl
           * \param textScale the scale of the text to render
           * \param r the red color value
           * \param g the green color value
-          * \param b the blue color vlaue
+          * \param b the blue color value
           * \param id the text object id (default: equal to the "text" parameter)
           * \param viewport the view port (default: all)
           */
-        template <typename PointT> bool  
-        addText3D (const std::string &text, const PointT &position, double textScale = 1.0, double r = 1.0, double g = 1.0, double b = 1.0, 
-                 const std::string &id = "", int viewport = 0);
+        template <typename PointT> bool
+        addText3D (const std::string &text, 
+                   const PointT &position, 
+                   double textScale = 1.0, 
+                   double r = 1.0, double g = 1.0, double b = 1.0,
+                   const std::string &id = "", int viewport = 0);
 
         /** \brief Add the estimated surface normals of a Point Cloud to screen. 
           * \param cloud the input point cloud dataset containing XYZ data and normals
