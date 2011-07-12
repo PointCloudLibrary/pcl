@@ -142,7 +142,7 @@ Features
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              This tutorial discusses the theoretical and implementation details of the surface normal estimation module in PCL.
      ======  ======
@@ -173,7 +173,7 @@ Features
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              This tutorial introduces a family of 3D feature descriptors called PFH (Point Feature Histograms) and discusses their implementation details from PCL's perspective.
      ======  ======
@@ -188,7 +188,7 @@ Features
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              This tutorial introduces the FPFH (Fast Point Feature Histograms) 3D descriptor and discusses their implementation details from PCL's perspective.
      ======  ======
@@ -238,7 +238,7 @@ Filtering
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to remove points whose values fall inside/outside a user given interval along a specified dimension.
      ======  ======
@@ -253,7 +253,7 @@ Filtering
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to downsample (i.e., reduce the number of points) a Point Cloud.
      ======  ======
@@ -284,7 +284,7 @@ Filtering
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to project points to a parametric model (i.e., plane).
      ======  ======
@@ -299,7 +299,7 @@ Filtering
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to extract a set of indices given by a segmentation algorithm.
      ======  ======
@@ -349,7 +349,7 @@ I/O
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to read a Point Cloud from a PCD file.
      ======  ======
@@ -364,7 +364,7 @@ I/O
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to write a Point Cloud to a PCD file.
      ======  ======
@@ -379,7 +379,7 @@ I/O
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to concatenate the fields of two Point Clouds, one containing only *XYZ* data, and one containing *Surface Normal* information.
      ======  ======
@@ -394,7 +394,7 @@ I/O
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to concatenate the point data of two Point Clouds with the same fields.
      ======  ======
@@ -554,7 +554,7 @@ Segmentation
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to segment arbitrary plane models from a given point cloud dataset.
      ======  ======
@@ -569,7 +569,7 @@ Segmentation
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to segment arbitrary cylindrical models from a given point cloud dataset.
      ======  ======
@@ -584,7 +584,7 @@ Segmentation
 
              Author: *Serkan Tuerker*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial we will learn how to extract Euclidean clusters with the ``pcl::EuclideanClusterExtraction`` class.
      ======  ======
@@ -604,7 +604,7 @@ Surface
 
              Author: *Zoltan-Csaba Marton*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial, we will learn how to construct and run a Moving Least Squares (MLS) algorithm to obtain smoothed XYZ coordinates and normals.
      ======  ======
@@ -634,7 +634,7 @@ Surface
 
              Author: *Zoltan-Csaba Marton*
 
-             Compatibility: > PCL 0.5
+             Compatibility: > PCL 1.0
 
              In this tutorial we will learn how to run a greedy triangulation algorithm on a PointCloud with normals to obtain a triangle mesh based on projections of the local neighborhood.
      ======  ======
