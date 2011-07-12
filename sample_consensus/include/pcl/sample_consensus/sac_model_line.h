@@ -46,6 +46,15 @@ namespace pcl
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusModelLine defines a model for 3D line segmentation.
+    * The model coefficients are defined as:
+    * <ul>
+    * <li><b>point_on_line.x</b>  : the X coordinate of a point on the line
+    * <li><b>point_on_line.y</b>  : the Y coordinate of a point on the line
+    * <li><b>point_on_line.z</b>  : the Z coordinate of a point on the line
+    * <li><b>line_direction.x</b> : the X coordinate of a line's direction
+    * <li><b>line_direction.y</b> : the Y coordinate of a line's direction
+    * <li><b>line_direction.z</b> : the Z coordinate of a line's direction
+    * </ul>
     * \author Radu Bogdan Rusu
     * \ingroup sample_consensus
     */

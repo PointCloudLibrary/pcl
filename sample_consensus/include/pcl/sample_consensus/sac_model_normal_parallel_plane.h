@@ -47,6 +47,13 @@ namespace pcl
 {
   /** \brief @b SampleConsensusModelNormalParallelPlane defines a model for 3D plane segmentation using additional surface normal
     * constraints. The plane must lie parallel to a user-specified axis.
+    * The model coefficients are defined as:
+    * <ul>
+    * <li><b>a</b> : the X coordinate of the plane's normal (normalized)
+    * <li><b>b</b> : the Y coordinate of the plane's normal (normalized)
+    * <li><b>c</b> : the Z coordinate of the plane's normal (normalized)
+    * <li><b>d</b> : the fourth <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian component</a> of the plane's equation
+    * </ul>
     * \author Radu Bogdan Rusu and Jared Glover and Nico Blodow
     * \ingroup sample_consensus
     */
