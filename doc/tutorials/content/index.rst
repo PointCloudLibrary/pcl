@@ -602,7 +602,7 @@ Surface
      ======  ======
      |su_2|  Title: **Construct a concave or convex hull polygon for a plane model**
 
-             Author: *Gabe O'Leary/Radu B. Rusu*
+             Author: *Gabe O'Leary, Radu B. Rusu*
 
              Compatibility: > PCL 1.0
 
