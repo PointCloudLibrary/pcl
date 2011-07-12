@@ -38,8 +38,9 @@
 #ifndef PCL_MULTISCALE_FEATURE_PERSISTENCE_H_
 #define PCL_MULTISCALE_FEATURE_PERSISTENCE_H_
 
-#include "pcl/features/fpfh.h"
-#include "pcl/point_representation.h"
+#include <pcl/pcl_base.h>
+#include <pcl/features/feature.h>
+#include <pcl/point_representation.h>
 #include <list>
 
 namespace pcl
@@ -67,14 +68,11 @@ namespace pcl
 
       using PCLBase<PointSource>::input_;
 
+      enum DistanceMetric { MANHATTAN, EUCLIDEAN, JEFFRIES_MATUSITA, BHATTACHARYYA, CHI_SQUARE, KL_DIVERGENCE };
+
+
       /** \brief Empty constructor */
-      MultiscaleFeaturePersistence ()
-        : feature_estimator_ ()
-      {
-        feature_representation_.reset (new DefaultPointRepresentation<PointFeature>);
-        // No input is needed, hack around the initCompute () check from PCLBase
-        input_.reset (new PointCloud<PointSource> ());
-      };
+      MultiscaleFeaturePersistence ();
 
       /** \brief Method that calls computeFeatureAtScale () for each scale parameter */
       void
@@ -89,20 +87,27 @@ namespace pcl
       determinePersistentFeatures (FeatureCloud &output_features,
                                    boost::shared_ptr<std::vector<int> > &output_indices);
 
-
       /** \brief Method for setting the scale parameters for the algorithm
        * \param scale_values vector of scales to determine the characteristic of each scaling step
        */
-      void
-      setScalesVector (std::vector<float> &scale_values) { scale_values_ = scale_values; };
+      inline void
+      setScalesVector (std::vector<float> &scale_values) { scale_values_ = scale_values; }
+
+      /** \brief Method for getting the scale parameters vector */
+      inline std::vector<float>
+      getScalesVector () { return scale_values_; }
 
       /** \brief Setter method for the feature estimator
        * \param feature_estimator pointer to the feature estimator instance that will be used
        * \note the feature estimator instance should already have the input data given beforehand
        * and everything set, ready to be given the compute () command
        */
-      void
+      inline void
       setFeatureEstimator (FeatureEstimatorPtr feature_estimator) { feature_estimator_ = feature_estimator; };
+
+      /** \brief Getter method for the feature estimator */
+      inline FeatureEstimatorPtr
+      getFeatureEstimator () { return feature_estimator_; }
 
       /** \brief Provide a pointer to the feature representation to use to convert features to k-D vectors.
        * \param feature_representation the const boost shared pointer to a PointRepresentation
@@ -124,8 +129,19 @@ namespace pcl
       inline float
       getAlpha () { return alpha_; }
 
+      /** \brief Method for setting the distance metric that will be used for computing the difference between feature vectors
+       * \param distance_metric the new distance metric chosen from the DistanceMetric enum
+       */
+      inline void
+      setDistanceMetric (DistanceMetric distance_metric) { distance_metric_ = distance_metric; }
+
+      /** \brief Returns the distance metric that is currently used to calculate the difference between feature vectors */
+      inline DistanceMetric
+      getDistanceMetric () { return distance_metric_; }
+
+
     protected:
-      /** \brief checks if all the necessary input was given and the computations can successfully start */
+      /** \brief Checks if all the necessary input was given and the computations can successfully start */
       bool
       initCompute ();
 
@@ -136,24 +152,34 @@ namespace pcl
                              FeatureCloudPtr &features);
 
 
-      /** \brief function that calculates the scalar difference between two features
+      /** \brief Function that calculates the scalar difference between two features
        * \return the difference as a floating point type
        */
       float
       distanceBetweenFeatures (const std::vector<float> &a,
                                const std::vector<float> &b);
 
+      /** \brief Method that averages all the features at all scales in order to obtain the global mean feature;
+       * this value is stored in the mean_feature field
+       */
       void
       calculateMeanFeature ();
 
+      /** \brief Selects the so-called 'unique' features from the cloud of features at each level.
+       * These features are the ones that fall outside the standard deviation * alpha_
+       */
       void
       extractUniqueFeatures ();
 
 
-      /** \brief the general parameter for determining each scale level */
+      /** \brief The general parameter for determining each scale level */
       std::vector<float> scale_values_;
 
+      /** \brief Parameter that determines if a feature is to be considered unique or not */
       float alpha_;
+
+      /** \brief Parameter that determines which distance metric is to be usedto calculate the difference between feature vectors */
+      DistanceMetric distance_metric_;
 
       /** \brief the feature estimator that will be used to determine the feature set at each scale level */
       FeatureEstimatorPtr feature_estimator_;
@@ -163,85 +189,12 @@ namespace pcl
       std::vector<float> mean_feature;
       FeatureRepresentationConstPtr feature_representation_;
 
-      /// two structures in which to hold the results of the unique feature extraction process
-      /// they are superfluous wrt to each other, but improve the time performance of the algorithm
-      std::vector <std::list<size_t> > unique_features_indices;
-      std::vector <std::vector<bool> > unique_features_table;
-  };
-
-
-
-
-  template <typename PointT, typename PointNT, typename PointFeature>
-  class FPFHMultiscaleFeaturePersistence : public PCLBase<PointT>
-  {
-    public:
-      using PCLBase<PointT>::input_;
-      typedef pcl::PointCloud<PointT> InputCloud;
-      typedef typename pcl::PointCloud<PointT>::Ptr InputCloudPtr;
-      typedef pcl::PointCloud<PointNT> NormalCloud;
-      typedef typename pcl::PointCloud<PointNT>::Ptr NormalCloudPtr;
-      typedef pcl::PointCloud<PointFeature> FeatureCloud;
-      typedef typename pcl::PointCloud<PointFeature>::Ptr FeatureCloudPtr;
-      typedef FPFHEstimation<PointT, PointNT, PointFeature> FeatureEstimator;
-      typedef typename FPFHEstimation<PointT, PointNT, PointFeature>::Ptr FeatureEstimatorPtr;
-
-      FPFHMultiscaleFeaturePersistence (std::vector<float> &a_scale_values,
-                                        float a_alpha = 1.0)
-        : scale_values (a_scale_values),
-          alpha (a_alpha)
-      {};
-
-      /** \brief Setter method for the scale vector
-       * \param a_scale_values vector of scales to determine the radius of the feature
-       * neighborhood at each scaling step
+      /** \brief Two structures in which to hold the results of the unique feature extraction process.
+       * They are superfluous with respect to each other, but improve the time performance of the algorithm
        */
-      void
-      setScalesVector (std::vector<float>& a_scale_values) { scale_values = a_scale_values; };
-
-      void
-      setInputNormals (NormalCloudPtr &a_normals) { normals_ = a_normals; };
-
-
-      void
-      determinePersistentFeatures (FeatureCloudPtr &output_features,
-                                   InputCloudPtr &output_locations);
-
-
-    private:
-      bool
-      initCompute ();
-
-      float
-      compareFunction (const PointFeature &a,
-                       const PointFeature &b);
-
-      void
-      calculateMeanFeature (PointFeature &mean);
-
-      void
-      computeFeatureAtScale (float &scale,
-                             FeatureCloudPtr &output_features);
-
-      void
-      extractUniqueFeatures ();
-
-
-      FeatureEstimatorPtr feature_estimator;
-      std::vector<FeatureCloudPtr> features_at_scale;
-      PointFeature mean_feature;
-
-      /// two structures in which to hold the results of the unique feature extraction process
-      /// they are superfluous wrt to each other, but improve the time performance of the algorithm
       std::vector <std::list<size_t> > unique_features_indices;
       std::vector <std::vector<bool> > unique_features_table;
-
-      std::vector<float> scale_values;
-      NormalCloudPtr normals_;
-      float alpha;
   };
-
-
 }
 
 
