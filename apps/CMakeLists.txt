@@ -53,7 +53,7 @@ if(build)
  	PCL_ADD_EXECUTABLE(multiscale_feature_persistence_example ${SUBSYS_NAME} src/multiscale_feature_persistence_example.cpp)
     target_link_libraries(multiscale_feature_persistence_example pcl_common pcl_io pcl_filters pcl_features pcl_visualization)
     
-    if (OPENNI_FOUND)  
+    if (OPENNI_FOUND AND BUILD_OPENNI)  
 	  PCL_ADD_EXECUTABLE(openni_voxel_grid ${SUBSYS_NAME} src/openni_voxel_grid.cpp)
 	  target_link_libraries(openni_voxel_grid pcl_common pcl_io pcl_filters pcl_visualization)
 
@@ -98,7 +98,7 @@ if(build)
 	  #PCL_ADD_EXECUTABLE(openni_icp_reg ${SUBSYS_NAME} src/openni_icp_reg.cpp)
 	  #target_link_libraries(openni_icp_reg pcl_common pcl_kdtree pcl_registration pcl_visualization gsl gslcblas ann)
     
-    endif() # OPENNI_FOUND
+  endif() # OPENNI_FOUND + BUILD_OPENNI
     
   endif() # VTK_FOUND
 

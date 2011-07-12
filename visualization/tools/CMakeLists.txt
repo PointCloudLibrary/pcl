@@ -12,7 +12,7 @@ target_link_libraries(octree_viewer pcl_common pcl_io pcl_octree pcl_visualizati
 PCL_ADD_EXECUTABLE(timed_trigger_test ${SUBSYS_NAME} timed_trigger_test.cpp)
 target_link_libraries(timed_trigger_test pcl_io pcl_common pcl_kdtree pcl_range_image pcl_visualization)
 
-if(OPENNI_FOUND)
+if(OPENNI_FOUND AND BUILD_OPENNI)
 
     PCL_ADD_EXECUTABLE(pcd_grabber_viewer ${SUBSYS_NAME} pcd_grabber_viewer.cpp)
     target_link_libraries(pcd_grabber_viewer pcl_common pcl_io pcl_kdtree
@@ -40,5 +40,5 @@ if(OPENNI_FOUND)
     target_link_libraries(pcl_stream_compression pcl_common pcl_io pcl_kdtree pcl_octree
         pcl_range_image pcl_visualization pcl_filters)    
 
-endif(OPENNI_FOUND)
+endif()
 
