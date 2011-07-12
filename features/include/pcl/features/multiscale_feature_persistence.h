@@ -61,12 +61,12 @@ namespace pcl
   class MultiscaleFeaturePersistence : public PCLBase<PointSource>
   {
     public:
-      typedef PointCloud<PointFeature> FeatureCloud;
-      typedef typename PointCloud<PointFeature>::Ptr FeatureCloudPtr;
-      typedef typename Feature<PointSource, PointFeature>::Ptr FeatureEstimatorPtr;
-      typedef boost::shared_ptr<const PointRepresentation <PointFeature> > FeatureRepresentationConstPtr;
+      typedef pcl::PointCloud<PointFeature> FeatureCloud;
+      typedef typename pcl::PointCloud<PointFeature>::Ptr FeatureCloudPtr;
+      typedef typename pcl::Feature<PointSource, PointFeature>::Ptr FeatureEstimatorPtr;
+      typedef boost::shared_ptr<const pcl::PointRepresentation <PointFeature> > FeatureRepresentationConstPtr;
 
-      using PCLBase<PointSource>::input_;
+      using pcl::PCLBase<PointSource>::input_;
 
       enum DistanceMetric { MANHATTAN, EUCLIDEAN, JEFFRIES_MATUSITA, BHATTACHARYYA, CHI_SQUARE, KL_DIVERGENCE };
 
@@ -192,8 +192,8 @@ namespace pcl
       /** \brief Two structures in which to hold the results of the unique feature extraction process.
        * They are superfluous with respect to each other, but improve the time performance of the algorithm
        */
-      std::vector <std::list<size_t> > unique_features_indices;
-      std::vector <std::vector<bool> > unique_features_table;
+      std::vector<std::list<size_t> > unique_features_indices;
+      std::vector<std::vector<bool> > unique_features_table;
   };
 }
 
