@@ -86,7 +86,7 @@ public:
   typedef typename Cloud::ConstPtr CloudConstPtr;
 
   SimpleOpenNIViewer(pcl::OpenNIGrabber& grabber)
-    : /*cloud_viewer_("PCL OpenNI Viewer"), */
+    : cloud_viewer_("PCL OpenNI Viewer"), 
       grabber_(grabber),
       image_viewer_ ("PCL image viewer")
   {
@@ -193,7 +193,7 @@ public:
       {
         //FPS_CALC ("drawing");
         //the call to get() sets the cloud_ to null;
-        //cloud_viewer_.showCloud (getLatestCloud ());
+        cloud_viewer_.showCloud (getLatestCloud ());
       }
       //*
       if (image_)
@@ -215,7 +215,7 @@ public:
           image_viewer_.showRGBImage(rgb_data, image->getWidth(), image->getHeight());
         }
       }
-      image_viewer_.spinOnce (10);
+//      image_viewer_.spinOnce (10);
       //*/
     }
 
@@ -228,7 +228,7 @@ public:
       delete[] rgb_data;
   }
 
-//  pcl::visualization::CloudViewer cloud_viewer_;
+  pcl::visualization::CloudViewer cloud_viewer_;
   pcl::OpenNIGrabber& grabber_;
   boost::mutex cloud_mutex_;
   CloudConstPtr cloud_;

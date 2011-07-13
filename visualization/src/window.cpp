@@ -36,13 +36,11 @@
 
 #include <pcl/visualization/window.h>
 #include <vtkCallbackCommand.h>
-#include <X11/X.h>
 #include <vtkObject.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/mouse_event.h>
-#include <vtkRenderWindow.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/interactor.h>
 
@@ -51,12 +49,12 @@ pcl::visualization::Window::Window (const std::string& window_name)
   : mouse_command_ (vtkCallbackCommand::New ()), 
     keyboard_command_ (vtkCallbackCommand::New ())
 {
-/*  mouse_command_->SetClientData (this);
+  mouse_command_->SetClientData (this);
   mouse_command_->SetCallback (Window::MouseCallback);
   
   keyboard_command_->SetClientData (this);
   keyboard_command_->SetCallback (Window::KeyboardCallback);
-*/  
+
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
   win_->SetWindowName (window_name.c_str ());
