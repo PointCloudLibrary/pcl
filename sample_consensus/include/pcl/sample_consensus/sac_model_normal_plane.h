@@ -45,8 +45,12 @@
 
 namespace pcl
 {
-  /** \brief @b SampleConsensusModelNormalPlane defines a model for 3D plane segmentation using additional surface normal
-    * constraints.
+  /** \brief @b SampleConsensusModelNormalPlane defines a model for 3D plane
+    * segmentation using additional surface normal constraints. Basically this
+    * means that checking for inliers will not only involve a "distance to
+    * model" criterion, but also an additional "maximum angular deviation"
+    * between the plane's normal and the inlier points normals.
+    *
     * The model coefficients are defined as:
     * <ul>
     * <li><b>a</b> : the X coordinate of the plane's normal (normalized)
@@ -54,6 +58,16 @@ namespace pcl
     * <li><b>c</b> : the Z coordinate of the plane's normal (normalized)
     * <li><b>d</b> : the fourth <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian component</a> of the plane's equation
     * </ul>
+    *
+    * To set the influence of the surface normals in the inlier estimation
+    * process, set the normal weight (0.0-1.0), e.g.:
+    * \code
+    * SampleConsensusModelNormalPlane<pcl::PointXYZ, pcl::Normal> sac_model;
+    * ...
+    * sac_model.setNormalDistanceWeight (0.1);
+    * ...
+    * \endcode
+    *
     * \author Radu Bogdan Rusu and Jared Glover
     * \ingroup sample_consensus
     */
@@ -79,69 +93,36 @@ namespace pcl
       /** \brief Constructor for base SampleConsensusModelNormalPlane.
         * \param cloud the input point cloud dataset
         */
-      SampleConsensusModelNormalPlane (const PointCloudConstPtr &cloud) : SampleConsensusModelPlane<PointT> (cloud),
-                                                                          eps_angle_ (0.0), eps_dist_ (0.0)
+      SampleConsensusModelNormalPlane (const PointCloudConstPtr &cloud) : SampleConsensusModelPlane<PointT> (cloud)
       {
-        axis_.setZero ();
       }
 
       /** \brief Constructor for base SampleConsensusModelNormalPlane.
         * \param cloud the input point cloud dataset
         * \param indices a vector of point indices to be used from \a cloud
         */
-      SampleConsensusModelNormalPlane (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModelPlane<PointT> (cloud, indices),
-                                                                                                           eps_angle_ (0.0), eps_dist_ (0.0)
+      SampleConsensusModelNormalPlane (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModelPlane<PointT> (cloud, indices)
       {
-        axis_.setZero ();
       }
-
-      /** \brief Set the axis along which we need to search for a plane perpendicular to.
-        * \param ax the axis along which we need to search for a plane perpendicular to
-        */
-      inline void setAxis (const Eigen::Vector3f &ax) { axis_ = ax; }
-
-      /** \brief Get the axis along which we need to search for a plane perpendicular to. */
-      inline Eigen::Vector3f getAxis () { return (axis_); }
-
-      /** \brief Set the angle epsilon (delta) threshold.
-        * \param ea the maximum allowed difference between the plane normal and the given axis.
-        */
-      inline void setEpsAngle (double ea) { eps_angle_ = ea; }
-
-      /** \brief Get the angle epsilon (delta) threshold. */
-      inline double getEpsAngle () { return (eps_angle_); }
-
-      /** \brief Set the distance we expect the plane to be from the origin
-        * \param d distance from the template plane to the origin
-        */
-      inline void setDistanceFromOrigin (double d) { distance_from_origin_ = d; }
-
-      /** \brief Get the distance of the plane from the origin. */
-      inline double getDistanceFromOrigin () { return (distance_from_origin_); }
-
-      /** \brief Set the distance epsilon (delta) threshold.
-        * \param delta the maximum allowed deviation from the template distance from the origin
-        */
-      inline void setEpsDist (double delta) { eps_dist_ = delta; }
-
-      /** \brief Get the distance epsilon (delta) threshold. */
-      inline double getEpsDist () { return (eps_dist_); }
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param model_coefficients the coefficients of a plane model that we need to compute distances to
         * \param inliers the resultant model inliers
         * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
-      void selectWithinDistance (const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers);
+      void 
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers);
 
       /** \brief Compute all distances from the cloud data to a given plane model.
         * \param model_coefficients the coefficients of a plane model that we need to compute distances to
         * \param distances the resultant estimated distances
         */
-      void getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances);
+      void 
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances);
 
       /** \brief Return an unique id for this model (SACMODEL_NORMAL_PLANE). */
-      inline pcl::SacModel getModelType () const { return (SACMODEL_NORMAL_PLANE); }
+      inline pcl::SacModel 
+      getModelType () const { return (SACMODEL_NORMAL_PLANE); }
 
     	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -149,20 +130,9 @@ namespace pcl
       /** \brief Check whether a model is valid given the user constraints.
         * \param model_coefficients the set of model coefficients
         */
-      bool isModelValid (const Eigen::VectorXf &model_coefficients);
+      bool 
+      isModelValid (const Eigen::VectorXf &model_coefficients);
 
-   private:
-      /** \brief The axis along which we need to search for a plane perpendicular to. */
-      Eigen::Vector3f axis_;
-
-      /** \brief The distance from the template plane to the origin. */
-      double distance_from_origin_;
-
-      /** \brief The maximum allowed difference between the plane normal and the given axis. */
-      double eps_angle_;
-
-      /** \brief The maximum allowed deviation from the template distance from the origin. */
-      double eps_dist_;
   };
 }
 

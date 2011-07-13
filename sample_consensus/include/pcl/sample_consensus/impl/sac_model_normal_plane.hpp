@@ -45,13 +45,6 @@ template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
       const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers)
 {
-  // Needs a valid set of model coefficients
-  if (model_coefficients.size () != 4)
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
-    return;
-  }
-
   if (!normals_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] No input dataset containing normals was given!\n");
@@ -100,13 +93,6 @@ template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::getDistancesToModel (
       const Eigen::VectorXf &model_coefficients, std::vector<double> &distances)
 {
-  // Needs a valid set of model coefficients
-  if (model_coefficients.size () != 4)
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
-    return;
-  }
-
   if (!normals_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelNormalPlane::getDistancesToModel] No input dataset containing normals was given!\n");
@@ -152,27 +138,6 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::isModelValid (const Eigen
   {
     PCL_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
     return (false);
-  }
-  
-  // Check against template, if given
-  if (eps_angle_ > 0.0)
-  {
-    // Obtain the plane normal
-    Eigen::Vector4f coeff = model_coefficients;
-    coeff[3] = 0;
-
-    Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0);
-    double angle_diff = fabs (getAngle3D (axis, coeff));
-    angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
-    // Check whether the current plane model satisfies our angle threshold criterion with respect to the given axis
-    if (angle_diff > eps_angle_)
-      return (false);
-  }
-
-  if (eps_dist_ > 0.0)
-  {
-    if (fabs (-model_coefficients[3] - distance_from_origin_) > eps_dist_)
-      return (false);
   }
 
   return (true);
