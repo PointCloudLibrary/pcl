@@ -45,9 +45,12 @@
 #include <pcl/visualization/interactor.h>
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::Window::Window (const std::string& window_name)
   : mouse_command_ (vtkCallbackCommand::New ()), 
-    keyboard_command_ (vtkCallbackCommand::New ())
+    keyboard_command_ (vtkCallbackCommand::New ()),
+    style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ()),
+    rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
 {
   mouse_command_->SetClientData (this);
   mouse_command_->SetCallback (Window::MouseCallback);
@@ -58,17 +61,35 @@ pcl::visualization::Window::Window (const std::string& window_name)
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
   win_->SetWindowName (window_name.c_str ());
-  win_->SetInteractor (interactor_);
-  // Create the interactor
+  win_->AlphaBitPlanesOff ();
+  win_->PointSmoothingOff ();
+  win_->LineSmoothingOff ();
+  win_->PolygonSmoothingOff ();
+  win_->SwapBuffersOn ();
+  win_->SetStereoTypeToAnaglyph ();
+
+  // Get screen size
+  int *scr_size = win_->GetScreenSize ();
+  // Set the window size as 1/2 of the screen size
+  win_->SetSize (scr_size[0] / 2, scr_size[1] / 2);
+
+  // Create the interactor style
+  style_->Initialize ();
+  style_->setRendererCollection (rens_);
+  style_->UseTimersOn ();
+
+ // Create the interactor
   //interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
   interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
 
   interactor_->SetRenderWindow (win_);
+  interactor_->SetInteractorStyle (style_);
   interactor_->SetDesiredUpdateRate (30.0);
   // Initialize and create timer
   interactor_->Initialize ();
   //interactor_->CreateRepeatingTimer (5000L);
-  interactor_->timer_id_ = interactor_->CreateRepeatingTimer (30L);
+  interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
+  //interactor_->timer_id_ = interactor_->CreateRepeatingTimer (30L);
   
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_main_loop_timer_callback_->window = this;

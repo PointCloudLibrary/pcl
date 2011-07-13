@@ -44,6 +44,7 @@
 #include <vtkCallbackCommand.h>
 #include <vtkInteractorStyle.h>
 #include <pcl/visualization/interactor.h>
+#include <pcl/visualization/interactor_style.h>
 
 namespace pcl
 {
@@ -173,7 +174,7 @@ namespace pcl
             if (event_id != vtkCommand::TimerEvent)
               return;
             int timer_id = *(int*)call_data;
-            PCL_WARN ("[pcl::visualization::Window::ExitMainLoopTimerCallback] Timer %d called.\n", timer_id);
+            //PCL_WARN ("[pcl::visualization::Window::ExitMainLoopTimerCallback] Timer %d called.\n", timer_id);
             if (timer_id != right_timer_id)
               return;
             window->interactor_->stopLoop ();
@@ -207,6 +208,10 @@ namespace pcl
         //vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
         vtkCallbackCommand* mouse_command_;
         vtkCallbackCommand* keyboard_command_;
+        /** \brief The render window interactor style. */
+        vtkSmartPointer<PCLVisualizerInteractorStyle> style_;
+        /** \brief The collection of renderers used. */
+        vtkSmartPointer<vtkRendererCollection> rens_;
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;
     };
