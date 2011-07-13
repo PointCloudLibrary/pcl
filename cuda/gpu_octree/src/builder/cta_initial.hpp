@@ -8,8 +8,6 @@ namespace initial
 {    
     struct KernelInitialPolicyGlobOctree
     {   
-        const static int max_points_per_leaf = 10;  
-
         enum 
         { 
             LEVEL_BITS_NUM = 3,

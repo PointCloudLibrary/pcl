@@ -13,6 +13,8 @@ namespace pcl
 {
     namespace gpu
     {
+        void get_cc_compiled_for(int& bin, int& ptr);
+
         class CudaOctree
         {
         public:
@@ -25,11 +27,10 @@ namespace pcl
         
         class Octree_host : public CudaOctree
         {
-        public:
-            const static int levels_num = 10;
-            const static int max_leaf_points = 10;
+        public:            
+            const static int max_leaf_points = 32;
 
-            struct Octree
+            struct OctreeData
             {
                 std::vector<int> nodes;
 
@@ -70,7 +71,7 @@ namespace pcl
         class Octree2 : public pcl::gpu::CudaOctree
         {
         public:
-            Octree2() {};
+            Octree2(int number_of_SMs_arg) : number_of_SMs(number_of_SMs_arg) {};
             ~Octree2() {};
 
             void setCloud(const DeviceArray_<float3>& input_points);           
@@ -94,11 +95,13 @@ namespace pcl
             OctreeGlobalLifetime octreeGlobal;    
 
             //test
-            Octree_host::Octree host;
+            Octree_host::OctreeData host;
             std::vector<float3> points_host;
 
             int downloaded;
             void internalDownload();
+
+            int number_of_SMs;
         };
     }
 }

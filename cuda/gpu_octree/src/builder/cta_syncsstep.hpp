@@ -16,9 +16,9 @@ namespace syncstep
             ARITY = 1 << LEVEL_BITS_NUM,
 
             CTA_SIZE = 1024,
-            GRID_SIZE = 14,
+            //GRID_SIZE = 14,
 
-            PROCESS_STRIDE = CTA_SIZE * GRID_SIZE
+            //PROCESS_STRIDE = CTA_SIZE * GRID_SIZE
         };
 
         struct SmemStorage
@@ -116,6 +116,9 @@ namespace syncstep
         __shared__ SmemStorage storage;                        
 
         Cta<KernelPolicy> cta(octree_global, codes, tasks_global, storage);
+
+
+        int STRIDE = gridDim.x * KernelPolicy::CTA_SIZE;
         
         for(;;)
         {            
@@ -129,8 +132,8 @@ namespace syncstep
             while(activeCount > 0)
             {                
                 cta.buildPiece(tasksPiece, activeCount);       
-                tasksPiece  += KernelPolicy::PROCESS_STRIDE;
-                activeCount -= KernelPolicy::PROCESS_STRIDE;
+                tasksPiece  += STRIDE; //KernelPolicy::PROCESS_STRIDE;
+                activeCount -= STRIDE; //KernelPolicy::PROCESS_STRIDE;
             }
             
             //__syncthreads();

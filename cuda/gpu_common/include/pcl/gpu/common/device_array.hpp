@@ -42,7 +42,9 @@
 namespace pcl
 {
     namespace gpu
-    {
+    {      
+        ////////////// DeviceArray classes with reference counting /////////////////////
+
         class PCL_EXPORTS DeviceArray
         {
         public:

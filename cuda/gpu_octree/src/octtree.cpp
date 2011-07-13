@@ -2,13 +2,28 @@
 
 #include "cuda_interface.hpp"
 #include "pcl/gpu/common/timers_cuda.hpp"
+#include "pcl/gpu/common/safe_call.hpp"
 
 pcl::gpu::CudaOctree* cast(void *ptr) { return static_cast<pcl::gpu::CudaOctree*>(ptr); }
 
 pcl::gpu::Octree::Octree() : impl(0)
 {
-    impl = new pcl::gpu::Octree2();    
-    //impl = new Octree_host();
+    int device;
+    cudaSafeCall( cudaGetDevice( &device ) );
+
+    cudaDeviceProp prop;
+    cudaSafeCall( cudaGetDeviceProperties( &prop, device) );
+    
+    if (prop.major < 2)
+        pcl::cuda::error("This code requires devices with compute capabiliti >= 2.0", __FILE__, __LINE__);
+
+    int bin, ptx;
+    get_cc_compiled_for(bin, ptx);
+
+    if (bin < 20 && ptx < 20)
+        pcl::cuda::error("This must be compiled for compute capabiliti >= 2.0", __FILE__, __LINE__);    
+
+    impl = new pcl::gpu::Octree2(prop.multiProcessorCount);        
 }
 
 pcl::gpu::Octree::~Octree() 

@@ -26,6 +26,23 @@ using namespace thrust;
 using namespace std;
 using namespace batch_radius_search;
 
+namespace getcc
+{
+    __global__ void get_cc_kernel(int *data)
+    {
+        data[threadIdx.x + blockDim.x * blockIdx.x] = threadIdx.x;
+    }
+}
+
+void pcl::gpu::get_cc_compiled_for(int& bin, int& ptx)
+{
+    cudaFuncAttributes attrs;
+    cudaFuncGetAttributes(&attrs, getcc::get_cc_kernel);  
+    bin = attrs.binaryVersion;
+    ptx = attrs.ptxVersion;
+}
+
+
 void pcl::gpu::Octree2::setCloud(const pcl::gpu::DeviceArray_<float3>& input_points)
 {
     points_num = input_points.size();
@@ -33,7 +50,7 @@ void pcl::gpu::Octree2::setCloud(const pcl::gpu::DeviceArray_<float3>& input_poi
 }
 
 void pcl::gpu::Octree2::build()
-{   
+{       
     downloaded = false;
 
     //allocatations
@@ -80,14 +97,17 @@ void pcl::gpu::Octree2::build()
     }
 
     {
+
+        int grid_size = number_of_SMs;
+
         typedef syncstep::KernelSyncPolicy KernelPolicy;
         //printFuncAttrib(syncstep::Kernel<KernelPolicy>);
 
         util::GlobalBarrierLifetime global_barrier;
-        global_barrier.Setup(KernelPolicy::GRID_SIZE);                
+        global_barrier.Setup(grid_size);                
 
         ScopeTimer timer("Kernelsync"); 
-        syncstep::Kernel<KernelPolicy><<<KernelPolicy::GRID_SIZE, KernelPolicy::CTA_SIZE>>>(tasksGlobal, octreeGlobal, codes.ptr(), global_barrier);
+        syncstep::Kernel<KernelPolicy><<<grid_size, KernelPolicy::CTA_SIZE>>>(tasksGlobal, octreeGlobal, codes.ptr(), global_barrier);
         cudaSafeCall( cudaGetLastError() );
         cudaSafeCall( cudaDeviceSynchronize() );
     }    
@@ -125,13 +145,13 @@ struct TransversalHelperCPU
         children_visited = false;
     }
 
-    int getNode() const { return  path[level]; };
+    int getNode() const { return path[level]; };
     void gotoNextLevel(int first, int len) 
     {
+        ++level;
         path[level] = first;
         lens[level] = len;
-        children_visited = false;
-        ++level;
+        children_visited = false;        
     }
     bool gotoSibling()
     {
@@ -150,7 +170,7 @@ struct TransversalHelperCPU
 
 void pcl::gpu::Octree2::radiusSearch2(const float3& center, float radius, vector<int>& out) const
 {    
-    const Octree_host::Octree& octree = host;
+    const Octree_host::OctreeData& octree = host;
     out.clear();   
 
     vector<int> check;
@@ -238,7 +258,7 @@ void pcl::gpu::Octree2::radiusSearch2(const float3& center, float radius, vector
 
 void pcl::gpu::Octree2::radiusSearch(const float3& center, float radius, vector<int>& out) const
 {          
-    const Octree_host::Octree& octree = host;
+    const Octree_host::OctreeData& octree = host;
 
     out.clear();    
         

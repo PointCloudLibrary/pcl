@@ -48,7 +48,7 @@ namespace pcl
     {        
 		struct PointXYZ
 		{
-			float x, y, z;           
+			float x, y, z; 
 		};
 
         class PCL_EXPORTS Octree
@@ -58,6 +58,9 @@ namespace pcl
             virtual ~Octree();
 
             /* Types */
+
+            typedef pcl::gpu::PointXYZ PointTypeGpu;
+
             typedef DeviceArray_<PointXYZ> PointCloud;
             typedef boost::shared_ptr<PointCloud> PointCloudPtr;
             typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;

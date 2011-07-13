@@ -10,7 +10,7 @@ namespace base
     {        
         OctreeGlobal& octree_global;
         const int* codes;
-        const static int max_points_per_leaf = 10;
+        const static int max_points_per_leaf = 32;
 
         __device__ __forceinline__ Cta_base(OctreeGlobal& octree_global_arg, const int* codes_arg) : octree_global(octree_global_arg), codes(codes_arg) {}
 
