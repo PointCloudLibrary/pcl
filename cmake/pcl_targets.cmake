@@ -110,7 +110,7 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
     if(PCL_SHARED_LIBS)
         # to overcome a limitation in cuda_add_library, we add manually PCLAPI_EXPORTS macro
         cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -arch sm_20 -DPCLAPI_EXPORTS)
-    elseif(PCL_SHARED_LIBS)
+    else(PCL_SHARED_LIBS)
         cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -arch sm_20)
     endif(PCL_SHARED_LIBS)
     
