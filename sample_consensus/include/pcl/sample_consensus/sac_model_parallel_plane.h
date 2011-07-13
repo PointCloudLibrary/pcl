@@ -45,7 +45,16 @@ namespace pcl
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusModelParallelPlane defines a model for 3D plane segmentation using additional
-    * angular constraints. The plane must be parallel to a user-specified axis within a user-specified angle threshold.
+    * angular constraints. The plane must be parallel to a user-specified axis
+    * (\ref setAxis) within an user-specified angle threshold (\ref setEpsAngle).
+    * 
+    * Code example for a plane model, parallel (within a 15 degrees tolerance) with the Z axis:
+    * \code
+    * SampleConsensusModelParallelPlane<pcl::PointXYZ> model (cloud);
+    * model.setAxis (Eigen::Vector3f (0.0, 0.0, 1.0));
+    * model.setEpsAngle (pcl::deg2rad (15));
+    * \endcode
+    *
     * \author Radu Bogdan Rusu, Nico Blodow
     * \ingroup sample_consensus
     */
@@ -81,40 +90,48 @@ namespace pcl
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
         * \param ax the axis along which we need to search for a plane perpendicular to
         */
-      inline void setAxis (const Eigen::Vector3f &ax) { axis_ = ax; }
+      inline void 
+      setAxis (const Eigen::Vector3f &ax) { axis_ = ax; }
 
       /** \brief Get the axis along which we need to search for a plane perpendicular to. */
-      inline Eigen::Vector3f getAxis ()  { return (axis_); }
+      inline Eigen::Vector3f 
+      getAxis ()  { return (axis_); }
 
       /** \brief Set the angle epsilon (delta) threshold.
         * \param ea the maximum allowed difference between the plane normal and the given axis.
         */
-      inline void setEpsAngle (double ea) { eps_angle_ = ea; }
+      inline void 
+      setEpsAngle (double ea) { eps_angle_ = ea; }
 
       /** \brief Get the angle epsilon (delta) threshold. */
-      inline double getEpsAngle () { return (eps_angle_); }
+      inline double 
+      getEpsAngle () { return (eps_angle_); }
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param model_coefficients the coefficients of a plane model that we need to compute distances to
         * \param inliers the resultant model inliers
         * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
-      void selectWithinDistance (const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers);
+      void 
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers);
 
       /** \brief Compute all distances from the cloud data to a given plane model.
         * \param model_coefficients the coefficients of a plane model that we need to compute distances to
         * \param distances the resultant estimated distances
         */
-      void getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances);
+      void 
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances);
 
       /** \brief Return an unique id for this model (SACMODEL_PARALLEL_PLANE). */
-      inline pcl::SacModel getModelType () const { return (SACMODEL_PARALLEL_PLANE); }
+      inline pcl::SacModel 
+      getModelType () const { return (SACMODEL_PARALLEL_PLANE); }
 
     protected:
       /** \brief Check whether a model is valid given the user constraints.
         * \param model_coefficients the set of model coefficients
         */
-      bool isModelValid (const Eigen::VectorXf &model_coefficients);
+      bool 
+      isModelValid (const Eigen::VectorXf &model_coefficients);
 
       /** \brief The axis along which we need to search for a plane perpendicular to. */
       Eigen::Vector3f axis_;

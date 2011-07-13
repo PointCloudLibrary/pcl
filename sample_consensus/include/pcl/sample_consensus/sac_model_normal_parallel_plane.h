@@ -45,8 +45,13 @@
 
 namespace pcl
 {
-  /** \brief @b SampleConsensusModelNormalParallelPlane defines a model for 3D plane segmentation using additional surface normal
-    * constraints. The plane must lie parallel to a user-specified axis.
+  /** \brief @b SampleConsensusModelNormalParallelPlane defines a model for 3D
+    * plane segmentation using additional surface normal constraints. Basically
+    * this means that checking for inliers will not only involve a "distance to
+    * model" criterion, but also an additional "maximum angular deviation"
+    * between the plane's normal and the inlier points normals. In addition,
+    * the plane must lie parallel to an user-specified axis.
+    *
     * The model coefficients are defined as:
     * <ul>
     * <li><b>a</b> : the X coordinate of the plane's normal (normalized)
@@ -54,6 +59,24 @@ namespace pcl
     * <li><b>c</b> : the Z coordinate of the plane's normal (normalized)
     * <li><b>d</b> : the fourth <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian component</a> of the plane's equation
     * </ul>
+    *
+    * To set the influence of the surface normals in the inlier estimation
+    * process, set the normal weight (0.0-1.0), e.g.:
+    * \code
+    * SampleConsensusModelNormalPlane<pcl::PointXYZ, pcl::Normal> sac_model;
+    * ...
+    * sac_model.setNormalDistanceWeight (0.1);
+    * ...
+    * \endcode
+    *
+    * In addition, the user can specify more constraints, such as:
+    * <ul>
+    * <li>an axis along which we need to search for a plane perpendicular to (\ref setAxis);
+    * <li>an angle \a tolerance threshold between the plane's normal and the above given axis (\ref setEpsAngle);
+    * <li>a distance we expect the plane to be from the origin (\ref setDistanceFromOrigin);
+    * <li>a distance \a tolerance as the maximum allowed deviation from the above given distance from the origin (\ref setEpsDist).
+    * </ul>
+    *
     * \author Radu Bogdan Rusu and Jared Glover and Nico Blodow
     * \ingroup sample_consensus
     */
@@ -98,50 +121,61 @@ namespace pcl
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
         * \param ax the axis along which we need to search for a plane perpendicular to
         */
-      inline void setAxis (const Eigen::Vector3f &ax) { axis_ = ax; }
+      inline void 
+      setAxis (const Eigen::Vector3f &ax) { axis_ = ax; }
 
       /** \brief Get the axis along which we need to search for a plane perpendicular to. */
-      inline Eigen::Vector3f getAxis () { return (axis_); }
+      inline Eigen::Vector3f 
+      getAxis () { return (axis_); }
 
       /** \brief Set the angle epsilon (delta) threshold.
         * \param ea the maximum allowed deviation from 90 degrees between the plane normal and the given axis.
         */
-      inline void setEpsAngle (double ea) { eps_angle_ = ea; }
+      inline void 
+      setEpsAngle (double ea) { eps_angle_ = ea; }
 
       /** \brief Get the angle epsilon (delta) threshold. */
-      inline double getEpsAngle () { return (eps_angle_); }
+      inline double 
+      getEpsAngle () { return (eps_angle_); }
 
       /** \brief Set the distance we expect the plane to be from the origin
         * \param d distance from the template plane to the origin
         */
-      inline void setDistanceFromOrigin (double d) { distance_from_origin_ = d; }
+      inline void 
+      setDistanceFromOrigin (double d) { distance_from_origin_ = d; }
 
       /** \brief Get the distance of the plane from the origin. */
-      inline double getDistanceFromOrigin () { return (distance_from_origin_); }
+      inline double 
+      getDistanceFromOrigin () { return (distance_from_origin_); }
 
       /** \brief Set the distance epsilon (delta) threshold.
         * \param delta the maximum allowed deviation from the template distance from the origin
         */
-      inline void setEpsDist (double delta) { eps_dist_ = delta; }
+      inline void 
+      setEpsDist (double delta) { eps_dist_ = delta; }
 
       /** \brief Get the distance epsilon (delta) threshold. */
-      inline double getEpsDist () { return (eps_dist_); }
+      inline double 
+      getEpsDist () { return (eps_dist_); }
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param model_coefficients the coefficients of a plane model that we need to compute distances to
         * \param inliers the resultant model inliers
         * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
-      void selectWithinDistance (const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers);
+      void 
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers);
 
       /** \brief Compute all distances from the cloud data to a given plane model.
         * \param model_coefficients the coefficients of a plane model that we need to compute distances to
         * \param distances the resultant estimated distances
         */
-      void getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances);
+      void 
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances);
 
       /** \brief Return an unique id for this model (SACMODEL_NORMAL_PARALLEL_PLANE). */
-      inline pcl::SacModel getModelType () const { return (SACMODEL_NORMAL_PARALLEL_PLANE); }
+      inline pcl::SacModel 
+      getModelType () const { return (SACMODEL_NORMAL_PARALLEL_PLANE); }
 
     	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -149,7 +183,8 @@ namespace pcl
       /** \brief Check whether a model is valid given the user constraints.
         * \param model_coefficients the set of model coefficients
         */
-      bool isModelValid (const Eigen::VectorXf &model_coefficients);
+      bool 
+      isModelValid (const Eigen::VectorXf &model_coefficients);
 
    private:
       /** \brief The axis along which we need to search for a plane perpendicular to. */
