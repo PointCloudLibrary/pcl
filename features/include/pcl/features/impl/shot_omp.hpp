@@ -41,119 +41,123 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT>
-  void
-  pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
-  {
+void
+pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
+{
+  if (threads_ < 0)
+    threads_ = 1;
 
-	
-    if (threads_ < 0)
-      threads_ = omp_get_max_threads ();
+  descLength_ = nr_grid_sector_ * (nr_shape_bins_ + 1);
 
-    descLength_ = nr_grid_sector_ * (nr_shape_bins_ + 1);
-
-    sqradius_ = search_radius_ * search_radius_;
-    sqradius4_ = sqradius_ / 4;
-    radius3_4_ = (search_radius_ * 3) / 4;
-    radius1_4_ = search_radius_ / 4;
-    radius1_2_ = search_radius_ / 2;
+  sqradius_ = search_radius_ * search_radius_;
+  sqradius4_ = sqradius_ / 4;
+  radius3_4_ = (search_radius_ * 3) / 4;
+  radius1_4_ = search_radius_ / 4;
+  radius1_2_ = search_radius_ / 2;
 
 	if (output.points[0].descriptor.size () != (size_t)descLength_)
 		for (size_t idx = 0; idx < indices_->size (); ++idx)
 			output.points[idx].descriptor.resize (descLength_);
 
-    int data_size = indices_->size ();
-    Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
-    std::vector<std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > > rfs (threads_);
-    for (size_t i = 0; i < rfs.size (); ++i)
-      rfs[i].resize (3);
+  int data_size = indices_->size ();
+  Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
+  std::vector<std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > > rfs (threads_);
+  for (size_t i = 0; i < rfs.size (); ++i)
+    rfs[i].resize (3);
 
-    for (int i = 0; i < threads_; i++)
-      shot[i].setZero (descLength_);
+  for (int i = 0; i < threads_; i++)
+    shot[i].setZero (descLength_);
 
-    int tid;
+  int tid;
 
-    // Iterating over the entire index vector
+  // Iterating over the entire index vector
 #pragma omp parallel for private(tid) num_threads(threads_)
-    for (int idx = 0; idx < data_size; ++idx)
-    {
-      // Allocate enough space to hold the results
-      // \note This resize is irrelevant for a radiusSearch ().
-      std::vector<int> nn_indices (k_);
-      std::vector<float> nn_dists (k_);
+  for (int idx = 0; idx < data_size; ++idx)
+  {
+    // Allocate enough space to hold the results
+    // \note This resize is irrelevant for a radiusSearch ().
+    std::vector<int> nn_indices (k_);
+    std::vector<float> nn_dists (k_);
 
-      this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
-      // Estimate the SHOT at each patch
-      tid = omp_get_thread_num ();
-      computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], rfs[tid]);
+    // Estimate the SHOT at each patch
+#ifdef _OPENMP
+    tid = omp_get_thread_num ();
+#else
+    tid = 0;
+#endif
+    computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], rfs[tid]);
 
-      // Copy into the resultant cloud
-      for (int d = 0; d < shot[tid].size (); ++d)
-        output.points[idx].descriptor[d] = shot[tid][d];
-      for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = rfs[tid][d/3][d % 3];
-    }
-
-    delete[] shot;
+    // Copy into the resultant cloud
+    for (int d = 0; d < shot[tid].size (); ++d)
+      output.points[idx].descriptor[d] = shot[tid][d];
+    for (int d = 0; d < 9; ++d)
+      output.points[idx].rf[d] = rfs[tid][d/3][d % 3];
   }
+  delete[] shot;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointNT, typename PointOutT>
-  void
-  pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
-  {
+void
+pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
+{
+  if (threads_ < 0)
+    threads_ = 1;
 
-    if (threads_ < 0)
-      threads_ = omp_get_max_threads ();
+  descLength_ = (b_describe_shape_) ? nr_grid_sector_ * (nr_shape_bins_ + 1) : 0;
+  descLength_ += (b_describe_color_) ? nr_grid_sector_ * (nr_color_bins_ + 1) : 0;
 
-    descLength_ = (b_describe_shape_) ? nr_grid_sector_ * (nr_shape_bins_ + 1) : 0;
-    descLength_ += (b_describe_color_) ? nr_grid_sector_ * (nr_color_bins_ + 1) : 0;
+  sqradius_ = search_radius_ * search_radius_;
+  sqradius4_ = sqradius_ / 4;
+  radius3_4_ = (search_radius_ * 3) / 4;
+  radius1_4_ = search_radius_ / 4;
+  radius1_2_ = search_radius_ / 2;
 
-    sqradius_ = search_radius_ * search_radius_;
-    sqradius4_ = sqradius_ / 4;
-    radius3_4_ = (search_radius_ * 3) / 4;
-    radius1_4_ = search_radius_ / 4;
-    radius1_2_ = search_radius_ / 2;
+  if (output.points[0].descriptor.size () != (size_t)descLength_)
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+      output.points[idx].descriptor.resize (descLength_);
 
-	if (output.points[0].descriptor.size () != (size_t)descLength_)
-		for (size_t idx = 0; idx < indices_->size (); ++idx)
-			output.points[idx].descriptor.resize (descLength_);
+  int data_size = indices_->size ();
+  Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
+  std::vector<std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > > rfs (threads_);
+  for (size_t i = 0; i < rfs.size (); ++i)
+    rfs[i].resize (3);
 
-    int data_size = indices_->size ();
-    Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
-    std::vector<std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > > rfs (threads_);
-    for (size_t i = 0; i < rfs.size (); ++i)
-      rfs[i].resize (3);
+  for (int i = 0; i < threads_; i++)
+    shot[i].setZero (descLength_);
 
-    for (int i = 0; i < threads_; i++)
-      shot[i].setZero (descLength_);
+  int tid;
 
-    int tid;
-
-    // Iterating over the entire index vector
+  // Iterating over the entire index vector
 #pragma omp parallel for private(tid) num_threads(threads_)
-    for (int idx = 0; idx < data_size; ++idx)
-    {
-      // Allocate enough space to hold the results
-      // \note This resize is irrelevant for a radiusSearch ().
-      std::vector<int> nn_indices (k_);
-      std::vector<float> nn_dists (k_);
+  for (int idx = 0; idx < data_size; ++idx)
+  {
+    // Allocate enough space to hold the results
+    // \note This resize is irrelevant for a radiusSearch ().
+    std::vector<int> nn_indices (k_);
+    std::vector<float> nn_dists (k_);
 
-      this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
-      // Estimate the SHOT at each patch
-      tid = omp_get_thread_num ();
-      computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], rfs[tid]);
+    // Estimate the SHOT at each patch
+#ifdef _OPENMP
+    tid = omp_get_thread_num ();
+#else
+    tid = 0;
+#endif
+    computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], rfs[tid]);
 
-      // Copy into the resultant cloud
-      for (int d = 0; d < shot[tid].size (); ++d)
-        output.points[idx].descriptor[d] = shot[tid][d];
-      for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = rfs[tid][d / 3][d % 3];
-    }
-
-    delete[] shot;
+    // Copy into the resultant cloud
+    for (int d = 0; d < shot[tid].size (); ++d)
+      output.points[idx].descriptor[d] = shot[tid][d];
+    for (int d = 0; d < 9; ++d)
+      output.points[idx].rf[d] = rfs[tid][d / 3][d % 3];
   }
+
+  delete[] shot;
+}
 
 #define PCL_INSTANTIATE_SHOTEstimationOMP(T,NT,OutT) template class PCL_EXPORTS pcl::SHOTEstimationOMP<T,NT,OutT>;
 
