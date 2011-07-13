@@ -46,7 +46,7 @@ namespace pcl
 namespace cuda
 {
   /** \brief Default point xyz-rgb structure. */
-  struct __align__(16) PointXYZRGB
+  struct /*__align__(16)*/ PointXYZRGB
   {
     inline __host__ __device__ PointXYZRGB () {}
     inline __host__ __device__ PointXYZRGB (float _x, float _y, float _z, int _rgb) : 
