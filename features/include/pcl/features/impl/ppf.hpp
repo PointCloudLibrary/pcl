@@ -39,7 +39,7 @@
 #define PCL_FEATURES_IMPL_PPF_H_
 
 #include "pcl/features/ppf.h"
-#include <pcl/features/pfh.h>
+#include "pcl/features/pfh.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
@@ -71,11 +71,11 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
       PointOutT p;
       if (i != j)
       {
-        if (pcl::computePairFeatures (input_->points[i].getVector4fMap (),
-                                      normals_->points[i].getNormalVector4fMap (),
-                                      input_->points[j].getVector4fMap (),
-                                      normals_->points[j].getNormalVector4fMap (),
-                                      p.f1, p.f2, p.f3, p.f4))
+        if (/*pcl::computePPFPairFeature*/pcl::computePairFeatures (input_->points[i].getVector4fMap (),
+                                   normals_->points[i].getNormalVector4fMap (),
+                                   input_->points[j].getVector4fMap (),
+                                   normals_->points[j].getNormalVector4fMap (),
+                                   p.f1, p.f2, p.f3, p.f4))
         {
           // Calculate alpha_m angle
           Eigen::Vector3f model_reference_point = input_->points[i].getVector3fMap (),

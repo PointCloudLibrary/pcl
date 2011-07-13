@@ -40,6 +40,28 @@
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::computePPFPairFeature (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
+                            const Eigen::Vector4f &p2, const Eigen::Vector4f &n2,
+                            float &f1, float &f2, float &f3, float &f4)
+{
+  Eigen::Vector4f delta = p2 - p1;
+  delta[3] = 0.0f;
+  // f4 = ||delta||
+  f4 = delta.norm ();
+
+  delta /= f4;
+
+  // f1 = n1 dot delta
+  f1 = n1[0] * delta[0] + n1[1] * delta[1] + n1[2] * delta[2];
+  // f2 = n2 dot delta
+  f2 = n2[0] * delta[0] + n2[1] * delta[1] + n2[2] * delta[2];
+  // f3 = n1 dot n2
+  f3 = n1[0] * n2[0] + n1[1] * n2[1] + n1[2] * n2[2];
+
+  return (true);
+}
 
 // Instantiations of specific point types
 PCL_INSTANTIATE_PRODUCT(PPFEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PPFSignature)));
