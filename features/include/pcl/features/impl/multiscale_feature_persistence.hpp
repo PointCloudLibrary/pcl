@@ -40,6 +40,7 @@
 
 #include "pcl/features/multiscale_feature_persistence.h"
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointFeature>
 pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::MultiscaleFeaturePersistence ()
   : distance_metric_ (MANHATTAN),
@@ -47,7 +48,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::MultiscaleFeatureP
 {
   feature_representation_.reset (new DefaultPointRepresentation<PointFeature>);
   // No input is needed, hack around the initCompute () check from PCLBase
-  input_.reset (new PointCloud<PointSource> ());
+  input_.reset (new pcl::PointCloud<PointSource> ());
 };
 
 
