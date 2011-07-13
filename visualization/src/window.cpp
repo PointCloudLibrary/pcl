@@ -43,7 +43,6 @@
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/mouse_event.h>
 #include <vtkRenderWindow.h>
-#include <vtk-5.4/vtkRenderWindow.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/interactor.h>
 

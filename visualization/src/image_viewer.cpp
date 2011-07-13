@@ -38,9 +38,9 @@
 #include <vtkImageImport.h>
 #include <vtkImageViewer.h>
 #include <vtkXRenderWindowInteractor.h>
-#include <vtk-5.4/vtkRenderWindowInteractor.h>
-#include <vtk-5.4/vtkImageViewer.h>
-#include <vtk-5.4/vtkImageViewer2.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkImageViewer.h>
+#include <vtkImageViewer2.h>
 
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   : Window (window_title)
