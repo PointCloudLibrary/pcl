@@ -85,10 +85,12 @@ namespace pcl
       return (0);
     }
 
-    if (k_indices.size() < (size_t)k) {
+    if (k_indices.size() < (size_t)k)
+    {
         k_indices.resize(k);
     }
-    if (k_distances.size() < (size_t)k) {
+    if (k_distances.size() < (size_t)k) 
+    {
         k_distances.resize(k);
     }
 
