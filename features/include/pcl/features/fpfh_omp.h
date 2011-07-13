@@ -72,6 +72,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::indices_;
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_parameter_;
+      using Feature<PointInT, PointOutT>::input_;
       using Feature<PointInT, PointOutT>::surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
       using FPFHEstimation<PointInT, PointNT, PointOutT>::hist_f1_;
