@@ -70,7 +70,7 @@ void pcl::gpu::Octree_host::build()
     maxp.x = (maxp.x - minp.x) * enlargeRatio + minp.x
     maxp.x = (maxp.x - minp.x) * enlargeRatio + minp.x*/
                              
-	thrust::transform(points.begin(), points.end(), codes.begin(), CalcMortonMM(minp, maxp));
+	thrust::transform(points.begin(), points.end(), codes.begin(), CalcMorton(minp, maxp));
         
 #if 0
     thrust::sort_by_key(codes.begin(), codes.end(), make_zip_iterator( make_tuple( points.begin(), indices.begin() ) ) );		

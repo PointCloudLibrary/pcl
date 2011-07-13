@@ -2,11 +2,12 @@
 
 struct Morton
 {   
-    const static int nbits = 30;
+    const static int levels = 10;
+    const static int bits_per_level = 3;
+    const static int nbits = levels * bits_per_level;    
 
     typedef int code_t;
     
-
     __device__ __host__ __forceinline__ 
     static int spreadBits(int x, int offset)
     {
@@ -56,40 +57,23 @@ struct Morton
     {
         return level_code << (nbits - 3 * (level + 1));
     }
-
-    
 };
 
 struct CalcMorton
-{    
-	float3 dims_;
-    CalcMorton() {}
-	CalcMorton(float3 dims) : dims_(dims) {}
-
-	const static int levels = 10;
-	const static int depth_mult = 1 << levels;
-	
-	__device__ __host__ Morton::code_t operator()(const float3& p) const
-	{			
-		int cellx = min((int)floor(depth_mult * p.x/dims_.x), depth_mult - 1);
-		int celly = min((int)floor(depth_mult * p.y/dims_.y), depth_mult - 1);
-		int cellz = min((int)floor(depth_mult * p.z/dims_.z), depth_mult - 1); 
-
-        return Morton::createCode(cellx, celly, cellz);
-	}	     
-};
-
-struct CalcMortonMM : CalcMorton
 {   
+    const static int depth_mult = 1 << Morton::levels;
+
 	float3 minp_;
-    CalcMortonMM(float3 minp, float3 maxp) : minp_(minp) 
+    float3 dims_;    
+
+    __device__ __host__ __forceinline__ CalcMorton(float3 minp, float3 maxp) : minp_(minp) 
     {        
         dims_.x = maxp.x - minp.x;
         dims_.y = maxp.y - minp.y;
         dims_.z = maxp.z - minp.z;        
     }			
 
-	__device__ __host__ Morton::code_t operator()(const float3& p) const
+	__device__ __host__ __forceinline__ Morton::code_t operator()(const float3& p) const
 	{			
 		int cellx = min((int)floor(depth_mult * (p.x - minp_.x)/dims_.x), depth_mult - 1);
 		int celly = min((int)floor(depth_mult * (p.y - minp_.y)/dims_.y), depth_mult - 1);

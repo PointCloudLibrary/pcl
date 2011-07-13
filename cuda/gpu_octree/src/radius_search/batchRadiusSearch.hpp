@@ -1,10 +1,10 @@
 #pragma once
 
 #include "octree_global.hpp"
+
 #include "utils/LaneId.hpp"
 #include "utils/copygen.hpp"
-
-#include "boxutils.hpp"
+#include "utils/boxutils.hpp"
 
 #include <cstdio>
 

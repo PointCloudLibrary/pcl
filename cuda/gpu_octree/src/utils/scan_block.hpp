@@ -98,6 +98,7 @@ __device__ T scan_block( volatile T *ptr , const unsigned int idx = threadIdx.x 
     // Step 3: Use 1st warp to scan per - warp results
     if( warpid == 0 ) 
     {
+        //#TODO HERE IS A ERROR!!!!
         /*if (lane == 31)
             ptr [ warpid ] = val;*/
 

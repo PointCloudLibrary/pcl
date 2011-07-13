@@ -10,9 +10,9 @@
 
 #include "pcl/gpu/common/timers_cuda.hpp"
 
-#include "cta_initial.hpp"
-#include "cta_syncsstep.hpp"
-#include "batchRadiusSearch.hpp"
+#include "builder/cta_initial.hpp"
+#include "builder/cta_syncsstep.hpp"
+#include "radius_search/batchRadiusSearch.hpp"
 
 #include <thrust/sequence.h>
 #include <thrust/sort.h>
@@ -58,7 +58,7 @@ void pcl::gpu::Octree2::build()
     		
         device_ptr<int> codes_beg(codes.ptr());
         device_ptr<int> codes_end = codes_beg + codes.size();
-	    thrust::transform(beg, end, codes_beg, CalcMortonMM(octreeGlobal.minp, octreeGlobal.maxp));
+	    thrust::transform(beg, end, codes_beg, CalcMorton(octreeGlobal.minp, octreeGlobal.maxp));
 
         device_ptr<int> indices_beg(indices.ptr());
         device_ptr<int> indices_end = indices_beg + indices.size();

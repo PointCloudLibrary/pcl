@@ -80,7 +80,7 @@ namespace ld
     */
 #define B40C_LOAD_VEC1(base_type, ptx_type, reg_mod, cast_type, modifier)																	\
     template<> template<> void ModifiedLoad<ld::modifier>::Ld(base_type &val, base_type* ptr) {												\
-    asm("ld.global."#modifier"."#ptx_type" %0, [%1];" : "="#reg_mod(reinterpret_cast<cast_type&>(val)) : _ASM_PTR_(ptr));			    \
+    asm("ld.global."#modifier"."#ptx_type" %0, [%1];" : "="#reg_mod(reinterpret_cast<cast_type&>(val)) : _ASM_PTR_(ptr));			        \
     }																																		\
 
 #define B40C_LOAD_VEC2(base_type, ptx_type, reg_mod, cast_type, modifier)																	\

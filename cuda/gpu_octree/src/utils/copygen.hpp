@@ -24,7 +24,6 @@ __device__ void GenerateKernel(T* out, int beg, int end)
 	}
 }
 
-
 template <typename T>
 __device__ void GenerateTasksKernel(T* out, int beg, int end, int level)
 {
