@@ -361,16 +361,6 @@ pcl::SACSegmentationFromNormals<PointT, PointNT>::initSACModel (const int model_
         PCL_DEBUG ("[pcl::%s::initSACModel] Setting normal distance weight to %f\n", getClassName ().c_str (), distance_weight_);
         model_normals->setNormalDistanceWeight (distance_weight_);
       }
-      if (axis_ != Eigen::Vector3f::Zero () && model_normals->getAxis () != axis_)
-      {
-        PCL_DEBUG ("[pcl::%s::initSACModel] Setting the axis to %f, %f, %f\n", getClassName ().c_str (), axis_[0], axis_[1], axis_[2]);
-        model_normals->setAxis (axis_);
-      }
-      if (eps_angle_ != 0.0 && model_normals->getEpsAngle () != eps_angle_)
-      {
-        PCL_DEBUG ("[pcl::%s::initSACModel] Setting the epsilon angle to %f (%f degrees)\n", getClassName ().c_str (), eps_angle_, eps_angle_ * 180.0 / M_PI);
-        model_normals->setEpsAngle (eps_angle_);
-      }
       break;
     }
     case SACMODEL_NORMAL_PARALLEL_PLANE:
