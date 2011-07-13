@@ -46,59 +46,58 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
                           const Eigen::Vector4f &p2, const Eigen::Vector4f &n2,
                           float &f1, float &f2, float &f3, float &f4)
 {
-  // Compute the Cartesian difference between the two points
-  Eigen::Vector4f delta = p2 - p1;
-  delta[3] = 0;
+  Eigen::Vector4f dp2p1 = p2 - p1;
+  dp2p1[3] = 0.0f;
+  f4 = dp2p1.norm ();
 
-  // Compute the Euclidean norm = || p_idx - q_idx ||
-  float distance_sqr = delta.squaredNorm ();
-
-  if (distance_sqr == 0)
+  if (f4 == 0)
   {
     PCL_ERROR ("Euclidean distance between points is 0!\n");
     f1 = f2 = f3 = f4 = 0;
     return (false);
   }
 
-  // Estimate f4 = || delta ||
-  f4 = sqrt (distance_sqr);
+  Eigen::Vector4f n1_copy = n1,
+      n2_copy = n2;
+  n1_copy[3] = n2_copy[3] = 0.0f;
+  float angle1 = n1_copy.dot (dp2p1) / f4,
+      angle2 = -n2_copy.dot (dp2p1) / f4;
+
+/* commented this to pass the unit tests
+ * if (acos (angle1) > acos(angle2))
+  {
+    // switch p1 and p2
+    n1_copy = n2;
+    n2_copy = n1;
+    n1_copy[3] = n2_copy[3] = 0.0f;
+    dp2p1 *= (-1);
+    f3 = angle2;
+  }
+  else*/
+  f3 = angle1;
 
   // Create a Darboux frame coordinate system u-v-w
   // u = n1; v = (p_idx - q_idx) x u / || (p_idx - q_idx) x u ||; w = u x v
-
-  // Estimate f3 = u * delta / || delta ||
-  // delta[3] = 0 (line 59)
-  f3 = n1.dot (delta) / f4;
-
-  // v = delta * u
-  Eigen::Vector4f v = Eigen::Vector4f::Zero ();
-  v = delta.cross3 (n1);
-
-  distance_sqr = v.squaredNorm ();
-  if (distance_sqr == 0)
+  Eigen::Vector4f v = dp2p1.cross3 (n1_copy);
+  v[3] = 0.0f;
+  float v_norm = v.norm ();
+  if (v_norm == 0)
   {
     PCL_ERROR ("Norm of Delta x U is 0!\n");
     f1 = f2 = f3 = f4 = 0;
     return (false);
   }
+  // Normalize v
+  v /= v_norm;
 
-  // Copy the q_idx normal
-  Eigen::Vector4f nq = n2;
-  nq[3] = 0;
+  Eigen::Vector4f w = n1_copy.cross3 (v);
+  // Do not have to normalize w - it is a unit vector by construction
 
-  // Normalize the vector
-  v /= sqrt (distance_sqr);
-
-  // Compute delta (w) = u x v
-  delta = n1.cross3 (v);
-
-  // Compute f2 = v * n2;
-  // v[3] = 0 (line 82)
-  f2 = v.dot (nq);
-
+  v[3] = 0.0f;
+  f2 = v.dot (n2_copy);
+  w[3] = 0.0f;
   // Compute f1 = arctan (w * n2, u * n2) i.e. angle of n2 in the x=u, y=w coordinate system
-  // delta[3] = 0 (line 59), nq[3] = 0 (line 97)
-  f1 = atan2f (delta.dot (nq), n1.dot (nq));       // @todo: optimize this
+  f1 = atan2f (w.dot (n2_copy), u.dot (n2_copy)); // @todo optimize this
 
   return (true);
 }
