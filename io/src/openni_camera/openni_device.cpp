@@ -58,7 +58,37 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   : context_ (context)
   , device_node_info_ (device_node)
 {
-  // create the production nodes
+// workaround for MAC from Alex Ichim
+#ifdef __APPLE__
+  cerr << "Creating OpenNIDevice" << endl;
+  XnStatus rc;
+
+    xn::EnumerationErrors errors;
+    rc = context_.InitFromXmlFile("/Users/alex/Work/pointclouds/pcl/trunk/apps/SamplesConfig.xml", &errors);
+    if (rc == XN_STATUS_NO_NODE_PRESENT)
+    {
+            XnChar strError[1024];
+            errors.ToString(strError, 1024);
+            printf("%s\n", strError);
+    }
+    else if (rc != XN_STATUS_OK)
+    {
+            printf("Open failed: %s\n", xnGetStatusString(rc));
+    }
+
+  XnStatus status = context_.FindExistingNode(XN_NODE_TYPE_DEPTH, depth_generator_);
+  if (status != XN_STATUS_OK)
+    cerr << "node depth problems" << endl;
+  status = context_.FindExistingNode(XN_NODE_TYPE_IMAGE, image_generator_);
+  if (status != XN_STATUS_OK)
+    cerr << "node image problems" << endl;
+  status = context_.FindExistingNode(XN_NODE_TYPE_IR, ir_generator_);
+    if (status != XN_STATUS_OK)
+      cerr << "node ir problems" << endl;
+
+  
+#else  
+// create the production nodes
   XnStatus status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating depth generator failed. Reason: %s", xnGetStatusString (status));
@@ -83,10 +113,12 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   status = ir_node.GetInstance (ir_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating IR generator instance failed. Reason: %s", xnGetStatusString (status));
-  
+
+  ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewIRDataAvailable, this, ir_callback_handle_);
+#endif
+
   depth_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewDepthDataAvailable, this, depth_callback_handle_);
   image_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewImageDataAvailable, this, image_callback_handle_);
-  ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewIRDataAvailable, this, ir_callback_handle_);  
 
   Init ();
 }
@@ -95,6 +127,32 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   : context_ (context)
   , device_node_info_ (device_node)
 {
+// workaround for MAC from Alex Ichim
+#ifdef __APPLE__
+  cerr << "Creating OpenNIDevice" << endl;
+  XnStatus rc;
+
+    xn::EnumerationErrors errors;
+    rc = context_.InitFromXmlFile("/Users/alex/Work/pointclouds/pcl/trunk/apps/SamplesConfig.xml", &errors);
+    if (rc == XN_STATUS_NO_NODE_PRESENT)
+    {
+            XnChar strError[1024];
+            errors.ToString(strError, 1024);
+            printf("%s\n", strError);
+    }
+    else if (rc != XN_STATUS_OK)
+    {
+            printf("Open failed: %s\n", xnGetStatusString(rc));
+    }
+
+  XnStatus status = context_.FindExistingNode(XN_NODE_TYPE_DEPTH, depth_generator_);
+  if (status != XN_STATUS_OK)
+    cerr << "node depth problems" << endl;
+  status = context_.FindExistingNode(XN_NODE_TYPE_IR, ir_generator_);
+    if (status != XN_STATUS_OK)
+      cerr << "node ir problems" << endl;
+  
+#else
   XnStatus status;
   
   // create the production nodes
@@ -115,9 +173,10 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating IR generator instance failed. Reason: %s", xnGetStatusString (status));
   
-  depth_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewDepthDataAvailable, this, depth_callback_handle_);
   ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewIRDataAvailable, this, ir_callback_handle_);
-  
+  #endif
+
+  depth_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewDepthDataAvailable, this, depth_callback_handle_);
   // set up rest
   Init ();  
 }
@@ -297,8 +356,10 @@ void OpenNIDevice::startIRStream () throw (OpenNIException)
         THROW_OPENNI_EXCEPTION ("starting IR stream failed. Reason: %s", xnGetStatusString (status));
     }
   }
+#ifndef __APPLE__
   else
     THROW_OPENNI_EXCEPTION ("Device does not provide an IR stream");
+#endif
 }
 
 void OpenNIDevice::stopIRStream () throw (OpenNIException)
@@ -893,8 +954,10 @@ void OpenNIDevice::setIROutputMode (const XnMapOutputMode& output_mode) throw (O
     if (status != XN_STATUS_OK)
       THROW_OPENNI_EXCEPTION ("Could not set IR stream output mode to %dx%d@%d. Reason: %s", output_mode.nXRes, output_mode.nYRes, output_mode.nFPS, xnGetStatusString (status));
   }
+#ifndef __APPLE__
   else
     THROW_OPENNI_EXCEPTION ("Device does not provide an IR stream");
+#endif
 }
 
 XnMapOutputMode OpenNIDevice::getImageOutputMode () const throw (OpenNIException)
