@@ -73,7 +73,7 @@
     
 pcl::gpu::DeviceArray::DeviceArray() : data_(0), size_(0), refcount_(0) {}
 pcl::gpu::DeviceArray::DeviceArray(void *ptr, size_t size) : data_(ptr), size_(size), refcount_(0) {}
-pcl::gpu::DeviceArray::DeviceArray(size_t size)  : data_(0), size_(0), refcount_(0)  { create(size_); }
+pcl::gpu::DeviceArray::DeviceArray(size_t size)  : data_(0), size_(0), refcount_(0)  { create(size); }
 pcl::gpu::DeviceArray::~DeviceArray() { release(); }
 
 
@@ -198,7 +198,7 @@ void pcl::gpu::DeviceArray2D::create(int rows, int colsBytes)
         if( data_ )
             release();
               
-        colsBytes = colsBytes;
+        colsBytes_ = colsBytes;
         rows_ = rows;
                         
         cudaSafeCall( cudaMallocPitch( (void**)&data_, &step_, colsBytes, rows) );        
