@@ -43,22 +43,63 @@ namespace pcl
 {
   namespace visualization
   {
+    /**
+     * /brief class representing key hit/release events
+     */
     class KeyboardEvent
     {
       public:
+        /** \brief bit patter for the ALT key*/
         static const unsigned int Alt   = 1;
+        /** \brief bit patter for the Control key*/
         static const unsigned int Ctrl  = 2;
+        /** \brief bit patter for the Shift key*/
         static const unsigned int Shift = 4;
 
+        /**
+         * \brief constructor
+         * @param action    true for key was pressed, false for released
+         * @param key_sym   the key-name that caused the action
+         * @param key       the key code that caused the action
+         * @param alt       whether the alt key was pressed at the time where this event was triggered
+         * @param ctrl      whether the alt ctrl was pressed at the time where this event was triggered
+         * @param shift     whether the alt shift was pressed at the time where this event was triggered
+         */
         inline KeyboardEvent (bool action, const std::string& key_sym, unsigned char key, bool alt, bool ctrl, bool shift);
 
+        /**
+         * @return   whether the alt key was pressed at the time where this event was triggered
+         */
         inline bool isAltPressed () const;
+        
+        /**
+         * @return whether the alt ctrl was pressed at the time where this event was triggered
+         */
         inline bool isCtrlPressed () const;
+        
+        /**
+         * @return whether the alt shift was pressed at the time where this event was triggered
+         */
         inline bool isShiftPressed () const;
 
+        /**
+         * @return the ASCII Code of the key that caused the event. If 0, then it was a special key, like ALT, F1, F2,... PgUp etc. Then the name of the key is in the keysym field.
+         */
         inline unsigned char getKeyCode () const;
+        
+        /**
+         * @return name of the key that caused the event
+         */
         inline const std::string& getKeySym () const;
+        
+        /**
+         * @return true if a key-press caused the event, false otherwise
+         */
         inline bool keyDown () const;
+        
+        /**
+         * @return true if a key-release caused the event, false otherwise
+         */
         inline bool keyUp () const;
       protected:
 

@@ -1,6 +1,6 @@
 set(SUBSYS_NAME visualization)
 set(SUBSYS_DESC "Point cloud visualization library")
-set(SUBSYS_DEPS common io kdtree octree range_image octree filters)
+set(SUBSYS_DEPS common io kdtree octree range_image octree filters surface)
 
 if(wxWidgets_FOUND)
   include(${wxWidgets_USE_FILE})
@@ -50,6 +50,8 @@ if(build)
         src/common/io.cpp
         src/common/shapes.cpp
         src/cloud_viewer.cpp
+        src/image_viewer.cpp
+        src/window.cpp
         ${WXWIDGETS_SOURCES}
         )
 
@@ -62,6 +64,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/point_cloud_handlers.h
         include/pcl/${SUBSYS_NAME}/keyboard_event.h
         include/pcl/${SUBSYS_NAME}/mouse_event.h
+        include/pcl/${SUBSYS_NAME}/window.h
+        include/pcl/${SUBSYS_NAME}/image_viewer.h
         ${WXWIDGETS_INCLUDES}
         )
 

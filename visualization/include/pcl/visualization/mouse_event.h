@@ -83,10 +83,19 @@ namespace pcl
       inline const Type& getType () const;
 
       /**
+       * @brief sets the mouse event type
+       */
+      inline void setType (const Type& type);
+      
+      /**
        * @return the Button that caused the action
        */
       inline const MouseButton& getButton () const;
 
+      /**
+       * @brief set the button that caused the event
+       */
+      inline void setButton (const MouseButton& button);
       /**
        * @return the x position of the mouse pointer at that time where the event got fired
        */
@@ -131,11 +140,21 @@ namespace pcl
       return type_;
     }
 
+    void MouseEvent::setType (const Type& type)
+    {
+      type_ = type;
+    }
+    
     const MouseEvent::MouseButton& MouseEvent::getButton () const
     {
       return button_;
     }
 
+    void MouseEvent::setButton (const MouseButton& button)
+    {
+      button_ = button;
+    }
+    
     unsigned int MouseEvent::getX () const
     {
       return pointer_x_;

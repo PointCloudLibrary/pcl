@@ -100,31 +100,68 @@ namespace pcl
         /** \brief PCL Visualizer destructor. */
         virtual ~PCLVisualizer ();
 
+        /**
+         * @brief registering a callback function for keyboard events
+         * @param callback  the function that will be registered as a callback for a keyboard event
+         * @param cookie    user data that is passed to the callback
+         * @return          connection object that allows to disconnect the callback function.
+         */
         boost::signals2::connection registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = NULL)
         {
           return registerKeyboardCallback (boost::bind (callback, _1, cookie));
         }
         
+        /**
+         * @brief registering a callback function for keyboard events
+         * @param callback  the member function that will be registered as a callback for a keyboard event
+         * @param instance  instance to the class that implements the callback function
+         * @param cookie    user data that is passed to the callback
+         * @return          connection object that allows to disconnect the callback function.
+         */
         template<typename T>
         boost::signals2::connection registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = NULL)
         {
           return registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie));
         }
         
+        /**
+         * @brief   registering a callback boost::function for keyboard events
+         * @param   the boost function that will be registered as a callback for a keyboard event
+         * @return  connection object that allows to disconnect the callback function.
+         */
         boost::signals2::connection registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)>);
 
+        /**
+         * @brief   registering a callback function for mouse events
+         * @param   the boost function that will be registered as a callback for a mouse event
+         * @return  connection object that allows to disconnect the callback function.
+         */
         boost::signals2::connection registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)>);
         
+        /**
+         * @brief 
+         * @param callback  the function that will be registered as a callback for a mouse event
+         * @param cookie    user data that is passed to the callback
+         * @return          connection object that allows to disconnect the callback function.
+         */
         boost::signals2::connection registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = NULL)
         {
           return registerMouseCallback (boost::bind (callback, _1, cookie));
         }
         
+        /**
+         * @brief registering a callback function for mouse events
+         * @param callback  the member function that will be registered as a callback for a mouse event
+         * @param instance  instance to the class that implements the callback function
+         * @param cookie    user data that is passed to the callback
+         * @return          connection object that allows to disconnect the callback function.
+         */
         template<typename T>
         boost::signals2::connection registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = NULL)
         {
           return registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie));
         }
+        
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
         void 
         spin ();
