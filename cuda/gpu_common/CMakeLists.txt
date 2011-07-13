@@ -5,9 +5,9 @@ set(SUBSYS_DEPS common)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
-mark_as_advanced("BUILD_${SUBSYS_NAME}")
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 PCL_SET_SUBSYS_INCLUDE_DIR(${SUBSYS_NAME} ${SUBSYS_PATH})
+mark_as_advanced("BUILD_${SUBSYS_NAME}")
 
 FILE(GLOB srcs src/*.cpp src/*.hpp)
 FILE(GLOB incs include/pcl/gpu/common/*.hpp)

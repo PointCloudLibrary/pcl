@@ -1,11 +1,8 @@
 #pragma warning (disable : 4996 4530)
 
-
 #include <gtest/gtest.h>
 
 #include<iostream>
-#include<opencv2/opencv.hpp>
-#include<opencv2/gpu/gpu.hpp>
 
 #pragma warning (disable: 4521)
 #include <pcl/point_cloud.h>
@@ -14,7 +11,7 @@
 
 #include "pcl/gpu/octree/octree.hpp"
 #include "pcl/gpu/common/device_array.hpp"
-#include "pcl/gpu/common/scope_timer.hpp"
+#include "pcl/gpu/common/timers_opencv.hpp"
 
 using namespace pcl::gpu;
 using namespace std;
@@ -42,9 +39,6 @@ protected:
 
     OctreeGpuTest() : cube_size(1024.f), rng(cv::theRNG()), data(data_size)
     {
-        //dummy for GPU init
-        cv::gpu::GpuMat mat(3, 3, CV_32S, cv::Scalar(255));
-
         //generate data                                       
         for(size_t i = 0; i < data.size(); ++i)
         {            

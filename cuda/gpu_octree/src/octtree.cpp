@@ -3,7 +3,6 @@
 #include "cuda_interface.hpp"
 #include "pcl/gpu/common/timers_cuda.hpp"
 
-
 pcl::gpu::CudaOctree* cast(void *ptr) { return static_cast<pcl::gpu::CudaOctree*>(ptr); }
 
 pcl::gpu::Octree::Octree() : impl(0)
@@ -32,7 +31,6 @@ void pcl::gpu::Octree::build()
 void pcl::gpu::Octree::internalDownload()
 {
     static_cast<Octree2*>(impl)->internalDownload();
-    //pcl::gpu::internalDownload(cast(impl));
 }
 
 void pcl::gpu::Octree::radiusSearchHost(const PointXYZ& center, float radius, std::vector<int>& out)
@@ -44,7 +42,7 @@ void pcl::gpu::Octree::radiusSearchHost(const PointXYZ& center, float radius, st
     static_cast<Octree2*>(impl)->radiusSearch2(c, radius, out);
 }
 
-void pcl::gpu::Octree::radiusSearchBatchGPU(const BatchQueries& centers, float radius, BatchResult& output, DeviceArray_<int>& out_sizes) const
+void pcl::gpu::Octree::radiusSearchBatchGPU(const BatchQueries& centers, float radius, BatchResult& output, BatchResultSizes& out_sizes) const
 {
     const DeviceArray_<float3>& queries = (const DeviceArray_<float3>&)centers;
 

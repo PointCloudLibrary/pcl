@@ -32,6 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #include "pcl/gpu/common/device_array.hpp"
 #include "pcl/gpu/common/safe_call.hpp"
 

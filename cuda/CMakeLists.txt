@@ -27,6 +27,9 @@ if(BUILD_CUDA)
     add_subdirectory (segmentation)
     add_subdirectory (sample_consensus)
     add_subdirectory (apps)
+	
+    add_subdirectory (gpu_common)
+    add_subdirectory (gpu_octree)	
   endif(CUDA_FOUND)
 endif(BUILD_CUDA)
 

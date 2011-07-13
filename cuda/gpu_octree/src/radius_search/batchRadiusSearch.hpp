@@ -6,10 +6,10 @@
 #include "utils/copygen.hpp"
 #include "utils/boxutils.hpp"
 
-#include <cstdio>
+#include "pcl/gpu/common/device_array.hpp"
 
 namespace batch_radius_search
-{
+{   
     template<class T>
     struct DevMem2D_
     {
@@ -21,7 +21,7 @@ namespace batch_radius_search
 
         DevMem2D_() : cols(0), rows(0), data(0), step(0) {}
 
-        //DevMem2D_(const DeviceArray2D_<T>& device_array) : cols(0), rows(0), dat(0), step(0) {}
+        DevMem2D_(pcl::gpu::DeviceArray2D_<T>& array) : cols(array.cols()), rows(array.rows()), data(array.ptr()), step(array.step()) {}
 
 
         __host__ __device__ __forceinline__ T* ptr(int y = 0) { return (T*)( (char*)data + y * step); }
@@ -234,6 +234,8 @@ namespace batch_radius_search
 
         __device__ __forceinline__ int operator()()
         {
+            using namespace pcl::gpu;
+
             TransversalHelper helper(storage);   
             node4warp = -1;            
 

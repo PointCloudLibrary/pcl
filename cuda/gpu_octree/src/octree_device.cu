@@ -335,10 +335,8 @@ void pcl::gpu::Octree2::radiusSearchBatch(const DeviceArray_<float3>& queries, f
 
     batch.indices = indices;
     batch.octree = octreeGlobal;
-    batch.output.data = output;
-    batch.output.step = output.step();
-    batch.output.rows = query_num;    
-    batch.output.cols = max_points;
+    
+    batch.output = batch_radius_search::DevMem2D_<int>(output);
 
     batch.output_sizes = out_sizes;
     batch.points = points;
