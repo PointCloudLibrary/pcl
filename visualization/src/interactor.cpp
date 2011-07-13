@@ -63,7 +63,7 @@ namespace pcl
       SendMessage (this->WindowId, RegisterWindowMessage (TEXT ("VTK_BreakWin32Loop")), 0, 0);
 #else
       BreakLoopFlagOn ();
-/*      XClientMessageEvent client;
+      XClientMessageEvent client;
       memset (&client, 0, sizeof (client));
       client.type = ClientMessage;
       client.display = DisplayId;
@@ -71,7 +71,7 @@ namespace pcl
       client.message_type = XInternAtom (client.display, "spinOnce exit", false);
       client.format = 32; // indicates size of data chunks: 8, 16 or 32 bits...
       XSendEvent (client.display, client.window, True, NoEventMask, reinterpret_cast<XEvent *>(&client));
-      XFlush (client.display);*/
+      XFlush (client.display);
 #endif
     }
 
