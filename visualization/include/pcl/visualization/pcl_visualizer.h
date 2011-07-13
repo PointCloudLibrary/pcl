@@ -167,10 +167,10 @@ namespace pcl
         spin ();
         
         /** \brief Spin once method. Calls the interactor and updates the screen once. 
-         *  \param time - How long (in ms) should the visualization loop be allowed to run.
-         *  \param force_redraw - if false it might return without doing anything if the 
-         *  interactor's framerate does not require a redraw yet.
-         */
+          *  \param time - How long (in ms) should the visualization loop be allowed to run.
+          *  \param force_redraw - if false it might return without doing anything if the 
+          *  interactor's framerate does not require a redraw yet.
+          */
         void 
         spinOnce (int time = 1, bool force_redraw = false);
 
@@ -1018,7 +1018,7 @@ namespace pcl
             if (event_id != vtkCommand::TimerEvent)
               return;
             int timer_id = *(int*)call_data;
-            //cout << "Timer "<<timer_id<<" called.\n";
+            PCL_WARN ("[pcl::visualization::PCLVisualizer::ExitMainLoopTimerCallback] Timer %d called.\n", timer_id);
             if (timer_id != right_timer_id)
               return;
             // Stop vtk loop and send notification to app to wake it up
@@ -1038,7 +1038,7 @@ namespace pcl
             if (event_id != vtkCommand::ExitEvent)
               return;
             pcl_visualizer->interactor_->stopped = true;
-            //this tends to close the window...
+            // This tends to close the window...
             pcl_visualizer->interactor_->stopLoop ();
           }
           PCLVisualizer* pcl_visualizer;
