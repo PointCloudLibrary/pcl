@@ -40,10 +40,12 @@
 
 #include <pcl/features/feature.h>
 
+#include <set>
+
 namespace pcl
 {
-  /** \brief @b FPFHEstimation estimates the <b>Fast Point Feature Histogram (FPFH)</b> descriptor for a given point cloud
-    * dataset containing points and normals.
+  /** \brief @b FPFHEstimation estimates the <b>Fast Point Feature Histogram (FPFH)</b> descriptor for a given point 
+    * cloud dataset containing points and normals.
     *
     * @note If you use this code in any academic work, please cite:
     *
@@ -74,6 +76,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::indices_;
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_parameter_;
+      using Feature<PointInT, PointOutT>::input_;
       using Feature<PointInT, PointOutT>::surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
@@ -135,19 +138,6 @@ namespace pcl
                                 const std::vector<float> &dists, 
                                 Eigen::VectorXf &fpfh_histogram);
 
-      /** \brief Provide a pointer to the vector of indices that represents the input data.
-        * \param indices a pointer to the vector of indices that represents the input data.
-        */
-      inline void
-      setIndices (const IndicesPtr &indices)
-      {
-        indices_ = indices;
-        size_t data_size = indices_->size ();
-        hist_f1_.setZero (data_size, nr_bins_f1_);
-        hist_f2_.setZero (data_size, nr_bins_f2_);
-        hist_f3_.setZero (data_size, nr_bins_f3_);
-      }
-
       /** \brief Set the number of subdivisions for each angular feature interval.
         * \param nr_bins_f1 number of subdivisions for the first angular feature
         * \param nr_bins_f2 number of subdivisions for the second angular feature
@@ -202,5 +192,3 @@ namespace pcl
 }
 
 #endif  //#ifndef PCL_FPFH_H_
-
-

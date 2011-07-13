@@ -107,11 +107,11 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePairFeatures (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT, typename PointOutT> void
-pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (
-      const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
-      int p_idx, const std::vector<int> &indices,
-      Eigen::MatrixXf &hist_f1, Eigen::MatrixXf &hist_f2, Eigen::MatrixXf &hist_f3)
+template <typename PointInT, typename PointNT, typename PointOutT> 
+void pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::
+computePointSPFHSignature (const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
+                           int p_idx, const std::vector<int> &indices,
+                           Eigen::MatrixXf &hist_f1, Eigen::MatrixXf &hist_f2, Eigen::MatrixXf &hist_f3)
 {
   Eigen::Vector4f pfh_tuple;
   // Get the number of bins from the histograms size
@@ -220,41 +220,80 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::weightPointSPFHSignature (
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
-  // Allocate enough space to hold the results
+  // Allocate enough space to hold the NN search results
   // \note This resize is irrelevant for a radiusSearch ().
   std::vector<int> nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
-  size_t data_size = indices_->size ();
-  // Reset the whole thing
+  std::set<int> spfh_indices;
+  std::vector<int> spfh_hist_lookup (surface_->points.size ());
+
+  // Build a list of (unique) indices for which we will need to compute SPFH signatures
+  // (We need an SPFH signature for every point that is a neighbor of any point in input_[indices_])
+  if (surface_ != input_ ||
+      indices_->size () != surface_->points.size ())
+  { 
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    {
+      int p_idx = (*indices_)[idx];
+      this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists);
+      
+      spfh_indices.insert (nn_indices.begin (), nn_indices.end ());
+    }
+  }
+  else
+  {
+    // Special case: When a feature must be computed at every point, there is no need for a neighborhood search
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+      spfh_indices.insert (idx);
+  }
+
+  // Initialize the arrays that will store the SPFH signatures
+  size_t data_size = spfh_indices.size ();
   hist_f1_.setZero (data_size, nr_bins_f1_);
   hist_f2_.setZero (data_size, nr_bins_f2_);
   hist_f3_.setZero (data_size, nr_bins_f3_);
 
-  int nr_bins = nr_bins_f1_ + nr_bins_f2_ + nr_bins_f3_;
-
-  // Iterating over the entire index vector
-  for (size_t idx = 0; idx < data_size; ++idx)
+  // Compute SPFH signatures for every point that needs them
+  std::set<int>::iterator spfh_indices_itr = spfh_indices.begin ();
+  for (size_t i = 0; i < spfh_indices.size (); ++i)
   {
-    int p_idx = (*indices_)[idx];
+    // Get the next point index
+    int p_idx = *spfh_indices_itr;
+    ++spfh_indices_itr;
+
+    // Find the neighborhood around p_idx
     this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists);
 
-    // Estimate the FPFH signature at each patch
-    computePointSPFHSignature (*surface_, *normals_, p_idx, nn_indices,
-                               hist_f1_, hist_f2_, hist_f3_);
+    // Estimate the SPFH signature around p_idx
+    computePointSPFHSignature (*surface_, *normals_, i, nn_indices, hist_f1_, hist_f2_, hist_f3_);
+
+    // Populate a lookup table for converting a point index to its corresponding row in the spfh_hist_* matrices
+    spfh_hist_lookup[p_idx] = i;
   }
 
+  // Intialize the array that will store the FPFH signature
+  int nr_bins = nr_bins_f1_ + nr_bins_f2_ + nr_bins_f3_;
   fpfh_histogram_.setZero (nr_bins);
-  // Iterating over the entire index vector
-  for (size_t idx = 0; idx < data_size; ++idx)
+
+  // Iterate over the entire index vector
+  for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
+    // Find the indices of point idx's neighbors... 
     this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
+    // ... and remap the nn_indices values so that they represent row indices in the spfh_hist_* matrices 
+    // instead of indices into surface_->points
+    for (size_t i = 0; i < nn_indices.size (); ++i)
+      nn_indices[i] = spfh_hist_lookup[nn_indices[i]];
+
+    // Compute the FPFH signature (i.e. compute a weighted combination of local SPFH signatures) ...
     weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram_);
 
-    // Copy into the resultant cloud
+    // ...and copy it into the output cloud
     for (int d = 0; d < fpfh_histogram_.size (); ++d)
       output.points[idx].histogram[d] = fpfh_histogram_[d];
+
     fpfh_histogram_.setZero ();
   }
 
