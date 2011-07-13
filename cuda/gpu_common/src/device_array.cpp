@@ -235,5 +235,7 @@ void pcl::gpu::DeviceArray2D::download(void *host_ptr, size_t host_step) const
     cudaSafeCall( cudaMemcpy2D(host_ptr, host_step, data_, step_, colsBytes_, rows_, cudaMemcpyDeviceToHost) );
 }
         
+size_t pcl::gpu::DeviceArray2D::step() const { return step_; }
+int pcl::gpu::DeviceArray2D::colsBytes() const { return colsBytes_; }
+int pcl::gpu::DeviceArray2D::rows() const { return rows_; }
       
-void pcl::gpu::DeviceArray2D::size(int& rows, int& colsBytes) const { rows = rows_; colsBytes = colsBytes_; }

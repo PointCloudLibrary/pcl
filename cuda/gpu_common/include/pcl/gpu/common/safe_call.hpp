@@ -37,6 +37,7 @@
 #define __PCL_CUDA_SAFE_CALL_HPP__
 
 #include "cuda_runtime_api.h"
+#include "pcl/pcl_macros.h"
 
 #if defined(__GNUC__)
     #define cudaSafeCall(expr)  pcl::cuda::___cudaSafeCall(expr, __FILE__, __LINE__, __func__)
@@ -48,7 +49,7 @@ namespace pcl
 {
     namespace cuda
     {
-        void error(const char *error_string, const char *file, const int line, const char *func = "");
+        void PCL_EXPORTS error(const char *error_string, const char *file, const int line, const char *func = "");
 
         static inline void ___cudaSafeCall(cudaError_t err, const char *file, const int line, const char *func = "")
         {
