@@ -43,7 +43,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointFeature>
 pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::MultiscaleFeaturePersistence ()
-  : distance_metric_ (MANHATTAN),
+  : distance_metric_ (L1),
     feature_estimator_ ()
 {
   feature_representation_.reset (new DefaultPointRepresentation<PointFeature>);
@@ -118,57 +118,7 @@ template <typename PointSource, typename PointFeature> float
 pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::distanceBetweenFeatures (const std::vector<float> &a,
                                                                                        const std::vector<float> &b)
 {
-  float dist = 0.0f;
-
-  switch (distance_metric_)
-  {
-    case (MANHATTAN):
-    {
-      for (size_t i = 0; i < a.size (); ++i)
-        dist += fabs (a[i] - b[i]);
-      break;
-    }
-
-    case (EUCLIDEAN):
-    {
-      for (size_t i = 0; i < a.size (); ++i)
-        dist += (a[i] - b[i]) * (a[i] - b[i]);
-      dist = sqrt (dist);
-      break;
-    }
-
-    case (JEFFRIES_MATUSITA):
-    {
-      for (size_t i = 0; i < a.size (); ++i)
-        dist += (sqrt ( fabs (a[i])) - sqrt ( fabs (b[i]))) * (sqrt (fabs (a[i])) - sqrt ( fabs (b[i])));
-      dist = sqrt (dist);
-      break;
-    }
-
-    case (BHATTACHARYYA):
-    {
-      for (size_t i = 0; i < a.size (); ++i)
-        dist += sqrt (fabs (a[i] - b[i]));
-      dist = -log (dist);
-      break;
-    }
-
-    case (CHI_SQUARE):
-    {
-      for (size_t i = 0; i < a.size (); ++i)
-        dist += (a[i] - b[i]) * (a[i] - b[i]) / (a[i] + b[i]);
-      break;
-    }
-
-    case (KL_DIVERGENCE):
-    {
-      for (size_t i = 0; i < a.size (); ++i)
-        dist += (a[i] - b[i]) * log (a[i] / b[i]);
-      break;
-    }
-  }
-
-  return dist;
+  return pcl::selectNorm<std::vector<float> > (a, b, a.size (), distance_metric_);
 }
 
 

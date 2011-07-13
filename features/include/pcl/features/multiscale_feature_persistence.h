@@ -41,6 +41,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/features/feature.h>
 #include <pcl/point_representation.h>
+#include <pcl/common/norms.h>
 #include <list>
 
 namespace pcl
@@ -67,9 +68,6 @@ namespace pcl
       typedef boost::shared_ptr<const pcl::PointRepresentation <PointFeature> > FeatureRepresentationConstPtr;
 
       using pcl::PCLBase<PointSource>::input_;
-
-      enum DistanceMetric { MANHATTAN, EUCLIDEAN, JEFFRIES_MATUSITA, BHATTACHARYYA, CHI_SQUARE, KL_DIVERGENCE };
-
 
       /** \brief Empty constructor */
       MultiscaleFeaturePersistence ();
@@ -130,13 +128,13 @@ namespace pcl
       getAlpha () { return alpha_; }
 
       /** \brief Method for setting the distance metric that will be used for computing the difference between feature vectors
-       * \param distance_metric the new distance metric chosen from the DistanceMetric enum
+       * \param distance_metric the new distance metric chosen from the NormType enum
        */
       inline void
-      setDistanceMetric (DistanceMetric distance_metric) { distance_metric_ = distance_metric; }
+      setDistanceMetric (NormType distance_metric) { distance_metric_ = distance_metric; }
 
       /** \brief Returns the distance metric that is currently used to calculate the difference between feature vectors */
-      inline DistanceMetric
+      inline NormType
       getDistanceMetric () { return distance_metric_; }
 
 
@@ -179,7 +177,7 @@ namespace pcl
       float alpha_;
 
       /** \brief Parameter that determines which distance metric is to be usedto calculate the difference between feature vectors */
-      DistanceMetric distance_metric_;
+      NormType distance_metric_;
 
       /** \brief the feature estimator that will be used to determine the feature set at each scale level */
       FeatureEstimatorPtr feature_estimator_;

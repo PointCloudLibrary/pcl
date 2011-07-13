@@ -68,7 +68,7 @@ main (int argc, char **argv)
   KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
   fpfh_estimation->setSearchMethod (tree);
   feature_persistence.setFeatureEstimator (fpfh_estimation);
-  feature_persistence.setDistanceMetric (MultiscaleFeaturePersistence<PointXYZ, FPFHSignature33>::CHI_SQUARE);
+  feature_persistence.setDistanceMetric (pcl::CS);
 
   PointCloud<FPFHSignature33>::Ptr output_features (new PointCloud<FPFHSignature33> ());
   boost::shared_ptr<std::vector<int> > output_indices (new std::vector<int> ());
