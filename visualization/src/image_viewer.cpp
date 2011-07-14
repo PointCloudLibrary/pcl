@@ -37,9 +37,7 @@
 #include <pcl/visualization/image_viewer.h>
 #include <vtkImageImport.h>
 #include <vtkImageViewer.h>
-#include <vtkXRenderWindowInteractor.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkImageViewer.h>
 #include <vtkImageViewer2.h>
 
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)

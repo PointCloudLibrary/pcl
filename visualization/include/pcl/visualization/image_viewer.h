@@ -43,9 +43,9 @@
 
 namespace pcl
 {
-  namespace PCL_EXPORTS visualization
+  namespace visualization
   {
-    class ImageViewer : public Window
+    class PCL_EXPORTS ImageViewer : public Window
     {
       public:
         ImageViewer (const std::string& window_title = "");
