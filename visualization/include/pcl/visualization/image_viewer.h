@@ -50,12 +50,16 @@ namespace pcl
       public:
         ImageViewer (const std::string& window_title = "");
         
+        void
+        init ();
+
         void 
         showRGBImage (const unsigned char* data, unsigned width, unsigned height);
 
       protected:
         vtkSmartPointer<vtkImageViewer2> image_viewer_;
         unsigned char dummy_[48];
+        bool is_init_;
     };
   }
 }

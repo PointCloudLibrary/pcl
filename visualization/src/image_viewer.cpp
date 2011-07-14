@@ -39,6 +39,8 @@
 #include <vtkImageViewer.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkImageViewer2.h>
+#include <vtkImageFlip.h>
+
 
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   : Window (window_title)
@@ -47,8 +49,19 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   memset (dummy_, 0, 48);
   showRGBImage (dummy_, 16, 16);
   //setWindowTitle (window_title);
-  //image_viewer_->SetupInteractor (interactor_);
+//  image_viewer_->SetupInteractor (interactor_);
   image_viewer_->SetRenderWindow (win_);
+
+  is_init_ = false;
+}
+
+void
+pcl::visualization::ImageViewer::init ()
+{
+  image_viewer_->GetRenderer ()->ResetCamera ();
+  // Image is flipped, so roll the camera by 180 degrees
+  image_viewer_->GetRenderer ()->GetActiveCamera ()->SetRoll (180);
+  is_init_ = true;
 }
 
 void 
@@ -62,10 +75,16 @@ pcl::visualization::ImageViewer::showRGBImage (const unsigned char* rgb_data, un
   
   void* data = const_cast<void*> ((const void*)rgb_data);
   importer->SetImportVoidPointer (data, 1);
-  
   image_viewer_->SetInputConnection (importer->GetOutputPort ());
   image_viewer_->SetColorLevel (127.5);
   image_viewer_->SetColorWindow (255);
+  // should do this somewhere else
+  if (!is_init_) init ();
+
+  /*or you can put init directly here
+  image_viewer_->GetRenderer ()->ResetCamera ();
+  image_viewer_->GetRenderer ()->GetActiveCamera ()->SetRoll (180);
+  */
   image_viewer_->Render ();
 }
 
