@@ -51,8 +51,8 @@
 
 #include <pcl/io/obj_io.h>
 
-#include <pcl/TextureMesh.h>
-#include <pcl/surface/texture_mapping.h>
+//#include <pcl/TextureMesh.h>
+//#include <pcl/surface/texture_mapping.h>
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
