@@ -37,7 +37,7 @@ int
   seg.setInputCloud (cloud_filtered);
   seg.segment (*inliers, *coefficients);
 
-  // Project the model inliers 
+  // Project the model inliers
   pcl::ProjectInliers<pcl::PointXYZ> proj;
   proj.setModelType (pcl::SACMODEL_PLANE);
   proj.setInputCloud (cloud_filtered);
@@ -52,7 +52,7 @@ int
 
   std::cerr << "Convex hull has: " << cloud_hull->points.size () << " data points." << std::endl;
 
-  pcl::PCDWriter writer; 
+  pcl::PCDWriter writer;
   writer.write ("table_scene_mug_stereo_textured_hull.pcd", *cloud_hull, false);
 
   return (0);

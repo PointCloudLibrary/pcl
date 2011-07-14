@@ -22,7 +22,19 @@ Then, create a file, let's say, ``concave_hull_2d.cpp`` or ``convex_hull2d.cpp``
 The explanation
 ---------------
 
-The only interesting part is in the lines below, where the ConcaveHull object
+In the following lines of code, a segmentation object is created and some parameters are set.  We use the SACMODEL_PLANE to segment this PointCloud, and the method used to find this model is SAC_RANSAC.  The actual segmentation takes place when 'seg.segment(*inliers, *coefficents);' is called.  This function stores all of the inlying points (on the plane) to *inliers, and it stores the coefficents to the plane (a * x + b * y + c * y = d) in *coefficients.
+
+.. literalinclude:: sources/concave_hull_2d/concave_hull_2d.cpp
+   :language: cpp
+   :lines: 28-38
+
+The next bit of code projects the inliers into another cloud.  One way that we could do this is by just extracting the inliers that we found before, but in this case we are going to use the coefficents we found before.  We set the model type we are looking for and then set the coefficents, and from that the object knows which points to project from cloud_filtered to cloud_projected. 
+
+.. literalinclude:: sources/concave_hull_2d/concave_hull_2d.cpp
+   :language: cpp
+   :lines: 40-45
+
+The real interesting part is in the lines below, where the ConcaveHull object
 gets created and the reconstruction is performed:
 
 .. literalinclude:: sources/concave_hull_2d/concave_hull_2d.cpp
