@@ -45,6 +45,12 @@ namespace pcl
     // Standard VTK macro for *New () 
     vtkStandardNewMacro (PCLVisualizerInteractor);
     
+/*    void
+    PCLVisualizerInteractor::TerminateApp ()
+    {
+      stopped = true;
+    }
+*/    
     //////////////////////////////////////////////////////////////////////////
     void 
     PCLVisualizerInteractor::stopLoop ()
@@ -54,7 +60,7 @@ namespace pcl
       // Send a VTK_BreakWin32Loop ClientMessage event to be sure we pop out of the
       // event loop.  This "wakes up" the event loop.  Otherwise, it might sit idle
       // waiting for an event before realizing an exit was requested.
-      SendMessage (this->WindowId ,RegisterWindowMessage (TEXT ("VTK_BreakWin32Loop")), 0, 0);
+      SendMessage (this->WindowId, RegisterWindowMessage (TEXT ("VTK_BreakWin32Loop")), 0, 0);
 #else
       BreakLoopFlagOn ();
       XClientMessageEvent client;

@@ -448,6 +448,64 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   return (true);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool 
+pcl::visualization::PCLVisualizer::addText3D (const std::string &text, const PointT& position, double textScale, double r, double g, double b, const std::string &id, int viewport)
+{
+  std::string tid;
+  if (id.empty ())
+    tid = text;
+  else
+    tid = id;
+
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_.find (tid);
+  if (am_it != shape_actor_map_.end ())
+  {
+    pcl::console::print_warn ("[addText3d] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkVectorText> textSource = vtkSmartPointer<vtkVectorText>::New();
+  textSource->SetText(text.c_str());
+  textSource->Update();
+
+  vtkSmartPointer<vtkPolyDataMapper> textMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+  textMapper->SetInputConnection(textSource->GetOutputPort());
+
+  // Since each follower may follow a different camera, we need different followers
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  int i = 1;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    // Should we add the actor to all renderers or just to i-nth renderer?
+    if (viewport == 0 || viewport == i)               
+    {
+      vtkSmartPointer<vtkFollower> textActor = vtkSmartPointer<vtkFollower>::New ();
+      textActor->SetMapper(textMapper);
+      textActor->SetPosition(position.x, position.y, position.z);
+      textActor->SetScale(textScale);
+      textActor->GetProperty()->SetColor( r, g, b );
+      textActor->SetCamera(renderer->GetActiveCamera());
+
+      renderer->AddActor (textActor);
+      renderer->Render ();
+
+      // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers 
+      // for multiple viewport
+      std::string alternate_tid = tid;
+      alternate_tid.append(i, '*');
+
+      shape_actor_map_[(viewport == 0) ? tid : alternate_tid] = textActor;
+    }
+
+    ++i;
+  }
+
+  return (true);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> bool
 pcl::visualization::PCLVisualizer::addPointCloudNormals (
