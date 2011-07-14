@@ -45,86 +45,108 @@
 /*@{*/
 namespace pcl
 {
+  /** \brief Enum that defines all the types of norms available.
+   * \note Any new norm type should have its own enum value and its own case in the selectNorm () method
+   * \ingroup common
+   */
+  enum NormType {L1, L2_SQR, L2, LINF, JM, B, SUBLINEAR, CS, DIV, PF, K, KL, HIK};
+
+  /** \brief Method that calculates any norm type available, based on the norm_type variable
+   * \note FloatVectorT is any type of vector with its values accessible via [ ]
+   * \ingroup common
+   * */
+  template <typename FloatVectorT> inline float
+  selectNorm (FloatVectorT A, FloatVectorT B, int dim, NormType norm_type);
+
   /** \brief Compute the L1 norm of the vector between two points
     * \param A the first point
     * \param B the second point
     * \param dim the number of dimensions in \a A and \a B (dimensions must match)
+    * \note FloatVectorT is any type of vector with its values accessible via [ ]
     * \ingroup common
     */
-  inline float 
-  L1_Norm (float *A, float *B, int dim);
+  template <typename FloatVectorT> inline float
+  L1_Norm (FloatVectorT A, FloatVectorT B, int dim);
   
   /** \brief Compute the squared L2 norm of the vector between two points
     * \param A the first point
     * \param B the second point
     * \param dim the number of dimensions in \a A and \a B (dimensions must match)
+    * \note FloatVectorT is any type of vector with its values accessible via [ ]
     * \ingroup common
     */
-  inline float 
-  L2_Norm_SQR (float *A, float *B, int dim);
+  template <typename FloatVectorT> inline float
+  L2_Norm_SQR (FloatVectorT A, FloatVectorT B, int dim);
   
   /** \brief Compute the L2 norm of the vector between two points
     * \param A the first point
     * \param B the second point
     * \param dim the number of dimensions in \a A and \a B (dimensions must match)
+    * \note FloatVectorT is any type of vector with its values accessible via [ ]
     * \ingroup common
     */
-  inline float 
-  L2_Norm (float *A, float *B, int dim);
+  template <typename FloatVectorT> inline float
+  L2_Norm (FloatVectorT A, FloatVectorT B, int dim);
 
   /** \brief Compute the L-infinity norm of the vector between two points
     * \param A the first point
     * \param B the second point
     * \param dim the number of dimensions in \a A and \a B (dimensions must match)
+    * \note FloatVectorT is any type of vector with its values accessible via [ ]
     * \ingroup common
     */  
-  inline float 
-  Linf_Norm (float *A, float *B, int dim);
+  template <typename FloatVectorT> inline float
+  Linf_Norm (FloatVectorT A, FloatVectorT B, int dim);
 
   /** \brief Compute the JM norm of the vector between two points
     * \param A the first point
     * \param B the second point
     * \param dim the number of dimensions in \a A and \a B (dimensions must match)
+    * \note FloatVectorT is any type of vector with its values accessible via [ ]
     * \ingroup common
     */
-  inline float 
-  JM_Norm (float *A, float *B, int dim);
+  template <typename FloatVectorT> inline float
+  JM_Norm (FloatVectorT A, FloatVectorT B, int dim);
 
   /** \brief Compute the B norm of the vector between two points
     * \param A the first point
     * \param B the second point
     * \param dim the number of dimensions in \a A and \a B (dimensions must match)
+    * \note FloatVectorT is any type of vector with its values accessible via [ ]
     * \ingroup common
     */
-  inline float 
-  B_Norm (float *A, float *B, int dim);
+  template <typename FloatVectorT> inline float
+  B_Norm (FloatVectorT A, FloatVectorT B, int dim);
 
   /** \brief Compute the sublinear norm of the vector between two points
     * \param A the first point
     * \param B the second point
     * \param dim the number of dimensions in \a A and \a B (dimensions must match)
+    * \note FloatVectorT is any type of vector with its values accessible via [ ]
     * \ingroup common
     */
-  inline float 
-  Sublinear_Norm (float *A, float *B, int dim);
+  template <typename FloatVectorT> inline float
+  Sublinear_Norm (FloatVectorT A, FloatVectorT B, int dim);
 
   /** \brief Compute the CS norm of the vector between two points
     * \param A the first point
     * \param B the second point
     * \param dim the number of dimensions in \a A and \a B (dimensions must match)
+    * \note FloatVectorT is any type of vector with its values accessible via [ ]
     * \ingroup common
     */
-  inline float 
-  CS_Norm (float *A, float *B, int dim);
+  template <typename FloatVectorT> inline float
+  CS_Norm (FloatVectorT A, FloatVectorT B, int dim);
 
   /** \brief Compute the div norm of the vector between two points
     * \param A the first point
     * \param B the second point
     * \param dim the number of dimensions in \a A and \a B (dimensions must match)
+    * \note FloatVectorT is any type of vector with its values accessible via [ ]
     * \ingroup common
     */
-  inline float 
-  Div_Norm (float *A, float *B, int dim);
+  template <typename FloatVectorT> inline float
+  Div_Norm (FloatVectorT A, FloatVectorT B, int dim);
 
   /** \brief Compute the PF norm of the vector between two points
     * \param A the first point
@@ -132,10 +154,11 @@ namespace pcl
     * \param dim the number of dimensions in \a A and \a B (dimensions must match)
     * \param P1 the first parameter
     * \param P2 the second parameter
+    * \note FloatVectorT is any type of vector with its values accessible via [ ]
     * \ingroup common
     */
-  inline float 
-  PF_Norm (float *A, float *B, int dim, float P1, float P2);
+  template <typename FloatVectorT> inline float
+  PF_Norm (FloatVectorT A, FloatVectorT B, int dim, float P1, float P2);
 
   /** \brief Compute the K norm of the vector between two points
     * \param A the first point
@@ -143,28 +166,31 @@ namespace pcl
     * \param dim the number of dimensions in \a A and \a B (dimensions must match)
     * \param P1 the first parameter
     * \param P2 the second parameter
+    * \note FloatVectorT is any type of vector with its values accessible via [ ]
     * \ingroup common
     */
-  inline float 
-  K_Norm (float *A, float *B, int dim, float P1, float P2);
+  template <typename FloatVectorT> inline float
+  K_Norm (FloatVectorT A, FloatVectorT B, int dim, float P1, float P2);
 
   /** \brief Compute the KL between two discrete probability density functions
     * \param A the first discrete PDF
     * \param B the second discrete PDF
     * \param dim the number of dimensions in \a A and \a B (dimensions must match)
+    * \note FloatVectorT is any type of vector with its values accessible via [ ]
     * \ingroup common
     */
-  inline float 
-  KL_Norm (float *A, float *B, int dim);
+  template <typename FloatVectorT> inline float
+  KL_Norm (FloatVectorT A, FloatVectorT B, int dim);
 
   /** \brief Compute the HIK norm of the vector between two points
     * \param A the first point
     * \param B the second point
     * \param dim the number of dimensions in \a A and \a B (dimensions must match)
+    * \note FloatVectorT is any type of vector with its values accessible via [ ]
     * \ingroup common
     */
-  inline float 
-  HIK_Norm (float *A, float *B, int dim);
+  template <typename FloatVectorT> inline float
+  HIK_Norm (FloatVectorT A, FloatVectorT B, int dim);
 }
 /*@}*/
 #include "pcl/common/impl/norms.hpp"
