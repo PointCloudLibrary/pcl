@@ -49,8 +49,7 @@
 #include <pcl/surface/concave_hull.h>
 #include <pcl/common/common.h>
 
-#include <pcl/io/obj_io.h>
-
+//#include <pcl/io/obj_io.h>
 //#include <pcl/TextureMesh.h>
 //#include <pcl/surface/texture_mapping.h>
 using namespace pcl;
