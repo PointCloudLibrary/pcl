@@ -172,8 +172,8 @@ public:
     //cloud_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg3D));    
     //cloud_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg3D));
 
-    image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
-    image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
+//    image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
+//    image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
       
     boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&SimpleOpenNIViewer::cloud_callback, this, _1);
     boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
@@ -186,8 +186,8 @@ public:
     unsigned char* rgb_data = 0;
     unsigned rgb_data_size = 0;
     
-    //while (!cloud_viewer_.wasStopped ())
-    while (!image_viewer_.wasStopped ())
+    while (!cloud_viewer_.wasStopped ())
+//    while (!image_viewer_.wasStopped ())
     {
       if (cloud_)
       {

@@ -38,30 +38,15 @@
 #include <vtkImageImport.h>
 #include <vtkImageViewer.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkImageViewer2.h>
-#include <vtkImageFlip.h>
-
+#include <vtkImageViewer.h>
+#include <vtkTransform.h>
 
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
-  : Window (window_title)
-  , image_viewer_ (vtkImageViewer2::New ())
+  : image_viewer_ (vtkImageViewer::New ())
 {
   memset (dummy_, 0, 48);
   showRGBImage (dummy_, 16, 16);
-  //setWindowTitle (window_title);
-//  image_viewer_->SetupInteractor (interactor_);
-  image_viewer_->SetRenderWindow (win_);
-
-  is_init_ = false;
-}
-
-void
-pcl::visualization::ImageViewer::init ()
-{
-  image_viewer_->GetRenderer ()->ResetCamera ();
-  // Image is flipped, so roll the camera by 180 degrees
-  image_viewer_->GetRenderer ()->GetActiveCamera ()->SetRoll (180);
-  is_init_ = true;
+  image_viewer_->GetRenderWindow ()->SetWindowName (window_title.c_str ());
 }
 
 void 
@@ -75,16 +60,26 @@ pcl::visualization::ImageViewer::showRGBImage (const unsigned char* rgb_data, un
   
   void* data = const_cast<void*> ((const void*)rgb_data);
   importer->SetImportVoidPointer (data, 1);
-  image_viewer_->SetInputConnection (importer->GetOutputPort ());
+
+/*  vtkTransform *imageTransform = vtkTransform::New();
+  imageTransform->PostMultiply();
+  imageTransform->Translate(width/2, height/2, 0.0);
+  imageTransform->RotateZ(180);
+  imageTransform->Translate(-width/2, -height/2, 0.0);
+  // Now create filter and set previously created transformation
+  vtkImageReslice *algo = vtkImageReslice::New();
+  algo->SetInput(importer->GetOutput());
+  algo->SetInformationInput(importer->GetOutput());
+  algo->SetResliceTransform(imageTransform);
+  algo->SetInterpolationModeToLinear();
+  algo->Update();
+
+  image_viewer_->SetInput (algo->GetOutput());*/
+  image_viewer_->SetInput (importer->GetOutput());
   image_viewer_->SetColorLevel (127.5);
   image_viewer_->SetColorWindow (255);
-  // should do this somewhere else
-  if (!is_init_) init ();
+  image_viewer_->SetSize (width, height);
 
-  /*or you can put init directly here
-  image_viewer_->GetRenderer ()->ResetCamera ();
-  image_viewer_->GetRenderer ()->GetActiveCamera ()->SetRoll (180);
-  */
   image_viewer_->Render ();
 }
 
