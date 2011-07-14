@@ -103,7 +103,7 @@ namespace pcl
 
     // Do mapping to original point cloud
     if (!identity_mapping_) {
-      for (size_t i = 0; i < k_indices.size (); ++i)
+      for (size_t i = 0; i < (size_t)k; ++i)
       {
         int& neighbor_index = k_indices[i];
         neighbor_index = index_mapping_[neighbor_index];
