@@ -33,8 +33,7 @@ if(build)
         src/surfel_smoothing.cpp
         src/marching_cubes.cpp
         src/marching_cubes_greedy.cpp
-	# add by KTran for texture mapping
-	src/texture_mapping.cpp
+      	#src/texture_mapping.cpp
         ${HULL_SOURCES}
         )
 
@@ -47,8 +46,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/reconstruction.h
         include/pcl/${SUBSYS_NAME}/marching_cubes.h
         include/pcl/${SUBSYS_NAME}/marching_cubes_greedy.h
-	# add by KTran for texture mapping
-	include/pcl/${SUBSYS_NAME}/texture_mapping.h
+      	include/pcl/${SUBSYS_NAME}/texture_mapping.h
         ${HULL_INCLUDES}
         )
 

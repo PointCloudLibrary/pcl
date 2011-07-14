@@ -373,7 +373,9 @@ TEST (PCL, ConcaveHull_LTable)
 
   EXPECT_EQ (alpha_shape2.points.size (), 19);
 }
-TEST (PCL, TextureMapping)
+
+
+/*TEST (PCL, TextureMapping)
 {
   // Init objects
   PolygonMesh triangles;
@@ -485,7 +487,9 @@ TEST (PCL, TextureMapping)
   EXPECT_EQ (states[0], gp3.COMPLETED);
   EXPECT_EQ (parts[393], 5);
   EXPECT_EQ (states[393], gp3.BOUNDARY);
-}
+}*/
+
+
 /* ---[ */
 int
 main (int argc, char** argv)
