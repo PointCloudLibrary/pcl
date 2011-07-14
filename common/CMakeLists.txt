@@ -32,6 +32,9 @@ if(build)
           include/pcl/PolygonMesh.h
           include/pcl/Vertices.h
           include/pcl/PointIndices.h
+	  # add by ktran 
+	  include/pcl/TextureMesh.h
+	  # end
         )
 
         set(sensor_msg_incs 

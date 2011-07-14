@@ -59,6 +59,8 @@ if(build)
         src/vtk_io.cpp
         #				src/ply_io.cpp
         src/compression.cpp
+	# add by ktran for obj_io
+	src/obj_io.cpp
         ${OPENNI_GRABBER_SOURCES}
         )
 
@@ -70,6 +72,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/vtk_io.h
 #        include/pcl/${SUBSYS_NAME}/ply_io.h
 #        include/pcl/${SUBSYS_NAME}/ply.h
+	# add by ktran for obj_io
+	include/pcl/${SUBSYS_NAME}/obj_io.h	
         ${OPENNI_GRABBER_INCLUDES}
         )
 
