@@ -39,6 +39,7 @@
 #define PCL_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
 
 #include "pcl/segmentation/extract_clusters.h"
+#include <pcl/kdtree/kdtree_flann.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -206,7 +207,7 @@ pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clu
 
   // Initialize the spatial locator
   if (!tree_)
-    initTree (spatial_locator_, tree_);
+    tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
 
   // Send the input dataset to the spatial locator
   tree_->setInputCloud (input_, indices_);

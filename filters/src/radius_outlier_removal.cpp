@@ -63,9 +63,8 @@ pcl::RadiusOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &o
     return;
   }
   // Initialize the spatial locator
-  //initTree (spatial_locator_type_, tree_, k_);
-
-  tree_.reset (new KdTreeFLANN<pcl::PointXYZ> );
+  if (!tree_)
+    tree_.reset (new KdTreeFLANN<pcl::PointXYZ> );
 
   // Send the input dataset to the spatial locator
   pcl::PointCloud<pcl::PointXYZ> cloud;

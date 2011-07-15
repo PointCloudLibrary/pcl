@@ -52,10 +52,8 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilter (PointCloud &output)
     return;
   }
   // Initialize the spatial locator
-  //initTree (spatial_locator_type_, tree_, k_);
-
-  // TODO: fix this
-  tree_.reset (new KdTreeFLANN<PointT> ());
+  if (!tree_)
+    tree_.reset (new KdTreeFLANN<PointT> ());
 
   // Send the input dataset to the spatial locator
   tree_->setInputCloud (input_);

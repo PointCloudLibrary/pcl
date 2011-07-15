@@ -42,8 +42,11 @@
 
 namespace pcl
 {
-  const static int KDTREE_FLANN           = 0;
-  const static int KDTREE_ORGANIZED_INDEX = 1;
+  enum TreeTypes
+  {
+    KDTREE_FLANN,
+    KDTREE_ORGANIZED_INDEX
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Initialize the spatial locator used for nearest neighbor search.
@@ -52,7 +55,8 @@ namespace pcl
     * \param k optional parameter (default 0) applied only if the spatial locator is set to organized (1)
     * \ingroup kdtree
     */
-  template <typename PointT> void initTree (const int &spatial_locator, boost::shared_ptr<pcl::KdTree<PointT> > &tree, int k = 0);
+  template <typename PointT> void 
+  initTree (const int &spatial_locator, boost::shared_ptr<pcl::KdTree<PointT> > &tree, int k = 0);
 }
 
 #endif  //#ifndef PCL_KDTREE_TREE_TYPES_H_
