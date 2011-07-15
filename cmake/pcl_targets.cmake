@@ -303,7 +303,7 @@ macro(PCL_MAKE_PKGCONFIG _name _component _desc _ext_deps _int_deps _cflags
         set(PKG_INTERNAL_DEPS "${PKG_INTERNAL_DEPS} -l${_dep}")
     endforeach(_dep)
 
-    set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}.pc)
+    set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}.pc)
     configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig.cmake.in ${_pc_file}
         @ONLY)
     install(FILES ${_pc_file} DESTINATION ${PKGCFG_INSTALL_DIR}
