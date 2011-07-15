@@ -73,7 +73,7 @@ namespace pcl
       * \author Radu Bogdan Rusu
       * \ingroup visualization
       */
-    class PCL_EXPORTS PCLVisualizer : public Window
+    class PCL_EXPORTS PCLVisualizer
     {
       public:
         typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
@@ -163,17 +163,17 @@ namespace pcl
         }
         
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
-/*        void 
+        void 
         spin ();
-*/        
+        
         /** \brief Spin once method. Calls the interactor and updates the screen once. 
           *  \param time - How long (in ms) should the visualization loop be allowed to run.
           *  \param force_redraw - if false it might return without doing anything if the 
           *  interactor's framerate does not require a redraw yet.
           */
-/*        void 
+        void 
         spinOnce (int time = 1, bool force_redraw = false);
-*/
+
         /** \brief Adds 3D axes describing a coordinate system to screen at 0,0,0.
           * \param scale the scale of the axes (default: 1)
           * \param viewport the view port where the 3D axes should be added (default: all)
@@ -1004,10 +1004,10 @@ namespace pcl
 
       protected:
         /** \brief The render window interactor. */
-//        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
+        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
 
       private:
-/*        struct ExitMainLoopTimerCallback : public vtkCommand
+        struct ExitMainLoopTimerCallback : public vtkCommand
         {
           static ExitMainLoopTimerCallback* New()
           {
@@ -1018,7 +1018,7 @@ namespace pcl
             if (event_id != vtkCommand::TimerEvent)
               return;
             int timer_id = *(int*)call_data;
-            PCL_WARN ("[pcl::visualization::PCLVisualizer::ExitMainLoopTimerCallback] Timer %d called.\n", timer_id);
+            //PCL_WARN ("[pcl::visualization::PCLVisualizer::ExitMainLoopTimerCallback] Timer %d called.\n", timer_id);
             if (timer_id != right_timer_id)
               return;
             // Stop vtk loop and send notification to app to wake it up
@@ -1043,20 +1043,19 @@ namespace pcl
           }
           PCLVisualizer* pcl_visualizer;
         };
-*/
         
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
-//        vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
-//        vtkSmartPointer<ExitCallback> exit_callback_;
+        vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
+        vtkSmartPointer<ExitCallback> exit_callback_;
 
         /** \brief The collection of renderers used. */
-//        vtkSmartPointer<vtkRendererCollection> rens_;
+        vtkSmartPointer<vtkRendererCollection> rens_;
 
         /** \brief The render window. */
-//        vtkSmartPointer<vtkRenderWindow> win_;
+        vtkSmartPointer<vtkRenderWindow> win_;
 
         /** \brief The render window interactor style. */
- //       vtkSmartPointer<PCLVisualizerInteractorStyle> style_;
+        vtkSmartPointer<PCLVisualizerInteractorStyle> style_;
 
         /** \brief Internal list with actor pointers and name IDs for point clouds. */
         CloudActorMapPtr cloud_actor_map_;

@@ -52,7 +52,8 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
-    pcl::visualization::Window (name),
+    rens_ (vtkSmartPointer<vtkRendererCollection>::New ()),
+    style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ()),
     cloud_actor_map_ (new CloudActorMap)
 {
   // FPS callback
@@ -68,7 +69,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   rens_->AddItem (ren);
 
   // Create a RendererWindow
-/*  win_ = vtkSmartPointer<vtkRenderWindow>::New ();
+  win_ = vtkSmartPointer<vtkRenderWindow>::New ();
   win_->SetWindowName (name.c_str ());
   win_->AlphaBitPlanesOff ();
   win_->PointSmoothingOff ();
@@ -81,7 +82,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   int *scr_size = win_->GetScreenSize ();
   // Set the window size as 1/2 of the screen size
   win_->SetSize (scr_size[0] / 2, scr_size[1] / 2);
-*/
+
   // Add all renderers to the window
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
@@ -89,14 +90,15 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
     win_->AddRenderer (renderer);
 
   // Create the interactor style
-//  style_->Initialize ();
-//  style_->setRendererCollection (rens_);
+  style_->Initialize ();
+  style_->setRendererCollection (rens_);
   style_->setCloudActorMap (cloud_actor_map_);
-//  style_->UseTimersOn ();
+  interactor_->SetInteractorStyle (style_);
+  style_->UseTimersOn ();
 
   // Create the interactor
   //interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
-/*  interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
+  interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
 
   interactor_->SetRenderWindow (win_);
   interactor_->SetInteractorStyle (style_);
@@ -106,8 +108,8 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   interactor_->Initialize ();
   //interactor_->CreateRepeatingTimer (5000L);
   interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
-*/
-/*  exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
+
+  exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
   exit_main_loop_timer_callback_->right_timer_id = -1;
   interactor_->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
@@ -116,12 +118,13 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   exit_callback_->pcl_visualizer = this;
   interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
 
-  resetStoppedFlag ();*/
+  resetStoppedFlag ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const std::string &name, PCLVisualizerInteractorStyle* style) : 
-    pcl::visualization::Window (name),
+//    pcl::visualization::Window (name),
+    rens_ (vtkSmartPointer<vtkRendererCollection>::New ()), 
     cloud_actor_map_ (new CloudActorMap)
 {
   style_ = style;
@@ -139,7 +142,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   rens_->AddItem (ren);
   
   // Create a RendererWindow
-/*  win_ = vtkSmartPointer<vtkRenderWindow>::New ();
+  win_ = vtkSmartPointer<vtkRenderWindow>::New ();
   win_->SetWindowName (name.c_str ());
   win_->AlphaBitPlanesOff ();
   win_->PointSmoothingOff ();
@@ -147,7 +150,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   win_->PolygonSmoothingOff ();
   win_->SwapBuffersOn ();
   win_->SetStereoTypeToAnaglyph ();
-*/
+
   // Get screen size
   int *scr_size = win_->GetScreenSize ();
   camera_.window_size[0] = scr_size[0]; camera_.window_size[1] = scr_size[1] / 2;
@@ -170,14 +173,14 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
     win_->AddRenderer (renderer);
 
   // Create the interactor style
-//  style_->Initialize ();
-//  style_->setRendererCollection (rens_);
+  style_->Initialize ();
+  style_->setRendererCollection (rens_);
   style_->setCloudActorMap (cloud_actor_map_);
-//  style_->UseTimersOn ();
+  style_->UseTimersOn ();
 
   // Create the interactor
   //interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
-/*  interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
+  interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
 
   interactor_->SetRenderWindow (win_);
   interactor_->SetInteractorStyle (style_);
@@ -197,13 +200,13 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   exit_callback_->pcl_visualizer = this;
   interactor_->AddObserver(vtkCommand::ExitEvent, exit_callback_);
   
-  resetStoppedFlag ();*/
+  resetStoppedFlag ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::~PCLVisualizer ()
 {
-//  interactor_->DestroyTimer (interactor_->timer_id_);
+  interactor_->DestroyTimer (interactor_->timer_id_);
   // Clear the collections
   rens_->RemoveAllItems ();
 }
@@ -223,17 +226,17 @@ pcl::visualization::PCLVisualizer::registerMouseCallback (boost::function<void (
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-/*void
+void
 pcl::visualization::PCLVisualizer::spin ()
 {
   resetStoppedFlag ();
   // Render the window before we start the interactor
   win_->Render ();
   interactor_->Start ();
-}*/
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-/*void
+void
 pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
 {
   resetStoppedFlag ();
@@ -256,7 +259,7 @@ pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
     interactor_->Start ();
     interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
   );
-}*/
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
