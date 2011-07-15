@@ -79,6 +79,12 @@ pcl::visualization::ImageViewer::showRGBImage (const unsigned char* rgb_data, un
   image_viewer_->SetColorLevel (127.5);
   image_viewer_->SetColorWindow (255);
   image_viewer_->SetSize (width, height);
+  vtkRenderWindowInteractor *iren = vtkRenderWindowInteractor::New ();
+  image_viewer_->SetupInteractor (iren);
+  
+  iren->SetRenderWindow (image_viewer_->GetRenderWindow ());
+  iren->Initialize ();
+
 
   image_viewer_->Render ();
 }

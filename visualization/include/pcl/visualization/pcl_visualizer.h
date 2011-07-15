@@ -1063,7 +1063,7 @@ namespace pcl
         CloudActorMapPtr cloud_actor_map_;
 
         /** \brief Internal list with actor pointers and name IDs for shapes. */
-        ShapeActorMap shape_actor_map_;
+        ShapeActorMapPtr shape_actor_map_;
 
         /** \brief Internal list with actor pointers and viewpoint for coordinates. */
         CoordinateActorMap coordinate_actor_map_;
