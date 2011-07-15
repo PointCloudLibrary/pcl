@@ -1018,7 +1018,7 @@ namespace pcl
             if (event_id != vtkCommand::TimerEvent)
               return;
             int timer_id = *(int*)call_data;
-            PCL_WARN ("[pcl::visualization::PCLVisualizer::ExitMainLoopTimerCallback] Timer %d called.\n", timer_id);
+            //PCL_WARN ("[pcl::visualization::PCLVisualizer::ExitMainLoopTimerCallback] Timer %d called.\n", timer_id);
             if (timer_id != right_timer_id)
               return;
             // Stop vtk loop and send notification to app to wake it up
