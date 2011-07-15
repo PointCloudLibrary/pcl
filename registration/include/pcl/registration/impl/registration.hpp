@@ -295,6 +295,7 @@ template <typename PointSource, typename PointTarget> inline void
 pcl::Registration<PointSource, PointTarget>::align (PointCloudSource &output, const Eigen::Matrix4f& guess)
 {
   if (!initCompute ()) return;
+
   if (!target_)
   {
     PCL_WARN ("[pcl::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());
