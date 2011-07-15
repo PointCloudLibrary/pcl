@@ -93,8 +93,6 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   style_->Initialize ();
   style_->setRendererCollection (rens_);
   style_->setCloudActorMap (cloud_actor_map_);
-  interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
-  interactor_->SetInteractorStyle (style_);
   style_->UseTimersOn ();
 
   // Create the interactor
@@ -120,6 +118,8 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
 
   resetStoppedFlag ();
+
+  win_->SetWindowName (name.c_str ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -202,6 +202,8 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   interactor_->AddObserver(vtkCommand::ExitEvent, exit_callback_);
   
   resetStoppedFlag ();
+
+  win_->SetWindowName (name.c_str ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
