@@ -210,12 +210,26 @@ pcl::visualization::PCLVisualizer::~PCLVisualizer ()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection
+pcl::visualization::PCLVisualizer::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
+{
+  return style_->registerKeyboardCallback (callback);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection
+pcl::visualization::PCLVisualizer::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
+{
+  return style_->registerMouseCallback (callback);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::spin ()
 {
   resetStoppedFlag ();
   // Render the window before we start the interactor
-  win_->Render();
+  win_->Render ();
   interactor_->Start ();
 }
 
