@@ -449,8 +449,16 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool 
-pcl::visualization::PCLVisualizer::addText3D (const std::string &text, const PointT& position, double textScale, double r, double g, double b, const std::string &id, int viewport)
+template <typename PointT>
+pcl::visualization::PCLVisualizer::addText3D (
+    const std::string &text, 
+    const PointT& position, 
+    double textScale, 
+    double r, 
+    double g, 
+    double b, 
+    const std::string &id, 
+    int viewport)
 {
   std::string tid;
   if (id.empty ())
