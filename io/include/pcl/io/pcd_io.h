@@ -184,12 +184,14 @@ namespace pcl
         * thus significantly alter the data. This is a known issue, and the fix
         * involves switching RGB data to be stored as a packed integer in
         * future versions of PCL.
+        *
+        * As an intermediary solution, precision 8 is used, which guarantees lossless storage for RGB.
         */
       int 
       writeASCII (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
                   const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
                   const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
-                  int precision = 7);
+                  int precision = 8);
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY format
         * \param file_name the output file name
@@ -216,6 +218,8 @@ namespace pcl
         * thus significantly alter the data. This is a known issue, and the fix
         * involves switching RGB data to be stored as a packed integer in
         * future versions of PCL.
+        *
+        * As an intermediary solution, precision 8 is used, which guarantees lossless storage for RGB.
         */
       inline int
       write (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
@@ -226,7 +230,7 @@ namespace pcl
         if (binary)
           return (writeBinary (file_name, cloud, origin, orientation));
         else
-          return (writeASCII (file_name, cloud, origin, orientation, 7));
+          return (writeASCII (file_name, cloud, origin, orientation, 8));
       }
 
       /** \brief Save point cloud data to a PCD file containing n-D points
