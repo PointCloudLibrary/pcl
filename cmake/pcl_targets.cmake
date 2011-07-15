@@ -150,7 +150,11 @@ endmacro(PCL_CUDA_ADD_LIBRARY)
 macro(PCL_ADD_EXECUTABLE _name _component)
     add_executable(${_name} ${ARGN})
     # must link explicitly against boost.
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
+    if(UNIX)
+      target_link_libraries(${_name} ${Boost_LIBRARIES} pthread)
+    else(UNIX)
+      target_link_libraries(${_name} ${Boost_LIBRARIES})
+    endif(UNIX)
     #
     # Only link if needed
     if(WIN32 AND MSVC)
