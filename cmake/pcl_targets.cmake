@@ -87,7 +87,7 @@ macro(PCL_ADD_LIBRARY _name _component)
     #
     set_target_properties(${_name} PROPERTIES
         VERSION ${PCL_VERSION}
-        SOVERSION ${PCL_MAJOR_VERSION}
+        SOVERSION ${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
