@@ -1,6 +1,6 @@
 set(SUBSYS_NAME features)
 set(SUBSYS_DESC "Point cloud features library")
-set(SUBSYS_DEPS common kdtree range_image)
+set(SUBSYS_DEPS common kdtree range_image filters)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -18,16 +18,21 @@ if(build)
         include/pcl/${SUBSYS_NAME}/intensity_gradient.h
         include/pcl/${SUBSYS_NAME}/intensity_spin.h
         include/pcl/${SUBSYS_NAME}/moment_invariants.h
+        include/pcl/${SUBSYS_NAME}/multiscale_feature_persistence.h
         include/pcl/${SUBSYS_NAME}/narf.h
         include/pcl/${SUBSYS_NAME}/narf_descriptor.h
         include/pcl/${SUBSYS_NAME}/normal_3d.h
         include/pcl/${SUBSYS_NAME}/normal_3d_omp.h
         include/pcl/${SUBSYS_NAME}/pfh.h
+        include/pcl/${SUBSYS_NAME}/ppf.h
+        include/pcl/${SUBSYS_NAME}/shot.h
+        include/pcl/${SUBSYS_NAME}/shot_omp.h
         include/pcl/${SUBSYS_NAME}/principal_curvatures.h
         include/pcl/${SUBSYS_NAME}/rift.h
         include/pcl/${SUBSYS_NAME}/rsd.h
+        include/pcl/${SUBSYS_NAME}/statistical_multiscale_interest_region_extraction.h
         include/pcl/${SUBSYS_NAME}/vfh.h
-        )
+		)
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/feature.hpp
@@ -38,13 +43,18 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/intensity_gradient.hpp
         include/pcl/${SUBSYS_NAME}/impl/intensity_spin.hpp
         include/pcl/${SUBSYS_NAME}/impl/moment_invariants.hpp
+        include/pcl/${SUBSYS_NAME}/impl/multiscale_feature_persistence.hpp
         include/pcl/${SUBSYS_NAME}/impl/narf.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/pfh.hpp
+        include/pcl/${SUBSYS_NAME}/impl/ppf.hpp
+        include/pcl/${SUBSYS_NAME}/impl/shot.hpp
+        include/pcl/${SUBSYS_NAME}/impl/shot_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/principal_curvatures.hpp
         include/pcl/${SUBSYS_NAME}/impl/rift.hpp
         include/pcl/${SUBSYS_NAME}/impl/rsd.hpp
+        include/pcl/${SUBSYS_NAME}/impl/statistical_multiscale_interest_region_extraction.hpp
         include/pcl/${SUBSYS_NAME}/impl/vfh.hpp
         )
 
@@ -56,14 +66,19 @@ if(build)
         src/intensity_gradient.cpp
         src/intensity_spin.cpp
         src/moment_invariants.cpp
+        src/multiscale_feature_persistence.cpp
         src/narf.cpp
         src/narf_descriptor.cpp
         src/normal_3d.cpp
         src/normal_3d_omp.cpp
         src/pfh.cpp
+        src/ppf.cpp
+        src/shot.cpp
+        src/shot_omp.cpp
         src/principal_curvatures.cpp
         src/rift.cpp
-        src/rsd.cpp
+        src/rsd.cpp 
+#        src/statistical_multiscale_interest_region_extraction.cpp                               
         src/vfh.cpp
         )
 
@@ -72,7 +87,7 @@ if(build)
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
     PCL_LINK_OPENMP(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_range_image pcl_kdtree)
+    target_link_libraries(${LIB_NAME} pcl_range_image pcl_kdtree pcl_filters)
     PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
         "${EXT_DEPS}" "" "" "")
