@@ -157,6 +157,29 @@ namespace pcl
       {
         return (this->height != 1);
       }
+      
+      ////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
+        * \param dim the number of dimensions to consider for each point (will become the number of rows)
+        * \param stride the number of values in each point (will be the number of values that separate two of the columns)
+        * \param offset the number of dimensions to skip from the beginning of each point
+            (note stride = offset + dim + x, where x is the number of dimensions to skip from the end of each point)
+        * \note for getting only XYZ coordinates out of PointXYZ use dim=3, stride=4 and offset=0 due to the alignment.
+        */
+      inline Eigen::MatrixXf
+      getMatrixXfMap (int dim, int stride, int offset)
+      {
+        return Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, dim, points.size(), Eigen::OuterStride<>(stride));
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
+        */
+      inline Eigen::MatrixXf
+      getMatrixXfMap ()
+      {
+        return getMatrixXfMap (sizeof (PointT) / sizeof (float),  sizeof (PointT) / sizeof (float), 0);
+      }
 
       /** \brief The point cloud header. It contains information about the acquisition time, as well as a transform
         * frame (see \a tf). */
