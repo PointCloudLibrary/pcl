@@ -50,6 +50,7 @@ namespace pcl
 {
 
 bool RangeImage::debug = false;
+int RangeImage::max_no_of_threads = 1;
 const int RangeImage::lookup_table_size = 20001;
 std::vector<float> RangeImage::asin_lookup_table;
 std::vector<float> RangeImage::atan_lookup_table;
@@ -1524,6 +1525,7 @@ Eigen::Affine3f RangeImage::doIcp (const RangeImage::VectorOfEigenVector3f& poin
   {
     float max_distance_squared = max_distance*max_distance;
     transformation_from_correspondeces.reset ();
+    # pragma omp parallel for num_threads(max_no_of_threads) default(shared) schedule(dynamic, 100)
     for (int point_idx=0; point_idx< (int)points.size (); ++point_idx)
     {
       const Eigen::Vector3f& point = points[point_idx];
@@ -1552,6 +1554,7 @@ Eigen::Affine3f RangeImage::doIcp (const RangeImage::VectorOfEigenVector3f& poin
       if (found_neighbor)
       {
         //cout << PVARN (closest_distance);
+#       pragma omp critical
         transformation_from_correspondeces.add (point, closest_point);
       }
     }
@@ -1569,6 +1572,131 @@ Eigen::Affine3f RangeImage::doIcp (const RangeImage::VectorOfEigenVector3f& poin
   //cout << PVARN (initial_guess.matrix ())<<PVARN (ret.matrix ());
   
   return ret;
+}
+
+Eigen::Affine3f
+RangeImage::doIcp (const RangeImage& other_range_image,
+                   const Eigen::Affine3f& initial_guess, int search_radius,
+                   float max_distance_start, float max_distance_end,
+                   int num_iterations, int pixel_step_start, int pixel_step_end) const
+{
+  Eigen::Affine3f ret = initial_guess;
+  
+  float max_distance = max_distance_start, 
+        max_distance_reduction = (max_distance_start-max_distance_end)/float (num_iterations);
+  
+  TransformationFromCorrespondences transformation_from_correspondeces;
+  for (int iteration=1; iteration<=num_iterations; ++iteration)
+  {
+    float max_distance_squared = max_distance*max_distance;
+    transformation_from_correspondeces.reset ();
+    
+    float progress = float(iteration)/float(num_iterations);
+    int pixel_step = pcl_lrint (float(pixel_step_start) + powf(progress, 3)*float(pixel_step_end-pixel_step_start));
+    //cout << PVARC(iteration) << PVARN(pixel_step);
+    
+    # pragma omp parallel for num_threads(max_no_of_threads) default(shared) schedule(dynamic, 1)
+    for (int other_y=0; other_y<int(other_range_image.height); other_y+=pixel_step)
+    {
+      for (int other_x=0; other_x<int(other_range_image.width); other_x+=pixel_step)
+      {
+        const PointWithRange& point = other_range_image.getPoint (other_x, other_y);
+        if (!pcl_isfinite (point.range))
+          continue;
+        Eigen::Vector3f transformed_point = ret * point.getVector3fMap();
+        int x,y;
+        getImagePoint (transformed_point, x, y);
+        float closest_distance = max_distance_squared;
+        Eigen::Vector3f closest_point (0.0f, 0.0f, 0.0f);
+        bool found_neighbor = false;
+        for (int y2=y-pixel_step*search_radius; y2<=y+pixel_step*search_radius; y2+=pixel_step)
+        {
+          for (int x2=x-pixel_step*search_radius; x2<=x+pixel_step*search_radius; x2+=pixel_step)
+          {
+            const PointWithRange& neighbor = getPoint (x2, y2);
+            if (!pcl_isfinite (neighbor.range))
+              continue;
+            float distance = (transformed_point-neighbor.getVector3fMap ()).squaredNorm ();
+            if (distance < closest_distance)
+            {
+              closest_distance = distance;
+              closest_point = neighbor.getVector3fMap ();
+              found_neighbor = true;
+            }
+          }
+        }
+        if (found_neighbor)
+        {
+          //cout << PVARN (closest_distance);
+#         pragma omp critical
+          transformation_from_correspondeces.add (point.getVector3fMap(), closest_point);
+        }
+      }
+    }
+    //cout << PVARN (transformation_from_correspondeces.getNoOfSamples ());
+    //cout << PVARN (iteration);
+    if (transformation_from_correspondeces.getNoOfSamples () < 3)
+      return ret;
+    // TODO: check if change
+    ret = transformation_from_correspondeces.getTransformation ();
+    //cout << ret<<"\n";
+    
+    max_distance -= max_distance_reduction;
+  }
+
+  //cout << PVARN (initial_guess.matrix ())<<PVARN (ret.matrix ());
+  
+  return ret;
+}
+
+float
+RangeImage::getOverlap (const RangeImage& other_range_image, const Eigen::Affine3f& relative_transformation,
+                        int search_radius, float max_distance, int pixel_step) const
+{
+  int hits_counter=0, valid_points_counter=0;
+  
+  float max_distance_squared = max_distance*max_distance;
+  
+  # pragma omp parallel for num_threads(max_no_of_threads) default(shared) schedule(dynamic, 1) \
+                        reduction(+ : valid_points_counter) reduction(+ : hits_counter)
+  for (int other_y=0; other_y<int(other_range_image.height); other_y+=pixel_step)
+  {
+    for (int other_x=0; other_x<int(other_range_image.width); other_x+=pixel_step)
+    {
+      const PointWithRange& point = other_range_image.getPoint (other_x, other_y);
+      if (!pcl_isfinite (point.range))
+        continue;
+      ++valid_points_counter;
+      Eigen::Vector3f transformed_point = relative_transformation * point.getVector3fMap();
+      int x,y;
+      getImagePoint (transformed_point, x, y);
+      float closest_distance = max_distance_squared;
+      Eigen::Vector3f closest_point (0.0f, 0.0f, 0.0f);
+      bool found_neighbor = false;
+      for (int y2=y-pixel_step*search_radius; y2<=y+pixel_step*search_radius; y2+=pixel_step)
+      {
+        for (int x2=x-pixel_step*search_radius; x2<=x+pixel_step*search_radius; x2+=pixel_step)
+        {
+          const PointWithRange& neighbor = getPoint (x2, y2);
+          if (!pcl_isfinite (neighbor.range))
+            continue;
+          float distance = (transformed_point-neighbor.getVector3fMap ()).squaredNorm ();
+          if (distance < closest_distance)
+          {
+            closest_distance = distance;
+            closest_point = neighbor.getVector3fMap ();
+            found_neighbor = true;
+          }
+        }
+      }
+
+      if (found_neighbor)
+      {
+        ++hits_counter;
+      }
+    }
+  }
+  return float(hits_counter)/float(valid_points_counter);
 }
 
 }  // namespace end

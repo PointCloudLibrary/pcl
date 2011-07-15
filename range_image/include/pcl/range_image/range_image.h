@@ -75,6 +75,10 @@ namespace pcl
       /** Destructor */
       PCL_EXPORTS ~RangeImage ();
       
+      // =====STATIC VARIABLES=====
+      /** The maximum number of openmp threads that can be used in this class */
+      static int max_no_of_threads;
+      
       // =====STATIC METHODS=====
       /** \brief Get the size of a certain area when seen from the given pose
         * \param viewer_pose an affine matrix defining the pose of the viewer
@@ -597,6 +601,21 @@ namespace pcl
       doIcp (const VectorOfEigenVector3f& points,
              const Eigen::Affine3f& initial_guess, int search_radius,
              float max_distance_start, float max_distance_end, int num_iterations) const;
+      
+      /** Perform ICP (Iterative closest point) on the given data
+       *  pixel_step_start, pixel_step_end can be used to improve performance by starting with low
+       *  resolution and going to higher resolution with later iterations (not used for default values) */
+      PCL_EXPORTS Eigen::Affine3f
+      doIcp (const RangeImage& other_range_image,
+             const Eigen::Affine3f& initial_guess, int search_radius,
+             float max_distance_start, float max_distance_end,
+             int num_iterations, int pixel_step_start=1, int pixel_step_end=1) const;
+      
+      /** Calculates the overlap of two range images given the relative transformation
+       *  (from the given image to *this) */
+      PCL_EXPORTS float
+      getOverlap (const RangeImage& other_range_image, const Eigen::Affine3f& relative_transformation,
+                  int search_radius, float max_distance, int pixel_step=1) const;
       
       /** Get the viewing direction for the given point */
       inline bool
