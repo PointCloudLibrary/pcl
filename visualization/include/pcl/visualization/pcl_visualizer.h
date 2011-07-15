@@ -73,7 +73,7 @@ namespace pcl
       * \author Radu Bogdan Rusu
       * \ingroup visualization
       */
-    class PCL_EXPORTS PCLVisualizer : public Window
+    class PCL_EXPORTS PCLVisualizer
     {
       public:
         typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
