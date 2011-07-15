@@ -44,16 +44,9 @@
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
-#include <pcl/visualization/mouse_event.h>
-#include <vtkImageViewer.h>
-#include <vtkImageImport.h>
 #include <vector>
-#include <string>
-
-using namespace std;
 
 #define SHOW_FPS 1
 #if SHOW_FPS
@@ -86,9 +79,8 @@ public:
   typedef typename Cloud::ConstPtr CloudConstPtr;
 
   SimpleOpenNIViewer(pcl::OpenNIGrabber& grabber)
-    : cloud_viewer_("PCL OpenNI Viewer"), 
-      grabber_(grabber),
-      image_viewer_ ("PCL image viewer")
+    : viewer("PCL OpenNI Viewer")
+    , grabber_(grabber)
   {
   }
 
@@ -97,42 +89,13 @@ public:
    * @param cloud The new point cloud from Grabber
    */
   void
-  cloud_callback (const CloudConstPtr& cloud)
+  cloud_cb_ (const CloudConstPtr& cloud)
   {
-    //FPS_CALC ("callback");
-    boost::mutex::scoped_lock lock (cloud_mutex_);
+    FPS_CALC ("callback");
+    boost::mutex::scoped_lock lock (mtx_);
     cloud_ = cloud;
   }
 
-  void
-  image_callback (const boost::shared_ptr<openni_wrapper::Image>& image)
-  {
-    boost::mutex::scoped_lock lock (image_mutex_);
-    image_ = image;
-  }
-  
-  void keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
-  {
-    string* message = (string*)cookie;
-    cout << (*message) << " :: ";
-    if (event.getKeyCode())
-      cout << "the key \'" << event.getKeyCode() << "\' (" << (int)event.getKeyCode() << ") was";
-    else
-      cout << "the special key \'" << event.getKeySym() << "\' was";
-    if (event.keyDown())
-      cout << " pressed" << endl;
-    else
-      cout << " released" << endl;
-  }
-  
-  void mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
-  {
-    string* message = (string*) cookie;
-    if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
-    {
-      cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
-    }
-  }
   /**
    * @brief swaps the pointer to the point cloud with Null pointer and returns the cloud pointer
    * @return boost shared pointer to point cloud
@@ -141,7 +104,7 @@ public:
   getLatestCloud ()
   {
     //lock while we swap our cloud and reset it.
-    boost::mutex::scoped_lock lock(cloud_mutex_);
+    boost::mutex::scoped_lock lock(mtx_);
     CloudConstPtr temp_cloud;
     temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
     //it is safe to set it again from our
@@ -149,14 +112,6 @@ public:
     return (temp_cloud);
   }
 
-  boost::shared_ptr<openni_wrapper::Image>
-  getLatestImage ()
-  {
-    boost::mutex::scoped_lock lock(image_mutex_);
-    boost::shared_ptr<openni_wrapper::Image> temp_image;
-    temp_image.swap (image_);
-    return temp_image;
-  }
   /**
    * @brief starts the main loop
    */
@@ -165,77 +120,29 @@ public:
   {
     //pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id_, pcl::OpenNIGrabber::OpenNI_QQVGA_30Hz, pcl::OpenNIGrabber::OpenNI_VGA_30Hz);
 
-    string mouseMsg3D("Mouse coordinates in PCL Visualizer");
-    string mouseMsg2D("Mouse coordinates in image viewer");
-    string keyMsg3D("Key event for PCL Visualizer");
-    string keyMsg2D("Key event for image viewer");
-    //cloud_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg3D));    
-    //cloud_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg3D));
+    boost::function<void (const CloudConstPtr&) > f = boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
 
-//    image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
-//    image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
-      
-    boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&SimpleOpenNIViewer::cloud_callback, this, _1);
-    boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
-    
-    boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&SimpleOpenNIViewer::image_callback, this, _1);
-    boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);
-    
+    boost::signals2::connection c = grabber_.registerCallback (f);
+
     grabber_.start();
-    
-    unsigned char* rgb_data = 0;
-    unsigned rgb_data_size = 0;
-    
-    while (!cloud_viewer_.wasStopped ())
-//    while (!image_viewer_.wasStopped ())
+
+    while (!viewer.wasStopped ())
     {
       if (cloud_)
       {
-        //FPS_CALC ("drawing");
+        FPS_CALC ("drawing");
         //the call to get() sets the cloud_ to null;
-        cloud_viewer_.showCloud (getLatestCloud ());
+        viewer.showCloud (getLatestCloud ());
       }
-      //*
-      if (image_)
-      {
-        boost::shared_ptr<openni_wrapper::Image> image = getLatestImage();
-
-        if (image->getEncoding() == openni_wrapper::Image::RGB)
-        {
-          image_viewer_.showRGBImage(image->getMetaData().Data(), image->getWidth(), image->getHeight());
-        }
-        else
-        {
-          if (rgb_data_size < image->getWidth() * image->getHeight())
-          {
-            rgb_data_size = image->getWidth() * image->getHeight();
-            rgb_data = new unsigned char [rgb_data_size * 3];
-          }
-          image->fillRGB (image->getWidth(), image->getHeight(), rgb_data);
-          image_viewer_.showRGBImage(rgb_data, image->getWidth(), image->getHeight());
-        }
-      }
-//      image_viewer_.spinOnce (10);
-      //*/
     }
 
     grabber_.stop();
-    
-    cloud_connection.disconnect();
-    image_connection.disconnect();
-    
-    if (rgb_data)
-      delete[] rgb_data;
   }
 
-  pcl::visualization::CloudViewer cloud_viewer_;
+  pcl::visualization::CloudViewer viewer;
   pcl::OpenNIGrabber& grabber_;
-  boost::mutex cloud_mutex_;
+  boost::mutex mtx_;
   CloudConstPtr cloud_;
-  
-  boost::mutex image_mutex_;
-  boost::shared_ptr<openni_wrapper::Image> image_;
-  pcl::visualization::ImageViewer image_viewer_;
 };
 
 void

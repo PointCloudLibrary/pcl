@@ -7,6 +7,13 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
+    OPTION(BUILD_OPENNI "Build the OpenNI Grabber." ON)
+    MARK_AS_ADVANCED(BUILD_OPENNI)
+    if(NOT BUILD_OPENNI)
+      # Set OPENNI_FOUND to false locally to avoid building anything OpenNI related
+      # Remember that other modules (libraries) need to check explicitly for BUILD_OPENNI
+      set(OPENNI_FOUND FALSE) 
+    endif()
     if(OPENNI_FOUND)
         set(OPENNI_GRABBER_INCLUDES
             include/pcl/io/grabber.h
@@ -52,6 +59,7 @@ if(build)
         src/vtk_io.cpp
         #				src/ply_io.cpp
         src/compression.cpp
+        #src/obj_io.cpp
         ${OPENNI_GRABBER_SOURCES}
         )
 
@@ -63,6 +71,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/vtk_io.h
 #        include/pcl/${SUBSYS_NAME}/ply_io.h
 #        include/pcl/${SUBSYS_NAME}/ply.h
+#        include/pcl/${SUBSYS_NAME}/obj_io.h	
         ${OPENNI_GRABBER_INCLUDES}
         )
 

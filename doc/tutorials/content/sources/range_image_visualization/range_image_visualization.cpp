@@ -146,6 +146,7 @@ main (int argc, char** argv)
   // --------------------------
   pcl::visualization::RangeImageVisualizer range_image_widget ("Range image");
   range_image_widget.setRangeImage (range_image);
+  //range_image_widget.savePPM("range_image.ppm", "Range Image Visualization");
   
   //--------------------
   // -----Main loop-----

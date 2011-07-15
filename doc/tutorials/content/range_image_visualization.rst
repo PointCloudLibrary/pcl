@@ -49,6 +49,14 @@ The next part visualizes the range image in 2D, using color coding for the range
   range_image_widget.setRangeImage (range_image);
   ...
 
+if you want to save the image to disc as a PPM you can uncomment this line:
+
+.. code-block:: cpp
+
+  ...
+  range_image_widget.savePPM("range_image.ppm", "Range Image Visualization");
+  ...
+
 Now we can start the main loop to keep the visualization alive, until one of the windows is closed:
 
 .. code-block:: cpp

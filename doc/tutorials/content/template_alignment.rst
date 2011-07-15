@@ -31,7 +31,7 @@ Now, let's break down the code piece by piece.
 
 We'll start by examining the *FeatureCloud* class.  This class is defined in order to provide a convenient method for computing and storing point clouds with local feature descriptors for each point.
 
-The constructor creates a new *KdTreeFLANN* object and initializes the radius parameters that will be used when computing surface normals and local features.
+The constructor creates a new :pcl:`KdTreeFLANN <pcl::KdTreeFLANN>` object and initializes the radius parameters that will be used when computing surface normals and local features.
 
 .. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
@@ -55,13 +55,13 @@ Next we define the method for processing the input point cloud, which first comp
    :language: cpp
    :lines: 71-77
 
-We use PCL's *NormalEstimation* class to compute the surface normals. To do so, we must specify the input point cloud, the KdTree to use when searching for neighboring points, and the radius that defines each point's neighborhood.  We then compute the surface normals and store them in a member variable for later use.
+We use PCL's :pcl:`NormalEstimation <pcl::NormalEstimation>` class to compute the surface normals. To do so, we must specify the input point cloud, the KdTree to use when searching for neighboring points, and the radius that defines each point's neighborhood.  We then compute the surface normals and store them in a member variable for later use.
 
 .. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
    :lines: 79-90
 
-Similarly, we use PCL's *FPFHEstimation* class to compute "Fast Point Feature Histogram" descriptors from the input point cloud and its surface normals.
+Similarly, we use PCL's :pcl:`FPFHEstimation <pcl::FPFHEstimation>` class to compute "Fast Point Feature Histogram" descriptors from the input point cloud and its surface normals.
 
 .. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
@@ -81,7 +81,7 @@ We start by defining a structure to store the alignment results.  It contains a 
    :language: cpp
    :lines: 122-128
 
-In the constructor, we initialize the *SampleConsensusInitialAlignment* (SAC-IA) object that we'll be using to perform the alignment, providing values for each of its parameters.  (Note: the maximum correspondence distance is actually specified as squared distance; for this example, we've decided to truncate the error with an upper limit of 1 cm, so we pass in 0.01 squared.)
+In the constructor, we initialize the :pcl:`SampleConsensusInitialAlignment <pcl::SampleConsensusInitialAlignment>` (SAC-IA) object that we'll be using to perform the alignment, providing values for each of its parameters.  (Note: the maximum correspondence distance is actually specified as squared distance; for this example, we've decided to truncate the error with an upper limit of 1 cm, so we pass in 0.01 squared.)
 
 .. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
@@ -99,7 +99,7 @@ We then define a method for specifying which template or templates to attempt to
    :language: cpp
    :lines: 152-157
 
-Next we define our alignment method.  This method takes a template as input and aligns it to the target cloud that was specified by calling *setTargetCloud*.  It works by setting the given template as the SAC-IA algorithm's source cloud and then calling its *align* method to align the source to the target.  Note that the *align* method requires us to pass in a point cloud that will store the newly aligned source cloud, but we can ignore this output for our application.  Instead, we call SAC-IA's accessor methods to get the alignment's fitness score and final transformation matrix (the rigid transformation from the source cloud to the target), and we output them as a Result struct.
+Next we define our alignment method.  This method takes a template as input and aligns it to the target cloud that was specified by calling :pcl:`setInputTarget <pcl::Registration::setInputTarget>`.  It works by setting the given template as the SAC-IA algorithm's source cloud and then calling its :pcl:`align <pcl::Registration::align>` method to align the source to the target.  Note that the :pcl:`align <pcl::Registration::align>` method requires us to pass in a point cloud that will store the newly aligned source cloud, but we can ignore this output for our application.  Instead, we call SAC-IA's accessor methods to get the alignment's fitness score and final transformation matrix (the rigid transformation from the source cloud to the target), and we output them as a Result struct.
 
 .. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
