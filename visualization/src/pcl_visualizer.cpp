@@ -118,6 +118,8 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
 
   resetStoppedFlag ();
+
+  win_->SetWindowName (name.c_str ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,6 +201,8 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   interactor_->AddObserver(vtkCommand::ExitEvent, exit_callback_);
   
   resetStoppedFlag ();
+  
+  win_->SetWindowName (name.c_str ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
