@@ -42,6 +42,7 @@
 #include "pcl/search/kdtree.h"
 #include "pcl/search/octree_pointcloud.h"
 #include "pcl/search/organized_neighbor_search.h"
+#include <pcl/common/time.h>
 
 using namespace std;
 namespace pcl
@@ -67,7 +68,7 @@ AutotunedSearch<PointT>::initSearchDS (int spatial_locator)
     else if(spatial_locator == AUTO_TUNED)
     {
 	std::cerr << "AUTO_TUNED Not yet implemented\n" << std::endl;
-	exit(0);
+//	exit(0);
     }
 
    spatial_loc = spatial_locator;
@@ -76,12 +77,73 @@ AutotunedSearch<PointT>::initSearchDS (int spatial_locator)
 
 }
 
+template <typename PointT> void 
+AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& cloudIn)
+{
+	unsigned int no_of_neighbors = 20;
+	unsigned int searchIdx;
+   while(1){
+   searchIdx = rand()%(cloudIn->width * cloudIn->height);
+   if(cloudIn->points[searchIdx].z <100)break;
+   }
+	
+	const PointT& searchPoint = cloudIn->points[searchIdx];
+	vector<int> k_indices;
+	k_indices.resize (no_of_neighbors);
+	vector<float> k_distances;
+	k_distances.resize (no_of_neighbors);
+
+	
+	std::cout << "\n---------------\nKDTree\n---------------\n";
+	double time1 = getTime();
+	_searchptr.reset(new KdTree<PointT>());
+	_searchptr->setInputCloud(cloudIn);
+	_searchptr->nearestKSearch (searchPoint, no_of_neighbors, k_indices, k_distances);
+	std::cout << "Neighbors are:" << std::endl;
+	
+	for(int i=0;i<20;i++){
+	std::cout << k_indices[i] << '\t'; 
+	}
+	std::cout << std::endl;
+	std::cout << "Number of Neighbors: " << k_indices.size() << std::endl; k_indices.clear();k_distances.clear();
+
+	std::cout << "\n---------------\nOrganizedData\n---------------\n";
+	double time2 = getTime();
+	_searchptr.reset(new OrganizedNeighborSearch<PointT>());
+	_searchptr->setInputCloud(cloudIn);
+	_searchptr->nearestKSearch (searchPoint, no_of_neighbors, k_indices, k_distances);
+	std::cout << "Neighbors are: " << std::endl;
+	for(int i=0;i<20;i++){
+	std::cout << k_indices[i] << '\t'; 
+	}
+	std::cout << std::endl;
+	std::cout << "Number of Neigbhors: " << k_indices.size() << std::endl; k_indices.clear();k_distances.clear();
+
+	std::cout << "\n---------------\nOctree\n---------------\n";
+	double time3 = getTime();
+	_searchptr.reset(new OctreePointCloud<PointT>(0.1f));
+	_searchptr->setInputCloud(cloudIn);
+	_searchptr->nearestKSearch (searchPoint, no_of_neighbors, k_indices, k_distances);
+	std::cout << "Neighbors are: " << std::endl;
+	for(int i=0;i<20;i++){
+	std::cout << k_indices[i] << '\t'; 
+	}
+	std::cout << std::endl;
+	std::cout << "Number of Neighbors: " << k_indices.size() << std::endl; k_indices.clear();k_distances.clear();
+	std::cout << std::endl;
+	std::cout << std::endl;
+
+
+	std::cout << "Time Taken: " << "KDTree: " << time2 - time1 << '\t' <<"OranizedData: "  << time3 - time2 << '\t' << "Octree: " << getTime() - time3 << '\t' << std::endl;	
+
+}
+
+
 
 template <typename PointT> void 
 AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices)
 {
-
-    /* for kdtree */
+    _cloudptr = cloud;
     _searchptr->setInputCloud(cloud, indices);
 
 
@@ -91,6 +153,7 @@ AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const I
 template <typename PointT> void 
 AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
 {
+    _cloudptr = cloud;
     _searchptr->setInputCloud(cloud);
 
 }
@@ -206,34 +269,6 @@ AutotunedSearch<PointT>::setPrecision(int k)
     }
 }
 
-template <typename PointT> void 
-       AutotunedSearch<PointT>::deleteTree ( bool freeMemory_arg)
-{
-     if(spatial_loc == OCTREE)
-   {
-   _searchptr->deleteTree(freeMemory_arg);
-     }
-    else
-    {
-     
-	std::cerr << "deleteTree() works only for OCTREE structure\n" << std::endl;
-    }
-}
-
-template <typename PointT> void 
-        AutotunedSearch<PointT>::
-        addPointsFromInputCloud ()
-{
-     if(spatial_loc == OCTREE)
-   {
-   _searchptr->addPointsFromInputCloud();
-     }
-    else
-    {
-     
-	std::cerr << "addPointsFromInputCloud() works only for OCTREE structure\n" << std::endl;
-    }
-}
 
 }
 #define PCL_INSTANTIATE_AutotunedSearch(T) template class PCL_EXPORTS pcl::AutotunedSearch<T>;

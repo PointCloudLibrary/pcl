@@ -82,6 +82,9 @@ const static int AUTO_TUNED             = 3;
 
     ~AutotunedSearch(){}
 
+    void
+	    evaluateSearchMethods (const PointCloudConstPtr& cloud);
+
     void initSearchDS(int spatial_locator);
     
     virtual void 
@@ -133,16 +136,11 @@ const static int AUTO_TUNED             = 3;
     virtual void
     setPrecision( int k );
 
-        virtual void
-        deleteTree ( bool freeMemory_arg = false);
-        
-       virtual void
-        addPointsFromInputCloud ();
-
 
   private:
     AutotunedSearchPtr _searchptr;
     int spatial_loc;
+   PointCloudConstPtr _cloudptr;
   };
 
 }

@@ -111,6 +111,7 @@ namespace pcl
         setInputCloud (const PointCloudConstPtr &cloud_arg)
         {
 	//  std::cout << "reached set input clodu" << std::endl; fflush(stdout);
+	  this->deleteTree();
           assert (this->leafCount_==0);
 
           if ((input_ != cloud_arg) && (this->leafCount_ == 0))
@@ -118,12 +119,15 @@ namespace pcl
             input_ = cloud_arg;
             indices_ = IndicesConstPtr();
           }
+	  this->addPointsFromInputCloud();
+	  
         }
 
         inline void
         setInputCloud (const PointCloudConstPtr &cloud_arg, const IndicesConstPtr& indices_arg)
         {
           //std::cout << "reached set input clodu" << std::endl; fflush(stdout);
+	  this->deleteTree();
           assert (this->leafCount_==0);
 
           if ((input_ != cloud_arg) && (this->leafCount_ == 0))
@@ -131,6 +135,7 @@ namespace pcl
             input_ = cloud_arg;
             indices_ = indices_arg;
           }
+	  this->addPointsFromInputCloud();
         }
 
         /** \brief Get a pointer to the vector of indices used.
@@ -187,8 +192,8 @@ namespace pcl
           return (resolution_);
         }
 
-      void
-      deleteTree (  bool freeMemory_arg = false );
+     // void
+     // deleteTree (  bool freeMemory_arg = false );
 
 
 

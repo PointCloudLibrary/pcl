@@ -101,7 +101,6 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   // create octree
  Search<PointXYZ>* octree = new  OctreePointCloud<PointXYZ>(0.1);
 
-  octree->setInputCloud (cloudIn);
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
 
@@ -163,9 +162,10 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     }
 
     // octree nearest neighbor search
-    octree->deleteTree();
+    //octree->deleteTree();
 #if 1
-    octree->addPointsFromInputCloud();
+   // octree->addPointsFromInputCloud();
+    octree->setInputCloud (cloudIn);
     octree->nearestKSearch (searchPoint, (int)K, k_indices, k_sqr_distances);
 
     ASSERT_EQ ( k_indices.size() , k_indices_bruteforce.size() );
@@ -208,7 +208,6 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 
   // create octree
   Search<PointXYZ>* octree = new OctreePointCloud<PointXYZ>(voxelResolution);
-  octree->setInputCloud (cloudIn);
 
 
   for (test_id = 0; test_id < test_runs; test_id++)
@@ -253,8 +252,9 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     float ANNdistance;
 
     // octree approx. nearest neighbor search
-    octree->deleteTree();
-    octree->addPointsFromInputCloud();
+ //  octree->deleteTree();
+ //   octree->addPointsFromInputCloud();
+    octree->setInputCloud (cloudIn);
     octree->approxNearestSearch (searchPoint,  ANNindex, ANNdistance);
 
     if (BFindex==ANNindex)
@@ -304,8 +304,6 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     Search<PointXYZ>* octree = new OctreePointCloud<PointXYZ>(0.001);
 
     // build octree
-    octree->setInputCloud (cloudIn);
-    octree->addPointsFromInputCloud();
 
     double pointDist;
     double searchRadius = 5.0 * ((double)rand () / (double)RAND_MAX);
@@ -330,6 +328,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     vector<float> cloudNWRRadius;
 
     // execute octree radius search
+    octree->setInputCloud (cloudIn);
     octree->radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius);
 
     ASSERT_EQ ( cloudNWRRadius.size() , cloudSearchBruteforce.size());

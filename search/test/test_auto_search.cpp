@@ -10,6 +10,7 @@ using namespace std;
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
+#include <pcl/io/pcd_io.h>
 
 using namespace pcl;
 
@@ -99,9 +100,24 @@ TEST (PCL, KdTree_nearestKSearch)
 
 
 
+TEST (PCL, AutoTunedSearch_Evaluate)
+{
 
+  Search<PointXYZ>* search = new AutotunedSearch<PointXYZ>(AUTO_TUNED);
 
+    pcl::PCDReader pcd;
+  pcl::PointCloud<PointXYZ>::Ptr cloudIn (new pcl::PointCloud<PointXYZ>);
 
+  unsigned int searchIdx;
+
+  if (pcd.read ("office1.pcd", *cloudIn) == -1)
+  {
+        std::cout <<"Couldn't read input cloud" << std::endl;
+    return;
+  }
+
+ search->evaluateSearchMethods(cloudIn);
+}
 
 
 int main(int argc, char** argv)

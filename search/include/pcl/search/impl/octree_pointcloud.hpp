@@ -64,6 +64,7 @@ namespace pcl
 
       }
 
+#if 0
     template<typename PointT, typename LeafT, typename OctreeT>
       void
       OctreePointCloud<PointT, LeafT, OctreeT>::deleteTree (bool freeMemory_arg)
@@ -84,13 +85,14 @@ namespace pcl
           this->poolCleanUp ();
 
 }
+
+#endif
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
       void
       OctreePointCloud<PointT, LeafT, OctreeT>::addPointsFromInputCloud ()
       {
         size_t i;
-//	std::cout << this->leafCount_ << std::endl;
         assert (this->leafCount_==0);
 
         {
@@ -122,6 +124,7 @@ namespace pcl
           }
 
         }
+
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -279,7 +282,7 @@ namespace pcl
                                                                 std::vector<float> &k_sqr_distances_arg)
       {
         this->setInputCloud (cloud_arg);
-        this->addPointsFromInputCloud ();
+     //   this->addPointsFromInputCloud ();
 
         return nearestKSearch (index_arg, k_arg, k_indices_arg, k_sqr_distances_arg);
       }
@@ -297,7 +300,6 @@ namespace pcl
 
         prioPointQueueEntry pointEntry;
         std::vector<prioPointQueueEntry> pointCandidates;
-
         assert (this->leafCount_>0);
 
         OctreeKey key;
@@ -348,7 +350,7 @@ namespace pcl
                                                                      float &sqr_distance_arg)
       {
         this->setInputCloud (cloud_arg);
-        this->addPointsFromInputCloud ();
+       // this->addPointsFromInputCloud ();
 
         return approxNearestSearch (query_index_arg, result_index_arg, sqr_distance_arg);
       }
@@ -387,7 +389,7 @@ namespace pcl
                                                               std::vector<float> &k_sqr_distances_arg, int max_nn_arg)
       {
         this->setInputCloud (cloud_arg);
-        this->addPointsFromInputCloud ();
+     //   this->addPointsFromInputCloud ();
 
         return radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
       }

@@ -74,6 +74,9 @@ namespace pcl
 
     ~Search(){}
 
+    virtual void
+            evaluateSearchMethods (const PointCloudConstPtr& cloud);
+
     
     virtual void 
     setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices);
@@ -123,12 +126,6 @@ namespace pcl
 
     virtual void
     setPrecision( int k );
-
-        virtual void
-        deleteTree ( bool freeMemory_arg = false);
-        
-       virtual void
-        addPointsFromInputCloud ();
 
 
   };

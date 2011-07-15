@@ -105,7 +105,6 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   // create octree
  Search<PointXYZ>* octree = new  AutotunedSearch<PointXYZ>(OCTREE);
 
-  octree->setInputCloud (cloudIn);
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
 
@@ -167,9 +166,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     }
 
     // octree nearest neighbor search
-    octree->deleteTree();
-#if 1
-    octree->addPointsFromInputCloud();
+  octree->setInputCloud (cloudIn);
     octree->nearestKSearch (searchPoint, (int)K, k_indices, k_sqr_distances);
 
     ASSERT_EQ ( k_indices.size() , k_indices_bruteforce.size() );
@@ -189,7 +186,6 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 
     }
 
-#endif
   }
 
 }
@@ -212,7 +208,6 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 
   // create octree
   Search<PointXYZ>* octree = new AutotunedSearch<PointXYZ>(OCTREE);
-  octree->setInputCloud (cloudIn);
 
 
   for (test_id = 0; test_id < test_runs; test_id++)
@@ -257,8 +252,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     float ANNdistance;
 
     // octree approx. nearest neighbor search
-    octree->deleteTree();
-    octree->addPointsFromInputCloud();
+  octree->setInputCloud (cloudIn);
     octree->approxNearestSearch (searchPoint,  ANNindex, ANNdistance);
 
     if (BFindex==ANNindex)

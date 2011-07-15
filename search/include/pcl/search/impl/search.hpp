@@ -119,16 +119,7 @@ Search<PointT>::setPrecision(int k)
 }
 
 template <typename PointT> void 
-       Search<PointT>::deleteTree ( bool freeMemory_arg)
-{
-
-}
-
-template <typename PointT> void 
-        Search<PointT>::
-        addPointsFromInputCloud ()
-{
-}
+            Search<PointT>::evaluateSearchMethods (const PointCloudConstPtr& cloud){}
 
 }
 #define PCL_INSTANTIATE_Search(T) template class PCL_EXPORTS pcl::Search<T>;
