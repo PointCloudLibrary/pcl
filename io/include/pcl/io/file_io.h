@@ -85,6 +85,12 @@ namespace pcl
     return atoi(nptr);
   }
 
+  template <> inline int
+  pcl_atoa<int>(const char *nptr)
+  {
+    return atoi(nptr);
+  }
+
   template <> inline unsigned int
   pcl_atoa<unsigned int>(const char *nptr)
   {

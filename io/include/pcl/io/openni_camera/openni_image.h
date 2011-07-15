@@ -122,7 +122,7 @@ unsigned Image::getFrameID () const throw ()
 
 unsigned long Image::getTimeStamp () const throw ()
 {
-  return image_md_->Timestamp ();
+  return (unsigned long) image_md_->Timestamp ();
 }
 
 const xn::ImageMetaData& Image::getMetaData () const throw ()

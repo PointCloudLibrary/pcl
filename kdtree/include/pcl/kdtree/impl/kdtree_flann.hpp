@@ -85,6 +85,15 @@ namespace pcl
       return (0);
     }
 
+    if (k_indices.size() < (size_t)k)
+    {
+        k_indices.resize(k);
+    }
+    if (k_distances.size() < (size_t)k) 
+    {
+        k_distances.resize(k);
+    }
+
     std::vector<float> tmp (dim_);
     point_representation_->vectorize ((PointT)point, tmp);
 
@@ -94,7 +103,7 @@ namespace pcl
 
     // Do mapping to original point cloud
     if (!identity_mapping_) {
-      for (size_t i = 0; i < k_indices.size (); ++i)
+      for (size_t i = 0; i < (size_t)k; ++i)
       {
         int& neighbor_index = k_indices[i];
         neighbor_index = index_mapping_[neighbor_index];
