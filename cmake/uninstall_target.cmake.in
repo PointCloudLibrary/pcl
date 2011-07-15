@@ -52,7 +52,7 @@ endif(EXISTS "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/pcl")
 # remove pcl directory in share (removes all files in it!)
 # created by CMakeLists.txt for PCLConfig.cmake
 message(STATUS "Uninstalling \"@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_DIR@\"")
-if(EXISTS "@CMAKE_INSTALL_PREFIX@/share/pcl-@PCL_VERSION@")
+if(EXISTS "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_DIR@")
     exec_program("@CMAKE_COMMAND@"
         ARGS "-E remove_directory \"@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_DIR@\""
         OUTPUT_VARIABLE rm_out RETURN_VALUE rm_retval)
