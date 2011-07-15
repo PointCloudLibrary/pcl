@@ -163,6 +163,28 @@ TEST (PCL, PointCloud)
   
   cloud.height = 1;
   EXPECT_EQ (cloud.isOrganized (), false);
+  
+  cloud.width = 10;
+  for (uint32_t i = 0; i < cloud.width*cloud.height; ++i)
+    cloud.points.push_back (PointXYZ (3*i+0,3*i+1,3*i+2));
+    
+  Eigen::MatrixXf mat_xyz1 = cloud.getMatrixXfMap();
+  EXPECT_EQ (mat_xyz1.rows (), 4);
+  EXPECT_EQ (mat_xyz1.cols (), cloud.width);
+  EXPECT_EQ (mat_xyz1 (0,0), 0);
+  EXPECT_EQ (mat_xyz1 (2,cloud.width-1), 3*cloud.width-1);
+
+  Eigen::MatrixXf mat_xyz = cloud.getMatrixXfMap(3,4,0);
+  EXPECT_EQ (mat_xyz.rows (), 3);
+  EXPECT_EQ (mat_xyz.cols (), cloud.width);
+  EXPECT_EQ (mat_xyz (0,0), 0);
+  EXPECT_EQ (mat_xyz (2,cloud.width-1), 3*cloud.width-1);
+
+  Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap(2,4,1);
+  EXPECT_EQ (mat_yz.rows (), 2);
+  EXPECT_EQ (mat_yz.cols (), cloud.width);
+  EXPECT_EQ (mat_yz (0,0), 1);
+  EXPECT_EQ (mat_yz (1,cloud.width-1), 3*cloud.width-1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
