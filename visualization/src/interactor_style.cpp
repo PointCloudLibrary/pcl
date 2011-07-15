@@ -506,6 +506,16 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
       break;
     }
 
+    case 'o': case 'O':
+    {
+      vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
+      int flag = cam->GetParallelProjection ();
+      cam->SetParallelProjection (!flag);
+ 
+      CurrentRenderer->SetActiveCamera (cam);
+      CurrentRenderer->Render ();
+      break;
+    }
     // Display a LUT actor on screen               
     case 'u': case 'U':
     {
