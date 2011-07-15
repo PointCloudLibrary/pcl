@@ -63,7 +63,6 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::Poin
     {
       index[j] = j;
     }
-    --j;
   }
   else
   {
@@ -77,13 +76,17 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::Poin
       index[j] = i;
       j++;
     }
+    if (j != cloud_in.points.size ())
+    {
+      // Resize to the correct size
+      cloud_out.points.resize (j);
+      index.resize (j);
+      cloud_out.height = 1;
+      cloud_out.width  = j;
+    }
+    // Removing bad points => dense (note: 'dense' doesn't mean 'organized')
+    cloud_out.is_dense = true;
   }
-  // Resize to the correct size
-  cloud_out.is_dense = true;      // Removing bad points => dense (note: 'dense' doesn't mean 'organized')
-  cloud_out.points.resize (j);
-  index.resize (j);
-  cloud_out.height = 1;
-  cloud_out.width  = j;
 }
 
 #define PCL_INSTANTIATE_removeNanFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNFromPointCloud<T>(const pcl::PointCloud<T>&, pcl::PointCloud<T>&, std::vector<int>&);
