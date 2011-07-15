@@ -203,7 +203,7 @@ configure_file("${PCL_SOURCE_DIR}/PCLConfigVersion.cmake.in"
 install(FILES
         "${PCL_BINARY_DIR}/PCLConfig.cmake"
         "${PCL_BINARY_DIR}/PCLConfigVersion.cmake"
-        DESTINATION share/pcl)
+        DESTINATION share/pcl-${PCL_VERSION})
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
 
