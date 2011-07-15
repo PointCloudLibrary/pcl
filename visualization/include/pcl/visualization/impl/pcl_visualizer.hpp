@@ -449,7 +449,7 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
+template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addText3D (
     const std::string &text, 
     const PointT& position, 
