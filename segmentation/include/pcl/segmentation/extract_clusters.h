@@ -298,7 +298,7 @@ namespace pcl
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
-      EuclideanClusterExtraction () : tree_ (), spatial_locator_ (0), min_pts_per_cluster_ (1), 
+      EuclideanClusterExtraction () : tree_ (), min_pts_per_cluster_ (1), 
                                       max_pts_per_cluster_ (std::numeric_limits<int>::max ())
       {};
 
@@ -339,12 +339,6 @@ namespace pcl
         */
       void extract (std::vector<PointIndices> &clusters);
 
-      /** \brief Set the spatial locator type to use.
-        * \param locator the spatial locator type
-        */
-      inline void setSpatialLocator (int locator) { spatial_locator_ = locator; }
-      /** \brief Get the spatial locator type used. */
-       inline int  getSpatialLocator ()            { return (spatial_locator_);  }
     protected:
       // Members derived from the base class
       using BasePCLBase::input_;
@@ -354,13 +348,6 @@ namespace pcl
 
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;
-
-      /** \brief Parameter for the spatial locator tree. By convention, the values represent:
-        * 0: ANN (Approximate Nearest Neigbor library) kd-tree
-        * 1: FLANN (Fast Library for Approximate Nearest Neighbors) kd-tree
-        * 2: Organized spatial dataset index
-        */
-      int spatial_locator_;
 
       /** \brief The spatial cluster tolerance as a measure in the L2 Euclidean space. */
       double cluster_tolerance_;

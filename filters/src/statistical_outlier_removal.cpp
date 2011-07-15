@@ -64,10 +64,8 @@ pcl::StatisticalOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointClou
   }
 
   // Initialize the spatial locator
-  //initTree (spatial_locator_type_, tree_, k_);
-
-  // TODO: fix this
-  tree_.reset (new pcl::KdTreeFLANN<pcl::PointXYZ>);
+  if (!tree_)
+    tree_.reset (new pcl::KdTreeFLANN<pcl::PointXYZ>);
 
   // Send the input dataset to the spatial locator
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);

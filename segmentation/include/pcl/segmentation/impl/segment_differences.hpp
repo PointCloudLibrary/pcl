@@ -40,6 +40,7 @@
 
 #include "pcl/segmentation/segment_differences.h"
 #include "pcl/common/concatenate.h"
+#include <pcl/kdtree/kdtree_flann.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -113,7 +114,9 @@ pcl::SegmentDifferences<PointT>::segment (PointCloud &output)
   }
 
   // Initialize the spatial locator
-  initTree (spatial_locator_, tree_);
+  if (!tree_)
+    tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
+
   // Send the input dataset to the spatial locator
   tree_->setInputCloud (target_);
 
