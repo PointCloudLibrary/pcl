@@ -109,11 +109,6 @@ namespace pcl
 
       }
 
-     inline void
-     setPrecision (int k)
-     {
-       precision_ = k;
-     }
 
      void check();
 
@@ -167,7 +162,7 @@ namespace pcl
         * \param k_distances the resultant !squared! point distances
         * \param max_nn maximum number of points to return
         */
-      int radiusSearchLP (const PointCloudConstPtr &cloud, int index, double radius, std::vector<int> &k_indices,
+      int approxRadiusSearch (const PointCloudConstPtr &cloud, int index, double radius, std::vector<int> &k_indices,
                          std::vector<float> &k_distances, int max_nn = INT_MAX) const;
 
 
@@ -219,7 +214,7 @@ namespace pcl
         * \param k_indices the resultant point indices (must be resized to \a k beforehand!)
         * \param k_distances \note this function does not return distances
         */
-      int nearestKSearchLP (const PointCloudConstPtr &cloud, int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances);
+      int approxNearestKSearch (const PointCloudConstPtr &cloud, int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances);
 
 
 

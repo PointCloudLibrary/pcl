@@ -52,6 +52,8 @@ const static int KDTREE_FLANN           = 0;
 const static int ORGANIZED_INDEX        = 1;
 const static int OCTREE                 = 2;
 const static int AUTO_TUNED             = 3;
+const static int NEAREST_K_SEARCH       = 4;
+const static int NEAREST_RADIUS_SEARCH       = 5;
 
   template <typename PointT>
   class AutotunedSearch: public Search<PointT>
@@ -83,7 +85,7 @@ const static int AUTO_TUNED             = 3;
     ~AutotunedSearch(){}
 
     void
-	    evaluateSearchMethods (const PointCloudConstPtr& cloud);
+	    evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type);
 
     void initSearchDS(int spatial_locator);
     
@@ -133,8 +135,6 @@ const static int AUTO_TUNED             = 3;
         virtual void
         approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg);
 
-    virtual void
-    setPrecision( int k );
 
 
   private:

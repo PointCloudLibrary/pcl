@@ -65,17 +65,9 @@ namespace pcl
                                                    std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const
     {
 
-     if(precision_ == 1)
-     {
       const PointT searchPoint = getPointByIndex (index_arg);
        
       return radiusSearch (searchPoint, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
-     }
-     else
-     {
-
-      return radiusSearchLP (input_,index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
-     }
 
     }
 
@@ -141,15 +133,8 @@ namespace pcl
                                                      std::vector<float> &k_sqr_distances_arg) 
     {
 
-      if(precision_ == 1)
-       {
       const PointT searchPoint = getPointByIndex (index_arg);
       return nearestKSearch (searchPoint, k_arg, k_indices_arg, k_sqr_distances_arg);
-       }
-      else
-      {
-      return nearestKSearchLP (input_,index_arg, k_arg, k_indices_arg, k_sqr_distances_arg); 
-      }
     }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -462,7 +447,7 @@ OrganizedNeighborSearch<PointT>::getPointByIndex (const unsigned int index_arg) 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int 
-OrganizedNeighborSearch<PointT>::radiusSearchLP (
+OrganizedNeighborSearch<PointT>::approxRadiusSearch (
     const PointCloudConstPtr &cloud, int index, double radius, std::vector<int> &k_indices, 
     std::vector<float> &k_distances, int max_nn) const
 {
@@ -532,7 +517,7 @@ OrganizedNeighborSearch<PointT>::radiusSearchLP (
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int 
-OrganizedNeighborSearch<PointT>::nearestKSearchLP (const PointCloudConstPtr &cloud, int index, int k, 
+OrganizedNeighborSearch<PointT>::approxNearestKSearch (const PointCloudConstPtr &cloud, int index, int k, 
     std::vector<int> &k_indices, std::vector<float> &k_distances)
 {
   k_indices.resize (k);

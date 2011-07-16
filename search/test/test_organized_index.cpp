@@ -256,7 +256,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search_Kinec
 
     // organized nearest neighbor search
     organizedNeighborSearch->setInputCloud (cloudIn);
-    organizedNeighborSearch->setPrecision (1);
     organizedNeighborSearch->nearestKSearch (searchIdx, (int)K, k_indices, k_sqr_distances);
  
 
@@ -406,7 +405,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     vector<float> cloudNWRRadius;
 
     organizedNeighborSearch->setInputCloud (cloudIn);
-    organizedNeighborSearch->setPrecision (1);
 
     organizedNeighborSearch->radiusSearch (randomIdx, searchRadius, cloudNWRSearch, cloudNWRRadius, INT_MAX); //,INT_MAX);
    
@@ -554,7 +552,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     vector<float> cloudNWRRadius;
     
     double check_time = getTime();
-    organizedNeighborSearch->setPrecision (0);  // For Organized Data Index
     organizedNeighborSearch->setInputCloud (cloudIn);
     organizedNeighborSearch->radiusSearch (randomIdx, searchRadius, cloudNWRSearch, cloudNWRRadius, INT_MAX); //,INT_MAX);
     
@@ -562,7 +559,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     
     radiusSearchLPTime += check_time2 - check_time;
 
-    organizedNeighborSearch->setPrecision (1);  // For Organized Neighbor Search
     organizedNeighborSearch->setInputCloud (cloudIn);
     organizedNeighborSearch->radiusSearch (randomIdx, searchRadius, cloudNWRSearch, cloudNWRRadius, INT_MAX); //,INT_MAX);
 
@@ -665,7 +661,6 @@ double sum_time = 0, sum_time2 = 0;
     cloudNWRRadius2.clear();
 
     double check_time = getTime();
-    organizedNeighborSearch->setPrecision (1);  // For Organized Data Index
     organizedNeighborSearch->setInputCloud (cloudIn);
     organizedNeighborSearch->radiusSearch (randomIdx, searchRadius, cloudNWRSearch2, cloudNWRRadius2, INT_MAX); //,INT_MAX);
 
@@ -679,9 +674,8 @@ sum_time+= check_time2 - check_time;
     cloudNWRSearch.clear();
     cloudNWRRadius.clear();
     double check_time = getTime();
-    organizedNeighborSearch->setPrecision (0);  // For Organized Data Index
     organizedNeighborSearch->setInputCloud (cloudIn);
-    organizedNeighborSearch->radiusSearch (randomIdx, searchRadius, cloudNWRSearch, cloudNWRRadius, INT_MAX); //,INT_MAX);
+    organizedNeighborSearch->approxRadiusSearch (*cloudIn, randomIdx, searchRadius, cloudNWRSearch, cloudNWRRadius, INT_MAX); //,INT_MAX);
 
     double check_time2 = getTime();
 sum_time2+= check_time2 - check_time;

@@ -75,7 +75,7 @@ namespace pcl
     ~Search(){}
 
     virtual void
-            evaluateSearchMethods (const PointCloudConstPtr& cloud);
+            evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type);
 
     
     virtual void 
@@ -124,9 +124,13 @@ namespace pcl
         virtual void
         approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg);
 
-    virtual void
-    setPrecision( int k );
+    virtual int
+    approxNearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
 
+    virtual int
+    approxRadiusSearch (const PointCloud& cloud, int index, double radius,
+                  std::vector<int>& k_indices, std::vector<float>& k_distances,
+                  int max_nn = -1);
 
   };
 

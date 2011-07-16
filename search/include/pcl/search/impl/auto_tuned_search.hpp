@@ -78,22 +78,24 @@ AutotunedSearch<PointT>::initSearchDS (int spatial_locator)
 }
 
 template <typename PointT> void 
-AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& cloudIn)
+AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& cloudIn,const int search_type)
 {
-	unsigned int no_of_neighbors = 20;
 	unsigned int searchIdx;
    while(1){
    searchIdx = rand()%(cloudIn->width * cloudIn->height);
    if(cloudIn->points[searchIdx].z <100)break;
    }
+   const PointT& searchPoint = cloudIn->points[searchIdx];
+
+
+if(search_type == NEAREST_K_SEARCH)
+{
 	
-	const PointT& searchPoint = cloudIn->points[searchIdx];
+	unsigned int no_of_neighbors = 20;
 	vector<int> k_indices;
 	k_indices.resize (no_of_neighbors);
 	vector<float> k_distances;
 	k_distances.resize (no_of_neighbors);
-
-	
 	std::cout << "\n---------------\nKDTree\n---------------\n";
 	double time1 = getTime();
 	_searchptr.reset(new KdTree<PointT>());
@@ -135,6 +137,61 @@ AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& cloudI
 
 
 	std::cout << "Time Taken: " << "KDTree: " << time2 - time1 << '\t' <<"OranizedData: "  << time3 - time2 << '\t' << "Octree: " << getTime() - time3 << '\t' << std::endl;	
+
+}
+else if(search_type == NEAREST_RADIUS_SEARCH)
+{
+
+	   double searchRadius = 1.0 * ((double)rand () / (double)RAND_MAX);
+
+        vector<int> k_indices;
+        vector<float> k_distances;
+        std::cout << "\n---------------\nKDTree\n---------------\n";
+        double time1 = getTime();
+        _searchptr.reset(new KdTree<PointT>());
+        _searchptr->setInputCloud(cloudIn);
+        _searchptr->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
+        std::cout << "Neighbors are:" << std::endl;
+
+        for(int i=0;i<20;i++){
+        std::cout << k_indices[i] << '\t';
+        }
+        std::cout << std::endl;
+        std::cout << "Number of Neighbors: " << k_indices.size() << std::endl; k_indices.clear();k_distances.clear();
+
+        std::cout << "\n---------------\nOrganizedData\n---------------\n";
+        double time2 = getTime();
+        _searchptr.reset(new OrganizedNeighborSearch<PointT>());
+        _searchptr->setInputCloud(cloudIn);
+        _searchptr->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
+        std::cout << "Neighbors are: " << std::endl;
+        for(int i=0;i<20;i++){
+        std::cout << k_indices[i] << '\t';
+        }
+        std::cout << std::endl;
+        std::cout << "Number of Neigbhors: " << k_indices.size() << std::endl; k_indices.clear();k_distances.clear();
+
+        std::cout << "\n---------------\nOctree\n---------------\n";
+        double time3 = getTime();
+        _searchptr.reset(new OctreePointCloud<PointT>(0.1f));
+        _searchptr->setInputCloud(cloudIn);
+        _searchptr->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
+        std::cout << "Neighbors are: " << std::endl;
+        for(int i=0;i<20;i++){
+        std::cout << k_indices[i] << '\t';
+        }
+        std::cout << std::endl;
+        std::cout << "Number of Neighbors: " << k_indices.size() << std::endl; k_indices.clear();k_distances.clear();
+        std::cout << std::endl;
+        std::cout << std::endl;
+
+
+        std::cout << "Time Taken: " << "KDTree: " << time2 - time1 << '\t' <<"OranizedData: "  << time3 - time2 << '\t' << "Octree: " << getTime() - time3 << '\t' << std::endl;
+
+}
+
+
+
 
 }
 
@@ -255,19 +312,6 @@ template <typename PointT> void
 };
 
 
-template <typename PointT> void 
-AutotunedSearch<PointT>::setPrecision(int k)
-{
-     if(spatial_loc == ORGANIZED_INDEX)
-   {
-    _searchptr->setPrecision(k);  // k = 1 for OrganizedDataIndex based search and k = 0 for OrganizedNeighborSearch based search
-     }
-    else
-    {
-     
-	std::cerr << "setPrecision() works only for ORGANIZED_INDEX structure\n" << std::endl;
-    }
-}
 
 
 }

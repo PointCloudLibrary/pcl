@@ -116,7 +116,8 @@ TEST (PCL, AutoTunedSearch_Evaluate)
     return;
   }
 
- search->evaluateSearchMethods(cloudIn);
+ search->evaluateSearchMethods(cloudIn, NEAREST_K_SEARCH);
+ search->evaluateSearchMethods(cloudIn, NEAREST_RADIUS_SEARCH);
 }
 
 

@@ -112,14 +112,21 @@ template <typename PointT> void
         Search<PointT>::
         approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg){};
 
+template <typename PointT> int
+Search<PointT>::approxRadiusSearch (const PointCloud& cloud, int index, double radius,
+                              std::vector<int>& k_indices, std::vector<float>& k_distances,
+                              int max_nn)
+{
+}
 
-template <typename PointT> void 
-Search<PointT>::setPrecision(int k)
+
+template <typename PointT> int
+Search<PointT>::approxNearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
 {
 }
 
 template <typename PointT> void 
-            Search<PointT>::evaluateSearchMethods (const PointCloudConstPtr& cloud){}
+            Search<PointT>::evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type){}
 
 }
 #define PCL_INSTANTIATE_Search(T) template class PCL_EXPORTS pcl::Search<T>;
