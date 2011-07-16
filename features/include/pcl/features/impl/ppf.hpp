@@ -84,7 +84,12 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
           Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                          model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
           Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
-          p.alpha_m = acos (Eigen::Vector3f::UnitY ().dot ((transform_mg * model_point).normalized ()));
+
+          Eigen::Vector3f model_point_transformed = transform_mg * model_point;
+          float angle = atan2f ( -model_point_transformed(2), model_point_transformed(1));
+          if (sin (angle) * model_point_transformed(2) < 0.0f)
+            angle *= (-1);
+          p.alpha_m = -angle;
         }
         else
         {

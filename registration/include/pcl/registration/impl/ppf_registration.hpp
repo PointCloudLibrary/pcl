@@ -41,9 +41,9 @@
 
 //#include "pcl/registration/ppf_registration.h"
 #include <pcl/features/ppf.h>
-#include <pcl/features/pfh.h>
 #include <pcl/common/transform.h>
 
+#include <pcl/features/pfh.h>
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::PPFHashMapSearch::setInputFeatureCloud (PointCloud<PPFSignature>::ConstPtr feature_cloud)
@@ -158,14 +158,12 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
       size_t scene_point_index = indices[i];
       if (scene_reference_index != scene_point_index)
       {
-        if (pcl::computePairFeatures (
-            target_->points[scene_reference_index].getVector4fMap (),
-            target_->points[scene_reference_index].getNormalVector4fMap (),
-            target_->points[scene_point_index].getVector4fMap (),
-            target_->points[scene_point_index].getNormalVector4fMap (),
-            f1, f2, f3, f4))
+        if (/*pcl::computePPFPairFeature*/pcl::computePairFeatures (target_->points[scene_reference_index].getVector4fMap (),
+                                        target_->points[scene_reference_index].getNormalVector4fMap (),
+                                        target_->points[scene_point_index].getVector4fMap (),
+                                        target_->points[scene_point_index].getNormalVector4fMap (),
+                                        f1, f2, f3, f4))
         {
-
           std::vector<std::pair<size_t, size_t> > nearest_indices;
           search_method_->nearestNeighborSearch (f1, f2, f3, f4, nearest_indices);
 
@@ -174,7 +172,18 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
           Eigen::AngleAxisf rotation_sg (acos (scene_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                          scene_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
           Eigen::Affine3f transform_sg = Eigen::Translation3f ( rotation_sg * ((-1) * scene_reference_point)) * rotation_sg;
-          float alpha_s = acos (Eigen::Vector3f::UnitY ().dot ((transform_sg * scene_point).normalized ()));
+//          float alpha_s = acos (Eigen::Vector3f::UnitY ().dot ((transform_sg * scene_point).normalized ()));
+
+          Eigen::Vector3f scene_point_transformed = transform_sg * scene_point;
+          float alpha_s = atan2f ( -scene_point_transformed(2), scene_point_transformed(1));
+          if ( alpha_s != alpha_s)
+          {
+            PCL_ERROR ("alpha_s is nan\n");
+            continue;
+          }
+          if (sin (alpha_s) * scene_point_transformed(2) < 0.0f)
+            alpha_s *= (-1);
+          alpha_s *= (-1);
 
           // Go through point pairs in the model with the same discretized feature
           for (std::vector<std::pair<size_t, size_t> >::iterator v_it = nearest_indices.begin (); v_it != nearest_indices.end (); ++ v_it)
