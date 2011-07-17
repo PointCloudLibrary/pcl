@@ -34,7 +34,7 @@
  */
 
 #include<iostream>
-
+#include<stdlib.h>
 #include "pcl/gpu/common/safe_call.hpp"
 
 void pcl::cuda::error(const char *error_string, const char *file, const int line, const char *func)
