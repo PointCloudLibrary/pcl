@@ -39,11 +39,8 @@
 #ifndef TEXTURE_MAPPING_H_
 #define TEXTURE_MAPPING_H_
 
-#include <pcl/PolygonMesh.h>
 #include <pcl/TextureMesh.h>
 #include <pcl/pcl_macros.h>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl
@@ -73,7 +70,7 @@ namespace pcl
     * \param
     */
     PCL_EXPORTS void
-       setTextureFiles( std::vector<char*> tex_files);
+       setTextureFiles( std::vector<std::string> tex_files);
 
     /** \brief set texture materials
      * \param
@@ -101,7 +98,7 @@ namespace pcl
     Eigen::Vector3f vector_field;
 
     /** \brief list of texture files */
-    std::vector<char*> tex_files;
+    std::vector<std::string> tex_files;
 
     /** \brief list of texture materials */
     TexMaterial tex_material;
@@ -116,13 +113,6 @@ namespace pcl
     */
     float
       getDistance(pcl::PointXYZ p1, pcl::PointXYZ p2);
-
-    /** \brief blend edge of 2 faces
-    * \param
-    */
-
-    int
-      blendTexture2Faces(std::vector<pcl::PointXY> pp1, std::vector<pcl::PointXY> pp2, IplImage* img_tex1, IplImage* img_tex2);
 
     /** \brief map texture to a face
     * \param

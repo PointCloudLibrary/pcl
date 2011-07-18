@@ -135,18 +135,16 @@ pcl::io::saveOBJFile (const std::string &file_name,
 
   // int idx_vt =0;
   for(int m = 0; m < nr_meshes; ++m){
+
     if( m > 0) f_idx += nr_faces[m-1];
-    int m_idx = 0;
+
+    fs << "# The material will be used for mesh " << m << std::endl;
+    fs << "usemtl " <<  tex_mesh.tex_materials[m].tex_name << std::endl;
+    fs << "# Faces" << std::endl;
+
     for (size_t i = 0; i < tex_mesh.tex_polygons[m].size(); ++i)
     {
-      if(i == tex_mesh.tex_material_idx[m][m_idx] )  {
-        // Specify the material will be used
-        fs << "# The material will be used for mesh " << m << std::endl;
-        fs << "usemtl " <<  tex_mesh.tex_materials[m][m_idx].tex_name << std::endl;
-        // Write faces with "f"
-        fs << "# Faces" << std::endl;
-        m_idx++;
-      }
+      // Write faces with "f"
       fs << "f ";
       size_t j = 0;
       for (j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size () - 1; ++j)
@@ -172,19 +170,17 @@ pcl::io::saveOBJFile (const std::string &file_name,
   m_fs << "# Wavefront material file" << std::endl;
   m_fs << "#" << std::endl;
   for(int m = 0; m < nr_meshes; ++m){
-    for(size_t i=0; i< tex_mesh.tex_materials[m].size(); ++i){
-      m_fs << "newmtl " << tex_mesh.tex_materials[m][i].tex_name << std::endl;
-      m_fs << "Ka "<< tex_mesh.tex_materials[m][i].tex_Ka.r << " " << tex_mesh.tex_materials[m][i].tex_Ka.g << " " << tex_mesh.tex_materials[m][i].tex_Ka.b << std::endl; // defines the ambient color of the material to be (r,g,b).
-      m_fs << "Kd "<< tex_mesh.tex_materials[m][i].tex_Kd.r << " " << tex_mesh.tex_materials[m][i].tex_Kd.g << " " << tex_mesh.tex_materials[m][i].tex_Kd.b << std::endl; // defines the diffuse color of the material to be (r,g,b).
-      m_fs << "Ks "<< tex_mesh.tex_materials[m][i].tex_Ks.r << " " << tex_mesh.tex_materials[m][i].tex_Ks.g << " " << tex_mesh.tex_materials[m][i].tex_Ks.b << std::endl; // defines the specular color of the material to be (r,g,b). This color shows up in highlights.
-      m_fs << "d " << tex_mesh.tex_materials[m][i].tex_d << std::endl; // defines the transparency of the material to be alpha.
-      m_fs << "Ns "<< tex_mesh.tex_materials[m][i].tex_Ns  << std::endl; // defines the shininess of the material to be s.
-      m_fs << "illum "<< tex_mesh.tex_materials[m][i].tex_illum << std::endl; // denotes the illumination model used by the material.
-                                              // illum = 1 indicates a flat material with no specular highlights, so the value of Ks is not used.
-                                              // illum = 2 denotes the presence of specular highlights, and so a specification for Ks is required.
-      m_fs << "map_Kd " << tex_mesh.tex_materials[m][i].tex_file << std::endl;
-      m_fs << "###" << std::endl;
-    }
+    m_fs << "newmtl " << tex_mesh.tex_materials[m].tex_name << std::endl;
+    m_fs << "Ka "<< tex_mesh.tex_materials[m].tex_Ka.r << " " << tex_mesh.tex_materials[m].tex_Ka.g << " " << tex_mesh.tex_materials[m].tex_Ka.b << std::endl; // defines the ambient color of the material to be (r,g,b).
+    m_fs << "Kd "<< tex_mesh.tex_materials[m].tex_Kd.r << " " << tex_mesh.tex_materials[m].tex_Kd.g << " " << tex_mesh.tex_materials[m].tex_Kd.b << std::endl; // defines the diffuse color of the material to be (r,g,b).
+    m_fs << "Ks "<< tex_mesh.tex_materials[m].tex_Ks.r << " " << tex_mesh.tex_materials[m].tex_Ks.g << " " << tex_mesh.tex_materials[m].tex_Ks.b << std::endl; // defines the specular color of the material to be (r,g,b). This color shows up in highlights.
+    m_fs << "d " << tex_mesh.tex_materials[m].tex_d << std::endl; // defines the transparency of the material to be alpha.
+    m_fs << "Ns "<< tex_mesh.tex_materials[m].tex_Ns  << std::endl; // defines the shininess of the material to be s.
+    m_fs << "illum "<< tex_mesh.tex_materials[m].tex_illum << std::endl; // denotes the illumination model used by the material.
+                                            // illum = 1 indicates a flat material with no specular highlights, so the value of Ks is not used.
+                                            // illum = 2 denotes the presence of specular highlights, and so a specification for Ks is required.
+    m_fs << "map_Kd " << tex_mesh.tex_materials[m].tex_file << std::endl;
+    m_fs << "###" << std::endl;
   }
   m_fs.close();
   return (0);

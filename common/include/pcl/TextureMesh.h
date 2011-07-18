@@ -81,8 +81,7 @@ namespace pcl
 
     std::vector<std::vector< ::pcl::Vertices> >  	tex_polygons; 		// polygon which is mapped with specific texture defined in TexMaterial
     std::vector<std::vector< ::pcl::PointXY> >  	tex_coordinates; 	// UV coordinates
-    std::vector<std::vector<TexMaterial> >		tex_materials; 		// define texture material
-    std::vector<std::vector<size_t> >			tex_material_idx; 	// define texture material
+    std::vector<TexMaterial> 		                tex_materials; 		// define texture material
 
     public:
       typedef boost::shared_ptr< ::pcl::TextureMesh> Ptr;

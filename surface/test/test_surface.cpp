@@ -374,7 +374,7 @@ TEST (PCL, ConcaveHull_LTable)
 }
 
 
-/*TEST (PCL, TextureMapping)
+TEST (PCL, TextureMapping)
 {
   // Init objects
   PolygonMesh triangles;
@@ -426,7 +426,7 @@ TEST (PCL, ConcaveHull_LTable)
   tm.setTextureMaterials(tex_material);
 
   // set 2 texture for 2 mesh
-  std::vector<char*> tex_files;
+  std::vector<std::string> tex_files;
   tex_files.push_back("tex4.jpg");
   tex_files.push_back("tex8.jpg");
 
@@ -452,10 +452,8 @@ TEST (PCL, ConcaveHull_LTable)
   tex_mesh.tex_polygons.push_back(polygon1);
   tex_mesh.tex_polygons.push_back(polygon2);
 
-
   // set texture mesh
   tm.setTextureMesh(tex_mesh);
-
 
   // mapping
   TextureMesh out_tex_mesh = tm.mapTexture2Mesh();
@@ -486,7 +484,7 @@ TEST (PCL, ConcaveHull_LTable)
   EXPECT_EQ (states[0], gp3.COMPLETED);
   EXPECT_EQ (parts[393], 5);
   EXPECT_EQ (states[393], gp3.BOUNDARY);
-}*/
+}
 
 
 /* ---[ */
