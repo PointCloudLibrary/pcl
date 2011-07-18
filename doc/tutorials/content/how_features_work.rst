@@ -1,4 +1,4 @@
-.. _features_tutorial:
+.. _how_3d_features_work:
 
 How 3D Features work in PCL
 ---------------------------
