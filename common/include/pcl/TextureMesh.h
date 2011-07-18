@@ -46,8 +46,6 @@
 #include "pcl/Vertices.h"
 #include <pcl/point_types.h>
 #include <pcl/common/common.h>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
 
 namespace pcl
 {
