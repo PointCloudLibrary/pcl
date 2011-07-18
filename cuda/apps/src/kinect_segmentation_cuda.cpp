@@ -195,6 +195,9 @@ class Segmentation
       static int enable_visualization = 1;
       static int enable_mean_shift = 0;
       static int enable_plane_fitting = 0;
+      static int meanshift_sp=8;
+      static int meanshift_sr=20;
+      static int meanshift_minsize=100;
 
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
       typename PointCloudAOS<Storage>::Ptr data;
@@ -204,7 +207,7 @@ class Segmentation
       // Compute the PointCloud on the device
       {
         ScopeTimeCPU time ("disparity smoothing");
-        d2c.compute<Storage> (depth_image, image, constant, data, true, 2, smoothing_nr_iterations, smoothing_filter_size);
+        d2c.compute<Storage> (depth_image, image, constant, data, false, 1, smoothing_nr_iterations, smoothing_filter_size);
       }
 
       boost::shared_ptr<typename Storage<float4>::type> normals;
@@ -234,7 +237,7 @@ class Segmentation
         ScopeTimeCPU time ("Mean Shift");
         if (enable_mean_shift == 1)
         {
-          cv::gpu::meanShiftSegmentation (normal_image, seg, 8, 20, 100);
+          cv::gpu::meanShiftSegmentation (normal_image, seg, meanshift_sp, meanshift_sr, meanshift_minsize);
           typename Storage<char4>::type new_colors ((char4*)seg.datastart, (char4*)seg.dataend);
           colorCloud<Storage> (data, new_colors);
         }
@@ -314,10 +317,6 @@ class Segmentation
         }
       }
 
-      
-
-
-
       {
         ScopeTimeCPU time ("Vis");
         cv::namedWindow("NormalImage", CV_WINDOW_NORMAL);
@@ -331,6 +330,9 @@ class Segmentation
         cvCreateTrackbar( "nr_neighbors", "Parameters", &nr_neighbors, 400, NULL);
         cvCreateTrackbar( "normal_viz_step", "Parameters", &normal_viz_step, 1000, NULL);
         cvCreateTrackbar( "enable_mean_shift", "Parameters", &enable_mean_shift, 1, NULL);
+        cvCreateTrackbar( "meanshift_sp", "Parameters", &meanshift_sp, 100, NULL);
+        cvCreateTrackbar( "meanshift_sr", "Parameters", &meanshift_sr, 100, NULL);
+        cvCreateTrackbar( "meanshift_minsize", "Parameters", &meanshift_minsize, 500, NULL);
         cvCreateTrackbar( "enable_plane_fitting", "Parameters", &enable_plane_fitting, 1, NULL);
         if (enable_visualization == 1)
         {
