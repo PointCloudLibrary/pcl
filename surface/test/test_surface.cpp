@@ -135,7 +135,118 @@ TEST (PCL, GreedyProjectionTriangulation)
   EXPECT_EQ (parts[393], 5);
   EXPECT_EQ (states[393], gp3.BOUNDARY);
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, TextureMapping)
+{
+  // Init objects
+  PolygonMesh triangles;
+  GreedyProjectionTriangulation<PointNormal> gp3;
 
+  // Set parameters
+  gp3.setInputCloud (cloud_with_normals);
+  gp3.setSearchMethod (tree2);
+  gp3.setSearchRadius (0.025);
+  gp3.setMu (2.5);
+  gp3.setMaximumNearestNeighbors (100);
+  gp3.setMaximumSurfaceAgle(M_PI/4); // 45 degrees
+  gp3.setMinimumAngle(M_PI/18); // 10 degrees
+  gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
+  gp3.setNormalConsistency(false);
+
+  // Reconstruct
+  gp3.reconstruct (triangles);
+
+  // test texture mapping
+  pcl::TextureMapping tm;
+
+
+  // set mesh scale control
+  tm.setF(0.01);
+
+  // set vector field
+  tm.setVectorField(1, 0, 0);
+
+  TexMaterial tex_material;
+  // default texture materials parameters
+  tex_material.tex_Ka.r = 0.2f;
+  tex_material.tex_Ka.g = 0.2f;
+  tex_material.tex_Ka.b = 0.2f;
+
+  tex_material.tex_Kd.r = 0.8f;
+  tex_material.tex_Kd.g = 0.8f;
+  tex_material.tex_Kd.b = 0.8f;
+
+  tex_material.tex_Ks.r = 1.0f;
+  tex_material.tex_Ks.g = 1.0f;
+  tex_material.tex_Ks.b = 1.0f;
+  tex_material.tex_d = 1.0f;
+  tex_material.tex_Ns = 0.0f;
+  tex_material.tex_illum = 2;
+
+
+  // set texture material paramaters
+  tm.setTextureMaterials(tex_material);
+
+  // set 2 texture for 2 mesh
+  std::vector<std::string> tex_files;
+  tex_files.push_back("tex4.jpg");
+  tex_files.push_back("tex8.jpg");
+
+  // set texture files
+  tm.setTextureFiles(tex_files);
+
+  // initialize texture mesh
+  TextureMesh tex_mesh;
+  tex_mesh.header = triangles.header;
+  tex_mesh.cloud = triangles.cloud;
+
+  // Split to 2 submeshes
+  std::vector< ::pcl::Vertices> polygon1, polygon2;
+
+  // testing:: the first 1/3 faces belong to 1st mesh
+  for(size_t i =0; i < triangles.polygons.size(); ++i){
+    if( i < triangles.polygons.size()/3)
+      polygon1.push_back(triangles.polygons[i]);
+    else
+      polygon2.push_back(triangles.polygons[i]);
+  }
+
+  tex_mesh.tex_polygons.push_back(polygon1);
+  tex_mesh.tex_polygons.push_back(polygon2);
+
+  // set texture mesh
+  tm.setTextureMesh(tex_mesh);
+
+  // mapping
+  TextureMesh out_tex_mesh = tm.mapTexture2Mesh();
+
+  saveOBJFile ("./bun0-gp3.obj", out_tex_mesh);
+
+  EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
+  EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
+  EXPECT_NEAR ((int)triangles.polygons.size(), 685, 5);
+
+  // Check triangles
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.size(), 3);
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(0), 0);
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(1), 12);
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(2), 198);
+  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.size(), 3);
+  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(0), 393);
+  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(1), 394);
+  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(2), 395);
+
+  // Additional vertex information
+  std::vector<int> parts = gp3.getPartIDs();
+  std::vector<int> states = gp3.getPointStates();
+  int nr_points = cloud_with_normals->width * cloud_with_normals->height;
+  EXPECT_EQ ((int)parts.size (), nr_points);
+  EXPECT_EQ ((int)states.size (), nr_points);
+  EXPECT_EQ (parts[0], 0);
+  EXPECT_EQ (states[0], gp3.COMPLETED);
+  EXPECT_EQ (parts[393], 5);
+  EXPECT_EQ (states[393], gp3.BOUNDARY);
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GridProjection)
 {
@@ -372,120 +483,6 @@ TEST (PCL, ConcaveHull_LTable)
 
   EXPECT_EQ (alpha_shape2.points.size (), 19);
 }
-
-
-//TEST (PCL, TextureMapping)
-//{
-//  // Init objects
-//  PolygonMesh triangles;
-//  GreedyProjectionTriangulation<PointNormal> gp3;
-//
-//  // Set parameters
-//  gp3.setInputCloud (cloud_with_normals);
-//  gp3.setSearchMethod (tree2);
-//  gp3.setSearchRadius (0.025);
-//  gp3.setMu (2.5);
-//  gp3.setMaximumNearestNeighbors (100);
-//  gp3.setMaximumSurfaceAgle(M_PI/4); // 45 degrees
-//  gp3.setMinimumAngle(M_PI/18); // 10 degrees
-//  gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
-//  gp3.setNormalConsistency(false);
-//
-//  // Reconstruct
-//  gp3.reconstruct (triangles);
-//
-//  // test texture mapping
-//  pcl::TextureMapping tm;
-//
-//
-//  // set mesh scale control
-//  tm.setF(0.01);
-//
-//  // set vector field
-//  tm.setVectorField(1, 0, 0);
-//
-//  TexMaterial tex_material;
-//  // default texture materials parameters
-//  tex_material.tex_Ka.r = 0.2f;
-//  tex_material.tex_Ka.g = 0.2f;
-//  tex_material.tex_Ka.b = 0.2f;
-//
-//  tex_material.tex_Kd.r = 0.8f;
-//  tex_material.tex_Kd.g = 0.8f;
-//  tex_material.tex_Kd.b = 0.8f;
-//
-//  tex_material.tex_Ks.r = 1.0f;
-//  tex_material.tex_Ks.g = 1.0f;
-//  tex_material.tex_Ks.b = 1.0f;
-//  tex_material.tex_d = 1.0f;
-//  tex_material.tex_Ns = 0.0f;
-//  tex_material.tex_illum = 2;
-//
-//
-//  // set texture material paramaters
-//  tm.setTextureMaterials(tex_material);
-//
-//  // set 2 texture for 2 mesh
-//  std::vector<std::string> tex_files;
-//  tex_files.push_back("tex4.jpg");
-//  tex_files.push_back("tex8.jpg");
-//
-//  // set texture files
-//  tm.setTextureFiles(tex_files);
-//
-//  // initialize texture mesh
-//  TextureMesh tex_mesh;
-//  tex_mesh.header = triangles.header;
-//  tex_mesh.cloud = triangles.cloud;
-//
-//  // Split to 2 submeshes
-//  std::vector< ::pcl::Vertices> polygon1, polygon2;
-//
-//  // testing:: the first 1/3 faces belong to 1st mesh
-//  for(size_t i =0; i < triangles.polygons.size(); ++i){
-//    if( i < triangles.polygons.size()/3)
-//      polygon1.push_back(triangles.polygons[i]);
-//    else
-//      polygon2.push_back(triangles.polygons[i]);
-//  }
-//
-//  tex_mesh.tex_polygons.push_back(polygon1);
-//  tex_mesh.tex_polygons.push_back(polygon2);
-//
-//  // set texture mesh
-//  tm.setTextureMesh(tex_mesh);
-//
-//  // mapping
-//  TextureMesh out_tex_mesh = tm.mapTexture2Mesh();
-//
-//  saveOBJFile ("./bun0-gp3.obj", out_tex_mesh);
-//
-//  EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
-//  EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
-//  EXPECT_NEAR ((int)triangles.polygons.size(), 685, 5);
-//
-//  // Check triangles
-//  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.size(), 3);
-//  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(0), 0);
-//  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(1), 12);
-//  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(2), 198);
-//  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.size(), 3);
-//  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(0), 393);
-//  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(1), 394);
-//  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(2), 395);
-//
-//  // Additional vertex information
-//  std::vector<int> parts = gp3.getPartIDs();
-//  std::vector<int> states = gp3.getPointStates();
-//  int nr_points = cloud_with_normals->width * cloud_with_normals->height;
-//  EXPECT_EQ ((int)parts.size (), nr_points);
-//  EXPECT_EQ ((int)states.size (), nr_points);
-//  EXPECT_EQ (parts[0], 0);
-//  EXPECT_EQ (states[0], gp3.COMPLETED);
-//  EXPECT_EQ (parts[393], 5);
-//  EXPECT_EQ (states[393], gp3.BOUNDARY);
-//}
-
 
 /* ---[ */
 int

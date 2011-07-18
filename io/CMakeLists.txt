@@ -59,7 +59,7 @@ if(build)
         src/vtk_io.cpp
         #				src/ply_io.cpp
         src/compression.cpp
-        #src/obj_io.cpp
+        src/obj_io.cpp
         ${OPENNI_GRABBER_SOURCES}
         )
 

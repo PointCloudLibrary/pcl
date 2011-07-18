@@ -33,7 +33,7 @@ if(build)
         src/surfel_smoothing.cpp
         src/marching_cubes.cpp
         src/marching_cubes_greedy.cpp
-      	#src/texture_mapping.cpp
+      	src/texture_mapping.cpp
         ${HULL_SOURCES}
         )
 
