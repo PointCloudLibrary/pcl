@@ -55,12 +55,14 @@ namespace pcl
     void 
     PCLVisualizerInteractor::stopLoop ()
     {
-#if defined _WIN32 || defined VTK_USE_CARBON || defined VTK_USE_CARBON
+#if defined _WIN32 || defined VTK_USE_COCOA || defined VTK_USE_CARBON
       BreakLoopFlagOn ();
       // Send a VTK_BreakWin32Loop ClientMessage event to be sure we pop out of the
       // event loop.  This "wakes up" the event loop.  Otherwise, it might sit idle
       // waiting for an event before realizing an exit was requested.
+#if defined _WIN32
       SendMessage (this->WindowId, RegisterWindowMessage (TEXT ("VTK_BreakWin32Loop")), 0, 0);
+#endif
 #else
       BreakLoopFlagOn ();
       XClientMessageEvent client;
@@ -75,7 +77,7 @@ namespace pcl
 #endif
     }
 
-#if defined _WIN32 || defined VTK_USE_CARBON || defined VTK_USE_CARBON
+#if defined _WIN32 || defined VTK_USE_COCOA || defined VTK_USE_CARBON
     //////////////////////////////////////////////////////////////////////////
     void 
     PCLVisualizerInteractor::Start ()
