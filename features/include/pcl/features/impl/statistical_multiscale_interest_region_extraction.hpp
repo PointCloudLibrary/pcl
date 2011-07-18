@@ -71,20 +71,38 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::generateCloudGraph (
   const size_t E = num_edges (cloud_graph),
       V = num_vertices (cloud_graph);
   PCL_INFO ("The graph has %lu vertices and %lu edges.\n", V, E);
-  geodesic_distances.clear ();
+  geodesic_distances_.clear ();
   for (size_t i = 0; i < V; ++i)
   {
     std::vector<float> aux (V);
-    geodesic_distances.push_back (aux);
+    geodesic_distances_.push_back (aux);
   }
-  johnson_all_pairs_shortest_paths (cloud_graph, geodesic_distances);
+  johnson_all_pairs_shortest_paths (cloud_graph, geodesic_distances_);
 
-  PCL_INFO("some distances: %f %f %f\n", geodesic_distances[1][3], geodesic_distances[100][200], geodesic_distances[400][401]);
+  PCL_INFO("some distances: %f %f %f\n", geodesic_distances_[1][3], geodesic_distances_[100][200], geodesic_distances_[400][401]);
 
 
   PCL_INFO ("Done generating the graph\n");
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::initCompute ()
+{
+  if (!PCLBase<PointT>::initCompute ())
+  {
+    PCL_ERROR ("[pcl::StatisticalMultiscaleInterestRegionExtraction::initCompute] PCLBase::initCompute () failed - no input cloud was given.\n");
+    return false;
+  }
+  if (scale_values_.empty ())
+  {
+    PCL_ERROR ("[pcl::StatisticalMultiscaleInterestRegionExtraction::initCompute] No scale values were given\n");
+    return false;
+  }
+
+  return true;
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,7 +120,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeRegionsOfInte
   PCL_INFO ("Calculating statistical information\n");
   output = typename pcl::PointCloud<PointT>::Ptr (new pcl::PointCloud<PointT> ());
 
-  for (std::vector<float>::iterator scale_it = scale_values.begin (); scale_it != scale_values.end (); ++scale_it)
+  for (std::vector<float>::iterator scale_it = scale_values_.begin (); scale_it != scale_values_.end (); ++scale_it)
   {
     float scale_squared = (*scale_it) * (*scale_it);
 
@@ -116,7 +134,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeRegionsOfInte
       std::vector<float> phi_row;
       for (size_t point_j = 0; point_j < input_->points.size (); ++point_j)
       {
-        float d_g = geodesic_distances[point_i][point_j];
+        float d_g = geodesic_distances_[point_i][point_j];
         float phi_i_j = 1.0 / sqrt(2.0*M_PI*scale_squared) * exp( (-1) * d_g*d_g / (2.0*scale_squared));
 
         point_density_i += phi_i_j;

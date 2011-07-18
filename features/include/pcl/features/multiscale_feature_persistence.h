@@ -138,12 +138,12 @@ namespace pcl
       getDistanceMetric () { return distance_metric_; }
 
 
-    protected:
+    private:
       /** \brief Checks if all the necessary input was given and the computations can successfully start */
       bool
       initCompute ();
 
-    private:
+
       /** \brief Method to compute the features for the point cloud at the given scale */
       virtual void
       computeFeatureAtScale (float &scale,

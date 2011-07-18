@@ -81,7 +81,7 @@ if(build)
         src/principal_curvatures.cpp
         src/rift.cpp
         src/rsd.cpp 
-#        src/statistical_multiscale_interest_region_extraction.cpp                               
+        src/statistical_multiscale_interest_region_extraction.cpp                               
         src/vfh.cpp
         )
 
