@@ -120,7 +120,7 @@ Advanced Usage
 Features
 --------
 
-  * :ref:`features_tutorial`
+  * :ref:`how_3d_features_work`
     
      ======  ======
      |fe_1|  Title: **How 3D features work**
