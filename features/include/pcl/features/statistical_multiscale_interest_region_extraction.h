@@ -79,7 +79,7 @@ namespace pcl
        * set of regions of interest
        */
       void
-      computeRegionsOfInterest (typename pcl::PointCloud<PointT>::Ptr &output);
+      computeRegionsOfInterest (typename pcl::PointCloud<PointT> &output);
 
       /** \brief Method for setting the scale parameters for the algorithm
        * \param scale_values vector of scales to determine the size of each scaling step
@@ -97,10 +97,22 @@ namespace pcl
       bool
       initCompute ();
 
+      void
+      geodesicFixedRadiusSearch (size_t &query_index,
+                                 float &radius,
+                                 std::vector<size_t> &result_indices);
+
+      void
+      computeF ();
+
+      void
+      extractExtrema (pcl::PointCloud<PointT> &output);
+
       using PCLBase<PointT>::initCompute;
       using PCLBase<PointT>::input_;
       std::vector<float> scale_values_;
       std::vector<std::vector<float> > geodesic_distances_;
+      std::vector<std::vector<float> > F_scales_;
   };
 }
 
