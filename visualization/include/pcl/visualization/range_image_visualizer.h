@@ -52,7 +52,7 @@ namespace pcl
       * \author Bastian Steder
       * \ingroup visualization
       */
-    class RangeImageVisualizer : public ImageWidgetWX 
+    class PCL_EXPORTS RangeImageVisualizer : public ImageWidgetWX 
     {
       public:
         // =====CONSTRUCTOR & DESTRUCTOR=====

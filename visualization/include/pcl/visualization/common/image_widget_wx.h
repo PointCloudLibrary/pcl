@@ -39,6 +39,8 @@
 #ifndef PCL_VISUALIZATION_IMAGE_WIDGET_WX_H_
 #define PCL_VISUALIZATION_IMAGE_WIDGET_WX_H_
 
+#include <pcl/pcl_macros.h>
+
 #include <wx/wx.h>
 #include <string>
 #include <vector>
@@ -58,7 +60,7 @@ namespace pcl
      * \author Bastian Steder
      * \ingroup visualization
      */
-    class ImageWidgetWX
+    class PCL_EXPORTS ImageWidgetWX
     {
       public:
         // =====CONSTRUCTOR & DESTRUCTOR=====
