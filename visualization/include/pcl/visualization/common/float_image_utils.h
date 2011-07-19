@@ -38,6 +38,8 @@
 #ifndef PCL_VISUALIZATION_FLOAT_IMAGE_UTILS_H_
 #define PCL_VISUALIZATION_FLOAT_IMAGE_UTILS_H_
 
+#include <pcl/pcl_macros.h>
+
 #include <iostream>
 #include <cmath>
 #include <limits>
@@ -50,7 +52,7 @@ namespace pcl
       * \author Bastian Steder
       * \ingroup visualization
       */
-    class FloatImageUtils
+    class PCL_EXPORTS FloatImageUtils
     {
       public:
         // =====STATIC METHODS=====
