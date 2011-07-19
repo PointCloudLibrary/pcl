@@ -47,7 +47,7 @@ namespace pcl
     * \author Bastian Steder
     * \ingroup features
     */
-  class NarfDescriptor : public Feature<PointWithRange,Narf36>
+  class PCL_EXPORTS NarfDescriptor : public Feature<PointWithRange,Narf36>
   {
     public:
       // =====TYPEDEFS=====

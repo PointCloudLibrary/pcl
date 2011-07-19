@@ -54,7 +54,7 @@ class RangeImageBorderExtractor;
   * \author Bastian Steder
   * \ingroup keypoints
   */
-class NarfKeypoint : public Keypoint<PointWithRange, int>
+class PCL_EXPORTS NarfKeypoint : public Keypoint<PointWithRange, int>
 {
   public:
     // =====TYPEDEFS=====
