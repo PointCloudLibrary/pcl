@@ -1,10 +1,44 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2011, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
+ */
+
 #ifndef PCL_GPU_CUDA_OCTREE_
 #define PCL_GPU_CUDA_OCTREE_
 
 #include "pcl/gpu/common/device_array.hpp"
-#include "cuda_runtime.h"
-
-#include <thrust/device_vector.h>
+#include "pcl/gpu/octree/octree.hpp"
 
 #include "octree_global.hpp"
 #include "tasks_global.hpp"
@@ -12,93 +46,58 @@
 namespace pcl
 {
     namespace gpu
-    {
-        void get_cc_compiled_for(int& bin, int& ptr);
-
-        class CudaOctree
+    {          
+        class OctreeImpl
         {
         public:
-            virtual ~CudaOctree() {}
+            typedef Octree::BatchQueries BatchQueries;
+            typedef Octree::BatchResult BatchResult;
+            typedef Octree::BatchResultSizes BatchResultSizes;
 
-            virtual void setCloud(const pcl::gpu::DeviceArray_<float3>& input_points) = 0 { };           
-            virtual void build() = 0 { };
-            virtual void radiusSearch(const float3& center, float radius, std::vector<int>& out) const = 0 { };
-        };
-        
-        class Octree_host : public CudaOctree
-        {
-        public:            
-            const static int max_leaf_points = 32;
-
-            struct OctreeData
-            {
-                std::vector<int> nodes;
-
-	            std::vector<int> begs;
-	            std::vector<int> ends;	
-                std::vector<int> node_codes;	
-
-                std::vector<int> indices;	
-            } octree;            
-
-            void setCloud(const pcl::gpu::DeviceArray_<float3>& input_points);           
-            void build();
-            void radiusSearch(const float3& center, float radius, std::vector<int>& out) const;            
-
-        private:
-            thrust::device_vector<float3> points;
-			
-			//auxilary
-			size_t points_num;
-			float3 minp, maxp;
-			
-			thrust::device_vector<int> indices;
-			thrust::device_vector<int> codes;
-
-			//buffers
-			thrust::device_vector<float> tmp_x;
-			thrust::device_vector<float> tmp_y;
-			thrust::device_vector<float> tmp_z;
-
-			thrust::device_vector<float3> tmp;
-
-            std::vector<float3> points_host;
-            void calcBoundingBoxOld(int level, int code, float3& res_minp, float3& res_maxp) const;
-            void getCodesInds(std::vector<int>& codes, std::vector<int>& inds);
-        };
+            static void get_gpu_arch_compiled_for(int& bin, int& ptr);
 
 
-        class Octree2 : public pcl::gpu::CudaOctree
-        {
-        public:
-            Octree2(int number_of_SMs_arg) : number_of_SMs(number_of_SMs_arg) {};
-            ~Octree2() {};
+            OctreeImpl(int number_of_SMs_arg) : number_of_SMs(number_of_SMs_arg) {};
+            ~OctreeImpl() {};
 
             void setCloud(const DeviceArray_<float3>& input_points);           
             void build();
-            void radiusSearch(const float3& center, float radius, std::vector<int>& out) const;
-            void radiusSearch2(const float3& center, float radius, std::vector<int>& out) const;
-
-            void radiusSearchBatch(const DeviceArray_<float3>& queries, float radius, DeviceArray2D_<int>& out, DeviceArray_<int>& out_sizes);
+            void radiusSearchHost(const float3& center, float radius, std::vector<int>& out, int max_nn) const;
+            
+            void radiusSearchBatch(const DeviceArray_<float3>& queries, float radius, int max_results, BatchResult& output, BatchResultSizes& out_sizes);
 
             size_t points_num;
 
-            //storage
+                        
             DeviceArray_<float3> points;
+            DeviceArray_<float3> points_sorted;
 
             DeviceArray_<int> codes;
             DeviceArray_<int> indices;
+                        
+            pcl::device::TasksGlobal tasksGlobal;
+            pcl::device::OctreeGlobalWithBox octreeGlobal;    
 
-            DeviceArray_<float3> points_sorted;
+            //storage
+            DeviceArray2D_<int> storage;            
 
-            TasksGlobalLifeTime tasksGlobal;
-            OctreeGlobalLifetime octreeGlobal;    
+            struct OctreeDataHost
+            {
+                std::vector<int> nodes;
 
-            //test
-            Octree_host::OctreeData host;
-            std::vector<float3> points_host;
+                std::vector<int> begs;
+                std::vector<int> ends;	
+                std::vector<int> node_codes;	
 
-            int downloaded;
+                std::vector<int> indices;	
+                
+                std::vector<float3> points_sorted;
+
+                int downloaded;
+
+            } host_octree;
+
+                        
             void internalDownload();
 
             int number_of_SMs;

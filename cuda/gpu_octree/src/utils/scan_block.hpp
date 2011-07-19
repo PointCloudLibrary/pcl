@@ -1,122 +1,111 @@
-#pragma once
+/*
+* Software License Agreement (BSD License)
+*
+*  Copyright (c) 2011, Willow Garage, Inc.
+*  All rights reserved.
+*
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
+*  are met:
+*
+*   * Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
+*   * Redistributions in binary form must reproduce the above
+*     copyright notice, this list of conditions and the following
+*     disclaimer in the documentation and/or other materials provided
+*     with the distribution.
+*   * Neither the name of Willow Garage, Inc. nor the names of its
+*     contributors may be used to endorse or promote products derived
+*     from this software without specific prior written permission.
+*
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+*  POSSIBILITY OF SUCH DAMAGE.
+*
+*  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
+*/
+
+#ifndef PCL_GPU_OCTREE_SCAN_BLOCK_HPP
+#define PCL_GPU_OCTREE_SCAN_BLOCK_HPP
 
 
-//template <unsigned int CTA_SIZE, typename T> __device__ void scan_block(T* array)
-//{    
-//    T val = array[threadIdx.x];
-//
-//    if (CTA_SIZE >   1) { if(threadIdx.x >=   1) { T tmp = array[threadIdx.x -   1]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (CTA_SIZE >   2) { if(threadIdx.x >=   2) { T tmp = array[threadIdx.x -   2]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (CTA_SIZE >   4) { if(threadIdx.x >=   4) { T tmp = array[threadIdx.x -   4]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (CTA_SIZE >   8) { if(threadIdx.x >=   8) { T tmp = array[threadIdx.x -   8]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (CTA_SIZE >  16) { if(threadIdx.x >=  16) { T tmp = array[threadIdx.x -  16]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (CTA_SIZE >  32) { if(threadIdx.x >=  32) { T tmp = array[threadIdx.x -  32]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (CTA_SIZE >  64) { if(threadIdx.x >=  64) { T tmp = array[threadIdx.x -  64]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (CTA_SIZE > 128) { if(threadIdx.x >= 128) { T tmp = array[threadIdx.x - 128]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (CTA_SIZE > 256) { if(threadIdx.x >= 256) { T tmp = array[threadIdx.x - 256]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }  
-//    if (CTA_SIZE > 512) { if(threadIdx.x >= 512) { T tmp = array[threadIdx.x - 512]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }  
-//}
-
-//template <typename SharedArray, typename T, typename BinaryFunction> __device__ T scan_block(SharedArray array, T val, BinaryFunction binary_op)
-//{
-//    array[threadIdx.x] = val;
-//
-//    __syncthreads();
-//
-//    // copy to temporary so val and tmp have the same memory space
-//    if (blockDim.x >   1) { if(threadIdx.x >=   1) { T tmp = array[threadIdx.x -   1]; val = binary_op(tmp, val); } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x >   2) { if(threadIdx.x >=   2) { T tmp = array[threadIdx.x -   2]; val = binary_op(tmp, val); } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x >   4) { if(threadIdx.x >=   4) { T tmp = array[threadIdx.x -   4]; val = binary_op(tmp, val); } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x >   8) { if(threadIdx.x >=   8) { T tmp = array[threadIdx.x -   8]; val = binary_op(tmp, val); } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x >  16) { if(threadIdx.x >=  16) { T tmp = array[threadIdx.x -  16]; val = binary_op(tmp, val); } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x >  32) { if(threadIdx.x >=  32) { T tmp = array[threadIdx.x -  32]; val = binary_op(tmp, val); } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x >  64) { if(threadIdx.x >=  64) { T tmp = array[threadIdx.x -  64]; val = binary_op(tmp, val); } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x > 128) { if(threadIdx.x >= 128) { T tmp = array[threadIdx.x - 128]; val = binary_op(tmp, val); } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x > 256) { if(threadIdx.x >= 256) { T tmp = array[threadIdx.x - 256]; val = binary_op(tmp, val); } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }  
-//    if (blockDim.x > 512) { if(threadIdx.x >= 512) { T tmp = array[threadIdx.x - 512]; val = binary_op(tmp, val); } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }  
-//
-//    return val;
-//}
-
-//template <typename SharedArray, typename T> __device__ T scan_block(SharedArray array, T val)
-//{
-//    array[threadIdx.x] = val;
-//
-//    __syncthreads();
-//
-//    // copy to temporary so val and tmp have the same memory space
-//    if (blockDim.x >   1) { if(threadIdx.x >=   1) { T tmp = array[threadIdx.x -   1]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x >   2) { if(threadIdx.x >=   2) { T tmp = array[threadIdx.x -   2]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x >   4) { if(threadIdx.x >=   4) { T tmp = array[threadIdx.x -   4]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x >   8) { if(threadIdx.x >=   8) { T tmp = array[threadIdx.x -   8]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x >  16) { if(threadIdx.x >=  16) { T tmp = array[threadIdx.x -  16]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x >  32) { if(threadIdx.x >=  32) { T tmp = array[threadIdx.x -  32]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x >  64) { if(threadIdx.x >=  64) { T tmp = array[threadIdx.x -  64]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x > 128) { if(threadIdx.x >= 128) { T tmp = array[threadIdx.x - 128]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }
-//    if (blockDim.x > 256) { if(threadIdx.x >= 256) { T tmp = array[threadIdx.x - 256]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }  
-//    if (blockDim.x > 512) { if(threadIdx.x >= 512) { T tmp = array[threadIdx.x - 512]; val = tmp + val; } __syncthreads(); array[threadIdx.x] = val; __syncthreads(); }  
-//
-//    return val;
-//}
-
-enum ScanKind { exclusive,  inclusive } ;
-
-template <ScanKind Kind , class T> 
-__device__ T scan_warp ( volatile T *ptr , const unsigned int idx = threadIdx.x )
+namespace pcl
 {
-    const unsigned int lane = idx & 31; // index of thread in warp (0..31)
-
-    if ( lane >=  1) ptr [idx ] = ptr [idx -  1] + ptr [idx];
-    if ( lane >=  2) ptr [idx ] = ptr [idx -  2] + ptr [idx];
-    if ( lane >=  4) ptr [idx ] = ptr [idx -  4] + ptr [idx];
-    if ( lane >=  8) ptr [idx ] = ptr [idx -  8] + ptr [idx];
-    if ( lane >= 16) ptr [idx ] = ptr [idx - 16] + ptr [idx];
-
-    if( Kind == inclusive ) 
-        return ptr [idx ];
-    else 
-        return (lane > 0) ? ptr [idx - 1] : 0;
-}
-
-template <ScanKind Kind , class T>
-__device__ T scan_block( volatile T *ptr , const unsigned int idx = threadIdx.x )
-{        
-    const unsigned int lane = idx & 31;
-    const unsigned int warpid = idx >> 5;
-
-    // Step 1: Intra - warp scan in each warp
-    T val = scan_warp <Kind>( ptr , idx );
-    
-    __syncthreads ();
-
-    // Step 2: Collect per - warp partial results
-    if( lane == 31 ) 
-        ptr [ warpid ] = ptr [idx ];    
-
-    __syncthreads ();
-
-    // Step 3: Use 1st warp to scan per - warp results
-    if( warpid == 0 ) 
+    namespace device
     {
-        //#TODO HERE IS A ERROR!!!!
-        /*if (lane == 31)
-            ptr [ warpid ] = val;*/
+        enum ScanKind { exclusive,  inclusive } ;
 
-        scan_warp<inclusive>( ptr , idx );
+        template <ScanKind Kind , class T> 
+        __device__ __forceinline__ T scan_warp ( volatile T *ptr , const unsigned int idx = threadIdx.x )
+        {
+            const unsigned int lane = idx & 31; // index of thread in warp (0..31)
+
+            if ( lane >=  1) ptr [idx ] = ptr [idx -  1] + ptr [idx];
+            if ( lane >=  2) ptr [idx ] = ptr [idx -  2] + ptr [idx];
+            if ( lane >=  4) ptr [idx ] = ptr [idx -  4] + ptr [idx];
+            if ( lane >=  8) ptr [idx ] = ptr [idx -  8] + ptr [idx];
+            if ( lane >= 16) ptr [idx ] = ptr [idx - 16] + ptr [idx];
+
+            if( Kind == inclusive ) 
+                return ptr [idx ];
+            else 
+                return (lane > 0) ? ptr [idx - 1] : 0;
+        }
+
+        template <ScanKind Kind , class T>
+        __device__ __forceinline__ T scan_block( volatile T *ptr , const unsigned int idx = threadIdx.x )
+        {        
+            const unsigned int lane = idx & 31;
+            const unsigned int warpid = idx >> 5;
+
+            // Step 1: Intra - warp scan in each warp
+            T val = scan_warp <Kind>( ptr , idx );
+
+            __syncthreads ();    
+
+            // Step 2: Collect per - warp partial results
+
+            /*  if( warpid == 0 ) 
+            if( lane == 31 ) 
+            ptr [ warpid ] = ptr [idx ];    
+
+            __syncthreads ();
+
+            if( warpid > 0 ) */
+            if( lane == 31 ) 
+                ptr [ warpid ] = ptr [idx ];    
+
+            __syncthreads ();
+
+            // Step 3: Use 1st warp to scan per - warp results
+            if( warpid == 0 ) 
+                scan_warp<inclusive>( ptr , idx );
+
+            __syncthreads ();
+
+            // Step 4: Accumulate results from Steps 1 and 3
+            if ( warpid > 0) 
+                val = ptr [warpid -1] + val;
+
+            __syncthreads ();
+
+            // Step 5: Write and return the final result
+            ptr[idx] = val;
+
+            __syncthreads ();
+
+            return val ;
+        }
     }
-
-    __syncthreads ();
-
-    // Step 4: Accumulate results from Steps 1 and 3
-    if ( warpid > 0) 
-        val = ptr [warpid -1] + val;
-
-    __syncthreads ();
-
-    // Step 5: Write and return the final result
-    ptr[idx] = val;
-
-    __syncthreads ();
-
-    return val ;
 }
+
+#endif /* PCL_GPU_OCTREE_SCAN_BLOCK_HPP */

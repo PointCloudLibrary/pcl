@@ -34,28 +34,33 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_SCOPE_TIMER_CV_H
-#define PCL_GPU_SCOPE_TIMER_CV_H
+#ifndef PCL_GPU_OCTREE_DEVMEM2D_HPP
+#define PCL_GPU_OCTREE_DEVMEM2D_HPP
 
-#include <opencv2/contrib/contrib.hpp>
-#include<iostream>
+#include "pcl/gpu/common/device_array.hpp"
 
 namespace pcl
 {
-    namespace gpu
+    namespace device
     {
-        struct ScopeTimerCV
+        template<class T>
+        struct DevMem2D_
         {
-            const char* name;
-            cv::TickMeter tm;
-            ScopeTimerCV(const char *name_) : name(name_) { tm.start(); }
-            ~ScopeTimerCV() 
-            {
-                tm.stop();
-                std::cout << "Time(" << name << ") = " << tm.getTimeMilli() << "ms" << std::endl;        
-            }
+            int cols;
+            int rows;
+
+            T* data;
+            size_t step;
+
+            DevMem2D_() : cols(0), rows(0), data(0), step(0) {}
+
+            DevMem2D_(pcl::gpu::DeviceArray2D_<T>& array) : cols(array.cols()), rows(array.rows()), data(array.ptr()), step(array.step()) {}
+
+
+            __host__ __device__ __forceinline__ T* ptr(int y = 0) { return (T*)( (char*)data + y * step); }
+            __host__ __device__ __forceinline__ const T* ptr(int y = 0) const { return (const T*)( (const char*)data + y * step); }
         };
     }
 }
 
-#endif PCL_GPU_SCOPE_TIMER_CV_H
+#endif /* PCL_GPU_OCTREE_DEVMEM2D_HPP */

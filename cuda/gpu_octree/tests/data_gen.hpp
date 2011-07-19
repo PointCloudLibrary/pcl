@@ -1,3 +1,39 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2011, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
+ */
+
 #ifndef _PCL_TEST_GPU_OCTREE_DATAGEN_
 #define _PCL_TEST_GPU_OCTREE_DATAGEN_
 
@@ -14,23 +50,19 @@ struct DataGenerator
     size_t tests_num;
 
     float cube_size;
-    float max_radius_part;        
+    float max_radius;     
+
+    float shared_radius;
 
     std::vector<PointTypeGpu> points;
     std::vector<PointTypeGpu> queries;
     std::vector<float> radiuses;
-
     std::vector< std::vector<int> > bfresutls;
 
-    DataGenerator() : data_size(871000), tests_num(10000), cube_size(1024.f), max_radius_part(15.f) 
-    {  
-        this->operator()();  
-    }
-
-    DataGenerator(size_t data_size_arg, size_t tests_num_arg, float cube_size_arg, float max_radius_part_arg) 
-        : data_size(data_size_arg), tests_num(tests_num_arg), cube_size(cube_size_arg), max_radius_part(15.f) 
-    {  
-        this->operator()();  
+    DataGenerator() : data_size(871000), tests_num(10000), cube_size(1024.f)
+    {
+        max_radius    = cube_size/15.f;
+        shared_radius = cube_size/20.f;
     }
 
     void operator()()
@@ -53,15 +85,24 @@ struct DataGenerator
             queries[i].x = (float)rng * cube_size;  
             queries[i].y = (float)rng * cube_size;  
             queries[i].z = (float)rng * cube_size;  		
-            radiuses[i]  = (float)rng * cube_size / max_radius_part;	
+            radiuses[i]  = (float)rng * max_radius;	
         };        
     }
 
-    void bruteForceSearch(float radius = -1.f)
+    void bruteForceSearch(bool log = false, float radius = -1.f)
     {        
+        if (log)
+            std::cout << "BruteForceSearch";
+
+        int value100 = std::min<int>(tests_num, 50);
+        int step = tests_num/value100;        
+
         bfresutls.resize(tests_num);
-        for(size_t i = 0; i < bfresutls.size(); ++i)
+        for(size_t i = 0; i < tests_num; ++i)
         {            
+            if (log && i % step == 0)
+                std::cout << ".";
+
             std::vector<int>& curr_res = bfresutls[i];
             curr_res.clear();
                         
@@ -82,14 +123,17 @@ struct DataGenerator
 
             std::sort(curr_res.begin(), curr_res.end());
         }
+        if (log)
+            std::cout << "Done" << std::endl;
     }
 
     void printParams() const 
-    {
-        std::cout << "Points number   = " << data_size << std::endl;
-        std::cout << "Queries number  = " << tests_num << std::endl;
-        std::cout << "Cube size       = " << cube_size << std::endl;
-        std::cout << "Max radius part = " << max_radius_part << std::endl;
+    {        
+        std::cout << "Points number  = " << data_size << std::endl;
+        std::cout << "Queries number = " << tests_num << std::endl;
+        std::cout << "Cube size      = " << cube_size << std::endl;
+        std::cout << "Max radius     = " << max_radius << std::endl;
+        std::cout << "Shared radius  = " << shared_radius << std::endl;
     }
 };
 

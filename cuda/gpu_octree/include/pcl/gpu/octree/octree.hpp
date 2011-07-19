@@ -31,13 +31,13 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
 #ifndef _PCL_GPU_OCTREE_
 #define _PCL_GPU_OCTREE_
 
 #include <vector>
-#include <boost/shared_ptr.hpp>
 
 #include "pcl/pcl_macros.h"
 #include "pcl/gpu/common/device_array.hpp"
@@ -60,16 +60,10 @@ namespace pcl
             /* Types */
 
             typedef pcl::gpu::PointXYZ PointTypeGpu;
-
             typedef DeviceArray_<PointXYZ> PointCloud;
-            typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-            typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
-
-            typedef boost::shared_ptr<Octree> Ptr;
-			typedef boost::shared_ptr<const Octree> ConstPtr;
-
+            
             typedef DeviceArray_<PointXYZ> BatchQueries;
-            typedef DeviceArray2D_<int> BatchResult;
+            typedef DeviceArray_<int> BatchResult;
             typedef DeviceArray_<int> BatchResultSizes;
 
             /*  Methods */            
@@ -78,12 +72,15 @@ namespace pcl
 			void build();
 
             void internalDownload();
-            void radiusSearchHost(const PointXYZ& center, float radius, std::vector<int>& out);
+            void radiusSearchHost(const PointXYZ& center, float radius, std::vector<int>& out, int max_nn = INT_MAX);
 
-            void radiusSearchBatchGPU(const BatchQueries& centers, float radius, BatchResult& out, BatchResultSizes& out_sizes) const;
+            void radiusSearchBatchGPU(const BatchQueries& centers, float radius, int max_results, BatchResult& out, BatchResultSizes& out_sizes) const;
         private:
             void *impl;            
         };        
+
+        
+        PCL_EXPORTS void bruteForceRadiusSearchGPU(const Octree::PointCloud& cloud, const PointXYZ& query, float radius, DeviceArray_<int>& result, DeviceArray_<int>& buffer);
     }
 }
 

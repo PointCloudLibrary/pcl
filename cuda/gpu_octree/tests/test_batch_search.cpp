@@ -34,15 +34,13 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include <numeric>
-#include <algorithm>
-#include <vector>
-
 #include <gtest/gtest.h>
+
+#include <iostream>
+#include <numeric>
 
 #pragma warning (disable: 4521)
 #include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/octree/octree.h>
 #pragma warning (default: 4521)
 
@@ -53,82 +51,89 @@
 #include "data_gen.hpp"
 
 using namespace std;
-using namespace pcl;
 using namespace pcl::gpu;
 
-//TEST(PCL_OctreeGPU, DISABLED_hostRadiusSearch)
-TEST(PCL_OctreeGPU, hostRadiusSearch)
-{
+//TEST(PCL_OctreeGPU, DISABLED_batchRadiusSearch)
+TEST(PCL_OctreeGPU, batchRadiusSearch)
+{   
     DataGenerator data;
     data.data_size = 871000;
     data.tests_num = 10000;
     data.cube_size = 1024.f;
     data.max_radius    = data.cube_size/15.f;
-    data.shared_radius = data.cube_size/20.f;
+    data.shared_radius = data.cube_size/30.f;
     data.printParams();
+
+    const int max_answers = 333;
 
     //generate
     data();
+        
+    //prepare gpu cloud
 
-    //prepare device cloud
     pcl::gpu::Octree::PointCloud cloud_device;
     cloud_device.upload(data.points);
 
-    //prepare host cloud
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);	
-    cloud_host->width = data.points.size();
-    cloud_host->height = 1;
-    cloud_host->points.resize (cloud_host->width * cloud_host->height);
-    for (size_t i = 0; i < cloud_host->points.size(); ++i)
-        cloud_host->points[i] = pcl::PointXYZ(data.points[i].x, data.points[i].y, data.points[i].z);
-
-    // build device octree
+    //gpu build 
     pcl::gpu::Octree octree_device;                
     octree_device.setCloud(cloud_device);	    
     octree_device.build();
-
-    // build host octree
-    float resolution = 25.f;
-    cout << "[!]Octree resolution: " << resolution << endl;
-    pcl::octree::OctreePointCloud<pcl::PointXYZ> octree_host(resolution);
-    octree_host.setInputCloud (cloud_host);
-    octree_host.addPointsFromInputCloud ();
-
-    //perform bruteForceSearch    
-    data.bruteForceSearch(true);    
+       
+    //upload queries
+    pcl::gpu::Octree::BatchQueries queries_device;
+    queries_device.upload(data.queries);                
     
-    vector<int> sizes;
-    sizes.reserve(data.tests_num);
-    octree_device.internalDownload();
-             
+    //prepare output buffers on device
+    pcl::gpu::Octree::BatchResult      result_device(queries_device.size() * max_answers);
+    pcl::gpu::Octree::BatchResultSizes  sizes_device(queries_device.size());
+    
+    //prepare output buffers on host
+    vector< vector<int> > host_search(data.tests_num);
     for(size_t i = 0; i < data.tests_num; ++i)
-    {
-        //search host on octree tha was built on device
-        vector<int> results_host_gpu; //host search
-        octree_device.radiusSearchHost(data.queries[i], data.radiuses[i], results_host_gpu);                        
+        host_search[i].reserve(max_answers);
+    
+    //search GPU
+    octree_device.radiusSearchBatchGPU(queries_device, data.shared_radius, max_answers, result_device, sizes_device);
+
+    //search CPU
+    octree_device.internalDownload();
+    for(size_t i = 0; i < data.tests_num; ++i)
+        octree_device.radiusSearchHost(data.queries[i], data.shared_radius, host_search[i], max_answers);
+    
+    //download results
+    vector<int> sizes;
+    sizes_device.download(sizes);
+
+    vector<int> downloaded_buffer, results_batch;    
+    result_device.download(downloaded_buffer);
         
-        //search host
-        vector<float> dists;
-        vector<int> results_host;                
-        octree_host.radiusSearch(pcl::PointXYZ(data.queries[i].x, data.queries[i].y, data.queries[i].z), data.radiuses[i], results_host, dists);                        
+    //data.bruteForceSearch();
+
+    //verify results    
+    for(size_t i = 0; i < data.tests_num; ++i)
+    {        
+        vector<int>& results_host = host_search[i];        
         
-        std::sort(results_host_gpu.begin(), results_host_gpu.end());
+        int beg = i * max_answers;
+        int end = beg + sizes[i];
+
+        results_batch.assign(downloaded_buffer.begin() + beg, downloaded_buffer.begin() + end);
+
+        std::sort(results_batch.begin(), results_batch.end());
         std::sort(results_host.begin(), results_host.end());
 
-        ASSERT_EQ ( (results_host_gpu == results_host     ), true );
-        ASSERT_EQ ( (results_host_gpu == data.bfresutls[i]), true );                
-        sizes.push_back(results_host.size());      
+        if (results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
+            results_host.resize(max_answers);
+        
+        ASSERT_EQ ( ( results_batch == results_host ), true );       
+       
+        //vector<int>& results_bf = data.bfresutls[i];
+        //ASSERT_EQ ( ( results_bf == results_batch), true );        
+        //ASSERT_EQ ( ( results_bf == results_host ), true );           
     }    
 
     float avg_size = std::accumulate(sizes.begin(), sizes.end(), 0) * (1.f/sizes.size());;
 
     cout << "avg_result_size = " << avg_size << endl;
     ASSERT_GT(avg_size, 5);    
-}
-
-
-int main (int argc, char** argv)
-{
-    testing::InitGoogleTest (&argc, argv);
-    return (RUN_ALL_TESTS ());
 }

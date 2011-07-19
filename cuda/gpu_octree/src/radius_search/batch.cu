@@ -34,28 +34,37 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_SCOPE_TIMER_CV_H
-#define PCL_GPU_SCOPE_TIMER_CV_H
+#include "cuda_interface.hpp"
+#include "radius_search/batch_radiusSearch.hpp"
 
-#include <opencv2/contrib/contrib.hpp>
-#include<iostream>
+#include "utils/funcattrib.hpp"
 
-namespace pcl
-{
-    namespace gpu
-    {
-        struct ScopeTimerCV
-        {
-            const char* name;
-            cv::TickMeter tm;
-            ScopeTimerCV(const char *name_) : name(name_) { tm.start(); }
-            ~ScopeTimerCV() 
-            {
-                tm.stop();
-                std::cout << "Time(" << name << ") = " << tm.getTimeMilli() << "ms" << std::endl;        
-            }
-        };
-    }
+
+void pcl::gpu::OctreeImpl::radiusSearchBatch(const DeviceArray_<float3>& queries, float radius, int max_results, BatchResult& output, BatchResultSizes& out_sizes)
+{        
+    pcl::device::batch_radius_search::Batch batch;
+          
+    batch.indices = indices;
+    batch.octree = octreeGlobal;
+
+    batch.queries_num = (int)queries.size();
+    batch.max_results = max_results;
+    
+    batch.output = output;                
+    batch.output_sizes = out_sizes;
+
+    batch.points  = points_sorted;
+    batch.queries = queries;
+    batch.radius  = radius;
+    
+    int block = pcl::device::batch_radius_search::KernelPolicy::CTA_SIZE;
+    int grid = (batch.queries_num + block - 1) / block;    
+
+    cudaSafeCall( cudaFuncSetCacheConfig(pcl::device::batch_radius_search::KernelB, cudaFuncCachePreferL1) );
+
+    pcl::device::batch_radius_search::KernelB<<<grid, block>>>(batch);
+    cudaSafeCall( cudaGetLastError() );
+    cudaSafeCall( cudaDeviceSynchronize() );
+
+    
 }
-
-#endif PCL_GPU_SCOPE_TIMER_CV_H

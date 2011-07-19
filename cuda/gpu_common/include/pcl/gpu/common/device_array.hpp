@@ -31,6 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
 #ifndef PCL_GPU_DEVICE_ARRAY_
@@ -121,8 +122,8 @@ namespace pcl
             enum { elem_size = sizeof(T) };
 
             DeviceArray_();
-            DeviceArray_(size_t sizeBytes);
-            DeviceArray_(T *ptr, size_t sizeBytes);
+            DeviceArray_(size_t size);
+            DeviceArray_(T *ptr, size_t size);
 
             DeviceArray_(const DeviceArray_& other);
             DeviceArray_& operator = (const DeviceArray_& other);
@@ -137,7 +138,10 @@ namespace pcl
             void download(std::vector<T>& data) const;
 
             T* ptr(); 
-            const T* ptr() const;            
+            const T* ptr() const;
+
+            template<class U> U* ptr() { return (U*)ptr(); }
+            template<class U> const U* ptr() const { return (const U*)ptr(); }
 
             operator T*();
             operator const T*() const;
@@ -202,7 +206,7 @@ template<class T> inline pcl::gpu::DeviceArray_<T>::operator const T*() const { 
 template<class T> inline size_t pcl::gpu::DeviceArray_<T>::size() const { return DeviceArray::sizeBytes() / elem_size; }
 
 template<class T> inline void pcl::gpu::DeviceArray_<T>::upload(const std::vector<T>& data) { upload(&data[0], data.size()); }
-template<class T> inline void pcl::gpu::DeviceArray_<T>::download(std::vector<T>& data) const { data.resize(size()); download(&data[0]); }
+template<class T> inline void pcl::gpu::DeviceArray_<T>::download(std::vector<T>& data) const { data.resize(size()); if (!data.empty()) download(&data[0]); }
 
 
 /////////////////////  Inline implementations of DeviceArray2D_ ////////////////////////////////////////////
@@ -227,7 +231,7 @@ template<class T> inline void pcl::gpu::DeviceArray2D_<T>::upload(const std::vec
 { upload(&data[0], cols * elem_size, data.size()/cols, cols); }
 
 template<class T> inline void pcl::gpu::DeviceArray2D_<T>::download(std::vector<T>& data, int& elem_step) const 
-{ int rows, cols; size(rows, cols); data.resize(cols * rows); download(&data[0], cols * elem_size);  }
+{ elem_step = cols(); data.resize(cols() * rows()); if (!data.empty()) download(&data[0], DeviceArray2D::colsBytes());  }
 
 template<class T> inline T* pcl::gpu::DeviceArray2D_<T>::ptr(int y) { return DeviceArray2D::ptr<T>(y); };
 template<class T> inline const T* pcl::gpu::DeviceArray2D_<T>::ptr(int y) const { return DeviceArray2D::ptr<T>(y); };

@@ -34,28 +34,56 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_SCOPE_TIMER_CV_H
-#define PCL_GPU_SCOPE_TIMER_CV_H
+#include "pcl/gpu/octree/octree.hpp"
 
-#include <opencv2/contrib/contrib.hpp>
-#include<iostream>
+#include <thrust/copy.h>
+#include <thrust/device_ptr.h>
+#include <thrust/iterator/counting_iterator.h>
+
+using namespace std;
+using namespace thrust;
 
 namespace pcl
-{
-    namespace gpu
+{    
+    namespace device
     {
-        struct ScopeTimerCV
-        {
-            const char* name;
-            cv::TickMeter tm;
-            ScopeTimerCV(const char *name_) : name(name_) { tm.start(); }
-            ~ScopeTimerCV() 
+        struct InSphere
+        {    
+            float x_, y_, z_, radius2_;
+            InSphere(float x, float y, float z, float radius) : x_(x), y_(y), z_(z), radius2_(radius * radius) {}
+
+            __device__ __host__ __forceinline__ bool operator()(const float3& point) const
             {
-                tm.stop();
-                std::cout << "Time(" << name << ") = " << tm.getTimeMilli() << "ms" << std::endl;        
+                float dx = point.x - x_;
+                float dy = point.y - y_;
+                float dz = point.z - z_;
+
+                return (dx * dx + dy * dy + dz * dz) < radius2_;
             }
         };
     }
 }
 
-#endif PCL_GPU_SCOPE_TIMER_CV_H
+//workaround of bug in Thrust
+typedef thrust::counting_iterator<int, thrust::use_default, thrust::use_default, thrust::use_default> It;
+template<> struct thrust::iterator_difference<It> { typedef int type; };
+
+void pcl::gpu::bruteForceRadiusSearchGPU(const Octree::PointCloud& cloud, const PointXYZ& query,  float radius,  DeviceArray_<int>& result,  DeviceArray_<int>& buffer)
+{   
+
+    if (buffer.size() < cloud.size())
+        buffer.create(cloud.size());
+
+    pcl::device::InSphere cond(query.x, query.y, query.z, radius);
+
+    device_ptr<const float3> cloud_ptr(cloud.ptr<float3>());
+    device_ptr<int> res_ptr(buffer.ptr());
+    
+    counting_iterator<int> first(0);
+    counting_iterator<int> last = first + cloud.size();
+    
+    //main bottle neck is a kernel call overhead
+    //work time for 871k points ~0.8ms
+    int count = thrust::copy_if(first, last, cloud_ptr, res_ptr, cond) - res_ptr;
+    result = DeviceArray_<int>(buffer.ptr(), count);
+}

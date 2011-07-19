@@ -17,10 +17,10 @@ if(build)
 	FILE(GLOB srcs_utils src/utils/*.hpp)
 	source_group("Source Files\\utils" FILES ${srcs_utils})
 
-	FILE(GLOB srcs_builder src/builder/*.hpp)
+	FILE(GLOB srcs_builder src/builder/*.hpp src/builder/*.cu)
 	source_group("Source Files\\builder" FILES ${srcs_builder})
 
-	FILE(GLOB srcs_radius_search src/radius_search/*.hpp)
+	FILE(GLOB srcs_radius_search src/radius_search/*.hpp src/radius_search/*.cu)
 	source_group("Source Files\\radius_search" FILES ${srcs_radius_search})
 
 	LIST(APPEND srcs ${srcs_utils} ${srcs_builder} ${srcs_radius_search})

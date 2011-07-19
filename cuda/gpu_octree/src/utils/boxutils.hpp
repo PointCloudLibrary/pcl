@@ -31,19 +31,20 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef _PCL_GPU_BOXUTILS_HPP_
-#define _PCL_GPU_BOXUTILS_HPP_
+#ifndef _PCL_GPU_OCTREE_BOXUTILS_HPP_
+#define _PCL_GPU_OCTREE_BOXUTILS_HPP_
 
 #include "utils/morton.hpp"
 
 namespace pcl
 {
-    namespace gpu
+    namespace device
     {
         __device__ __host__ __forceinline__
-            static inline bool checkIfNodeInsideSphere(const float3& minp, const float3& maxp, const float3& c, float r)
+        static bool checkIfNodeInsideSphere(const float3& minp, const float3& maxp, const float3& c, float r)
         {
             r *= r;
 
@@ -84,8 +85,8 @@ namespace pcl
             return true;
         }
 
-        __device__ __host__ __forceinline__ 
-            static inline bool checkIfNodeOutsideSphere(const float3& minp, const float3& maxp, const float3& c, float r)
+        __device__ __host__ __forceinline__
+        static bool checkIfNodeOutsideSphere(const float3& minp, const float3& maxp, const float3& c, float r)
         {
             if (maxp.x < (c.x - r) ||  maxp.y < (c.y - r) || maxp.z < (c.z - r))
                 return true;
@@ -97,7 +98,7 @@ namespace pcl
         }
 
         __device__ __host__ __forceinline__
-            static inline void calcBoundingBox(int level, int code, float3& res_minp, float3& res_maxp)
+        static void calcBoundingBox(int level, int code, float3& res_minp, float3& res_maxp)
         {        
             int cell_x, cell_y, cell_z;
             Morton::decomposeCode(code, cell_x, cell_y, cell_z);   
@@ -117,4 +118,4 @@ namespace pcl
     }
 }
 
-#endif _PCL_GPU_BOXUTILS_HPP_
+#endif /* _PCL_GPU_OCTREE_BOXUTILS_HPP_ */

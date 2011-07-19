@@ -34,28 +34,64 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_SCOPE_TIMER_CV_H
-#define PCL_GPU_SCOPE_TIMER_CV_H
+#include <gtest/gtest.h>
 
-#include <opencv2/contrib/contrib.hpp>
-#include<iostream>
+#include <iostream>
+#include <numeric>
 
-namespace pcl
-{
-    namespace gpu
+#pragma warning (disable: 4521)
+#include <pcl/point_cloud.h>
+#include <pcl/octree/octree.h>
+#pragma warning (default: 4521)
+
+#include "pcl/gpu/octree/octree.hpp"
+#include "pcl/gpu/common/device_array.hpp"
+#include "pcl/gpu/common/timers_opencv.hpp"
+
+#include "data_gen.hpp"
+
+using namespace std;
+using namespace pcl::gpu;
+
+
+//TEST (PCL_GPU, DISABLED_bruteForceRadiusSeachGPU)
+TEST (PCL_GPU, bruteForceRadiusSeachGPU)
+{   
+    DataGenerator data;
+    data.data_size = 871000;
+    data.tests_num = 100;
+    data.cube_size = 1024.f;
+    data.max_radius    = data.cube_size/15.f;
+    data.shared_radius = data.cube_size/20.f;
+    data.printParams();  
+
+    //generate
+    data();
+    
+    // brute force radius search
+    data.bruteForceSearch();
+
+    //prepare gpu cloud
+    pcl::gpu::Octree::PointCloud cloud_device;
+    cloud_device.upload(data.points);
+    
+    pcl::gpu::DeviceArray_<int> results_device, buffer(cloud_device.size());
+    
+    vector<int> results_host;
+    vector<size_t> sizes;
+    for(size_t i = 0; i < data.tests_num; ++i)
     {
-        struct ScopeTimerCV
-        {
-            const char* name;
-            cv::TickMeter tm;
-            ScopeTimerCV(const char *name_) : name(name_) { tm.start(); }
-            ~ScopeTimerCV() 
-            {
-                tm.stop();
-                std::cout << "Time(" << name << ") = " << tm.getTimeMilli() << "ms" << std::endl;        
-            }
-        };
-    }
-}
+        pcl::gpu::bruteForceRadiusSearchGPU(cloud_device, data.queries[i], data.radiuses[i], results_device, buffer);
 
-#endif PCL_GPU_SCOPE_TIMER_CV_H
+        results_device.download(results_host);
+        std::sort(results_host.begin(), results_host.end());
+
+        ASSERT_EQ ( (results_host == data.bfresutls[i]), true );
+        sizes.push_back(results_device.size());      
+    }
+        
+    float avg_size = std::accumulate(sizes.begin(), sizes.end(), 0) * (1.f/sizes.size());;
+
+    cout << "avg_result_size = " << avg_size << endl;
+    ASSERT_GT(avg_size, 5);    
+}

@@ -1,3 +1,39 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2011, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
+ */
+
 #pragma warning (disable : 4996 4530)
 
 #include <gtest/gtest.h>
@@ -12,6 +48,7 @@
 #include "pcl/gpu/octree/octree.hpp"
 #include "pcl/gpu/common/device_array.hpp"
 #include "pcl/gpu/common/timers_opencv.hpp"
+#include "pcl/gpu/common/safe_call.hpp"
 
 #include "data_gen.hpp"
 
@@ -20,282 +57,137 @@
 using namespace pcl::gpu;
 using namespace std;
 
-ostream& operator<<(ostream& out, pcl::gpu::PointXYZ p) { return out << "[" << p.x << ", " << p.y << ", " << p.x << "]"; }
-
-class OctreeGpuTest : public testing::Test 
+//TEST(PCL_OctreeGPU, DISABLED_perfomance)
+TEST(PCL_OctreeGPU, perfomance)
 {
-protected:
+    int device;
+    cudaSafeCall( cudaGetDevice( &device ) );    
+    cudaDeviceProp prop;
+    cudaSafeCall( cudaGetDeviceProperties( &prop, device) );
+    cout << "Device: " << prop.name << endl;
+
     DataGenerator data;
-    
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host;
+    data.data_size = 871000;
+    data.tests_num = 10000;
+    data.cube_size = 1024.f;
+    data.max_radius    = data.cube_size/15.f;
+    data.shared_radius = data.cube_size/15.f;
+    data.printParams();
+
+    //generate data
+    data();
+
+    //prepare device cloud
     pcl::gpu::Octree::PointCloud cloud_device;
+    cloud_device.upload(data.points);
 
-    float pcl_octree_resolution;
+    //prepare queries_device
+    pcl::gpu::Octree::BatchQueries queries_device;
+    queries_device.upload(data.queries);  
 
+    //prepare host cloud
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);	
+    cloud_host->width = data.points.size();
+    cloud_host->height = 1;
+    cloud_host->points.resize (cloud_host->width * cloud_host->height);
+    for (size_t i = 0; i < cloud_host->points.size(); ++i)
+        cloud_host->points[i] = pcl::PointXYZ(data.points[i].x, data.points[i].y, data.points[i].z);
+
+    float host_octree_resolution = 25.f;
+    cout << "[!] Host octree resolution: " << host_octree_resolution << endl;    
+
+    cout << "======  Build perfomance =====" << endl;
+    // build device octree
+    pcl::gpu::Octree octree_device;                
+    octree_device.setCloud(cloud_device);	    
+    {
+        ScopeTimerCV up("gpu-build");	                
+        octree_device.build();
+    }    
+    {
+        ScopeTimerCV up("gpu-download");	
+        octree_device.internalDownload();
+    }
+
+    //build host octree
+    pcl::octree::OctreePointCloud<pcl::PointXYZ> octree_host(host_octree_resolution);
+    octree_host.setInputCloud (cloud_host);
+    {
+        ScopeTimerCV t("host-build");	        
+        octree_host.addPointsFromInputCloud();
+    }
+
+    // build opencv octree
+    cv::Octree octree_opencv;
     const static int opencv_octree_points_per_leaf = 32;
-        
-    OctreeGpuTest() : pcl_octree_resolution(4.0f)
-    {                   
-        cout << "pcl::octree resolution = " << pcl_octree_resolution << endl;
-        
-        cloud_device.upload(data.points);
-
-        //create PCL cloud
-        cloud_host.reset(new pcl::PointCloud<pcl::PointXYZ>);	
-        cloud_host->width = data.points.size();
-        cloud_host->height = 1;
-        cloud_host->points.resize (cloud_host->width * cloud_host->height);
-        for (size_t i = 0; i < cloud_host->points.size(); ++i)
-        {
-            cloud_host->points[i].x = data.points[i].x;
-            cloud_host->points[i].y = data.points[i].y;
-            cloud_host->points[i].z = data.points[i].z;
-        }        
-    }       
-    
-    virtual void SetUp()  {}    // virtual void SetUp() will be called before each test is run.  
-    virtual void TearDown()  {} // virtual void TearDown() will be called after each test is run.     
-};
-
-//TEST_F(OctreeGpuTest, DISABLED_BuildPerfomance)
-TEST_F(OctreeGpuTest, BuildPerfomance)
-{
-    pcl::gpu::Octree tree;    
-    tree.setCloud(cloud_device);	
-
-    {
-        ScopeTimerCV up("gpu-build");	        
-        tree.build();	
-    }
-    {
-        ScopeTimerCV up("gpu-downloadInternal");	
-        tree.internalDownload();
-    }
-
-    //pcl-build            
-    pcl::octree::OctreePointCloud<pcl::PointXYZ> octree (pcl_octree_resolution);
-    {
-        ScopeTimerCV t("pcl-build");	
-
-        octree.setInputCloud (cloud_host);
-        octree.addPointsFromInputCloud ();
-    }
-
-    {
-        // another my (anatoly baksheev's) octree implementation contributed in 2008
-        // The goal was not to implement fast build procedure
-
-        ScopeTimerCV t("opencv-build");	
-        cv::Octree opencv_octree;
-        vector<cv::Point3f>& opencv_points = (vector<cv::Point3f>&)data.points;
-        opencv_octree.buildTree(opencv_points, 10, opencv_octree_points_per_leaf); 
+    vector<cv::Point3f>& opencv_points = (vector<cv::Point3f>&)data.points;        
+    {        
+        ScopeTimerCV t("opencv-build");	        
+        octree_opencv.buildTree(opencv_points, 10, opencv_octree_points_per_leaf); 
     }
     
-}
+    //// Radius search perfomance ///
 
-//TEST_F(OctreeGpuTest, DISABLED_RadiusSearchHostPerfomance)
-TEST_F(OctreeGpuTest, RadiusSearchHostPerfomance)
-{
-    pcl::gpu::Octree tree;    
-    tree.setCloud(cloud_device);	
-    tree.build();	
-    tree.internalDownload();
-    
-    //pcl-build            
-    pcl::octree::OctreePointCloud<pcl::PointXYZ> octree (pcl_octree_resolution);
-    octree.setInputCloud (cloud_host);
-    octree.addPointsFromInputCloud ();
+    const int max_answers = 500;
 
-    cv::Octree opencv_octree;
-    vector<cv::Point3f>& opencv_points = (vector<cv::Point3f>&)data.points;
-    opencv_octree.buildTree(opencv_points, 10, opencv_octree_points_per_leaf); 
-
-    vector<int> inds;
+    //host buffers
+    vector<int> indeces;
     vector<float> pointRadiusSquaredDistance;
     vector<cv::Point3f> opencv_results;
-    inds.reserve(10000);
-    pointRadiusSquaredDistance.reserve(10000);    
-    opencv_results.reserve(10000);  
 
-    {                
-        ScopeTimerCV up("pcl-search-all");	
-        for(size_t i = 0; i < data.tests_num; ++i)
-        {                                                
-            pcl::PointXYZ searchPoint = *(pcl::PointXYZ*)&data.queries[i];                                        
-            octree.radiusSearch (searchPoint, data.radiuses[i], inds, pointRadiusSquaredDistance);                        
-        }
-    }
+    //reserve
+    indeces.reserve(data.data_size);
+    pointRadiusSquaredDistance.reserve(data.data_size);
+    opencv_results.reserve(data.data_size);
 
-    {
-        ScopeTimerCV up("gpu-host-search-all");	
-        for(size_t i = 0; i < data.tests_num; ++i)
-            tree.radiusSearchHost(data.queries[i], data.radiuses[i], inds);                        
-    }
-
-    
-    {
-        ScopeTimerCV up("opencv-search-all");	
-        for(size_t i = 0; i < data.tests_num; ++i)
-        {
-            const cv::Point3f& center = (const cv::Point3f&)data.queries[i];
-            opencv_octree.getPointsWithinSphere( center, data.radiuses[i], opencv_results );
-        }            
-    }    
-}
-
-
-TEST_F(OctreeGpuTest, DISABLED_batch)
-{   
-    float radius = data.cube_size/20;
-
-    //my-build
-    pcl::gpu::Octree tree;    
-    tree.setCloud(cloud_device);	
-
-    {
-        ScopeTimerCV up("my-build");	        
-        tree.build();	
-    }
-    {
-        ScopeTimerCV up("my-downloadInternal");	
-        tree.internalDownload();
-    }
-    //pcl-build            
-  /*  float resolution = 4.f;
-    pcl::octree::OctreePointCloud<pcl::PointXYZ> octree (resolution);
-    {
-        ScopeTimerCV t("pcl_build");	
-
-        octree.setInputCloud (cloud);
-        octree.addPointsFromInputCloud ();
-    }
-
-    vector< vector<int> > res_my(tests_num);
-    vector< vector<int> > res_pcl(tests_num);
-    std::vector<float> pointRadiusSquaredDistance;
-    pointRadiusSquaredDistance.reserve(data.size());
-
-    
-    {
-        ScopeTimerCV up("search-pcl-all");	
-        for(size_t i = 0; i < tests_num; ++i)
-        {                                    
-            vector<int>& inds_pcl = res_pcl[i];
-            pcl::PointXYZ searchPoint = *(pcl::PointXYZ*)&queries[i];                                        
-            octree.radiusSearch (searchPoint, radius, inds_pcl, pointRadiusSquaredDistance);                        
-        }
-    }*/
-
-    pcl::gpu::Octree::BatchQueries queries_device;
-    queries_device.upload(data.queries);
-
-    const int max_points = 500;
-    pcl::gpu::Octree::BatchResult      result_device(queries_device.size(), max_points);
+    //device buffers
+    pcl::gpu::DeviceArray_<int> bruteforce_results_device, buffer(cloud_device.size());    
+    pcl::gpu::Octree::BatchResult      result_device(queries_device.size() * max_answers);
     pcl::gpu::Octree::BatchResultSizes  sizes_device(queries_device.size());
 
-    cout << "queries = " << queries_device.size() << endl;
-    cout << "sizes_device = " << sizes_device.size() << endl;
-
+    cout << "======  Separate radius for each query =====" << endl;
     {
-        ScopeTimerCV up("search-gpu-batch");	        
-        tree.radiusSearchBatchGPU(queries_device, radius, result_device, sizes_device);
-    }
-    vector<int> sizes;
-    sizes_device.download(sizes);
-
-    cout << "Size = " << sizes[0] << endl;
-
-    /*for(int i = 0; i < tests_num; ++i)
-    {
-        size_t size_pcl = res_pcl[i].size();
-        size_t size_my = (size_t)sizes[i];
-
-        if (size_pcl != size_my)
-            cout << "Different i = " << i << ", size_pcl = " << size_pcl << ", size_my = " << size_my << endl;
-    }*/
-
-    /*for(size_t i = 0; i < tests_num; ++i)
-    {
-        vector<int>& inds_my = res_my[i];
-        vector<int>& inds_pcl = res_pcl[i];
-
-        std::sort(inds_my.begin(), inds_my.end());
-        std::sort(inds_pcl.begin(), inds_pcl.end());
-
-        if (inds_my != inds_pcl)
-        {
-            cout << "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\ntest failed, i = " << i << endl;
-            return;
-        }
-        else        
-            cout << "the same = " << inds_my.size() << endl;
-    }*/
-}
-
-
-TEST_F(OctreeGpuTest, DISABLED_host)
-{               
-    //my-build
-    pcl::gpu::Octree tree;    
-    tree.setCloud(cloud_device);	
-    {
-        ScopeTimerCV up("my-build");	        
-        tree.build();	
-    }
-    {
-        ScopeTimerCV up("my-downloadInternal");	
-        tree.internalDownload();
-    }
-
-    //pcl-build            
-    float resolution = 4.f;
-    pcl::octree::OctreePointCloud<pcl::PointXYZ> octree (resolution);
-    {
-        ScopeTimerCV t("pcl_build");	
-
-        octree.setInputCloud (cloud_host);
-        octree.addPointsFromInputCloud ();
-    }
-
-    vector< vector<int> > res_my(data.tests_num);
-    vector< vector<int> > res_pcl(data.tests_num);
-    {
-        ScopeTimerCV up("search-pcl");	
+        ScopeTimerCV up("gpu-search-{host}-all");	
         for(size_t i = 0; i < data.tests_num; ++i)
-        {                        
-            vector<int>& inds_pcl = res_pcl[i];
-
-            pcl::PointXYZ searchPoint = *(pcl::PointXYZ*)&data.queries[i];
-            std::vector<float> pointRadiusSquaredDistance;
-            {
-                //ScopeTimerCV up("search-pcl");	
-                octree.radiusSearch(searchPoint, data.radiuses[i], inds_pcl, pointRadiusSquaredDistance);            
-            }            
-        }
+            octree_device.radiusSearchHost(data.queries[i], data.radiuses[i], indeces, max_answers);                        
     }
-    {
-        ScopeTimerCV up("search-my");	
+
+    {                
+        ScopeTimerCV up("host-search-all");	
         for(size_t i = 0; i < data.tests_num; ++i)
-            tree.radiusSearchHost(data.queries[i], data.radiuses[i], res_my[i]);                        
+            octree_host.radiusSearch(pcl::PointXYZ(data.queries[i].x, data.queries[i].y, data.queries[i].z), 
+                data.radiuses[i], indeces, pointRadiusSquaredDistance, max_answers);                        
+    }
+     
+    {
+        ScopeTimerCV up("gpu_bruteforce-search-all");	         
+        for(size_t i = 0; i < data.tests_num; ++i)
+            pcl::gpu::bruteForceRadiusSearchGPU(cloud_device, data.queries[i], data.radiuses[i], bruteforce_results_device, buffer);
     }
 
-    for(size_t i = 0; i < data.tests_num; ++i)
+    cout << "======  Shared radius (" << data.shared_radius << ") =====" << endl;
+    
     {
-        vector<int>& inds_my = res_my[i];
-        vector<int>& inds_pcl = res_pcl[i];
+        ScopeTimerCV up("gpu-search-batch-all");	        
+        octree_device.radiusSearchBatchGPU(queries_device, data.shared_radius, max_answers, result_device, sizes_device);                        
+    }
 
-        std::sort(inds_my.begin(), inds_my.end());
-        std::sort(inds_pcl.begin(), inds_pcl.end());
+    {
+        ScopeTimerCV up("gpu-search-{host}-all");
+        for(size_t i = 0; i < data.tests_num; ++i)
+            octree_device.radiusSearchHost(data.queries[i], data.shared_radius, indeces, max_answers);                        
+    }
 
-        if (inds_my != inds_pcl)
-        {
-            cout << "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\ntest failed, i = " << i << endl;
-            return;
-        }
-        else
-        {
-         //   cout << "the same = " << inds_my.size() << endl;
-        }
+    {                
+        ScopeTimerCV up("host-search-all");	
+        for(size_t i = 0; i < data.tests_num; ++i)
+            octree_host.radiusSearch(pcl::PointXYZ(data.queries[i].x, data.queries[i].y, data.queries[i].z), 
+                data.radiuses[i], indeces, pointRadiusSquaredDistance, max_answers);                        
+    }
+     
+    {
+        ScopeTimerCV up("gpu-bruteforce-search-all");	         
+        for(size_t i = 0; i < data.tests_num; ++i)
+            pcl::gpu::bruteForceRadiusSearchGPU(cloud_device, data.queries[i], data.shared_radius, bruteforce_results_device, buffer);
     }
 }
-
