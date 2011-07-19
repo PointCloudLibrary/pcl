@@ -45,7 +45,8 @@
 
 namespace pcl
 {
-  class TextureMapping{
+  class PCL_EXPORTS TextureMapping
+  {
   public:
 
     /** \brief Constructor. */
@@ -57,37 +58,37 @@ namespace pcl
     /** \brief set mesh scale control
     * \param
     */
-    PCL_EXPORTS void
+    void
        setF(float f);
 
     /** \brief set vector field
     * \param
     */
-    PCL_EXPORTS void
+    void
        setVectorField(float x, float y, float z);
 
     /** \brief set texture files
     * \param
     */
-    PCL_EXPORTS void
+    void
        setTextureFiles( std::vector<std::string> tex_files);
 
     /** \brief set texture materials
      * \param
      */
-    PCL_EXPORTS void
+    void
       setTextureMaterials(TexMaterial tex_material);
 
      /** \brief set texture Mesh
       * \param
       */
-    PCL_EXPORTS void
+    void
        setTextureMesh(TextureMesh tex_mesh);
 
     /** \brief map texture to a face
     * \param
     */
-    PCL_EXPORTS pcl::TextureMesh
+    pcl::TextureMesh
       mapTexture2Mesh();
 
   protected:
@@ -112,13 +113,13 @@ namespace pcl
     * \param 2 3D points
     */
     float
-      getDistance(pcl::PointXYZ p1, pcl::PointXYZ p2);
+      getDistance(const pcl::PointXYZ &p1, const pcl::PointXYZ &p2);
 
     /** \brief map texture to a face
     * \param
     */
      std::vector<pcl::PointXY>
-       mapTexture2Face(pcl::PointXYZ pp1, pcl::PointXYZ pp2, pcl::PointXYZ pp3);
+       mapTexture2Face(const pcl::PointXYZ &pp1, const pcl::PointXYZ &pp2, const pcl::PointXYZ &pp3);
 
   };
 }

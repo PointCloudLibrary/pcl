@@ -71,13 +71,13 @@ pcl::TextureMapping::setTextureMesh(TextureMesh tex_mesh){
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////
 float
-pcl::TextureMapping::getDistance(pcl::PointXYZ p1, pcl::PointXYZ p2)
+pcl::TextureMapping::getDistance(const pcl::PointXYZ &p1, const pcl::PointXYZ &p2)
 {
   return std::sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y) + (p1.z-p2.z)*(p1.z-p2.z));
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////
 std::vector<pcl::PointXY>
-pcl::TextureMapping::mapTexture2Face(pcl::PointXYZ pp1, pcl::PointXYZ pp2, pcl::PointXYZ pp3){
+pcl::TextureMapping::mapTexture2Face(const pcl::PointXYZ &pp1, const pcl::PointXYZ &pp2, const pcl::PointXYZ &pp3){
   std::vector<pcl::PointXY> tex_coordinates;
   // process for each face
   Eigen::Vector3f p1p2(pp2.x - pp1.x, pp2.y - pp1.y, pp2.z - pp1.z);
