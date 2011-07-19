@@ -36,91 +36,115 @@
  */
 /** \author Khai Tran */
 
-#ifndef TEXTURE_MAPPING_H_
-#define TEXTURE_MAPPING_H_
+#ifndef PCL_SURFACE_TEXTURE_MAPPING_H_
+#define PCL_SURFACE_TEXTURE_MAPPING_H_
 
-#include <pcl/TextureMesh.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/pcl_macros.h>
+#include "pcl/surface/reconstruction.h"
+#include "pcl/TextureMesh.h"
+#include "pcl/pcl_macros.h"
 
 namespace pcl
 {
-  class PCL_EXPORTS TextureMapping
+  /** \brief The texture mapping algorithm
+      * \author Khai Tran
+      * \ingroup surface
+      */
+  template <typename PointInT>
+  class TextureMapping
   {
-  public:
+    public:
+      /** \brief Constructor. */
+      TextureMapping(){};
 
-    /** \brief Constructor. */
-    TextureMapping();
+      /** \brief Destructor. */
+      ~TextureMapping(){};
 
-    /** \brief Destructor. */
-    ~TextureMapping();
+      /** \brief set mesh scale control
+      * \para
+      */
+      inline void
+      setF(float f){
+        f_ = f;
+      };
 
-    /** \brief set mesh scale control
-    * \param
-    */
-    void
-       setF(float f);
-
-    /** \brief set vector field
-    * \param
-    */
-    void
-       setVectorField(float x, float y, float z);
-
-    /** \brief set texture files
-    * \param
-    */
-    void
-       setTextureFiles( std::vector<std::string> tex_files);
-
-    /** \brief set texture materials
-     * \param
-     */
-    void
-      setTextureMaterials(TexMaterial tex_material);
-
-     /** \brief set texture Mesh
+      /** \brief set vector field
       * \param
       */
-    void
-       setTextureMesh(TextureMesh tex_mesh);
+      inline void
+      setVectorField(float x, float y, float z){
+        vector_field_ =  Eigen::Vector3f(x, y, z);
+        // normalize vector field
+        vector_field_ = vector_field_/std::sqrt(vector_field_.dot(vector_field_));
+      };
 
-    /** \brief map texture to a face
-    * \param
-    */
-    pcl::TextureMesh
-      mapTexture2Mesh();
+      /** \brief set texture files
+      * \param
+      */
+      inline void
+      setTextureFiles( std::vector<std::string> tex_files){
+        tex_files_ = tex_files;
+      };
 
-  protected:
-    /** \brief mesh scale control. */
-    float f;
+      /** \brief set texture materials
+       * \param
+       */
+      inline void
+      setTextureMaterials(TexMaterial tex_material){
+        tex_material_ = tex_material;
+      };
 
-    /** \brief vector field */
-    Eigen::Vector3f vector_field;
+       /** \brief set texture Mesh
+        * \param
+        */
+      inline void
+      setTextureMesh(TextureMesh tex_mesh){
+        tex_mesh_ = tex_mesh;
+      }
 
-    /** \brief list of texture files */
-    std::vector<std::string> tex_files;
+      /** \brief map texture to a  mesh synthesis algorithm
+      * \param
+      */
+      pcl::TextureMesh
+        mapTexture2Mesh();
 
-    /** \brief list of texture materials */
-    TexMaterial tex_material;
+      /** \brief map texture to a mesh UV mapping
+      * \param
+      */
+      pcl::TextureMesh
+        mapTexture2MeshUV();
 
-    /** \brief texture mesh */
-    TextureMesh tex_mesh;
+    protected:
+      /** \brief mesh scale control. */
+      float f_;
 
-    /** \brief list of functions */
+      /** \brief vector field */
+      Eigen::Vector3f vector_field_;
 
-    /** \brief get the distance of 2 3D points.
-    * \param 2 3D points
-    */
-    float
-      getDistance(const pcl::PointXYZ &p1, const pcl::PointXYZ &p2);
+      /** \brief list of texture files */
+      std::vector<std::string> tex_files_;
 
-    /** \brief map texture to a face
-    * \param
-    */
-     std::vector<pcl::PointXY>
-       mapTexture2Face(const pcl::PointXYZ &pp1, const pcl::PointXYZ &pp2, const pcl::PointXYZ &pp3);
+      /** \brief list of texture materials */
+      TexMaterial tex_material_;
 
+      /** \brief texture mesh */
+      TextureMesh tex_mesh_;
+
+      /** \brief list of functions */
+
+      /** \brief get the distance of 2 3D points.
+      * \param 2 3D points
+      */
+      float
+        getDistance(Eigen::Vector3f &p1, Eigen::Vector3f &p2);
+
+      /** \brief map texture to a face
+      * \param
+      */
+       std::vector<Eigen::Vector2f>
+         mapTexture2Face(Eigen::Vector3f  &p1, Eigen::Vector3f  &p2, Eigen::Vector3f &p3);
+
+       /** \brief Class get name method. */
+      std::string getClassName () const { return ("TextureMapping"); }
   };
 }
 

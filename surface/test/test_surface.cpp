@@ -157,8 +157,7 @@ TEST (PCL, TextureMapping)
   gp3.reconstruct (triangles);
 
   // test texture mapping
-  pcl::TextureMapping tm;
-
+  TextureMapping<PointXYZ> tm;
 
   // set mesh scale control
   tm.setF(0.01);
@@ -189,8 +188,8 @@ TEST (PCL, TextureMapping)
 
   // set 2 texture for 2 mesh
   std::vector<std::string> tex_files;
-  tex_files.push_back("tex4.jpg");
-  tex_files.push_back("tex8.jpg");
+  tex_files.push_back("stoc-left.png");
+//  tex_files.push_back("tex8.jpg");
 
   // set texture files
   tm.setTextureFiles(tex_files);
@@ -201,26 +200,26 @@ TEST (PCL, TextureMapping)
   tex_mesh.cloud = triangles.cloud;
 
   // Split to 2 submeshes
-  std::vector< ::pcl::Vertices> polygon1, polygon2;
+//  std::vector< ::pcl::Vertices> polygon1, polygon2;
+//
+//  // testing:: the first 1/3 faces belong to 1st mesh
+//  for(size_t i =0; i < triangles.polygons.size(); ++i){
+//    if( i < triangles.polygons.size()/3)
+//      polygon1.push_back(triangles.polygons[i]);
+//    else
+//      polygon2.push_back(triangles.polygons[i]);
+//  }
 
-  // testing:: the first 1/3 faces belong to 1st mesh
-  for(size_t i =0; i < triangles.polygons.size(); ++i){
-    if( i < triangles.polygons.size()/3)
-      polygon1.push_back(triangles.polygons[i]);
-    else
-      polygon2.push_back(triangles.polygons[i]);
-  }
-
-  tex_mesh.tex_polygons.push_back(polygon1);
-  tex_mesh.tex_polygons.push_back(polygon2);
+//  tex_mesh.tex_polygons.push_back(polygon1);
+  tex_mesh.tex_polygons.push_back(triangles.polygons);
 
   // set texture mesh
   tm.setTextureMesh(tex_mesh);
 
   // mapping
-  TextureMesh out_tex_mesh = tm.mapTexture2Mesh();
+  TextureMesh out_tex_mesh = tm.mapTexture2MeshUV();
 
-  saveOBJFile ("./bun0-gp3.obj", out_tex_mesh);
+  saveOBJFile ("./stoc1.obj", out_tex_mesh);
 
   EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
   EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);

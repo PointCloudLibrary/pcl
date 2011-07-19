@@ -127,7 +127,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
     fs << "# "<< tex_mesh.tex_coordinates[m].size() <<" vertex textures in submesh " << m <<  std::endl;
     for (size_t i = 0; i < tex_mesh.tex_coordinates[m].size(); ++i){
       fs << "vt ";
-      fs <<  tex_mesh.tex_coordinates[m][i].x << " " << tex_mesh.tex_coordinates[m][i].y << std::endl;
+      fs <<  tex_mesh.tex_coordinates[m][i][0] << " " << tex_mesh.tex_coordinates[m][i][1] << std::endl;
     }
   }
 

@@ -78,7 +78,7 @@ namespace pcl
     ::sensor_msgs::PointCloud2 		cloud;
 
     std::vector<std::vector< ::pcl::Vertices> >  	tex_polygons; 		// polygon which is mapped with specific texture defined in TexMaterial
-    std::vector<std::vector< ::pcl::PointXY> >  	tex_coordinates; 	// UV coordinates
+    std::vector<std::vector< Eigen::Vector2f> >  	tex_coordinates; 	// UV coordinates
     std::vector<TexMaterial> 		                tex_materials; 		// define texture material
 
     public:

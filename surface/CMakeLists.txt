@@ -58,6 +58,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/reconstruction.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy.hpp
+	include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
         ${HULL_IMPLS}
         )
 
