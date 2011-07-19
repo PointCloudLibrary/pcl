@@ -52,6 +52,7 @@
 #  undef Complex
 #  undef Bool
 #  undef Success
+#  undef Status
 #endif
 #endif
 
