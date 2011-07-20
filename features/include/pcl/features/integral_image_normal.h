@@ -1,5 +1,5 @@
 /*
- * Software License Agreement (BSD License)
+* Software License Agreement (BSD License)
  *
  *  Copyright (c) 2010, Willow Garage, Inc.
  *  All rights reserved.
@@ -130,9 +130,9 @@ namespace pcl
         *   from the covariance matrix of its local neighborhood.</b>
         *   <li><b>AVERAGE_3D_GRADIENT</b> - creates 6 integral images to compute smoothed versions of 
         *   horizontal and vertical 3D gradients and computes the normals using the cross-product between these 
-        *   two gradients.</b>
+        *   two gradients.
         *   <li><b>AVERAGE_DEPTH_CHANGE</b> -  creates only a single integral image and computes the normals 
-        *   from the average depth changes.</b>
+        *   from the average depth changes.
         * </ul>
         * \param normal_estimation_method the method used for normal estimation
         */

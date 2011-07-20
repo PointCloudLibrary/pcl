@@ -462,3 +462,4 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr ONIGrabber::convertToXYZIPointCloud(const b
 
 }
 #endif // HAVE_OPENNI
+
