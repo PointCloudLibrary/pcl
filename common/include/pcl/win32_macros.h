@@ -78,7 +78,13 @@ namespace pcl
 
 #elif __PATHCC__
 # include <cmath>
-# define pcl_isnan(x)    std::isnan(x)
+# include <stdio.h>
+template <typename T> int
+pcl_isnan (T &val)
+{
+  return (val != val);
+}
+//# define pcl_isnan(x)    std::isnan(x)
 # define pcl_isfinite(x) std::isfinite(x)
 # define pcl_isinf(x)    std::isinf(x)
 

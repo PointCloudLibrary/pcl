@@ -170,3 +170,4 @@ namespace pcl
 
 #endif // __PCL_IO_ONI_PLAYER__
 #endif // HAVE_OPENNI
+
