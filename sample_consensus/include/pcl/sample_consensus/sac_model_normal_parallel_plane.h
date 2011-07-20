@@ -77,6 +77,8 @@ namespace pcl
     * <li>a distance \a tolerance as the maximum allowed deviation from the above given distance from the origin (\ref setEpsDist).
     * </ul>
     *
+    * \note Please remember that you need to specify an angle > 0 in order to activate the axis-angle constraint!
+    *
     * \author Radu Bogdan Rusu and Jared Glover and Nico Blodow
     * \ingroup sample_consensus
     */
@@ -130,6 +132,7 @@ namespace pcl
 
       /** \brief Set the angle epsilon (delta) threshold.
         * \param ea the maximum allowed deviation from 90 degrees between the plane normal and the given axis.
+        * \note You need to specify an angle > 0 in order to activate the axis-angle constraint!
         */
       inline void 
       setEpsAngle (double ea) { eps_angle_ = ea; }
