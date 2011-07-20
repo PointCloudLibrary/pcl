@@ -43,7 +43,6 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusModelParallelPlane defines a model for 3D plane segmentation using additional
     * angular constraints. The plane must be parallel to a user-specified axis
     * (\ref setAxis) within an user-specified angle threshold (\ref setEpsAngle).
@@ -54,6 +53,8 @@ namespace pcl
     * model.setAxis (Eigen::Vector3f (0.0, 0.0, 1.0));
     * model.setEpsAngle (pcl::deg2rad (15));
     * \endcode
+    *
+    * \note Please remember that you need to specify an angle > 0 in order to activate the axis-angle constraint!
     *
     * \author Radu Bogdan Rusu, Nico Blodow
     * \ingroup sample_consensus
@@ -99,6 +100,7 @@ namespace pcl
 
       /** \brief Set the angle epsilon (delta) threshold.
         * \param ea the maximum allowed difference between the plane normal and the given axis.
+        * \note You need to specify an angle > 0 in order to activate the axis-angle constraint!
         */
       inline void 
       setEpsAngle (double ea) { eps_angle_ = ea; }
