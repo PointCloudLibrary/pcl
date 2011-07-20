@@ -60,10 +60,11 @@ namespace pcl
       ~TextureMapping(){};
 
       /** \brief set mesh scale control
-      * \para
+      * \param
       */
       inline void
-      setF(float f){
+      setF(float f)
+      {
         f_ = f;
       };
 
