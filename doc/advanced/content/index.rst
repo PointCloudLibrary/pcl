@@ -93,6 +93,11 @@ development that everyone should follow:
   If you're not sure how to best make concurrent commits to the repository to both **trunk**, and any of the existing **branches**, see this example.
 
 
+* :ref:`pcl2`
+
+  An in-depth discussion about the PCL 2.x API can be found here.
+
+
 Improving the PCL documentation
 -------------------------------
 
