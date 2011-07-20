@@ -25,6 +25,7 @@ Table of contents
   * :ref:`octree_tutorial`
   * :ref:`range_images`
   * :ref:`registration_tutorial`
+  * :ref:`sample_consensus`
   * :ref:`segmentation_tutorial`
   * :ref:`surface_tutorial`
   * :ref:`visualization_tutorial`
@@ -525,6 +526,26 @@ Registration
      ======  ======
 
      .. |re_1| image:: images/iterative_closest_point.gif
+               :height: 100px
+
+.. _sample_consensus:
+
+Sample Consensus
+----------------
+
+  * :ref:`random_sample_consensus`
+    
+     ======  ======
+     |sc_1|  Title: **How to use Random Sample Consensus model**
+
+             Author: *Gabe O'Leary*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial we learn how to use a RandomSampleConsensus with a plane model to obtain the cloud fitting to this model.
+     ======  ======
+     
+     .. |sc_1| image:: images/ransac_outliers.png
                :height: 100px
 
 .. _segmentation_tutorial:
