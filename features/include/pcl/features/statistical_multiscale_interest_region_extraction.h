@@ -40,6 +40,7 @@
 
 #include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
+#include <list>
 
 
 namespace pcl
@@ -65,6 +66,8 @@ namespace pcl
   class StatisticalMultiscaleInterestRegionExtraction : public PCLBase<PointT>
   {
     public:
+      typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
+
       /** \brief Empty constructor */
       StatisticalMultiscaleInterestRegionExtraction ()
       {};
@@ -79,7 +82,7 @@ namespace pcl
        * set of regions of interest
        */
       void
-      computeRegionsOfInterest (typename pcl::PointCloud<PointT> &output);
+      computeRegionsOfInterest (std::list<IndicesPtr>& rois);
 
       /** \brief Method for setting the scale parameters for the algorithm
        * \param scale_values vector of scales to determine the size of each scaling step
@@ -100,13 +103,13 @@ namespace pcl
       void
       geodesicFixedRadiusSearch (size_t &query_index,
                                  float &radius,
-                                 std::vector<size_t> &result_indices);
+                                 std::vector<int> &result_indices);
 
       void
       computeF ();
 
       void
-      extractExtrema (pcl::PointCloud<PointT> &output);
+      extractExtrema (std::list<IndicesPtr>& rois);
 
       using PCLBase<PointT>::initCompute;
       using PCLBase<PointT>::input_;
