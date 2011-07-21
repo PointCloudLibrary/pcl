@@ -116,7 +116,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::geodesicFixedRadiusS
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeRegionsOfInterest (std::list<pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::IndicesPtr> &rois)
+pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeRegionsOfInterest (std::list<IndicesPtr> &rois)
 {
   if (!initCompute ())
   {
@@ -194,7 +194,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema (std::list<pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::IndicesPtr> &rois)
+pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema (std::list<IndicesPtr> &rois)
 {
   std::vector<std::vector<bool> > is_min (scale_values_.size ()),
       is_max (scale_values_.size ());
