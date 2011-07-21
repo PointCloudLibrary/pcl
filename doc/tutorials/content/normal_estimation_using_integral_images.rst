@@ -46,7 +46,12 @@ editor, and place the following inside it:
       pcl::IntegralImageNormalEstimation ne;
 
       pcl::PointCloud<pcl::Normal> normals;
-      ne.compute (cloud, normals, 0.02f, 10.0f, ne.AVERAGE_DEPTH_CHANGE);
+	  
+      ne.setNormalEstimationMethod (ne.AVERAGE_DEPTH_CHANGE);
+      ne.setMaxDepthChangeFactor(0.02f);
+      ne.setNormalSmoothingSize(10.0f);
+      ne.setInputCloud(cloud);
+      ne.compute(normals);
 
       return (0);
     }
@@ -86,7 +91,11 @@ the normals:
     pcl::IntegralImageNormalEstimation ne;
 
     pcl::PointCloud<pcl::Normal> normals;
-    ne.compute (cloud, normals, 0.02f, 10.0f, ne.AVERAGE_DEPTH_CHANGE);
+    ne.setNormalEstimationMethod (ne.AVERAGE_DEPTH_CHANGE);
+    ne.setMaxDepthChangeFactor(0.02f);
+    ne.setNormalSmoothingSize(10.0f);
+    ne.setInputCloud(cloud);
+    ne.compute(normals);
 
 The following normal estimation methods are available:
 
