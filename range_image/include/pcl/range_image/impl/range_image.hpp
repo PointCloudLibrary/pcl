@@ -443,8 +443,8 @@ RangeImage::getPointConsideringWrapAround(int image_x, int image_y) const
     getImagePointFromAngles(angle_x, angle_y, image_x_f, image_y_f);
     int new_image_x, new_image_y;
     real2DToInt2D(image_x_f, image_y_f, new_image_x, new_image_y);
-    if (image_x!=new_image_x || image_y!=new_image_y)
-      std::cout << image_x<<","<<image_y << " was change to "<<new_image_x<<","<<new_image_y<<"\n";
+    //if (image_x!=new_image_x || image_y!=new_image_y)
+      //std::cout << image_x<<","<<image_y << " was change to "<<new_image_x<<","<<new_image_y<<"\n";
     if (!isInImage(new_image_x, new_image_y))
       return unobserved_point;
     image_x=new_image_x; image_y=new_image_y;
@@ -503,7 +503,9 @@ RangeImage::getPoint(float image_x, float image_y) const
 PointWithRange& 
 RangeImage::getPoint(float image_x, float image_y)
 {
-  return getPoint(image_x, image_y);
+  int x, y;
+  real2DToInt2D(image_x, image_y, x, y);
+  return getPoint(x, y);
 }
 
 /////////////////////////////////////////////////////////////////////////
