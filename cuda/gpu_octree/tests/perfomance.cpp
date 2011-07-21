@@ -39,6 +39,7 @@
 #include <gtest/gtest.h>
 
 #include<iostream>
+#include<algorithm>
 
 #pragma warning (disable: 4521)
 #include <pcl/point_cloud.h>
@@ -57,6 +58,16 @@
 using namespace pcl::gpu;
 using namespace std;
 
+
+struct PointType_to_Point3f
+{
+    cv::Point3f operator()(const DataGenerator::PointType& p) const 
+    {
+        return cv::Point3f(p.x, p.y, p.z);
+    }
+};
+
+
 //TEST(PCL_OctreeGPU, DISABLED_perfomance)
 TEST(PCL_OctreeGPU, perfomance)
 {
@@ -74,6 +85,7 @@ TEST(PCL_OctreeGPU, perfomance)
     data.shared_radius = data.cube_size/15.f;
     data.printParams();
 
+    cout << "sizeof(pcl::gpu::Octree::PointType): " << sizeof(pcl::gpu::Octree::PointType) << endl;    
     //generate data
     data();
 
@@ -94,7 +106,7 @@ TEST(PCL_OctreeGPU, perfomance)
         cloud_host->points[i] = pcl::PointXYZ(data.points[i].x, data.points[i].y, data.points[i].z);
 
     float host_octree_resolution = 25.f;
-    cout << "[!] Host octree resolution: " << host_octree_resolution << endl;    
+    cout << "[!] Host octree resolution: " << host_octree_resolution << endl << endl;    
 
     cout << "======  Build perfomance =====" << endl;
     // build device octree
@@ -119,8 +131,10 @@ TEST(PCL_OctreeGPU, perfomance)
 
     // build opencv octree
     cv::Octree octree_opencv;
-    const static int opencv_octree_points_per_leaf = 32;
-    vector<cv::Point3f>& opencv_points = (vector<cv::Point3f>&)data.points;        
+    const static int opencv_octree_points_per_leaf = 32;    
+    vector<cv::Point3f> opencv_points;
+    std::transform(data.points.begin(), data.points.end(), back_inserter(opencv_points), PointType_to_Point3f());
+        
     {        
         ScopeTimerCV t("opencv-build");	        
         octree_opencv.buildTree(opencv_points, 10, opencv_octree_points_per_leaf); 

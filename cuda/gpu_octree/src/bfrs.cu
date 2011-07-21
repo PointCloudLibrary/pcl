@@ -34,11 +34,12 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include "pcl/gpu/octree/octree.hpp"
 
 #include <thrust/copy.h>
 #include <thrust/device_ptr.h>
 #include <thrust/iterator/counting_iterator.h>
+
+#include "cuda_interface.hpp"
 
 using namespace std;
 using namespace thrust;
@@ -60,6 +61,11 @@ namespace pcl
 
                 return (dx * dx + dy * dy + dz * dz) < radius2_;
             }
+
+            __device__ __host__ __forceinline__ bool operator()(const float4& point) const
+            {
+                return (*this)(make_float3(point.x, point.y, point.z));                
+            }
         };
     }
 }
@@ -68,15 +74,17 @@ namespace pcl
 typedef thrust::counting_iterator<int, thrust::use_default, thrust::use_default, thrust::use_default> It;
 template<> struct thrust::iterator_difference<It> { typedef int type; };
 
-void pcl::gpu::bruteForceRadiusSearchGPU(const Octree::PointCloud& cloud, const PointXYZ& query,  float radius,  DeviceArray_<int>& result,  DeviceArray_<int>& buffer)
+
+void pcl::gpu::bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, const OctreeImpl::PointType& query, float radius, DeviceArray_<int>& result, DeviceArray_<int>& buffer)
 {   
+    typedef OctreeImpl::PointType PointType;
 
     if (buffer.size() < cloud.size())
         buffer.create(cloud.size());
 
     pcl::device::InSphere cond(query.x, query.y, query.z, radius);
 
-    device_ptr<const float3> cloud_ptr(cloud.ptr<float3>());
+    device_ptr<const PointType> cloud_ptr(cloud.ptr<PointType>());
     device_ptr<int> res_ptr(buffer.ptr());
     
     counting_iterator<int> first(0);

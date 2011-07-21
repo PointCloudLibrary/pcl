@@ -37,6 +37,7 @@
 #ifndef PCL_GPU_OCTREE_MORTON_HPP
 #define PCL_GPU_OCTREE_MORTON_HPP
 
+
 namespace pcl
 {
     namespace device
@@ -121,6 +122,10 @@ namespace pcl
                 int cellz = min((int)floor(depth_mult * (p.z - minp_.z)/dims_.z), depth_mult - 1); 
 
                 return Morton::createCode(cellx, celly, cellz);
+            }	
+             __device__ __host__ __forceinline__ Morton::code_t operator()(const float4& p) const
+            {			
+                return (*this)(make_float3(p.x, p.y, p.z));                
             }	
         };
 

@@ -34,7 +34,6 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include "pcl/gpu/octree/octree.hpp"
 #include "pcl/gpu/common/timers_cuda.hpp"
 #include "pcl/gpu/common/safe_call.hpp"
 
@@ -68,9 +67,8 @@ void  pcl::gpu::OctreeImpl::get_gpu_arch_compiled_for(int& bin, int& ptx)
     ptx = attrs.ptxVersion;
 }
 
-void pcl::gpu::OctreeImpl::setCloud(const pcl::gpu::DeviceArray_<float3>& input_points)
+void pcl::gpu::OctreeImpl::setCloud(const PointCloud& input_points)
 {
-    points_num = input_points.size();
     points = input_points;
 }
 
@@ -128,9 +126,11 @@ struct OctreeIteratorHost
     }        
 };
 
-void pcl::gpu::OctreeImpl::radiusSearchHost(const float3& center, float radius, vector<int>& out, int max_nn) const
+void pcl::gpu::OctreeImpl::radiusSearchHost(const PointType& query, float radius, vector<int>& out, int max_nn) const
 {            
     out.clear();  
+
+    float3 center = make_float3(query.x, query.y, query.z);
 
     OctreeIteratorHost iterator;
 
@@ -179,11 +179,13 @@ void pcl::gpu::OctreeImpl::radiusSearchHost(const float3& center, float radius, 
             for(int j = beg; j < end; ++j)
             {
                 int index = host_octree.indices[j];
-                const float3& point = host_octree.points_sorted[j];
+                const float& point_x = host_octree.points_sorted[j                                     ];
+                const float& point_y = host_octree.points_sorted[j + host_octree.points_sorted_step    ];
+                const float& point_z = host_octree.points_sorted[j + host_octree.points_sorted_step * 2];
 
-                float dx = (point.x - center.x);
-                float dy = (point.y - center.y);
-                float dz = (point.z - center.z);
+                float dx = (point_x - center.x);
+                float dy = (point_y - center.y);
+                float dz = (point_z - center.z);
 
                 float dist2 = dx * dx + dy * dy + dz * dz;
 
@@ -212,73 +214,8 @@ void pcl::gpu::OctreeImpl::internalDownload()
     DeviceArray_<int>(octreeGlobal.nodes, number).download(host_octree.nodes);    
     DeviceArray_<int>(octreeGlobal.codes, number).download(host_octree.node_codes); 
 
-    points_sorted.download(host_octree.points_sorted);    
+    points_sorted.download(host_octree.points_sorted, host_octree.points_sorted_step);    
     indices.download(host_octree.indices);    
 
     host_octree.downloaded = true;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////// Octree Host Interface implementation ////////////////////////////////
-
-pcl::gpu::Octree::Octree() : impl(0)
-{
-    int device;
-    cudaSafeCall( cudaGetDevice( &device ) );
-    
-    cudaDeviceProp prop;
-    cudaSafeCall( cudaGetDeviceProperties( &prop, device) );
-
-    if (prop.major < 2)
-        pcl::cuda::error("This code requires devices with compute capabiliti >= 2.0", __FILE__, __LINE__);
-
-    int bin, ptx;
-    OctreeImpl::get_gpu_arch_compiled_for(bin, ptx);
-
-    if (bin < 20 && ptx < 20)
-        pcl::cuda::error("This must be compiled for compute capability >= 2.0", __FILE__, __LINE__);    
-
-    impl = new pcl::gpu::OctreeImpl(prop.multiProcessorCount);        
-}
-
-pcl::gpu::Octree::~Octree() 
-{
-    if (impl)
-        delete static_cast<OctreeImpl*>(impl);
-}
-
-void pcl::gpu::Octree::setCloud(const PointCloud& cloud_arg)
-{
-    const DeviceArray_<float3>& cloud = (const DeviceArray_<float3>&)cloud_arg;
-    static_cast<OctreeImpl*>(impl)->setCloud(cloud);
-}
-
-void pcl::gpu::Octree::build()
-{
-    static_cast<OctreeImpl*>(impl)->build();    
-}
-
-void pcl::gpu::Octree::internalDownload()
-{
-    static_cast<OctreeImpl*>(impl)->internalDownload();
-}
-
-void pcl::gpu::Octree::radiusSearchHost(const PointXYZ& center, float radius, std::vector<int>& out, int max_nn)
-{
-    if (!static_cast<OctreeImpl*>(impl)->host_octree.downloaded)
-        internalDownload();
-
-    float3 c = *(float3*)(&center.x);
-    static_cast<OctreeImpl*>(impl)->radiusSearchHost(c, radius, out, max_nn);
-}
-
-
-void pcl::gpu::Octree::radiusSearchBatchGPU(const BatchQueries& queries, float radius, int max_results, BatchResult& output, BatchResultSizes& out_sizes) const
-{
-    out_sizes.create(queries.size());
-    output.create(queries.size() * max_results);
-
-    const DeviceArray_<float3>& q = (const DeviceArray_<float3>&)queries;
-    static_cast<OctreeImpl*>(impl)->radiusSearchBatch(q, radius, max_results, output, out_sizes);
 }

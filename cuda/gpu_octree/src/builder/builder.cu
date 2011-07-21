@@ -54,26 +54,37 @@ namespace pcl
 {
     namespace device
     {
+        template<typename PointType>
         struct SelectMinPoint
         {
-	        __host__ __device__ __forceinline__ float3 operator()(const float3& e1, const float3& e2) const
+	        __host__ __device__ __forceinline__ PointType operator()(const PointType& e1, const PointType& e2) const
 	        {
-		        return make_float3(fmin(e1.x, e2.x), fmin(e1.y, e2.y), fmin(e1.z, e2.z));	
+                PointType result;
+                result.x = fmin(e1.x, e2.x);
+                result.y = fmin(e1.y, e2.y);
+                result.z = fmin(e1.z, e2.z);
+                return result;		        
 	        }	
         };
 
+        template<typename PointType>
         struct SelectMaxPoint
         {
-	        __host__ __device__ __forceinline__ float3 operator()(const float3& e1, const float3& e2) const 
+	        __host__ __device__ __forceinline__ PointType operator()(const PointType& e1, const PointType& e2) const 
 	        {		
-		        return make_float3(fmax(e1.x, e2.x), fmax(e1.y, e2.y), fmax(e1.z, e2.z));	
+                PointType result;
+                result.x = fmax(e1.x, e2.x);
+                result.y = fmax(e1.y, e2.y);
+                result.z = fmax(e1.z, e2.z);
+                return result;		    
 	        }	
         };
 
 
-        struct Float3_to_tuple
+        template<typename PointType>
+        struct PointType_to_tuple
         {
-            __device__ __forceinline__ thrust::tuple<float, float, float> operator()(const float3 arg) const
+            __device__ __forceinline__ thrust::tuple<float, float, float> operator()(const PointType& arg) const
             {
                 thrust::tuple<float, float, float> res;
                 res.get<0>() = arg.x;
@@ -91,6 +102,8 @@ void pcl::gpu::OctreeImpl::build()
     using namespace pcl::device;
     host_octree.downloaded = false;
 
+    int points_num = (int)points.size();
+
     //allocatations
     {
         //ScopeTimer timer("new_allocs"); 
@@ -105,8 +118,10 @@ void pcl::gpu::OctreeImpl::build()
         //+1 octreeGlobal.parent * points_num * sizeof(int)
         //+1 tasksGlobal.line[0] * points_num * sizeof(int)
         //+1 tasksGlobal.line[1] * points_num * sizeof(int)
+
+        //+3 points_sorted       * points_num * sizeof(float)
         //==
-        // 9 rows   
+        // 12 rows   
 
         //left 
         //octreeGlobal.nodes_num * 1 * sizeof(int)  
@@ -121,7 +136,7 @@ void pcl::gpu::OctreeImpl::build()
 
         const int transaction_size = 128 / sizeof(int);
         int cols = max<int>(points_num, transaction_size * 4);
-        int rows = 9 + 1; // = 10
+        int rows = 12 + 1; // = 13
             
         storage.create(rows, cols);
         
@@ -141,21 +156,27 @@ void pcl::gpu::OctreeImpl::build()
         tasksGlobal.line[0]  = DeviceArray_<int>(storage.ptr(8), points_num);
         tasksGlobal.line[1]  = DeviceArray_<int>(storage.ptr(9), points_num);
 
-        points_sorted.create(points_num);
-
+        points_sorted = DeviceArray2D_<float>(3, points_num, storage.ptr(10), storage.step());
         tasksGlobal.active_selector = 0;        
     }
 
     {
         //ScopeTimer timer("reduce-morton-sort-permutations"); 
     	
-        device_ptr<float3> beg(points.ptr());
-        device_ptr<float3> end = beg + points.size();
+        device_ptr<PointType> beg(points.ptr());
+        device_ptr<PointType> end = beg + points.size();
 
         {
+            PointType atmax, atmin;
+            atmax.x = atmax.y = atmax.z = FLT_MAX;
+            atmin.x = atmin.y = atmin.z = -FLT_MAX;
+
             //ScopeTimer timer("reduce"); 
-            octreeGlobal.minp = thrust::reduce(beg, end, make_float3( FLT_MAX,  FLT_MAX,  FLT_MAX), SelectMinPoint());
-	        octreeGlobal.maxp = thrust::reduce(beg, end, make_float3(-FLT_MAX, -FLT_MAX, -FLT_MAX), SelectMaxPoint());	
+            PointType minp = thrust::reduce(beg, end, atmax, SelectMinPoint<PointType>());
+	        PointType maxp = thrust::reduce(beg, end, atmin, SelectMaxPoint<PointType>());	
+
+            octreeGlobal.minp = make_float3(minp.x, minp.y, minp.z);
+            octreeGlobal.maxp = make_float3(maxp.x, maxp.y, maxp.z);
         }
     		
         device_ptr<int> codes_beg(codes.ptr());
@@ -173,25 +194,24 @@ void pcl::gpu::OctreeImpl::build()
             thrust::sort_by_key(codes_beg, codes_end, indices_beg );		
         }
         {
-            //ScopeTimer timer("perm"); 
-            thrust::copy(make_permutation_iterator(beg, indices_beg),
-                              make_permutation_iterator(end, indices_end), device_ptr<float3>(points_sorted.ptr()));    
+            ////ScopeTimer timer("perm"); 
+            //thrust::copy(make_permutation_iterator(beg, indices_beg),
+            //                  make_permutation_iterator(end, indices_end), device_ptr<float3>(points_sorted.ptr()));    
 
              
         }
 
-        //    DeviceArray2D_<float> st(3, points_num);
-        //{
-        //    device_ptr<float> xs(st.ptr(0));
-        //    device_ptr<float> ys(st.ptr(1));
-        //    device_ptr<float> zs(st.ptr(2));
-        //    ScopeTimer timer("perm2"); 
-        //    thrust::transform(make_permutation_iterator(beg, indices_beg),
-        //                 make_permutation_iterator(end, indices_end), 
-        //                 make_zip_iterator(make_tuple(xs, ys, zs)), Float3_to_tuple());
+        {
+            device_ptr<float> xs(points_sorted.ptr(0));
+            device_ptr<float> ys(points_sorted.ptr(1));
+            device_ptr<float> zs(points_sorted.ptr(2));
+            //ScopeTimer timer("perm2"); 
+            thrust::transform(make_permutation_iterator(beg, indices_beg),
+                              make_permutation_iterator(end, indices_end), 
+                              make_zip_iterator(make_tuple(xs, ys, zs)), PointType_to_tuple<PointType>());
 
-        //
-        //}
+        
+        }
     }
       
     {

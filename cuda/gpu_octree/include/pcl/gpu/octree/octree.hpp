@@ -39,17 +39,16 @@
 
 #include <vector>
 
+#include "pcl/point_types.h"
 #include "pcl/pcl_macros.h"
 #include "pcl/gpu/common/device_array.hpp"
 
 namespace pcl
 {
     namespace gpu
-    {        
-		struct PointXYZ
-		{
-			float x, y, z; 
-		};
+    {   
+        using pcl::PointXYZ;
+        //struct PointXYZ { float x, y, z;  };
 
         class PCL_EXPORTS Octree
         {
@@ -59,10 +58,10 @@ namespace pcl
 
             /* Types */
 
-            typedef pcl::gpu::PointXYZ PointTypeGpu;
-            typedef DeviceArray_<PointXYZ> PointCloud;
+            typedef pcl::gpu::PointXYZ PointType;
+            typedef DeviceArray_<PointType> PointCloud;
             
-            typedef DeviceArray_<PointXYZ> BatchQueries;
+            typedef DeviceArray_<PointType> BatchQueries;
             typedef DeviceArray_<int> BatchResult;
             typedef DeviceArray_<int> BatchResultSizes;
 
@@ -72,7 +71,7 @@ namespace pcl
 			void build();
 
             void internalDownload();
-            void radiusSearchHost(const PointXYZ& center, float radius, std::vector<int>& out, int max_nn = INT_MAX);
+            void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out, int max_nn = INT_MAX);
 
             void radiusSearchBatchGPU(const BatchQueries& centers, float radius, int max_results, BatchResult& out, BatchResultSizes& out_sizes) const;
         private:
@@ -80,7 +79,7 @@ namespace pcl
         };        
 
         
-        PCL_EXPORTS void bruteForceRadiusSearchGPU(const Octree::PointCloud& cloud, const PointXYZ& query, float radius, DeviceArray_<int>& result, DeviceArray_<int>& buffer);
+        PCL_EXPORTS void bruteForceRadiusSearchGPU(const Octree::PointCloud& cloud, const Octree::PointType& query, float radius, DeviceArray_<int>& result, DeviceArray_<int>& buffer);
     }
 }
 

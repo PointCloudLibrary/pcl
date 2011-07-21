@@ -40,6 +40,7 @@
 #include "octree_global.hpp"
 #include "utils/lower_bound.hpp"
 #include "utils/morton.hpp"
+#include "utils/static_check.hpp"
 
 namespace pcl
 {
@@ -47,14 +48,6 @@ namespace pcl
     {
         namespace base
         {
-            template<bool expr> 
-            struct Static {};
-            
-            template<> struct Static<true> 
-            { 
-                __host__ __device__ __forceinline__ static void check() {}; 
-            };
-
             /*__device__ __forceinline__ void setParent(OctreeGlobalBase<false>& octree, int index, int content) {}
             __device__ __forceinline__ void setParent(OctreeGlobalBase<true>& octree, int index, int content)
             {
@@ -69,7 +62,7 @@ namespace pcl
 
                 __device__ __forceinline__ Cta_base(OctreeGlobal& octree_global_arg, const int* codes_arg) : octree_global(octree_global_arg), codes(codes_arg) 
                 {
-                    //32 is a perfomance penalty step
+                    //32 is a perfomance penalty step for search
                     Static<(max_points_per_leaf % 32) == 0>::check();                
                 }
 

@@ -38,10 +38,9 @@
 #define PCL_GPU_CUDA_OCTREE_
 
 #include "pcl/gpu/common/device_array.hpp"
-#include "pcl/gpu/octree/octree.hpp"
 
 #include "octree_global.hpp"
-#include "tasks_global.hpp"
+#include "builder/tasks_global.hpp"
 
 namespace pcl
 {
@@ -50,9 +49,14 @@ namespace pcl
         class OctreeImpl
         {
         public:
-            typedef Octree::BatchQueries BatchQueries;
-            typedef Octree::BatchResult BatchResult;
-            typedef Octree::BatchResultSizes BatchResultSizes;
+            typedef float4 PointType;
+            typedef DeviceArray_<PointType> PointArray;
+
+            typedef PointArray PointCloud;
+            typedef PointArray BatchQueries;
+                       
+            typedef DeviceArray_<int> BatchResult;
+            typedef DeviceArray_<int> BatchResultSizes;
 
             static void get_gpu_arch_compiled_for(int& bin, int& ptr);
 
@@ -60,18 +64,17 @@ namespace pcl
             OctreeImpl(int number_of_SMs_arg) : number_of_SMs(number_of_SMs_arg) {};
             ~OctreeImpl() {};
 
-            void setCloud(const DeviceArray_<float3>& input_points);           
+            void setCloud(const PointCloud& input_points);           
             void build();
-            void radiusSearchHost(const float3& center, float radius, std::vector<int>& out, int max_nn) const;
+            void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out, int max_nn) const;
             
-            void radiusSearchBatch(const DeviceArray_<float3>& queries, float radius, int max_results, BatchResult& output, BatchResultSizes& out_sizes);
+            void radiusSearchBatch(const BatchQueries& queries, float radius, int max_results, BatchResult& output, BatchResultSizes& out_sizes);
 
-            size_t points_num;
+            //just reference 
+            PointCloud points;
 
-                        
-            DeviceArray_<float3> points;
-            DeviceArray_<float3> points_sorted;
-
+            // data
+            DeviceArray2D_<float> points_sorted;
             DeviceArray_<int> codes;
             DeviceArray_<int> indices;
                         
@@ -91,7 +94,8 @@ namespace pcl
 
                 std::vector<int> indices;	
                 
-                std::vector<float3> points_sorted;
+                std::vector<float> points_sorted;
+                int points_sorted_step;
 
                 int downloaded;
 
@@ -102,6 +106,9 @@ namespace pcl
 
             int number_of_SMs;
         };
+
+        void bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, const OctreeImpl::PointType& query, float radius, DeviceArray_<int>& result, DeviceArray_<int>& buffer);
+
     }
 }
 

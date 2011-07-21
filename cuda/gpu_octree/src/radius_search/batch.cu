@@ -40,9 +40,12 @@
 #include "utils/funcattrib.hpp"
 
 
-void pcl::gpu::OctreeImpl::radiusSearchBatch(const DeviceArray_<float3>& queries, float radius, int max_results, BatchResult& output, BatchResultSizes& out_sizes)
+void pcl::gpu::OctreeImpl::radiusSearchBatch(const BatchQueries& queries, float radius, int max_results, BatchResult& output, BatchResultSizes& out_sizes)
 {        
-    pcl::device::batch_radius_search::Batch batch;
+    typedef OctreeImpl::PointType PointType;
+    typedef pcl::device::batch_radius_search::Batch<PointType> BatchType;
+
+    BatchType batch;
           
     batch.indices = indices;
     batch.octree = octreeGlobal;
@@ -54,15 +57,16 @@ void pcl::gpu::OctreeImpl::radiusSearchBatch(const DeviceArray_<float3>& queries
     batch.output_sizes = out_sizes;
 
     batch.points  = points_sorted;
+    batch.points_step = points_sorted.step()/points_sorted.elem_size;
     batch.queries = queries;
     batch.radius  = radius;
     
     int block = pcl::device::batch_radius_search::KernelPolicy::CTA_SIZE;
     int grid = (batch.queries_num + block - 1) / block;    
 
-    cudaSafeCall( cudaFuncSetCacheConfig(pcl::device::batch_radius_search::KernelB, cudaFuncCachePreferL1) );
+    cudaSafeCall( cudaFuncSetCacheConfig(pcl::device::batch_radius_search::KernelB<PointType>, cudaFuncCachePreferL1) );
 
-    pcl::device::batch_radius_search::KernelB<<<grid, block>>>(batch);
+    pcl::device::batch_radius_search::KernelB<PointType><<<grid, block>>>(batch);
     cudaSafeCall( cudaGetLastError() );
     cudaSafeCall( cudaDeviceSynchronize() );
 

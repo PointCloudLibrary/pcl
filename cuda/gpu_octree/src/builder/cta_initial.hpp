@@ -39,7 +39,7 @@
 
 #include "cta_base.hpp"
 #include "octree_global.hpp"
-#include "tasks_global.hpp"
+#include "builder/tasks_global.hpp"
 
 #include "utils/scan_block.hpp"
 #include "utils/copygen.hpp"

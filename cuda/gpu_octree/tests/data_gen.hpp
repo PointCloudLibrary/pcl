@@ -42,9 +42,13 @@
 #include <iostream>
 #include <opencv2/core/core.hpp>
 
+#include <Eigen/StdVector>
+
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::PointXYZ)
+
 struct DataGenerator
 {
-    typedef pcl::gpu::Octree::PointTypeGpu PointTypeGpu;
+    typedef pcl::gpu::Octree::PointType PointType;
 
     size_t data_size;            
     size_t tests_num;
@@ -54,8 +58,8 @@ struct DataGenerator
 
     float shared_radius;
 
-    std::vector<PointTypeGpu> points;
-    std::vector<PointTypeGpu> queries;
+    std::vector<PointType> points;
+    std::vector<PointType> queries;
     std::vector<float> radiuses;
     std::vector< std::vector<int> > bfresutls;
 
@@ -107,11 +111,11 @@ struct DataGenerator
             curr_res.clear();
                         
             float query_radius = radius > 0 ? radius : radiuses[i];
-            const PointTypeGpu& query = queries[i];
+            const PointType& query = queries[i];
 
             for(size_t ind = 0; ind < points.size(); ++ind)
             {
-                const PointTypeGpu& point = points[ind];
+                const PointType& point = points[ind];
 
                 float dx = query.x - point.x;
                 float dy = query.y - point.y;
