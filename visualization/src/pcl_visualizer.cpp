@@ -1706,7 +1706,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
         cell_array->InsertCellPoint (poly_mesh.polygons[i].vertices[j]);
     }
 
-    vtkPolyData* polydata = vtkPolyData::New ();
+    vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
     polydata->SetStrips (cell_array);
     polydata->SetPoints (poly_points);
 
