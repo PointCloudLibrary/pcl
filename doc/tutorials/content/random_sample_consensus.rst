@@ -8,7 +8,7 @@ In this tutorial we learn how to use a RandomSampleConsensus with a plane model 
 Theoretical Primer
 ------------------
 
-The abbreviation of "RAndom SAmple Consensus" is RANSAC, and it is an iterative mthod that is used to estimate parameters of a meathematical model from a set of data containing outliers.  This algorithm was published by Fischler and Bolles in 1981.  The RANSAC algorithm assumes that all of the data we are looking at is comprised of both inliers and outliers.  The inliers distribution can be explained by a set of parameters and a model.  The outlying data does not fit the model.  Another necessary assumption is that there is a procedure which can estimate the parameters of whatever model optimally explains this data.
+The abbreviation of "RANdom SAmple Consensus" is RANSAC, and it is an iterative mthod that is used to estimate parameters of a meathematical model from a set of data containing outliers.  This algorithm was published by Fischler and Bolles in 1981.  The RANSAC algorithm assumes that all of the data we are looking at is comprised of both inliers and outliers.  The inliers distribution can be explained by a set of parameters and a model.  The outlying data does not fit the model.  Another necessary assumption is that there is a procedure which can estimate the parameters of whatever model optimally explains this data.
 
 From [Wikipedia]_:
 
