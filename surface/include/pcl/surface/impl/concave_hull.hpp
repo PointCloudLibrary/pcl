@@ -76,6 +76,13 @@ template <typename PointInT> void
 pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output)
 {
   output.header = input_->header;
+  if (alpha_ <= 0)
+  {
+    PCL_ERROR ("[pcl::%s::reconstruct] Alpha parameter must be set to a positive number!\n", getClassName ().c_str ());
+    output.points.clear ();
+    return;
+  }
+
   if (!initCompute ())
   {
     output.points.clear ();
@@ -95,21 +102,28 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output)
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &points, std::vector<pcl::Vertices> &polygons)
+pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output, std::vector<pcl::Vertices> &polygons)
 {
-  points.header = input_->header;
+  output.header = input_->header;
+  if (alpha_ <= 0)
+  {
+    PCL_ERROR ("[pcl::%s::reconstruct] Alpha parameter must be set to a positive number!\n", getClassName ().c_str ());
+    output.points.clear ();
+    return;
+  }
+
   if (!initCompute ())
   {
-    points.points.clear ();
+    output.points.clear ();
     return;
   }
 
   // Perform the actual surface reconstruction
-  performReconstruction (points, polygons);
+  performReconstruction (output, polygons);
 
-  points.width = points.points.size ();
-  points.height = 1;
-  points.is_dense = true;
+  output.width = output.points.size ();
+  output.height = 1;
+  output.is_dense = true;
 
   deinitCompute ();
 }
