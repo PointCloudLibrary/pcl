@@ -30,9 +30,8 @@ if(build)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} pcl_kdtree pcl_sample_consensus)
-    PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-        "${EXT_DEPS}" "" "" "")
+      "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})

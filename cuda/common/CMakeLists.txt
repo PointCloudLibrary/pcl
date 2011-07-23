@@ -23,10 +23,9 @@ set(common_incs
 
 include_directories(./include)
 #set(LIB_NAME pcl_${SUBSYS_NAME})
-PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-list(APPEND EXT_DEPS CUDA)
+set(EXT_DEPS CUDA)
 #PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-#    "${EXT_DEPS}" "" "" "")
+#    "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
 # Install include files
 PCL_ADD_INCLUDES(${SUBSYS_NAME} "cuda" ${incs})

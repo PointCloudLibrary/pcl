@@ -88,7 +88,7 @@ if(build)
 	    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus)
 	       
 	  	PCL_ADD_SSE_FLAGS(${LIB_NAME})
-	    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" "" "" "")
+	    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" "" "" "" "")
 	      
 	  endif() # QHULL_FOUND
 

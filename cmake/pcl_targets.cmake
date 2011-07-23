@@ -286,11 +286,12 @@ endmacro(PCL_ADD_LINKFLAGS)
 # _name The library name. "pcl_" will be preprended to this.
 # _component The part of PCL that this pkg-config file belongs to.
 # _desc Description of the library.
+# _pcl_deps External dependencies to pcl libs, as a list. (will get mangled to external pkg-config name)
 # _ext_deps External dependencies, as a list.
 # _int_deps Internal dependencies, as a list.
 # _cflags Compiler flags necessary to build with the library.
 # _lib_flags Linker flags necessary to link to the library.
-macro(PCL_MAKE_PKGCONFIG _name _component _desc _ext_deps _int_deps _cflags
+macro(PCL_MAKE_PKGCONFIG _name _component _desc _pcl_deps _ext_deps _int_deps _cflags
         _lib_flags)
     set(PKG_NAME ${_name})
     set(PKG_DESC ${_desc})
@@ -298,6 +299,9 @@ macro(PCL_MAKE_PKGCONFIG _name _component _desc _ext_deps _int_deps _cflags
     set(PKG_LIBFLAGS ${_lib_flags})
     LIST_TO_STRING(_ext_deps_str "${_ext_deps}")
     set(PKG_EXTERNAL_DEPS ${_ext_deps_str})
+    foreach(_dep ${_pcl_deps})
+      set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} pcl_${_dep}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+    endforeach(_dep)
     set(PKG_INTERNAL_DEPS "")
     foreach(_dep ${_int_deps})
         set(PKG_INTERNAL_DEPS "${PKG_INTERNAL_DEPS} -l${_dep}")

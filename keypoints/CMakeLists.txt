@@ -24,10 +24,9 @@ if(build)
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} pcl_range_image_border_extractor)
-    PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-    list(APPEND EXT_DEPS pcl_range_image_border_extractor)
+    list(APPEND SUBSYS_DEPS pcl_range_image_border_extractor)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-        "${EXT_DEPS}" "" "" "")
+      "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})

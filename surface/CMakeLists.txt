@@ -70,9 +70,8 @@ if(build)
     endif(QHULL_FOUND)
     # add link to OpenCV library by KTran
     target_link_libraries(${LIB_NAME} pcl_common ${OpenCV_LIBS})
-    PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-        "${EXT_DEPS}" "" "" "")
+      "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})

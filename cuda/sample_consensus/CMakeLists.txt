@@ -34,10 +34,10 @@ PCL_CUDA_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs})
 target_link_libraries (${LIB_NAME} pcl_cuda_features)
 PCL_ADD_SSE_FLAGS(${LIB_NAME})
 
-PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-#list(APPEND EXT_DEPS CUDA)
+set(EXT_DEPS "")
+#set(EXT_DEPS CUDA)
 PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-    "${EXT_DEPS}" "" "" "")
+  "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
 # Install include files
 PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_PATH} ${incs})
