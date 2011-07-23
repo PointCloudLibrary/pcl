@@ -54,5 +54,14 @@ if(build)
                  FILES test_ii_normals.cpp
                  LINK_WITH pcl_io pcl_features
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd)
+                 
+    include_directories(${PCL_INCLUDE_DIRS})
+    include_directories( . )
+    
+    PCL_ADD_EXECUTABLE (evaluate_feature ${SUBSYS_NAME} evaluate_feature.cpp)
+    target_link_libraries (evaluate_feature pcl_io pcl_features pcl_kdtree pcl_filters)
+    
+    PCL_ADD_EXECUTABLE (sample_feature_test ${SUBSYS_NAME} sample_feature_test.cpp)
+    target_link_libraries (sample_feature_test pcl_io pcl_features pcl_kdtree pcl_filters)
 
 endif(build)
