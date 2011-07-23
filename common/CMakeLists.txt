@@ -110,7 +110,7 @@ if(build)
     link_ros_libs (${LIB_NAME})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
-        "" "")
+        "" "" "")
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
