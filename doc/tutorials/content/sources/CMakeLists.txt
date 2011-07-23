@@ -11,6 +11,7 @@ foreach(subdir
           concatenate_fields
           concatenate_points
           convex_hull_2d
+          concave_hull_2d
           cylinder_segmentation
           extract_indices
           greedy_projection
