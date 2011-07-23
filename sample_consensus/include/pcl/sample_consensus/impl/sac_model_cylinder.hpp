@@ -466,9 +466,9 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::isModelValid (const Eigen::V
       return (false);
   }
 
-  if (radius_min_ != -DBL_MAX && model_coefficients[3] < radius_min_)
+  if (radius_min_ != -DBL_MAX && model_coefficients[6] < radius_min_)
     return (false);
-  if (radius_max_ != DBL_MAX && model_coefficients[3] > radius_max_)
+  if (radius_max_ != DBL_MAX && model_coefficients[6] > radius_max_)
     return (false);
 
   return (true);
