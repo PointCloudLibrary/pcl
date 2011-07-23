@@ -98,13 +98,12 @@ if(build)
     if(OPENNI_FOUND)
         target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
     endif(OPENNI_FOUND)
-    PREFIX_LIST(EXT_DEPS pcl_ "${SUBSYS_DEPS}")
-    list(APPEND EXT_DEPS eigen3)
+    set(EXT_DEPS eigen3)
     if(OPENNI_FOUND)
       list(APPEND EXT_DEPS openni-dev)
     endif(OPENNI_FOUND)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-        "${EXT_DEPS}" "" "" "")
+      "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
