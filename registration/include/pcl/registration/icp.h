@@ -81,6 +81,7 @@ namespace pcl
       using Registration<PointSource, PointTarget>::corr_dist_threshold_;
       using Registration<PointSource, PointTarget>::inlier_threshold_;
       using Registration<PointSource, PointTarget>::min_number_correspondences_;
+      using Registration<PointSource, PointTarget>::update_visualizer_;
 
       typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
       typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -110,6 +111,7 @@ namespace pcl
                            const pcl::PointCloud<PointTarget> &cloud_tgt, 
                            const std::vector<int> &indices_tgt,
                            Eigen::Matrix4f &transformation_matrix)> rigid_transformation_estimation_;
+
   };
 }
 

@@ -97,6 +97,7 @@ namespace pcl
                         converged_ (false), min_number_correspondences_ (3), /*k_ (1),*/ point_representation_ ()
       {
         tree_.reset (new pcl::KdTreeFLANN<PointTarget>);     // ANN tree for nearest neighbor search
+        update_visualizer_ = NULL;
       }
 
       /** \brief destructor. */
@@ -225,6 +226,24 @@ namespace pcl
         point_representation_ = point_representation;
       }
 
+      /** \brief Register the user callback function which will be called from registration thread
+       * in order to update point cloud obtained after each iteration
+       * \param refference of the user callback function
+       */
+      template<typename FunctionSignature> inline bool
+      registerVisualizationCallback (boost::function<FunctionSignature> &visualizerCallback)
+      {
+        if (visualizerCallback != NULL)
+        {
+          update_visualizer_ = visualizerCallback;
+          return true;
+        }
+        else
+        {
+          return false;
+        }
+      }
+
       /** \brief Obtain the fitness score (e.g., sum of squared distances from the source to the target). 
         * \param max_range maximum allowable distance between a point and its correspondent neighbor in the target 
         * (default: double::max)
@@ -250,6 +269,10 @@ namespace pcl
         */
       inline void 
       align (PointCloudSource &output, const Eigen::Matrix4f& guess);
+
+      /** \brief Abstract class get name method. */
+      inline const std::string&
+      getClassName () const { return (reg_name_); }
 
     protected:
       /** \brief The registration method name. */
@@ -300,6 +323,14 @@ namespace pcl
         */
       int min_number_correspondences_;
 
+      /** \brief Callback function to update intermediate source point cloud position during it's registration
+       * to the target point cloud.
+       */
+      boost::function<void(const pcl::PointCloud<PointSource> &cloud_src,
+                           const std::vector<int> &indices_src,
+                           const pcl::PointCloud<PointTarget> &cloud_tgt,
+                           const std::vector<int> &indices_tgt)> update_visualizer_;
+
       /** \brief Search for the closest nearest neighbor of a given point.
         * \param cloud the point cloud dataset to use for nearest neighbor search
         * \param index the index of the query point
@@ -330,10 +361,6 @@ namespace pcl
       inline void 
       findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices);
 
-      /** \brief Abstract class get name method. */
-      inline const std::string& 
-      getClassName () const { return (reg_name_); }
-
     private:
  
       /** \brief Abstract transformation computation method. */
@@ -352,7 +379,6 @@ namespace pcl
 
       /** \brief An STL map containing features to use when performing the correspondence search.*/
       FeaturesMap features_map_;
-
 
       /** \brief An inner class containing pointers to the source and target feature clouds along with the KdTree and 
         * the parameters needed to perform the correspondence search.  This class extends FeatureContainerInterface, 

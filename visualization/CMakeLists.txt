@@ -61,6 +61,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/interactor.h
         include/pcl/${SUBSYS_NAME}/interactor_style.h
         include/pcl/${SUBSYS_NAME}/pcl_visualizer.h
+        include/pcl/${SUBSYS_NAME}/registration_visualizer.h
         include/pcl/${SUBSYS_NAME}/point_cloud_handlers.h
         include/pcl/${SUBSYS_NAME}/keyboard_event.h
         include/pcl/${SUBSYS_NAME}/mouse_event.h
@@ -81,6 +82,7 @@ if(build)
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/histogram_visualizer.hpp
         include/pcl/${SUBSYS_NAME}/impl/pcl_visualizer.hpp
+        include/pcl/${SUBSYS_NAME}/impl/registration_visualizer.hpp
         include/pcl/${SUBSYS_NAME}/impl/point_cloud_handlers.hpp
         )
 

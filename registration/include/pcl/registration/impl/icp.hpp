@@ -156,6 +156,11 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
     final_transformation_ = transformation_ * final_transformation_;
 
     nr_iterations_++;
+
+    // Update the vizualization of icp convergence
+    if( update_visualizer_ != 0)
+      update_visualizer_(output, source_indices_good, *target_, target_indices_good );
+
     // Check for convergence
     if (nr_iterations_ >= max_iterations_ ||
         fabs ((transformation_ - previous_transformation_).sum ()) < transformation_epsilon_)
