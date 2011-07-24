@@ -42,6 +42,7 @@
 #include "pcl/pcl_macros.h"
 #include "pcl/point_cloud.h"
 #include "pcl/point_representation.h"
+
 //#include "pcl/search/search_flann.h"
 
 namespace pcl
@@ -71,8 +72,9 @@ namespace pcl
     }
 
 
-
     ~Search(){}
+
+
 
     virtual void
             evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type);
@@ -88,6 +90,10 @@ namespace pcl
     nearestKSearch (const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
 
     virtual int
+    nearestKSearchGPU (std::vector<const PointT>& point, int k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances);
+
+
+    virtual int
     nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
 
     virtual int
@@ -96,6 +102,8 @@ namespace pcl
     virtual int 
     radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices,    std::vector<float>& k_distances, int max_nn = -1) const;
 
+    virtual int 
+    radiusSearchGPU (std::vector<const PointT>& point, const double radius, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn = -1) const;
 //    virtual int 
   //  radiusSearch (const PointT& point, double radius,
     //              std::vector<int>& k_indices, std::vector<float> &k_sqr_distances_arg);
