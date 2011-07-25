@@ -41,5 +41,4 @@
 #include "pcl/registration/impl/pyramid_feature_matching.hpp"
 
 
-PCL_INSTANTIATE_PRODUCT(PyramidHistogram, (PCL_FEATURE_POINT_TYPES));
-PCL_INSTANTIATE_PRODUCT(PyramidFeatureMatching, (PCL_FEATURE_POINT_TYPES));
+PCL_INSTANTIATE_PRODUCT(PyramidFeatureHistogram, (PCL_FEATURE_POINT_TYPES));

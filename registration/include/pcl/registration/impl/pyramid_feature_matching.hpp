@@ -43,9 +43,9 @@
 #include "pcl/registration/pyramid_feature_matching.h"
 
 /** \brief Helper function to calculate the binary logarithm
-  * \param n_arg: some value
-  * \return binary logarithm (log2) of argument n_arg
-  */
+ * \param n_arg: some value
+ * \return binary logarithm (log2) of argument n_arg
+ */
 __inline double
 Log2 (double n_arg)
 {
@@ -55,18 +55,18 @@ Log2 (double n_arg)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> float
-pcl::PyramidFeatureMatching<PointFeature>::comparePyramidHistograms (const PyramidHistogramPtr &pyramid_a,
-                                                                     const PyramidHistogramPtr &pyramid_b)
+pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (const PyramidFeatureHistogram::Ptr &pyramid_a,
+                                                                             const PyramidFeatureHistogram::Ptr &pyramid_b)
 {
   // do a few consistency checks before and during the computation
   if (pyramid_a->nr_dimensions != pyramid_b->nr_dimensions)
   {
-    PCL_ERROR ("[pcl::PyramidFeatureMatching::comparePyramidHistograms] The two given pyramids have different numbers of dimensions: %u vs %u\n", pyramid_a->nr_dimensions, pyramid_b->nr_dimensions);
+    PCL_ERROR ("[pcl::PyramidFeatureMatching::comparePyramidFeatureHistograms] The two given pyramids have different numbers of dimensions: %u vs %u\n", pyramid_a->nr_dimensions, pyramid_b->nr_dimensions);
     return -1;
   }
   if (pyramid_a->nr_levels != pyramid_b->nr_levels)
   {
-    PCL_ERROR ("[pcl::PyramidFeatureMatching::comparePyramidHistograms] The two given pyramids have different numbers of levels: %u vs %u\n", pyramid_a->nr_levels, pyramid_b->nr_levels);
+    PCL_ERROR ("[pcl::PyramidFeatureMatching::comparePyramidFeatureHistograms] The two given pyramids have different numbers of levels: %u vs %u\n", pyramid_a->nr_levels, pyramid_b->nr_levels);
     return -1;
   }
 
@@ -74,7 +74,7 @@ pcl::PyramidFeatureMatching<PointFeature>::comparePyramidHistograms (const Pyram
   // calculate for level 0 first
   if (pyramid_a->hist_levels[0].hist.size () != pyramid_b->hist_levels[0].hist.size ())
   {
-    PCL_ERROR ("[pcl::PyramidFeatureMatching::comparePyramidHistograms] The two given pyramids have different numbers of bins on level 0: %u vs %u\n", pyramid_a->hist_levels[0].hist.size (), pyramid_b->hist_levels[0].hist.size ());
+    PCL_ERROR ("[pcl::PyramidFeatureMatching::comparePyramidFeatureHistograms] The two given pyramids have different numbers of bins on level 0: %u vs %u\n", pyramid_a->hist_levels[0].hist.size (), pyramid_b->hist_levels[0].hist.size ());
     return -1;
   }
   float match_count_level = 0.0f, match_count_prev_level = 0.0f;
@@ -92,7 +92,7 @@ pcl::PyramidFeatureMatching<PointFeature>::comparePyramidHistograms (const Pyram
   {
     if (pyramid_a->hist_levels[level_i].hist.size () != pyramid_b->hist_levels[level_i].hist.size ())
     {
-      PCL_ERROR ("[pcl::PyramidFeatureMatching::comparePyramidHistograms] The two given pyramids have different numbers of bins on level %u: %u vs %u\n", level_i, pyramid_a->hist_levels[level_i].hist.size (), pyramid_b->hist_levels[level_i].hist.size ());
+      PCL_ERROR ("[pcl::PyramidFeatureMatching::comparePyramidFeatureHistograms] The two given pyramids have different numbers of bins on level %u: %u vs %u\n", level_i, pyramid_a->hist_levels[level_i].hist.size (), pyramid_b->hist_levels[level_i].hist.size ());
       return -1;
     }
 
@@ -114,25 +114,23 @@ pcl::PyramidFeatureMatching<PointFeature>::comparePyramidHistograms (const Pyram
   // include self-similarity factors
   float self_similarity_a = pyramid_a->nr_features,
       self_similarity_b = pyramid_b->nr_features;
-  PCL_INFO ("[pcl::PyramidFeatureMatching::comparePyramidHistograms] Self similarity measures: %f, %f\n", self_similarity_a, self_similarity_b);
+  PCL_INFO ("[pcl::PyramidFeatureMatching::comparePyramidFeatureHistograms] Self similarity measures: %f, %f\n", self_similarity_a, self_similarity_b);
   match_count /= sqrt (self_similarity_a * self_similarity_b);
 
   return match_count;
 }
 
 
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature>
-pcl::PyramidHistogram<PointFeature>::PyramidHistogram ()
+pcl::PyramidFeatureHistogram<PointFeature>::PyramidFeatureHistogram ()
 {
   feature_representation_.reset (new DefaultPointRepresentation<PointFeature>);
+  is_computed_ = false;
 }
 
 template <typename PointFeature> void
-pcl::PyramidHistogram<PointFeature>::PyramidHistogramLevel::initializeHistogramLevel ()
+pcl::PyramidFeatureHistogram<PointFeature>::PyramidFeatureHistogramLevel::initializeHistogramLevel ()
 {
   size_t total_vector_size = 1;
   for (std::vector<size_t>::iterator dim_it = bins_per_dimension.begin (); dim_it != bins_per_dimension.end (); ++dim_it)
@@ -144,34 +142,33 @@ pcl::PyramidHistogram<PointFeature>::PyramidHistogramLevel::initializeHistogramL
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> bool
-pcl::PyramidHistogram<PointFeature>::initializeHistogram ()
+pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
 {
   // a few consistency checks before starting the computations
   if (!PCLBase<PointFeature>::initCompute ())
   {
-    PCL_ERROR ("[pcl::PyramidHistogram::initializeHistogram] PCLBase initCompute failed\n");
+    PCL_ERROR ("[pcl::PyramidFeatureHistogram::initializeHistogram] PCLBase initCompute failed\n");
     return false;
   }
 
   if (dimension_range_input_.size () == 0)
   {
-    PCL_ERROR ("[pcl::PyramidHistogram::initializeHistogram] Input dimension range was not set\n");
+    PCL_ERROR ("[pcl::PyramidFeatureHistogram::initializeHistogram] Input dimension range was not set\n");
     return false;
   }
 
   if (dimension_range_target_.size () == 0)
   {
-    PCL_ERROR ("[pcl::PyramidHistogram::initializeHistogram] Target dimension range was not set\n");
+    PCL_ERROR ("[pcl::PyramidFeatureHistogram::initializeHistogram] Target dimension range was not set\n");
     return false;
   }
 
   if (dimension_range_input_.size () != dimension_range_target_.size ())
   {
-    PCL_ERROR ("[pcl::PyramidHistogram::initializeHistogram] Input and target dimension ranges do not agree in size: %u vs %u\n",
+    PCL_ERROR ("[pcl::PyramidFeatureHistogram::initializeHistogram] Input and target dimension ranges do not agree in size: %u vs %u\n",
                dimension_range_input_.size (), dimension_range_target_.size ());
     return false;
   }
-
 
 
   nr_dimensions = dimension_range_target_.size ();
@@ -184,7 +181,7 @@ pcl::PyramidHistogram<PointFeature>::initializeHistogram ()
   }
   D = sqrt (D);
   nr_levels = ceil (Log2 (D));
-  PCL_INFO ("[pcl::PyramidHistogram::initializeHistogram] Pyramid will have %u levels with a hyper-parallelepiped diagonal size of %f\n", nr_levels, D);
+  PCL_INFO ("[pcl::PyramidFeatureHistogram::initializeHistogram] Pyramid will have %u levels with a hyper-parallelepiped diagonal size of %f\n", nr_levels, D);
 
 
   for (size_t level_i = 0; level_i < nr_levels; ++level_i)
@@ -195,9 +192,9 @@ pcl::PyramidHistogram<PointFeature>::initializeHistogram ()
       bins_per_dimension.push_back (ceil ( (dimension_range_target_[dim_i].second - dimension_range_target_[dim_i].first) / (pow (2.0f, (int) level_i) * sqrt ((float) nr_dimensions))));
       bin_step.push_back (pow (2.0f, (int) level_i) * sqrt ((float) nr_dimensions));
     }
-    hist_levels.push_back (PyramidHistogramLevel (bins_per_dimension, bin_step));
+    hist_levels.push_back (PyramidFeatureHistogramLevel (bins_per_dimension, bin_step));
 
-    PCL_INFO ("[pcl::PyramidHistogram::initializeHistogram] Created vector of size %u at level %u\nwith #bins per dimension:", hist_levels.back ().hist.size (), level_i);
+    PCL_INFO ("[pcl::PyramidFeatureHistogram::initializeHistogram] Created vector of size %u at level %u\nwith #bins per dimension:", hist_levels.back ().hist.size (), level_i);
     for (size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i)
       PCL_INFO ("%u ", bins_per_dimension[dim_i]);
     PCL_INFO ("\n");
@@ -209,17 +206,17 @@ pcl::PyramidHistogram<PointFeature>::initializeHistogram ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> unsigned int&
-pcl::PyramidHistogram<PointFeature>::at (std::vector<size_t> &access,
-                                         size_t &level)
+pcl::PyramidFeatureHistogram<PointFeature>::at (std::vector<size_t> &access,
+                                                size_t &level)
 {
   if (access.size () != nr_dimensions)
   {
-    PCL_ERROR ("[pcl::PyramidHistogram::at] Cannot access histogram position because the access point does not have the right number of dimensions\n");
+    PCL_ERROR ("[pcl::PyramidFeatureHistogram::at] Cannot access histogram position because the access point does not have the right number of dimensions\n");
     return hist_levels.front ().hist.front ();
   }
   if (level >= hist_levels.size ())
   {
-    PCL_ERROR ("[pcl::PyramidHistogram::at] Trying to access a too large level\n");
+    PCL_ERROR ("[pcl::PyramidFeatureHistogram::at] Trying to access a too large level\n");
     return hist_levels.front ().hist.front ();
   }
 
@@ -238,17 +235,17 @@ pcl::PyramidHistogram<PointFeature>::at (std::vector<size_t> &access,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> unsigned int&
-pcl::PyramidHistogram<PointFeature>::at (std::vector<float> &feature,
-                                         size_t &level)
+pcl::PyramidFeatureHistogram<PointFeature>::at (std::vector<float> &feature,
+                                                size_t &level)
 {
   if (feature.size () != nr_dimensions)
   {
-    PCL_ERROR ("[pcl::PyramidHistogram::at] The given feature vector does not match the feature dimensions of the pyramid histogram: %u vs %u\n", feature.size (), nr_dimensions);
+    PCL_ERROR ("[pcl::PyramidFeatureHistogram::at] The given feature vector does not match the feature dimensions of the pyramid histogram: %u vs %u\n", feature.size (), nr_dimensions);
     return hist_levels.front ().hist.front ();
   }
   if (level >= hist_levels.size ())
   {
-    PCL_ERROR ("[pcl::PyramidHistogram::at] Trying to access a too large level\n");
+    PCL_ERROR ("[pcl::PyramidFeatureHistogram::at] Trying to access a too large level\n");
     return hist_levels.front ().hist.front ();
   }
 
@@ -262,8 +259,8 @@ pcl::PyramidHistogram<PointFeature>::at (std::vector<float> &feature,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> void
-pcl::PyramidHistogram<PointFeature>::convertFeatureToVector (const PointFeature &feature,
-                                                             std::vector<float> &feature_vector)
+pcl::PyramidFeatureHistogram<PointFeature>::convertFeatureToVector (const PointFeature &feature,
+                                                                    std::vector<float> &feature_vector)
 {
   // convert feature to vector representation
   feature_vector.resize (feature_representation_->getNumberOfDimensions ());
@@ -272,13 +269,13 @@ pcl::PyramidHistogram<PointFeature>::convertFeatureToVector (const PointFeature 
   // adapt the values from the input range to the target range
   for (size_t i = 0; i < feature_vector.size (); ++i)
     feature_vector[i] = (feature_vector[i] - dimension_range_input_[i].first) / (dimension_range_input_[i].second - dimension_range_input_[i].first) *
-        (dimension_range_target_[i].second - dimension_range_target_[i].first) + dimension_range_target_[i].first;
+    (dimension_range_target_[i].second - dimension_range_target_[i].first) + dimension_range_target_[i].first;
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> void
-pcl::PyramidHistogram<PointFeature>::compute ()
+pcl::PyramidFeatureHistogram<PointFeature>::compute ()
 {
   if (!initializeHistogram ())
     return;
@@ -287,21 +284,22 @@ pcl::PyramidHistogram<PointFeature>::compute ()
   {
     std::vector<float> feature_vector;
     convertFeatureToVector (input_->points[feature_i], feature_vector);
-//    PCL_INFO ("adding feature_i %u with values: %f %f %f %f\n", feature_i, feature_vector[0], feature_vector[1], feature_vector[2], feature_vector[3]);
+    //    PCL_INFO ("adding feature_i %u with values: %f %f %f %f\n", feature_i, feature_vector[0], feature_vector[1], feature_vector[2], feature_vector[3]);
     addFeature (feature_vector);
   }
+
+  is_computed_ = true;
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> void
-pcl::PyramidHistogram<PointFeature>::addFeature (std::vector<float> &feature)
+pcl::PyramidFeatureHistogram<PointFeature>::addFeature (std::vector<float> &feature)
 {
   for (size_t level_i = 0; level_i < nr_levels; ++level_i)
     at (feature, level_i) ++;
 }
 
-#define PCL_INSTANTIATE_PyramidHistogram(PointFeature) template class PCL_EXPORTS pcl::PyramidHistogram<PointFeature>;
-#define PCL_INSTANTIATE_PyramidFeatureMatching(PointFeature) template class PCL_EXPORTS pcl::PyramidFeatureMatching<PointFeature>;
+#define PCL_INSTANTIATE_PyramidFeatureHistogram(PointFeature) template class PCL_EXPORTS pcl::PyramidFeatureHistogram<PointFeature>;
 
 #endif /* PCL_REGISTRATION_IMPL_PYRAMID_FEATURE_MATCHING_H_ */

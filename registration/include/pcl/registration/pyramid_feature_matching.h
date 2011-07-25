@@ -43,33 +43,57 @@
 
 namespace pcl
 {
+  /**
+   * \brief Class that compares two sets of features by using a multiscale representation of the features inside a
+   * pyramid. Each level of the pyramid offers information about the similarity of the two feature sets.
+   * \note Works with any Point/Feature type which has a PointRepresentation implementation
+   * \note The only parameters it needs are the input dimension ranges and the output dimension ranges. The input
+   * dimension ranges represent the ranges in which each dimension of the feature vector lies. As described in the
+   * paper, a minimum inter-vector distance of sqrt(nr_dims)/2 is needed. As such, the target dimension range parameter
+   * is used in order to augment/reduce the range for each dimension in order to obtain the necessary minimal
+   * inter-vector distance and to add/subtract weight to/from certain dimensions of the feature vector.
+   *
+   * Follows the algorithm presented in the publication:
+   *    Grauman, K. & Darrell, T.
+   *    The Pyramid Match Kernel: Discriminative Classification with Sets of Image Features
+   *    Tenth IEEE International Conference on Computer Vision ICCV05 Volume 1
+   *    October 2005
+   *
+   * \author Alexandru-Eugen Ichim
+   */
   template <typename PointFeature>
-  class PyramidHistogram : public PCLBase<PointFeature>
+  class PyramidFeatureHistogram : public PCLBase<PointFeature>
   {
     public:
       using PCLBase<PointFeature>::input_;
 
-      typedef boost::shared_ptr<PyramidHistogram<PointFeature> > Ptr;
+      typedef boost::shared_ptr<PyramidFeatureHistogram<PointFeature> > Ptr;
+      typedef Ptr PyramidFeatureHistogramPtr;
       typedef boost::shared_ptr<const pcl::PointRepresentation<PointFeature> > FeatureRepresentationConstPtr;
 
 
-      PyramidHistogram ();
+      /** \brief Empty constructor that instantiates the feature representation variable */
+      PyramidFeatureHistogram ();
 
-      bool
-      initializeHistogram ();
-
+      /** \brief Method for setting the input dimension range parameter.
+       * \note Please check the PyramidHistogram class description for more details about this parameter.
+       */
       inline void
       setInputDimensionRange (std::vector<std::pair<float, float> > &dimension_range_input)
       { dimension_range_input_ = dimension_range_input; }
 
+      /** \brief Method for retrieving the input dimension range vector */
       inline std::vector<std::pair<float, float> >
       getInputDimensionRange () { return dimension_range_input_; }
 
-
+      /** \brief Method to set the target dimension range parameter.
+       * \note Please check the PyramidHistogram class description for more details about this parameter.
+       */
       inline void
       setTargetDimensionRange (std::vector<std::pair<float, float> > &dimension_range_target)
       { dimension_range_target_ = dimension_range_target; }
 
+      /** \brief Method for retrieving the target dimension range vector */
       inline std::vector<std::pair<float, float> >
       getTargetDimensionRange () { return dimension_range_target_; }
 
@@ -83,22 +107,66 @@ namespace pcl
       inline FeatureRepresentationConstPtr const
       getPointRepresentation () { return feature_representation_; }
 
+      /** \brief The central method for inserting the feature set inside the pyramid and obtaining the complete pyramid */
       void
       compute ();
 
+      /** \brief Checks whether the pyramid histogram has been computed */
+      inline bool
+      isComputed () { return is_computed_; }
+
+      /** \brief Static method for comparing two pyramid histograms that returns a floating point value between 0 and 1,
+       * representing the similiarity between the feature sets on which the two pyramid histograms are based.
+       * \param pyramid_a Pointer to the first pyramid to be compared (needs to be computed already).
+       * \param pyramid_b Pointer to the second pyramid to be compared (needs to be computed already).
+       */
+      static float
+      comparePyramidFeatureHistograms (const PyramidFeatureHistogramPtr &pyramid_a,
+                                       const PyramidFeatureHistogramPtr &pyramid_b);
+
+
+    private:
+      size_t nr_dimensions, nr_levels, nr_features;
+      std::vector<std::pair<float, float> > dimension_range_input_, dimension_range_target_;
+      FeatureRepresentationConstPtr feature_representation_;
+      bool is_computed_;
+
+      /** \brief Checks for input inconsistencies and initializes the underlying data structures */
+      bool
+      initializeHistogram ();
+
+      /** \brief Converts a feature in templated form to an STL vector. This is the point where the conversion from the
+       * input dimension range to the target dimension range is done.
+       */
+      void
+      convertFeatureToVector (const PointFeature &feature,
+                              std::vector<float> &feature_vector);
+
+      /** \brief Adds a feature vector to its corresponding bin at each level in the pyramid */
+      void
+      addFeature (std::vector<float> &feature);
+
+      /** \brief Access the pyramid bin given the position of the bin at the given pyramid level
+       * and the pyramid level
+       * \param access index of the bin at the respective level
+       * \param level the level in the pyramid
+       */
       inline unsigned int&
       at (std::vector<size_t> &access,
           size_t &level);
 
+      /** \brief Access the pyramid bin given a feature vector and the pyramid level
+       * \param feature the feature in vectorized form
+       * \param level the level in the pyramid
+       */
       inline unsigned int&
       at (std::vector<float> &feature,
           size_t &level);
 
-      size_t nr_dimensions, nr_levels, nr_features;
-
-      struct PyramidHistogramLevel
+      /** \brief Structure for representing a single pyramid histogram level */
+      struct PyramidFeatureHistogramLevel
       {
-        PyramidHistogramLevel (std::vector<size_t> &a_bins_per_dimension,
+        PyramidFeatureHistogramLevel (std::vector<size_t> &a_bins_per_dimension,
                                std::vector<float> &a_bin_step)
         : bins_per_dimension (a_bins_per_dimension),
           bin_step (a_bin_step)
@@ -113,33 +181,7 @@ namespace pcl
         std::vector<size_t> bins_per_dimension;
         std::vector<float> bin_step;
       };
-      std::vector<PyramidHistogramLevel> hist_levels;
-
-
-    private:
-      std::vector<std::pair<float, float> > dimension_range_input_, dimension_range_target_;
-      FeatureRepresentationConstPtr feature_representation_;
-
-      void
-      convertFeatureToVector (const PointFeature &feature,
-                              std::vector<float> &feature_vector);
-
-      void
-      addFeature (std::vector<float> &feature);
-  };
-
-
-  template <typename PointFeature>
-  class PyramidFeatureMatching : public PCLBase<PointFeature>
-  {
-    public:
-      typedef typename pcl::PyramidHistogram<PointFeature>::Ptr PyramidHistogramPtr;
-
-      PyramidFeatureMatching () {};
-
-      float
-      comparePyramidHistograms (const PyramidHistogramPtr &pyramid_a,
-                                const PyramidHistogramPtr &pyramid_b);
+      std::vector<PyramidFeatureHistogramLevel> hist_levels;
   };
 }
 
