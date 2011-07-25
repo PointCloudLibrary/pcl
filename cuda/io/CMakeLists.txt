@@ -38,7 +38,7 @@ set(EXT_DEPS "")
 #set(EXT_DEPS CUDA)
 PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
   "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
-  "${SUBSYS_DEPS}" "" "" "" "")
+  
 
 # Install include files
 PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_PATH} ${incs})

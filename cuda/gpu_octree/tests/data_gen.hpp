@@ -139,6 +139,20 @@ struct DataGenerator
         std::cout << "Max radius     = " << max_radius << std::endl;
         std::cout << "Shared radius  = " << shared_radius << std::endl;
     }
+
+    template<typename Dst>
+    struct ConvPoint
+    {    
+        Dst operator()(const PointType& src) const 
+        {
+            Dst dst;
+            dst.x = src.x;
+            dst.y = src.y;
+            dst.z = src.z;
+            return dst;
+        }
+    };
+
 };
 
 #endif  /* _PCL_TEST_GPU_OCTREE_DATAGEN_ */

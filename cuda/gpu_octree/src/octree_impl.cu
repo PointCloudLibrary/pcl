@@ -40,6 +40,8 @@
 #include "cuda_interface.hpp"
 #include "utils/boxutils.hpp"
 
+#include<limits>
+
 using namespace pcl::gpu;
 using namespace pcl::cuda;
 using namespace pcl::device;
@@ -137,7 +139,7 @@ void pcl::gpu::OctreeImpl::radiusSearchHost(const PointType& query, float radius
     while(iterator.level >= 0)
     {        
         int node_idx = *iterator;
-        int code = host_octree.node_codes[node_idx];
+        int code = host_octree.codes[node_idx];
 
         float3 node_minp = octreeGlobal.minp;
         float3 node_maxp = octreeGlobal.maxp;        
@@ -179,9 +181,9 @@ void pcl::gpu::OctreeImpl::radiusSearchHost(const PointType& query, float radius
             for(int j = beg; j < end; ++j)
             {
                 int index = host_octree.indices[j];
-                const float& point_x = host_octree.points_sorted[j                                     ];
-                const float& point_y = host_octree.points_sorted[j + host_octree.points_sorted_step    ];
-                const float& point_z = host_octree.points_sorted[j + host_octree.points_sorted_step * 2];
+                float point_x = host_octree.points_sorted[j                                     ];
+                float point_y = host_octree.points_sorted[j + host_octree.points_sorted_step    ];
+                float point_z = host_octree.points_sorted[j + host_octree.points_sorted_step * 2];
 
                 float dx = (point_x - center.x);
                 float dy = (point_y - center.y);
@@ -204,6 +206,65 @@ void pcl::gpu::OctreeImpl::radiusSearchHost(const PointType& query, float radius
     }
 }
 
+void  pcl::gpu::OctreeImpl::approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist) const
+{
+    float3 minp = octreeGlobal.minp;
+    float3 maxp = octreeGlobal.maxp;
+
+    int node_idx = 0;
+
+    bool out_of_root = query.x < minp.x || query.y < minp.y ||  query.z < minp.z || query.x > maxp.x || query.y > maxp.y ||  query.z > maxp.z;
+
+    if(!out_of_root)        
+    {
+        int code = CalcMorton(minp, maxp)(query);
+        int level = 0;
+
+        for(;;)
+        {            
+            int mask_pos = 1 << Morton::extractLevelCode(code, level);
+
+            int node = host_octree.nodes[node_idx];
+            int mask = node & 0xFF;
+                                
+            if(getBitsNum(mask) == 0)  // leaf
+                break;
+        
+            if ( (mask & mask_pos) == 0) // no child
+                break;
+
+            node_idx = (node >> 8) + getBitsNum(mask & (mask_pos - 1));
+            ++level;
+        }
+    }
+
+    int beg = host_octree.begs[node_idx];
+    int end = host_octree.ends[node_idx];
+
+    sqr_dist = std::numeric_limits<float>::max();
+
+    for(int i = beg; i < end; ++i)
+    {
+        float point_x = host_octree.points_sorted[i                                     ];
+        float point_y = host_octree.points_sorted[i + host_octree.points_sorted_step    ];
+        float point_z = host_octree.points_sorted[i + host_octree.points_sorted_step * 2];
+
+        float dx = (point_x - query.x);
+        float dy = (point_y - query.y);
+        float dz = (point_z - query.z);
+        
+        float d2 = dx * dx + dy * dy + dz * dz;
+
+        if (sqr_dist > d2)
+        {
+            sqr_dist = d2;
+            out_index = i;
+        }
+    }  
+
+    out_index = host_octree.indices[out_index];
+}
+
 void pcl::gpu::OctreeImpl::internalDownload()
 {
     int number;
@@ -212,7 +273,7 @@ void pcl::gpu::OctreeImpl::internalDownload()
     DeviceArray_<int>(octreeGlobal.begs,  number).download(host_octree.begs);    
     DeviceArray_<int>(octreeGlobal.ends,  number).download(host_octree.ends);    
     DeviceArray_<int>(octreeGlobal.nodes, number).download(host_octree.nodes);    
-    DeviceArray_<int>(octreeGlobal.codes, number).download(host_octree.node_codes); 
+    DeviceArray_<int>(octreeGlobal.codes, number).download(host_octree.codes); 
 
     points_sorted.download(host_octree.points_sorted, host_octree.points_sorted_step);    
     indices.download(host_octree.indices);    

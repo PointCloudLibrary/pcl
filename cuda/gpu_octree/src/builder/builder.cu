@@ -143,18 +143,18 @@ void pcl::gpu::OctreeImpl::build()
         codes   = DeviceArray_<int>(storage.ptr(0), points_num);
         indices = DeviceArray_<int>(storage.ptr(1), points_num);
         
-        octreeGlobal.nodes   = DeviceArray_<int>(storage.ptr(2), points_num);
-        octreeGlobal.codes   = DeviceArray_<int>(storage.ptr(3), points_num);
-        octreeGlobal.begs    = DeviceArray_<int>(storage.ptr(4), points_num);
-        octreeGlobal.ends    = DeviceArray_<int>(storage.ptr(5), points_num);
-        octreeGlobal.parent  = DeviceArray_<int>(storage.ptr(6), points_num);
+        octreeGlobal.nodes   = storage.ptr(2);
+        octreeGlobal.codes   = storage.ptr(3);
+        octreeGlobal.begs    = storage.ptr(4);
+        octreeGlobal.ends    = storage.ptr(5);
+        octreeGlobal.parent  = storage.ptr(6);
 
         octreeGlobal.nodes_num = storage.ptr(7);
         tasksGlobal.count[0]   = storage.ptr(7) + transaction_size;
         tasksGlobal.count[1]   = storage.ptr(7) + transaction_size * 2;
 
-        tasksGlobal.line[0]  = DeviceArray_<int>(storage.ptr(8), points_num);
-        tasksGlobal.line[1]  = DeviceArray_<int>(storage.ptr(9), points_num);
+        tasksGlobal.line[0]  = storage.ptr(8);
+        tasksGlobal.line[1]  = storage.ptr(9);
 
         points_sorted = DeviceArray2D_<float>(3, points_num, storage.ptr(10), storage.step());
         tasksGlobal.active_selector = 0;        

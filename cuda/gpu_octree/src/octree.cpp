@@ -42,6 +42,8 @@
 #include "cuda_runtime.h"
 #include "utils/static_check.hpp"
 
+#include<assert.h>
+
 using namespace pcl::gpu;
 using namespace pcl::cuda;
 using namespace std;
@@ -106,14 +108,51 @@ void pcl::gpu::Octree::radiusSearchHost(const PointType& center, float radius, s
     static_cast<OctreeImpl*>(impl)->radiusSearchHost(query, radius, out, max_nn);
 }
 
-
-void pcl::gpu::Octree::radiusSearchBatchGPU(const BatchQueries& queries, float radius, int max_results, BatchResult& output, BatchResultSizes& out_sizes) const
+void  pcl::gpu::Octree::approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist)
 {
+    if (!static_cast<OctreeImpl*>(impl)->host_octree.downloaded)
+        internalDownload();
+
+    OctreeImpl::PointType q;
+    q.x = query.x;
+    q.y = query.y;
+    q.z = query.z;
+    
+    static_cast<OctreeImpl*>(impl)->approxNearestSearchHost(q, out_index, sqr_dist);
+
+}
+
+
+void pcl::gpu::Octree::radiusSearchBatch(const BatchQueries& queries, float radius, int max_results, BatchResult& output, BatchResultSizes& out_sizes) const
+{
+    assert(queries.size() > 0);
     out_sizes.create(queries.size());
     output.create(queries.size() * max_results);
 
     const OctreeImpl::BatchQueries& q = (const OctreeImpl::BatchQueries&)queries;
     static_cast<OctreeImpl*>(impl)->radiusSearchBatch(q, radius, max_results, output, out_sizes);
+}
+
+void pcl::gpu::Octree::radiusSearchBatch(const BatchQueries& queries, const BatchRadiuses& radiuses, int max_results, BatchResult& output, BatchResultSizes& out_sizes) const
+{
+    assert(queries.size() > 0);
+    assert(queries.size() == radiuses.size());
+
+    out_sizes.create(queries.size());
+    output.create(queries.size() * max_results);
+
+    const OctreeImpl::BatchQueries& q = (const OctreeImpl::BatchQueries&)queries;
+    static_cast<OctreeImpl*>(impl)->radiusSearchBatch(q, radiuses, max_results, output, out_sizes);
+}
+
+void pcl::gpu::Octree::approxNearestSearchBatch(const BatchQueries& queries, BatchResult& out) const
+{
+    assert(queries.size() > 0);
+    out.create(queries.size());
+    
+    const OctreeImpl::BatchQueries& q = (const OctreeImpl::BatchQueries&)queries;
+    static_cast<OctreeImpl*>(impl)->approxNearestSearchBatch(q, out);
+
 }
 
 

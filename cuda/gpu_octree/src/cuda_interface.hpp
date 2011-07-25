@@ -55,6 +55,7 @@ namespace pcl
             typedef PointArray PointCloud;
             typedef PointArray BatchQueries;
                        
+            typedef DeviceArray_<float> BatchRadiuses;
             typedef DeviceArray_<int> BatchResult;
             typedef DeviceArray_<int> BatchResultSizes;
 
@@ -67,8 +68,14 @@ namespace pcl
             void setCloud(const PointCloud& input_points);           
             void build();
             void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out, int max_nn) const;
+            void approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist) const;
             
             void radiusSearchBatch(const BatchQueries& queries, float radius, int max_results, BatchResult& output, BatchResultSizes& out_sizes);
+
+            void radiusSearchBatch(const BatchQueries& queries, const BatchRadiuses& radiuses, int max_results, BatchResult& output, BatchResultSizes& out_sizes);
+
+
+            void approxNearestSearchBatch(const BatchQueries& queries, BatchResult& out) const;
 
             //just reference 
             PointCloud points;
@@ -87,10 +94,11 @@ namespace pcl
             struct OctreeDataHost
             {
                 std::vector<int> nodes;
+                std::vector<int> codes;	
 
                 std::vector<int> begs;
                 std::vector<int> ends;	
-                std::vector<int> node_codes;	
+                
 
                 std::vector<int> indices;	
                 
@@ -105,6 +113,10 @@ namespace pcl
             void internalDownload();
 
             int number_of_SMs;
+
+        private:
+            template<typename Batch>
+            void radiusSearchBatchEx(Batch& batch, const BatchQueries& queries, int max_results, BatchResult& output, BatchResultSizes& out_sizes);
         };
 
         void bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, const OctreeImpl::PointType& query, float radius, DeviceArray_<int>& result, DeviceArray_<int>& buffer);

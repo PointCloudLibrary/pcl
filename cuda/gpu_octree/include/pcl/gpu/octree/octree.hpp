@@ -62,8 +62,10 @@ namespace pcl
             typedef DeviceArray_<PointType> PointCloud;
             
             typedef DeviceArray_<PointType> BatchQueries;
+            typedef DeviceArray_<float> BatchRadiuses;
             typedef DeviceArray_<int> BatchResult;
             typedef DeviceArray_<int> BatchResultSizes;
+            
 
             /*  Methods */            
             void setCloud(const PointCloud& cloud_arg);
@@ -72,8 +74,13 @@ namespace pcl
 
             void internalDownload();
             void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out, int max_nn = INT_MAX);
+            void approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist);
 
-            void radiusSearchBatchGPU(const BatchQueries& centers, float radius, int max_results, BatchResult& out, BatchResultSizes& out_sizes) const;
+            void radiusSearchBatch(const BatchQueries& centers, float radius, int max_results, BatchResult& out, BatchResultSizes& out_sizes) const;
+            void radiusSearchBatch(const BatchQueries& centers, const BatchRadiuses& radiuses, int max_results, BatchResult& out, BatchResultSizes& out_sizes) const;
+
+
+            void approxNearestSearchBatch(const BatchQueries& queries, BatchResult& out) const;
         private:
             void *impl;            
         };        

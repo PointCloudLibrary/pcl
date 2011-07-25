@@ -59,15 +59,6 @@ using namespace pcl::gpu;
 using namespace std;
 
 
-struct PointType_to_Point3f
-{
-    cv::Point3f operator()(const DataGenerator::PointType& p) const 
-    {
-        return cv::Point3f(p.x, p.y, p.z);
-    }
-};
-
-
 //TEST(PCL_OctreeGPU, DISABLED_perfomance)
 TEST(PCL_OctreeGPU, perfomance)
 {
@@ -95,15 +86,16 @@ TEST(PCL_OctreeGPU, perfomance)
 
     //prepare queries_device
     pcl::gpu::Octree::BatchQueries queries_device;
+    pcl::gpu::Octree::BatchRadiuses radiuses_device;
     queries_device.upload(data.queries);  
+    radiuses_device.upload(data.radiuses);
 
     //prepare host cloud
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);	
     cloud_host->width = data.points.size();
     cloud_host->height = 1;
-    cloud_host->points.resize (cloud_host->width * cloud_host->height);
-    for (size_t i = 0; i < cloud_host->points.size(); ++i)
-        cloud_host->points[i] = pcl::PointXYZ(data.points[i].x, data.points[i].y, data.points[i].z);
+    cloud_host->points.resize (cloud_host->width * cloud_host->height);    
+    std::transform(data.points.begin(), data.points.end(), cloud_host->points.begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
 
     float host_octree_resolution = 25.f;
     cout << "[!] Host octree resolution: " << host_octree_resolution << endl << endl;    
@@ -132,8 +124,8 @@ TEST(PCL_OctreeGPU, perfomance)
     // build opencv octree
     cv::Octree octree_opencv;
     const static int opencv_octree_points_per_leaf = 32;    
-    vector<cv::Point3f> opencv_points;
-    std::transform(data.points.begin(), data.points.end(), back_inserter(opencv_points), PointType_to_Point3f());
+    vector<cv::Point3f> opencv_points(data.points.size());
+    std::transform(data.points.begin(), data.points.end(), opencv_points.begin(), DataGenerator::ConvPoint<cv::Point3f>());
         
     {        
         ScopeTimerCV t("opencv-build");	        
@@ -143,6 +135,8 @@ TEST(PCL_OctreeGPU, perfomance)
     //// Radius search perfomance ///
 
     const int max_answers = 500;
+    float dist;
+    int inds;
 
     //host buffers
     vector<int> indeces;
@@ -158,23 +152,30 @@ TEST(PCL_OctreeGPU, perfomance)
     pcl::gpu::DeviceArray_<int> bruteforce_results_device, buffer(cloud_device.size());    
     pcl::gpu::Octree::BatchResult      result_device(queries_device.size() * max_answers);
     pcl::gpu::Octree::BatchResultSizes  sizes_device(queries_device.size());
-
+    
+    
     cout << "======  Separate radius for each query =====" << endl;
+
     {
-        ScopeTimerCV up("gpu-search-{host}-all");	
+        ScopeTimerCV up("gpu--radius-search-batch-all");	        
+        octree_device.radiusSearchBatch(queries_device, radiuses_device, max_answers, result_device, sizes_device);                        
+    }
+
+    {
+        ScopeTimerCV up("gpu-radius-search-{host}-all");	
         for(size_t i = 0; i < data.tests_num; ++i)
             octree_device.radiusSearchHost(data.queries[i], data.radiuses[i], indeces, max_answers);                        
     }
 
     {                
-        ScopeTimerCV up("host-search-all");	
+        ScopeTimerCV up("host-radius-search-all");	
         for(size_t i = 0; i < data.tests_num; ++i)
             octree_host.radiusSearch(pcl::PointXYZ(data.queries[i].x, data.queries[i].y, data.queries[i].z), 
                 data.radiuses[i], indeces, pointRadiusSquaredDistance, max_answers);                        
     }
      
     {
-        ScopeTimerCV up("gpu_bruteforce-search-all");	         
+        ScopeTimerCV up("gpu_bruteforce-radius-search-all");	         
         for(size_t i = 0; i < data.tests_num; ++i)
             pcl::gpu::bruteForceRadiusSearchGPU(cloud_device, data.queries[i], data.radiuses[i], bruteforce_results_device, buffer);
     }
@@ -182,26 +183,45 @@ TEST(PCL_OctreeGPU, perfomance)
     cout << "======  Shared radius (" << data.shared_radius << ") =====" << endl;
     
     {
-        ScopeTimerCV up("gpu-search-batch-all");	        
-        octree_device.radiusSearchBatchGPU(queries_device, data.shared_radius, max_answers, result_device, sizes_device);                        
+        ScopeTimerCV up("gpu-radius-search-batch-all");	        
+        octree_device.radiusSearchBatch(queries_device, data.shared_radius, max_answers, result_device, sizes_device);                        
     }
 
     {
-        ScopeTimerCV up("gpu-search-{host}-all");
+        ScopeTimerCV up("gpu-radius-search-{host}-all");
         for(size_t i = 0; i < data.tests_num; ++i)
             octree_device.radiusSearchHost(data.queries[i], data.shared_radius, indeces, max_answers);                        
     }
 
     {                
-        ScopeTimerCV up("host-search-all");	
+        ScopeTimerCV up("host-radius-search-all");	
         for(size_t i = 0; i < data.tests_num; ++i)
             octree_host.radiusSearch(pcl::PointXYZ(data.queries[i].x, data.queries[i].y, data.queries[i].z), 
                 data.radiuses[i], indeces, pointRadiusSquaredDistance, max_answers);                        
     }
      
     {
-        ScopeTimerCV up("gpu-bruteforce-search-all");	         
+        ScopeTimerCV up("gpu-radius-bruteforce-search-all");	         
         for(size_t i = 0; i < data.tests_num; ++i)
             pcl::gpu::bruteForceRadiusSearchGPU(cloud_device, data.queries[i], data.shared_radius, bruteforce_results_device, buffer);
+    }
+
+    cout << "======  Approx nearest search =====" << endl;
+
+    {
+        ScopeTimerCV up("gpu-approx-nearest-batch-all");	        
+        octree_device.approxNearestSearchBatch(queries_device, sizes_device);                        
+    }
+
+    {        
+        ScopeTimerCV up("gpu-approx-nearest-search-{host}-all");
+        for(size_t i = 0; i < data.tests_num; ++i)
+            octree_device.approxNearestSearchHost(data.queries[i], inds, dist);                        
+    }
+
+    {                
+        ScopeTimerCV up("host-approx-nearest-search-all");	
+        for(size_t i = 0; i < data.tests_num; ++i)
+            octree_host.approxNearestSearch(data.queries[i].x, inds, dist);
     }
 }
