@@ -93,7 +93,12 @@ pcl::visualization::createPlane (const pcl::ModelCoefficients &coefficients)
 {
   vtkSmartPointer<vtkPlaneSource> plane = vtkSmartPointer<vtkPlaneSource>::New ();
   plane->SetNormal (coefficients.values[0], coefficients.values[1], coefficients.values[2]);
-  plane->Push (coefficients.values[3]);
+
+  double norm_sqr = coefficients.values[0] * coefficients.values[0]
+                  + coefficients.values[1] * coefficients.values[1]
+                  + coefficients.values[2] * coefficients.values[2];
+
+  plane->Push (-coefficients.values[3] / sqrt(norm_sqr));
   return (plane->GetOutput ());
 }
 
