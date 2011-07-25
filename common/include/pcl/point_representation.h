@@ -235,6 +235,25 @@ namespace pcl
   };
 
   template <>
+  class DefaultPointRepresentation <PPFSignature> : public  PointRepresentation <PPFSignature>
+  {
+  public:
+    DefaultPointRepresentation ()
+    {
+      nr_dimensions_ = 4;
+    }
+
+    virtual void
+    copyToFloatArray (const PPFSignature &p, float * out) const
+    {
+      out[0] = p.f1;
+      out[1] = p.f2;
+      out[2] = p.f3;
+      out[3] = p.f4;
+    }
+  };
+
+  template <>
   class DefaultPointRepresentation <FPFHSignature33> : public  PointRepresentation <FPFHSignature33>
   {
     public:
