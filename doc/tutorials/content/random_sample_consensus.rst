@@ -56,19 +56,19 @@ The following source code initializes two PointClouds and fills one of them with
 
 .. literalinclude:: sources/random_sample_consensus/random_sample_consensus.cpp
    :language: cpp
-   :lines: 29-46
+   :lines: 30-63
 
-Now we create our RandomSampleConsensus object using a plane model that uses our input cloud.
+Next we create a vector of ints that can store the locations of our inlier points from our PointCloud and now we can build our RandomSampleConsensus object using either a plane or a sphere model from our input cloud.
 
 .. literalinclude:: sources/random_sample_consensus/random_sample_consensus.cpp
    :language: cpp
-   :lines: 48-53
+   :lines: 65-85
 
 This last bit of code copys all of the points that fit our model to another cloud and then display either that or our original cloud in the viewer.
 
 .. literalinclude:: sources/random_sample_consensus/random_sample_consensus.cpp
    :language: cpp
-   :lines: 55-71
+   :lines: 87-96
 
 There is some extra code that relates to the display of the PointClouds in the 3D Viewer, but I'm not going to explain that here.
 
@@ -87,7 +87,7 @@ After you have made the executable, you can run it. Simply do::
 
 to have a viewer window display that shows you the original PointCloud (with outliers) we have created.
 
-.. image:: images/ransac_outliers.png
+.. image:: images/ransac_outliers_plane.png
    :align: center
    :height: 400px
 
@@ -97,10 +97,30 @@ Hit 'r' on your keyboard to scale and center the viewer.  You can then click and
 
 the program will display only the indices of the original PointCloud which satisfy the paticular model we have chosen (in this case plane) as found by RandomSampleConsens in the viewer.
 
-.. image:: images/ransac_inliers.png
+.. image:: images/ransac_inliers_plane.png
    :align: center
    :height: 400px
 
 Again hit 'r' to scale and center the view and then click and drag with the mouse to rotate around the cloud.  You can see there are no longer any points that do not lie with in the plane model in this PointCloud. Hit 'q' to exit the viewer and program.
+
+There is also an example using a sphere in this program.  If you run it with::
+
+  $ ./random_sample_consensus -s
+
+It will generate and display a sphereical cloud and some outliers as well.
+
+.. image:: images/ransac_outliers_sphere.png
+   :align: center
+   :height: 400px
+
+Then when you run the program with::
+
+  $ ./random_sample_consensus -sf
+
+It will show you the result of applying RandomSampleConsensus to this data set with a spherical model.
+
+.. image:: images/ransac_inliers_sphere.png
+   :align: center
+   :height: 400px
 
 .. [Wikipedia] http://en.wikipedia.org/wiki/RANSAC
