@@ -99,9 +99,13 @@ pcl::io::saveVTKFile (const std::string &file_name,
     fs << "1 " << i << std::endl;
 
   // Write polygons
-  // note: Double check the second parameter!
-  fs << "\nPOLYGONS " << triangles.polygons.size () << " " << (triangles.polygons[0].vertices.size () + 1) * triangles.polygons.size () << std::endl;
-  for (size_t i = 0; i < triangles.polygons.size (); ++i)
+  // compute the correct number of values:
+  size_t triangle_size = triangles.polygons.size ();
+  int correct_number = triangle_size;
+  for (size_t i = 0; i < triangle_size; ++i)
+    correct_number += triangles.polygons[i].vertices.size ();
+  fs << "\nPOLYGONS " << triangle_size << " " << correct_number << std::endl;
+  for (size_t i = 0; i < triangle_size; ++i)
   {
     fs << triangles.polygons[i].vertices.size () << " ";
     size_t j = 0;
