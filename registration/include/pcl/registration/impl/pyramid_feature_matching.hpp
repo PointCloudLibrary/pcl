@@ -114,7 +114,7 @@ pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (con
   // include self-similarity factors
   float self_similarity_a = pyramid_a->nr_features,
       self_similarity_b = pyramid_b->nr_features;
-  PCL_INFO ("[pcl::PyramidFeatureMatching::comparePyramidFeatureHistograms] Self similarity measures: %f, %f\n", self_similarity_a, self_similarity_b);
+  PCL_DEBUG ("[pcl::PyramidFeatureMatching::comparePyramidFeatureHistograms] Self similarity measures: %f, %f\n", self_similarity_a, self_similarity_b);
   match_count /= sqrt (self_similarity_a * self_similarity_b);
 
   return match_count;
@@ -181,23 +181,24 @@ pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
   }
   D = sqrt (D);
   nr_levels = ceil (Log2 (D));
-  PCL_INFO ("[pcl::PyramidFeatureHistogram::initializeHistogram] Pyramid will have %u levels with a hyper-parallelepiped diagonal size of %f\n", nr_levels, D);
+  PCL_DEBUG ("[pcl::PyramidFeatureHistogram::initializeHistogram] Pyramid will have %u levels with a hyper-parallelepiped diagonal size of %f\n", nr_levels, D);
 
 
+  hist_levels.resize (nr_levels);
   for (size_t level_i = 0; level_i < nr_levels; ++level_i)
   {
-    std::vector<size_t> bins_per_dimension;
-    std::vector<float> bin_step;
+    std::vector<size_t> bins_per_dimension (nr_dimensions);
+    std::vector<float> bin_step (nr_dimensions);
     for (size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i) {
-      bins_per_dimension.push_back (ceil ( (dimension_range_target_[dim_i].second - dimension_range_target_[dim_i].first) / (pow (2.0f, (int) level_i) * sqrt ((float) nr_dimensions))));
-      bin_step.push_back (pow (2.0f, (int) level_i) * sqrt ((float) nr_dimensions));
+      bins_per_dimension[dim_i] = ceil ( (dimension_range_target_[dim_i].second - dimension_range_target_[dim_i].first) / (pow (2.0f, (int) level_i) * sqrt ((float) nr_dimensions)));
+      bin_step[dim_i] = pow (2.0f, (int) level_i) * sqrt ((float) nr_dimensions);
     }
-    hist_levels.push_back (PyramidFeatureHistogramLevel (bins_per_dimension, bin_step));
+    hist_levels[level_i] = PyramidFeatureHistogramLevel (bins_per_dimension, bin_step);
 
-    PCL_INFO ("[pcl::PyramidFeatureHistogram::initializeHistogram] Created vector of size %u at level %u\nwith #bins per dimension:", hist_levels.back ().hist.size (), level_i);
+    PCL_DEBUG ("[pcl::PyramidFeatureHistogram::initializeHistogram] Created vector of size %u at level %u\nwith #bins per dimension:", hist_levels.back ().hist.size (), level_i);
     for (size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i)
-      PCL_INFO ("%u ", bins_per_dimension[dim_i]);
-    PCL_INFO ("\n");
+      PCL_DEBUG ("%u ", bins_per_dimension[dim_i]);
+    PCL_DEBUG ("\n");
   }
 
   return true;
@@ -284,7 +285,6 @@ pcl::PyramidFeatureHistogram<PointFeature>::compute ()
   {
     std::vector<float> feature_vector;
     convertFeatureToVector (input_->points[feature_i], feature_vector);
-    //    PCL_INFO ("adding feature_i %u with values: %f %f %f %f\n", feature_i, feature_vector[0], feature_vector[1], feature_vector[2], feature_vector[3]);
     addFeature (feature_vector);
   }
 

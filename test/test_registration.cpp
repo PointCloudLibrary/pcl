@@ -47,6 +47,8 @@
 #include "pcl/registration/icp.h"
 #include "pcl/registration/icp_nl.h"
 #include "pcl/registration/ia_ransac.h"
+#include "pcl/registration/pyramid_feature_matching.h"
+#include "pcl/features/ppf.h"
 
 // We need Histogram<2> to function, so we'll explicitely add kdtree_flann.hpp here
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
@@ -273,6 +275,89 @@ TEST (PCL, SampleConsensusInitialAlignment)
   reg.align (cloud_reg);
   EXPECT_EQ ((int)cloud_reg.points.size (), (int)cloud_source.points.size ());
   EXPECT_EQ (reg.getFitnessScore () < 0.0005, true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, PyramidFeatureHistogram)
+{
+  // Create shared pointers
+   PointCloud<PointXYZ>::Ptr cloud_source_ptr = cloud_source.makeShared (),
+       cloud_target_ptr = cloud_target.makeShared ();
+
+  PointCloud<Normal>::Ptr cloud_source_normals (new PointCloud<Normal> ()),
+      cloud_target_normals (new PointCloud<Normal> ());
+  KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
+  NormalEstimation<PointXYZ, Normal> normal_estimator;
+  normal_estimator.setSearchMethod (tree);
+  normal_estimator.setRadiusSearch (0.05);
+  normal_estimator.setInputCloud (cloud_source_ptr);
+  normal_estimator.compute (*cloud_source_normals);
+
+  normal_estimator.setInputCloud (cloud_target_ptr);
+  normal_estimator.compute (*cloud_target_normals);
+
+
+  PointCloud<PPFSignature>::Ptr ppf_signature_source (new PointCloud<PPFSignature> ()),
+      ppf_signature_target (new PointCloud<PPFSignature> ());
+  PPFEstimation<PointXYZ, Normal, PPFSignature> ppf_estimator;
+  ppf_estimator.setInputCloud (cloud_source_ptr);
+  ppf_estimator.setInputNormals (cloud_source_normals);
+  ppf_estimator.compute (*ppf_signature_source);
+
+  ppf_estimator.setInputCloud (cloud_target_ptr);
+  ppf_estimator.setInputNormals (cloud_target_normals);
+  ppf_estimator.compute (*ppf_signature_target);
+
+
+  vector<pair<float, float> > dim_range_input, dim_range_target;
+  for (size_t i = 0; i < 3; ++i) dim_range_input.push_back (pair<float, float> (-M_PI, M_PI));
+  dim_range_input.push_back (pair<float, float> (0.0f, 1.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target.push_back (pair<float, float> (-M_PI * 10.0f, M_PI * 10.0f));
+  dim_range_target.push_back (pair<float, float> (0.0f, 50.0f));
+
+
+  PyramidFeatureHistogram<PPFSignature>::Ptr pyramid_source (new PyramidFeatureHistogram<PPFSignature> ()),
+      pyramid_target (new PyramidFeatureHistogram<PPFSignature> ());
+  pyramid_source->setInputCloud (ppf_signature_source);
+  pyramid_source->setInputDimensionRange (dim_range_input);
+  pyramid_source->setTargetDimensionRange (dim_range_target);
+  pyramid_source->compute ();
+
+  pyramid_target->setInputCloud (ppf_signature_target);
+  pyramid_target->setInputDimensionRange (dim_range_input);
+  pyramid_target->setTargetDimensionRange (dim_range_target);
+  pyramid_target->compute ();
+
+  float similarity_value = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
+  EXPECT_NEAR (similarity_value, 0.739672, 1e-6);
+
+
+  vector<pair<float, float> > dim_range_target2;
+  for (size_t i = 0; i < 3; ++i) dim_range_target2.push_back (pair<float, float> (-M_PI * 5.0f, M_PI * 5.0f));
+    dim_range_target2.push_back (pair<float, float> (0.0f, 20.0f));
+
+  pyramid_source->setTargetDimensionRange (dim_range_target2);
+  pyramid_source->compute ();
+
+  pyramid_target->setTargetDimensionRange (dim_range_target2);
+  pyramid_target->compute ();
+
+  float similarity_value2 = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
+  EXPECT_NEAR (similarity_value2, 0.801435, 1e-6);
+
+
+  vector<pair<float, float> > dim_range_target3;
+  for (size_t i = 0; i < 3; ++i) dim_range_target3.push_back (pair<float, float> (-M_PI * 2.0f, M_PI * 2.0f));
+  dim_range_target3.push_back (pair<float, float> (0.0f, 10.0f));
+
+  pyramid_source->setTargetDimensionRange (dim_range_target3);
+  pyramid_source->compute ();
+
+  pyramid_target->setTargetDimensionRange (dim_range_target3);
+  pyramid_target->compute ();
+
+  float similarity_value3 = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
+  EXPECT_NEAR (similarity_value3, 0.881507, 1e-6);
 }
 
 /* ---[ */
