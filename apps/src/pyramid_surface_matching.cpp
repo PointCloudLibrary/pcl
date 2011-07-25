@@ -49,14 +49,14 @@ public:
   convertFeatureToVector (const PFHSignature125& feature,
                           std::vector<float>& feature_vector)
   {
-    //feature_vector.clear ();
+    feature_vector.resize (125);
     for (size_t i = 0; i < 125; ++i)
-      feature_vector.push_back (feature.histogram[i]);
+      feature_vector[i] = feature.histogram[i];
   }
 };
 */
 
-class PPFPyramidFeatureMatching : public PyramidFeatureMatching<PPFSignature>
+/*class PPFPyramidFeatureMatching : public PyramidFeatureMatching<PPFSignature>
 {
 public:
   PPFPyramidFeatureMatching (size_t a_dimensions,
@@ -68,12 +68,13 @@ public:
                           std::vector<float>& feature_vector)
   {
     // rescale features for better bin sizes inside the histogram
-    feature_vector.push_back (feature.f1 * 10.0f);
-    feature_vector.push_back (feature.f2 * 10.0f);
-    feature_vector.push_back (feature.f3 * 10.0f);
-    feature_vector.push_back (feature.f4 * 50.0f);
+    feature_vector.resize (4);
+    feature_vector[0] = feature.f1 * 10.0f;
+    feature_vector[1] = feature.f2 * 10.0f;
+    feature_vector[2] = feature.f3 * 10.0f;
+    feature_vector[3] = feature.f4 * 50.0f;
   }
-};
+};*/
 
 int
 main (int argc, char **argv)
@@ -120,18 +121,28 @@ main (int argc, char **argv)
 
   cerr << "Finished calculating the features..." << endl;
   size_t dimensions = 4;
-  vector<pair<float, float> > dim_range;
-  for (size_t i = 0; i < 3; ++i) dim_range.push_back (pair<float, float> (-M_PI * 10.0f, M_PI * 10.0f));
-  dim_range.push_back (pair<float, float> (0.0f, 50.0f));
+  vector<pair<float, float> > dim_range_input, dim_range_target;
+  for (size_t i = 0; i < 3; ++i) dim_range_input.push_back (pair<float, float> (-M_PI, M_PI));
+  dim_range_input.push_back (pair<float, float> (0.0f, 1.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target.push_back (pair<float, float> (-M_PI * 10.0f, M_PI * 10.0f));
+  dim_range_target.push_back (pair<float, float> (0.0f, 50.0f));
 
-  PPFPyramidFeatureMatching pyramid_matching (dimensions, dim_range);
-  PyramidHistogram::Ptr pyramid_a, pyramid_b;
-  pyramid_matching.computePyramidHistogram (ppf_signature_a, pyramid_a);
+
+  PyramidHistogram<PPFSignature>::Ptr pyramid_a (new PyramidHistogram<PPFSignature> ());
+  pyramid_a->setInputCloud (ppf_signature_a);
+  pyramid_a->setInputDimensionRange (dim_range_input);
+  pyramid_a->setTargetDimensionRange (dim_range_target);
+  pyramid_a->compute ();
   cerr << "Done with the first pyramid" << endl;
-  pyramid_matching.computePyramidHistogram (ppf_signature_b, pyramid_b);
+
+  PyramidHistogram<PPFSignature>::Ptr pyramid_b (new PyramidHistogram<PPFSignature> ());
+  pyramid_b->setInputCloud (ppf_signature_b);
+  pyramid_b->setInputDimensionRange (dim_range_input);
+  pyramid_b->setTargetDimensionRange (dim_range_target);
+  pyramid_b->compute ();
   cerr << "Done with the second pyramid" << endl;
 
-
+  PyramidFeatureMatching<PPFSignature> pyramid_matching;
   float value = pyramid_matching.comparePyramidHistograms (pyramid_a, pyramid_b);
 
   cerr << "Surface comparison value between " << argv[1] << " and " << argv[2] << " is: " << value << endl;

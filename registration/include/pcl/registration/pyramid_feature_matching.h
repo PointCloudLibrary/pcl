@@ -39,60 +39,93 @@
 #define PCL_PYRAMID_FEATURE_MATCHING_H_
 
 #include <pcl/pcl_base.h>
+#include <pcl/point_representation.h>
 
 namespace pcl
 {
-  struct PyramidHistogram
+  template <typename PointFeature>
+  class PyramidHistogram : public PCLBase<PointFeature>
   {
-    typedef boost::shared_ptr<PyramidHistogram> Ptr;
+    public:
+      using PCLBase<PointFeature>::input_;
 
-    PyramidHistogram (std::vector<std::pair<float, float> > &a_dimension_range,
-                      size_t &a_nr_levels,
-                      size_t a_nr_features)
-      : dimension_range (a_dimension_range),
-        nr_levels (a_nr_levels),
-        nr_features (a_nr_features)
-    {
-      dimensions = dimension_range.size ();
+      typedef boost::shared_ptr<PyramidHistogram<PointFeature> > Ptr;
+      typedef boost::shared_ptr<const pcl::PointRepresentation<PointFeature> > FeatureRepresentationConstPtr;
+
+
+      PyramidHistogram ();
+
+      bool
       initializeHistogram ();
-    }
 
-    void
-    initializeHistogram ();
+      inline void
+      setInputDimensionRange (std::vector<std::pair<float, float> > &dimension_range_input)
+      { dimension_range_input_ = dimension_range_input; }
 
-    void
-    addFeature (std::vector<float> &feature);
+      inline std::vector<std::pair<float, float> >
+      getInputDimensionRange () { return dimension_range_input_; }
 
-    unsigned int&
-    at (std::vector<size_t> &access,
-        size_t &level);
 
-    unsigned int&
-    at (std::vector<float> &feature,
-        size_t &level);
+      inline void
+      setTargetDimensionRange (std::vector<std::pair<float, float> > &dimension_range_target)
+      { dimension_range_target_ = dimension_range_target; }
 
-    std::vector<std::pair<float, float> > dimension_range;
-    size_t dimensions, nr_levels, nr_features;
+      inline std::vector<std::pair<float, float> >
+      getTargetDimensionRange () { return dimension_range_target_; }
 
-    struct PyramidHistogramLevel
-    {
-      PyramidHistogramLevel (std::vector<size_t> &a_bins_per_dimension,
-                             std::vector<float> &a_bin_step)
-        : bins_per_dimension (a_bins_per_dimension),
-          bin_step (a_bin_step)
-      {
-        initializeHistogramLevel ();
-      }
+      /** \brief Provide a pointer to the feature representation to use to convert features to k-D vectors.
+       * \param feature_representation the const boost shared pointer to a PointRepresentation
+       */
+      inline void
+      setPointRepresentation (const FeatureRepresentationConstPtr& feature_representation) { feature_representation_ = feature_representation; }
+
+      /** \brief Get a pointer to the feature representation used when converting features into k-D vectors. */
+      inline FeatureRepresentationConstPtr const
+      getPointRepresentation () { return feature_representation_; }
 
       void
-      initializeHistogramLevel ();
+      compute ();
 
-      std::vector<unsigned int> hist;
-      std::vector<size_t> bins_per_dimension;
-      std::vector<float> bin_step;
-    };
+      inline unsigned int&
+      at (std::vector<size_t> &access,
+          size_t &level);
 
-    std::vector<PyramidHistogramLevel> hist_levels;
+      inline unsigned int&
+      at (std::vector<float> &feature,
+          size_t &level);
+
+      size_t nr_dimensions, nr_levels, nr_features;
+
+      struct PyramidHistogramLevel
+      {
+        PyramidHistogramLevel (std::vector<size_t> &a_bins_per_dimension,
+                               std::vector<float> &a_bin_step)
+        : bins_per_dimension (a_bins_per_dimension),
+          bin_step (a_bin_step)
+        {
+          initializeHistogramLevel ();
+        }
+
+        void
+        initializeHistogramLevel ();
+
+        std::vector<unsigned int> hist;
+        std::vector<size_t> bins_per_dimension;
+        std::vector<float> bin_step;
+      };
+      std::vector<PyramidHistogramLevel> hist_levels;
+
+
+    private:
+      std::vector<std::pair<float, float> > dimension_range_input_, dimension_range_target_;
+      FeatureRepresentationConstPtr feature_representation_;
+
+      void
+      convertFeatureToVector (const PointFeature &feature,
+                              std::vector<float> &feature_vector);
+
+      void
+      addFeature (std::vector<float> &feature);
   };
 
 
@@ -100,37 +133,13 @@ namespace pcl
   class PyramidFeatureMatching : public PCLBase<PointFeature>
   {
     public:
-      typedef pcl::PointCloud<PointFeature> FeatureCloud;
-      typedef typename pcl::PointCloud<PointFeature>::ConstPtr FeatureCloudConstPtr;
+      typedef typename pcl::PyramidHistogram<PointFeature>::Ptr PyramidHistogramPtr;
 
-      using PCLBase<PointFeature>::input_;
-
-      PyramidFeatureMatching (size_t a_dimensions,
-                              std::vector<std::pair<float, float> > a_dimension_range)
-        : dimensions (a_dimensions),
-          dimension_range (a_dimension_range)
-      {
-        initialize ();
-      };
-
-      void
-      initialize ();
-
-      void
-      computePyramidHistogram (const FeatureCloudConstPtr &feature_cloud,
-                               PyramidHistogram::Ptr &pyramid);
-
-      virtual void
-      convertFeatureToVector (const PointFeature& feature,
-                              std::vector<float>& feature_vector) = 0;
+      PyramidFeatureMatching () {};
 
       float
-      comparePyramidHistograms (const pcl::PyramidHistogram::Ptr &pyramid_a,
-                                const pcl::PyramidHistogram::Ptr &pyramid_b);
-
-    protected:
-      size_t dimensions, levels;
-      std::vector<std::pair<float, float> > dimension_range;
+      comparePyramidHistograms (const PyramidHistogramPtr &pyramid_a,
+                                const PyramidHistogramPtr &pyramid_b);
   };
 }
 
