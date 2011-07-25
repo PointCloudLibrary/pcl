@@ -654,10 +654,9 @@ namespace pcl
                                                 *   a reference to a non-existing point */
       
       // =====PROTECTED METHODS=====
-      template <typename PointCloudType>
-      void
-        doZBuffer (const PointCloudType& point_cloud, float noise_level,
-                  float min_range, int& top, int& right, int& bottom, int& left);
+      template <typename PointCloudType> void
+      doZBuffer (const PointCloudType& point_cloud, float noise_level,
+                 float min_range, int& top, int& right, int& bottom, int& left);
 
       // =====STATIC PROTECTED=====
       static const int lookup_table_size;
@@ -666,19 +665,19 @@ namespace pcl
       static std::vector<float> cos_lookup_table;
       /** Create lookup tables for trigonometric functions */
       static void
-        createLookupTables ();
+      createLookupTables ();
 
       /** Query the asin lookup table */
       static inline float
-        asinLookUp (float value);
+      asinLookUp (float value);
       
       /** Query the atan2 lookup table */
       static inline float
-        atan2LookUp (float y, float x);
+      atan2LookUp (float y, float x);
      
       /** Query the cos lookup table */
       static inline float
-        cosLookUp (float value);
+      cosLookUp (float value);
 
 
     public:
@@ -689,11 +688,26 @@ namespace pcl
     * /ingroup range_image
     */
   inline std::ostream&
-    operator<< (std::ostream& os, const RangeImage& r)
+  operator<< (std::ostream& os, const RangeImage& r)
   {
-    os << "range image of size "<<r.width<<"x"<<r.height<<" with angular resolution "
-       << RAD2DEG (r.getAngularResolution ()) << "deg/pixel and "<<r.points.size ()<<" points";
-    return os;
+    os << "header: " << std::endl;
+    os << r.header;
+    os << "points[]: " << r.points.size () << std::endl;
+    os << "width: " << r.width << std::endl;
+    os << "height: " << r.height << std::endl;
+    os << "sensor_origin_: "
+       << r.sensor_origin_[0] << ' '
+       << r.sensor_origin_[1] << ' '
+       << r.sensor_origin_[2] << std::endl;
+    os << "sensor_orientation_: "
+       << r.sensor_orientation_.x () << ' '
+       << r.sensor_orientation_.y () << ' '
+       << r.sensor_orientation_.z () << ' '
+       << r.sensor_orientation_.w () << std::endl;
+    os << "is_dense: " << r.is_dense << std::endl;
+    os << "angular resolution: "
+       << RAD2DEG (r.getAngularResolution ()) << "deg/pixel" << std::endl;
+    return (os);
   }
 
 }  // namespace end
