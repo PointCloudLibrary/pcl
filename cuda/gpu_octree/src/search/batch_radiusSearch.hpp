@@ -45,7 +45,7 @@
 #include "utils/devmem2d.hpp"
 #include "utils/scan_block.hpp"
 
-#include "radius_search/octree_iterator.hpp"
+#include "search/octree_iterator.hpp"
 
 
 namespace pcl
@@ -54,9 +54,11 @@ namespace pcl
     {
         namespace batch_radius_search
         {   
-            template<typename PointType>
-            struct Batch
+            template<typename PointT, typename RadiusStrategy>
+            struct Batch : public RadiusStrategy
             {   
+                typedef PointT PointType;
+
                 const int *indices;
 
                 const float* points;
@@ -64,7 +66,6 @@ namespace pcl
 
                 OctreeGlobalWithBox octree;
 
-                float radius;
                 const PointType* queries;
 
                 int queries_num;
@@ -72,6 +73,29 @@ namespace pcl
 
                 mutable int* output;
                 mutable int* output_sizes;        
+            };
+
+            struct SharedRadius
+            {
+                float radius;
+                __device__ __forceinline__ float getRadius(int /*index*/) const { return radius; }                
+
+                __device__ __forceinline__ float bradcastRadius2(float* /*ptr*/, bool /*active*/, float& /*radius_reg*/) const
+                {
+                    return radius * radius;
+                }
+            };
+
+            struct IndividualRadius
+            {
+                const float* radiuses;
+                __device__ __forceinline__ float getRadius(int index) const { return radiuses[index]; }
+                __device__ __forceinline__ float bradcastRadius2(float* ptr, bool active, float& radius_reg) const
+                {
+                    if (active)
+                        *ptr = radius_reg * radius_reg;
+                    return *ptr;
+                }
             };
 
             struct KernelPolicy
@@ -114,14 +138,14 @@ namespace pcl
             __shared__ KernelPolicy::SmemStorage storage;
          
 
-            template<typename PointType>
+            template<typename BatchType>
             struct Warp_radiusSearch
             {   
             public:
 
                 //typedef OctreeIteratorDevice<KernelPolicy::CTA_SIZE, KernelPolicy::MAX_LEVELS_PLUS_ROOT> OctreeIterator;
                 typedef OctreeIteratorDeviceNS OctreeIterator;
-                typedef Batch<PointType> BatchType;
+                typedef typename BatchType::PointType PointType;
                 
                 const BatchType& batch;
                 OctreeIterator iterator;        
@@ -129,6 +153,7 @@ namespace pcl
                 int found_count;
                 int query_index;        
                 float3 query;
+                float radius;
 
                 __device__ __forceinline__ Warp_radiusSearch(const BatchType& batch_arg, int query_index_arg) 
                     : batch(batch_arg), iterator(/**/batch.octree/*storage.paths/**/), found_count(0), query_index(query_index_arg){}
@@ -139,6 +164,7 @@ namespace pcl
                     {
                         PointType q = batch.queries[query_index];
                         query = make_float3(q.x, q.y, q.z);
+                        radius = batch.getRadius(query_index);
                     }
                     else                
                         query_index = -1;
@@ -173,13 +199,13 @@ namespace pcl
                     calcBoundingBox(iterator.level, code, node_minp, node_maxp);
 
                     //if true, take nothing, and go to next
-                    if (checkIfNodeOutsideSphere(node_minp, node_maxp, query, batch.radius))
+                    if (checkIfNodeOutsideSphere(node_minp, node_maxp, query, radius))
                     {     
                         ++iterator;
                         return -1;                
                     }
 
-                    if (checkIfNodeInsideSphere(node_minp, node_maxp, query, batch.radius))
+                    if (checkIfNodeInsideSphere(node_minp, node_maxp, query, radius))
                     {   
                         ++iterator;       
                         return node_idx; //return node to copy
@@ -263,7 +289,9 @@ namespace pcl
                                 storage.per_warp_buffer[warpId] = __float_as_int(query.z);
                             active_query.z = __int_as_float(storage.per_warp_buffer[warpId]);                            
 
-                            length = TestWarpKernel(batch.indices + beg, batch.points + beg, batch.points_step, active_query, length, out, length_left);                    
+                            float radius2 = batch.bradcastRadius2((float*)&storage.per_warp_buffer[warpId], (active_lane == laneId), radius);                            
+
+                            length = TestWarpKernel(batch.indices + beg, batch.points + beg, batch.points_step, active_query, radius2, length, out, length_left);                    
                         }
                         else
                         {                            
@@ -276,10 +304,8 @@ namespace pcl
                     }            
                 }    
 
-                __device__ __forceinline__ int TestWarpKernel(const int* indices, const float* points, int points_step, float3 active_query, int length, int* out, int length_left)
+                __device__ __forceinline__ int TestWarpKernel(const int* indices, const float* points, int points_step, float3 active_query, float radius2, int length, int* out, int length_left)
                 {                        
-                    float radius2 = batch.radius * batch.radius;            
-
                     unsigned int idx = LaneId();
                     const int STRIDE = warpSize;            
                     int last_threadIdx = threadIdx.x - idx + 31;            
@@ -326,8 +352,8 @@ namespace pcl
                 }
             };
             
-            template<typename PointType>
-            __global__ void KernelB(const Batch<PointType> batch) 
+            template<typename BatchType>
+            __global__ void KernelB(const BatchType batch) 
             {         
                 int query_index = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -336,7 +362,7 @@ namespace pcl
                 if (__all(active == false)) 
                     return;
 
-                Warp_radiusSearch<PointType> search(batch, query_index);
+                Warp_radiusSearch<BatchType> search(batch, query_index);
                 search.launch(active); 
             }
         }
