@@ -329,7 +329,7 @@ TEST (PCL, PyramidFeatureHistogram)
   pyramid_target->compute ();
 
   float similarity_value = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
-  EXPECT_NEAR (similarity_value, 0.739672, 1e-6);
+  EXPECT_NEAR (similarity_value, 0.739672, 1e-4);
 
 
   vector<pair<float, float> > dim_range_target2;
@@ -343,7 +343,7 @@ TEST (PCL, PyramidFeatureHistogram)
   pyramid_target->compute ();
 
   float similarity_value2 = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
-  EXPECT_NEAR (similarity_value2, 0.801435, 1e-6);
+  EXPECT_NEAR (similarity_value2, 0.801435, 1e-4);
 
 
   vector<pair<float, float> > dim_range_target3;
@@ -357,7 +357,7 @@ TEST (PCL, PyramidFeatureHistogram)
   pyramid_target->compute ();
 
   float similarity_value3 = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
-  EXPECT_NEAR (similarity_value3, 0.881507, 1e-6);
+  EXPECT_NEAR (similarity_value3, 0.881507, 1e-4);
 }
 
 /* ---[ */
