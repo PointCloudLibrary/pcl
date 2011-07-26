@@ -133,7 +133,7 @@ namespace pcl
           if (isSampleGood (samples))
             return;
         }
-        PCL_WARN ("[pcl::SampleConsensusModel::getSamples] WARNING: Could not select %d sample points in %d iterations!\n", getSampleSize (), max_sample_checks_);
+        PCL_DEBUG ("[pcl::SampleConsensusModel::getSamples] WARNING: Could not select %d sample points in %d iterations!\n", getSampleSize (), max_sample_checks_);
         samples.clear ();
       }
 
