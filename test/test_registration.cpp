@@ -49,6 +49,7 @@
 #include "pcl/registration/ia_ransac.h"
 #include "pcl/registration/pyramid_feature_matching.h"
 #include "pcl/features/ppf.h"
+#include "pcl/registration/ppf_registration.h"
 
 // We need Histogram<2> to function, so we'll explicitely add kdtree_flann.hpp here
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
@@ -358,6 +359,83 @@ TEST (PCL, PyramidFeatureHistogram)
 
   float similarity_value3 = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
   EXPECT_NEAR (similarity_value3, 0.881507, 1e-4);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, PPFRegistration)
+{
+  // Transform the source cloud by a large amount
+  Eigen::Vector3f initial_offset (100, 0, 0);
+  float angle = M_PI/6;
+  Eigen::Quaternionf initial_rotation (cos (angle / 2), 0, 0, sin (angle / 2));
+  PointCloud<PointXYZ> cloud_source_transformed;
+  transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
+
+
+  // Create shared pointers
+  PointCloud<PointXYZ>::Ptr cloud_source_ptr, cloud_target_ptr, cloud_source_transformed_ptr;
+  cloud_source_transformed_ptr = cloud_source_transformed.makeShared ();
+  cloud_target_ptr = cloud_target.makeShared ();
+
+  // Estimate normals for both clouds
+  NormalEstimation<PointXYZ, Normal> normal_estimation;
+  KdTreeFLANN<PointXYZ>::Ptr search_tree (new KdTreeFLANN<PointXYZ> ());
+  normal_estimation.setSearchMethod (search_tree);
+  normal_estimation.setRadiusSearch (0.05);
+  PointCloud<Normal>::Ptr normals_target (new PointCloud<Normal> ()),
+      normals_source_transformed (new PointCloud<Normal> ());
+  normal_estimation.setInputCloud (cloud_target_ptr);
+  normal_estimation.compute (*normals_target);
+  normal_estimation.setInputCloud (cloud_source_transformed_ptr);
+  normal_estimation.compute (*normals_source_transformed);
+
+  PointCloud<PointNormal>::Ptr cloud_target_with_normals (new PointCloud<PointNormal> ()),
+      cloud_source_transformed_with_normals (new PointCloud<PointNormal> ());
+  concatenateFields (*cloud_target_ptr, *normals_target, *cloud_target_with_normals);
+  concatenateFields (*cloud_source_transformed_ptr, *normals_source_transformed, *cloud_source_transformed_with_normals);
+
+  // Compute PPFSignature feature clouds for source cloud
+  PPFEstimation<PointXYZ, Normal, PPFSignature> ppf_estimator;
+  PointCloud<PPFSignature>::Ptr features_source_transformed (new PointCloud<PPFSignature> ());
+  ppf_estimator.setInputCloud (cloud_source_transformed_ptr);
+  ppf_estimator.setInputNormals (normals_source_transformed);
+  ppf_estimator.compute (*features_source_transformed);
+
+
+  // Train the source cloud - create the hash map search structure
+  PPFHashMapSearch::Ptr hash_map_search (new PPFHashMapSearch (15.0 / 180 * M_PI,
+                                                               0.05));
+  hash_map_search->setInputFeatureCloud (features_source_transformed);
+
+  // Finally, do the registration
+  PPFRegistration<PointNormal, PointNormal> ppf_registration;
+  ppf_registration.setSceneReferencePointSamplingRate (20);
+  ppf_registration.setPositionClusteringThreshold (0.15);
+  ppf_registration.setRotationClusteringThreshold (45.0 / 180 * M_PI);
+  ppf_registration.setSearchMethod (hash_map_search);
+  ppf_registration.setInputCloud (cloud_source_transformed_with_normals);
+  ppf_registration.setInputTarget (cloud_target_with_normals);
+
+  PointCloud<PointNormal> cloud_output;
+  ppf_registration.align (cloud_output);
+  Eigen::Matrix4f transformation = ppf_registration.getFinalTransformation ();
+
+  EXPECT_NEAR (transformation(0, 0), -0.105976, 1e-4);
+  EXPECT_NEAR (transformation(0, 1), -0.987014, 1e-4);
+  EXPECT_NEAR (transformation(0, 2), 0.120714, 1e-4);
+  EXPECT_NEAR (transformation(0, 3), 10.701012, 1e-4);
+  EXPECT_NEAR (transformation(1, 0), 0.914111, 1e-4);
+  EXPECT_NEAR (transformation(1, 1), -0.144482, 1e-4);
+  EXPECT_NEAR (transformation(1, 2), -0.378848, 1e-4);
+  EXPECT_NEAR (transformation(1, 3), -91.315384, 1e-4);
+  EXPECT_NEAR (transformation(2, 0), 0.391370, 1e-4);
+  EXPECT_NEAR (transformation(2, 1), 0.070197, 1e-4);
+  EXPECT_NEAR (transformation(2, 2), 0.917552, 1e-4);
+  EXPECT_NEAR (transformation(2, 3), -39.084114, 1e-4);
+  EXPECT_NEAR (transformation(3, 0), 0.000000, 1e-4);
+  EXPECT_NEAR (transformation(3, 1), 0.000000, 1e-4);
+  EXPECT_NEAR (transformation(3, 2), 0.000000, 1e-4);
+  EXPECT_NEAR (transformation(3, 3), 1.000000, 1e-4);
 }
 
 /* ---[ */
