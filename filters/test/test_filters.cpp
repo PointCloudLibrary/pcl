@@ -196,10 +196,10 @@ TEST (ExtractIndices, Filters)
   eie.setIndices (idx);
   eie.setNegative (false);
   eie.filter (result);
-  EXPECT_EQ ((int)result.points.size (), 0);
+  EXPECT_EQ ((int)result.points.size (), 10);
   eie.setNegative (true);
   eie.filter (result);
-  EXPECT_EQ ((int)result.points.size (), 10);
+  EXPECT_EQ ((int)result.points.size (), 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
