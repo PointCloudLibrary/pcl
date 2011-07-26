@@ -58,7 +58,7 @@ namespace pcl
             DeviceArray(const DeviceArray& other);
             DeviceArray& operator=(const DeviceArray& other);
 
-            void create(size_t size);
+            void create(size_t sizeBytes);
             void release();
 
             void upload(const void *host_ptr, size_t sizeBytes);
@@ -128,10 +128,10 @@ namespace pcl
             DeviceArray_(const DeviceArray_& other);
             DeviceArray_& operator = (const DeviceArray_& other);
 
-            void create(size_t sizeBytes);
+            void create(size_t size);
             void release();
 
-            void upload(const T *host_ptr, size_t sizeBytes);
+            void upload(const T *host_ptr, size_t size);
             void download(T *host_ptr) const;
 
             void upload(const std::vector<T>& data);
