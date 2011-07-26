@@ -129,14 +129,6 @@ namespace pcl
         */
       SampleConsensusModelPlane (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModel<PointT> (cloud, indices) {};
 
-      /** \brief Get 3 random non-collinear points as data samples and return them as point indices.
-        * \param iterations the internal number of iterations used by SAC methods
-        * \param samples the resultant model samples
-        * \note assumes unique points!
-        */
-      void 
-      getSamples (int &iterations, std::vector<int> &samples);
-
       /** \brief Check whether the given index samples can form a valid plane model, compute the model coefficients from
         * these samples and store them internally in model_coefficients_. The plane coefficients are:
         * a, b, c, d (ax+by+cz+d=0)
@@ -212,8 +204,8 @@ namespace pcl
         * indices. Pure virtual.
         * \param samples the resultant index samples
         */
-      bool
-      isSampleGood(const std::vector<int> &samples) const;
+      virtual bool
+      isSampleGood (const std::vector<int> &samples) const;
   };
 }
 
