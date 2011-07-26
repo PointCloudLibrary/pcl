@@ -45,8 +45,11 @@
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelPlane<PointT>::isSampleGood(const std::vector<int> &samples) const
+pcl::SampleConsensusModelPlane<PointT>::isSampleGood (const std::vector<int> &samples) const
 {
+  // Need an extra check in case the sample selection is empty
+  if (samples.empty ())
+    return (false);
   // Get the values at the two points
   pcl::Array4fMapConst p0 = input_->points[samples[0]].getArray4fMap ();
   pcl::Array4fMapConst p1 = input_->points[samples[1]].getArray4fMap ();

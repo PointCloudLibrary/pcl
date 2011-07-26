@@ -108,10 +108,11 @@ namespace pcl
         * \param iterations the internal number of iterations used by SAC methods
         * \param samples the resultant model samples
         */
-      void getSamples(int &iterations, std::vector<int> &samples)
+      void 
+      getSamples (int &iterations, std::vector<int> &samples)
       {
         // We're assuming that indices_ have already been set in the constructor
-        if (indices_->size () < getSampleSize())
+        if (indices_->size () < getSampleSize ())
         {
           PCL_ERROR ("[pcl::SampleConsensusModel::getSamples] Can not select %lu unique points out of %lu!\n",
                      (unsigned long)samples.size (), (unsigned long)indices_->size ());
@@ -122,18 +123,18 @@ namespace pcl
         }
 
         // Get a second point which is different than the first
-        samples.resize(getSampleSize());
-        for(unsigned int iter = 0; iter < max_sample_checks_; ++iter)
+        samples.resize (getSampleSize());
+        for (unsigned int iter = 0; iter < max_sample_checks_; ++iter)
         {
           // Choose the random indices
           SampleConsensusModel<PointT>::drawIndexSample (samples);
 
           // If it's a good sample, stop here
-          if (isSampleGood(samples))
+          if (isSampleGood (samples))
             return;
         }
-        PCL_DEBUG ("[pcl::SampleConsensusModel::getSamples] WARNING: Could not select 3 non collinear points in %d iterations!\n", max_sample_checks_);
-        samples.clear();
+        PCL_WARN ("[pcl::SampleConsensusModel::getSamples] WARNING: Could not select %d sample points in %d iterations!\n", getSampleSize (), max_sample_checks_);
+        samples.clear ();
       }
 
       /** \brief Check whether the given index samples can form a valid model,
@@ -263,7 +264,13 @@ namespace pcl
 
       /** \brief Return the size of a sample from which a model is computed */
       inline unsigned int 
-      getSampleSize() const { return SAC_SAMPLE_SIZE.find (getModelType ())->second; }
+      getSampleSize () const 
+      { 
+        std::map<pcl::SacModel, unsigned int>::const_iterator it = SAC_SAMPLE_SIZE.find (getModelType ());
+        if (it == SAC_SAMPLE_SIZE.end ())
+          throw InvalidSACModelTypeException ("No sample size defined for given model type!\n");
+        return (it->second);
+      }
 
       /** \brief Set the minimum and maximum allowable radius limits for the
         * model (applicable to models that estimate a radius)
@@ -322,7 +329,7 @@ namespace pcl
         * \param samples the resultant index samples
         */
       virtual bool
-      isSampleGood(const std::vector<int> &samples) const = 0;
+      isSampleGood (const std::vector<int> &samples) const = 0;
 
       /** \brief A boost shared pointer to the point cloud data array. */
       PointCloudConstPtr input_;
