@@ -545,7 +545,7 @@ Sample Consensus
              In this tutorial we learn how to use a RandomSampleConsensus with a plane model to obtain the cloud fitting to this model.
      ======  ======
      
-     .. |sc_1| image:: images/ransac_outliers.png
+     .. |sc_1| image:: images/ransac_outliers_plane.png
                :height: 100px
 
 .. _segmentation_tutorial:
