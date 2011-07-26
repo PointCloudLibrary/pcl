@@ -133,5 +133,21 @@ namespace pcl
                          unsigned line_number = 0) throw ()
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
+
+  /**
+   * @class InvalidSACModelTypeException
+   * @brief An exception that is thrown when a sample consensus model doesn't
+   * have the correct number of samples defined in model_types.h
+   */
+  class InvalidSACModelTypeException : public PCLException
+  {
+  public:
+
+    InvalidSACModelTypeException (const std::string& error_description,
+                                  const std::string& file_name = "",
+                                  const std::string& function_name = "" ,
+                                  unsigned line_number = 0) throw ()
+      : pcl::PCLException (error_description, file_name, function_name, line_number) { }
+  } ;
 }
 #endif
