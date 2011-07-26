@@ -178,9 +178,8 @@ void elch(int start, int end, const CloudVector &clouds)
 
   static graph_t g;
 
-  for(int i = num_vertices(g)+1; i < clouds.size(); i++) {
-    add_edge(i-1, i, g);
-  }
+  for (size_t i = num_vertices(g)+1; i < clouds.size(); i++) 
+    add_edge (i-1, i, g);
 
   graph_t grb[4];
 
@@ -204,7 +203,7 @@ void elch(int start, int end, const CloudVector &clouds)
   Eigen::Affine3f aend(tend);
   Eigen::Affine3f aendI = aend.inverse();
 
-  for (int i = 0; i < clouds.size(); i++)
+  for (size_t i = 0; i < clouds.size (); i++)
   {
     CloudPtr tmp (new Cloud);
 
@@ -263,7 +262,7 @@ void loopDetection(int end, const CloudVector &clouds, double dist)
     }
   }
   std::cout << "min_dist: " << min_dist << " state: " << state << " first: " << first << " end: " << end << std::endl;
-  if(min_dist > 0 && (state < 2 || end == clouds.size()-1)) //TODO
+  if (min_dist > 0 && (state < 2 || end == (int)clouds.size () - 1)) //TODO
   {
     min_dist = -1;
     std::cout << "calling elch with " << first << " and " << last << std::endl;
@@ -283,10 +282,10 @@ main (int argc, char **argv)
     std::cout << "loading file: " << argv[i] << " size: " << pc->size() << std::endl;
   }
 
-  for(int i = 0; i < clouds.size(); i++)
-    loopDetection(i, clouds, 15.0);
+  for (size_t i = 0; i < clouds.size (); i++)
+    loopDetection (i, clouds, 15.0);
 
-  for(int i = 0; i < clouds.size(); i++)
+  for (size_t i = 0; i < clouds.size (); i++)
   {
     std::string result_filename(clouds[i].first);
     result_filename = result_filename.substr (result_filename.rfind ("/") + 1);

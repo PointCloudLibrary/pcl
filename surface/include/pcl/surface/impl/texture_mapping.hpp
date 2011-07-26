@@ -224,8 +224,8 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV(){
   float x_range = (x_lowest - x_highest)*-1;
   float x_offset = 0 - x_lowest;
   // x
-  float y_range = (y_lowest - y_highest)*-1;
-  float y_offset = 0 - y_lowest;
+  //float y_range = (y_lowest - y_highest)*-1;
+  //float y_offset = 0 - y_lowest;
   // z
   float z_range = (z_lowest - z_highest)*-1;
   float z_offset = 0 - z_lowest;
