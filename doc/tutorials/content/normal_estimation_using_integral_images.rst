@@ -43,7 +43,7 @@ editor, and place the following inside it:
        }
 
       // Estimate normals
-      pcl::IntegralImageNormalEstimation ne;
+      pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
 
       pcl::PointCloud<pcl::Normal> normals;
 	  
@@ -88,7 +88,7 @@ the normals:
 .. code-block:: cpp
 
     // Estimate normals
-    pcl::IntegralImageNormalEstimation ne;
+    pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
 
     pcl::PointCloud<pcl::Normal> normals;
     ne.setNormalEstimationMethod (ne.AVERAGE_DEPTH_CHANGE);
