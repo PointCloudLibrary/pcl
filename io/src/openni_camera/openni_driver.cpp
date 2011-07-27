@@ -61,7 +61,7 @@ using namespace boost;
 namespace openni_wrapper
 {
 
-OpenNIDriver::OpenNIDriver () throw (OpenNIException)
+OpenNIDriver::OpenNIDriver ()
 {
   // Initialize the Engine
   XnStatus status = context_.Init ();
@@ -71,7 +71,7 @@ OpenNIDriver::OpenNIDriver () throw (OpenNIException)
   updateDeviceList ();
 }
 
-unsigned OpenNIDriver::updateDeviceList () throw ()
+unsigned OpenNIDriver::updateDeviceList ()
 {
   // clear current list of devices
   device_context_.clear ();
@@ -116,7 +116,7 @@ unsigned OpenNIDriver::updateDeviceList () throw ()
   // enumerate image nodes
   static xn::NodeInfoList image_nodes;
   status = context_.EnumerateProductionTrees (XN_NODE_TYPE_IMAGE, NULL, image_nodes, NULL);
-  
+
 
   // Suat: This is an ugly ASUS Xtion workaround.
   if (status == XN_STATUS_OK)
@@ -206,7 +206,7 @@ unsigned OpenNIDriver::updateDeviceList () throw ()
   return (device_context_.size ());
 }
 
-void OpenNIDriver::stopAll () throw (OpenNIException)
+void OpenNIDriver::stopAll ()
 {
   XnStatus status = context_.StopGeneratingAll ();
   if (status != XN_STATUS_OK)
@@ -227,12 +227,12 @@ OpenNIDriver::~OpenNIDriver () throw ()
   context_.Shutdown ();
 }
 
-boost::shared_ptr<OpenNIDevice> OpenNIDriver::createVirtualDevice (const string& path, bool repeat, bool stream) const throw (OpenNIException)
+boost::shared_ptr<OpenNIDevice> OpenNIDriver::createVirtualDevice (const string& path, bool repeat, bool stream) const
 {
   return boost::shared_ptr<OpenNIDevice> (new DeviceONI (context_, path, repeat, stream));
 }
- 
-boost::shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) const throw (OpenNIException)
+
+boost::shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) const
 {
   using namespace std;
 
@@ -273,8 +273,8 @@ boost::shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) 
 }
 
 #ifndef _WIN32
-boost::shared_ptr<OpenNIDevice> 
-OpenNIDriver::getDeviceBySerialNumber (const std::string& serial_number) const throw (OpenNIException)
+boost::shared_ptr<OpenNIDevice>
+OpenNIDriver::getDeviceBySerialNumber (const std::string& serial_number) const
 {
   std::map<std::string, unsigned>::const_iterator it = serial_map_.find (serial_number);
 
@@ -289,8 +289,8 @@ OpenNIDriver::getDeviceBySerialNumber (const std::string& serial_number) const t
   return (boost::shared_ptr<OpenNIDevice > ((OpenNIDevice*)NULL));
 }
 
-boost::shared_ptr<OpenNIDevice> 
-OpenNIDriver::getDeviceByAddress (unsigned char bus, unsigned char address) const throw (OpenNIException)
+boost::shared_ptr<OpenNIDevice>
+OpenNIDriver::getDeviceByAddress (unsigned char bus, unsigned char address) const
 {
   std::map<unsigned char, std::map<unsigned char, unsigned> >::const_iterator busIt = bus_map_.find (bus);
   if (busIt != bus_map_.end ())
@@ -308,7 +308,7 @@ OpenNIDriver::getDeviceByAddress (unsigned char bus, unsigned char address) cons
   return (boost::shared_ptr<OpenNIDevice > ((OpenNIDevice*)NULL));
 }
 
-void 
+void
 OpenNIDriver::getDeviceInfos () throw ()
 {
   libusb_context *context = NULL;
@@ -484,7 +484,7 @@ unsigned char OpenNIDriver::getAddress (unsigned index) const throw ()
 #ifndef _WIN32
   unsigned short vendor_id;
   unsigned short product_id;
-  unsigned char bus;  
+  unsigned char bus;
   sscanf (device_context_[index].device_node.GetCreationInfo (), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
 #endif
   return address;

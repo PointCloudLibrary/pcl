@@ -54,7 +54,7 @@ using namespace boost;
 namespace openni_wrapper
 {
 
-OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException)
+OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node)
   : context_ (context)
   , device_node_info_ (device_node)
 {
@@ -86,8 +86,8 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
     if (status != XN_STATUS_OK)
       cerr << "node ir problems" << endl;
 
-  
-#else  
+
+#else
 // create the production nodes
   XnStatus status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
   if (status != XN_STATUS_OK)
@@ -123,7 +123,7 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   Init ();
 }
 
-OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException)
+OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node)
   : context_ (context)
   , device_node_info_ (device_node)
 {
@@ -151,10 +151,10 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   status = context_.FindExistingNode(XN_NODE_TYPE_IR, ir_generator_);
     if (status != XN_STATUS_OK)
       cerr << "node ir problems" << endl;
-  
+
 #else
   XnStatus status;
-  
+
   // create the production nodes
   status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
   if (status != XN_STATUS_OK)
@@ -172,17 +172,17 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   status = ir_node.GetInstance (ir_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating IR generator instance failed. Reason: %s", xnGetStatusString (status));
-  
+
   ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewIRDataAvailable, this, ir_callback_handle_);
   #endif
 
   depth_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewDepthDataAvailable, this, depth_callback_handle_);
   // set up rest
-  Init ();  
+  Init ();
 }
 
 // For ONI Player devices
-OpenNIDevice::OpenNIDevice (xn::Context& context) throw (OpenNIException)
+OpenNIDevice::OpenNIDevice (xn::Context& context)
   : context_ (context)
   , device_node_info_ (0)
 {
@@ -223,7 +223,7 @@ OpenNIDevice::~OpenNIDevice () throw ()
     ir_thread_.join ();
 }
 
-void OpenNIDevice::Init () throw (OpenNIException)
+void OpenNIDevice::Init ()
 {
   XnDouble pixel_size;
 
@@ -273,11 +273,11 @@ void OpenNIDevice::Init () throw (OpenNIException)
     lock_guard<mutex> ir_lock (ir_mutex_);
     ir_thread_ = boost::thread (&OpenNIDevice::IRDataThreadFunction, this);
   }
-  
+
   quit_ = false;
 }
 
-void OpenNIDevice::startImageStream () throw (OpenNIException)
+void OpenNIDevice::startImageStream ()
 {
   if (hasImageStream ())
   {
@@ -293,7 +293,7 @@ void OpenNIDevice::startImageStream () throw (OpenNIException)
     THROW_OPENNI_EXCEPTION ("Device does not provide an image stream");
 }
 
-void OpenNIDevice::stopImageStream () throw (OpenNIException)
+void OpenNIDevice::stopImageStream ()
 {
   if (hasImageStream ())
   {
@@ -309,7 +309,7 @@ void OpenNIDevice::stopImageStream () throw (OpenNIException)
     THROW_OPENNI_EXCEPTION ("Device does not provide an image stream");
 }
 
-void OpenNIDevice::startDepthStream () throw (OpenNIException)
+void OpenNIDevice::startDepthStream ()
 {
   if (hasDepthStream ())
   {
@@ -326,7 +326,7 @@ void OpenNIDevice::startDepthStream () throw (OpenNIException)
     THROW_OPENNI_EXCEPTION ("Device does not provide a depth stream");
 }
 
-void OpenNIDevice::stopDepthStream () throw (OpenNIException)
+void OpenNIDevice::stopDepthStream ()
 {
   if (hasDepthStream ())
   {
@@ -343,7 +343,7 @@ void OpenNIDevice::stopDepthStream () throw (OpenNIException)
     THROW_OPENNI_EXCEPTION ("Device does not provide a depth stream");
 }
 
-void OpenNIDevice::startIRStream () throw (OpenNIException)
+void OpenNIDevice::startIRStream ()
 {
   if (hasIRStream ())
   {
@@ -362,7 +362,7 @@ void OpenNIDevice::startIRStream () throw (OpenNIException)
 #endif
 }
 
-void OpenNIDevice::stopIRStream () throw (OpenNIException)
+void OpenNIDevice::stopIRStream ()
 {
   if (hasIRStream ())
   {
@@ -379,19 +379,19 @@ void OpenNIDevice::stopIRStream () throw (OpenNIException)
     THROW_OPENNI_EXCEPTION ("Device does not provide an IR stream");
 }
 
-bool OpenNIDevice::isImageStreamRunning () const throw (OpenNIException)
+bool OpenNIDevice::isImageStreamRunning () const throw ()
 {
   lock_guard<mutex> image_lock (image_mutex_);
   return ( image_generator_.IsValid () && image_generator_.IsGenerating ());
 }
 
-bool OpenNIDevice::isDepthStreamRunning () const throw (OpenNIException)
+bool OpenNIDevice::isDepthStreamRunning () const throw ()
 {
   lock_guard<mutex> depth_lock (depth_mutex_);
   return ( depth_generator_.IsValid () && depth_generator_.IsGenerating ());
 }
 
-bool OpenNIDevice::isIRStreamRunning () const throw (OpenNIException)
+bool OpenNIDevice::isIRStreamRunning () const throw ()
 {
   lock_guard<mutex> ir_lock (ir_mutex_);
   return ( ir_generator_.IsValid () && ir_generator_.IsGenerating ());
@@ -417,7 +417,7 @@ bool OpenNIDevice::hasIRStream () const throw ()
   return ir_generator_.IsValid ();
 }
 
-void OpenNIDevice::setDepthRegistration (bool on_off) throw (OpenNIException)
+void OpenNIDevice::setDepthRegistration (bool on_off)
 {
   if (hasDepthStream () && hasImageStream())
   {
@@ -446,7 +446,7 @@ void OpenNIDevice::setDepthRegistration (bool on_off) throw (OpenNIException)
     THROW_OPENNI_EXCEPTION ("Device does not provide image + depth stream");
 }
 
-bool OpenNIDevice::isDepthRegistered () const throw (OpenNIException)
+bool OpenNIDevice::isDepthRegistered () const throw ()
 {
   if (hasDepthStream () && hasImageStream() )
   {
@@ -460,7 +460,7 @@ bool OpenNIDevice::isDepthRegistered () const throw (OpenNIException)
   return false;
 }
 
-bool OpenNIDevice::isDepthRegistrationSupported () const throw (OpenNIException)
+bool OpenNIDevice::isDepthRegistrationSupported () const throw ()
 {
   lock_guard<mutex> image_lock (image_mutex_);
   lock_guard<mutex> depth_lock (depth_mutex_);
@@ -475,7 +475,7 @@ bool OpenNIDevice::isSynchronizationSupported () const throw ()
   return ( depth_generator_.IsValid() && image_generator_.IsValid() && depth_generator_.IsCapabilitySupported (XN_CAPABILITY_FRAME_SYNC));
 }
 
-void OpenNIDevice::setSynchronization (bool on_off) throw (OpenNIException)
+void OpenNIDevice::setSynchronization (bool on_off)
 {
   if (hasDepthStream () && hasImageStream())
   {
@@ -500,7 +500,7 @@ void OpenNIDevice::setSynchronization (bool on_off) throw (OpenNIException)
     THROW_OPENNI_EXCEPTION ("Device does not provide image + depth stream");
 }
 
-bool OpenNIDevice::isSynchronized () const throw (OpenNIException)
+bool OpenNIDevice::isSynchronized () const throw ()
 {
   if (hasDepthStream () && hasImageStream())
   {
@@ -520,7 +520,7 @@ bool OpenNIDevice::isDepthCroppingSupported () const throw ()
   return ( image_generator_.IsValid() && depth_generator_.IsCapabilitySupported (XN_CAPABILITY_CROPPING) );
 }
 
-bool OpenNIDevice::isDepthCropped () const throw (OpenNIException)
+bool OpenNIDevice::isDepthCropped () const
 {
   if (hasDepthStream ())
   {
@@ -536,7 +536,7 @@ bool OpenNIDevice::isDepthCropped () const throw (OpenNIException)
   return false;
 }
 
-void OpenNIDevice::setDepthCropping (unsigned x, unsigned y, unsigned width, unsigned height) throw (OpenNIException)
+void OpenNIDevice::setDepthCropping (unsigned x, unsigned y, unsigned width, unsigned height)
 {
   if (hasDepthStream ())
   {
@@ -556,7 +556,7 @@ void OpenNIDevice::setDepthCropping (unsigned x, unsigned y, unsigned width, uns
     THROW_OPENNI_EXCEPTION ("Device does not provide depth stream");
 }
 
-void OpenNIDevice::ImageDataThreadFunction () throw (OpenNIException)
+void OpenNIDevice::ImageDataThreadFunction ()
 {
   while (true)
   {
@@ -574,7 +574,7 @@ void OpenNIDevice::ImageDataThreadFunction () throw (OpenNIException)
     image_generator_.GetMetaData (*image_data);
 
     image_lock.unlock ();
-    
+
     boost::shared_ptr<Image> image = getCurrentImage (image_data);
     for (map< OpenNIDevice::CallbackHandle, ActualImageCallbackFunction >::iterator callbackIt = image_callback_.begin (); callbackIt != image_callback_.end (); ++callbackIt)
     {
@@ -583,7 +583,7 @@ void OpenNIDevice::ImageDataThreadFunction () throw (OpenNIException)
   }
 }
 
-void OpenNIDevice::DepthDataThreadFunction () throw (OpenNIException)
+void OpenNIDevice::DepthDataThreadFunction ()
 {
   while (true)
   {
@@ -599,7 +599,7 @@ void OpenNIDevice::DepthDataThreadFunction () throw (OpenNIException)
     boost::shared_ptr<xn::DepthMetaData> depth_data (new xn::DepthMetaData);
     depth_generator_.GetMetaData (*depth_data);
     depth_lock.unlock ();
-    
+
     boost::shared_ptr<DepthImage> depth_image ( new DepthImage (depth_data, baseline_, getDepthFocalLength (), shadow_value_, no_sample_value_) );
 
     for (map< OpenNIDevice::CallbackHandle, ActualDepthImageCallbackFunction >::iterator callbackIt = depth_callback_.begin ();
@@ -610,7 +610,7 @@ void OpenNIDevice::DepthDataThreadFunction () throw (OpenNIException)
   }
 }
 
-void OpenNIDevice::IRDataThreadFunction () throw (OpenNIException)
+void OpenNIDevice::IRDataThreadFunction ()
 {
   while (true)
   {
@@ -657,53 +657,34 @@ void __stdcall OpenNIDevice::NewIRDataAvailable (xn::ProductionNode& node, void*
 
 OpenNIDevice::CallbackHandle OpenNIDevice::registerImageCallback (const ImageCallbackFunction& callback, void* custom_data) throw ()
 {
-  if (!hasImageStream ())
-    THROW_OPENNI_EXCEPTION ("Device does not provide an image stream");
-
   image_callback_[image_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
   return image_callback_handle_counter_++;
 }
 
 bool OpenNIDevice::unregisterImageCallback (const OpenNIDevice::CallbackHandle& callbackHandle) throw ()
 {
-  if (!hasImageStream ())
-    THROW_OPENNI_EXCEPTION ("Device does not provide an image stream");
-
   return (image_callback_.erase (callbackHandle) != 0);
 }
 
 OpenNIDevice::CallbackHandle OpenNIDevice::registerDepthCallback (const DepthImageCallbackFunction& callback, void* custom_data) throw ()
 {
-  if (!hasDepthStream ())
-    THROW_OPENNI_EXCEPTION ("Device does not provide a depth image");
-
   depth_callback_[depth_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
   return depth_callback_handle_counter_++;
 }
 
 bool OpenNIDevice::unregisterDepthCallback (const OpenNIDevice::CallbackHandle& callbackHandle) throw ()
 {
-  if (hasDepthStream ())
-    return (depth_callback_.erase (callbackHandle) != 0);
-  else
-    THROW_OPENNI_EXCEPTION ("Device does not provide a depth image");
-  return false;
+  return (depth_callback_.erase (callbackHandle) != 0);
 }
 
 OpenNIDevice::CallbackHandle OpenNIDevice::registerIRCallback (const IRImageCallbackFunction& callback, void* custom_data) throw ()
 {
-  if (!hasDepthStream ())
-    THROW_OPENNI_EXCEPTION ("Device does not provide an IR stream");
-
   ir_callback_[ir_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
   return ir_callback_handle_counter_++;
 }
 
 bool OpenNIDevice::unregisterIRCallback (const OpenNIDevice::CallbackHandle& callbackHandle) throw ()
 {
-  if (!hasDepthStream ())
-    THROW_OPENNI_EXCEPTION ("Device does not provide an IR stream");
-
   return (ir_callback_.erase (callbackHandle) != 0);
 }
 
@@ -721,11 +702,11 @@ unsigned short OpenNIDevice::getVendorID () const throw ()
 {
   unsigned short vendor_id;
   unsigned short product_id;
-  
+
 #ifndef _WIN32
   unsigned char bus;
   unsigned char address;
-  
+
   sscanf (device_node_info_.GetCreationInfo(), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
 
 #else
@@ -785,7 +766,7 @@ const char* OpenNIDevice::getProductName () const throw ()
   return description.strName;
 }
 
-bool OpenNIDevice::findCompatibleImageMode (const XnMapOutputMode& output_mode, XnMapOutputMode& mode) const throw (OpenNIException)
+bool OpenNIDevice::findCompatibleImageMode (const XnMapOutputMode& output_mode, XnMapOutputMode& mode) const throw ()
 {
   if (isImageModeSupported (output_mode))
   {
@@ -815,7 +796,7 @@ bool OpenNIDevice::findCompatibleImageMode (const XnMapOutputMode& output_mode, 
   }
 }
 
-bool OpenNIDevice::findCompatibleDepthMode (const XnMapOutputMode& output_mode, XnMapOutputMode& mode) const throw (OpenNIException)
+bool OpenNIDevice::findCompatibleDepthMode (const XnMapOutputMode& output_mode, XnMapOutputMode& mode) const throw ()
 {
   if (isDepthModeSupported (output_mode))
   {
@@ -845,45 +826,7 @@ bool OpenNIDevice::findCompatibleDepthMode (const XnMapOutputMode& output_mode, 
   }
 }
 
-void OpenNIDevice::enumAvailableModes () throw (OpenNIException)
-{
-  // we use the overloaded methods from subclasses!
-  /*
-  available_image_modes_.clear ();
-  unique_lock<mutex> image_lock (image_mutex_);
-  unsigned mode_count = image_generator_.GetSupportedMapOutputModesCount ();
-  XnMapOutputMode* modes = new XnMapOutputMode[mode_count];
-  XnStatus status = image_generator_.GetSupportedMapOutputModes (modes, mode_count);
-  if (status != XN_STATUS_OK)
-  {
-    delete[] modes;
-    THROW_OPENNI_EXCEPTION ("Could not enumerate image stream output modes. Reason: %s", xnGetStatusString (status));
-  }
-  image_lock.unlock ();
-
-  for (unsigned modeIdx = 0; modeIdx < mode_count; ++modeIdx)
-    available_image_modes_.push_back (modes[modeIdx]);
-  delete[] modes;
-
-  available_depth_modes_.clear ();
-  unique_lock<mutex> depth_lock (depth_mutex_);
-  mode_count = depth_generator_.GetSupportedMapOutputModesCount ();
-  modes = new XnMapOutputMode[mode_count];
-  status = depth_generator_.GetSupportedMapOutputModes (modes, mode_count);
-  if (status != XN_STATUS_OK)
-  {
-    delete[] modes;
-    THROW_OPENNI_EXCEPTION ("Could not enumerate depth stream output modes. Reason: %s", xnGetStatusString (status));
-  }
-  depth_lock.unlock ();
-
-  for (unsigned modeIdx = 0; modeIdx < mode_count; ++modeIdx)
-    available_depth_modes_.push_back (modes[modeIdx]);
-  delete[] modes;
- */
-}
-
-bool OpenNIDevice::isImageModeSupported (const XnMapOutputMode& output_mode) const throw (OpenNIException)
+bool OpenNIDevice::isImageModeSupported (const XnMapOutputMode& output_mode) const throw ()
 {
   for (vector<XnMapOutputMode>::const_iterator modeIt = available_image_modes_.begin (); modeIt != available_image_modes_.end (); ++modeIt)
   {
@@ -893,7 +836,7 @@ bool OpenNIDevice::isImageModeSupported (const XnMapOutputMode& output_mode) con
   return false;
 }
 
-bool OpenNIDevice::isDepthModeSupported (const XnMapOutputMode& output_mode) const throw (OpenNIException)
+bool OpenNIDevice::isDepthModeSupported (const XnMapOutputMode& output_mode) const throw ()
 {
   for (vector<XnMapOutputMode>::const_iterator modeIt = available_depth_modes_.begin (); modeIt != available_depth_modes_.end (); ++modeIt)
   {
@@ -919,7 +862,7 @@ const XnMapOutputMode&  OpenNIDevice::getDefaultIRMode () const throw ()
   return available_depth_modes_[0];
 }
 
-void OpenNIDevice::setImageOutputMode (const XnMapOutputMode& output_mode) throw (OpenNIException)
+void OpenNIDevice::setImageOutputMode (const XnMapOutputMode& output_mode)
 {
   if (hasImageStream ())
   {
@@ -932,7 +875,7 @@ void OpenNIDevice::setImageOutputMode (const XnMapOutputMode& output_mode) throw
     THROW_OPENNI_EXCEPTION ("Device does not provide an image stream");
 }
 
-void OpenNIDevice::setDepthOutputMode (const XnMapOutputMode& output_mode) throw (OpenNIException)
+void OpenNIDevice::setDepthOutputMode (const XnMapOutputMode& output_mode)
 {
   if (hasDepthStream ())
   {
@@ -945,7 +888,7 @@ void OpenNIDevice::setDepthOutputMode (const XnMapOutputMode& output_mode) throw
     THROW_OPENNI_EXCEPTION ("Device does not provide a depth stream");
 }
 
-void OpenNIDevice::setIROutputMode (const XnMapOutputMode& output_mode) throw (OpenNIException)
+void OpenNIDevice::setIROutputMode (const XnMapOutputMode& output_mode)
 {
   if (hasIRStream ())
   {
@@ -960,7 +903,7 @@ void OpenNIDevice::setIROutputMode (const XnMapOutputMode& output_mode) throw (O
 #endif
 }
 
-XnMapOutputMode OpenNIDevice::getImageOutputMode () const throw (OpenNIException)
+XnMapOutputMode OpenNIDevice::getImageOutputMode () const
 {
   if (!hasImageStream ())
     THROW_OPENNI_EXCEPTION ("Device does not provide an image stream");
@@ -973,7 +916,7 @@ XnMapOutputMode OpenNIDevice::getImageOutputMode () const throw (OpenNIException
   return output_mode;
 }
 
-XnMapOutputMode OpenNIDevice::getDepthOutputMode () const throw (OpenNIException)
+XnMapOutputMode OpenNIDevice::getDepthOutputMode () const
 {
   if (!hasDepthStream () )
     THROW_OPENNI_EXCEPTION ("Device does not provide a depth stream");
@@ -986,7 +929,7 @@ XnMapOutputMode OpenNIDevice::getDepthOutputMode () const throw (OpenNIException
   return output_mode;
 }
 
-XnMapOutputMode OpenNIDevice::getIROutputMode () const throw (OpenNIException)
+XnMapOutputMode OpenNIDevice::getIROutputMode () const
 {
   if (!hasIRStream ())
     THROW_OPENNI_EXCEPTION ("Device does not provide an IR stream");

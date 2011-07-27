@@ -56,14 +56,14 @@ public:
   inline IRImage (boost::shared_ptr<xn::IRMetaData> ir_meta_data) throw ();
   inline virtual ~IRImage () throw ();
 
-  void fillRaw (unsigned width, unsigned height, unsigned short* ir_buffer, unsigned line_step = 0) const throw (OpenNIException);
+  void fillRaw (unsigned width, unsigned height, unsigned short* ir_buffer, unsigned line_step = 0) const;
 
   inline unsigned getWidth () const throw ();
   inline unsigned getHeight () const throw ();
   inline unsigned getFrameID () const throw ();
   inline unsigned long getTimeStamp () const throw ();
   inline const xn::IRMetaData& getMetaData () const throw ();
-	
+
 protected:
   boost::shared_ptr<xn::IRMetaData> ir_md_;
 };

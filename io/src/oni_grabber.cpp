@@ -31,43 +31,43 @@ ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)
 {
   rgb_frame_id_ = "/openni_rgb_optical_frame";
   depth_frame_id_ = "/openni_depth_optical_frame";
- 
+
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
   device_ = boost::dynamic_pointer_cast< openni_wrapper::DeviceONI> (driver.createVirtualDevice(file_name, repeat, stream));
-    
+
   if (!device_->hasDepthStream())
     THROW_PCL_IO_EXCEPTION("Device does not provide 3D information.");
 
   XnMapOutputMode depth_mode = device_->getDepthOutputMode();
   depth_width_ = depth_mode.nXRes;
   depth_height_ = depth_mode.nYRes;
-  
+
   depth_image_signal_ = createSignal <sig_cb_openni_depth_image > ();
   point_cloud_signal_ = createSignal <sig_cb_openni_point_cloud > ();
-  
+
   if (device_->hasIRStream())
   {
     ir_image_signal_        = createSignal <sig_cb_openni_ir_image > ();
     point_cloud_i_signal_   = createSignal <sig_cb_openni_point_cloud_i > ();
     ir_depth_image_signal_  = createSignal <sig_cb_openni_ir_depth_image > ();
   }
-  
+
   if (device_->hasImageStream())
   {
     XnMapOutputMode depth_mode = device_->getImageOutputMode();
     image_width_ = depth_mode.nXRes;
     image_height_ = depth_mode.nYRes;
-    
+
     image_signal_             = createSignal <sig_cb_openni_image > ();
     image_depth_image_signal_ = createSignal <sig_cb_openni_image_depth_image > ();
     point_cloud_rgb_signal_   = createSignal <sig_cb_openni_point_cloud_rgb > ();
     rgb_sync_.addCallback(boost::bind(&ONIGrabber::imageDepthImageCallback, this, _1, _2));
   }
-  
+
   image_callback_handle = device_->registerImageCallback(&ONIGrabber::imageCallback, *this);
   depth_callback_handle = device_->registerDepthCallback(&ONIGrabber::depthCallback, *this);
   ir_callback_handle    = device_->registerIRCallback(&ONIGrabber::irCallback, *this);
-  
+
   // if in trigger mode -> publish these topics
   if (!stream)
   {
@@ -108,7 +108,7 @@ ONIGrabber::~ONIGrabber() throw ()
   }
 }
 
-void ONIGrabber::start() throw (pcl::PCLIOException)
+void ONIGrabber::start()
 {
   if (device_->isStreaming())
   {
@@ -135,16 +135,16 @@ void ONIGrabber::start() throw (pcl::PCLIOException)
   {
     if (device_->hasImageStream())
       device_->trigger();
-    
+
     if (device_->hasDepthStream())
       device_->trigger();
-    
+
     if (device_->hasIRStream())
       device_->trigger();
   }
 }
 
-void ONIGrabber::stop() throw (pcl::PCLIOException)
+void ONIGrabber::stop()
 {
   if (device_->isStreaming())
   {
@@ -168,7 +168,7 @@ void ONIGrabber::stop() throw (pcl::PCLIOException)
   }
 }
 
-bool ONIGrabber::isRunning() const throw (pcl::PCLIOException)
+bool ONIGrabber::isRunning() const
 {
   return running_;
 }
@@ -345,7 +345,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud(con
     depth_map = depth_buffer.get();
   }
 
-  // here we need exact the size of the point cloud for a one-one correspondence! 
+  // here we need exact the size of the point cloud for a one-one correspondence!
   if (rgb_array_size < image_width_ * image_height_ * 3)
   {
     rgb_array_size = image_width_ * image_height_ * 3;

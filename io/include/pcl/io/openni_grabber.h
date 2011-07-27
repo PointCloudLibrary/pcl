@@ -30,7 +30,7 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *
  * Author: Nico Blodow (blodow@cs.tum.edu), Suat Gedikli (gedikli@willowgarage.com)
  */
 
@@ -89,7 +89,7 @@ namespace pcl
       typedef void (sig_cb_openni_point_cloud) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&);
       typedef void (sig_cb_openni_point_cloud_rgb) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&);
       typedef void (sig_cb_openni_point_cloud_i) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
-      
+
     public:
       //enable using some openni parameters in the constructor.
       /** \brief Constructor
@@ -97,122 +97,132 @@ namespace pcl
         * \param depth_mode
         * \param image_mode
         */
-      OpenNIGrabber (const std::string& device_id = "", 
-                     const Mode& depth_mode = OpenNI_Default_Mode, 
-                     const Mode& image_mode = OpenNI_Default_Mode) throw (openni_wrapper::OpenNIException);
+      OpenNIGrabber (const std::string& device_id = "",
+                     const Mode& depth_mode = OpenNI_Default_Mode,
+                     const Mode& image_mode = OpenNI_Default_Mode);
 
       /** \brief Destructor */
       virtual ~OpenNIGrabber () throw ();
-      
-      /** \brief ... */
-      virtual void 
-      start () throw (pcl::PCLIOException);
 
       /** \brief ... */
-      virtual void 
-      stop () throw (pcl::PCLIOException);
+      virtual void
+      start ();
 
       /** \brief ... */
-      virtual bool 
-      isRunning () const throw (pcl::PCLIOException);
+      virtual void
+      stop ();
 
       /** \brief ... */
-      virtual std::string 
+      virtual bool
+      isRunning () const;
+
+      /** \brief ... */
+      virtual std::string
       getName () const;
 
       /** \brief ... */
-      inline boost::shared_ptr<openni_wrapper::OpenNIDevice> 
+      inline boost::shared_ptr<openni_wrapper::OpenNIDevice>
       getDevice () const;
 
       /** \brief ... */
-      std::vector<std::pair<int, XnMapOutputMode> > 
+      std::vector<std::pair<int, XnMapOutputMode> >
       getAvailableDepthModes () const;
 
       /** \brief ... */
-      std::vector<std::pair<int, XnMapOutputMode> > 
+      std::vector<std::pair<int, XnMapOutputMode> >
       getAvailableImageModes () const;
+
+      void setPrincipalPoint (float cx, float cy);
+
+      void setAspectRatio (float aspect_ratio);
+
+      void setFocalLength (float focal_length);
+
+      void setLensDistortion (float k1, float k2, float t1, float t2);
+
+      float getFocalLength (unsigned image_width) const;
 
     private:
       /** \brief ... */
-      void 
+      void
       onInit (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode);
 
       /** \brief ... */
-      void 
+      void
       setupDevice (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode);
 
       /** \brief ... */
-      void 
+      void
       updateModeMaps ();
 
       /** \brief ... */
-      void 
+      void
       startSynchronization ();
 
       /** \brief ... */
-      void 
+      void
       stopSynchronization ();
 
 
       /** \brief ... */
-      bool 
+      bool
       mapConfigMode2XnMode (int mode, XnMapOutputMode &xnmode) const;
 
       // callback methods
       /** \brief ... */
-      void 
+      void
       imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie);
 
       /** \brief ... */
-      void 
+      void
       depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie);
 
       /** \brief ... */
-      void 
+      void
       irCallback (boost::shared_ptr<openni_wrapper::IRImage> ir_image, void* cookie);
 
       /** \brief ... */
-      void 
+      void
       imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image> &image,
                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image);
 
       /** \brief ... */
-      void 
+      void
       irDepthImageCallback (const boost::shared_ptr<openni_wrapper::IRImage> &image,
                             const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image);
 
       /** \brief ... */
-      virtual void 
+      virtual void
       signalsChanged ();
 
       // helper methods
 
       /** \brief ... */
-      virtual inline void 
+      virtual inline void
       checkImageAndDepthSynchronizationRequired ();
 
       /** \brief ... */
-      virtual inline void 
+      virtual inline void
       checkImageStreamRequired ();
-      
+
       /** \brief ... */
-      virtual inline void 
+      virtual inline void
       checkDepthStreamRequired ();
-      
+
       /** \brief ... */
-      virtual inline void 
+      virtual inline void
       checkIRStreamRequired();
-      
+
       /** \brief ... */
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> > 
+      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> >
       convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage> &depth) const;
 
       /** \brief ... */
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > 
+      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >
       convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
                                  const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
       /** \brief ... */
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > 
+      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> >
       convertToXYZIPointCloud (const boost::shared_ptr<openni_wrapper::IRImage> &image,
                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
 

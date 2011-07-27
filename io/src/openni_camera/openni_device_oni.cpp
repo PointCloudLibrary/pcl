@@ -46,7 +46,7 @@ using namespace boost;
 namespace openni_wrapper
 {
 
-DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool repeat, bool streaming) throw (OpenNIException)
+DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool repeat, bool streaming)
   : OpenNIDevice(context)
   , streaming_ (streaming)
   , depth_stream_running_ (false)
@@ -73,11 +73,11 @@ DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool re
     available_image_modes_.push_back(getImageOutputMode());
     image_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewONIImageDataAvailable, this, image_callback_handle_);
   }
-  
+
   status = context.FindExistingNode(XN_NODE_TYPE_IR, ir_generator_);
   if (status == XN_STATUS_OK)
-    ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewONIIRDataAvailable, this, ir_callback_handle_); 
-  
+    ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewONIIRDataAvailable, this, ir_callback_handle_);
+
   status = context.FindExistingNode(XN_NODE_TYPE_PLAYER, player_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION("Failed to find player node: %s\n", xnGetStatusString(status));
@@ -100,75 +100,75 @@ DeviceONI::~DeviceONI() throw ()
   }
 }
 
-void DeviceONI::startImageStream () throw (OpenNIException)
+void DeviceONI::startImageStream ()
 {
   if (hasImageStream() && !image_stream_running_)
     image_stream_running_ = true;
 }
 
-void DeviceONI::stopImageStream () throw (OpenNIException)
+void DeviceONI::stopImageStream ()
 {
   if (hasImageStream() && image_stream_running_)
     image_stream_running_ = false;
 }
 
-void DeviceONI::startDepthStream () throw (OpenNIException)
+void DeviceONI::startDepthStream ()
 {
   if (hasDepthStream() && !depth_stream_running_)
     depth_stream_running_ = true;
 }
 
-void DeviceONI::stopDepthStream () throw (OpenNIException)
+void DeviceONI::stopDepthStream ()
 {
   if (hasDepthStream() && depth_stream_running_)
     depth_stream_running_ = false;
 }
 
-void DeviceONI::startIRStream () throw (OpenNIException)
+void DeviceONI::startIRStream ()
 {
   if (hasIRStream() && !ir_stream_running_)
     ir_stream_running_ = true;
 }
 
-void DeviceONI::stopIRStream () throw (OpenNIException)
+void DeviceONI::stopIRStream ()
 {
   if (hasIRStream() && ir_stream_running_)
     ir_stream_running_ = false;
 }
 
-bool DeviceONI::isImageStreamRunning () const throw (OpenNIException)
+bool DeviceONI::isImageStreamRunning () const throw ()
 {
  return image_stream_running_;
 }
 
-bool DeviceONI::isDepthStreamRunning () const throw (OpenNIException)
+bool DeviceONI::isDepthStreamRunning () const throw ()
 {
   return depth_stream_running_;
 }
 
-bool DeviceONI::isIRStreamRunning () const throw (OpenNIException)
+bool DeviceONI::isIRStreamRunning () const throw ()
 {
   return ir_stream_running_;
 }
 
-bool DeviceONI::trigger () throw (OpenNIException)
+bool DeviceONI::trigger ()
 {
   if (player_.IsEOF())
     return false;
-  
+
   if (streaming_)
     THROW_OPENNI_EXCEPTION ("Virtual device is in streaming mode. Trigger not available.");
-  
+
   player_.ReadNext();
   return true;
 }
 
-bool DeviceONI::isStreaming () const throw (OpenNIException)
+bool DeviceONI::isStreaming () const throw ()
 {
   return streaming_;
 }
 
-void DeviceONI::PlayerThreadFunction() throw (OpenNIException)
+void DeviceONI::PlayerThreadFunction()
 {
   quit_ = false;
   while (!quit_)

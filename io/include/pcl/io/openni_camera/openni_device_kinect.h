@@ -58,15 +58,15 @@ class DeviceKinect : public OpenNIDevice
 {
   friend class OpenNIDriver;
 public:
-  DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException);
+  DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
   virtual ~DeviceKinect () throw ();
 
   inline void setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) throw ();
   inline const ImageBayerGRBG::DebayeringMethod& getDebayeringMethod () const throw ();
-  
+
 protected:
   virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
-  virtual void enumAvailableModes () throw (OpenNIException);
+  void enumAvailableModes () throw ();
   virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
   ImageBayerGRBG::DebayeringMethod debayering_method_;
 };

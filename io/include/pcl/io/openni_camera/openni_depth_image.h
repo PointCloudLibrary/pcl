@@ -62,9 +62,9 @@ public:
   inline virtual ~DepthImage () throw ();
 
   inline const xn::DepthMetaData& getDepthMetaData () const throw ();
-  void fillDisparityImage (unsigned width, unsigned height, float* disparity_buffer, unsigned line_step = 0) const throw (OpenNIException);
-  void fillDepthImage (unsigned width, unsigned height, float* depth_buffer, unsigned line_step = 0) const throw (OpenNIException);
-  void fillDepthImageRaw (unsigned width, unsigned height, unsigned short* depth_buffer, unsigned line_step = 0) const throw (OpenNIException);
+  void fillDisparityImage (unsigned width, unsigned height, float* disparity_buffer, unsigned line_step = 0) const;
+  void fillDepthImage (unsigned width, unsigned height, float* depth_buffer, unsigned line_step = 0) const;
+  void fillDepthImageRaw (unsigned width, unsigned height, unsigned short* depth_buffer, unsigned line_step = 0) const;
 
   inline float getBaseline () const throw ();
   inline float getFocalLength () const throw ();

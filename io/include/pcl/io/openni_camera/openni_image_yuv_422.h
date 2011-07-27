@@ -56,15 +56,15 @@ public:
   ImageYUV422 (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ();
   virtual ~ImageYUV422 () throw ();
 
-  inline virtual Encoding 
+  inline virtual Encoding
   getEncoding () const
   {
     return (YUV422);
   }
 
   virtual bool isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const;
-  virtual void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const throw (OpenNIException);
-  virtual void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const throw (OpenNIException);
+  virtual void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const;
+  virtual void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const;
   inline static bool resizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height);
 };
 

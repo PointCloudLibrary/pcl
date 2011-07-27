@@ -66,15 +66,15 @@ class PCL_EXPORTS OpenNIDriver
 public:
   ~OpenNIDriver () throw ();
 
-  inline static OpenNIDriver& getInstance () throw (OpenNIException);
-  unsigned updateDeviceList () throw ();
+  inline static OpenNIDriver& getInstance ();
+  unsigned updateDeviceList ();
   inline unsigned getNumberDevices () const throw ();
-  
-  boost::shared_ptr<OpenNIDevice> createVirtualDevice (const std::string& path, bool repeat, bool stream) const throw (OpenNIException);
-  boost::shared_ptr<OpenNIDevice> getDeviceByIndex (unsigned index) const throw (OpenNIException);
+
+  boost::shared_ptr<OpenNIDevice> createVirtualDevice (const std::string& path, bool repeat, bool stream) const;
+  boost::shared_ptr<OpenNIDevice> getDeviceByIndex (unsigned index) const;
 #ifndef _WIN32
-  boost::shared_ptr<OpenNIDevice> getDeviceBySerialNumber (const std::string& serial_number) const throw (OpenNIException);
-  boost::shared_ptr<OpenNIDevice> getDeviceByAddress (unsigned char bus, unsigned char address) const throw (OpenNIException);
+  boost::shared_ptr<OpenNIDevice> getDeviceBySerialNumber (const std::string& serial_number) const;
+  boost::shared_ptr<OpenNIDevice> getDeviceByAddress (unsigned char bus, unsigned char address) const;
 #endif
 
   const char* getSerialNumber (unsigned index) const throw ();
@@ -88,7 +88,7 @@ public:
   unsigned char  getBus (unsigned index) const throw ();
   unsigned char  getAddress (unsigned index) const throw ();
 
-  void stopAll () throw (OpenNIException);
+  void stopAll ();
 
   static void getDeviceType (const std::string& connection_string, unsigned short& vendorId, unsigned short& productId);
 protected:
@@ -104,14 +104,14 @@ protected:
     boost::weak_ptr<OpenNIDevice> device;
   };
 
-  OpenNIDriver () throw (OpenNIException);
-  boost::shared_ptr<OpenNIDevice> getDevice (unsigned index) const throw (OpenNIException);
+  OpenNIDriver ();
+  boost::shared_ptr<OpenNIDevice> getDevice (unsigned index) const;
 
 #ifndef _WIN32
   // workaround to get additional device nformation like serial number, vendor and product name, until Primesense fix this
   void getDeviceInfos () throw ();
 #endif
-  
+
   mutable std::vector<DeviceContext> device_context_;
   mutable xn::Context context_;
 
@@ -120,7 +120,7 @@ protected:
   std::map< std::string, unsigned > connection_string_map_;
 };
 
-OpenNIDriver& OpenNIDriver::getInstance () throw (OpenNIException)
+OpenNIDriver& OpenNIDriver::getInstance ()
 {
   static OpenNIDriver driver;
   return driver;

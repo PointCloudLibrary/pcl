@@ -57,30 +57,30 @@ class DeviceONI : public OpenNIDevice
 {
   friend class OpenNIDriver;
 public:
-  DeviceONI (xn::Context& context, const std::string& file_name, bool repeat = false, bool streaming = true) throw (OpenNIException);
+  DeviceONI (xn::Context& context, const std::string& file_name, bool repeat = false, bool streaming = true);
   virtual ~DeviceONI () throw ();
-    
-  virtual void startImageStream () throw (OpenNIException);
-  virtual void stopImageStream () throw (OpenNIException);
 
-  virtual void startDepthStream () throw (OpenNIException);
-  virtual void stopDepthStream () throw (OpenNIException);
+  virtual void startImageStream ();
+  virtual void stopImageStream ();
 
-  virtual void startIRStream () throw (OpenNIException);
-  virtual void stopIRStream () throw (OpenNIException);
-  
-  virtual bool isImageStreamRunning () const throw (OpenNIException);
-  virtual bool isDepthStreamRunning () const throw (OpenNIException);
-  virtual bool isIRStreamRunning () const throw (OpenNIException);
-  
+  virtual void startDepthStream ();
+  virtual void stopDepthStream ();
+
+  virtual void startIRStream ();
+  virtual void stopIRStream ();
+
+  virtual bool isImageStreamRunning () const throw ();
+  virtual bool isDepthStreamRunning () const throw ();
+  virtual bool isIRStreamRunning () const throw ();
+
   virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
-  
-  bool trigger () throw (OpenNIException);
-  bool isStreaming () const throw (OpenNIException);
+
+  bool trigger ();
+  bool isStreaming () const throw ();
 protected:
   virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
-  
-  void PlayerThreadFunction () throw (OpenNIException);
+
+  void PlayerThreadFunction ();
   static void __stdcall NewONIDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
   static void __stdcall NewONIImageDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
   static void __stdcall NewONIIRDataAvailable (xn::ProductionNode& node, void* cookie) throw ();

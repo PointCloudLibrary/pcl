@@ -30,7 +30,7 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *
  * Author: Suat Gedikli (gedikli@willowgarage.com)
  */
 
@@ -76,16 +76,16 @@ namespace pcl
       /**
        * @brief starts playing the list of PCD files if frames_per_second is > 0. Otherwise it works as a trigger: publishes only the next PCD file in the list.
        */
-      virtual void start () throw (pcl::PCLIOException);
+      virtual void start ();
       /**
        * @brief stops playing the list of PCD files if frames_per_second is > 0. Otherwise the method has no effect.
        */
-      virtual void stop () throw (pcl::PCLIOException);
+      virtual void stop ();
       /**
        * @brief wheter the grabber is started (publishing) or not.
        * @return true only if publishing.
        */
-      virtual bool isRunning () const throw (pcl::PCLIOException);
+      virtual bool isRunning () const;
       /**
        *
        * @return name of the grabber

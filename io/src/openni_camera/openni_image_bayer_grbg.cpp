@@ -65,7 +65,7 @@ bool ImageBayerGRBG::isResizingSupported (unsigned input_width, unsigned input_h
   return ImageBayerGRBG::resizingSupported (input_width, input_height, output_width, output_height);
 }
 
-void ImageBayerGRBG::fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step) const throw (OpenNIException)
+void ImageBayerGRBG::fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step) const
 {
   if (width > image_md_->XRes () || height > image_md_->YRes ())
     THROW_OPENNI_EXCEPTION ("Upsampling not supported. Request was: %d x %d -> %d x %d", image_md_->XRes (), image_md_->YRes (), width, height);
@@ -288,7 +288,7 @@ void ImageBayerGRBG::fillGrayscale (unsigned width, unsigned height, unsigned ch
   } // downsampling
 }
 
-void ImageBayerGRBG::fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step) const throw (OpenNIException)
+void ImageBayerGRBG::fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step) const
 {
   if (width > image_md_->XRes () || height > image_md_->YRes ())
     THROW_OPENNI_EXCEPTION ("Upsampling only possible for multiple of 2 in both dimensions. Request was %d x %d -> %d x %d.", image_md_->XRes (), image_md_->YRes (), width, height);
