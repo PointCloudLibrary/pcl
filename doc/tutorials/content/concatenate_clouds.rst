@@ -58,7 +58,7 @@ creates p_n_cloud_c by concatenating the fields of cloud_a and cloud_b together.
 
 Finally either:
 
-.. literalinclude:: sources/concatenate_points/concatenate_clouds.cpp
+.. literalinclude:: sources/concatenate_clouds/concatenate_clouds.cpp
    :language: cpp
    :lines: 68-70
 
