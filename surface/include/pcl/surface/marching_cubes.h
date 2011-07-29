@@ -45,16 +45,16 @@ namespace pcl
    * Tables, and functions, derived from Paul Bourke's Marching Cubes implementation:
    * http://paulbourke.net/geometry/polygonise/
    * Cube vertex indices:
-   *         7 ________ 6
+   *         4 ________ 5
    *         /|       /| 
    *       /  |     /  | 
-   *   4 /_______ /    | 
-   *    |     |  |5    | 
-   *    |    3|__|_____|2
+   *   7 /_______ /    |
+   *    |     |  |6    |
+   *    |    0|__|_____|1
    *    |    /   |    /  
    *    |  /     |  /    
    *    |/_______|/      
-   *   0          1      
+   *   3          2
    */
   const unsigned int edgeTable[256]={
     0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
@@ -446,6 +446,18 @@ namespace pcl
       void
       getNeighborList1D (Leaf leaf, Eigen::Vector3i &index3d, HashMap &neighbor_list);
 
+      /** \brief Given the 3d index (x, y, z) of the cell, get the
+        * coordinates of the cell center
+        * \param index the output 3d index
+        * \param center the resultant cell center
+        */
+      inline void
+      getCellCenterFromIndex (const Eigen::Vector3i &index, Eigen::Vector4f &center) const
+      {
+        for (int i = 0; i < 3; ++i)
+          center[i] = min_p_[i] + index[i] * leaf_size_ + leaf_size_/2;
+      }
+
       /** \brief Create the surface. 
         *
         * More details here.
@@ -489,19 +501,6 @@ namespace pcl
       /** \brief Convert the point cloud into voxel data. */
       virtual void
       voxelizeData() =0;
-
-      /** \brief Given the 3d index (x, y, z) of the cell, get the
-        * coordinates of the cell center
-        * \param index the output 3d index
-        * \param center the resultant cell center
-        */
-      inline void
-      getCellCenterFromIndex (const Eigen::Vector3i &index, Eigen::Vector4f &center) const
-      {
-        for (int i = 0; i < 3; ++i)
-          center[i] = min_p_[i] + index[i] * leaf_size_ + leaf_size_/2;
-      }
-
 
       /** \brief Interpolate along the voxel edge
        *

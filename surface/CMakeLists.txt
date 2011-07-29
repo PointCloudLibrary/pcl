@@ -23,6 +23,9 @@ if(build)
             )
     endif(QHULL_FOUND)
 
+    
+    set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
+    include (${VTK_USE_FILE})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
     set(srcs src/gp3.cpp
@@ -33,7 +36,9 @@ if(build)
         src/surfel_smoothing.cpp
         src/marching_cubes.cpp
         src/marching_cubes_greedy.cpp
+        src/marching_cubes_greedy_dot.cpp
       	src/texture_mapping.cpp
+        src/vtk_smoother.cpp
         ${HULL_SOURCES}
         )
 
@@ -46,7 +51,9 @@ if(build)
         include/pcl/${SUBSYS_NAME}/reconstruction.h
         include/pcl/${SUBSYS_NAME}/marching_cubes.h
         include/pcl/${SUBSYS_NAME}/marching_cubes_greedy.h
+        include/pcl/${SUBSYS_NAME}/marching_cubes_greedy_dot.h
       	include/pcl/${SUBSYS_NAME}/texture_mapping.h
+      	include/pcl/${SUBSYS_NAME}/vtk_smoother.h
         ${HULL_INCLUDES}
         )
 
@@ -58,6 +65,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/reconstruction.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy.hpp
+        include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy_dot.hpp
 	include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
         ${HULL_IMPLS}
         )
@@ -69,7 +77,7 @@ if(build)
         target_link_libraries(${LIB_NAME} pcl_kdtree ${QHULL_LIBRARIES})
     endif(QHULL_FOUND)
     # add link to OpenCV library by KTran
-    target_link_libraries(${LIB_NAME} pcl_common ${OpenCV_LIBS})
+    target_link_libraries(${LIB_NAME} pcl_common ${OpenCV_LIBS} vtkCommon vtkWidgets)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "" "" "" "")
 
