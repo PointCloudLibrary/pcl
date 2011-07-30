@@ -55,8 +55,8 @@ Log2 (double n_arg)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> float
-pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (const PyramidFeatureHistogram::Ptr &pyramid_a,
-                                                                             const PyramidFeatureHistogram::Ptr &pyramid_b)
+pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (const PyramidFeatureHistogramPtr &pyramid_a,
+                                                                             const PyramidFeatureHistogramPtr &pyramid_b)
 {
   // do a few consistency checks before and during the computation
   if (pyramid_a->nr_dimensions != pyramid_b->nr_dimensions)
