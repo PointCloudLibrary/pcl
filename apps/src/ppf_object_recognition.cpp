@@ -4,15 +4,15 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/registration/ppf_registration.h>
 
-#include <pcl/visualization/cloud_viewer.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <boost/thread/thread.hpp>
+
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
 
 using namespace pcl;
-
-#include <iostream>
 using namespace std;
 
 const Eigen::Vector4f subsampling_leaf_size (0.02, 0.02, 0.02, 0.0);
@@ -39,7 +39,7 @@ subsampleAndCalculateNormals (PointCloud<PointXYZ>::Ptr cloud)
   PointCloud<PointNormal>::Ptr cloud_subsampled_with_normals (new PointCloud<PointNormal> ());
   concatenateFields (*cloud_subsampled, *cloud_subsampled_normals, *cloud_subsampled_with_normals);
 
-  cerr << "Cloud dimensions before / after subsampling: " << cloud->points.size () << " / " << cloud_subsampled->points.size () << endl;
+  PCL_INFO ("Cloud dimensions before / after subsampling: %u / %u\n", cloud->points.size (), cloud_subsampled->points.size ());
   return cloud_subsampled_with_normals;
 }
 
@@ -89,7 +89,7 @@ main (int argc, char** argv)
     seg.setInputCloud (cloud_scene);
     seg.segment (*inliers, *coefficients);
     PCL_INFO ("Plane inliers: %u\n", inliers->indices.size ());
-    if (inliers->indices.size () < 20000) break;
+    if (inliers->indices.size () < 50000) break;
 
     extract.setInputCloud (cloud_scene);
     extract.setIndices (inliers);
@@ -119,9 +119,10 @@ main (int argc, char** argv)
   }
 
 
-  visualization::CloudViewer viewer ("Recognition results");
-  viewer.showCloud (cloud_scene, "scene");
-
+  visualization::PCLVisualizer viewer ("PPF Object Recognition - Results");
+  viewer.setBackgroundColor (0, 0, 0);
+  viewer.addPointCloud (cloud_scene);
+  viewer.spinOnce (10);
   PCL_INFO ("Registering models to scene ...\n");
   for (size_t model_i = 0; model_i < cloud_models.size (); ++model_i)
   {
@@ -139,8 +140,8 @@ main (int argc, char** argv)
     ppf_registration.align (cloud_output_subsampled);
 
     PointCloud<PointXYZ>::Ptr cloud_output_subsampled_xyz (new PointCloud<PointXYZ> ());
-    for (size_t i = 0; i < cloud_output_subsampled.points.size (); ++i) cloud_output_subsampled_xyz->points.push_back ( PointXYZ (cloud_output_subsampled.points[i].x, cloud_output_subsampled.points[i].y, cloud_output_subsampled.points[i].z));
-    viewer.showCloud (cloud_output_subsampled_xyz, "cloud_output");
+    for (size_t i = 0; i < cloud_output_subsampled.points.size (); ++i)
+      cloud_output_subsampled_xyz->points.push_back ( PointXYZ (cloud_output_subsampled.points[i].x, cloud_output_subsampled.points[i].y, cloud_output_subsampled.points[i].z));
 
 
     Eigen::Matrix4f mat = ppf_registration.getFinalTransformation ();
@@ -154,16 +155,20 @@ main (int argc, char** argv)
 
 
     stringstream ss; ss << "model_" << model_i;
-    viewer.showCloud (cloud_output, ss.str ());
-    io::savePCDFileASCII (ss.str ().c_str (), *cloud_output);
+    visualization::PointCloudColorHandlerRandom<PointXYZ> random_color (cloud_output->makeShared ());
+    viewer.addPointCloud (cloud_output, random_color, ss.str ());
+//    io::savePCDFileASCII (ss.str ().c_str (), *cloud_output);
     PCL_INFO ("Showing model %s\n", ss.str ().c_str ());
   }
 
   PCL_INFO ("All models have been registered!\n");
 
 
-
-  while (!viewer.wasStopped (50));
+  while (!viewer.wasStopped ())
+  {
+    viewer.spinOnce (100);
+    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+  }
 
   return 0;
 }
