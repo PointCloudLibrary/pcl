@@ -1655,13 +1655,13 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
 
   // Create points from polyMesh.cloud
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
-  pcl::PointCloud<pcl::PointXYZ> point_cloud;
-  pcl::fromROSMsg (poly_mesh.cloud, point_cloud);
-  poly_points->SetNumberOfPoints (point_cloud.points.size ());
+  pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+  pcl::fromROSMsg (poly_mesh.cloud, *point_cloud);
+  poly_points->SetNumberOfPoints (point_cloud->points.size ());
 
   size_t i;
-  for (i = 0; i < point_cloud.points.size (); ++i)
-    poly_points->InsertPoint (i, point_cloud.points[i].x, point_cloud.points[i].y, point_cloud.points[i].z);
+  for (i = 0; i < point_cloud->points.size (); ++i)
+    poly_points->InsertPoint (i, point_cloud->points[i].x, point_cloud->points[i].y, point_cloud->points[i].z);
 
   bool has_color = false;
   vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
@@ -1707,7 +1707,8 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     }
 
     vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
-    polydata->SetStrips (cell_array);
+//    polydata->SetStrips (cell_array);
+    polydata->SetPolys (cell_array);
     polydata->SetPoints (poly_points);
 
     if (has_color)
@@ -1715,7 +1716,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
 
     createActorFromVTKDataSet (polydata, actor);
   } 
-  else 
+  else if (poly_mesh.polygons.size() == 1)
   {
     vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New ();
     size_t n_points = poly_mesh.polygons[0].vertices.size ();
@@ -1732,6 +1733,11 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
 
     createActorFromVTKDataSet (poly_grid, actor);
     actor->GetProperty ()->SetRepresentationToWireframe ();
+  }
+  else
+  {
+    PCL_ERROR("PCLVisualizer::addPolygonMesh: No polygons\n");
+    return false;
   }
 
   actor->GetProperty ()->SetRepresentationToSurface ();
