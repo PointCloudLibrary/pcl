@@ -485,4 +485,101 @@ this case, they affect all viewports.
     ...
 
 Finally, we add the normals, one to each viewport.
+              
 
+Interaction Customization
+=========================
+
+You will sometimes feel that the interactivity options offered by the default
+mouse and key bindings do not satisfy your needs and you may want to extend
+functionality with features such as the possibility of saving the currently
+shown point clouds when pressing a button or annotating certain locations on the
+rendering window with your mouse etc. A very simple example of such things
+is found in the ``interactionCustomizationVis`` method.
+
+In this part of the tutorial you will be shown how to catch mouse and keyboard
+events. By right clicking on the window, a 2D text will appear and you can
+erase all the text instances by pressing 'r'. The result should look something
+like this:
+
+.. image:: images/pcl_visualizer_interaction_customization.png
+  :width: 838
+  
+Explanation
+-----------
+
+.. code-block:: cpp
+
+    ...
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+    viewer->initCameraParameters ();
+    ...
+    
+This is the standard code for instantiating a viewer.
+
+.. code-block:: cpp 
+
+	...
+	viewer->registerKeyboardCallback (keyboardEventOccurred, (void*)&viewer);
+  	viewer->registerMouseCallback (mouseEventOccurred, (void*)&viewer);
+	...
+	
+These two lines of code will register the two methods, ``keyboardEventOccurred``
+and ``mouseEventOccurred`` to the keyboard and mouse event callback, respectively.
+The second arguments for the two method calls are the so-called cookies. These
+are any parameters you might want to pass to the callback function. In our case,
+we want to pass the viewer itself, in order to do modifications on it in case
+of user interaction. Note that these arguments must be in the form of a single 
+``void*`` instance, so we need to cast the pointer to our ``boost::shared_ptr`` to ``void*``.
+
+.. code-block:: cpp   
+
+	...
+	void mouseEventOccurred (const pcl::visualization::MouseEvent &event,
+    	                     void* viewer_void)
+	{
+	  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
+	  if (event.getButton () == pcl::visualization::MouseEvent::LeftButton && event.getType () == pcl::visualization::MouseEvent::MouseButtonRelease)
+	  {
+	    std::cout << "Left mouse button released at position (" << event.getX () << ", " << event.getY () << ")" << std::endl;
+	    char str[512];
+	    
+	    sprintf (str, "text#%03d", text_id ++);
+	    viewer->addText ("clicked here", event.getX (), event.getY (), str);
+	  }
+	}
+	...
+	
+This is the method that handles the mouse events. Every time any kind of mouse
+event is registered, this function will be called. In order to see exactly what
+that event is, we need to extract that information from the ``event`` instance.
+In our case, we are looking for left mouse button releases. Whenever such an event
+happens, we shall write a small text at the position of the mouse click.
+
+.. code-block:: cpp      
+
+	...
+	void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event,
+    	                        void* viewer_void)
+	{
+	  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
+	  if (event.getKeySym () == "r" && event.keyDown ())
+	  {
+	    std::cout << "r was pressed => removing all text" << std::endl;
+    
+	    char str[512];
+	    for (unsigned int i = 0; i < text_id; ++i)
+	    {
+	      sprintf (str, "text#%03d", i);
+	      viewer->removeShape (str);
+	    }
+	    text_id = 0;
+	  }
+	}
+	...
+	
+The same approach applies for the keyboard events. We check what key was pressed
+and the action we do is to remove all the text created by our mouse clicks.  
+Please note that when 'r' is pressed, the 3D camera still resets, as per
+the original binding of 'r' inside PCLVisualizer. So, our keyboard events do not
+overwrite the functionality of the base class.
