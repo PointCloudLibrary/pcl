@@ -161,7 +161,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
       diff_vector[point_i] = diff;
     }
     standard_dev = sqrt (standard_dev / features_at_scale_vectorized[scale_i].size ());
-    PCL_INFO("Standard deviation for scale %f is %f\n", scale_values_[scale_i], standard_dev);
+    PCL_DEBUG ("[pcl::MultiscaleFeaturePersistence::extractUniqueFeatures] Standard deviation for scale %f is %f\n", scale_values_[scale_i], standard_dev);
 
 
 
@@ -191,14 +191,18 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersisten
     return;
 
   // Compute the features for all scales with the given feature estimator
+  PCL_DEBUG ("[pcl::MultiscaleFeaturePersistence::determinePersistentFeatures] Computing features ...\n");
   computeFeaturesAtAllScales ();
 
   // Compute mean feature
+  PCL_DEBUG ("[pcl::MultiscaleFeaturePersistence::determinePersistentFeatures] Calculating mean feature ...\n");
   calculateMeanFeature ();
 
   // Get the 'unique' features at each scale
+  PCL_DEBUG ("[pcl::MultiscaleFeaturePersistence::determinePersistentFeatures] Extracting unique features ...\n");
   extractUniqueFeatures ();
 
+  PCL_DEBUG ("[pcl::MultiscaleFeaturePersistence::determinePersistentFeatures] Determining persistent features between scales ...\n");
   // Determine persistent features between scales
 
 /*
@@ -209,7 +213,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersisten
       if (unique_features_table[scale_i][*feature_it] == true)
       {
         output_features.points.push_back (features_at_scale[scale_i]->points[*feature_it]);
-        output_indices->push_back (*feature_it);
+        output_indices->push_back (feature_estimator_->getIndices ()->at (*feature_it));
       }
     }
 */
@@ -223,7 +227,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersisten
     if (present_in_all)
     {
       output_features.points.push_back (features_at_scale.front ()->points[*feature_it]);
-      output_indices->push_back (*feature_it);
+      output_indices->push_back (feature_estimator_->getIndices ()->at (*feature_it));
     }
   }
 
