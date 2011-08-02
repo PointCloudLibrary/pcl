@@ -80,7 +80,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothCloudIteration (PointCloudInPtr &ou
 {
   PCL_INFO ("SurfelSmoothing: cloud smoothing iteration starting ...\n");
   // use the initial cloud every time
-  tree_->setInputCloud (interm_cloud_);
+//  tree_->setInputCloud (interm_cloud_);
 
   output_positions = PointCloudInPtr (new PointCloudIn);
   output_positions->points.resize (interm_cloud_->points.size ());
@@ -100,14 +100,14 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothCloudIteration (PointCloudInPtr &ou
 
     // get neighbors
     // @todo using 5x the scale for searching instead of all the points to avoid O(N^2)
-    tree_->radiusSearch (i, 5*scale_, nn_indices, nn_distances);
+    tree_->radiusSearch (interm_cloud_->points[i], 5*scale_, nn_indices, nn_distances);
 //    PCL_INFO ("NN: %u\n", nn_indices.size ());
 
     float theta_normalization_factor = 0.0;
     std::vector<float> theta (nn_indices.size ());
     for (size_t nn_index_i = 0; nn_index_i < nn_indices.size (); ++nn_index_i)
     {
-      float dist = pcl::squaredEuclideanDistance (interm_cloud_->points[i], interm_cloud_->points[nn_indices[nn_index_i]]);
+      float dist = pcl::squaredEuclideanDistance (interm_cloud_->points[i], input_->points[nn_indices[nn_index_i]]);//interm_cloud_->points[nn_indices[nn_index_i]]);
       float theta_i = exp ( (-1) * dist / scale_squared_);
       theta_normalization_factor += theta_i;
 
@@ -120,20 +120,34 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothCloudIteration (PointCloudInPtr &ou
     smoothed_normal(3) = 0.0f;
     smoothed_normal.normalize ();
 
-    float e_residual = 0.0f;
-    for (size_t nn_index_i = 0; nn_index_i < nn_indices.size (); ++nn_index_i)
-    {
-      float dot_product = smoothed_normal.dot (interm_cloud_->points[nn_indices[nn_index_i]].getVector4fMap () - interm_cloud_->points[i].getVector4fMap ());
-      e_residual += theta[nn_index_i] * dot_product;// * dot_product;
-    }
-    e_residual /= theta_normalization_factor;
 
-    smoothed_point = interm_cloud_->points[i].getVector4fMap () + e_residual * smoothed_normal;
+    // find minimum along the normal
+    float e_residual;
+    smoothed_point = interm_cloud_->points[i].getVector4fMap ();
+    while (1)
+    {
+      e_residual = 0.0f;
+      smoothed_point(3) = 0.0f;
+      for (size_t nn_index_i = 0; nn_index_i < nn_indices.size (); ++nn_index_i)
+      {
+        Eigen::Vector4f neighbor = input_->points[nn_indices[nn_index_i]].getVector4fMap ();//interm_cloud_->points[nn_indices[nn_index_i]].getVector4fMap ();
+        neighbor(3) = 0.0f;
+        float dot_product = smoothed_normal.dot (neighbor - smoothed_point);
+        e_residual += theta[nn_index_i] * dot_product;// * dot_product;
+      }
+      e_residual /= theta_normalization_factor;
+      if (e_residual < 1e-5) break;
+
+      smoothed_point = smoothed_point + e_residual * smoothed_normal;
+//      PCL_INFO ("e_residual: %f with smoothed point %f %f %f and smoothed normal: %f %f %f\n", e_residual, smoothed_point(0), smoothed_point(1), smoothed_point(2),
+//                smoothed_normal(0), smoothed_normal(1), smoothed_normal(2));
+    }
+//    PCL_INFO ("%u ", i);
 
     total_residual += e_residual;
 
     output_positions->points[i].getVector4fMap () = smoothed_point;
-    output_normals->points[i].getNormalVector4fMap () = smoothed_normal;//normals_->points[i].getNormalVector4fMap ();//smoothed_normal;
+    output_normals->points[i].getNormalVector4fMap () = normals_->points[i].getNormalVector4fMap ();//smoothed_normal;
 
     // Calculate difference
 //    diffs[i] = smoothed_normal.dot (smoothed_point - interm_cloud_->points[i].getVector4fMap ());
@@ -164,8 +178,8 @@ pcl::SurfelSmoothing<PointT, PointNT>::computeSmoothedCloud (PointCloudInPtr &ou
   {
     PCL_INFO ("Surfel smoothing iteration %u\n", iteration);
     residual = smoothCloudIteration (output_positions, output_normals);
-    if (residual > last_residual && iteration > min_iterations) break;
-    if (fabs (residual) < 0.0001) break;
+    if (fabs (residual) > fabs (last_residual) -1e-8 && iteration > min_iterations) break;
+//    if (fabs (residual) < 0.23) break;
 
     interm_cloud_ = output_positions;
     interm_normals_ = output_normals;
