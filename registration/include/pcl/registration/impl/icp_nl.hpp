@@ -207,9 +207,9 @@ template <typename PointSource, typename PointTarget> inline int
     Eigen::Vector4f pp = transformation_matrix * p_src;
 
     // Estimate the distance (cost function)
-    //fvec[i] = model->distL2Sqr (p_tgt, pp);
+    fvec[i] = model->distL2Sqr (p_tgt, pp);
     //fvec[i] = model->distL1 (pp, p_tgt);
-    fvec[i] = model->distHuber (pp, p_tgt, sigma);
+    //fvec[i] = model->distHuber (pp, p_tgt, sigma);
   }
   return (0);
 }
@@ -264,8 +264,8 @@ template <typename PointSource, typename PointTarget> inline int
     Eigen::Vector4f pp = transformation_matrix * p_src;
 
     // Estimate the distance (cost function)
-    //fvec[i] = model->distL2Sqr (p_tgt, pp);
-    fvec[i] = model->distL1 (pp, p_tgt);
+    fvec[i] = model->distL2Sqr (p_tgt, pp);
+    //fvec[i] = model->distL1 (pp, p_tgt);
     //fvec[i] = model->distHuber (pp, p_tgt, sigma);
   }
 /*  // Compute the median
