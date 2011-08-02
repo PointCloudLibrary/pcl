@@ -75,7 +75,7 @@ namespace pcl
       bool
       initCompute ();
 
-      void
+      float
       smoothCloudIteration (PointCloudInPtr &output_positions,
                             NormalCloudPtr &output_normals);
 
