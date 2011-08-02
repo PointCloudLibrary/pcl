@@ -27,6 +27,7 @@ printUsage (const char* progName)
             << "-n           Normals visualisation example\n"
             << "-a           Shapes visualisation example\n"
             << "-v           Viewports example\n"
+            << "-i           Interaction Customization example\n"
             << "\n\n";
 }
 
@@ -173,6 +174,53 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> viewportsVis (
 }
 
 
+unsigned int text_id = 0;
+void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event,
+                            void* viewer_void)
+{
+  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
+  if (event.getKeySym () == "r" && event.keyDown ())
+  {
+    std::cout << "r was pressed => removing all text" << std::endl;
+
+    char str[512];
+    for (unsigned int i = 0; i < text_id; ++i)
+    {
+      sprintf (str, "text#%03d", i);
+      viewer->removeShape (str);
+    }
+    text_id = 0;
+  }
+}
+
+void mouseEventOccurred (const pcl::visualization::MouseEvent &event,
+                         void* viewer_void)
+{
+  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
+  if (event.getButton () == pcl::visualization::MouseEvent::LeftButton &&
+      event.getType () == pcl::visualization::MouseEvent::MouseButtonRelease)
+  {
+    std::cout << "Left mouse button released at position (" << event.getX () << ", " << event.getY () << ")" << std::endl;
+
+    char str[512];
+    sprintf (str, "text#%03d", text_id ++);
+    viewer->addText ("clicked here", event.getX (), event.getY (), str);
+  }
+}
+
+boost::shared_ptr<pcl::visualization::PCLVisualizer> interactionCustomizationVis ()
+{
+  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  viewer->setBackgroundColor (0, 0, 0);
+  viewer->addCoordinateSystem (1.0);
+
+  viewer->registerKeyboardCallback (keyboardEventOccurred, (void*)&viewer);
+  viewer->registerMouseCallback (mouseEventOccurred, (void*)&viewer);
+
+  return (viewer);
+}
+
+
 // --------------
 // -----Main-----
 // --------------
@@ -188,7 +236,7 @@ main (int argc, char** argv)
     return 0;
   }
   bool simple(false), rgb(false), custom_c(false), normals(false),
-    shapes(false), viewports(false);
+    shapes(false), viewports(false), interaction_customization(false);
   if (pcl::console::find_argument (argc, argv, "-s") >= 0)
   {
     simple = true;
@@ -218,6 +266,11 @@ main (int argc, char** argv)
   {
     viewports = true;
     std::cout << "Viewports example\n";
+  }
+  else if (pcl::console::find_argument (argc, argv, "-i") >= 0)
+  {
+    interaction_customization = true;
+    std::cout << "Interaction Customization example\n";
   }
   else
   {
@@ -312,6 +365,10 @@ main (int argc, char** argv)
   {
     viewer = viewportsVis(point_cloud_ptr, cloud_normals1, cloud_normals2);
   }
+  else if (interaction_customization)
+  {
+    viewer = interactionCustomizationVis();
+  }
 
   //--------------------
   // -----Main loop-----
@@ -322,4 +379,3 @@ main (int argc, char** argv)
     boost::this_thread::sleep (boost::posix_time::microseconds (100000));
   }
 }
-
