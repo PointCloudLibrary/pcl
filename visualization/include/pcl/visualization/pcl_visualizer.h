@@ -982,6 +982,10 @@ namespace pcl
         bool 
         getCameraParameters (int argc, char **argv);
 
+        /** \brief Checks whether the camera parameters were manually loaded from file.*/
+        bool 
+        cameraParamsSet() const;
+
         /** \brief Update camera parameters and render. */
         void 
         updateCamera ();
@@ -1067,6 +1071,9 @@ namespace pcl
 
         /** \brief Internal list with actor pointers and viewpoint for coordinates. */
         CoordinateActorMap coordinate_actor_map_;
+
+        /** \brief Boolean that holds whether or not the camera parameters were manually initialized*/
+        bool camera_set_;
         
         /** \brief Internal method. Removes a vtk actor from the screen.
           * \param actor a pointer to the vtk actor object

@@ -162,7 +162,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   initCameraParameters ();
  
   // Parse the camera settings and update the internal camera
-  getCameraParameters (argc, argv);
+  camera_set_ = getCameraParameters (argc, argv);
   updateCamera ();
   // Set the window size as 1/2 of the screen size or the user given parameter
   win_->SetSize (camera_.window_size[0], camera_.window_size[1]);
@@ -981,6 +981,13 @@ pcl::visualization::PCLVisualizer::initCameraParameters ()
   camera_.focal[0] = camera_.focal[1] = camera_.focal[2] = 0;
   camera_.pos[0] = camera_.pos[1] = 0; camera_.pos[2] = 1;
   camera_.view[0] = camera_.view[2] = 0; camera_.view[1] = 1;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::cameraParamsSet () const
+{
+  return (camera_set_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
