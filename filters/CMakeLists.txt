@@ -16,6 +16,7 @@ if(build)
         src/radius_outlier_removal.cpp
         src/statistical_outlier_removal.cpp
         src/voxel_grid.cpp
+        src/fast_voxel_grid.cpp
         )
 
     set(incs 
@@ -27,6 +28,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/radius_outlier_removal.h
         include/pcl/${SUBSYS_NAME}/statistical_outlier_removal.h
         include/pcl/${SUBSYS_NAME}/voxel_grid.h
+        include/pcl/${SUBSYS_NAME}/fast_voxel_grid.h
         )
 
     set(impl_incs 
@@ -38,6 +40,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/radius_outlier_removal.hpp
         include/pcl/${SUBSYS_NAME}/impl/statistical_outlier_removal.hpp
         include/pcl/${SUBSYS_NAME}/impl/voxel_grid.hpp
+        include/pcl/${SUBSYS_NAME}/impl/fast_voxel_grid.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
