@@ -258,8 +258,8 @@ pcl::FeatureCorrespondenceTest<PointIn>::performDownsampling (float leaf_x, floa
   pcl::VoxelGrid<PointIn> vox_grid;
   vox_grid.setLeafSize (leaf_x, leaf_y, leaf_z);
 
-  preprocessed_source_ = PointCloudInPtr (new PointCloud<PointIn>);
-  preprocessed_target_ = PointCloudInPtr (new PointCloud<PointIn>);
+  preprocessed_source_ = PointCloudInPtr (new pcl::PointCloud<PointIn>);
+  preprocessed_target_ = PointCloudInPtr (new pcl::PointCloud<PointIn>);
 
   vox_grid.setInputCloud (source_input_);
   vox_grid.filter (*preprocessed_source_);
@@ -333,7 +333,7 @@ pcl::FPFHTest<PointIn, NormalT, FeatureDescriptor>::computeNormals (float search
   KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
   ne_source.setSearchMethod (tree_source);
 
-  source_normals_ = NormalInPtr(new PointCloud<NormalT>);
+  source_normals_ = NormalInPtr(new pcl::PointCloud<NormalT>);
 
   ne_source.setRadiusSearch (search_radius);
 
@@ -346,7 +346,7 @@ pcl::FPFHTest<PointIn, NormalT, FeatureDescriptor>::computeNormals (float search
   KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
   ne_target.setSearchMethod (tree_target);
 
-  target_normals_ = NormalInPtr(new PointCloud<NormalT>);
+  target_normals_ = NormalInPtr(new pcl::PointCloud<NormalT>);
 
   ne_target.setRadiusSearch (search_radius);
 
@@ -367,7 +367,7 @@ pcl::FPFHTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& tim
   KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
   fpfh_source.setSearchMethod (tree_source);
 
-  source_features_ = FeaturesPtr(new PointCloud<FeatureDescriptor> ());
+  source_features_ = FeaturesPtr(new pcl::PointCloud<FeatureDescriptor> ());
 
   fpfh_source.setRadiusSearch (search_radius_);
 
@@ -383,7 +383,7 @@ pcl::FPFHTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& tim
   KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
   fpfh_target.setSearchMethod (tree_target);
 
-  target_features_ = FeaturesPtr(new PointCloud<FeatureDescriptor> ());
+  target_features_ = FeaturesPtr(new pcl::PointCloud<FeatureDescriptor> ());
 
   fpfh_target.setRadiusSearch (search_radius_);
 
