@@ -412,6 +412,10 @@ main (int argc, char** argv)
     // Change the cloud rendered opacity
     if (opaque.size () > 0)
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
+
+    // Reset camera viewpoint to center of cloud if camera parameters were not passed manually and this is the first loaded cloud
+    if (i == 0 && !p->cameraParamsSet ())
+      p->resetCameraViewpoint (cloud_name.str ());
   }
 
   if (p)
