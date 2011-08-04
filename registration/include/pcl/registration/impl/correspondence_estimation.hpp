@@ -265,4 +265,18 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
   deinitCompute ();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget>
+template <typename FeatureType> inline void 
+pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setFeatureRepresentation (
+  const std::string &key, 
+  const typename pcl::KdTree<FeatureType>::PointRepresentationConstPtr &fr)
+{
+  if (features_map_.count (key) == 0)
+    features_map_[key].reset (new FeatureContainer<FeatureType>);
+  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setFeatureRepresentation (fr);
+}
+
+
+
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_ */

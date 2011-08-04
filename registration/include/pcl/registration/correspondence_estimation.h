@@ -146,6 +146,14 @@ namespace pcl
         template <typename FeatureType> inline void 
         setKSearch (const typename pcl::KdTree<FeatureType>::Ptr &tree, int k, std::string key);
 
+        /** \brief Provide a boost shared pointer to a PointRepresentation to be used when comparing features
+          * \param key a string that uniquely identifies the feature
+          * \param fr the point feature representation to be used by the k-D tree
+          */
+        template <typename FeatureType> inline void
+        setFeatureRepresentation (const std::string &key,
+                                  const typename pcl::KdTree<FeatureType>::PointRepresentationConstPtr &fr);
+
         /** \brief Set the maximum distance threshold between two correspondent points in source <-> target. If the
           * distance is larger than this threshold, the points will be ignored in the alignment process.
           * \param distance_threshold the maximum distance threshold between a point and its nearest neighbor
@@ -320,7 +328,12 @@ namespace pcl
             typedef boost::function<bool (const pcl::PointCloud<FeatureType> &, int, std::vector<int> &,
                                           std::vector<float> &)> SearchMethod;
 
-            FeatureContainer () : k_(0), radius_(0) {}
+            typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
+
+            FeatureContainer () : k_(0), radius_(0), 
+                                  feature_representation_() 
+            {
+            }
 
             void 
             setSourceFeature (const FeatureCloudConstPtr &source_features)
@@ -383,6 +396,10 @@ namespace pcl
             findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices,
                                         std::vector<float> &distances)
             {
+              // Set the internal feature point representation of choice
+              if (feature_representation_)
+                tree_->setPointRepresentation (feature_representation_);
+
               if (k_ > 0)
               {
                 correspondence_indices.resize (k_);
@@ -399,6 +416,9 @@ namespace pcl
             SearchMethod search_method_;
             int k_;
             double radius_;
+
+            /** \brief The internal point feature representation used. */
+            PointRepresentationConstPtr feature_representation_;
         };
 
         class FeatureContainerInterface
