@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -198,12 +200,20 @@ namespace pcl
         }
       }
 
-      /** \brief Obtain the fitness score (e.g., sum of squared distances from the source to the target). 
-        * \param max_range maximum allowable distance between a point and its correspondent neighbor in the target 
+      /** \brief Obtain the Euclidean fitness score (e.g., sum of squared distances from the source to the target)
+        * \param max_range maximum allowable distance between a point and its correspondence in the target 
         * (default: double::max)
         */
       inline double 
       getFitnessScore (double max_range = std::numeric_limits<double>::max ());
+
+      /** \brief Obtain the Euclidean fitness score (e.g., sum of squared distances from the source to the target)
+        * from two sets of correspondence distances (distances between source and target points)
+        * \param[in] distances_a the first set of distances between correspondences
+        * \param[in] distances_b the second set of distances between correspondences
+        */
+      inline double 
+      getFitnessScore (const std::vector<float> &distances_a, const std::vector<float> &distances_b);
 
       /** \brief Return the state of convergence after the last align run */
       inline bool 

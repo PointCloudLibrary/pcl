@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -34,7 +36,6 @@
  * $Id$
  *
  */
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline void
@@ -92,6 +93,16 @@ pcl::Registration<PointSource, PointTarget>::findFeatureCorrespondences (int ind
   correspondence_indices.resize (correspondence_indices_end - correspondence_indices.begin());
 }*/
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget> inline double
+pcl::Registration<PointSource, PointTarget>::getFitnessScore (const std::vector<float> &distances_a, 
+                                                              const std::vector<float> &distances_b)
+{
+  unsigned int nr_elem = std::min (distances_a.size (), distances_b.size ());
+  Eigen::Map<Eigen::VectorXf> map_a = Eigen::VectorXf::MapAligned (&distances_a[0], nr_elem);
+  Eigen::Map<Eigen::VectorXf> map_b = Eigen::VectorXf::MapAligned (&distances_b[0], nr_elem);
+  return ((map_a - map_b).sum () / nr_elem);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline double
