@@ -59,21 +59,23 @@ namespace pcl
       using CorrespondenceRejector::rejection_name_;
       using CorrespondenceRejector::getClassName;
 
-    public:
-      CorrespondenceRejectorOneToOne()
-      {
-        rejection_name_ = "CorrespondenceRejectorOneToOne";
-      }
+      public:
+        CorrespondenceRejectorOneToOne ()
+        {
+          rejection_name_ = "CorrespondenceRejectorOneToOne";
+        }
 
-      inline void 
-      getCorrespondences (const pcl::registration::Correspondences& original_correspondences, 
-                          pcl::registration::Correspondences& remaining_correspondences);
+        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
+          * \param original_correspondences the set of initial correspondences given
+          * \param remaining_correspondences the resultant filtered set of remaining correspondences
+          */
+        inline void 
+        getRemainingCorrespondences (const pcl::registration::Correspondences& original_correspondences, 
+                                     pcl::registration::Correspondences& remaining_correspondences);
 
-
-    protected:
-      void 
-      applyRejection (pcl::registration::Correspondences &correspondences);
-
+      protected:
+        void 
+        applyRejection (pcl::registration::Correspondences &correspondences);
     };
 
   }

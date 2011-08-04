@@ -55,31 +55,36 @@ namespace pcl
       using CorrespondenceRejector::rejection_name_;
       using CorrespondenceRejector::getClassName;
 
-    public:
-      CorrespondenceRejectorDistance() : max_distance_(std::numeric_limits<float>::max())
-      {
-        rejection_name_ = "CorrespondenceRejectorDistance";
-      }
+      public:
+        CorrespondenceRejectorDistance () : max_distance_(std::numeric_limits<float>::max ())
+        {
+          rejection_name_ = "CorrespondenceRejectorDistance";
+        }
 
-      inline void 
-      getCorrespondences (const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences);
+        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
+          * \param original_correspondences the set of initial correspondences given
+          * \param remaining_correspondences the resultant filtered set of remaining correspondences
+          */
+        inline void 
+        getRemainingCorrespondences (const pcl::registration::Correspondences& original_correspondences, 
+                                     pcl::registration::Correspondences& remaining_correspondences);
 
-      /** \brief Set the maximum distance used for thresholding in correspondence rejection.
-       * \param distance Distance to be used as maximum distance between correspondences. Correspondences with larger distance are rejected.
-       * */
-      virtual inline void 
-      setMaximumDistance (float distance) { max_distance_ = distance; };
+        /** \brief Set the maximum distance used for thresholding in correspondence rejection.
+         * \param distance Distance to be used as maximum distance between correspondences. Correspondences with larger distance are rejected.
+         * */
+        virtual inline void 
+        setMaximumDistance (float distance) { max_distance_ = distance; };
 
-      /** \brief Get the maximum distance used for thresholding in correspondence rejection. */
-      inline float 
-      getMaxmimumDistance () { return max_distance_; };
+        /** \brief Get the maximum distance used for thresholding in correspondence rejection. */
+        inline float 
+        getMaxmimumDistance () { return max_distance_; };
 
-    protected:
+      protected:
 
-      void 
-      applyRejection (pcl::registration::Correspondences &correspondences);
+        void 
+        applyRejection (pcl::registration::Correspondences &correspondences);
 
-      float max_distance_;
+        float max_distance_;
     };
 
   }

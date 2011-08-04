@@ -62,49 +62,56 @@ namespace pcl
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
-    public:
-      CorrespondenceRejectorSampleConsensus()
-      {
-        rejection_name_ = "CorrespondenceRejectorSampleConsensus";
-        inlier_threshold_ = 0.05;
-      }
+      public:
+        CorrespondenceRejectorSampleConsensus ()
+        {
+          rejection_name_ = "CorrespondenceRejectorSampleConsensus";
+          inlier_threshold_ = 0.05;
+        }
 
-      inline void 
-      getCorrespondences (const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences);
+        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
+          * \param original_correspondences the set of initial correspondences given
+          * \param remaining_correspondences the resultant filtered set of remaining correspondences
+          */
+        inline void 
+        getRemainingCorrespondences (const pcl::registration::Correspondences& original_correspondences, 
+                                     pcl::registration::Correspondences& remaining_correspondences);
 
-      virtual inline void 
-      setInputCloud (const PointCloudConstPtr &cloud) { input_ = cloud; }
-      virtual inline void 
-      setTargetCloud (const PointCloudConstPtr &cloud) { target_ = cloud; }
+        virtual inline void 
+        setInputCloud (const PointCloudConstPtr &cloud) { input_ = cloud; }
 
-      inline void 
-      setInlierThreshold(double threshold) { inlier_threshold_ = threshold; };
-      inline double 
-      getInlierThreshold() { return inlier_threshold_; };
+        virtual inline void 
+        setTargetCloud (const PointCloudConstPtr &cloud) { target_ = cloud; }
 
-      inline void 
-      setMaxIterations (int max_iterations) {max_iterations_ = max_iterations; };
-      inline int 
-      getMaxIterations () { return max_iterations_; };
+        inline void 
+        setInlierThreshold(double threshold) { inlier_threshold_ = threshold; };
 
-      inline Eigen::Matrix4f 
-      getBestTransformation () { return best_transformation_; };
+        inline double 
+        getInlierThreshold() { return inlier_threshold_; };
 
-    protected:
+        inline void 
+        setMaxIterations (int max_iterations) {max_iterations_ = max_iterations; };
 
-      inline void 
-      applyRejection (pcl::registration::Correspondences &correspondences);
+        inline int 
+        getMaxIterations () { return max_iterations_; };
 
-      double inlier_threshold_;
+        inline Eigen::Matrix4f 
+        getBestTransformation () { return best_transformation_; };
 
-      int max_iterations_;
+      protected:
 
-      PointCloudConstPtr input_;
-      PointCloudConstPtr target_;
+        inline void 
+        applyRejection (pcl::registration::Correspondences &correspondences);
 
-      Eigen::Matrix4f best_transformation_;
+        double inlier_threshold_;
+
+        int max_iterations_;
+
+        PointCloudConstPtr input_;
+        PointCloudConstPtr target_;
+
+        Eigen::Matrix4f best_transformation_;
     };
-
   }
 }
 

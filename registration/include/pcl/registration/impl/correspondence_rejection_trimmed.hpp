@@ -36,35 +36,42 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_TRIMMED_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_TRIMMED_HPP_
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::registration::CorrespondenceRejectorTrimmed::applyRejection(pcl::registration::Correspondences &correspondences)
+pcl::registration::CorrespondenceRejectorTrimmed::applyRejection (
+    pcl::registration::Correspondences &correspondences)
 {
   /* not really an efficient implementation */
   correspondences = *input_correspondences_;
-  unsigned int number_valid_correspondences = ( int( std::floor( overlap_ratio_ * (float)(correspondences.size()) ) ) );
-  number_valid_correspondences = std::max(number_valid_correspondences, nr_min_correspondences_);
+  unsigned int number_valid_correspondences = (int(std::floor (overlap_ratio_ * (float)(correspondences.size ()))));
+  number_valid_correspondences = std::max (number_valid_correspondences, nr_min_correspondences_);
 
-  if ( number_valid_correspondences < input_correspondences_->size() )
+  if (number_valid_correspondences < input_correspondences_->size ())
   {
-    std::sort(correspondences.begin(), correspondences.end(), pcl::registration::sortCorrespondencesByDistance());
-    correspondences.resize(number_valid_correspondences);
+    std::sort (correspondences.begin (), correspondences.end (), 
+               pcl::registration::sortCorrespondencesByDistance ());
+    correspondences.resize (number_valid_correspondences);
   }
   else
     correspondences = *input_correspondences_;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::registration::CorrespondenceRejectorTrimmed::getCorrespondences(const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences)
+pcl::registration::CorrespondenceRejectorTrimmed::getRemainingCorrespondences (
+    const pcl::registration::Correspondences& original_correspondences, 
+    pcl::registration::Correspondences& remaining_correspondences)
 {
   /* not really an efficient implementation */
   remaining_correspondences = original_correspondences;
-  unsigned int number_valid_correspondences = ( int( std::floor( overlap_ratio_ * (float)(remaining_correspondences.size()) ) ) );
-  number_valid_correspondences = std::max(number_valid_correspondences, nr_min_correspondences_);
+  unsigned int number_valid_correspondences = (int (std::floor (overlap_ratio_ * (float) (remaining_correspondences.size ()))));
+  number_valid_correspondences = std::max (number_valid_correspondences, nr_min_correspondences_);
 
-  if ( number_valid_correspondences < remaining_correspondences.size() )
+  if (number_valid_correspondences < remaining_correspondences.size ())
   {
-    std::sort(remaining_correspondences.begin(), remaining_correspondences.end(), pcl::registration::sortCorrespondencesByDistance());
-    remaining_correspondences.resize(number_valid_correspondences);
+    std::sort (remaining_correspondences.begin (), remaining_correspondences.end (), 
+               pcl::registration::sortCorrespondencesByDistance ());
+    remaining_correspondences.resize (number_valid_correspondences);
   }
 }
 

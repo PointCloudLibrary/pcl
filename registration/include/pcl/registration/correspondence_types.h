@@ -43,7 +43,7 @@ namespace pcl
 {
   namespace registration
   {
-    /** @b Correspondence represents point correspondences (similar to OpenCV's DMATCH)
+    /** @b Correspondence represents point correspondences
       * \author Dirk Holz
       * \ingroup registration
       */
@@ -55,26 +55,29 @@ namespace pcl
     typedef boost::shared_ptr<const std::vector<pcl::registration::Correspondence> > CorrespondencesConstPtr;
 
     /** \brief calculates the mean and standard deviation of descriptor distances from correspondences
-        \param[in] correspondences list of correspondences
-        \param[out] mean the mean descriptor distance of correspondences
-        \param[out] stddev the standard deviation of descriptor distances.
-        \note The sample varaiance is used to determine the standard deviation
-    */
-    inline void getCorDistMeanStd(const Correspondences& correspondences, double &mean, double &stddev);
+      * \param[in] correspondences list of correspondences
+      * \param[out] mean the mean descriptor distance of correspondences
+      * \param[out] stddev the standard deviation of descriptor distances.
+      * \note The sample varaiance is used to determine the standard deviation
+      */
+    inline void 
+    getCorDistMeanStd (const Correspondences& correspondences, double &mean, double &stddev);
 
     /** \brief extracts the query indices
-        \param[in] correspondences list of correspondences
-        \param[out] indices array of extracted indices.
-        \note order of indices corresponds to input list of descriptor correspondences
-    */
-    inline void getQueryIndices(const Correspondences& correspondences, std::vector<int>& indices);
+      * \param[in] correspondences list of correspondences
+      * \param[out] indices array of extracted indices.
+      * \note order of indices corresponds to input list of descriptor correspondences
+      */
+    inline void 
+    getQueryIndices (const Correspondences& correspondences, std::vector<int>& indices);
 
     /** \brief extracts the match indices
-        \param[in] correspondences list of correspondences
-        \param[out] indices array of extracted indices.
-        \note order of indices corresponds to input list of descriptor correspondences
-    */
-    inline void getMatchIndices(const Correspondences& correspondences, std::vector<int>& indices);
+      * \param[in] correspondences list of correspondences
+      * \param[out] indices array of extracted indices.
+      * \note order of indices corresponds to input list of descriptor correspondences
+      */
+    inline void 
+    getMatchIndices (const Correspondences& correspondences, std::vector<int>& indices);
 
 //    inline void getNonMatchingQueryIndices()
 //    {

@@ -36,16 +36,21 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_RECIPROCAL_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_RECIPROCAL_HPP_
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::registration::CorrespondenceRejectorReciprocal::applyRejection(pcl::registration::Correspondences &correspondences)
+pcl::registration::CorrespondenceRejectorReciprocal::applyRejection (
+    pcl::registration::Correspondences &correspondences)
 {
-
+  PCL_WARN ("[pcl::registration::CorrespondenceRejectorReciprocal::applyRejection] Not implemented!\n");
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::registration::CorrespondenceRejectorReciprocal::getCorrespondences(const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences)
+pcl::registration::CorrespondenceRejectorReciprocal::getRemainingCorrespondences (
+    const pcl::registration::Correspondences& original_correspondences, 
+    pcl::registration::Correspondences& remaining_correspondences)
 {
-
+  PCL_WARN ("[pcl::registration::CorrespondenceRejectorReciprocal::getCorrespondences] Not implemented!\n");
 }
 
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_RECIPROCAL_HPP_ */

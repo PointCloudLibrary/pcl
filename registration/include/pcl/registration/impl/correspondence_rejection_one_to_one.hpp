@@ -36,54 +36,59 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_ONE_TO_ONE_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_ONE_TO_ONE_HPP_
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::registration::CorrespondenceRejectorOneToOne::applyRejection(pcl::registration::Correspondences &correspondences)
+pcl::registration::CorrespondenceRejectorOneToOne::applyRejection (
+    pcl::registration::Correspondences &correspondences)
 {
   /* not really an efficient implementation */
   pcl::registration::Correspondences input = *input_correspondences_;
 
-  std::sort(input.begin(), input.end(), pcl::registration::sortCorrespondencesByMatchIndexAndDistance());
+  std::sort (input.begin (), input.end (), pcl::registration::sortCorrespondencesByMatchIndexAndDistance ());
 
-  correspondences.resize(input_correspondences_->size());
+  correspondences.resize (input_correspondences_->size ());
   int index_last = -1;
   unsigned int number_valid_correspondences = 0;
-  for ( unsigned int i = 0; i < input.size(); ++i )
+  for (size_t i = 0; i < input.size (); ++i)
   {
     if (input[i].indexMatch < 0)
       continue;
-    else if ( input[i].indexMatch != index_last )
+    else if (input[i].indexMatch != index_last)
     {
       correspondences[number_valid_correspondences] = input[i];
       index_last = input[i].indexMatch;
       ++number_valid_correspondences;
     }
   }
-  correspondences.resize(number_valid_correspondences);
+  correspondences.resize (number_valid_correspondences);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::registration::CorrespondenceRejectorOneToOne::getCorrespondences(const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences)
+pcl::registration::CorrespondenceRejectorOneToOne::getRemainingCorrespondences (
+    const pcl::registration::Correspondences& original_correspondences, 
+    pcl::registration::Correspondences& remaining_correspondences)
 {
   /* not really an efficient implementation */
   pcl::registration::Correspondences input = original_correspondences;
 
-  std::sort(input.begin(), input.end(), pcl::registration::sortCorrespondencesByMatchIndexAndDistance());
+  std::sort (input.begin (), input.end (), pcl::registration::sortCorrespondencesByMatchIndexAndDistance ());
 
-  remaining_correspondences.resize(input.size());
+  remaining_correspondences.resize (input.size ());
   int index_last = -1;
   unsigned int number_valid_correspondences = 0;
-  for ( unsigned int i = 0; i < input.size(); ++i )
+  for (size_t i = 0; i < input.size (); ++i)
   {
     if (input[i].indexMatch < 0)
       continue;
-    else if ( input[i].indexMatch != index_last )
+    else if (input[i].indexMatch != index_last)
     {
       remaining_correspondences[number_valid_correspondences] = input[i];
       index_last = input[i].indexMatch;
       ++number_valid_correspondences;
     }
   }
-  remaining_correspondences.resize(number_valid_correspondences);
+  remaining_correspondences.resize (number_valid_correspondences);
 }
 
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_ONE_TO_ONE_HPP_ */

@@ -85,8 +85,6 @@ namespace pcl
 
       typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
 
-      typedef std::map<std::string, boost::shared_ptr<FeatureContainerInterface> > FeaturesMap;
-
       /** \brief Empty constructor. */
       Registration () : target_ (),
                         final_transformation_ (Eigen::Matrix4f::Identity ()),
@@ -112,50 +110,6 @@ namespace pcl
       /** \brief Get a pointer to the input point cloud dataset target. */
       inline PointCloudTargetConstPtr const 
       getInputTarget () { return (target_ ); }
-
-      /** \brief Provide a pointer to a cloud of feature descriptors associated with the source point cloud
-        * \param source_feature a cloud of feature descriptors associated with the source point cloud
-        * \param key a string that uniquely identifies the feature
-        */
-      template <typename FeatureType> inline void 
-      setSourceFeature (const typename pcl::PointCloud<FeatureType>::ConstPtr &source_feature, std::string key);
-
-      /** \brief Get a pointer to the source cloud's feature descriptors, specified by the given \a key
-        * \param key a string that uniquely identifies the feature (must match the key provided by setSourceFeature)
-        */
-      template <typename FeatureType> inline typename pcl::PointCloud<FeatureType>::ConstPtr 
-      getSourceFeature (std::string key);
-
-      /** \brief Provide a pointer to a cloud of feature descriptors associated with the target point cloud
-        * \param target_feature a cloud of feature descriptors associated with the target point cloud
-        * \param key a string that uniquely identifies the feature
-        */
-      template <typename FeatureType> inline void 
-      setTargetFeature (const typename pcl::PointCloud<FeatureType>::ConstPtr &target_feature, std::string key);
-
-      /** \brief Get a pointer to the source cloud's feature descriptors, specified by the given \a key
-        * \param key a string that uniquely identifies the feature (must match the key provided by setTargetFeature)
-        */
-      template <typename FeatureType> inline typename pcl::PointCloud<FeatureType>::ConstPtr 
-      getTargetFeature (std::string key);
-
-      /** \brief Use radius-search as the search method when finding correspondences for the feature associated with the
-        * provided \a key      
-        * \param tree the KdTree to use to compare features
-        * \param r the radius to use when performing the correspondence search
-        * \param key a string that uniquely identifies the feature
-        */
-      template <typename FeatureType> inline void 
-      setRadiusSearch (const typename pcl::KdTree<FeatureType>::Ptr &tree, float r, std::string key);
-
-      /** \brief Use k-nearest-neighbors as the search method when finding correspondences for the feature associated 
-        * with the provided \a key
-        * \param tree the KdTree to use to compare features
-        * \param k the number of nearest neighbors to return in the correspondence search
-        * \param key a string that uniquely identifies the feature
-        */
-      template <typename FeatureType> inline void 
-      setKSearch (const typename pcl::KdTree<FeatureType>::Ptr &tree, int k, std::string key);
 
       /** \brief Get the final transformation matrix estimated by the registration method. */
       inline Eigen::Matrix4f 
@@ -347,20 +301,14 @@ namespace pcl
         return (true);
       }
 
-      /** \brief Test that all features are valid (i.e., does each key have a valid source cloud, target cloud, and 
-        * search method)
-        */
-      inline bool 
-      hasValidFeatures ();
-
       /** \brief Find the indices of the points in the target cloud whose features correspond with the features of the 
         * given point in the source cloud
         * \param index the index of the query point (in the source cloud)
         * \param correspondence_indices the resultant vector of indices representing the query's corresponding features (in the target cloud)
         */
-      inline void 
+/*      inline void 
       findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices);
-
+*/
     private:
  
       /** \brief Abstract transformation computation method. */
@@ -371,123 +319,8 @@ namespace pcl
       virtual void 
       computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess) {}
 
-      // /** \brief The number of K nearest neighbors to use for each point. */
-      // int k_;
-
       /** \brief The point representation used (internal). */
       PointRepresentationConstPtr point_representation_;
-
-      /** \brief An STL map containing features to use when performing the correspondence search.*/
-      FeaturesMap features_map_;
-
-      /** \brief An inner class containing pointers to the source and target feature clouds along with the KdTree and 
-        * the parameters needed to perform the correspondence search.  This class extends FeatureContainerInterface, 
-        * which contains abstract methods for any methods that do not depend on the FeatureType --- these methods can 
-        * thus be called from a pointer to FeatureContainerInterface without casting to the derived class.
-        */
-      template <typename FeatureType>
-      class FeatureContainer : public pcl::Registration<PointSource, PointTarget>::FeatureContainerInterface
-      {
-        public:
-          typedef typename pcl::PointCloud<FeatureType>::ConstPtr FeatureCloudConstPtr;
-          typedef typename pcl::KdTree<FeatureType> KdTree;
-          typedef typename pcl::KdTree<FeatureType>::Ptr KdTreePtr;
-          typedef boost::function<int (const pcl::PointCloud<FeatureType> &, int, std::vector<int> &, 
-                                        std::vector<float> &)> SearchMethod;
-          
-          FeatureContainer () : k_(0), radius_(0) {}
-
-          void setSourceFeature (const FeatureCloudConstPtr &source_features)
-          {
-            source_features_ = source_features;
-          }
-          
-          FeatureCloudConstPtr getSourceFeature ()
-          {
-            return (source_features_);
-          }
-          
-          void setTargetFeature (const FeatureCloudConstPtr &target_features)
-          {
-            target_features_ = target_features;
-            if (tree_)
-            {
-              tree_->setInputCloud (target_features_);
-            }
-          }
-          
-          FeatureCloudConstPtr getTargetFeature ()
-          {
-            return (target_features_);
-          }
-          
-          void setRadiusSearch (KdTreePtr tree, float r)
-          {
-            tree_ = tree;
-            radius_ = r;
-            k_ = 0;
-            if (target_features_)
-            {
-              tree_->setInputCloud (target_features_);
-            }
-          }
-
-          void setKSearch (KdTreePtr tree, int k)
-          {
-            tree_ = tree;
-            k_ = k;
-            radius_ = 0.0;
-            if (target_features_)
-            {
-              tree_->setInputCloud (target_features_);
-            }
-          }
-          
-          virtual bool isValid ()
-          {
-            if (!source_features_ || !target_features_ || !tree_)
-            {
-              return (false);
-            }
-            else
-            {
-              return (source_features_->points.size () > 0 && 
-                      target_features_->points.size () > 0 &&
-                      (k_ > 0 || radius_ > 0.0));
-            }
-          }
-
-          virtual void findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices, 
-                                                   std::vector<float> &distances)
-          {
-            if (k_ > 0)
-            {
-              correspondence_indices.resize (k_);
-              distances.resize (k_);
-              tree_->nearestKSearch (*source_features_, index, k_, correspondence_indices, distances);
-            }
-            else
-            {
-              tree_->radiusSearch (*source_features_, index, radius_, correspondence_indices, distances);
-            }
-          }
-          
-        private:
-          FeatureCloudConstPtr source_features_, target_features_;
-          KdTreePtr tree_;
-          SearchMethod search_method_;
-          int k_;
-          double radius_;
-      };
-
-      class FeatureContainerInterface
-      {
-        public:
-          virtual bool isValid () = 0;
-          virtual void findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices, 
-                                                   std::vector<float> &distances) = 0;
-      };
-
    };
 }
 

@@ -46,9 +46,11 @@ namespace pcl
 		/** \brief class representing a match between two descriptors */
     struct Correspondence
     {
-      union {
+      union 
+      {
         float data[4];
-        struct {
+        struct 
+        {
           /** \brief index of the query point */
           int indexQuery;
           /** \brief index of the matching point */
@@ -58,26 +60,23 @@ namespace pcl
         };
       } EIGEN_ALIGN16;
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+      
       /** \brief standard Constructor */
-      inline Correspondence()
-      : indexQuery (0)
-      , indexMatch (-1)
-      , distance (std::numeric_limits<float>::max ())
+      inline Correspondence () : indexQuery(0), indexMatch(-1), distance(std::numeric_limits<float>::max ())
       {
       	data[3] = 1.0f;
       }
+
       /** \brief Ctor */
-      inline Correspondence(int _indexQuery, int _indexMatch, float _distance)
-      : indexQuery (indexQuery)
-      , indexMatch (indexMatch)
-      , distance (distance)
+      inline Correspondence (int _indexQuery, int _indexMatch, float _distance) : indexQuery(_indexQuery), indexMatch(_indexMatch), distance (_distance)
       { 
       	data[3] = 1.0f;
       }
     };
     
     /** \brief overloaded << operator */
-    inline std::ostream& operator << (std::ostream& os, const Correspondence& c)
+    inline std::ostream& 
+    operator << (std::ostream& os, const Correspondence& c)
     {
       os << c.indexQuery << " " << c.indexMatch << " " << c.distance;
       return (os);
@@ -86,36 +85,36 @@ namespace pcl
 }
 
 inline void
-pcl::registration::getCorDistMeanStd(const Correspondences &correspondences, double &mean, double &stddev)
+pcl::registration::getCorDistMeanStd (const Correspondences &correspondences, double &mean, double &stddev)
 {
-  if ( correspondences.size() == 0 )
+  if (correspondences.empty ())
     return;
 
   double sum = 0, sq_sum = 0;
 
-  for (size_t i = 0; i < correspondences.size(); ++i)
+  for (size_t i = 0; i < correspondences.size (); ++i)
   {
     sum += correspondences[i].distance;
     sq_sum += correspondences[i].distance * correspondences[i].distance;
   }
   mean = sum / correspondences.size();
-  double variance = (double)(sq_sum - sum * sum / correspondences.size()) / (correspondences.size() - 1);
-  stddev = sqrt(variance);
+  double variance = (double)(sq_sum - sum * sum / correspondences.size ()) / (correspondences.size () - 1);
+  stddev = sqrt (variance);
 }
 
 inline void
-pcl::registration::getQueryIndices(const Correspondences& correspondences, std::vector<int>& indices)
+pcl::registration::getQueryIndices (const Correspondences& correspondences, std::vector<int>& indices)
 {
-  indices.resize(correspondences.size());
-  for ( unsigned int i = 0; i < correspondences.size(); ++i)
+  indices.resize (correspondences.size ());
+  for (size_t i = 0; i < correspondences.size (); ++i)
     indices[i] = correspondences[i].indexQuery;
 }
 
 inline void
-pcl::registration::getMatchIndices(const Correspondences& correspondences, std::vector<int>& indices)
+pcl::registration::getMatchIndices (const Correspondences& correspondences, std::vector<int>& indices)
 {
-  indices.resize(correspondences.size());
-  for ( unsigned int i = 0; i < correspondences.size(); ++i)
+  indices.resize (correspondences.size ());
+  for (size_t i = 0; i < correspondences.size (); ++i)
     indices[i] = correspondences[i].indexMatch;
 }
 

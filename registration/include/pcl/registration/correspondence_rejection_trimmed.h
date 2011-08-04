@@ -63,51 +63,56 @@ namespace pcl
       using CorrespondenceRejector::rejection_name_;
       using CorrespondenceRejector::getClassName;
 
-    public:
-      CorrespondenceRejectorTrimmed() : overlap_ratio_(1.0f)
-      {
-        rejection_name_ = "CorrespondenceRejectorTrimmed";
-        overlap_ratio_ = 0.5;
-        nr_min_correspondences_ = 0;
-      }
+      public:
+        CorrespondenceRejectorTrimmed () : overlap_ratio_(1.0f)
+        {
+          rejection_name_ = "CorrespondenceRejectorTrimmed";
+          overlap_ratio_ = 0.5;
+          nr_min_correspondences_ = 0;
+        }
 
-      inline void 
-      getCorrespondences (const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences);
+        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
+          * \param original_correspondences the set of initial correspondences given
+          * \param remaining_correspondences the resultant filtered set of remaining correspondences
+          */
+        inline void 
+        getRemainingCorrespondences (const pcl::registration::Correspondences& original_correspondences, 
+                                     pcl::registration::Correspondences& remaining_correspondences);
 
-      /** \brief Set the expected ratio of overlap between point clouds (in
-       * terms of correspondences).
-       * \param ratio ratio of overlap between 0 (no overlap, no
-       * correspondences) and 1 (full overlap, all correspondences)
-       */
-      virtual inline void 
-      setOverlapRadio (float ratio) { overlap_ratio_ = std::min(1.0f, std::max(0.0f, ratio)); };
+        /** \brief Set the expected ratio of overlap between point clouds (in
+         * terms of correspondences).
+         * \param ratio ratio of overlap between 0 (no overlap, no
+         * correspondences) and 1 (full overlap, all correspondences)
+         */
+        virtual inline void 
+        setOverlapRadio (float ratio) { overlap_ratio_ = std::min (1.0f, std::max (0.0f, ratio)); };
 
-      /** \brief Get the maximum distance used for thresholding in correspondence rejection. */
-      inline float 
-      getOverlapRadio () { return overlap_ratio_; };
+        /** \brief Get the maximum distance used for thresholding in correspondence rejection. */
+        inline float 
+        getOverlapRadio () { return overlap_ratio_; };
 
-      /** \brief Set a minimum number of correspondences. If the specified overlap ratio causes to have
-        * less correspondences,  \a CorrespondenceRejectorTrimmed will try to return at least
-        * \a nr_min_correspondences_ correspondences (or all correspondences in case \a nr_min_correspondences_
-        * is less than the number of given correspondences). 
-        */
-      inline void 
-      setMinCorrespondences (unsigned int min_correspondences) { nr_min_correspondences_ = min_correspondences; };
+        /** \brief Set a minimum number of correspondences. If the specified overlap ratio causes to have
+          * less correspondences,  \a CorrespondenceRejectorTrimmed will try to return at least
+          * \a nr_min_correspondences_ correspondences (or all correspondences in case \a nr_min_correspondences_
+          * is less than the number of given correspondences). 
+          */
+        inline void 
+        setMinCorrespondences (unsigned int min_correspondences) { nr_min_correspondences_ = min_correspondences; };
 
-      /** \brief Get the minimum number of correspondences. */
-      inline unsigned int 
-      getMinCorrespondences () { return nr_min_correspondences_; };
+        /** \brief Get the minimum number of correspondences. */
+        inline unsigned int 
+        getMinCorrespondences () { return nr_min_correspondences_; };
 
-    protected:
+      protected:
 
-      void 
-      applyRejection (pcl::registration::Correspondences &correspondences);
+        void 
+        applyRejection (pcl::registration::Correspondences &correspondences);
 
-      /** Overlap Ratio in [0..1] */
-      float overlap_ratio_;
+        /** Overlap Ratio in [0..1] */
+        float overlap_ratio_;
 
-      /** Minimum number of correspondences. */
-      unsigned int nr_min_correspondences_;
+        /** Minimum number of correspondences. */
+        unsigned int nr_min_correspondences_;
     };
 
   }
