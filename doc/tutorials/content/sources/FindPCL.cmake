@@ -37,7 +37,7 @@
 
 include(FindPackageHandleStandardArgs)
 #set a suffix based on project name and version
-set(PCL_SUFFIX pcl-1.0)
+set(PCL_SUFFIX pcl-1.2)
 #set a suffix for debug libraries
 set(PCL_DEBUG_SUFFIX "-gd")
 
