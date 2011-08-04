@@ -41,6 +41,7 @@
 #include "pcl/common/common.h"
 #include "pcl/filters/fast_voxel_grid.h"
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::FastVoxelGrid<PointT>::flush (PointCloud &output, size_t op, he *hhe, int rgba_index, int centroid_size)
 {
@@ -50,12 +51,15 @@ pcl::FastVoxelGrid<PointT>::flush (PointCloud &output, size_t op, he *hhe, int r
   if (rgba_index >= 0)
   {
     // pack r/g/b into rgb
-    float r = hhe->centroid[centroid_size-3], g = hhe->centroid[centroid_size-2], b = hhe->centroid[centroid_size-1];
+    float r = hhe->centroid[centroid_size-3], 
+          g = hhe->centroid[centroid_size-2], 
+          b = hhe->centroid[centroid_size-1];
     int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
     memcpy (((char *)&output.points[op]) + rgba_index, &rgb, sizeof (float));
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::FastVoxelGrid<PointT>::applyFilter (PointCloud &output)
 {
@@ -75,24 +79,27 @@ pcl::FastVoxelGrid<PointT>::applyFilter (PointCloud &output)
     centroid_size += 3;
   }
 
-  for (size_t i = 0; i < histsize; i++) {
+  for (size_t i = 0; i < histsize; i++) 
+  {
     history[i].count = 0;
-    history[i].centroid = Eigen::VectorXf::Zero(centroid_size);
+    history[i].centroid = Eigen::VectorXf::Zero (centroid_size);
   }
-  Eigen::VectorXf scratch = Eigen::VectorXf::Zero(centroid_size);
+  Eigen::VectorXf scratch = Eigen::VectorXf::Zero (centroid_size);
 
-  output.points.resize(input_->points.size ());   // size output for worst case
+  output.points.resize (input_->points.size ());   // size output for worst case
   size_t op = 0;    // output pointer
-  for (size_t cp = 0; cp < input_->points.size (); ++cp) {
-    int ix = (int)floor(input_->points[cp].x * inverse_leaf_size_[0]);
-    int iy = (int)floor(input_->points[cp].y * inverse_leaf_size_[1]);
-    int iz = (int)floor(input_->points[cp].z * inverse_leaf_size_[2]);
+  for (size_t cp = 0; cp < input_->points.size (); ++cp) 
+  {
+    int ix = (int)floor (input_->points[cp].x * inverse_leaf_size_[0]);
+    int iy = (int)floor (input_->points[cp].y * inverse_leaf_size_[1]);
+    int iz = (int)floor (input_->points[cp].z * inverse_leaf_size_[2]);
     unsigned int hash = (ix * 7171 + iy * 3079 + iz * 4231) & (histsize - 1);
     he *hhe = &history[hash];
-    if (hhe->count && ((ix != hhe->ix) || (iy != hhe->iy) || (iz != hhe->iz))) {
-      flush(output, op++, hhe, rgba_index, centroid_size);
+    if (hhe->count && ((ix != hhe->ix) || (iy != hhe->iy) || (iz != hhe->iz))) 
+    {
+      flush (output, op++, hhe, rgba_index, centroid_size);
       hhe->count = 0;
-      hhe->centroid = Eigen::VectorXf::Zero (centroid_size);
+      hhe->centroid.setZero ();// = Eigen::VectorXf::Zero (centroid_size);
     }
     hhe->ix = ix;
     hhe->iy = iy;
@@ -113,12 +120,16 @@ pcl::FastVoxelGrid<PointT>::applyFilter (PointCloud &output)
     pcl::for_each_type <FieldList> (xNdCopyPointEigenFunctor <PointT> (input_->points[cp], scratch));
     hhe->centroid += scratch;
   }
-  for (size_t i = 0; i < histsize; i++) {
+  for (size_t i = 0; i < histsize; i++) 
+  {
     he *hhe = &history[i];
     if (hhe->count)
-      flush(output, op++, hhe, rgba_index, centroid_size);
+      flush (output, op++, hhe, rgba_index, centroid_size);
   }
-  output.points.resize(op);
+  output.points.resize (op);
+  output.width = output.points.size ();
+  output.height       = 1;                    // downsampling breaks the organized structure
+  output.is_dense     = false;                 // we filter out invalid points
 }
 
 #define PCL_INSTANTIATE_FastVoxelGrid(T) template class PCL_EXPORTS pcl::FastVoxelGrid<T>;
