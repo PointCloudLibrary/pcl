@@ -157,6 +157,7 @@ add_subdirectory(segmentation)
 add_subdirectory(surface)
 add_subdirectory(visualization)
 add_subdirectory(test)
+add_subdirectory(tools)
 add_subdirectory(apps)
 add_subdirectory(cuda)
 
