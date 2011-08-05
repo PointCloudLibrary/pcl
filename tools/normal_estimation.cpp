@@ -51,6 +51,9 @@ using namespace pcl::console;
 int    default_k = 0;
 double default_radius = 0.0;
 
+Eigen::Vector4f    translation;
+Eigen::Quaternionf orientation;
+
 void
 printHelp (int argc, char **argv)
 {
@@ -69,7 +72,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
 
   tt.tic ();
-  if (loadPCDFile (filename, cloud) < 0)
+  if (loadPCDFile (filename, cloud, translation, orientation) < 0)
     return (false);
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
   print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
@@ -116,7 +119,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
   
-  pcl::io::savePCDFile (filename, output);
+  pcl::io::savePCDFile (filename, output, translation, orientation, true);
   
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
