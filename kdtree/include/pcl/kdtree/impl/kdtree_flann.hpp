@@ -85,14 +85,10 @@ namespace pcl
       return (0);
     }
 
-    if (k_indices.size() < (size_t)k)
-    {
-        k_indices.resize(k);
-    }
-    if (k_distances.size() < (size_t)k) 
-    {
-        k_distances.resize(k);
-    }
+    if (k_indices.size () < (size_t)k)
+      k_indices.resize (k);
+    if (k_distances.size () < (size_t)k) 
+      k_distances.resize (k);
 
     std::vector<float> tmp (dim_);
     point_representation_->vectorize ((PointT)point, tmp);
@@ -102,7 +98,8 @@ namespace pcl
     flann_index_->knnSearch (flann::Matrix<float>(&tmp[0], 1, dim_), k_indices_mat, k_distances_mat, k, flann::SearchParams (-1 ,epsilon_));
 
     // Do mapping to original point cloud
-    if (!identity_mapping_) {
+    if (!identity_mapping_) 
+    {
       for (size_t i = 0; i < (size_t)k; ++i)
       {
         int& neighbor_index = k_indices[i];
@@ -220,16 +217,16 @@ namespace pcl
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   template <typename PointT>
-  void KdTreeFLANN<PointT>::convertCloudToArray (const PointCloud &ros_cloud)
+  void KdTreeFLANN<PointT>::convertCloudToArray (const PointCloud &cloud)
   {
     // No point in doing anything if the array is empty
-    if (ros_cloud.points.empty ())
+    if (cloud.points.empty ())
     {
       cloud_ = NULL;
       return;
     }
 
-    int original_no_of_points = ros_cloud.points.size();
+    int original_no_of_points = cloud.points.size();
 
     cloud_ = (float*)malloc (original_no_of_points * dim_ * sizeof(float));
     float* cloud_ptr = cloud_;
@@ -238,9 +235,10 @@ namespace pcl
 
     for (int cloud_index = 0; cloud_index < original_no_of_points; ++cloud_index)
     {
-      const PointT point = ros_cloud.points[cloud_index];
+      const PointT point = cloud.points[cloud_index];
       // Check if the point is invalid
-      if (!point_representation_->isValid(point)) {
+      if (!point_representation_->isValid (point))
+      {
         identity_mapping_ = false;
         continue;
       }
@@ -254,10 +252,10 @@ namespace pcl
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   template <typename PointT>
-  void KdTreeFLANN<PointT>::convertCloudToArray (const PointCloud &ros_cloud, const std::vector<int> &indices)
+  void KdTreeFLANN<PointT>::convertCloudToArray (const PointCloud &cloud, const std::vector<int> &indices)
   {
     // No point in doing anything if the array is empty
-    if (ros_cloud.points.empty ())
+    if (cloud.points.empty ())
     {
       cloud_ = NULL;
       return;
@@ -273,7 +271,7 @@ namespace pcl
     for (int indices_index = 0; indices_index < original_no_of_points; ++indices_index)
     {
       int cloud_index = indices[indices_index];
-      const PointT point = ros_cloud.points[cloud_index];
+      const PointT point = cloud.points[cloud_index];
       // Check if the point is invalid
       if (!point_representation_->isValid(point)) {
         identity_mapping_ = false;

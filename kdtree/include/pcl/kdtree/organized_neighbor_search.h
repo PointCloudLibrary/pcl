@@ -342,7 +342,5 @@ namespace pcl
 
 }
 
-//#include "organized_neighbor_search.hpp"
-
 #endif
 
