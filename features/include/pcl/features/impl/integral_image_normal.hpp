@@ -392,11 +392,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
     }
   }
 
-  // Estimate normals
-  output.width  = input_->width;
-  output.height = input_->height;
-  output.points.resize (input_->width * input_->height);
-
   // Set all normals that we do not touch to NaN
   for (size_t ri = 0; ri < normal_smoothing_size_; ++ri)
   {
