@@ -58,6 +58,9 @@ namespace pcl
       std::vector<float> alpha_;
       
     public:
+      typedef boost::shared_ptr<PointRepresentation<PointT> > Ptr;
+      typedef boost::shared_ptr<const PointRepresentation<PointT> > ConstPtr;
+
       /** \brief Empty constructor */
       PointRepresentation () : nr_dimensions_ (0), alpha_ (0) {}
       
