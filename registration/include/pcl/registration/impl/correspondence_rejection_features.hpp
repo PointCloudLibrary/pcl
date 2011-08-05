@@ -41,24 +41,24 @@ void
 pcl::registration::CorrespondenceRejectorFeatures::applyRejection (
     pcl::registration::Correspondences &correspondences)
 {
-  // Go over the map of features
-  //
-  // For each set of features, call findFeatureCorrespondences (with K or Radius set a-priori)
-  //
-  // Check the indices obtained with the set of correspondences given as input
-  // WARN: this only works if the clouds have the same size?!?!
-
-/*  unsigned int number_valid_correspondences = 0;
+  unsigned int number_valid_correspondences = 0;
   correspondences.resize (input_correspondences_->size ());
+  // For each set of features, go over each correspondence from input_correspondences_
   for (size_t i = 0; i < input_correspondences_->size (); ++i)
   {
-    if ((*input_correspondences_)[i].distance < max_distance_)
+    // Go over the map of features
+    for (FeaturesMap::const_iterator it = features_map_.begin (); it != features_map_.end (); ++it)
     {
+      // Check if the score in feature space is above the given threshold
+      // (assume that the number of feature correspondenecs is the same as the number of point correspondences)
+      if (!it->second->isCorrespondenceValid (i))
+        break;
+
       correspondences[number_valid_correspondences] = (*input_correspondences_)[i];
       ++number_valid_correspondences;
     }
   }
-  correspondences.resize (number_valid_correspondences);*/
+  correspondences.resize (number_valid_correspondences);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,18 +67,24 @@ pcl::registration::CorrespondenceRejectorFeatures::getRemainingCorrespondences (
     const pcl::registration::Correspondences& original_correspondences, 
     pcl::registration::Correspondences& remaining_correspondences)
 {
-/*  size_t number_valid_correspondences = 0;
+  unsigned int number_valid_correspondences = 0;
   remaining_correspondences.resize (original_correspondences.size ());
-  for (size_t i = 0; i < original_correspondences.size (); ++i)
+  // For each set of features, go over each correspondence from input_correspondences_
+  for (size_t i = 0; i < input_correspondences_->size (); ++i)
   {
-    if (original_correspondences[i].distance < max_distance_)
+    // Go over the map of features
+    for (FeaturesMap::const_iterator it = features_map_.begin (); it != features_map_.end (); ++it)
     {
+      // Check if the score in feature space is above the given threshold
+      // (assume that the number of feature correspondenecs is the same as the number of point correspondences)
+      if (!it->second->isCorrespondenceValid (i))
+        break;
+
       remaining_correspondences[number_valid_correspondences] = original_correspondences[i];
       ++number_valid_correspondences;
     }
   }
   remaining_correspondences.resize (number_valid_correspondences);
-  */
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

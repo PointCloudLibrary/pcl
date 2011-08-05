@@ -36,6 +36,7 @@
 #ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_FEATURES_H_
 #define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_FEATURES_H_
 
+#include <boost/unordered_map.hpp>
 #include <pcl/registration/correspondence_rejection.h>
 
 namespace pcl
@@ -135,9 +136,10 @@ namespace pcl
           public:
             virtual bool isValid () = 0;
             virtual double getCorrespondenceScore (int index) = 0;
+            virtual bool isCorrespondenceValid (int index) = 0;
         };
 
-        typedef std::map<std::string, boost::shared_ptr<pcl::registration::CorrespondenceRejectorFeatures::FeatureContainerInterface> > FeaturesMap;
+        typedef boost::unordered_map<std::string, boost::shared_ptr<pcl::registration::CorrespondenceRejectorFeatures::FeatureContainerInterface> > FeaturesMap;
 
         /** \brief An STL map containing features to use when performing the correspondence search.*/
         FeaturesMap features_map_;
@@ -192,7 +194,7 @@ namespace pcl
               thresh_ = thresh;
             }
 
-            virtual bool 
+            virtual inline bool 
             isValid ()
             {
               if (!source_features_ || !target_features_)
@@ -215,7 +217,7 @@ namespace pcl
               * \param[in] the index to check in the list of correspondences
               * \return score the resultant computed score
               */
-            virtual double
+            virtual inline double
             getCorrespondenceScore (int index)
             {
               // If no feature representation was given, reset to the default implementation for FeatureT
@@ -242,7 +244,21 @@ namespace pcl
               // Compute the L2 norm
               return ((feat_src_ptr - feat_tgt_ptr).norm ());
             }
-            
+
+            /** \brief Check whether the correspondence pair at the given index is valid
+              * by computing the score and testing it against the user given threshold 
+              * \param[in] the index to check in the list of correspondences
+              * \return true if the correspondence is good, false otherwise
+              */
+            virtual inline bool
+            isCorrespondenceValid (int index)
+            {
+              if (getCorrespondenceScore (index) > thresh_)
+                return (true);
+              else
+                return (false);
+            }
+             
           private:
             FeatureCloudConstPtr source_features_, target_features_;
             SearchMethod search_method_;
