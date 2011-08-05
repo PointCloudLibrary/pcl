@@ -306,6 +306,17 @@ namespace pcl
                      const pcl::PointCloud<PointIn2T> &cloud2_in, 
                      pcl::PointCloud<PointOutT> &cloud_out);
 
+  /** \brief Concatenate two datasets representing different fields.
+    * \param[in] cloud1_in the first input dataset
+    * \param[in] cloud2_in the second input dataset
+    * \param[out] cloud_out the output dataset created by concatenating all the fields in the input datasets
+    * \ingroup io
+    */
+  PCL_EXPORTS bool
+  concatenateFields (const sensor_msgs::PointCloud2 &cloud1_in, 
+                     const sensor_msgs::PointCloud2 &cloud2_in, 
+                     sensor_msgs::PointCloud2 &cloud_out);
+
   /** \brief Copy the XYZ dimensions of a sensor_msgs::PointCloud2 into Eigen format
     * \param in the point cloud message
     * \param out the resultant Eigen MatrixXf format containing XYZ0 / point
