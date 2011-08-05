@@ -9,7 +9,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <pcl/kdtree/tree_types.h>
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/kdtree/kdtree_flann.h>
 

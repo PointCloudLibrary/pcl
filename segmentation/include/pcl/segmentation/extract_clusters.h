@@ -41,7 +41,6 @@
 #include <pcl/pcl_base.h>
 
 #include "pcl/kdtree/kdtree.h"
-#include "pcl/kdtree/tree_types.h"
 
 namespace pcl
 {

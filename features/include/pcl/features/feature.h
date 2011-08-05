@@ -47,7 +47,6 @@
 #include "pcl/common/eigen.h"
 #include "pcl/common/centroid.h"
 
-#include "pcl/kdtree/tree_types.h"
 #include "pcl/kdtree/kdtree.h"
 #include "pcl/kdtree/kdtree_flann.h"
 #include "pcl/kdtree/organized_data.h"
