@@ -177,7 +177,7 @@ template <typename PointSource, typename PointTarget> void
   delete[] x;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////(
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline int
   pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::functionToOptimize (void *p, int m, int n, const double *x, double *fvec, int iflag)
 {
@@ -207,8 +207,8 @@ template <typename PointSource, typename PointTarget> inline int
     Eigen::Vector4f pp = transformation_matrix * p_src;
 
     // Estimate the distance (cost function)
-    //fvec[i] = model->distL2Sqr (p_tgt, pp);
-    fvec[i] = model->distL1 (pp, p_tgt);
+    fvec[i] = model->distL2Sqr (p_tgt, pp);
+    //fvec[i] = model->distL1 (pp, p_tgt);
     //fvec[i] = model->distHuber (pp, p_tgt, sigma);
   }
   return (0);

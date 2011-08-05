@@ -37,12 +37,14 @@
 
 #include <boost/unordered_map.hpp>
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
 pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output)
 {
   pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (output, Eigen::Matrix4f::Identity());
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
 pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess)
 {
@@ -59,7 +61,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
   double dist_threshold = corr_dist_threshold_ * corr_dist_threshold_;
 
   // If the guessed transformation is non identity
-  if(guess != Eigen::Matrix4f::Identity())
+  if (guess != Eigen::Matrix4f::Identity ())
   {
     // Initialise final transformation to the guessed one
     final_transformation_ = guess;
@@ -67,10 +69,16 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
     transformPointCloud (output, output, guess);
   }
 
+  // Resize the vector of distances between correspondences 
+  std::vector<float> previous_correspondence_distances (indices_->size ());
+  correspondence_distances_.resize (indices_->size ());
+
   while (!converged_)           // repeat until convergence
   {
     // Save the previously estimated transformation
     previous_transformation_ = transformation_;
+    // And the previous set of distances
+    previous_correspondence_distances = correspondence_distances_;
 
     int cnt = 0;
     std::vector<int> source_indices (indices_->size ());
@@ -92,6 +100,9 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
         target_indices[cnt] = nn_indices[0];
         cnt++;
       }
+
+      // Save the nn_dists[0] to a global vector of distances
+      correspondence_distances_[idx] = std::min (nn_dists[0], (float)dist_threshold);
     }
     // Resize to the actual number of valid correspondences
     source_indices.resize (cnt); target_indices.resize (cnt);
@@ -158,12 +169,21 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
     nr_iterations_++;
 
     // Update the vizualization of icp convergence
-    if( update_visualizer_ != 0)
+    if (update_visualizer_ != 0)
       update_visualizer_(output, source_indices_good, *target_, target_indices_good );
 
-    // Check for convergence
+    // Various/Different convergence termination criteria
+    // 1. Number of iterations has reached the maximum user imposed number of iterations (via 
+    //    setMaximumIterations)
+    // 2. The epsilon (difference) between the previous transformation and the current estimated transformation 
+    //    is smaller than an user imposed value (via setTransformationEpsilon)
+    // 3. The sum of Euclidean squared errors is smaller than a user defined threshold (via 
+    //    setEuclideanFitnessEpsilon)
+
     if (nr_iterations_ >= max_iterations_ ||
-        fabs ((transformation_ - previous_transformation_).sum ()) < transformation_epsilon_)
+        fabs ((transformation_ - previous_transformation_).sum ()) < transformation_epsilon_ ||
+        fabs (getFitnessScore (correspondence_distances_, previous_correspondence_distances)) <= euclidean_fitness_epsilon_
+       )
     {
       converged_ = true;
       PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f\n",

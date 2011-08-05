@@ -45,9 +45,42 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief @b IterativeClosestPoint is an implementation of the Iterative Closest Point algorithm based on Singular
-    * Value Decomposition (SVD).
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief @b IterativeClosestPoint provides a base implementation of the Iterative Closest Point algorithm. 
+    * The transformation is estimated based on Singular Value Decomposition (SVD).
+    *
+    * The algorithm has several termination criteria:
+    *
+    * 1. Number of iterations has reached the maximum user imposed number of iterations (via 
+    *    \ref setMaximumIterations)
+    * 2. The epsilon (difference) between the previous transformation and the current estimated transformation 
+    *    is smaller than an user imposed value (via \ref setTransformationEpsilon)
+    * 3. The sum of Euclidean squared errors is smaller than a user defined threshold (via 
+    *    \ref setEuclideanFitnessEpsilon)
+    *
+    * Usage example:
+    * \code
+    * IterativeClosestPoint<PointXYZ, PointXYZ> icp;
+    * // Set the input source and target
+    * reg.setInputCloud (cloud_source);
+    * reg.setInputTarget (cloud_target);
+    *
+    * // Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
+    * reg.setMaxCorrespondenceDistance (0.05);
+    * // Set the maximum number of iterations (criterion 1)
+    * reg.setMaximumIterations (50);
+    * // Set the transformation epsilon (criterion 2)
+    * reg.setTransformationEpsilon (1e-8);
+    * // Set the euclidean distance difference epsilon (criterion 3)
+    * reg.setEuclideanFitnessEpsilon (1);
+    *
+    * // Perform the alignment
+    * reg.align (cloud_source_registered);
+    *
+    * // Obtain the transformation that aligned cloud_source to cloud_source_registered
+    * Eigen::Matrix4f transformation = reg.getFinalTransformation ();
+    * \endcode
+    *
     * \author Radu Bogdan Rusu, Michael Dixon
     * \ingroup registration
     */
@@ -82,6 +115,8 @@ namespace pcl
       using Registration<PointSource, PointTarget>::inlier_threshold_;
       using Registration<PointSource, PointTarget>::min_number_correspondences_;
       using Registration<PointSource, PointTarget>::update_visualizer_;
+      using Registration<PointSource, PointTarget>::correspondence_distances_;
+      using Registration<PointSource, PointTarget>::euclidean_fitness_epsilon_;
 
       typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
       typedef typename PointCloudSource::Ptr PointCloudSourcePtr;

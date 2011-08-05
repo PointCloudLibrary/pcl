@@ -71,6 +71,8 @@ namespace pcl
     using IterativeClosestPoint<PointSource, PointTarget>::min_number_correspondences_;
     using IterativeClosestPoint<PointSource, PointTarget>::rigid_transformation_estimation_;
     using IterativeClosestPoint<PointSource, PointTarget>::update_visualizer_;
+    using Registration<PointSource, PointTarget>::correspondence_distances_;
+    using Registration<PointSource, PointTarget>::euclidean_fitness_epsilon_;
 
     typedef pcl::PointCloud<PointSource> PointCloudSource;
     typedef typename PointCloudSource::Ptr PointCloudSourcePtr;

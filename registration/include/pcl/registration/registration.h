@@ -92,7 +92,9 @@ namespace pcl
                         final_transformation_ (Eigen::Matrix4f::Identity ()),
                         transformation_ (Eigen::Matrix4f::Identity ()),
                         previous_transformation_ (Eigen::Matrix4f::Identity ()),
-                        transformation_epsilon_ (0.0), corr_dist_threshold_ (std::sqrt (std::numeric_limits<double>::max ())),
+                        transformation_epsilon_ (0.0), 
+                        euclidean_fitness_epsilon_ (std::numeric_limits<double>::max ()),
+                        corr_dist_threshold_ (std::sqrt (std::numeric_limits<double>::min ())),
                         inlier_threshold_ (0.05),
                         converged_ (false), min_number_correspondences_ (3), /*k_ (1),*/ point_representation_ ()
       {
@@ -159,19 +161,37 @@ namespace pcl
       inline double 
       getMaxCorrespondenceDistance () { return (corr_dist_threshold_); }
 
-      /** \brief Set the transformation epsilon (maximum allowable difference between two consecutive transformations)
-        * in order for an optimization to be considered as having converged to the final solution.
-        * \param epsilon the transformation epsilon in order for an optimization to be considered as having converged
-        * to the final solution.
+      /** \brief Set the transformation epsilon (maximum allowable difference between two consecutive 
+        * transformations) in order for an optimization to be considered as having converged to the final 
+        * solution.
+        * \param epsilon the transformation epsilon in order for an optimization to be considered as having 
+        * converged to the final solution.
         */
       inline void 
       setTransformationEpsilon (double epsilon) { transformation_epsilon_ = epsilon; }
 
-      /** \brief Get the transformation epsilon (maximum allowable difference between two consecutive transformations)
-        * as set by the user.
+      /** \brief Get the transformation epsilon (maximum allowable difference between two consecutive 
+        * transformations) as set by the user.
         */
       inline double 
       getTransformationEpsilon () { return (transformation_epsilon_); }
+
+      /** \brief Set the maximum allowed Euclidean error between two consecutive steps in the ICP loop, before 
+        * the algorithm is considered to have converged. 
+        * The error is estimated as the sum of the differences between correspondences in an Euclidean sense, 
+        * divided by the number of correspondences.
+        * \param epsilon the maximum allowed distance error before the algorithm will be considered to have
+        * converged
+        */
+
+      inline void 
+      setEuclideanFitnessEpsilon (double epsilon) { euclidean_fitness_epsilon_ = epsilon; }
+
+      /** \brief Get the maximum allowed distance error before the algorithm will be considered to have converged,
+        * as set by the user. See \ref setEuclideanFitnessEpsilon
+        */
+      inline double 
+      getEuclideanFitnessEpsilon () { return (euclidean_fitness_epsilon_); }
 
       /** \brief Provide a boost shared pointer to the PointRepresentation to be used when comparing points
         * \param point_representation the PointRepresentation to be used by the k-D tree
@@ -268,6 +288,12 @@ namespace pcl
         */
       double transformation_epsilon_;
 
+      /** \brief The maximum allowed Euclidean error between two consecutive steps in the ICP loop, before the 
+        * algorithm is considered to have converged. The error is estimated as the sum of the differences between 
+        * correspondences in an Euclidean sense, divided by the number of correspondences.
+        */
+      double euclidean_fitness_epsilon_;
+
       /** \brief The maximum distance threshold between two correspondent points in source <-> target. If the 
         * distance is larger than this threshold, the points will not be ignored in the alignement process.
         */
@@ -287,9 +313,14 @@ namespace pcl
         */
       int min_number_correspondences_;
 
+      /** \brief A set of distances between the points in the source cloud and their correspondences in the 
+        * target.                                                                                           
+        */                                                                                                  
+      std::vector<float> correspondence_distances_;                                                              
+
       /** \brief Callback function to update intermediate source point cloud position during it's registration
-       * to the target point cloud.
-       */
+        * to the target point cloud.
+        */
       boost::function<void(const pcl::PointCloud<PointSource> &cloud_src,
                            const std::vector<int> &indices_src,
                            const pcl::PointCloud<PointTarget> &cloud_tgt,
