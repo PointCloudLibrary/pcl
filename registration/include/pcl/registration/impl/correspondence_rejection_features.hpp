@@ -82,68 +82,56 @@ pcl::registration::CorrespondenceRejectorFeatures::getRemainingCorrespondences (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename FeatureType> inline void 
+template <typename FeatureT> inline void 
 pcl::registration::CorrespondenceRejectorFeatures::setSourceFeature (
-    const typename pcl::PointCloud<FeatureType>::ConstPtr &source_feature, const std::string &key)
+    const typename pcl::PointCloud<FeatureT>::ConstPtr &source_feature, const std::string &key)
 {
   if (features_map_.count (key) == 0)
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setSourceFeature (source_feature);
+    features_map_[key].reset (new FeatureContainer<FeatureT>);
+  boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->setSourceFeature (source_feature);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename FeatureType> inline typename pcl::PointCloud<FeatureType>::ConstPtr 
+template <typename FeatureT> inline typename pcl::PointCloud<FeatureT>::ConstPtr 
 pcl::registration::CorrespondenceRejectorFeatures::getSourceFeature (const std::string &key)
 {
   if (features_map_.count (key) == 0)
-    return (boost::shared_ptr<pcl::PointCloud<const FeatureType> > ());
+    return (boost::shared_ptr<pcl::PointCloud<const FeatureT> > ());
   else
-    return (boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->getSourceFeature ());
+    return (boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->getSourceFeature ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename FeatureType> inline void 
+template <typename FeatureT> inline void 
 pcl::registration::CorrespondenceRejectorFeatures::setTargetFeature (
-    const typename pcl::PointCloud<FeatureType>::ConstPtr &target_feature, const std::string &key)
+    const typename pcl::PointCloud<FeatureT>::ConstPtr &target_feature, const std::string &key)
 {
   if (features_map_.count (key) == 0)
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setTargetFeature (target_feature);
+    features_map_[key].reset (new FeatureContainer<FeatureT>);
+  boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->setTargetFeature (target_feature);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename FeatureType> inline typename pcl::PointCloud<FeatureType>::ConstPtr 
+template <typename FeatureT> inline typename pcl::PointCloud<FeatureT>::ConstPtr 
 pcl::registration::CorrespondenceRejectorFeatures::getTargetFeature (const std::string &key)
 {
-  typedef pcl::PointCloud<FeatureType> FeatureCloud;
+  typedef pcl::PointCloud<FeatureT> FeatureCloud;
   typedef typename FeatureCloud::ConstPtr FeatureCloudConstPtr;
 
   if (features_map_.count (key) == 0)
-    return (boost::shared_ptr<const pcl::PointCloud<FeatureType> > ());
+    return (boost::shared_ptr<const pcl::PointCloud<FeatureT> > ());
   else
-    return (boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->getTargetFeature ());
+    return (boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->getTargetFeature ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename FeatureType> inline void 
-pcl::registration::CorrespondenceRejectorFeatures::setRadiusSearch (
-    float r, const std::string &key, 
-    const typename pcl::KdTree<FeatureType>::Ptr &tree)
+template <typename FeatureT> inline void 
+pcl::registration::CorrespondenceRejectorFeatures::setDistanceThreshold (
+    double thresh, const std::string &key)
 {
   if (features_map_.count (key) == 0)
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setRadiusSearch (tree, r);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename FeatureType> inline void 
-pcl::registration::CorrespondenceRejectorFeatures::setKSearch (
-    int k, const std::string &key, 
-    const typename pcl::KdTree<FeatureType>::Ptr &tree)
-{
-  if (features_map_.count (key) == 0)
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setKSearch (tree, k);
+    features_map_[key].reset (new FeatureContainer<FeatureT>);
+  boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->setDistanceThreshold (thresh);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -160,14 +148,14 @@ pcl::registration::CorrespondenceRejectorFeatures::hasValidFeatures ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename FeatureType> inline void 
+template <typename FeatureT> inline void 
 pcl::registration::CorrespondenceRejectorFeatures::setFeatureRepresentation (
-  const std::string &key, 
-  const typename pcl::KdTree<FeatureType>::PointRepresentationConstPtr &fr)
+  const typename pcl::PointRepresentation<FeatureT>::ConstPtr &fr,
+  const std::string &key)
 {
   if (features_map_.count (key) == 0)
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setFeatureRepresentation (fr);
+    features_map_[key].reset (new FeatureContainer<FeatureT>);
+  boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->setFeatureRepresentation (fr);
 }
 
 
