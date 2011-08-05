@@ -79,8 +79,6 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothCloudIteration (PointCloudInPtr &ou
                                                              NormalCloudPtr &output_normals)
 {
   PCL_INFO ("SurfelSmoothing: cloud smoothing iteration starting ...\n");
-  // use the initial cloud every time
-//  tree_->setInputCloud (interm_cloud_);
 
   output_positions = PointCloudInPtr (new PointCloudIn);
   output_positions->points.resize (interm_cloud_->points.size ());
@@ -139,10 +137,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothCloudIteration (PointCloudInPtr &ou
       if (e_residual < 1e-5) break;
 
       smoothed_point = smoothed_point + e_residual * smoothed_normal;
-//      PCL_INFO ("e_residual: %f with smoothed point %f %f %f and smoothed normal: %f %f %f\n", e_residual, smoothed_point(0), smoothed_point(1), smoothed_point(2),
-//                smoothed_normal(0), smoothed_normal(1), smoothed_normal(2));
     }
-//    PCL_INFO ("%u ", i);
 
     total_residual += e_residual;
 
@@ -159,6 +154,91 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothCloudIteration (PointCloudInPtr &ou
 }
 
 
+template <typename PointT, typename PointNT> void
+pcl::SurfelSmoothing<PointT, PointNT>::smoothPoint (size_t &point_index,
+                                                    PointT &output_point,
+                                                    PointNT &output_normal)
+{
+  Eigen::Vector4f average_normal = Eigen::Vector4f::Zero ();
+  Eigen::Vector4f result_point = input_->points[point_index].getVector4fMap ();
+  result_point(3) = 0.0f;
+
+  // @todo parameter
+  float error_residual_threshold_ = 1e-9;
+  float error_residual = error_residual_threshold_ + 1;
+  float last_error_residual = error_residual + 100;
+
+  std::vector<int> nn_indices;
+  std::vector<float> nn_distances;
+
+  int big_iterations = 0;
+  int max_big_iterations = 500;
+
+  while (fabs (error_residual) < fabs (last_error_residual) -error_residual_threshold_ &&
+         big_iterations < max_big_iterations)
+  {
+    average_normal = Eigen::Vector4f::Zero ();
+    big_iterations ++;
+//    PCL_INFO ("%f  ", error_residual);
+    PointT aux_point; aux_point.x = result_point(0); aux_point.y = result_point(1); aux_point.z = result_point(2);
+    tree_->radiusSearch (aux_point, 5*scale_, nn_indices, nn_distances);
+
+    float theta_normalization_factor = 0.0;
+    std::vector<float> theta (nn_indices.size ());
+    for (size_t nn_index_i = 0; nn_index_i < nn_indices.size (); ++nn_index_i)
+    {
+      float dist = nn_distances[nn_index_i];
+      float theta_i = exp ( (-1) * dist / scale_squared_);
+      theta_normalization_factor += theta_i;
+
+      average_normal += theta_i * normals_->points[nn_indices[nn_index_i]].getNormalVector4fMap ();
+      theta[nn_index_i] = theta_i;
+    }
+    average_normal /= theta_normalization_factor;
+    average_normal(3) = 0.0f;
+    average_normal.normalize ();
+
+    // find minimum along the normal
+    float e_residual_along_normal;
+    int small_iterations = 0;
+    int max_small_iterations = 10;
+    while (small_iterations < max_small_iterations)
+    {
+      small_iterations ++;
+
+      e_residual_along_normal = 0.0f;
+      for (size_t nn_index_i = 0; nn_index_i < nn_indices.size (); ++nn_index_i)
+      {
+        Eigen::Vector4f neighbor = input_->points[nn_indices[nn_index_i]].getVector4fMap ();
+        neighbor(3) = 0.0f;
+        float dot_product = average_normal.dot (neighbor - result_point);
+        e_residual_along_normal += theta[nn_index_i] * dot_product;
+      }
+      e_residual_along_normal /= theta_normalization_factor;
+      if (e_residual_along_normal < 1e-8) break;
+
+      result_point = result_point + e_residual_along_normal * average_normal;
+    }
+
+    if (small_iterations == max_small_iterations)
+      PCL_INFO ("passed the number of small iterations %d\n", small_iterations);
+
+    last_error_residual = error_residual;
+    error_residual = e_residual_along_normal;
+
+    PCL_INFO ("last %f    current %f\n", last_error_residual, error_residual);
+  }
+
+  output_point.x = result_point(0);
+  output_point.y = result_point(1);
+  output_point.z = result_point(2);
+  output_normal = normals_->points[point_index];
+
+  if (big_iterations == max_big_iterations)
+    PCL_INFO ("passed the number of BIG iterations: %d\n", big_iterations);
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SurfelSmoothing<PointT, PointNT>::computeSmoothedCloud (PointCloudInPtr &output_positions,
@@ -170,6 +250,15 @@ pcl::SurfelSmoothing<PointT, PointNT>::computeSmoothedCloud (PointCloudInPtr &ou
     return;
   }
 
+  tree_->setInputCloud (input_);
+
+  output_positions->points.resize (input_->points.size ());
+  output_normals->points.resize (input_->points.size ());
+  for (size_t i = 0; i < input_->points.size (); ++i)
+  {
+    smoothPoint (i, output_positions->points[i], output_normals->points[i]);
+  }
+/*
   // @todo make this a parameter
   size_t min_iterations = 0;
   size_t max_iterations = 200;
@@ -184,7 +273,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::computeSmoothedCloud (PointCloudInPtr &ou
     interm_cloud_ = output_positions;
     interm_normals_ = output_normals;
     last_residual = residual;
-  }
+  }*/
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
