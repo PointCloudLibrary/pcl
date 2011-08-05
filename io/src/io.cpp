@@ -46,6 +46,57 @@
 
 //////////////////////////////////////////////////////////////////////////
 bool
+pcl::concatenateFields (const sensor_msgs::PointCloud2 &cloud1, 
+                        const sensor_msgs::PointCloud2 &cloud2, 
+                        sensor_msgs::PointCloud2 &cloud_out)
+{
+  // If the cloud's sizes differ (points wise), then exit with error
+  if (cloud1.width != cloud2.width || cloud1.height != cloud2.height)
+    return (false);
+
+  // Else, copy the first cloud (width, height, header stay the same)
+  cloud_out = cloud1;
+
+  // Point step must increase with the length of each new field
+  cloud_out.point_step += cloud2.point_step;
+  // Recalculate row_step
+  cloud_out.row_step = cloud_out.point_step * cloud_out.width;
+
+  // Resize data to hold all clouds
+  cloud_out.data.resize (cloud1.data.size () + cloud2.data.size ());
+
+  // Concatenate fields
+  cloud_out.fields.resize (cloud1.fields.size () + cloud2.fields.size ());
+  int delta_offset = cloud_out.fields[cloud1.fields.size () - 1].offset + 
+                     pcl::getFieldSize (cloud1.fields[cloud1.fields.size () - 1].datatype);
+  for (size_t d = 0; d < cloud2.fields.size (); ++d)
+  {
+    cloud_out.fields[cloud1.fields.size () + d] = cloud2.fields[d];
+    // Adjust the offset
+    cloud_out.fields[cloud1.fields.size () + d].offset += delta_offset;
+  }
+ 
+  // Iterate over each point and perform the appropriate memcpys
+  int point_offset = 0;
+  for (size_t cp = 0; cp < cloud_out.width * cloud_out.height; ++cp)
+  {
+    // Copy each individual point
+    memcpy (&cloud_out.data[point_offset], &cloud1.data[cp * cloud1.point_step], cloud1.point_step);
+    point_offset += cloud1.point_step;
+    memcpy (&cloud_out.data[point_offset], &cloud2.data[cp * cloud2.point_step], cloud2.point_step);
+    point_offset += cloud2.point_step;
+  }
+
+  if (!cloud1.is_dense || !cloud2.is_dense)
+    cloud_out.is_dense = false;
+  else
+    cloud_out.is_dense = true;
+
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////
+bool
 pcl::concatenatePointCloud (const sensor_msgs::PointCloud2 &cloud1, 
                             const sensor_msgs::PointCloud2 &cloud2, 
                             sensor_msgs::PointCloud2 &cloud_out)
