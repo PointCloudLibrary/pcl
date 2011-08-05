@@ -83,6 +83,12 @@ namespace pcl
       computeSmoothedCloud (PointCloudInPtr &output_positions,
                             NormalCloudPtr &output_normals);
 
+
+      void
+      smoothPoint (size_t &point_index,
+                   PointT &output_point,
+                   PointNT &output_normal);
+
       void
       extractSalientFeaturesBetweenScales (PointCloudInPtr &cloud2,
                                            NormalCloudPtr &cloud2_normals,
