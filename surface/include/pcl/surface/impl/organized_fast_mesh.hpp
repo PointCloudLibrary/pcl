@@ -62,11 +62,37 @@ pcl::OrganizedFastMesh<PointInT>::performReconstruction (pcl::PolygonMesh &outpu
       const PointInT& vertex_right = input_->points[index_right];
       const PointInT& vertex_down = input_->points[index_down];
       const PointInT& vertex_down_right = input_->points[index_down_right];
+      
+      bool upper_right = isValidTriangle(vertex, vertex_right, vertex_down_right);
+      bool lower_left  = isValidTriangle(vertex, vertex_down, vertex_down_right);
+      bool upper_left  = isValidTriangle(vertex, vertex_right, vertex_down);
+      bool lower_right = isValidTriangle(vertex_right, vertex_down, vertex_down_right);
 
+      if (upper_right && lower_left)
+      {
+        addTriangle(i, index_right, index_down_right, output);
+        addTriangle(i, index_down, index_down_right, output);
+      }
+      else if (upper_left && lower_right) // makes sense if distance filtering is enabled
+      {
+        addTriangle(i, index_right, index_down, output);
+        addTriangle(index_right, index_down, index_down_right, output);
+      }
+      else if (upper_right)
+        addTriangle(i, index_right, index_down_right, output);
+      else if (lower_left)
+        addTriangle(i, index_down, index_down_right, output);
+      else if (upper_left)
+        addTriangle(i, index_right, index_down, output);
+      else if (lower_right)
+        addTriangle(index_right, index_down, index_down_right, output);
+      
+      /*
       if ( isValidTriangle(vertex, vertex_right, vertex_down_right) )
         addTriangle(i, index_right, index_down_right, output);
       if ( isValidTriangle(vertex, vertex_down, vertex_down_right) )
         addTriangle(i, index_down, index_down_right, output);
+      */
     }
   }
 
