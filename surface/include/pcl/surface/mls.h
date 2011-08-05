@@ -123,7 +123,7 @@ namespace pcl
         * \param radius the sphere radius that is to contain all k-nearest neighbors
         * \note Calling this method resets the squared Gaussian parameter to radius * radius !
         */
-      inline void setSearchRadius (double radius) { search_radius_ = 5*radius; sqr_gauss_param_ = search_radius_ * search_radius_; }
+      inline void setSearchRadius (double radius) { search_radius_ = /*5**/radius; sqr_gauss_param_ = search_radius_ * search_radius_; }
 
       /** \brief Get the sphere radius used for determining the k-nearest neighbors. */
       inline double getSearchRadius () { return (search_radius_); }
