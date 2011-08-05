@@ -3,7 +3,7 @@
 #include <pcl/registration/transforms.h>
 #include <pcl/registration/icp.h>
 
-#include <boost/graph/graphviz.hpp>
+//#include <boost/graph/graphviz.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/graph_traits.hpp>
 using boost::graph_traits;
