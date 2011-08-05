@@ -10,4 +10,7 @@ if (build)
   PCL_ADD_EXECUTABLE (normal_estimation ${SUBSYS_NAME} normal_estimation.cpp)
   target_link_libraries (normal_estimation pcl_common pcl_io pcl_features pcl_kdtree)
 
+  PCL_ADD_EXECUTABLE (voxel_grid ${SUBSYS_NAME} voxel_grid.cpp)
+  target_link_libraries (voxel_grid pcl_common pcl_io pcl_filters)
+
 endif ()
