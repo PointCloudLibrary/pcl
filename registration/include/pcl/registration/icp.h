@@ -45,18 +45,17 @@
 
 namespace pcl
 {
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b IterativeClosestPoint provides a base implementation of the Iterative Closest Point algorithm. 
     * The transformation is estimated based on Singular Value Decomposition (SVD).
     *
     * The algorithm has several termination criteria:
     *
-    * 1. Number of iterations has reached the maximum user imposed number of iterations (via 
-    *    \ref setMaximumIterations)
-    * 2. The epsilon (difference) between the previous transformation and the current estimated transformation 
-    *    is smaller than an user imposed value (via \ref setTransformationEpsilon)
-    * 3. The sum of Euclidean squared errors is smaller than a user defined threshold (via 
-    *    \ref setEuclideanFitnessEpsilon)
+    * <ol>
+    * <li>Number of iterations has reached the maximum user imposed number of iterations (via \ref setMaximumIterations)</li>
+    * <li>The epsilon (difference) between the previous transformation and the current estimated transformation is smaller than an user imposed value (via \ref setTransformationEpsilon)</li>
+    * <li>The sum of Euclidean squared errors is smaller than a user defined threshold (via \ref setEuclideanFitnessEpsilon)</li>
+    * </ol>
+    *
     *
     * Usage example:
     * \code
