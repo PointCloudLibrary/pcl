@@ -1,10 +1,13 @@
 set(SUBSYS_NAME search)
 set(SUBSYS_DESC "Point cloud generic search library")
-set(SUBSYS_DEPS common io filters)
+set(SUBSYS_DEPS common io filters cuda_common gpu_octree gpu_common octree)
 
+FIND_PACKAGE (OpenCV)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
+
+
 
 if(build)
     set(srcs 
@@ -13,6 +16,7 @@ if(build)
         src/kdtree.cpp
         src/organized_neighbor_search.cpp
         src/octree_impl.cpp
+        src/octree_gpu.cpp
         )
 
     set(incs 
@@ -22,6 +26,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/organized_neighbor_search.h
         include/pcl/${SUBSYS_NAME}/octree_pointcloud.h
         include/pcl/${SUBSYS_NAME}/octree.h
+        include/pcl/${SUBSYS_NAME}/octree_gpu.h
 
         )
 
@@ -32,6 +37,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/organized_neighbor_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree.hpp
+        include/pcl/${SUBSYS_NAME}/impl/octree_gpu.hpp
 
         )
 
@@ -52,6 +58,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/organized_neighbor_search.h
         include/pcl/${SUBSYS_NAME}/octree_pointcloud.h
         include/pcl/${SUBSYS_NAME}/octree.h
+        include/pcl/${SUBSYS_NAME}/octree_gpu.h
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
 
@@ -62,6 +69,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/organized_neighbor_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree.hpp
+        include/pcl/${SUBSYS_NAME}/impl/octree_gpu.hpp
         )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
     

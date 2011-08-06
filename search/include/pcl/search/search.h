@@ -32,7 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *
- *
+ *  Author: Siddharth Choudhary (itzsid@gmail.com)
  */
 
 #ifndef PCL_SEARCH_GENERIC_SEARCH_H_
