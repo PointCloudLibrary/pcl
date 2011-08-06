@@ -160,7 +160,7 @@ namespace pcl
             
             typedef typename pcl::PointRepresentation<FeatureT>::ConstPtr PointRepresentationConstPtr;
 
-            FeatureContainer () : thresh_(0), feature_representation_()
+            FeatureContainer () : thresh_(std::numeric_limits<double>::max ()), feature_representation_()
             {
             }
 
@@ -253,7 +253,7 @@ namespace pcl
             virtual inline bool
             isCorrespondenceValid (int index)
             {
-              if (getCorrespondenceScore (index) > thresh_)
+              if (getCorrespondenceScore (index) < thresh_)
                 return (true);
               else
                 return (false);
