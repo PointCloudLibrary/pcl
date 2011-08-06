@@ -398,7 +398,15 @@ namespace pcl
             {
               // Set the internal feature point representation of choice
               if (feature_representation_)
+              {
                 tree_->setPointRepresentation (feature_representation_);
+              }
+              else
+              {
+                typename DefaultFeatureRepresentation<FeatureType>::Ptr dfr 
+                  (new DefaultFeatureRepresentation<FeatureType>);
+                tree_->setPointRepresentation (dfr);
+              }
 
               if (k_ > 0)
               {

@@ -39,6 +39,8 @@
 
 #include "pcl/point_types.h"
 #include "pcl/win32_macros.h"
+//#include "pcl/conversions.h"
+#include "pcl/ros/for_each_type.h"
 
 namespace pcl
 {
@@ -165,6 +167,102 @@ namespace pcl
       }
   };
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief @b DefaulFeatureRepresentation extends PointRepresentation and is intended to be used when defining the
+    * default behavior for feature descriptor types (i.e., copy each element of each field into a float array).
+    */
+  template <typename PointDefault>
+  class DefaultFeatureRepresentation : public PointRepresentation <PointDefault>
+  {
+    using PointRepresentation <PointDefault>::nr_dimensions_;
+
+    private:
+      struct IncrementFunctor
+      {
+        IncrementFunctor (int &n) : n_ (n)
+        {
+          n_ = 0;
+        }
+        
+        template<typename Key> inline void operator () ()
+        {
+          n_ += pcl::traits::datatype<PointDefault, Key>::size;
+        }
+        
+      private:
+        int &n_;
+      };
+
+    struct NdCopyPointFunctor
+    {
+      typedef typename traits::POD<PointDefault>::type Pod;
+      
+      NdCopyPointFunctor (const PointDefault &p1, float * p2)
+        : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2), f_idx_ (0) { }
+      
+      template<typename Key> inline void operator() ()
+      {  
+        typedef typename pcl::traits::datatype<PointDefault, Key>::type FieldT;
+        const int NrDims = pcl::traits::datatype<PointDefault, Key>::size;
+        Helper<Key, FieldT, NrDims>::copyPoint (p1_, p2_, f_idx_);
+      }
+      
+      // Copy helper for scalar fields
+      template <typename Key, typename FieldT, int NrDims>
+      struct Helper
+      {
+        static void copyPoint (const Pod &p1, float * p2, int &f_idx) 
+        {
+          const uint8_t * data_ptr = reinterpret_cast<const uint8_t *> (&p1) + 
+            pcl::traits::offset<PointDefault, Key>::value;
+          p2[f_idx++] = *reinterpret_cast<const FieldT*> (data_ptr);
+        }
+      };
+      // Copy helper for array fields
+      template <typename Key, typename FieldT, int NrDims>
+      struct Helper<Key, FieldT[NrDims], NrDims>
+      {
+        static void copyPoint (const Pod &p1, float * p2, int &f_idx)
+        {
+          const uint8_t * data_ptr = reinterpret_cast<const uint8_t *> (&p1) + 
+            pcl::traits::offset<PointDefault, Key>::value;
+          int nr_dims = NrDims;
+          const FieldT * array = reinterpret_cast<const FieldT *> (data_ptr);
+          for (int i = 0; i < nr_dims; ++i)
+          {
+            p2[f_idx++] = array[i];
+          }
+        }
+      };
+  
+    private:
+      const Pod &p1_;
+      float * p2_;
+      int f_idx_;
+    };
+
+    public:
+      // Boost shared pointers
+    typedef int Foo;
+      typedef typename boost::shared_ptr<DefaultFeatureRepresentation<PointDefault> > Ptr;
+      typedef typename boost::shared_ptr<const DefaultFeatureRepresentation<PointDefault> > ConstPtr;
+      typedef typename pcl::traits::fieldList<PointDefault>::type FieldList;
+
+      DefaultFeatureRepresentation ()
+      {      
+        nr_dimensions_ = 0; // zero-out the nr_dimensions_ before it gets incremented
+        pcl::for_each_type <FieldList> (IncrementFunctor (nr_dimensions_));
+      }
+
+      inline Ptr makeShared () const { return Ptr (new DefaultFeatureRepresentation<PointDefault> (*this)); } 
+
+      virtual void 
+        copyToFloatArray (const PointDefault &p, float * out) const
+      {
+        pcl::for_each_type <FieldList> (NdCopyPointFunctor (p, out));
+      }
+  };
+
   template <>
   class DefaultPointRepresentation <PointXYZ> : public  PointRepresentation <PointXYZ>
   {
@@ -221,91 +319,26 @@ namespace pcl
   };
 
   template <>
-  class DefaultPointRepresentation <PFHSignature125> : public  PointRepresentation <PFHSignature125>
-  {
-    public:
-      DefaultPointRepresentation ()
-      {
-        nr_dimensions_ = 125;
-      }
-
-      virtual void 
-        copyToFloatArray (const PFHSignature125 &p, float * out) const
-      {
-        for (int i = 0; i < nr_dimensions_; ++i)
-          out[i] = p.histogram[i];
-      }
-  };
+  class DefaultPointRepresentation <PFHSignature125> : public DefaultFeatureRepresentation <PFHSignature125>
+  {};
 
   template <>
-  class DefaultPointRepresentation <PPFSignature> : public  PointRepresentation <PPFSignature>
-  {
-  public:
-    DefaultPointRepresentation ()
-    {
-      nr_dimensions_ = 4;
-    }
-
-    virtual void
-    copyToFloatArray (const PPFSignature &p, float * out) const
-    {
-      out[0] = p.f1;
-      out[1] = p.f2;
-      out[2] = p.f3;
-      out[3] = p.f4;
-    }
-  };
+  class DefaultPointRepresentation <PPFSignature> : public DefaultFeatureRepresentation <PPFSignature>
+  {};
 
   template <>
-  class DefaultPointRepresentation <FPFHSignature33> : public  PointRepresentation <FPFHSignature33>
-  {
-    public:
-      DefaultPointRepresentation ()
-      {
-        nr_dimensions_ = 33;
-      }
-
-      virtual void 
-        copyToFloatArray (const FPFHSignature33 &p, float * out) const
-      {
-        for (int i = 0; i < nr_dimensions_; ++i)
-          out[i] = p.histogram[i];
-      }
-  };
+  class DefaultPointRepresentation <FPFHSignature33> : public DefaultFeatureRepresentation <FPFHSignature33>
+  {};
 
   template <>
-  class DefaultPointRepresentation <VFHSignature308> : public  PointRepresentation <VFHSignature308>
-  {
-    public:
-      DefaultPointRepresentation ()
-      {
-        nr_dimensions_ = 308;
-      }
-
-      virtual void
-        copyToFloatArray (const VFHSignature308 &p, float * out) const
-      {
-        for (int i = 0; i < nr_dimensions_; ++i)
-          out[i] = p.histogram[i];
-      }
-  };
+  class DefaultPointRepresentation <VFHSignature308> : public DefaultFeatureRepresentation <VFHSignature308>
+  {};
 
   template <>
-  class DefaultPointRepresentation <NormalBasedSignature12> : public PointRepresentation <NormalBasedSignature12>
-  {
-    public:
-      DefaultPointRepresentation ()
-      {
-        nr_dimensions_ = 12;
-      }
+  class DefaultPointRepresentation <NormalBasedSignature12> : 
+    public DefaultFeatureRepresentation <NormalBasedSignature12>
+  {};
 
-      virtual void
-        copyToFloatArray (const NormalBasedSignature12 &p, float * out) const
-      {
-        for (int i = 0; i < nr_dimensions_; ++i)
-          out[i] = p.values[i];
-      }
-  };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b CustomPointRepresentation extends PointRepresentation to allow for sub-part selection on the point.
