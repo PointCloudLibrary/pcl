@@ -13,7 +13,10 @@ if (build)
   PCL_ADD_EXECUTABLE (voxel_grid ${SUBSYS_NAME} voxel_grid.cpp)
   target_link_libraries (voxel_grid pcl_common pcl_io pcl_filters)
 	
-	PCL_ADD_EXECUTABLE (passthrough_filter ${SUBSYS_NAME} passthrough_filter.cpp)
-	target_link_libraries (passthrough_filter pcl_common pcl_io pcl_filters)
+  PCL_ADD_EXECUTABLE (passthrough_filter ${SUBSYS_NAME} passthrough_filter.cpp)
+  target_link_libraries (passthrough_filter pcl_common pcl_io pcl_filters)
+	
+  PCL_ADD_EXECUTABLE (extract_feature ${SUBSYS_NAME} extract_feature.cpp)
+  target_link_libraries (extract_feature pcl_common pcl_io pcl_features pcl_kdtree)
 
 endif ()
