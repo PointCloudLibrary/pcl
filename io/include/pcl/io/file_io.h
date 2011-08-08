@@ -313,29 +313,29 @@ namespace pcl
       stream << boost::numeric_cast<Type>(value);
   }
   template <> inline void
-  copyValueString<char> (const sensor_msgs::PointCloud2 &cloud, 
+  copyValueString<int8_t> (const sensor_msgs::PointCloud2 &cloud, 
                          unsigned int point_index, int point_size, unsigned int field_idx, 
                          unsigned int fields_count, std::ostream &stream)
   {
-    char value;
-    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (char)], sizeof (char));
+    int8_t value;
+    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (int8_t)], sizeof (int8_t));
     if (pcl_isnan (value))
       stream << "nan";
     else
-      // Numeric cast doesn't give us what we want for chars
+      // Numeric cast doesn't give us what we want for int8_t
       stream << boost::numeric_cast<int>(value);
   }
   template <> inline void
-  copyValueString<unsigned char> (const sensor_msgs::PointCloud2 &cloud, 
+  copyValueString<uint8_t> (const sensor_msgs::PointCloud2 &cloud, 
                                   unsigned int point_index, int point_size, unsigned int field_idx, 
                                   unsigned int fields_count, std::ostream &stream)
   {
-    unsigned char value;
-    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (unsigned char)], sizeof (unsigned char));
+    uint8_t value;
+    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (uint8_t)], sizeof (uint8_t));
     if (pcl_isnan (value))
       stream << "nan";
     else
-      // Numeric cast doesn't give us what we want for unsigned chars
+      // Numeric cast doesn't give us what we want for uint8_t
       stream << boost::numeric_cast<int>(value);
   }
 }
