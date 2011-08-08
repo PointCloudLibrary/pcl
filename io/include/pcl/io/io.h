@@ -296,9 +296,14 @@ namespace pcl
                   pcl::PointCloud<PointOutT> &cloud_out);
 
   /** \brief Concatenate two datasets representing different fields.
-    * \param cloud1_in the first input dataset
-    * \param cloud2_in the second input dataset
-    * \param cloud_out the resultant output dataset created by the concatenation of all the fields in the input datasets
+    *
+    * \note If the input datasets have overlapping fields (i.e., both contain
+    * the same fields), then the data in the second cloud (\ref cloud2_in) will
+    * overwrite the data in the first (\ref cloud1_in).
+    *
+    * \param[in] cloud1_in the first input dataset
+    * \param[in] cloud2_in the second input dataset (overwrites the fields of the first dataset for those that are shared)
+    * \param[out] cloud_out the resultant output dataset created by the concatenation of all the fields in the input datasets
     * \ingroup io
     */
   template <typename PointIn1T, typename PointIn2T, typename PointOutT> void 
@@ -307,8 +312,13 @@ namespace pcl
                      pcl::PointCloud<PointOutT> &cloud_out);
 
   /** \brief Concatenate two datasets representing different fields.
+    *
+    * \note If the input datasets have overlapping fields (i.e., both contain
+    * the same fields), then the data in the second cloud (\ref cloud2_in) will
+    * overwrite the data in the first (\ref cloud1_in).
+    *
     * \param[in] cloud1_in the first input dataset
-    * \param[in] cloud2_in the second input dataset
+    * \param[in] cloud2_in the second input dataset (overwrites the fields of the first dataset for those that are shared)
     * \param[out] cloud_out the output dataset created by concatenating all the fields in the input datasets
     * \ingroup io
     */
