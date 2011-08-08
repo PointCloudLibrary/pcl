@@ -86,7 +86,6 @@ namespace pcl
 
         /** \brief Empty constructor. */
         CorrespondenceEstimation () : target_ (),
-            corr_dist_threshold_ (std::numeric_limits<double>::max()),
             point_representation_ ()
         {
           tree_.reset (new pcl::KdTreeFLANN<PointTarget>);     // FLANN tree for nearest neighbor search
@@ -153,20 +152,6 @@ namespace pcl
         template <typename FeatureType> inline void
         setFeatureRepresentation (const std::string &key,
                                   const typename pcl::KdTree<FeatureType>::PointRepresentationConstPtr &fr);
-
-        /** \brief Set the maximum distance threshold between two correspondent points in source <-> target. If the
-          * distance is larger than this threshold, the points will be ignored in the alignment process.
-          * \param distance_threshold the maximum distance threshold between a point and its nearest neighbor
-          * correspondent in order to be considered in the alignment process
-          */
-        inline void 
-        setMaxCorrespondenceDistance (double distance_threshold) { corr_dist_threshold_ = distance_threshold; }
-
-        /** \brief Get the maximum distance threshold between two correspondent points in source <-> target. If the
-          * distance is larger than this threshold, the points will be ignored in the alignment process.
-          */
-        inline double 
-        getMaxCorrespondenceDistance () { return (corr_dist_threshold_); }
 
         /** \brief Provide a boost shared pointer to the PointRepresentation to be used when comparing points
           * \param point_representation the PointRepresentation to be used by the k-D tree
@@ -279,11 +264,6 @@ namespace pcl
 
         /** \brief The input point cloud dataset target. */
         PointCloudTargetConstPtr target_;
-
-        /** \brief The maximum distance threshold between two correspondent points in source <-> target. If the
-          * distance is larger than this threshold, the points will not be ignored in the alignement process.
-          */
-        double corr_dist_threshold_;
 
         /** \brief Test that all features are valid (i.e., does each key have a valid source cloud, target cloud,
           * and search method)
