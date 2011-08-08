@@ -211,7 +211,8 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor (vtkSma
         continue;
 
       uint8_t* pt_data = (uint8_t*)&cloud_->points[cp];
-      memcpy (&field_data, pt_data + fields_[field_idx_].offset, sizeof (float));
+      //memcpy (&field_data, pt_data + fields_[field_idx_].offset, sizeof (float));
+      memcpy (&field_data, pt_data + fields_[field_idx_].offset, pcl::getFieldSize (fields_[field_idx_].datatype));
 
       if (!pcl_isfinite (field_data))
         continue;
@@ -226,7 +227,8 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor (vtkSma
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
       uint8_t* pt_data = (uint8_t*)&cloud_->points[cp];
-      memcpy (&field_data, pt_data + fields_[field_idx_].offset, sizeof (float));
+      //memcpy (&field_data, pt_data + fields_[field_idx_].offset, sizeof (float));
+      memcpy (&field_data, pt_data + fields_[field_idx_].offset, pcl::getFieldSize (fields_[field_idx_].datatype));
 
       if (!pcl_isfinite (field_data))
         continue;

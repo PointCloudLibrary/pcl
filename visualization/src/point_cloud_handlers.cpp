@@ -38,6 +38,7 @@
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/console/time.h>
 #include <pcl/win32_macros.h>
+#include <pcl/io/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -232,7 +233,8 @@ pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>
                                            x_point_offset += cloud_->point_step)
     {
       // Copy the value at the specified field
-      memcpy (&field_data, &cloud_->data[point_offset], sizeof (float));
+      //memcpy (&field_data, &cloud_->data[point_offset], sizeof (float));
+      memcpy (&field_data, &cloud_->data[point_offset], pcl::getFieldSize (cloud_->fields[field_idx_].datatype));
 
       if (!pcl_isfinite (field_data))
         continue;
@@ -254,7 +256,8 @@ pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>
     for (vtkIdType cp = 0; cp < nr_points; ++cp, point_offset += cloud_->point_step)
     {
       // Copy the value at the specified field
-      memcpy (&field_data, &cloud_->data[point_offset], sizeof (float));
+      //memcpy (&field_data, &cloud_->data[point_offset], sizeof (float));
+      memcpy (&field_data, &cloud_->data[point_offset], pcl::getFieldSize (cloud_->fields[field_idx_].datatype));
 
       if (!pcl_isfinite (field_data))
         continue;
