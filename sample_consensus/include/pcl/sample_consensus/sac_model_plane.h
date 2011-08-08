@@ -43,6 +43,22 @@
 
 namespace pcl
 {
+
+  /** \brief Project a point on a planar model given by a set of normalized coefficients
+    * \param[in] p the input point to project
+    * \param[in] model_coefficients the coefficients of the plane (a, b, c, d) that satisfy ax+by+cz+d=0
+    * \param[out] q the resultant projected point
+    */
+  template <typename Point> inline void
+  projectPoint (const Point &p, const Eigen::VectorXf &model_coefficients, Point &q)
+  {
+    // Calculate the distance from the point to the plane
+    Eigen::Vector4f pp (p.x, p.y, p.z, 1);
+    // use normalized coefficients to calculate the scalar projection 
+    float distance_to_plane = model_coefficients.dot (pp);
+    q = pp - model_coefficients * distance_to_plane;
+  }
+
   /** \brief Get the distance from a point to a plane (signed) defined by ax+by+cz+d=0
     * \param p a point
     * \param a the normalized <i>a</i> coefficient of a plane
