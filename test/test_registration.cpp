@@ -280,7 +280,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, PyramidFeatureHistogram)
+/*TEST (PCL, PyramidFeatureHistogram)
 {
   // Create shared pointers
    PointCloud<PointXYZ>::Ptr cloud_source_ptr = cloud_source.makeShared (),
@@ -360,7 +360,7 @@ TEST (PCL, PyramidFeatureHistogram)
 
   float similarity_value3 = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
   EXPECT_NEAR (similarity_value3, 0.881507, 1e-4);
-}
+}*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PPFRegistration)
