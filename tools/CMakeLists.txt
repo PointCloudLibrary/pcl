@@ -7,6 +7,9 @@ PCL_SUBSYS_DEPEND (build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if (build)
 
+  PCL_ADD_EXECUTABLE (plane_projection ${SUBSYS_NAME} plane_projection.cpp)
+  target_link_libraries (plane_projection pcl_common pcl_io pcl_sample_consensus)
+
   PCL_ADD_EXECUTABLE (normal_estimation ${SUBSYS_NAME} normal_estimation.cpp)
   target_link_libraries (normal_estimation pcl_common pcl_io pcl_features pcl_kdtree)
 

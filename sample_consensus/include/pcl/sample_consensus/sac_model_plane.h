@@ -50,13 +50,14 @@ namespace pcl
     * \param[out] q the resultant projected point
     */
   template <typename Point> inline void
-  projectPoint (const Point &p, const Eigen::VectorXf &model_coefficients, Point &q)
+  projectPoint (const Point &p, const Eigen::Vector4f &model_coefficients, Point &q)
   {
     // Calculate the distance from the point to the plane
     Eigen::Vector4f pp (p.x, p.y, p.z, 1);
     // use normalized coefficients to calculate the scalar projection 
     float distance_to_plane = model_coefficients.dot (pp);
-    q = pp - model_coefficients * distance_to_plane;
+    Eigen::Vector4f q_e = q.getVector4fMap ();
+    q_e = pp - model_coefficients * distance_to_plane;
   }
 
   /** \brief Get the distance from a point to a plane (signed) defined by ax+by+cz+d=0
