@@ -129,7 +129,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
   
-  pcl::io::savePCDFile (filename, output, translation, orientation, true);
+  pcl::io::savePCDFile (filename, output, translation, orientation, false);
   
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
