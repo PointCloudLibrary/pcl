@@ -53,7 +53,7 @@ using namespace std;
 
 using namespace pcl;
 
-#include <pcl/search/auto_tuned_search.h>
+#include <pcl/search/pcl_search.h>
 //#include <pcl/search/octree_impl.h>
 
 

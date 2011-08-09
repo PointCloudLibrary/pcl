@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Copyright (c) 2009, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,65 +31,18 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Siddharth Choudhary (itzsid@gmail.com)
+ *
+ *
  */
 
-#include <iostream>
-#include <fstream>
-#include <numeric>
+#ifndef PCL_SEARCH_HEADER_
+#define PCL_SEARCH_HEADER_
 
-#include <pcl/point_cloud.h>
-#include <pcl/octree/octree.h>
-
-#include "pcl/gpu/octree/octree.hpp"
-#include "pcl/gpu/common/device_array.hpp"
-#include "pcl/gpu/common/timers_opencv.hpp"
+#include "pcl/search/search.h"
+#include "pcl/search/kdtree.h"
+#include "pcl/search/octree_pointcloud.h"
+#include "pcl/search/organized_neighbor_search.h"
+#include "pcl/search/auto_tuned_search.h"
 
 
-namespace pcl
-{
-PointCloud<PointXYZ> cloud, cloud_big;
-void
-  init ()
-{
-  float resolution = 0.1;
-  for (float z = -0.5f; z <= 0.5f; z += resolution)
-    for (float y = -0.5f; y <= 0.5f; y += resolution)
-      for (float x = -0.5f; x <= 0.5f; x += resolution)
-        cloud.points.push_back (PointXYZ (x, y, z));
-  cloud.width  = cloud.points.size ();
-  cloud.height = 1;
-
-  cloud_big.width  = 640;
-  cloud_big.height = 480;
-  srand (time (NULL));
-  // Randomly create a new point cloud
-  for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
-    cloud_big.points.push_back (PointXYZ (1024 * rand () / (RAND_MAX + 1.0),
-                                         1024 * rand () / (RAND_MAX + 1.0),
-                                         1024 * rand () / (RAND_MAX + 1.0)));
-}
-
-
-
-
-using namespace std;
-using namespace pcl::gpu;
-
-	template <typename PointT> int
-		OctreeGPU<PointT>::	    radiusSearchGPU (std::vector<const PointT>& point, const double radius, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn ) const
-		{
-
-								
-   pcl::gpu::Octree::PointCloud cloud_device; 
-//    cloud_device.upload(cloud.points);
-
-		};
-
-
-
-}
-
-#define PCL_INSTANTIATE_OctreeGPU(T) template class PCL_EXPORTS pcl::OctreeGPU<T>;
-
-
+#endif

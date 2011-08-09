@@ -6,8 +6,8 @@ using namespace std;
 
 #include <pcl/common/time.h>
 //#include <pcl/kdtree/kdtree_ann.h>
-#include <pcl/search/search.h>
-#include <pcl/search/kdtree.h>
+#include <pcl/search/pcl_search.h>
+//##include <pcl/search/kdtree.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 

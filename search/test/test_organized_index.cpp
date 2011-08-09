@@ -51,9 +51,7 @@ using namespace std;
 
 using namespace pcl;
 
-#include "pcl/search/organized_neighbor_search.h"
-#include "pcl/search/impl/organized_neighbor_search.hpp"
-#include "pcl/search/search.h"
+#include "pcl/search/pcl_search.h"
 
 
 // helper class for priority queue

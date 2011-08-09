@@ -39,9 +39,7 @@
 #define PCL_SEARCH_GENERIC_SEARCH_IMPL
 
 #include "pcl/search/search.h"
-#include "pcl/search/kdtree.h"
-#include "pcl/search/octree_pointcloud.h"
-#include "pcl/search/organized_neighbor_search.h"
+
 
 
 
@@ -50,25 +48,27 @@ namespace pcl
 {
 
 
-
+#if 1
 template <typename PointT> void 
 Search<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices)
 {
 
 }
 
+#endif
+
 template <typename PointT> void 
 Search<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
 {
 
 }
-
+#if 0
 template <typename PointT> int 
 Search<PointT>::nearestKSearch (const PointT& point,  int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances) 
 {
 
 }
-
+#endif
 
 template <typename PointT> int 
 Search<PointT>::nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances) 

@@ -43,7 +43,6 @@
 #include "pcl/point_cloud.h"
 #include "pcl/point_representation.h"
 
-//#include "pcl/search/search_flann.h"
 
 namespace pcl
 {
@@ -87,7 +86,7 @@ namespace pcl
     setInputCloud (const PointCloudConstPtr& cloud);
 
     virtual int
-    nearestKSearch (const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
+    nearestKSearch (const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)=0;
 
     virtual int
     nearestKSearchGPU (std::vector<const PointT>& point, int k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances);

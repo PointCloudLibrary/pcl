@@ -49,7 +49,7 @@ using namespace std;
 
 using namespace pcl;
 
-#include <pcl/search/octree_pointcloud.h>
+#include <pcl/search/pcl_search.h>
 //#include <pcl/search/octree_impl.h>
 
 
