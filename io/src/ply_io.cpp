@@ -205,11 +205,6 @@ pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
       elements_it != parser_.end();
       ++elements_it)
   {
-    if((*elements_it)->has_list_properties ())
-    {
-      PCL_ERROR ("[pcl::PLYReader::readHeader] list properties are not handled\n");
-      return (-1);
-    }
     if("vertex" == (*elements_it)->name_)
       vertex = *elements_it;
     if("camera" == (*elements_it)->name_)
@@ -414,7 +409,8 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     cloud.is_dense = false;
     // Open for reading
     boost::iostreams::mapped_file_source mapped_file_;
-    mapped_file_.open (file_name, cloud.data.size () + data_idx + sizeof(pcl::io::ply::camera), 0);
+//    mapped_file_.open (file_name, cloud.data.size () + data_idx + sizeof(pcl::io::ply::camera), 0);
+    mapped_file_.open (file_name);
     if (!mapped_file_.is_open())
       return (-1);
     
@@ -424,12 +420,12 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     memcpy (&cloud.data[0], &map[0] + data_idx, cloud.data.size ());
 
     // Copy the sensor data if available
-    if(parser_["camera"] != NULL)
-    {
-      pcl::io::ply::camera sensor;
-      memcpy (&sensor, &map[0] + data_idx + cloud.data.size (), sizeof(pcl::io::ply::camera));
-      sensor.ext_to_eigen(origin, orientation);
-    }
+    // if(parser_["camera"] != NULL)
+    // {
+    //   pcl::io::ply::camera sensor;
+    //   memcpy (&sensor, &map[0] + data_idx + cloud.data.size (), sizeof(pcl::io::ply::camera));
+    //   sensor.ext_to_eigen(origin, orientation);
+    // }
     // Unmap the pages of memory
     mapped_file_.close();
   }
@@ -522,7 +518,7 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
 
   // If mask can not be determined
   if(mask_ == 0)
-    return "";
+    throw "Mask can not be determined";
 
   if(mask_ & pcl::io::ply::VERTEX_XYZ)
   {
@@ -625,6 +621,11 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
   std::ofstream fs;
   fs.precision (precision);
   fs.open (file_name.c_str ());      // Open file
+  if(!fs)
+  {
+    PCL_ERROR ("[pcl::PLYWriter::writeASCII] Error during opening (%s)!\n", file_name.c_str());
+    return (-1);
+  }
 
   int nr_points  = cloud.width * cloud.height;
   int point_size = cloud.data.size () / nr_points;
@@ -712,7 +713,7 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
     fs << std::endl;
   }
   // Append sensor information
-  fs << origin[0] << " " << origin[1] << " " << origin[2] << " ";
+  fs << origin[0]/origin[3] << " " << origin[1]/origin[3] << " " << origin[2]/origin[3] << " ";
   Eigen::Matrix3f R = orientation.toRotationMatrix ();
   fs << R(0,0) << " " << R(0,1) << " " << R(0,2) << " ";
   fs << R(1,0) << " " << R(1,1) << " " << R(1,2) << " ";
@@ -735,75 +736,75 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int
-pcl::PLYWriter::writeBinary (const std::string &file_name, 
-                             const sensor_msgs::PointCloud2 &cloud,
-                             const Eigen::Vector4f &origin, 
-                             const Eigen::Quaternionf &orientation)
-{
-  if (cloud.data.empty ())
-  {
-    PCL_ERROR ("[pcl::FileWriter::writeBinary] Input point cloud has no data!");
-    return (-1);
-  }
-  int data_idx = 0;
-  std::ofstream fs;
+// int
+// pcl::PLYWriter::writeBinary (const std::string &file_name, 
+//                              const sensor_msgs::PointCloud2 &cloud,
+//                              const Eigen::Vector4f &origin, 
+//                              const Eigen::Quaternionf &orientation)
+// {
+//   if (cloud.data.empty ())
+//   {
+//     PCL_ERROR ("[pcl::FileWriter::writeBinary] Input point cloud has no data!");
+//     return (-1);
+//   }
+//   int data_idx = 0;
+//   std::ofstream fs;
 
-  // Write the header information
-  std::ostringstream oss;
-  oss << generateHeader (cloud, true);
-  std::string header(oss.str());
-  if("" == header)
-  {
-    std::cout << "unvalid header" << std::endl;
-    return (-1);
-  }
-  oss.flush();
-  data_idx = oss.tellp ();
+//   // Write the header information
+//   std::ostringstream oss;
+//   oss << generateHeader (cloud, true);
+//   std::string header(oss.str());
+//   if("" == header)
+//   {
+//     std::cout << "unvalid header" << std::endl;
+//     return (-1);
+//   }
+//   oss.flush();
+//   data_idx = oss.tellp ();
 
-  // Open for writing
-   boost::iostreams::mapped_file_params file_params_(file_name);
-   file_params_.mode = std::ios_base::out | std::ios_base::binary;
-   file_params_.offset = 0;
-   file_params_.new_file_size = sizeof(pcl::io::ply::camera) + cloud.data.size ()+ getpagesize() - 1;
-  // mapped_file_.open(file_params_);
-  boost::iostreams::mapped_file_sink mapped_file_;
-//  mapped_file_.open (file_name, sizeof(pcl::io::ply::camera) + cloud.data.size ()+ getpagesize() - 1, 0);
-  mapped_file_.open(file_params_);
-  if (!mapped_file_.is_open())
-  {
-    PCL_ERROR ("[pcl::FileWriter::writeBinary] Error during open () %s!\n", file_name.c_str());
-    return (-1);
-  }
+//   // Open for writing
+//    boost::iostreams::mapped_file_params file_params_(file_name);
+//    file_params_.mode = std::ios_base::out | std::ios_base::binary;
+//    file_params_.offset = 0;
+//    file_params_.new_file_size = sizeof(pcl::io::ply::camera) + cloud.data.size ()+ getpagesize() - 1;
+//   // mapped_file_.open(file_params_);
+//   boost::iostreams::mapped_file_sink mapped_file_;
+// //  mapped_file_.open (file_name, sizeof(pcl::io::ply::camera) + cloud.data.size ()+ getpagesize() - 1, 0);
+//   mapped_file_.open(file_params_);
+//   if (!mapped_file_.is_open())
+//   {
+//     PCL_ERROR ("[pcl::FileWriter::writeBinary] Error during open () %s!\n", file_name.c_str());
+//     return (-1);
+//   }
 
-  // Stretch the file size to the size of the data
-  mapped_file_.resize(getpagesize () + cloud.data.size () + sizeof(pcl::io::ply::camera)  - 1);
-  if (mapped_file_.size() != getpagesize () + cloud.data.size () + sizeof(pcl::io::ply::camera) - 1)
-  {
-    mapped_file_.close();
-    PCL_ERROR ("[pcl::FileWriter::writeBinary] Error during resize ()!\n");
-    return (-1);
-  }
+//   // Stretch the file size to the size of the data
+//   mapped_file_.resize (getpagesize () + cloud.data.size () + sizeof(pcl::io::ply::camera));
+//   if (mapped_file_.size() != getpagesize () + cloud.data.size () + sizeof(pcl::io::ply::camera))
+//   {
+//     mapped_file_.close();
+//     PCL_ERROR ("[pcl::FileWriter::writeBinary] Error during resize ()!\n");
+//     return (-1);
+//   }
 
-  // Prepare the map
-  char *map = mapped_file_.data();
+//   // Prepare the map
+//   char *map = mapped_file_.data();
 
-  // Copy the header
-  memcpy (&map[0], oss.str().c_str(), data_idx);
+//   // Copy the header
+//   memcpy (&map[0], oss.str().c_str(), data_idx);
 
-  // Copy the data
-  memcpy (&map[0] + data_idx, &cloud.data[0], cloud.data.size ());
+//   // Copy the data
+//   memcpy (&map[0] + data_idx, &cloud.data[0], cloud.data.size ());
 
-  // Wrap sensor data
-  pcl::io::ply::camera sensor(origin, orientation);
+//   // Wrap sensor data
+// //  pcl::io::ply::camera sensor(origin, orientation);
 
-  // Copy the sensor data
-  memcpy (&map[0] + data_idx + cloud.data.size (), &sensor, sizeof(pcl::io::ply::camera));
+//   // Copy the sensor data
+// //  memcpy (&map[0] + data_idx + cloud.data.size (), &sensor, sizeof(pcl::io::ply::camera));
 
-  // Close file
-  mapped_file_.close();
+//   // Close file
+//   mapped_file_.close();
 
-//   // Append sensor information
+// //   // Append sensor information
 
 //   std::ofstream fpout(file_name.c_str(), std::ios::app | std::ios::binary);
 //   if(!fpout)
@@ -815,7 +816,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
 //   float t;
 //   for(int i = 0; i < 3; i++)
 //   {
-//     t = origin[i];
+//     t = origin[i]/origin[3];
 //     fpout.write((const char *) &t,sizeof(float));
 //   }
 //   Eigen::Matrix3f R = orientation.toRotationMatrix ();
@@ -827,20 +828,20 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
 //   }
 
 
-// /////////////////////////////////////////////////////
-// // Append those properties directly.               //
-// // They are for perspective cameras so just put 0  //
-// //                                                 //
-// // property float focal                            //
-// // property float scalex                           //
-// // property float scaley                           //
-// // property float centerx                          //
-// // property float centery                          //
-// // property int viewportx                          //
-// // property int viewporty                          //
-// // property float k1                               //
-// // property float k2                               //
-// /////////////////////////////////////////////////////
+// // /////////////////////////////////////////////////////
+// // // Append those properties directly.               //
+// // // They are for perspective cameras so just put 0  //
+// // //                                                 //
+// // // property float focal                            //
+// // // property float scalex                           //
+// // // property float scaley                           //
+// // // property float centerx                          //
+// // // property float centery                          //
+// // // property int viewportx                          //
+// // // property int viewporty                          //
+// // // property float k1                               //
+// // // property float k2                               //
+// // /////////////////////////////////////////////////////
 
 //   float zerof = 0;
 //   for(int i = 0; i < 5; i++)
@@ -853,5 +854,160 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
 
 //   fpout.close();
 
+//   return (0);
+// }
+
+int
+pcl::PLYWriter::writeBinary (const std::string &file_name, 
+                            const sensor_msgs::PointCloud2 &cloud, 
+                            const Eigen::Vector4f &origin, 
+                            const Eigen::Quaternionf &orientation)
+{
+  if (cloud.data.empty ())
+  {
+    PCL_ERROR ("[pcl::PLYWriter::writeBinary] Input point cloud has no data!\n");
+    return (-1);
+  }
+
+  std::ofstream fs;
+  fs.open (file_name.c_str ());      // Open file
+  if(!fs)
+  {
+    PCL_ERROR ("[pcl::PLYWriter::writeBinary] Error during opening (%s)!\n", file_name.c_str());
+    return (-1);
+  }
+
+  int nr_points  = cloud.width * cloud.height;
+  int point_size = cloud.data.size () / nr_points;
+
+  // Write the header information if available
+  fs << generateHeader (cloud, true);
+  // Close the file
+  fs.close();
+  // Open file in binary appendable
+  std::ofstream fpout(file_name.c_str(), std::ios::app | std::ios::binary);
+  if(!fpout)
+  {
+    PCL_ERROR ("[pcl::PLYWriter::writeBinary] Error during reopening (%s)!\n", file_name.c_str());
+    return (-1);
+  }
+  // Unlike PCD format file, PLY doesn't like 
+  // Iterate through the points
+  for (int i = 0; i < nr_points; ++i)
+  {
+    for (size_t d = 0; d < cloud.fields.size (); ++d)
+    {
+      int count = cloud.fields[d].count;
+      if (count == 0) 
+        count = 1; //workaround
+
+      for (int c = 0; c < count; ++c)
+      {
+        switch (cloud.fields[d].datatype)
+        {
+          case sensor_msgs::PointField::INT8:
+          {
+            char value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (char)], sizeof (char));
+            fpout.write((const char *) &value,sizeof(char));
+            break;
+          }
+          case sensor_msgs::PointField::UINT8:
+          {
+            unsigned char value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned char)], sizeof (unsigned char));
+            fpout.write((const char *) &value,sizeof(unsigned char));
+            break;
+          }
+          case sensor_msgs::PointField::INT16:
+          {
+            short value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (short)], sizeof (short));
+            fpout.write((const char *) &value,sizeof(short));
+            break;
+          }
+          case sensor_msgs::PointField::UINT16:
+          {
+            unsigned short value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned short)], sizeof (unsigned short));
+            fpout.write((const char *) &value,sizeof(unsigned short));
+            break;
+          }
+          case sensor_msgs::PointField::INT32:
+          {
+            int value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (int)], sizeof (int));
+            fpout.write((const char *) &value,sizeof(int));
+            break;
+          }
+          case sensor_msgs::PointField::UINT32:
+          {
+            unsigned int value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned int)], sizeof (unsigned int));
+            fpout.write((const char *) &value,sizeof(unsigned int));
+            break;
+          }
+          case sensor_msgs::PointField::FLOAT32:
+          {
+            float value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+            fpout.write((const char *) &value,sizeof(float));
+            break;
+          }
+          case sensor_msgs::PointField::FLOAT64:
+          {
+            double value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (double)], sizeof (double));
+            fpout.write((const char *) &value,sizeof(double));
+            break;
+          }
+          default:
+            PCL_WARN ("[pcl::PLYWriter::writeBinary] Incorrect field data type specified (%d)!\n", cloud.fields[d].datatype);
+            break;
+        }
+      }
+    }
+  }
+  // Append sensor information
+  float t;
+  for(int i = 0; i < 3; i++)
+  {
+    t = origin[i]/origin[3];
+    fpout.write((const char *) &t,sizeof(float));
+  }
+  Eigen::Matrix3f R = orientation.toRotationMatrix ();
+  for(int i = 0; i < 3; i++)
+    for(int j = 0; j < 3; j++)
+  {
+    t = R(i,j);
+    fpout.write((const char *) &t,sizeof(float));
+  }
+
+/////////////////////////////////////////////////////
+// Append those properties directly.               //
+// They are for perspective cameras so just put 0  //
+//                                                 //
+// property float focal                            //
+// property float scalex                           //
+// property float scaley                           //
+// property float centerx                          //
+// property float centery                          //
+// property int viewportx                          //
+// property int viewporty                          //
+// property float k1                               //
+// property float k2                               //
+/////////////////////////////////////////////////////
+
+  float zerof = 0;
+  for(int i = 0; i < 5; i++)
+    fpout.write((const char *) &zerof,sizeof(float));
+  int zeroi = 0;
+  for(int i = 0; i < 2; i++)
+    fpout.write((const char *) &zeroi,sizeof(float));
+  for(int i = 0; i < 2; i++)
+    fpout.write((const char *) &zerof,sizeof(float));
+
+  // Close file
+  fpout.close ();              
   return (0);
 }
