@@ -261,8 +261,6 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   
   int line_count = 0;
   assert(parser_["vertex"] != NULL);
-  // Get the number of points the cloud should have
-  int nr_points = cloud.width * cloud.height;
 
   // if ascii
   if (!binary_data)
@@ -400,6 +398,11 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     {
       sensor.ext_to_eigen(origin, orientation);
     }
+    else
+    {
+      origin = Eigen::Vector4f::Zero ();
+      orientation = Eigen::Quaternionf::Identity ();
+    }
   }
   /// ---[ Binary mode only
   /// We must re-open the file and read with mmap () for binary
@@ -420,26 +423,25 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     memcpy (&cloud.data[0], &map[0] + data_idx, cloud.data.size ());
 
     // Copy the sensor data if available
-    // if(parser_["camera"] != NULL)
-    // {
-    //   pcl::io::ply::camera sensor;
-    //   memcpy (&sensor, &map[0] + data_idx + cloud.data.size (), sizeof(pcl::io::ply::camera));
-    //   sensor.ext_to_eigen(origin, orientation);
-    // }
+    if(parser_["camera"] != NULL)
+    {
+      pcl::io::ply::camera sensor;
+      memcpy (&sensor, &map[0] + data_idx + cloud.data.size (), sizeof(pcl::io::ply::camera));
+      sensor.ext_to_eigen(origin, orientation);
+    }
+    else
+    {
+      origin = Eigen::Vector4f::Zero ();
+      orientation = Eigen::Quaternionf::Identity ();
+    }
     // Unmap the pages of memory
     mapped_file_.close();
   }
 
-  // if ( (line_count != nr_points) && (!binary_data) )
-  // {
-  //   PCL_ERROR ("[pcl::PLYReader::read] Number of points read (%d) is different than expected (%d)", line_count, nr_points);
-  //   return (-1);
-  // }
-  
   return 0;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 void pcl::PLYWriter::setMaskFromFieldsList(const std::string& fields_list)
 {
@@ -713,7 +715,11 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
     fs << std::endl;
   }
   // Append sensor information
-  fs << origin[0]/origin[3] << " " << origin[1]/origin[3] << " " << origin[2]/origin[3] << " ";
+  if(origin[3] != 0)
+    fs << origin[0]/origin[3] << " " << origin[1]/origin[3] << " " << origin[2]/origin[3] << " ";
+  else
+    fs << origin[0] << " " << origin[1] << " " << origin[2] << " ";
+
   Eigen::Matrix3f R = orientation.toRotationMatrix ();
   fs << R(0,0) << " " << R(0,1) << " " << R(0,2) << " ";
   fs << R(1,0) << " " << R(1,1) << " " << R(1,2) << " ";
@@ -972,7 +978,10 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
   float t;
   for(int i = 0; i < 3; i++)
   {
-    t = origin[i]/origin[3];
+    if(origin[3] != 0)
+      t = origin[i]/origin[3];
+    else
+      t = origin[i];
     fpout.write((const char *) &t,sizeof(float));
   }
   Eigen::Matrix3f R = orientation.toRotationMatrix ();
