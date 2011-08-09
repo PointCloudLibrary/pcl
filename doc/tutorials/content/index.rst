@@ -22,6 +22,7 @@ Table of contents
   * :ref:`filtering_tutorial`
   * :ref:`i_o`
   * :ref:`keypoints_tutorial`
+  * :ref:`kdtree_tutorial`
   * :ref:`octree_tutorial`
   * :ref:`range_images`
   * :ref:`registration_tutorial`
@@ -421,6 +422,26 @@ Keypoints
      ======  ======
      
      .. |kp_1| image:: images/narf_keypoint_extraction.png
+               :height: 100px
+
+.. _kdtree_tutorial:
+
+KdTree
+------
+
+  * :ref:`kdtree_search`
+
+     ======  ======
+     |kd_1|  Title: **KdTree Search**
+
+             Author: *Gabe O'Leary*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial, we will learn how to search using the nearest neighbor method for k-d trees
+     ======  ======
+     
+     .. |kd_1| image:: images/kdtree_search.png
                :height: 100px
 
 .. _octree_tutorial:
