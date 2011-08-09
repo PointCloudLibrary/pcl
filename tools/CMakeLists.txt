@@ -27,5 +27,8 @@ if (build)
 	
   PCL_ADD_EXECUTABLE (extract_feature ${SUBSYS_NAME} extract_feature.cpp)
   target_link_libraries (extract_feature pcl_common pcl_io pcl_features pcl_kdtree)
+  
+  PCL_ADD_EXECUTABLE (compute_cloud_error ${SUBSYS_NAME} compute_cloud_error.cpp)
+  target_link_libraries (compute_cloud_error pcl_common pcl_io pcl_kdtree)
 
 endif ()
