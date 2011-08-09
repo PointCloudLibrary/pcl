@@ -42,8 +42,17 @@
 
 namespace pcl
 {
-  /** \brief ...
-    */
+  /** \brief Normal-based feature signature estimation class [more info here ...]
+   * Please consult the following publication for more details:
+   *    Xinju Li and Igor Guskov
+   *    Multi-scale features for approximate alignment of point-based surfaces
+   *    Proceedings of the third Eurographics symposium on Geometry processing
+   *    July 2005, Vienna, Austria
+   *
+   * \Note These features were meant to be used at keypoints detected by a detector using different smoothing radii
+   * (e.g., SmoothedSurfacesKeypoint)
+   * \author Alexandru-Eugen Ichim
+   */
   template <typename PointT, typename PointNT, typename PointFeature>
   class NormalBasedSignatureEstimation : public FeatureFromNormals<PointT, PointNT, PointFeature>
   {
@@ -57,32 +66,55 @@ namespace pcl
       typedef pcl::PointCloud<PointFeature> FeatureCloud;
 
 
-      /** \brief Constructor
+      /** \brief Empty constructor, initializes the internal parameters to the default values
         */
-      NormalBasedSignatureEstimation (float a_scale_h,
-                                      float a_normal_search_radius,
-                                      size_t a_N = 32,
-                                      size_t a_M = 8,
-                                      size_t a_N_prime = 4,
-                                      size_t a_M_prime = 3)
+      NormalBasedSignatureEstimation ()
         : FeatureFromNormals<PointT, PointNT, PointFeature> (),
-          scale_h (a_scale_h),
-          normal_search_radius (a_normal_search_radius),
-          N (a_N),
-          M (a_M),
-          N_prime (a_N_prime),
-          M_prime (a_M_prime)
+          N_ (32),
+          M_ (8),
+          N_prime_ (4),
+          M_prime_ (3)
       {
-        search_radius_ = a_normal_search_radius;
       }
+
+      inline void
+      setN (size_t N) { N_ = N; }
+
+      inline size_t
+      getN () { return N_; }
+
+      inline void
+      setM (size_t M) { M_ = M; }
+
+      inline size_t
+      getM () { return M_; }
+
+      inline void
+      setNPrime (size_t N_prime) { N_prime_ = N_prime; }
+
+      inline size_t
+      getNPrime () { return N_prime_; }
+
+      inline void
+      setMPrime (size_t M_prime) { M_prime_ = M_prime; }
+
+      inline size_t
+      getMPrime () { return M_prime_; }
+
+      inline void
+      setScale (float scale) { scale_h_ = scale; }
+
+      inline float
+      getScale () { return scale_h_; }
+
 
     protected:
       void
       computeFeature (FeatureCloud &output);
 
     private:
-      float scale_h, normal_search_radius;
-      size_t N, M, N_prime, M_prime;
+      float scale_h_;
+      size_t N_, M_, N_prime_, M_prime_;
   };
 }
 
