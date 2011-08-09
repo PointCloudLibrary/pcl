@@ -38,6 +38,7 @@
 #ifndef PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
 #define PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
 
+#include <boost/shared_ptr.hpp>
 #include <pcl/PolygonMesh.h>
 
 namespace pcl
@@ -52,11 +53,19 @@ namespace pcl
         SimplificationRemoveUnusedVertices(){};
         ~SimplificationRemoveUnusedVertices(){};
 
+        inline void
+        simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output)
+        {
+          std::vector<int> indices;
+          simplify(input, output, indices);
+        }
+
         /** \brief Perform simplification (remove unused vertices).
          * \param
          */
         void
-        simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output);
+        simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices);
+
     };
   }
 }

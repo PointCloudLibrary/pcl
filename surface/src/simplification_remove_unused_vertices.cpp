@@ -39,30 +39,32 @@
 
 #include <cstring>
 #include <vector>
+#include <iostream>
+#include <stdio.h>
 
 void
-pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output)
+pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices)
 {
   if ( input.polygons.size() == 0)
     return;
 
   unsigned int nr_points = input.cloud.width * input.cloud.height;
 
-  // mark all points as being unused
-  std::vector<bool> point_used ((size_t)(nr_points), false);
+  std::vector<int> new_indices(nr_points, -1);
+  indices.clear();
+  indices.reserve(nr_points);
 
   // mark all points in triangles as being used
-  unsigned int nr_used_points = 0;
   for ( size_t polygon = 0; polygon < input.polygons.size(); ++polygon)
     for ( size_t point = 0; point < input.polygons[polygon].vertices.size(); ++point )
-      if ( !point_used[ input.polygons[polygon].vertices[point] ] )
+      if ( new_indices[ input.polygons[polygon].vertices[point] ] == -1 )
       {
-        ++nr_used_points;
-        point_used[ input.polygons[polygon].vertices[point] ] = true;
+        new_indices[ input.polygons[polygon].vertices[point] ] = indices.size();
+        indices.push_back(input.polygons[polygon].vertices[point]);
       }
 
-  // in case all points are, do nothing and return input mesh
-  if ( nr_used_points == nr_points )
+  // in case all points are used , do nothing and return input mesh
+  if ( indices.size() == nr_points )
   {
     output = input;
     return;
@@ -71,29 +73,21 @@ pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMes
   // copy cloud information
   output.header = input.header;
   output.cloud.data.clear();
-  output.polygons.clear();
   output.cloud.header = input.cloud.header;
   output.cloud.fields = input.cloud.fields;
   output.cloud.row_step = input.cloud.row_step;
   output.cloud.point_step = input.cloud.point_step;
   output.cloud.is_bigendian = input.cloud.is_bigendian;
   output.cloud.height = 1; // cloud is no longer organized
-  output.cloud.width = nr_used_points;
+  output.cloud.width = indices.size();
   output.cloud.row_step = output.cloud.point_step * output.cloud.width;
   output.cloud.data.resize (output.cloud.width * output.cloud.height * output.cloud.point_step);
+  output.cloud.is_dense = false;
+  output.polygons.clear();
 
   // copy (only!) used points
-  std::vector<int> point_indices ((size_t)(nr_points), 0);
-  nr_used_points = 0;
-  for ( size_t i = 0; i < point_used.size(); ++i )
-  {
-    if ( point_used[i] )
-    {
-      memcpy (&output.cloud.data[nr_used_points * output.cloud.point_step], &input.cloud.data[i * output.cloud.point_step], output.cloud.point_step);
-      point_indices[i] = nr_used_points;
-      nr_used_points++;
-    }
-  }
+  for ( size_t i = 0; i < indices.size(); ++i )
+    memcpy (&output.cloud.data[i * output.cloud.point_step], &input.cloud.data[indices[i] * output.cloud.point_step], output.cloud.point_step);
 
   // copy mesh information (and update indices)
   output.polygons.reserve( input.polygons.size() );
@@ -101,10 +95,8 @@ pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMes
   {
     pcl::Vertices corrected_polygon;
     corrected_polygon.vertices.resize(input.polygons[polygon].vertices.size());
-
     for ( size_t point = 0; point < input.polygons[polygon].vertices.size(); ++point )
-      corrected_polygon.vertices[point] = point_indices[ input.polygons[polygon].vertices[point] ];
-
+      corrected_polygon.vertices[point] = new_indices[ input.polygons[polygon].vertices[point] ];
     output.polygons.push_back(corrected_polygon);
   }
 }
