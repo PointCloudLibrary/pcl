@@ -49,6 +49,10 @@ namespace pcl
   class PCL_EXPORTS PCDReader : public FileReader
   {
     public:
+      /** Empty constructor */      
+      PCDReader() : FileReader() {}
+      /** Empty destructor */      
+      ~PCDReader() {}
       /** \brief Various PCD file versions.
         *
         * PCD_V6 represents PCD files with version .6, which contain the following fields:
@@ -152,6 +156,8 @@ namespace pcl
   class PCL_EXPORTS PCDWriter : public FileWriter
   {
     public:
+      PCDWriter() : FileWriter() {}
+      ~PCDWriter() {}
       /** \brief Generate the header of a PCD v.7 file format
         * \param cloud the point cloud data message
         * \param origin the sensor acquisition origin
