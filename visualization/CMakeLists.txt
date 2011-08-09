@@ -66,7 +66,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/keyboard_event.h
         include/pcl/${SUBSYS_NAME}/mouse_event.h
         include/pcl/${SUBSYS_NAME}/window.h
-        include/pcl/${SUBSYS_NAME}/image_viewer.h
+	include/pcl/${SUBSYS_NAME}/correspondence_visualizer.h
         ${WXWIDGETS_INCLUDES}
         )
 
@@ -84,6 +84,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/pcl_visualizer.hpp
         include/pcl/${SUBSYS_NAME}/impl/registration_visualizer.hpp
         include/pcl/${SUBSYS_NAME}/impl/point_cloud_handlers.hpp
+        include/pcl/${SUBSYS_NAME}/impl/correspondence_visualizer.hpp
         )
 
     set(common_impl_incs include/pcl/${SUBSYS_NAME}/common/impl/shapes.hpp)
