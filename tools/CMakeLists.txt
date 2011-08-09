@@ -30,5 +30,8 @@ if (build)
   
   PCL_ADD_EXECUTABLE (compute_cloud_error ${SUBSYS_NAME} compute_cloud_error.cpp)
   target_link_libraries (compute_cloud_error pcl_common pcl_io pcl_kdtree)
+  
+  PCL_ADD_EXECUTABLE (add_gaussian_noise ${SUBSYS_NAME} add_gaussian_noise.cpp)
+  target_link_libraries (add_gaussian_noise pcl_common pcl_io)
 
 endif ()

@@ -206,7 +206,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
 int
 main (int argc, char** argv)
 {
-  print_info ("Filter a point cloud using the pcl::PassThroughFilterEstimate. For more information, use: %s -h\n", argv[0]);
+  print_info ("Compute the differences between two point clouds and visualizing them as an output intensity cloud. For more information, use: %s -h\n", argv[0]);
 
   if (argc < 4)
   {
