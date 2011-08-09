@@ -77,11 +77,9 @@ class OpenNIIO
     cloud_cb (const CloudConstPtr& cloud)
     {
       boost::mutex::scoped_lock lock (mtx_);
-      std::cerr << "callback" << std::endl;
+      FPS_CALC ("callback");
 
-      pcl::io::savePCDFile<PointType> ("/tmp/a.pcd", *cloud, false);
-      pcl::io::savePCDFile<PointType> ("/tmp/b.pcd", *cloud, true);
-      exit (1);
+      cloud_  = cloud;
     }
 
     void
@@ -96,6 +94,15 @@ class OpenNIIO
       
       while (true)
       {
+        if (cloud_)
+        {
+          CloudConstPtr temp_cloud;
+          temp_cloud.swap (cloud_); //here we set cloud_ to null
+          //FPS_CALC ("callback - IO (ascii)");
+          //pcl::io::savePCDFile<PointType> ("/tmp/test_ascii.pcd", *temp_cloud, false);
+          FPS_CALC ("callback - IO (binary)");
+          pcl::io::savePCDFile<PointType> ("/tmp/test_binary.pcd", *temp_cloud, true);
+        }
         boost::this_thread::sleep(boost::posix_time::milliseconds(1));
       }
 
@@ -104,6 +111,7 @@ class OpenNIIO
 
     std::string device_id_;
     boost::mutex mtx_;
+    CloudConstPtr cloud_;
 };
 
 void
