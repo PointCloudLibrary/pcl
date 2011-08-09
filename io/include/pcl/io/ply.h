@@ -385,7 +385,7 @@ namespace pcl
         /** converts extrinsics camera parameters to eigen structures */
         void ext_to_eigen(Eigen::Vector4f &origin, Eigen::Quaternionf &orientation)
         {
-          origin[0] = view_px; origin[1] = view_py;  origin[2] = view_pz;
+          origin[0] = view_px; origin[1] = view_py;  origin[2] = view_pz; origin[3] = 1.0;
           Eigen::Matrix3f R;
           R << x_axisx, x_axisy, x_axisz,
                y_axisx, y_axisy, y_axisz,
