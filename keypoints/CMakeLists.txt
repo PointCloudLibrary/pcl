@@ -8,7 +8,7 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
     set(srcs src/narf_keypoint.cpp
-    	src/smoothed_surfaces_keypoint.cpp)
+				src/smoothed_surfaces_keypoint.cpp)
 
     set(incs include/pcl/${SUBSYS_NAME}/keypoint.h
         include/pcl/${SUBSYS_NAME}/narf_keypoint.h

@@ -54,9 +54,6 @@ namespace pcl
   template <typename PointInT, typename PointOutT>
   class Keypoint : public PCLBase<PointInT>
   {
-    using PCLBase<PointInT>::initCompute;
-    using PCLBase<PointInT>::deinitCompute;
-
     public:
       using PCLBase<PointInT>::indices_;
       using PCLBase<PointInT>::input_;
@@ -148,6 +145,9 @@ namespace pcl
       }
 
     protected:
+      using PCLBase<PointInT>::initCompute;
+      using PCLBase<PointInT>::deinitCompute;
+
       /** \brief The key point detection method's name. */
       std::string name_;
 

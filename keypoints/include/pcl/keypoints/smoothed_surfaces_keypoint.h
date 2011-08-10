@@ -51,50 +51,71 @@ namespace pcl
    *
    * \author Alexandru-Eugen Ichim
    */
-  template <typename PointT, typename PointNT, typename PointOut>
-  class SmoothedSurfacesKeypoint : public Keypoint <PointT, PointOut>
+  template <typename PointT, typename PointNT>
+  class SmoothedSurfacesKeypoint : public Keypoint <PointT, PointT>
   {
     public:
-      using Keypoint<PointT, PointOut>::name_;
+      using PCLBase<PointT>::input_;
+      using PCLBase<PointT>::initCompute;
+      using Keypoint<PointT, PointT>::name_;
+      using Keypoint<PointT, PointT>::tree_;
 
       typedef pcl::PointCloud<PointT> PointCloudT;
-      typedef typename PointCloudT::Ptr PointCloudTPtr;
+      typedef typename PointCloudT::ConstPtr PointCloudTConstPtr;
       typedef pcl::PointCloud<PointNT> PointCloudNT;
-      typedef typename PointCloudNT::Ptr PointCloudNTPtr;
-      typedef pcl::PointCloud<PointOut> PointCloudOut;
-      typedef typename PointCloudOut::Ptr PointCloudOutPtr;
+      typedef typename PointCloudNT::ConstPtr PointCloudNTConstPtr;
+      typedef typename PointCloudT::Ptr PointCloudTPtr;
+      typedef typename Keypoint<PointT, PointT>::KdTreePtr KdTreePtr;
 
       SmoothedSurfacesKeypoint ()
-        : Keypoint<PointT, PointOut> (),
-          neighborhood_constant_ (0.5f)
+        : Keypoint<PointT, PointT> (),
+          neighborhood_constant_ (0.5f),
+          normals_ ()
       {
         name_ = "SmoothedSurfacesKeypoint";
       }
 
-    void
-    addSmoothedPointCloud (PointCloudTPtr &cloud, PointCloudNTPtr &normals, float &scale);
+      void
+      addSmoothedPointCloud (PointCloudTConstPtr &cloud,
+                             PointCloudNTConstPtr &normals,
+                             KdTreePtr &kdtree,
+                             float &scale);
 
-    void
-    resetClouds ();
+      void
+      resetClouds ();
 
-    inline void
-    setNeighborhoodConstant (float neighborhood_constant) { neighborhood_constant_ = neighborhood_constant; }
+      inline void
+      setNeighborhoodConstant (float neighborhood_constant) { neighborhood_constant_ = neighborhood_constant; }
 
-    inline float
-    getNeighborhoodConstant () { return neighborhood_constant_; }
+      inline float
+      getNeighborhoodConstant () { return neighborhood_constant_; }
+
+      inline void
+      setInputNormals (PointCloudNTConstPtr &normals) { normals_ = normals; }
+
+      inline void
+      setInputScale (float input_scale) { input_scale_ = input_scale; }
 
     protected:
       void
-      detectKeypoints (PointCloudOut &output);
+      detectKeypoints (PointCloudT &output);
 
-      void
+      bool
       initCompute ();
 
     private:
       float neighborhood_constant_;
-      std::vector<PointCloudTPtr> clouds_;
-      std::vector<PointCloudNTPtr> normals_;
-      std::vector<float> scales_;
+      std::vector<PointCloudTConstPtr> clouds_;
+      std::vector<PointCloudNTConstPtr> cloud_normals_;
+      std::vector<KdTreePtr> cloud_trees_;
+      PointCloudNTConstPtr normals_;
+      std::vector<std::pair<float, size_t> > scales_;
+      float input_scale_;
+      size_t input_index_;
+
+      static bool
+      compareScalesFunction (const std::pair<float, size_t> &a,
+                             const std::pair<float, size_t> &b) { return a.first > b.first; }
   };
 }
 
