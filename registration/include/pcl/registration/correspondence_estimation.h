@@ -281,7 +281,7 @@ namespace pcl
         KdTreePtr tree_;
 
         /** \brief The input point cloud dataset target. */
-        PointCloudTargetConstPtr target_;
+        PointCloudTargetPtr target_;
 
         /** \brief Test that all features are valid (i.e., does each key have a valid source cloud, target cloud,
           * and search method)
@@ -390,7 +390,7 @@ namespace pcl
               feature_representation_ = fr;
             }
 
- virtual void 
+            virtual void 
             findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices,
                                         std::vector<float> &distances)
             {

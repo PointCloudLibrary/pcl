@@ -52,15 +52,13 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setInputT
   }
 
   // Create a copy of the data so we can set the last element to 1
-  PointCloudTarget target = *cloud;
+  target_.reset (new PointCloudTarget);
+  *target_ = *cloud;
 
   // Set all the point.data[3] values to 1 to aid the rigid transformation
-  // TODO: optimize this
-  for (size_t i = 0; i < target.points.size (); ++i)
-    target.points[i].data[3] = 1.0;
+  for (size_t i = 0; i < target_->points.size (); ++i)
+    target_->points[i].data[3] = 1.0;
 
-  //target_ = cloud;
-  target_ = target.makeShared ();
   tree_->setInputCloud (target_);
 }
 
