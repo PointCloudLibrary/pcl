@@ -43,9 +43,9 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
-pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::addSmoothedPointCloud (SmoothedSurfacesKeypoint<PointT, PointNT>::PointCloudTConstPtr &cloud,
-                                                                       SmoothedSurfacesKeypoint<PointT, PointNT>::PointCloudNTConstPtr &normals,
-                                                                       SmoothedSurfacesKeypoint<PointT, PointNT>::KdTreePtr &kdtree,
+pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::addSmoothedPointCloud (PointCloudTConstPtr &cloud,
+                                                                       PointCloudNTConstPtr &normals,
+                                                                       KdTreePtr &kdtree,
                                                                        float &scale)
 {
   clouds_.push_back (cloud);
@@ -67,7 +67,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::resetClouds ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
-pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::PointCloudT &output)
+pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &output)
 {
   // Calculate differences for each cloud
   std::vector<std::vector<float> > diffs (scales_.size ());
