@@ -26,8 +26,6 @@ if(build)
     if(VTK_FOUND)
         set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
         include (${VTK_USE_FILE})
-        set(VTK_SURFACE_INCLUDES include/pcl/${SUBSYS_NAME}/vtk_smoother.h)
-        set(VTK_SURFACE_SOURCE src/vtk_smoother.cpp)
         set(VTK_SURFACE_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
     endif(VTK_FOUND)
 
@@ -39,7 +37,6 @@ if(build)
         src/surfel_smoothing.cpp
         src/marching_cubes.cpp
         src/marching_cubes_greedy.cpp
-        ${VTK_SURFACE_SOURCE}
         ${HULL_SOURCES}
         )
 
@@ -52,7 +49,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/reconstruction.h
         include/pcl/${SUBSYS_NAME}/marching_cubes.h
         include/pcl/${SUBSYS_NAME}/marching_cubes_greedy.h
-        ${VTK_SURFACE_INCLUDES}
         ${HULL_INCLUDES}
         )
 
