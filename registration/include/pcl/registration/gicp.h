@@ -93,7 +93,8 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      GeneralizedIterativeClosestPoint () : k_correspondences_(20), 
+      GeneralizedIterativeClosestPoint () :
+      k_correspondences_(20), 
       gicp_epsilon_(0.0004), rotation_epsilon_(2e-3),
       input_covariances_(0), target_covariances_(0), mahalanobis_(0)
       {
@@ -101,6 +102,7 @@ namespace pcl
         reg_name_ = "GeneralizedIterativeClosestPoint";
         max_iterations_ = 200;
         transformation_epsilon_ = 5e-4;
+        corr_dist_threshold_ = 5. * 5.;
         rigid_transformation_estimation_ = 
           boost::bind (&GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationLM, 
               this, _1, _2, _3, _4, _5); 
@@ -172,7 +174,7 @@ namespace pcl
       }
 
       /** \brief Computes rotation matrix derivative.
-        * rotation matrix is obtainded from quaternion components x[3], x[4] and x[5]
+        * rotation matrix is obtainded from rotation angles x[3], x[4] and x[5]
         * \return d/d_rx, d/d_ry and d/d_rz respectively in g[3], g[4] and g[5]
         * param x array representing 3D transformation
         * param R rotation matrix
@@ -254,9 +256,6 @@ namespace pcl
       static int 
       functionToOptimizeIndices (void *p, int m, int n, const double *x, double *fvec, double *fjac, int ldfjac, int iflag);
 
-      /** \brief The vector of residual weights. Used internall in the LM loop. */
-      std::vector<double> weights_;
-
       /** \brief Temporary boost mutex for \a tmp_src_ and \a tmp_tgt_*/
       boost::mutex tmp_mutex_;
 
@@ -297,10 +296,10 @@ namespace pcl
 
       /** \return trace of mat1^t . mat2 
         * \param mat1 matrix of dimension nxm
-        * \param mat2 matrix of dimension pxn
+        * \param mat2 matrix of dimension nxp
         */
-      inline double matricesInnerProd(const Eigen::MatrixXd& mat1, 
-                                      const Eigen::MatrixXd& mat2)
+      inline double 
+      matricesInnerProd(const Eigen::MatrixXd& mat1, const Eigen::MatrixXd& mat2)
       {
         double r = 0.;
         size_t n = mat1.rows();
@@ -332,10 +331,8 @@ namespace pcl
         * \param index vector of size 1 to store the index of the nearest neighbour found
         * \param distance vector of size 1 to store the distance to nearest neighbour found
         */
-      inline bool
-        searchForNeighbors (const PointSource &query, 
-                            std::vector<int>& index, 
-                            std::vector<float>& distance)
+      inline bool 
+      searchForNeighbors (const PointSource &query, std::vector<int>& index, std::vector<float>& distance)
       {
         int k = tree_->nearestKSearch (query, 1, index, distance);
         if (k == 0)
@@ -346,9 +343,8 @@ namespace pcl
       /** \brief Compute heteregenious product result = mat1 * mat2
         * This function is here cause eigen doesnt allow double = float * float
         */
-      void heteregenious_product(const Eigen::Matrix4f& mat1, 
-                                 const Eigen::Matrix4f& mat2, 
-                                 Eigen::Matrix4d& result)
+      inline void 
+      heteregenious_product(const Eigen::Matrix4f& mat1, const Eigen::Matrix4f& mat2, Eigen::Matrix4d& result)
       {
         result.setZero();
         for(size_t i = 0; i < 4; i++)
@@ -356,6 +352,10 @@ namespace pcl
             for(size_t k = 0; k < 4; k++)
               result(i,j)+= double(mat1(i,k)) * double(mat2(k,j));
       }
+
+      void apply_state(Eigen::Matrix4f &t, const double x[]);
+      void get_translation(const Eigen::Matrix4f &t, double &x, double &y, double &z);
+      void get_rotation(const Eigen::Matrix4f &t, double &rx, double &ry, double &rz);
   };
 }
 

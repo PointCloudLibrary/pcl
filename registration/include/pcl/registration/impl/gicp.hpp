@@ -41,8 +41,8 @@
 template <typename PointSource, typename PointTarget> 
 template<typename PointT> void
 pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud, 
-                   const typename pcl::KdTree<PointT>::Ptr kdtree,
-                   std::vector<Eigen::Matrix3d>& cloud_covariances)
+                                                                                    const typename pcl::KdTree<PointT>::Ptr kdtree,
+                                                                                    std::vector<Eigen::Matrix3d>& cloud_covariances)
 {
   if((size_t)k_correspondences_ > cloud->size ())
   {
@@ -54,15 +54,15 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovarian
   std::vector<int> nn_indecies; nn_indecies.reserve (k_correspondences_);
   std::vector<float> nn_dist_sq; nn_dist_sq.reserve (k_correspondences_);
 
+  // We should never get there but who knows
   if(cloud_covariances.size () < cloud->size ())
     cloud_covariances.reserve (cloud->size ());
 
-  size_t points_counter =0;
   typename pcl::PointCloud<PointT>::const_iterator points_iterator = cloud->begin ();
   std::vector<Eigen::Matrix3d>::iterator matrices_iterator = cloud_covariances.begin ();
   for(;
       points_iterator != cloud->end ();
-      ++points_iterator, ++matrices_iterator, points_counter++)
+      ++points_iterator, ++matrices_iterator)
   {
     const PointT &query_point = *points_iterator;
     Eigen::Matrix3d &cov = *matrices_iterator;
@@ -124,19 +124,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeRDerivat
   Eigen::Matrix3d dR_dTheta;
   Eigen::Matrix3d dR_dPsi;
 
-  // Take phi, theta and psi from x vector according to the algorithm in
-  // http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-  double q0 = 0;
-  // double q1 = x[3];
-  // double q2 = x[4];
-  // double q3 = x[5];
-  // double phi = atan2 (2*(q0*q1 + q2*q3),1-(q1*q1 + q2*q2));
-  // double theta = asin (2*(q0*q2 - q3*q1));
-  // double psi = atan2 (2*(q0*q3 + q1*q2),1-(q2*q2 + q3*q3));
-
-  double phi = atan2 (2*(q0*x[3] + x[4]*x[5]),1-(x[3]*x[3] + x[4]*x[4]));
-  double theta = asin (2*(q0*x[4] - x[5]*x[3]));
-  double psi = atan2 (2*(q0*x[5] + x[3]*x[4]),1-(x[4]*x[4] + x[5]*x[5]));
+  double phi = x[3], theta = x[4], psi = x[5];
   
   double cphi = cos(phi), sphi = sin(phi);
   double ctheta = cos(theta), stheta = sin(theta);
@@ -218,7 +206,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTr
   double *x = new double[n_unknowns];
   // Translation estimates - initial guess
   x[0] = 0; x[1] = 0; x[2] = 0;
-  // Rotation estimates - initial guess quaternion: x-y-z-w
+  // Rotation estimates - initial guess quaternion: rx-ry-rz
   x[3] = 0; x[4] = 0; x[5] = 0;
 
   // Set temporary pointers
@@ -238,18 +226,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTr
              //x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
 
   delete [] wa; delete [] fvec; delete [] fjac;
-  // <cloud_src,cloud_src> is the source dataset
-  transformation_matrix.setZero ();
-
   // Return the correct transformation
-  // Compute w from the unit quaternion
-  Eigen::Quaternionf q (0, x[3], x[4], x[5]);
-  q.w () = sqrt (1 - q.dot (q));
-  transformation_matrix.topLeftCorner<3, 3> () = q.toRotationMatrix ();
-
-  Eigen::Vector4f t (x[0], x[1], x[2], 1.0);
-  transformation_matrix.block <4, 1> (0, 3) = t;
-
+  transformation_matrix.setIdentity();
+  apply_state(transformation_matrix, x);
   tmp_src_ = tmp_tgt_ = NULL;
 
   delete[] iwa;
@@ -285,11 +264,8 @@ template <typename PointSource, typename PointTarget> void
   int ldfjac = m;
   // Set the initial solution
   double *x = new double[n_unknowns];
-  // Translation estimates - initial guess
-  x[0] = 0; x[1] = 0; x[2] = 0;
-  // Rotation estimates - initial guess quaternion: x-y-z-w
-  x[3] = 0; x[4] = 0; x[5] = 0;
-
+  get_translation(transformation_matrix, x[0], x[1], x[2]);
+  get_rotation(transformation_matrix, x[3], x[4], x[5]);
   // Set temporary pointers
   tmp_src_ = &cloud_src;
   tmp_tgt_ = &cloud_tgt;
@@ -309,17 +285,11 @@ template <typename PointSource, typename PointTarget> void
              //x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
 
   delete [] wa; delete [] fvec; delete [] fjac;
-  // <cloud_src,cloud_src> is the source dataset
-  transformation_matrix.setZero ();
 
   // Return the correct transformation
-  // Compute w from the unit quaternion
-  Eigen::Quaternionf q (0, x[3], x[4], x[5]);
-  q.w () = sqrt (1 - q.dot (q));
-  transformation_matrix.topLeftCorner<3, 3> () = q.toRotationMatrix ();
-
-  Eigen::Vector4f t (x[0], x[1], x[2], 1.0);
-  transformation_matrix.block <4, 1> (0, 3) = t;
+  transformation_matrix.setIdentity();
+  apply_state(transformation_matrix, x);
+  tmp_src_ = tmp_tgt_ = NULL;
 
   tmp_src_ = tmp_tgt_ = NULL;
   tmp_idx_src_ = tmp_idx_tgt_ = NULL;
@@ -388,12 +358,12 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
         //double temp_double = res.transpose() * temp;
         // Increment translation gradient
         // orignally g_t+= 2*M*res/m
-        g_t= 2 * model->mahalanobis(i) * res;
+        g_t= model->mahalanobis(i) * res;
         pp = model->base_transformation_ * p_src;
         Eigen::Vector3d p_src3(pp[0], pp[1], pp[2]);
         // R = 2/m*pt1*temp^T + R with R set to zeros originally i.e.
-        // R = 2/m*pt1*temp^T, we discard the /m
-        Eigen::Matrix3d Ri = 2.0 * (p_src3 * temp.transpose());
+        // R = 2/m*pt1*temp^T, we discard the 2/m
+        Eigen::Matrix3d Ri = p_src3 * temp.transpose();
         model->computeRDerivative(x, Ri, &fjac[i*n]);
       }
     }
@@ -405,22 +375,11 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
 template <typename PointSource, typename PointTarget> inline int
 pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptimizeIndices (void *p, int m, int n, const double *x, double *fvec, double *fjac, int ldfjac, int iflag)
 {
+  std::cout << "m "<< m << std::endl;
   GeneralizedIterativeClosestPoint *model = (GeneralizedIterativeClosestPoint*)p;
 
-  // Copy the rotation and translation components
-  Eigen::Vector4f t (x[0], x[1], x[2], 1.0);
-  // Compute w from the unit quaternion
-  Eigen::Quaternionf q (0, x[3], x[4], x[5]);
-  q.w () = sqrt (1 - q.dot (q));
-
-  // If the quaternion is used to rotate several points (>1) then it is much more efficient to first convert it
-  // to a 3x3 Matrix. Comparison of the operation cost for n transformations:
-  // * Quaternion: 30n
-  // * Via a Matrix3: 24 + 15n
-  Eigen::Matrix4f transformation_matrix = Eigen::Matrix4f::Zero ();
-  transformation_matrix.topLeftCorner<3, 3> () = q.toRotationMatrix ();
-  transformation_matrix.block <4, 1> (0, 3) = t;
-  transformation_matrix = transformation_matrix * model->base_transformation_;
+  Eigen::Matrix4f transformation_matrix = model->base_transformation_;
+  model->apply_state(transformation_matrix, x);
 
   if (iflag == 1)
   {
@@ -436,7 +395,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
       // The last coordiante is still guaranteed to be set to 1.0
       Eigen::Vector3d res(pp[0] - p_tgt[0], pp[1] - p_tgt[1], pp[2] - p_tgt[2]);
       Eigen::Vector3d temp = model->mahalanobis((*model->tmp_idx_src_)[i]) * res;
-      fvec[i] = double(res.transpose() * temp) / m;
+      fvec[i] = double(res.transpose() * temp);
     }
   }
   else
@@ -459,10 +418,10 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
         Eigen::Vector3d temp = model->mahalanobis((*model->tmp_idx_src_)[i]) * res;
         // Increment translation gradient
         // g_t+= 2*M*res/num_matches
-        g_t= 2 * model->mahalanobis((*model->tmp_idx_src_)[i]) * res / m;
+        g_t= model->mahalanobis((*model->tmp_idx_src_)[i]) * res;
         pp = model->base_transformation_ * p_src;
         Eigen::Vector3d p_src3 (pp[0], pp[1], pp[2]);
-        Eigen::Matrix3d Ri = 2.0 * p_src3 * temp.transpose();
+        Eigen::Matrix3d Ri = p_src3 * temp.transpose();
         model->computeRDerivative(x, Ri, &fjac[i*n]);
       }
     }
@@ -470,26 +429,41 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::functionToOptim
   return (0);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline void
 pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess)
 {
+  using namespace std;
   // Difference between consecutive transforms
   double delta = 0;
   // Get the size of the target
   const size_t N = indices_->size ();
+  std::cout << "N " << N << std::endl;
   // Set the mahalanobis matrices to identity
   mahalanobis_.resize (N, Eigen::Matrix3d::Identity ());
   // Compute target cloud covariance matrices
   computeCovariances<PointTarget> (target_, tree_, target_covariances_);
+  // std::ofstream c2_file("c2.txt");
+  // for(size_t i = 0; i < target_->size(); i++)
+  // {
+  //   c2_file << target_covariances_[i] << std::endl;
+  // }
+  // c2_file.close();
   // Compute input cloud covariance matrices
   computeCovariances<PointSource> (input_, input_tree_, input_covariances_);
+  // std::ofstream c1_file("c1.txt");
+  // for(size_t i = 0; i < input_->size(); i++)
+  // {
+  //   c1_file << input_covariances_[i] << std::endl;
+  // }
+  // c1_file.close();
   base_transformation_ = guess;
   nr_iterations_ = 0;
   converged_ = false;
   double dist_threshold = corr_dist_threshold_ * corr_dist_threshold_;
   std::vector<int> nn_indices (1);
   std::vector<float> nn_dists (1);
+
   while(!converged_)
   {
     size_t cnt = 0;
@@ -523,15 +497,16 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
         Eigen::Matrix3d &M = mahalanobis_[i];
         // M = R*C1
         M = R * C1;
-        // tmp = M*R' + C2 = R*C1*R' + C2
-        Eigen::Matrix3d tmp = M * R.transpose() + C2;
+        // temp = M*R' + C2 = R*C1*R' + C2
+        Eigen::Matrix3d temp = M * R.transpose() + C2;
         // M = temp^-1
-        M = tmp.inverse();
+        M = temp.inverse();
         source_indices[cnt] = i;
         target_indices[cnt] = nn_indices[0];
         cnt++;
       }
     }
+
     // Resize to the actual number of valid correspondences
     source_indices.resize(cnt); target_indices.resize(cnt);
     /* optimize transformation using the current assignment and Mahalanobis metrics*/
@@ -555,11 +530,50 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
 
     nr_iterations_++;
     // Check for convergence
+    std::cout << "iteration " << nr_iterations_ << ": delta "<< delta << std::endl;
     if (nr_iterations_ >= max_iterations_ || delta < 1)
     {
+      if(delta <  1)
+        std::cout << "delta is < 1" << std::endl;
+      if(nr_iterations_ >= max_iterations_)
+        std::cout << "nr_iterations_ >= max_iterations_" << std::endl;
+
       converged_ = true;
       PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f\n",
                  getClassName ().c_str (), nr_iterations_, max_iterations_, fabs ((transformation_ - previous_transformation_).sum ()));
+    } 
+    else {
+      PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence failed");      
     }
   }
+  final_transformation_ = transformation_;
+}
+
+template <typename PointSource, typename PointTarget> void
+pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::apply_state(Eigen::Matrix4f &t, const double x[])
+{
+  // !!! CAUTION Stanford GICP uses the Z Y X euler angles convention
+  Eigen::Matrix3f R;
+  R = Eigen::AngleAxisf(x[5], Eigen::Vector3f::UnitZ())
+    * Eigen::AngleAxisf(x[4], Eigen::Vector3f::UnitY())
+    * Eigen::AngleAxisf(x[3], Eigen::Vector3f::UnitX());
+  t.topLeftCorner<3,3> () = R * t.topLeftCorner<3,3> ();
+  Eigen::Vector4f T (x[0], x[1], x[2], 0);
+  t.block <4, 1> (0, 3) += T;
+}
+
+template <typename PointSource, typename PointTarget> void 
+pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::get_rotation(const Eigen::Matrix4f &t, double &rx, double &ry, double &rz) 
+{
+  rx = atan2(t(2,1), t(2,2));
+  ry = asin(-t(2,0));
+  rz = atan2(t(1,0), t(0,0));                 
+}
+
+template <typename PointSource, typename PointTarget> void 
+pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::get_translation(const Eigen::Matrix4f &t, double &x, double &y, double &z) 
+{
+  x = t(0,3);
+  y = t(1,3);
+  z = t(2,3);
 }
