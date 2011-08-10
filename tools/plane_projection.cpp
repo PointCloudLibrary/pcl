@@ -92,18 +92,27 @@ project (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   //First, we'll find a point on the plane
   print_highlight (stderr, "Projecting ");
 
+  PointCloud<PointXYZ>::Ptr projected_cloud_pcl (new PointCloud<PointXYZ>);
+  projected_cloud_pcl->width = xyz->width;
+  projected_cloud_pcl->height = xyz->height;
+  projected_cloud_pcl->is_dense = xyz->is_dense;
+  projected_cloud_pcl->sensor_origin_ = xyz->sensor_origin_;
+  projected_cloud_pcl->sensor_orientation_ = xyz->sensor_orientation_;
+
   for(size_t i = 0; i < xyz->points.size(); ++i)
   {
     pcl::PointXYZ projection;
-    pcl::projectPoint(xyz->points[i], coeffs, xyz->points[i]);
+    pcl::projectPoint(xyz->points[i], coeffs, projection);
+    projected_cloud_pcl->points.push_back(projection);
   }
 
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : ");
+  pcl::io::savePCDFile ("foo.pcd", *projected_cloud_pcl);
 
   // Convert data back
   sensor_msgs::PointCloud2 projected_cloud;
-  toROSMsg (*xyz, projected_cloud);
+  toROSMsg (*projected_cloud_pcl, projected_cloud);
 
   //we can actually use concatenate fields to inject our projection into the
   //output, the second argument overwrites the first's fields for those that
@@ -119,7 +128,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
   
-  pcl::io::savePCDFile (filename, output, translation, orientation, true);
+  pcl::io::savePCDFile (filename, output, translation, orientation, false);
   
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }

@@ -55,9 +55,17 @@ namespace pcl
     // Calculate the distance from the point to the plane
     Eigen::Vector4f pp (p.x, p.y, p.z, 1);
     // use normalized coefficients to calculate the scalar projection 
-    float distance_to_plane = model_coefficients.dot (pp);
-    Eigen::Vector4f q_e = q.getVector4fMap ();
-    q_e = pp - model_coefficients * distance_to_plane;
+    float distance_to_plane = pp.dot(model_coefficients);
+
+
+    //TODO: Why doesn't getVector4Map work here?
+    //Eigen::Vector4f q_e = q.getVector4fMap ();
+    //q_e = pp - model_coefficients * distance_to_plane;
+    
+    Eigen::Vector4f q_e = pp - distance_to_plane * model_coefficients;
+    q.x = q_e[0];
+    q.y = q_e[1];
+    q.z = q_e[2];
   }
 
   /** \brief Get the distance from a point to a plane (signed) defined by ax+by+cz+d=0
