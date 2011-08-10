@@ -68,6 +68,13 @@ namespace pcl
         typedef OctreePointCloudOccupancy<PointT, LeafT, OctreeBase<int, LeafT> > SingleBuffer;
         typedef OctreePointCloudOccupancy<PointT, LeafT, Octree2BufBase<int, LeafT> > DoubleBuffer;
 
+        // public point cloud typedefs
+        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloud PointCloud;
+        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloudPtr PointCloudPtr;
+        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloudConstPtr PointCloudConstPtr;
+
+        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::OctreeKey OctreeKey;
+
         /** \brief Constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
@@ -80,6 +87,40 @@ namespace pcl
         virtual
         ~OctreePointCloudOccupancy ()
         {
+        }
+
+        /** \brief Set occupied voxel at point.
+         *  \param point_arg:  input point
+         * */
+        void setOccupiedVoxelAtPoint( const PointT& point_arg ) {
+        	OctreeKey key;
+
+            // make sure bounding box is big enough
+            adoptBoundingBoxToPoint (point_arg);
+
+            // generate key
+            genOctreeKeyforPoint (point_arg, key);
+
+            // add point to octree at key
+            this->add (key, 0);
+        }
+
+        /** \brief Set occupied voxels at all points from point cloud.
+         *  \param cloud_arg:  input point cloud
+         * */
+        void setOccupiedVoxelsAtPointsFromCloud( PointCloudPtr cloud_arg ) {
+            size_t i;
+
+            for (i = 0; i < cloud_arg->points.size (); i++)
+            {
+              // check for NaNs
+              if ((cloud_arg->points[i].x == cloud_arg->points[i].x) &&
+                  (cloud_arg->points[i].y == cloud_arg->points[i].y) &&
+                  (cloud_arg->points[i].z == cloud_arg->points[i].z)) {
+                // set voxel at point
+                this->setOccupiedVoxelAtPoint (cloud_arg->points[i]);
+              }
+            }
         }
 
       };
