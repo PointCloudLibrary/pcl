@@ -22,11 +22,14 @@ if(build)
             src/convex_hull.cpp
             )
     endif(QHULL_FOUND)
-
     
-    set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
-    include (${VTK_USE_FILE})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+    if(VTK_FOUND)
+        set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
+        include (${VTK_USE_FILE})
+        set(VTK_SURFACE_INCLUDES include/pcl/${SUBSYS_NAME}/vtk_smoother.h)
+        set(VTK_SURFACE_SOURCE src/vtk_smoother.cpp)
+        set(VTK_SURFACE_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
+    endif(VTK_FOUND)
 
     set(srcs src/gp3.cpp
         src/grid_projection.cpp
@@ -37,8 +40,8 @@ if(build)
         src/marching_cubes.cpp
         src/marching_cubes_greedy.cpp
         src/marching_cubes_greedy_dot.cpp
-      	src/texture_mapping.cpp
-        src/vtk_smoother.cpp
+        src/texture_mapping.cpp
+        ${VTK_SURFACE_SOURCE}
         ${HULL_SOURCES}
         )
 
@@ -52,8 +55,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/marching_cubes.h
         include/pcl/${SUBSYS_NAME}/marching_cubes_greedy.h
         include/pcl/${SUBSYS_NAME}/marching_cubes_greedy_dot.h
-      	include/pcl/${SUBSYS_NAME}/texture_mapping.h
-      	include/pcl/${SUBSYS_NAME}/vtk_smoother.h
+        include/pcl/${SUBSYS_NAME}/texture_mapping.h
+        ${VTK_SURFACE_INCLUDES}
         ${HULL_INCLUDES}
         )
 
@@ -66,18 +69,15 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy_dot.hpp
-	include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
+        include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
         ${HULL_IMPLS}
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    if(QHULL_FOUND)
-        target_link_libraries(${LIB_NAME} pcl_kdtree ${QHULL_LIBRARIES})
-    endif(QHULL_FOUND)
-    # add link to OpenCV library by KTran
-    target_link_libraries(${LIB_NAME} pcl_common ${OpenCV_LIBS} vtkCommon vtkWidgets)
+    target_link_libraries(${LIB_NAME} pcl_common pcl_kdtree ${OpenCV_LIBS} ${VTK_SURFACE_TARGET_LINK_LIBRARIES} ${QHULL_LIBRARIES})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "" "" "" "")
 
