@@ -395,8 +395,8 @@ namespace pcl
                                         std::vector<float> &distances)
             {
               // If no feature representation was given, reset to the default implementation for FeatureT
-              if (!feature_representation_);
-//                feature_representation_.reset (new DefaultFeatureRepresentation<FeatureT>);
+              if (!feature_representation_)
+                feature_representation_.reset (new DefaultFeatureRepresentation<FeatureT>);
 
               // Set the internal feature point representation of choice
               tree_->setPointRepresentation (feature_representation_);

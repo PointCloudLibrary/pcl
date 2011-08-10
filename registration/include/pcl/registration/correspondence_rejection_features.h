@@ -221,8 +221,8 @@ namespace pcl
             getCorrespondenceScore (int index)
             {
               // If no feature representation was given, reset to the default implementation for FeatureT
-              if (!feature_representation_);
-//                feature_representation_.reset (new DefaultFeatureRepresentation<FeatureT>);
+              if (!feature_representation_)
+                feature_representation_.reset (new DefaultFeatureRepresentation<FeatureT>);
 
               // Get the source and the target feature from the list
               const FeatureT feat_src = source_features_->points[index];
