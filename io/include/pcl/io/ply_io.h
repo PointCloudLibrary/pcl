@@ -40,6 +40,7 @@
 
 #include "pcl/io/file_io.h"
 #include "pcl/io/ply.h"
+#include <pcl/PolygonMesh.h>
 
 namespace pcl
 {
@@ -385,6 +386,16 @@ namespace pcl
       PLYWriter w;
       return (w.write<PointT> (file_name, cloud_out, binary_mode));
     }
+
+    /** \brief Saves a PolygonMesh in ascii PLY format.
+      * \param file_name the name of the file to write to disk
+      * \param triangles the polygonal mesh to save
+      * \param precision the output ASCII precision default 5
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh, unsigned precision = 5);
+
   };
 }
 

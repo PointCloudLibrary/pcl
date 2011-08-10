@@ -50,8 +50,7 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS int
-        saveOBJFile (const std::string &file_name,
-            	    const pcl::TextureMesh &tex_mesh, unsigned precision = 5);
+    saveOBJFile (const std::string &file_name, const pcl::TextureMesh &tex_mesh, unsigned precision = 5);
   }
 }
 

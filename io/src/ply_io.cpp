@@ -245,7 +245,7 @@ pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   return (0);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 int
 pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
@@ -495,7 +495,7 @@ void pcl::PLYWriter::setMaskFromFieldsList(const std::string& fields_list)
   }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 std::string
 pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud, 
@@ -605,7 +605,7 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
   return (oss.str ());
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 int
 pcl::PLYWriter::writeASCII (const std::string &file_name, 
@@ -741,7 +741,7 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
   return (0);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PLYWriter::writeBinary (const std::string &file_name, 
                             const sensor_msgs::PointCloud2 &cloud, 
@@ -897,5 +897,111 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
 
   // Close file
   fpout.close ();              
+  return (0);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh, unsigned precision)
+{
+  if (mesh.cloud.data.empty ())
+  {
+    PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no data!\n");
+    return (-1);
+  }
+  // Open file
+  std::ofstream fs;
+  fs.precision (precision);
+  fs.open (file_name.c_str ());
+  if(!fs)
+  {
+    PCL_ERROR ("[pcl::PLYWriter::writeBinary] Error during opening (%s)!\n", file_name.c_str());
+    return (-1);
+  }
+  
+  // number of points
+  size_t nr_points  = mesh.cloud.width * mesh.cloud.height;
+  size_t point_size = mesh.cloud.data.size () / nr_points;
+
+  // mesh size
+  size_t nr_faces = mesh.polygons.size ();
+
+  // Write header
+  fs << "ply";
+  fs << "\nformat ascii 1.0";
+  fs << "\ncomment PCL generated";
+  // Vertices
+  fs << "\nelement vertex "<< mesh.cloud.width * mesh.cloud.height;
+  fs << "\nproperty float x"
+    "\nproperty float y"
+    "\nproperty float z";
+  // Check if we have color on vertices
+  int rgb_index = getFieldIndex (mesh.cloud, "rgb");
+  if(rgb_index != -1)
+  {
+    fs << "\nproperty uchar red"
+      "\nproperty uchar green"
+      "\nproperty uchar blue";    
+  }
+  // Faces
+  fs << "\nelement face "<< nr_faces;
+  fs << "\nproperty list uint uint vertex_index";
+  fs << "\nend_header";
+  
+  // Write down vertices
+  for (size_t i = 0; i < nr_points; ++i)
+  {
+    int xyz = 0;
+    for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
+    {
+      int count = mesh.cloud.fields[d].count;
+      if (count == 0)
+        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
+      int c = 0;
+      
+      // adding vertex
+      if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && (
+          mesh.cloud.fields[d].name == "x" ||
+          mesh.cloud.fields[d].name == "y" ||
+          mesh.cloud.fields[d].name == "z"))
+      {
+        float value;
+        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        fs << value;
+        if (++xyz == 3)
+          break;
+      }
+      fs << " ";
+      if (mesh.cloud.fields[rgb_index].datatype == sensor_msgs::PointField::FLOAT32)
+      {
+        float value;
+        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (float));
+        int color = *reinterpret_cast<const int*>(&(value));
+        int r = (0xff0000 & color) >> 16;
+        int g = (0x00ff00 & color) >> 8;
+        int b =  0x0000ff & color;
+        fs << r << " " << g << " " << b;
+      }
+    }
+    if (xyz != 3)
+    {
+      PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no XYZ data!\n");
+      return (-2);
+    }
+    fs << std::endl;
+  }
+  
+  // Write down faces
+  for(size_t i = 0; i < nr_faces; i++)
+  {
+    fs << mesh.polygons[i].vertices.size () << " ";
+    size_t j = 0;
+    for (j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
+      fs << mesh.polygons[i].vertices[j] << " ";
+    fs << mesh.polygons[i].vertices[j] << std::endl;
+  }
+  
+  // Close file
+  fs.close ();
   return (0);
 }
