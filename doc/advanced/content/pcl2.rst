@@ -44,6 +44,13 @@ Proposals for the 2.x API:
    * cloud["xyz"] => gets all 3D x,y,z data
    * cloud["normals"] => gets all surface normal data
    * etc
+ * Complete traits system to identify what data/channels a cloud stores at
+   runtime, facilitating decision making in software that uses PCL. (e.g.
+   generic component wrappers.)
+ * Stream-based IO sub-system to allow developers to load a stream of point
+   clouds and "play" them through their algorithm(s), as well as easily capture
+   a stream of point clouds (e.g. from a Kinect). Perhaps based on
+   Boost::Iostreams.
 
 1.2 PointTypes 
 ^^^^^^^^^^^^^^
