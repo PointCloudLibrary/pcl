@@ -90,7 +90,7 @@ namespace pcl
      * \param mesh PCL Polygon Mesh to fill
      * \return Number of points in the point cloud of mesh.
      */
-    int
+    PCL_EXPORTS int
     vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMesh& mesh);
 
     /**
@@ -99,45 +99,45 @@ namespace pcl
      * \param poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
      * \return Number of points in the point cloud of mesh.
      */
-    int
+    PCL_EXPORTS int
     mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& poly_data);
 
 
-    int
+    PCL_EXPORTS int
     loadPolygonFile (const std::string &file_name, pcl::PolygonMesh& mesh);
 
-    int
+    PCL_EXPORTS int
     savePolygonFile (const std::string &file_name, const pcl::PolygonMesh& mesh);
 
 
 
-    int
+    PCL_EXPORTS int
     loadPolygonFileVTK (const std::string &file_name, pcl::PolygonMesh& mesh);
 
-    int
+    PCL_EXPORTS int
     loadPolygonFilePLY (const std::string &file_name, pcl::PolygonMesh& mesh);
 
-    int
+    PCL_EXPORTS int
     loadPolygonFileOBJ (const std::string &file_name, pcl::PolygonMesh& mesh);
 
-    int
+    PCL_EXPORTS int
     loadPolygonFileSTL (const std::string &file_name, pcl::PolygonMesh& mesh);
 
 
 
-    int
+    PCL_EXPORTS int
     savePolygonFileVTK (const std::string &file_name, const pcl::PolygonMesh& mesh);
 
-    int
+    PCL_EXPORTS int
     savePolygonFilePLY (const std::string &file_name, const pcl::PolygonMesh& mesh);
 
-    int
+    PCL_EXPORTS int
     savePolygonFileOBJ (const std::string &file_name, const pcl::PolygonMesh& mesh);
 
-    int
+    PCL_EXPORTS int
     savePolygonFileSTL (const std::string &file_name, const pcl::PolygonMesh& mesh);
 
-    int
+    PCL_EXPORTS int
     savePolygonFileWRL (const std::string &file_name, const pcl::PolygonMesh& mesh);
 
     inline int

@@ -81,7 +81,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ply_io.h
         include/pcl/${SUBSYS_NAME}/ply.h
         include/pcl/${SUBSYS_NAME}/obj_io.h 
-        ${VTK_INCLUDES}
+        ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         )
 
