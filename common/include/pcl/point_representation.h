@@ -174,7 +174,8 @@ namespace pcl
   template <typename PointDefault>
   class DefaultFeatureRepresentation : public PointRepresentation <PointDefault>
   {
-    using PointRepresentation <PointDefault>::nr_dimensions_;
+    protected:
+      using PointRepresentation <PointDefault>::nr_dimensions_;
 
     private:
       struct IncrementFunctor
@@ -324,7 +325,22 @@ namespace pcl
 
   template <>
   class DefaultPointRepresentation <PPFSignature> : public DefaultFeatureRepresentation <PPFSignature>
-  {};
+  {
+  public:
+    DefaultPointRepresentation ()
+    {
+      nr_dimensions_ = 4;
+    }
+
+    virtual void
+    copyToFloatArray (const PPFSignature &p, float * out) const
+    {
+      out[0] = p.f1;
+      out[1] = p.f2;
+      out[2] = p.f3;
+      out[3] = p.f4;
+    }
+  };
 
   template <>
   class DefaultPointRepresentation <FPFHSignature33> : public DefaultFeatureRepresentation <FPFHSignature33>
