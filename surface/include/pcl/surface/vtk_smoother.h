@@ -31,6 +31,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id$
+ *
  */
 
 #ifndef VTK_SMOOTHER_H_
@@ -38,35 +40,50 @@
 
 #include <pcl/pcl_base.h>
 #include <pcl/PolygonMesh.h>
+#include <pcl/io/vtk_lib_io.h>
 #include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
 
 namespace pcl
 {
   namespace surface
   {
+    /** \brief VtkSmoother is a wrapper around some subdivision and filter methods from VTK.
+      * \author Greg Long(?), Dirk Holz
+      * \ingroup surface
+      *
+      * TODO: inheritance from some PCLBase-like interface for PolygonMesh
+      * TODO: wrap more vtk functionality in here
+      * TODO: Do we want to wrap any VTK functionality anyway or are we just going to provide conversion as in mesh2vtk and vtk2mesh?
+      */
     class VtkSmoother
     {
     public:
       VtkSmoother ();
       ~VtkSmoother ();
 
+      /** \brief Convert (input) mesh into the vtk data structure. */
       int
       convertToVTK (const pcl::PolygonMesh &triangles);
 
+      /** \brief Subdivision using a given filter. TODO: make ENUM for all implemented filters. */
       void
       subdivideMesh (int filter);
 
+      /** \brief Smooth mesh vertices. */
       void
       smoothMeshWindowedSinc (int num_iter, float feature_angle, float pass_band);
 
+      /** \brief Apply Laplacian filter. */
       void
       smoothMeshLaplacian (int num_iter);
 
+      /** \brief Convert (output) mesh back to PCL PolygonMesh. */
       void
       convertToPCL (pcl::PolygonMesh &triangles);
 
     private:
-      vtkPolyData *vtk_polygons;
+      vtkSmartPointer<vtkPolyData> vtk_polygons;
     };
   }
 }

@@ -31,6 +31,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id$
+ *
  */
 
 #include <pcl/surface/vtk_smoother.h>
@@ -67,52 +69,9 @@ pcl::surface::VtkSmoother::convertToVTK (const pcl::PolygonMesh &triangles)
     PCL_ERROR ("[pcl::surface::convertToVTK] Input point cloud has no data!\n");
     return (-1);
   }
-  vtkPoints *vtk_pts = vtkPoints::New ();
+  pcl::io::mesh2vtk(triangles, vtk_polygons);
 
-  int nr_points  = triangles.cloud.width * triangles.cloud.height;
-  int point_size = triangles.cloud.data.size () / nr_points;
-  for (int i = 0; i < nr_points; ++i)
-  {
-    int xyz = 0;
-    float value[3];
-    for (size_t d = 0; d < triangles.cloud.fields.size (); ++d)
-    {
-      int count = triangles.cloud.fields[d].count;
-      if (count == 0)
-        count = 1;
-      int c = 0;
-      if ((triangles.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && (
-          triangles.cloud.fields[d].name == "x" ||
-          triangles.cloud.fields[d].name == "y" ||
-          triangles.cloud.fields[d].name == "z"))
-      {
-        memcpy (&value[xyz], &triangles.cloud.data[i * point_size + triangles.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
-        if (++xyz == 3)
-          break;
-      }
-    }
-    if (xyz != 3)
-    {
-      PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!\n");
-      return (-2);
-    }
-    vtk_pts->InsertPoint(i,value);
-  }
-
-  vtkCellArray *vtk_cells = vtkCellArray::New ();
-  for (size_t i = 0; i < triangles.polygons.size (); ++i)
-  {
-    vtk_cells->InsertNextCell (triangles.polygons[i].vertices.size ());
-    size_t j = 0;
-    for (j = 0; j < triangles.polygons[i].vertices.size (); ++j)
-      vtk_cells->InsertCellPoint (triangles.polygons[i].vertices[j]);
-  }
-
-  vtk_polygons->SetPoints(vtk_pts);
-  vtk_polygons->SetPolys(vtk_cells);
-  vtk_polygons->Update();
-
-  vtkTriangleFilter *vtk_triangles = vtkTriangleFilter::New ();
+  vtkSmartPointer<vtkTriangleFilter> vtk_triangles = vtkTriangleFilter::New ();
   vtk_triangles->SetInput (vtk_polygons);
   vtk_triangles->Update();
 
@@ -125,7 +84,7 @@ pcl::surface::VtkSmoother::convertToVTK (const pcl::PolygonMesh &triangles)
 void
 pcl::surface::VtkSmoother::subdivideMesh(int filter)
 {
-  vtkPolyDataAlgorithm *vtk_subdivision_filter;
+  vtkSmartPointer<vtkPolyDataAlgorithm> vtk_subdivision_filter;
   switch(filter)
   {
     case 0:
@@ -153,7 +112,7 @@ pcl::surface::VtkSmoother::subdivideMesh(int filter)
 void
 pcl::surface::VtkSmoother::smoothMeshWindowedSinc(int num_iter, float feature_angle, float pass_band)
 {
-  vtkWindowedSincPolyDataFilter *vtk_smoother = vtkWindowedSincPolyDataFilter::New ();
+  vtkSmartPointer<vtkWindowedSincPolyDataFilter> vtk_smoother = vtkWindowedSincPolyDataFilter::New ();
   vtk_smoother->SetInput (vtk_polygons);
   vtk_smoother->SetNumberOfIterations (num_iter);
   vtk_smoother->SetFeatureAngle (feature_angle);
@@ -171,7 +130,7 @@ pcl::surface::VtkSmoother::smoothMeshWindowedSinc(int num_iter, float feature_an
 void
 pcl::surface::VtkSmoother::smoothMeshLaplacian(int num_iter)
 {
-  vtkSmoothPolyDataFilter *vtk_smoother = vtkSmoothPolyDataFilter::New ();
+  vtkSmartPointer<vtkSmoothPolyDataFilter> vtk_smoother = vtkSmoothPolyDataFilter::New ();
   vtk_smoother->SetInput (vtk_polygons);
   vtk_smoother->SetNumberOfIterations (num_iter);
   vtk_smoother->Update ();
@@ -183,35 +142,5 @@ pcl::surface::VtkSmoother::smoothMeshLaplacian(int num_iter)
 void
 pcl::surface::VtkSmoother::convertToPCL(pcl::PolygonMesh &triangles)
 {
-
-  pcl::PointCloud < pcl::PointXYZ > cloud;
-  cloud.points.resize (vtk_polygons->GetNumberOfPoints ());
-  for (vtkIdType i = 0; i < vtk_polygons->GetNumberOfPoints (); ++i)
-  {
-    double p[3];
-    vtk_polygons->GetPoint (i, p);
-    cloud.points[i].x = p[0];
-    cloud.points[i].y = p[1];
-    cloud.points[i].z = p[2];
-  }
-  pcl::toROSMsg (cloud, triangles.cloud);
-  triangles.polygons.resize (vtk_polygons->GetNumberOfCells ());
-
-  vtkCellArray *vtk_newcells = vtk_polygons->GetPolys ();
-  vtk_newcells->InitTraversal ();
-
-  for (vtkIdType i = 0; i < vtk_newcells->GetNumberOfCells (); ++i)
-  {
-    pcl::Vertices v;
-    vtkIdType num_points = 0;
-    vtkIdType *points = 0;
-    vtk_newcells->GetNextCell (num_points, points);
-    v.vertices.resize (num_points);
-    for (vtkIdType j = 0; j < num_points; ++j)
-    {
-      v.vertices[j] = points[j];
-    }
-    triangles.polygons[i] = v;
-
-  }
+  pcl::io::vtk2mesh(vtk_polygons, triangles);
 }
