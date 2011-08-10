@@ -89,7 +89,7 @@ pcl::concatenateFields (const sensor_msgs::PointCloud2 &cloud1,
       cloud1_unique_fields.push_back(&(cloud1.fields[i]));
 
       int size = 0;
-      int next_valid_field = i + 1;
+      size_t next_valid_field = i + 1;
 
       while(next_valid_field < cloud1.fields.size())
       {
