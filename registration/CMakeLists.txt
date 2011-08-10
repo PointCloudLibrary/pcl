@@ -28,7 +28,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/transformation_estimation.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h
         include/pcl/${SUBSYS_NAME}/transforms.h
-#        include/pcl/${SUBSYS_NAME}/stanford_gicp.h
+        include/pcl/${SUBSYS_NAME}/gicp.h
         )
 
 #    set(stanford_gicp_incs
@@ -56,6 +56,7 @@ if(build)
         #include/pcl/${SUBSYS_NAME}/impl/stanford_gicp.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd.hpp
         include/pcl/${SUBSYS_NAME}/impl/transforms.hpp
+        include/pcl/${SUBSYS_NAME}/impl/gicp.hpp
         )
 
     set(srcs
