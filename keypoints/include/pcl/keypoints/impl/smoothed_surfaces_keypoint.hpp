@@ -92,7 +92,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
 
   // Find minima and maxima in differences inside the input cloud
   tree_->setInputCloud (input_);
-  for (int point_i = 0; point_i < input_->points.size (); ++point_i)
+  for (int point_i = 0; point_i < (int)input_->points.size (); ++point_i)
   {
     std::vector<int> nn_indices;
     std::vector<float> nn_distances;
