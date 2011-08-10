@@ -70,8 +70,8 @@ namespace pcl
           * \param remaining_correspondences the resultant filtered set of remaining correspondences
           */
         void 
-        getRemainingCorrespondences (const pcl::registration::Correspondences& original_correspondences, 
-                                     pcl::registration::Correspondences& remaining_correspondences);
+        getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
+                                     pcl::Correspondences& remaining_correspondences);
 
         /** \brief Provide a pointer to a cloud of feature descriptors associated with the source point cloud
           * \param source_feature a cloud of feature descriptors associated with the source point cloud
@@ -127,7 +127,7 @@ namespace pcl
      protected:
 
         void 
-        applyRejection (pcl::registration::Correspondences &correspondences);
+        applyRejection (pcl::Correspondences &correspondences);
 
         float max_distance_;
 
@@ -139,7 +139,7 @@ namespace pcl
             virtual bool isCorrespondenceValid (int index) = 0;
         };
 
-        typedef boost::unordered_map<std::string, boost::shared_ptr<pcl::registration::CorrespondenceRejectorFeatures::FeatureContainerInterface> > FeaturesMap;
+        typedef boost::unordered_map<std::string, boost::shared_ptr<FeatureContainerInterface> > FeaturesMap;
 
         /** \brief An STL map containing features to use when performing the correspondence search.*/
         FeaturesMap features_map_;

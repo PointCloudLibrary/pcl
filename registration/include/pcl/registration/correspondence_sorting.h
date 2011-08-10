@@ -46,11 +46,11 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    struct sortCorrespondencesByQueryIndex : public std::binary_function<pcl::registration::Correspondence, pcl::registration::Correspondence, bool>
+    struct sortCorrespondencesByQueryIndex : public std::binary_function<pcl::Correspondence, pcl::Correspondence, bool>
     {
-      bool operator()( pcl::registration::Correspondence a, pcl::registration::Correspondence b)
+      bool operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
-        return (a.indexQuery < b.indexQuery);
+        return (a.index_query < b.index_query);
       }
     };
 
@@ -58,11 +58,11 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    struct sortCorrespondencesByMatchIndex : public std::binary_function<pcl::registration::Correspondence, pcl::registration::Correspondence, bool>
+    struct sortCorrespondencesByMatchIndex : public std::binary_function<pcl::Correspondence, pcl::Correspondence, bool>
     {
-      bool operator()( pcl::registration::Correspondence a, pcl::registration::Correspondence b)
+      bool operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
-        return (a.indexMatch < b.indexMatch);
+        return (a.index_match < b.index_match);
       }
     };
 
@@ -70,9 +70,9 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    struct sortCorrespondencesByDistance : public std::binary_function<pcl::registration::Correspondence, pcl::registration::Correspondence, bool>
+    struct sortCorrespondencesByDistance : public std::binary_function<pcl::Correspondence, pcl::Correspondence, bool>
     {
-      bool operator()( pcl::registration::Correspondence a, pcl::registration::Correspondence b)
+      bool operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
         return (a.distance < b.distance);
       }
@@ -82,13 +82,13 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    struct sortCorrespondencesByQueryIndexAndDistance : public std::binary_function<pcl::registration::Correspondence, pcl::registration::Correspondence, bool>
+    struct sortCorrespondencesByQueryIndexAndDistance : public std::binary_function<pcl::Correspondence, pcl::Correspondence, bool>
     {
-      bool operator()( pcl::registration::Correspondence a, pcl::registration::Correspondence b)
+      bool operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
-        if (a.indexQuery < b.indexQuery)
+        if (a.index_query < b.index_query)
           return true;
-        else if ( (a.indexQuery == b.indexQuery) && (a.distance < b.distance) )
+        else if ( (a.index_query == b.index_query) && (a.distance < b.distance) )
           return true;
         return false;
       }
@@ -98,13 +98,13 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    struct sortCorrespondencesByMatchIndexAndDistance : public std::binary_function<pcl::registration::Correspondence, pcl::registration::Correspondence, bool>
+    struct sortCorrespondencesByMatchIndexAndDistance : public std::binary_function<pcl::Correspondence, pcl::Correspondence, bool>
     {
-      bool operator()( pcl::registration::Correspondence a, pcl::registration::Correspondence b)
+      bool operator()( pcl::Correspondence a, pcl::Correspondence b)
       {
-        if (a.indexMatch < b.indexMatch)
+        if (a.index_match < b.index_match)
           return true;
-        else if ( (a.indexMatch == b.indexMatch) && (a.distance < b.distance) )
+        else if ( (a.index_match == b.index_match) && (a.distance < b.distance) )
           return true;
         return false;
       }

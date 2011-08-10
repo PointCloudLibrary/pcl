@@ -39,7 +39,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::registration::CorrespondenceRejectorFeatures::applyRejection (
-    pcl::registration::Correspondences &correspondences)
+    pcl::Correspondences &correspondences)
 {
   unsigned int number_valid_correspondences = 0;
   correspondences.resize (input_correspondences_->size ());
@@ -64,8 +64,8 @@ pcl::registration::CorrespondenceRejectorFeatures::applyRejection (
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::registration::CorrespondenceRejectorFeatures::getRemainingCorrespondences (
-    const pcl::registration::Correspondences& original_correspondences, 
-    pcl::registration::Correspondences& remaining_correspondences)
+    const pcl::Correspondences& original_correspondences, 
+    pcl::Correspondences& remaining_correspondences)
 {
   unsigned int number_valid_correspondences = 0;
   remaining_correspondences.resize (original_correspondences.size ());

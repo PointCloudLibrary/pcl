@@ -72,7 +72,7 @@ namespace pcl
         getInputCorrespondences () { return input_correspondences_; };
 
         inline void 
-        getCorrespondences (pcl::registration::Correspondences &correspondences)
+        getCorrespondences (pcl::Correspondences &correspondences)
         {
           // something like initCompute() ?
           if (!input_correspondences_ || (input_correspondences_->empty ()))
@@ -89,14 +89,19 @@ namespace pcl
           * \param remaining_correspondences the resultant filtered set of remaining correspondences
           */
         virtual inline void 
-        getRemainingCorrespondences (const pcl::registration::Correspondences& original_correspondences, 
-                                     pcl::registration::Correspondences& remaining_correspondences) = 0;
+        getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
+                                     pcl::Correspondences& remaining_correspondences) = 0;
 
-        /** \brief ...
+        /** \brief Simple comparator for two correspondences. Returns true if
+          * the distance of the first correspondence is smaller than the
+          * distance of the second.
+          *
+          * \param[in] a the first correspondence
+          * \param[in] b the second correspondence
           */
-        static bool 
-        compareCorrespondencesDistance (pcl::registration::Correspondence a, 
-                                        pcl::registration::Correspondence b) 
+        inline static bool 
+        compareCorrespondencesDistance (const pcl::Correspondence &a, 
+                                        const pcl::Correspondence &b) 
         { 
           return (a.distance < b.distance); 
         }
@@ -104,7 +109,7 @@ namespace pcl
         /** \brief ...
           */
         inline void 
-        getRejectedQueryIndices (const std::vector<pcl::registration::Correspondence> &correspondences, 
+        getRejectedQueryIndices (const std::vector<pcl::Correspondence> &correspondences, 
                                  std::vector<int>& indices)
         {
           if (!input_correspondences_ || input_correspondences_->empty ())
@@ -118,11 +123,11 @@ namespace pcl
           // Copy the indices
           indices_before.resize (input_correspondences_->size ());
           for (size_t i = 0; i < input_correspondences_->size (); ++i)
-            indices_before[i] = (*input_correspondences_)[i].indexQuery;
+            indices_before[i] = (*input_correspondences_)[i].index_query;
 
           indices_after.resize (correspondences.size ());
           for (size_t i = 0; i < correspondences.size (); ++i)
-            indices_after[i] = correspondences[i].indexQuery;
+            indices_after[i] = correspondences[i].index_query;
 
           std::vector<int> remaining_indices;
           set_difference (

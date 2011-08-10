@@ -102,7 +102,7 @@ namespace pcl
       estimateRigidTransformation (
           const pcl::PointCloud<PointSource> &cloud_src,
           const pcl::PointCloud<PointTarget> &cloud_tgt,
-          const std::vector<pcl::registration::Correspondence> &correspondences,
+          const std::vector<pcl::Correspondence> &correspondences,
           Eigen::Matrix4f &transformation_matrix);
     };
 

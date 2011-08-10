@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -36,9 +38,12 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
 
+#include <pcl/common/concatenate.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline void
-pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setInputTarget (const PointCloudTargetConstPtr &cloud)
+pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setInputTarget (
+    const PointCloudTargetConstPtr &cloud)
 {
   if (cloud->points.empty ())
   {
@@ -61,71 +66,79 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setInputT
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget>
-template <typename FeatureType> inline void
+template <typename FeatureT> inline void
 pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setSourceFeature (
-    const typename pcl::PointCloud<FeatureType>::ConstPtr &source_feature, std::string key)
+    const typename pcl::PointCloud<FeatureT>::ConstPtr &source_feature, 
+    const std::string &key)
 {
   if (features_map_.count (key) == 0)
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setSourceFeature (source_feature);
+    features_map_[key].reset (new FeatureContainer<FeatureT>);
+  boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->setSourceFeature (source_feature);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget>
-template <typename FeatureType> inline typename pcl::PointCloud<FeatureType>::ConstPtr
-pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::getSourceFeature (std::string key)
+template <typename FeatureT> inline typename pcl::PointCloud<FeatureT>::ConstPtr
+pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::getSourceFeature (
+    const std::string &key)
 {
   if (features_map_.count (key) == 0)
-    return (boost::shared_ptr<pcl::PointCloud<const FeatureType> > ());
+    return (boost::shared_ptr<pcl::PointCloud<const FeatureT> > ());
   else
-    return (boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->getSourceFeature ());
+    return (boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->getSourceFeature ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget>
-template <typename FeatureType> inline void
+template <typename FeatureT> inline void
 pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setTargetFeature (
-    const typename pcl::PointCloud<FeatureType>::ConstPtr &target_feature, std::string key)
+    const typename pcl::PointCloud<FeatureT>::ConstPtr &target_feature, 
+    const std::string &key)
 {
   if (features_map_.count (key) == 0)
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setTargetFeature (target_feature);
+    features_map_[key].reset (new FeatureContainer<FeatureT>);
+  boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->setTargetFeature (target_feature);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget>
-template <typename FeatureType> inline typename pcl::PointCloud<FeatureType>::ConstPtr
-pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::getTargetFeature (std::string key)
+template <typename FeatureT> inline typename pcl::PointCloud<FeatureT>::ConstPtr
+pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::getTargetFeature (
+    const std::string &key)
 {
-  typedef pcl::PointCloud<FeatureType> FeatureCloud;
+  typedef pcl::PointCloud<FeatureT> FeatureCloud;
   typedef typename FeatureCloud::ConstPtr FeatureCloudConstPtr;
 
   if (features_map_.count (key) == 0)
-    return (boost::shared_ptr<const pcl::PointCloud<FeatureType> > ());
+    return (boost::shared_ptr<const pcl::PointCloud<FeatureT> > ());
   else
-    return (boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->getTargetFeature ());
+    return (boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->getTargetFeature ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget>
-template <typename FeatureType> inline void
-pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setRadiusSearch (const typename pcl::KdTree<FeatureType>::Ptr &tree,
-                                                                float r, std::string key)
+template <typename FeatureT> inline void
+pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setRadiusSearch (
+    const typename pcl::KdTree<FeatureT>::Ptr &tree,
+    float r, 
+    const std::string &key)
 {
   if (features_map_.count (key) == 0)
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setRadiusSearch (tree, r);
+    features_map_[key].reset (new FeatureContainer<FeatureT>);
+  boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->setRadiusSearch (tree, r);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget>
-template <typename FeatureType> inline void
-pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setKSearch (const typename pcl::KdTree<FeatureType>::Ptr &tree,
-                                                           int k, std::string key)
+template <typename FeatureT> inline void
+pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setKSearch (
+    const typename pcl::KdTree<FeatureT>::Ptr &tree,                                                       
+    int k, 
+    const std::string &key)
 {
   if (features_map_.count (key) == 0)
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setKSearch (tree, k);
+    features_map_[key].reset (new FeatureContainer<FeatureT>);
+  boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->setKSearch (tree, k);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -143,13 +156,12 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::hasValidF
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
-pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::findFeatureCorrespondences (
-    int index,
-    std::vector<int> &correspondence_indices)
+pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determineFeatureCorrespondences (
+    std::vector<pcl::Correspondence> &correspondence_indices)
 {
   if (features_map_.empty ())
   {
-    PCL_ERROR ("[pcl::%s::findFeatureCorrespondences] One or more features must be set before finding correspondences!\n",
+    PCL_ERROR ("[pcl::%s::findFeatureCorrespondences] At least one feature must be set!\n",
                getClassName ().c_str ());
     return;
   }
@@ -158,33 +170,41 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::findFeatu
   std::vector<float> nn_dists;
 
   // Find the correspondence indices for the first feature in the features map
-  typename FeaturesMap::const_iterator feature_itr = features_map_.begin ();
-  feature_itr->second->findFeatureCorrespondences (index, correspondence_indices, nn_dists);
+/*  typename FeaturesMap::const_iterator feature_itr = features_map_.begin ();
+  feature_itr->second->findFeatureCorrespondences ((*indices_)[0], correspondence_indices, nn_dists);
   std::vector<int>::iterator correspondence_indices_end = correspondence_indices.end ();
   std::sort (correspondence_indices.begin (), correspondence_indices_end);
 
-  // Iterate over the remaining features and continuously narrow down the set of corresponding point
-  for (++feature_itr; feature_itr != features_map_.end (); ++feature_itr)
+  for (size_t i = 0; i < indices_->size (); ++i)
   {
-    feature_itr->second->findFeatureCorrespondences (index, nn_indices, nn_dists);
+    // Iterate over the remaining features and continuously narrow down the set of corresponding point
+    for (typename FeaturesMap::const_iterator it = features_map_.begin (); it != features_map_.end (); ++it)
+    //for (++feature_itr; feature_itr != features_map_.end (); ++feature_itr)
+    {
+      feature_itr->second->findFeatureCorrespondences ((*indices_)[i], nn_indices, nn_dists);
 
-    std::sort (nn_indices.begin (), nn_indices.end ());
-    correspondence_indices_end = std::set_intersection (nn_indices.begin (), nn_indices.end (),
-                                                        correspondence_indices.begin (), correspondence_indices_end,
-                                                        correspondence_indices.begin ());
+      std::sort (nn_indices.begin (), nn_indices.end ());
+      correspondence_indices_end = std::set_intersection (nn_indices.begin (), nn_indices.end (),
+                                                          correspondence_indices.begin (), 
+                                                          correspondence_indices_end,
+                                                          correspondence_indices.begin ());
+    }
   }
 
-  // 'corresponding_indices' now contains the indices of the points that corresponded to 'index' for *all* features
-  // in 'feature_map_'.
-  correspondence_indices.resize (correspondence_indices_end - correspondence_indices.begin());
+  // 'corresponding_indices' now contains the indices of the points that corresponded to 'index' for *all* 
+  // features in 'feature_map_'.
+  correspondence_indices.resize (correspondence_indices_end - correspondence_indices.begin ());
+  */
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
 pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determineCorrespondences (
-    std::vector<pcl::registration::Correspondence> &correspondences, float max_distance)
+    std::vector<pcl::Correspondence> &correspondences, float max_distance)
 {
+  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
+
   if (!initCompute ())
     return;
 
@@ -196,24 +216,30 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
 
   float max_dist_sqr = max_distance * max_distance;
 
-  correspondences.resize(indices_->size());
-  std::vector<int> index(1);
-  std::vector<float> distance(1);
-  pcl::registration::Correspondence corr;
-  for (unsigned int i = 0; i < indices_->size(); ++i)
+  correspondences.resize (indices_->size ());
+  std::vector<int> index (1);
+  std::vector<float> distance (1);
+  pcl::Correspondence corr;
+  for (size_t i = 0; i < indices_->size (); ++i)
   {
-    if (tree_->nearestKSearch (input_->points[(*indices_)[i]], 1, index, distance))
+    //if (tree_->nearestKSearch (input_->points[(*indices_)[i]], 1, index, distance))
+    PointTarget pt;
+    pcl::for_each_type <FieldListTarget> (pcl::NdConcatenateFunctor <PointSource, PointTarget> (
+          input_->points[(*indices_)[i]], 
+          pt));
+
+    if (tree_->nearestKSearch (pt, 1, index, distance))
     {
       if (distance[0] <= max_dist_sqr)
       {
-        corr.indexQuery = i;
-        corr.indexMatch = index[0];
+        corr.index_query = i;
+        corr.index_match = index[0];
         corr.distance = distance[0];
         correspondences[i] = corr;
         continue;
       }
     }
-//    correspondences[i] = pcl::registration::Correspondence(i, -1, std::numeric_limits<float>::max());
+//    correspondences[i] = pcl::Correspondence(i, -1, std::numeric_limits<float>::max());
   }
   deinitCompute ();
 }
@@ -221,7 +247,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
 pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determineReciprocalCorrespondences (
-    std::vector<pcl::registration::Correspondence> &correspondences)
+    std::vector<pcl::Correspondence> &correspondences)
 {
   if (!initCompute ())
     return;
@@ -234,14 +260,14 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
 
   // setup tree for reciprocal search
   pcl::KdTreeFLANN<PointTarget> tree_reciprocal;
-  tree_reciprocal.setInputCloud (input_, indices_);
+  //tree_reciprocal.setInputCloud (input_, indices_);
 
   correspondences.resize (indices_->size());
   std::vector<int> index (1);
   std::vector<float> distance (1);
   std::vector<int> index_reciprocal (1);
   std::vector<float> distance_reciprocal (1);
-  pcl::registration::Correspondence corr;
+  pcl::Correspondence corr;
   unsigned int nr_valid_correspondences = 0;
 
 //  #pragma omp parallel for shared( input_tree, output_tree )
@@ -253,8 +279,8 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
 //    #pragma omp critical
     if ((*indices_)[i] == index_reciprocal[0])
     {
-      corr.indexQuery = (*indices_)[i];
-      corr.indexMatch = index[0];
+      corr.index_query = (*indices_)[i];
+      corr.index_match = index[0];
       corr.distance = distance[0];
       correspondences[nr_valid_correspondences] = corr;
       ++nr_valid_correspondences;
@@ -267,16 +293,14 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget>
-template <typename FeatureType> inline void 
+template <typename FeatureT> inline void 
 pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setFeatureRepresentation (
-  const std::string &key, 
-  const typename pcl::KdTree<FeatureType>::PointRepresentationConstPtr &fr)
+  const typename pcl::PointRepresentation<FeatureT>::ConstPtr &fr,
+  const std::string &key)
 {
   if (features_map_.count (key) == 0)
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setFeatureRepresentation (fr);
+    features_map_[key].reset (new FeatureContainer<FeatureT>);
+  boost::static_pointer_cast<FeatureContainer<FeatureT> > (features_map_[key])->setFeatureRepresentation (fr);
 }
-
-
 
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_ */

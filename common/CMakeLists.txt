@@ -17,11 +17,13 @@ if(build)
         src/time_trigger.cpp
         )
 
-    set(incs include/pcl/exceptions.h
+    set(incs 
+        include/pcl/exceptions.h
         include/pcl/pcl_base.h
         include/pcl/pcl_macros.h
         include/pcl/point_cloud.h
         include/pcl/point_representation.h
+        include/pcl/correspondence.h
         include/pcl/point_types.h
         include/pcl/win32_macros.h
         )
@@ -32,9 +34,7 @@ if(build)
           include/pcl/PolygonMesh.h
           include/pcl/Vertices.h
           include/pcl/PointIndices.h
-	  # add by ktran 
-	  include/pcl/TextureMesh.h
-	  # end
+          include/pcl/TextureMesh.h
         )
 
         set(sensor_msg_incs 

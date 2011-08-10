@@ -36,6 +36,7 @@
 #ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_H_
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_H_
 
+#include <pcl/correspondence.h>
 #include <pcl/features/feature.h>
 #include <pcl/registration/transforms.h>
 #include <pcl/registration/correspondence_types.h>
@@ -104,7 +105,7 @@ namespace pcl
       estimateRigidTransformation (
           const pcl::PointCloud<PointSource> &cloud_src,
           const pcl::PointCloud<PointTarget> &cloud_tgt,
-          const std::vector<pcl::registration::Correspondence> &correspondences,
+          const std::vector<pcl::Correspondence> &correspondences,
           Eigen::Matrix4f &transformation_matrix) = 0;
     };
 

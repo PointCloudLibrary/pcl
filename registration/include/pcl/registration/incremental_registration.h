@@ -145,7 +145,7 @@ namespace pcl
               // SAC-based correspondence rejection
               double sac_threshold = max_dist;
               int sac_max_iterations = 100;
-              std::vector<pcl::registration::Correspondence> correspondences_sac;
+              std::vector<pcl::Correspondence> correspondences_sac;
               cor_rej_sac_.setInputCloud(cloud_output_ptr);
               cor_rej_sac_.setTargetCloud(cloud_model_ptr_);
               cor_rej_sac_.setInlierThreshold(sac_threshold);

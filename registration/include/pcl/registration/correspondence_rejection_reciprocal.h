@@ -69,8 +69,8 @@ namespace pcl
           * \param remaining_correspondences the resultant filtered set of remaining correspondences
           */
         inline void 
-        getRemainingCorrespondences (const pcl::registration::Correspondences& original_correspondences, 
-                                     pcl::registration::Correspondences& remaining_correspondences);
+        getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
+                                     pcl::Correspondences& remaining_correspondences);
 
         /** \brief Set maximally allowable distance between a correspondence and its reciprocal correspondence. */
         virtual inline void 
@@ -96,7 +96,7 @@ namespace pcl
       protected:
 
         void 
-        applyRejection (pcl::registration::Correspondences &correspondences);
+        applyRejection (pcl::Correspondences &correspondences);
 
         float distance_threshold_;
 

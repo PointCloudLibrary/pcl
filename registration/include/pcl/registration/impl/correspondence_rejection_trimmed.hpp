@@ -39,7 +39,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::registration::CorrespondenceRejectorTrimmed::applyRejection (
-    pcl::registration::Correspondences &correspondences)
+    pcl::Correspondences &correspondences)
 {
   /* not really an efficient implementation */
   correspondences = *input_correspondences_;
@@ -59,8 +59,8 @@ pcl::registration::CorrespondenceRejectorTrimmed::applyRejection (
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::registration::CorrespondenceRejectorTrimmed::getRemainingCorrespondences (
-    const pcl::registration::Correspondences& original_correspondences, 
-    pcl::registration::Correspondences& remaining_correspondences)
+    const pcl::Correspondences& original_correspondences, 
+    pcl::Correspondences& remaining_correspondences)
 {
   /* not really an efficient implementation */
   remaining_correspondences = original_correspondences;

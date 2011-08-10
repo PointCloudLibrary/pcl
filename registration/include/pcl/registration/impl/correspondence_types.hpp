@@ -39,53 +39,8 @@
 #include <limits>
 #include <Eigen/Core>
 
-namespace pcl
-{
-  namespace registration
-  {
-		/** \brief class representing a match between two descriptors */
-    struct Correspondence
-    {
-      union 
-      {
-        float data[4];
-        struct 
-        {
-          /** \brief index of the query point */
-          int indexQuery;
-          /** \brief index of the matching point */
-          int indexMatch;
-          /** \brief distance between query and matching point (w.r.t. the used feature descriptors) */
-          float distance;
-        };
-      } EIGEN_ALIGN16;
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
-      
-      /** \brief standard Constructor */
-      inline Correspondence () : indexQuery(0), indexMatch(-1), distance(std::numeric_limits<float>::max ())
-      {
-      	data[3] = 1.0f;
-      }
-
-      /** \brief Ctor */
-      inline Correspondence (int _indexQuery, int _indexMatch, float _distance) : indexQuery(_indexQuery), indexMatch(_indexMatch), distance (_distance)
-      { 
-      	data[3] = 1.0f;
-      }
-    };
-    
-    /** \brief overloaded << operator */
-    inline std::ostream& 
-    operator << (std::ostream& os, const Correspondence& c)
-    {
-      os << c.indexQuery << " " << c.indexMatch << " " << c.distance;
-      return (os);
-    }
-  }
-}
-
 inline void
-pcl::registration::getCorDistMeanStd (const Correspondences &correspondences, double &mean, double &stddev)
+pcl::registration::getCorDistMeanStd (const pcl::Correspondences &correspondences, double &mean, double &stddev)
 {
   if (correspondences.empty ())
     return;
@@ -103,19 +58,19 @@ pcl::registration::getCorDistMeanStd (const Correspondences &correspondences, do
 }
 
 inline void
-pcl::registration::getQueryIndices (const Correspondences& correspondences, std::vector<int>& indices)
+pcl::registration::getQueryIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
 {
   indices.resize (correspondences.size ());
   for (size_t i = 0; i < correspondences.size (); ++i)
-    indices[i] = correspondences[i].indexQuery;
+    indices[i] = correspondences[i].index_query;
 }
 
 inline void
-pcl::registration::getMatchIndices (const Correspondences& correspondences, std::vector<int>& indices)
+pcl::registration::getMatchIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
 {
   indices.resize (correspondences.size ());
   for (size_t i = 0; i < correspondences.size (); ++i)
-    indices[i] = correspondences[i].indexMatch;
+    indices[i] = correspondences[i].index_match;
 }
 
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_ */

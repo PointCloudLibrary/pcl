@@ -74,8 +74,8 @@ namespace pcl
           * \param remaining_correspondences the resultant filtered set of remaining correspondences
           */
         inline void 
-        getRemainingCorrespondences (const pcl::registration::Correspondences& original_correspondences, 
-                                     pcl::registration::Correspondences& remaining_correspondences);
+        getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
+                                     pcl::Correspondences& remaining_correspondences);
 
         virtual inline void 
         setInputCloud (const PointCloudConstPtr &cloud) { input_ = cloud; }
@@ -101,7 +101,7 @@ namespace pcl
       protected:
 
         inline void 
-        applyRejection (pcl::registration::Correspondences &correspondences);
+        applyRejection (pcl::Correspondences &correspondences);
 
         double inlier_threshold_;
 

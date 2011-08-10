@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -42,7 +44,9 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::getFieldIndex (const pcl::PointCloud<PointT> &cloud, const std::string &field_name, std::vector<sensor_msgs::PointField> &fields)
+pcl::getFieldIndex (const pcl::PointCloud<PointT> &cloud, 
+                    const std::string &field_name, 
+                    std::vector<sensor_msgs::PointField> &fields)
 {
   fields.clear ();
   // Get the fields list

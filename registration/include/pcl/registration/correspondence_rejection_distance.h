@@ -66,25 +66,30 @@ namespace pcl
           * \param remaining_correspondences the resultant filtered set of remaining correspondences
           */
         inline void 
-        getRemainingCorrespondences (const pcl::registration::Correspondences& original_correspondences, 
-                                     pcl::registration::Correspondences& remaining_correspondences);
+        getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
+                                     pcl::Correspondences& remaining_correspondences);
 
         /** \brief Set the maximum distance used for thresholding in correspondence rejection.
-         * \param distance Distance to be used as maximum distance between correspondences. Correspondences with larger distance are rejected.
-         * */
+          * \param distance Distance to be used as maximum distance between correspondences. 
+          * Correspondences with larger distances are rejected.
+          * \note Internally, the distance will be stored squared.
+          */
         virtual inline void 
-        setMaximumDistance (float distance) { max_distance_ = distance; };
+        setMaximumDistance (float distance) { max_distance_ = distance * distance; };
 
         /** \brief Get the maximum distance used for thresholding in correspondence rejection. */
         inline float 
-        getMaxmimumDistance () { return max_distance_; };
+        getMaxmimumDistance () { return std::sqrt (max_distance_); };
 
       protected:
 
         void 
-        applyRejection (pcl::registration::Correspondences &correspondences);
+        applyRejection (pcl::Correspondences &correspondences);
 
-        float max_distance_;
+        /** \brief The maximum distance threshold between two correspondent points in source <-> target. If the
+          * distance is larger than this threshold, the points will not be ignored in the alignment process.
+          */
+       float max_distance_;
     };
 
   }

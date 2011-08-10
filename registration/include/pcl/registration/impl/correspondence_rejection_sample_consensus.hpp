@@ -41,7 +41,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline void 
 pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::applyRejection (
-    pcl::registration::Correspondences &correspondences)
+    pcl::Correspondences &correspondences)
 {
   std::vector<int> source_indices;
   std::vector<int> target_indices;
@@ -50,8 +50,8 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::applyRejection
   target_indices.resize (nr_correspondences);
   for (size_t i = 0; i < input_correspondences_->size (); ++i)
   {
-    source_indices[i] = (*input_correspondences_)[i].indexQuery;
-    target_indices[i] = (*input_correspondences_)[i].indexMatch;
+    source_indices[i] = (*input_correspondences_)[i].index_query;
+    target_indices[i] = (*input_correspondences_)[i].index_match;
   }
 
    // from pcl/registration/icp.hpp:
@@ -82,7 +82,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::applyRejection
 
        boost::unordered_map<int, int> index_to_correspondence;
        for (int i = 0; i < nr_correspondences; ++i)
-         index_to_correspondence[(*input_correspondences_)[i].indexQuery] = i;
+         index_to_correspondence[(*input_correspondences_)[i].index_query] = i;
 
        correspondences.resize (inliers.size ());
        for (size_t i = 0; i < inliers.size (); ++i)
@@ -102,8 +102,8 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::applyRejection
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
 pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences (
-    const pcl::registration::Correspondences& original_correspondences, 
-    pcl::registration::Correspondences& remaining_correspondences)
+    const pcl::Correspondences& original_correspondences, 
+    pcl::Correspondences& remaining_correspondences)
 {
   std::vector<int> source_indices;
   std::vector<int> target_indices;
@@ -112,8 +112,8 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
   target_indices.resize (nr_correspondences);
   for (size_t i = 0; i < original_correspondences.size (); ++i)
   {
-    source_indices[i] = original_correspondences[i].indexQuery;
-    target_indices[i] = original_correspondences[i].indexMatch;
+    source_indices[i] = original_correspondences[i].index_query;
+    target_indices[i] = original_correspondences[i].index_match;
   }
 
    // from pcl/registration/icp.hpp:
@@ -144,7 +144,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
 
        boost::unordered_map<int, int> index_to_correspondence;
        for (int i = 0; i < nr_correspondences; ++i)
-         index_to_correspondence[(*input_correspondences_)[i].indexQuery] = i;
+         index_to_correspondence[(*input_correspondences_)[i].index_query] = i;
 
        remaining_correspondences.resize (inliers.size ());
        for (size_t i = 0; i < inliers.size (); ++i)

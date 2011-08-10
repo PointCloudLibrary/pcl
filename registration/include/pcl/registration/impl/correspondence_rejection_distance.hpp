@@ -38,7 +38,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::registration::CorrespondenceRejectorDistance::applyRejection (pcl::registration::Correspondences &correspondences)
+pcl::registration::CorrespondenceRejectorDistance::applyRejection (pcl::Correspondences &correspondences)
 {
   unsigned int number_valid_correspondences = 0;
   correspondences.resize (input_correspondences_->size ());
@@ -56,20 +56,20 @@ pcl::registration::CorrespondenceRejectorDistance::applyRejection (pcl::registra
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::registration::CorrespondenceRejectorDistance::getRemainingCorrespondences (
-    const pcl::registration::Correspondences& original_correspondences, 
-    pcl::registration::Correspondences& remaining_correspondences)
+    const pcl::Correspondences& original_correspondences, 
+    pcl::Correspondences& remaining_correspondences)
 {
   unsigned int number_valid_correspondences = 0;
-  remaining_correspondences.resize( original_correspondences.size() );
-  for ( unsigned int i = 0; i < original_correspondences.size(); ++i )
+  remaining_correspondences.resize (original_correspondences.size ());
+  for (size_t i = 0; i < original_correspondences.size (); ++i)
   {
-    if ( original_correspondences.at(i).distance < max_distance_ )
+    if (original_correspondences[i].distance < max_distance_)
     {
-      remaining_correspondences[number_valid_correspondences] = original_correspondences.at(i);
+      remaining_correspondences[number_valid_correspondences] = original_correspondences[i];
       ++number_valid_correspondences;
     }
   }
-  remaining_correspondences.resize(number_valid_correspondences);
+  remaining_correspondences.resize (number_valid_correspondences);
 }
 
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_DISTANCE_HPP_ */

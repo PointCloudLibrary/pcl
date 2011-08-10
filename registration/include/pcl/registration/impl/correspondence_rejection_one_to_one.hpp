@@ -39,10 +39,10 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::registration::CorrespondenceRejectorOneToOne::applyRejection (
-    pcl::registration::Correspondences &correspondences)
+    pcl::Correspondences &correspondences)
 {
   /* not really an efficient implementation */
-  pcl::registration::Correspondences input = *input_correspondences_;
+  pcl::Correspondences input = *input_correspondences_;
 
   std::sort (input.begin (), input.end (), pcl::registration::sortCorrespondencesByMatchIndexAndDistance ());
 
@@ -51,12 +51,12 @@ pcl::registration::CorrespondenceRejectorOneToOne::applyRejection (
   unsigned int number_valid_correspondences = 0;
   for (size_t i = 0; i < input.size (); ++i)
   {
-    if (input[i].indexMatch < 0)
+    if (input[i].index_match < 0)
       continue;
-    else if (input[i].indexMatch != index_last)
+    else if (input[i].index_match != index_last)
     {
       correspondences[number_valid_correspondences] = input[i];
-      index_last = input[i].indexMatch;
+      index_last = input[i].index_match;
       ++number_valid_correspondences;
     }
   }
@@ -66,11 +66,11 @@ pcl::registration::CorrespondenceRejectorOneToOne::applyRejection (
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::registration::CorrespondenceRejectorOneToOne::getRemainingCorrespondences (
-    const pcl::registration::Correspondences& original_correspondences, 
-    pcl::registration::Correspondences& remaining_correspondences)
+    const pcl::Correspondences& original_correspondences, 
+    pcl::Correspondences& remaining_correspondences)
 {
   /* not really an efficient implementation */
-  pcl::registration::Correspondences input = original_correspondences;
+  pcl::Correspondences input = original_correspondences;
 
   std::sort (input.begin (), input.end (), pcl::registration::sortCorrespondencesByMatchIndexAndDistance ());
 
@@ -79,12 +79,12 @@ pcl::registration::CorrespondenceRejectorOneToOne::getRemainingCorrespondences (
   unsigned int number_valid_correspondences = 0;
   for (size_t i = 0; i < input.size (); ++i)
   {
-    if (input[i].indexMatch < 0)
+    if (input[i].index_match < 0)
       continue;
-    else if (input[i].indexMatch != index_last)
+    else if (input[i].index_match != index_last)
     {
       remaining_correspondences[number_valid_correspondences] = input[i];
-      index_last = input[i].indexMatch;
+      index_last = input[i].index_match;
       ++number_valid_correspondences;
     }
   }

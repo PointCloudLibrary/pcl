@@ -39,7 +39,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::registration::CorrespondenceRejectorReciprocal::applyRejection (
-    pcl::registration::Correspondences &correspondences)
+    pcl::Correspondences &correspondences)
 {
   PCL_WARN ("[pcl::registration::CorrespondenceRejectorReciprocal::applyRejection] Not implemented!\n");
 }
@@ -47,8 +47,8 @@ pcl::registration::CorrespondenceRejectorReciprocal::applyRejection (
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::registration::CorrespondenceRejectorReciprocal::getRemainingCorrespondences (
-    const pcl::registration::Correspondences& original_correspondences, 
-    pcl::registration::Correspondences& remaining_correspondences)
+    const pcl::Correspondences& original_correspondences, 
+    pcl::Correspondences& remaining_correspondences)
 {
   PCL_WARN ("[pcl::registration::CorrespondenceRejectorReciprocal::getCorrespondences] Not implemented!\n");
 }
