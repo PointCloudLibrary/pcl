@@ -379,70 +379,71 @@ TEST (PCL, PCDReaderWriter)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// TEST (PCL, PLYReaderWriter)
-// {
-//   sensor_msgs::PointCloud2 cloud_blob;
-//   PointCloud<PointXYZI> cloud;
+TEST (PCL, PLYReaderWriter)
+{
+  sensor_msgs::PointCloud2 cloud_blob;
+  PointCloud<PointXYZI> cloud;
 
-//   cloud.width  = 640;
-//   cloud.height = 480;
-//   cloud.resize (cloud.width * cloud.height);
-//   cloud.is_dense = true;
+  cloud.width  = 640;
+  cloud.height = 480;
+  cloud.resize (cloud.width * cloud.height);
+  cloud.is_dense = true;
 
-//   srand (time (NULL));
-//   size_t nr_p = cloud.size ();
-//   // Randomly create a new point cloud
-//   for (size_t i = 0; i < nr_p; ++i)
-//   {
-//     cloud[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-//     cloud[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-//     cloud[i].z = 1024 * rand () / (RAND_MAX + 1.0);
-//   }
-//   PointXYZ first, last;
-//   first.x = cloud[0].x;       first.y = cloud[0].y;       first.z = cloud[0].z;
-//   last.x = cloud[nr_p - 1].x; last.y = cloud[nr_p - 1].y; last.z = cloud[nr_p - 1].z;
+  srand (time (NULL));
+  size_t nr_p = cloud.size ();
+  // Randomly create a new point cloud
+  for (size_t i = 0; i < nr_p; ++i)
+  {
+    cloud[i].x = 1024 * rand () / (RAND_MAX + 1.0);
+    cloud[i].y = 1024 * rand () / (RAND_MAX + 1.0);
+    cloud[i].z = 1024 * rand () / (RAND_MAX + 1.0);
+    cloud.points[i].intensity = i;
+  }
+  PointXYZI first, last;
+  first.x = cloud[0].x;       first.y = cloud[0].y;       first.z = cloud[0].z;
+  first.intensity = cloud[0].intensity;
+  last.x = cloud[nr_p - 1].x; last.y = cloud[nr_p - 1].y; last.z = cloud[nr_p - 1].z;
+  last.intensity = cloud[nr_p - 1].intensity;
 
-//   // Convert from data type to blob
-//   toROSMsg (cloud, cloud_blob);
+  // Convert from data type to blob
+  toROSMsg (cloud, cloud_blob);
 
-//   EXPECT_EQ ((uint32_t)cloud_blob.width, cloud.width);    // test for toROSMsg ()
-//   EXPECT_EQ ((uint32_t)cloud_blob.height, cloud.height);  // test for toROSMsg ()
-//   EXPECT_EQ ((bool)cloud_blob.is_dense, cloud.is_dense);  // test for toROSMsg ()
-//   EXPECT_EQ ((size_t)cloud_blob.data.size (), 
-//              cloud_blob.width * cloud_blob.height * sizeof (PointXYZ));  
-// // test for toROSMsg ()
+  EXPECT_EQ (cloud_blob.width, cloud.width);    // test for toROSMsg ()
+  EXPECT_EQ (cloud_blob.height, cloud.height);  // test for toROSMsg ()
+  EXPECT_EQ (cloud_blob.is_dense, cloud.is_dense);  // test for toROSMsg ()
+  EXPECT_EQ (cloud_blob.data.size (), 
+             cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  
+// test for toROSMsg ()
 
-//   PLYWriter writer;
-//   writer.write ("test_pcl_io.ply", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true);
+  PLYWriter writer;
+  writer.write ("test_pcl_io.ply", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true);
 
-  // PLYReader reader;
-  // reader.read ("test_pcl_io.ply", cloud_blob);
-  // EXPECT_EQ ((uint32_t)cloud_blob.width, cloud.width);
-  // EXPECT_EQ ((uint32_t)cloud_blob.height, cloud.height);
-  // EXPECT_EQ ((bool)cloud_blob.is_dense, false);   // @todo: let is_dense be false for now when reading from binary files
-  // //EXPECT_EQ ((size_t)cloud_blob.data.size () * 2,         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
-  // //           cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPLYFile ()
-  // EXPECT_EQ ((size_t)cloud_blob.data.size (),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
-  //            cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPLYFile ()
+  PLYReader reader;
+  reader.read ("test_pcl_io.ply", cloud_blob);
+  //PLY doesn't preserve organiziation
+  EXPECT_EQ (cloud_blob.width * cloud_blob.height, cloud.width * cloud.height);
+  EXPECT_EQ (cloud_blob.is_dense, false);   
+  EXPECT_EQ ((size_t)cloud_blob.data.size (),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
+             cloud_blob.width * cloud_blob.height * sizeof (PointXYZ));  // test for loadPLYFile ()
 
-  // // Convert from blob to data type
-  // fromROSMsg (cloud_blob, cloud);
+  // Convert from blob to data type
+  fromROSMsg (cloud_blob, cloud);
 
-  // EXPECT_EQ ((uint32_t)cloud.width, cloud_blob.width);    // test for fromROSMsg ()
-  // EXPECT_EQ ((uint32_t)cloud.height, cloud_blob.height);  // test for fromROSMsg ()
-  // EXPECT_EQ ((int)cloud.is_dense, cloud_blob.is_dense);   // test for fromROSMsg ()
-  // EXPECT_EQ ((size_t)cloud.size (), nr_p);         // test for fromROSMsg ()
+  EXPECT_EQ ((uint32_t)cloud.width, cloud_blob.width);    // test for fromROSMsg ()
+  EXPECT_EQ ((uint32_t)cloud.height, cloud_blob.height);  // test for fromROSMsg ()
+  EXPECT_EQ ((int)cloud.is_dense, cloud_blob.is_dense);   // test for fromROSMsg ()
+  EXPECT_EQ ((size_t)cloud.size (), nr_p);         // test for fromROSMsg ()
 
-  // EXPECT_NEAR ((float)cloud[0].x, first.x, 1e-5);     // test for fromROSMsg ()
-  // EXPECT_NEAR ((float)cloud[0].y, first.y, 1e-5);     // test for fromROSMsg ()
-  // EXPECT_NEAR ((float)cloud[0].z, first.z, 1e-5);     // test for fromROSMsg ()
-  // EXPECT_NEAR ((uint32_t)cloud[0].intensity, first.intensity, 1e-5);  // test for fromROSMsg ()
+  EXPECT_NEAR ((float)cloud[0].x, first.x, 1e-5);     // test for fromROSMsg ()
+  EXPECT_NEAR ((float)cloud[0].y, first.y, 1e-5);     // test for fromROSMsg ()
+  EXPECT_NEAR ((float)cloud[0].z, first.z, 1e-5);     // test for fromROSMsg ()
+  EXPECT_NEAR ((uint32_t)cloud[0].intensity, first.intensity, 1e-5);  // test for fromROSMsg ()
 
-  // EXPECT_NEAR ((float)cloud[nr_p - 1].x, last.x, 1e-5);    // test for fromROSMsg ()
-  // EXPECT_NEAR ((float)cloud[nr_p - 1].y, last.y, 1e-5);    // test for fromROSMsg ()
-  // EXPECT_NEAR ((float)cloud[nr_p - 1].z, last.z, 1e-5);    // test for fromROSMsg ()
-  // EXPECT_NEAR ((uint32_t)cloud[nr_p - 1].intensity, last.intensity, 1e-5); // test for fromROSMsg ()
-// }
+  EXPECT_NEAR ((float)cloud[nr_p - 1].x, last.x, 1e-5);    // test for fromROSMsg ()
+  EXPECT_NEAR ((float)cloud[nr_p - 1].y, last.y, 1e-5);    // test for fromROSMsg ()
+  EXPECT_NEAR ((float)cloud[nr_p - 1].z, last.z, 1e-5);    // test for fromROSMsg ()
+  EXPECT_NEAR ((uint32_t)cloud[nr_p - 1].intensity, last.intensity, 1e-5); // test for fromROSMsg ()
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

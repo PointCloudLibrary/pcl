@@ -57,7 +57,7 @@ if(build)
     set(srcs src/io.cpp
         src/pcd_io.cpp
         src/vtk_io.cpp
-        #				src/ply_io.cpp
+        src/ply_io.cpp
         src/compression.cpp
         src/obj_io.cpp
         ${OPENNI_GRABBER_SOURCES}
@@ -69,9 +69,9 @@ if(build)
         include/pcl/${SUBSYS_NAME}/pcd_io.h
         include/pcl/${SUBSYS_NAME}/pcl_io_exception.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
-#        include/pcl/${SUBSYS_NAME}/ply_io.h
-#        include/pcl/${SUBSYS_NAME}/ply.h
-        include/pcl/${SUBSYS_NAME}/obj_io.h	
+        include/pcl/${SUBSYS_NAME}/ply_io.h
+        include/pcl/${SUBSYS_NAME}/ply.h
+        include/pcl/${SUBSYS_NAME}/obj_io.h 
         ${OPENNI_GRABBER_INCLUDES}
         )
 
@@ -84,8 +84,7 @@ if(build)
        )
 
     set(impl_incs 
-			  include/pcl/${SUBSYS_NAME}/impl/io.hpp
-#			  include/pcl/${SUBSYS_NAME}/impl/ply_io.hpp
+        include/pcl/${SUBSYS_NAME}/impl/io.hpp
         include/pcl/compression/impl/entropy_range_coder.hpp
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
        )
