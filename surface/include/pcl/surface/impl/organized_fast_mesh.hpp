@@ -46,7 +46,103 @@
 template <typename PointInT> void
 pcl::OrganizedFastMesh<PointInT>::performReconstruction (pcl::PolygonMesh &output)
 {
+  this->reconstructPolygons(output.polygons);
 
+  // correct all measurements,
+  // (running over complete image since some rows and columns are left out
+  // depending on triangle_pixel_size)
+  // avoid to do that here (only needed for ASCII mesh file output, e.g., in vtk files
+  for ( unsigned int i = 0; i < input_->points.size(); ++i )
+    if ( !hasValidXYZ(input_->points[i]) )
+      resetPointData(i, output, 0.0f);
+}
+
+template <typename PointInT> void
+pcl::OrganizedFastMesh<PointInT>::reconstructPolygons (std::vector<pcl::Vertices>& polygons)
+{
+  if ( triangulation_type_ == TRIANGLE_RIGHT_CUT )
+    makeRightCutMesh(polygons);
+  else if ( triangulation_type_ == TRIANGLE_LEFT_CUT )
+    makeLeftCutMesh(polygons);
+  else if ( triangulation_type_ == TRIANGLE_ADAPTIVE_CUT )
+    makeAdaptiveCutMesh(polygons);
+  else if ( triangulation_type_ == QUAD_MESH )
+    makeQuadMesh(polygons);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::OrganizedFastMesh<PointInT>::makeQuadMesh (std::vector<pcl::Vertices>& polygons)
+{
+  unsigned int last_column = input_->width - triangle_pixel_size_;
+  unsigned int last_row = input_->height - triangle_pixel_size_;
+  for ( unsigned int x = 0; x < last_column; x+=triangle_pixel_size_ )
+  {
+    for ( unsigned int y = 0; y < last_row; y+=triangle_pixel_size_ )
+    {
+      int i = getIndex(x, y);
+      int index_right = getIndex(x+triangle_pixel_size_, y);
+      int index_down = getIndex(x, y+triangle_pixel_size_);
+      int index_down_right = getIndex(x+triangle_pixel_size_, y+triangle_pixel_size_);
+      if ( isValidQuad(i, index_right, index_down_right, index_down) )
+        if ( !isShadowedQuad(i, index_right, index_down_right, index_down) )
+          addQuad(i, index_right, index_down_right, index_down, polygons);
+    }
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::OrganizedFastMesh<PointInT>::makeRightCutMesh (std::vector<pcl::Vertices>& polygons)
+{
+  unsigned int last_column = input_->width - triangle_pixel_size_;
+  unsigned int last_row = input_->height - triangle_pixel_size_;
+  for ( unsigned int x = 0; x < last_column; x+=triangle_pixel_size_ )
+  {
+    for ( unsigned int y = 0; y < last_row; y+=triangle_pixel_size_ )
+    {
+      int i = getIndex(x, y);
+      int index_right = getIndex(x+triangle_pixel_size_, y);
+      int index_down = getIndex(x, y+triangle_pixel_size_);
+      int index_down_right = getIndex(x+triangle_pixel_size_, y+triangle_pixel_size_);
+      if ( isValidTriangle(i, index_right, index_down_right) )
+        addTriangle(i, index_right, index_down_right, polygons);
+      if ( isValidTriangle(i, index_down, index_down_right) )
+        addTriangle(i, index_down, index_down_right, polygons);
+    }
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::OrganizedFastMesh<PointInT>::makeLeftCutMesh (std::vector<pcl::Vertices>& polygons)
+{
+  unsigned int last_column = input_->width - triangle_pixel_size_;
+  unsigned int last_row = input_->height - triangle_pixel_size_;
+  for ( unsigned int x = 0; x < last_column; x+=triangle_pixel_size_ )
+  {
+    for ( unsigned int y = 0; y < last_row; y+=triangle_pixel_size_ )
+    {
+      int i = getIndex(x, y);
+      int index_right = getIndex(x+triangle_pixel_size_, y);
+      int index_down = getIndex(x, y+triangle_pixel_size_);
+      int index_down_right = getIndex(x+triangle_pixel_size_, y+triangle_pixel_size_);
+      if ( isValidTriangle(i, index_right, index_down) )
+        addTriangle(i, index_right, index_down, polygons);
+      if ( isValidTriangle(index_right, index_down, index_down_right) )
+        addTriangle(index_right, index_down, index_down_right, polygons);
+    }
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices>& polygons)
+{
   unsigned int last_column = input_->width - triangle_pixel_size_;
   unsigned int last_row = input_->height - triangle_pixel_size_;
   for ( unsigned int x = 0; x < last_column; x+=triangle_pixel_size_ )
@@ -58,52 +154,41 @@ pcl::OrganizedFastMesh<PointInT>::performReconstruction (pcl::PolygonMesh &outpu
       int index_down = getIndex(x, y+triangle_pixel_size_);
       int index_down_right = getIndex(x+triangle_pixel_size_, y+triangle_pixel_size_);
 
-      const PointInT& vertex = input_->points[i];
-      const PointInT& vertex_right = input_->points[index_right];
-      const PointInT& vertex_down = input_->points[index_down];
-      const PointInT& vertex_down_right = input_->points[index_down_right];
-      
-      bool upper_right = isValidTriangle(vertex, vertex_right, vertex_down_right);
-      bool lower_left  = isValidTriangle(vertex, vertex_down, vertex_down_right);
-      bool upper_left  = isValidTriangle(vertex, vertex_right, vertex_down);
-      bool lower_right = isValidTriangle(vertex_right, vertex_down, vertex_down_right);
+      const bool right_cut_upper = isValidTriangle(i, index_right, index_down_right);
+      const bool right_cut_lower = isValidTriangle(i, index_down, index_right);
+      const bool left_cut_upper = isValidTriangle(i, index_right, index_down);
+      const bool left_cut_lower = isValidTriangle(index_right, index_down, index_down_right);
 
-      if (upper_right && lower_left)
+      if ( right_cut_upper && right_cut_lower && left_cut_upper && left_cut_lower )
       {
-        addTriangle(i, index_right, index_down_right, output);
-        addTriangle(i, index_down, index_down_right, output);
+        float dist_right_cut = fabs (input_->points[index_down].z - input_->points[index_right].z);
+        float dist_left_cut = fabs (input_->points[i].z - input_->points[index_down_right].z);
+        if ( dist_right_cut >= dist_left_cut )
+        {
+          addTriangle(i, index_right, index_down_right, polygons);
+          addTriangle(i, index_down, index_down_right, polygons);
+        }
+        else
+        {
+          addTriangle(i, index_right, index_down, polygons);
+          addTriangle(index_right, index_down, index_down_right, polygons);
+        }
       }
-      else if (upper_left && lower_right) // makes sense if distance filtering is enabled
+      else
       {
-        addTriangle(i, index_right, index_down, output);
-        addTriangle(index_right, index_down, index_down_right, output);
+        if (right_cut_upper)
+          addTriangle(i, index_right, index_down_right, polygons);
+        if (right_cut_lower)
+          addTriangle(i, index_down, index_right, polygons);
+        if (left_cut_upper)
+          addTriangle(i, index_right, index_down, polygons);
+        if (left_cut_lower)
+          addTriangle(index_right, index_down, index_down_right, polygons);
       }
-      else if (upper_right)
-        addTriangle(i, index_right, index_down_right, output);
-      else if (lower_left)
-        addTriangle(i, index_down, index_down_right, output);
-      else if (upper_left)
-        addTriangle(i, index_right, index_down, output);
-      else if (lower_right)
-        addTriangle(index_right, index_down, index_down_right, output);
-      
-      /*
-      if ( isValidTriangle(vertex, vertex_right, vertex_down_right) )
-        addTriangle(i, index_right, index_down_right, output);
-      if ( isValidTriangle(vertex, vertex_down, vertex_down_right) )
-        addTriangle(i, index_down, index_down_right, output);
-      */
     }
   }
-
-  // correct all measurements
-  // (running over complete image since some rows and columns are left out
-  // depending on triangle_pixel_size)
-  for ( unsigned int i = 0; i < input_->points.size(); ++i )
-    if ( !hasValidXYZ(input_->points[i]) )
-      resetPointData(i, output, 0.0f);
-
 }
+
 
 #define PCL_INSTANTIATE_OrganizedFastMesh(T)                \
   template class PCL_EXPORTS pcl::OrganizedFastMesh<T>;

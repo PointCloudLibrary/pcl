@@ -41,7 +41,6 @@
 #include <pcl/common/angles.h>
 #include <pcl/io/io.h>
 #include <pcl/surface/reconstruction.h>
-#include <pcl/kdtree/kdtree_flann.h> // just for faking a search tree (is not needed)
 
 namespace pcl
 {
@@ -61,11 +60,24 @@ namespace pcl
 
       typedef typename pcl::PointCloud<PointInT>::Ptr PointCloudPtr;
 
-      OrganizedFastMesh()
-      : max_edge_length_squared_(0.025f)
-      , triangle_pixel_size_(1)
+      typedef std::vector<pcl::Vertices> Polygons;
+
+      enum TriangulationType
       {
-        check_tree_ = false; // tree_.reset(new pcl::KdTreeFLANN<PointInT>());
+        TRIANGLE_RIGHT_CUT,     // _always_ "cuts" a quad from top left to bottom right
+        TRIANGLE_LEFT_CUT,      // _always_ "cuts" a quad from top right to bottom left
+        TRIANGLE_ADAPTIVE_CUT,  // "cuts" where possible and prefers larger differences in 'z' direction
+        QUAD_MESH               // create a simple quad mesh
+      };
+
+      OrganizedFastMesh()
+      : max_edge_length_squared_ (0.025f)
+      , triangle_pixel_size_ (1)
+      , triangulation_type_ (TRIANGLE_RIGHT_CUT)
+      , store_shadowed_faces_(false)
+      {
+        check_tree_ = false;
+        cos_angle_tolerance_ = fabs(cos(pcl::deg2rad(12.5f)));
       };
       ~OrganizedFastMesh(){};
 
@@ -79,6 +91,9 @@ namespace pcl
       void
       performReconstruction (pcl::PolygonMesh &output);
 
+      void
+      reconstructPolygons (std::vector<pcl::Vertices>& polygons);
+
       /** \brief Set a maximum edge length. TODO: Implement! */
       inline void
       setMaxEdgeLength(float max_edge_length)
@@ -86,11 +101,32 @@ namespace pcl
         max_edge_length_squared_ = max_edge_length*max_edge_length;
       };
 
-      /** Set the edge length (in pixels) used for constructing the fixed mesh. */
+      /**
+       * \brief Set the edge length (in pixels) used for constructing the fixed mesh.
+       * \param triangle_size edge length in pixels
+       * (Default: 1 = neighboring pixels are connected)
+       */
       inline void
       setTrianglePixelSize(int triangle_size)
       {
         triangle_pixel_size_ = std::max(1, (triangle_size - 1));
+      }
+
+      /**
+       * \brief Set the triangulation type (see \a TriangulationType)
+       * @param type quad mesh, triangle mesh with fixed left, right cut,
+       * or adaptive cut (splits a quad wrt. the depth (z) of the points)
+       */
+      inline void
+      setTriangulationType(TriangulationType type)
+      {
+        triangulation_type_ = type;
+      }
+
+      inline void
+      storeShadowedFaces(bool enable)
+      {
+        store_shadowed_faces_ = enable;
       }
 
     protected:
@@ -98,11 +134,22 @@ namespace pcl
       /** \brief Temporary variable to store a triangle **/
       pcl::Vertices triangle_;
 
+      /** \brief Temporary variable to store a quad **/
+      pcl::Vertices quad_;
+
       /** \brief max (squared) length of edge */
       float max_edge_length_squared_;
 
       /** \brief size of triangle endges (in pixels) */
       int triangle_pixel_size_;
+
+      /** \brief Type of meshin scheme (quads vs. triangles, left cut vs. right cut ... */
+      TriangulationType triangulation_type_;
+
+      /** \brief Whether or not shadowed faces are stored, e.g., for exploration */
+      bool store_shadowed_faces_;
+
+      float cos_angle_tolerance_;
 
       /** \brief Add a new triangle to the current polygon mesh
         * \param a index of the first vertex
@@ -111,13 +158,27 @@ namespace pcl
         * \param output the polygon mesh to be updated
         */
       inline void
-      addTriangle (int a, int b, int c, pcl::PolygonMesh &output)
+      addTriangle (int a, int b, int c, std::vector<pcl::Vertices>& polygons)
       {
+        if (isShadowedTriangle(a, b, c))
+          return;
+
         triangle_.vertices.clear ();
         triangle_.vertices.push_back (a);
         triangle_.vertices.push_back (b);
         triangle_.vertices.push_back (c);
-        output.polygons.push_back (triangle_);
+        polygons.push_back (triangle_);
+      }
+
+      inline void
+      addQuad(int a, int b, int c, int d, std::vector<pcl::Vertices>& polygons)
+      {
+        quad_.vertices.clear ();
+        quad_.vertices.push_back (a);
+        quad_.vertices.push_back (b);
+        quad_.vertices.push_back (c);
+        quad_.vertices.push_back (d);
+        polygons.push_back (quad_);
       }
 
 
@@ -139,33 +200,54 @@ namespace pcl
       inline bool
       isShadowed(const PointInT& point_a, const PointInT& point_b)
       {
-          Eigen::Vector3f viewpoint(0.0f, 0.0f, 0.0f); // TODO: allow for passing viewpoint information
-          Eigen::Vector3f dir_a = viewpoint - point_a.getVector3fMap();
-          Eigen::Vector3f dir_b = point_b.getVector3fMap() - point_a.getVector3fMap();
-          float angle = acos( dir_a.dot(dir_b) / (dir_a.norm()*dir_b.norm()) );
-          if ( angle != angle ) angle = 0.0f;
-          float angle_tolerance = pcl::deg2rad(15.0f); // (10 * pi) / 180
-          return ( (angle < angle_tolerance) || (angle > (M_PI - angle_tolerance)) );
+        Eigen::Vector3f viewpoint(0.0f, 0.0f, 0.0f); // TODO: allow for passing viewpoint information
+        Eigen::Vector3f dir_a = viewpoint - point_a.getVector3fMap();
+        Eigen::Vector3f dir_b = point_b.getVector3fMap() - point_a.getVector3fMap();
+        float distance_to_points = dir_a.norm();
+        float distance_between_points = dir_b.norm();
+        float cos_angle = dir_a.dot(dir_b) / (distance_to_points*distance_between_points);
+        if (cos_angle != cos_angle) cos_angle = 1.0f;
+        return ( fabs(cos_angle) >= cos_angle_tolerance_ );
+        // TODO: check for both: angle almost 0/180 _and_ distance between points larger than noise level
       }
 
       inline bool
-      isValidTriangle (const PointInT& point_a, const PointInT& point_b, const PointInT& point_c)
+      isValidTriangle(const int& a, const int& b, const int& c)
       {
-        if ( !pcl::hasValidXYZ(point_a) ) return false;
-        if ( !pcl::hasValidXYZ(point_b) ) return false;
-        if ( !pcl::hasValidXYZ(point_c) ) return false;
-
-//        if ( dist(point_a, point_b) > max_edge_length_squared_ ) return false;
-//        if ( dist(point_b, point_c) > max_edge_length_squared_ ) return false;
-//        if ( dist(point_c, point_a) > max_edge_length_squared_ ) return false;
-
-        if ( isShadowed(point_a, point_b) ) return false;
-        if ( isShadowed(point_b, point_c) ) return false;
-        if ( isShadowed(point_c, point_a) ) return false;
-
+        if ( !pcl::hasValidXYZ(input_->points[a]) ) return false;
+        if ( !pcl::hasValidXYZ(input_->points[b]) ) return false;
+        if ( !pcl::hasValidXYZ(input_->points[c]) ) return false;
         return true;
       }
 
+      inline bool
+      isShadowedTriangle(const int& a, const int& b, const int& c)
+      {
+        if ( isShadowed(input_->points[a], input_->points[b]) ) return true;
+        if ( isShadowed(input_->points[b], input_->points[c]) ) return true;
+        if ( isShadowed(input_->points[c], input_->points[a]) ) return true;
+        return false;
+      }
+
+      inline bool
+      isValidQuad(const int& a, const int& b, const int& c, const int& d)
+      {
+        if ( !pcl::hasValidXYZ(input_->points[a]) ) return false;
+        if ( !pcl::hasValidXYZ(input_->points[b]) ) return false;
+        if ( !pcl::hasValidXYZ(input_->points[c]) ) return false;
+        if ( !pcl::hasValidXYZ(input_->points[d]) ) return false;
+        return true;
+      }
+
+      inline bool
+      isShadowedQuad(const int& a, const int& b, const int& c, const int& d)
+      {
+        if ( isShadowed(input_->points[a], input_->points[b]) ) return true;
+        if ( isShadowed(input_->points[b], input_->points[c]) ) return true;
+        if ( isShadowed(input_->points[c], input_->points[d]) ) return true;
+        if ( isShadowed(input_->points[d], input_->points[a]) ) return true;
+        return false;
+      }
 
       inline int
       getIndex(int x, int y)
@@ -173,14 +255,17 @@ namespace pcl
         return (int)(y * input_->width + x);
       }
 
-      inline float
-      dist(const PointInT& point_a, const PointInT& point_b)
-      {
-        Eigen::Vector3f v = point_a.getVector3fMap() - point_b.getVector3fMap();
-        return v.squaredNorm();
-      }
+      void
+      makeQuadMesh (std::vector<pcl::Vertices>& polygons);
 
+      void
+      makeRightCutMesh (std::vector<pcl::Vertices>& polygons);
 
+      void
+      makeLeftCutMesh (std::vector<pcl::Vertices>& polygons);
+
+      void
+      makeAdaptiveCutMesh (std::vector<pcl::Vertices>& polygons);
 
   };
 
