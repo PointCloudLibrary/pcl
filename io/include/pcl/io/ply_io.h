@@ -181,12 +181,12 @@ namespace pcl
       /** \brief Save point cloud data to a PLY file containing n-D points, in ASCII format
         * \param file_name the output file name
         * \param cloud the point cloud data message
-        * \param precision the specified output numeric stream precision (default: 7)
+        * \param precision the specified output numeric stream precision (default: 8)
         */
       int writeASCII (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
                       const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
                       const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
-                      int precision = 7);
+                      int precision = 8);
 
       /** \brief Save point cloud data to a PLY file containing n-D points, in BINARY format
         * \param file_name the output file name
@@ -213,7 +213,7 @@ namespace pcl
         if (binary)
           return (this->writeBinary (file_name, cloud, origin, orientation));
         else
-          return (this->writeASCII (file_name, cloud, origin, orientation, 7));
+          return (this->writeASCII (file_name, cloud, origin, orientation, 8));
       }
 
       /** \brief Save point cloud data to a PLY file containing n-D points

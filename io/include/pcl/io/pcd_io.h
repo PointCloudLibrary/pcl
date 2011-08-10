@@ -182,7 +182,7 @@ namespace pcl
         * \param cloud the point cloud data message
         * \param origin the sensor acquisition origin
         * \param orientation the sensor acquisition orientation
-        * \param precision the specified output numeric stream precision (default: 7)
+        * \param precision the specified output numeric stream precision (default: 8)
         *
         * Caution: PointCloud structures containing an RGB field have
         * traditionally used packed float values to store RGB data. Storing a
