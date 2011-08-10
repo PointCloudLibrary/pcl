@@ -54,12 +54,22 @@ if(build)
             )
     endif(OPENNI_FOUND)
 
+    if(VTK_FOUND)
+        set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
+        include (${VTK_USE_FILE})
+        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+        set(VTK_IO_INCLUDES include/pcl/${SUBSYS_NAME}/vtk_lib_io.h)
+        set(VTK_IO_SOURCE src/vtk_lib_io.cpp)
+        set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
+    endif(VTK_FOUND)
+
     set(srcs src/io.cpp
         src/pcd_io.cpp
         src/vtk_io.cpp
         src/ply_io.cpp
         src/compression.cpp
         src/obj_io.cpp
+        ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
         )
 
@@ -72,6 +82,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ply_io.h
         include/pcl/${SUBSYS_NAME}/ply.h
         include/pcl/${SUBSYS_NAME}/obj_io.h 
+        ${VTK_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         )
 
@@ -93,10 +104,7 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_common)
-    if(OPENNI_FOUND)
-        target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
-    endif(OPENNI_FOUND)
+    target_link_libraries(${LIB_NAME} pcl_common ${VTK_IO_TARGET_LINK_LIBRARIES} ${OPENNI_LIBRARIES})
     set(EXT_DEPS eigen3)
     if(OPENNI_FOUND)
       list(APPEND EXT_DEPS openni-dev)
