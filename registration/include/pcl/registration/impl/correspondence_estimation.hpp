@@ -222,12 +222,13 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
   pcl::Correspondence corr;
   for (size_t i = 0; i < indices_->size (); ++i)
   {
-    //if (tree_->nearestKSearch (input_->points[(*indices_)[i]], 1, index, distance))
+    // Copy the source data to a target PointTarget format so we can search in the tree
     PointTarget pt;
     pcl::for_each_type <FieldListTarget> (pcl::NdConcatenateFunctor <PointSource, PointTarget> (
           input_->points[(*indices_)[i]], 
           pt));
 
+    //if (tree_->nearestKSearch (input_->points[(*indices_)[i]], 1, index, distance))
     if (tree_->nearestKSearch (pt, 1, index, distance))
     {
       if (distance[0] <= max_dist_sqr)
@@ -249,6 +250,10 @@ template <typename PointSource, typename PointTarget> void
 pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determineReciprocalCorrespondences (
     std::vector<pcl::Correspondence> &correspondences)
 {
+  typedef typename pcl::traits::fieldList<PointSource>::type FieldListSource;
+  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
+  typedef typename pcl::intersect<FieldListSource, FieldListTarget>::type FieldList;
+  
   if (!initCompute ())
     return;
 
@@ -259,8 +264,8 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
   }
 
   // setup tree for reciprocal search
-  pcl::KdTreeFLANN<PointTarget> tree_reciprocal;
-  //tree_reciprocal.setInputCloud (input_, indices_);
+  pcl::KdTreeFLANN<PointSource> tree_reciprocal;
+  tree_reciprocal.setInputCloud (input_, indices_);
 
   correspondences.resize (indices_->size());
   std::vector<int> index (1);
@@ -270,13 +275,25 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
   pcl::Correspondence corr;
   unsigned int nr_valid_correspondences = 0;
 
-//  #pragma omp parallel for shared( input_tree, output_tree )
   for (size_t i = 0; i < indices_->size (); ++i)
   {
-    tree_->nearestKSearch (input_->points[(*indices_)[i]], 1, index, distance);
-    tree_reciprocal.nearestKSearch (target_->points[index[0]], 1, index_reciprocal, distance_reciprocal);
+    // Copy the source data to a target PointTarget format so we can search in the tree
+    PointTarget pt_src;
+    pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointSource, PointTarget> (
+          input_->points[(*indices_)[i]], 
+          pt_src));
 
-//    #pragma omp critical
+    //tree_->nearestKSearch (input_->points[(*indices_)[i]], 1, index, distance);
+    tree_->nearestKSearch (pt_src, 1, index, distance);
+
+    // Copy the target data to a target PointSource format so we can search in the tree_reciprocal
+    PointSource pt_tgt;
+    pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTarget, PointSource> (
+          target_->points[index[0]],
+          pt_tgt));
+    //tree_reciprocal.nearestKSearch (target_->points[index[0]], 1, index_reciprocal, distance_reciprocal);
+    tree_reciprocal.nearestKSearch (pt_tgt, 1, index_reciprocal, distance_reciprocal);
+
     if ((*indices_)[i] == index_reciprocal[0])
     {
       corr.index_query = (*indices_)[i];
