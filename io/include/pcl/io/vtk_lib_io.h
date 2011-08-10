@@ -49,10 +49,10 @@
 #include <vtkPLYReader.h>
 #include <vtkPLYWriter.h>
 #include <vtkOBJReader.h>
-#include <vtkOBJExporter.h>
+//#include <vtkOBJExporter.h>
 #include <vtkSTLReader.h>
 #include <vtkSTLWriter.h>
-#include <vtkVRMLExporter.h>
+//#include <vtkVRMLExporter.h>
 #include <boost/filesystem.hpp>
 
 #include "pcl/point_types.h"

@@ -421,8 +421,6 @@ pcl::io::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& p
     }
     poly_data->GetPointData()->SetNormals(normals);
   }
-  else
-    printf("No normal information");
 
   if ( poly_data->GetPoints() == NULL )
     return 0;
