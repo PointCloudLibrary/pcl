@@ -36,10 +36,6 @@ if(build)
 
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-  # Install include files
-  PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-  PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-  
   PCL_ADD_EXECUTABLE(nn_classification_example ${SUBSYS_NAME} src/nn_classification_example.cpp)
   target_link_libraries(nn_classification_example pcl_common pcl_io pcl_features pcl_kdtree)
 
@@ -91,8 +87,12 @@ if(build)
 	    set(incs include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h)  
 	  	set(impl_incs include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp)
 	    set(srcs src/dominant_plane_segmentation.cpp)
-	             
-	  	set(LIB_NAME pcl_${SUBSYS_NAME})
+	    
+      # Install include files
+      PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+      PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+    	
+    	set(LIB_NAME pcl_${SUBSYS_NAME})
 	    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${impl_incs} ${incs})
 	    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus)
 	       

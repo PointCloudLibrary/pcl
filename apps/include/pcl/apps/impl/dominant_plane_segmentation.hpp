@@ -5,29 +5,30 @@
 
 template<typename PointType>
 void
-pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters)
+pcl::apps::DominantPlaneSegmentation<PointType>::compute (
+                                                          std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters)
 {
 
   // Has the input dataset been set already?
   if (!input_)
   {
-    PCL_WARN ("[DominantPlaneSegmentation] No input dataset given!\n");
+    PCL_WARN ("[pcl::apps::DominantPlaneSegmentation] No input dataset given!\n");
     return;
   }
 
   CloudConstPtr cloud_;
-  CloudPtr cloud_filtered_(new Cloud());
-  CloudPtr cloud_downsampled_(new Cloud());
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals_(new pcl::PointCloud<pcl::Normal>());
-  pcl::PointIndices::Ptr table_inliers_(new pcl::PointIndices());
-  pcl::ModelCoefficients::Ptr table_coefficients_(new pcl::ModelCoefficients());
-  CloudPtr table_projected_(new Cloud());
-  CloudPtr table_hull_(new Cloud());
-  CloudPtr cloud_objects_(new Cloud());
-  CloudPtr cluster_object_(new Cloud());
+  CloudPtr cloud_filtered_ (new Cloud ());
+  CloudPtr cloud_downsampled_ (new Cloud ());
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals_ (new pcl::PointCloud<pcl::Normal> ());
+  pcl::PointIndices::Ptr table_inliers_ (new pcl::PointIndices ());
+  pcl::ModelCoefficients::Ptr table_coefficients_ (new pcl::ModelCoefficients ());
+  CloudPtr table_projected_ (new Cloud ());
+  CloudPtr table_hull_ (new Cloud ());
+  CloudPtr cloud_objects_ (new Cloud ());
+  CloudPtr cluster_object_ (new Cloud ());
 
-  KdTreePtr normals_tree_(new pcl::KdTreeFLANN<PointType>);
-  KdTreePtr clusters_tree_(new pcl::KdTreeFLANN<PointType>);
+  KdTreePtr normals_tree_ (new pcl::KdTreeFLANN<PointType>);
+  KdTreePtr clusters_tree_ (new pcl::KdTreeFLANN<PointType>);
   clusters_tree_->setEpsilon (1);
 
   // Normal estimation parameters
@@ -73,7 +74,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr, 
   grid_.filter (*cloud_downsampled_);
 
   PCL_INFO ("[DominantPlaneSegmentation] Number of points left after filtering (%f -> %f): %d out of %d\n",
-  min_z_bounds_, max_z_bounds_, (int)cloud_downsampled_->points.size (), (int)input_->points.size ());
+      min_z_bounds_, max_z_bounds_, (int)cloud_downsampled_->points.size (), (int)input_->points.size ());
 
   // ---[ Estimate the point normals
   n3d_.setInputCloud (cloud_downsampled_);
@@ -148,23 +149,19 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr, 
 
   // ---[ Split the objects into Euclidean clusters
   std::vector<pcl::PointIndices> clusters2;
-  cluster_.setInputCloud (cloud_objects_);
+  cluster_.setInputCloud (cloud_downsampled_);
+  cluster_.setIndices (boost::make_shared<const pcl::PointIndices> (cloud_object_indices));
   cluster_.extract (clusters2);
 
   PCL_INFO ("[DominantPlaneSegmentation] Number of clusters found matching the given constraints: %d.\n",
       (int)clusters2.size ());
 
   clusters.resize (clusters2.size ());
+
   for (size_t i = 0; i < clusters2.size (); ++i)
   {
-    clusters[i] = (CloudPtr)(new Cloud());
-    clusters[i]->points.resize (clusters2[i].indices.size ());
-    for (size_t j = 0; j < clusters[i]->points.size (); ++j)
-    {
-      clusters[i]->points[j].x = cloud_objects_->points[clusters2[i].indices[j]].x;
-      clusters[i]->points[j].y = cloud_objects_->points[clusters2[i].indices[j]].y;
-      clusters[i]->points[j].z = cloud_objects_->points[clusters2[i].indices[j]].z;
-    }
+    clusters[i] = (CloudPtr)(new Cloud ());
+    pcl::copyPointCloud (*cloud_downsampled_, clusters2[i].indices, *clusters[i]);
   }
 }
 
