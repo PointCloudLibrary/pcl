@@ -670,7 +670,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   rgb[2] = 0 * 255.0;
 
   // Draw lines between the best corresponding points
-  for (size_t i = 0; i < source_points->size (); ++i)
+  for (size_t i = 0; i < correspondences.size (); ++i)
   {
     const PointT &p_src = source_points->points[correspondences[i].index_query];
     const PointT &p_tgt = target_points->points[correspondences[i].index_match];
