@@ -74,10 +74,21 @@ pcl::registration::CorrespondenceRejectorDistance::getRemainingCorrespondences (
   remaining_correspondences.resize (original_correspondences.size ());
   for (size_t i = 0; i < original_correspondences.size (); ++i)
   {
-    if (original_correspondences[i].distance < max_distance_)
+    if (data_container_)
     {
-      remaining_correspondences[number_valid_correspondences] = original_correspondences[i];
-      ++number_valid_correspondences;
+      if (data_container_->getCorrespondenceScore (original_correspondences[i]) < max_distance_)
+      {
+        remaining_correspondences[number_valid_correspondences] = original_correspondences[i];
+        ++number_valid_correspondences;
+      }
+    }
+    else
+    {
+      if (original_correspondences[i].distance < max_distance_)
+      {
+        remaining_correspondences[number_valid_correspondences] = original_correspondences[i];
+        ++number_valid_correspondences;
+      }
     }
   }
   remaining_correspondences.resize (number_valid_correspondences);
