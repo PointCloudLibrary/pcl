@@ -59,6 +59,7 @@ namespace pcl
   {
     using PCLBase<PointInT>::input_;
     using PCLBase<PointInT>::indices_;
+    using PCLBase<PointInT>::fake_indices_;
     using PCLBase<PointInT>::initCompute;
     using PCLBase<PointInT>::deinitCompute;
 
@@ -77,7 +78,7 @@ namespace pcl
       typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
 
       /** \brief Empty constructor. */
-      MovingLeastSquares () : tree_ (), order_ (2), polynomial_fit_ (true), search_radius_ (0), sqr_gauss_param_ (0) {};
+      MovingLeastSquares () : PCLBase<PointInT> (), tree_ (), order_ (2), polynomial_fit_ (true), search_radius_ (0), sqr_gauss_param_ (0) {};
 
       /** \brief Provide a pointer to an point cloud where normal information should be saved
         * \note This is optional, it can be the same as the parameter to the reconstruction method, but no normals are estimated if it is not set.
