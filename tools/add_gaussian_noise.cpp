@@ -104,7 +104,9 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
     xyz_cloud_filtered->points[point_i].z = xyz_cloud->points[point_i].z + var_nor ();
   }
 
-  toROSMsg (*xyz_cloud_filtered, output);
+  sensor_msgs::PointCloud2 input_xyz_filtered;
+  toROSMsg (*xyz_cloud_filtered, input_xyz_filtered);
+  concatenateFields (*input, input_xyz_filtered, output);
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }

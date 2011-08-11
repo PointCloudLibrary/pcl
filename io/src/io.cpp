@@ -55,7 +55,7 @@ pcl::concatenateFields (const sensor_msgs::PointCloud2 &cloud1,
     return (false);
 
   if(cloud1.is_bigendian != cloud2.is_bigendian)
-    return false;
+    return (false);
 
   // Else, copy the second cloud (width, height, header stay the same)
   // we do this since fields from the second cloud are supposed to overwrite
