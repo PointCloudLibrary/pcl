@@ -1005,11 +1005,12 @@ namespace pcl
           * \param poses represent the transformation from object coordinates to camera coordinates for the respective viewpoint.
           * \param enthropies are values between 0 and 1 representing which percentage of the model is seen from the respective viewpoint.
           * \param tesselation_level represents the number of subdivisions applied to the triangles of original icosahedron.
+          * \param view_angle field of view of the virtual camera
           */
         void
         renderViewTesselatedSphere (int xres, int yres,
         std::vector<pcl::PointCloud<pcl::PointXYZ>,Eigen::aligned_allocator< pcl::PointCloud<pcl::PointXYZ> > > & cloud,
-        std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level);
+        std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level, float view_angle=45);
 
         /** \brief Camera view, window position and size. */
         Camera camera_;
