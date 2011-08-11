@@ -23,12 +23,6 @@ if(build)
             )
     endif(QHULL_FOUND)
     
-    if(VTK_FOUND)
-        set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
-        include (${VTK_USE_FILE})
-        set(VTK_SURFACE_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
-    endif(VTK_FOUND)
-
     set(srcs src/gp3.cpp
         src/grid_projection.cpp
         src/organized_fast_mesh.cpp
@@ -67,7 +61,7 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_common pcl_kdtree ${OpenCV_LIBS} ${VTK_SURFACE_TARGET_LINK_LIBRARIES} ${QHULL_LIBRARIES})
+    target_link_libraries(${LIB_NAME} pcl_common pcl_kdtree ${OpenCV_LIBS} ${QHULL_LIBRARIES})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "" "" "" "")
 
