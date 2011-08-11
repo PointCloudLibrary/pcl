@@ -44,10 +44,21 @@ pcl::registration::CorrespondenceRejectorDistance::applyRejection (pcl::Correspo
   correspondences.resize (input_correspondences_->size ());
   for (size_t i = 0; i < input_correspondences_->size (); ++i)
   {
-    if ((*input_correspondences_)[i].distance < max_distance_)
+    if (data_container_)
     {
-      correspondences[number_valid_correspondences] = (*input_correspondences_)[i];
-      ++number_valid_correspondences;
+      if (data_container_->getCorrespondenceScore ((*input_correspondences_)[i]) < max_distance_)
+      {
+        correspondences[number_valid_correspondences] = (*input_correspondences_)[i];
+        ++number_valid_correspondences;
+      }
+    }
+    else
+    {
+      if ((*input_correspondences_)[i].distance < max_distance_)
+      {
+        correspondences[number_valid_correspondences] = (*input_correspondences_)[i];
+        ++number_valid_correspondences;
+      }
     }
   }
   correspondences.resize (number_valid_correspondences);

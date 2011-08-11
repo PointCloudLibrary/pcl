@@ -225,8 +225,8 @@ namespace pcl
                 feature_representation_.reset (new DefaultFeatureRepresentation<FeatureT>);
 
               // Get the source and the target feature from the list
-              const FeatureT feat_src = source_features_->points[index];
-              const FeatureT feat_tgt = target_features_->points[index];
+              const FeatureT &feat_src = source_features_->points[index];
+              const FeatureT &feat_tgt = target_features_->points[index];
 
               // Check if the representations are valid
               if (!feature_representation_->isValid (feat_src) || !feature_representation_->isValid (feat_tgt))
@@ -242,7 +242,7 @@ namespace pcl
               feature_representation_->vectorize ((FeatureT)feat_tgt, feat_tgt_ptr);
 
               // Compute the L2 norm
-              return ((feat_src_ptr - feat_tgt_ptr).norm ());
+              return ((feat_src_ptr - feat_tgt_ptr).squaredNorm ());
             }
 
             /** \brief Check whether the correspondence pair at the given index is valid
@@ -253,7 +253,7 @@ namespace pcl
             virtual inline bool
             isCorrespondenceValid (int index)
             {
-              if (getCorrespondenceScore (index) < thresh_)
+              if (getCorrespondenceScore (index) < thresh_ * thresh_)
                 return (true);
               else
                 return (false);
@@ -262,6 +262,8 @@ namespace pcl
           private:
             FeatureCloudConstPtr source_features_, target_features_;
             SearchMethod search_method_;
+
+            /** \brief The L2 squared Euclidean threshold. */
             double thresh_;
 
             /** \brief The internal point feature representation used. */

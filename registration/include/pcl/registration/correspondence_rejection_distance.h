@@ -56,7 +56,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        CorrespondenceRejectorDistance () : max_distance_(std::numeric_limits<float>::max ())
+        CorrespondenceRejectorDistance () : max_distance_(std::numeric_limits<float>::max ()),
+                                            data_container_ ()
         {
           rejection_name_ = "CorrespondenceRejectorDistance";
         }
@@ -81,6 +82,38 @@ namespace pcl
         inline float 
         getMaxmimumDistance () { return std::sqrt (max_distance_); };
 
+        /** \brief Provide a pointer to a cloud 
+          * \param[in] cloud a cloud 
+          */
+        template <typename PointT> inline void 
+        setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
+        {
+          data_container_.reset (new DataContainer<PointT>);
+          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputCloud (cloud);
+        }
+
+        /** \brief Get a pointer to the source cloud's feature descriptors, specified by the given \a key
+          * \param key a string that uniquely identifies the feature (must match the key provided by setSourceFeature)
+          */
+//        template <typename FeatureT> inline typename pcl::PointCloud<FeatureT>::ConstPtr 
+//        getSourceFeature (const std::string &key);
+
+        /** \brief Provide a pointer to a cloud of feature descriptors associated with the target point cloud
+          * \param target_feature a cloud of feature descriptors associated with the target point cloud
+          * \param key a string that uniquely identifies the feature
+          */
+        template <typename PointT> inline void 
+        setInputTarget (const typename pcl::PointCloud<PointT>::ConstPtr &target)
+        {
+          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
+        }
+
+        /** \brief Get a pointer to the source cloud's feature descriptors, specified by the given \a key
+          * \param key a string that uniquely identifies the feature (must match the key provided by setTargetFeature)
+          */
+//        template <typename FeatureT> inline typename pcl::PointCloud<FeatureT>::ConstPtr 
+//        getTargetFeature (const std::string &key);
+
       protected:
 
         void 
@@ -89,7 +122,72 @@ namespace pcl
         /** \brief The maximum distance threshold between two correspondent points in source <-> target. If the
           * distance is larger than this threshold, the points will not be ignored in the alignment process.
           */
-       float max_distance_;
+        float max_distance_;
+
+        class DataContainerInterface
+        {
+          public:
+            virtual double getCorrespondenceScore (int index) = 0;
+            virtual double getCorrespondenceScore (const pcl::Correspondence &) = 0;
+        };
+
+        template <typename PointT>
+        class DataContainer : public DataContainerInterface
+        {
+          typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
+          typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
+          
+          public:
+
+            DataContainer ()
+            {
+              tree_.reset (new pcl::KdTreeFLANN<PointT>);
+            }
+
+            inline void 
+            setInputCloud (const PointCloudConstPtr &cloud)
+            {
+              input_ = cloud;
+            }
+
+            inline void 
+            setInputTarget (const PointCloudConstPtr &target)
+            {
+              target_ = target;
+              tree_->setInputCloud (target_);
+            }
+
+            inline double 
+            getCorrespondenceScore (int index)
+            {
+              std::vector<int> indices (1);
+              std::vector<float> distances (1);
+              if (tree_->nearestKSearch (input_->points[index], 1, indices, distances))
+              {
+                return (distances[0]);
+              }
+              else
+                return (std::numeric_limits<double>::max ());
+            }
+
+            inline double 
+            getCorrespondenceScore (const pcl::Correspondence &corr)
+            {
+              // Get the source and the target feature from the list
+              const PointT &src = input_->points[corr.index_query];
+              const PointT &tgt = target_->points[corr.index_match];
+
+              return ((src.getVector4fMap () - tgt.getVector4fMap ()).squaredNorm ());
+            }
+
+          private:
+            PointCloudConstPtr input_, target_;
+            KdTreePtr tree_;
+        };
+
+        typedef boost::shared_ptr<DataContainerInterface> DataContainerPtr;
+
+        DataContainerPtr data_container_;
     };
 
   }
