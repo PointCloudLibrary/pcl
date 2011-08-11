@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -39,6 +41,7 @@
 
 // PCL includes
 #include <pcl/point_types.h>
+#include <pcl/correspondence.h>
 #include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>
 // 
@@ -562,17 +565,57 @@ namespace pcl
                         int viewport = 0);
 
         /** \brief Add a Polygonline from a polygonMesh object to screen
-          * \param polymesh the polygonal mesh from where the polylines will be extracted
-          * \param id the polygon object id (default: "polygon")
-          * \param viewport the view port where the PolygonMesh should be added (default: all)
+          * \param[in] polymesh the polygonal mesh from where the polylines will be extracted
+          * \param[in] id the polygon object id (default: "polygon")
+          * \param[in] viewport the view port where the PolygonMesh should be added (default: all)
           */
         bool
         addPolylineFromPolygonMesh (const pcl::PolygonMesh &polymesh, 
                                     const std::string &id = "polyline",
                                     int viewport = 0);
 
+        /** \brief Add the specified correspondences to the display. 
+          * \param[in] source_points The source points
+          * \param[in] target_points The target points
+          * \param[in] correspondences The mapping from source points to target points. Each element must be an index into \ref target_points 
+          * \param[in] line_ids A vector of strings into which the IDs of the newly drawn lines will be added
+          * \param[in] id the polygon object id (default: "correspondences")
+          * \param[in] viewport the view port where the PolygonMesh should be added (default: all)
+          */
+        template <typename PointT> bool
+        addCorrespondences (const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
+                            const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
+                            const std::vector<int> & correspondences,
+                            const std::string &id = "correspondences",
+                            int viewport = 0);
+
+        /** \brief Add the specified correspondences to the display. 
+          * \param[in] source_points The source points
+          * \param[in] target_points The target points
+          * \param[in] correspondences The mapping from source points to target points. Each element must be an index into \ref target_points
+          * \param[in] line_ids A vector of strings into which the IDs of the newly drawn lines will be added
+          * \param[in] id the polygon object id (default: "correspondences")
+          * \param[in] viewport the view port where the PolygonMesh should be added (default: all)
+          */
+        template <typename PointT> bool
+        addCorrespondences (const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
+                            const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
+                            const std::vector<pcl::Correspondence> &correspondences,
+                            const std::string &id = "correspondences",
+                            int viewport = 0);
+        
+        /** \brief Remove the specified correspondences from the display. 
+          * \param[in] id the polygon correspondences object id (i.e., given on \ref addCorrespondences)
+          * \param[in] viewport view port from where the polygon should be removed (default: all)
+          */
+        inline void
+        removeCorrespondences (const std::string &id = "correspondences", int viewport = 0)
+        {
+          removeShape (id, viewport);
+        }
+         
         /** \brief Get the color handler index of a rendered PointCloud based on its ID
-          * \param id the point cloud object id
+          * \param[in] id the point cloud object id
           */
         inline int 
         getColorHandlerIndex (const std::string &id)

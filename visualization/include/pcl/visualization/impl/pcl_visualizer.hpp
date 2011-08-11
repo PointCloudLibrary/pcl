@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,6 +39,8 @@
 
 #ifndef PCL_PCL_VISUALIZER_IMPL_H_
 #define PCL_PCL_VISUALIZER_IMPL_H_
+
+#include <vtkCellData.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool 
@@ -575,6 +579,124 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   act.actor = actor;
   (*cloud_actor_map_)[id] = act;
   //style_->setCloudActorMap (cloud_actor_map_);
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::visualization::PCLVisualizer::addCorrespondences (
+   const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
+   const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
+   const std::vector<int> &correspondences,
+   const std::string &id,
+   int viewport)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
+  {
+    PCL_WARN ("[addCorrespondences] A set of correspondences with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkAppendPolyData> polydata = vtkSmartPointer<vtkAppendPolyData>::New ();
+
+  vtkSmartPointer<vtkUnsignedCharArray> line_colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  line_colors->SetNumberOfComponents (3);
+  line_colors->SetName ("Colors");
+  // Use Red by default (can be changed later)
+  unsigned char rgb[3];
+  rgb[0] = 1 * 255.0;
+  rgb[1] = 0 * 255.0;
+  rgb[2] = 0 * 255.0;
+
+  // Draw lines between the best corresponding points
+  for (size_t i = 0; i < source_points->size (); ++i)
+  {
+    const PointT &p_src = source_points->points[i];
+    const PointT &p_tgt = target_points->points[correspondences[i]];
+    
+    // Add the line
+    vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();
+    line->SetPoint1 (p_src.x, p_src.y, p_src.z);
+    line->SetPoint2 (p_tgt.x, p_tgt.y, p_tgt.z);
+    line->Update ();
+    polydata->AddInput (line->GetOutput ());
+    line_colors->InsertNextTupleValue (rgb);
+  }
+  polydata->Update ();
+  vtkSmartPointer<vtkPolyData> line_data = polydata->GetOutput ();
+  line_data->GetCellData ()->SetScalars (line_colors);
+
+  // Create an Actor
+  vtkSmartPointer<vtkLODActor> actor;
+  createActorFromVTKDataSet (line_data, actor);
+  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetOpacity (0.5);
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  (*shape_actor_map_)[id] = actor;
+
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::visualization::PCLVisualizer::addCorrespondences (
+   const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
+   const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
+   const std::vector<pcl::Correspondence> &correspondences,
+   const std::string &id,
+   int viewport)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
+  {
+    PCL_WARN ("[addCorrespondences] A set of correspondences with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkAppendPolyData> polydata = vtkSmartPointer<vtkAppendPolyData>::New ();
+
+  vtkSmartPointer<vtkUnsignedCharArray> line_colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  line_colors->SetNumberOfComponents (3);
+  line_colors->SetName ("Colors");
+  unsigned char rgb[3];
+  // Use Red by default (can be changed later)
+  rgb[0] = 1 * 255.0;
+  rgb[1] = 0 * 255.0;
+  rgb[2] = 0 * 255.0;
+
+  // Draw lines between the best corresponding points
+  for (size_t i = 0; i < source_points->size (); ++i)
+  {
+    const PointT &p_src = source_points->points[correspondences[i].index_query];
+    const PointT &p_tgt = target_points->points[correspondences[i].index_match];
+    
+    // Add the line
+    vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();
+    line->SetPoint1 (p_src.x, p_src.y, p_src.z);
+    line->SetPoint2 (p_tgt.x, p_tgt.y, p_tgt.z);
+    line->Update ();
+    polydata->AddInput (line->GetOutput ());
+    line_colors->InsertNextTupleValue (rgb);
+  }
+  polydata->Update ();
+  vtkSmartPointer<vtkPolyData> line_data = polydata->GetOutput ();
+  line_data->GetCellData ()->SetScalars (line_colors);
+
+  // Create an Actor
+  vtkSmartPointer<vtkLODActor> actor;
+  createActorFromVTKDataSet (line_data, actor);
+  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetOpacity (0.5);
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  (*shape_actor_map_)[id] = actor;
+
   return (true);
 }
 
