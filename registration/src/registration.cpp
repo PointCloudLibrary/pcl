@@ -41,7 +41,7 @@
 
 **/
 
-#include "pcl/point_types.h"
+/*#include "pcl/point_types.h"
 #include "pcl/registration/registration.h"
 #include "pcl/registration/icp.h"
 #include "pcl/registration/icp_nl.h"
@@ -49,10 +49,10 @@
 #include "pcl/registration/correspondence_rejection.h"
 #include "pcl/registration/correspondence_rejection_distance.h"
 #include "pcl/registration/correspondence_rejection_one_to_one.h"
-#include "pcl/registration/correspondence_rejection_reciprocal.h"
 #include "pcl/registration/correspondence_rejection_sample_consensus.h"
 #include "pcl/registration/correspondence_rejection_trimmed.h"
 #include "pcl/registration/correspondence_sorting.h"
+*/
 
 //typedef pcl::IterativeClosestPoint<pcl::PointXYZ,pcl::PointXYZ> IterativeClosestPoint;
 //typedef pcl::IterativeClosestPointNonLinear<pcl::PointXYZ,pcl::PointXYZ> IterativeClosestPointNonLinear;

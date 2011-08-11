@@ -13,7 +13,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_distance.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_features.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_one_to_one.h
-        include/pcl/${SUBSYS_NAME}/correspondence_rejection_reciprocal.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_sample_consensus.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_trimmed.h
         include/pcl/${SUBSYS_NAME}/correspondence_sorting.h
@@ -43,7 +42,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_distance.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_features.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_one_to_one.hpp
-        include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_reciprocal.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_sample_consensus.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_trimmed.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_types.hpp
