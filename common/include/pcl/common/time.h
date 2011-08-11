@@ -61,7 +61,7 @@ namespace pcl
     public: 
       inline ScopeTime (const char* title)
       {
-        start_time_ = boost::posix_time::second_clock::local_time();
+        start_time_ = boost::posix_time::microsec_clock::local_time();
         title_ = std::string(title);
       }
 
