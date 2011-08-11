@@ -58,14 +58,14 @@ if(build)
         )
 
     set(srcs
-      src/registration.cpp
+        src/registration.cpp
       #src/stanford_gicp/bfgs_funcs.cpp
       #src/stanford_gicp/gicp.cpp
       #src/stanford_gicp/optimize.cpp
       #src/stanford_gicp/scan.cpp
       #src/stanford_gicp/transform.cpp
-      src/ppf_registration.cpp
-      src/pyramid_feature_matching.cpp)
+        src/ppf_registration.cpp
+        src/pyramid_feature_matching.cpp)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)

@@ -39,6 +39,7 @@
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
 
 #include <pcl/common/concatenate.h>
+//#include <pcl/registration/correspondence_estimation.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline void
@@ -163,5 +164,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
 
   deinitCompute ();
 }
+
+//#define PCL_INSTANTIATE_CorrespondenceEstimation(T,U) template class PCL_EXPORTS pcl::registration::CorrespondenceEstimation<T,U>;
 
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_ */

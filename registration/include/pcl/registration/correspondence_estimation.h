@@ -40,9 +40,6 @@
 #define PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_H_
 
 #include <string>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
-#include <boost/unordered_map.hpp>
 
 #include <pcl/pcl_base.h>
 #include <pcl/kdtree/kdtree.h>
@@ -63,8 +60,6 @@ namespace pcl
     template <typename PointSource, typename PointTarget>
     class CorrespondenceEstimation : public PCLBase<PointSource>
     {
-      class FeatureContainerInterface;
-
       public:
         using PCLBase<PointSource>::initCompute;
         using PCLBase<PointSource>::deinitCompute;
