@@ -392,16 +392,16 @@ namespace pcl
                           const PointCloudColorHandler<PointT> &color_handler,
                           const std::string &id = "cloud");
 
-         /** \brief Updates the XYZRGB data for an existing cloud object id on screen. 
-           * \param cloud the input point cloud dataset
-           * \param color_handler the RGB color handler to use 
-           * \param id the point cloud object id to update (default: cloud)
-           * \return false if no cloud with the specified ID was found
-           */
-/*        bool 
-        updatePointCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud, 
-                          const PointCloudColorHandlerRGBField<pcl::PointXYZRGB> &color_handler,
-                          const std::string &id = "cloud");*/
+//         /** \brief Updates the XYZRGB data for an existing cloud object id on screen. 
+//           * \param cloud the input point cloud dataset
+//           * \param color_handler the RGB color handler to use 
+//           * \param id the point cloud object id to update (default: cloud)
+//           * \return false if no cloud with the specified ID was found
+//           */
+//        bool 
+//        updatePointCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud, 
+//                          const PointCloudColorHandlerRGBField<pcl::PointXYZRGB> &color_handler,
+//                          const std::string &id = "cloud");
 
         /** \brief Add a Point Cloud (templated) to screen. 
           * \param cloud the input point cloud dataset
