@@ -46,7 +46,12 @@ namespace pcl
       * @b CorrespondenceRejectorDistance implements a simple correspondence
       * rejection method based on thresholding the distances between the
       * correspondences.
-      * \author Dirk Holz
+      *
+      * \note If \ref setInputCloud and \ref setInputTarget are given, then the
+      * distances between correspondences will be estimated using the given XYZ
+      * data, and not read from the set of input correspondences.
+      *
+      * \author Dirk Holz, Radu B. Rusu
       * \ingroup registration
       */
     class CorrespondenceRejectorDistance: public CorrespondenceRejector
@@ -80,39 +85,31 @@ namespace pcl
 
         /** \brief Get the maximum distance used for thresholding in correspondence rejection. */
         inline float 
-        getMaxmimumDistance () { return std::sqrt (max_distance_); };
+        getMaximumDistance () { return std::sqrt (max_distance_); };
 
-        /** \brief Provide a pointer to a cloud 
-          * \param[in] cloud a cloud 
+        /** \brief Provide a source point cloud dataset (must contain XYZ
+          * data!), used to compute the correspondence distance.  
+          * \param[in] cloud a cloud containing XYZ data
           */
         template <typename PointT> inline void 
         setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
         {
-          data_container_.reset (new DataContainer<PointT>);
+          if (!data_container_)
+            data_container_.reset (new DataContainer<PointT>);
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputCloud (cloud);
         }
 
-        /** \brief Get a pointer to the source cloud's feature descriptors, specified by the given \a key
-          * \param key a string that uniquely identifies the feature (must match the key provided by setSourceFeature)
-          */
-//        template <typename FeatureT> inline typename pcl::PointCloud<FeatureT>::ConstPtr 
-//        getSourceFeature (const std::string &key);
-
-        /** \brief Provide a pointer to a cloud of feature descriptors associated with the target point cloud
-          * \param target_feature a cloud of feature descriptors associated with the target point cloud
-          * \param key a string that uniquely identifies the feature
+        /** \brief Provide a target point cloud dataset (must contain XYZ
+          * data!), used to compute the correspondence distance.  
+          * \param[in] target a cloud containing XYZ data
           */
         template <typename PointT> inline void 
         setInputTarget (const typename pcl::PointCloud<PointT>::ConstPtr &target)
         {
+          if (!data_container_)
+            data_container_.reset (new DataContainer<PointT>);
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
         }
-
-        /** \brief Get a pointer to the source cloud's feature descriptors, specified by the given \a key
-          * \param key a string that uniquely identifies the feature (must match the key provided by setTargetFeature)
-          */
-//        template <typename FeatureT> inline typename pcl::PointCloud<FeatureT>::ConstPtr 
-//        getTargetFeature (const std::string &key);
 
       protected:
 
@@ -139,7 +136,7 @@ namespace pcl
           
           public:
 
-            DataContainer ()
+            DataContainer () : input_ (), target_ ()
             {
               tree_.reset (new pcl::KdTreeFLANN<PointT>);
             }
