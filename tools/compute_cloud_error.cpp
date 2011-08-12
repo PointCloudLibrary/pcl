@@ -68,13 +68,13 @@ bool
 loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 {
   TicToc tt;
-  print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
+//  print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
 
   tt.tic ();
   if (loadPCDFile (filename, cloud) < 0)
     return (false);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
-  print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
+//  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
+//  print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
 
   return (true);
 }
@@ -101,7 +101,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &cloud_source, const sensor_ms
 
   if (correspondence_type == "index")
   {
-    print_highlight (stderr, "Computing using the equal indices correspondence heuristic.\n");
+//    print_highlight (stderr, "Computing using the equal indices correspondence heuristic.\n");
 
     if (xyz_source->points.size () != xyz_target->points.size ())
     {
@@ -123,7 +123,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &cloud_source, const sensor_ms
   }
   else if (correspondence_type == "nn")
   {
-    print_highlight (stderr, "Computing using the nearest neighbor correspondence heuristic.\n");
+//    print_highlight (stderr, "Computing using the nearest neighbor correspondence heuristic.\n");
 
     KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
     tree->setInputCloud (xyz_target);
@@ -148,7 +148,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &cloud_source, const sensor_ms
   }
   else if (correspondence_type == "nnplane")
   {
-    print_highlight (stderr, "Computing using the nearest neighbor plane projection correspondence heuristic.\n");
+//    print_highlight (stderr, "Computing using the nearest neighbor plane projection correspondence heuristic.\n");
 
     PointCloud<Normal>::Ptr normals_target (new PointCloud<Normal> ());
     fromROSMsg (*cloud_target, *normals_target);
@@ -185,7 +185,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &cloud_source, const sensor_ms
 
   toROSMsg (*output_xyzi, output);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds]\n");
+// print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds]\n");
   print_highlight ("RMSE Error: %f\n", rmse);
 }
 
@@ -195,18 +195,18 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
   TicToc tt;
   tt.tic ();
 
-  print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
+//  print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
 
   pcl::io::savePCDFile (filename, output);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+//  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  print_info ("Compute the differences between two point clouds and visualizing them as an output intensity cloud. For more information, use: %s -h\n", argv[0]);
+//  print_info ("Compute the differences between two point clouds and visualizing them as an output intensity cloud. For more information, use: %s -h\n", argv[0]);
 
   if (argc < 4)
   {
@@ -240,6 +240,6 @@ main (int argc, char** argv)
   // Perform the feature estimation
   compute (cloud_source, cloud_target, output, correspondence_type);
 
-  // Ouput the third file
+  // Output the third file
   saveCloud (argv[p_file_indices[2]], output);
 }

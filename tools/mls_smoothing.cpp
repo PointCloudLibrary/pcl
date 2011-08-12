@@ -86,7 +86,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 
 void
 compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output,
-         double search_radius, double sqr_gauss_param,
+         double search_radius, bool sqr_gauss_param_set, double sqr_gauss_param,
          bool use_polynomial_fit, int polynomial_order)
 {
   TicToc tt;
@@ -104,7 +104,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   MovingLeastSquares<PointXYZ, Normal> mls;
   mls.setInputCloud (xyz_cloud);
   mls.setSearchRadius (search_radius);
-  mls.setSqrGaussParam (sqr_gauss_param);
+  if (sqr_gauss_param_set) mls.setSqrGaussParam (sqr_gauss_param);
   mls.setPolynomialFit (use_polynomial_fit);
   mls.setPolynomialOrder (polynomial_order);
 
@@ -161,11 +161,13 @@ main (int argc, char** argv)
   // Command line parsing
   double search_radius = default_search_radius;
   double sqr_gauss_param = default_sqr_gauss_param;
+  bool sqr_gauss_param_set = true;
   int polynomial_order = default_polynomial_order;
   bool use_polynomial_fit = default_use_polynomial_fit;
 
   parse_argument (argc, argv, "-search_radius", search_radius);
-  parse_argument (argc, argv, "-sqr_gauss_param", sqr_gauss_param);
+  if (parse_argument (argc, argv, "-sqr_gauss_param", sqr_gauss_param) == -1)
+    sqr_gauss_param_set = false;
   if (parse_argument (argc, argv, "-polynomial_order", polynomial_order) == -1 )
     use_polynomial_fit = true;
   parse_argument (argc, argv, "-use_polynomial_fit", use_polynomial_fit);
@@ -177,7 +179,7 @@ main (int argc, char** argv)
 
   // Add the noise
   sensor_msgs::PointCloud2 output;
-  compute (cloud, output, search_radius, sqr_gauss_param,
+  compute (cloud, output, search_radius, sqr_gauss_param, sqr_gauss_param_set,
            use_polynomial_fit, polynomial_order);
 
   // Save into the second file
