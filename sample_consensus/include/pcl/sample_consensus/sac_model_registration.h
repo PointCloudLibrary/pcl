@@ -70,7 +70,7 @@ namespace pcl
       SampleConsensusModelRegistration (const PointCloudConstPtr &cloud) : SampleConsensusModel<PointT> (cloud)
       {
         setInputCloud (cloud);
-        computeOriginalIndexMapping();
+        computeOriginalIndexMapping ();
       }
 
       /** \brief Constructor for base SampleConsensusModelRegistration.
@@ -81,7 +81,7 @@ namespace pcl
                                         const std::vector<int> &indices) : 
         SampleConsensusModel<PointT> (cloud, indices)
       {
-        computeOriginalIndexMapping();
+        computeOriginalIndexMapping ();
         input_ = cloud;
         computeSampleDistanceThreshold (cloud);
       }
@@ -93,7 +93,7 @@ namespace pcl
       setInputCloud (const PointCloudConstPtr &cloud)
       {
         SampleConsensusModel<PointT>::setInputCloud (cloud);
-        computeOriginalIndexMapping();
+        computeOriginalIndexMapping ();
         computeSampleDistanceThreshold (cloud);
       }
 
@@ -127,11 +127,12 @@ namespace pcl
       {
         target_ = target;
         // Cache the size and fill the target indices
-        unsigned int target_size = target->size();
-        indices_tgt_->resize(target_size);
+        unsigned int target_size = target->size ();
+        indices_tgt_->resize (target_size);
+
         for (unsigned int i = 0; i < target_size; ++i)
-          indices_tgt_->push_back(i);
-        computeOriginalIndexMapping();
+          (*indices_tgt_)[i] = i;
+        computeOriginalIndexMapping ();
       }
 
       /** \brief Set the input point cloud target.
@@ -143,7 +144,7 @@ namespace pcl
       {
         target_ = target;
         indices_tgt_.reset (new std::vector<int> (indices_tgt));
-        computeOriginalIndexMapping();
+        computeOriginalIndexMapping ();
       }
 
       /** \brief Compute a 4x4 rigid transformation matrix from the samples given
@@ -188,14 +189,17 @@ namespace pcl
       {};
 
       bool 
-      doSamplesVerifyModel (const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, double threshold)
+      doSamplesVerifyModel (const std::set<int> &indices, 
+                            const Eigen::VectorXf &model_coefficients, 
+                            double threshold)
       {
         PCL_ERROR ("[pcl::SampleConsensusModelRegistration::doSamplesVerifyModel] called!\n");
         return (false);
       }
 
       /** \brief Return an unique id for this model (SACMODEL_REGISTRATION). */
-      inline pcl::SacModel getModelType() const { return (SACMODEL_REGISTRATION); }
+      inline pcl::SacModel 
+      getModelType () const { return (SACMODEL_REGISTRATION); }
 
     protected:
       /** \brief Check whether a model is valid given the user constraints.
@@ -219,13 +223,14 @@ namespace pcl
       isSampleGood(const std::vector<int> &samples) const;
 
     private:
-      /** \brief compute mappings between original indices of the input_/target_ clouds */
+      /** \brief Compute mappings between original indices of the input_/target_ clouds. */
       void
-      computeOriginalIndexMapping() {
+      computeOriginalIndexMapping () 
+      {
         if ((!indices_tgt_) || (!indices_) || (indices_->empty()) || (indices_->size()!=indices_tgt_->size()))
           return;
-        for (unsigned int i = 0; i < indices_->size(); ++i)
-          original_index_mapping_[indices_->operator[](i)] = indices_tgt_->operator[](i);
+        for (size_t i = 0; i < indices_->size (); ++i)
+          correspondences_[(*indices_)[i]] = (*indices_tgt_)[i];
       }
 
       /** \brief A boost shared pointer to the target point cloud data array. */
@@ -235,7 +240,7 @@ namespace pcl
       boost::shared_ptr <std::vector<int> > indices_tgt_;
 
       /** \brief Given the index in the original point cloud, give the matching original index in the target cloud */
-      boost::unordered_map<int, int> original_index_mapping_;
+      boost::unordered_map<int, int> correspondences_;
 
       /** \brief Internal distance threshold used for the sample selection step. */
       double sample_dist_thresh_;
