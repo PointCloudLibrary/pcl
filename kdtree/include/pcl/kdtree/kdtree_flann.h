@@ -61,7 +61,7 @@ namespace pcl
     * \author Radu Bogdan Rusu, Marius Muja
     * \ingroup kdtree 
     */
-  template <typename PointT>
+  template <typename PointT, typename Dist = flann::L2_Simple<float> >
   class KdTreeFLANN : public pcl::KdTree<PointT>
   {
     using KdTree<PointT>::input_;
@@ -76,7 +76,7 @@ namespace pcl
     typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
     typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
 
-    typedef flann::Index <flann::L2_Simple<float> > FLANNIndex;
+    typedef flann::Index <Dist> FLANNIndex;
 
     public:
       // Boost shared pointers

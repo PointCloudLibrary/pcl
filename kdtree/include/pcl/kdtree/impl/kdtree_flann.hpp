@@ -43,8 +43,8 @@
 namespace pcl
 {
   ////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointT>
-  void KdTreeFLANN<PointT>::setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr &indices)
+  template <typename PointT, typename Dist>
+  void KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr &indices)
   {
     cleanup ();   // Perform an automatic cleanup of structures
 
@@ -74,8 +74,8 @@ namespace pcl
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointT> int 
-  KdTreeFLANN<PointT>::nearestKSearch (const PointT &point, int k, 
+  template <typename PointT, typename Dist> int 
+  KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k, 
                                        std::vector<int> &k_indices, 
                                        std::vector<float> &k_distances)
   {
@@ -111,8 +111,8 @@ namespace pcl
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointT>
-  int KdTreeFLANN<PointT>::radiusSearch (const PointT &point, double radius, std::vector<int> &k_indices,
+  template <typename PointT, typename Dist>
+  int KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius, std::vector<int> &k_indices,
                                           std::vector<float> &k_squared_distances, int max_nn) const
   {
     static flann::Matrix<int> indices_empty;
@@ -179,8 +179,8 @@ namespace pcl
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointT>
-  void KdTreeFLANN<PointT>::cleanup ()
+  template <typename PointT, typename Dist>
+  void KdTreeFLANN<PointT, Dist>::cleanup ()
   {
     delete flann_index_;
 
@@ -197,8 +197,8 @@ namespace pcl
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointT>
-  bool KdTreeFLANN<PointT>::initParameters ()
+  template <typename PointT, typename Dist>
+  bool KdTreeFLANN<PointT, Dist>::initParameters ()
   {
     epsilon_ = 0.0;   // default error bound value
     dim_ = point_representation_->getNumberOfDimensions (); // Number of dimensions - default is 3 = xyz
@@ -207,8 +207,8 @@ namespace pcl
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointT>
-  void KdTreeFLANN<PointT>::initData ()
+  template <typename PointT, typename Dist>
+  void KdTreeFLANN<PointT, Dist>::initData ()
   {
     flann_index_ = new FLANNIndex(flann::Matrix<float>(cloud_, index_mapping_.size(), dim_),
 			  	  	  	  	  	  flann::KDTreeSingleIndexParams(15)); // max 15 points/leaf
@@ -216,8 +216,8 @@ namespace pcl
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointT>
-  void KdTreeFLANN<PointT>::convertCloudToArray (const PointCloud &cloud)
+  template <typename PointT, typename Dist>
+  void KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud)
   {
     // No point in doing anything if the array is empty
     if (cloud.points.empty ())
@@ -251,8 +251,8 @@ namespace pcl
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointT>
-  void KdTreeFLANN<PointT>::convertCloudToArray (const PointCloud &cloud, const std::vector<int> &indices)
+  template <typename PointT, typename Dist>
+  void KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud, const std::vector<int> &indices)
   {
     // No point in doing anything if the array is empty
     if (cloud.points.empty ())
