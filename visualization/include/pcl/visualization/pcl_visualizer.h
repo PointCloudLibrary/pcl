@@ -90,14 +90,14 @@ namespace pcl
         typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
         /** \brief PCL Visualizer constructor.
-          * \param name the window name (empty by default)
+          * \param[in] name the window name (empty by default)
           */
         PCLVisualizer (const std::string &name = "");
         /** \brief PCL Visualizer constructor.
-          * \param argc
-          * \param argv
-          * \param name the window name (empty by default)
-          * \param style interactor style (defaults to PCLVisualizerInteractorStyle)
+          * \param[in] argc
+          * \param[in] argv
+          * \param[in] name the window name (empty by default)
+          * \param[in] style interactor style (defaults to PCLVisualizerInteractorStyle)
           */
         PCLVisualizer (int &argc, char **argv, const std::string &name = "", 
             PCLVisualizerInteractorStyle* style = PCLVisualizerInteractorStyle::New ());
@@ -105,66 +105,94 @@ namespace pcl
         /** \brief PCL Visualizer destructor. */
         virtual ~PCLVisualizer ();
 
-        /**
-         * @brief registering a callback function for keyboard events
-         * @param callback  the function that will be registered as a callback for a keyboard event
-         * @param cookie    user data that is passed to the callback
-         * @return          connection object that allows to disconnect the callback function.
-         */
-        boost::signals2::connection registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = NULL)
-        {
-          return registerKeyboardCallback (boost::bind (callback, _1, cookie));
-        }
-        
-        /**
-         * @brief registering a callback function for keyboard events
-         * @param callback  the member function that will be registered as a callback for a keyboard event
-         * @param instance  instance to the class that implements the callback function
-         * @param cookie    user data that is passed to the callback
-         * @return          connection object that allows to disconnect the callback function.
-         */
-        template<typename T>
-        boost::signals2::connection registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = NULL)
-        {
-          return registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie));
-        }
-        
-        /**
-         * @brief   registering a callback boost::function for keyboard events
-         * @param   the boost function that will be registered as a callback for a keyboard event
-         * @return  connection object that allows to disconnect the callback function.
-         */
-        boost::signals2::connection registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)>);
+        /** \brief Register a callback boost::function for keyboard events
+          * \param[in] a boost function that will be registered as a callback for a keyboard event
+          * \return    connection object that allows to disconnect the callback function.
+          */
+        boost::signals2::connection 
+        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)>);
 
-        /**
-         * @brief   registering a callback function for mouse events
-         * @param   the boost function that will be registered as a callback for a mouse event
-         * @return  connection object that allows to disconnect the callback function.
-         */
-        boost::signals2::connection registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)>);
-        
-        /**
-         * @brief 
-         * @param callback  the function that will be registered as a callback for a mouse event
-         * @param cookie    user data that is passed to the callback
-         * @return          connection object that allows to disconnect the callback function.
-         */
-        boost::signals2::connection registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = NULL)
+        /** \brief Register a callback function for keyboard events
+          * \param[in] callback  the function that will be registered as a callback for a keyboard event
+          * \param[in] cookie    user data that is passed to the callback
+          * \return              connection object that allows to disconnect the callback function.
+          */
+        inline boost::signals2::connection 
+        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = NULL)
         {
-          return registerMouseCallback (boost::bind (callback, _1, cookie));
+          return (registerKeyboardCallback (boost::bind (callback, _1, cookie)));
         }
         
-        /**
-         * @brief registering a callback function for mouse events
-         * @param callback  the member function that will be registered as a callback for a mouse event
-         * @param instance  instance to the class that implements the callback function
-         * @param cookie    user data that is passed to the callback
-         * @return          connection object that allows to disconnect the callback function.
-         */
-        template<typename T>
-        boost::signals2::connection registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = NULL)
+        /** \brief Register a callback function for keyboard events
+          * \param[in] callback  the member function that will be registered as a callback for a keyboard event
+          * \param[in] instance  instance to the class that implements the callback function
+          * \param[in] cookie    user data that is passed to the callback
+          * \return              connection object that allows to disconnect the callback function.
+          */
+        template<typename T> inline boost::signals2::connection 
+        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = NULL)
         {
-          return registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie));
+          return (registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie)));
+        }
+        
+        /** \brief Register a callback function for mouse events
+          * \param[in] a boost function that will be registered as a callback for a mouse event
+          * \return    connection object that allows to disconnect the callback function.
+          */
+        boost::signals2::connection 
+        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)>);
+        
+        /** \brief Register a callback function for mouse events
+          * \param[in] callback  the function that will be registered as a callback for a mouse event
+          * \param[in] cookie    user data that is passed to the callback
+          * \return              connection object that allows to disconnect the callback function.
+          */
+        inline boost::signals2::connection 
+        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = NULL)
+        {
+          return (registerMouseCallback (boost::bind (callback, _1, cookie)));
+        }
+        
+        /** \brief Register a callback function for mouse events
+          * \param[in] callback  the member function that will be registered as a callback for a mouse event
+          * \param[in] instance  instance to the class that implements the callback function
+          * \param[in] cookie    user data that is passed to the callback
+          * \return              connection object that allows to disconnect the callback function.
+          */
+        template<typename T> inline boost::signals2::connection 
+        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = NULL)
+        {
+          return (registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
+        }
+
+        /** \brief Register a callback function for point picking events
+          * \param[in] a boost function that will be registered as a callback for a point picking event
+          * \return    connection object that allows to disconnect the callback function.
+          */
+        boost::signals2::connection 
+        registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)>);
+        
+        /** \brief Register a callback function for point picking events
+          * \param[in] callback  the function that will be registered as a callback for a point picking event
+          * \param[in] cookie    user data that is passed to the callback
+          * \return              connection object that allows to disconnect the callback function.
+          */
+        inline boost::signals2::connection 
+        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = NULL)
+        {
+          return (registerPointPickingCallback (boost::bind (callback, _1, cookie)));
+        }
+        
+        /** \brief Register a callback function for point picking events
+          * \param[in] callback  the member function that will be registered as a callback for a point picking event
+          * \param[in] instance  instance to the class that implements the callback function
+          * \param[in] cookie    user data that is passed to the callback
+          * \return              connection object that allows to disconnect the callback function.
+          */
+        template<typename T> inline boost::signals2::connection 
+        registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = NULL)
+        {
+          return (registerPointPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }
         
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
@@ -197,37 +225,37 @@ namespace pcl
         addCoordinateSystem (double scale, float x, float y, float z, int viewport = 0);
 
          /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z, Roll,Pitch,Yaw
-          * \
-          * \param scale the scale of the axes (default: 1)
-          * \param t transformation matrix
-          * \param tube_size the size of tube(radius of each orthogonal axies ,default: 1)
-          * \param viewport the view port where the 3D axes should be added (default: all)
-          *
-          * RPY Angles
-          * Rotate the reference frame by the angle roll about axis x
-          * Rotate the reference frame by the angle pitch about axis y
-          * Rotate the reference frame by the angle yaw about axis z
-          *
-          * Description:
-          * Sets the orientation of the Prop3D.  Orientation is specified as
-          * X,Y and Z rotations in that order, but they are performed as
-          * RotateZ, RotateX, and finally RotateY.
-          *
-          * All axies use right hand rule. x=red axis, y=green axis, z=blue axis
-          * z direction is point into the screen.
-          *     z
-          *      \
-          *       \
-          *        \
-          *         -----------> x
-          *         |
-          *         |
-          *         |
-          *         |
-          *         |
-          *         |
-          *         y
-          */
+           *
+           * \param scale the scale of the axes (default: 1)
+           * \param t transformation matrix
+           * \param tube_size the size of tube(radius of each orthogonal axies ,default: 1)
+           * \param viewport the view port where the 3D axes should be added (default: all)
+           *
+           * RPY Angles
+           * Rotate the reference frame by the angle roll about axis x
+           * Rotate the reference frame by the angle pitch about axis y
+           * Rotate the reference frame by the angle yaw about axis z
+           *
+           * Description:
+           * Sets the orientation of the Prop3D.  Orientation is specified as
+           * X,Y and Z rotations in that order, but they are performed as
+           * RotateZ, RotateX, and finally RotateY.
+           *
+           * All axies use right hand rule. x=red axis, y=green axis, z=blue axis
+           * z direction is point into the screen.
+           *     z
+           *      \
+           *       \
+           *        \
+           *         -----------> x
+           *         |
+           *         |
+           *         |
+           *         |
+           *         |
+           *         |
+           *         y
+           */
         void 
         addCoordinateSystem (double scale, const Eigen::Matrix4f& t, int viewport = 0);
 

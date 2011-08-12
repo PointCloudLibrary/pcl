@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -59,6 +61,7 @@
 #include <vtkClipPolyData.h>
 #include <vtkPlanes.h>
 
+#include <boost/shared_ptr.hpp>
 #include <pcl/console/print.h>
 #include <pcl/visualization/common/actor_map.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
@@ -67,6 +70,7 @@
 //#include <boost/signals2/slot.hpp>
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/mouse_event.h>
+#include <pcl/visualization/point_picking_event.h>
 
 namespace pcl
 {
@@ -86,22 +90,45 @@ namespace pcl
         vtkTypeMacro(PCLVisualizerInteractorStyle,vtkInteractorStyleTrackballCamera);
         
         /** \brief Initialization routine. Must be called before anything else. */
-        virtual void Initialize ();
+        virtual void 
+        Initialize ();
         
         /** \brief Pass a pointer to the actor map
           * \param actors the actor map that will be used with this style
           */
-        inline void setCloudActorMap (const CloudActorMapPtr &actors) { actors_ = actors; }
-        inline CloudActorMapPtr getCloudActorMap () { return (actors_); }
+        inline void 
+        setCloudActorMap (const CloudActorMapPtr &actors) { actors_ = actors; }
+        inline CloudActorMapPtr 
+        getCloudActorMap () { return (actors_); }
 
         /** \brief Pass a set of renderers to the interactor style. 
           * \param rens the vtkRendererCollection to use
           */
-        void setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { rens_ = rens; }
+        void 
+        setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { rens_ = rens; }
 
-        boost::signals2::connection registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> );
-        boost::signals2::connection registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> );
-      protected:
+        /** \brief Register a callback function for mouse events
+          * \param[in] a boost function that will be registered as a callback for a mouse event
+          * \return    connection object that allows to disconnect the callback function.
+          */
+        boost::signals2::connection 
+        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> );
+
+        /** \brief Register a callback boost::function for keyboard events
+          * \param[in] a boost function that will be registered as a callback for a keyboard event
+          * \return    connection object that allows to disconnect the callback function.
+          */
+        boost::signals2::connection 
+        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> );
+
+        /** \brief Register a callback function for point picking events
+          * \param[in] a boost function that will be registered as a callback for a point picking event
+          * \return    connection object that allows to disconnect the callback function.
+          */
+        boost::signals2::connection 
+        registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)>);
+
+       protected:
         /** \brief Set to true after initialization is complete. */
         bool init_;
 
@@ -137,36 +164,58 @@ namespace pcl
 
         boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
         boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)> keyboard_signal_;
+        boost::signals2::signal<void (const pcl::visualization::PointPickingEvent&)> point_picking_signal_;
+
         /** \brief Interactor style internal method. Gets called whenever a key is pressed. */
-        virtual void OnChar ();
+        virtual void 
+        OnChar ();
 
         // Keyboard events
-        virtual void OnKeyDown ();
-        virtual void OnKeyUp ();
+        virtual void 
+        OnKeyDown ();
+        virtual void 
+        OnKeyUp ();
         
         // mouse button events
-        virtual void 	OnMouseMove ();
-        virtual void 	OnLeftButtonDown ();
-        virtual void 	OnLeftButtonUp ();
-        virtual void 	OnMiddleButtonDown ();
-        virtual void 	OnMiddleButtonUp ();
-        virtual void 	OnRightButtonDown ();
-        virtual void 	OnRightButtonUp ();
-        virtual void 	OnMouseWheelForward ();
-        virtual void 	OnMouseWheelBackward ();
+        virtual void 	
+        OnMouseMove ();
+        virtual void 	
+        OnLeftButtonDown ();
+        virtual void 	
+        OnLeftButtonUp ();
+        virtual void 	
+        OnMiddleButtonDown ();
+        virtual void 	
+        OnMiddleButtonUp ();
+        virtual void 	
+        OnRightButtonDown ();
+        virtual void 	
+        OnRightButtonUp ();
+        virtual void 	
+        OnMouseWheelForward ();
+        virtual void 	
+        OnMouseWheelBackward ();
         
         // mouse move event
         /** \brief Interactor style internal method. Gets called periodically if a timer is set. */
-        virtual void OnTimer ();
+        virtual void 
+        OnTimer ();
 
         /** \brief Interactor style internal method. Zoom in. */
-        void zoomIn ();
+        void 
+        zoomIn ();
 
         /** \brief Interactor style internal method. Zoom out. */
-        void zoomOut ();
+        void 
+        zoomOut ();
 
         /** \brief True if we're using red-blue colors for anaglyphic stereo, false if magenta-green. */
         bool stereo_anaglyph_mask_default_;
+
+        /** \brief A VTK Mouse Callback object, used for point picking. */
+        vtkSmartPointer<PointPickingCallback> mouse_callback_;
+
+        friend class PointPickingCallback;
     };
 
     /** \brief PCL histogram visualizer interactory style class.

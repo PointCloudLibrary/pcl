@@ -84,6 +84,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
   init_ = true;
 
   stereo_anaglyph_mask_default_ = true;
+
+  // Add our own mouse callback before any user callback. Used for accurate point picking.
+  mouse_callback_ = vtkSmartPointer<pcl::visualization::PointPickingCallback>::New ();
+  AddObserver (vtkCommand::LeftButtonPressEvent, mouse_callback_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -598,14 +602,21 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
 boost::signals2::connection 
 pcl::visualization::PCLVisualizerInteractorStyle::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
-  return mouse_signal_.connect(callback);
+  return (mouse_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection 
 pcl::visualization::PCLVisualizerInteractorStyle::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
-  return keyboard_signal_.connect(callback);
+  return (keyboard_signal_.connect (callback));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection 
+pcl::visualization::PCLVisualizerInteractorStyle::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
+{
+  return (point_picking_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

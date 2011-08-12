@@ -42,6 +42,7 @@ if(build)
   endif()
 
     set(srcs src/interactor.cpp
+        src/point_picking_event.cpp
         src/interactor_style.cpp
         src/point_cloud_handlers.cpp
         src/pcl_visualizer.cpp
@@ -64,6 +65,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/registration_visualizer.h
         include/pcl/${SUBSYS_NAME}/point_cloud_handlers.h
         include/pcl/${SUBSYS_NAME}/keyboard_event.h
+        include/pcl/${SUBSYS_NAME}/point_picking_event.h
         include/pcl/${SUBSYS_NAME}/mouse_event.h
         include/pcl/${SUBSYS_NAME}/window.h
         ${WXWIDGETS_INCLUDES}

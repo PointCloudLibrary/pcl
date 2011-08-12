@@ -49,6 +49,7 @@
 #include <vtkTransform.h>
 #include <vtkVisibleCellSelector.h>
 #include <vtkSelection.h>
+#include <vtkPointPicker.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
@@ -108,6 +109,10 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   interactor_->Initialize ();
   //interactor_->CreateRepeatingTimer (5000L);
   interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
+
+  // Set a simple PointPicker
+  vtkPointPicker *pp = vtkPointPicker::New ();
+  interactor_->SetPicker (pp);
 
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
@@ -193,14 +198,18 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   //interactor_->CreateRepeatingTimer (5000L);
   interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
 
+  // Set a simple PointPicker
+  vtkPointPicker *pp = vtkPointPicker::New ();
+  interactor_->SetPicker (pp);
+
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
   exit_main_loop_timer_callback_->right_timer_id = -1;
-  interactor_->AddObserver(vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
+  interactor_->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
 
   exit_callback_ = vtkSmartPointer<ExitCallback>::New();
   exit_callback_->pcl_visualizer = this;
-  interactor_->AddObserver(vtkCommand::ExitEvent, exit_callback_);
+  interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
   
   resetStoppedFlag ();
 
@@ -219,14 +228,21 @@ pcl::visualization::PCLVisualizer::~PCLVisualizer ()
 boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
-  return style_->registerKeyboardCallback (callback);
+  return (style_->registerKeyboardCallback (callback));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
-  return style_->registerMouseCallback (callback);
+  return (style_->registerMouseCallback (callback));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection
+pcl::visualization::PCLVisualizer::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
+{
+  return (style_->registerPointPickingCallback (callback));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
