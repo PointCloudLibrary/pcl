@@ -56,7 +56,7 @@ namespace pcl
       * TODO: wrap more vtk functionality in here
       * TODO: Do we want to wrap any VTK functionality anyway or are we just going to provide conversion as in mesh2vtk and vtk2mesh?
       */
-    class VtkSmoother
+    class PCL_EXPORTS VtkSmoother
     {
     public:
       VtkSmoother ();
