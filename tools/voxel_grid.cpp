@@ -138,7 +138,25 @@ main (int argc, char** argv)
   double leaf_x = default_leaf_size,
          leaf_y = default_leaf_size,
          leaf_z = default_leaf_size;
-  parse_3x_arguments (argc, argv, "-leaf", leaf_x, leaf_y, leaf_z);
+
+  std::vector<double> values;
+  parse_x_arguments (argc, argv, "-leaf", values);
+  if (values.size () == 1)
+  {
+    leaf_x = values[0];
+    leaf_y = values[0];
+    leaf_z = values[0];
+  }
+  else if (values.size () == 3)
+  {
+    leaf_x = values[0];
+    leaf_y = values[1];
+    leaf_z = values[2];
+  }
+  else
+  {
+    print_error ("Leaf size must be specified with either 1 or 3 numbers (%zu given). ", values.size ());
+  }
   print_info ("Using a leaf size of: "); print_value ("%f, %f, %f\n", leaf_x, leaf_y, leaf_z);
 
   std::string field (default_field);
