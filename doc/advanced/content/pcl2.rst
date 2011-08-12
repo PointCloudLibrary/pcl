@@ -44,6 +44,10 @@ Proposals for the 2.x API:
    * cloud["xyz"] => gets all 3D x,y,z data
    * cloud["normals"] => gets all surface normal data
    * etc
+ * Capability to construct point cloud types containing the necessary channels
+   *at runtime*. This will be particularly useful for run-time configuration of
+   input sensors and for reading point clouds from files, which may contain a
+   variety of point cloud layouts not known until the file is opened.
  * Complete traits system to identify what data/channels a cloud stores at
    runtime, facilitating decision making in software that uses PCL. (e.g.
    generic component wrappers.)
