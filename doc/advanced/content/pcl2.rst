@@ -59,6 +59,33 @@ Proposals for the 2.x API:
 1.2 PointTypes 
 ^^^^^^^^^^^^^^
 
+
+1.3 GPU support
+^^^^^^^^^^^^^^^
+ #. Stop using Thrust containers (can't be constructed for user allocated memory, incompatibility alignment qualifier support, etc.)
+ #. Implement own containers for data in GPU memory preferably with reference counting (like pcl::gpu::DeviceArray, or cv::gpu::GpuMat). 
+
+     * DeviceArray for arbitrary binary data on GPU, DeviceArray_<T> for convenience.
+
+ #. There should be two layers in PCL GPU part - host(main) and device(for advanced use):
+    
+     * Host is a main layer for calling GPU functionality. Users and non-GPU part of PCL will run GPU via this. 
+       
+       * It must have CUDA-independent interface, i.e. headers from it must be compiled with gcc, cl, etc. 
+       * Algorithms receive input data uploaded to GPU(ex. DeviceArray_<T>) and output is in GPU memory as well. So that output from one algorithm can be passed as input to another without downloading/uploading.
+       * pcl::cuda (can depend on float4, cudaEvent_t, etc.) or pcl::gpu (completely independent, ATI/Intel support in future?) namespaces. Do we need the second?
+       
+     * Device layer contains code that is built with for NVidia's compiler.        
+     
+       * pcl::device namespace, only headers.
+       * It is mainly for internal usage, for sharing __device__ algorithms among GPU parts of PCL (like functors, traits, reduction, scans, etc.). 
+       * Also users who develop for GPU can take advantages of this.
+ 
+ #. Async. support??
+ 
+    to be continued...
+  
+       
 Minor changes
 =============
 
