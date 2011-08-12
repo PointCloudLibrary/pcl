@@ -945,9 +945,9 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   }
   // Faces
   fs << "\nelement face "<< nr_faces;
-  fs << "\nproperty list uint uint vertex_index";
-  fs << "\nend_header";
-  
+  fs << "\nproperty list uchar int vertex_index";
+  fs << "\nend_header\n";
+
   // Write down vertices
   for (size_t i = 0; i < nr_points; ++i)
   {
