@@ -37,4 +37,7 @@ if (build)
   PCL_ADD_EXECUTABLE (mls_smoothing ${SUBSYS_NAME} mls_smoothing.cpp)
   target_link_libraries (mls_smoothing pcl_common pcl_io pcl_surface)
 
+  PCL_ADD_EXECUTABLE (transform_point_cloud ${SUBSYS_NAME} transform_point_cloud.cpp)
+  target_link_libraries (transform_point_cloud pcl_common pcl_io pcl_registration)
+
 endif ()
