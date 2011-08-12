@@ -60,7 +60,7 @@ namespace pcl
       * \param indices the resultant list of indices
       * \ingroup visualization
       */
-    void 
+    PCL_EXPORTS void 
     getCorrespondingPointCloud (vtkPolyData *src, const pcl::PointCloud<pcl::PointXYZ> &tgt, std::vector<int> &indices);
 
     /** \brief Saves the vtk-formatted Point Cloud data into a set of files, based on whether
@@ -71,7 +71,7 @@ namespace pcl
       * \param actors the list of actors present on screen
       * \ingroup visualization
       */
-    bool 
+    PCL_EXPORTS bool 
     savePointData (vtkPolyData* data, const std::string &out_file, const boost::shared_ptr<CloudActorMap> &actors);
   }
 }
