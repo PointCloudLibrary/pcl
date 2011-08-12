@@ -79,7 +79,7 @@ namespace pcl
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    class FPSCallback : public vtkCommand
+    class PCL_EXPORTS FPSCallback : public vtkCommand
     {
       public:
         static FPSCallback *New () { return new FPSCallback;}

@@ -37,6 +37,8 @@
 #ifndef PCL_PCL_VISUALIZER_INTERACTOR_H_
 #define PCL_PCL_VISUALIZER_INTERACTOR_H_
 
+#include <pcl/pcl_macros.h>
+
 #include <vtkObjectFactory.h>
 #ifdef _WIN32
 #  include <vtkWin32RenderWindowInteractor.h>
@@ -62,7 +64,7 @@ namespace pcl
   {
     /** \brief The PCLVisualizer interactor */
 #ifdef _WIN32
-    class PCLVisualizerInteractor : public vtkWin32RenderWindowInteractor
+    class PCL_EXPORTS PCLVisualizerInteractor : public vtkWin32RenderWindowInteractor
 #elif defined VTK_USE_CARBON
     class PCLVisualizerInteractor : public vtkCarbonRenderWindowInteractor
 #elif defined VTK_USE_COCOA

@@ -39,12 +39,13 @@
 #define PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
 
 #include <pcl/PolygonMesh.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
   namespace surface
   {
-    class SimplificationRemoveUnusedVertices
+    class PCL_EXPORTS SimplificationRemoveUnusedVertices
     {
 
       public:
