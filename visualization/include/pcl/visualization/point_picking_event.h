@@ -39,6 +39,7 @@
 #ifndef PCL_VISUALIZATION_POINT_PICKING_EVENT_H_
 #define	PCL_VISUALIZATION_POINT_PICKING_EVENT_H_
 
+#include <pcl/pcl_macros.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkCommand.h>
 
@@ -46,7 +47,7 @@ namespace pcl
 {
   namespace visualization
   {
-    class PointPickingCallback : public vtkCommand
+    class PCL_EXPORTS PointPickingCallback : public vtkCommand
     {
       public:
         static PointPickingCallback *New () { return new PointPickingCallback; }
@@ -59,7 +60,7 @@ namespace pcl
     };
 
     /** /brief Class representing 3D point picking events. */
-    class PointPickingEvent
+    class PCL_EXPORTS PointPickingEvent
     {
       public:
         inline PointPickingEvent (int idx)
