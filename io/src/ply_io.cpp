@@ -985,7 +985,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
     }
     if (xyz != 3)
     {
-      PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no XYZ data!\n");
+      PCL_ERROR ("[pcl::io::savePLYFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
     fs << std::endl;
