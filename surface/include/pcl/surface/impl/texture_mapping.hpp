@@ -136,11 +136,11 @@ pcl::TextureMapping<PointInT>::mapTexture2Face(Eigen::Vector3f  &p1, Eigen::Vect
   return tex_coordinates;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT>  pcl::TextureMesh
-pcl::TextureMapping<PointInT>::mapTexture2Mesh(){
+template <typename PointInT> void
+pcl::TextureMapping<PointInT>::mapTexture2Mesh(pcl::TextureMesh &tex_mesh){
   // mesh information
-  int nr_points  = tex_mesh_.cloud.width * tex_mesh_.cloud.height;
-  int point_size = tex_mesh_.cloud.data.size () / nr_points;
+  int nr_points  = tex_mesh.cloud.width * tex_mesh.cloud.height;
+  int point_size = tex_mesh.cloud.data.size () / nr_points;
 
   // temporary PointXYZ
   float x_, y_, z_;
@@ -150,21 +150,21 @@ pcl::TextureMapping<PointInT>::mapTexture2Mesh(){
   // texture coordinates for each mesh
   std::vector< std::vector<Eigen::Vector2f> > texture_map;
 
-  for (size_t m = 0; m < tex_mesh_.tex_polygons.size(); ++m){
+  for (size_t m = 0; m < tex_mesh.tex_polygons.size(); ++m){
 
     // texture coordinates for each mesh
     std::vector<Eigen::Vector2f> texture_map_tmp;
 
     // processing for each face
-    for (size_t i=0; i < tex_mesh_.tex_polygons[m].size(); ++i){
+    for (size_t i=0; i < tex_mesh.tex_polygons[m].size(); ++i){
       size_t idx;
 
       // get facet information
-      for (size_t j=0; j < tex_mesh_.tex_polygons[m][i].vertices.size(); ++j){
-        idx =  tex_mesh_.tex_polygons[m][i].vertices[j];
-        memcpy (&x_, &tex_mesh_.cloud.data[idx * point_size + tex_mesh_.cloud.fields[0].offset], sizeof (float));
-        memcpy (&y_, &tex_mesh_.cloud.data[idx * point_size + tex_mesh_.cloud.fields[1].offset], sizeof (float));
-        memcpy (&z_, &tex_mesh_.cloud.data[idx * point_size + tex_mesh_.cloud.fields[2].offset], sizeof (float));
+      for (size_t j=0; j < tex_mesh.tex_polygons[m][i].vertices.size(); ++j){
+        idx =  tex_mesh.tex_polygons[m][i].vertices[j];
+        memcpy (&x_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[0].offset], sizeof (float));
+        memcpy (&y_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[1].offset], sizeof (float));
+        memcpy (&z_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[2].offset], sizeof (float));
         facet[j][0] = x_;
         facet[j][1] = y_;
         facet[j][2] = z_;
@@ -180,21 +180,18 @@ pcl::TextureMapping<PointInT>::mapTexture2Mesh(){
     tex_name << "material_"<< m;
     tex_name >> tex_material_.tex_name;
     tex_material_.tex_file = tex_files_[m];
-    tex_mesh_.tex_materials.push_back(tex_material_);
+    tex_mesh.tex_materials.push_back(tex_material_);
 
     // texture coordinates
-    tex_mesh_.tex_coordinates.push_back(texture_map_tmp);
+    tex_mesh.tex_coordinates.push_back(texture_map_tmp);
   }// end meshes
-
-  // return mesh with texture
-  return tex_mesh_;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT>  pcl::TextureMesh
-pcl::TextureMapping<PointInT>::mapTexture2MeshUV(){
+template <typename PointInT> void
+pcl::TextureMapping<PointInT>::mapTexture2MeshUV(pcl::TextureMesh &tex_mesh){
   // mesh information
-  int nr_points  = tex_mesh_.cloud.width * tex_mesh_.cloud.height;
-  int point_size = tex_mesh_.cloud.data.size () / nr_points;
+  int nr_points  = tex_mesh.cloud.width * tex_mesh.cloud.height;
+  int point_size = tex_mesh.cloud.data.size () / nr_points;
 
   float x_lowest = 100000;
   float x_highest = 0 ;
@@ -205,9 +202,9 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV(){
   float x_, y_, z_;
 
   for (int i =0; i < nr_points; ++i){
-    memcpy (&x_, &tex_mesh_.cloud.data[i * point_size + tex_mesh_.cloud.fields[0].offset + 0 * sizeof (float)], sizeof (float));
-    memcpy (&y_, &tex_mesh_.cloud.data[i * point_size + tex_mesh_.cloud.fields[1].offset + 0 * sizeof (float)], sizeof (float));
-    memcpy (&z_, &tex_mesh_.cloud.data[i * point_size + tex_mesh_.cloud.fields[2].offset + 0 * sizeof (float)], sizeof (float));
+    memcpy (&x_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[0].offset + 0 * sizeof (float)], sizeof (float));
+    memcpy (&y_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[1].offset + 0 * sizeof (float)], sizeof (float));
+    memcpy (&z_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[2].offset + 0 * sizeof (float)], sizeof (float));
     // x
     if (x_ <= x_lowest) x_lowest = x_;
     if (x_ > x_lowest) x_highest = x_;
@@ -234,20 +231,20 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV(){
   // texture coordinates for each mesh
   std::vector< std::vector<Eigen::Vector2f> > texture_map;
 
-  for (size_t m = 0; m < tex_mesh_.tex_polygons.size(); ++m){
+  for (size_t m = 0; m < tex_mesh.tex_polygons.size(); ++m){
 
     // texture coordinates for each mesh
     std::vector<Eigen::Vector2f> texture_map_tmp;
 
     // processing for each face
-    for (size_t i=0; i < tex_mesh_.tex_polygons[m].size(); ++i){
+    for (size_t i=0; i < tex_mesh.tex_polygons[m].size(); ++i){
       size_t idx;
       Eigen::Vector2f tmp_VT;
-      for (size_t j=0; j < tex_mesh_.tex_polygons[m][i].vertices.size(); ++j){
-        idx =  tex_mesh_.tex_polygons[m][i].vertices[j];
-        memcpy (&x_, &tex_mesh_.cloud.data[idx * point_size + tex_mesh_.cloud.fields[0].offset], sizeof (float));
-        memcpy (&y_, &tex_mesh_.cloud.data[idx * point_size + tex_mesh_.cloud.fields[1].offset], sizeof (float));
-        memcpy (&z_, &tex_mesh_.cloud.data[idx * point_size + tex_mesh_.cloud.fields[2].offset], sizeof (float));
+      for (size_t j=0; j < tex_mesh.tex_polygons[m][i].vertices.size(); ++j){
+        idx =  tex_mesh.tex_polygons[m][i].vertices[j];
+        memcpy (&x_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[0].offset], sizeof (float));
+        memcpy (&y_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[1].offset], sizeof (float));
+        memcpy (&z_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[2].offset], sizeof (float));
         // calculate uv coordinates
         tmp_VT[0] = (x_ + x_offset)/x_range;
         tmp_VT[1] = (z_ + z_offset)/z_range;
@@ -260,14 +257,11 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV(){
     tex_name << "material_"<< m;
     tex_name >> tex_material_.tex_name;
     tex_material_.tex_file = tex_files_[m];
-    tex_mesh_.tex_materials.push_back(tex_material_);
+    tex_mesh.tex_materials.push_back(tex_material_);
 
     // texture coordinates
-    tex_mesh_.tex_coordinates.push_back(texture_map_tmp);
+    tex_mesh.tex_coordinates.push_back(texture_map_tmp);
   }// end meshes
-
-  // return mesh with texture
-  return tex_mesh_;
 }
 
 #define PCL_INSTANTIATE_TextureMapping(T)                \

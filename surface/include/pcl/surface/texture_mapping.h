@@ -94,25 +94,17 @@ namespace pcl
         tex_material_ = tex_material;
       };
 
-       /** \brief set texture Mesh
-        * \param
-        */
-      inline void
-      setTextureMesh(TextureMesh tex_mesh){
-        tex_mesh_ = tex_mesh;
-      }
-
       /** \brief map texture to a  mesh synthesis algorithm
       * \param
       */
-      pcl::TextureMesh
-        mapTexture2Mesh();
+      void
+        mapTexture2Mesh(pcl::TextureMesh &tex_mesh);
 
       /** \brief map texture to a mesh UV mapping
       * \param
       */
-      pcl::TextureMesh
-        mapTexture2MeshUV();
+      void
+        mapTexture2MeshUV(pcl::TextureMesh &tex_mesh);
 
     protected:
       /** \brief mesh scale control. */
@@ -127,8 +119,6 @@ namespace pcl
       /** \brief list of texture materials */
       TexMaterial tex_material_;
 
-      /** \brief texture mesh */
-      TextureMesh tex_mesh_;
 
       /** \brief list of functions */
 
