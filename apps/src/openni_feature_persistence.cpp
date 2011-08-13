@@ -49,7 +49,7 @@
 #include <pcl/features/fpfh_omp.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/extract_indices.h>
-#include <pcl/features/normal_3d_omp.h>.h>
+#include <pcl/features/normal_3d_omp.h>
 
 
 #define FPS_CALC(_WHAT_) \
@@ -232,7 +232,7 @@ usage (char ** argv)
             << "         -normal_search_radius X = size of the neighborhood to consider for calculating the local plane and extracting the normals (default: " << default_normal_search_radius << "\n"
             << "         -persistence_alpha X = value of alpha for the multiscale feature persistence (default: " << default_alpha << "\n"
             << "         -scales X1 X2 ... = values for the multiple scales for extracting features (default: ";
-  for (int i = 0; i < default_scales_vector.size (); ++i) std::cout << default_scales_vector[i] << " ";
+  for (size_t i = 0; i < default_scales_vector.size (); ++i) std::cout << default_scales_vector[i] << " ";
   std::cout << "\n\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
@@ -257,7 +257,7 @@ main (int argc, char **argv)
   std::cout << "OpenNIFeaturePersistence - show persistent features based on the MultiscaleFeaturePersistence class using the FPFH features\n"
             << "Use \"-h\" to get more info about the available options.\n";
 
-  if (pcl::console::find_argument (argc, argv, "-h"))
+  if (pcl::console::find_argument (argc, argv, "-h") == -1)
   {
     usage (argv);
     return 1;
@@ -301,3 +301,4 @@ main (int argc, char **argv)
 
   return (0);
 }
+
