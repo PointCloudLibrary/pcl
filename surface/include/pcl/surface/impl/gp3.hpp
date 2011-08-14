@@ -1627,13 +1627,13 @@ pcl::GreedyProjectionTriangulation<PointInT>::getTriangleList (pcl::PolygonMesh 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles(pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2){
-
+pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles(pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2)
+{
   size_t point_size1 = mesh1.cloud.width * mesh1.cloud.height;
 
   // create new cloud
-  PointCloud<PointInT> newcloud;
-  PointCloud<PointInT> cloud2;
+  pcl::PointCloud<PointInT> newcloud;
+  pcl::PointCloud<PointInT> cloud2;
 
   pcl::fromROSMsg(mesh1.cloud, newcloud);
   pcl::fromROSMsg(mesh2.cloud, cloud2);
@@ -1649,7 +1649,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles(pcl::Polygo
   // for searching
   KdTreeFLANN<MyPoint> kdtree;
 
-  PointCloud<MyPoint>::Ptr mycloud (new PointCloud<MyPoint> ());
+  pcl::PointCloud<MyPoint>::Ptr mycloud (new pcl::PointCloud<MyPoint>);
 
   Eigen::Vector3f tmp;
   for(size_t i=0; i< newcloud.points.size (); ++i){
@@ -1742,20 +1742,21 @@ pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles(pcl::Polygo
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes(pcl::PolygonMesh &output, pcl::PolygonMesh &mesh2, std::vector<int> state2, std::vector<int> sfn2, std::vector<int> ffn2){
+pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (pcl::PolygonMesh &output, pcl::PolygonMesh &mesh2, std::vector<int> state2, std::vector<int> sfn2, std::vector<int> ffn2)
+{
   // store old information
   size_t point_size1 = input_->points.size ();
 
   // create new cloud
-  PointCloud<PointInT> newcloud_;
-  PointCloud<PointInT> cloud2;
+  pcl::PointCloud<PointInT> newcloud_;
+  pcl::PointCloud<PointInT> cloud2;
   newcloud_ = *input_;
 
-  pcl::fromROSMsg(mesh2.cloud, cloud2);
+  pcl::fromROSMsg (mesh2.cloud, cloud2);
   newcloud_ += cloud2;
 
   // update cloud
-  input_ = PointCloudInConstPtr (new PointCloud<PointInT>(newcloud_));
+  input_ = PointCloudInConstPtr (new pcl::PointCloud<PointInT>(newcloud_));
 
   // change header
   output.header = input_->header;
@@ -1779,7 +1780,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes(pcl::PolygonMesh &out
     part_[i] = -1;
   }
   // change the state
-  state_.resize(indices_->size ());
+  state_.resize (indices_->size ());
 
   for (size_t i = point_size1; i < indices_->size (); ++i) {
     state_[i] = state2[indices_->size () - point_size1];
@@ -2743,12 +2744,12 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (const PointCloudInCons
   size_t point_size_old = input_->points.size ();
 
   // create new cloud
-  PointCloud<PointInT> newcloud_;
+  pcl::PointCloud<PointInT> newcloud_;
   newcloud_ = *input_;
   newcloud_ += *update;
 
   // update cloud
-  input_ = PointCloudInConstPtr (new PointCloud<PointInT>(newcloud_));
+  input_ = PointCloudInConstPtr (new pcl::PointCloud<PointInT>(newcloud_));
 
   // change header
   output.header = input_->header;
