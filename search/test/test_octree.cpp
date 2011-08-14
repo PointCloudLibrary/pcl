@@ -269,6 +269,49 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
   ASSERT_EQ ( (bestMatchCount > 0) , true);
 }
 
+TEST (PCL, Octree_RadiusSearch_GPU)
+{
+	PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+	// generate point cloud data
+    cloudIn->width = 1000;
+    cloudIn->height = 1;
+    cloudIn->points.resize (cloudIn->width * cloudIn->height);
+
+	int i=0;
+	for (i = 0; i < 1000; i++)
+	{
+		cloudIn->points[i] = PointXYZ (10.0 * ((double)rand () / (double)RAND_MAX),
+				10.0 * ((double)rand () / (double)RAND_MAX),
+				5.0 * ((double)rand () / (double)RAND_MAX));
+	}
+
+	
+
+	Search<PointXYZ>* octree = new OctreeGPU<PointXYZ>();
+	octree->setInputCloud(cloudIn);
+#if 1
+
+std::vector <PointXYZ > point;
+    const PointXYZ searchPoint (10.0 * ((double)rand () / (double)RAND_MAX), 10.0 * ((double)rand () / (double)RAND_MAX),
+                          10.0 * ((double)rand () / (double)RAND_MAX));
+point.push_back(searchPoint);
+point.push_back(searchPoint);
+point.push_back(searchPoint);
+    double searchRadius = 5.0 * ((double)rand () / (double)RAND_MAX);
+ double radius =5;
+vector < double > radiuses;
+radiuses.push_back(radius);
+radiuses.push_back(radius);
+radiuses.push_back(radius);
+std::vector<std::vector<int> > k_indices;    
+std::vector<std::vector<float> > k_distances; 
+int max_nn = -1;
+
+
+octree->radiusSearchGPU (point, radiuses, k_indices,k_distances,max_nn );
+#endif
+}
+
 TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
 {
 

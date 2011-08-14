@@ -34,6 +34,9 @@
  * Author: Siddharth Choudhary (itzsid@gmail.com)
  */
 
+#ifndef PCL_SEARCH_OCTREE_GPU_H_
+#define PCL_SEARCH_OCTREE_GPU_H_
+
 #include "pcl/search/search.h"
 #include "pcl/search/impl/octree.hpp"
 
@@ -48,14 +51,21 @@ namespace pcl
   class OctreeGPU : public pcl::Search<PointT> 
 {
 
+	public:
 OctreeGPU(){}
 ~OctreeGPU(){}
-	public:
+
+    typedef typename Search<PointT>::PointCloud PointCloud;
+    typedef typename Search<PointT>::PointCloudConstPtr PointCloudConstPtr;
+
+    void setInputCloud( const PointCloudConstPtr& cloud);
+   
 
     int 
-    radiusSearchGPU (std::vector<const PointT>& point, const double radius, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn = -1) const;
-
+    radiusSearchGPU (std::vector<PointT>& point, std::vector< double>& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const;
 
 };
 
 }
+
+#endif

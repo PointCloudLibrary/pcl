@@ -47,7 +47,7 @@ if(build)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     #target_link_libraries(${LIB_NAME} pcl_common pcl_io ${FLANN_LIBRARIES})
-    target_link_libraries(${LIB_NAME} pcl_common pcl_io ${FLANN_LIBRARIES} pcl_gpu_common pcl_gpu_octree)
+    target_link_libraries(${LIB_NAME} pcl_common pcl_io ${FLANN_LIBRARIES} pcl_gpu_common pcl_gpu_octree ${OpenCV_LIBS})
     list(APPEND EXT_DEPS flann)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "{SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
