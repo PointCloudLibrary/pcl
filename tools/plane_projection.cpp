@@ -102,7 +102,7 @@ project (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   for(size_t i = 0; i < xyz->points.size(); ++i)
   {
     pcl::PointXYZ projection;
-    pcl::projectPoint(xyz->points[i], coeffs, projection);
+    pcl::projectPoint<PointXYZ> (xyz->points[i], coeffs, projection);
     projected_cloud_pcl->points.push_back(projection);
   }
 
