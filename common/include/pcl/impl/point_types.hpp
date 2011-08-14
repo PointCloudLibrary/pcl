@@ -176,9 +176,43 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW    ;
     return (os);
   }
 
+  /** \brief A structure representing RGB color information. 
+    *
+    * The RGBA information is available either as separate r, g, b, or as a
+    * packed uint32_t rgba value. To pack it, use:
+    *
+    * \code
+    * int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
+    * \endcode
+    *
+    * To unpack it use:
+    *
+    * \code
+    * int rgb = ...;
+    * uint8_t r = (rgb >> 16) & 0x0000ff;
+    * uint8_t g = (rgb >> 8)  & 0x0000ff;
+    * uint8_t b = (rgb)     & 0x0000ff;
+    * \endcode
+    *
+    */
+  struct RGB
+  {
+    union
+    {
+      struct
+      {
+        uint8_t b;
+        uint8_t g;
+        uint8_t r;
+        uint8_t a;
+      };
+      uint32_t rgba;
+    };
+  };
+
   /** \brief A point structure representing Euclidean xyz coordinates, and the intensity value.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct EIGEN_ALIGN16 PointXYZI
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
