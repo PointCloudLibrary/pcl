@@ -386,23 +386,20 @@ pcl::io::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& p
   }
 
   // copy color information
-  if (idx_rgb != -1)
+  if (idx_rgb != -1 || idx_rgba != -1)
   {
-    vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New();
-    colors->SetNumberOfComponents(3);
-    colors->SetName("Colors");
-    float float_rgb = 0.0f;
+    vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+    colors->SetNumberOfComponents (3);
+    colors->SetName ("Colors");
+    pcl::RGB rgb;
+    int offset = (idx_rgb != -1) ? mesh.cloud.fields[idx_rgb].offset : mesh.cloud.fields[idx_rgba].offset;
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
-      memcpy(&float_rgb, &mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_rgb].offset], sizeof(float));
-      const uint32_t int_rgb = *reinterpret_cast<uint32_t*>(&float_rgb);
-      const unsigned char r = (int_rgb >> 16) & 0x0000ff;
-      const unsigned char g = (int_rgb >> 8) & 0x0000ff;
-      const unsigned char b = (int_rgb) & 0x0000ff;
-      const unsigned char color[3] = {r, g, b};
-      colors->InsertNextTupleValue(color);
+      memcpy (&rgb, &mesh.cloud.data[cp * mesh.cloud.point_step + offset], sizeof (RGB));
+      const unsigned char color[3] = {rgb.r, rgb.g, rgb.b};
+      colors->InsertNextTupleValue (color);
     }
-    poly_data->GetPointData()->SetScalars(colors);
+    poly_data->GetPointData ()->SetScalars (colors);
   }
 
   // copy normal information
