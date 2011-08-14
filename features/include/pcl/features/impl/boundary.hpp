@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -47,7 +49,7 @@ template <typename PointInT, typename PointNT, typename PointOutT> bool
       const pcl::PointCloud<PointInT> &cloud, int q_idx, 
       const std::vector<int> &indices, 
       const Eigen::Vector3f &u, const Eigen::Vector3f &v, 
-      float angle_threshold)
+      const float angle_threshold)
 {
   return (isBoundaryPoint (cloud, cloud.points[q_idx], indices, u, v, angle_threshold));
 }
@@ -58,7 +60,7 @@ template <typename PointInT, typename PointNT, typename PointOutT> bool
       const pcl::PointCloud<PointInT> &cloud, const PointInT &q_point, 
       const std::vector<int> &indices, 
       const Eigen::Vector3f &u, const Eigen::Vector3f &v, 
-      float angle_threshold)
+      const float angle_threshold)
 {
   if (indices.size () < 3)
     return (false);
