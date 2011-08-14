@@ -353,7 +353,7 @@ namespace pcl
                        unsigned int point_index, int point_size, unsigned int field_idx, unsigned int fields_count, 
                        std::ostream &stream)
       {
-        copyValueString<Type> (cloud, point_index, point_size, field_idx, fields_count, stream);
+        pcl::copyValueString<Type> (cloud, point_index, point_size, field_idx, fields_count, stream);
       }
   };
 }
