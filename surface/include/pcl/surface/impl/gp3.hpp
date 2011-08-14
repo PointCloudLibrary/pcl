@@ -1661,11 +1661,12 @@ pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles(pcl::Polygo
   Eigen::Vector3f center(0,0,0);
 
   // verties of triangle
-  size_t idx[3];
+  int idx[3];
 
-  for (size_t i=0; i < mesh1.polygons.size(); ++i){
-
-    for (size_t j=0; j < mesh1.polygons[i].vertices.size(); ++j){
+  for (size_t i=0; i < mesh1.polygons.size(); ++i)
+  {
+    for (size_t j=0; j < mesh1.polygons[i].vertices.size(); ++j)
+    {
       idx[j] =  mesh1.polygons[i].vertices[j];
       center = center + input_->points[idx[j]].getVector3fMap();
     }
@@ -1675,44 +1676,49 @@ pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles(pcl::Polygo
     kdtree.nearestKSearch (center_point, 1, nnIdx, sqrDists);
 
     // remove the triangle if we can
-    if(nnIdx[0] >= point_size1 && triangleList2[nnIdx[0]].size() > 0){ // remove triangle
-
-      for( size_t j = 0; j < 3; ++j){
+    if (nnIdx[0] >= (int)point_size1 && triangleList2[nnIdx[0]].size() > 0)
+    { // remove triangle
+      for (int j = 0; j < 3; ++j)
+      {
         // set vertex 1 to FREE if the triangle to be deleted was the only triangle it was in
-        if( triangleList1[idx[j]].size() == 1){
+        if (triangleList1[idx[j]].size() == 1)
+        {
           state_[idx[j]] = FREE;
           sfn_[idx[j]] = -1;
           ffn_[idx[j]] = -1;
 
-          for(size_t k = 0; k < 3; ++k){
+          for (int k = 0; k < 3; ++k)
+          {
             // update sfn and ffn of other 2 vertices
-            if (k!=j){
-              if(sfn_[idx[k]] == idx[j]){
+            if (k != j)
+            {
+              if (sfn_[idx[k]] == idx[j])
                 sfn_[idx[k]] = idx[3- k-j];
-              }
-              if(ffn_[idx[k]] == idx[j]){
+              if (ffn_[idx[k]] == idx[j])
                 ffn_[idx[k]] = idx[3- k-j];
-              }
             }
           }// end for k
-        }else{ // set to be FRINGE
+        }
+        else
+        { // set to be FRINGE
           state_[idx[j]] = FRINGE;
           // scanning other triangle that has this vertex
           size_t bothshare2triangles =0;
           size_t last_k = 0;
-          for(size_t k =0; k < 3; ++k){
+          for (int k = 0; k < 3; ++k)
+          {
             size_t share2triangles = 0;
-            if(k != j){
-              for(size_t p = 0; p < triangleList1[idx[j]].size(); ++p){
-                for(size_t q =0; q < triangleList1[idx[k]].size(); ++q){
-                  if(triangleList1[idx[j]][p] == triangleList1[idx[j]][q]){
-                    share2triangles++;
-                  }
-                }
-              }
-            }
+            if (k == j)
+              continue;
+
+            for (size_t p = 0; p < triangleList1[idx[j]].size(); ++p)
+              for (size_t q =0; q < triangleList1[idx[k]].size(); ++q)
+                if (triangleList1[idx[j]][p] == triangleList1[idx[j]][q])
+                  share2triangles++;
+
             // if 2 vertex share 2 triangles
-            if(share2triangles == 2){
+            if(share2triangles == 2)
+            {
               sfn_[idx[j]] = idx[k];
               ffn_[idx[j]] = idx[k];
               bothshare2triangles++;
@@ -1720,7 +1726,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles(pcl::Polygo
             }
           }
           // if both share 2 triangles
-          if(bothshare2triangles == 2){
+          if (bothshare2triangles == 2)
+          {
             // change ffn or sfn
             ffn_[idx[j]] = idx[3-j-last_k];
           }
