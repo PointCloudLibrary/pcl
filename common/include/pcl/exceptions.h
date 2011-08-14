@@ -1,8 +1,9 @@
-/*********************************************************************
- *
+/*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,7 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  * Author: Eitan Marder-Eppstein, Suat Gedikli (gedikli@willowgarage.com)
- *********************************************************************/
+ */
 #ifndef PCL_EXCEPTIONS_H_
 #define PCL_EXCEPTIONS_H_
 
@@ -42,81 +43,80 @@
 namespace pcl
 {
 
-  /**
-   * @class PCLException
-   * @brief A base class for all pcl exceptions which inherits from std::runtime_error
-   */
+  /** \class PCLException
+    * \brief A base class for all pcl exceptions which inherits from std::runtime_error
+    */
   class PCLException : public std::runtime_error
   {
-  public:
+    public:
 
-    PCLException (const std::string& error_description,
-                  const std::string& file_name = "",
-                  const std::string& function_name = "" ,
-                  unsigned line_number = 0) throw ()
-    : std::runtime_error (error_description)
-    , file_name_ (file_name)
-    , function_name_ (function_name)
-    , line_number_ (line_number)
- { }
-    
-    virtual ~PCLException () throw ()
-    {}
-    
-    const std::string&
-    getFileName () const throw ()
-    {
-      return file_name_;
-    }
-
-    const std::string&
-    getFunctionName () const throw ()
-    {
-      return function_name_;
-    }
-
-    unsigned
-    getLineNumber () const throw ()
-    {
-      return line_number_;
-    }
-
-    std::string detailedMessage () const throw ()
-    {
-      std::stringstream sstream;
-      if (function_name_ != "")
-        sstream << function_name_ << " ";
+      PCLException (const std::string& error_description,
+                    const std::string& file_name = "",
+                    const std::string& function_name = "" ,
+                    unsigned line_number = 0) throw ()
+      : std::runtime_error (error_description)
+      , file_name_ (file_name)
+      , function_name_ (function_name)
+      , line_number_ (line_number)
+      {}
       
-      if (file_name_ != "")
+      virtual ~PCLException () throw ()
+      {}
+      
+      const std::string&
+      getFileName () const throw ()
       {
-        sstream << "in " << file_name_ << " ";
-        if (line_number_ != 0)
-          sstream << "@ " << line_number_ << " ";
+        return file_name_;
       }
-      sstream << ":" << what ();
-      
-      return sstream.str ();
-    }
 
-  protected:
-    std::string file_name_;
-    std::string function_name_;
-    unsigned line_number_;
+      const std::string&
+      getFunctionName () const throw ()
+      {
+        return function_name_;
+      }
+
+      unsigned
+      getLineNumber () const throw ()
+      {
+        return line_number_;
+      }
+
+      std::string 
+      detailedMessage () const throw ()
+      {
+        std::stringstream sstream;
+        if (function_name_ != "")
+          sstream << function_name_ << " ";
+        
+        if (file_name_ != "")
+        {
+          sstream << "in " << file_name_ << " ";
+          if (line_number_ != 0)
+            sstream << "@ " << line_number_ << " ";
+        }
+        sstream << ":" << what ();
+        
+        return sstream.str ();
+      }
+
+    protected:
+      std::string file_name_;
+      std::string function_name_;
+      unsigned line_number_;
   } ;
 
-  /**
-   * @class InvalidConversionException
-   * @brief An exception that is thrown when a PointCloud2 message cannot be converted into a PCL type
-   */
+  /** \class InvalidConversionException
+    * \brief An exception that is thrown when a PointCloud2 message cannot be converted into a PCL type
+    */
   class InvalidConversionException : public PCLException
   {
-  public:
+    public:
 
-    InvalidConversionException (const std::string& error_description,
-                                const std::string& file_name = "",
-                                const std::string& function_name = "" ,
-                                unsigned line_number = 0) throw ()
-      : pcl::PCLException (error_description, file_name, function_name, line_number) { }
+      InvalidConversionException (const std::string& error_description,
+                                  const std::string& file_name = "",
+                                  const std::string& function_name = "" ,
+                                  unsigned line_number = 0) throw ()
+        : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
   /**
@@ -125,29 +125,42 @@ namespace pcl
    */
   class IsNotDenseException : public PCLException
   {
-  public:
+    public:
 
-    IsNotDenseException (const std::string& error_description,
-                         const std::string& file_name = "",
-                         const std::string& function_name = "" ,
-                         unsigned line_number = 0) throw ()
-      : pcl::PCLException (error_description, file_name, function_name, line_number) { }
+      IsNotDenseException (const std::string& error_description,
+                           const std::string& file_name = "",
+                           const std::string& function_name = "" ,
+                           unsigned line_number = 0) throw ()
+        : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
-  /**
-   * @class InvalidSACModelTypeException
-   * @brief An exception that is thrown when a sample consensus model doesn't
-   * have the correct number of samples defined in model_types.h
-   */
+  /** \class InvalidSACModelTypeException
+    * \brief An exception that is thrown when a sample consensus model doesn't
+    * have the correct number of samples defined in model_types.h
+    */
   class InvalidSACModelTypeException : public PCLException
   {
-  public:
+    public:
 
-    InvalidSACModelTypeException (const std::string& error_description,
-                                  const std::string& file_name = "",
-                                  const std::string& function_name = "" ,
-                                  unsigned line_number = 0) throw ()
-      : pcl::PCLException (error_description, file_name, function_name, line_number) { }
+      InvalidSACModelTypeException (const std::string& error_description,
+                                    const std::string& file_name = "",
+                                    const std::string& function_name = "" ,
+                                    unsigned line_number = 0) throw ()
+        : pcl::PCLException (error_description, file_name, function_name, line_number) { }
+  } ;
+
+  /** \class IOException
+    * \brief An exception that is thrown during an IO error (typical read/write errors)
+    */
+  class IOException : public PCLException
+  {
+    public:
+
+      IOException (const std::string& error_description,
+                   const std::string& file_name = "",
+                   const std::string& function_name = "" ,
+                   unsigned line_number = 0) throw ()
+        : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 }
 #endif
