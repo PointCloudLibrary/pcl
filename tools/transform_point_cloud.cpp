@@ -43,6 +43,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/registration/transforms.h>
+#include <cmath>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -255,7 +256,7 @@ main (int argc, char** argv)
   {
     if (values.size () == 9 || values.size () == 16)
     {
-      int n = sqrt (values.size ());
+      int n = values.size () == 9 ? 3 : 4;
       for (int r = 0; r < n; ++r)
         for (int c = 0; c < n; ++c)
           tform (r, c) = values[n*r+c];
