@@ -95,6 +95,7 @@ if(build)
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/io.hpp
+        include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp
         include/pcl/compression/impl/entropy_range_coder.hpp
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
        )

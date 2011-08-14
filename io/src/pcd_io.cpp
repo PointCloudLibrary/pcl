@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -537,8 +539,8 @@ pcl::PCDWriter::generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud,
 {
   std::ostringstream oss;
 
-  oss << "# .PCD v.7 - Point Cloud Data file format"
-         "\nVERSION .7"
+  oss << "# .PCD v0.7 - Point Cloud Data file format"
+         "\nVERSION 0.7"
          "\nFIELDS ";
 
   std::ostringstream stream;
@@ -635,8 +637,8 @@ pcl::PCDWriter::generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud,
 {
   std::ostringstream oss;
 
-  oss << "# .PCD v.7 - Point Cloud Data file format"
-         "\nVERSION .7"
+  oss << "# .PCD v0.7 - Point Cloud Data file format"
+         "\nVERSION 0.7"
          "\nFIELDS";
 
   // Compute the total size of the fields
@@ -712,7 +714,7 @@ pcl::PCDWriter::generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud,
 int
 pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
                             const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation,
-                            int precision)
+                            const int precision)
 {
   if (cloud.data.empty ())
   {
@@ -902,3 +904,4 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
 #endif
   return (0);
 }
+
