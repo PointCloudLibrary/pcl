@@ -142,13 +142,13 @@ main (int argc, char** argv)
   std::string device_id = "";
   pcl::console::parse_argument (argc, argv, "-dev", device_id);
 
-  pcl::Grabber* grabber = new pcl::OpenNIGrabber (device_id);
+  pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
 
   EventHelper h;
   boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
-  boost::signals2::connection c1 = grabber->registerCallback (f);
+  boost::signals2::connection c1 = interface->registerCallback (f);
 
-  grabber->start ();
+  interface->start ();
   while (!p->wasStopped ())
   {
     p->spinOnce ();
@@ -171,6 +171,6 @@ main (int argc, char** argv)
       boost::this_thread::sleep (boost::posix_time::microseconds (1000));
   }
 
-  grabber->stop ();
+  interface->stop ();
 }
 /* ]--- */
