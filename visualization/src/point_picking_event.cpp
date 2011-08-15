@@ -65,9 +65,9 @@ pcl::visualization::PointPickingCallback::performSinglePick (vtkRenderWindowInte
   vtkPointPicker *picker = (vtkPointPicker*)iren->GetPicker ();
   iren->GetMousePosition (&mouse_x, &mouse_y);
   iren->StartPickCallback ();
-
-  vtkRendererCollection *coll = iren->GetRenderWindow ()->GetRenderers ();
-  picker->Pick (mouse_x, mouse_y, 0.0, coll->GetFirstRenderer ());
+  
+  vtkRenderer *ren = iren->FindPokedRenderer (iren->GetEventPosition ()[0], iren->GetEventPosition ()[1]);
+  picker->Pick (mouse_x, mouse_y, 0.0, ren);
   return ((int)picker->GetPointId ());
 }
 
