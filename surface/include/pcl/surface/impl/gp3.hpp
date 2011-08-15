@@ -1633,8 +1633,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles (
   size_t point_size1 = mesh1.cloud.width * mesh1.cloud.height;
 
   // create new cloud
-  PointCloud<PointInT> newcloud;
-  PointCloud<PointInT> cloud2;
+  pcl::PointCloud<PointInT> newcloud;
+  pcl::PointCloud<PointInT> cloud2;
 
   pcl::fromROSMsg(mesh1.cloud, newcloud);
   pcl::fromROSMsg(mesh2.cloud, cloud2);
@@ -1650,7 +1650,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles (
   // for searching
   KdTreeFLANN<SearchPoint> kdtree;
 
-  PointCloud<SearchPoint>::Ptr mycloud (new PointCloud<SearchPoint> ());
+  pcl::PointCloud<SearchPoint>::Ptr mycloud (new pcl::PointCloud<SearchPoint> ());
 
   Eigen::Vector3f tmp;
   for(size_t i=0; i< newcloud.points.size (); ++i)
@@ -1753,15 +1753,15 @@ pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (
   size_t point_size1 = input_->points.size ();
 
   // create new cloud
-  PointCloud<PointInT> newcloud;
-  PointCloud<PointInT> cloud2;
+  pcl::PointCloud<PointInT> newcloud;
+  pcl::PointCloud<PointInT> cloud2;
   newcloud = *input_;
 
   pcl::fromROSMsg(mesh2.cloud, cloud2);
   newcloud += cloud2;
 
   // update cloud
-  input_ = PointCloudInConstPtr (new PointCloud<PointInT>(newcloud));
+  input_ = PointCloudInConstPtr (new pcl::PointCloud<PointInT>(newcloud));
 
   // change header
   output.header = input_->header;
@@ -2741,12 +2741,12 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (
   size_t point_size_old = input_->points.size ();
 
   // create new cloud
-  PointCloud<PointInT> newcloud;
+  pcl::PointCloud<PointInT> newcloud;
   newcloud = *input_;
   newcloud += *update;
 
   // update cloud
-  input_ = PointCloudInConstPtr (new PointCloud<PointInT>(newcloud));
+  input_ = PointCloudInConstPtr (new pcl::PointCloud<PointInT>(newcloud));
 
   // change header
   output.header = input_->header;

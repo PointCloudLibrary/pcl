@@ -278,25 +278,25 @@ namespace pcl
       /** \brief update mesh when new point cloud is added without recreating mesh.
       * \param point cloud update and update mesh output
       */
-      PCL_EXPORTS void
+      void
       updateMesh (const PointCloudInConstPtr &update, pcl::PolygonMesh &output);
 
       /** \brief update texture mesh when new point cloud is added without recreating mesh.
         * \param point cloud update and update texture mesh output
         */
-      PCL_EXPORTS void
+      void
       updateMesh (const PointCloudInConstPtr &update, pcl::PolygonMesh &output, pcl::TextureMesh &tex_mesh);
 
       /** \brief remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
       * \param polygonMesh 1st and 2nd mesh.
       */
-      PCL_EXPORTS void
+      void
       merge2Meshes (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2, std::vector<int> state2, std::vector<int> sfn2, std::vector<int> ffn2);
 
       /** \brief remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
       * \param polygonMesh 1st and 2nd mesh.
       */
-      PCL_EXPORTS void
+      void
       removeOverlapTriangles (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2);
 
     protected:
