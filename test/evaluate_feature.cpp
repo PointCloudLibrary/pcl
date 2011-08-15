@@ -17,7 +17,7 @@
 
 #include <Eigen/Core>
 
-#include "feature_evaluation_framework.h"
+#include <pcl/features/feature_evaluation/feature_evaluation_framework.h>
 
 namespace co = pcl::console;
 
@@ -168,6 +168,7 @@ int runTests (int argc, char** argv)
     return -1;
   }
 
+  test_features.clearData ();
   return 0;
 }
 
@@ -220,6 +221,7 @@ int main()
   test_features.setThreshold (0.01,0.1,0.01);
   test_features.setParameters (parameters);
   test_features.setDownsampling (true);
+  test_features.setLeafSize(0.01,0.01,0.01);
   test_features.setVerbose (true);
   test_features.setLogFile ("variation-with-leaf-sizes-new.txt");
 

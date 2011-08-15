@@ -56,7 +56,6 @@ if(build)
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd)
                  
     include_directories(${PCL_INCLUDE_DIRS})
-    include_directories( . )
     
     PCL_ADD_EXECUTABLE (evaluate_feature ${SUBSYS_NAME} evaluate_feature.cpp)
     target_link_libraries (evaluate_feature pcl_io pcl_features pcl_kdtree pcl_filters)

@@ -11,7 +11,7 @@
 
 #include <Eigen/Core>
 
-#include "feature_evaluation_framework.h"
+#include <pcl/features/feature_evaluation/feature_evaluation_framework.h>
 
 /*
  * This is a sample program to illustrate the use of the Feature Evaluation Framework.
