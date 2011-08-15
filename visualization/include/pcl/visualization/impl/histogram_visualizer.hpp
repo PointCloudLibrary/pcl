@@ -51,11 +51,6 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
     return (false);
   }
 
-  // Create the actor
-  RenWinInteract renwinint;
-  renwinint.xy_plot_->SetDataObjectPlotModeToColumns ();
-  renwinint.xy_plot_->SetXValuesToValue ();
-
   vtkSmartPointer<vtkDoubleArray> xy_array = vtkSmartPointer<vtkDoubleArray>::New ();
   xy_array->SetNumberOfComponents (2);
   xy_array->SetNumberOfTuples (hsize);
@@ -68,73 +63,8 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
     xy[1] = cloud.points[0].histogram[d];
     xy_array->SetTuple (d, xy);
   }
-  double min_max[2];
-  xy_array->GetRange (min_max, 1);
-
-  // Create the data structures
-  vtkSmartPointer<vtkFieldData> field_values = vtkSmartPointer<vtkFieldData>::New ();
-  field_values->AddArray (xy_array);
-
-  vtkSmartPointer<vtkDataObject> field_data = vtkSmartPointer<vtkDataObject>::New ();
-  field_data->SetFieldData (field_values);
-
-  renwinint.xy_plot_->AddDataObjectInput (field_data);
-  // Set the plot color
-  renwinint.xy_plot_->SetPlotColor (0, 1.0, 0.0, 0.0);
-
-  renwinint.xy_plot_->SetDataObjectXComponent (0, 0); renwinint.xy_plot_->SetDataObjectYComponent (0, 1);
-  renwinint.xy_plot_->PlotPointsOn ();
-  //renwinint.xy_plot_->PlotCurvePointsOn ();
-  //renwinint.xy_plot_->PlotLinesOn ();
-  renwinint.xy_plot_->PlotCurveLinesOn ();
-
-  renwinint.xy_plot_->SetYTitle (""); renwinint.xy_plot_->SetXTitle ("");
-  renwinint.xy_plot_->SetYRange (min_max[0], min_max[1]); 
-  renwinint.xy_plot_->SetXRange (0, hsize - 1);
-
-  //renwinint.xy_plot_->SetTitle (id.c_str ());
-  renwinint.xy_plot_->GetProperty ()->SetColor (0, 0, 0);
-
-  // Adjust text properties
-  vtkSmartPointer<vtkTextProperty> tprop = renwinint.xy_plot_->GetTitleTextProperty ();
-  renwinint.xy_plot_->AdjustTitlePositionOn ();
-  tprop->SetFontSize (8);
-  tprop->ShadowOff (); tprop->ItalicOff ();
-  tprop->SetColor (renwinint.xy_plot_->GetProperty ()->GetColor ());
-
-  renwinint.xy_plot_->SetAxisLabelTextProperty (tprop);
-  renwinint.xy_plot_->SetAxisTitleTextProperty (tprop);
-  renwinint.xy_plot_->SetNumberOfXLabels (8);
-  renwinint.xy_plot_->GetProperty ()->SetPointSize (3);
-  renwinint.xy_plot_->GetProperty ()->SetLineWidth (2);
-
-  renwinint.xy_plot_->SetPosition (0, 0);
-  renwinint.xy_plot_->SetWidth (1); renwinint.xy_plot_->SetHeight (1);
-
-  // Create the new window with its interactor and renderer
-  renwinint.ren_->AddActor2D (renwinint.xy_plot_);
-  renwinint.ren_->SetBackground (1, 1, 1);
-  renwinint.win_->SetWindowName (id.c_str ());
-  renwinint.win_->AddRenderer (renwinint.ren_);
-  renwinint.win_->SetSize (win_width, win_height);
-  renwinint.win_->SetBorders (1);
-  
-  // Create the interactor style
-  vtkSmartPointer<pcl::visualization::PCLHistogramVisualizerInteractorStyle> style_ = vtkSmartPointer<pcl::visualization::PCLHistogramVisualizerInteractorStyle>::New ();
-  style_->Initialize ();
-  renwinint.style_ = style_;
-  renwinint.style_->UseTimersOn ();
-  renwinint.interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
-  renwinint.interactor_->SetRenderWindow (renwinint.win_);
-  renwinint.interactor_->SetInteractorStyle (renwinint.style_);
-  // Initialize and create timer
-  renwinint.interactor_->Initialize ();
-  renwinint.interactor_->timer_id_ = renwinint.interactor_->CreateRepeatingTimer (5000L);
-
-  exit_main_loop_timer_callback_->right_timer_id = -1;
-  renwinint.interactor_->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
-
-  renwinint.interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
+  RenWinInteract renwinint;
+  createActor (xy_array, renwinint, id, win_width, win_height);
 
   // Save the pointer/ID pair to the global window map
   wins_[id] = renwinint;
@@ -160,18 +90,11 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
   // Get the fields present in this cloud
   std::vector<sensor_msgs::PointField> fields;
   pcl::getFields (cloud, fields);
-  int field_idx = -1;
   // Check if our field exists
-  for (size_t i = 0; i < fields.size (); ++i)
-  {
-    if (fields[i].name != field_name)
-      continue;
-    field_idx = i;
-    break;
-  }
+  int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1)
   {
-    PCL_WARN ("[addFeatureHistogram] The specified field <%s> does not exist!\n", field_name.c_str ());
+    PCL_ERROR ("[addFeatureHistogram] The specified field <%s> does not exist!\n", field_name.c_str ());
     return (false);
   }
 
@@ -181,11 +104,6 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
     PCL_WARN ("[addFeatureHistogram] A window with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
-
-  // Create the actor
-  RenWinInteract renwinint;
-  renwinint.xy_plot_->SetDataObjectPlotModeToColumns ();
-  renwinint.xy_plot_->SetXValuesToValue ();
 
   vtkSmartPointer<vtkDoubleArray> xy_array = vtkSmartPointer<vtkDoubleArray>::New ();
   xy_array->SetNumberOfComponents (2);
@@ -202,73 +120,8 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
     xy[1] = data;
     xy_array->SetTuple (d, xy);
   }
-  double min_max[2];
-  xy_array->GetRange (min_max, 1);
-
-  // Create the data structures
-  vtkSmartPointer<vtkFieldData> field_values = vtkSmartPointer<vtkFieldData>::New ();
-  field_values->AddArray (xy_array);
-
-  vtkSmartPointer<vtkDataObject> field_data = vtkSmartPointer<vtkDataObject>::New ();
-  field_data->SetFieldData (field_values);
-
-  renwinint.xy_plot_->AddDataObjectInput (field_data);
-  // Set the plot color
-  renwinint.xy_plot_->SetPlotColor (0, 1.0, 0.0, 0.0);
-
-  renwinint.xy_plot_->SetDataObjectXComponent (0, 0); renwinint.xy_plot_->SetDataObjectYComponent (0, 1);
-  renwinint.xy_plot_->PlotPointsOn ();
-  //renwinint.xy_plot_->PlotCurvePointsOn ();
-  //renwinint.xy_plot_->PlotLinesOn ();
-  renwinint.xy_plot_->PlotCurveLinesOn ();
-
-  renwinint.xy_plot_->SetYTitle (""); renwinint.xy_plot_->SetXTitle ("");
-  renwinint.xy_plot_->SetYRange (min_max[0], min_max[1]); 
-  renwinint.xy_plot_->SetXRange (0, fields[field_idx].count - 1);
-
-  //renwinint.xy_plot_->SetTitle (id.c_str ());
-  renwinint.xy_plot_->GetProperty ()->SetColor (0, 0, 0);
-
-  // Adjust text properties
-  vtkSmartPointer<vtkTextProperty> tprop = renwinint.xy_plot_->GetTitleTextProperty ();
-  renwinint.xy_plot_->AdjustTitlePositionOn ();
-  tprop->SetFontSize (8);
-  tprop->ShadowOff (); tprop->ItalicOff ();
-  tprop->SetColor (renwinint.xy_plot_->GetProperty ()->GetColor ());
-
-  renwinint.xy_plot_->SetAxisLabelTextProperty (tprop);
-  renwinint.xy_plot_->SetAxisTitleTextProperty (tprop);
-  renwinint.xy_plot_->SetNumberOfXLabels (8);
-  renwinint.xy_plot_->GetProperty ()->SetPointSize (3);
-  renwinint.xy_plot_->GetProperty ()->SetLineWidth (2);
-
-  renwinint.xy_plot_->SetPosition (0, 0);
-  renwinint.xy_plot_->SetWidth (1); renwinint.xy_plot_->SetHeight (1);
-
-  // Create the new window with its interactor and renderer
-  renwinint.ren_->AddActor2D (renwinint.xy_plot_);
-  renwinint.ren_->SetBackground (1, 1, 1);
-  renwinint.win_->SetWindowName (id.c_str ());
-  renwinint.win_->AddRenderer (renwinint.ren_);
-  renwinint.win_->SetSize (win_width, win_height);
-  renwinint.win_->SetBorders (1);
-  
-  // Create the interactor style
-  vtkSmartPointer<pcl::visualization::PCLHistogramVisualizerInteractorStyle> style_ = vtkSmartPointer<pcl::visualization::PCLHistogramVisualizerInteractorStyle>::New ();
-  style_->Initialize ();
-  renwinint.style_ = style_;
-  renwinint.style_->UseTimersOn ();
-  renwinint.interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
-  renwinint.interactor_->SetRenderWindow (renwinint.win_);
-  renwinint.interactor_->SetInteractorStyle (renwinint.style_);
-  // Initialize and create timer
-  renwinint.interactor_->Initialize ();
-  renwinint.interactor_->timer_id_ = renwinint.interactor_->CreateRepeatingTimer (5000L);
-
-  exit_main_loop_timer_callback_->right_timer_id = -1;
-  renwinint.interactor_->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
-
-  renwinint.interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
+  RenWinInteract renwinint;
+  createActor (xy_array, renwinint, id, win_width, win_height);
 
   // Save the pointer/ID pair to the global window map
   wins_[id] = renwinint;

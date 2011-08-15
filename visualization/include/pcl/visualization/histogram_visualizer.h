@@ -64,10 +64,10 @@ namespace pcl
 
         ~PCLHistogramVisualizer ();
         /** \brief Spin once method. Calls the interactor and updates the screen once. 
-         *  \param time - How long (in ms) should the visualization loop be allowed to run.
-         *  \param force_redraw - if false it might return without doing anything if the interactor's
-         *                        framerate does not require a redraw yet.
-         */
+          *  \param[in] time - How long (in ms) should the visualization loop be allowed to run.
+          *  \param[in] force_redraw - if false it might return without doing anything if the interactor's
+          *                            framerate does not require a redraw yet.
+          */
         void 
         spinOnce (int time = 1, bool force_redraw = false);
         
@@ -76,41 +76,45 @@ namespace pcl
         spin ();
         
         /** \brief Set the viewport's background color.
-          * \param r the red component of the RGB color
-          * \param g the green component of the RGB color
-          * \param b the blue component of the RGB color
-          * \param viewport the view port (default: all)
+          * \param[in] r the red component of the RGB color
+          * \param[in] g the green component of the RGB color
+          * \param[in] b the blue component of the RGB color
+          * \param[in] viewport the view port (default: all)
           */
         void 
         setBackgroundColor (const double &r, const double &g, const double &b, int viewport = 0);
 
-        /** \brief Add a histogram feature to screen as a separate window.
-          * \param cloud the PointCloud dataset containing the histogram
-          * \param hsize the length of the histogram
-          * \param id the point cloud object id (default: cloud)
-          * \param win_width the size of the window (width)
-          * \param win_height the size of the window (width)
+        /** \brief Add a histogram feature to screen as a separate window, from a cloud containing a single histogram.
+          * \param[in] cloud the PointCloud dataset containing the histogram
+          * \param[in] hsize the length of the histogram
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] win_width the width of the window
+          * \param[in] win_height the height of the window
           */
         template <typename PointT> bool 
-        addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, int hsize, const std::string &id = "cloud", int win_width = 640, int win_height = 200);
+        addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, 
+                             int hsize, 
+                             const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
-        /** \brief Add a histogram feature to screen as a separate window.
-          * \param cloud the PointCloud dataset containing the histogram
-          * \param field_name the field name containing the histogram
-          * \param id the point cloud object id (default: cloud)
-          * \param win_width the size of the window (width)
-          * \param win_height the size of the window (width)
+        /** \brief Add a histogram feature to screen as a separate window from a cloud containing a single histogram.
+          * \param[in] cloud the PointCloud dataset containing the histogram
+          * \param[in] field_name the field name containing the histogram
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] win_width the width of the window
+          * \param[in] win_height the height of the window
           */
         bool 
-        addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, const std::string &field_name, const std::string &id = "cloud", int win_width = 640, int win_height = 200);
+        addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+                             const std::string &field_name, 
+                             const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
         /** \brief Add a histogram feature to screen as a separate window.
-          * \param cloud the PointCloud dataset containing the histogram
-          * \param index the point index to extract the histogram from
-          * \param field_name the field name containing the histogram
-          * \param id the point cloud object id (default: cloud)
-          * \param win_width the size of the window (width)
-          * \param win_height the size of the window (width)
+          * \param[in] cloud the PointCloud dataset containing the histogram
+          * \param[in] field_name the field name containing the histogram
+          * \param[in] index the point index to extract the histogram from
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] win_width the width of the window
+          * \param[in] win_height the height of the window 
           */
         template <typename PointT> bool 
         addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, 
@@ -118,10 +122,24 @@ namespace pcl
                              const int index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
-        /** \brief Set the Y range to minp-maxp for all histograms.
-          * \param minp the minimum Y range
-          * \param maxp the maximum Y range
+        /** \brief Add a histogram feature to screen as a separate window.
+          * \param[in] cloud the PointCloud dataset containing the histogram
+          * \param[in] field_name the field name containing the histogram
+          * \param[in] index the point index to extract the histogram from
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] win_width the width of the window
+          * \param[in] win_height the height of the window
           */
+        bool 
+        addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+                             const std::string &field_name, 
+                             const int index,
+                             const std::string &id = "cloud", int win_width = 640, int win_height = 200);
+
+         /** \brief Set the Y range to minp-maxp for all histograms.
+           * \param[in] minp the minimum Y range
+           * \param[in] maxp the maximum Y range
+           */
         void 
         setGlobalYRange (float minp, float maxp);
 
@@ -136,6 +154,20 @@ namespace pcl
         /** \brief Set the stopped flag back to false */
         void 
         resetStoppedFlag ();
+
+      protected:
+
+        /** \brief Create a 2D actor from the given vtkDoubleArray histogram and add it to the screen.
+          * \param[in] xy_array the input vtkDoubleArray holding the histogram data
+          * \param[out] renwinint the resultant render window interactor holding the rendered object
+          * \param[in] id the point cloud object id
+          * \param[in] win_width the width of the window
+          * \param[in] win_height the height of the window
+          */
+        void
+        createActor (const vtkSmartPointer<vtkDoubleArray> &xy_array, 
+                     RenWinInteract &renwinint,
+                     const std::string &id, const int win_width, const int win_height);
 
       private:
         /** \brief A map of all windows on screen (with their renderers and interactors). */
