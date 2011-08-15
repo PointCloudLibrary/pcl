@@ -91,6 +91,7 @@ Proposals for the 2.x API:
        * Also users who develop for GPU can take advantages of this.
  
  #. Async. support??
+ #. How about implementing cloud and other containers with flag that indicates where data is located? Can be CPU, GPU, other. Such approach allows to implement universal CPU/GPU interface with behaviour depending on data passed. 
  
     to be continued...
   
