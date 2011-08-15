@@ -45,8 +45,7 @@ namespace pcl
 {
   namespace registration
   {
-    /**
-      * @b CorrespondenceRejectorSampleConsensus implements a correspondence rejection
+    /** \brief CorrespondenceRejectorSampleConsensus implements a correspondence rejection
       * using Random Sample Consensus to identify inliers (and reject outliers)
       * \author Dirk Holz
       * \ingroup registration
@@ -84,7 +83,7 @@ namespace pcl
         setTargetCloud (const PointCloudConstPtr &cloud) { target_ = cloud; }
 
         inline void 
-        setInlierThreshold(double threshold) { inlier_threshold_ = threshold; };
+        setInlierThreshold (double threshold) { inlier_threshold_ = threshold; };
 
         inline double 
         getInlierThreshold() { return inlier_threshold_; };
