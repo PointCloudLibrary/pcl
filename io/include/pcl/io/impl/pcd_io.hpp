@@ -139,6 +139,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during open!");
     return (-1);
   }
+#endif
 
   std::vector<sensor_msgs::PointField> fields;
   std::vector<int> fields_sizes;
@@ -161,6 +162,13 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   
   data_size = cloud.points.size () * fsize;
 
+  // Prepare the map
+#if _WIN32
+  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_idx + data_size, NULL);
+  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
+  CloseHandle (fm);
+
+#else
   // Stretch the file size to the size of the data
   int result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
   if (result < 0)
@@ -177,14 +185,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during write ()!");
     return (-1);
   }
-#endif
-  // Prepare the map
-#if _WIN32
-  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_idx + cloud.data.size (), NULL);
-  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + cloud.data.size ()));
-  CloseHandle (fm);
 
-#else
   char *map = (char*)mmap (0, data_idx + data_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if (map == MAP_FAILED)
   {
@@ -260,6 +261,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during open!");
     return (-1);
   }
+#endif
 
   std::vector<sensor_msgs::PointField> fields;
   std::vector<int> fields_sizes;
@@ -282,6 +284,13 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   
   data_size = indices.size () * fsize;
 
+  // Prepare the map
+#if _WIN32
+  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_idx + data_size, NULL);
+  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
+  CloseHandle (fm);
+
+#else
   // Stretch the file size to the size of the data
   int result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
   if (result < 0)
@@ -298,14 +307,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during write ()!");
     return (-1);
   }
-#endif
-  // Prepare the map
-#if _WIN32
-  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_idx + cloud.data.size (), NULL);
-  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + cloud.data.size ()));
-  CloseHandle (fm);
 
-#else
   char *map = (char*)mmap (0, data_idx + data_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if (map == MAP_FAILED)
   {
