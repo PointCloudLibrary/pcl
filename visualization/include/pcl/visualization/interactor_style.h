@@ -89,18 +89,25 @@ namespace pcl
         virtual void Initialize ();
         
         /** \brief Pass a pointer to the actor map
-          * \param actors the actor map that will be used with this style
+          * \param[in] actors the actor map that will be used with this style
           */
         inline void setCloudActorMap (const CloudActorMapPtr &actors) { actors_ = actors; }
         inline CloudActorMapPtr getCloudActorMap () { return (actors_); }
 
         /** \brief Pass a set of renderers to the interactor style. 
-          * \param rens the vtkRendererCollection to use
+          * \param[in] rens the vtkRendererCollection to use
           */
         void setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { rens_ = rens; }
 
         boost::signals2::connection registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> );
         boost::signals2::connection registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> );
+
+        /** \brief Save the current rendered image to disk, as a PNG screenshot.
+          * \param[in] file the name of the PNG file
+          */
+        void
+        saveScreenshot (const std::string &file);
+
       protected:
         /** \brief Set to true after initialization is complete. */
         bool init_;
@@ -170,7 +177,7 @@ namespace pcl
     };
 
     /** \brief PCL histogram visualizer interactory style class.
-      * \author Radu Bogdan Rusu
+      * \author Radu B. Rusu
       */
     class PCLHistogramVisualizerInteractorStyle : public vtkInteractorStyleTrackballCamera
     {
@@ -178,12 +185,21 @@ namespace pcl
         static PCLHistogramVisualizerInteractorStyle *New ();
 
         /** \brief Initialization routine. Must be called before anything else. */
-        void Initialize ();
+        void 
+        Initialize ();
         
         /** \brief Pass a map of render/window/interactors to the interactor style. 
-          * \param wins the RenWinInteract map to use
+          * \param[in] wins the RenWinInteract map to use
           */
-        void setRenWinInteractMap (const RenWinInteractMap &wins) { wins_ = wins; }
+        void 
+        setRenWinInteractMap (const RenWinInteractMap &wins) { wins_ = wins; }
+
+        /** \brief Save the current rendered image to disk, as a PNG screenshot.
+          * \param[in] file the name of the PNG file
+          */
+        void
+        saveScreenshot (const std::string &file);
+
       private:
         /** \brief A map of all windows on screen (with their renderers and interactors). */
         RenWinInteractMap wins_;
