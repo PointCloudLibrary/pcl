@@ -89,7 +89,7 @@ namespace pcl
     nearestKSearch (const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
 
     virtual int
-    nearestKSearchGPU (std::vector<const PointT>& point, std::vector< int >& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances);
+    nearestKSearch (std::vector<const PointT>& point, std::vector< int >& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances);
 
 
     virtual int
@@ -102,7 +102,7 @@ namespace pcl
     radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices,    std::vector<float>& k_distances, int max_nn = -1) const;
 
     virtual int 
-    radiusSearchGPU (std::vector< PointT>& point, std::vector < double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn = -1) const;
+    radiusSearch (std::vector< PointT>& point, std::vector < double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn = -1) const;
 //    virtual int 
   //  radiusSearch (const PointT& point, double radius,
     //              std::vector<int>& k_indices, std::vector<float> &k_sqr_distances_arg);

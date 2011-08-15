@@ -73,7 +73,7 @@ OctreeGPU<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
 }
 
 	template <typename PointT> int
-		OctreeGPU<PointT>::	    radiusSearchGPU (std::vector<PointT>& point, std::vector < double >&radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn ) const
+		OctreeGPU<PointT>::	    radiusSearch (std::vector<PointT>& point, std::vector < double >&radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn ) const
 
 		{
     const int max_answers = 333;

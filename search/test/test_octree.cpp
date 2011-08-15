@@ -308,7 +308,7 @@ std::vector<std::vector<float> > k_distances;
 int max_nn = -1;
 
 
-octree->radiusSearchGPU (point, radiuses, k_indices,k_distances,max_nn );
+octree->radiusSearch (point, radiuses, k_indices,k_distances,max_nn );
 #endif
 }
 
