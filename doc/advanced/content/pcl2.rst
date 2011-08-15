@@ -81,8 +81,8 @@ Proposals for the 2.x API:
      * Host is a main layer for calling GPU functionality. Users and non-GPU part of PCL will run GPU via this. 
        
        * It must have CUDA-independent interface, i.e. headers from it must be compiled with gcc, cl, etc. 
-       * Algorithms receive input data uploaded to GPU(ex. DeviceArray_<T>) and output is in GPU memory as well. So that output from one algorithm can be passed as input to another without downloading/uploading.
-       * pcl::cuda (can depend on float4, cudaEvent_t, etc.) or pcl::gpu (completely independent, ATI/Intel support in future?) namespaces. Do we need the second?
+       * Algorithms receive input data uploaded to GPU(ex. DeviceArray_<T>) and output is in GPU memory as well. So that output from one algorithm can be passed as input to another algorithm (or even library) without downloading/uploading.
+       * namespace pcl::cuda (can depend on float4, cudaEvent_t, etc.) or pcl::gpu (completely independent, ATI/Intel support in future?) namespaces. Do we need the second?
        
      * Device layer contains code that is built with for NVidia's compiler.        
      
