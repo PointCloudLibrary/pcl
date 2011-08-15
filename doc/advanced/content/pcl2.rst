@@ -55,6 +55,15 @@ Proposals for the 2.x API:
    clouds and "play" them through their algorithm(s), as well as easily capture
    a stream of point clouds (e.g. from a Kinect). Perhaps based on
    Boost::Iostreams.
+ * Given the experience on `libpointmatcher <https://github.com/ethz-asl/libpointmatcher>`_,
+   I (Stéphane Magnenat) propose the following data structures::
+     cloud = map<identifier, space>
+     space = tuple<type, components_identifiers, data_matrix>
+     components_identifiers = vector<identifier>
+     data_matrix = Eigen matrix
+     identifier = string with standardised naming (pos, normals, x, y, etc.)
+     type = type of space, underlying scalar type + norm definition (float with euclidean norm, binary with manhattan norm, etc.)
+
 
 1.2 PointTypes 
 ^^^^^^^^^^^^^^
