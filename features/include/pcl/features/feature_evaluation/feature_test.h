@@ -59,7 +59,7 @@ namespace pcl
       }
 
       void
-      setGroundTruth (Eigen::Vector3f vec, Eigen::Quaternionf quat) {
+      setGroundTruth (const Eigen::Vector3f &vec, const Eigen::Quaternionf &quat) {
         offset_ = vec;
         rotation_ = quat;
       }
