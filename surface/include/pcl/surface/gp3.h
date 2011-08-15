@@ -60,9 +60,9 @@
 namespace pcl
 {
   // add by ktran for Kdtree_flaan search
-  struct MyPoint : public PointXYZ
+  struct SearchPoint : public PointXYZ
   {
-    MyPoint(float x, float y, float z) {this->x=x; this->y=y; this->z=z;}
+    SearchPoint(float x, float y, float z) {this->x=x; this->y=y; this->z=z;}
   };
 
   /** \brief Returns if a point X is visible from point R (or the origin)
@@ -144,7 +144,7 @@ namespace pcl
     * \ingroup surface
     */
   template <typename PointInT>
-  class PCL_EXPORTS GreedyProjectionTriangulation : public SurfaceReconstruction<PointInT>
+  class GreedyProjectionTriangulation : public SurfaceReconstruction<PointInT>
   {
     public:
       using SurfaceReconstruction<PointInT>::tree_;
@@ -278,26 +278,26 @@ namespace pcl
       /** \brief update mesh when new point cloud is added without recreating mesh.
       * \param point cloud update and update mesh output
       */
-      void
+      PCL_EXPORTS void
       updateMesh (const PointCloudInConstPtr &update, pcl::PolygonMesh &output);
 
       /** \brief update texture mesh when new point cloud is added without recreating mesh.
         * \param point cloud update and update texture mesh output
         */
-      void
+      PCL_EXPORTS void
       updateMesh (const PointCloudInConstPtr &update, pcl::PolygonMesh &output, pcl::TextureMesh &tex_mesh);
 
       /** \brief remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
       * \param polygonMesh 1st and 2nd mesh.
       */
-      void
-      merge2Meshes(pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2, std::vector<int> state2, std::vector<int> sfn2, std::vector<int> ffn2);
+      PCL_EXPORTS void
+      merge2Meshes (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2, std::vector<int> state2, std::vector<int> sfn2, std::vector<int> ffn2);
 
       /** \brief remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
       * \param polygonMesh 1st and 2nd mesh.
       */
-      void
-      removeOverlapTriangles(pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2);
+      PCL_EXPORTS void
+      removeOverlapTriangles (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2);
 
     protected:
       /** \brief The maximum number of nearest neighbors accepted by searching. */
@@ -510,3 +510,4 @@ namespace pcl
 } // namespace pcl
 
 #endif  //#ifndef PCL_GP3_H_
+

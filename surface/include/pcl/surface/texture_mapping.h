@@ -41,7 +41,6 @@
 
 #include "pcl/surface/reconstruction.h"
 #include "pcl/TextureMesh.h"
-#include "pcl/pcl_macros.h"
 
 namespace pcl
 {
@@ -54,59 +53,63 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      TextureMapping(){};
+      TextureMapping (){};
 
       /** \brief Destructor. */
-      ~TextureMapping(){};
+      ~TextureMapping (){};
 
       /** \brief set mesh scale control
       * \param
       */
       inline void
-      setF(float f)
+      setF (float f)
       {
         f_ = f;
       };
 
       /** \brief set vector field
-      * \param
+      * \param data point x, y z
       */
       inline void
-      setVectorField(float x, float y, float z){
+      setVectorField (float x, float y, float z)
+      {
         vector_field_ =  Eigen::Vector3f(x, y, z);
         // normalize vector field
         vector_field_ = vector_field_/std::sqrt(vector_field_.dot(vector_field_));
       };
 
       /** \brief set texture files
-      * \param
+      * \param list of texture files
       */
       inline void
-      setTextureFiles( std::vector<std::string> tex_files){
+      setTextureFiles (std::vector<std::string> tex_files)
+      {
         tex_files_ = tex_files;
       };
 
       /** \brief set texture materials
-       * \param
+       * \param texture material
        */
       inline void
-      setTextureMaterials(TexMaterial tex_material){
+      setTextureMaterials (TexMaterial tex_material)
+      {
         tex_material_ = tex_material;
       };
 
       /** \brief map texture to a  mesh synthesis algorithm
-      * \param
+      * \param texture mesh
       */
       void
-        mapTexture2Mesh(pcl::TextureMesh &tex_mesh);
+      mapTexture2Mesh (pcl::TextureMesh &tex_mesh);
 
       /** \brief map texture to a mesh UV mapping
-      * \param
+      * \param texture mesh
       */
       void
-        mapTexture2MeshUV(pcl::TextureMesh &tex_mesh);
+      mapTexture2MeshUV (pcl::TextureMesh &tex_mesh);
 
     protected:
+
       /** \brief mesh scale control. */
       float f_;
 
@@ -120,19 +123,17 @@ namespace pcl
       TexMaterial tex_material_;
 
 
-      /** \brief list of functions */
-
       /** \brief get the distance of 2 3D points.
       * \param 2 3D points
       */
       float
-        getDistance(Eigen::Vector3f &p1, Eigen::Vector3f &p2);
+      getDistance (Eigen::Vector3f &p1, Eigen::Vector3f &p2);
 
       /** \brief map texture to a face
       * \param
       */
-       std::vector<Eigen::Vector2f>
-         mapTexture2Face(Eigen::Vector3f  &p1, Eigen::Vector3f  &p2, Eigen::Vector3f &p3);
+      std::vector<Eigen::Vector2f>
+      mapTexture2Face (Eigen::Vector3f  &p1, Eigen::Vector3f  &p2, Eigen::Vector3f &p3);
 
        /** \brief Class get name method. */
       std::string getClassName () const { return ("TextureMapping"); }
@@ -140,3 +141,4 @@ namespace pcl
 }
 
 #endif /* TEXTURE_MAPPING_H_ */
+

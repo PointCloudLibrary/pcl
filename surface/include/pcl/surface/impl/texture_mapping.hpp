@@ -1,9 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
- *  
+ *  Copyright (c) 2010, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -36,6 +34,7 @@
  * $Id: texture_mapping.hpp 1006 2011-07-13 13:07:00 ktran $
  *
  */
+/** \author Khai Tran */
 #ifndef PCL_SURFACE_IMPL_TEXTURE_MAPPING_HPP_
 #define PCL_SURFACE_IMPL_TEXTURE_MAPPING_HPP_
 
@@ -50,38 +49,38 @@ pcl::TextureMapping<PointInT>::getDistance (Eigen::Vector3f &p1, Eigen::Vector3f
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> std::vector<Eigen::Vector2f>
-pcl::TextureMapping<PointInT>::mapTexture2Face (Eigen::Vector3f &p1, Eigen::Vector3f &p2, Eigen::Vector3f &p3)
+pcl::TextureMapping<PointInT>::mapTexture2Face (Eigen::Vector3f  &p1, Eigen::Vector3f  &p2, Eigen::Vector3f &p3)
 {
   std::vector<Eigen::Vector2f> tex_coordinates;
   // process for each face
-  Eigen::Vector3f p1p2 (p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]);
-  Eigen::Vector3f p1p3 (p3[0] - p1[0], p3[1] - p1[1], p3[2] - p1[2]);
-  Eigen::Vector3f p2p3 (p3[0] - p2[0], p3[1] - p2[1], p3[2] - p2[2]);
+  Eigen::Vector3f p1p2(p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]);
+  Eigen::Vector3f p1p3(p3[0] - p1[0], p3[1] - p1[1], p3[2] - p1[2]);
+  Eigen::Vector3f p2p3(p3[0] - p2[0], p3[1] - p2[1], p3[2] - p2[2]);
 
   // Normalize
-  p1p2 = p1p2/std::sqrt (p1p2.dot (p1p2));
-  p1p3 = p1p3/std::sqrt (p1p3.dot (p1p3));
-  p2p3 = p2p3/std::sqrt (p2p3.dot (p2p3));
+  p1p2 = p1p2/std::sqrt(p1p2.dot(p1p2));
+  p1p3 = p1p3/std::sqrt(p1p3.dot(p1p3));
+  p2p3 = p2p3/std::sqrt(p2p3.dot(p2p3));
 
   // compute vector normal of a face
-  Eigen::Vector3f f_normal = p1p2.cross (p1p3);
-  f_normal = f_normal / std::sqrt (f_normal.dot (f_normal));
-  // project vector field onto the face:
-  // vector v1_projected = v1 - Dot(v1, n) * n;
+  Eigen::Vector3f f_normal = p1p2.cross(p1p3);
+  f_normal = f_normal/std::sqrt(f_normal.dot(f_normal));
 
-  Eigen::Vector3f f_vector_field = vector_field_ - vector_field_.dot (f_normal) * f_normal;
+  // project vector field onto the face: vector v1_projected = v1 - Dot(v1, n) * n;
+  Eigen::Vector3f f_vector_field =  vector_field_ - vector_field_.dot(f_normal) * f_normal;
+
   // Normalize
-  f_vector_field = f_vector_field / std::sqrt (f_vector_field.dot (f_vector_field));
+  f_vector_field = f_vector_field/std::sqrt(f_vector_field.dot(f_vector_field));
 
   // texture coordinates
   Eigen::Vector2f tp1, tp2, tp3;
 
-  double alpha = std::acos (f_vector_field.dot (p1p2));
+  double alpha = std::acos(f_vector_field.dot(p1p2));
 
   // distance between 3 vertices of triangles
-  double e1 = getDistance (p2, p3) / f_;
-  double e2 = getDistance (p1, p3) / f_;
-  double e3 = getDistance (p1, p2) / f_;
+  double e1 = getDistance(p2, p3)/f_;
+  double e2 = getDistance(p1, p3)/f_;
+  double e3 = getDistance(p1, p2)/f_;
 
   // initialize
   tp1[0] = 0.0;
@@ -91,23 +90,21 @@ pcl::TextureMapping<PointInT>::mapTexture2Face (Eigen::Vector3f &p1, Eigen::Vect
   tp2[1] = 0.0;
 
   // determine texture coordinate tp3;
-
-  double cos_p1 = (e2*e2+e3*e3-e1*e1) / (2*e2*e3);
-  double sin_p1 = std::sqrt (1 - (cos_p1 * cos_p1));
+  double cos_p1 = (e2*e2+e3*e3-e1*e1)/(2*e2*e3);
+  double sin_p1 = sqrt(1-(cos_p1*cos_p1));
 
   tp3[0] = cos_p1*e2;
   tp3[1] = sin_p1*e2;
 
   // rotating by alpha (angle between V and pp1 & pp2)
   Eigen::Vector2f r_tp2, r_tp3;
-  r_tp2[0] = tp2[0] * std::cos (alpha) - tp2[1] * std::sin (alpha);
-  r_tp2[1] = tp2[0] * std::sin (alpha) + tp2[1] * std::cos (alpha);
+  r_tp2[0] = tp2[0]*std::cos(alpha) - tp2[1]*std::sin(alpha);
+  r_tp2[1] = tp2[0]*std::sin(alpha) + tp2[1]*std::cos(alpha);
 
-  r_tp3[0] = tp3[0] * std::cos (alpha) - tp3[1] * std::sin (alpha);
-  r_tp3[1] = tp3[0] * std::sin (alpha) + tp3[1] * std::cos (alpha);
+  r_tp3[0] = tp3[0]*std::cos(alpha) - tp3[1]*std::sin(alpha);
+  r_tp3[1] = tp3[0]*std::sin(alpha) + tp3[1]*std::cos(alpha);
 
   // shifting
-
   tp1[0] = tp1[0];
   tp2[0] = r_tp2[0];
   tp3[0] = r_tp3[0];
@@ -122,23 +119,23 @@ pcl::TextureMapping<PointInT>::mapTexture2Face (Eigen::Vector3f &p1, Eigen::Vect
   if (min_y > tp2[1]) min_y = tp2[1];
   if (min_y > tp3[1]) min_y = tp3[1];
 
-  if (min_x < 0)
+  if(min_x < 0)
   {
-    tp1[0] = tp1[0] -min_x;
-    tp2[0] = tp2[0] -min_x;
-    tp3[0] = tp3[0] -min_x;
+    tp1[0] = tp1[0] - min_x;
+    tp2[0] = tp2[0] - min_x;
+    tp3[0] = tp3[0] - min_x;
   }
-  if (min_y < 0)
+  if(min_y < 0)
   {
-    tp1[1] = tp1[1] -min_y;
-    tp2[1] = tp2[1] -min_y;
-    tp3[1] = tp3[1] -min_y;
+    tp1[1] = tp1[1] - min_y;
+    tp2[1] = tp2[1] - min_y;
+    tp3[1] = tp3[1] - min_y;
   }
 
-  tex_coordinates.push_back (tp1);
-  tex_coordinates.push_back (tp2);
-  tex_coordinates.push_back (tp3);
-  return (tex_coordinates);
+  tex_coordinates.push_back(tp1);
+  tex_coordinates.push_back(tp2);
+  tex_coordinates.push_back(tp3);
+  return tex_coordinates;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,39 +147,39 @@ pcl::TextureMapping<PointInT>::mapTexture2Mesh (pcl::TextureMesh &tex_mesh)
   int point_size = tex_mesh.cloud.data.size () / nr_points;
 
   // temporary PointXYZ
-  float x_, y_, z_;
+  float x, y, z;
   // temporary face
   Eigen::Vector3f facet[3];
 
   // texture coordinates for each mesh
-  std::vector<std::vector<Eigen::Vector2f> > texture_map;
+  std::vector< std::vector<Eigen::Vector2f> > texture_map;
 
-  for (size_t m = 0; m < tex_mesh.tex_polygons.size (); ++m)
+  for (size_t m = 0; m < tex_mesh.tex_polygons.size(); ++m)
   {
     // texture coordinates for each mesh
     std::vector<Eigen::Vector2f> texture_map_tmp;
 
     // processing for each face
-    for (size_t i = 0; i < tex_mesh.tex_polygons[m].size (); ++i)
+    for (size_t i=0; i < tex_mesh.tex_polygons[m].size(); ++i)
     {
       size_t idx;
 
       // get facet information
-      for (size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
+      for (size_t j=0; j < tex_mesh.tex_polygons[m][i].vertices.size(); ++j)
       {
         idx =  tex_mesh.tex_polygons[m][i].vertices[j];
-        memcpy (&x_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[0].offset], sizeof (float));
-        memcpy (&y_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[1].offset], sizeof (float));
-        memcpy (&z_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[2].offset], sizeof (float));
-        facet[j][0] = x_;
-        facet[j][1] = y_;
-        facet[j][2] = z_;
+        memcpy (&x, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[0].offset], sizeof (float));
+        memcpy (&y, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[1].offset], sizeof (float));
+        memcpy (&z, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[2].offset], sizeof (float));
+        facet[j][0] = x;
+        facet[j][1] = y;
+        facet[j][2] = z;
       }
 
       // get texture coordinates of each face
-      std::vector<Eigen::Vector2f> tex_coordinates = mapTexture2Face (facet[0], facet[1], facet[2]);
-      for (size_t n = 0; n < tex_coordinates.size (); ++n) 
-        texture_map_tmp.push_back (tex_coordinates[n]);
+      std::vector<Eigen::Vector2f> tex_coordinates = mapTexture2Face(facet[0], facet[1], facet[2]);
+      for(size_t n = 0; n < tex_coordinates.size(); ++n)
+        texture_map_tmp.push_back(tex_coordinates[n]);
     }// end faces
 
     // texture materials
@@ -190,17 +187,17 @@ pcl::TextureMapping<PointInT>::mapTexture2Mesh (pcl::TextureMesh &tex_mesh)
     tex_name << "material_"<< m;
     tex_name >> tex_material_.tex_name;
     tex_material_.tex_file = tex_files_[m];
-    tex_mesh.tex_materials.push_back (tex_material_);
+    tex_mesh.tex_materials.push_back(tex_material_);
 
     // texture coordinates
-    tex_mesh.tex_coordinates.push_back (texture_map_tmp);
+    tex_mesh.tex_coordinates.push_back(texture_map_tmp);
   }// end meshes
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
-{
+pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh){
+
   // mesh information
   int nr_points  = tex_mesh.cloud.width * tex_mesh.cloud.height;
   int point_size = tex_mesh.cloud.data.size () / nr_points;
@@ -208,33 +205,27 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
   float x_lowest = 100000;
   float x_highest = 0 ;
   float y_lowest = 100000;
-  //float y_highest = 0 ;
+  float y_highest = 0 ;
   float z_lowest = 100000;
   float z_highest = 0;
   float x_, y_, z_;
 
-  for (int i = 0; i < nr_points; ++i)
+  for (int i =0; i < nr_points; ++i)
   {
-    memcpy (&x_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[0].offset + 0 * sizeof (float)], sizeof (float));
-    memcpy (&y_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[1].offset + 0 * sizeof (float)], sizeof (float));
-    memcpy (&z_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[2].offset + 0 * sizeof (float)], sizeof (float));
+    memcpy (&x_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[0].offset], sizeof (float));
+    memcpy (&y_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[1].offset], sizeof (float));
+    memcpy (&z_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[2].offset], sizeof (float));
     // x
-    if (x_ <= x_lowest) 
-      x_lowest = x_;
-    if (x_ > x_lowest) 
-      x_highest = x_;
+    if (x_ <= x_lowest) x_lowest = x_;
+    if (x_ > x_lowest) x_highest = x_;
 
     // y
-    if (y_ <= y_lowest) 
-      y_lowest = y_;
-    //if (y_ > y_lowest) 
-    //  y_highest = y_;
+    if (y_ <= y_lowest) y_lowest = y_;
+    if (y_ > y_lowest) y_highest = y_;
 
     // z
-    if (z_ <= z_lowest) 
-      z_lowest = z_;
-    if (z_ > z_lowest) 
-      z_highest = z_;
+    if (z_ <= z_lowest) z_lowest = z_;
+    if (z_ > z_lowest) z_highest = z_;
   }
   // x
   float x_range = (x_lowest - x_highest)*-1;
@@ -266,10 +257,11 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
         memcpy (&x_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[0].offset], sizeof (float));
         memcpy (&y_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[1].offset], sizeof (float));
         memcpy (&z_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[2].offset], sizeof (float));
+
         // calculate uv coordinates
         tmp_VT[0] = (x_ + x_offset)/x_range;
         tmp_VT[1] = (z_ + z_offset)/z_range;
-        texture_map_tmp.push_back (tmp_VT);
+        texture_map_tmp.push_back(tmp_VT);
       }
     }// end faces
 
@@ -278,15 +270,15 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
     tex_name << "material_"<< m;
     tex_name >> tex_material_.tex_name;
     tex_material_.tex_file = tex_files_[m];
-    tex_mesh.tex_materials.push_back (tex_material_);
+    tex_mesh.tex_materials.push_back(tex_material_);
 
     // texture coordinates
-    tex_mesh.tex_coordinates.push_back (texture_map_tmp);
+    tex_mesh.tex_coordinates.push_back(texture_map_tmp);
   }// end meshes
 }
 
 #define PCL_INSTANTIATE_TextureMapping(T)                \
   template class PCL_EXPORTS pcl::TextureMapping<T>;
 
-#endif /* PCL_SURFACE_IMPL_TEXTURE_MAPPING_HPP_ */
+#endif /* TEXTURE_MAPPING_HPP_ */
 

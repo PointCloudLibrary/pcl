@@ -1612,28 +1612,29 @@ template <typename PointInT> std::vector<std::vector<size_t> >
 pcl::GreedyProjectionTriangulation<PointInT>::getTriangleList (pcl::PolygonMesh input)
 {
   std::vector< std::vector<size_t> > triangleList;
-  for (size_t i=0; i < input.cloud.width * input.cloud.height; ++i){
+  for (size_t i=0; i < input.cloud.width * input.cloud.height; ++i)
+  {
     std::vector<size_t> temp;
     triangleList.push_back(temp);
   }
 
-  for (size_t i=0; i < input.polygons.size(); ++i){
-    for (size_t j=0; j < input.polygons[i].vertices.size(); ++j){
+  for (size_t i=0; i < input.polygons.size(); ++i)
+    for (size_t j=0; j < input.polygons[i].vertices.size(); ++j)
       triangleList[j].push_back(i);
-    }
-  }
   return triangleList;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles(pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2)
+pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles (
+    pcl::PolygonMesh &mesh1,
+    pcl::PolygonMesh &mesh2)
 {
   size_t point_size1 = mesh1.cloud.width * mesh1.cloud.height;
 
   // create new cloud
-  pcl::PointCloud<PointInT> newcloud;
-  pcl::PointCloud<PointInT> cloud2;
+  PointCloud<PointInT> newcloud;
+  PointCloud<PointInT> cloud2;
 
   pcl::fromROSMsg(mesh1.cloud, newcloud);
   pcl::fromROSMsg(mesh2.cloud, cloud2);
@@ -1647,14 +1648,15 @@ pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles(pcl::Polygo
   std::vector<float> sqrDists (1);
 
   // for searching
-  KdTreeFLANN<MyPoint> kdtree;
+  KdTreeFLANN<SearchPoint> kdtree;
 
-  pcl::PointCloud<MyPoint>::Ptr mycloud (new pcl::PointCloud<MyPoint>);
+  PointCloud<SearchPoint>::Ptr mycloud (new PointCloud<SearchPoint> ());
 
   Eigen::Vector3f tmp;
-  for(size_t i=0; i< newcloud.points.size (); ++i){
+  for(size_t i=0; i< newcloud.points.size (); ++i)
+  {
     tmp = newcloud.points[i].getVector3fMap();
-    mycloud->points.push_back (MyPoint (tmp(0), tmp(1), tmp(2)));
+    mycloud->points.push_back (SearchPoint (tmp(0), tmp(1), tmp(2)));
   }
 
   kdtree.setInputCloud (mycloud);
@@ -1672,7 +1674,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles(pcl::Polygo
       center = center + input_->points[idx[j]].getVector3fMap();
     }
     center = center/3;
-    MyPoint center_point(center(0), center(1), center(2));
+    SearchPoint center_point(center(0), center(1), center(2));
 
     kdtree.nearestKSearch (center_point, 1, nnIdx, sqrDists);
 
@@ -1704,30 +1706,30 @@ pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles(pcl::Polygo
         { // set to be FRINGE
           state_[idx[j]] = FRINGE;
           // scanning other triangle that has this vertex
-          size_t bothshare2triangles =0;
+          size_t both_share_2triangles = 0;
           size_t last_k = 0;
           for (int k = 0; k < 3; ++k)
           {
-            size_t share2triangles = 0;
+            size_t share_2triangles = 0;
             if (k == j)
               continue;
 
             for (size_t p = 0; p < triangleList1[idx[j]].size(); ++p)
               for (size_t q =0; q < triangleList1[idx[k]].size(); ++q)
                 if (triangleList1[idx[j]][p] == triangleList1[idx[j]][q])
-                  share2triangles++;
+                  share_2triangles++;
 
             // if 2 vertex share 2 triangles
-            if(share2triangles == 2)
+            if(share_2triangles == 2)
             {
               sfn_[idx[j]] = idx[k];
               ffn_[idx[j]] = idx[k];
-              bothshare2triangles++;
+              both_share_2triangles++;
               last_k = k;
             }
           }
           // if both share 2 triangles
-          if (bothshare2triangles == 2)
+          if (both_share_2triangles == 2)
           {
             // change ffn or sfn
             ffn_[idx[j]] = idx[3-j-last_k];
@@ -1742,21 +1744,24 @@ pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles(pcl::Polygo
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (pcl::PolygonMesh &output, pcl::PolygonMesh &mesh2, std::vector<int> state2, std::vector<int> sfn2, std::vector<int> ffn2)
+pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (
+    pcl::PolygonMesh &output, pcl::PolygonMesh &mesh2,
+    std::vector<int> state2, std::vector<int> sfn2,
+    std::vector<int> ffn2)
 {
   // store old information
   size_t point_size1 = input_->points.size ();
 
   // create new cloud
-  pcl::PointCloud<PointInT> newcloud_;
-  pcl::PointCloud<PointInT> cloud2;
-  newcloud_ = *input_;
+  PointCloud<PointInT> newcloud;
+  PointCloud<PointInT> cloud2;
+  newcloud = *input_;
 
-  pcl::fromROSMsg (mesh2.cloud, cloud2);
-  newcloud_ += cloud2;
+  pcl::fromROSMsg(mesh2.cloud, cloud2);
+  newcloud += cloud2;
 
   // update cloud
-  input_ = PointCloudInConstPtr (new pcl::PointCloud<PointInT>(newcloud_));
+  input_ = PointCloudInConstPtr (new PointCloud<PointInT>(newcloud));
 
   // change header
   output.header = input_->header;
@@ -1766,9 +1771,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (pcl::PolygonMesh &ou
   indices_->resize (input_->points.size ());
 
   // update indices
-  for (size_t i = point_size1; i < indices_->size (); ++i) {
+  for (size_t i = point_size1; i < indices_->size (); ++i)
     (*indices_)[i] = i;
-  }
 
   // update tree
   tree_->setInputCloud (input_, indices_);
@@ -1776,28 +1780,19 @@ pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (pcl::PolygonMesh &ou
   // initializing states and fringe neighbors
 
   part_.resize(indices_->size ()); // indices of point's part
-  for (size_t i = point_size1; i < indices_->size (); ++i) {
-    part_[i] = -1;
-  }
-  // change the state
-  state_.resize (indices_->size ());
+  for (size_t i = point_size1; i < indices_->size (); ++i) part_[i] = -1;
 
-  for (size_t i = point_size1; i < indices_->size (); ++i) {
-    state_[i] = state2[indices_->size () - point_size1];
-  }
+  state_.resize(indices_->size ());
+  for (size_t i = point_size1; i < indices_->size (); ++i) state_[i] = state2[indices_->size () - point_size1];
 
   source_.resize(indices_->size ());
-  for (size_t i = point_size1; i < indices_->size (); ++i) {
-    source_[i] = NONE;
-  }
+  for (size_t i = point_size1; i < indices_->size (); ++i) source_[i] = NONE;
+
   ffn_.resize(indices_->size ());
-  for (size_t i = point_size1; i < indices_->size (); ++i) {
-    ffn_[i] = ffn2[indices_->size () - point_size1];
-  }
+  for (size_t i = point_size1; i < indices_->size (); ++i) ffn_[i] = ffn2[indices_->size () - point_size1];
+
   sfn_.resize(indices_->size (), NONE);
-  for (size_t i = point_size1; i < indices_->size (); ++i) {
-    sfn_[i] = sfn2[indices_->size () - point_size1];
-  }
+  for (size_t i = point_size1; i < indices_->size (); ++i) sfn_[i] = sfn2[indices_->size () - point_size1];
 
   // merge and update 2 meshes
   //  for (size_t i = 0; i < indices_->size (); ++i) {
@@ -2738,18 +2733,20 @@ pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (pcl::PolygonMesh &ou
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (const PointCloudInConstPtr &update, pcl::PolygonMesh &output)
+pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (
+    const PointCloudInConstPtr &update,
+    pcl::PolygonMesh &output)
 {
   // store old information
   size_t point_size_old = input_->points.size ();
 
   // create new cloud
-  pcl::PointCloud<PointInT> newcloud_;
-  newcloud_ = *input_;
-  newcloud_ += *update;
+  PointCloud<PointInT> newcloud;
+  newcloud = *input_;
+  newcloud += *update;
 
   // update cloud
-  input_ = PointCloudInConstPtr (new pcl::PointCloud<PointInT>(newcloud_));
+  input_ = PointCloudInConstPtr (new PointCloud<PointInT>(newcloud));
 
   // change header
   output.header = input_->header;
@@ -2759,17 +2756,48 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (const PointCloudInCons
   indices_->resize (input_->points.size ());
 
   // update indices
-  for (size_t i = point_size_old; i < indices_->size (); ++i) {
+  for (size_t i = point_size_old; i < indices_->size (); ++i)
     (*indices_)[i] = i;
-  }
 
   // update tree
   tree_->setInputCloud (input_, indices_);
 
+  // initializing states and fringe neighbors
+
+  part_.resize(indices_->size ()); // indices of point's part
+  for (size_t i = point_size_old; i < indices_->size (); ++i) part_[i] = -1;
+
+  // change the state set BOUNDARY to be FRINGE and all new point to be FREE
+  state_.resize(indices_->size ());
+  for (size_t i = 0; i < point_size_old; ++i)
+    if (state_[i] == BOUNDARY) state_[i] = FRINGE;
+
+  for (size_t i = point_size_old; i < indices_->size (); ++i) state_[i] = FREE;
+
+  source_.resize(indices_->size ());
+  for (size_t i = point_size_old; i < indices_->size (); ++i) source_[i] = NONE;
+
+  ffn_.resize(indices_->size ());
+  for (size_t i = point_size_old; i < indices_->size (); ++i) ffn_[i] = NONE;
+
+  sfn_.resize(indices_->size (), NONE);
+  for (size_t i = point_size_old; i < indices_->size (); ++i) sfn_[i] = NONE;
+
+  fringe_queue_.clear ();
+
+  int fqIdx = 0; // current fringe's index in the queue to be processed
+
+  // Saving coordinates
+  coords_.reserve (indices_->size ());
+  for (size_t cp = point_size_old; cp < indices_->size (); ++cp)
+  {
+    coords_.push_back(input_->points[(*indices_)[cp]].getVector3fMap());
+  }
+
   const double sqr_mu = mu_*mu_;
   const double sqr_max_edge = search_radius_*search_radius_;
   if (nnn_ > (int)indices_->size ())
-    nnn_ = indices_->size ();
+   nnn_ = indices_->size ();
 
   // Variables to hold the results of nearest neighbor searches
   std::vector<int> nnIdx (nnn_);
@@ -2786,46 +2814,6 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (const PointCloudInCons
 
   // initializing fields
   already_connected_ = false; // see declaration for comments :P
-
-  // initializing states and fringe neighbors
-
-  part_.resize(indices_->size ()); // indices of point's part
-  for (size_t i = point_size_old; i < indices_->size (); ++i) {
-    part_[i] = -1;
-  }
-  // change the state
-  state_.resize(indices_->size ());
-  for (size_t i = 0; i < point_size_old; ++i) {
-    if (state_[i] == BOUNDARY){
-      state_[i] = FRINGE;
-    }
-  }
-  for (size_t i = point_size_old; i < indices_->size (); ++i) {
-    state_[i] = FREE;
-  }
-
-  source_.resize(indices_->size ());
-  for (size_t i = point_size_old; i < indices_->size (); ++i) {
-    source_[i] = NONE;
-  }
-  ffn_.resize(indices_->size ());
-  for (size_t i = point_size_old; i < indices_->size (); ++i) {
-    ffn_[i] = NONE;
-  }
-  sfn_.resize(indices_->size (), NONE);
-  for (size_t i = point_size_old; i < indices_->size (); ++i) {
-    sfn_[i] = NONE;
-  }
-  fringe_queue_.clear ();
-  // need to be considered
-  int fqIdx = 0; // current fringe's index in the queue to be processed
-
-  // Saving coordinates
-  coords_.reserve (indices_->size ());
-  for (size_t cp = point_size_old; cp < indices_->size (); ++cp)
-  {
-    coords_.push_back(input_->points[(*indices_)[cp]].getVector3fMap());
-  }
 
   // Initializing
   int is_free = point_size_old;
@@ -3726,7 +3714,9 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (const PointCloudInCons
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (const PointCloudInConstPtr &update, pcl::PolygonMesh &output, pcl::TextureMesh &tex_mesh)
+pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (
+    const PointCloudInConstPtr &update, pcl::PolygonMesh &output,
+    pcl::TextureMesh &tex_mesh)
 {
   // store old information
   size_t point_size1 = input_->points.size ();
@@ -3742,9 +3732,9 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (const PointCloudInCons
   std::vector< ::pcl::Vertices> polygon;
 
   // testing:: the first 1/3 faces belong to 1st mesh
-  for(size_t i =point_size1; i < output.polygons.size(); ++i){
-      polygon.push_back(output.polygons[i]);
-  }
+  for(size_t i =point_size1; i < output.polygons.size(); ++i)
+    polygon.push_back(output.polygons[i]);
+
   // add new polygon to texture mesh
   tex_mesh.tex_polygons.push_back(polygon);
 }
@@ -3753,4 +3743,5 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (const PointCloudInCons
   template class PCL_EXPORTS pcl::GreedyProjectionTriangulation<T>;
 
 #endif    // PCL_SURFACE_IMPL_GP3_H_
+
 
