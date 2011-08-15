@@ -68,23 +68,22 @@ TEST (ExtractIndicesSelf, Filters)
   (*indices)[0] = 0;
   (*indices)[1] = cloud->points.size () - 1;
 
-  // Deep copy
-  PointCloud<PointXYZ>::Ptr input (new PointCloud<PointXYZ> (*cloud));
-  ei.setInputCloud (input);
+  PointCloud<PointXYZ>::Ptr output (new PointCloud<PointXYZ>);
+  ei.setInputCloud (cloud);
   ei.setIndices (indices);
-  ei.filter (*input);
+  ei.filter (*output);
 
-  EXPECT_EQ ((int)input->points.size (), 2);
-  EXPECT_EQ ((int)input->width, 2);
-  EXPECT_EQ ((int)input->height, 1);
+  EXPECT_EQ ((int)output->points.size (), 2);
+  EXPECT_EQ ((int)output->width, 2);
+  EXPECT_EQ ((int)output->height, 1);
 
-  EXPECT_EQ (cloud->points[0].x, input->points[0].x);
-  EXPECT_EQ (cloud->points[0].y, input->points[0].y);
-  EXPECT_EQ (cloud->points[0].z, input->points[0].z);
+  EXPECT_EQ (cloud->points[0].x, output->points[0].x);
+  EXPECT_EQ (cloud->points[0].y, output->points[0].y);
+  EXPECT_EQ (cloud->points[0].z, output->points[0].z);
 
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].x, input->points[1].x);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, input->points[1].y);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, input->points[1].z);
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].x, output->points[1].x);
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output->points[1].y);
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output->points[1].z);
 }
   
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
