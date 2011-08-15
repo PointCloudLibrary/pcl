@@ -48,6 +48,8 @@
 
 #ifdef _WIN32
 # include <io.h>
+# define WIN32_LEAN_AND_MEAN
+# define NOMINMAX
 # include <windows.h>
 # define pcl_open                    _open
 # define pcl_close(fd)               _close(fd)
