@@ -80,8 +80,7 @@ class OpenNIIO
       boost::mutex::scoped_lock lock (mtx_);
       FPS_CALC ("callback");
 
-      PCDWriter w;
-      w.writeBinary<PointType> ("/tmp/test_binary.pcd", *cloud);
+      cloud_ = cloud;
     }
 
     void
@@ -94,8 +93,18 @@ class OpenNIIO
      
       interface->start ();
       
+      PCDWriter w;
       while (true)
       {
+        if (cloud_)
+        {
+          boost::mutex::scoped_lock lock (mtx_);
+          FPS_CALC ("write");
+
+          CloudConstPtr temp_cloud;
+          temp_cloud.swap (cloud_);
+          w.writeBinary<PointType> ("test_binary.pcd", *temp_cloud);
+        }
         boost::this_thread::sleep(boost::posix_time::milliseconds(1));
       }
 
