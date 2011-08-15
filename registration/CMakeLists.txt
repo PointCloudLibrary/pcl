@@ -28,6 +28,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h
         include/pcl/${SUBSYS_NAME}/transforms.h
         include/pcl/${SUBSYS_NAME}/gicp.h
+        include/pcl/${SUBSYS_NAME}/warp_point_rigid.h
+        include/pcl/${SUBSYS_NAME}/warp_point_rigid_6d.h
         )
 
 #    set(stanford_gicp_incs
