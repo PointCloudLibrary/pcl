@@ -89,7 +89,7 @@ namespace pcl
     nearestKSearch (const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
 
     virtual int
-    nearestKSearchGPU (std::vector<const PointT>& point, int k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances);
+    nearestKSearchGPU (std::vector<const PointT>& point, std::vector< int >& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances);
 
 
     virtual int

@@ -132,7 +132,7 @@ template <typename PointT> void
 
 
 template <typename PointT> int
-    Search<PointT>::nearestKSearchGPU (std::vector<const PointT>& point, int k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances){};
+    Search<PointT>::nearestKSearchGPU (std::vector<const PointT>& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances){};
 
 
 template <typename PointT> int

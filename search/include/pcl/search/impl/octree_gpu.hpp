@@ -45,7 +45,6 @@
 #include "pcl/gpu/octree/octree.hpp"
 #include "pcl/gpu/common/device_array.hpp"
 #include "pcl/gpu/common/timers_opencv.hpp"
-#include "pcl/search/impl/data_gen.hpp"
 
 #ifndef PCL_SEARCH_IMPL_OCTREE_GPU_H_
 #define PCL_SEARCH_IMPL_OCTREE_GPU_H_
