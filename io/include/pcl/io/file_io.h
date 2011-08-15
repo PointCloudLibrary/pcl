@@ -293,16 +293,19 @@ namespace pcl
     *
     * If the value is NaN, it inserst "nan".
     *
-    * \param cloud the cloud to copy from
-    * \param point_index the index of the point
-    * \param point_size the size of the point in the cloud
-    * \param field_idx the index of the dimension/field
-    * \param fields_count the current fields count
-    * \param stream the ostringstream to copy into
+    * \param[in] cloud the cloud to copy from
+    * \param[in] point_index the index of the point
+    * \param[in] point_size the size of the point in the cloud
+    * \param[in] field_idx the index of the dimension/field
+    * \param[in] fields_count the current fields count
+    * \param[out] stream the ostringstream to copy into
     */
   template <typename Type> inline void
   copyValueString (const sensor_msgs::PointCloud2 &cloud, 
-                   unsigned int point_index, int point_size, unsigned int field_idx, unsigned int fields_count, 
+                   const unsigned int point_index, 
+                   const int point_size, 
+                   const unsigned int field_idx, 
+                   const unsigned int fields_count, 
                    std::ostream &stream)
   {
     Type value;
@@ -314,8 +317,11 @@ namespace pcl
   }
   template <> inline void
   copyValueString<int8_t> (const sensor_msgs::PointCloud2 &cloud, 
-                         unsigned int point_index, int point_size, unsigned int field_idx, 
-                         unsigned int fields_count, std::ostream &stream)
+                           const unsigned int point_index, 
+                           const int point_size, 
+                           const unsigned int field_idx, 
+                           const unsigned int fields_count, 
+                           std::ostream &stream)
   {
     int8_t value;
     memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (int8_t)], sizeof (int8_t));
@@ -327,8 +333,11 @@ namespace pcl
   }
   template <> inline void
   copyValueString<uint8_t> (const sensor_msgs::PointCloud2 &cloud, 
-                                  unsigned int point_index, int point_size, unsigned int field_idx, 
-                                  unsigned int fields_count, std::ostream &stream)
+                            const unsigned int point_index, 
+                            const int point_size, 
+                            const unsigned int field_idx, 
+                            const unsigned int fields_count, 
+                            std::ostream &stream)
   {
     uint8_t value;
     memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (uint8_t)], sizeof (uint8_t));

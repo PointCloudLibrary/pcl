@@ -44,6 +44,7 @@
 #include <fcntl.h>
 #include <string>
 #include <stdlib.h>
+#include <boost/algorithm/string.hpp>
 
 #ifdef _WIN32
 # include <io.h>
@@ -60,7 +61,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> std::string
-pcl::PCDWriter::generateHeaderBinary (const pcl::PointCloud<PointT> &cloud, const int nr_points)
+pcl::PCDWriter::generateHeader (const pcl::PointCloud<PointT> &cloud, const int nr_points)
 {
   std::ostringstream oss;
 
@@ -121,7 +122,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   }
   int data_idx = 0;
   std::ostringstream oss;
-  oss << generateHeaderBinary<PointT> (cloud) << "DATA binary\n";
+  oss << generateHeader<PointT> (cloud) << "DATA binary\n";
   oss.flush ();
   data_idx = oss.tellp ();
 
@@ -230,6 +231,157 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   return (0);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> int
+pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<PointT> &cloud, 
+                            const int precision)
+{
+  if (cloud.points.empty ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Input point cloud has no data!");
+    return (-1);
+  }
+
+  std::ofstream fs;
+  fs.precision (precision);
+  fs.open (file_name.c_str ());      // Open file
+  if (!fs.is_open () || fs.fail ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Could not open file for writing!");
+    return (-1);
+  }
+
+  if (cloud.width * cloud.height != cloud.points.size ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
+    return (-1);
+  }
+  std::vector<sensor_msgs::PointField> fields;
+  pcl::getFields (cloud, fields);
+
+  // Write the header information
+  fs << generateHeader<PointT> (cloud) << "DATA ascii\n";
+
+  std::ostringstream stream;
+  stream.precision (precision);
+
+  // Iterate through the points
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+  {
+    for (size_t d = 0; d < fields.size (); ++d)
+    {
+      // Ignore invalid padded dimensions that are inherited from binary data
+      if (fields[d].name == "_")
+        continue;
+
+      int count = fields[d].count;
+      if (count == 0) 
+        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
+
+      for (int c = 0; c < count; ++c)
+      {
+        switch (fields[d].datatype)
+        {
+          case sensor_msgs::PointField::INT8:
+          {
+            int8_t value;
+            memcpy (&value, (const char*)&cloud.points[i] + fields[d].offset + c * sizeof (int8_t), sizeof (int8_t));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<uint32_t>(value);
+            break;
+          }
+          case sensor_msgs::PointField::UINT8:
+          {
+            uint8_t value;
+            memcpy (&value, (const char*)&cloud.points[i] + fields[d].offset + c * sizeof (uint8_t), sizeof (uint8_t));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<uint32_t>(value);
+            break;
+          }
+          case sensor_msgs::PointField::INT16:
+          {
+            int16_t value;
+            memcpy (&value, (const char*)&cloud.points[i] + fields[d].offset + c * sizeof (int16_t), sizeof (int16_t));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<int16_t>(value);
+            break;
+          }
+          case sensor_msgs::PointField::UINT16:
+          {
+            uint16_t value;
+            memcpy (&value, (const char*)&cloud.points[i] + fields[d].offset + c * sizeof (uint16_t), sizeof (uint16_t));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<uint16_t>(value);
+            break;
+          }
+          case sensor_msgs::PointField::INT32:
+          {
+            int32_t value;
+            memcpy (&value, (const char*)&cloud.points[i] + fields[d].offset + c * sizeof (int32_t), sizeof (int32_t));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<int32_t>(value);
+            break;
+          }
+          case sensor_msgs::PointField::UINT32:
+          {
+            uint32_t value;
+            memcpy (&value, (const char*)&cloud.points[i] + fields[d].offset + c * sizeof (uint32_t), sizeof (uint32_t));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<uint32_t>(value);
+            break;
+          }
+          case sensor_msgs::PointField::FLOAT32:
+          {
+            float value;
+            memcpy (&value, (const char*)&cloud.points[i] + fields[d].offset + c * sizeof (float), sizeof (float));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<float>(value);
+            break;
+          }
+          case sensor_msgs::PointField::FLOAT64:
+          {
+            double value;
+            memcpy (&value, (const char*)&cloud.points[i] + fields[d].offset + c * sizeof (double), sizeof (double));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<double>(value);
+            break;
+          }
+          default:
+            PCL_WARN ("[pcl::PCDWriter::writeASCII] Incorrect field data type specified (%d)!\n", fields[d].datatype);
+            break;
+        }
+
+        if (d < fields.size () - 1 || c < (int)fields[d].count - 1)
+          stream << " ";
+      }
+    }
+    // Copy the stream, trim it, and write it to disk
+    std::string result = stream.str ();
+    boost::trim (result);
+    stream.str ("");
+    fs << result << "\n";
+  }
+  fs.close ();              // Close file
+  return (0);
+}
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::PCDWriter::writeBinary (const std::string &file_name, 
@@ -243,7 +395,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   }
   int data_idx = 0;
   std::ostringstream oss;
-  oss << generateHeaderBinary<PointT> (cloud, indices.size ()) << "DATA binary\n";
+  oss << generateHeader<PointT> (cloud, indices.size ()) << "DATA binary\n";
   oss.flush ();
   data_idx = oss.tellp ();
 
@@ -349,6 +501,158 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 #else
   pcl_close (fd);
 #endif
+  return (0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> int
+pcl::PCDWriter::writeASCII (const std::string &file_name, 
+                            const pcl::PointCloud<PointT> &cloud, 
+                            const std::vector<int> &indices,
+                            const int precision)
+{
+  if (cloud.points.empty () || indices.empty ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Input point cloud has no data or empty indices given!");
+    return (-1);
+  }
+
+  std::ofstream fs;
+  fs.precision (precision);
+  fs.open (file_name.c_str ());      // Open file
+  if (!fs.is_open () || fs.fail ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Could not open file for writing!");
+    return (-1);
+  }
+
+  if (cloud.width * cloud.height != cloud.points.size ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
+    return (-1);
+  }
+  std::vector<sensor_msgs::PointField> fields;
+  pcl::getFields (cloud, fields);
+
+  // Write the header information
+  fs << generateHeader<PointT> (cloud, indices.size ()) << "DATA ascii\n";
+
+  std::ostringstream stream;
+  stream.precision (precision);
+
+  // Iterate through the points
+  for (size_t i = 0; i < indices.size (); ++i)
+  {
+    for (size_t d = 0; d < fields.size (); ++d)
+    {
+      // Ignore invalid padded dimensions that are inherited from binary data
+      if (fields[d].name == "_")
+        continue;
+
+      int count = fields[d].count;
+      if (count == 0) 
+        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
+
+      for (int c = 0; c < count; ++c)
+      {
+        switch (fields[d].datatype)
+        {
+          case sensor_msgs::PointField::INT8:
+          {
+            int8_t value;
+            memcpy (&value, (const char*)&cloud.points[indices[i]] + fields[d].offset + c * sizeof (int8_t), sizeof (int8_t));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<uint32_t>(value);
+            break;
+          }
+          case sensor_msgs::PointField::UINT8:
+          {
+            uint8_t value;
+            memcpy (&value, (const char*)&cloud.points[indices[i]] + fields[d].offset + c * sizeof (uint8_t), sizeof (uint8_t));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<uint32_t>(value);
+            break;
+          }
+          case sensor_msgs::PointField::INT16:
+          {
+            int16_t value;
+            memcpy (&value, (const char*)&cloud.points[indices[i]] + fields[d].offset + c * sizeof (int16_t), sizeof (int16_t));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<int16_t>(value);
+            break;
+          }
+          case sensor_msgs::PointField::UINT16:
+          {
+            uint16_t value;
+            memcpy (&value, (const char*)&cloud.points[indices[i]] + fields[d].offset + c * sizeof (uint16_t), sizeof (uint16_t));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<uint16_t>(value);
+            break;
+          }
+          case sensor_msgs::PointField::INT32:
+          {
+            int32_t value;
+            memcpy (&value, (const char*)&cloud.points[indices[i]] + fields[d].offset + c * sizeof (int32_t), sizeof (int32_t));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<int32_t>(value);
+            break;
+          }
+          case sensor_msgs::PointField::UINT32:
+          {
+            uint32_t value;
+            memcpy (&value, (const char*)&cloud.points[indices[i]] + fields[d].offset + c * sizeof (uint32_t), sizeof (uint32_t));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<uint32_t>(value);
+            break;
+          }
+          case sensor_msgs::PointField::FLOAT32:
+          {
+            float value;
+            memcpy (&value, (const char*)&cloud.points[indices[i]] + fields[d].offset + c * sizeof (float), sizeof (float));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<float>(value);
+            break;
+          }
+          case sensor_msgs::PointField::FLOAT64:
+          {
+            double value;
+            memcpy (&value, (const char*)&cloud.points[indices[i]] + fields[d].offset + c * sizeof (double), sizeof (double));
+            if (pcl_isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<double>(value);
+            break;
+          }
+          default:
+            PCL_WARN ("[pcl::PCDWriter::writeASCII] Incorrect field data type specified (%d)!\n", fields[d].datatype);
+            break;
+        }
+
+        if (d < fields.size () - 1 || c < (int)fields[d].count - 1)
+          stream << " ";
+      }
+    }
+    // Copy the stream, trim it, and write it to disk
+    std::string result = stream.str ();
+    boost::trim (result);
+    stream.str ("");
+    fs << result << "\n";
+  }
+  fs.close ();              // Close file
   return (0);
 }
 
