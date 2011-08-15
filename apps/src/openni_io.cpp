@@ -42,6 +42,7 @@
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
+#include <pcl/console/time.h>
 
 using namespace pcl;
 using namespace std;
@@ -79,7 +80,8 @@ class OpenNIIO
       boost::mutex::scoped_lock lock (mtx_);
       FPS_CALC ("callback");
 
-      cloud_  = cloud;
+      PCDWriter w;
+      w.writeBinary<PointType> ("/tmp/test_binary.pcd", *cloud);
     }
 
     void
@@ -94,15 +96,6 @@ class OpenNIIO
       
       while (true)
       {
-        if (cloud_)
-        {
-          CloudConstPtr temp_cloud;
-          temp_cloud.swap (cloud_); //here we set cloud_ to null
-          //FPS_CALC ("callback - IO (ascii)");
-          //pcl::io::savePCDFile<PointType> ("/tmp/test_ascii.pcd", *temp_cloud, false);
-          FPS_CALC ("callback - IO (binary)");
-          pcl::io::savePCDFile<PointType> ("/tmp/test_binary.pcd", *temp_cloud, true);
-        }
         boost::this_thread::sleep(boost::posix_time::milliseconds(1));
       }
 
