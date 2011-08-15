@@ -244,11 +244,11 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
         if (rgba_index >= 0)
         {
           // fill r/g/b data
-          int rgb;
-          memcpy (&rgb, ((char *)&(input_->points[cp])) + rgba_index, sizeof (int));
-          centroid[centroid_size-3] = (rgb>>16) & 0x0000ff;
-          centroid[centroid_size-2] = (rgb>>8)  & 0x0000ff;
-          centroid[centroid_size-1] = (rgb)     & 0x0000ff;
+          pcl::RGB rgb;
+          memcpy (&rgb, ((char *)&(input_->points[cp])) + rgba_index, sizeof (RGB));
+          centroid[centroid_size-3] = rgb.r;
+          centroid[centroid_size-2] = rgb.g;
+          centroid[centroid_size-1] = rgb.b;
         }
         pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor <PointT> (input_->points[cp], centroid));
         leaf.centroid += centroid;
@@ -298,11 +298,11 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
         if (rgba_index >= 0)
         {
           // Fill r/g/b data, assuming that the order is BGRA
-          int rgb;
-          memcpy (&rgb, ((char *)&(input_->points[cp])) + rgba_index, sizeof (int));
-          centroid[centroid_size-3] = (rgb>>16) & 0x0000ff;
-          centroid[centroid_size-2] = (rgb>>8)  & 0x0000ff;
-          centroid[centroid_size-1] = (rgb)     & 0x0000ff;
+          pcl::RGB rgb;
+          memcpy (&rgb, ((char *)&(input_->points[cp])) + rgba_index, sizeof (RGB));
+          centroid[centroid_size-3] = rgb.r;
+          centroid[centroid_size-2] = rgb.g;
+          centroid[centroid_size-1] = rgb.b;
         }
         pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor <PointT> (input_->points[cp], centroid));
         leaf.centroid += centroid;

@@ -46,6 +46,7 @@
 #include "pcl/io/io.h"
 #include "pcl/io/ply_io.h"
 #include "pcl/io/ply.h"
+#include <pcl/point_types.h>
 
 int
 pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
@@ -974,12 +975,11 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
       fs << " ";
       if (mesh.cloud.fields[rgb_index].datatype == sensor_msgs::PointField::FLOAT32)
       {
-        float value;
-        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (float));
-        int color = *reinterpret_cast<const int*>(&(value));
-        int r = (0xff0000 & color) >> 16;
-        int g = (0x00ff00 & color) >> 8;
-        int b =  0x0000ff & color;
+        pcl::RGB color;
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
+        int r = color.r;
+        int g = color.g;
+        int b = color.b;
         fs << r << " " << g << " " << b;
       }
     }

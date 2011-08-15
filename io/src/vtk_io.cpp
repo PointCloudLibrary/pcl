@@ -35,6 +35,7 @@
  *
  */
 
+#include <pcl/point_types.h>
 #include <pcl/io/vtk_io.h>
 #include <fstream>
 #include <iostream>
@@ -127,12 +128,11 @@ pcl::io::saveVTKFile (const std::string &file_name,
       int c = 0;
       if (triangles.cloud.fields[field_index].datatype == sensor_msgs::PointField::FLOAT32)
       {
-        float value;
-        memcpy (&value, &triangles.cloud.data[i * point_size + triangles.cloud.fields[field_index].offset + c * sizeof (float)], sizeof (float));
-        int color = *reinterpret_cast<const int*>(&(value));
-        int r = (0xff0000 & color) >> 16;
-        int g = (0x00ff00 & color) >> 8;
-        int b =  0x0000ff & color;
+        pcl::RGB color;
+        memcpy (&color, &triangles.cloud.data[i * point_size + triangles.cloud.fields[field_index].offset + c * sizeof (float)], sizeof (RGB));
+        int r = color.r;
+        int g = color.g;
+        int b = color.b;
         fs << (float)r/255.0 << " " << (float)g/255.0 << " " << (float)b/255.0;
       }
       fs << std::endl;
