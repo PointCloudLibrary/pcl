@@ -1080,6 +1080,12 @@ namespace pcl
         Eigen::Affine3f
         getViewerPose ();
 
+        /** \brief Save the current rendered image to disk, as a PNG screenshot.
+          * \param[in] file the name of the PNG file
+          */
+        void
+        saveScreenshot (const std::string &file);
+
       protected:
         /** \brief The render window interactor. */
         vtkSmartPointer<PCLVisualizerInteractor> interactor_;

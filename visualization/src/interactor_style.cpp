@@ -92,6 +92,16 @@ pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::visualization::PCLVisualizerInteractorStyle::saveScreenshot (const std::string &file)
+{
+  wif_->Modified ();      // Update the WindowToImageFilter
+  snapshot_writer_->Modified ();
+  snapshot_writer_->SetFileName (file.c_str ());
+  snapshot_writer_->Write ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::visualization::PCLVisualizerInteractorStyle::zoomIn ()
 {
   FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
@@ -335,13 +345,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
     // Save a PNG snapshot with the current screen
     case 'j': case 'J':
     {
-      wif_->Modified ();      // Update the WindowToImageFilter
-      snapshot_writer_->Modified ();
       char cam_fn[80], snapshot_fn[80];
       unsigned t = time (0);
       sprintf (snapshot_fn, "screenshot-%d.png" , t);
-      snapshot_writer_->SetFileName (snapshot_fn);
-      snapshot_writer_->Write ();
+      saveScreenshot (snapshot_fn);
 
       sprintf (cam_fn, "screenshot-%d.cam", t);
       ofstream ofs_cam;
@@ -803,6 +810,16 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::Initialize ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::visualization::PCLHistogramVisualizerInteractorStyle::saveScreenshot (const std::string &file)
+{
+  wif_->Modified ();      // Update the WindowToImageFilter
+  snapshot_writer_->Modified ();
+  snapshot_writer_->SetFileName (file.c_str ());
+  snapshot_writer_->Write ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnChar ()
 {
   if (!init_)
@@ -880,8 +897,7 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnChar ()
       char cam_fn[80], snapshot_fn[80];
       unsigned t = time (0);
       sprintf (snapshot_fn, "screenshot-%d.png" , t);
-      snapshot_writer_->SetFileName (snapshot_fn);
-      snapshot_writer_->Write ();
+      saveScreenshot (snapshot_fn);
 
       sprintf (cam_fn, "screenshot-%d.cam", t);
       ofstream ofs_cam;

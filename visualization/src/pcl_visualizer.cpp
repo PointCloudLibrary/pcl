@@ -225,6 +225,13 @@ pcl::visualization::PCLVisualizer::~PCLVisualizer ()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::saveScreenshot (const std::string &file)
+{
+  style_->saveScreenshot (file);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
