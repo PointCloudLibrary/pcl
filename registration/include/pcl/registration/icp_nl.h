@@ -39,6 +39,7 @@
 #define PCL_ICP_NL_H_
 
 // PCL includes
+#include "pcl/registration/warp_point_rigid.h"
 #include "pcl/registration/icp.h"
 #include "pcl/sample_consensus/ransac.h"
 #include "pcl/sample_consensus/sac_model_registration.h"
@@ -53,9 +54,12 @@ namespace pcl
     * The algorithm has several termination criteria:
     *
     * <ol>
-    * <li>Number of iterations has reached the maximum user imposed number of iterations (via \ref setMaximumIterations)</li>
-    * <li>The epsilon (difference) between the previous transformation and the current estimated transformation is smaller than an user imposed value (via \ref setTransformationEpsilon)</li>
-    * <li>The sum of Euclidean squared errors is smaller than a user defined threshold (via \ref setEuclideanFitnessEpsilon)</li>
+    * <li>Number of iterations has reached the maximum user imposed number of iterations 
+    *     (via \ref setMaximumIterations)</li>
+    * <li>The epsilon (difference) between the previous transformation and the current estimated transformation is 
+    *     smaller than an user imposed value (via \ref setTransformationEpsilon)</li>
+    * <li>The sum of Euclidean squared errors is smaller than a user defined threshold 
+    *     (via \ref setEuclideanFitnessEpsilon)</li>
     * </ol>
     *
     * \author Radu Bogdan Rusu, Michael Dixon
@@ -104,6 +108,15 @@ namespace pcl
               this, _1, _2, _3, _4, _5);
       }
 
+      /** \brief Set the function we use to warp points. Defaults to rigid 6D warp.
+        * \param shared pointer to object that warps points
+        */
+      void
+      setWarpFunction (boost::shared_ptr<WarpPointRigid<PointSource, PointTarget> > warp_fcn)
+      {
+        warp_point_ = warp_fcn;
+      }
+
       /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative
         * non-linear Levenberg-Marquardt approach.
         * \param cloud_src the source point cloud dataset
@@ -111,14 +124,16 @@ namespace pcl
         * \param transformation_matrix the resultant transformation matrix
         */
       void 
-      estimateRigidTransformationLM (const PointCloudSource &cloud_src, const PointCloudTarget &cloud_tgt, Eigen::Matrix4f &transformation_matrix);
+      estimateRigidTransformationLM (const PointCloudSource &cloud_src, const PointCloudTarget &cloud_tgt, 
+                                     Eigen::Matrix4f &transformation_matrix);
 
       /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative
         * non-linear Levenberg-Marquardt approach.
         * \param cloud_src the source point cloud dataset
         * \param indices_src the vector of indices describing the points of interest in \a cloud_src
         * \param cloud_tgt the target point cloud dataset
-        * \param indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
+        * \param indices_tgt the vector of indices describing the correspondences of the interst points from \a 
+        * indices_src
         * \param transformation_matrix the resultant transformation matrix
         */
       void 
@@ -147,7 +162,7 @@ namespace pcl
         */
       static int 
       functionToOptimize (void *p, int m, int n, const double *x, double *fvec, int iflag);
-      static int 
+
       /** \brief Cost function to be minimized
         * \param p a pointer to our data structure array
         * \param m the number of functions
@@ -156,6 +171,7 @@ namespace pcl
         * \param fvec a pointer to the resultant functions evaluations
         * \param iflag set to -1 inside the function to terminate execution
         */
+      static int 
       functionToOptimizeIndices (void *p, int m, int n, const double *x, double *fvec, int iflag);
 
       /** \brief Use a Huber kernel to estimate the distance between two vectors
@@ -242,6 +258,9 @@ namespace pcl
 
       /** \brief Temporary pointer to the target dataset indices. */
       const std::vector<int> *tmp_idx_tgt_;
+
+      /** \brief Temporary pointer to the target dataset indices. */
+      boost::shared_ptr<WarpPointRigid<PointSource, PointTarget> > warp_point_;
   };
 }
 
