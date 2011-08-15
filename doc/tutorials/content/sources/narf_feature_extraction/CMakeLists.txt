@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 
 project(narf_feature_extraction)
 
-find_package(PCL 1.1 REQUIRED COMPONENTS io range_image visualization keypoints features)
+find_package(PCL 1.1 REQUIRED)
 
 if(WXWIDGETS_FOUND)
   include_directories(${PCL_INCLUDE_DIRS})
