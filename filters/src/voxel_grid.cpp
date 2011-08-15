@@ -347,11 +347,11 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
         // fill in extra r/g/b centroid field
         if (rgba_index >= 0)
         {
-          int rgb;
-          memcpy (&rgb, &input_->data[point_offset + input_->fields[rgba_index].offset], sizeof (int));
-          centroid[centroid_size-3] = (rgb>>16) & 0x0000ff;
-          centroid[centroid_size-2] = (rgb>>8)  & 0x0000ff;
-          centroid[centroid_size-1] = (rgb)     & 0x0000ff;
+          pcl::RGB rgb;
+          memcpy (&rgb, &input_->data[point_offset + input_->fields[rgba_index].offset], sizeof (RGB));
+          centroid[centroid_size-3] = rgb.r;
+          centroid[centroid_size-2] = rgb.g;
+          centroid[centroid_size-1] = rgb.b;
         }
         // Copy all the fields
         for (unsigned int d = 0; d < input_->fields.size (); ++d)
@@ -408,11 +408,11 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
         // fill extra r/g/b centroid field
         if (rgba_index >= 0)
         {
-          int rgb;
-          memcpy (&rgb, &input_->data[point_offset + input_->fields[rgba_index].offset], sizeof (int));
-          centroid[centroid_size-3] = (rgb>>16) & 0x0000ff;
-          centroid[centroid_size-2] = (rgb>>8)  & 0x0000ff;
-          centroid[centroid_size-1] = (rgb)     & 0x0000ff;
+          pcl::RGB rgb;
+          memcpy (&rgb, &input_->data[point_offset + input_->fields[rgba_index].offset], sizeof (RGB));
+          centroid[centroid_size-3] = rgb.r;
+          centroid[centroid_size-2] = rgb.g;
+          centroid[centroid_size-1] = rgb.b;
         }
         // Copy all the fields
         for (unsigned int d = 0; d < input_->fields.size(); ++d)

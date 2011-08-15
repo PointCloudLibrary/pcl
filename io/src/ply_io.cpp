@@ -46,6 +46,7 @@
 #include "pcl/io/io.h"
 #include "pcl/io/ply_io.h"
 #include "pcl/io/ply.h"
+#include <pcl/point_types.h>
 
 int
 pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
