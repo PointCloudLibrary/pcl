@@ -104,6 +104,20 @@ namespace pcl
         bool 
         addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, const std::string &field_name, const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
+        /** \brief Add a histogram feature to screen as a separate window.
+          * \param cloud the PointCloud dataset containing the histogram
+          * \param index the point index to extract the histogram from
+          * \param field_name the field name containing the histogram
+          * \param id the point cloud object id (default: cloud)
+          * \param win_width the size of the window (width)
+          * \param win_height the size of the window (width)
+          */
+        template <typename PointT> bool 
+        addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, 
+                             const std::string &field_name, 
+                             const int index,
+                             const std::string &id = "cloud", int win_width = 640, int win_height = 200);
+
         /** \brief Set the Y range to minp-maxp for all histograms.
           * \param minp the minimum Y range
           * \param maxp the maximum Y range

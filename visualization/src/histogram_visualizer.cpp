@@ -129,7 +129,7 @@ pcl::visualization::PCLHistogramVisualizer::spin ()
       if ((*am_it).second.interactor_->stopped)
         return;
     }
-    boost::this_thread::sleep(boost::posix_time::seconds(1));
+    boost::this_thread::sleep (boost::posix_time::seconds (1));
   }
   while (true);
 }
@@ -335,12 +335,10 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
   return (true);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLHistogramVisualizer::~PCLHistogramVisualizer ()
 {
   for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
-     {
-       (*am_it).second.interactor_->DestroyTimer ( (*am_it).second.interactor_->timer_id_);
-     }
-  }
-
+    (*am_it).second.interactor_->DestroyTimer ( (*am_it).second.interactor_->timer_id_);
+}
 
