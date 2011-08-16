@@ -26,6 +26,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/registration.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h
+        include/pcl/${SUBSYS_NAME}/transformation_estimation_lm.h
         include/pcl/${SUBSYS_NAME}/transforms.h
         include/pcl/${SUBSYS_NAME}/gicp.h
         include/pcl/${SUBSYS_NAME}/warp_point_rigid.h
@@ -55,6 +56,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/registration.hpp
         #include/pcl/${SUBSYS_NAME}/impl/stanford_gicp.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd.hpp
+        include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_lm.hpp
         include/pcl/${SUBSYS_NAME}/impl/transforms.hpp
         include/pcl/${SUBSYS_NAME}/impl/gicp.hpp
         )
