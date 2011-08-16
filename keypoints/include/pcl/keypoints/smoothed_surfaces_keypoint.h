@@ -56,9 +56,9 @@ namespace pcl
   {
     public:
       using PCLBase<PointT>::input_;
-      using PCLBase<PointT>::initCompute;
       using Keypoint<PointT, PointT>::name_;
       using Keypoint<PointT, PointT>::tree_;
+      using Keypoint<PointT, PointT>::initCompute;
 
       typedef pcl::PointCloud<PointT> PointCloudT;
       typedef typename PointCloudT::ConstPtr PointCloudTConstPtr;
@@ -73,13 +73,17 @@ namespace pcl
           normals_ ()
       {
         name_ = "SmoothedSurfacesKeypoint";
+
+        // hack to pass the initCompute () check of Keypoint - although it is never used in SmoothedSurfacesKeypoint
+        Keypoint<PointT, PointT>::search_radius_ = 0.1;
       }
 
       void
-      addSmoothedPointCloud (PointCloudTConstPtr &cloud,
-                             PointCloudNTConstPtr &normals,
+      addSmoothedPointCloud (const PointCloudTConstPtr &cloud,
+                             const PointCloudNTConstPtr &normals,
                              KdTreePtr &kdtree,
                              float &scale);
+
 
       void
       resetClouds ();
@@ -91,15 +95,15 @@ namespace pcl
       getNeighborhoodConstant () { return neighborhood_constant_; }
 
       inline void
-      setInputNormals (PointCloudNTConstPtr &normals) { normals_ = normals; }
+      setInputNormals (const PointCloudNTConstPtr &normals) { normals_ = normals; }
 
       inline void
       setInputScale (float input_scale) { input_scale_ = input_scale; }
 
-    protected:
       void
       detectKeypoints (PointCloudT &output);
 
+    protected:
       bool
       initCompute ();
 
@@ -115,7 +119,7 @@ namespace pcl
 
       static bool
       compareScalesFunction (const std::pair<float, size_t> &a,
-                             const std::pair<float, size_t> &b) { return a.first > b.first; }
+                             const std::pair<float, size_t> &b) { return a.first < b.first; }
   };
 }
 

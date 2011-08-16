@@ -41,10 +41,12 @@
 #include "pcl/keypoints/smoothed_surfaces_keypoint.h"
 #include <pcl/kdtree/kdtree_flann.h>
 
+//#include <pcl/io/pcd_io.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
-pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::addSmoothedPointCloud (PointCloudTConstPtr &cloud,
-                                                                       PointCloudNTConstPtr &normals,
+pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::addSmoothedPointCloud (const PointCloudTConstPtr &cloud,
+                                                                       const PointCloudNTConstPtr &normals,
                                                                        KdTreePtr &kdtree,
                                                                        float &scale)
 {
@@ -76,11 +78,13 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
   std::vector<float> aux_diffs (input_->points.size (), 0.0f);
   diffs[scales_[0].second] = aux_diffs;
 
+  cloud_trees_[scales_[0].second]->setInputCloud (clouds_[scales_[0].second]);
   for (size_t scale_i = 1; scale_i < clouds_.size (); ++scale_i)
   {
-    diffs[scale_i].resize (input_->points.size ());
     size_t cloud_i = scales_[scale_i].second,
         cloud_i_minus_one = scales_[scale_i - 1].second;
+    diffs[cloud_i].resize (input_->points.size ());
+    PCL_INFO ("cloud_i %u cloud_i_minus_one %u\n", cloud_i, cloud_i_minus_one);
     for (size_t point_i = 0; point_i < input_->points.size (); ++point_i)
       diffs[cloud_i][point_i] = cloud_normals_[cloud_i]->points[point_i].getNormalVector3fMap ().dot (
           clouds_[cloud_i]->points[point_i].getVector3fMap () - clouds_[cloud_i_minus_one]->points[point_i].getVector3fMap ());
@@ -91,12 +95,12 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
 
 
   // Find minima and maxima in differences inside the input cloud
-  tree_->setInputCloud (input_);
+  typename KdTree<PointT>::Ptr input_tree = cloud_trees_.back ();
   for (int point_i = 0; point_i < (int)input_->points.size (); ++point_i)
   {
     std::vector<int> nn_indices;
     std::vector<float> nn_distances;
-    tree_->radiusSearch (point_i, input_scale_ * neighborhood_constant_, nn_indices, nn_distances);
+    input_tree->radiusSearch (point_i, input_scale_ * neighborhood_constant_, nn_indices, nn_distances);
 
     bool is_min = true, is_max = true;
     for (std::vector<int>::iterator nn_it = nn_indices.begin (); nn_it != nn_indices.end (); ++nn_it)
@@ -104,19 +108,19 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
       {
         if (diffs[input_index_][point_i] < diffs[input_index_][*nn_it])
           is_max = false;
-        else
+        else if (diffs[input_index_][point_i] > diffs[input_index_][*nn_it])
           is_min = false;
       }
 
-    // If the point is a local minimum/maximum, check if it so over all the scales
+    // If the point is a local minimum/maximum, check if it is the same over all the scales
     if (is_min || is_max)
     {
-      bool passed = true;
+      bool passed_min = true, passed_max = true;
       for (size_t scale_i = 0; scale_i < scales_.size (); ++scale_i)
       {
         size_t cloud_i = scales_[scale_i].second;
         // skip input cloud
-        if (cloud_i == clouds_.size ())
+        if (cloud_i == clouds_.size () - 1)
           continue;
 
         nn_indices.clear (); nn_distances.clear ();
@@ -128,21 +132,46 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
           {
             if (diffs[input_index_][point_i] < diffs[cloud_i][*nn_it])
               is_max_other_scale = false;
-            else
+            else if (diffs[input_index_][point_i] > diffs[cloud_i][*nn_it])
               is_min_other_scale = false;
           }
 
-        if ( (is_min == true && is_min_other_scale == false) || (is_max == true && is_max_other_scale == false) )
-        {
-          passed = false;
+        if (is_min == true && is_min_other_scale == false)
+          passed_min = false;
+        if (is_max == true && is_max_other_scale == false)
+          passed_max = false;
+
+        if (!passed_min && !passed_max)
           break;
-        }
       }
 
       // check if point was minimum/maximum over all the scales
-      if (passed)
+      if (passed_min || passed_max)
         output.points.push_back (input_->points[point_i]);
     }
+  }
+
+  output.header = input_->header;
+  output.width = output.points.size ();
+  output.height = 1;
+
+  // debug stuff
+//  for (size_t scale_i = 0; scale_i < scales_.size (); ++scale_i)
+//  {
+//    PointCloud<PointXYZI>::Ptr debug_cloud (new PointCloud<PointXYZI> ());
+//    debug_cloud->points.resize (input_->points.size ());
+//    debug_cloud->width = input_->width;
+//    debug_cloud->height = input_->height;
+//    for (size_t point_i = 0; point_i < input_->points.size (); ++point_i)
+//    {
+//      debug_cloud->points[point_i].intensity = diffs[scales_[scale_i].second][point_i];
+//      debug_cloud->points[point_i].x = input_->points[point_i].x;
+//      debug_cloud->points[point_i].y = input_->points[point_i].y;
+//      debug_cloud->points[point_i].z = input_->points[point_i].z;
+//    }
+
+//    char str[512]; sprintf (str, "diffs_%2d.pcd", scale_i);
+//    io::savePCDFile (str, *debug_cloud);
   }
 }
 
@@ -150,9 +179,10 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
 template <typename PointT, typename PointNT> bool
 pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::initCompute ()
 {
-  if ( !PCLBase<PointT>::initCompute ())
+  PCL_INFO ("SmoothedSurfacesKeypoint initCompute () called\n");
+  if ( !Keypoint<PointT, PointT>::initCompute ())
   {
-    PCL_ERROR ("[pcl::SmoothedSurfacesKeypoints::initCompute] PCLBase::initCompute failed\n");
+    PCL_ERROR ("[pcl::SmoothedSurfacesKeypoints::initCompute] Keypoint::initCompute failed\n");
     return false;
   }
 
@@ -192,6 +222,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::initCompute ()
   scales_.push_back (std::pair<float, size_t> (input_scale_, scales_.size ()));
   clouds_.push_back (input_);
   cloud_normals_.push_back (normals_);
+  cloud_trees_.push_back (tree_);
   // Sort the clouds by their scales
   sort (scales_.begin (), scales_.end (), compareScalesFunction);
 
@@ -202,6 +233,10 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::initCompute ()
       input_index_ = i;
       break;
     }
+
+  PCL_INFO ("Scales: ");
+  for (size_t i = 0; i < scales_.size (); ++i) PCL_INFO ("(%d %f), ", scales_[i].second, scales_[i].first);
+  PCL_INFO ("\n");
 
   return true;
 }

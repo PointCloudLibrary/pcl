@@ -33,19 +33,31 @@
  *
  */
 
-template <typename PointInT, typename PointOutT> inline void
-  pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
+template <typename PointInT, typename PointOutT> bool
+  pcl::Keypoint<PointInT, PointOutT>::initCompute ()
 {
-  if (!initCompute ())
+  if (!PCLBase<PointInT>::initCompute ())
   {
-    PCL_ERROR ("[pcl::%s::compute] initCompute failed!\n", getClassName ().c_str ());
-    return;
+    return false;
   }
 
   // Check if a space search locator was given
   if (!tree_)
   {
     PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!\n", getClassName ().c_str ());
+    return false;
+  }
+
+
+  return true;
+}
+
+template <typename PointInT, typename PointOutT> inline void
+pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
+{
+  if (!initCompute ())
+  {
+    PCL_ERROR ("[pcl::%s::compute] initCompute failed!\n", getClassName ().c_str ());
     return;
   }
 

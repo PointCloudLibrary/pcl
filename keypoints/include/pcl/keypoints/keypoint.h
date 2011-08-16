@@ -145,8 +145,10 @@ namespace pcl
       }
 
     protected:
-      using PCLBase<PointInT>::initCompute;
       using PCLBase<PointInT>::deinitCompute;
+
+      virtual bool
+      initCompute ();
 
       /** \brief The key point detection method's name. */
       std::string name_;
