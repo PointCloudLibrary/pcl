@@ -31,30 +31,32 @@ if(build)
         set(VTK_SURFACE_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
     endif(VTK_FOUND)
 
-    set(srcs src/gp3.cpp
+    set(srcs src/ear_clipping.cpp
+        src/gp3.cpp
         src/grid_projection.cpp
-        src/organized_fast_mesh.cpp
-        src/mls.cpp
-        src/simplification_remove_unused_vertices.cpp
-        src/surfel_smoothing.cpp
         src/marching_cubes.cpp
         src/marching_cubes_greedy.cpp
         src/marching_cubes_greedy_dot.cpp
+        src/mls.cpp
+        src/organized_fast_mesh.cpp
+        src/simplification_remove_unused_vertices.cpp
+        src/surfel_smoothing.cpp
         src/texture_mapping.cpp
         ${VTK_SURFACE_SOURCE}
         ${HULL_SOURCES}
         )
 
-    set(incs include/pcl/${SUBSYS_NAME}/gp3.h
+    set(incs include/pcl/${SUBSYS_NAME}/ear_clipping.h
+        include/pcl/${SUBSYS_NAME}/gp3.h
         include/pcl/${SUBSYS_NAME}/grid_projection.h
-        include/pcl/${SUBSYS_NAME}/mls.h
-        include/pcl/${SUBSYS_NAME}/organized_fast_mesh.h
-        include/pcl/${SUBSYS_NAME}/simplification_remove_unused_vertices.h
-        include/pcl/${SUBSYS_NAME}/surfel_smoothing.h
-        include/pcl/${SUBSYS_NAME}/reconstruction.h
         include/pcl/${SUBSYS_NAME}/marching_cubes.h
         include/pcl/${SUBSYS_NAME}/marching_cubes_greedy.h
         include/pcl/${SUBSYS_NAME}/marching_cubes_greedy_dot.h
+        include/pcl/${SUBSYS_NAME}/mls.h
+        include/pcl/${SUBSYS_NAME}/organized_fast_mesh.h
+        include/pcl/${SUBSYS_NAME}/reconstruction.h
+        include/pcl/${SUBSYS_NAME}/simplification_remove_unused_vertices.h
+        include/pcl/${SUBSYS_NAME}/surfel_smoothing.h        
         include/pcl/${SUBSYS_NAME}/texture_mapping.h
         ${VTK_SURFACE_INCLUDES}
         ${HULL_INCLUDES}
@@ -62,13 +64,13 @@ if(build)
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/gp3.hpp
         include/pcl/${SUBSYS_NAME}/impl/grid_projection.hpp
-        include/pcl/${SUBSYS_NAME}/impl/mls.hpp
-        include/pcl/${SUBSYS_NAME}/impl/organized_fast_mesh.hpp
-        include/pcl/${SUBSYS_NAME}/impl/surfel_smoothing.hpp
-        include/pcl/${SUBSYS_NAME}/impl/reconstruction.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy_dot.hpp
+        include/pcl/${SUBSYS_NAME}/impl/mls.hpp
+        include/pcl/${SUBSYS_NAME}/impl/organized_fast_mesh.hpp
+        include/pcl/${SUBSYS_NAME}/impl/reconstruction.hpp
+        include/pcl/${SUBSYS_NAME}/impl/surfel_smoothing.hpp
         include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
         ${HULL_IMPLS}
         )

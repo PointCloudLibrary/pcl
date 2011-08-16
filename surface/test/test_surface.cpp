@@ -47,6 +47,7 @@
 #include <pcl/surface/grid_projection.h>
 #include <pcl/surface/convex_hull.h>
 #include <pcl/surface/concave_hull.h>
+#include <pcl/surface/ear_clipping.h>
 #include <pcl/common/common.h>
 
 #include <pcl/io/obj_io.h>
@@ -515,6 +516,50 @@ TEST (PCL, ConcaveHull_LTable)
   concave_hull2.reconstruct (alpha_shape2, polygons_alpha2);
 
   EXPECT_EQ (alpha_shape2.points.size (), 19);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, EarClipping)
+{
+  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>());
+  cloud->height = 1;
+  cloud->points.push_back (PointXYZ ( 0, 0, 0.5));
+  cloud->points.push_back (PointXYZ ( 5, 0, 0.6));
+  cloud->points.push_back (PointXYZ ( 9, 4, 0.5));
+  cloud->points.push_back (PointXYZ ( 4, 7, 0.5));
+  cloud->points.push_back (PointXYZ ( 2, 5, 0.5));
+  cloud->points.push_back (PointXYZ (-1, 8, 0.5));
+  cloud->width = cloud->points.size();
+
+  Vertices vertices;
+  vertices.vertices.resize (cloud->points.size ());
+  for (int i = 0; i < (int) vertices.vertices.size (); ++i)
+    vertices.vertices[i] = i;
+
+  PolygonMesh::Ptr mesh (new PolygonMesh);
+  toROSMsg (*cloud, mesh->cloud);
+  mesh->polygons.push_back (vertices);
+
+  EarClipping clipper;
+  clipper.setInputPolygonMesh (mesh);
+
+  PolygonMesh triangulated_mesh;
+  clipper.triangulate (triangulated_mesh);
+
+  EXPECT_EQ (triangulated_mesh.polygons.size (), 4);
+  for (int i = 0; i < (int)triangulated_mesh.polygons.size (); ++i)
+    EXPECT_EQ (triangulated_mesh.polygons[i].vertices.size (), 3);
+
+  const int truth[][3] = { {5, 0, 1},
+                           {2, 3, 4},
+                           {4, 5, 1},
+                           {1, 2, 4} };
+
+  for (int pi = 0; pi < (int) triangulated_mesh.polygons.size (); ++pi)
+  for (int vi = 0; vi < 3; ++vi)
+  {
+    EXPECT_EQ (triangulated_mesh.polygons[pi].vertices[vi], truth[pi][vi]);
+  }
 }
 
 /* ---[ */
