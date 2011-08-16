@@ -172,7 +172,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
 
 //    char str[512]; sprintf (str, "diffs_%2d.pcd", scale_i);
 //    io::savePCDFile (str, *debug_cloud);
-  }
+//  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
