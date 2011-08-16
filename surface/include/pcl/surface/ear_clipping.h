@@ -52,7 +52,7 @@ namespace pcl
     * \author Nicolas Burrus
     * \ingroup surface
     */
-  class EarClipping
+  class PCL_EXPORTS EarClipping
   {
     public:
       /** \brief Provide a pointer to the input PolygonMesh
