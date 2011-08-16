@@ -282,7 +282,10 @@ namespace pcl
 
       /** \brief Provide a pointer to the input dataset that contains the point normals of 
         * the XYZ dataset.
-        * \param normals the const boost shared pointer to a PointCloud message
+        * In case of search surface is set to be different from the input cloud, 
+        * normals should correspond to the search surface, not the input cloud!
+        * \param normals the const boost shared pointer to a PointCloud of normals. 
+        * By convention, L2 norm of each normal should be 1. 
         */
       inline void 
       setInputNormals (const PointCloudNConstPtr &normals) { normals_ = normals; }
