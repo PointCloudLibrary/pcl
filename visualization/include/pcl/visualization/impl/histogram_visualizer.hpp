@@ -89,9 +89,8 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 
   // Get the fields present in this cloud
   std::vector<sensor_msgs::PointField> fields;
-  pcl::getFields (cloud, fields);
   // Check if our field exists
-  int field_idx = pcl::getFieldIndex (cloud, field_name);
+  int field_idx = pcl::getFieldIndex<PointT> (cloud, field_name, fields);
   if (field_idx == -1)
   {
     PCL_ERROR ("[addFeatureHistogram] The specified field <%s> does not exist!\n", field_name.c_str ());
