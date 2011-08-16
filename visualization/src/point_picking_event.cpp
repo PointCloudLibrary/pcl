@@ -49,9 +49,10 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
 
   if ((eventid == vtkCommand::LeftButtonPressEvent) && (iren->GetShiftKey () == 1)) 
   {
-    int idx = performSinglePick (iren);
+    float x = 0, y = 0, z = 0;
+    int idx = performSinglePick (iren, x, y, z);
     // Create a PointPickingEvent
-    PointPickingEvent event (idx);
+    PointPickingEvent event (idx, x, y, z);
     reinterpret_cast<pcl::visualization::PCLVisualizerInteractorStyle*>(caller)->point_picking_signal_ (event);
   }
   // Call the parent's class mouse events
@@ -69,5 +70,28 @@ pcl::visualization::PointPickingCallback::performSinglePick (vtkRenderWindowInte
   vtkRenderer *ren = iren->FindPokedRenderer (iren->GetEventPosition ()[0], iren->GetEventPosition ()[1]);
   picker->Pick (mouse_x, mouse_y, 0.0, ren);
   return ((int)picker->GetPointId ());
+}
+
+int
+pcl::visualization::PointPickingCallback::performSinglePick (
+    vtkRenderWindowInteractor *iren,
+    float &x, float &y, float &z)
+{
+  int mouse_x, mouse_y;
+  vtkPointPicker *picker = (vtkPointPicker*)iren->GetPicker ();
+  iren->GetMousePosition (&mouse_x, &mouse_y);
+  iren->StartPickCallback ();
+  
+  vtkRenderer *ren = iren->FindPokedRenderer (iren->GetEventPosition ()[0], iren->GetEventPosition ()[1]);
+  picker->Pick (mouse_x, mouse_y, 0.0, ren);
+
+  int idx = picker->GetPointId ();
+  if (picker->GetDataSet () != NULL)
+  {
+    double p[3];
+    picker->GetDataSet ()->GetPoint (idx, p);
+    x = p[0]; y = p[1]; z = p[2];
+  }
+  return (idx);
 }
 

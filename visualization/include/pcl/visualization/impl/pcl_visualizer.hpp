@@ -478,12 +478,12 @@ pcl::visualization::PCLVisualizer::addText3D (
     return (false);
   }
 
-  vtkSmartPointer<vtkVectorText> textSource = vtkSmartPointer<vtkVectorText>::New();
-  textSource->SetText(text.c_str());
-  textSource->Update();
+  vtkSmartPointer<vtkVectorText> textSource = vtkSmartPointer<vtkVectorText>::New ();
+  textSource->SetText (text.c_str());
+  textSource->Update ();
 
-  vtkSmartPointer<vtkPolyDataMapper> textMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-  textMapper->SetInputConnection(textSource->GetOutputPort());
+  vtkSmartPointer<vtkPolyDataMapper> textMapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
+  textMapper->SetInputConnection (textSource->GetOutputPort ());
 
   // Since each follower may follow a different camera, we need different followers
   rens_->InitTraversal ();
@@ -495,11 +495,11 @@ pcl::visualization::PCLVisualizer::addText3D (
     if (viewport == 0 || viewport == i)               
     {
       vtkSmartPointer<vtkFollower> textActor = vtkSmartPointer<vtkFollower>::New ();
-      textActor->SetMapper(textMapper);
-      textActor->SetPosition(position.x, position.y, position.z);
-      textActor->SetScale(textScale);
-      textActor->GetProperty()->SetColor( r, g, b );
-      textActor->SetCamera(renderer->GetActiveCamera());
+      textActor->SetMapper (textMapper);
+      textActor->SetPosition (position.x, position.y, position.z);
+      textActor->SetScale (textScale);
+      textActor->GetProperty ()->SetColor (r, g, b);
+      textActor->SetCamera (renderer->GetActiveCamera ());
 
       renderer->AddActor (textActor);
       renderer->Render ();

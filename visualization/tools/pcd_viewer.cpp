@@ -42,6 +42,7 @@
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/histogram_visualizer.h>
+#include <pcl/visualization/point_picking_event.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
@@ -111,6 +112,37 @@ printHelp (int argc, char **argv)
   print_info ("\n");
 
   print_info ("\n(Note: for multiple .pcd files, provide multiple -{fc,ps,opaque} parameters; they will be automatically assigned to the right file)\n");
+}
+
+// Global visualizer object
+pcl::visualization::PCLHistogramVisualizer ph_global;
+boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
+
+void
+pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
+{
+  if (event.getPointIndex () == -1)
+    return;
+  sensor_msgs::PointCloud2::Ptr cloud = *(sensor_msgs::PointCloud2::Ptr*)cookie;
+  if (!cloud)
+    return;
+
+  std::stringstream ss;
+  ss << event.getPointIndex ();
+  // Get the cloud's fields
+  for (size_t i = 0; i < cloud->fields.size (); ++i)
+  {
+    if (!isMultiDimensionalFeatureField (cloud->fields[i]))
+      continue;
+    ph_global.addFeatureHistogram (*cloud, cloud->fields[i].name, event.getPointIndex (), ss.str ());
+  }
+  if (p)
+  {
+    pcl::PointXYZ pos;
+    event.getPoint (pos.x, pos.y, pos.z);
+    p->addText3D<pcl::PointXYZ> (ss.str (), pos, 0.0005, 1.0, 1.0, 1.0, ss.str ());
+  }
+  ph_global.spinOnce ();
 }
 
 /* ---[ */
@@ -191,7 +223,6 @@ main (int argc, char** argv)
 
   // Create the PCLVisualizer object
   boost::shared_ptr<pcl::visualization::PCLHistogramVisualizer> ph;
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
 
   // Using min_p, max_p to set the global Y min/max range for the histogram
   float min_p = FLT_MAX; float max_p = -FLT_MAX;
@@ -285,7 +316,10 @@ main (int argc, char** argv)
 
     // Create the PCLVisualizer object here on the first encountered XYZ file
     if (!p)
+    {
       p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
+      p->registerPointPickingCallback (&pp_callback, (void*)&cloud);
+    }
 
     // Multiview enabled?
     if (mview)

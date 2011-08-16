@@ -57,7 +57,10 @@ namespace pcl
 
         int
         performSinglePick (vtkRenderWindowInteractor *iren);
-    };
+
+        int
+        performSinglePick (vtkRenderWindowInteractor *iren, float &x, float &y, float &z);
+     };
 
     /** /brief Class representing 3D point picking events. */
     class PCL_EXPORTS PointPickingEvent
@@ -68,14 +71,27 @@ namespace pcl
           idx_ = idx;
         }
 
+        inline PointPickingEvent (int idx, float x, float y, float z)
+        {
+          idx_ = idx; x_ = x; y_ = y; z_ = z;
+        }
+
         inline int
         getPointIndex () const
         {
           return (idx_);
         }
 
+        inline void
+        getPoint (float &x, float &y, float &z) const
+        {
+          x = x_; y = y_; z = z_;
+        }
+
       private:
         int idx_;
+
+        float x_, y_, z_;
     };
   } //namespace visualization
 } //namespace pcl
