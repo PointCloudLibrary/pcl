@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -72,7 +74,9 @@ namespace pcl
           cloud_ (cloud), capable_ (false)
         {}
 
-        /** \brief Abstract getName method. */
+        /** \brief Abstract getName method. 
+          * \return the name of the class/object.
+          */
         virtual std::string 
         getName () const = 0;
 
@@ -80,12 +84,12 @@ namespace pcl
         virtual std::string 
         getFieldName () const  = 0;
 
-        /** \brief Return whether this handler is capable of handling the input data or not. */
+        /** \brief Checl if this handler is capable of handling the input data or not. */
         inline bool 
         isCapable () const { return (capable_); }
 
-        /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
-          * \param points the resultant geometry 
+        /** \brief Obtain the actual point geometry for the input dataset in VTK format.
+          * \param[out] points the resultant geometry 
           */
         virtual void 
         getGeometry (vtkSmartPointer<vtkPoints> &points) const = 0;
@@ -112,8 +116,9 @@ namespace pcl
         std::vector<sensor_msgs::PointField> fields_;
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief XYZ handler class for PointCloud geometry. 
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief XYZ handler class for PointCloud geometry. Given an input dataset, all XYZ 
+      * data present in fields "x", "y", and "z" is extracted and displayed on screen.
       * \ingroup visualization
       */
     template <typename PointT>
@@ -138,8 +143,8 @@ namespace pcl
         virtual std::string 
         getFieldName () const { return ("xyz"); }
 
-        /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
-          * \param points the resultant geometry 
+        /** \brief Obtain the actual point geometry for the input dataset in VTK format.
+          * \param[out] points the resultant geometry 
           */
         virtual void 
         getGeometry (vtkSmartPointer<vtkPoints> &points) const;
@@ -154,8 +159,10 @@ namespace pcl
         using PointCloudGeometryHandler<PointT>::fields_;
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Surface normal handler class for PointCloud geometry. 
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Surface normal handler class for PointCloud geometry. Given an input 
+      * dataset, all data present in fields "normal_x", "normal_y", and "normal_z" is
+      * extracted and dislayed on screen as XYZ data.
       * \ingroup visualization
       */
     template <typename PointT>
@@ -180,8 +187,8 @@ namespace pcl
         virtual std::string 
         getFieldName () const { return ("normal_xyz"); }
 
-        /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
-          * \param points the resultant geometry 
+        /** \brief Obtain the actual point geometry for the input dataset in VTK format.
+          * \param[out] points the resultant geometry 
           */
         virtual void 
         getGeometry (vtkSmartPointer<vtkPoints> &points) const;
@@ -196,8 +203,10 @@ namespace pcl
         using PointCloudGeometryHandler<PointT>::fields_;
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Custom handler class for PointCloud geometry. 
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Custom handler class for PointCloud geometry. Given an input dataset and
+      * three user defined fields, all data present in them is extracted and displayed on
+      * screen as XYZ data.
       * \ingroup visualization
       */
     template <typename PointT>
@@ -225,8 +234,8 @@ namespace pcl
         virtual std::string 
         getFieldName () const { return (field_name_); }
 
-        /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
-          * \param points the resultant geometry 
+        /** \brief Obtain the actual point geometry for the input dataset in VTK format.
+          * \param[out] points the resultant geometry 
           */
         virtual void 
         getGeometry (vtkSmartPointer<vtkPoints> &points) const;
@@ -244,7 +253,7 @@ namespace pcl
         std::string field_name_;
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
     /** \brief Base handler class for PointCloud geometry. 
       * \ingroup visualization
       */
@@ -274,12 +283,12 @@ namespace pcl
         virtual std::string 
         getFieldName () const  = 0;
 
-        /** \brief Return whether this handler is capable of handling the input data or not. */
+        /** \brief Check if this handler is capable of handling the input data or not. */
         inline bool 
         isCapable () const { return (capable_); }
 
-        /** \brief Obtain the actual point geometry for the input dataset as a vtk pointset.
-          * \param points the resultant geometry 
+        /** \brief Obtain the actual point geometry for the input dataset in VTK format.
+          * \param[out] points the resultant geometry 
           */
         virtual void 
         getGeometry (vtkSmartPointer<vtkPoints> &points) const;
@@ -306,8 +315,9 @@ namespace pcl
         std::vector<sensor_msgs::PointField> fields_;
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief XYZ handler class for PointCloud geometry. 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /** \brief XYZ handler class for PointCloud geometry. Given an input dataset, all XYZ 
+      * data present in fields "x", "y", and "z" is extracted and displayed on screen.
       * \ingroup visualization
       */
     template <>
@@ -333,8 +343,10 @@ namespace pcl
         getFieldName () const { return ("xyz"); }
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Surface normal handler class for PointCloud geometry. 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Surface normal handler class for PointCloud geometry. Given an input 
+      * dataset, all data present in fields "normal_x", "normal_y", and "normal_z" is
+      * extracted and dislayed on screen as XYZ data.
       * \ingroup visualization
       */
     template <>
@@ -360,8 +372,10 @@ namespace pcl
         getFieldName () const { return ("normal_xyz"); }
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Custom handler class for PointCloud geometry. 
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Custom handler class for PointCloud geometry. Given an input dataset and
+      * three user defined fields, all data present in them is extracted and displayed on
+      * screen as XYZ data.
       * \ingroup visualization
       */
     template <>
@@ -391,7 +405,7 @@ namespace pcl
         std::string field_name_;
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Base Handler class for PointCloud colors. 
       * \ingroup visualization
       */
@@ -411,7 +425,7 @@ namespace pcl
           cloud_ (cloud), capable_ (false)
         {}
 
-        /** \brief Return whether this handler is capable of handling the input data or not. */
+        /** \brief Check if this handler is capable of handling the input data or not. */
         inline bool 
         isCapable () const { return (capable_); }
 
@@ -424,7 +438,7 @@ namespace pcl
         getFieldName () const = 0;
 
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param scalars the resultant scalars containing the color for the input dataset
+          * \param[out] scalars the output scalars containing the color for the dataset
           */
         virtual void 
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const = 0;
@@ -445,8 +459,8 @@ namespace pcl
         std::vector<sensor_msgs::PointField> fields_;
     };
    
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Handler for random PointCloud colors. 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Handler for random PointCloud colors (i.e., R, G, B will be randomly chosen)
       * \ingroup visualization
       */
     template <typename PointT>
@@ -476,7 +490,7 @@ namespace pcl
         getFieldName () const { return ("[random]"); }
 
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param scalars the resultant scalars containing the color for the input dataset
+          * \param[out] scalars the output scalars containing the color for the dataset
           */
         virtual void 
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
@@ -487,8 +501,9 @@ namespace pcl
         using PointCloudColorHandler<PointT>::capable_;
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Handler for predefined user colors. 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Handler for predefined user colors. The color at each point will be drawn
+      * as the use given R, G, B values.
       * \ingroup visualization
       */
     template <typename PointT>
@@ -522,7 +537,7 @@ namespace pcl
         getFieldName () const { return (""); }
 
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param scalars the resultant scalars containing the color for the input dataset
+          * \param[out] scalars the output scalars containing the color for the dataset
           */
         virtual void 
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
@@ -536,8 +551,9 @@ namespace pcl
         double r_, g_, b_;
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief RGB handler class for colors. 
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief RGB handler class for colors. Uses the data present in the "rgb" or "rgba"
+      * fields as the color at each point.
       * \ingroup visualization
       */
     template <typename PointT>
@@ -559,7 +575,7 @@ namespace pcl
         getFieldName () const { return ("rgb"); }
 
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param scalars the resultant scalars containing the color for the input dataset
+          * \param[out] scalars the output scalars containing the color for the dataset
           */
         virtual void 
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
@@ -577,8 +593,9 @@ namespace pcl
         using PointCloudColorHandler<PointT>::fields_;
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Generic field handler class for colors. 
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Generic field handler class for colors. Uses an user given field to extract
+      * 1D data and display the color at each point using a min-max lookup table.
       * \ingroup visualization
       */
     template <typename PointT>
@@ -600,7 +617,7 @@ namespace pcl
         virtual std::string getFieldName () const { return (field_name_); }
 
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param scalars the resultant scalars containing the color for the input dataset
+          * \param[out] scalars the output scalars containing the color for the dataset
           */
         virtual void 
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
@@ -653,7 +670,7 @@ namespace pcl
         getFieldName () const = 0;
 
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param scalars the resultant scalars containing the color for the input dataset
+          * \param[out] scalars the output scalars containing the color for the dataset
           */
         virtual void 
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const = 0;
@@ -671,8 +688,8 @@ namespace pcl
         int field_idx_;
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Handler for random PointCloud colors. 
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Handler for random PointCloud colors (i.e., R, G, B will be randomly chosen)
       * \ingroup visualization
       */
     template <>
@@ -702,14 +719,15 @@ namespace pcl
         getFieldName () const { return ("[random]"); }
 
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param scalars the resultant scalars containing the color for the input dataset
+          * \param[out] scalars the output scalars containing the color for the dataset
           */
         virtual void 
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Handler for predefined user colors. 
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Handler for predefined user colors. The color at each point will be drawn
+      * as the use given R, G, B values.
       * \ingroup visualization
       */
     template <>
@@ -740,7 +758,7 @@ namespace pcl
         getFieldName () const { return (""); }
 
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param scalars the resultant scalars containing the color for the input dataset
+          * \param[out] scalars the output scalars containing the color for the dataset
           */
         virtual void 
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
@@ -750,8 +768,9 @@ namespace pcl
         double r_, g_, b_;
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief RGB handler class for colors. 
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief RGB handler class for colors. Uses the data present in the "rgb" or "rgba"
+      * fields as the color at each point.
       * \ingroup visualization
       */
     template <>
@@ -769,7 +788,7 @@ namespace pcl
         PointCloudColorHandlerRGBField (const PointCloudConstPtr &cloud);
 
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param scalars the resultant scalars containing the color for the input dataset
+          * \param[out] scalars the output scalars containing the color for the dataset
           */
         virtual void 
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
@@ -784,8 +803,9 @@ namespace pcl
         getFieldName () const { return ("rgb"); }
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Generic field handler class for colors. 
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Generic field handler class for colors. Uses an user given field to extract
+      * 1D data and display the color at each point using a min-max lookup table.
       * \ingroup visualization
       */
     template <>
@@ -804,7 +824,7 @@ namespace pcl
                                             const std::string &field_name);
 
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param scalars the resultant scalars containing the color for the input dataset
+          * \param[out] scalars the output scalars containing the color for the dataset
           */
         virtual void 
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
