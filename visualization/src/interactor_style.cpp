@@ -289,6 +289,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
                   "          l, L           : list all available geometric and color handlers for the current actor map\n"
                   "    ALT + 0..9 [+ CTRL]  : switch between different geometric handlers (where available)\n"
                   "          0..9 [+ CTRL]  : switch between different color handlers (where available)\n"
+                  "\n"
+                  "    SHIFT + left click   : select a point\n"
           );
       break;
     }
