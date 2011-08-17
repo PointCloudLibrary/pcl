@@ -177,7 +177,7 @@ main (int argc, char** argv)
   if (!loadCloud (argv[p_file_indices[0]], *cloud))
     return (-1);
 
-  // Add the noise
+  // Do the smoothing
   sensor_msgs::PointCloud2 output;
   compute (cloud, output, search_radius, sqr_gauss_param, sqr_gauss_param_set,
            use_polynomial_fit, polynomial_order);

@@ -73,6 +73,10 @@ if(build)
 	  
 	  PCL_ADD_EXECUTABLE(openni_feature_persistence ${SUBSYS_NAME} src/openni_feature_persistence.cpp)
 	  target_link_libraries(openni_feature_persistence pcl_common pcl_io pcl_filters pcl_visualization pcl_features)
+		
+		PCL_ADD_EXECUTABLE(openni_mls_smoothing ${SUBSYS_NAME} src/openni_mls_smoothing.cpp)
+	  target_link_libraries(openni_mls_smoothing pcl_common pcl_io pcl_surface pcl_visualization)
+	 
 	  
 	  
 
