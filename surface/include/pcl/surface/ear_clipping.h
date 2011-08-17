@@ -86,10 +86,10 @@ namespace pcl
       void triangulate (const Vertices& vertices, PolygonMesh& output);
 
       /** \brief Compute the signed area of a polygon. */
-      float area (const std::vector<int>& vertices);
+      float area (const std::vector<unsigned int>& vertices);
 
       /** \brief Check if the triangle (u,v,w) is an ear. */
-      bool isEar (int u, int v, int w, const std::vector<int>& vertices);
+      bool isEar (int u, int v, int w, const std::vector<unsigned int>& vertices);
 
       /** \brief Check if p is inside the triangle (u,v,w). */
       bool isInsideTriangle (const PointXY& u, const PointXY& v, const PointXY& w,const PointXY& p);

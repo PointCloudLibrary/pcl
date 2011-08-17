@@ -48,7 +48,7 @@ pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
     return;
   }
 
-  std::vector<int> remaining_vertices (n_vertices);
+  std::vector<unsigned int> remaining_vertices (n_vertices);
   if (area (vertices.vertices) > 0) // clockwise?
   {
     remaining_vertices = vertices.vertices;
@@ -86,7 +86,7 @@ pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
 }
 
 float
-pcl::EarClipping::area (const std::vector<int>& vertices)
+pcl::EarClipping::area (const std::vector<unsigned int>& vertices)
 {
   int n = vertices.size ();
   float area = 0.0f;
@@ -100,7 +100,7 @@ pcl::EarClipping::area (const std::vector<int>& vertices)
 }
 
 bool
-pcl::EarClipping::isEar (int u, int v, int w, const std::vector<int>& vertices)
+pcl::EarClipping::isEar (int u, int v, int w, const std::vector<unsigned int>& vertices)
 {
   PointXY p_u = toPointXY (points_.points[vertices[u]]);
   PointXY p_v = toPointXY (points_.points[vertices[v]]);
