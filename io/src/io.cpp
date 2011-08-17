@@ -169,7 +169,8 @@ pcl::concatenateFields (const sensor_msgs::PointCloud2 &cloud1,
       field_offset +=  local_data_size;
 
       //make sure that we add padding when its needed
-      memset (&cloud_out.data[point_offset + field_offset], 0, padding_size);
+      if(padding_size > 0)
+        memset (&cloud_out.data[point_offset + field_offset], 0, padding_size);
       field_offset += padding_size;
     }
     point_offset += field_offset;
