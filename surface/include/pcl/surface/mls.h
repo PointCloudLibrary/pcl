@@ -59,6 +59,7 @@ namespace pcl
   {
     using PCLBase<PointInT>::input_;
     using PCLBase<PointInT>::indices_;
+    using PCLBase<PointInT>::fake_indices_;
     using PCLBase<PointInT>::initCompute;
     using PCLBase<PointInT>::deinitCompute;
 
@@ -77,7 +78,7 @@ namespace pcl
       typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
 
       /** \brief Empty constructor. */
-      MovingLeastSquares () : tree_ (), order_ (2), polynomial_fit_ (true), search_radius_ (0), sqr_gauss_param_ (0) {};
+      MovingLeastSquares () : PCLBase<PointInT> (), tree_ (), order_ (2), polynomial_fit_ (true), search_radius_ (0), sqr_gauss_param_ (0) {};
 
       /** \brief Provide a pointer to an point cloud where normal information should be saved
         * \note This is optional, it can be the same as the parameter to the reconstruction method, but no normals are estimated if it is not set.
@@ -123,7 +124,7 @@ namespace pcl
         * \param radius the sphere radius that is to contain all k-nearest neighbors
         * \note Calling this method resets the squared Gaussian parameter to radius * radius !
         */
-      inline void setSearchRadius (double radius) { search_radius_ = radius; sqr_gauss_param_ = search_radius_ * search_radius_; }
+      inline void setSearchRadius (double radius) { search_radius_ = radius; sqr_gauss_param_ = radius * radius; }
 
       /** \brief Get the sphere radius used for determining the k-nearest neighbors. */
       inline double getSearchRadius () { return (search_radius_); }
