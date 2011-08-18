@@ -87,8 +87,8 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, pcl::PointCloud<
   // Allocate enough space and copy the basics
   cloud_out.points.resize (cloud_in.points.size ());
   cloud_out.header   = cloud_in.header;
-  cloud_out.width    = cloud_in.points.size ();
-  cloud_out.height   = 1;
+  cloud_out.width    = cloud_in.width;
+  cloud_out.height   = cloud_in.height;
   cloud_out.is_dense = cloud_in.is_dense;
   // Copy all the data fields from the input cloud to the output one
   typedef typename pcl::traits::fieldList<PointInT>::type FieldListInT;
