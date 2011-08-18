@@ -84,7 +84,6 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output
   // Check if the output will be computed for all points or only a subset
   if (indices_->size () != input_->points.size ())
   {
-    PCL_INFO ("OUTPUT INCORRECT SIZE\n");
     output.width    = indices_->size ();
     output.height   = 1;
   }
@@ -92,14 +91,12 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output
   {
     output.width    = input_->width;
     output.height   = input_->height;
-    PCL_INFO ("OUTPUT GETS CORRECT SIZE %d %d\n", output.width, output.height);
   }
   output.is_dense = input_->is_dense;
 
   // Resize the output normal dataset
   if (normals_)
   {
-    PCL_INFO ("NORMALS PROPERLY RESIZED\n");
     normals_->points.resize (output.points.size ());
     normals_->width    = output.width;
     normals_->height   = output.height;
@@ -249,7 +246,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
       P_weight_Pt_.llt ().solveInPlace (c_vec_);
 
       // Projection onto MLS surface along Darboux normal to the height at (0,0)
-      if (!pcl_isfinite (c_vec_[0]))
+      if (pcl_isfinite (c_vec_[0]))
       {
         point += (c_vec_[0] * plane_normal).cast<float> ();
 
