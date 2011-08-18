@@ -80,7 +80,10 @@ if(build)
     link_directories(${VTK_LIBRARY_DIRS})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_kdtree ${OpenCV_LIBS} ${VTK_SURFACE_TARGET_LINK_LIBRARIES} ${QHULL_LIBRARIES})
+    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_kdtree ${OpenCV_LIBS} ${VTK_SURFACE_TARGET_LINK_LIBRARIES})
+    if(QHULL_FOUND)
+      target_link_libraries(${LIB_NAME} ${QHULL_LIBRARIES})
+    endif(QHULL_FOUND)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "" "" "" "")
 
