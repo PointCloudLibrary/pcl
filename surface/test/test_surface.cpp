@@ -87,13 +87,14 @@ TEST (PCL, MovingLeastSquares)
 
   // Reconstruct
   mls.reconstruct (mls_points);
-  EXPECT_NEAR (mls_points.points[0].x, 0.005, 1e-3);
-  EXPECT_NEAR (mls_points.points[0].y, 0.111, 1e-3);
-  EXPECT_NEAR (mls_points.points[0].z, 0.038, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[0].normal[0]), 0.1176, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[0].normal[1]), 0.6193, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[0].normal[2]), 0.7762, 1e-3);
-  EXPECT_NEAR (mls_normals->points[0].curvature, 0.012, 1e-3);
+
+  EXPECT_NEAR (mls_points.points[0].x, 0.005417, 1e-3);
+  EXPECT_NEAR (mls_points.points[0].y, 0.113463, 1e-3);
+  EXPECT_NEAR (mls_points.points[0].z, 0.040715, 1e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[0].normal[0]), 0.111894, 1e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[0].normal[1]), 0.594906, 1e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[0].normal[2]), 0.795969, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].curvature, 0.012019, 1e-3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
