@@ -137,7 +137,11 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
   // Use original point positions for fitting
   // \note no up/down/adapting-sampling or hole filling possible like this
   output.points.resize (indices_->size ());
-  pcl::copyPointCloud (*input_, *indices_, output);
+  // Check if fake indices were used, otherwise the output loses its organized structure
+  if (!fake_indices_)
+    pcl::copyPointCloud (*input_, *indices_, output);
+  else
+    output = *input_;
 
   // For all points
   for (size_t cp = 0; cp < indices_->size (); ++cp)
@@ -242,7 +246,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
       P_weight_Pt_.llt ().solveInPlace (c_vec_);
 
       // Projection onto MLS surface along Darboux normal to the height at (0,0)
-      if (!pcl_isfinite (c_vec_[0]))
+      if (pcl_isfinite (c_vec_[0]))
       {
         point += (c_vec_[0] * plane_normal).cast<float> ();
 
