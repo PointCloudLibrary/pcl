@@ -125,6 +125,7 @@ RangeImage::createFromPointCloud(const PointCloudType& point_cloud, float angula
   recalculate3DPointPositions();
 }
 
+
 /////////////////////////////////////////////////////////////////////////
 template <typename PointCloudTypeWithViewpoints> void 
 RangeImage::createFromPointCloudWithViewpoints(const PointCloudTypeWithViewpoints& point_cloud, float angular_resolution,

@@ -138,6 +138,25 @@ RangeImage::reset ()
 }
 
 /////////////////////////////////////////////////////////////////////////
+void
+RangeImage::createEmpty(float angular_resolution, const Eigen::Affine3f& sensor_pose,
+                        RangeImage::CoordinateFrame coordinate_frame, float angle_width, float angle_height)
+{
+  angular_resolution_ = angular_resolution;
+  angular_resolution_reciprocal_ = 1.0f / angular_resolution_;
+  width = pcl_lrint(floor(angle_width*angular_resolution_reciprocal_));
+  height = pcl_lrint(floor(angle_height*angular_resolution_reciprocal_));
+  image_offset_x_ = image_offset_y_ = 0;  // TODO: FIX THIS
+  is_dense = false;
+  getCoordinateFrameTransformation(coordinate_frame, to_world_system_);
+  to_world_system_ = sensor_pose * to_world_system_;
+  getInverse(to_world_system_, to_range_image_system_);
+  unsigned int size = width*height;
+  points.clear();
+  points.resize(size, unobserved_point);
+}
+
+/////////////////////////////////////////////////////////////////////////
 void 
 RangeImage::integrateFarRanges (const PointCloud<PointWithViewpoint>& far_ranges)
 {

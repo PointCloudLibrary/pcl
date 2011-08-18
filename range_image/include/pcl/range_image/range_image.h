@@ -189,7 +189,19 @@ namespace pcl
                                           float max_angle_width, float max_angle_height,
                                           CoordinateFrame coordinate_frame=CAMERA_FRAME, float noise_level=0.0f,
                                           float min_range=0.0f, int border_size=0);
+
+      /** \brief Create an empty depth image (filled with unobserved points)
+        * \param angular_resolution the angle between each sample in the depth image
+        * \param sensor_pose an affine matrix defining the pose of the sensor (defaults to Identity)
+        * \param coordinate_frame the coordinate frame (defaults to CAMERA_FRAME)
+        * \param max_angle_width an angle defining the horizontal bounds of the sensor (defaults to full 360deg)
+        * \param max_angle_height an angle defining the vertical bounds of the sensor (defaults to full 180deg
+        */
+      void
+      createEmpty(float angular_resolution, const Eigen::Affine3f& sensor_pose=Eigen::Affine3f::Identity(),
+                  RangeImage::CoordinateFrame coordinate_frame=CAMERA_FRAME, float angle_width=pcl::deg2rad(360.0f), float angle_height=pcl::deg2rad(180.0f));
       
+      /** \brief Integrates the given far range measurements into the range image */
       PCL_EXPORTS void
       integrateFarRanges (const PointCloud<PointWithViewpoint>& far_ranges);
       
