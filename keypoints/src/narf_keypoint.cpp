@@ -48,8 +48,6 @@ using std::vector;
 //#include <pcl/common/vector_average.h>
 
 
-#define USE_OMP 1
-
 namespace pcl {
 
 
@@ -67,6 +65,7 @@ NarfKeypoint::NarfKeypoint (RangeImageBorderExtractor* range_image_border_extrac
 /////////////////////////////////////////////////////////////////////////
 NarfKeypoint::~NarfKeypoint ()
 {
+  //cerr << __PRETTY_FUNCTION__<<" called.\n";
   clearData ();
 }
 
@@ -83,7 +82,7 @@ void
     delete range_image_scale_space_[scale_space_idx];
   range_image_scale_space_.clear ();
   for (size_t scale_space_idx = 1; scale_space_idx<interest_image_scale_space_.size (); ++scale_space_idx)
-    delete interest_image_scale_space_[scale_space_idx];
+    delete[] interest_image_scale_space_[scale_space_idx];
   interest_image_scale_space_.clear();
   is_interest_point_image_.clear ();
   delete[] interest_image_; interest_image_=NULL;
