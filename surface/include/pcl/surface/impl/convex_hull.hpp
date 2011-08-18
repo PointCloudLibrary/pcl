@@ -146,7 +146,7 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
 
   if (exitcode != 0)
   {
-    PCL_ERROR ("[pcl::%s::performReconstrution] ERROR: qhull was unable to compute a convex hull for the given point cloud (%zu)!\n", getClassName ().c_str (), input_->points.size ());
+    PCL_ERROR ("[pcl::%s::performReconstrution] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), (unsigned long) input_->points.size ());
 
     //check if it fails because of NaN values...
     if (!cloud_transformed.is_dense)

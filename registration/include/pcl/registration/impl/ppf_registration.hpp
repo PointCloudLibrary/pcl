@@ -196,7 +196,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
             accumulator_array[model_reference_index][alpha_discretized] ++;
           }
         }
-        else PCL_ERROR ("[pcl::PPFRegistration::computeTransformation] Computing pair feature vector between points %zu and %zu went wrong.\n", scene_reference_index, scene_point_index);
+        else PCL_ERROR ("[pcl::PPFRegistration::computeTransformation] Computing pair feature vector between points %lu and %lu went wrong.\n", (unsigned long) scene_reference_index, (unsigned long) scene_point_index);
       }
     }
 

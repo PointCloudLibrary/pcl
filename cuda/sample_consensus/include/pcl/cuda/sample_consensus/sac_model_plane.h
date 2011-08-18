@@ -209,7 +209,7 @@ namespace pcl
   //        // Needs a valid model coefficients
   //        if (model_coefficients.size () != 4)
   //        {
-  //          ROS_ERROR ("[pcl::SampleConsensusModelPlane::isModelValid] Invalid number of model coefficients given (%zu)!", model_coefficients.size ());
+  //          ROS_ERROR ("[pcl::SampleConsensusModelPlane::isModelValid] Invalid number of model coefficients given (%lu)!", (unsigned long) model_coefficients.size ());
   //          return (false);
   //        }
   //        return (true);

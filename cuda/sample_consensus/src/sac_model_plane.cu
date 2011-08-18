@@ -232,7 +232,7 @@ namespace pcl
       // Needs a valid set of model coefficients
       if (model_coefficients.size () != 4)
       {
-        fprintf (stderr, "[pcl::cuda::SampleConsensusModelPlane::countWithinDistance] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+        fprintf (stderr, "[pcl::cuda::SampleConsensusModelPlane::countWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long) model_coefficients.size ());
         return 0;
       }
 
@@ -275,7 +275,7 @@ namespace pcl
       // Needs a valid set of model coefficients
       if (model_coefficients.size () != 4)
       {
-        fprintf (stderr, "[pcl::cuda::SampleConsensusModelPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+        fprintf (stderr, "[pcl::cuda::SampleConsensusModelPlane::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long) model_coefficients.size ());
         return 0;
       }
 
@@ -321,7 +321,7 @@ namespace pcl
       // Needs a valid set of model coefficients
     /*  if (model_coefficients.size () != 4)
       {
-        fprintf (stderr, "[pcl::cuda::SampleConsensusModelPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+        fprintf (stderr, "[pcl::cuda::SampleConsensusModelPlane::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long) model_coefficients.size ());
         return;
       }*/
 
@@ -366,7 +366,7 @@ namespace pcl
       // Needs a valid set of model coefficients
     /*  if (model_coefficients.size () != 4)
       {
-        fprintf (stderr, "[pcl::cuda::SampleConsensusModelPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+        fprintf (stderr, "[pcl::cuda::SampleConsensusModelPlane::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long) model_coefficients.size ());
         return;
       }*/
 

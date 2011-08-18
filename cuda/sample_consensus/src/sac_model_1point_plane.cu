@@ -71,7 +71,7 @@ namespace pcl
     SampleConsensusModel1PointPlane<Storage>::getSamples (int &iterations, Indices &samples)
     {
       samples.resize (1);
-      float trand = indices_->size () / (RAND_MAX + 1.0);
+      float trand = indices_->size () / (RAND_MAX + 1.0f);
       int idx = (int)(rngl_ () * trand);
       samples[0] = (*indices_)[idx];
     }
@@ -551,7 +551,7 @@ namespace pcl
       // Needs a valid set of model coefficients
       if (model_coefficients.size () != 4)
       {
-        fprintf (stderr, "[pcl::cuda::SampleConsensusModel1PointPlane::countWithinDistance] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+        fprintf (stderr, "[pcl::cuda::SampleConsensusModel1PointPlane::countWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long) model_coefficients.size ());
         return 0;
       }
 
@@ -561,7 +561,7 @@ namespace pcl
       coefficients.z = model_coefficients[2];
       coefficients.w = model_coefficients[3];
 
-      return count_if (
+      return (int) count_if (
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
                              indices_->size (),
@@ -576,7 +576,7 @@ namespace pcl
       if (isnan (((float4)h[idx]).x))
         return (0);
 
-      return 
+      return (int)
         (thrust::count_if (
           thrust::make_zip_iterator (thrust::make_tuple (input_->points.begin (), indices_->begin ())),
           thrust::make_zip_iterator (thrust::make_tuple (input_->points.begin (), indices_->begin ())) + 
@@ -594,11 +594,11 @@ namespace pcl
       // Needs a valid set of model coefficients
       if (model_coefficients.size () != 4)
       {
-        fprintf (stderr, "[SampleConsensusModel1PointPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+        fprintf (stderr, "[SampleConsensusModel1PointPlane::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long) model_coefficients.size ());
         return 0;
       }
 
-      int nr_points = indices_->size ();
+      int nr_points = (int) indices_->size ();
       {
     //  pcl::ScopeTime t ("Resize inl");
       if (!inliers_stencil)
@@ -641,7 +641,7 @@ namespace pcl
     //  pcl::ScopeTime t ("Resize");
       inliers->resize (it - inliers->begin ());
       }
-      return inliers->size();
+      return (int) inliers->size();
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -654,11 +654,11 @@ namespace pcl
       // Needs a valid set of model coefficients
     /*  if (model_coefficients.size () != 4)
       {
-        fprintf (stderr, "[SampleConsensusModel1PointPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+        fprintf (stderr, "[SampleConsensusModel1PointPlane::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long) model_coefficients.size ());
         return;
       }*/
 
-      int nr_points = indices_->size ();
+      int nr_points = (int) indices_->size ();
       {
     //  pcl::ScopeTime t ("Resize inl");
 
@@ -701,7 +701,7 @@ namespace pcl
     //  pcl::ScopeTime t ("Resize");
       inliers->resize (it - inliers->begin ());
       }
-      return inliers->size ();
+      return (int) inliers->size ();
     }
 
 
@@ -711,10 +711,10 @@ namespace pcl
     SampleConsensusModel1PointPlane<Storage>::selectWithinDistance (
         Hypotheses &h, int idx, float threshold, IndicesPtr &inliers_stencil, float3 &c)
     {
-      float angle_threshold = 0.26;
+      float angle_threshold = 0.26f;
       using namespace thrust;
 
-      int nr_points = indices_stencil_->size ();
+      int nr_points = (int) indices_stencil_->size ();
       float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
       if (!inliers_stencil)
@@ -802,12 +802,12 @@ namespace pcl
       inliers.erase (last, inliers.end ());
 
       if (inliers.size () < 1)
-        return inliers.size ();
+        return (int) inliers.size ();
 
       best_inliers_stencil = inliers_stencil;
-      int best_nr_inliers = inliers.size ();
+      int best_nr_inliers = (int) inliers.size ();
 
-      int nr_inliers_after_refit = inliers.size ();
+      int nr_inliers_after_refit = (int) inliers.size ();
       int nr_inliers_before_refit;
       int nr_refit_iterations = 0;
 
@@ -914,7 +914,7 @@ namespace pcl
         last = thrust::remove_copy (inliers_stencil->begin (), inliers_stencil->end (), inliers.begin (), -1);
         inliers.erase (last, inliers.end ());
 
-        nr_inliers_after_refit = inliers.size ();
+        nr_inliers_after_refit = (int) inliers.size ();
 
         compute3DCentroid (make_permutation_iterator (input_->points.begin (), inliers.begin ()),
                          make_permutation_iterator (input_->points.begin (), inliers.end ()),

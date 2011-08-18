@@ -69,7 +69,7 @@ namespace pcl
         {
           if (stencils_[i][idx] != -1)
           {
-            ret = (i / (float)nr_stencils_) * 255;
+            ret = (int) ((i / (float)nr_stencils_) * 255);
           }
         }
         return ret;
@@ -96,7 +96,7 @@ namespace pcl
 
       thrust::counting_iterator<int> first (0);
       thrust::counting_iterator<int> last = first + region_mask.size ();
-      thrust::transform (first, last, region_mask.begin (), InlierLabeling (stencils, inlier_stencils.size ()));
+      thrust::transform (first, last, region_mask.begin (), InlierLabeling (stencils, (int) inlier_stencils.size ()));
     }
 
     //struct ConvertToImage1
@@ -133,10 +133,10 @@ namespace pcl
       __host__ __device__ __inline__ char4 operator () (float4 n)
       {
         char4 r;
-        r.x = (1.0f + n.x) * 128;
-        r.y = (1.0f + n.y) * 128;
-        r.z = (1.0f + n.z) * 128;
-        r.w = (1.0f + n.w) * 128;
+        r.x = (char) ((1.0f + n.x) * 128);
+        r.y = (char) ((1.0f + n.y) * 128);
+        r.z = (char) ((1.0f + n.z) * 128);
+        r.w = (char) ((1.0f + n.w) * 128);
         return r;
       }
     };

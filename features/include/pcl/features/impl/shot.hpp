@@ -873,7 +873,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (Poin
       output.points[idx].descriptor.resize (descLength_);
 //  if (output.points[0].size != (size_t)descLength_)
 //  {
-//    PCL_ERROR ("[pcl::%s::computeFeature] The desired descriptor size (%zu) does not match the output point type feature (%zu)! Aborting...\n", getClassName ().c_str (), descLength_, output.points[0].size);
+//    PCL_ERROR ("[pcl::%s::computeFeature] The desired descriptor size (%lu) does not match the output point type feature (%lu)! Aborting...\n", getClassName ().c_str (), descLength_, (unsigned long) output.points[0].size);
 //    return;
 //  }
 
@@ -924,7 +924,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (PointClou
       output.points[idx].descriptor.resize (descLength_);
 //  if (output.points[0].size != (size_t)descLength_)
 //  {
-//    PCL_ERROR ("[pcl::%s::computeFeature] The desired descriptor size (%zu) does not match the output point type feature (%zu)! Aborting...\n", getClassName ().c_str (), descLength_, output.points[0].size);
+//    PCL_ERROR ("[pcl::%s::computeFeature] The desired descriptor size (%lu) does not match the output point type feature (%lu)! Aborting...\n", getClassName ().c_str (), descLength_, (unsigned long) output.points[0].size);
 //    return;
 //  }
 

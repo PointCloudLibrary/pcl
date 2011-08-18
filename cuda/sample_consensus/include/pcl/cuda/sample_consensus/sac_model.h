@@ -74,7 +74,7 @@ namespace pcl
         operator ()(PointXYZRGB pt) 
         { 
 #ifdef __CUDACC__
-            return (isnan (pt.x) | isnan (pt.y) | isnan (pt.z)); 
+            return (isnan (pt.x) | isnan (pt.y) | isnan (pt.z)) == 1; 
 #else
             return (pcl_isnan (pt.x) | pcl_isnan (pt.y) | pcl_isnan (pt.z)) == 1;
 #endif
@@ -135,7 +135,7 @@ namespace pcl
         {
           if (indices_->size () > input_->points.size ())
           {
-            ROS_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %zu while the input PointCloud has size %zu!", indices_->size (), input_->points.size ());
+            ROS_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %lu while the input PointCloud has size %lu!", (unsigned long) indices_->size (), (unsigned long) input_->points.size ());
             indices_->clear ();
           }
         };*/

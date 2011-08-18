@@ -145,7 +145,7 @@ namespace pcl
       }
 
       if (debug_verbosity_level > 0)
-        fprintf (stderr, "[pcl::cuda::RandomSampleConsensus::computeModel] Model: %zu size, %d inliers.\n", model_.size (), n_best_inliers_count);
+        fprintf (stderr, "[pcl::cuda::RandomSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", (unsigned long) model_.size (), n_best_inliers_count);
 
     //  if (model_.empty ())
     //  {
