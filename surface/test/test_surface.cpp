@@ -48,17 +48,26 @@
 #include <pcl/surface/convex_hull.h>
 #include <pcl/surface/concave_hull.h>
 #include <pcl/surface/organized_fast_mesh.h>
+#include <pcl/surface/ear_clipping.h>
 #include <pcl/common/common.h>
 
+#include <pcl/io/obj_io.h>
+#include <pcl/TextureMesh.h>
+#include <pcl/surface/texture_mapping.h>
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
-//boost::shared_ptr<vector<int> > indices (new vector<int>);
 KdTree<PointXYZ>::Ptr tree;
 KdTree<PointNormal>::Ptr tree2;
+
+// add by ktran to test update functions
+PointCloud<PointXYZ>::Ptr cloud1 (new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
+KdTree<PointXYZ>::Ptr tree3;
+KdTree<PointNormal>::Ptr tree4;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, MovingLeastSquares)
@@ -78,13 +87,14 @@ TEST (PCL, MovingLeastSquares)
 
   // Reconstruct
   mls.reconstruct (mls_points);
-  EXPECT_NEAR (mls_points.points[0].x, 0.005, 1e-3);
-  EXPECT_NEAR (mls_points.points[0].y, 0.111, 1e-3);
-  EXPECT_NEAR (mls_points.points[0].z, 0.038, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[0].normal[0]), 0.1176, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[0].normal[1]), 0.6193, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[0].normal[2]), 0.7762, 1e-3);
-  EXPECT_NEAR (mls_normals->points[0].curvature, 0.012, 1e-3);
+
+  EXPECT_NEAR (mls_points.points[0].x, 0.005417, 1e-3);
+  EXPECT_NEAR (mls_points.points[0].y, 0.113463, 1e-3);
+  EXPECT_NEAR (mls_points.points[0].z, 0.040715, 1e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[0].normal[0]), 0.111894, 1e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[0].normal[1]), 0.594906, 1e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[0].normal[2]), 0.795969, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].curvature, 0.012019, 1e-3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,6 +145,198 @@ TEST (PCL, GreedyProjectionTriangulation)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, GreedyProjectionTriangulation_Merge2Meshes)
+{
+  // check if exist update cloud
+  if(cloud_with_normals1->width * cloud_with_normals1->height > 0){
+    // Init objects
+    PolygonMesh triangles;
+    PolygonMesh triangles1;
+    GreedyProjectionTriangulation<PointNormal> gp3;
+    GreedyProjectionTriangulation<PointNormal> gp31;
+
+    // Set parameters
+    gp3.setInputCloud (cloud_with_normals);
+    gp3.setSearchMethod (tree2);
+    gp3.setSearchRadius (0.025);
+    gp3.setMu (2.5);
+    gp3.setMaximumNearestNeighbors (100);
+    gp3.setMaximumSurfaceAgle(M_PI/4); // 45 degrees
+    gp3.setMinimumAngle(M_PI/18); // 10 degrees
+    gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
+    gp3.setNormalConsistency(false);
+
+    // for mesh 2
+    // Set parameters
+    gp31.setInputCloud (cloud_with_normals1);
+    gp31.setSearchMethod (tree4);
+    gp31.setSearchRadius (0.025);
+    gp31.setMu (2.5);
+    gp31.setMaximumNearestNeighbors (100);
+    gp31.setMaximumSurfaceAgle(M_PI/4); // 45 degrees
+    gp31.setMinimumAngle(M_PI/18); // 10 degrees
+    gp31.setMaximumAngle(2*M_PI/3); // 120 degrees
+    gp31.setNormalConsistency(false);
+
+
+    // Reconstruct
+    gp3.reconstruct (triangles);
+
+    saveVTKFile ("bun01.vtk", triangles);
+
+    gp31.reconstruct (triangles1);
+    saveVTKFile ("bun02.vtk", triangles1);
+
+    gp3.removeOverlapTriangles(triangles, triangles1);
+    gp31.removeOverlapTriangles(triangles1, triangles);
+
+    std::vector<int> states1 = gp31.getPointStates();
+    std::vector<int> sfn1 = gp31.getSFN();
+    std::vector<int> ffn1 = gp31.getFFN();
+
+    gp3.merge2Meshes(triangles, triangles1, states1, sfn1, ffn1);
+
+    saveVTKFile ("bun_merged.vtk", triangles);
+  }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, UpdateMesh_With_TextureMapping)
+{
+  if(cloud_with_normals1->width * cloud_with_normals1->height > 0){
+    // Init objects
+    PolygonMesh triangles;
+    PolygonMesh triangles1;
+    GreedyProjectionTriangulation<PointNormal> gp3;
+    GreedyProjectionTriangulation<PointNormal> gp31;
+
+    // Set parameters
+    gp3.setInputCloud (cloud_with_normals);
+    gp3.setSearchMethod (tree2);
+    gp3.setSearchRadius (0.025);
+    gp3.setMu (2.5);
+    gp3.setMaximumNearestNeighbors (100);
+    gp3.setMaximumSurfaceAgle(M_PI/4); // 45 degrees
+    gp3.setMinimumAngle(M_PI/18); // 10 degrees
+    gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
+    gp3.setNormalConsistency(false);
+
+    gp3.reconstruct (triangles);
+
+    EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
+    EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
+    EXPECT_EQ ((int)triangles.polygons.size(), 685);
+
+    // update with texture mapping
+    // set 2 texture for 2 mesh
+    std::vector<std::string> tex_files;
+    tex_files.push_back("tex4.jpg");
+
+    // initialize texture mesh
+    TextureMesh tex_mesh;
+    tex_mesh.header = triangles.header;
+    tex_mesh.cloud = triangles.cloud;
+
+    // add the 1st mesh
+    tex_mesh.tex_polygons.push_back(triangles.polygons);
+
+    // update mesh and texture mesh
+    gp3.updateMesh(cloud_with_normals1, triangles, tex_mesh);
+
+    // set texture for added cloud
+    tex_files.push_back("tex8.jpg");
+
+    // save updated mesh
+    saveVTKFile ("update_bunny.vtk", triangles);
+
+    TextureMapping<PointXYZ> tm;
+
+    // set mesh scale control
+    tm.setF(0.01);
+
+    // set vector field
+    tm.setVectorField(1, 0, 0);
+
+    TexMaterial tex_material;
+
+    // default texture materials parameters
+    tex_material.tex_Ka.r = 0.2f;
+    tex_material.tex_Ka.g = 0.2f;
+    tex_material.tex_Ka.b = 0.2f;
+
+    tex_material.tex_Kd.r = 0.8f;
+    tex_material.tex_Kd.g = 0.8f;
+    tex_material.tex_Kd.b = 0.8f;
+
+    tex_material.tex_Ks.r = 1.0f;
+    tex_material.tex_Ks.g = 1.0f;
+    tex_material.tex_Ks.b = 1.0f;
+    tex_material.tex_d = 1.0f;
+    tex_material.tex_Ns = 0.0f;
+    tex_material.tex_illum = 2;
+
+    // set texture material paramaters
+    tm.setTextureMaterials(tex_material);
+
+    // set texture files
+    tm.setTextureFiles(tex_files);
+
+    // mapping
+    tm.mapTexture2Mesh(tex_mesh);
+
+    saveOBJFile ("update_bunny.obj", tex_mesh);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, Organized)
+{
+  //construct dataset
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_organized (new pcl::PointCloud<pcl::PointXYZ> ());
+  cloud_organized->width = 5;
+  cloud_organized->height = 10;
+  cloud_organized->points.resize (cloud_organized->width * cloud_organized->height);
+
+  int npoints = 0;
+  for (size_t i = 0; i < cloud_organized->height; i++)
+  {
+    for (size_t j = 0; j < cloud_organized->width; j++)
+    {
+      cloud_organized->points[npoints].x = i;
+      cloud_organized->points[npoints].y = j;
+      cloud_organized->points[npoints].z = cloud_organized->points.size (); // to avoid shadowing
+      npoints++;
+    }
+  }
+  int nan_idx = cloud_organized->width*cloud_organized->height - 2*cloud_organized->width + 1;
+  cloud_organized->points[nan_idx].x = numeric_limits<float>::quiet_NaN ();
+  cloud_organized->points[nan_idx].y = numeric_limits<float>::quiet_NaN ();
+  cloud_organized->points[nan_idx].z = numeric_limits<float>::quiet_NaN ();
+  
+  // Init objects
+  PolygonMesh triangles;
+  OrganizedFastMesh<PointXYZ> ofm;
+
+  // Set parameters
+  ofm.setInputCloud (cloud_organized);
+  ofm.setMaxEdgeLength (1.5);
+  ofm.setTrianglePixelSize (1);
+  ofm.setTriangulationType (OrganizedFastMesh<PointXYZ>::TRIANGLE_ADAPTIVE_CUT);
+
+  // Reconstruct
+  ofm.reconstruct (triangles);
+  //saveVTKFile ("./test/organized.vtk", triangles);
+
+  // Check triangles
+  EXPECT_EQ (triangles.cloud.width, cloud_organized->width);
+  EXPECT_EQ (triangles.cloud.height, cloud_organized->height);
+  EXPECT_EQ ((int)triangles.polygons.size(), 2*(triangles.cloud.width-1)*(triangles.cloud.height-1) - 4);
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.size(), 3);
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(0), 0);
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(1), 1);
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(2), triangles.cloud.width+1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GridProjection)
 {
   // Init objects
@@ -165,7 +367,7 @@ TEST (PCL, ConvexHull_bunny)
   pcl::ConvexHull<pcl::PointXYZ> chull;
   chull.setInputCloud (cloud);
   chull.reconstruct (hull, polygons);
-  
+
   //PolygonMesh convex;
   //toROSMsg (hull, convex.cloud);
   //convex.polygons = polygons;
@@ -191,9 +393,9 @@ TEST (PCL, ConvexHull_LTable)
   cloud_out_ltable.points.resize (100);
 
   int npoints = 0;
-  for (size_t i = 0; i < 8; i++) 
+  for (size_t i = 0; i < 8; i++)
   {
-    for (size_t j = 0; j <= 2; j++) 
+    for (size_t j = 0; j <= 2; j++)
     {
       cloud_out_ltable.points[npoints].x = (double)(i)*0.5;
       cloud_out_ltable.points[npoints].y = -(double)(j)*0.5;
@@ -202,9 +404,9 @@ TEST (PCL, ConvexHull_LTable)
     }
   }
 
-  for (size_t i = 0; i <= 2; i++) 
+  for (size_t i = 0; i <= 2; i++)
   {
-    for (size_t j = 3; j < 8; j++) 
+    for (size_t j = 3; j < 8; j++)
     {
       cloud_out_ltable.points[npoints].x = (double)(i)*0.5;
       cloud_out_ltable.points[npoints].y = -(double)(j)*0.5;
@@ -218,27 +420,27 @@ TEST (PCL, ConvexHull_LTable)
   cloud_out_ltable.points[npoints].y = 0.5;
   cloud_out_ltable.points[npoints].z = 0;
   npoints++;
-	
+
   cloud_out_ltable.points[npoints].x = 4.5;
   cloud_out_ltable.points[npoints].y = 0.5;
   cloud_out_ltable.points[npoints].z = 0;
   npoints++;
-	
+
   cloud_out_ltable.points[npoints].x = 4.5;
   cloud_out_ltable.points[npoints].y = -1.0;
   cloud_out_ltable.points[npoints].z = 0;
   npoints++;
-  
+
   cloud_out_ltable.points[npoints].x = 1.0;
   cloud_out_ltable.points[npoints].y = -4.5;
   cloud_out_ltable.points[npoints].z = 0;
   npoints++;
-  
+
   cloud_out_ltable.points[npoints].x = -0.5;
   cloud_out_ltable.points[npoints].y = -4.5;
   cloud_out_ltable.points[npoints].z = 0;
   npoints++;
-  
+
   cloud_out_ltable.points.resize (npoints);
 
   pcl::PointCloud<pcl::PointXYZ> hull;
@@ -257,9 +459,9 @@ TEST (PCL, ConcaveHull_bunny)
 {
   //construct dataset
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2D (new pcl::PointCloud<pcl::PointXYZ> (*cloud));
-  for (size_t i = 0; i < cloud2D->points.size (); i++) 
+  for (size_t i = 0; i < cloud2D->points.size (); i++)
     cloud2D->points[i].z = 0;
-  
+
   pcl::PointCloud<pcl::PointXYZ> alpha_shape;
   pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers (new pcl::PointCloud<pcl::PointXYZ>);
   std::vector<pcl::Vertices> polygons_alpha;
@@ -294,7 +496,7 @@ TEST (PCL, ConcaveHull_bunny)
   concave_hull2.reconstruct (alpha_shape2, polygons_alpha2);
 
   EXPECT_EQ (alpha_shape2.points.size (), 81);
-  
+
   //PolygonMesh concave;
   //toROSMsg (alpha_shape2, concave.cloud);
   //concave.polygons = polygons_alpha2;
@@ -309,9 +511,9 @@ TEST (PCL, ConcaveHull_LTable)
   cloud_out_ltable.points.resize (100);
 
   int npoints = 0;
-  for (size_t i = 0; i < 8; i++) 
+  for (size_t i = 0; i < 8; i++)
   {
-    for (size_t j = 0; j <= 2; j++) 
+    for (size_t j = 0; j <= 2; j++)
     {
       cloud_out_ltable.points[npoints].x = (double)(i)*0.5;
       cloud_out_ltable.points[npoints].y = -(double)(j)*0.5;
@@ -320,9 +522,9 @@ TEST (PCL, ConcaveHull_LTable)
     }
   }
 
-  for (size_t i = 0; i <= 2; i++) 
+  for (size_t i = 0; i <= 2; i++)
   {
-    for(size_t j = 3; j < 8; j++) 
+    for(size_t j = 3; j < 8; j++)
     {
       cloud_out_ltable.points[npoints].x = (double)(i)*0.5;
       cloud_out_ltable.points[npoints].y = -(double)(j)*0.5;
@@ -371,6 +573,50 @@ TEST (PCL, ConcaveHull_LTable)
   EXPECT_EQ (alpha_shape2.points.size (), 19);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, EarClipping)
+{
+  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>());
+  cloud->height = 1;
+  cloud->points.push_back (PointXYZ ( 0, 0, 0.5));
+  cloud->points.push_back (PointXYZ ( 5, 0, 0.6));
+  cloud->points.push_back (PointXYZ ( 9, 4, 0.5));
+  cloud->points.push_back (PointXYZ ( 4, 7, 0.5));
+  cloud->points.push_back (PointXYZ ( 2, 5, 0.5));
+  cloud->points.push_back (PointXYZ (-1, 8, 0.5));
+  cloud->width = cloud->points.size();
+
+  Vertices vertices;
+  vertices.vertices.resize (cloud->points.size ());
+  for (int i = 0; i < (int) vertices.vertices.size (); ++i)
+    vertices.vertices[i] = i;
+
+  PolygonMesh::Ptr mesh (new PolygonMesh);
+  toROSMsg (*cloud, mesh->cloud);
+  mesh->polygons.push_back (vertices);
+
+  EarClipping clipper;
+  clipper.setInputPolygonMesh (mesh);
+
+  PolygonMesh triangulated_mesh;
+  clipper.triangulate (triangulated_mesh);
+
+  EXPECT_EQ (triangulated_mesh.polygons.size (), 4);
+  for (int i = 0; i < (int)triangulated_mesh.polygons.size (); ++i)
+    EXPECT_EQ (triangulated_mesh.polygons[i].vertices.size (), 3);
+
+  const int truth[][3] = { {5, 0, 1},
+                           {2, 3, 4},
+                           {4, 5, 1},
+                           {1, 2, 4} };
+
+  for (int pi = 0; pi < (int) triangulated_mesh.polygons.size (); ++pi)
+  for (int vi = 0; vi < 3; ++vi)
+  {
+    EXPECT_EQ (triangulated_mesh.polygons[pi].vertices[vi], truth[pi][vi]);
+  }
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
@@ -385,10 +631,6 @@ main (int argc, char** argv)
   sensor_msgs::PointCloud2 cloud_blob;
   loadPCDFile (argv[1], cloud_blob);
   fromROSMsg (cloud_blob, *cloud);
-
-  // Set up dummy indices
-  //indices->resize (cloud->points.size ());
-  //for (size_t i = 0; i < indices->size (); ++i) { (*indices)[i] = i; }
 
   // Create search tree
   tree.reset (new KdTreeFLANN<PointXYZ> (false));
@@ -410,8 +652,34 @@ main (int argc, char** argv)
   tree2.reset (new KdTreeFLANN<PointNormal>);
   tree2->setInputCloud (cloud_with_normals);
 
+  // Process for update cloud
+  if(argc == 3){
+    sensor_msgs::PointCloud2 cloud_blob1;
+    loadPCDFile (argv[2], cloud_blob1);
+    fromROSMsg (cloud_blob1, *cloud1);
+        // Create search tree
+    tree3.reset (new KdTreeFLANN<PointXYZ> (false));
+    tree3->setInputCloud (cloud1);
+
+    // Normal estimation
+    NormalEstimation<PointXYZ, Normal> n1;
+    PointCloud<Normal>::Ptr normals1 (new PointCloud<Normal> ());
+    n1.setInputCloud (cloud1);
+
+    n1.setSearchMethod (tree3);
+    n1.setKSearch (20);
+    n1.compute (*normals1);
+
+    // Concatenate XYZ and normal information
+    pcl::concatenateFields (*cloud1, *normals1, *cloud_with_normals1);
+    // Create search tree
+    tree4.reset (new KdTreeFLANN<PointNormal>);
+    tree4->setInputCloud (cloud_with_normals1);
+  }
+
   // Testing
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }
 /* ]--- */
+
