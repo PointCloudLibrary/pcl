@@ -59,15 +59,18 @@ RangeImageBorderExtractor::RangeImageBorderExtractor(const RangeImage* range_ima
   surface_structure_(NULL), border_descriptions_(NULL), shadow_border_informations_(NULL), border_directions_(NULL),
   surface_change_scores_(NULL), surface_change_directions_(NULL)
 {
+  //cerr << __PRETTY_FUNCTION__<<" called (this="<<(void*)this<<").\n";
 }
 
 RangeImageBorderExtractor::~RangeImageBorderExtractor()
 {
+  //cerr << __PRETTY_FUNCTION__<<" called (this="<<(void*)this<<").\n";
   clearData();
 }
 
 void RangeImageBorderExtractor::setRangeImage(const RangeImage* range_image)
 {
+  //cerr << __PRETTY_FUNCTION__<<" called (this="<<(void*)this<<").\n";
   clearData();
   range_image_ = range_image;
 }
@@ -80,23 +83,15 @@ void RangeImageBorderExtractor::clearData()
   delete[] border_scores_right_;   border_scores_right_  = NULL;
   delete[] border_scores_top_;     border_scores_top_    = NULL;
   delete[] border_scores_bottom_;  border_scores_bottom_ = NULL;
-  //if (range_image_==NULL)
-  //{ 
-    //if (surface_structure_!=NULL || shadow_border_informations_!=NULL || border_directions_!=NULL)
-      //std::cerr << __PRETTY_FUNCTION__ << ": Can't erase elements of surface_structure_ since range_image_ is NULL.\n";
-  //}
-  //else
+  //cout << PVARC(range_image_size_during_extraction_)<<PVARN((void*)this);
+  for (int i=0; i<range_image_size_during_extraction_; ++i)
   {
-    //for (int i=0; i<int(range_image_->width*range_image_->height); ++i)
-    for (int i=0; i<range_image_size_during_extraction_; ++i)
-    {
-      if (surface_structure_!=NULL)
-        delete surface_structure_[i];
-      if (shadow_border_informations_!=NULL)
-        delete shadow_border_informations_[i];
-      if (border_directions_!=NULL)
-        delete border_directions_[i];
-    }
+    if (surface_structure_!=NULL)
+      delete surface_structure_[i];
+    if (shadow_border_informations_!=NULL)
+      delete shadow_border_informations_[i];
+    if (border_directions_!=NULL)
+      delete border_directions_[i];
   }
   delete[] surface_structure_; surface_structure_ = NULL;
   delete border_descriptions_; border_descriptions_ = NULL;
@@ -111,12 +106,13 @@ void RangeImageBorderExtractor::extractLocalSurfaceStructure()
 {
   if (surface_structure_ != NULL)
     return;
+  //cerr << __PRETTY_FUNCTION__<<" called (this="<<(void*)this<<").\n";
   //MEASURE_FUNCTION_TIME;
   
   int width  = range_image_->width,
-      height = range_image_->height,
-      range_image_size_during_extraction_ = width*height,
-      array_size = range_image_size_during_extraction_;
+      height = range_image_->height;
+  range_image_size_during_extraction_ = width*height;
+  int array_size = range_image_size_during_extraction_;
   surface_structure_ = new LocalSurface*[array_size];
   int step_size = (std::max)(1, parameters_.pixel_radius_plane_extraction/2);
   //cout << PVARN(step_size);
