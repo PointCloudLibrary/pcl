@@ -155,7 +155,7 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
       int index_down_right = getIndex(x+triangle_pixel_size_, y+triangle_pixel_size_);
 
       const bool right_cut_upper = isValidTriangle(i, index_right, index_down_right);
-      const bool right_cut_lower = isValidTriangle(i, index_down, index_right);
+      const bool right_cut_lower = isValidTriangle(i, index_down, index_down_right);
       const bool left_cut_upper = isValidTriangle(i, index_right, index_down);
       const bool left_cut_lower = isValidTriangle(index_right, index_down, index_down_right);
 
@@ -179,7 +179,7 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
         if (right_cut_upper)
           addTriangle(i, index_right, index_down_right, polygons);
         if (right_cut_lower)
-          addTriangle(i, index_down, index_right, polygons);
+          addTriangle(i, index_down, index_down_right, polygons);
         if (left_cut_upper)
           addTriangle(i, index_right, index_down, polygons);
         if (left_cut_lower)

@@ -47,6 +47,7 @@
 #include <pcl/surface/grid_projection.h>
 #include <pcl/surface/convex_hull.h>
 #include <pcl/surface/concave_hull.h>
+#include <pcl/surface/organized_fast_mesh.h>
 #include <pcl/surface/ear_clipping.h>
 #include <pcl/common/common.h>
 
@@ -220,6 +221,10 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
 
     gp3.reconstruct (triangles);
 
+    EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
+    EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
+    EXPECT_EQ ((int)triangles.polygons.size(), 685);
+
     // update with texture mapping
     // set 2 texture for 2 mesh
     std::vector<std::string> tex_files;
@@ -235,7 +240,6 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
 
     // update mesh and texture mesh
     gp3.updateMesh(cloud_with_normals1, triangles, tex_mesh);
-
 
     // set texture for added cloud
     tex_files.push_back("tex8.jpg");
@@ -281,6 +285,56 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
     saveOBJFile ("update_bunny.obj", tex_mesh);
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, Organized)
+{
+  //construct dataset
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_organized (new pcl::PointCloud<pcl::PointXYZ> ());
+  cloud_organized->width = 5;
+  cloud_organized->height = 10;
+  cloud_organized->points.resize (cloud_organized->width * cloud_organized->height);
+
+  int npoints = 0;
+  for (size_t i = 0; i < cloud_organized->height; i++)
+  {
+    for (size_t j = 0; j < cloud_organized->width; j++)
+    {
+      cloud_organized->points[npoints].x = i;
+      cloud_organized->points[npoints].y = j;
+      cloud_organized->points[npoints].z = cloud_organized->points.size (); // to avoid shadowing
+      npoints++;
+    }
+  }
+  int nan_idx = cloud_organized->width*cloud_organized->height - 2*cloud_organized->width + 1;
+  cloud_organized->points[nan_idx].x = numeric_limits<float>::quiet_NaN ();
+  cloud_organized->points[nan_idx].y = numeric_limits<float>::quiet_NaN ();
+  cloud_organized->points[nan_idx].z = numeric_limits<float>::quiet_NaN ();
+  
+  // Init objects
+  PolygonMesh triangles;
+  OrganizedFastMesh<PointXYZ> ofm;
+
+  // Set parameters
+  ofm.setInputCloud (cloud_organized);
+  ofm.setMaxEdgeLength (1.5);
+  ofm.setTrianglePixelSize (1);
+  ofm.setTriangulationType (OrganizedFastMesh<PointXYZ>::TRIANGLE_ADAPTIVE_CUT);
+
+  // Reconstruct
+  ofm.reconstruct (triangles);
+  //saveVTKFile ("./test/organized.vtk", triangles);
+
+  // Check triangles
+  EXPECT_EQ (triangles.cloud.width, cloud_organized->width);
+  EXPECT_EQ (triangles.cloud.height, cloud_organized->height);
+  EXPECT_EQ ((int)triangles.polygons.size(), 2*(triangles.cloud.width-1)*(triangles.cloud.height-1) - 4);
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.size(), 3);
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(0), 0);
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(1), 1);
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(2), triangles.cloud.width+1);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GridProjection)
 {
