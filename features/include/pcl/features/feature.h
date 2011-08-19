@@ -96,8 +96,6 @@ namespace pcl
   template <typename PointInT, typename PointOutT>
   class Feature : public PCLBase<PointInT>
   {
-    using PCLBase<PointInT>::deinitCompute;
-
     public:
       using PCLBase<PointInT>::indices_;
       using PCLBase<PointInT>::input_;
@@ -196,7 +194,7 @@ namespace pcl
         */
       inline int
       searchForNeighbors (int index, double parameter, 
-                          std::vector<int> &indices, std::vector<float> &distances)
+                          std::vector<int> &indices, std::vector<float> &distances) const
       {
         if (surface_ == input_)       // if the two surfaces are the same
           return (search_method_ (index, parameter, indices, distances));
@@ -239,10 +237,10 @@ namespace pcl
       virtual bool
       initCompute ();
 
-    private:
       /** \brief If no surface is given, we use the input PointCloud as the surface. */
       bool fake_surface_;
 
+    private:
       /** \brief Abstract feature estimation method. */
       virtual void 
       computeFeature (PointCloudOut &output) = 0;
