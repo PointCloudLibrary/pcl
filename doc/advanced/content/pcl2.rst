@@ -93,7 +93,15 @@ Proposals for the 2.x API:
  #. Async. support??
  #. How about implementing cloud and other containers with flag that indicates where data is located? Can be CPU, GPU, other. Such approach allows to implement universal CPU/GPU interface with behaviour depending on data passed. 
  
-    to be continued...
+
+
+1.4 Keypoints and features 
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+ #. The name Feature is a bit misleading, since it has tons of meanings. Alternatives are Descriptor or FeatureDescription.
+ #. In the feature description, there is no need in separate FeatureFromNormals class and setNormals() method, since all the required channels are contained in one input. We still need separate setSearchSurface() though.
+ #. There exist different types of keypoints (corners, blobs, regions), so keypoint detector might return some meta-information besides the keypoint locations (scale, orientation etc.). Some channels of that meta-information are required by some descriptors. There are options how to deliver that information from keypoints to descriptor, but it should be easy to pass it if a user doesn't change anything. This interface should be uniform to allow for switching implementations and automated benchmarking. Still one might want to set, say, custom orientations, different from what detector returned. 
+	
+	to be continued...
   
        
 Minor changes
