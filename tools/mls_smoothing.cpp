@@ -43,6 +43,7 @@
 #include <pcl/console/time.h>
 #include <pcl/surface/mls.h>
 #include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/organized_data.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -89,12 +90,6 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
          double search_radius, bool sqr_gauss_param_set, double sqr_gauss_param,
          bool use_polynomial_fit, int polynomial_order)
 {
-  TicToc tt;
-  tt.tic ();
-
-  print_highlight ("Computing smoothed surface and normals with search_radius %f, sqr_gauss_param %f, ", search_radius, sqr_gauss_param);
-  if (use_polynomial_fit) print_info ("using polynomial fit of order %d.\n", polynomial_order);
-  else print_info ("not using polynomial fit.\n");
 
   PointCloud<PointXYZ>::Ptr xyz_cloud (new pcl::PointCloud<PointXYZ> ());
   fromROSMsg (*input, *xyz_cloud);
@@ -112,7 +107,13 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   mls.setSearchMethod (tree);
   PointCloud<Normal>::Ptr mls_normals (new PointCloud<Normal> ());
   mls.setOutputNormals (mls_normals);
+
+  PCL_INFO ("Computing smoothed surface and normals with search_radius %f , sqr_gaussian_param %f, polynomial fitting %d, polynomial order %d\n",
+            mls.getSearchRadius(), mls.getSqrGaussParam(), mls.getPolynomialFit(), mls.getPolynomialOrder());
+  TicToc tt;
+  tt.tic ();
   mls.reconstruct (*xyz_cloud_smoothed);
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 
   sensor_msgs::PointCloud2 output_positions, output_normals, output_positions_normals;
   toROSMsg (*xyz_cloud_smoothed, output_positions);
@@ -120,8 +121,6 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
 
   concatenateFields (output_positions, output_normals, output_positions_normals);
   concatenateFields (*input, output_positions_normals, output);
-
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
 
 void
@@ -168,7 +167,7 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-search_radius", search_radius);
   if (parse_argument (argc, argv, "-sqr_gauss_param", sqr_gauss_param) == -1)
     sqr_gauss_param_set = false;
-  if (parse_argument (argc, argv, "-polynomial_order", polynomial_order) == -1 )
+  if (parse_argument (argc, argv, "-polynomial_order", polynomial_order) != -1 )
     use_polynomial_fit = true;
   parse_argument (argc, argv, "-use_polynomial_fit", use_polynomial_fit);
 
@@ -179,7 +178,7 @@ main (int argc, char** argv)
 
   // Do the smoothing
   sensor_msgs::PointCloud2 output;
-  compute (cloud, output, search_radius, sqr_gauss_param, sqr_gauss_param_set,
+  compute (cloud, output, search_radius, sqr_gauss_param_set, sqr_gauss_param,
            use_polynomial_fit, polynomial_order);
 
   // Save into the second file
