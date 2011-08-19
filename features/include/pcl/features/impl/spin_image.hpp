@@ -272,7 +272,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
   {
     PCL_ERROR ("[pcl::%s::initCompute] No normals for input cloud were given!\n", getClassName ().c_str ());
     // Cleanup
-    deinitCompute ();
+    FeatureFromNormals<PointInT, PointNT, PointOutT>::deinitCompute ();
     return (false);
   }
 
@@ -281,7 +281,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
   {
     PCL_ERROR ("[pcl::%s::initCompute] No normals for input cloud were given!\n", getClassName ().c_str ());
     // Cleanup
-    deinitCompute ();
+    FeatureFromNormals<PointInT, PointNT, PointOutT>::deinitCompute ();
     return (false);
   }
 
@@ -290,7 +290,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
   {
     PCL_ERROR ("[pcl::%s::initCompute] Rotation axis cloud have different size from input!\n", getClassName ().c_str ());
     // Cleanup
-    deinitCompute ();
+    FeatureFromNormals<PointInT, PointNT, PointOutT>::deinitCompute ();
     return (false);
   }
 

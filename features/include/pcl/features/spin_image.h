@@ -77,6 +77,10 @@ namespace pcl
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;
+      using Feature<PointInT, PointOutT>::search_radius_;
+      using Feature<PointInT, PointOutT>::surface_;
+      using Feature<PointInT, PointOutT>::fake_surface_;
+      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
       using PCLBase<PointInT>::input_;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
