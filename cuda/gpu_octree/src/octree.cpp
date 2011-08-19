@@ -70,7 +70,7 @@ pcl::gpu::Octree::Octree() : impl(0)
     if (bin < 20 && ptx < 20)
         pcl::cuda::error("This must be compiled for compute capability >= 2.0", __FILE__, __LINE__);    
 
-    impl = new pcl::gpu::OctreeImpl(prop.multiProcessorCount);        
+    impl = new pcl::gpu::OctreeImpl(prop.major < 2 ? 512 : 1024);        
 }
 
 pcl::gpu::Octree::~Octree() 
@@ -152,9 +152,20 @@ void pcl::gpu::Octree::approxNearestSearchBatch(const BatchQueries& queries, Bat
     
     const OctreeImpl::BatchQueries& q = (const OctreeImpl::BatchQueries&)queries;
     static_cast<OctreeImpl*>(impl)->approxNearestSearchBatch(q, out);
-
 }
 
+//void pcl::gpu::Octree::nearestKSearchBatch(const BatchQueries& queries, int k, BatchResult& results, BatchResultSqrDists& sqr_dists) const
+//{
+//    assert(k == 32); // others are not supported
+//
+//	assert(queries.size() > 0);
+//    results.create(queries.size() * k);
+//    sqr_dists.create(queries.size() * k);
+//
+//	const OctreeImpl::BatchQueries& q = (const OctreeImpl::BatchQueries&)queries;
+//
+//    static_cast<OctreeImpl*>(impl)->nearestKSearchBatch(q, k, results, sqr_dists);
+//}
 
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////// Brute Force Radius Search Mediator //////////////////////////////////

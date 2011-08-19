@@ -76,7 +76,10 @@ TEST(PCL_OctreeGPU, perfomance)
     data.shared_radius = data.cube_size/15.f;
     data.printParams();
 
+    //const int k = 32;
+
     cout << "sizeof(pcl::gpu::Octree::PointType): " << sizeof(pcl::gpu::Octree::PointType) << endl;    
+    //cout << "k = " << k << endl;
     //generate data
     data();
 
@@ -97,7 +100,8 @@ TEST(PCL_OctreeGPU, perfomance)
     cloud_host->points.resize (cloud_host->width * cloud_host->height);    
     std::transform(data.points.begin(), data.points.end(), cloud_host->points.begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
 
-    float host_octree_resolution = 25.f;
+    float host_octree_resolution = 25.f;    
+    
     cout << "[!] Host octree resolution: " << host_octree_resolution << endl << endl;    
 
     cout << "======  Build perfomance =====" << endl;
@@ -152,6 +156,9 @@ TEST(PCL_OctreeGPU, perfomance)
     pcl::gpu::DeviceArray_<int> bruteforce_results_device, buffer(cloud_device.size());    
     pcl::gpu::Octree::BatchResult      result_device(queries_device.size() * max_answers);
     pcl::gpu::Octree::BatchResultSizes  sizes_device(queries_device.size());
+
+    //pcl::gpu::Octree::BatchResult          distsKNN_device(queries_device.size() * k);
+    //pcl::gpu::Octree::BatchResultSqrDists  indsKNN_device(queries_device.size() * k);
     
     
     cout << "======  Separate radius for each query =====" << endl;
@@ -222,6 +229,18 @@ TEST(PCL_OctreeGPU, perfomance)
     {                
         ScopeTimerCV up("host-approx-nearest-search-all");	
         for(size_t i = 0; i < data.tests_num; ++i)
-            octree_host.approxNearestSearch(data.queries[i].x, inds, dist);
+            octree_host.approxNearestSearch(data.queries[i], inds, dist);
     }
+
+ /*   cout << "======  knn search ( k fixed to " << k << " ) =====" << endl;    
+    {
+        ScopeTimerCV up("gpu-knn-batch-all");	        
+        octree_device.nearestKSearchBatch(queries_device, k, distsKNN_device, indsKNN_device);                        
+    }    
+
+    {                
+        ScopeTimerCV up("host-knn-search-all");	
+        for(size_t i = 0; i < data.tests_num; ++i)
+            octree_host.nearestKSearch(data.queries[i], k, indeces, pointRadiusSquaredDistance);
+    }*/
 }

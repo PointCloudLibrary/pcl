@@ -56,13 +56,13 @@ namespace pcl
             typedef PointArray BatchQueries;
                        
             typedef DeviceArray_<float> BatchRadiuses;
-            typedef DeviceArray_<int> BatchResult;
+            typedef DeviceArray_<int> BatchResult;            
             typedef DeviceArray_<int> BatchResultSizes;
+            typedef DeviceArray_<float> BatchResultSqrDists;
 
             static void get_gpu_arch_compiled_for(int& bin, int& ptr);
 
-
-            OctreeImpl(int number_of_SMs_arg) : number_of_SMs(number_of_SMs_arg) {};
+            OctreeImpl(int max_threads_x_arg) : max_threads_x(max_threads_x_arg) {};
             ~OctreeImpl() {};
 
             void setCloud(const PointCloud& input_points);           
@@ -76,6 +76,8 @@ namespace pcl
 
 
             void approxNearestSearchBatch(const BatchQueries& queries, BatchResult& out) const;
+
+            //void nearestKSearchBatch(const BatchQueries& queries, int k, BatchResult& results, BatchResultSqrDists& sqr_dists) const;
 
             //just reference 
             PointCloud points;
@@ -110,10 +112,8 @@ namespace pcl
             } host_octree;
 
                         
-            void internalDownload();
-
-            int number_of_SMs;
-
+            void internalDownload(); 
+            int max_threads_x;
         private:
             template<typename Batch>
             void radiusSearchBatchEx(Batch& batch, const BatchQueries& queries, int max_results, BatchResult& output, BatchResultSizes& out_sizes);

@@ -65,6 +65,7 @@ namespace pcl
             typedef DeviceArray_<float> BatchRadiuses;
             typedef DeviceArray_<int> BatchResult;
             typedef DeviceArray_<int> BatchResultSizes;
+            typedef DeviceArray_<float> BatchResultSqrDists;
             
 
             /*  Methods */            
@@ -81,6 +82,7 @@ namespace pcl
 
 
             void approxNearestSearchBatch(const BatchQueries& queries, BatchResult& out) const;
+            
         private:
             void *impl;            
         };        

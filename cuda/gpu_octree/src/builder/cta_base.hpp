@@ -48,12 +48,6 @@ namespace pcl
     {
         namespace base
         {
-            /*__device__ __forceinline__ void setParent(OctreeGlobalBase<false>& octree, int index, int content) {}
-            __device__ __forceinline__ void setParent(OctreeGlobalBase<true>& octree, int index, int content)
-            {
-                octree.parent[index] = content;
-            }*/
-            
             struct Cta_base
             {        
                 OctreeGlobal& octree_global;

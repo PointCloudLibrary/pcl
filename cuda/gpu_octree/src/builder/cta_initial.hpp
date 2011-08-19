@@ -57,8 +57,11 @@ namespace pcl
                 { 
                     LEVEL_BITS_NUM = 3,
                     ARITY = 1 << LEVEL_BITS_NUM,
-
+#if __CUDA_ARCH__ >= 200
                     CTA_SIZE = 1024,
+#else
+                    CTA_SIZE = 512,
+#endif
                     OFFSETS_SIZE = CTA_SIZE,
                     GRID_SIZE = 1
                 };
@@ -98,7 +101,6 @@ namespace pcl
                         octree_global. ends[0] = points_num;
 
                         octree_global.parent[0] = -1;
-                        //pcl::device::base::setParent(octree_global, 0, -1);
                         storage.nodes_num = 1;
 
                         //init tasks
@@ -153,7 +155,6 @@ namespace pcl
                                     octree_global.codes[storage.nodes_num + offset + i] = parent_code_shifted + cell_code[i];
                                     
                                     octree_global.parent[storage.nodes_num + offset + i] = task;
-                                    //pcl::device::base::setParent(octree_global, storage.nodes_num + offset + i, task);
 
                                     mask |= (1 << cell_code[i]);
 

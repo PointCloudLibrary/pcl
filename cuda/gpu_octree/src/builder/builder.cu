@@ -219,21 +219,17 @@ void pcl::gpu::OctreeImpl::build()
         //printFuncAttrib(initial::Kernel<KernelPolicy>);        
 
         //ScopeTimer timer("KernelInitial"); 
-        initial::Kernel<KernelPolicy><<<KernelPolicy::GRID_SIZE, KernelPolicy::CTA_SIZE>>>(tasksGlobal, octreeGlobal, codes.ptr(), points_num);
+        initial::Kernel<KernelPolicy><<<KernelPolicy::GRID_SIZE, max_threads_x>>>(tasksGlobal, octreeGlobal, codes.ptr(), points_num);
         cudaSafeCall( cudaGetLastError() );
         cudaSafeCall( cudaDeviceSynchronize() );
     }
 
     {
-        int grid_size = number_of_SMs;        
         typedef syncstep::KernelSyncPolicy KernelPolicy;
         //printFuncAttrib(syncstep::Kernel<KernelPolicy>);
 
-        util::GlobalBarrierLifetime global_barrier;
-        global_barrier.Setup(grid_size);                
-
         //ScopeTimer timer("Kernelsync"); 
-        syncstep::Kernel<KernelPolicy><<<grid_size, KernelPolicy::CTA_SIZE>>>(tasksGlobal, octreeGlobal, codes.ptr(), global_barrier);
+        syncstep::Kernel<KernelPolicy><<<KernelPolicy::GRID_SIZE, max_threads_x>>>(tasksGlobal, octreeGlobal, codes);
         cudaSafeCall( cudaGetLastError() );
         cudaSafeCall( cudaDeviceSynchronize() );
     }    

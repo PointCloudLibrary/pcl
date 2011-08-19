@@ -42,8 +42,6 @@
 #include "octree_global.hpp"
 #include "tasks_global.hpp"
 
-#include "utils/global_barrier.hpp"
-
 namespace pcl
 {
     namespace device
@@ -57,10 +55,14 @@ namespace pcl
                     LEVEL_BITS_NUM = 3,
                     ARITY = 1 << LEVEL_BITS_NUM,
 
+#if (__CUDA_ARCH__ >= 200)
                     CTA_SIZE = 1024,
-                    //GRID_SIZE = 14,
-
-                    //PROCESS_STRIDE = CTA_SIZE * GRID_SIZE
+#else
+                    CTA_SIZE = 512,
+#endif
+                    
+                    GRID_SIZE = 1,
+                    PROCESS_STRIDE = CTA_SIZE * GRID_SIZE
                 };
 
                 struct SmemStorage
@@ -140,7 +142,6 @@ namespace pcl
                                 octree_global.ends [storage.old_nodes_num + offset + i] = cell_begs[i + 1];
                                 octree_global.codes[storage.old_nodes_num + offset + i] = parent_code_shifted + cell_code[i];
                                 octree_global.parent[storage.old_nodes_num + offset + i] = task;
-                                //pcl::device::base::setParent(octree_global, storage.old_nodes_num + offset + i, task);
                                 mask |= (1 << cell_code[i]);
 
                                 tasks_global.outLine()[storage.old_out_tasks_num + offset + i] = ((storage.old_nodes_num + offset + i) << 8) + (level + 1);
@@ -153,16 +154,13 @@ namespace pcl
             };
 
             template<typename KernelPolicy>
-            __global__ void Kernel(TasksGlobal tasks_global, OctreeGlobal octree_global, const int *codes, util::GlobalBarrier barrier)
+            __global__ void Kernel(TasksGlobal tasks_global, OctreeGlobal octree_global, const int *codes)
             {   
                 typedef typename KernelPolicy::SmemStorage SmemStorage;
 
                 __shared__ SmemStorage storage;                        
 
                 Cta<KernelPolicy> cta(octree_global, codes, tasks_global, storage);
-
-
-                int STRIDE = gridDim.x * KernelPolicy::CTA_SIZE;
 
                 for(;;)
                 {            
@@ -176,20 +174,19 @@ namespace pcl
                     while(activeCount > 0)
                     {                
                         cta.buildPiece(tasksPiece, activeCount);       
-                        tasksPiece  += STRIDE; //KernelPolicy::PROCESS_STRIDE;
-                        activeCount -= STRIDE; //KernelPolicy::PROCESS_STRIDE;
+                        tasksPiece  += KernelPolicy::PROCESS_STRIDE;
+                        activeCount -= KernelPolicy::PROCESS_STRIDE;
                     }
 
-                    //__syncthreads();
-                    barrier.Sync();
+                    __syncthreads();
+                    
 
                     cta.tasks_global.swap();
 
                     if (blockIdx.x == 0 && threadIdx.x == 0)
                         *cta.tasks_global.outCountPtr() = 0;
 
-                    //__syncthreads();
-                    barrier.Sync();            
+                    __syncthreads();                    
                 }                
             }
         }

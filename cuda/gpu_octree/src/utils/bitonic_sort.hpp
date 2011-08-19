@@ -34,74 +34,53 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#ifndef PCL_GPU_OCTREE_COPYGE_HPP
-#define PCL_GPU_OCTREE_COPYGE_HPP
-
-#include "utils/laneid.hpp"
+#ifndef PCL_GPU_BITONIC_SORT_WARP_HPP
+#define PCL_GPU_BITONIC_SORT_WARP_HPP
 
 namespace pcl
 {
     namespace device
     {
+        template<typename T>    
+        __device__ __forceinline__ void swap(T& a, T& b) { T t = a; a = b; b = t; }
 
-        template <typename T>
-        __device__ void CopyKernel(const T* in, T *out, int length)
+        template<typename V, typename K>
+        __device__ __forceinline__ void bitonicSortWarp(volatile K* keys, volatile V* vals, unsigned int dir = 1)
         {
-            int STRIDE = gridDim.x * blockDim.x;
-            for (int idx = (blockIdx.x * blockDim.x) + threadIdx.x; idx < length; idx += STRIDE) 
+            const unsigned int arrayLength = 64;   
+            unsigned int lane = threadIdx.x & 31;
+
+            for(unsigned int size = 2; size < arrayLength; size <<= 1)
             {
-                out[idx] = in[idx];
+                //Bitonic merge
+                unsigned int ddd = dir ^ ( (lane & (size / 2)) != 0 );
+
+                for(unsigned int stride = size / 2; stride > 0; stride >>= 1)
+                {            
+                    unsigned int pos = 2 * lane - (lane & (stride - 1));
+
+                    if ( (keys[pos] > keys[pos + stride]) == ddd )
+                    {
+                        swap(keys[pos], keys[pos + stride]);
+                        swap(vals[pos], vals[pos + stride]);
+                    }            
+                }
+            }
+
+            //ddd == dir for the last bitonic merge step
+            for(unsigned int stride = arrayLength / 2; stride > 0; stride >>= 1)
+            {        
+                unsigned int pos = 2 * lane - (lane & (stride - 1));
+
+                if ( (keys[pos] > keys[pos + stride]) == dir )
+                {
+                    swap(keys[pos], keys[pos + stride]);
+                    swap(vals[pos], vals[pos + stride]);
+                }     
             }
         }
-
-        template <typename T>
-        __device__ void GenerateKernel(T* out, int beg, int end)
-        {
-            int length = end - beg;
-            int pos = beg;
-
-            int STRIDE = blockDim.x;
-            for (int idx = threadIdx.x; idx < length; idx += STRIDE, pos += STRIDE) 
-            {
-                out[idx] = pos + threadIdx.x;
-            }
-        }
-
-        template <typename T>
-        __device__ void GenerateTasksKernel(T* out, int beg, int end, int level)
-        {
-            int length = end - beg;
-            int pos = beg;
-
-            int STRIDE = blockDim.x;
-            for (int idx = threadIdx.x; idx < length; idx += STRIDE, pos += STRIDE) 
-            {
-                out[idx] = ((pos + threadIdx.x) << 8) + level;
-            }
-        }
-
-        template<typename T>
-        __device__ __forceinline__ void CopyWarpKernel(const T* in, T* out, int length)
-        {
-            int STRIDE = warpSize;
-            unsigned int laneId = LaneId();
-
-            for (int idx = laneId; idx < length; idx += STRIDE) 
-                out[idx] = in[idx];
-        }
-
-        template<typename T>
-        __device__ __forceinline__ void SetWarpKernel(T value, T* out, int length)
-        {
-            int STRIDE = warpSize;
-            unsigned int laneId = LaneId();
-
-            for (int idx = laneId; idx < length; idx += STRIDE) 
-                out[idx] = value;
-        }
-
 
     }
 }
 
-#endif /* PCL_GPU_OCTREE_COPYGE_HPP */
+#endif /* PCL_GPU_BITONIC_SORT_WARP_HPP */
