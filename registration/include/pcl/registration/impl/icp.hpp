@@ -79,7 +79,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
     // Iterating over the entire index vector and  find all correspondences
     for (size_t idx = 0; idx < indices_->size (); ++idx)
     {
-      if (!searchForNeighbors (output, idx, nn_indices, nn_dists))
+      if (!searchForNeighbors (output, (*indices_)[idx], nn_indices, nn_dists))
       {
         PCL_ERROR ("[pcl::%s::computeTransformation] Unable to find a nearest neighbor in the target dataset for point %d in the source!\n", getClassName ().c_str (), (*indices_)[idx]);
         return;
@@ -88,7 +88,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
       // Check if the distance to the nearest neighbor is smaller than the user imposed threshold
       if (nn_dists[0] < dist_threshold)
       {
-        source_indices[cnt] = idx;
+        source_indices[cnt] = (*indices_)[idx];
         target_indices[cnt] = nn_indices[0];
         cnt++;
       }
