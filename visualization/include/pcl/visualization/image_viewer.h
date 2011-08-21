@@ -37,7 +37,7 @@
 #ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_H__
 #define	PCL_VISUALIZATION_IMAGE_VISUALIZER_H__
 
-#include "window.h"
+#include <pcl/visualization/window.h>
 #include <vtkImageViewer.h>
 #include <vtkInteractorStyle.h>
 

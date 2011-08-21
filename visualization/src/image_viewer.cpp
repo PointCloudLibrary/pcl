@@ -47,6 +47,13 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   memset (dummy_, 0, 48);
   showRGBImage (dummy_, 16, 16);
   image_viewer_->GetRenderWindow ()->SetWindowName (window_title.c_str ());
+
+  vtkRenderWindowInteractor *iren = vtkRenderWindowInteractor::New ();
+  image_viewer_->SetupInteractor (iren);
+  
+  iren->SetRenderWindow (image_viewer_->GetRenderWindow ());
+  iren->Initialize ();
+
 }
 
 void 
@@ -79,12 +86,6 @@ pcl::visualization::ImageViewer::showRGBImage (const unsigned char* rgb_data, un
   image_viewer_->SetColorLevel (127.5);
   image_viewer_->SetColorWindow (255);
   image_viewer_->SetSize (width, height);
-  vtkRenderWindowInteractor *iren = vtkRenderWindowInteractor::New ();
-  image_viewer_->SetupInteractor (iren);
-  
-  iren->SetRenderWindow (image_viewer_->GetRenderWindow ());
-  iren->Initialize ();
-
 
   image_viewer_->Render ();
 }
