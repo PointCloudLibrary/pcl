@@ -63,19 +63,19 @@ pcl::MarchingCubes<PointNT>::getBoundingBox ()
   Eigen::Vector4f bounding_box_size = max_p_ - min_p_;
 
   bounding_box_size = max_p_ - min_p_;
-  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Size of Bounding Box is [%f, %f, %f]\n",
+  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Size of Bounding Box is [%f, %f, %f]\n",
       bounding_box_size.x (), bounding_box_size.y (), bounding_box_size.z ());
   double max_size =
     (std::max) ((std::max)(bounding_box_size.x (), bounding_box_size.y ()),
                 bounding_box_size.z ());
 
   data_size_ = max_size / leaf_size_;
-  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Lower left point is [%f, %f, %f]\n",
+  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Lower left point is [%f, %f, %f]\n",
       min_p_.x (), min_p_.y (), min_p_.z ());
-  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Upper left point is [%f, %f, %f]\n",
+  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Upper left point is [%f, %f, %f]\n",
       max_p_.x (), max_p_.y (), max_p_.z ());
-  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Padding size: %d\n", padding_size_);
-  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Leaf size: %f\n", leaf_size_);
+  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Padding size: %d\n", padding_size_);
+  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Leaf size: %f\n", leaf_size_);
 
   gaussian_scale_ = pow ((padding_size_+1) * leaf_size_ / 2.0, 2.0);
 }

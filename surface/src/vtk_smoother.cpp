@@ -51,14 +51,6 @@
 #include <vtkButterflySubdivisionFilter.h>
 #include <vtkPolyDataWriter.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-pcl::surface::VtkSmoother::VtkSmoother()
-{
-  vtk_polygons = vtkPolyData::New ();
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-pcl::surface::VtkSmoother::~VtkSmoother(){}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int
@@ -82,22 +74,25 @@ pcl::surface::VtkSmoother::convertToVTK (const pcl::PolygonMesh &triangles)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::surface::VtkSmoother::subdivideMesh(int filter)
+pcl::surface::VtkSmoother::subdivideMesh()
 {
   vtkSmartPointer<vtkPolyDataAlgorithm> vtk_subdivision_filter;
-  switch(filter)
+  switch(subdivision_filter_)
   {
     case 0:
-      vtk_subdivision_filter = vtkLinearSubdivisionFilter::New ();
+      return;
       break;
     case 1:
-      vtk_subdivision_filter = vtkLoopSubdivisionFilter::New ();
+      vtk_subdivision_filter = vtkLinearSubdivisionFilter::New ();
       break;
     case 2:
+      vtk_subdivision_filter = vtkLoopSubdivisionFilter::New ();
+      break;
+    case 3:
       vtk_subdivision_filter = vtkButterflySubdivisionFilter::New ();
       break;
     default:
-      PCL_ERROR ("[pcl::surface::subdivideMesh] Invalid filter selection!\n");
+      PCL_ERROR ("[pcl::surface::VtkSmoother::subdivideMesh] Invalid filter selection!\n");
       return;
       break;
   }
@@ -110,13 +105,13 @@ pcl::surface::VtkSmoother::subdivideMesh(int filter)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::surface::VtkSmoother::smoothMeshWindowedSinc(int num_iter, float feature_angle, float pass_band)
+pcl::surface::VtkSmoother::smoothMeshWindowedSinc()
 {
   vtkSmartPointer<vtkWindowedSincPolyDataFilter> vtk_smoother = vtkWindowedSincPolyDataFilter::New ();
   vtk_smoother->SetInput (vtk_polygons);
-  vtk_smoother->SetNumberOfIterations (num_iter);
-  vtk_smoother->SetFeatureAngle (feature_angle);
-  vtk_smoother->SetPassBand (pass_band);
+  vtk_smoother->SetNumberOfIterations (num_iter_);
+  vtk_smoother->SetFeatureAngle (feature_angle_);
+  vtk_smoother->SetPassBand (pass_band_);
   vtk_smoother->BoundarySmoothingOff ();
   vtk_smoother->FeatureEdgeSmoothingOff ();
   vtk_smoother->NonManifoldSmoothingOff ();
@@ -128,11 +123,11 @@ pcl::surface::VtkSmoother::smoothMeshWindowedSinc(int num_iter, float feature_an
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::surface::VtkSmoother::smoothMeshLaplacian(int num_iter)
+pcl::surface::VtkSmoother::smoothMeshLaplacian()
 {
   vtkSmartPointer<vtkSmoothPolyDataFilter> vtk_smoother = vtkSmoothPolyDataFilter::New ();
   vtk_smoother->SetInput (vtk_polygons);
-  vtk_smoother->SetNumberOfIterations (num_iter);
+  vtk_smoother->SetNumberOfIterations (num_iter_);
   vtk_smoother->Update ();
 
   vtk_polygons = vtk_smoother->GetOutput ();

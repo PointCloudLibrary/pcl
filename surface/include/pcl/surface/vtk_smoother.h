@@ -49,7 +49,7 @@ namespace pcl
   namespace surface
   {
     /** \brief VtkSmoother is a wrapper around some subdivision and filter methods from VTK.
-      * \author Greg Long(?), Dirk Holz
+      * \author Greg Long, Dirk Holz
       * \ingroup surface
       *
       * TODO: inheritance from some PCLBase-like interface for PolygonMesh
@@ -59,31 +59,138 @@ namespace pcl
     class PCL_EXPORTS VtkSmoother
     {
     public:
-      VtkSmoother ();
-      ~VtkSmoother ();
+      /** \brief Default Constructor. */
+      VtkSmoother () :
+        vtk_polygons (vtkPolyData::New ()), subdivision_filter_ (2), num_iter_ (20), feature_angle_ (120.0),
+            pass_band_ (0.01)
+      {
+      };
 
-      /** \brief Convert (input) mesh into the vtk data structure. */
+      /** \brief Constructor. */
+      VtkSmoother (int subdivision_filter, int num_iter, float feature_angle, float pass_band) :
+        vtk_polygons (vtkPolyData::New ()), subdivision_filter_ (subdivision_filter), num_iter_ (num_iter),
+            feature_angle_ (feature_angle), pass_band_ (pass_band)
+      {
+      };
+
+      /** \brief Destructor. */
+      ~VtkSmoother ()
+      {
+      };
+
+      /** \brief Convert a PCL PolygonMesh to a VTK vtkPolyData.
+       * \param triangles PolygonMesh to be converted to vtkPolyData, stored in the object.
+       */
       int
       convertToVTK (const pcl::PolygonMesh &triangles);
 
       /** \brief Subdivision using a given filter. TODO: make ENUM for all implemented filters. */
       void
-      subdivideMesh (int filter);
+      subdivideMesh ();
 
-      /** \brief Smooth mesh vertices. */
+      /** \brief Perform smoothing on the mesh using the windowed sinc algorithm. */
       void
-      smoothMeshWindowedSinc (int num_iter, float feature_angle, float pass_band);
+      smoothMeshWindowedSinc ();
 
-      /** \brief Apply Laplacian filter. */
+      /** \brief Perform smoothing on the mesh using the laplacian algorithm. */
       void
-      smoothMeshLaplacian (int num_iter);
+      smoothMeshLaplacian ();
 
-      /** \brief Convert (output) mesh back to PCL PolygonMesh. */
+      /** \brief Convert the vtkPolyData object back to PolygonMesh.
+       * \param triangles the PolygonMesh to store the vtkPolyData in.
+       */
       void
       convertToPCL (pcl::PolygonMesh &triangles);
 
+      /** \brief Set the subdivision filter.
+       * \param subdivision_filter the number of the desired subdivision filter.
+       */
+      inline void
+      setSubdivisionFilter (int subdivision_filter)
+      {
+        subdivision_filter_ = subdivision_filter;
+      };
+
+      /** \brief Set the number of iterations for the smoothing filter.
+       * \param num_iter the number of iterations
+       */
+      inline void
+      setNumIter (int num_iter)
+      {
+        num_iter_ = num_iter;
+      };
+
+      /** \brief Set the feature angle for sharp edge identification.
+             * \param feature_angle the feature angle.
+             */
+      inline void
+      setFeatureAngle (float feature_angle)
+      {
+        feature_angle_ = feature_angle;
+      };
+
+      /** \brief Set the pass band value for windowed sinc filtering.
+       * \param pass_band value for the pass band.
+       */
+      inline void
+      setPassBand (float pass_band)
+      {
+        pass_band_ = pass_band;
+      };
+
+      /** \brief Get the subdivision filter number.
+       */
+      inline int
+      getSubdivisionFilter ()
+      {
+        return subdivision_filter_;
+      };
+
+      /** \brief Get the number of iterations.
+       */
+      inline int
+      getNumIter ()
+      {
+        return num_iter_;
+      };
+
+      /** \brief Get the feature angle.
+       */
+      inline float
+      getFeatureAngle ()
+      {
+        return feature_angle_;
+      };
+
+      /** \brief get the pass band value.
+       *
+       */
+      inline float
+      getPassBand ()
+      {
+        return pass_band_;
+      };
+
     private:
       vtkSmartPointer<vtkPolyData> vtk_polygons;
+
+      /** \brief the subdivision filter number.  0 corresponds to no subdivision, 1 to linear
+       * subdivision, 2 to loop subdivision, and 3 to butterfly.
+       */
+      int subdivision_filter_;
+
+      /** \brief the number of iterations for the smoothing filter.  For the windowed sinc filter,
+       * a typical number is 10-20.  For Laplacian, 100-200 is typical.
+       */
+      int num_iter_;
+
+      /** \brief The angle that defines a sharp interior edge. */
+      float feature_angle_;
+
+      /** \brief The value for the pass band, used in windowed sinc smoothing, ranging from 0 to 2.
+       * Lower values cause more smoothing.  A typical value is 0.1.
+       */
+      float pass_band_;
     };
   }
 }

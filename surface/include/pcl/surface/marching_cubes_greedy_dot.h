@@ -80,6 +80,7 @@ namespace pcl
       void
       voxelizeData ();
 
+      /** \brief Theshold value for whether to skip the voxel.  Typically set to 0.*/
       float dp_threshold_;
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
