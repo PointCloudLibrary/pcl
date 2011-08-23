@@ -31,43 +31,43 @@ if(build)
         set(VTK_SURFACE_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
     endif(VTK_FOUND)
 
-    # Includes for Misha's Poisson reconstruction code
-    set(POISSON_INCLUDES
-	include/pcl/${SUBSYS_NAME}/poisson/Allocator.h
-	include/pcl/${SUBSYS_NAME}/poisson/BinaryNode.h
-	include/pcl/${SUBSYS_NAME}/poisson/CmdLineParser.h
-	include/pcl/${SUBSYS_NAME}/poisson/Factor.h
-	include/pcl/${SUBSYS_NAME}/poisson/FunctionData.h
-	include/pcl/${SUBSYS_NAME}/poisson/Geometry.h
-	include/pcl/${SUBSYS_NAME}/poisson/Hash.h
-	include/pcl/${SUBSYS_NAME}/poisson/MarchingCubes.h
-	include/pcl/${SUBSYS_NAME}/poisson/MemoryUsage.h
-	include/pcl/${SUBSYS_NAME}/poisson/MultiGridOctreeData.h
-	include/pcl/${SUBSYS_NAME}/poisson/Octree.h
-	include/pcl/${SUBSYS_NAME}/poisson/Polynomial.h
-	include/pcl/${SUBSYS_NAME}/poisson/PPolynomial.h
-	include/pcl/${SUBSYS_NAME}/poisson/SparseMatrix.h
-	include/pcl/${SUBSYS_NAME}/poisson/Time.h
-	include/pcl/${SUBSYS_NAME}/poisson/Vector.h
-	)
-    set(POISSON_IMPLS
-        include/pcl/${SUBSYS_NAME}/impl/poisson/FunctionData.inl
-        include/pcl/${SUBSYS_NAME}/impl/poisson/Geometry.inl
-        include/pcl/${SUBSYS_NAME}/impl/poisson/MultiGridOctreeData.inl
-        include/pcl/${SUBSYS_NAME}/impl/poisson/Octree.inl
-        include/pcl/${SUBSYS_NAME}/impl/poisson/Polynomial.inl
-        include/pcl/${SUBSYS_NAME}/impl/poisson/PPolynomial.inl
-        include/pcl/${SUBSYS_NAME}/impl/poisson/SparseMatrix.inl
-        include/pcl/${SUBSYS_NAME}/impl/poisson/Vector.inl
-	)
-    set(POISSON_SOURCES
-	src/poisson/CmdLineParser.cpp
-	src/poisson/Factor.cpp
-	src/poisson/Geometry.cpp
-	src/poisson/MarchingCubes.cpp
-	src/poisson/Time.cpp
-	)
-
+    #    # Includes for Misha's Poisson reconstruction code
+    #    set(POISSON_INCLUDES
+    #	include/pcl/${SUBSYS_NAME}/poisson/Allocator.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/BinaryNode.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/CmdLineParser.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/Factor.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/FunctionData.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/Geometry.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/Hash.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/MarchingCubes.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/MemoryUsage.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/MultiGridOctreeData.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/Octree.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/Polynomial.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/PPolynomial.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/SparseMatrix.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/Time.h
+    #	include/pcl/${SUBSYS_NAME}/poisson/Vector.h
+    #	)
+    #    set(POISSON_IMPLS
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/FunctionData.inl
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/Geometry.inl
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/MultiGridOctreeData.inl
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/Octree.inl
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/Polynomial.inl
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/PPolynomial.inl
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/SparseMatrix.inl
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/Vector.inl
+    #	)
+    #    set(POISSON_SOURCES
+    #	src/poisson/CmdLineParser.cpp
+    #	src/poisson/Factor.cpp
+    #	src/poisson/Geometry.cpp
+    #	src/poisson/MarchingCubes.cpp
+    #	src/poisson/Time.cpp
+    #	)
+    #
     set(srcs src/ear_clipping.cpp
         src/gp3.cpp
         src/grid_projection.cpp
@@ -80,9 +80,9 @@ if(build)
         src/surfel_smoothing.cpp
         src/texture_mapping.cpp
         ${VTK_SURFACE_SOURCE}
-	src/poisson.cpp
+        #src/poisson.cpp
         ${HULL_SOURCES}
-	${POISSON_SOURCES}
+        #${POISSON_SOURCES}
         )
 
     set(incs include/pcl/${SUBSYS_NAME}/ear_clipping.h
@@ -98,9 +98,9 @@ if(build)
         include/pcl/${SUBSYS_NAME}/surfel_smoothing.h        
         include/pcl/${SUBSYS_NAME}/texture_mapping.h
         ${VTK_SURFACE_INCLUDES}
-	include/pcl/${SUBSYS_NAME}/poisson.h
+        #include/pcl/${SUBSYS_NAME}/poisson.h
         ${HULL_INCLUDES}
-	${POISSON_INCLUDES}
+        #${POISSON_INCLUDES}
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/gp3.hpp
@@ -113,7 +113,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/reconstruction.hpp
         include/pcl/${SUBSYS_NAME}/impl/surfel_smoothing.hpp
         include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
-	include/pcl/${SUBSYS_NAME}/impl/poisson.hpp
+        #include/pcl/${SUBSYS_NAME}/impl/poisson.hpp
         ${HULL_IMPLS}
         )
 
@@ -131,9 +131,9 @@ if(build)
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/poisson ${POISSON_INCLUDES})
+    #PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/poisson ${POISSON_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/poisson ${POISSON_IMPLS})
+    #PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/poisson ${POISSON_IMPLS})
 
     add_subdirectory(test)
 endif(build)
