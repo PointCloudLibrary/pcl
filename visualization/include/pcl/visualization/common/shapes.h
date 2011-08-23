@@ -217,6 +217,10 @@ namespace pcl
       */
     PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
     createCone (const pcl::ModelCoefficients &coefficients);
+
+    /** \brief Allocate a new unstructured grid smartpointer. Internal */
+    PCL_EXPORTS void
+    allocVtkUnstructuredGrid (vtkSmartPointer<vtkUnstructuredGrid> &polydata);
   }
 }
 /*@}*/
