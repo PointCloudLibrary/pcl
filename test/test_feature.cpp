@@ -1421,30 +1421,30 @@ TEST (PCL, SpinImageEstimation)
 
   EXPECT_NEAR (spin_images->points[100].histogram[0], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[12], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[24], 0.00190488, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[24], 0.00233226, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[36], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[48], 6.93148e-005, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[60], 0.0217573, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[48], 8.48662e-005, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[60], 0.0266387, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[72], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[84], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[96], 0.0338676, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[96], 0.0414662, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[108], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[120], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[132], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[144], 0.0104963, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[144], 0.0128513, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[0], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[12], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[300].histogram[24], 0.00569815, 1e-5);
+  EXPECT_NEAR (spin_images->points[300].histogram[24], 0.00932424, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[36], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[48], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[300].histogram[60], 0.00890589, 1e-5);
+  EXPECT_NEAR (spin_images->points[300].histogram[60], 0.0145733, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[72], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[84], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[300].histogram[96], 0.000210571, 1e-5);
+  EXPECT_NEAR (spin_images->points[300].histogram[96], 0.00034457, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[108], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[120], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[132], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[300].histogram[144], 0.00740636, 1e-5);
+  EXPECT_NEAR (spin_images->points[300].histogram[144], 0.0121195, 1e-5);
 
 
   // radial SI, angular spin-images 
@@ -1492,30 +1492,30 @@ TEST (PCL, SpinImageEstimation)
 
   EXPECT_NEAR (spin_images->points[100].histogram[0], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[12], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[24], 0.000512188, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[24], 0.000889345, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[36], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[48], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[60], 0.0281931, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[60], 0.0489534, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[72], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[84], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[96], 0.0430291, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[96], 0.0747141, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[108], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[120], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[132], 0.00998773, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[132], 0.0173423, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[144], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[0], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[12], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[300].histogram[24], 0.0102648, 1e-5);
+  EXPECT_NEAR (spin_images->points[300].histogram[24], 0.0267132, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[36], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[48], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[60], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[72], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[84], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[96], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[300].histogram[108], 0.00805825, 1e-5);
+  EXPECT_NEAR (spin_images->points[300].histogram[108], 0.0209709, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[120], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[300].histogram[132], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[300].histogram[144], 0.0112865, 1e-5);
+  EXPECT_NEAR (spin_images->points[300].histogram[144], 0.029372, 1e-5);
 
 
   // rectangular SI, angular spin-images 
