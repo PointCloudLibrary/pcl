@@ -324,6 +324,10 @@ namespace pcl
   {};
 
   template <>
+  class DefaultPointRepresentation <PFHRGBSignature250> : public DefaultFeatureRepresentation <PFHRGBSignature250>
+  {};
+
+  template <>
   class DefaultPointRepresentation <PPFSignature> : public DefaultFeatureRepresentation <PPFSignature>
   {
   public:

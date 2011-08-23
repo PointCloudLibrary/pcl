@@ -42,7 +42,9 @@
 
 namespace pcl
 {
-  /** \brief Normal-based feature signature estimation class [more info here ...]
+  /** \brief Normal-based feature signature estimation class. Obtains the feature vector by applying Discrete Cosine and
+   * Fourier Transforms on an NxM array of real numbers representing the projection distances of the points in the input
+   * cloud to a disc around the point of interest.
    * Please consult the following publication for more details:
    *    Xinju Li and Igor Guskov
    *    Multi-scale features for approximate alignment of point-based surfaces
@@ -70,40 +72,66 @@ namespace pcl
         */
       NormalBasedSignatureEstimation ()
         : FeatureFromNormals<PointT, PointNT, PointFeature> (),
-          N_ (32),
+          N_ (36),
           M_ (8),
           N_prime_ (4),
           M_prime_ (3)
       {
       }
 
+      /** \brief Setter method for the N parameter - the length of the columns used for the Discrete Fourier Transform. */
       inline void
       setN (size_t N) { N_ = N; }
 
+      /** \brief Returns the N parameter - the length of the columns used for the Discrete Fourier Transform. */
       inline size_t
       getN () { return N_; }
 
+      /** \brief Setter method for the M parameter - the length of the rows used for the Discrete Cosine Transform */
       inline void
       setM (size_t M) { M_ = M; }
 
+      /** \brief Returns the M parameter - the length of the rows used for the Discrete Cosine Transform */
       inline size_t
       getM () { return M_; }
 
+      /** \brief Setter method for the N' parameter - the number of columns to be taken from the matrix of DFT and DCT
+       * values that will be contained in the output feature vector
+       * \note This value directly influences the dimensions of the type of output points (PointFeature)
+       */
       inline void
       setNPrime (size_t N_prime) { N_prime_ = N_prime; }
 
+      /** \brief Returns the N' parameter - the number of rows to be taken from the matrix of DFT and DCT
+       * values that will be contained in the output feature vector
+       * \note This value directly influences the dimensions of the type of output points (PointFeature)
+       */
       inline size_t
       getNPrime () { return N_prime_; }
 
+      /** \brief Setter method for the M' parameter - the number of rows to be taken from the matrix of DFT and DCT
+       * values that will be contained in the output feature vector
+       * \note This value directly influences the dimensions of the type of output points (PointFeature)
+       */
       inline void
       setMPrime (size_t M_prime) { M_prime_ = M_prime; }
 
+      /** \brief Returns the M' parameter - the number of rows to be taken from the matrix of DFT and DCT
+       * values that will be contained in the output feature vector
+       * \note This value directly influences the dimensions of the type of output points (PointFeature)
+       */
       inline size_t
       getMPrime () { return M_prime_; }
 
+      /** \brief Setter method for the scale parameter - used to determine the radius of the sampling disc around the
+       * point of interest - linked to the smoothing scale of the input cloud
+       */
       inline void
       setScale (float scale) { scale_h_ = scale; }
 
+      /** \brief Returns the scale parameter - used to determine the radius of the sampling disc around the
+       * point of interest - linked to the smoothing scale of the input cloud
+       */
       inline float
       getScale () { return scale_h_; }
 

@@ -116,8 +116,14 @@ namespace pcl
   struct PFHSignature125;
   // Members: float pfh[125];
 
+  struct PFHRGBSignature250;
+  // Members: float pfhrgb[250];
+
   struct PPFSignature;
   // Members: float f1, f2, f3, f4, alpha_m;
+
+  struct PPFRGBSignature;
+  // Members: float f1, f2, f3, f4, r_ratio, g_ratio, b_ratio, alpha_m
 
   struct NormalBasedSignature12;
   // Members: float values[12];
@@ -310,11 +316,26 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PFHSignature125,
     (float[125], histogram, pfh)
 )
 
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PFHRGBSignature250,
+    (float[250], histogram, pfhrgb)
+)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFSignature,
     (float, f1, f1)
     (float, f2, f2)
     (float, f3, f3)
     (float, f4, f4)
+    (float, alpha_m, alpha_m)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFRGBSignature,
+    (float, f1, f1)
+    (float, f2, f2)
+    (float, f3, f3)
+    (float, f4, f4)
+    (float, r_ratio, r_ratio)
+    (float, g_ratio, g_ratio)
+    (float, b_ratio, b_ratio)
     (float, alpha_m, alpha_m)
 )
 

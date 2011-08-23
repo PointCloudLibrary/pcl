@@ -71,7 +71,9 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
       PointOutT p;
       if (i != j)
       {
-        if (/*pcl::computePPFPairFeature*/pcl::computePairFeatures (input_->points[i].getVector4fMap (),
+        if (//pcl::computePPFPairFeature
+            pcl::computePairFeatures
+            (input_->points[i].getVector4fMap (),
                                    normals_->points[i].getNormalVector4fMap (),
                                    input_->points[j].getVector4fMap (),
                                    normals_->points[j].getNormalVector4fMap (),
