@@ -77,6 +77,7 @@ namespace pcl
       // Build our Test registry (We'll need a line here for every feature test we've implemented)
       //includeTest<PFHTest<PointIn, Normal, FPFHSignature33> > ();
       includeTest<FPFHTest<PointIn, Normal, FPFHSignature33> > ("FPFHTest");
+      includeTest<NormalBasedSignatureTest<PointIn, Normal, NormalBasedSignature12> > ("NormalBasedSignatureTest");
       //includeTest<MySuperAwesomeFeatureTest<PointIn, Histogram<123> > > ();
       // and so on ..
     }

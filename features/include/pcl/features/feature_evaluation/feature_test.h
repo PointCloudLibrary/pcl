@@ -16,6 +16,7 @@
 #include <pcl/features/feature.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh.h>
+#include <pcl/features/normal_based_signature.h>
 
 #include <pcl/filters/voxel_grid.h>
 
@@ -289,6 +290,97 @@ namespace pcl
 
   };
 
+
+  template <typename PointIn, typename NormalT, typename FeatureDescriptor>
+  class NormalBasedSignatureTest : public FeatureCorrespondenceTest<PointIn>
+  {
+  public:
+    using FeatureCorrespondenceTest<PointIn>::preprocessed_source_;
+    using FeatureCorrespondenceTest<PointIn>::preprocessed_target_;
+    using FeatureCorrespondenceTest<PointIn>::correspondences_;
+
+    typedef pcl::PointCloud<FeatureDescriptor> Features;
+    typedef typename Features::Ptr FeaturesPtr;
+    typedef typename Features::ConstPtr FeaturesConstPtr;
+
+    typedef typename pcl::KdTree<FeatureDescriptor> KdTree;
+    typedef typename pcl::KdTree<FeatureDescriptor>::Ptr KdTreePtr;
+
+
+    typedef pcl::PointCloud<NormalT> NormalIn;
+    typedef typename NormalIn::Ptr NormalInPtr;
+    typedef typename NormalIn::ConstPtr NormalInConstPtr;
+
+    typedef typename pcl::KdTreeFLANN<PointIn> KdTreePointIn;
+    typedef typename KdTreePointIn::Ptr KdTreePointInPtr;
+
+    typedef typename FeatureCorrespondenceTest<PointIn>::ParameterList ParameterList;
+    typedef typename FeatureCorrespondenceTest<PointIn>::MapSourceTargetIndices MapSourceTargetIndices;
+    typedef typename FeatureCorrespondenceTest<PointIn>::MapSourceTargetIndicesPtr MapSourceTargetIndicesPtr;
+
+  public:
+    NormalBasedSignatureTest () : source_normals_(), target_normals_(), source_features_(),
+                                  target_features_(), search_radius_(0.05), scale_(0.05)
+    {
+      FeatureCorrespondenceTest<PointIn> ();
+    }
+
+    inline void setNormalSearchRadius (float normal_search_radius) { normal_search_radius_ = normal_search_radius; }
+    inline void setRadiusSearch (float radius) { search_radius_ = radius; }
+    inline void setScale (float scale) { scale_ = scale; }
+
+    /** \brief Calculate surface normals of input source and target clouds.
+      *
+      */
+    void
+    computeNormals (float search_radius);
+
+    /** \brief Set parameters for feature correspondence test algorithm
+      *
+      */
+    void
+    setParameters (ParameterList params);
+
+    /** \brief Compute the FPFH feature descriptors of source and target clouds, and return the time taken for both source and target features
+      *
+      */
+    void
+    computeFeatures (double& time_source, double& time_target);
+
+    /** \brief Compute the FPFH feature descriptors of source and target clouds
+      *
+      */
+    void
+    computeFeatures ();
+
+    /** \brief Calculate the nearest neighbour of each source_feature_ point in the target_feature_ cloud in n-D feature space
+      *
+      */
+    void
+    computeCorrespondences ();
+
+    std::string
+    getClassName () { return "NormalBasedSignatureTest"; }
+
+    void
+    clearData () {
+      if (source_normals_ != NULL) source_normals_.reset();
+      if (target_normals_ != NULL) target_normals_.reset();
+      if (source_features_ != NULL) source_features_.reset();
+      if (target_features_ != NULL) target_features_.reset();
+      FeatureCorrespondenceTest<PointIn>::clearData();
+    }
+
+  protected:
+    NormalInPtr source_normals_;
+    NormalInPtr target_normals_;
+
+    FeaturesPtr source_features_;
+    FeaturesPtr target_features_;
+
+    float normal_search_radius_, search_radius_, scale_;
+  };
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -454,6 +546,136 @@ pcl::FPFHTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures ()
 
 template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
 pcl::FPFHTest<PointIn, NormalT, FeatureDescriptor>::computeCorrespondences ()
+{
+  if (source_features_ == NULL || target_features_ == NULL)
+    return;
+
+  KdTreePtr tree_ = KdTreePtr(new KdTreeFLANN<FeatureDescriptor>);
+  tree_->setInputCloud (target_features_);
+
+  std::vector<int> nearest_neighbour (1,0);
+  std::vector<float> distance (1,0.0);
+
+  if (correspondences_ == NULL)
+    correspondences_ = new MapSourceTargetIndices;
+  else
+    correspondences_->clear();
+
+  for (unsigned index = 0; index < (source_features_->points).size(); index++)
+  {
+    tree_->nearestKSearch ( (source_features_->points)[index], 1, nearest_neighbour, distance);
+    (*correspondences_)[index] = nearest_neighbour[0];
+  }
+}
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////  NormalBasedSignatureTest  ///////////////////////////////////////////
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::NormalBasedSignatureTest<PointIn, NormalT, FeatureDescriptor>::setParameters (ParameterList params)
+{
+  if (params.find ("normalsearchradius") != params.end ())
+  {
+    float radius = boost::lexical_cast<float>(params["normalsearchradius"]);
+    setNormalSearchRadius (radius);
+  }
+
+  if (params.find ("searchradius") != params.end ())
+  {
+    float radius = boost::lexical_cast<float>(params["searchradius"]);
+    setRadiusSearch (radius);
+  }
+
+  if (params.find ("scale") != params.end ())
+  {
+    float scale = boost::lexical_cast<float>(params["scale"]);
+    setScale (scale);
+  }
+}
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::NormalBasedSignatureTest<PointIn, NormalT, FeatureDescriptor>::computeNormals (float search_radius)
+{
+  PCL_INFO ("Computing normals from NormalBasedSignatureTest with search_radius %f\n", search_radius);
+  NormalEstimation<PointIn, NormalT> ne_source;
+  ne_source.setInputCloud (preprocessed_source_);
+
+  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  ne_source.setSearchMethod (tree_source);
+
+  if (source_normals_ == NULL)
+    source_normals_ = NormalInPtr(new pcl::PointCloud<NormalT>);
+
+  ne_source.setRadiusSearch (search_radius);
+
+  ne_source.compute (*source_normals_);
+
+
+  NormalEstimation<PointIn, NormalT> ne_target;
+  ne_target.setInputCloud (preprocessed_target_);
+
+  KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
+  ne_target.setSearchMethod (tree_target);
+
+  if(target_normals_ == NULL)
+    target_normals_ = NormalInPtr(new pcl::PointCloud<NormalT>);
+
+  ne_target.setRadiusSearch (search_radius);
+
+  ne_target.compute (*target_normals_);
+
+}
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::NormalBasedSignatureTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& time_source, double& time_target)
+{
+  std::cout << "NormalBasedSignatureTest: computing normals" << std::endl;
+  computeNormals(normal_search_radius_);
+
+  NormalBasedSignatureEstimation<PointIn, NormalT, FeatureDescriptor> nbs_estimator;
+  nbs_estimator.setInputCloud (preprocessed_source_);
+  nbs_estimator.setInputNormals (source_normals_);
+
+  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  nbs_estimator.setSearchMethod (tree_source);
+
+  if (source_features_ == NULL)
+    source_features_ = FeaturesPtr(new pcl::PointCloud<FeatureDescriptor> ());
+
+  nbs_estimator.setRadiusSearch (search_radius_);
+  nbs_estimator.setScale (scale_);
+
+  std::cout << "NormalBasedSignatureTest: computing source features" << std::endl;
+  boost::timer time_1;
+  nbs_estimator.compute (*source_features_);
+  time_source = time_1.elapsed();
+
+  nbs_estimator.setInputCloud (preprocessed_target_);
+  nbs_estimator.setInputNormals (target_normals_);
+
+  if (target_features_ == NULL)
+    target_features_ = FeaturesPtr(new pcl::PointCloud<FeatureDescriptor> ());
+
+
+  std::cout << "NormalBasedSignatureTest: computing target features" << std::endl;
+  boost::timer time_2;
+  nbs_estimator.compute (*target_features_);
+  time_target = time_2.elapsed();
+}
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::NormalBasedSignatureTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures ()
+{
+  double t1, t2;
+  computeFeatures (t1, t2);
+}
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::NormalBasedSignatureTest<PointIn, NormalT, FeatureDescriptor>::computeCorrespondences ()
 {
   if (source_features_ == NULL || target_features_ == NULL)
     return;
