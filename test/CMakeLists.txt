@@ -57,8 +57,8 @@ if(build)
                  
     include_directories(${PCL_INCLUDE_DIRS})
     
-    PCL_ADD_EXECUTABLE (evaluate_feature ${SUBSYS_NAME} evaluate_feature.cpp)
-    target_link_libraries (evaluate_feature pcl_io pcl_features pcl_kdtree pcl_filters)
+#    PCL_ADD_EXECUTABLE (evaluate_feature ${SUBSYS_NAME} evaluate_feature.cpp)
+#    target_link_libraries (evaluate_feature pcl_io pcl_features pcl_kdtree pcl_filters)
     
     PCL_ADD_EXECUTABLE (sample_feature_test ${SUBSYS_NAME} sample_feature_test.cpp)
     target_link_libraries (sample_feature_test pcl_io pcl_features pcl_kdtree pcl_filters)
