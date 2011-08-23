@@ -52,7 +52,8 @@ pcl::visualization::createPolygon (const typename pcl::PointCloud<PointT>::Const
     polygon->GetPointIds ()->SetId (i, i);
   }
 
-  vtkSmartPointer<vtkUnstructuredGrid> poly_grid = vtkSmartPointer<vtkUnstructuredGrid>::New ();
+  vtkSmartPointer<vtkUnstructuredGrid> poly_grid;
+  allocVtkUnstructuredGrid (poly_grid);
   poly_grid->Allocate (1, 1);
   poly_grid->InsertNextCell (polygon->GetCellType (), polygon->GetPointIds ());
   poly_grid->SetPoints (poly_points);

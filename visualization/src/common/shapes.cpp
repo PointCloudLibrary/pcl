@@ -191,3 +191,9 @@ pcl::visualization::createLine (const Eigen::Vector4f &pt1, const Eigen::Vector4
   return (line->GetOutput ());
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::allocVtkUnstructuredGrid (vtkSmartPointer<vtkUnstructuredGrid> &polydata)
+{
+  polydata = vtkSmartPointer<vtkUnstructuredGrid>::New ();
+}

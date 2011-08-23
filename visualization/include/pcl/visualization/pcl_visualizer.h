@@ -1213,9 +1213,14 @@ namespace pcl
                               const PointCloudColorHandler<PointT> &color_handler,
                               const std::string &id, 
                               int viewport);
+
+        /** \brief Allocate a new polydata smartpointer. Internal */
         void
         allocVtkPolyData (vtkSmartPointer<vtkPolyData> &polydata);
 
+        /** \brief Allocate a new unstructured grid smartpointer. Internal */
+        void
+        allocVtkUnstructuredGrid (vtkSmartPointer<vtkUnstructuredGrid> &polydata);
     };
   }
 }
