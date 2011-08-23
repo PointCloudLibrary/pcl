@@ -1,6 +1,6 @@
 set (SUBSYS_NAME tools)
 set (SUBSYS_DESC "Useful PCL-based command line tools")
-set (SUBSYS_DEPS common io filters sample_consensus segmentation kdtree features surface octree registration)
+set (SUBSYS_DEPS common io filters sample_consensus segmentation kdtree features surface octree registration visualization)
 
 PCL_SUBSYS_OPTION (build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND (build ${SUBSYS_NAME} ${SUBSYS_DEPS})
@@ -39,6 +39,19 @@ if (build)
   
   PCL_ADD_EXECUTABLE (mls_smoothing ${SUBSYS_NAME} mls_smoothing.cpp)
   target_link_libraries (mls_smoothing pcl_common pcl_io pcl_surface)
+  
+  if(NOT VTK_FOUND)
+    set(DEFAULT FALSE)
+    set(REASON "VTK was not found.")
+  else(NOT VTK_FOUND)
+      set(DEFAULT TRUE)
+      set(REASON)
+      set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
+      include (${VTK_USE_FILE})
+      include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+      PCL_ADD_EXECUTABLE(mesh2pcd ${SUBSYS_NAME} mesh2pcd.cpp)
+      target_link_libraries(mesh2pcd pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
+  endif(NOT VTK_FOUND)
 
   PCL_ADD_EXECUTABLE (transform_point_cloud ${SUBSYS_NAME} transform_point_cloud.cpp)
   target_link_libraries (transform_point_cloud pcl_common pcl_io pcl_registration)
