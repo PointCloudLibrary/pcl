@@ -44,7 +44,7 @@
 void
 pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 {
-  if (indices_->empty ())
+  if (indices_->empty () || (input_->width * input_->height == 0))
   {
     output.width = output.height = 0;
     output.data.clear ();
@@ -55,7 +55,15 @@ pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   }
   if (indices_->size () == (input_->width * input_->height))
   {
-    output = *input_;
+    // If negative, then return an empty cloud
+    if (negative_)
+    {
+      output.width = output.height = 0;
+      output.data.clear ();
+    }
+    // else, we need to return all points
+    else
+      output = *input_;
     return;
   }
 
