@@ -294,7 +294,7 @@ namespace pcl
       int
       triangleCount (void);
     };
-#include "pcl/surface/impl/poisson/Geometry.inl"
   }
 }
+#include "pcl/surface/impl/poisson/Geometry.inl"
 #endif // GEOMETRY_INCLUDED
