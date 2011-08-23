@@ -25,7 +25,9 @@ if(build)
         include/pcl/${SUBSYS_NAME}/normal_3d_omp.h
         include/pcl/${SUBSYS_NAME}/normal_based_signature.h
         include/pcl/${SUBSYS_NAME}/pfh.h
+        include/pcl/${SUBSYS_NAME}/pfhrgb.h
         include/pcl/${SUBSYS_NAME}/ppf.h
+		include/pcl/${SUBSYS_NAME}/ppfrgb.h
         include/pcl/${SUBSYS_NAME}/shot.h
         include/pcl/${SUBSYS_NAME}/shot_omp.h
         include/pcl/${SUBSYS_NAME}/spin_image.h
@@ -56,7 +58,9 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/normal_3d_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_based_signature.hpp
         include/pcl/${SUBSYS_NAME}/impl/pfh.hpp
+        include/pcl/${SUBSYS_NAME}/impl/pfhrgb.hpp
         include/pcl/${SUBSYS_NAME}/impl/ppf.hpp
+        include/pcl/${SUBSYS_NAME}/impl/ppfrgb.hpp
         include/pcl/${SUBSYS_NAME}/impl/shot.hpp
         include/pcl/${SUBSYS_NAME}/impl/shot_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/spin_image.hpp
@@ -82,7 +86,9 @@ if(build)
         src/normal_3d_omp.cpp
         src/normal_based_signature.cpp
         src/pfh.cpp
+        src/pfhrgb.cpp
         src/ppf.cpp
+		src/ppfrgb.cpp
         src/shot.cpp
         src/shot_omp.cpp
         src/spin_image.cpp

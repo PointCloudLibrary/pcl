@@ -22,6 +22,8 @@
 #include <pcl/features/feature.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh.h>
+#include <pcl/features/pfh.h>
+#include <pcl/features/pfhrgb.h>
 
 #include <pcl/registration/transforms.h>
 
@@ -77,6 +79,8 @@ namespace pcl
       // Build our Test registry (We'll need a line here for every feature test we've implemented)
       //includeTest<PFHTest<PointIn, Normal, FPFHSignature33> > ();
       includeTest<FPFHTest<PointIn, Normal, FPFHSignature33> > ("FPFHTest");
+      includeTest<PFHTest<PointIn, Normal, PFHSignature125> > ("PFHTest");
+      includeTest<PFHRGBTest<PointIn, Normal, PFHRGBSignature250> > ("PFHRGBTest");
       includeTest<NormalBasedSignatureTest<PointIn, Normal, NormalBasedSignature12> > ("NormalBasedSignatureTest");
       //includeTest<MySuperAwesomeFeatureTest<PointIn, Histogram<123> > > ();
       // and so on ..

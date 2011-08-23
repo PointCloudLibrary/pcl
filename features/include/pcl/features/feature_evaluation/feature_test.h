@@ -16,6 +16,7 @@
 #include <pcl/features/feature.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh.h>
+#include <pcl/features/pfh.h>
 #include <pcl/features/normal_based_signature.h>
 
 #include <pcl/filters/voxel_grid.h>
@@ -287,7 +288,6 @@ namespace pcl
     FeaturesPtr target_features_;
 
     float search_radius_;
-
   };
 
 
@@ -379,6 +379,186 @@ namespace pcl
     FeaturesPtr target_features_;
 
     float normal_search_radius_, search_radius_, scale_;
+  };
+
+
+  template <typename PointIn, typename NormalT, typename FeatureDescriptor>
+  class PFHTest : public FeatureCorrespondenceTest<PointIn>
+  {
+  public:
+    using FeatureCorrespondenceTest<PointIn>::preprocessed_source_;
+    using FeatureCorrespondenceTest<PointIn>::preprocessed_target_;
+    using FeatureCorrespondenceTest<PointIn>::correspondences_;
+
+    typedef pcl::PointCloud<FeatureDescriptor> Features;
+    typedef typename Features::Ptr FeaturesPtr;
+    typedef typename Features::ConstPtr FeaturesConstPtr;
+
+    typedef typename pcl::KdTree<FeatureDescriptor> KdTree;
+    typedef typename pcl::KdTree<FeatureDescriptor>::Ptr KdTreePtr;
+
+
+    typedef pcl::PointCloud<NormalT> NormalIn;
+    typedef typename NormalIn::Ptr NormalInPtr;
+    typedef typename NormalIn::ConstPtr NormalInConstPtr;
+
+    typedef typename pcl::KdTreeFLANN<PointIn> KdTreePointIn;
+    typedef typename KdTreePointIn::Ptr KdTreePointInPtr;
+
+    typedef typename FeatureCorrespondenceTest<PointIn>::ParameterList ParameterList;
+    typedef typename FeatureCorrespondenceTest<PointIn>::MapSourceTargetIndices MapSourceTargetIndices;
+    typedef typename FeatureCorrespondenceTest<PointIn>::MapSourceTargetIndicesPtr MapSourceTargetIndicesPtr;
+
+  public:
+    PFHTest () : source_normals_(), target_normals_(), source_features_(),
+    target_features_(), search_radius_(0.05)
+    {
+      FeatureCorrespondenceTest<PointIn> ();
+    }
+
+    inline void setRadiusSearch (float radius) { search_radius_ = radius; }
+
+    /** \brief Calculate surface normals of input source and target clouds.
+     *
+     */
+    void
+    computeNormals (float search_radius);
+
+    /** \brief Set parameters for feature correspondence test algorithm
+     *
+     */
+    void
+    setParameters (ParameterList params);
+
+    /** \brief Compute the FPFH feature descriptors of source and target clouds, and return the time taken for both source and target features
+     *
+     */
+    void
+    computeFeatures (double& time_source, double& time_target);
+
+    /** \brief Compute the FPFH feature descriptors of source and target clouds
+     *
+     */
+    void
+    computeFeatures ();
+
+    /** \brief Calculate the nearest neighbour of each source_feature_ point in the target_feature_ cloud in n-D feature space
+     *
+     */
+    void
+    computeCorrespondences ();
+
+    std::string
+    getClassName () { return "PFHEstimation"; }
+
+    void
+    clearData () {
+      if (source_normals_ != NULL) source_normals_.reset();
+      if (target_normals_ != NULL) target_normals_.reset();
+      if (source_features_ != NULL) source_features_.reset();
+      if (target_features_ != NULL) target_features_.reset();
+      FeatureCorrespondenceTest<PointIn>::clearData();
+    }
+
+  protected:
+    NormalInPtr source_normals_;
+    NormalInPtr target_normals_;
+
+    FeaturesPtr source_features_;
+    FeaturesPtr target_features_;
+
+    float search_radius_;
+
+  };
+
+
+  template <typename PointIn, typename NormalT, typename FeatureDescriptor>
+  class PFHRGBTest : public FeatureCorrespondenceTest<PointIn>
+  {
+  public:
+    using FeatureCorrespondenceTest<PointIn>::preprocessed_source_;
+    using FeatureCorrespondenceTest<PointIn>::preprocessed_target_;
+    using FeatureCorrespondenceTest<PointIn>::correspondences_;
+
+    typedef pcl::PointCloud<FeatureDescriptor> Features;
+    typedef typename Features::Ptr FeaturesPtr;
+    typedef typename Features::ConstPtr FeaturesConstPtr;
+
+    typedef typename pcl::KdTree<FeatureDescriptor> KdTree;
+    typedef typename pcl::KdTree<FeatureDescriptor>::Ptr KdTreePtr;
+
+
+    typedef pcl::PointCloud<NormalT> NormalIn;
+    typedef typename NormalIn::Ptr NormalInPtr;
+    typedef typename NormalIn::ConstPtr NormalInConstPtr;
+
+    typedef typename pcl::KdTreeFLANN<PointIn> KdTreePointIn;
+    typedef typename KdTreePointIn::Ptr KdTreePointInPtr;
+
+    typedef typename FeatureCorrespondenceTest<PointIn>::ParameterList ParameterList;
+    typedef typename FeatureCorrespondenceTest<PointIn>::MapSourceTargetIndices MapSourceTargetIndices;
+    typedef typename FeatureCorrespondenceTest<PointIn>::MapSourceTargetIndicesPtr MapSourceTargetIndicesPtr;
+
+  public:
+    PFHRGBTest () : source_normals_(), target_normals_(), source_features_(),
+    target_features_(), search_radius_(0.05)
+    {
+      FeatureCorrespondenceTest<PointIn> ();
+    }
+
+    inline void setRadiusSearch (float radius) { search_radius_ = radius; }
+
+    /** \brief Calculate surface normals of input source and target clouds.
+     *
+     */
+    void
+    computeNormals (float search_radius);
+
+    /** \brief Set parameters for feature correspondence test algorithm
+     *
+     */
+    void
+    setParameters (ParameterList params);
+
+    /** \brief Compute the FPFH feature descriptors of source and target clouds, and return the time taken for both source and target features
+     *
+     */
+    void
+    computeFeatures (double& time_source, double& time_target);
+
+    /** \brief Compute the FPFH feature descriptors of source and target clouds
+     *
+     */
+    void
+    computeFeatures ();
+
+    /** \brief Calculate the nearest neighbour of each source_feature_ point in the target_feature_ cloud in n-D feature space
+     *
+     */
+    void
+    computeCorrespondences ();
+
+    std::string
+    getClassName () { return "PFHRGBEstimation"; }
+
+    void
+    clearData () {
+      if (source_normals_ != NULL) source_normals_.reset();
+      if (target_normals_ != NULL) target_normals_.reset();
+      if (source_features_ != NULL) source_features_.reset();
+      if (target_features_ != NULL) target_features_.reset();
+      FeatureCorrespondenceTest<PointIn>::clearData();
+    }
+
+  protected:
+    NormalInPtr source_normals_;
+    NormalInPtr target_normals_;
+
+    FeaturesPtr source_features_;
+    FeaturesPtr target_features_;
+
+    float search_radius_;
+
   };
 
 }
@@ -676,6 +856,246 @@ pcl::NormalBasedSignatureTest<PointIn, NormalT, FeatureDescriptor>::computeFeatu
 
 template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
 pcl::NormalBasedSignatureTest<PointIn, NormalT, FeatureDescriptor>::computeCorrespondences ()
+{
+  if (source_features_ == NULL || target_features_ == NULL)
+    return;
+
+  KdTreePtr tree_ = KdTreePtr(new KdTreeFLANN<FeatureDescriptor>);
+  tree_->setInputCloud (target_features_);
+
+  std::vector<int> nearest_neighbour (1,0);
+  std::vector<float> distance (1,0.0);
+
+  if (correspondences_ == NULL)
+    correspondences_ = new MapSourceTargetIndices;
+  else
+    correspondences_->clear();
+
+  for (unsigned index = 0; index < (source_features_->points).size(); index++)
+  {
+    tree_->nearestKSearch ( (source_features_->points)[index], 1, nearest_neighbour, distance);
+    (*correspondences_)[index] = nearest_neighbour[0];
+  }
+}
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////  PFHTest  ///////////////////////////////////////////
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::PFHTest<PointIn, NormalT, FeatureDescriptor>::setParameters (ParameterList params)
+{
+  if (params.find ("searchradius") != params.end ())
+  {
+    float radius = boost::lexical_cast<float>(params["searchradius"]);
+    setRadiusSearch (radius);
+  }
+}
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::PFHTest<PointIn, NormalT, FeatureDescriptor>::computeNormals (float search_radius)
+{
+  NormalEstimation<PointIn, NormalT> ne_source;
+  ne_source.setInputCloud (preprocessed_source_);
+
+  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  ne_source.setSearchMethod (tree_source);
+
+  if (source_normals_ == NULL)
+    source_normals_ = NormalInPtr(new pcl::PointCloud<NormalT>);
+
+  ne_source.setRadiusSearch (search_radius);
+
+  ne_source.compute (*source_normals_);
+
+
+  NormalEstimation<PointIn, NormalT> ne_target;
+  ne_target.setInputCloud (preprocessed_target_);
+
+  KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
+  ne_target.setSearchMethod (tree_target);
+
+  if(target_normals_ == NULL)
+    target_normals_ = NormalInPtr(new pcl::PointCloud<NormalT>);
+
+  ne_target.setRadiusSearch (search_radius);
+
+  ne_target.compute (*target_normals_);
+
+}
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::PFHTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& time_source, double& time_target)
+{
+  std::cout << "FHTest: computing normals" << std::endl;
+  computeNormals(0.5*search_radius_);
+
+  PFHEstimation<PointIn, NormalT, FeatureDescriptor> pfh_source;
+  pfh_source.setInputCloud (preprocessed_source_);
+  pfh_source.setInputNormals (source_normals_);
+
+  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  pfh_source.setSearchMethod (tree_source);
+
+  if (source_features_ == NULL)
+    source_features_ = FeaturesPtr(new pcl::PointCloud<FeatureDescriptor> ());
+
+  pfh_source.setRadiusSearch (search_radius_);
+
+  std::cout << "PFHTest: computing source features" << std::endl;
+  boost::timer time_1;
+  pfh_source.compute (*source_features_);
+  time_source = time_1.elapsed();
+
+  PFHEstimation<PointIn, NormalT, FeatureDescriptor> pfh_target;
+  pfh_target.setInputCloud (preprocessed_target_);
+  pfh_target.setInputNormals (target_normals_);
+
+  KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
+  pfh_target.setSearchMethod (tree_target);
+
+  if (target_features_ == NULL)
+    target_features_ = FeaturesPtr(new pcl::PointCloud<FeatureDescriptor> ());
+
+  pfh_target.setRadiusSearch (search_radius_);
+
+  std::cout << "PFHTest: computing target features" << std::endl;
+  boost::timer time_2;
+  pfh_target.compute (*target_features_);
+  time_target = time_2.elapsed();
+}
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::PFHTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures ()
+{
+  double t1, t2;
+  computeFeatures (t1, t2);
+}
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::PFHTest<PointIn, NormalT, FeatureDescriptor>::computeCorrespondences ()
+{
+  if (source_features_ == NULL || target_features_ == NULL)
+    return;
+
+  KdTreePtr tree_ = KdTreePtr(new KdTreeFLANN<FeatureDescriptor>);
+  tree_->setInputCloud (target_features_);
+
+  std::vector<int> nearest_neighbour (1,0);
+  std::vector<float> distance (1,0.0);
+
+  if (correspondences_ == NULL)
+    correspondences_ = new MapSourceTargetIndices;
+  else
+    correspondences_->clear();
+
+  for (unsigned index = 0; index < (source_features_->points).size(); index++)
+  {
+    tree_->nearestKSearch ( (source_features_->points)[index], 1, nearest_neighbour, distance);
+    (*correspondences_)[index] = nearest_neighbour[0];
+  }
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////  PFHRGBTest  ///////////////////////////////////////////
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::PFHRGBTest<PointIn, NormalT, FeatureDescriptor>::setParameters (ParameterList params)
+{
+  if (params.find ("searchradius") != params.end ())
+  {
+    float radius = boost::lexical_cast<float>(params["searchradius"]);
+    setRadiusSearch (radius);
+  }
+}
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::PFHRGBTest<PointIn, NormalT, FeatureDescriptor>::computeNormals (float search_radius)
+{
+  NormalEstimation<PointIn, NormalT> ne_source;
+  ne_source.setInputCloud (preprocessed_source_);
+
+  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  ne_source.setSearchMethod (tree_source);
+
+  if (source_normals_ == NULL)
+    source_normals_ = NormalInPtr(new pcl::PointCloud<NormalT>);
+
+  ne_source.setRadiusSearch (search_radius);
+
+  ne_source.compute (*source_normals_);
+
+
+  NormalEstimation<PointIn, NormalT> ne_target;
+  ne_target.setInputCloud (preprocessed_target_);
+
+  KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
+  ne_target.setSearchMethod (tree_target);
+
+  if(target_normals_ == NULL)
+    target_normals_ = NormalInPtr(new pcl::PointCloud<NormalT>);
+
+  ne_target.setRadiusSearch (search_radius);
+
+  ne_target.compute (*target_normals_);
+
+}
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::PFHRGBTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& time_source, double& time_target)
+{
+  std::cout << "PFHRGBTest: computing normals" << std::endl;
+  computeNormals(0.5*search_radius_);
+
+  PFHRGBEstimation<PointIn, NormalT, FeatureDescriptor> pfhrgb_source;
+  pfhrgb_source.setInputCloud (preprocessed_source_);
+  pfhrgb_source.setInputNormals (source_normals_);
+
+  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  pfhrgb_source.setSearchMethod (tree_source);
+
+  if (source_features_ == NULL)
+    source_features_ = FeaturesPtr(new pcl::PointCloud<FeatureDescriptor> ());
+
+  pfhrgb_source.setRadiusSearch (search_radius_);
+
+  std::cout << "PFHRGBTest: computing source features" << std::endl;
+  boost::timer time_1;
+  pfhrgb_source.compute (*source_features_);
+  time_source = time_1.elapsed();
+
+  PFHRGBEstimation<PointIn, NormalT, FeatureDescriptor> pfhrgb_target;
+  pfhrgb_target.setInputCloud (preprocessed_target_);
+  pfhrgb_target.setInputNormals (target_normals_);
+
+  KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
+  pfhrgb_target.setSearchMethod (tree_target);
+
+  if (target_features_ == NULL)
+    target_features_ = FeaturesPtr(new pcl::PointCloud<FeatureDescriptor> ());
+
+  pfhrgb_target.setRadiusSearch (search_radius_);
+
+  std::cout << "PFHRGBTest: computing target features" << std::endl;
+  boost::timer time_2;
+  pfhrgb_target.compute (*target_features_);
+  time_target = time_2.elapsed();
+}
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::PFHRGBTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures ()
+{
+  double t1, t2;
+  computeFeatures (t1, t2);
+}
+
+template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
+pcl::PFHRGBTest<PointIn, NormalT, FeatureDescriptor>::computeCorrespondences ()
 {
   if (source_features_ == NULL || target_features_ == NULL)
     return;

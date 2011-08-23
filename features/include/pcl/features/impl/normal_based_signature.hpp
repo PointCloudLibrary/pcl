@@ -58,7 +58,6 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
   tree_->setInputCloud (input_);
   output.points.resize (indices_->size ());
 
-  //for (size_t point_i = 0; point_i < input_->points.size (); ++point_i)
   for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
     size_t point_i = (*indices_)[index_i];
