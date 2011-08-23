@@ -233,7 +233,7 @@ SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int index)
   else if (neighb_cnt > 1) // to avoid division by zero, also no need to divide by 1
   {
     // normalization
-    m_matrix /= double(neighb_cnt);
+    m_matrix /= m_matrix.sum();
   }
 
   return m_matrix;
