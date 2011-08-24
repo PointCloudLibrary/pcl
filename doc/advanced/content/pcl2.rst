@@ -73,32 +73,31 @@ Proposals for the 2.x API:
 1.2 PointTypes 
 ^^^^^^^^^^^^^^
 
+  #. Eigen::Vector4f or Eigen::Vector3f ??
+  
+  #. 16 byte per point is maximum for GPU. LargerLarger points cause significant perfomance penalty. SOA is better in this case.
+
 
 1.3 GPU support
 ^^^^^^^^^^^^^^^
- #. Stop using Thrust containers (can't be constructed for user allocated memory, incompatibility alignment qualifier support, etc.)
- #. Implement own containers for data in GPU memory preferably with reference counting (like pcl::gpu::DeviceArray, or cv::gpu::GpuMat). 
+ #. Thrust containers are incinvinient. Consider implementing own containers for data in GPU memory preferably with reference counting (like pcl::gpu::DeviceArray, or cv::gpu::GpuMat). 
 
      * DeviceArray for arbitrary binary data on GPU, DeviceArray_<T> for convenience.
-
- #. There should be two layers in PCL GPU part - host(main) and device(for advanced use):
-    
-     * Host is a main layer for calling GPU functionality. Users and non-GPU part of PCL will run GPU via this. 
-       
-       * It must have CUDA-independent interface, i.e. headers from it must be compiled with gcc, cl, etc. 
-       * Algorithms receive input data uploaded to GPU(ex. DeviceArray_<T>) and output is in GPU memory as well. So that output from one algorithm can be passed as input to another algorithm (or even library) without downloading/uploading.
-       * namespace pcl::cuda (can depend on float4, cudaEvent_t, etc.) or pcl::gpu (completely independent, ATI/Intel support in future?) namespaces. Do we need the second?
-       
-     * Device layer contains code that is built with for NVidia's compiler.        
+     * Containes must compile without CUDA Toolkit and just throw exception in this case.
+        
+ #. Channels for GPU memory. Say, with "_gpu" postfix.
+ 
+     * cloud["xyz_gpu"] => gets container that points to 3D x,y,z data allocated on GPU.     
+     * gpu::computeNormals function creates cloud["normals_gpu"] and writes there. Users can preallocate the channel and data inside it in order to save time on allocations.
+     * Users must manually invoke uploading/downloading data to/from GPU. This provides better understanding how much each operation costs.
+          
+ #. Two layers in GPU part:  host layer(nvcc-independent interface) and device(for advanced use, for sharing code compiled by nvcc):
+ 
+     * namespace pcl::cuda (can depend on CUDA headers) or pcl::gpu (completely independent from CUDA, OpenCL support in future?).     
+     * namespace pcl::device for device layer, only headers.
+      
+ #. Async operation support???
      
-       * pcl::device namespace, only headers.
-       * It is mainly for internal usage, for sharing __device__ algorithms among GPU parts of PCL (like functors, traits, reduction, scans, etc.). 
-       * Also users who develop for GPU can take advantages of this.
- 
- #. Async. support??
- #. How about implementing cloud and other containers with flag that indicates where data is located? Can be CPU, GPU, other. Such approach allows to implement universal CPU/GPU interface with behaviour depending on data passed. 
- 
-
 
 1.4 Keypoints and features 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
