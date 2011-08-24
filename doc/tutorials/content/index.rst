@@ -97,6 +97,21 @@ Basic Usage
      .. |mi_4| image:: images/windows_logo.png
                :height: 100px
 
+  * :ref:`compiling_pcl_macosx`
+
+     ======  ======
+     |mi_5|  Title: **Compiling PCL and its dependencies from MacPorts and source on Mac OS X**
+
+             Author: *Justin Rosen*
+
+             Compatibility: > PCL 1.0
+             
+             This tutorial explains how to build the Point Cloud Library **from MacPorts and source** on Mac OS X platforms.
+     ======  ======
+
+     .. |mi_5| image:: images/macosx_logo.png
+               :height: 100px
+
 .. _advanced_usage:
 
 Advanced Usage
