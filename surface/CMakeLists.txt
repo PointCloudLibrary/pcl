@@ -51,14 +51,14 @@ if(build)
     #	include/pcl/${SUBSYS_NAME}/poisson/Vector.h
     #	)
     #    set(POISSON_IMPLS
-    #        include/pcl/${SUBSYS_NAME}/impl/poisson/FunctionData.inl
-    #        include/pcl/${SUBSYS_NAME}/impl/poisson/Geometry.inl
-    #        include/pcl/${SUBSYS_NAME}/impl/poisson/MultiGridOctreeData.inl
-    #        include/pcl/${SUBSYS_NAME}/impl/poisson/Octree.inl
-    #        include/pcl/${SUBSYS_NAME}/impl/poisson/Polynomial.inl
-    #        include/pcl/${SUBSYS_NAME}/impl/poisson/PPolynomial.inl
-    #        include/pcl/${SUBSYS_NAME}/impl/poisson/SparseMatrix.inl
-    #        include/pcl/${SUBSYS_NAME}/impl/poisson/Vector.inl
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/FunctionData.hpp
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/Geometry.hpp
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/MultiGridOctreeData.hpp
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/Octree.hpp
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/Polynomial.hpp
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/PPolynomial.hpp
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/SparseMatrix.hpp
+    #        include/pcl/${SUBSYS_NAME}/impl/poisson/Vector.hpp
     #	)
     #    set(POISSON_SOURCES
     #	src/poisson/CmdLineParser.cpp

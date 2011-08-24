@@ -86,7 +86,7 @@ namespace pcl
         static inline int
         SymmetricIndex (const int& i1, const int& i2, int& index);
       };
-#include "pcl/surface/impl/poisson/FunctionData.inl"
+#include "pcl/surface/impl/poisson/FunctionData.hpp"
   }
 }
 

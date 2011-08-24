@@ -105,7 +105,7 @@ namespace pcl
         static const int DepthShift, OffsetShift, OffsetShift1, OffsetShift2, OffsetShift3;
         static const int DepthMask, OffsetMask;
 
-        static Allocator<OctNode> Allocator;
+      static pcl::surface::Allocator<OctNode> Allocator;
         static int
         UseAllocator (void);
         static void
@@ -333,7 +333,7 @@ namespace pcl
         width (const int& maxDepth) const;
       };
 
-#include "pcl/surface/impl/poisson/Octree.inl"
+#include "pcl/surface/impl/poisson/Octree.hpp"
 
   }
 }

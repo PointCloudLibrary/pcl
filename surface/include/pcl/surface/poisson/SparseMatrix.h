@@ -75,7 +75,7 @@ namespace pcl
       private:
         static int UseAlloc;
       public:
-        static Allocator<MatrixEntry<T> > Allocator;
+        static pcl::surface::Allocator<MatrixEntry<T> > Allocator;
         static int
         UseAllocator (void);
         static void
@@ -145,7 +145,7 @@ namespace pcl
       private:
         static int UseAlloc;
       public:
-        static Allocator<NMatrixEntry<T, Dim> > Allocator;
+        static pcl::surface::Allocator<NMatrixEntry<T, Dim> > Allocator;
         static int
         UseAllocator (void);
         static void
@@ -208,7 +208,7 @@ namespace pcl
           Solve (const SparseSymmetricMatrix<T>& M, const Vector<T>& diagonal, const Vector<T2>& b, const int& iters,
                  Vector<T2>& solution, const T2 eps = 1e-8, const int& reset = 1);
       };
-#include "pcl/surface/impl/poisson/SparseMatrix.inl"
+#include "pcl/surface/impl/poisson/SparseMatrix.hpp"
   }
 }
 

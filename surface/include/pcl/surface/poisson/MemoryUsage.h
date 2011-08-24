@@ -98,7 +98,7 @@ public:
     long ld;
     unsigned long lu;
     unsigned long long llu;
-    char* s;
+    //char s[4096];
     char c;
 
     int pid;
@@ -108,10 +108,13 @@ public:
         n =
             fscanf (
                     f,
-                    "%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %d %ld %llu %lu %ld %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %d %d %lu %lu",
-                    &pid, &s, &c, &d, &d, &d, &d, &d, &lu, &lu, &lu, &lu, &lu, &lu, &lu, &ld, &ld, &ld, &ld, &d, &ld,
+                    "%d %*s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %d %ld %llu %lu %ld %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %d %d %lu %lu",
+                    &pid, &c, &d, &d, &d, &d, &d, &lu, &lu, &lu, &lu, &lu, &lu, &lu, &ld, &ld, &ld, &ld, &d, &ld,
                     &llu, &vm, &ld, &lu, &lu, &lu, &lu, &lu, &lu, &lu, &lu, &lu, &lu, &lu, &lu, &lu, &d, &d, &lu, &lu);
-
+    if(n != 41)
+    {
+      printf ("WARNING: read values not equal to expected result!\n");
+    }
     fclose (f);
     /*
      pid %d

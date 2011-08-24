@@ -370,7 +370,7 @@ namespace pcl
         GetMCIsoTriangles (const Real& isoValue, const int& subdivideDepth, CoredMeshData* mesh,
                            const int& fullDepthIso = 0, const int& nonLinearFit = 1, bool addBarycenter = false);
       };
-#include "pcl/surface/impl/poisson/MultiGridOctreeData.inl"
+#include "pcl/surface/impl/poisson/MultiGridOctreeData.hpp"
   }
 }
 

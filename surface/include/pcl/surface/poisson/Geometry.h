@@ -31,6 +31,7 @@
 #include <math.h>
 #include <vector>
 #include "pcl/surface/poisson/Hash.h"
+#include <stdio.h>
 namespace pcl
 {
   namespace surface
@@ -294,7 +295,7 @@ namespace pcl
       int
       triangleCount (void);
     };
+#include "pcl/surface/impl/poisson/Geometry.hpp"
   }
 }
-#include "pcl/surface/impl/poisson/Geometry.inl"
 #endif // GEOMETRY_INCLUDED

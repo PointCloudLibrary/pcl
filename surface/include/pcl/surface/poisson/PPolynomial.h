@@ -152,7 +152,7 @@ namespace pcl
         void
         write (FILE* fp, const int& samples, const double& min, const double& max) const;
       };
-#include "pcl/surface/impl/poisson/PPolynomial.inl"
+#include "pcl/surface/impl/poisson/PPolynomial.hpp"
   }
 }
 

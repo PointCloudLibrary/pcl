@@ -126,7 +126,7 @@ namespace pcl
         getSolutions (const double& c, std::vector<double>& roots, const double& EPS) const;
       };
 
-#include "pcl/surface/impl/poisson/Polynomial.inl"
+#include "pcl/surface/impl/poisson/Polynomial.hpp"
   }
 }
 
