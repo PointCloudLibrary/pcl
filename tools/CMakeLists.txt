@@ -18,6 +18,9 @@ if (build)
 
   PCL_ADD_EXECUTABLE (fpfh_estimation ${SUBSYS_NAME} fpfh_estimation.cpp)
   target_link_libraries (fpfh_estimation pcl_common pcl_io pcl_features pcl_kdtree)
+
+  PCL_ADD_EXECUTABLE (vfh_estimation ${SUBSYS_NAME} vfh_estimation.cpp)
+  target_link_libraries (vfh_estimation pcl_common pcl_io pcl_features pcl_kdtree)
   
   PCL_ADD_EXECUTABLE (spin_estimation ${SUBSYS_NAME} spin_estimation.cpp)
   target_link_libraries (spin_estimation pcl_common pcl_io pcl_features pcl_kdtree)
