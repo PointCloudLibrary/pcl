@@ -153,9 +153,9 @@ namespace pcl
       /** \brief Return whether a dataset is organized (e.g., arranged in a structured grid).
         */
       inline bool
-      isOrganized ()
+      isOrganized () const
       {
-        return (this->height != 1);
+        return (height != 1);
       }
       
       ////////////////////////////////////////////////////////////////////////////////////////
