@@ -41,6 +41,7 @@
 #include "pcl/segmentation/segment_differences.h"
 #include "pcl/common/concatenate.h"
 #include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/organized_data.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -115,8 +116,12 @@ pcl::SegmentDifferences<PointT>::segment (PointCloud &output)
 
   // Initialize the spatial locator
   if (!tree_)
-    tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
-
+  {
+    if (target_->isOrganized ())
+      tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+    else
+      tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
+  }
   // Send the input dataset to the spatial locator
   tree_->setInputCloud (target_);
 
