@@ -41,7 +41,7 @@
 
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
-#include "pcl/search/octree.h"
+#include "pcl/search/octree_base.h"
 
 namespace pcl
 {
