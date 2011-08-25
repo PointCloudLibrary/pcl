@@ -107,7 +107,6 @@ pcl::PPFRegistration<PointSource, PointTarget>::setInputTarget (const PointCloud
 {
   Registration<PointSource, PointTarget>::setInputTarget (cloud);
 
-  PCL_INFO ("Scene KdTree init ...\n");
   scene_search_tree_ = typename pcl::KdTreeFLANN<PointTarget>::Ptr (new pcl::KdTreeFLANN<PointTarget>);
   scene_search_tree_->setInputCloud (target_);
 }
