@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -44,9 +46,6 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b Keypoint represents the base class for key points.
     * \author Bastian Steder
     * \ingroup keypoints
@@ -69,64 +68,61 @@ namespace pcl
       typedef boost::function<int (const PointCloudIn &cloud, int index, double, std::vector<int> &, std::vector<float> &)> SearchMethodSurface;
     
     public:
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
       Keypoint () : BaseClass(), surface_ (), tree_ (), search_parameter_ (0), search_radius_ (0), k_ (0) {};
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Provide a pointer to the input dataset that we need to estimate features at every point for.
         * \param cloud the const boost shared pointer to a PointCloud message
         */
       inline void
-        setSearchSurface (const PointCloudInConstPtr &cloud) { surface_ = cloud; }
+      setSearchSurface (const PointCloudInConstPtr &cloud) { surface_ = cloud; }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get a pointer to the surface point cloud dataset. */
-      inline PointCloudInConstPtr getSearchSurface () { return (surface_); }
+      inline PointCloudInConstPtr 
+      getSearchSurface () { return (surface_); }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Provide a pointer to the search object.
         * \param tree a pointer to the spatial search object.
         */
-      inline void setSearchMethod (const KdTreePtr &tree) { tree_ = tree; }
+      inline void 
+      setSearchMethod (const KdTreePtr &tree) { tree_ = tree; }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get a pointer to the search method used. */
-      inline KdTreePtr getSearchMethod () { return (tree_); }
+      inline KdTreePtr 
+      getSearchMethod () { return (tree_); }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get the internal search parameter. */
-      inline double getSearchParameter () { return (search_parameter_); }
+      inline double 
+      getSearchParameter () { return (search_parameter_); }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Set the number of k nearest neighbors to use for the feature estimation.
         * \param k the number of k-nearest neighbors
         */
-      inline void setKSearch (int k) { k_ = k; }
+      inline void 
+      setKSearch (int k) { k_ = k; }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief get the number of k nearest neighbors used for the feature estimation. */
-      inline int getKSearch () { return (k_); }
+      inline int 
+      getKSearch () { return (k_); }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Set the sphere radius that is to be used for determining the nearest neighbors used for the
        *         key point detection
         * \param radius the sphere radius used as the maximum distance to consider a point a neighbor
         */
-      inline void setRadiusSearch (double radius) { search_radius_ = radius; }
+      inline void 
+      setRadiusSearch (double radius) { search_radius_ = radius; }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get the sphere radius used for determining the neighbors. */
-      inline double getRadiusSearch () { return (search_radius_); }
+      inline double 
+      getRadiusSearch () { return (search_radius_); }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Base method for key point detection for all points given in <setInputCloud (), setIndices ()> using
         * the surface in setSearchSurface () and the spatial locator in setSearchMethod ()
         * \param output the resultant point cloud model dataset containing the estimated features
         */
-      inline void compute (PointCloudOut &output);
+      inline void 
+      compute (PointCloudOut &output);
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Search for k-nearest neighbors using the spatial locator from \a setSearchmethod, and the given surface
         * from \a setSearchSurface.
         * \param index the index of the query point
@@ -136,7 +132,7 @@ namespace pcl
         * k-nearest neighbors
         */
       inline int
-        searchForNeighbors (int index, double parameter, std::vector<int> &indices, std::vector<float> &distances)
+      searchForNeighbors (int index, double parameter, std::vector<int> &indices, std::vector<float> &distances)
       {
         if (surface_ == input_)       // if the two surfaces are the same
           return (search_method_ (index, parameter, indices, distances));
@@ -174,13 +170,13 @@ namespace pcl
       /** \brief The number of K nearest neighbors to use for each point. */
       int k_;
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Get a string representation of the name of this class. */
-      inline const std::string& getClassName () const { return (name_); }
+      inline const std::string& 
+      getClassName () const { return (name_); }
       
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Abstract key point detection method. */
-      virtual void detectKeypoints (PointCloudOut &output) = 0;
+      virtual void 
+      detectKeypoints (PointCloudOut &output) = 0;
   };
 }
 

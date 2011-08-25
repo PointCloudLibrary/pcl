@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,22 +35,29 @@
  *
  */
 
+#ifndef PCL_KEYPOINT_IMPL_H_
+#define PCL_KEYPOINT_IMPL_H_
+
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/organized_data.h>
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> bool
-  pcl::Keypoint<PointInT, PointOutT>::initCompute ()
+pcl::Keypoint<PointInT, PointOutT>::initCompute ()
 {
   if (!PCLBase<PointInT>::initCompute ())
   {
     return false;
   }
 
-  // Check if a space search locator was given
+  // Initialize the spatial locator
   if (!tree_)
   {
-    PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!\n", getClassName ().c_str ());
-    return false;
+    if (input_->isOrganized ())
+      tree_.reset (new pcl::OrganizedDataIndex<PointInT> ());
+    else
+      tree_.reset (new pcl::KdTreeFLANN<PointInT> (false));
   }
-
-
   return true;
 }
 
@@ -131,3 +140,6 @@ pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
   if (input_ == surface_)
     surface_.reset ();
 }
+
+#endif  //#ifndef PCL_KEYPOINT_IMPL_H_
+
