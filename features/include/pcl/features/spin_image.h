@@ -42,14 +42,14 @@
 
 namespace pcl
 {
-  /** \brief Estimates spin-image descriptors in the  given input points 
-    *  \n
+  /** \brief Estimates spin-image descriptors in the  given input points. 
+    *  
     *  This class represents spin image descriptor. Spin image is
     *  a histogram of point locations summed along the bins of the image.
-    *  A 2D accumulator indexed by &alpha; and &beta; is created. Next, 
-    *  the coordinates (&alpha;, &beta;) are computed for a vertex in 
+    *  A 2D accumulator indexed by <VAR>a</VAR> and <VAR>b</VAR> is created. Next, 
+    *  the coordinates (<VAR>a</VAR>, <VAR>b</VAR>) are computed for a vertex in 
     *  the surface mesh that is within the support of the spin image 
-    *  (explained below). The bin indexed by (&alpha;, &beta;) in 
+    *  (explained below). The bin indexed by (<VAR>a</VAR>, <VAR>b</VAR>) in 
     *  the accumulator is then incremented; bilinear interpolation is used 
     *  to smooth the contribution of the vertex. This procedure is repeated 
     *  for all vertices within the support of the spin image. 
@@ -59,14 +59,14 @@ namespace pcl
     *  than the median distance between vertices in the mesh 
     *  (the definition of mesh resolution), the position of individual 
     *  vertices will be averaged out during spin image generation.
-    *  \n
-    *  For further information please see: 
+    *  
+    *  For further information please see: <br>
     *  Johnson, A. E., & Hebert, M. (1998). Surface Matching for Object Recognition in 
     *  Complex 3D Scenes. Image and Vision Computing, 16, 635-651.
-    *  \n
+    *  
     *  The class also implements radial spin images and spin-images in angular domain 
     *  (or both).
-    *  \n
+    *  
     *  \author Roman Shapovalov, Alexander Velizhev
     *  \ingroup features
     */
@@ -93,8 +93,8 @@ namespace pcl
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
       
-      /** \brief Constructs empty spin image estimator
-        * \n
+      /** \brief Constructs empty spin image estimator.
+        * 
         * \param image_width spin-image resolution, number of bins along one dimension
         * \param support_angle_cos minimal allowed cosine of the angle between 
         *   the normals of input point and search surface point for the point 
@@ -106,8 +106,8 @@ namespace pcl
                            double support_angle_cos = 0.0,   // when 0, this is bogus, so not applied
                            unsigned int min_pts_neighb = 0);
 
-      /** \brief Sets spin-image resolution
-        * \n
+      /** \brief Sets spin-image resolution.
+        * 
         * \param bin_count spin-image resolution, number of bins along one dimension
         */
       void 
@@ -116,8 +116,8 @@ namespace pcl
         image_width_ = bin_count;
       }
 
-      /** \brief Sets the maximum angle for the point normal to get to support region
-        * \n
+      /** \brief Sets the maximum angle for the point normal to get to support region.
+        * 
         * \param support_angle_cos minimal allowed cosine of the angle between 
         *   the normals of input point and search surface point for the point 
         *   to be retained in the support
@@ -134,8 +134,8 @@ namespace pcl
         support_angle_cos_ = support_angle_cos;
       }
 
-      /** \brief Sets minimal points count for spin image computation
-        * \n
+      /** \brief Sets minimal points count for spin image computation.
+        *
         * \param min_pts_neighb min number of points in the support to correctly estimate 
         *   spin-image. If at some point the support contains less points, exception is thrown
         */
@@ -147,7 +147,8 @@ namespace pcl
 
 
       /** \brief Sets input cloud along with corresponding normals.
-        * \n Note that if no search surface is given explicitly, these points
+        * 
+        * Note that if no search surface is given explicitly, these points
         *   and normals are used to estimate the descriptor
         * \param input the cloud that provides the query points where the descriptor is estimated
         * \param normals provides normals for input, they should be normalized
@@ -161,10 +162,11 @@ namespace pcl
       }
 
       /** \brief Sets surface that is used to estimate descriptor.
-        * \n This method is not mandatory. If it has not been called, the points
-        *   and normals from @setInputWithNormals are used to estimate the descriptor
-        *   Calling this method is tantamount to calling @setSearchSurface and @setInputNormals
-        *   with the same parameters (note that @setInputNormals in fact sets surface normals)
+        * 
+        * This method is not mandatory. If it has not been called, the points
+        *   and normals from setInputWithNormals() are used to estimate the descriptor
+        *   Calling this method is tantamount to calling setSearchSurface() and setInputNormals()
+        *   with the same parameters (note that setInputNormals() in fact sets surface normals)
         * \param surface search surface used to estimate descriptor
         * \param normals provides normals for surface, they should be normalized
         */
@@ -176,8 +178,9 @@ namespace pcl
         setInputNormals (normals);
       }
 
-      /** \brief Sets single vector a rotation axis for all input points
-        * \n It could be useful e.g. when the vertical axis is known.
+      /** \brief Sets single vector a rotation axis for all input points.
+        * 
+        * It could be useful e.g. when the vertical axis is known.
         * \param axis unit-length vector that serves as rotation axis for reference frame
         */
       void 
@@ -188,8 +191,9 @@ namespace pcl
         use_custom_axes_cloud_ = false;
       }
 
-      /** \brief Sets array of vectors as rotation axes for input points
-        * \n Useful e.g. when one wants to use tangents instead of normals as rotation axes
+      /** \brief Sets array of vectors as rotation axes for input points.
+        * 
+        * Useful e.g. when one wants to use tangents instead of normals as rotation axes
         * \param axes unit-length vectors that serves as rotation axes for 
         *   the corresponding input points' reference frames
         */
@@ -202,8 +206,8 @@ namespace pcl
         use_custom_axis_ = false;
       }
 
-      /** \brief Sets input normals as rotation axes (default setting)
-        * \n
+      /** \brief Sets input normals as rotation axes (default setting).
+        * 
         */
       void 
       useNormalsAsRotationAxis () 
@@ -212,8 +216,9 @@ namespace pcl
         use_custom_axes_cloud_ = false;
       }
 
-      /** \brief Sets/unsets flag for angular spin-image domain
-        * \n Angular spin-image differs from the vanilla one in the way that not 
+      /** \brief Sets/unsets flag for angular spin-image domain.
+        * 
+        *  Angular spin-image differs from the vanilla one in the way that not 
         *  the points are collected in the bins but the angles between their
         *  normals and the normal to the reference point. For further
         *  information please see 
@@ -225,8 +230,9 @@ namespace pcl
       void 
       setAngularDomain (bool is_angular = true) { is_angular_ = is_angular; }
 
-      /** \brief Sets/unsets flag for radial spin-image structure
-        * \n Instead of rectangular coordinate system for reference frame 
+      /** \brief Sets/unsets flag for radial spin-image structure.
+        * 
+        *  Instead of rectangular coordinate system for reference frame 
         *  polar coordinates are used. Binning is done depending on the distance and 
         *  inclination angle from the reference point
         * \param is_radial true for radial spin-image structure, false for rectangular
@@ -236,14 +242,14 @@ namespace pcl
 
     protected:
       /** \brief Estimate the Spin Image descriptors at a set of points given by
-        * @setInputWithNormals using the surface in @setSearchSurfaceWithNormals and the spatial locator 
+        * setInputWithNormals() using the surface in setSearchSurfaceWithNormals() and the spatial locator 
         * \param output the resultant point cloud that contains the Spin Image feature estimates
         */
       virtual void 
       computeFeature (PointCloudOut &output); 
 
-      /** \brief initializes computations specific to spin-image
-        * \n
+      /** \brief initializes computations specific to spin-image.
+        * 
         * \return true iff input data and initialization are correct
         */
       virtual bool
@@ -252,7 +258,7 @@ namespace pcl
 
     private:
       /** \brief Computes a spin-image for the point of the scan. 
-        * \n
+        * 
         * \param index the index of the reference point in the input cloud
         * \return estimated spin-image (or its variant) as a matrix
         */
@@ -275,8 +281,8 @@ namespace pcl
 
       static const double PI;
   
-      /** \brief rounds the argument
-        * \n
+      /** \brief rounds the argument.
+        * 
         * \param dubl double number not greater than maxint by absolute value
         * \return rounded value as int
         */
