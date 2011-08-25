@@ -346,14 +346,12 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
     return (-1);
   }
 
-  //////////////////////////////////////////////////////////////////////
+#if !_WIN32
   // Stretch the file size to the size of the data
   int result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
   if (result < 0)
   {
-#if !_WIN32
     pcl_close (fd);
-#endif
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during lseek ()!");
     return (-1);
   }
@@ -361,12 +359,11 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   result = ::write (fd, "", 1);
   if (result != 1)
   {
-#if !_WIN32
     pcl_close (fd);
-#endif
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during write ()!");
     return (-1);
   }
+#endif
 
   // Prepare the map
 #if _WIN32
