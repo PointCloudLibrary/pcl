@@ -38,6 +38,8 @@
 #ifndef PCL_IO_LZF_H
 #define PCL_IO_LZF_H
 
+#include <pcl/pcl_macros.h>
+
 namespace pcl
 {
   /** \brief Compress in_len bytes stored at the memory block starting at
@@ -59,7 +61,7 @@ namespace pcl
     * \param[out] out_len the length of the output buffer
     *
     */
-  unsigned int 
+  PCL_EXPORTS unsigned int 
   lzfCompress (const void *const in_data,  unsigned int in_len,
                void             *out_data, unsigned int out_len);
 
@@ -81,7 +83,7 @@ namespace pcl
     * \param[out] out_data the output buffer (must be resized to \ref out_len)
     * \param[out] out_len the length of the output buffer
     */
-  unsigned int 
+  PCL_EXPORTS unsigned int 
   lzfDecompress (const void *const in_data,  unsigned int in_len,
                  void             *out_data, unsigned int out_len);
 }
