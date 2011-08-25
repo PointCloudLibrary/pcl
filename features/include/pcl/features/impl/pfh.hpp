@@ -127,11 +127,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
     // Copy into the resultant cloud
     for (int d = 0; d < pfh_histogram_.size (); ++d)
-    {
       output.points[idx].histogram[d] = pfh_histogram_[d];
-      PCL_INFO ("%f ", pfh_histogram_[d]);
-    }
-    PCL_INFO ("\n");
   }
 }
 
