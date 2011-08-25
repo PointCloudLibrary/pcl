@@ -35,11 +35,13 @@
  *
  */
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 #include "pcl/filters/radius_outlier_removal.h"
 #include "pcl/filters/impl/radius_outlier_removal.hpp"
-#include "pcl/ros/conversions.h"
+#include <pcl/ros/conversions.h>
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/organized_data.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -62,14 +64,19 @@ pcl::RadiusOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &o
     output.data.clear ();
     return;
   }
+  // Send the input dataset to the spatial locator
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::fromROSMsg (*input_, *cloud);
+
   // Initialize the spatial locator
   if (!tree_)
-    tree_.reset (new KdTreeFLANN<pcl::PointXYZ> );
-
-  // Send the input dataset to the spatial locator
-  pcl::PointCloud<pcl::PointXYZ> cloud;
-  pcl::fromROSMsg (*input_, cloud);
-  tree_->setInputCloud (cloud.makeShared ());
+  {
+    if (cloud->isOrganized ())
+      tree_.reset (new pcl::OrganizedDataIndex<pcl::PointXYZ> ());
+    else
+      tree_.reset (new pcl::KdTreeFLANN<pcl::PointXYZ> (false));
+  }
+  tree_->setInputCloud (cloud);
 
   // Allocate enough space to hold the results
   std::vector<int> nn_indices (indices_->size ());
