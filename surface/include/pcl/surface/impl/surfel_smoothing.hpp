@@ -39,6 +39,8 @@
 #define PCL_SURFACE_IMPL_SURFEL_SMOOTHING_H_
 
 #include "pcl/surface/surfel_smoothing.h"
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/organized_data.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
@@ -59,17 +61,20 @@ pcl::SurfelSmoothing<PointT, PointNT>::initCompute ()
     return false;
   }
 
+  // Initialize the spatial locator
   if (!tree_)
   {
-    PCL_ERROR ("SurfelSmoothing: kd-tree not set\n");
-    return false;
+    if (input_->isOrganized ())
+      tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+    else
+      tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
   }
 
   // create internal copies of the input - these will be modified
   interm_cloud_ = PointCloudInPtr (new PointCloudIn (*input_));
   interm_normals_ = NormalCloudPtr (new NormalCloud (*normals_));
 
-  return true;
+  return (true);
 }
 
 

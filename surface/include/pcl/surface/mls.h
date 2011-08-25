@@ -84,10 +84,12 @@ namespace pcl
         * \note This is optional, it can be the same as the parameter to the reconstruction method, but no normals are estimated if it is not set.
         * \param cloud the const boost shared pointer to a point cloud with normal
         */
-      inline void setOutputNormals (NormalCloudOutPtr cloud) { normals_ = cloud; }
+      inline void 
+      setOutputNormals (NormalCloudOutPtr cloud) { normals_ = cloud; }
 
       /** \brief Returns a pointer to the point cloud where normal information was saved during reconstruction */
-      inline NormalCloudOutPtr getOutputNormals () { return normals_; }
+      inline NormalCloudOutPtr 
+      getOutputNormals () { return normals_; }
 
       /** \brief Provide a pointer to the search object.
         * \param tree a pointer to the spatial search object.
@@ -102,46 +104,56 @@ namespace pcl
       }
 
       /** \brief Get a pointer to the search method used. */
-      inline KdTreePtr getSearchMethod () { return (tree_); }
+      inline KdTreePtr 
+      getSearchMethod () { return (tree_); }
 
       /** \brief Set the order of the polynomial to be fit.
         * \param order the order of the polynomial
         */
-      inline void setPolynomialOrder (int order) { order_ = order; }
+      inline void 
+      setPolynomialOrder (int order) { order_ = order; }
 
       /** \brief Get the order of the polynomial to be fit. */
-      inline int getPolynomialOrder () { return (order_); }
+      inline int 
+      getPolynomialOrder () { return (order_); }
 
       /** \brief Sets whether the surface and normal are approximated using a polynomial, or only via tangent estimation.
         * \param polynomial_fit set to true for polynomial fit
         */
-      inline void setPolynomialFit (bool polynomial_fit) { polynomial_fit_ = polynomial_fit; }
+      inline void 
+      setPolynomialFit (bool polynomial_fit) { polynomial_fit_ = polynomial_fit; }
 
       /** \brief Get the polynomial_fit value (true if the surface and normal are approximated using a polynomial). */
-      inline bool getPolynomialFit () { return (polynomial_fit_); }
+      inline bool 
+      getPolynomialFit () { return (polynomial_fit_); }
 
       /** \brief Set the sphere radius that is to be used for determining the k-nearest neighbors used for fitting.
         * \param radius the sphere radius that is to contain all k-nearest neighbors
         * \note Calling this method resets the squared Gaussian parameter to radius * radius !
         */
-      inline void setSearchRadius (double radius) { search_radius_ = /*5**/radius; sqr_gauss_param_ = search_radius_ * search_radius_; }
+      inline void 
+      setSearchRadius (double radius) { search_radius_ = radius; sqr_gauss_param_ = search_radius_ * search_radius_; }
 
       /** \brief Get the sphere radius used for determining the k-nearest neighbors. */
-      inline double getSearchRadius () { return (search_radius_); }
+      inline double 
+      getSearchRadius () { return (search_radius_); }
 
       /** \brief Set the parameter used for distance based weighting of neighbors (the square of the search radius works
         * best in general).
         * \note sqr_gauss_param the squared Gaussian parameter
         */
-      inline void setSqrGaussParam (double sqr_gauss_param) { sqr_gauss_param_ = sqr_gauss_param; }
+      inline void 
+      setSqrGaussParam (double sqr_gauss_param) { sqr_gauss_param_ = sqr_gauss_param; }
 
       /** \brief Get the parameter for distance based weighting of neighbors. */
-      inline double getSqrGaussParam () { return (sqr_gauss_param_); }
+      inline double 
+      getSqrGaussParam () { return (sqr_gauss_param_); }
 
       /** \brief Base method for surface reconstruction for all points given in <setInputCloud (), setIndices ()>
         * \param output the resultant reconstructed surface model
         */
-      void reconstruct (PointCloudIn &output);
+      void 
+      reconstruct (PointCloudIn &output);
 
     protected:
       /** \brief The input point cloud dataset. */

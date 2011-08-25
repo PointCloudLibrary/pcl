@@ -41,6 +41,8 @@
 #include "pcl/surface/mls.h"
 #include "pcl/io/io.h"
 #include "pcl/features/normal_3d.h"
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/organized_data.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename NormalOutT> void
@@ -66,13 +68,13 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output
     return;
   }
 
-  // Check if a space search locator was given
+  // Initialize the spatial locator
   if (!tree_)
   {
-    PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
-    return;
+    if (input_->isOrganized ())
+      tree_.reset (new pcl::OrganizedDataIndex<PointInT> ());
+    else
+      tree_.reset (new pcl::KdTreeFLANN<PointInT> (false));
   }
 
   // Send the surface dataset to the spatial locator
