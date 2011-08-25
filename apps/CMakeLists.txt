@@ -40,10 +40,10 @@ if(build)
   target_link_libraries(nn_classification_example pcl_common pcl_io pcl_features pcl_kdtree)
 
   PCL_ADD_EXECUTABLE(pyramid_surface_matching ${SUBSYS_NAME} src/pyramid_surface_matching.cpp)
-  target_link_libraries(pyramid_surface_matching pcl_common pcl_io pcl_features pcl_registration)
+  target_link_libraries(pyramid_surface_matching pcl_common pcl_io pcl_features pcl_registration pcl_filters)
   
   PCL_ADD_EXECUTABLE(statistical_multiscale_interest_region_extraction_example ${SUBSYS_NAME} src/statistical_multiscale_interest_region_extraction_example.cpp)
-  target_link_libraries(statistical_multiscale_interest_region_extraction_example pcl_common pcl_io pcl_features)
+  target_link_libraries(statistical_multiscale_interest_region_extraction_example pcl_common pcl_io pcl_features pcl_filters)
 
   if (VTK_FOUND)
     PCL_ADD_EXECUTABLE(ppf_object_recognition ${SUBSYS_NAME} src/ppf_object_recognition.cpp)
