@@ -71,11 +71,6 @@ typedef unsigned int LZF_STATE[1 << (HLOG)];
 // ((h * 57321 >> (3*8 - HLOG)) & ((1 << (HLOG)) - 1))
 #define IDX(h) ((( h >> (3*8 - HLOG)) - h  ) & ((1 << (HLOG)) - 1))
 
-#define expect(expr,value) __builtin_expect ((expr),(value))
-
-#define expect_false(expr) expect ((expr) != 0, 0)
-#define expect_true(expr)  expect ((expr) != 0, 1)
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
 // compressed format
@@ -152,7 +147,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
       maxlen = maxlen > ((1 << 8) + (1 << 3)) ? ((1 << 8) + (1 << 3)) : maxlen;
 
       // First a faster conservative test
-      if (expect_false (op + 3 + 1 >= out_end))
+      if (op + 3 + 1 >= out_end)
       {
         // Second the exact but rare test
         if (op - !lit + 3 + 1 >= out_end)
@@ -169,7 +164,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
 
       while (true)
       {
-        if (expect_true (maxlen > 16))
+        if (maxlen > 16)
         {
           len++; if (ref [len] != ip [len]) break;
           len++; if (ref [len] != ip [len]) break;
@@ -220,7 +215,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
 
       ip += len + 1;
 
-      if (expect_false (ip >= in_end - 2))
+      if (ip >= in_end - 2)
         break;
 
       --ip;
@@ -233,7 +228,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
     else
     {
       // One more literal byte we must copy
-      if (expect_false (op >= out_end))
+      if (op >= out_end)
       {
         PCL_WARN ("[pcl::lzf_compress] Attempting to copy data outside the output buffer!\n");
         return (0);
@@ -241,7 +236,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
 
       lit++; *op++ = *ip++;
 
-      if (expect_false (lit == (1 <<  5)))
+      if (lit == (1 <<  5))
       {
         // Stop run
         op [- lit - 1] = lit - 1;
@@ -259,13 +254,13 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
   {
     lit++; *op++ = *ip++;
 
-    if (expect_false (lit == (1 <<  5)))
-      {
-        // Stop run
-        op [- lit - 1] = lit - 1;
-        // Start run
-        lit = 0; op++;
-      }
+    if (lit == (1 <<  5))
+    {
+      // Stop run
+      op [- lit - 1] = lit - 1;
+      // Start run
+      lit = 0; op++;
+    }
   }
 
   // End run

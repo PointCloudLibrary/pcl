@@ -339,7 +339,9 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   }
   else
   {
+#if !_WIN32
     pcl_close (fd);
+#endif
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during compression!");
     return (-1);
   }
@@ -349,7 +351,9 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   int result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
   if (result < 0)
   {
+#if !_WIN32
     pcl_close (fd);
+#endif
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during lseek ()!");
     return (-1);
   }
@@ -357,7 +361,9 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   result = ::write (fd, "", 1);
   if (result != 1)
   {
+#if !_WIN32
     pcl_close (fd);
+#endif
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during write ()!");
     return (-1);
   }
@@ -372,7 +378,9 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   char *map = (char*)mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0);
   if (map == MAP_FAILED)
   {
+#if !_WIN32
     pcl_close (fd);
+#endif
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during mmap ()!");
     return (-1);
   }
