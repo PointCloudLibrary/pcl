@@ -83,9 +83,6 @@ if(build)
     #    PCL_ADD_EXECUTABLE(openni_boundary_estimation ${SUBSYS_NAME} src/openni_boundary_estimation.cpp)
     #    target_link_libraries(openni_boundary_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
 
-    PCL_ADD_EXECUTABLE(openni_io ${SUBSYS_NAME} src/openni_io.cpp)
-	  target_link_libraries(openni_io pcl_common pcl_io)
-	
 	  if (QHULL_FOUND)
 	    PCL_ADD_EXECUTABLE(openni_3d_convex_hull ${SUBSYS_NAME} src/openni_3d_convex_hull.cpp)
 	    target_link_libraries(openni_3d_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
