@@ -267,17 +267,19 @@ namespace pcl
 
       PointCloudNConstPtr input_normals_;
       PointCloudNConstPtr rotation_axes_cloud_;
+      
+      bool is_angular_;
 
       PointNT rotation_axis_;
       bool use_custom_axis_;
       bool use_custom_axes_cloud_;
 
-      unsigned int image_width_;
-      unsigned int min_pts_neighb_;
-      double support_angle_cos_;
-
-      bool is_angular_;
       bool is_radial_;
+
+      unsigned int image_width_;
+      double support_angle_cos_;
+      unsigned int min_pts_neighb_;
+
 
       static const double PI;
   

@@ -75,7 +75,8 @@ SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int index)
 
   const Eigen::Vector3f origin_point (input_->points[index].getVector3fMap ());
 
-  const Eigen::Vector3f origin_normal = 
+  Eigen::Vector3f origin_normal;
+  origin_normal = 
     input_normals_ ? 
       input_normals_->points[index].getNormalVector3fMap () :
       Eigen::Vector3f (); // just a placeholder; should never be used!
