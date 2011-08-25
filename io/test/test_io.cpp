@@ -720,6 +720,45 @@ TEST (PCL, CopyPointCloud)
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, LZF)
+{
+  PointCloud<PointXYZ> cloud, cloud2;
+  cloud.width  = 640;
+  cloud.height = 480;
+  cloud.points.resize (cloud.width * cloud.height);
+  cloud.is_dense = true;
+
+  srand (time (NULL));
+  size_t nr_p = cloud.points.size ();
+  // Randomly create a new point cloud
+  for (size_t i = 0; i < nr_p; ++i)
+  {
+    cloud.points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
+    cloud.points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
+    cloud.points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
+  }
+  PCDWriter writer;
+  int res = writer.writeBinaryCompressed<PointXYZ> ("test_pcl_io_compressed.pcd", cloud);
+  EXPECT_EQ (res, 0);
+
+  PCDReader reader;
+  reader.read<PointXYZ> ("test_pcl_io_compressed.pcd", cloud2);
+
+  EXPECT_EQ (cloud2.width, cloud.width);
+  EXPECT_EQ (cloud2.height, cloud.height);
+  EXPECT_EQ (cloud2.is_dense, false);
+  EXPECT_EQ (cloud2.points.size (), cloud.points.size ());
+
+  for (size_t i = 0; i < cloud2.points.size (); ++i)
+  {
+    EXPECT_EQ (cloud2.points[i].x, cloud.points[i].x);
+    EXPECT_EQ (cloud2.points[i].y, cloud.points[i].y);
+    EXPECT_EQ (cloud2.points[i].z, cloud.points[i].z);
+  }
+}
+
+
 /* ---[ */
 int
   main (int argc, char** argv)

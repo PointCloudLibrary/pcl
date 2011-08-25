@@ -135,13 +135,13 @@ namespace pcl
         * \param origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
         * \param orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
         * \param file_version the FILE version of the file (either FILE_V6 or FILE_V7)
-        * \param binary_data is true if the FILE file contains binary data, false if ascii 
+        * \param data_type the type of data (binary data=1, ascii=0, etc)
         * \param data_idx the offset of cloud data within the file
         */
       virtual int 
       readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &file_version,
-                  bool &binary_data, int &data_idx) = 0;
+                  int &data_type, int &data_idx) = 0;
 
       /** \brief Read a point cloud data from a FILE file and store it into a sensor_msgs/PointCloud2.
         * \param file_name the name of the file containing the actual PointCloud data

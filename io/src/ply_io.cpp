@@ -51,11 +51,11 @@
 int
 pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
                             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
-                            int &ply_version, bool &binary_data, int &data_idx)
+                            int &ply_version, int &data_type, int &data_idx)
 {
   // Default values
   data_idx = 0;
-  binary_data = false;
+  data_type = 0;
   cloud.width = cloud.height = cloud.point_step = cloud.row_step = 0;
   cloud.data.clear ();
 
@@ -107,19 +107,19 @@ pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
       {
         float version =  atof(st.at(2).c_str());
         //check version number
-        if(version != 1.0)
+        if (version != 1.0)
         {
           PCL_ERROR ("[pcl::PLYReader::readHeader] can't handle this PLY format version %f\n", version);
           return (-1);
         }
         //check format
-        if("ascii" == st.at(1))
-          binary_data = false;
+        if ("ascii" == st.at (1))
+          data_type = 0;
         else
         {
-          if ("binary_big_endian" == st.at(1) || "binary_little_endian" == st.at(1))
+          if ("binary_big_endian" == st.at (1) || "binary_little_endian" == st.at (1))
           {
-            binary_data = true;
+            data_type = 1;
             pcl::io::ply::Format format = pcl::io::ply::getEndianess();
             if ((("binary_big_endian" == st.at(1)) && 
                  (format == pcl::io::ply::LITTLE_ENDIAN_FORMAT)) ||
@@ -254,7 +254,7 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
 {
   using namespace pcl::io;
 
-  bool binary_data;
+  int binary_data;
   int data_idx;
   int res = readHeader (file_name, cloud, origin, orientation, ply_version, binary_data, data_idx);
   if (res < 0)

@@ -51,6 +51,7 @@ if(build)
             src/openni_grabber.cpp
             src/oni_grabber.cpp
             src/pcd_grabber.cpp
+            src/lzf.cpp
             )
     endif(OPENNI_FOUND)
 

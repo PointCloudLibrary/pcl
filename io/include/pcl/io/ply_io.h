@@ -81,7 +81,7 @@ namespace pcl
         */
       int readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
                       Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
-                      int &ply_version, bool &binary_data, int &data_idx);
+                      int &ply_version, int &data_type, int &data_idx);
 
       /** \brief Read a point cloud data from a PLY file and store it into a sensor_msgs/PointCloud2.
         * \param file_name the name of the file containing the actual PointCloud data

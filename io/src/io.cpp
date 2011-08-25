@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,14 +37,28 @@
  *
  */
 
-/**
-\author Radu Bogdan Rusu
-
-**/
-
 #include "pcl/point_types.h"
 #include "pcl/io/io.h"
 #include "pcl/io/pcd_io.h"
+
+//////////////////////////////////////////////////////////////////////////
+void
+getFieldsSizes (const std::vector<sensor_msgs::PointField> &fields,
+                std::vector<int> &fields_sizes)
+{
+  int valid = 0;
+  fields_sizes.resize (fields.size ());
+  for (size_t i = 0; i < fields.size (); ++i)
+  {
+    if (fields[i].name == "_")
+      continue;
+
+    int fs = fields[i].count * pcl::getFieldSize (fields[i].datatype);
+    fields_sizes[i] = fs;
+    valid++;
+  }
+  fields_sizes.resize (valid);
+}
 
 //////////////////////////////////////////////////////////////////////////
 bool

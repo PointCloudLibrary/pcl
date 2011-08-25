@@ -45,7 +45,8 @@ class OpenNIGrabFrame
   public:
     OpenNIGrabFrame () : no_frame(true) {}
 
-    void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+    void 
+    cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
       if (no_frame)
       {
@@ -54,20 +55,21 @@ class OpenNIGrabFrame
         if (output_dir.empty ())
           output_dir = ".";
 
-        std::string filename;
-        if (filename.empty ())
-        {
-          std::stringstream ss;
-          ss << output_dir << "/frame_" << boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::local_time()) << ".pcd";
-          filename = ss.str ();
-        }
-        pcl::io::savePCDFileASCII(filename, *cloud);
-        std::cerr << "Data saved to " << filename << std::endl;
+        std::stringstream ss;
+        ss << output_dir << "/frame_" << boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::local_time());
+        std::string file = ss.str ();
+
+        w.writeASCII<pcl::PointXYZRGB> (file + "_ascii.pcd", *cloud);
+        w.writeBinary<pcl::PointXYZRGB> (file + "_binary.pcd", *cloud);
+        w.writeBinaryCompressed<pcl::PointXYZRGB> (file + "_binary_compressed.pcd", *cloud);
+
+        std::cerr << "Data saved to " << ss.str () << "_{ascii,binary,binary_compresed}.pcd" << std::endl;
         no_frame = false;
       }
     }
     
-    void run ()
+    void 
+    run ()
     {
       // create a new grabber for OpenNI devices
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
@@ -89,6 +91,8 @@ class OpenNIGrabFrame
       // stop the grabber
       interface->stop ();
     }
+
+    pcl::PCDWriter w;
     bool no_frame;
 };
 

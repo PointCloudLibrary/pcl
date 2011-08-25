@@ -133,6 +133,14 @@ namespace pcl
     }
   }
 
+  /** \brief Obtain a vector with the sizes of all valid fields (e.g., not "_")
+    * \param[in] fields the input vector containing the fields
+    * \param[out] field_sizes the resultant field sizes in bytes
+    */
+  PCL_EXPORTS void
+  getFieldsSizes (const std::vector<sensor_msgs::PointField> &fields, 
+                  std::vector<int> &field_sizes);
+
   /** \brief Obtains the type of the PointField from a specific size and type
     * \param[in] size the size in bytes of the data field
     * \param[in] type a char describing the type of the field  ('F' = float, 'I' = signed, 'U' = unsigned)
