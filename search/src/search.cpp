@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Copyright (c) 2010, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,41 +31,15 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Siddharth Choudhary (itzsid@gmail.com)
+ * 
+ *
  */
 
-#ifndef PCL_SEARCH_OCTREE_GPU_H_
-#define PCL_SEARCH_OCTREE_GPU_H_
-
+#include "pcl/impl/instantiate.hpp"
+#include "pcl/point_types.h"
 #include "pcl/search/search.h"
-#include "pcl/search/impl/octree_base.hpp"
+#include "pcl/search/impl/search.hpp"
 
+// Instantiations of specific point types
+PCL_INSTANTIATE(Search, PCL_XYZ_POINT_TYPES);
 
-
-
-namespace pcl		
-{
-
-	
-  template <typename PointT>
-  class OctreeGPU : public pcl::Search<PointT> 
-{
-
-	public:
-OctreeGPU(){}
-~OctreeGPU(){}
-
-    typedef typename Search<PointT>::PointCloud PointCloud;
-    typedef typename Search<PointT>::PointCloudConstPtr PointCloudConstPtr;
-
-    void setInputCloud( const PointCloudConstPtr& cloud);
-   
-
-    int 
-    radiusSearch (std::vector<PointT>& point, std::vector< double>& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const;
-
-};
-
-}
-
-#endif

@@ -37,7 +37,7 @@
 #ifndef OCTREE_POINTCLOUD_H
 #define OCTREE_POINTCLOUD_H
 
-#include "octree.h"
+#include "octree_base.h"
 //#include "octree2buf_base.h"
 //#include "octree_lowmemory_base.h"
 
