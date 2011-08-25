@@ -89,7 +89,7 @@ Basic Usage
 
              Author: *Mourad Boufarguine*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > PCL 1.0 
              
              In this tutorial, we will explain how to compile PCL in Microsoft Windows using the provided 3rd Party installers.
      ======  ======
