@@ -38,6 +38,9 @@
 #ifndef PCL_FEATURES_IMPL_FEATURE_H_
 #define PCL_FEATURES_IMPL_FEATURE_H_
 
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/organized_data.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 inline void
 pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix, 
@@ -152,15 +155,6 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
     return (false);
   }
 
-  // Check if a space search locator was given
-  if (!tree_)
-  {
-    PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!\n", getClassName ().c_str ());
-    // Cleanup
-    deinitCompute ();
-    return (false);
-  }
-
   // If no search surface has been defined, use the input dataset as the search surface itself
   if (!surface_)
   {
@@ -168,6 +162,14 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
     surface_ = input_;
   }
 
+  // Check if a space search locator was given
+  if (!tree_)
+  {
+    if (surface_->isOrganized ())
+      tree_.reset (new pcl::OrganizedDataIndex<PointInT> ());
+    else
+      tree_.reset (new pcl::KdTreeFLANN<PointInT> (false));
+  }
   // Send the surface dataset to the spatial locator
   tree_->setInputCloud (surface_);
 
