@@ -5,9 +5,7 @@
 using namespace std;
 
 #include <pcl/common/time.h>
-//#include <pcl/kdtree/kdtree_ann.h>
 #include <pcl/search/pcl_search.h>
-//##include <pcl/search/kdtree.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -40,12 +38,12 @@ void
 }
 
 
+/* Test for KdTree nearestKSearch */
 
 TEST (PCL, KdTree_nearestKSearch)
 {
 
   Search<PointXYZ>* kdtree = new KdTree<PointXYZ>();
-//  kdtree.initSearchDS();
   kdtree->setInputCloud (cloud.makeShared ());
   PointXYZ test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
@@ -73,7 +71,6 @@ TEST (PCL, KdTree_nearestKSearch)
   //if (k_indices.size() != no_of_neighbors)  cerr << "Found "<<k_indices.size()<<" instead of "<<no_of_neighbors<<" neighbors.\n";
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
-#if 1
   // Check if all found neighbors have distance smaller than max_dist
   for (size_t i = 0; i < k_indices.size (); ++i)
   {
@@ -94,7 +91,6 @@ TEST (PCL, KdTree_nearestKSearch)
     for (size_t i = 0; i < cloud_big.points.size (); ++i)
       kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
   }
-#endif
 
 }	
 
@@ -110,11 +106,6 @@ int main(int argc, char** argv)
 /* Testing using explicit instantiation of inherited class */
   Search<PointXYZ>* kdtree = new KdTree<PointXYZ>();
   kdtree->setInputCloud (cloud.makeShared ());
-
-
-   //Search<PointXYZ> orgtree(KDTREE_FLANN);
-   //orgtree.setInputCloud (cloud_big.makeShared ());
-
 
   return (RUN_ALL_TESTS ());
 

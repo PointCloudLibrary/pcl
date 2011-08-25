@@ -294,19 +294,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search_Kinec
 
 
     ASSERT_EQ ( k_indices.size() , k_indices_bruteforce.size() );
-    //std::cout << k_indices.size() << '\t' << k_indices_bruteforce.size() << std::endl;
-
-#if 0
-    // compare nearest neighbor results of organized search  with bruteforce search
-    for (i = 0; i < k_indices.size (); i++)
-    {
-      ASSERT_EQ ( k_indices[i] , k_indices_bruteforce.back() );
-//      EXPECT_NEAR (k_sqr_distances[i], k_sqr_distances_bruteforce.back(), 1e-4);
-
-      k_indices_bruteforce.pop_back();
-      k_sqr_distances_bruteforce.pop_back();
-    }
-#endif
 
   }
 
@@ -323,9 +310,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
   srand (time (NULL));
   
   Search<PointXYZ>* organizedNeighborSearch = new OrganizedNeighborSearch<PointXYZ>();
-//  organizedNeighborSearch->check();
-
-//  OrganizedNeighborSearch<PointXYZ> organizedNeighborSearch;
 
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
@@ -438,7 +422,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
 
       ++current;
     }
-  //  cout << "Radius = " << searchRadius << " Size of OrganizedIndex Search = "<< cloudNWRSearch.size() << " Size of BruteForce search = " << cloudSearchBruteforce.size() << endl;	
 
     for (i = 0; i < cloudSearchBruteforce.size (); i++) 
       for (j = 0; j < cloudNWRSearch.size (); j++) 
@@ -467,9 +450,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
   srand (time (NULL));
 
   Search<PointXYZ>* organizedNeighborSearch = new OrganizedNeighborSearch<PointXYZ>();
-//  organizedNeighborSearch->check();
-
-//  OrganizedNeighborSearch<PointXYZ> organizedNeighborSearch;
 
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
@@ -563,7 +543,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     radiusSearchTime += getTime() - check_time2;
 
   }
-//    std::cout << " Time taken " << "OrganizedNeighborSearch: " << radiusSearchTime << "\t OrganizedDataIndex: " << radiusSearchLPTime <<  std::endl;
 
 }
 
@@ -580,28 +559,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
 	std::cout <<"Couldn't read input cloud" << std::endl; 
     return;
   }
-#if 0
-  pcl::PassThrough<pcl::PointXYZ> pass;
-  pass.setInputCloud (cloudIn);	
-  pass.setFilterFieldName ("z");
-  pass.setFilterLimits (0.0, 100);
-//pass.removeNaNFromPointCloud(*cloud,*cloudIn);
-  //pass.setFilterLimitsNegative (true);
-  pass.filter (*cloud);
-
-#endif
-#if 0
-  std::cerr << "Cloud after filtering: " << std::endl;
-  for (size_t i = 0; i < cloudIn->points.size (); ++i)
-    std::cerr << "    " << cloudIn->points[i].x << " " 
-                        << cloudIn->points[i].y << " " 
-                        << cloudIn->points[i].z << std::endl;
-
-  Search<PointXYZ>* organizedNeighborSearch = new OrganizedNeighborSearch<PointXYZ>();
-    organizedNeighborSearch->setPrecision (1);  // For Organized Data Index
-    organizedNeighborSearch->setInputCloud (cloudIn);
-#endif
-#if 1
   const unsigned int test_runs = 10;
   unsigned int test_id;
 
@@ -610,9 +567,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
   srand (time (NULL));
 
   Search<PointXYZ>* organizedNeighborSearch = new OrganizedNeighborSearch<PointXYZ>();
-//  organizedNeighborSearch->check();
-
-//  OrganizedNeighborSearch<PointXYZ> organizedNeighborSearch;
 
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
@@ -628,9 +582,9 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
 
   double radiusSearchTime = 0, radiusSearchLPTime = 0;
 unsigned int randomIdx;
+
   while(1){
 	  randomIdx = rand()%(cloudIn->width * cloudIn->height);
-//	  std::cout << cloudIn->points[randomIdx].z << std::endl;
 	  if(cloudIn->points[randomIdx].z <100)break;
   }
 
@@ -683,7 +637,6 @@ sum_time2+= check_time2 - check_time;
    ASSERT_EQ(cloudNWRSearch.size(), cloudNWRSearch2.size());
   
 
-//std::cout << "| " << searchRadius  <<"\t | " << sum_time/100 << "\t   | "<< setprecision(5) << sum_time2/100 << "     | " << setw(6) << cloudNWRSearch.size() << "\t|" << std::endl;
 printf("| %.3lf  | %0.5lf         | %0.5lf        | %6d            |\n",searchRadius, sum_time/100, sum_time2/100, cloudNWRSearch.size());
 std::cout << "+--------+-----------------+----------------+-------------------+" << std::endl;
 
@@ -752,13 +705,6 @@ std::cout << "+--------+-----------------+----------------+-------------------+"
 
       ++current;
     }
-/*
-    for (i = 0; i < cloudSearchBruteforce.size (); i++)
-      for (j = 0; j < cloudNWRSearch.size (); j++)
-        if (cloudNWRSearch[i]== cloudSearchBruteforce[j])
-          break;
-*/
-//    std::cout << cloudNWRRadius.size() << "\t" << cloudNWRRadius2.size() << "\t" << cloudSearchBruteforce.size() << std::endl;
     ASSERT_EQ (cloudNWRRadius.size() , cloudSearchBruteforce.size ());
 
     // check if result limitation works
@@ -770,7 +716,6 @@ std::cout << "+--------+-----------------+----------------+-------------------+"
 
 }
 
-#endif
 }
 
 /* ---[ */
@@ -778,7 +723,6 @@ int
 main (int argc, char** argv)
 {
 
-//  cout << "running organized neighbour search test" << endl;
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }

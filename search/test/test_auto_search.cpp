@@ -45,7 +45,6 @@ TEST (PCL, KdTree_nearestKSearch)
 {
 
   Search<PointXYZ>* kdtree = new AutotunedSearch<PointXYZ>(KDTREE_FLANN);
-//  kdtree.initSearchDS();
   kdtree->setInputCloud (cloud.makeShared ());
   PointXYZ test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
@@ -70,10 +69,8 @@ TEST (PCL, KdTree_nearestKSearch)
 
   kdtree->nearestKSearch (test_point, no_of_neighbors, k_indices, k_distances);
 
-  //if (k_indices.size() != no_of_neighbors)  cerr << "Found "<<k_indices.size()<<" instead of "<<no_of_neighbors<<" neighbors.\n";
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
-#if 1
   // Check if all found neighbors have distance smaller than max_dist
   for (size_t i = 0; i < k_indices.size (); ++i)
   {
@@ -89,12 +86,10 @@ TEST (PCL, KdTree_nearestKSearch)
   ScopeTime scopeTime ("FLANN nearestKSearch");
   {
     Search<PointXYZ>* kdtree = new AutotunedSearch<PointXYZ>(KDTREE_FLANN);
-//    kdtree.initSearchDS();
     kdtree->setInputCloud (cloud_big.makeShared ());
     for (size_t i = 0; i < cloud_big.points.size (); ++i)
       kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
   }
-#endif
 
 }	
 
@@ -131,11 +126,6 @@ int main(int argc, char** argv)
 /* Testing using explicit instantiation of inherited class */
   Search<PointXYZ>* kdtree = new AutotunedSearch<PointXYZ>(KDTREE_FLANN);
   kdtree->setInputCloud (cloud.makeShared ());
-
-
-   //Search<PointXYZ> orgtree(KDTREE_FLANN);
-   //orgtree.setInputCloud (cloud_big.makeShared ());
-
 
   return (RUN_ALL_TESTS ());
 
