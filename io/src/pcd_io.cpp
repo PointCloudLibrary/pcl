@@ -477,15 +477,18 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     // Prepare the map
 #ifdef _WIN32
     // map te whole file
-    HANDLE fm = CreateFileMapping ((HANDLE) _get_osfhandle (fd), NULL, PAGE_READONLY, 0, data_size, NULL);
-    char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ, 0, 0, data_size));
+    // As we don't know the real size of data (compressed or not), we set dwMaximumSizeHigh = dwMaximumSizeLow = 0
+    // so as to map the whole file
+    HANDLE fm = CreateFileMapping ((HANDLE) _get_osfhandle (fd), NULL, PAGE_READONLY, 0, 0, NULL);
+    // As we don't know the real size of data (compressed or not), we set dwNumberOfBytesToMap = 0
+    // so as to map the whole file
+    char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ, 0, 0, 0));
     if (map == NULL)
     {
       CloseHandle (fm);
       pcl_close (fd);
       return (-1);
     }
-    CloseHandle (fm);
 #else
     char *map = (char*)mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0);
     if (map == MAP_FAILED)
@@ -502,7 +505,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       unsigned int compressed_size, uncompressed_size;
       memcpy (&compressed_size, &map[data_idx + 0], sizeof (unsigned int));
       memcpy (&uncompressed_size, &map[data_idx + 4], sizeof (unsigned int));
-      PCL_DEBUG ("[pcl::read] Read a binary compressed file with %zu bytes compressed and %zu original.\n", compressed_size, uncompressed_size);
+      PCL_DEBUG ("[pcl::read] Read a binary compressed file with %lu bytes compressed and %lu original.\n", (unsigned long) compressed_size, (unsigned long) uncompressed_size);
       // For all those weird situations where the compressed data is actually LARGER than the uncompressed one
       // (we really ought to check this in the compressor and copy the original data in those cases)
       if (data_size < compressed_size)
@@ -520,8 +523,8 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
 
       if (uncompressed_size != cloud.data.size ())
       {
-        PCL_WARN ("[pcl::read] The estimated cloud.data size (%zu) is smaller than the saved uncompressed value (%zu)! Data corruption?\n", 
-                  cloud.data.size (), uncompressed_size);
+        PCL_WARN ("[pcl::read] The estimated cloud.data size (%lu) is smaller than the saved uncompressed value (%lu)! Data corruption?\n", 
+                  (unsigned long) cloud.data.size (), (unsigned long) uncompressed_size);
         cloud.data.resize (uncompressed_size);
       }
 
@@ -579,6 +582,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     // Unmap the pages of memory
 #if _WIN32
     UnmapViewOfFile (map);
+    CloseHandle (fm);
 #else
     if (munmap (map, data_size) == -1)
     {
