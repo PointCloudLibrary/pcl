@@ -133,7 +133,7 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   XnStatus rc;
 
     xn::EnumerationErrors errors;
-    rc = context_.InitFromXmlFile("/Users/alex/Work/pointclouds/pcl/trunk/apps/SamplesConfig.xml", &errors);
+    rc = context_.InitFromXmlFile("/etc/primesense/SamplesConfig.xml", &errors);
     if (rc == XN_STATUS_NO_NODE_PRESENT)
     {
             XnChar strError[1024];
