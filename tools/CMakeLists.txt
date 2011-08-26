@@ -52,8 +52,12 @@ if (build)
       set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
       include (${VTK_USE_FILE})
       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+      
       PCL_ADD_EXECUTABLE(mesh2pcd ${SUBSYS_NAME} mesh2pcd.cpp)
       target_link_libraries(mesh2pcd pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
+      
+      PCL_ADD_EXECUTABLE(mesh_sampling ${SUBSYS_NAME} mesh_sampling.cpp)
+      target_link_libraries(mesh_sampling pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
   endif(NOT VTK_FOUND)
 
   PCL_ADD_EXECUTABLE (transform_point_cloud ${SUBSYS_NAME} transform_point_cloud.cpp)
