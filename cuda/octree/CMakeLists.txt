@@ -1,7 +1,7 @@
 set(SUBSYS_NAME gpu_octree)
 set(SUBSYS_PATH cuda/gpu_octree)
 set(SUBSYS_DESC "Octree GPU")
-set(SUBSYS_DEPS common gpu_containers gpu_device_utils gpu_utils)
+set(SUBSYS_DEPS common gpu_containers gpu_utils)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
