@@ -485,6 +485,10 @@ void pcl::PLYWriter::setMaskFromFieldsList(const std::string& fields_list)
     found = fields_list.find("strength", xyz_found);
     if(found != std::string::npos)
       mask_ |= pcl::io::ply::VERTEX_STRENGTH;
+    // Find confidence optional
+    found = fields_list.find("confidence", xyz_found);
+    if(found != std::string::npos)
+      mask_ |= pcl::io::ply::VERTEX_CONFIDENCE;
     // Find viewpoint optional
     found = fields_list.find("vp_x vp_y vp_z", xyz_found);
     if(found != std::string::npos)
