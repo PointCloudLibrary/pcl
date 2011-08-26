@@ -38,7 +38,7 @@
 #define PCL_SEARCH_OCTREE_GPU_H_
 
 #include "pcl/search/search.h"
-#include "pcl/search/impl/octree_base.hpp"
+#include "pcl/octree/impl/octree_base.hpp"
 
 
 

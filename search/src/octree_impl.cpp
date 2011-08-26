@@ -39,8 +39,6 @@
 #include <pcl/point_cloud.h>
 #include "pcl/point_types.h"
 
-#include "pcl/search/octree_base.h"
-#include "pcl/search/impl/octree_base.hpp"
 #include "pcl/search/octree_pointcloud.h"
 #include "pcl/search/impl/octree_pointcloud.hpp"
 
