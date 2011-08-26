@@ -38,9 +38,9 @@
 #define PCL_GPU_OCTREE_STA_BASE_H_
 
 #include "octree_global.hpp"
-#include "utils/lower_bound.hpp"
+#include "pcl/gpu/utils/device/algorithm.hpp"
+#include "pcl/gpu/utils/device/static_check.hpp"
 #include "utils/morton.hpp"
-#include "utils/static_check.hpp"
 
 namespace pcl
 {

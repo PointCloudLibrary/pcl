@@ -40,7 +40,7 @@
 
 #include "cuda_interface.hpp"
 #include "cuda_runtime.h"
-#include "utils/static_check.hpp"
+#include "pcl/gpu/utils/device/static_check.hpp"
 
 #include<assert.h>
 

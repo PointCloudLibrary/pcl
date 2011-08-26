@@ -39,11 +39,12 @@
 
 #include "octree_global.hpp"
 
+#include "pcl/gpu/utils/device/numeric_limits.hpp"
+
 #include "utils/laneid.hpp"
 #include "utils/copygen.hpp"
 #include "utils/boxutils.hpp"
 #include "utils/scan_block.hpp"
-#include "utils/limits.hpp"
 #include "utils/emulation.hpp"
 
 #include "search/octree_iterator.hpp"
