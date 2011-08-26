@@ -127,7 +127,7 @@ if(build)
     set(LIB_NAME pcl_range_image_border_extractor)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${border_srcs} ${border_incs} ${border_impl_incs})
     PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_range_image)
+    target_link_libraries(${LIB_NAME} pcl_range_image pcl_kdtree)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME}
         "Point cloud range image border extractor library"
         "${SUBSYS_DEPS}" "" "" "" "")
