@@ -19,8 +19,9 @@ OPTION(BUILD_CUDA "Build the CUDA-related subsystems" ON)
 
 if(BUILD_CUDA)
   if(CUDA_FOUND)
-    include(CudaComputeTargetFlags.cmake)
+    include(${PCL_SOURCE_DIR}/cmake/CudaComputeTargetFlags.cmake) 
     APPEND_TARGET_ARCH_FLAGS()
+    
     add_subdirectory (common)
     add_subdirectory (io)
     add_subdirectory (features)
@@ -28,8 +29,9 @@ if(BUILD_CUDA)
     add_subdirectory (sample_consensus)
     add_subdirectory (apps)
 	
-    add_subdirectory (gpu_common)
-    add_subdirectory (gpu_octree)	
+    add_subdirectory (containers)
+    add_subdirectory (utils)    
+    add_subdirectory (octree)	
   endif(CUDA_FOUND)
 endif(BUILD_CUDA)
 
