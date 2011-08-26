@@ -51,7 +51,6 @@ namespace pcl
 template <typename PointT> void 
 AutotunedSearch<PointT>::initSearchDS (int spatial_locator)
 {
-        #if 1
 
     if(spatial_locator == KDTREE_FLANN) {
         // initialize kdtree
@@ -62,7 +61,7 @@ AutotunedSearch<PointT>::initSearchDS (int spatial_locator)
     }
     else if(spatial_locator == OCTREE) {
 
-      _searchptr.reset(new OctreePointCloud<PointT>(0.1f));
+      _searchptr.reset(new pcl::octree::OctreePointCloud<PointT>(0.1f));
 	
     }
     else if(spatial_locator == AUTO_TUNED)
@@ -73,7 +72,6 @@ AutotunedSearch<PointT>::initSearchDS (int spatial_locator)
 
    spatial_loc = spatial_locator;
 
-    #endif
 
 }
 
@@ -123,7 +121,7 @@ if(search_type == NEAREST_K_SEARCH)
 
 	std::cout << "\n---------------\nOctree\n---------------\n";
 	double time3 = getTime();
-	_searchptr.reset(new OctreePointCloud<PointT>(0.1f));
+	_searchptr.reset(new pcl::octree::OctreePointCloud<PointT>(0.1f));
 	_searchptr->setInputCloud(cloudIn);
 	_searchptr->nearestKSearch (searchPoint, no_of_neighbors, k_indices, k_distances);
 	std::cout << "Neighbors are: " << std::endl;
@@ -173,7 +171,7 @@ else if(search_type == NEAREST_RADIUS_SEARCH)
 
         std::cout << "\n---------------\nOctree\n---------------\n";
         double time3 = getTime();
-        _searchptr.reset(new OctreePointCloud<PointT>(0.1f));
+        _searchptr.reset(new pcl::octree::OctreePointCloud<PointT>(0.1f));
         _searchptr->setInputCloud(cloudIn);
         _searchptr->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
         std::cout << "Neighbors are: " << std::endl;

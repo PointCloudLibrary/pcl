@@ -37,14 +37,14 @@
 #ifndef OCTREE_POINTCLOUD_H
 #define OCTREE_POINTCLOUD_H
 
-#include "octree_base.h"
+#include "pcl/octree/octree_base.h"
 //#include "octree2buf_base.h"
 //#include "octree_lowmemory_base.h"
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include "octree_nodes.h"
+#include "pcl/octree/octree_nodes.h"
 #include "pcl/search/search.h"
 #include <queue>
 #include <vector>
@@ -54,6 +54,8 @@
 namespace pcl
 {
 
+   namespace octree
+   {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b Octree pointcloud class
      *  \note Octree implementation for pointclouds. Only indices are stored by the octree leaf nodes (zero-copy).
@@ -761,7 +763,7 @@ namespace pcl
         bool boundingBoxDefined_;
 
       };
-
+}
 }
 
 #endif

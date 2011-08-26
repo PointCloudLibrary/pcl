@@ -54,6 +54,7 @@ using namespace pcl;
 
 
 
+using namespace octree;
 
 // helper class for priority queue
 class prioPointQueueEntry

@@ -56,7 +56,6 @@
 //template class pcl::octree::Octree2BufBase<int, pcl::octree::OctreeLeafDataTVector<int> >;
 //template class pcl::octree::OctreeLowMemBase<int, pcl::octree::OctreeLeafDataTVector<int> >;
 
-PCL_INSTANTIATE(OctreeBase, PCL_XYZ_POINT_TYPES);
 PCL_INSTANTIATE(OctreeSearch, PCL_XYZ_POINT_TYPES);
 //PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES);
 //PCL_INSTANTIATE(OctreePointCloudLowMemWithLeafDataTVector, PCL_XYZ_POINT_TYPES);

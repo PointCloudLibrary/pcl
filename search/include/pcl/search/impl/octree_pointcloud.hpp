@@ -44,7 +44,8 @@
 
 namespace pcl
 {
-
+   namespace octree
+   {
     using namespace std;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1325,10 +1326,10 @@ namespace pcl
 
         return voxelCount;
       }
-
+}
 }
 
-#define PCL_INSTANTIATE_OctreeSearch(T) template class PCL_EXPORTS pcl::OctreePointCloud<T, pcl::OctreeLeafDataTVector<int> , pcl::OctreeBase<int, pcl::OctreeLeafDataTVector<int> > >;
+#define PCL_INSTANTIATE_OctreeSearch(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafDataTVector<int> , pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafDataTVector<int> > >;
 
 
 #endif /* OCTREE_POINTCLOUD_HPP_ */
