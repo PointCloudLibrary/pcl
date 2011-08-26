@@ -36,7 +36,7 @@
 
 #include "pcl/gpu/utils/timers_cuda.hpp"
 
-#include "cuda_interface.hpp"
+#include "internal.hpp"
 
 #include <thrust/sequence.h>
 #include <thrust/sort.h>

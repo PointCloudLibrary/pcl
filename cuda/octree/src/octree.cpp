@@ -38,7 +38,7 @@
 #include "pcl/gpu/utils/timers_cuda.hpp"
 #include "pcl/gpu/utils/safe_call.hpp"
 
-#include "cuda_interface.hpp"
+#include "internal.hpp"
 #include "cuda_runtime.h"
 #include "pcl/gpu/utils/device/static_check.hpp"
 
@@ -121,37 +121,35 @@ void  pcl::gpu::Octree::approxNearestSearchHost(const PointType& query, int& out
     static_cast<OctreeImpl*>(impl)->approxNearestSearchHost(q, out_index, sqr_dist);
 
 }
-
-
-void pcl::gpu::Octree::radiusSearchBatch(const BatchQueries& queries, float radius, int max_results, BatchResult& output, BatchResultSizes& out_sizes) const
+                        
+void pcl::gpu::Octree::radiusSearch(const Queries& queries, float radius, int max_results, NeighborIndices& results) const
 {
     assert(queries.size() > 0);
-    out_sizes.create(queries.size());
-    output.create(queries.size() * max_results);
-
-    const OctreeImpl::BatchQueries& q = (const OctreeImpl::BatchQueries&)queries;
-    static_cast<OctreeImpl*>(impl)->radiusSearchBatch(q, radius, max_results, output, out_sizes);
+    results.create(queries.size(), max_results);
+    results.sizes.create(queries.size());
+    
+    const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
+    static_cast<OctreeImpl*>(impl)->radiusSearch(q, radius, results);
 }
 
-void pcl::gpu::Octree::radiusSearchBatch(const BatchQueries& queries, const BatchRadiuses& radiuses, int max_results, BatchResult& output, BatchResultSizes& out_sizes) const
+void pcl::gpu::Octree::radiusSearch(const Queries& queries, const Radiuses& radiuses, int max_results, NeighborIndices& results) const
 {
     assert(queries.size() > 0);
     assert(queries.size() == radiuses.size());
-
-    out_sizes.create(queries.size());
-    output.create(queries.size() * max_results);
-
-    const OctreeImpl::BatchQueries& q = (const OctreeImpl::BatchQueries&)queries;
-    static_cast<OctreeImpl*>(impl)->radiusSearchBatch(q, radiuses, max_results, output, out_sizes);
+    results.create(queries.size(), max_results);
+    results.sizes.create(queries.size());
+    
+    const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
+    static_cast<OctreeImpl*>(impl)->radiusSearch(q, radiuses, results);
 }
 
-void pcl::gpu::Octree::approxNearestSearchBatch(const BatchQueries& queries, BatchResult& out) const
+void pcl::gpu::Octree::approxNearestSearch(const Queries& queries, NeighborIndices& results) const
 {
-    assert(queries.size() > 0);
-    out.create(queries.size());
+    assert(queries.size() > 0);    
+    results.create(queries.size(), 1);
     
-    const OctreeImpl::BatchQueries& q = (const OctreeImpl::BatchQueries&)queries;
-    static_cast<OctreeImpl*>(impl)->approxNearestSearchBatch(q, out);
+    const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
+    static_cast<OctreeImpl*>(impl)->approxNearestSearch(q, results);
 }
 
 //void pcl::gpu::Octree::nearestKSearchBatch(const BatchQueries& queries, int k, BatchResult& results, BatchResultSqrDists& sqr_dists) const

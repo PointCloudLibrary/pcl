@@ -81,17 +81,16 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     octree_device.build();
        
     //upload queries
-    pcl::gpu::Octree::BatchQueries queries_device;
-    pcl::gpu::Octree::BatchRadiuses radiuses_device;
+    pcl::gpu::Octree::Queries queries_device;
+    pcl::gpu::Octree::Radiuses radiuses_device;
     queries_device.upload(data.queries);                
     radiuses_device.upload(data.radiuses);
     
     //prepare output buffers on device
-    pcl::gpu::Octree::BatchResult      result_device1(queries_device.size() * max_answers);
-    pcl::gpu::Octree::BatchResultSizes  sizes_device1(queries_device.size());
-    pcl::gpu::Octree::BatchResult      result_device2(queries_device.size() * max_answers);
-    pcl::gpu::Octree::BatchResultSizes  sizes_device2(queries_device.size());
-    
+
+    pcl::gpu::NeighborIndices result_device1(queries_device.size(), max_answers);
+    pcl::gpu::NeighborIndices result_device2(queries_device.size(), max_answers);
+            
     //prepare output buffers on host
     vector< vector<int> > host_search1(data.tests_num);
     vector< vector<int> > host_search2(data.tests_num);
@@ -102,10 +101,10 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     }
     
     //search GPU shared
-    octree_device.radiusSearchBatch(queries_device, data.shared_radius, max_answers, result_device1, sizes_device1);
+    octree_device.radiusSearch(queries_device, data.shared_radius, max_answers, result_device1);
 
     //search GPU individual
-    octree_device.radiusSearchBatch(queries_device, radiuses_device, max_answers, result_device2, sizes_device2);
+    octree_device.radiusSearch(queries_device,    radiuses_device, max_answers, result_device2);
 
     //search CPU
     octree_device.internalDownload();
@@ -118,12 +117,12 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     //download results
     vector<int> sizes1;
     vector<int> sizes2;
-    sizes_device1.download(sizes1);
-    sizes_device2.download(sizes2);
+    result_device1.sizes.download(sizes1);
+    result_device2.sizes.download(sizes2);
 
     vector<int> downloaded_buffer1, downloaded_buffer2, results_batch;    
-    result_device1.download(downloaded_buffer1);
-    result_device2.download(downloaded_buffer2);
+    result_device1.data.download(downloaded_buffer1);
+    result_device2.data.download(downloaded_buffer2);
         
     //data.bruteForceSearch();
 

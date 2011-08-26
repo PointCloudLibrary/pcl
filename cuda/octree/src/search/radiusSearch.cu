@@ -34,8 +34,7 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#include "cuda_interface.hpp"
-#include "utils/funcattrib.hpp"
+#include "internal.hpp"
 
 #include "octree_global.hpp"
 
@@ -157,9 +156,9 @@ namespace pcl { namespace device { namespace radius_search
 
 				active = active && iterator.level >= 0 && found_count < batch.max_results;
 			}            
-
-			if (query_index != -1)
-				batch.output_sizes[query_index] = found_count;
+            
+		    if (query_index != -1)
+			    batch.output_sizes[query_index] = found_count;
 		}    
 
 	private:
@@ -350,17 +349,16 @@ namespace pcl { namespace device { namespace radius_search
 } } } 
 
 template<typename BatchType>
-void pcl::gpu::OctreeImpl::radiusSearchBatchEx(BatchType& batch, const BatchQueries& queries, int max_results, BatchResult& output, BatchResultSizes& out_sizes)
+void pcl::gpu::OctreeImpl::radiusSearchEx(BatchType& batch, const Queries& queries, NeighborIndices& results)
 {
-
 	batch.indices = indices;
 	batch.octree = octreeGlobal;
 
 	batch.queries_num = (int)queries.size();
-	batch.max_results = max_results;
+	batch.max_results = results.max_elems;
 
-	batch.output = output;                
-	batch.output_sizes = out_sizes;
+	batch.output = results.data;                
+	batch.output_sizes = results.sizes;
 
 	batch.points  = points_sorted;
 	batch.points_step = points_sorted.elem_step();
@@ -377,7 +375,7 @@ void pcl::gpu::OctreeImpl::radiusSearchBatchEx(BatchType& batch, const BatchQuer
 }
 
 
-void pcl::gpu::OctreeImpl::radiusSearchBatch(const BatchQueries& queries, float radius, int max_results, BatchResult& output, BatchResultSizes& out_sizes)
+void pcl::gpu::OctreeImpl::radiusSearch(const Queries& queries, float radius, NeighborIndices& results)
 {        
 	using namespace pcl::device::radius_search;
 	typedef OctreeImpl::PointType PointType;
@@ -385,10 +383,10 @@ void pcl::gpu::OctreeImpl::radiusSearchBatch(const BatchQueries& queries, float 
 
 	BatchType batch;
 	batch.radius = radius;
-	radiusSearchBatchEx(batch, queries, max_results, output, out_sizes);              
+	radiusSearchEx(batch, queries, results);              
 }
 
-void pcl::gpu::OctreeImpl::radiusSearchBatch(const BatchQueries& queries, const BatchRadiuses& radiuses, int max_results, BatchResult& output, BatchResultSizes& out_sizes)
+void pcl::gpu::OctreeImpl::radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results)
 {
 	using namespace pcl::device::radius_search;
 	typedef OctreeImpl::PointType PointType;
@@ -396,5 +394,5 @@ void pcl::gpu::OctreeImpl::radiusSearchBatch(const BatchQueries& queries, const 
 
 	BatchType batch;
 	batch.radiuses = radiuses;
-	radiusSearchBatchEx(batch, queries, max_results, output, out_sizes);              
+	radiusSearchEx(batch, queries, results);              
 }

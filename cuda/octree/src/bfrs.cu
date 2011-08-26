@@ -39,7 +39,7 @@
 #include <thrust/device_ptr.h>
 #include <thrust/iterator/counting_iterator.h>
 
-#include "cuda_interface.hpp"
+#include "internal.hpp"
 
 using namespace std;
 using namespace thrust;

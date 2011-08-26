@@ -34,60 +34,37 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef _PCL_GPU_OCTREE_
-#define _PCL_GPU_OCTREE_
+#ifndef _PCL_GPU_OCTREE_DEVICE_FORMAT_HPP_
+#define _PCL_GPU_OCTREE_DEVICE_FORMAT_HPP_
 
-#include <vector>
-
-#include "pcl/point_types.h"
-#include "pcl/pcl_macros.h"
 #include "pcl/gpu/containers/device_array.hpp"
-#include "pcl/gpu/octree/device_format.hpp"
 
 namespace pcl
 {
     namespace gpu
-    {   
-        using pcl::PointXYZ;
-        //struct PointXYZ { float x, y, z;  };
-
-        class PCL_EXPORTS Octree
+    {
+        struct NeighborIndices
         {
-        public:
-            Octree();
-            virtual ~Octree();
+            DeviceArray<int> data;
+            DeviceArray<int> sizes;
+            int max_elems;  
 
-            /* Types */
+            NeighborIndices() {}
+            NeighborIndices(int query_number, int max_elements) : max_elems(0)
+            {
+                create(query_number, max_elements);
+            }
 
-            typedef pcl::gpu::PointXYZ PointType;
-            typedef DeviceArray<PointType> PointCloud;
-            
-            typedef DeviceArray<PointType> Queries;
-            typedef DeviceArray<float> Radiuses;            
-            
-            typedef DeviceArray<float> ResultSqrDists;
-            
-            /*  Methods */            
-            void setCloud(const PointCloud& cloud_arg);
+            void create(int query_number, int max_elements)
+            {
+                max_elems = max_elements;
+                data.create (query_number * max_elems);
 
-			void build();
-
-            void internalDownload();
-            void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out, int max_nn = INT_MAX);
-            void approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist);
-
-            void radiusSearch(const Queries& centers, float radius, int max_results, NeighborIndices& result) const;
-            void radiusSearch(const Queries& centers, const Radiuses& radiuses, int max_results, NeighborIndices& result) const;
-
-            void approxNearestSearch(const Queries& queries, NeighborIndices& result) const;
-            
-        private:
-            void *impl;            
-        };        
-
-        
-        PCL_EXPORTS void bruteForceRadiusSearchGPU(const Octree::PointCloud& cloud, const Octree::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer);
+                if (max_elems != 1)
+                    sizes.create(query_number);                
+            }
+        };
     }
 }
 
-#endif /* _PCL_GPU_OCTREE_ */
+#endif /* _PCL_GPU_OCTREE_DEVICE_FORMAT_HPP_ */

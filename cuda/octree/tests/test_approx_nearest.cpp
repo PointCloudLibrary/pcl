@@ -96,22 +96,22 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
     octree_host.addPointsFromInputCloud();
            
     //upload queries
-    pcl::gpu::Octree::BatchQueries queries_device;
+    pcl::gpu::Octree::Queries queries_device;
     queries_device.upload(data.queries);
     
         
     //prepare output buffers on device
-    pcl::gpu::Octree::BatchResult result_device(data.tests_num);
+    pcl::gpu::NeighborIndices result_device(data.tests_num, 1);
     vector<int> result_host_pcl(data.tests_num);
     vector<int> result_host_gpu(data.tests_num);
     vector<float> dists_pcl(data.tests_num);
     vector<float> dists_gpu(data.tests_num);
     
     //search GPU shared
-    octree_device.approxNearestSearchBatch(queries_device, result_device);
+    octree_device.approxNearestSearch(queries_device, result_device);
 
     vector<int> downloaded;
-    result_device.download(downloaded);
+    result_device.data.download(downloaded);
                 
     for(size_t i = 0; i < data.tests_num; ++i)
     {

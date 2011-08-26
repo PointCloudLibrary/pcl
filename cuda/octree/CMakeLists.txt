@@ -1,5 +1,5 @@
 set(SUBSYS_NAME gpu_octree)
-set(SUBSYS_PATH cuda/octree)
+set(SUBSYS_PATH cuda/gpu_octree)
 set(SUBSYS_DESC "Octree GPU")
 set(SUBSYS_DEPS common gpu_containers gpu_device_utils gpu_utils)
 

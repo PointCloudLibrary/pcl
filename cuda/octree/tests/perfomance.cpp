@@ -88,9 +88,9 @@ TEST(PCL_OctreeGPU, perfomance)
     cloud_device.upload(data.points);
 
     //prepare queries_device
-    pcl::gpu::Octree::BatchQueries queries_device;
-    pcl::gpu::Octree::BatchRadiuses radiuses_device;
-    queries_device.upload(data.queries);  
+    pcl::gpu::Octree::Queries queries_device;
+    pcl::gpu::Octree::Radiuses radiuses_device;
+     queries_device.upload(data.queries);  
     radiuses_device.upload(data.radiuses);
 
     //prepare host cloud
@@ -154,18 +154,16 @@ TEST(PCL_OctreeGPU, perfomance)
 
     //device buffers
     pcl::gpu::DeviceArray<int> bruteforce_results_device, buffer(cloud_device.size());    
-    pcl::gpu::Octree::BatchResult      result_device(queries_device.size() * max_answers);
-    pcl::gpu::Octree::BatchResultSizes  sizes_device(queries_device.size());
-
+    pcl::gpu::NeighborIndices result_device(queries_device.size(), max_answers);
+    
     //pcl::gpu::Octree::BatchResult          distsKNN_device(queries_device.size() * k);
     //pcl::gpu::Octree::BatchResultSqrDists  indsKNN_device(queries_device.size() * k);
-    
-    
+        
     cout << "======  Separate radius for each query =====" << endl;
 
     {
         ScopeTimerCV up("gpu--radius-search-batch-all");	        
-        octree_device.radiusSearchBatch(queries_device, radiuses_device, max_answers, result_device, sizes_device);                        
+        octree_device.radiusSearch(queries_device, radiuses_device, max_answers, result_device);                        
     }
 
     {
@@ -191,7 +189,7 @@ TEST(PCL_OctreeGPU, perfomance)
     
     {
         ScopeTimerCV up("gpu-radius-search-batch-all");	        
-        octree_device.radiusSearchBatch(queries_device, data.shared_radius, max_answers, result_device, sizes_device);                        
+        octree_device.radiusSearch(queries_device, data.shared_radius, max_answers, result_device);                        
     }
 
     {
@@ -217,7 +215,7 @@ TEST(PCL_OctreeGPU, perfomance)
 
     {
         ScopeTimerCV up("gpu-approx-nearest-batch-all");	        
-        octree_device.approxNearestSearchBatch(queries_device, sizes_device);                        
+        octree_device.approxNearestSearch(queries_device, result_device);                        
     }
 
     {        

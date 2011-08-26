@@ -34,10 +34,11 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_CUDA_OCTREE_
-#define PCL_GPU_CUDA_OCTREE_
+#ifndef PCL_GPU_OCTREE_INTERNAL_HPP_
+#define PCL_GPU_OCTREE_INTERNAL_HPP_
 
 #include "pcl/gpu/containers/device_array.hpp"
+#include "pcl/gpu/octree/device_format.hpp"
 
 #include "octree_global.hpp"
 #include "builder/tasks_global.hpp"
@@ -53,9 +54,9 @@ namespace pcl
             typedef DeviceArray<PointType> PointArray;
 
             typedef PointArray PointCloud;
-            typedef PointArray BatchQueries;
+            typedef PointArray Queries;
                        
-            typedef DeviceArray<float> BatchRadiuses;
+            typedef DeviceArray<float> Radiuses;
             typedef DeviceArray<int> BatchResult;            
             typedef DeviceArray<int> BatchResultSizes;
             typedef DeviceArray<float> BatchResultSqrDists;
@@ -70,12 +71,10 @@ namespace pcl
             void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out, int max_nn) const;
             void approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist) const;
             
-            void radiusSearchBatch(const BatchQueries& queries, float radius, int max_results, BatchResult& output, BatchResultSizes& out_sizes);
+            void radiusSearch(const Queries& queries, float radius, NeighborIndices& results);
+            void radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results);
 
-            void radiusSearchBatch(const BatchQueries& queries, const BatchRadiuses& radiuses, int max_results, BatchResult& output, BatchResultSizes& out_sizes);
-
-
-            void approxNearestSearchBatch(const BatchQueries& queries, BatchResult& out) const;
+            void approxNearestSearch(const Queries& queries, NeighborIndices& results) const;
 
             //void nearestKSearchBatch(const BatchQueries& queries, int k, BatchResult& results, BatchResultSqrDists& sqr_dists) const;
 
@@ -115,8 +114,8 @@ namespace pcl
             void internalDownload(); 
             int max_threads_x;
         private:
-            template<typename Batch>
-            void radiusSearchBatchEx(Batch& batch, const BatchQueries& queries, int max_results, BatchResult& output, BatchResultSizes& out_sizes);
+            template<typename BatchType>
+            void radiusSearchEx(BatchType& batch, const Queries& queries, NeighborIndices& results);
         };
 
         void bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, const OctreeImpl::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer);
@@ -124,4 +123,4 @@ namespace pcl
     }
 }
 
-#endif /* PCL_GPU_CUDA_OCTREE_ */
+#endif /* PCL_GPU_OCTREE_INTERNAL_HPP_ */

@@ -34,12 +34,11 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include "cuda_interface.hpp"
-#include "utils/funcattrib.hpp"
-
-#include "octree_global.hpp"
 
 #include "pcl/gpu/utils/device/numeric_limits.hpp"
+
+#include "internal.hpp"
+#include "octree_global.hpp"
 
 #include "utils/laneid.hpp"
 #include "utils/copygen.hpp"
@@ -309,18 +308,18 @@ namespace pcl { namespace device { namespace appnearest_search
 
 } } }
 
-void pcl::gpu::OctreeImpl::approxNearestSearchBatch(const BatchQueries& queries, BatchResult& output) const
+
+void pcl::gpu::OctreeImpl::approxNearestSearch(const Queries& queries, NeighborIndices& results) const
 {
     typedef OctreeImpl::PointType PointType;
     typedef pcl::device::appnearest_search::Batch<PointType> BatchType;
-
 
     BatchType batch;
     batch.indices = indices;
     batch.octree = octreeGlobal;
 
     batch.queries_num = (int)queries.size();        
-    batch.output = output;     
+    batch.output = results.data;     
 
     batch.points = points_sorted;
     batch.points_step = points_sorted.elem_step();
@@ -328,7 +327,6 @@ void pcl::gpu::OctreeImpl::approxNearestSearchBatch(const BatchQueries& queries,
 
     int block = pcl::device::appnearest_search::KernelPolicy::CTA_SIZE;
     int grid = (batch.queries_num + block - 1) / block;    
-
 
     cudaSafeCall( cudaFuncSetCacheConfig(pcl::device::appnearest_search::KernelAN<PointType>, cudaFuncCachePreferL1) );
 
