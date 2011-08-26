@@ -86,8 +86,8 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
     if (status != XN_STATUS_OK)
       cerr << "node ir problems" << endl;
 
-  
-#else  
+
+#else
 // create the production nodes
   XnStatus status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
   if (status != XN_STATUS_OK)
@@ -133,7 +133,7 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   XnStatus rc;
 
     xn::EnumerationErrors errors;
-    rc = context_.InitFromXmlFile("/Users/alex/Work/pointclouds/pcl/trunk/apps/SamplesConfig.xml", &errors);
+    rc = context_.InitFromXmlFile("/etc/primesense/SamplesConfig.xml", &errors);
     if (rc == XN_STATUS_NO_NODE_PRESENT)
     {
             XnChar strError[1024];
@@ -151,10 +151,10 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   status = context_.FindExistingNode(XN_NODE_TYPE_IR, ir_generator_);
     if (status != XN_STATUS_OK)
       cerr << "node ir problems" << endl;
-  
+
 #else
   XnStatus status;
-  
+
   // create the production nodes
   status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
   if (status != XN_STATUS_OK)
@@ -172,13 +172,13 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   status = ir_node.GetInstance (ir_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating IR generator instance failed. Reason: %s", xnGetStatusString (status));
-  
+
   ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewIRDataAvailable, this, ir_callback_handle_);
   #endif
 
   depth_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewDepthDataAvailable, this, depth_callback_handle_);
   // set up rest
-  Init ();  
+  Init ();
 }
 
 // For ONI Player devices
@@ -273,7 +273,7 @@ void OpenNIDevice::Init () throw (OpenNIException)
     lock_guard<mutex> ir_lock (ir_mutex_);
     ir_thread_ = boost::thread (&OpenNIDevice::IRDataThreadFunction, this);
   }
-  
+
   quit_ = false;
 }
 
@@ -574,7 +574,7 @@ void OpenNIDevice::ImageDataThreadFunction () throw (OpenNIException)
     image_generator_.GetMetaData (*image_data);
 
     image_lock.unlock ();
-    
+
     boost::shared_ptr<Image> image = getCurrentImage (image_data);
     for (map< OpenNIDevice::CallbackHandle, ActualImageCallbackFunction >::iterator callbackIt = image_callback_.begin (); callbackIt != image_callback_.end (); ++callbackIt)
     {
@@ -599,7 +599,7 @@ void OpenNIDevice::DepthDataThreadFunction () throw (OpenNIException)
     boost::shared_ptr<xn::DepthMetaData> depth_data (new xn::DepthMetaData);
     depth_generator_.GetMetaData (*depth_data);
     depth_lock.unlock ();
-    
+
     boost::shared_ptr<DepthImage> depth_image ( new DepthImage (depth_data, baseline_, getDepthFocalLength (), shadow_value_, no_sample_value_) );
 
     for (map< OpenNIDevice::CallbackHandle, ActualDepthImageCallbackFunction >::iterator callbackIt = depth_callback_.begin ();
@@ -721,11 +721,11 @@ unsigned short OpenNIDevice::getVendorID () const throw ()
 {
   unsigned short vendor_id;
   unsigned short product_id;
-  
+
 #ifndef _WIN32
   unsigned char bus;
   unsigned char address;
-  
+
   sscanf (device_node_info_.GetCreationInfo(), "%hx/%hx@%hhu/%hhu", &vendor_id, &product_id, &bus, &address);
 
 #else
