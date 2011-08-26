@@ -203,12 +203,14 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZ,
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZ, pcl::_PointXYZ)
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZRGBA,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGBA,
     (float, x, x)
     (float, y, y)
     (float, z, z)
     (uint32_t, rgba, rgba)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGBA, pcl::_PointXYZRGBA)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGB,
     (float, x, x)
     (float, y, y)
