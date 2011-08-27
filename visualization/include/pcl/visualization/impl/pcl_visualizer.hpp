@@ -536,7 +536,8 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
     return (false);
   }
 
-  vtkSmartPointer<vtkAppendPolyData> polydata = vtkSmartPointer<vtkAppendPolyData>::New ();
+  vtkSmartPointer<vtkAppendPolyData> polydata;
+  allocVtkPolyData (polydata);
 
   for (size_t i = 0; i < cloud->points.size (); i+=level)
   {
@@ -561,11 +562,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  CloudActor act;
-  //act.color_handlers.push_back (handler);
-  act.actor = actor;
-  (*cloud_actor_map_)[id] = act;
-  //style_->setCloudActorMap (cloud_actor_map_);
+  (*cloud_actor_map_)[id].actor = actor;
   return (true);
 }
 

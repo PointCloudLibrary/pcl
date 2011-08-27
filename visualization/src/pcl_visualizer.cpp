@@ -2401,6 +2401,12 @@ pcl::visualization::PCLVisualizer::updateCells (vtkSmartPointer<vtkIdTypeArray> 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::visualization::PCLVisualizer::allocVtkPolyData (vtkSmartPointer<vtkAppendPolyData> &polydata)
+{
+  polydata = vtkSmartPointer<vtkAppendPolyData>::New ();
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::visualization::PCLVisualizer::allocVtkPolyData (vtkSmartPointer<vtkPolyData> &polydata)
 {
   polydata = vtkSmartPointer<vtkPolyData>::New ();

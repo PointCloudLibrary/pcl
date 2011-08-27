@@ -1287,11 +1287,21 @@ namespace pcl
                               const std::string &id, 
                               int viewport);
 
-        /** \brief Allocate a new polydata smartpointer. Internal */
+        /** \brief Allocate a new polydata smartpointer. Internal 
+          * \param[out] polydata the resultant poly data
+          */
+        void
+        allocVtkPolyData (vtkSmartPointer<vtkAppendPolyData> &polydata);
+
+        /** \brief Allocate a new polydata smartpointer. Internal 
+          * \param[out] polydata the resultant poly data
+          */
         void
         allocVtkPolyData (vtkSmartPointer<vtkPolyData> &polydata);
 
-        /** \brief Allocate a new unstructured grid smartpointer. Internal */
+        /** \brief Allocate a new unstructured grid smartpointer. Internal 
+          * \param[out] polydata the resultant poly data
+          */
         void
         allocVtkUnstructuredGrid (vtkSmartPointer<vtkUnstructuredGrid> &polydata);
     };
