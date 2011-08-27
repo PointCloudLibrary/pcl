@@ -205,7 +205,7 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh){
   float x_lowest = 100000;
   float x_highest = 0 ;
   float y_lowest = 100000;
-  float y_highest = 0 ;
+  //float y_highest = 0 ;
   float z_lowest = 100000;
   float z_highest = 0;
   float x_, y_, z_;
@@ -221,7 +221,7 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh){
 
     // y
     if (y_ <= y_lowest) y_lowest = y_;
-    if (y_ > y_lowest) y_highest = y_;
+    //if (y_ > y_lowest) y_highest = y_;
 
     // z
     if (z_ <= z_lowest) z_lowest = z_;
