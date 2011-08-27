@@ -543,29 +543,29 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   vtkSmartPointer<vtkFloatArray> data = vtkSmartPointer<vtkFloatArray>::New ();
   data->SetNumberOfComponents (3);
   
-  vtkIdType nr_points = (2 * cloud->points.size () * 3) / level;
-  float* pts = new float[nr_points];
+  vtkIdType nr_normals = (cloud->points.size () - 1) / level + 1 ;
+  float* pts = new float[2 * nr_normals * 3];
 
-  for (size_t i = 0; i < cloud->points.size (); i+=level)
+  for (size_t i = 0, j = 0; j < nr_normals; j++, i = j * level)
   {
     PointT p = cloud->points[i];
     p.x += normals->points[i].normal[0] * scale; 
     p.y += normals->points[i].normal[1] * scale; 
     p.z += normals->points[i].normal[2] * scale;
     
-    pts[2 * i * 3 + 0] = cloud->points[i].x;
-    pts[2 * i * 3 + 1] = cloud->points[i].y;
-    pts[2 * i * 3 + 2] = cloud->points[i].z;
-    pts[2 * i * 3 + 3] = p.x;
-    pts[2 * i * 3 + 4] = p.y;
-    pts[2 * i * 3 + 5] = p.z;
+    pts[2 * j * 3 + 0] = cloud->points[i].x;
+    pts[2 * j * 3 + 1] = cloud->points[i].y;
+    pts[2 * j * 3 + 2] = cloud->points[i].z;
+    pts[2 * j * 3 + 3] = p.x;
+    pts[2 * j * 3 + 4] = p.y;
+    pts[2 * j * 3 + 5] = p.z;
 
     lines->InsertNextCell(2);
-    lines->InsertCellPoint(2*i);
-    lines->InsertCellPoint(2*i+1);
+    lines->InsertCellPoint(2*j);
+    lines->InsertCellPoint(2*j+1);
   }
 
-  data->SetArray (&pts[0], nr_points, 0);
+  data->SetArray (&pts[0], 2 * nr_normals * 3, 0);
   points->SetData (data);
 
   vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
