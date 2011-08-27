@@ -192,7 +192,7 @@ add_subdirectory(test)
 add_subdirectory(tools)
 add_subdirectory(apps)
 add_subdirectory(cuda)
-add_subdirectory(python)
+#add_subdirectory(python)
 
 ### ---[ Documentation
 add_subdirectory(doc)
