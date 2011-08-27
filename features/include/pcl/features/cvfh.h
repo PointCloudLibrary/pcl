@@ -69,6 +69,8 @@ namespace pcl
       typedef typename pcl::NormalEstimation<PointNormal, PointNormal> NormalEstimator;
       typedef typename pcl::VFHEstimation<PointInT, PointNT, pcl::VFHSignature308> VFHEstimator;
 
+      //pcl::PointCloud<pcl::PointXYZINormal>::Ptr clusters_colored_;
+
       /** \brief Empty constructor. */
       CVFHEstimation () :
         vpx_ (0), vpy_ (0), vpz_ (0), leaf_size_ (0.005), curv_threshold_ (0.03), cluster_tolerance_ (leaf_size_ * 3),
@@ -77,6 +79,7 @@ namespace pcl
         search_radius_ = 0;
         k_ = 1;
         feature_name_ = "CVFHEstimation";
+        normalize_bins_ = false;
       }
       ;
 
@@ -159,6 +162,24 @@ namespace pcl
         min_points_ = min;
       }
 
+      /*
+       * \brief Set resolution of the pointcloud
+       */
+      inline void
+      setLeafSize (float size)
+      {
+        leaf_size_ = size;
+      }
+
+      /*
+       * \brief Sets wether if the CVFH signatures should be normalized or not
+       */
+      inline void
+      setNormalizeBins (bool normalize)
+      {
+        normalize_bins_ = normalize;
+      }
+
     private:
       /** \brief Values describing the viewpoint ("pinhole" camera model assumed). 
        * By default, the viewpoint is set to 0,0,0.
@@ -166,9 +187,13 @@ namespace pcl
       float vpx_, vpy_, vpz_;
 
       /** \brief Size of the voxels after voxel gridding. IMPORTANT: Must match the voxel 
-       * size of the training data
+       * size of the training data or the normalize_bins_ flag must be set to true.
        */
       float leaf_size_;
+
+      /** \brief Wether to normalize the signatures or not, default=false
+       */
+      bool normalize_bins_;
 
       /** \brief Curvature threshold for removing normals */
       float curv_threshold_;
