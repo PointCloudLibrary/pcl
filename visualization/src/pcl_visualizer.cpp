@@ -1867,7 +1867,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     int xres, int yres, 
     std::vector<pcl::PointCloud<pcl::PointXYZ>, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZ> > > & clouds,
     std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f> > & poses, 
-    std::vector<float> & enthropies, int tesselation_level, float view_angle)
+    std::vector<float> & enthropies, int tesselation_level, float view_angle, float radius_sphere)
 {
   if (rens_->GetNumberOfItems () > 1)
   {
@@ -1976,7 +1976,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   vtkPolyData *sphere = subdivide->GetOutput ();
   sphere->Update ();
 
-  double camera_radius = 1;
+  double camera_radius = radius_sphere;
   double cam_pos[3];
   double first_cam_pos[3];
 

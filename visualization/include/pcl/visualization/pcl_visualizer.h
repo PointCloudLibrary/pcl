@@ -1038,7 +1038,7 @@ namespace pcl
         void
         renderViewTesselatedSphere (int xres, int yres,
         std::vector<pcl::PointCloud<pcl::PointXYZ>,Eigen::aligned_allocator< pcl::PointCloud<pcl::PointXYZ> > > & cloud,
-        std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level, float view_angle=45);
+        std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level, float view_angle=45, float radius_sphere=1);
 
         /** \brief Camera view, window position and size. */
         Camera camera_;
