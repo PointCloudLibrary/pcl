@@ -42,6 +42,9 @@ if (build)
   
   PCL_ADD_EXECUTABLE (mls_smoothing ${SUBSYS_NAME} mls_smoothing.cpp)
   target_link_libraries (mls_smoothing pcl_common pcl_io pcl_surface)
+
+  PCL_ADD_EXECUTABLE (gp3_surface ${SUBSYS_NAME} gp3_surface.cpp)
+  target_link_libraries (gp3_surface pcl_common pcl_io pcl_surface)
   
   if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
