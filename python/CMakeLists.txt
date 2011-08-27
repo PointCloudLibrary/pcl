@@ -2,8 +2,16 @@ set(SUBSYS_NAME python)
 set(SUBSYS_DESC "Python pcl")
 set(SUBSYS_DEPS common filters)
 
-set(build TRUE)
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
+if(PYTHONLIBS_FOUND)
+    set(DEFAULT TRUE)
+    set(REASON "")
+    include_directories(${PYTHON_INCLUDE_PATH})
+else(PYTHONLIBS_FOUND)
+    set(DEFAULT FALSE)
+    set(REASON "PythonLibs were not found!")
+endif(PYTHONLIBS_FOUND)
+
+PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 add_custom_command(
@@ -19,11 +27,8 @@ if(build)
     set(LIB_NAME pcl)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    include_directories(${PYTHON_INCLUDE_PATH})
     include_directories(${PCL_INCLUDE_DIRS})
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
-    link_directories(${PCL_LIBRARY_DIRS})
-    add_definitions(${PCL_DEFINITIONS})
 
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
