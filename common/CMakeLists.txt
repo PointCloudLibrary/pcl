@@ -24,6 +24,7 @@ if(build)
         include/pcl/point_representation.h
         include/pcl/point_types.h
         include/pcl/win32_macros.h
+        include/pcl/correspondence.h
         )
         
     if(NOT USE_ROS)
