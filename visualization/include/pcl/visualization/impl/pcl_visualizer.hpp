@@ -536,8 +536,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
     return (false);
   }
 
-  vtkSmartPointer<vtkAppendPolyData> polydata;
-  allocVtkPolyData (polydata);
+  vtkSmartPointer<vtkAppendPolyData> polydata = vtkSmartPointer<vtkAppendPolyData>::New ();
 
   for (size_t i = 0; i < cloud->points.size (); i+=level)
   {
@@ -556,7 +555,28 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
-  createActorFromVTKDataSet (polydata->GetOutput (), actor);
+  //createActorFromVTKDataSet (polydata->GetOutput (), actor);
+
+  actor = vtkSmartPointer<vtkLODActor>::New ();
+
+  vtkSmartPointer<vtkDataArray> scalars = polydata->GetOutput ()->GetPointData ()->GetScalars ();
+  double minmax[2];
+  if (scalars)
+    scalars->GetRange (minmax);
+
+  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();      
+  mapper->SetInput (polydata->GetOutput ());
+  if (scalars)
+    mapper->SetScalarRange (minmax);
+  mapper->SetScalarModeToUsePointData ();
+  mapper->InterpolateScalarsBeforeMappingOn ();
+  mapper->ScalarVisibilityOn ();
+  mapper->ImmediateModeRenderingOff ();
+
+  actor->SetNumberOfCloudPoints (polydata->GetOutput ()->GetNumberOfPoints () / 10);
+  actor->GetProperty ()->SetInterpolationToFlat ();
+
+  actor->SetMapper (mapper);
 
   // Add it to all renderers
   addActorToRenderer (actor, viewport);
