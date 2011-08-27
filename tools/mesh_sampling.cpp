@@ -154,7 +154,7 @@ printHelp (int argc, char **argv)
 int
 main (int argc, char **argv)
 {
-  print_info ("Convert a CAD model to a point cloud using ray tracing operations. For more information, use: %s -h\n",
+  print_info ("Convert a CAD model to a point cloud using uniform sampling. For more information, use: %s -h\n",
               argv[0]);
 
   if (argc < 3)
