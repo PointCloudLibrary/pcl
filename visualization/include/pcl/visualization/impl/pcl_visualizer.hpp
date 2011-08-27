@@ -290,7 +290,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPolygon (
     const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
-    const std::string &id, int viewport)
+    double r, double g, double b, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
@@ -306,6 +306,8 @@ pcl::visualization::PCLVisualizer::addPolygon (
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetColor (r, g, b);
+  actor->GetMapper ()->ScalarVisibilityOff ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -317,21 +319,15 @@ pcl::visualization::PCLVisualizer::addPolygon (
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPolygon (
     const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
-    double r, double g, double b, const std::string &id, int viewport)
+    const std::string &id, int viewport)
 {
-  if (!addPolygon<PointT> (cloud, id, viewport))
+  return (!addPolygon<PointT> (cloud, 0.5, 0.5, 0.5, id, viewport));
     return (false);
-
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second);
-  actor->GetProperty ()->SetColor (r, g, b);
-  actor->Modified ();
-  return (true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename P1, typename P2> bool
-pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, const std::string &id, int viewport)
+pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, double r, double g, double b, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
@@ -347,6 +343,8 @@ pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, const 
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetColor (r, g, b);
+  actor->GetMapper ()->ScalarVisibilityOff ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -356,16 +354,9 @@ pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, const 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename P1, typename P2> bool
-pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, double r, double g, double b, const std::string &id, int viewport)
+pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, const std::string &id, int viewport)
 {
-  if (!addLine (pt1, pt2, id, viewport))
-    return (false);
-
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second);
-  actor->GetProperty ()->SetColor (r, g, b);
-  actor->Modified ();
-  return (true);
+  return (!addLine (pt1, pt2, 0.5, 0.5, 0.5, id, viewport));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -415,7 +406,7 @@ pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, double
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radius, const std::string &id, int viewport)
+pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radius, double r, double g, double b, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
@@ -431,6 +422,9 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetInterpolationToGouraud ();
+  actor->GetMapper ()->ScalarVisibilityOff ();
+  actor->GetProperty ()->SetColor (r, g, b);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -440,16 +434,9 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radius, double r, double g, double b, const std::string &id, int viewport)
+pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radius, const std::string &id, int viewport)
 {
-  if (!addSphere (center, radius, id, viewport))
-    return (false);
-
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second);
-  actor->GetProperty ()->SetColor (r, g, b);
-  actor->Modified ();
-  return (true);
+  return (addSphere (center, radius, 0.5, 0.5, 0.5, id, viewport));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

@@ -718,7 +718,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
   if (scalars)
     mapper->SetScalarRange (minmax);
   mapper->SetScalarModeToUsePointData ();
-  mapper->InterpolateScalarsBeforeMappingOn();
+  mapper->InterpolateScalarsBeforeMappingOn ();
   mapper->ScalarVisibilityOn ();
   mapper->ImmediateModeRenderingOff ();
 
