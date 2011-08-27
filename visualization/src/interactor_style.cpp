@@ -84,6 +84,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
   init_ = true;
 
   stereo_anaglyph_mask_default_ = true;
+  alt_on_key_down_ = false;
 
   // Add our own mouse callback before any user callback. Used for accurate point picking.
   mouse_callback_ = vtkSmartPointer<pcl::visualization::PointPickingCallback>::New ();
@@ -160,7 +161,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
   // Get the status of special keys (Cltr+Alt+Shift)
   //bool shift = Interactor->GetShiftKey   ();
   bool ctrl  = Interactor->GetControlKey ();
-  bool alt   = Interactor->GetAltKey     ();
+  bool alt   = (alt_on_key_down_ || Interactor->GetAltKey ());
 
   //fprintf (stderr, "Key sym: %s\n", Interactor->GetKeySym ());
   // ---[ Check the rest of the key codes 
@@ -190,7 +191,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
 
         // Create the new geometry
         PointCloudGeometryHandler<sensor_msgs::PointCloud2>::ConstPtr geometry_handler = act->geometry_handlers[index];
-        //pcl::console::print_debug ("[OnChar] Setting a new geometry handler (%s) for actor %s\n", geometry_handler->getFieldName ().c_str (), (*it).first.c_str ());
 
         // Use the handler to obtain the geometry
         vtkSmartPointer<vtkPoints> points;
@@ -227,8 +227,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
 
         // Get the new color
         PointCloudColorHandler<sensor_msgs::PointCloud2>::ConstPtr color_handler = act->color_handlers[index];
-
-        //pcl::console::print_debug ("[OnChar] Setting a new color handler (%s) for actor %s\n", color_handler->getFieldName ().c_str (), (*it).first.c_str ());
 
         vtkSmartPointer<vtkDataArray> scalars;
         color_handler->getColor (scalars);
@@ -628,6 +626,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::registerPointPickingCallback (
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 {
+  alt_on_key_down_ = Interactor->GetAltKey ();
   KeyboardEvent event (true, Interactor->GetKeySym (), Interactor->GetKeyCode (), Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
   keyboard_signal_ (event);
   Superclass::OnKeyDown ();
@@ -826,12 +825,6 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnChar ()
     return;
   }
 
-/*  if (!wins_)
-  {
-    pcl::console::print_error ("[PCLHistogramVisualizerInteractorStyle] No renderer-window-interactor map given! Use setRenWinInteractMap () before continuing.\n");
-    return;
-  }*/
-
   FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
 
   if (wif_->GetInput () == NULL)
@@ -850,7 +843,7 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnChar ()
   }
 
   // Get the status of special keys (Cltr+Alt+Shift)
-  bool alt   = Interactor->GetAltKey     ();
+  bool alt = Interactor->GetAltKey ();
 
   //fprintf (stderr, "Key sym: %s\n", Interactor->GetKeySym ());
   // ---[ Check the rest of the key codes 

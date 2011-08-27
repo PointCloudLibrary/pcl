@@ -172,6 +172,12 @@ namespace pcl
         boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)> keyboard_signal_;
         boost::signals2::signal<void (const pcl::visualization::PointPickingEvent&)> point_picking_signal_;
 
+        /** \brief Bool set when ALT is pressed. We need this because on some
+          * OSes (e.g. Windows), the ALT state is set on \ref OnKeyDown and not
+          * on \ref OnChar.
+          */
+        bool alt_on_key_down_;
+
         /** \brief Interactor style internal method. Gets called whenever a key is pressed. */
         virtual void 
         OnChar ();
