@@ -44,7 +44,7 @@
 
 #include <Eigen/StdVector>
 
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::PointXYZ)
+/** BROKEN EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::PointXYZ)*/
 
 struct DataGenerator
 {
