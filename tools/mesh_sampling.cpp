@@ -83,7 +83,7 @@ randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, dou
 {
   float r = uniform_deviate (rand ()) * totalArea;
 
-  std::vector<double>::iterator low = lower_bound (cumulativeAreas->begin (), cumulativeAreas->end (), r);
+  std::vector<double>::iterator low = std::lower_bound (cumulativeAreas->begin (), cumulativeAreas->end (), r);
   vtkIdType el = (vtkIdType)(low - cumulativeAreas->begin ());
 
   double A[3], B[3], C[3];
