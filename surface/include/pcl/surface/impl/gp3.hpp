@@ -113,7 +113,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
       part_[R_] = part_index++;
 
       // creating starting triangle
-      searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
+      //searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
+      tree_->nearestKSearch ((*indices_)[R_], nnn_, nnIdx, sqrDists);
       double sqr_dist_threshold = (std::min)(sqr_max_edge, sqr_mu * sqrDists[1]);
 
       // Get the normal estimate at the current point 
@@ -259,7 +260,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
         state_[R_] = COMPLETED;
         continue;
       }
-      searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
+      //searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
+      tree_->nearestKSearch ((*indices_)[R_], nnn_, nnIdx, sqrDists);
 
       // Locating FFN and SFN to adapt distance threshold
       double sqr_source_dist = (coords_[R_] - coords_[source_[R_]]).squaredNorm ();
@@ -1852,7 +1854,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (
       part_[R_] = part_index++;
 
       // creating starting triangle
-      searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
+      //searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
+      tree_->nearestKSearch ((*indices_)[R_], nnn_, nnIdx, sqrDists);
       double sqr_dist_threshold = (std::min)(sqr_max_edge, sqr_mu * sqrDists[1]);
 
       // Get the normal estimate at the current point
@@ -1999,7 +2002,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (
         state_[R_] = COMPLETED;
         continue;
       }
-      searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
+      //searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
+      tree_->nearestKSearch ((*indices_)[R_], nnn_, nnIdx, sqrDists);
 
       // Locating FFN and SFN to adapt distance threshold
       double sqr_source_dist = (coords_[R_] - coords_[source_[R_]]).squaredNorm ();
@@ -2833,7 +2837,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (
       part_[R_] = part_index++;
 
       // creating starting triangle
-      searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
+      //searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
+      tree_->nearestKSearch ((*indices_)[R_], nnn_, nnIdx, sqrDists);
       double sqr_dist_threshold = (std::min)(sqr_max_edge, sqr_mu * sqrDists[1]);
 
       // Get the normal estimate at the current point
@@ -2980,7 +2985,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (
         state_[R_] = COMPLETED;
         continue;
       }
-      searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
+      //searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
+      tree_->nearestKSearch ((*indices_)[R_], nnn_, nnIdx, sqrDists);
 
       // Locating FFN and SFN to adapt distance threshold
       double sqr_source_dist = (coords_[R_] - coords_[source_[R_]]).squaredNorm ();

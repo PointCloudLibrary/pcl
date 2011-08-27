@@ -63,8 +63,6 @@ namespace pcl
       typedef typename pcl::KdTree<PointInT> KdTree;
       typedef typename pcl::KdTree<PointInT>::Ptr KdTreePtr;
 
-      typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
-
       /** \brief Constructor. */
       SurfaceReconstruction () : tree_(), check_tree_(true) {}
 
@@ -81,18 +79,13 @@ namespace pcl
       setSearchMethod (const KdTreePtr &tree)
       {
         tree_ = tree;
-        // Declare the search locator definition
-        int (KdTree::*nearestKSearch)(int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) = &KdTree::nearestKSearch;
-        search_method_ = boost::bind (nearestKSearch, boost::ref (tree_), _1, _2, _3, _4);
       }
 
       /** \brief Get a pointer to the search method used. */
-      inline KdTreePtr getSearchMethod () { return (tree_); }
+      inline KdTreePtr 
+      getSearchMethod () { return (tree_); }
 
     protected:
-      /** \brief The search method template for indices. */
-      SearchMethod search_method_;
-
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;
 
