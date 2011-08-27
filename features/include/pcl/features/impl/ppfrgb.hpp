@@ -94,6 +94,7 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
     tree_->radiusSearch (i, search_radius_, nn_indices, nn_distances);
 
     PointOutT average_feature_nn;
+    average_feature_nn.alpha_m = 0;
     average_feature_nn.f1 = average_feature_nn.f2 = average_feature_nn.f3 = average_feature_nn.f4 =
         average_feature_nn.r_ratio = average_feature_nn.g_ratio = average_feature_nn.b_ratio = 0.0f;
 
