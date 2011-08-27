@@ -536,7 +536,15 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
     return (false);
   }
 
-  vtkSmartPointer<vtkAppendPolyData> polydata = vtkSmartPointer<vtkAppendPolyData>::New ();
+  vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+  vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
+
+  points->SetDataTypeToFloat ();
+  vtkSmartPointer<vtkFloatArray> data = vtkSmartPointer<vtkFloatArray>::New ();
+  data->SetNumberOfComponents (3);
+  
+  vtkIdType nr_points = (2 * cloud->points.size () * 3) / level;
+  float* pts = new float[nr_points];
 
   for (size_t i = 0; i < cloud->points.size (); i+=level)
   {
@@ -544,40 +552,35 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
     p.x += normals->points[i].normal[0] * scale; 
     p.y += normals->points[i].normal[1] * scale; 
     p.z += normals->points[i].normal[2] * scale;
-    vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();
-    line->SetPoint1 (cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
-    line->SetPoint2 (p.x, p.y, p.z);
-    line->Update ();
-    polydata->AddInput (line->GetOutput ());
+    
+    pts[2 * i * 3 + 0] = cloud->points[i].x;
+    pts[2 * i * 3 + 1] = cloud->points[i].y;
+    pts[2 * i * 3 + 2] = cloud->points[i].z;
+    pts[2 * i * 3 + 3] = p.x;
+    pts[2 * i * 3 + 4] = p.y;
+    pts[2 * i * 3 + 5] = p.z;
+
+    lines->InsertNextCell(2);
+    lines->InsertCellPoint(2*i);
+    lines->InsertCellPoint(2*i+1);
   }
-  // Convert the PointCloud to VTK PolyData
-  polydata->Update ();
 
-  // Create an Actor
-  vtkSmartPointer<vtkLODActor> actor;
-  //createActorFromVTKDataSet (polydata->GetOutput (), actor);
+  data->SetArray (&pts[0], nr_points, 0);
+  points->SetData (data);
 
-  actor = vtkSmartPointer<vtkLODActor>::New ();
-
-  vtkSmartPointer<vtkDataArray> scalars = polydata->GetOutput ()->GetPointData ()->GetScalars ();
-  double minmax[2];
-  if (scalars)
-    scalars->GetRange (minmax);
+  vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
+  polyData->SetPoints(points);
+  polyData->SetLines(lines);
 
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();      
-  mapper->SetInput (polydata->GetOutput ());
-  if (scalars)
-    mapper->SetScalarRange (minmax);
-  mapper->SetScalarModeToUsePointData ();
-  mapper->InterpolateScalarsBeforeMappingOn ();
-  mapper->ScalarVisibilityOn ();
-  mapper->ImmediateModeRenderingOff ();
+  mapper->SetInput (polyData);
+  mapper->SetColorModeToMapScalars();
+  mapper->SetScalarModeToUsePointData();
 
-  actor->SetNumberOfCloudPoints (polydata->GetOutput ()->GetNumberOfPoints () / 10);
-  actor->GetProperty ()->SetInterpolationToFlat ();
-
-  actor->SetMapper (mapper);
-
+  // create actor
+  vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>::New();
+  actor->SetMapper(mapper);
+  
   // Add it to all renderers
   addActorToRenderer (actor, viewport);
 
