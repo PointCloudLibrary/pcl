@@ -135,6 +135,38 @@ const static int NEAREST_RADIUS_SEARCH       = 5;
         virtual void
         approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg);
 
+inline int
+    nearestKSearch (std::vector<const PointT>& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances){
+        std::cerr << "This function is not supported by AutoTunedSearch" << std::endl;
+exit(0);
+};
+inline int
+    radiusSearch (std::vector<PointT>& point, std::vector <  double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const
+{
+
+        std::cerr << "This function is not supported by AutoTunedSearch" << std::endl;
+exit(0);
+};
+
+
+inline int
+approxRadiusSearch (const PointCloudConstPtr& cloud, int index, double radius,
+                              std::vector<int>& k_indices, std::vector<float>& k_distances,
+                              int max_nn)const
+{
+        std::cerr << "This function is not supported by AutotunedSearch" << std::endl;
+exit(0);
+}
+
+
+inline int
+approxNearestKSearch (const PointCloudConstPtr& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
+{
+        std::cerr << "This function is not supported by AutotunedSearch" << std::endl;
+exit(0);
+}
+
+
 
 
   private:

@@ -87,6 +87,8 @@ namespace pcl
       typedef pcl::PointCloud<PointT> PointCloud;
       typedef boost::shared_ptr<PointCloud> PointCloudPtr;
       typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+      typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
+
 
 
       /** \brief Provide a pointer to the input data set.
@@ -109,8 +111,29 @@ namespace pcl
 
       }
 
+      inline void 
+      setInputCloud(const PointCloudConstPtr& cloud, const IndicesConstPtr &indices)
+      {
+	std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+      }
 
-     void check();
+      
+    inline int
+    nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
+{
+
+	std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+	return 0;
+}
+
+inline int
+radiusSearch (const PointCloud& cloud, int index, double radius,
+                              std::vector<int>& k_indices, std::vector<float>& k_distances,
+                              int max_nn) 
+{
+	std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+	return 0;
+}
 
       /** \brief Search for all neighbors of query point that are within a given radius.
        * \param cloud_arg the point cloud data
@@ -217,7 +240,54 @@ namespace pcl
       int approxNearestKSearch (const PointCloudConstPtr &cloud, int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances);
 
 
+    /* Functions which are not implemented */
+      inline void 
+        approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
+                             float &sqr_distance_arg)
+       
+{
+	std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+exit(0);
+}
 
+      inline void 
+        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg){
+	std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+exit(0);
+};
+
+      inline void 
+        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg){
+	std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+exit(0);
+};
+
+
+inline void
+            evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type){
+
+        std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+exit(0);
+}
+
+
+inline int
+    nearestKSearch (std::vector<const PointT>& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances){
+        std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+exit(0);
+};
+
+
+inline int
+    radiusSearch (std::vector<PointT>& point, std::vector <  double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const
+{
+
+        std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+exit(0);
+};
+
+
+    
       /** \brief Get the maximum allowed distance between the query point and its nearest neighbors. */
       inline double
       getMaxDistance () const

@@ -51,6 +51,8 @@ namespace pcl
   class OctreeGPU : public pcl::Search<PointT> 
 {
 
+   // acts as an interface to the octree GPU implementation
+
 	public:
 OctreeGPU(){}
 ~OctreeGPU(){}

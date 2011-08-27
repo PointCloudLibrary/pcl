@@ -65,29 +65,6 @@ namespace pcl
 
       }
 
-#if 0
-    template<typename PointT, typename LeafT, typename OctreeT>
-      void
-      OctreePointCloud<PointT, LeafT, OctreeT>::deleteTree (bool freeMemory_arg)
-{
-      //  std::cout <<"reached delete tree" << std::endl;
-        if (rootNode_)
-        {
-          // reset octree
-          this->deleteBranch (*rootNode_);
-          this->leafCount_ = 0;
-          this->branchCount_ = 1;
-          this->objectCount_ = 0;
-
-        }
-
-        // delete node pool
-        if (freeMemory_arg)
-          this->poolCleanUp ();
-
-}
-
-#endif
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
       void
@@ -1326,6 +1303,7 @@ namespace pcl
 
         return voxelCount;
       }
+     
 }
 }
 

@@ -289,6 +289,66 @@ namespace pcl
         nearestKSearch (const PointCloudConstPtr &cloud_arg, int index_arg, int k_arg, std::vector<int> &k_indices_arg,
                         std::vector<float> &k_sqr_distances_arg);
 
+    inline int
+    nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
+{
+
+        std::cerr << "This function is not supported by Octree class" << std::endl;
+        return 0;
+}
+
+
+inline int
+radiusSearch (const PointCloud& cloud, int index, double radius,
+                              std::vector<int>& k_indices, std::vector<float>& k_distances,
+                              int max_nn) 
+{
+        std::cerr << "This function is not supported by Octree class" << std::endl;
+        return 0;
+}
+
+inline int
+approxRadiusSearch (const PointCloudConstPtr& cloud, int index, double radius,
+                              std::vector<int>& k_indices, std::vector<float>& k_distances,
+                              int max_nn)const
+{
+        std::cerr << "This function is not supported by Octree" << std::endl;
+exit(0);
+}
+
+
+inline int
+approxNearestKSearch (const PointCloudConstPtr& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
+{
+        std::cerr << "This function is not supported by Octree" << std::endl;
+exit(0);
+}
+
+inline void
+            evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type){
+
+        std::cerr << "This function is not supported by Octree" << std::endl;
+exit(0);
+}
+
+
+inline int
+    nearestKSearch (std::vector<const PointT>& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances){
+        std::cerr << "This function is not supported by Octree" << std::endl;
+exit(0);
+};
+
+
+inline int
+    radiusSearch (std::vector<PointT>& point, std::vector <  double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const
+{
+
+        std::cerr << "This function is not supported by Octree" << std::endl;
+exit(0);
+};
+
+
+
         /** \brief Search for k-nearest neighbors at given query point.
          * @param p_q_arg the given query point
          * @param k_arg the number of neighbors to search for

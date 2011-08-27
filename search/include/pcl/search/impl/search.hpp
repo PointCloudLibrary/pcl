@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ *  Author: Siddharth Choudhary (itzsid@gmail.com)
  *
  */
 
@@ -46,98 +46,6 @@
 using namespace std;
 namespace pcl
 {
-
-
-#if 1
-template <typename PointT> void 
-Search<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices)
-{
-
-}
-
-#endif
-
-template <typename PointT> void 
-Search<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
-{
-
-}
-#if 1
-template <typename PointT> int 
-Search<PointT>::nearestKSearch (const PointT& point,  int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances) 
-{
-
-}
-#endif
-
-template <typename PointT> int 
-Search<PointT>::nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances) 
-{
-}
-
-
-
-template <typename PointT> int 
-Search<PointT>::nearestKSearch (int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
-{
-}
-
-
-template <typename PointT> int 
-Search<PointT>::radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices, std::vector<float>& k_distances, int max_nn) const
-{
-}
-
-template <typename PointT> int 
-Search<PointT>::radiusSearch (const PointCloud& cloud, int index, double radius,
-                              std::vector<int>& k_indices, std::vector<float>& k_distances,
-                              int max_nn) 
-{
-}
-
-template <typename PointT> int 
-Search<PointT>::radiusSearch (int index, double radius, std::vector<int>& k_indices,
-                              std::vector<float>& k_distances, int max_nn) const
-{
-}
-
-template <typename PointT> void 
-        Search<PointT>::
-        approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
-                             float &sqr_distance_arg){}
-
-template <typename PointT> void 
-        Search<PointT>::
-        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg){};
-
-template <typename PointT> void 
-        Search<PointT>::
-        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg){};
-
-template <typename PointT> int
-Search<PointT>::approxRadiusSearch (const PointCloud& cloud, int index, double radius,
-                              std::vector<int>& k_indices, std::vector<float>& k_distances,
-                              int max_nn)
-{
-}
-
-
-template <typename PointT> int
-Search<PointT>::approxNearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
-{
-}
-
-template <typename PointT> void 
-            Search<PointT>::evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type){}
-
-
-template <typename PointT> int
-    Search<PointT>::nearestKSearch (std::vector<const PointT>& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances){};
-
-
-template <typename PointT> int
-    Search<PointT>::radiusSearch (std::vector<PointT>& point, std::vector <  double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const
-{};
 
 }
 #define PCL_INSTANTIATE_Search(T) template class PCL_EXPORTS pcl::Search<T>;

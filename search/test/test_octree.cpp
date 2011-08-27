@@ -262,7 +262,6 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
   ASSERT_EQ ( (bestMatchCount > 0) , true);
 }
 
-#if 0
 TEST (PCL, Octree_RadiusSearch_GPU)
 {
 	PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
@@ -281,7 +280,7 @@ TEST (PCL, Octree_RadiusSearch_GPU)
 
 
 
-	Search<PointXYZ>* octree = new OctreeGPU<PointXYZ>();
+	Search<PointXYZ>* octree = new pcl::octree::OctreePointCloud<PointXYZ>(0.1f);
 	octree->setInputCloud(cloudIn);
 
 	std::vector <PointXYZ > point;
@@ -303,7 +302,6 @@ TEST (PCL, Octree_RadiusSearch_GPU)
 
 	octree->radiusSearch (point, radiuses, k_indices,k_distances,max_nn );
 }
-#endif
 
 TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
 {

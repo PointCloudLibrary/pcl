@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ *  Author: Siddharth Choudhary (itzsid@gmail.com)
  *
  */
 
@@ -48,9 +48,12 @@ using namespace std;
 namespace pcl
 {
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> void 
 AutotunedSearch<PointT>::initSearchDS (int spatial_locator)
 {
+    // specifies the data-structure to be used using spatial_locator flag
 
     if(spatial_locator == KDTREE_FLANN) {
         // initialize kdtree
@@ -75,9 +78,13 @@ AutotunedSearch<PointT>::initSearchDS (int spatial_locator)
 
 }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> void 
 AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& cloudIn,const int search_type)
 {
+   // evaluates different search data-structures for the given data and sets it to the ds having minimum time
+   
 	unsigned int searchIdx;
    while(1){
    searchIdx = rand()%(cloudIn->width * cloudIn->height);
@@ -85,7 +92,7 @@ AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& cloudI
    }
    const PointT& searchPoint = cloudIn->points[searchIdx];
 
-
+double time_kdtree, time_octree, time_organized_data;
 if(search_type == NEAREST_K_SEARCH)
 {
 	
@@ -134,7 +141,11 @@ if(search_type == NEAREST_K_SEARCH)
 	std::cout << std::endl;
 
 
-	std::cout << "Time Taken: " << "KDTree: " << time2 - time1 << '\t' <<"OranizedData: "  << time3 - time2 << '\t' << "Octree: " << getTime() - time3 << '\t' << std::endl;	
+	 time_kdtree = time2 - time1;
+	 time_organized_data = time3 - time2;
+	 time_octree = getTime() - time3;
+	
+	std::cout << "Time Taken: " << "KDTree: " << time_kdtree << '\t' <<"OranizedData: "  << time_organized_data << '\t' << "Octree: " << time_octree << '\t' << std::endl;	
 
 }
 else if(search_type == NEAREST_RADIUS_SEARCH)
@@ -184,16 +195,42 @@ else if(search_type == NEAREST_RADIUS_SEARCH)
         std::cout << std::endl;
 
 
-        std::cout << "Time Taken: " << "KDTree: " << time2 - time1 << '\t' <<"OranizedData: "  << time3 - time2 << '\t' << "Octree: " << getTime() - time3 << '\t' << std::endl;
+	 time_kdtree = time2 - time1;
+	 time_organized_data = time3 - time2;
+	 time_octree = getTime() - time3;
+	
+	std::cout << "Time Taken: " << "KDTree: " << time_kdtree << '\t' <<"OranizedData: "  << time_organized_data << '\t' << "Octree: " << time_octree << '\t' << std::endl;	
+
+}
+else
+{
+
+std::cerr << "Only NEAREST_K_SEARCH and NEAREST_RADIUS_SEARCH supported" << std::endl;
+exit(0);
+}
+// Set the datastructure according to which takes the minimum time
+if(time_kdtree < time_organized_data && time_kdtree < time_octree)
+{
+spatial_loc = KDTREE_FLANN;
+_searchptr.reset(new KdTree<PointT>());
+}
+else if(time_octree < time_kdtree && time_octree < time_organized_data)
+{
+spatial_loc = OCTREE;
+_searchptr.reset(new pcl::octree::OctreePointCloud<PointT>(0.1f));
+}
+else if(time_organized_data < time_kdtree && time_organized_data < time_octree)
+{
+spatial_loc = OCTREE;
+        _searchptr.reset(new OrganizedNeighborSearch<PointT>());
+}
+
+_searchptr->setInputCloud(cloudIn);
 
 }
 
 
-
-
-}
-
-
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> void 
 AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices)
@@ -204,6 +241,7 @@ AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const I
 
 
 }
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> void 
 AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
@@ -212,6 +250,7 @@ AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
     _searchptr->setInputCloud(cloud);
 
 }
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> int 
 AutotunedSearch<PointT>::nearestKSearch (const PointT& point,  int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances) 
@@ -221,6 +260,7 @@ AutotunedSearch<PointT>::nearestKSearch (const PointT& point,  int k, std::vecto
 
 }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> int 
 AutotunedSearch<PointT>::nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances) 
@@ -228,6 +268,7 @@ AutotunedSearch<PointT>::nearestKSearch (const PointCloud& cloud, int index, int
     return _searchptr->nearestKSearch(cloud,index,k,k_indices,k_sqr_distances);
 }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 
 template <typename PointT> int 
@@ -236,6 +277,7 @@ AutotunedSearch<PointT>::nearestKSearch (int index, int k, std::vector<int>& k_i
     return _searchptr->nearestKSearch(index,k,k_indices,k_sqr_distances);
 }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> int 
 AutotunedSearch<PointT>::radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices, std::vector<float>& k_distances, int max_nn) const
@@ -243,6 +285,7 @@ AutotunedSearch<PointT>::radiusSearch (const PointT& point, const double radius,
 
     return _searchptr->radiusSearch(point,radius,k_indices,k_distances,max_nn);
 }
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> int 
 AutotunedSearch<PointT>::radiusSearch (const PointCloud& cloud, int index, double radius,
@@ -251,6 +294,7 @@ AutotunedSearch<PointT>::radiusSearch (const PointCloud& cloud, int index, doubl
 {
     return _searchptr->radiusSearch(cloud,index,radius,k_indices,k_distances,max_nn);
 }
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> int 
 AutotunedSearch<PointT>::radiusSearch (int index, double radius, std::vector<int>& k_indices,
@@ -259,6 +303,7 @@ AutotunedSearch<PointT>::radiusSearch (int index, double radius, std::vector<int
 
     return _searchptr->radiusSearch(index,radius,k_indices,k_distances,max_nn);
 }
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> void 
         AutotunedSearch<PointT>::
@@ -275,6 +320,7 @@ template <typename PointT> void
 	std::cerr << "approxNearestSearch() works only for OCTREE structure\n" << std::endl;
     }
 }
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> void 
         AutotunedSearch<PointT>::
@@ -291,6 +337,7 @@ template <typename PointT> void
     }
 
 };
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> void 
         AutotunedSearch<PointT>::
@@ -308,6 +355,7 @@ template <typename PointT> void
     }
 
 };
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 
 

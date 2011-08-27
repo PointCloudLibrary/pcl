@@ -190,6 +190,71 @@ namespace pcl
         }
     }
 
+ /* Functions which are not implemented */
+      inline void
+        approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
+                             float &sqr_distance_arg)
+
+{
+
+        std::cerr << "This function is not supported by KdTree" << std::endl;
+exit(0);
+}
+
+      inline void
+        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg){
+
+        std::cerr << "This function is not supported by KdTree" << std::endl;
+exit(0);
+};
+
+      inline void
+        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg){
+
+        std::cerr << "This function is not supported by KdTree" << std::endl;
+exit(0);
+};
+
+
+inline int
+approxRadiusSearch (const PointCloudConstPtr& cloud, int index, double radius,
+                              std::vector<int>& k_indices, std::vector<float>& k_distances,
+                              int max_nn)const
+{
+        std::cerr << "This function is not supported by KdTree" << std::endl;
+exit(0);
+}
+
+
+inline int
+approxNearestKSearch (const PointCloudConstPtr& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
+{
+        std::cerr << "This function is not supported by KdTree" << std::endl;
+exit(0);
+}
+
+inline void
+            evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type){
+
+        std::cerr << "This function is not supported by KdTree" << std::endl;
+exit(0);
+}
+
+
+inline int
+    nearestKSearch (std::vector<const PointT>& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances){
+        std::cerr << "This function is not supported by KdTree" << std::endl;
+exit(0);
+};
+
+
+inline int
+    radiusSearch (std::vector<PointT>& point, std::vector <  double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const
+{
+
+        std::cerr << "This function is not supported by KdTree" << std::endl;
+exit(0);
+};
 
 
 
