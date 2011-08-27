@@ -1,6 +1,6 @@
 set(SUBSYS_NAME visualization)
 set(SUBSYS_DESC "Point cloud visualization library")
-set(SUBSYS_DEPS common io kdtree octree range_image octree filters)
+set(SUBSYS_DEPS common io kdtree octree range_image octree filters registration sample_consensus)
 
 if(wxWidgets_FOUND)
   include(${wxWidgets_USE_FILE})
@@ -42,6 +42,7 @@ if(build)
   endif()
 
     set(srcs src/interactor.cpp
+        src/point_picking_event.cpp
         src/interactor_style.cpp
         src/point_cloud_handlers.cpp
         src/pcl_visualizer.cpp
@@ -50,18 +51,24 @@ if(build)
         src/common/io.cpp
         src/common/shapes.cpp
         src/cloud_viewer.cpp
+        src/image_viewer.cpp
+        src/window.cpp
         ${WXWIDGETS_SOURCES}
         )
 
     set(incs 
         include/pcl/${SUBSYS_NAME}/cloud_viewer.h
         include/pcl/${SUBSYS_NAME}/histogram_visualizer.h
+        include/pcl/${SUBSYS_NAME}/image_viewer.h
         include/pcl/${SUBSYS_NAME}/interactor.h
         include/pcl/${SUBSYS_NAME}/interactor_style.h
         include/pcl/${SUBSYS_NAME}/pcl_visualizer.h
+        include/pcl/${SUBSYS_NAME}/registration_visualizer.h
         include/pcl/${SUBSYS_NAME}/point_cloud_handlers.h
         include/pcl/${SUBSYS_NAME}/keyboard_event.h
+        include/pcl/${SUBSYS_NAME}/point_picking_event.h
         include/pcl/${SUBSYS_NAME}/mouse_event.h
+        include/pcl/${SUBSYS_NAME}/window.h
         ${WXWIDGETS_INCLUDES}
         )
 
@@ -77,6 +84,7 @@ if(build)
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/histogram_visualizer.hpp
         include/pcl/${SUBSYS_NAME}/impl/pcl_visualizer.hpp
+        include/pcl/${SUBSYS_NAME}/impl/registration_visualizer.hpp
         include/pcl/${SUBSYS_NAME}/impl/point_cloud_handlers.hpp
         )
 
@@ -84,20 +92,9 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs})
-#    if(MSVC)
-#       set(VTK_COMMON_LIBRARIES optimized vtkCommon debug vtkCommon-gd)
-#       set(VTK_WIDGETS_LIBRARIES optimized vtkWidgets debug vtkWidgets-gd)
-#       set(VTK_HYBRID_LIBRARIES optimized vtkHybrid debug vtkHybrid-gd)
-#       target_link_libraries(${LIB_NAME} pcl_io pcl_kdtree pcl_range_image 
-#                                        ${wxWidgets_LIBRARIES} 
-#                                        ${VTK_COMMON_LIBRARIES} 
-#                                        ${VTK_WIDGETS_LIBRARIES}
-#                                        ${VTK_HYBRID_LIBRARIES})
-#    else(MSVC)
-       target_link_libraries(${LIB_NAME} pcl_io pcl_kdtree pcl_range_image 
-                                        ${wxWidgets_LIBRARIES} 
-                                        vtkCommon vtkWidgets)
-#    endif(MSVC)
+     target_link_libraries(${LIB_NAME} pcl_io pcl_kdtree pcl_range_image 
+                                       ${wxWidgets_LIBRARIES} 
+                                       vtkCommon vtkWidgets)
     set(EXT_DEPS "")
     if(OPENNI_FOUND)
       list(APPEND EXT_DEPS openni-dev)

@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -39,14 +41,15 @@
 
 // PCL includes
 #include <pcl/point_types.h>
+#include <pcl/correspondence.h>
 #include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>
 // 
 #include <pcl/console/print.h>
 #include <pcl/visualization/interactor.h>
-#include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/visualization/common/shapes.h>
+#include <pcl/visualization/window.h>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 // VTK includes
@@ -54,6 +57,8 @@
 #include <vtkFloatArray.h>
 #include <vtkAppendPolyData.h>
 #include <vtkPointData.h>
+#include <vtkPolyData.h>
+#include <vtkUnstructuredGrid.h>
 #include <vtkTubeFilter.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkDataSetMapper.h>
@@ -85,14 +90,14 @@ namespace pcl
         typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
         /** \brief PCL Visualizer constructor.
-          * \param name the window name (empty by default)
+          * \param[in] name the window name (empty by default)
           */
         PCLVisualizer (const std::string &name = "");
         /** \brief PCL Visualizer constructor.
-          * \param argc
-          * \param argv
-          * \param name the window name (empty by default)
-          * \param style interactor style (defaults to PCLVisualizerInteractorStyle)
+          * \param[in] argc
+          * \param[in] argv
+          * \param[in] name the window name (empty by default)
+          * \param[in] style interactor style (defaults to PCLVisualizerInteractorStyle)
           */
         PCLVisualizer (int &argc, char **argv, const std::string &name = "", 
             PCLVisualizerInteractorStyle* style = PCLVisualizerInteractorStyle::New ());
@@ -100,66 +105,94 @@ namespace pcl
         /** \brief PCL Visualizer destructor. */
         virtual ~PCLVisualizer ();
 
-        /**
-         * @brief registering a callback function for keyboard events
-         * @param callback  the function that will be registered as a callback for a keyboard event
-         * @param cookie    user data that is passed to the callback
-         * @return          connection object that allows to disconnect the callback function.
-         */
-        boost::signals2::connection registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = NULL)
-        {
-          return registerKeyboardCallback (boost::bind (callback, _1, cookie));
-        }
-        
-        /**
-         * @brief registering a callback function for keyboard events
-         * @param callback  the member function that will be registered as a callback for a keyboard event
-         * @param instance  instance to the class that implements the callback function
-         * @param cookie    user data that is passed to the callback
-         * @return          connection object that allows to disconnect the callback function.
-         */
-        template<typename T>
-        boost::signals2::connection registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = NULL)
-        {
-          return registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie));
-        }
-        
-        /**
-         * @brief   registering a callback boost::function for keyboard events
-         * @param   the boost function that will be registered as a callback for a keyboard event
-         * @return  connection object that allows to disconnect the callback function.
-         */
-        boost::signals2::connection registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)>);
+        /** \brief Register a callback boost::function for keyboard events
+          * \param[in] a boost function that will be registered as a callback for a keyboard event
+          * \return    connection object that allows to disconnect the callback function.
+          */
+        boost::signals2::connection 
+        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)>);
 
-        /**
-         * @brief   registering a callback function for mouse events
-         * @param   the boost function that will be registered as a callback for a mouse event
-         * @return  connection object that allows to disconnect the callback function.
-         */
-        boost::signals2::connection registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)>);
-        
-        /**
-         * @brief 
-         * @param callback  the function that will be registered as a callback for a mouse event
-         * @param cookie    user data that is passed to the callback
-         * @return          connection object that allows to disconnect the callback function.
-         */
-        boost::signals2::connection registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = NULL)
+        /** \brief Register a callback function for keyboard events
+          * \param[in] callback  the function that will be registered as a callback for a keyboard event
+          * \param[in] cookie    user data that is passed to the callback
+          * \return              connection object that allows to disconnect the callback function.
+          */
+        inline boost::signals2::connection 
+        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = NULL)
         {
-          return registerMouseCallback (boost::bind (callback, _1, cookie));
+          return (registerKeyboardCallback (boost::bind (callback, _1, cookie)));
         }
         
-        /**
-         * @brief registering a callback function for mouse events
-         * @param callback  the member function that will be registered as a callback for a mouse event
-         * @param instance  instance to the class that implements the callback function
-         * @param cookie    user data that is passed to the callback
-         * @return          connection object that allows to disconnect the callback function.
-         */
-        template<typename T>
-        boost::signals2::connection registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = NULL)
+        /** \brief Register a callback function for keyboard events
+          * \param[in] callback  the member function that will be registered as a callback for a keyboard event
+          * \param[in] instance  instance to the class that implements the callback function
+          * \param[in] cookie    user data that is passed to the callback
+          * \return              connection object that allows to disconnect the callback function.
+          */
+        template<typename T> inline boost::signals2::connection 
+        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = NULL)
         {
-          return registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie));
+          return (registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie)));
+        }
+        
+        /** \brief Register a callback function for mouse events
+          * \param[in] a boost function that will be registered as a callback for a mouse event
+          * \return    connection object that allows to disconnect the callback function.
+          */
+        boost::signals2::connection 
+        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)>);
+        
+        /** \brief Register a callback function for mouse events
+          * \param[in] callback  the function that will be registered as a callback for a mouse event
+          * \param[in] cookie    user data that is passed to the callback
+          * \return              connection object that allows to disconnect the callback function.
+          */
+        inline boost::signals2::connection 
+        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = NULL)
+        {
+          return (registerMouseCallback (boost::bind (callback, _1, cookie)));
+        }
+        
+        /** \brief Register a callback function for mouse events
+          * \param[in] callback  the member function that will be registered as a callback for a mouse event
+          * \param[in] instance  instance to the class that implements the callback function
+          * \param[in] cookie    user data that is passed to the callback
+          * \return              connection object that allows to disconnect the callback function.
+          */
+        template<typename T> inline boost::signals2::connection 
+        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = NULL)
+        {
+          return (registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
+        }
+
+        /** \brief Register a callback function for point picking events
+          * \param[in] a boost function that will be registered as a callback for a point picking event
+          * \return    connection object that allows to disconnect the callback function.
+          */
+        boost::signals2::connection 
+        registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)>);
+        
+        /** \brief Register a callback function for point picking events
+          * \param[in] callback  the function that will be registered as a callback for a point picking event
+          * \param[in] cookie    user data that is passed to the callback
+          * \return              connection object that allows to disconnect the callback function.
+          */
+        inline boost::signals2::connection 
+        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = NULL)
+        {
+          return (registerPointPickingCallback (boost::bind (callback, _1, cookie)));
+        }
+        
+        /** \brief Register a callback function for point picking events
+          * \param[in] callback  the member function that will be registered as a callback for a point picking event
+          * \param[in] instance  instance to the class that implements the callback function
+          * \param[in] cookie    user data that is passed to the callback
+          * \return              connection object that allows to disconnect the callback function.
+          */
+        template<typename T> inline boost::signals2::connection 
+        registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = NULL)
+        {
+          return (registerPointPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }
         
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
@@ -192,37 +225,37 @@ namespace pcl
         addCoordinateSystem (double scale, float x, float y, float z, int viewport = 0);
 
          /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z, Roll,Pitch,Yaw
-          * \
-          * \param scale the scale of the axes (default: 1)
-          * \param t transformation matrix
-          * \param tube_size the size of tube(radius of each orthogonal axies ,default: 1)
-          * \param viewport the view port where the 3D axes should be added (default: all)
-          *
-          * RPY Angles
-          * Rotate the reference frame by the angle roll about axis x
-          * Rotate the reference frame by the angle pitch about axis y
-          * Rotate the reference frame by the angle yaw about axis z
-          *
-          * Description:
-          * Sets the orientation of the Prop3D.  Orientation is specified as
-          * X,Y and Z rotations in that order, but they are performed as
-          * RotateZ, RotateX, and finally RotateY.
-          *
-          * All axies use right hand rule. x=red axis, y=green axis, z=blue axis
-          * z direction is point into the screen.
-          *     z
-          *      \
-          *       \
-          *        \
-          *         -----------> x
-          *         |
-          *         |
-          *         |
-          *         |
-          *         |
-          *         |
-          *         y
-          */
+           *
+           * \param scale the scale of the axes (default: 1)
+           * \param t transformation matrix
+           * \param tube_size the size of tube(radius of each orthogonal axies ,default: 1)
+           * \param viewport the view port where the 3D axes should be added (default: all)
+           *
+           * RPY Angles
+           * Rotate the reference frame by the angle roll about axis x
+           * Rotate the reference frame by the angle pitch about axis y
+           * Rotate the reference frame by the angle yaw about axis z
+           *
+           * Description:
+           * Sets the orientation of the Prop3D.  Orientation is specified as
+           * X,Y and Z rotations in that order, but they are performed as
+           * RotateZ, RotateX, and finally RotateY.
+           *
+           * All axies use right hand rule. x=red axis, y=green axis, z=blue axis
+           * z direction is point into the screen.
+           *     z
+           *      \
+           *       \
+           *        \
+           *         -----------> x
+           *         |
+           *         |
+           *         |
+           *         |
+           *         |
+           *         |
+           *         y
+           */
         void 
         addCoordinateSystem (double scale, const Eigen::Matrix4f& t, int viewport = 0);
 
@@ -560,17 +593,57 @@ namespace pcl
                         int viewport = 0);
 
         /** \brief Add a Polygonline from a polygonMesh object to screen
-          * \param polymesh the polygonal mesh from where the polylines will be extracted
-          * \param id the polygon object id (default: "polygon")
-          * \param viewport the view port where the PolygonMesh should be added (default: all)
+          * \param[in] polymesh the polygonal mesh from where the polylines will be extracted
+          * \param[in] id the polygon object id (default: "polygon")
+          * \param[in] viewport the view port where the PolygonMesh should be added (default: all)
           */
         bool
         addPolylineFromPolygonMesh (const pcl::PolygonMesh &polymesh, 
                                     const std::string &id = "polyline",
                                     int viewport = 0);
 
+        /** \brief Add the specified correspondences to the display. 
+          * \param[in] source_points The source points
+          * \param[in] target_points The target points
+          * \param[in] correspondences The mapping from source points to target points. Each element must be an index into \ref target_points 
+          * \param[in] line_ids A vector of strings into which the IDs of the newly drawn lines will be added
+          * \param[in] id the polygon object id (default: "correspondences")
+          * \param[in] viewport the view port where the PolygonMesh should be added (default: all)
+          */
+        template <typename PointT> bool
+        addCorrespondences (const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
+                            const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
+                            const std::vector<int> & correspondences,
+                            const std::string &id = "correspondences",
+                            int viewport = 0);
+
+        /** \brief Add the specified correspondences to the display. 
+          * \param[in] source_points The source points
+          * \param[in] target_points The target points
+          * \param[in] correspondences The mapping from source points to target points. Each element must be an index into \ref target_points
+          * \param[in] line_ids A vector of strings into which the IDs of the newly drawn lines will be added
+          * \param[in] id the polygon object id (default: "correspondences")
+          * \param[in] viewport the view port where the PolygonMesh should be added (default: all)
+          */
+        template <typename PointT> bool
+        addCorrespondences (const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
+                            const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
+                            const std::vector<pcl::Correspondence> &correspondences,
+                            const std::string &id = "correspondences",
+                            int viewport = 0);
+        
+        /** \brief Remove the specified correspondences from the display. 
+          * \param[in] id the polygon correspondences object id (i.e., given on \ref addCorrespondences)
+          * \param[in] viewport view port from where the polygon should be removed (default: all)
+          */
+        inline void
+        removeCorrespondences (const std::string &id = "correspondences", int viewport = 0)
+        {
+          removeShape (id, viewport);
+        }
+         
         /** \brief Get the color handler index of a rendered PointCloud based on its ID
-          * \param id the point cloud object id
+          * \param[in] id the point cloud object id
           */
         inline int 
         getColorHandlerIndex (const std::string &id)
@@ -960,11 +1033,12 @@ namespace pcl
           * \param poses represent the transformation from object coordinates to camera coordinates for the respective viewpoint.
           * \param enthropies are values between 0 and 1 representing which percentage of the model is seen from the respective viewpoint.
           * \param tesselation_level represents the number of subdivisions applied to the triangles of original icosahedron.
+          * \param view_angle field of view of the virtual camera
           */
         void
         renderViewTesselatedSphere (int xres, int yres,
         std::vector<pcl::PointCloud<pcl::PointXYZ>,Eigen::aligned_allocator< pcl::PointCloud<pcl::PointXYZ> > > & cloud,
-        std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level);
+        std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level, float view_angle=45);
 
         /** \brief Camera view, window position and size. */
         Camera camera_;
@@ -1048,12 +1122,11 @@ namespace pcl
             if (event_id != vtkCommand::ExitEvent)
               return;
             pcl_visualizer->interactor_->stopped = true;
-            //this tends to close the window...
+            // This tends to close the window...
             pcl_visualizer->interactor_->stopLoop ();
           }
           PCLVisualizer* pcl_visualizer;
         };
-
         
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
@@ -1072,7 +1145,7 @@ namespace pcl
         CloudActorMapPtr cloud_actor_map_;
 
         /** \brief Internal list with actor pointers and name IDs for shapes. */
-        ShapeActorMap shape_actor_map_;
+        ShapeActorMapPtr shape_actor_map_;
 
         /** \brief Internal list with actor pointers and viewpoint for coordinates. */
         CoordinateActorMap coordinate_actor_map_;

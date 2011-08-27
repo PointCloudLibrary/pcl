@@ -84,6 +84,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
   init_ = true;
 
   stereo_anaglyph_mask_default_ = true;
+
+  // Add our own mouse callback before any user callback. Used for accurate point picking.
+  mouse_callback_ = vtkSmartPointer<pcl::visualization::PointPickingCallback>::New ();
+  AddObserver (vtkCommand::LeftButtonPressEvent, mouse_callback_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -285,6 +289,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
                   "          l, L           : list all available geometric and color handlers for the current actor map\n"
                   "    ALT + 0..9 [+ CTRL]  : switch between different geometric handlers (where available)\n"
                   "          0..9 [+ CTRL]  : switch between different color handlers (where available)\n"
+                  "\n"
+                  "    SHIFT + left click   : select a point\n"
           );
       break;
     }
@@ -601,14 +607,21 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
 boost::signals2::connection 
 pcl::visualization::PCLVisualizerInteractorStyle::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
-  return mouse_signal_.connect(callback);
+  return (mouse_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection 
 pcl::visualization::PCLVisualizerInteractorStyle::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
-  return keyboard_signal_.connect(callback);
+  return (keyboard_signal_.connect (callback));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection 
+pcl::visualization::PCLVisualizerInteractorStyle::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
+{
+  return (point_picking_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

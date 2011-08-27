@@ -316,14 +316,24 @@ pcl::visualization::CloudViewer::wasStopped (int millis)
   return !impl_->viewer_;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
 pcl::visualization::CloudViewer::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
   return impl_->viewer_->registerKeyboardCallback (callback);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
 pcl::visualization::CloudViewer::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
   return impl_->viewer_->registerMouseCallback (callback);
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection
+pcl::visualization::CloudViewer::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
+{
+  return (impl_->viewer_->registerPointPickingCallback (callback));
+}
+

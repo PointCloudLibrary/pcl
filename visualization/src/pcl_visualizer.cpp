@@ -49,12 +49,14 @@
 #include <vtkTransform.h>
 #include <vtkVisibleCellSelector.h>
 #include <vtkSelection.h>
+#include <vtkPointPicker.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
     rens_ (vtkSmartPointer<vtkRendererCollection>::New ()),
     style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ()),
-    cloud_actor_map_ (new CloudActorMap)
+    cloud_actor_map_ (new CloudActorMap),
+    shape_actor_map_ (new ShapeActorMap)
 {
   // FPS callback
   vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
@@ -108,6 +110,10 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   //interactor_->CreateRepeatingTimer (5000L);
   interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
 
+  // Set a simple PointPicker
+  vtkPointPicker *pp = vtkPointPicker::New ();
+  interactor_->SetPicker (pp);
+
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
   exit_main_loop_timer_callback_->right_timer_id = -1;
@@ -125,7 +131,8 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const std::string &name, PCLVisualizerInteractorStyle* style) : 
     rens_ (vtkSmartPointer<vtkRendererCollection>::New ()), 
-    cloud_actor_map_ (new CloudActorMap)
+    cloud_actor_map_ (new CloudActorMap),
+    shape_actor_map_ (new ShapeActorMap)
 {
   style_ = style;
 
@@ -191,17 +198,21 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   //interactor_->CreateRepeatingTimer (5000L);
   interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
 
+  // Set a simple PointPicker
+  vtkPointPicker *pp = vtkPointPicker::New ();
+  interactor_->SetPicker (pp);
+
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
   exit_main_loop_timer_callback_->right_timer_id = -1;
-  interactor_->AddObserver(vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
+  interactor_->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
 
   exit_callback_ = vtkSmartPointer<ExitCallback>::New();
   exit_callback_->pcl_visualizer = this;
-  interactor_->AddObserver(vtkCommand::ExitEvent, exit_callback_);
+  interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
   
   resetStoppedFlag ();
-  
+
   win_->SetWindowName (name.c_str ());
 }
 
@@ -224,14 +235,21 @@ pcl::visualization::PCLVisualizer::saveScreenshot (const std::string &file)
 boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
-  return style_->registerKeyboardCallback (callback);
+  return (style_->registerKeyboardCallback (callback));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
-  return style_->registerMouseCallback (callback);
+  return (style_->registerMouseCallback (callback));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection
+pcl::visualization::PCLVisualizer::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
+{
+  return (style_->registerPointPickingCallback (callback));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -466,9 +484,9 @@ bool
 pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewport)
 {
   // Check to see if the given ID entry exists
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
 
-  if (am_it == shape_actor_map_.end ())
+  if (am_it == shape_actor_map_->end ())
   {
     //pcl::console::print_warn ("[removeSape] Could not find any shape with id <%s>!\n", id.c_str ());
     return (false);
@@ -478,7 +496,7 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
   removeActorFromRenderer (am_it->second, viewport);
 
   // Remove the pointer/ID pair to the global actor map
-  shape_actor_map_.erase (am_it);
+  shape_actor_map_->erase (am_it);
   return (true);
 }
 
@@ -487,9 +505,9 @@ bool
 pcl::visualization::PCLVisualizer::deleteText3D (const std::string &id, int viewport)
 {
   // Check to see if the given ID entry exists
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
 
-  if (am_it == shape_actor_map_.end ())
+  if (am_it == shape_actor_map_->end ())
   {
     //pcl::console::print_warn ("[removeSape] Could not find any shape with id <%s>!\n", id.c_str ());
     return (false);
@@ -499,7 +517,7 @@ pcl::visualization::PCLVisualizer::deleteText3D (const std::string &id, int view
   removeActorFromRenderer (am_it->second, viewport);
 
   // Remove the pointer/ID pair to the global actor map
-  shape_actor_map_.erase (am_it);
+  shape_actor_map_->erase (am_it);
   return (true);
 }
 
@@ -700,7 +718,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
   if (scalars)
     mapper->SetScalarRange (minmax);
   mapper->SetScalarModeToUsePointData ();
-  mapper->InterpolateScalarsBeforeMappingOn();
+  mapper->InterpolateScalarsBeforeMappingOn ();
   mapper->ScalarVisibilityOn ();
   mapper->ImmediateModeRenderingOff ();
 
@@ -894,9 +912,9 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     int property, double val1, double val2, double val3, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
 
-  if (am_it == shape_actor_map_.end ())
+  if (am_it == shape_actor_map_->end ())
   {
     pcl::console::print_error ("[setShapeRenderingProperties] Could not find any shape with id <%s>!\n", id.c_str ());
     return (false);
@@ -930,9 +948,9 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     int property, double value, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
 
-  if (am_it == shape_actor_map_.end ())
+  if (am_it == shape_actor_map_->end ())
   {
     pcl::console::print_error ("[setShapeRenderingProperties] Could not find any shape with id <%s>!\n", id.c_str ());
     return (false);
@@ -1242,8 +1260,8 @@ pcl::visualization::PCLVisualizer::addCylinder (const pcl::ModelCoefficients &co
                                                const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn ("[addCylinder] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
@@ -1258,7 +1276,7 @@ pcl::visualization::PCLVisualizer::addCylinder (const pcl::ModelCoefficients &co
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[id] = actor;
+  (*shape_actor_map_)[id] = actor;
   return (true);
 }
 
@@ -1268,8 +1286,8 @@ pcl::visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coef
                                              const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn ("[addSphere] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
@@ -1284,7 +1302,7 @@ pcl::visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coef
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[id] = actor;
+  (*shape_actor_map_)[id] = actor;
   return (true);
 }
 
@@ -1293,8 +1311,8 @@ bool
 pcl::visualization::PCLVisualizer::addModelFromPolyData (
     vtkSmartPointer<vtkPolyData> polydata, const std::string & id, int viewport) 
 {
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn (
                                 "[addModelFromPolyData] A shape with id <%s> already exists! Please choose a different id and retry.\n",
@@ -1308,7 +1326,7 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[id] = actor;
+  (*shape_actor_map_)[id] = actor;
   return (true);
 }
 
@@ -1317,8 +1335,8 @@ bool
 pcl::visualization::PCLVisualizer::addModelFromPolyData (
     vtkSmartPointer<vtkPolyData> polydata, vtkSmartPointer<vtkTransform> transform, const std::string & id, int viewport) 
 {
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn (
                                 "[addModelFromPolyData] A shape with id <%s> already exists! Please choose a different id and retry.\n",
@@ -1338,7 +1356,7 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[id] = actor;
+  (*shape_actor_map_)[id] = actor;
   return (true);
 }
 
@@ -1348,8 +1366,8 @@ bool
 pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filename, 
                                                        const std::string &id, int viewport)
 {
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn (
                                 "[addModelFromPLYFile] A shape with id <%s> already exists! Please choose a different id and retry.\n",
@@ -1367,7 +1385,7 @@ pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filen
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[id] = actor;
+  (*shape_actor_map_)[id] = actor;
   return (true);
 }
 
@@ -1377,8 +1395,8 @@ pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filen
                                                        vtkSmartPointer<vtkTransform> transform, const std::string &id,
                                                        int viewport)
 {
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn (
                                 "[addModelFromPLYFile] A shape with id <%s> already exists! Please choose a different id and retry.\n",
@@ -1401,7 +1419,7 @@ pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filen
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[id] = actor;
+  (*shape_actor_map_)[id] = actor;
   return (true);
 }
 
@@ -1410,8 +1428,8 @@ bool
 pcl::visualization::PCLVisualizer::addLine (const pcl::ModelCoefficients &coefficients, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn ("[addLine] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
@@ -1426,7 +1444,7 @@ pcl::visualization::PCLVisualizer::addLine (const pcl::ModelCoefficients &coeffi
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[id] = actor;
+  (*shape_actor_map_)[id] = actor;
   return (true);
 }
 
@@ -1440,8 +1458,8 @@ bool
   pcl::visualization::PCLVisualizer::addPlane (const pcl::ModelCoefficients &coefficients, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn ("[addPlane] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
@@ -1456,7 +1474,7 @@ bool
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[id] = actor;
+  (*shape_actor_map_)[id] = actor;
   return (true);
 }
 
@@ -1465,8 +1483,8 @@ bool
 pcl::visualization::PCLVisualizer::addCircle (const pcl::ModelCoefficients &coefficients, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn ("[addCircle] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
@@ -1481,7 +1499,7 @@ pcl::visualization::PCLVisualizer::addCircle (const pcl::ModelCoefficients &coef
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[id] = actor;
+  (*shape_actor_map_)[id] = actor;
   return (true);
 }
 
@@ -1490,8 +1508,8 @@ bool
 pcl::visualization::PCLVisualizer::addCone (const pcl::ModelCoefficients &coefficients, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn ("[addCone] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
@@ -1506,7 +1524,7 @@ pcl::visualization::PCLVisualizer::addCone (const pcl::ModelCoefficients &coeffi
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[id] = actor;
+  (*shape_actor_map_)[id] = actor;
   return (true);
 }
 
@@ -1545,8 +1563,8 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
     tid = id;
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (tid);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn ("[addText] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
     return (false);
@@ -1566,7 +1584,7 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[tid] = actor;
+  (*shape_actor_map_)[tid] = actor;
   return (true);
 }
 
@@ -1581,8 +1599,8 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
     tid = id;
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (tid);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn ("[addText] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
     return (false);
@@ -1602,7 +1620,7 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[tid] = actor;
+  (*shape_actor_map_)[tid] = actor;
   return (true);
 }
 
@@ -1656,8 +1674,8 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
                                                   const std::string &id,
                                                   int viewport)
 {
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn (
                                 "[addPolygonMesh] A shape with id <%s> already exists! Please choose a different id and retry.\n",
@@ -1667,13 +1685,13 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
 
   // Create points from polyMesh.cloud
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
-  pcl::PointCloud<pcl::PointXYZ> point_cloud;
-  pcl::fromROSMsg (poly_mesh.cloud, point_cloud);
-  poly_points->SetNumberOfPoints (point_cloud.points.size ());
+  pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+  pcl::fromROSMsg (poly_mesh.cloud, *point_cloud);
+  poly_points->SetNumberOfPoints (point_cloud->points.size ());
 
   size_t i;
-  for (i = 0; i < point_cloud.points.size (); ++i)
-    poly_points->InsertPoint (i, point_cloud.points[i].x, point_cloud.points[i].y, point_cloud.points[i].z);
+  for (i = 0; i < point_cloud->points.size (); ++i)
+    poly_points->InsertPoint (i, point_cloud->points[i].x, point_cloud->points[i].y, point_cloud->points[i].z);
 
   bool has_color = false;
   vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
@@ -1718,8 +1736,9 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
         cell_array->InsertCellPoint (poly_mesh.polygons[i].vertices[j]);
     }
 
-    vtkPolyData* polydata = vtkPolyData::New ();
-    polydata->SetStrips (cell_array);
+    vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
+//    polydata->SetStrips (cell_array);
+    polydata->SetPolys (cell_array);
     polydata->SetPoints (poly_points);
 
     if (has_color)
@@ -1727,7 +1746,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
 
     createActorFromVTKDataSet (polydata, actor);
   } 
-  else 
+  else if (poly_mesh.polygons.size() == 1)
   {
     vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New ();
     size_t n_points = poly_mesh.polygons[0].vertices.size ();
@@ -1745,12 +1764,17 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     createActorFromVTKDataSet (poly_grid, actor);
     actor->GetProperty ()->SetRepresentationToWireframe ();
   }
+  else
+  {
+    PCL_ERROR("PCLVisualizer::addPolygonMesh: No polygons\n");
+    return false;
+  }
 
   actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[id] = actor;
+  (*shape_actor_map_)[id] = actor;
   return (true);
 }
 
@@ -1760,8 +1784,8 @@ bool
 pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
     const pcl::PolygonMesh &polymesh, const std::string &id, int viewport) 
 {
-  ShapeActorMap::iterator am_it = shape_actor_map_.find (id);
-  if (am_it != shape_actor_map_.end ())
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn (
                                 "[addPolylineFromPolygonMesh] A shape with id <%s> already exists! Please choose a different id and retry.\n",
@@ -1813,7 +1837,7 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  shape_actor_map_[id] = actor;
+  (*shape_actor_map_)[id] = actor;
 
   return (true);
 }
@@ -1843,7 +1867,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     int xres, int yres, 
     std::vector<pcl::PointCloud<pcl::PointXYZ>, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZ> > > & clouds,
     std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f> > & poses, 
-    std::vector<float> & enthropies, int tesselation_level) 
+    std::vector<float> & enthropies, int tesselation_level, float view_angle)
 {
   if (rens_->GetNumberOfItems () > 1)
   {
@@ -1970,9 +1994,13 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
   vtkSmartPointer<vtkCamera> cam = vtkSmartPointer<vtkCamera>::New ();
   cam->SetFocalPoint (0, 0, 0);
-  cam->SetViewUp (0, 1, 0);
+
+  Eigen::Vector3f cam_pos_3f(first_cam_pos[0],first_cam_pos[1],first_cam_pos[2]);
+  Eigen::Vector3f perp = cam_pos_3f.cross(Eigen::Vector3f::UnitY());
+  cam->SetViewUp (perp[0], perp[1], perp[2]);
+
   cam->SetPosition (first_cam_pos);
-  cam->SetViewAngle (45);
+  cam->SetViewAngle (view_angle);
   cam->Modified ();
 
   //For each camera position, traposesnsform the object and render view
@@ -1982,8 +2010,22 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
     //create temporal virtual camera
     vtkSmartPointer<vtkCamera> cam_tmp = vtkSmartPointer<vtkCamera>::New ();
-    cam_tmp->SetViewAngle (45);
-    cam_tmp->SetViewUp (0, 1, 0);
+    cam_tmp->SetViewAngle (view_angle);
+
+    Eigen::Vector3f cam_pos_3f (cam_pos[0], cam_pos[1], cam_pos[2]);
+    cam_pos_3f = cam_pos_3f.normalized ();
+    Eigen::Vector3f test = Eigen::Vector3f::UnitY ();
+
+    //If the view up is parallel to ray cam_pos - focalPoint then the transformation
+    //is singular and no points are rendered...
+    //make sure it is perpendicular
+    if (fabs (cam_pos_3f.dot (test)) == 1)
+    {
+      //parallel, create
+      test = cam_pos_3f.cross (Eigen::Vector3f::UnitX ());
+    }
+
+    cam_tmp->SetViewUp (test[0], test[1], test[2]);
 
     for (int k = 0; k < 3; k++)
     {
@@ -1991,6 +2033,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     }
 
     cam_tmp->SetPosition (cam_pos);
+    cam_tmp->SetFocalPoint (0, 0, 0);
     cam_tmp->Modified ();
 
     //rotate model so it looks the same as if we would look from the new position
@@ -2362,7 +2405,6 @@ pcl::visualization::PCLVisualizer::allocVtkPolyData (vtkSmartPointer<vtkPolyData
 {
   polydata = vtkSmartPointer<vtkPolyData>::New ();
 }
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::allocVtkUnstructuredGrid (vtkSmartPointer<vtkUnstructuredGrid> &polydata)
