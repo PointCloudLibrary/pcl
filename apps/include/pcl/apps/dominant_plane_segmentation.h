@@ -57,6 +57,13 @@ namespace pcl
         void
         compute (std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters);
 
+        /* \brief Extract the clusters.
+         * \param clusters Clusters extracted from the initial point cloud. The returned
+         * clusters are not downsampled.
+         */
+        void
+        compute_full (std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters);
+
         /* \brief Sets the input point cloud.
          * \param cloud_in The input point cloud.
          */
