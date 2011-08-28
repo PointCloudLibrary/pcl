@@ -80,31 +80,6 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output
   // Send the surface dataset to the spatial locator
   tree_->setInputCloud (input_, indices_);
 
-  // Resize the output dataset
-  if (output.points.size () != indices_->size ())
-    output.points.resize (indices_->size ());
-  // Check if the output will be computed for all points or only a subset
-  if (indices_->size () != input_->points.size ())
-  {
-    output.width    = indices_->size ();
-    output.height   = 1;
-  }
-  else
-  {
-    output.width    = input_->width;
-    output.height   = input_->height;
-  }
-  output.is_dense = input_->is_dense;
-
-  // Resize the output normal dataset
-  if (normals_)
-  {
-    normals_->points.resize (output.points.size ());
-    normals_->width    = output.width;
-    normals_->height   = output.height;
-    normals_->is_dense = output.is_dense;
-  }
-
   // Perform the actual surface reconstruction
   performReconstruction (output);
 
@@ -144,6 +119,15 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
     pcl::copyPointCloud (*input_, *indices_, output);
   else
     output = *input_;
+
+  // Resize the output normal dataset
+  if (normals_)
+  {
+    normals_->points.resize (output.points.size ());
+    normals_->width    = output.width;
+    normals_->height   = output.height;
+    normals_->is_dense = output.is_dense;
+  }
 
   // For all points
   for (size_t cp = 0; cp < indices_->size (); ++cp)
