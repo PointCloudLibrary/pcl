@@ -64,7 +64,7 @@ namespace pcl
   {
     inline float operator ()(const PointXYZRGB & p) const
     {
-      return ((299*p.r + 587*p.g + 114*p.b)/1000.0);
+      return ((299*p.r + 587*p.g + 114*p.b)/1000.0f);
     }
   };
 

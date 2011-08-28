@@ -312,9 +312,9 @@ TEST (PCL, PyramidFeatureHistogram)
 
 
   vector<pair<float, float> > dim_range_input, dim_range_target;
-  for (size_t i = 0; i < 3; ++i) dim_range_input.push_back (pair<float, float> (-M_PI, M_PI));
+  for (size_t i = 0; i < 3; ++i) dim_range_input.push_back (pair<float, float> ((float) -M_PI, (float) M_PI));
   dim_range_input.push_back (pair<float, float> (0.0f, 1.0f));
-  for (size_t i = 0; i < 3; ++i) dim_range_target.push_back (pair<float, float> (-M_PI * 10.0f, M_PI * 10.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target.push_back (pair<float, float> ((float) -M_PI * 10.0f, (float) M_PI * 10.0f));
   dim_range_target.push_back (pair<float, float> (0.0f, 50.0f));
 
 
@@ -335,7 +335,7 @@ TEST (PCL, PyramidFeatureHistogram)
 
 
   vector<pair<float, float> > dim_range_target2;
-  for (size_t i = 0; i < 3; ++i) dim_range_target2.push_back (pair<float, float> (-M_PI * 5.0f, M_PI * 5.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target2.push_back (pair<float, float> ((float) -M_PI * 5.0f, (float) M_PI * 5.0f));
     dim_range_target2.push_back (pair<float, float> (0.0f, 20.0f));
 
   pyramid_source->setTargetDimensionRange (dim_range_target2);
@@ -349,7 +349,7 @@ TEST (PCL, PyramidFeatureHistogram)
 
 
   vector<pair<float, float> > dim_range_target3;
-  for (size_t i = 0; i < 3; ++i) dim_range_target3.push_back (pair<float, float> (-M_PI * 2.0f, M_PI * 2.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target3.push_back (pair<float, float> ((float) -M_PI * 2.0f, (float) M_PI * 2.0f));
   dim_range_target3.push_back (pair<float, float> (0.0f, 10.0f));
 
   pyramid_source->setTargetDimensionRange (dim_range_target3);

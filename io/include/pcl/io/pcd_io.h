@@ -366,7 +366,7 @@ namespace pcl
       write (const std::string &file_name, 
              const pcl::PointCloud<PointT> &cloud, 
              const std::vector<int> &indices,
-             const bool binary = false)
+             bool binary = false)
       {
         if (binary)
           return (writeBinary<PointT> (file_name, cloud, indices));

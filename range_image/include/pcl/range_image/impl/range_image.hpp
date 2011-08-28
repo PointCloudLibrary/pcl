@@ -57,7 +57,7 @@ RangeImage::atan2LookUp (float y, float x)
   float ret;
   if(fabsf(x) < fabsf(y)) {
     ret = atan_lookup_table[pcl_lrintf ((lookup_table_size/2)*(x/y)) + lookup_table_size/2];
-    ret = (x*y > 0 ? M_PI/2-ret : -M_PI/2-ret);
+    ret = (float) (x*y > 0 ? M_PI/2-ret : -M_PI/2-ret);
     //if (fabsf(ret-atanf(y/x)) > 1e-3)
       //std::cout << "atanf("<<y<<"/"<<x<<")"<<" = "<<ret<<" = "<<atanf(y/x)<<"\n";
   }
@@ -65,7 +65,7 @@ RangeImage::atan2LookUp (float y, float x)
     ret = atan_lookup_table[pcl_lrintf ((lookup_table_size/2)*(y/x)) + lookup_table_size/2];
   }
   if (x < 0)
-    ret = (y < 0 ? ret-M_PI : ret+M_PI);
+    ret = (float) (y < 0 ? ret-M_PI : ret+M_PI);
   
   //if (fabsf(ret-atan2f(y,x)) > 1e-3)
     //std::cout << "atan2f("<<y<<","<<x<<")"<<" = "<<ret<<" = "<<atan2f(y,x)<<"\n";
@@ -439,7 +439,7 @@ RangeImage::getPointConsideringWrapAround(int image_x, int image_y) const
   if (!isObserved(image_x, image_y))
   {
     float angle_x, angle_y, image_x_f, image_y_f;
-    getAnglesFromImagePoint(image_x, image_y, angle_x, angle_y);
+    getAnglesFromImagePoint((float) image_x, (float) image_y, angle_x, angle_y);
     angle_x = normAngle(angle_x);  angle_y = normAngle(angle_y);
     getImagePointFromAngles(angle_x, angle_y, image_x_f, image_y_f);
     int new_image_x, new_image_y;
@@ -602,7 +602,7 @@ RangeImage::getImpactAngle(const PointWithRange& point1, const PointWithRange& p
   
   float r1 = (std::min)(point1.range, point2.range),
         r2 = (std::max)(point1.range, point2.range);
-  float impact_angle = 0.5f*M_PI;
+  float impact_angle = (float) 0.5f*M_PI;
   
   if (pcl_isinf(r2)) {
     if (r2 > 0.0f && !pcl_isinf(r1))
@@ -631,7 +631,7 @@ RangeImage::getAcutenessValue(const PointWithRange& point1, const PointWithRange
   float impact_angle = getImpactAngle(point1, point2);
   if (pcl_isinf(impact_angle))
     return -std::numeric_limits<float>::infinity ();
-  float ret = 1.0f - fabs(impact_angle)/(0.5f*M_PI);
+  float ret = 1.0f - float (fabs(impact_angle)/(0.5f*M_PI));
   if (impact_angle < 0.0f)
     ret = -ret;
   //if (fabs(ret)>1)
@@ -864,7 +864,7 @@ RangeImage::getImpactAngleBasedOnLocalNormal(int x, int y, int radius) const
   if (!isValid(x,y))
     return -std::numeric_limits<float>::infinity ();
   const PointWithRange& point = getPoint(x, y);
-  int no_of_nearest_neighbors = pow((double)(radius+1), 2.0);
+  int no_of_nearest_neighbors = (int) pow((double)(radius+1), 2.0);
   Eigen::Vector3f normal;
   if (!getNormalForClosestNeighbors(x, y, radius, point, no_of_nearest_neighbors, normal, 1))
     return -std::numeric_limits<float>::infinity ();
@@ -905,7 +905,7 @@ RangeImage::getNormalBasedAcutenessValue(int x, int y, int radius) const
   float impact_angle = getImpactAngleBasedOnLocalNormal(x, y, radius);
   if (pcl_isinf(impact_angle))
     return -std::numeric_limits<float>::infinity ();
-  float ret = 1.0f - impact_angle/(0.5f*M_PI);
+  float ret = 1.0f - (float) (impact_angle/(0.5f*M_PI));
   //std::cout << PVARAC(impact_angle)<<PVARN(ret);
   return ret;
 }
@@ -924,7 +924,7 @@ RangeImage::getNormalForClosestNeighbors(int x, int y, Eigen::Vector3f& normal, 
 {
   if (!isValid(x,y))
     return false;
-  int no_of_nearest_neighbors = pow ((double)(radius+1), 2.0);
+  int no_of_nearest_neighbors = (int) pow ((double)(radius+1), 2.0);
   return getNormalForClosestNeighbors(x, y, radius, getPoint(x,y).getVector3fMap(), no_of_nearest_neighbors, normal);
 }
 
@@ -955,7 +955,7 @@ RangeImage::getSurfaceInformation (int x, int y, int radius, const Eigen::Vector
   if (eigen_values_all_neighbors!=NULL)
     eigen_values_all_neighbors->setZero();
   
-  int blocksize = pow ((double)(2*radius+1), 2.0);
+  int blocksize = (int) pow ((double)(2*radius+1), 2.0);
   
   PointWithRange given_point;
   given_point.x=point[0];  given_point.y=point[1];  given_point.z=point[2];
@@ -1032,7 +1032,7 @@ RangeImage::getSquaredDistanceOfNthNeighbor(int x, int y, int radius, int n, int
   if (!pcl_isfinite(point.range))
     return -std::numeric_limits<float>::infinity ();
   
-  int blocksize = pow ((double)(2*radius+1), 2.0);
+  int blocksize = (int) pow ((double)(2*radius+1), 2.0);
   std::vector<float> neighbor_distances (blocksize);
   int neighbor_counter = 0;
   for (int y2=y-radius; y2<=y+radius; y2+=step_size)

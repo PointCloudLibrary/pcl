@@ -468,7 +468,7 @@ namespace pcl
       inline int 
       getCentroidIndex (float x, float y, float z)
       {
-        return leaf_layout_.at ((Eigen::Vector4i (floor (x / leaf_size_[0]), floor (y / leaf_size_[1]), floor (z / leaf_size_[2]), 0) - min_b_).dot (divb_mul_));
+        return leaf_layout_.at ((Eigen::Vector4i ((int) floor (x / leaf_size_[0]), (int) floor (y / leaf_size_[1]), (int) floor (z / leaf_size_[2]), 0) - min_b_).dot (divb_mul_));
       }
 
       /** \brief Returns the indices in the resulting downsampled cloud of the points at the specified grid coordinates,
@@ -482,7 +482,7 @@ namespace pcl
       inline std::vector<int> 
       getNeighborCentroidIndices (float x, float y, float z, const Eigen::MatrixXi &relative_coordinates)
       {
-        Eigen::Vector4i ijk (floor (x / leaf_size_[0]), floor (y / leaf_size_[1]), floor (z / leaf_size_[2]), 0);
+        Eigen::Vector4i ijk ((int) floor (x / leaf_size_[0]), (int) floor (y / leaf_size_[1]), (int) floor (z / leaf_size_[2]), 0);
         Eigen::Array4i diff2min = min_b_ - ijk;
         Eigen::Array4i diff2max = max_b_ - ijk;
         std::vector<int> neighbors (relative_coordinates.cols());
@@ -501,7 +501,7 @@ namespace pcl
       inline std::vector<int> 
       getNeighborCentroidIndices (float x, float y, float z, const std::vector<Eigen::Vector3i> &relative_coordinates)
       {
-        Eigen::Vector4i ijk (floor (x / leaf_size_[0]), floor (y / leaf_size_[1]), floor (z / leaf_size_[2]), 0);
+        Eigen::Vector4i ijk ((int) floor (x / leaf_size_[0]), (int) floor (y / leaf_size_[1]), (int) floor (z / leaf_size_[2]), 0);
         std::vector<int> neighbors;
         neighbors.reserve (relative_coordinates.size ());
         for (std::vector<Eigen::Vector3i>::const_iterator it = relative_coordinates.begin (); it != relative_coordinates.end (); it++)
@@ -519,7 +519,7 @@ namespace pcl
       inline Eigen::Vector3i 
       getGridCoordinates (float x, float y, float z) 
       { 
-        return Eigen::Vector3i (floor (x / leaf_size_[0]), floor (y / leaf_size_[1]), floor (z / leaf_size_[2])); 
+        return Eigen::Vector3i ((int) floor (x / leaf_size_[0]), (int) floor (y / leaf_size_[1]), (int) floor (z / leaf_size_[2])); 
       }
 
       /** \brief Returns the index in the downsampled cloud corresponding to coordinates (i,j,k) in the grid (-1 if empty) */

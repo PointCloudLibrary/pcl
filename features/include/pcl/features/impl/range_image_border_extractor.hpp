@@ -41,7 +41,7 @@ namespace pcl {
 ////////// STATIC //////////
 float RangeImageBorderExtractor::getObstacleBorderAngle(const BorderTraits& border_traits)
 {
-  int x=0, y=0;
+  float x=0.0f, y=0.0f;
   if (border_traits[BORDER_TRAIT__OBSTACLE_BORDER_RIGHT])
     ++x;
   if (border_traits[BORDER_TRAIT__OBSTACLE_BORDER_LEFT])
@@ -138,7 +138,7 @@ bool RangeImageBorderExtractor::get3dDirection(const BorderDescription& border_d
   int x=border_description.x, y=border_description.y;
   const PointWithRange& point = range_image_->getPoint(x, y);
   Eigen::Vector3f neighbor_point;
-  range_image_->calculate3DPoint(x+delta_x, y+delta_y, point.range, neighbor_point);
+  range_image_->calculate3DPoint((float) (x+delta_x), (float) (y+delta_y), point.range, neighbor_point);
   //cout << "Neighborhood point is "<<neighbor_point[0]<<", "<<neighbor_point[1]<<", "<<neighbor_point[2]<<".\n";
   
   if (local_surface!=NULL)
@@ -263,7 +263,7 @@ bool RangeImageBorderExtractor::checkPotentialBorder(int x, int y, int offset_x,
     return false;
   
   shadow_border_idx = -1;
-  float best_shadow_border_score = -0.5*parameters_.minimum_border_probability;
+  float best_shadow_border_score = -0.5f*parameters_.minimum_border_probability;
   
   for (int neighbor_distance=1; neighbor_distance<=parameters_.pixel_radius_borders; ++neighbor_distance)
   {

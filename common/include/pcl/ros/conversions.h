@@ -292,7 +292,7 @@ namespace pcl
     for (size_t d = 0; d < cloud.fields.size (); ++d)
       if (cloud.fields[d].name == "rgb")
       {
-        rgb_index = d;
+        rgb_index = (int) d;
         break;
       }
 

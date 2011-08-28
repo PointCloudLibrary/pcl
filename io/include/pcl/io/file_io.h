@@ -100,7 +100,7 @@ namespace pcl
   template <> inline float
   pcl_atoa<float>(const char *nptr)
   {
-    return atof(nptr);
+    return (float) atof(nptr);
   }
 
   template <> inline double
