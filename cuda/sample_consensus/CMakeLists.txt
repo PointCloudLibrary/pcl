@@ -11,34 +11,37 @@ mark_as_advanced("BUILD_${SUBSYS_NAME}")
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 PCL_SET_SUBSYS_INCLUDE_DIR(${SUBSYS_NAME} ${SUBSYS_PATH})
 
-set(srcs
-    src/sac_model.cu
-    src/sac_model_plane.cu
-    src/sac_model_1point_plane.cu
-    src/ransac.cpp
-    src/multi_ransac.cpp
-    )
+if (build)
+    set(srcs
+        src/sac_model.cu
+        src/sac_model_plane.cu
+        src/sac_model_1point_plane.cu
+        src/ransac.cpp
+        src/multi_ransac.cpp
+        )
 
-set(incs 
-    include/pcl/cuda/sample_consensus/sac.h
-    include/pcl/cuda/sample_consensus/ransac.h
-    include/pcl/cuda/sample_consensus/multi_ransac.h
-    include/pcl/cuda/sample_consensus/sac_model.h
-    include/pcl/cuda/sample_consensus/sac_model_plane.h
-    include/pcl/cuda/sample_consensus/sac_model_1point_plane.h
-    )
+    set(incs
+        include/pcl/cuda/sample_consensus/sac.h
+        include/pcl/cuda/sample_consensus/ransac.h
+        include/pcl/cuda/sample_consensus/multi_ransac.h
+        include/pcl/cuda/sample_consensus/sac_model.h
+        include/pcl/cuda/sample_consensus/sac_model_plane.h
+        include/pcl/cuda/sample_consensus/sac_model_1point_plane.h
+        )
 
-set(LIB_NAME pcl_${SUBSYS_NAME})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-PCL_CUDA_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs})
-target_link_libraries (${LIB_NAME} pcl_cuda_features)
-PCL_ADD_SSE_FLAGS(${LIB_NAME})
+    set(LIB_NAME pcl_${SUBSYS_NAME})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+    PCL_CUDA_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs})
+    target_link_libraries (${LIB_NAME} pcl_cuda_features)
+    PCL_ADD_SSE_FLAGS(${LIB_NAME})
 
-set(EXT_DEPS "")
-#set(EXT_DEPS CUDA)
-PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-  "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
+    set(EXT_DEPS "")
+    #set(EXT_DEPS CUDA)
+    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
+      "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
-# Install include files
-PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_PATH} ${incs})
+    # Install include files
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_PATH} ${incs})
+
+endif()
 
