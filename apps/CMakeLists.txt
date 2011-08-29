@@ -89,7 +89,10 @@ if(build)
 	  
 	    PCL_ADD_EXECUTABLE(openni_3d_concave_hull ${SUBSYS_NAME} src/openni_3d_concave_hull.cpp)
 	    target_link_libraries(openni_3d_concave_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
-	      
+
+            PCL_ADD_EXECUTABLE(openni_tracking ${SUBSYS_NAME} src/openni_tracking.cpp)
+	    target_link_libraries(openni_tracking pcl_common pcl_io pcl_surface pcl_visualization pcl_filters pcl_features pcl_segmentation)
+            
 	    set(incs include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h)  
 	  	set(impl_incs include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp)
 	    set(srcs src/dominant_plane_segmentation.cpp)
