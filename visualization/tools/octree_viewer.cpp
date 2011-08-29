@@ -198,5 +198,6 @@ int
   win->AddRenderer (ren);
 
   iren->SetRenderWindow (win);
+  win->Render ();
   iren->Start ();
 }
