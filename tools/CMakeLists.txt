@@ -16,6 +16,9 @@ if (build)
   PCL_ADD_EXECUTABLE (boundary_estimation ${SUBSYS_NAME} boundary_estimation.cpp)
   target_link_libraries (boundary_estimation pcl_common pcl_io pcl_features pcl_kdtree)
 
+  PCL_ADD_EXECUTABLE (cluster_extraction ${SUBSYS_NAME} cluster_extraction.cpp)
+  target_link_libraries (cluster_extraction pcl_common pcl_io pcl_segmentation pcl_filters pcl_kdtree)
+
   PCL_ADD_EXECUTABLE (fpfh_estimation ${SUBSYS_NAME} fpfh_estimation.cpp)
   target_link_libraries (fpfh_estimation pcl_common pcl_io pcl_features pcl_kdtree)
 
