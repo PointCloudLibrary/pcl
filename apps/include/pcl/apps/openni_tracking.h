@@ -681,7 +681,7 @@ namespace pcl
         
         double theta = pcl::getAngle3D (n, n_dash);
         
-        if (!isnan (theta))
+        if (!pcl_isnan (theta))
         {
           return 1.0 / (1.0 + normal_blending * theta * theta);
         }
@@ -758,12 +758,12 @@ namespace pcl
                                1, k_indices, k_distances);
           PointType target_point =
             measured_point_cloud_ptr->points[k_indices[0]];
-          if (!isnan(target_point.x)
-              && !isnan(target_point.y)
-              && !isnan(target_point.z)
-              && !isnan(target_point.normal[0])
-              && !isnan(target_point.normal[1])
-              && !isnan(target_point.normal[2]))
+          if (!pcl_isnan(target_point.x)
+              && !pcl_isnan(target_point.y)
+              && !pcl_isnan(target_point.z)
+              && !pcl_isnan(target_point.normal[0])
+              && !pcl_isnan(target_point.normal[1])
+              && !pcl_isnan(target_point.normal[2]))
           {
             double d_n = PointDistance<PointType>(input_point,
                                                   target_point,

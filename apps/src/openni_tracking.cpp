@@ -373,7 +373,7 @@ public:
       pcl::PointCloud<RefPointType>::Ptr ref_cloud (new pcl::PointCloud<RefPointType>);
       if (pcl::io::loadPCDFile<RefPointType> (pcd_file_, *ref_cloud) == -1)
       {
-        PCL_ERROR ("Couldn't read file test_pcd.pcd \n");
+        PCL_ERROR ("Couldn't read file %s \n", pcd_file_.c_str ());
         return;
       }
 
@@ -388,7 +388,7 @@ public:
       interface->start ();
       
       while (!viewer_.wasStopped ())
-        sleep(1);
+        boost::this_thread::sleep(boost::posix_time::seconds(1));
       interface->stop ();
     }
   
