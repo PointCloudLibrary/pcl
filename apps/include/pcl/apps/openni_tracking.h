@@ -25,7 +25,8 @@ namespace pcl
     // pfilterlib.h
     namespace PF                // utilities related with particle filter
     {
-      double SampleNormal (double mean, double sigma)
+      double
+      SampleNormal (double mean, double sigma)
       {
         using namespace boost;
         static mt19937 rng(static_cast<unsigned> (std::time (0)));
@@ -37,7 +38,7 @@ namespace pcl
         
         return normal_sampler ();
       }
-
+      
       class Particle
       {
       protected:
@@ -55,10 +56,12 @@ namespace pcl
             for (size_t i = 0; i < orig.getState().size(); i++)
               state_[i] = orig.getStateValue(i);
           }
-        virtual ~Particle () {}
+        virtual
+        ~Particle () {}
 
-        virtual void sample(const std::vector<double>& mean,
-                            const std::vector<double>& cov)
+        virtual void
+        sample(const std::vector<double>& mean,
+               const std::vector<double>& cov)
           {
             for ( size_t j = 0; j < state_.size(); j++ )
             {
@@ -67,42 +70,50 @@ namespace pcl
           }
 
         // accessors
-        virtual inline const std::vector<double>& getState () const
+        virtual inline const std::vector<double>&
+        getState () const
           {
             return state_;
           }
         
         /* does not overwrite orig_likelihood_ */
-        virtual inline void updateWeight (const double weight)
+        virtual inline void
+        updateWeight (const double weight)
           {
             weight_ = weight;
           }
         
         // overwrite orig_likelihood_
-        virtual inline void setWeight (const double weight)
+        virtual inline void
+        setWeight (const double weight)
           {
             weight_ = weight;
             orig_likelihood_ = weight;
           }
         
-        virtual inline double getWeight () const { return weight_; };
+        virtual inline double
+        getWeight () const { return weight_; };
         
-        virtual inline double getStateValue (const size_t i) const
+        virtual inline double
+        getStateValue (const size_t i) const
           {
             return state_[i];
           }
         
-        virtual inline void setStateValue (const size_t i, const double val)
+        virtual inline void
+        setStateValue (const size_t i, const double val)
           {
             state_[i] = val;
           }
         
-        virtual inline double getOriginalLikelihood () const
+        virtual inline double
+        getOriginalLikelihood () const
           {
             return orig_likelihood_;
           }
 
-        virtual inline void zero () // zero set
+        virtual inline void
+        zero () // zero set
           {
             for ( size_t j = 0; j < state_.size(); j++ )
               state_[j] = 0.0;
@@ -111,7 +122,8 @@ namespace pcl
       };
 
       // for debuging
-      std::ostream& operator << (std::ostream& s, const Particle &p)
+      std::ostream&
+      operator << (std::ostream& s, const Particle &p)
       {
         s << p.getState ()[0] << ", " << p.getState ()[1] << ", "
           << p.getState ()[2] << ", " << p.getState ()[3] << ", "
@@ -138,7 +150,8 @@ namespace pcl
         std::vector<Particle> particles_;
         Particle representative_state_;
         
-        void normalizeWeight ()
+        void
+        normalizeWeight ()
           {
             // calc weight summation
             double sum = 0.0;
@@ -169,8 +182,10 @@ namespace pcl
             initParticles ();
           }
         
-        virtual inline Particle getResult (){ return representative_state_; }
-        virtual ~ParticleFilter() { }
+        virtual inline Particle
+        getResult (){ return representative_state_; }
+        virtual
+        ~ParticleFilter() { }
         
         /* sampling with replacement based on Walker's alias method
                    
@@ -189,7 +204,8 @@ namespace pcl
            address = {New York, NY, USA},
            }
         */
-        virtual void genAliasTable (std::vector<int> &a, std::vector<double> &q)
+        virtual void
+        genAliasTable (std::vector<int> &a, std::vector<double> &q)
           {
             /* generate an alias table, a and q */
             std::vector<int> HL (particle_num_);
@@ -221,8 +237,9 @@ namespace pcl
             }
           }
 
-        virtual inline int sampleWithReplacement (const std::vector<int>& a,
-                                                  const std::vector<double>& q)
+        virtual inline int
+        sampleWithReplacement (const std::vector<int>& a,
+                               const std::vector<double>& q)
           {
             using namespace boost;
             static mt19937 gen (static_cast<unsigned long>(time (0)));
@@ -274,7 +291,8 @@ namespace pcl
             normalizeWeight();
           }
         
-        void update_mean ()
+        void
+        updateMean ()
           {
             //fill by zero
             representative_state_.zero ();
@@ -297,7 +315,8 @@ namespace pcl
             representative_state_.setWeight (maxweight_);
           }
         
-        void update_max ()
+        void
+        updateMax ()
           {
             int max_index = 0;
             double maxweight_ = 0.0;
@@ -313,23 +332,25 @@ namespace pcl
             representative_state_ = particles_[max_index];
           }
         
-        inline void update ()
+        inline void
+        update ()
           {
             // update
             switch (update_method_)
             {
             case UPDATE_MEAN:
-              update_mean ();
+              updateMean ();
               break;
             case UPDATE_MAX:
-              update_max ();
+              updateMax ();
               break;
             default:            // should raise an exception?
               break;
             }
           }
         
-        void initParticles ()    // finish
+        void
+        initParticles ()    // finish
           {
             std::cout << "initParticles" << std::endl;
             particles_ = std::vector<Particle> (particle_num_, dim_);
@@ -371,47 +392,33 @@ namespace pcl
                                const double roll_offset,
                                const double pitch_offset,
                                const double yaw_offset)
-        : _x_width (x_width), _y_width (y_width), _z_width (z_width),
-          _roll_width (roll_width), _pitch_width (pitch_width),
-          _yaw_width (yaw_width),
-          _x_offset (x_offset), _y_offset (y_offset), _z_offset (z_offset),
-          _roll_offset (roll_offset), _pitch_offset (pitch_offset),
-          _yaw_offset (yaw_offset),
-          _trans (Eigen::Affine3f::Identity ())
+        : x_width_ (x_width), y_width_ (y_width), z_width_ (z_width),
+          roll_width_ (roll_width), pitch_width_ (pitch_width),
+          yaw_width_ (yaw_width),
+          x_offset_ (x_offset), y_offset_ (y_offset), z_offset_ (z_offset),
+          roll_offset_ (roll_offset), pitch_offset_ (pitch_offset),
+          yaw_offset_ (yaw_offset),
+          trans_ (Eigen::Affine3f::Identity ())
         {
           // do nothing
         }
       
       virtual ~ParticleFilterParameter () {}
-      /* TODO: camel case */
-      // accessors
-      inline double x_width () const {return _x_width;};
-      inline double y_width () const {return _y_width;};
-      inline double z_width () const {return _z_width;};
-      inline double roll_width () const {return _roll_width;};
-      inline double pitch_width () const {return _pitch_width;};
-      inline double yaw_width () const {return _yaw_width;};
-      inline double x_offset () const {return _x_offset;};
-      inline double y_offset () const {return _y_offset;};
-      inline double z_offset () const {return _z_offset;};
-      inline double roll_offset () const {return _roll_offset;};
-      inline double pitch_offset () const {return _pitch_offset;};
-      inline double yaw_offset () const {return _yaw_offset;};
 
-      inline double getXWidth () const {return _x_width;};
-      inline double getYWidth () const {return _y_width;};
-      inline double getZWidth () const {return _z_width;};
-      inline double getRollWidth () const {return _roll_width;};
-      inline double getPitchWidth () const {return _pitch_width;};
-      inline double getYawWidth () const {return _yaw_width;};
-      inline double getXOffset () const {return _x_offset;};
-      inline double getYOffset () const {return _y_offset;};
-      inline double getZOffset () const {return _z_offset;};
-      inline double getRollOffset () const {return _roll_offset;};
-      inline double getPitchOffset () const {return _pitch_offset;};
-      inline double getYawOffset () const {return _yaw_offset;};
+      inline double getXWidth () const {return x_width_;}
+      inline double getYWidth () const {return y_width_;}
+      inline double getZWidth () const {return z_width_;}
+      inline double getRollWidth () const {return roll_width_;}
+      inline double getPitchWidth () const {return pitch_width_;}
+      inline double getYawWidth () const {return yaw_width_;}
+      inline double getXOffset () const {return x_offset_;}
+      inline double getYOffset () const {return y_offset_;}
+      inline double getZOffset () const {return z_offset_;}
+      inline double getRollOffset () const {return roll_offset_;}
+      inline double getPitchOffset () const {return pitch_offset_;}
+      inline double getYawOffset () const {return yaw_offset_;}
 
-      inline void setTrans (Eigen::Affine3f trans) { _trans = trans; }
+      inline void setTrans (Eigen::Affine3f trans) { trans = trans_; }
       
       Eigen::Vector3f
       getOffsetVector ()
@@ -466,30 +473,29 @@ namespace pcl
           double yval = getYWidth () * ( y - 0.5 ) + getYOffset ();
           double zval = getZWidth () * ( z - 0.5 ) + getZOffset ();
           // i need to normalize euler angles?
-          double rollval = normalizeAngle(_roll_width * ( roll - 0.5 ) + _roll_offset);
-          double pitchval = normalizeAngle(_pitch_width * ( pitch - 0.5 ) + _pitch_offset);
-          double yawval = normalizeAngle(_yaw_width * ( yaw - 0.5 ) + _yaw_offset);
+          double rollval = normalizeAngle(roll_width_ * ( roll - 0.5 ) + roll_offset_);
+          double pitchval = normalizeAngle(pitch_width_ * ( pitch - 0.5 ) + pitch_offset_);
+          double yawval = normalizeAngle(yaw_width_ * ( yaw - 0.5 ) + yaw_offset_);
           //Eigen::Affine3f particle_trans = getTransformation(xval, yval, zval, rollval, pitchval, yawval);
           
-          return _trans * getTransformation(xval, yval, zval, rollval, pitchval, yawval);
+          return trans_ * getTransformation(xval, yval, zval, rollval, pitchval, yawval);
         }
       
       
     protected:
-      /* TODO: use _ as suffix rather than prefix */
-      const double _x_width;
-      const double _y_width;
-      const double _z_width;
-      const double _roll_width;
-      const double _pitch_width;
-      const double _yaw_width;
-      const double _x_offset;
-      const double _y_offset;
-      const double _z_offset;
-      const double _roll_offset;
-      const double _pitch_offset;
-      const double _yaw_offset;
-      Eigen::Affine3f _trans;
+      const double x_width_;
+      const double y_width_;
+      const double z_width_;
+      const double roll_width_;
+      const double pitch_width_;
+      const double yaw_width_;
+      const double x_offset_;
+      const double y_offset_;
+      const double z_offset_;
+      const double roll_offset_;
+      const double pitch_offset_;
+      const double yaw_offset_;
+      Eigen::Affine3f trans_;
 
     };
     
