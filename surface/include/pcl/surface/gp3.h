@@ -477,7 +477,8 @@ namespace pcl
         fringe_queue_.push_back(v);
       }
 
-      /** \brief Function for ascending sort of nnAngle 
+      /** \brief Function for ascending sort of nnAngle, taking visibility into account
+        * (angles to visible neighbors will be first, to the invisible ones after).
         * \param a1 the first angle
         * \param a2 the second angle
         */
