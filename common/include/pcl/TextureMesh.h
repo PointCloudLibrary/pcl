@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -34,16 +36,17 @@
  * $Id: TextureMesh.h 1003 2011-07-13 13:07:00 ktran $
  *
  */
-/** \author Khai Tran */
 
-#ifndef TEXTUREMESH_H_
-#define TEXTUREMESH_H_
+#ifndef PCL_TEXTUREMESH_H_
+#define PCL_TEXTUREMESH_H_
 
-// Include the correct Header path here
+#include <Eigen/Core>
+#include <std_msgs/Header.h>
 #include <pcl/PolygonMesh.h>
+#include <string>
+#include <sensor_msgs/PointCloud2.h>
+#include <pcl/Vertices.h>
 #include "std_msgs/Header.h"
-#include "sensor_msgs/PointCloud2.h"
-#include "pcl/Vertices.h"
 #include <pcl/point_types.h>
 #include <pcl/common/common.h>
 #include <opencv/cv.h>
@@ -51,6 +54,7 @@
 
 namespace pcl
 {
+  /** \author Khai Tran */
   struct RGB{
     float r;
     float g;
@@ -73,26 +77,24 @@ namespace pcl
 
   struct TextureMesh
   {
-    TextureMesh () : header (), cloud ()
-    {}
+    TextureMesh () : header (), cloud () {}
 
-    ::std_msgs::Header  		header;
-    ::sensor_msgs::PointCloud2 		cloud;
+    std_msgs::Header          header;
+    sensor_msgs::PointCloud2  cloud;
 
-    std::vector<std::vector< ::pcl::Vertices> >  	tex_polygons; 		// polygon which is mapped with specific texture defined in TexMaterial
-    std::vector<std::vector< ::pcl::PointXY> >  	tex_coordinates; 	// UV coordinates
-    std::vector<std::vector<TexMaterial> >		tex_materials; 		// define texture material
+    std::vector<std::vector<pcl::Vertices> >    tex_polygons;     // polygon which is mapped with specific texture defined in TexMaterial
+    std::vector<std::vector<pcl::PointXY> >     tex_coordinates;  // UV coordinates
+    std::vector<std::vector<TexMaterial> >      tex_materials;    // define texture material
     std::vector<std::vector<size_t> >			tex_material_idx; 	// define texture material
 
     public:
-      typedef boost::shared_ptr< ::pcl::TextureMesh> Ptr;
-      typedef boost::shared_ptr< ::pcl::TextureMesh const> ConstPtr;
-
+      typedef boost::shared_ptr<pcl::TextureMesh> Ptr;
+      typedef boost::shared_ptr<pcl::TextureMesh const> ConstPtr;
    }; // struct TextureMesh
 
-   typedef boost::shared_ptr< ::pcl::TextureMesh> TextureMeshPtr;
-   typedef boost::shared_ptr< ::pcl::TextureMesh const> TextureMeshConstPtr;
-
+   typedef boost::shared_ptr<pcl::TextureMesh> TextureMeshPtr;
+   typedef boost::shared_ptr<pcl::TextureMesh const> TextureMeshConstPtr;
 } // namespace pcl
 
-#endif /* TEXTUREMESH_H_ */
+#endif /* PCL_TEXTUREMESH_H_ */
+
