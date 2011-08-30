@@ -37,7 +37,7 @@
 #ifndef PCL_GPU_OCTREE_COPYGE_HPP
 #define PCL_GPU_OCTREE_COPYGE_HPP
 
-#include "utils/laneid.hpp"
+#include "pcl/gpu/utils/device/warp.hpp"
 
 namespace pcl
 {
@@ -84,7 +84,7 @@ namespace pcl
         __device__ __forceinline__ void CopyWarpKernel(const T* in, T* out, int length)
         {
             int STRIDE = warpSize;
-            unsigned int laneId = LaneId();
+            unsigned int laneId = Warp::laneId();
 
             for (int idx = laneId; idx < length; idx += STRIDE) 
                 out[idx] = in[idx];
@@ -94,7 +94,7 @@ namespace pcl
         __device__ __forceinline__ void SetWarpKernel(T value, T* out, int length)
         {
             int STRIDE = warpSize;
-            unsigned int laneId = LaneId();
+            unsigned int laneId = Warp::laneId();
 
             for (int idx = laneId; idx < length; idx += STRIDE) 
                 out[idx] = value;

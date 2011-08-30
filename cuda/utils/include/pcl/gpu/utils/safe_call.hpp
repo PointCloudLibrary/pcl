@@ -41,14 +41,14 @@
 #include "pcl/pcl_macros.h"
 
 #if defined(__GNUC__)
-    #define cudaSafeCall(expr)  pcl::cuda::___cudaSafeCall(expr, __FILE__, __LINE__, __func__)
+    #define cudaSafeCall(expr)  pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__, __func__)
 #else /* defined(__CUDACC__) || defined(__MSVC__) */
-    #define cudaSafeCall(expr)  pcl::cuda::___cudaSafeCall(expr, __FILE__, __LINE__)    
+    #define cudaSafeCall(expr)  pcl::device::___cudaSafeCall(expr, __FILE__, __LINE__)    
 #endif
 
 namespace pcl
 {
-    namespace cuda
+    namespace device
     {
         void PCL_EXPORTS error(const char *error_string, const char *file, const int line, const char *func = "");
 
@@ -56,7 +56,14 @@ namespace pcl
         {
             if (cudaSuccess != err)
                 error(cudaGetErrorString(err), file, line, func);
-        }
+        }        
+
+        static inline int div_up(int total, int grain) { return (total + grain - 1) / grain; }
+    }
+
+    namespace gpu
+    {
+        using pcl::device::div_up;        
     }
 }
 

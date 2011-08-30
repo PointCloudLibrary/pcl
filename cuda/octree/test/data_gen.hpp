@@ -43,7 +43,6 @@
 #include <opencv2/core/core.hpp>
 
 #include <Eigen/StdVector>
-
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::PointXYZ)
 
 struct DataGenerator

@@ -45,7 +45,6 @@
 #include<assert.h>
 
 using namespace pcl::gpu;
-using namespace pcl::cuda;
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -62,13 +61,13 @@ pcl::gpu::Octree::Octree() : impl(0)
     cudaSafeCall( cudaGetDeviceProperties( &prop, device) );
 
     if (prop.major < 2)
-        pcl::cuda::error("This code requires devices with compute capabiliti >= 2.0", __FILE__, __LINE__);
+        pcl::device::error("This code requires devices with compute capabiliti >= 2.0", __FILE__, __LINE__);
 
     int bin, ptx;
     OctreeImpl::get_gpu_arch_compiled_for(bin, ptx);
 
     if (bin < 20 && ptx < 20)
-        pcl::cuda::error("This must be compiled for compute capability >= 2.0", __FILE__, __LINE__);    
+        pcl::device::error("This must be compiled for compute capability >= 2.0", __FILE__, __LINE__);    
 
     impl = new pcl::gpu::OctreeImpl(prop.major < 2 ? 512 : 1024);        
 }

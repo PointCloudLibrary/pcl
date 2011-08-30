@@ -34,78 +34,15 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-
-#ifndef PCL_DEVICE_FUNCTIONAL_HPP_
-#define PCL_DEVICE_FUNCTIONAL_HPP_
-
-#include <thrust/functional.h>
-
+#ifndef PCL_DEVICE_ASM_HPP_
+#define PCL_DEVICE_ASM_HPP_
 
 namespace pcl
 {
     namespace device
-    {
-        // Function Objects
-
-        using thrust::unary_function;
-        using thrust::binary_function;
-
-        // Arithmetic Operations
-
-        using thrust::plus;
-        using thrust::minus;
-        using thrust::multiplies;
-        using thrust::divides;
-        using thrust::modulus;
-        using thrust::negate;
-
-        // Comparison Operations
-
-        using thrust::equal_to;
-        using thrust::not_equal_to;
-        using thrust::greater;
-        using thrust::less;
-        using thrust::greater_equal;
-        using thrust::less_equal;
-
-        // Logical Operations
-
-        using thrust::logical_and;
-        using thrust::logical_or;
-        using thrust::logical_not;
-
-        // Bitwise Operations
-
-        using thrust::bit_and;
-        using thrust::bit_or;
-        using thrust::bit_xor;
-
-        template <typename T> struct bit_not : unary_function<T, T>
-        {
-            __forceinline__ __device__ T operator ()(const T& v) const {return ~v;}
-        };
-
-        // Generalized Identity Operations
-
-        using thrust::identity;    
-        using thrust::project1st;
-        using thrust::project2nd;
-
-
-        // Other functors
-
-        template<typename T, typename W>
-        struct plusWeighted : public plus<T>
-        {
-            W w;
-            __device__ __host__ __forceinline__ plusWeighted(W weight) : w(weight) {}                
-            __device__ __host__ __forceinline__ float operator()(const float& f1, const float f2) const 
-            {
-                return f1 + f2 * w;
-            }
-        };
+    {         
+       
     }
-};
+}
 
-
-#endif /* PCL_DEVICE_FUNCTIONAL_HPP_ */
+#endif /* PCL_DEVICE_ASM_HPP_ */

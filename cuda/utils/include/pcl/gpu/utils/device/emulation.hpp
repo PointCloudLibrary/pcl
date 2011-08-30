@@ -45,7 +45,7 @@ namespace pcl
 	{
 		struct Emulation
 		{
-			static __forceinline__ __device__ int Ballot(int predicate, volatile int* cta_buffer)
+			static __forceinline__ __device__ int ballot(int predicate, volatile int* cta_buffer)
 			{
 #if __CUDA_ARCH__ >= 200
 				(void)cta_buffer;

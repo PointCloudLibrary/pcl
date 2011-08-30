@@ -58,7 +58,7 @@ template<class T>  const T* pcl::gpu::DeviceMemory2D::ptr(int y_arg) const { ret
 template <class U> pcl::gpu::DeviceMemory2D::operator pcl::gpu::PtrStep<U>() const
 {
     PtrStep<U> result;
-    result.data = ptr<U>();
+    result.data = (U*)ptr<U>();
     result.step = step;
     return result;
 }
@@ -66,7 +66,7 @@ template <class U> pcl::gpu::DeviceMemory2D::operator pcl::gpu::PtrStep<U>() con
 template <class U> pcl::gpu::DeviceMemory2D::operator pcl::gpu::PtrStepSz<U>() const
 {
     PtrStepSz<U> result;
-    result.data = ptr<U>();
+    result.data = (U*)ptr<U>();
     result.step = step;
     result.cols = colsBytes/sizeof(U);
     result.rows = rows;

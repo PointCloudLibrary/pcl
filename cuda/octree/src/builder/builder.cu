@@ -47,7 +47,7 @@
 #include "builder/cta_initial.hpp"
 #include "builder/cta_syncsstep.hpp"
 
-using namespace pcl::cuda;
+using namespace pcl::gpu;
 using namespace thrust;
 
 namespace pcl 

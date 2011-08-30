@@ -38,7 +38,8 @@
 
 #include "octree_global.hpp"
 
-#include "utils/laneid.hpp"
+#include "pcl/gpu/utils/device/warp.hpp"
+
 #include "utils/copygen.hpp"
 #include "utils/boxutils.hpp"
 #include "utils/scan_block.hpp"
@@ -215,7 +216,7 @@ namespace pcl { namespace device { namespace radius_search
 
 			while(mask)
 			{                
-				unsigned int laneId = LaneId();
+                unsigned int laneId = Warp::laneId();
 				unsigned int warpId = threadIdx.x/warpSize;            
 
 				int active_lane = __ffs(mask) - 1; //[0..31]
@@ -286,7 +287,7 @@ namespace pcl { namespace device { namespace radius_search
 
 		__device__ __forceinline__ int TestWarpKernel(const int* indices, const float* points, int points_step, float3 active_query, float radius2, int length, int* out, int length_left)
 		{                        
-			unsigned int idx = LaneId();
+			unsigned int idx = Warp::laneId();
 			const int STRIDE = warpSize;            
 			int last_threadIdx = threadIdx.x - idx + 31;            
 

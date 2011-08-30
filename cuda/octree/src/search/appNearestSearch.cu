@@ -35,12 +35,13 @@
  */
 
 
-#include "pcl/gpu/utils/device/numeric_limits.hpp"
+#include "pcl/gpu/utils/device/limits.hpp"
 
 #include "internal.hpp"
 #include "octree_global.hpp"
 
-#include "utils/laneid.hpp"
+#include "pcl/gpu/utils/device/warp.hpp"
+
 #include "utils/copygen.hpp"
 #include "utils/boxutils.hpp"
 #include "utils/scan_block.hpp"
@@ -166,7 +167,7 @@ namespace pcl { namespace device { namespace appnearest_search
 
 			while(mask)
 			{                
-				unsigned int laneId = LaneId();
+				unsigned int laneId = Warp::laneId();
 				unsigned int warpId = threadIdx.x/warpSize;            
 
 				int active_lane = __ffs(mask) - 1; //[0..31]                        
@@ -218,7 +219,7 @@ namespace pcl { namespace device { namespace appnearest_search
 			dist2[tid] = pcl::device::numeric_limits<float>::max();
 
 			//serial step
-			for (int idx = LaneId(); idx < length; idx += STRIDE)
+			for (int idx = Warp::laneId(); idx < length; idx += STRIDE)
 			{
 				float dx = points[idx                  ] - active_query.x;
 				float dy = points[idx + points_step    ] - active_query.y;
@@ -233,7 +234,7 @@ namespace pcl { namespace device { namespace appnearest_search
 				}
 			}
 			//parallel step
-			unsigned int lane = LaneId();
+			unsigned int lane = Warp::laneId();
 
 			float mind2 = dist2[tid];
 

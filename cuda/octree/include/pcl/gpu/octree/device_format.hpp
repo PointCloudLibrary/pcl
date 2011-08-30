@@ -63,6 +63,13 @@ namespace pcl
                 if (max_elems != 1)
                     sizes.create(query_number);                
             }
+
+            void upload(const std::vector<int>& data, const std::vector<int>& sizes, int max_elements)
+            {
+                this->data.upload(data);
+                this->sizes.upload(sizes);
+                max_elems = max_elements;
+            }
         };
     }
 }

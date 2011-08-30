@@ -42,7 +42,7 @@
 
 namespace pcl
 {
-    namespace cuda
+    namespace gpu
     {
         struct Timer
         {

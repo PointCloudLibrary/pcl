@@ -58,7 +58,8 @@ namespace pcl
             T* data;
 
             __PCL_GPU_HOST_DEVICE__ size_t elemSize() const { return elem_size; }
-            __PCL_GPU_HOST_DEVICE__ operator T*() const { return data; }
+            __PCL_GPU_HOST_DEVICE__ operator       T*()       { return data; }
+            __PCL_GPU_HOST_DEVICE__ operator const T*() const { return data; }
         };
 
         template<typename T> struct PtrSz : public DevPtr<T>
@@ -71,8 +72,8 @@ namespace pcl
             /** \brief stride between two consecutive rows in bytes. Step is stored always and everywhere in bytes!!! */
             size_t step;            
 
-/** BROKEN            __PCL_GPU_HOST_DEVICE__       T* ptr(int y = 0)       { return (      T*)( (      char*)data + y * step); }
-            __PCL_GPU_HOST_DEVICE__ const T* ptr(int y = 0) const { return (const T*)( (const char*)data + y * step); }            */
+            __PCL_GPU_HOST_DEVICE__       T* ptr(int y = 0)       { return (      T*)( (      char*)data + y * step); }
+            __PCL_GPU_HOST_DEVICE__ const T* ptr(int y = 0) const { return (const T*)( (const char*)data + y * step); }
         };
 
         template <typename T> struct PtrStepSz : public PtrStep<T>

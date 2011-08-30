@@ -43,13 +43,12 @@
 #include<limits>
 
 using namespace pcl::gpu;
-using namespace pcl::cuda;
 using namespace pcl::device;
 using namespace std;
 
 namespace pcl
 {
-    namespace cuda
+    namespace device
     {
         namespace getcc
         {
@@ -64,7 +63,7 @@ namespace pcl
 void  pcl::gpu::OctreeImpl::get_gpu_arch_compiled_for(int& bin, int& ptx)
 {
     cudaFuncAttributes attrs;
-    cudaSafeCall( cudaFuncGetAttributes(&attrs, getcc::get_cc_kernel) );  
+    cudaSafeCall( cudaFuncGetAttributes(&attrs, pcl::device::getcc::get_cc_kernel) );  
     bin = attrs.binaryVersion;
     ptx = attrs.ptxVersion;
 }
