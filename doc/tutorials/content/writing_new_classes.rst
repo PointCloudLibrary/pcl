@@ -875,17 +875,35 @@ The implementation file header thus becomes:
 
       output = *input_;
 
-      for (size_t i = 0; i < indices->size (); ++i)
+      for (size_t i = 0; i < indices_->size (); ++i)
       {
-        tree_->radiusSearch ((*indices)[i], sigma_s_ * 2, k_indices, k_distances);
+        tree_->radiusSearch ((*indices_)[i], sigma_s_ * 2, k_indices, k_distances);
 
-        output.points[(*indices)[i]].intensity = computePointWeight ((*indices)[i], k_indices, k_distances);
+        output.points[(*indices_)[i]].intensity = computePointWeight ((*indices_)[i], k_indices, k_distances);
       }
     }
      
     #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
 
     #endif // PCL_FILTERS_BILATERAL_H_
+
+To make :pcl:`indices_<pcl::PCLBase::indices_>` work without typing the full
+construct, we need to add a new line to *bilateral.h* that specifies the class
+where `indices_` is declared:
+
+.. code-block:: cpp
+   :linenos:
+
+    ...
+      template<typename PointT>
+      class BilateralFilter : public Filter<PointT>
+      {
+        using Filter<PointT>::input_;
+        using Filter<PointT>::indices_;
+        public:
+          BilateralFilter () : sigma_s_ (0),
+    ...
+
 
 
 Licenses
@@ -1012,6 +1030,7 @@ class look like:
       class BilateralFilter : public Filter<PointT>
       {
         using Filter<PointT>::input_;
+        using Filter<PointT>::indices_;
         typedef typename Filter<PointT>::PointCloud PointCloud;
         typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
 
@@ -1209,13 +1228,13 @@ And the *bilateral.hpp* like:
       output = *input_;
 
       // For all the indices given (equal to the entire cloud if none given)
-      for (size_t i = 0; i < indices->size (); ++i)
+      for (size_t i = 0; i < indices_->size (); ++i)
       {
         // Perform a radius search to find the nearest neighbors
-        tree_->radiusSearch ((*indices)[i], sigma_s_ * 2, k_indices, k_distances);
+        tree_->radiusSearch ((*indices_)[i], sigma_s_ * 2, k_indices, k_distances);
 
         // Overwrite the intensity value with the computed average
-        output.points[(*indices)[i]].intensity = computePointWeight ((*indices)[i], k_indices, k_distances);
+        output.points[(*indices_)[i]].intensity = computePointWeight ((*indices_)[i], k_indices, k_distances);
       }
     }
      
