@@ -111,9 +111,9 @@ endmacro(PCL_ADD_LIBRARY)
 macro(PCL_CUDA_ADD_LIBRARY _name _component)
     if(PCL_SHARED_LIBS)
         # to overcome a limitation in cuda_add_library, we add manually PCLAPI_EXPORTS macro
-        cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -arch sm_20 -DPCLAPI_EXPORTS)
+        cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -DPCLAPI_EXPORTS)
     else(PCL_SHARED_LIBS)
-        cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -arch sm_20)
+        cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
     endif(PCL_SHARED_LIBS)
     
     # must link explicitly against boost.

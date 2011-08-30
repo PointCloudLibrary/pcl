@@ -5,10 +5,6 @@
 #   	include(CudaComputeTargetFlags.cmake)
 #		APPEND_TARGET_ARCH_FLAGS() 
 
-#init with empty flags
-set(CUDA_ARCH_BIN "" CACHE STRING "Specify 'real' GPU architectures to build binaries for, BIN(PTX) format is supported. Example: 1.3 2.1(1.3) or 13 21(13)")
-set(CUDA_ARCH_PTX "" CACHE STRING "Specify 'virtual' PTX architectures to build PTX intermediate code for. Example: 1.0 1.2 or 10 12")              
-
 #compute flags macros
 MACRO(CUDA_COMPUTE_TARGET_FLAGS arch_bin arch_ptx cuda_nvcc_target_flags)
 	string(REGEX REPLACE "\\." "" ARCH_BIN_WITHOUT_DOTS "${${arch_bin}}")
