@@ -54,6 +54,7 @@ namespace pcl
   class BilateralFilter : public Filter<PointT>
   {
     using Filter<PointT>::input_;
+    using Filter<PointT>::indices_;
     typedef typename Filter<PointT>::PointCloud PointCloud;
     typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
 
