@@ -1,6 +1,8 @@
 set (SUBSYS_NAME tools)
 set (SUBSYS_DESC "Useful PCL-based command line tools")
 set (SUBSYS_DEPS common io filters sample_consensus segmentation kdtree features surface octree registration visualization)
+set (DEFAULT ON)
+set (REASON "")
 
 PCL_SUBSYS_OPTION (build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND (build ${SUBSYS_NAME} ${SUBSYS_DEPS})
