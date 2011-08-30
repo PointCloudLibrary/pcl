@@ -17,6 +17,7 @@ if(build)
         src/statistical_outlier_removal.cpp
         src/voxel_grid.cpp
         src/fast_voxel_grid.cpp
+        src/bilateral.cpp
         )
 
     set(incs 
@@ -29,6 +30,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/statistical_outlier_removal.h
         include/pcl/${SUBSYS_NAME}/voxel_grid.h
         include/pcl/${SUBSYS_NAME}/fast_voxel_grid.h
+        include/pcl/${SUBSYS_NAME}/bilateral.h
         )
 
     set(impl_incs 
@@ -41,6 +43,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/statistical_outlier_removal.hpp
         include/pcl/${SUBSYS_NAME}/impl/voxel_grid.hpp
         include/pcl/${SUBSYS_NAME}/impl/fast_voxel_grid.hpp
+        include/pcl/${SUBSYS_NAME}/impl/bilateral.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
@@ -54,5 +57,5 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
-#    add_subdirectory(test)
+    add_subdirectory(test)
 endif(build)
