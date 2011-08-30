@@ -963,6 +963,15 @@ original copyright can be changed):
 
     * Copyright (c) XXX, respective authors.
 
+Proper naming
+=============
+
+We wrote the tutorial so far by using *silly named* setters and getters in our
+example, like `setSigmaS` or `setSigmaR`. In reality, we would like to use a
+better naming scheme, that actually represents what the parameter is doing. In
+a final version of the code we could therefore rename the setters and getters
+to `set/getHalfSize` and `set/getStdDev` or something similar.
+
 Code comments
 =============
 
@@ -1266,7 +1275,7 @@ class instead:
       std::string incloudfile = argv[1];
       std::string outcloudfile = argv[2];
       float sigma_s = atof (argv[3]);
-      //float sigma_r = atof (argv[4]);
+      float sigma_r = atof (argv[4]);
 
       // Load cloud
       pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
@@ -1279,9 +1288,9 @@ class instead:
 
       pcl::BilateralFilter<PointT> bf;
       bf.setInputCloud (cloud);
-      //bf.setSearchMethod (tree);
-      bf.setSigmaS (sigma_s);
-      //bf.setSigmaR (sigma_r);
+      bf.setSearchMethod (tree);
+      bf.setHalfSize (sigma_s);
+      bf.setStdDev (sigma_r);
       bf.filter (outcloud);
 
       // Save filtered output
