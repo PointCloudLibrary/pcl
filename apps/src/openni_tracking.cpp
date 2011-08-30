@@ -121,7 +121,7 @@ public:
                 "searcharea");
     }
 
-  pcl::PointXYZ calcCubePoint (Eigen::Matrix4f origin, Eigen::Vector4f point)
+  pcl::PointXYZ calcCubePoint (const Eigen::Matrix4f& origin, const Eigen::Vector4f& point)
     {
       Eigen::Vector4f position = origin * point;
       pcl::PointXYZ ret;
@@ -131,17 +131,17 @@ public:
       return ret;
     }
 
-  void drawLine (pcl::visualization::PCLVisualizer& viz, pcl::PointXYZ from, pcl::PointXYZ to, std::string name)
+  void drawLine (pcl::visualization::PCLVisualizer& viz, const pcl::PointXYZ& from, const pcl::PointXYZ& to, const std::string& name)
     {
       viz.removeShape (name);
       viz.addLine<pcl::PointXYZ> (from, to, name);
     }
   
-  void drawCube (pcl::visualization::PCLVisualizer& viz, Eigen::Matrix4f origin,
+  void drawCube (pcl::visualization::PCLVisualizer& viz, const Eigen::Matrix4f& origin,
                  double width,  // x
                  double height, // y
                  double depth,  // z
-                 std::string name = "cube")
+                 const std::string& name = "cube")
     {
       pcl::PointXYZ A = calcCubePoint (origin, Eigen::Vector4f (+ width / 2.0, - height / 2.0, - depth / 2.0, 1.0));
       pcl::PointXYZ B = calcCubePoint (origin, Eigen::Vector4f (+ width / 2.0, + height / 2.0, - depth / 2.0, 1.0));
