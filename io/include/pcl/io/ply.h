@@ -42,6 +42,8 @@
 #include "pcl/io/io.h"
 #include <functional>
 #include <algorithm>
+#include <boost/algorithm/string.hpp>
+#include <fstream>
 
 namespace pcl
 {
@@ -68,13 +70,13 @@ namespace pcl
       ///@return endianess of the host machine
       Format getEndianess()
       {
-        #ifdef PCL_LITTLE_ENDIAN
+#ifdef PCL_LITTLE_ENDIAN
         return LITTLE_ENDIAN_FORMAT;
-        #elif defined PCL_BIG_ENDIAN
+#elif defined PCL_BIG_ENDIAN
         return BIG_ENDIAN_FORMAT;
-        #else
-        #error
-        #endif
+#else
+#error
+#endif
       }
 #undef PCL_BIG_ENDIAN
 #undef PCL_LITTLE_ENDIAN
@@ -130,14 +132,14 @@ namespace pcl
       {
         switch(size_type)
         {
-          case sensor_msgs::PointField::UINT8 : 
-            return std::numeric_limits<unsigned char>::max();
-          case sensor_msgs::PointField::UINT16 : 
-            return std::numeric_limits<unsigned short>::max();
+        case sensor_msgs::PointField::UINT8 : 
+          return std::numeric_limits<unsigned char>::max();
+        case sensor_msgs::PointField::UINT16 : 
+          return std::numeric_limits<unsigned short>::max();
         case sensor_msgs::PointField::UINT32 : 
-            return std::numeric_limits<unsigned int>::max();
-          default:
-            return 0;
+          return std::numeric_limits<unsigned int>::max();
+        default:
+          return 0;
         }
       };
 
@@ -148,9 +150,9 @@ namespace pcl
         std::string name_;
         int data_type_;
         size_t offset_;
-        property(const std::string& name) : name_(name), offset_(0) {}
-        property(const std::string& name, int data_type) : 
-          name_(name), data_type_(data_type)
+      property(const std::string& name) : name_(name), offset_(0) {}
+      property(const std::string& name, int data_type) : 
+        name_(name), data_type_(data_type)
         {
           offset_ = pcl::getFieldSize(data_type_);
         }
@@ -159,194 +161,336 @@ namespace pcl
       struct list_property : public property
       {
         int size_type_;
-        list_property(const std::string& name, int size_type, int data_type) : 
+      list_property(const std::string& name, int size_type, int data_type) : 
         property(name, data_type), size_type_(size_type) 
         {
           offset_ = pcl::getFieldSize(size_type_) + 
-                    getMaximumCapacity(size_type_) * pcl::getFieldSize(data_type_);
+            getMaximumCapacity(size_type_) * pcl::getFieldSize(data_type_);
         }
         
-        inline void set_size(const void* size)
+        void set_size(const void* size)
         {
           offset_ = pcl::getFieldSize(size_type_);
           switch(size_type_)
           {
-            case sensor_msgs::PointField::UINT8 : 
-            {
-              const unsigned char *size_; size_ = (unsigned char*) size;
-              offset_ += (*size_) * pcl::getFieldSize(size_type_);
-            }
-            break;
-            case sensor_msgs::PointField::UINT16 : 
-            {
-              const unsigned short *size_; size_ = (unsigned short*) size;
-              offset_ += (*size_) * pcl::getFieldSize(size_type_);
-            }
-            break;
-            case sensor_msgs::PointField::UINT32 : 
-            {
-              const unsigned int *size_; size_ = (unsigned int*) size;
-              offset_ += (*size_) * pcl::getFieldSize(size_type_);
-            }
-            break;
+          case sensor_msgs::PointField::UINT8 : 
+          {
+            const unsigned char *size_; size_ = (unsigned char*) size;
+            offset_ += (*size_) * pcl::getFieldSize(size_type_);
+          }
+          break;
+          case sensor_msgs::PointField::UINT16 : 
+          {
+            const unsigned short *size_; size_ = (unsigned short*) size;
+            offset_ += (*size_) * pcl::getFieldSize(size_type_);
+          }
+          break;
+          case sensor_msgs::PointField::UINT32 : 
+          {
+            const unsigned int *size_; size_ = (unsigned int*) size;
+            offset_ += (*size_) * pcl::getFieldSize(size_type_);
+          }
+          break;
           }
         }
       };
 
       class element
       {
-        public:
-          std::string name_;
-          size_t count_;
-          size_t offset_;
-          element(const std::string& name, size_t count) : 
-          name_(name), count_(count), offset_(0), properties_(0), list_properties_(0) {}
+      public:
+        std::string name_;
+        size_t count_;
+        size_t offset_;
+      element(const std::string& name, size_t count) : 
+        name_(name), count_(count), offset_(0), properties_(0), list_properties_(0) {}
 
-          typedef std::vector<property*>::iterator iterator;
-          typedef std::vector<property*>::const_iterator const_iterator;
-          typedef std::vector<iterator>::iterator iterator_iterator;
-          typedef std::vector<iterator>::const_iterator const_iterator_iterator;
-          inline size_t properties_size() { return properties_.size(); }
-          inline property* operator[](const std::string &prop_name)
-          {
-            std::vector<property*>::iterator properties_it = properties_.begin();
-            for(; properties_it != properties_.end(); ++properties_it)
-              if((*properties_it)->name_ == prop_name) break;
-            if (properties_it == properties_.end())
-              return NULL;
+        typedef std::vector<property*>::iterator iterator;
+        typedef std::vector<property*>::const_iterator const_iterator;
+        typedef std::vector<iterator>::iterator iterator_iterator;
+        typedef std::vector<iterator>::const_iterator const_iterator_iterator;
+        size_t properties_size() { return properties_.size(); }
+        property* operator[](const std::string &prop_name)
+        {
+          std::vector<property*>::iterator properties_it = properties_.begin();
+          for(; properties_it != properties_.end(); ++properties_it)
+            if((*properties_it)->name_ == prop_name) break;
+          if (properties_it == properties_.end())
+            return NULL;
+          else
+            return *properties_it;
+        }
+          
+        const property* operator[](const std::string &prop_name) const 
+        {
+          std::vector<property*>::const_iterator properties_it = properties_.begin ();
+          for(; properties_it != properties_.end (); ++properties_it)
+            if((*properties_it)->name_ == prop_name) break;
+          if (properties_it == properties_.end ())
+            return NULL;
+          else
+            return *properties_it;
+        }
+
+        int push_property(const std::string& name, int data_type)
+        {
+          property* p = new property (name, data_type);
+          properties_.push_back (p);
+          offset_+= p->offset_;
+          return int (properties_.size ());
+        }
+          
+        int push_property(const std::string& name, int size_type, int data_type)
+        {
+          property *lp = new list_property (name, size_type, data_type);
+          properties_.push_back (lp);
+          list_properties_.push_back (properties_.end() - 1);
+          offset_+= lp->offset_;
+          return int (properties_.size ());
+        }
+
+        bool has_list_properties() const { return (!list_properties_.empty()); }
+          
+        size_t offset_before(const std::string& prop_name)
+        {
+          size_t offset = 0;
+          std::vector<property*>::const_iterator properties_it = properties_.begin();
+          for(; properties_it != properties_.end(); ++properties_it)
+            if((*properties_it)->name_ == prop_name) 
+              break;
             else
-              return *properties_it;
-          }
-          
-          inline const property* operator[](const std::string &prop_name) const 
-          {
-            std::vector<property*>::const_iterator properties_it = properties_.begin ();
-            for(; properties_it != properties_.end (); ++properties_it)
-              if((*properties_it)->name_ == prop_name) break;
-            if (properties_it == properties_.end ())
-              return NULL;
-            else
-              return *properties_it;
-          }
+              offset+= (*properties_it)->offset_;
+          if (properties_it == properties_.end())
+            return -1;
+          return offset;
+        }
 
-          inline int push_property(const std::string& name, int data_type)
-          {
-            property* p = new property (name, data_type);
-            properties_.push_back (p);
-            offset_+= p->offset_;
-            return int (properties_.size ());
-          }
-          
-          inline int push_property(const std::string& name, int size_type, int data_type)
-          {
-            property *lp = new list_property (name, size_type, data_type);
-            properties_.push_back (lp);
-            list_properties_.push_back (properties_.end() - 1);
-            offset_+= lp->offset_;
-            return int (properties_.size ());
-          }
+        void update_offset() 
+        {
+          offset_ = 0;
+          std::vector<property*>::const_iterator properties_it = properties_.begin();
+          for(; properties_it != properties_.end(); ++properties_it)
+            offset_+= (*properties_it)->offset_;
+        }
 
-          inline bool has_list_properties() const { return (!list_properties_.empty()); }
-          
-          size_t offset_before(const std::string& prop_name)
-          {
-            size_t offset = 0;
-            std::vector<property*>::const_iterator properties_it = properties_.begin();
-            for(; properties_it != properties_.end(); ++properties_it)
-              if((*properties_it)->name_ == prop_name) 
-                break;
-              else
-                offset+= (*properties_it)->offset_;
-            if (properties_it == properties_.end())
-              return -1;
-            return offset;
-          }
+        bool is_list_property(const_iterator property_pos)
+        {
+          return std::find_if(list_properties_.begin(),
+                              list_properties_.end(),
+                              std::bind1st(std::equal_to<const_iterator>(),property_pos)) != list_properties_.end();
+        }
 
-          inline void update_offset() 
-          {
-            offset_ = 0;
-            std::vector<property*>::const_iterator properties_it = properties_.begin();
-            for(; properties_it != properties_.end(); ++properties_it)
-              offset_+= (*properties_it)->offset_;
-          }
-
-          inline bool is_list_property(const_iterator property_pos)
-          {
-            return std::find_if(list_properties_.begin(),
-                                list_properties_.end(),
-                                std::bind1st(std::equal_to<const_iterator>(),property_pos)) != list_properties_.end();
-          }
-
-          std::vector<property*> properties_;
-          std::vector<iterator> list_properties_;
+        std::vector<property*> properties_;
+        std::vector<iterator> list_properties_;
       };
 
       class parser
       {
-        public:
-          parser() : elements_(0), last_element_(0) {}
+      public:
+      parser() : elements_(0), last_element_(0) {}
 
-          typedef std::vector<element*>::iterator iterator;
-          typedef std::vector<element*>::const_iterator const_iterator;
-          inline iterator begin() { return elements_.begin(); }
-          inline iterator end() { return elements_.end(); }
+        typedef std::vector<element*>::iterator iterator;
+        typedef std::vector<element*>::const_iterator const_iterator;
+        iterator begin() { return elements_.begin(); }
+        iterator end() { return elements_.end(); }
 
-          inline element* operator[](const std::string &element_name)
-          {
-            std::vector<element*>::iterator elements_it = elements_.begin();
-            for(; elements_it != elements_.end(); ++elements_it)
-              if((*elements_it)->name_ == element_name) break;
-            if (elements_it == elements_.end())
-              return NULL;
+        element* operator[](const std::string &element_name)
+        {
+          std::vector<element*>::iterator elements_it = elements_.begin();
+          for(; elements_it != elements_.end(); ++elements_it)
+            if((*elements_it)->name_ == element_name) break;
+          if (elements_it == elements_.end())
+            return NULL;
+          else
+            return *elements_it;
+        }
+
+        const element* operator[](const std::string &element_name) const
+        {
+          std::vector<element*>::const_iterator elements_it = elements_.begin();
+          for(; elements_it != elements_.end(); ++elements_it)
+            if((*elements_it)->name_ == element_name) break;
+          if (elements_it == elements_.end())
+            return NULL;
+          else
+            return *elements_it;
+        }
+          
+        int push_element(const std::string& name, size_t count)
+        {
+          last_element_ = new element(name, count);
+          elements_.push_back(last_element_);
+          return int (elements_.size());
+        }
+
+        int push_property(const std::string& name, int data_type)
+        {
+          return last_element_->push_property(name, data_type);
+        }
+
+        int push_property(const std::string& name, int size_type, int data_type)
+        {
+          return last_element_->push_property(name, size_type, data_type);
+        }
+
+        size_t offset_before(const std::string& element_name)
+        {
+          size_t offset = 0;
+          std::vector<element*>::const_iterator elements_it = elements_.begin();
+          for(; elements_it != elements_.end(); ++elements_it)
+            if((*elements_it)->name_ == element_name) 
+              break;
             else
-              return *elements_it;
+              offset+= (*elements_it)->offset_ * (*elements_it)->count_;
+          if (elements_it == this->end())
+            return -1;
+          return offset;
+        }
+
+
+        int parse_header(const std::string& file_name, int& data_type, int& data_idx, bool& is_swap_required)
+        {
+          std::ifstream fs;
+          std::string line;
+
+          // Open file in binary mode to avoid problem of 
+          // std::getline() corrupting the result of ifstream::tellg()
+          fs.open (file_name.c_str (), std::ios::binary);
+          if (!fs.is_open () || fs.fail ())
+          {
+            PCL_ERROR ("[pcl::io::ply::parser::parse_header] Could not open file %s.\n", file_name.c_str ());
+            return (-1);
           }
 
-          inline const element* operator[](const std::string &element_name) const
+          std::vector<std::string> st;
+          // Read the header and fill it in with wonderful values
+          try
           {
-            std::vector<element*>::const_iterator elements_it = elements_.begin();
-            for(; elements_it != elements_.end(); ++elements_it)
-              if((*elements_it)->name_ == element_name) break;
-            if (elements_it == elements_.end())
-              return NULL;
-            else
-              return *elements_it;
+            getline (fs, line);
+            boost::trim (line);
+            boost::split (st, line, boost::is_any_of ( std::string ("\t\r ")), boost::token_compress_on);
+
+            // PLY file always start with magic line "ply"
+            if (st.at (0) !=  "ply")
+            {
+              PCL_ERROR ("[pcl::io::ply::parser::parse_header] %s is not a valid ply file\n", st[0].c_str());
+              return(-1);
+            }
+
+            while (!fs.eof ())
+            {
+              getline (fs, line);
+              // Ignore empty lines
+              if (line == "")
+                continue;
+
+              // Tokenize the line
+              boost::trim (line);
+              boost::split (st, line, boost::is_any_of (std::string ( "\t\r ")), boost::token_compress_on);
+
+              std::string line_type = st.at (0);
+
+              // read format
+              if (line_type.substr (0, 6) == "format")
+              {
+                float version =  atof(st.at(2).c_str());
+                //check version number
+                if (version != 1.0)
+                {
+                  PCL_ERROR ("[pcl::io::ply::parser::parse_header] can't handle this PLY format version %f\n", version);
+                  return (-1);
+                }
+                //check format
+                if ("ascii" == st.at (1))
+                  data_type = 0;
+                else
+                {
+                  if ("binary_big_endian" == st.at (1) || "binary_little_endian" == st.at (1))
+                  {
+                    data_type = 1;
+                    pcl::io::ply::Format format = pcl::io::ply::getEndianess();
+                    if ((("binary_big_endian" == st.at(1)) && 
+                         (format == pcl::io::ply::LITTLE_ENDIAN_FORMAT)) ||
+                        (("binary_little_endian" == st.at(1)) && 
+                         (format == pcl::io::ply::BIG_ENDIAN_FORMAT)))
+                      is_swap_required = true;
+                  }
+                  else
+                  {
+                    PCL_ERROR ("[pcl::io::ply::parser::parse_header] unknown format %f\n", st[1].c_str());
+                    return (-1);
+                  }
+                }
+                continue;
+              }
+              // ignore comments
+              if (line_type.substr (0, 7) == "comment")
+                continue;
+              // read element
+              if (line_type.substr (0, 7) == "element") 
+              {
+                if(st.size() == 3)
+                  push_element(st.at(1), atoi(st.at(2).c_str()));
+                else
+                  push_element(st.at(1), 1);
+                continue;
+              }
+              // read property
+              if (line_type.substr (0, 8) == "property")
+              {
+                // list property
+                if(st.at(1) == "list")
+                {
+                  int size_type = pcl::io::ply::getTypeFromTypeName(st.at(2));
+                  int data_type = pcl::io::ply::getTypeFromTypeName(st.at(3));
+                  if(data_type < -1 || size_type < -1)
+                  {
+                    PCL_ERROR ("[pcl::io::ply::parser::parse_header] parse error property list %s %s %s.\n", st[2].c_str(), st[3].c_str (), st[4].c_str ());
+                    return -1;
+                  }
+                  else
+                  {
+                    size_t capacity = pcl::io::ply::getMaximumCapacity(size_type);
+                    if(capacity == 0)
+                    {
+                      PCL_ERROR ("[pcl::io::ply::parser::parse_header] unhandled size type for property list %s %s %s.\n", st[2].c_str(), st[3].c_str (), st[4].c_str ());
+                      return -1;
+                    }
+                    push_property(st.at(4), size_type, data_type);
+                  }
+                }
+                // scalar property
+                else
+                {
+                  int type = pcl::io::ply::getTypeFromTypeName(st.at(1));
+                  if(type < -1)
+                  {
+                    PCL_ERROR ("[pcl::io::ply::parser::parse_header] parse error property %s %s.\n", st[1].c_str (), st[2].c_str ());
+                    return -1;
+                  }
+                  else
+                    push_property (st.at(2), type);
+                }
+                continue;
+              }
+              // end of header
+              if (line_type.substr (0, 10) == "end_header") 
+                data_idx = fs.tellg ();
+              break;
+            }
+          }
+          catch (const char *exception)
+          {
+            PCL_ERROR ("[pcl::io::ply::parser::parse_header] %s\n", exception);
+            return (-1);
           }
           
-          inline int push_element(const std::string& name, size_t count)
-          {
-            last_element_ = new element(name, count);
-            elements_.push_back(last_element_);
-            return int (elements_.size());
-          }
+          fs.close();
+          return (0);
+        }
 
-          inline int push_property(const std::string& name, int data_type)
-          {
-            return last_element_->push_property(name, data_type);
-          }
-
-          inline int push_property(const std::string& name, int size_type, int data_type)
-          {
-            return last_element_->push_property(name, size_type, data_type);
-          }
-
-          size_t offset_before(const std::string& element_name)
-          {
-            size_t offset = 0;
-            std::vector<element*>::const_iterator elements_it = elements_.begin();
-            for(; elements_it != elements_.end(); ++elements_it)
-              if((*elements_it)->name_ == element_name) 
-                break;
-              else
-                offset+= (*elements_it)->offset_ * (*elements_it)->count_;
-            if (elements_it == this->end())
-              return -1;
-            return offset;
-          }
-
-        private:
-          std::vector<element*> elements_;
-          element* last_element_;
+      private:
+        std::vector<element*> elements_;
+        element* last_element_;
       };
 
       /** Wrapper for PLY camera structure to ease read/write */
@@ -359,20 +503,20 @@ namespace pcl
         float focal; float scalex; float scaley; float centerx; float centery;
         int viewportx; int viewporty; float k1; float k2;
         /**constructor 
-          *\param origin: sensor origin to store in view_p[x,y,z]
-          *\param orientation: sensor orientation to store in [x,y,z]_axis[x,y,z]
-          *\remark instrinsics are set to 0 cause they are unused
-          */
-        camera() :
-          view_px(0), view_py(0), view_pz(0),
+         *\param origin: sensor origin to store in view_p[x,y,z]
+         *\param orientation: sensor orientation to store in [x,y,z]_axis[x,y,z]
+         *\remark instrinsics are set to 0 cause they are unused
+         */
+      camera() :
+        view_px(0), view_py(0), view_pz(0),
           x_axisx(0), x_axisy(0), x_axisz(0),
           y_axisx(0), y_axisy(0), y_axisz(0),
           z_axisx(0), z_axisy(0), z_axisz(0),
           focal(0), scalex(0), centerx(0), centery(0), viewportx(0), viewporty(0),
-            k1(0), k2(0) {}
+          k1(0), k2(0) {}
 
-        camera(const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation) :
-          view_px(origin[0]), view_py(origin[1]), view_pz(origin[2]),
+      camera(const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation) :
+        view_px(origin[0]), view_py(origin[1]), view_pz(origin[2]),
           focal(0), scalex(0), centerx(0), centery(0), viewportx(0), viewporty(0),
           k1(0), k2(0)
         {
@@ -388,8 +532,8 @@ namespace pcl
           origin[0] = view_px; origin[1] = view_py;  origin[2] = view_pz; origin[3] = 1.0;
           Eigen::Matrix3f R;
           R << x_axisx, x_axisy, x_axisz,
-               y_axisx, y_axisy, y_axisz,
-               z_axisx, z_axisy, z_axisz;
+            y_axisx, y_axisy, y_axisz,
+            z_axisx, z_axisy, z_axisz;
           orientation = Eigen::Quaternionf(R);
         }
       };
