@@ -158,7 +158,7 @@ void pcl::gpu::DeviceMemory::create(size_t sizeBytes_arg)
 
 void pcl::gpu::DeviceMemory::copyTo(DeviceMemory& other) const
 {
-    assert(!this.data);
+    assert(data);
 
     other.create(sizeBytes);    
     cudaSafeCall( cudaMemcpy(other.data, data, sizeBytes, cudaMemcpyDeviceToDevice) );
@@ -269,7 +269,7 @@ void pcl::gpu::DeviceMemory2D::release()
 
 void pcl::gpu::DeviceMemory2D::copyTo(DeviceMemory2D& other) const
 {
-    assert(!this.data);
+    assert(data);
     other.create(rows, colsBytes);    
     cudaSafeCall( cudaMemcpy2D(other.data, other.step, data, step, colsBytes, rows, cudaMemcpyDeviceToDevice) );
     cudaSafeCall( cudaDeviceSynchronize() );
