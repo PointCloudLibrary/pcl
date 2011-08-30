@@ -164,9 +164,7 @@ usage (char ** argv)
 int 
 main (int argc, char ** argv)
 {
-  bool help = false;
-  pcl::console::parse_argument (argc, argv, "-h", help);
-  if (help)
+  if (pcl::console::find_argument (argc, argv, "-h"))
   {
     usage (argv);
     return (1);
