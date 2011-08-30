@@ -9,6 +9,7 @@ endif("${CMAKE_BUILD_TYPE}" STREQUAL "")
 project(PCL)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
     "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -39,7 +40,7 @@ else(UNIX OR APPLE)
   endif(MSVC)
 endif()
 if (__COMPILER_PATHSCALE)
-  add_definitions("-Wno-uninitialized -zerouv -pthread")
+  add_definitions("-Wno-uninitialized -zerouv -pthread -mp")
 endif()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   add_definitions("-std=gnu++0x")
@@ -123,6 +124,7 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
 find_package(VTK)
 if(VTK_FOUND)
   message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
+  link_directories(${VTK_LIBRARY_DIRS})
   set(HAVE_VTK ON)
 endif()
 # Find wxWidgets
