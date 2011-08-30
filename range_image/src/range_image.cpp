@@ -42,6 +42,7 @@
 using std::cout;
 using std::cerr;
 #include <cmath>
+#include <set>
 
 #include <pcl/range_image/range_image.h>
 #include <pcl/common/transformation_from_correspondences.h>
@@ -1716,6 +1717,175 @@ RangeImage::getOverlap (const RangeImage& other_range_image, const Eigen::Affine
     }
   }
   return float(hits_counter)/float(valid_points_counter);
+}
+
+void
+RangeImage::extractPlanes (float initial_max_plane_error,
+                           std::vector<RangeImage::ExtractedPlane>& planes) const
+{
+  //MEASURE_FUNCTION_TIME;
+  
+  planes.clear();
+  
+  std::vector<bool> point_still_valid;
+  point_still_valid.resize(points.size(), true);
+  std::vector<int> points_on_plane;
+  std::vector<float> distances_to_neighbors;
+  
+  VectorAverage3f vector_average;
+  for (int start_point_idx = 0; start_point_idx<int(points.size()); ++start_point_idx)
+  {
+    if (!isValid(start_point_idx) || !point_still_valid[start_point_idx])
+      continue;
+    points_on_plane.clear();
+    vector_average.reset();
+    
+    points_on_plane.push_back(start_point_idx);
+    point_still_valid[start_point_idx] = false;
+    const PointWithRange& start_point = points[start_point_idx];
+    vector_average.add(start_point.getVector3fMap());
+    
+    Eigen::Vector3f eigen_values(0,0,0), plane_normal(0,0,0), eigen_vector2(0,0,0), eigen_vector3(0,0,0);
+    float plane_d=0;
+    bool first_plane_estimate_done = false;
+    
+    for (int check_neighbors_idx=0; check_neighbors_idx<int(points_on_plane.size()); ++check_neighbors_idx)
+    {
+      int current_idx = points_on_plane[check_neighbors_idx],
+          current_y   = current_idx/width,
+          current_x   = current_idx - current_y*width;
+      const PointWithRange& current_point = points[current_idx];
+      
+      distances_to_neighbors.clear();
+      for (int neighbor_y=current_y-1; neighbor_y<=current_y+1; ++neighbor_y)
+        for (int neighbor_x=current_x-1; neighbor_x<=current_x+1; ++neighbor_x)
+          if (isValid(neighbor_x, neighbor_y))
+            distances_to_neighbors.push_back(
+                (points[neighbor_y*width+neighbor_x].getVector3fMap()-current_point.getVector3fMap()).squaredNorm());
+      std::sort(distances_to_neighbors.begin(), distances_to_neighbors.end());
+      if (distances_to_neighbors.empty())
+        continue;
+      float max_squared_distance = 4.0f*distances_to_neighbors[distances_to_neighbors.size()/2];
+      
+      for (int neighbor_y=current_y-1; neighbor_y<=current_y+1; ++neighbor_y)
+      {
+        for (int neighbor_x=current_x-1; neighbor_x<=current_x+1; ++neighbor_x)
+        {
+          int neighbor_idx = neighbor_y*width + neighbor_x;
+          if (!isValid(neighbor_x, neighbor_y) || !point_still_valid[neighbor_idx])
+            continue;
+          const PointWithRange& neighbor = points[neighbor_idx];
+          float squared_distance_to_current_point = (neighbor.getVector3fMap()-current_point.getVector3fMap()).squaredNorm();
+          if (squared_distance_to_current_point > max_squared_distance)
+          {
+            //cout << "Skipping a point because of distance jump.\n";
+            continue;
+          }
+          
+          if (first_plane_estimate_done)
+          {
+            float distance_to_plane = plane_d-plane_normal.dot(neighbor.getVector3fMap());
+            //cout << PVARN(distance_to_plane);
+            if (fabsf(distance_to_plane) > initial_max_plane_error)
+              continue;
+            
+            bool do_point_above_check = true;
+            if (do_point_above_check)
+            {
+              float normal_factor = (distance_to_plane<0 ? -initial_max_plane_error : initial_max_plane_error);
+              Eigen::Vector3f point_above = neighbor.getVector3fMap()-normal_factor*plane_normal;
+              int point_above_image_x, point_above_image_y;
+              getImagePoint(point_above, point_above_image_x, point_above_image_y);
+              if (isValid(point_above_image_x, point_above_image_y)) {
+                float point_above_squared_error =
+                  (point_above-getPoint(point_above_image_x, point_above_image_y).getVector3fMap()).squaredNorm();
+                if (point_above_squared_error < pow(0.5*initial_max_plane_error, 2))
+                {
+                  //std::cout << "Kicking out a point since it has a point above.\n";
+                  continue;
+                }
+              }
+            }
+          }
+          points_on_plane.push_back(neighbor_idx);
+          point_still_valid[neighbor_idx] = false;
+          vector_average.add(neighbor.getVector3fMap());
+        }
+      }
+      if (vector_average.getNoOfSamples() >= 3)
+      {
+        vector_average.doPCA (eigen_values, plane_normal, eigen_vector2, eigen_vector3);
+        plane_d = plane_normal.dot(vector_average.getMean());
+        first_plane_estimate_done = true;
+      }
+    }
+    
+    if (vector_average.getNoOfSamples() < 3)
+      continue;
+    planes.push_back(ExtractedPlane());
+    ExtractedPlane& plane = planes.back();
+    plane.point_indices = points_on_plane;
+    
+    bool reduce_maximum_plane_error_regarding_sigma = false;
+    if (reduce_maximum_plane_error_regarding_sigma)
+    {
+      float new_max_plane_error = 3.0f*sqrtf(eigen_values[0]);
+      vector_average.reset();
+      for (int plane_point_idx=0; plane_point_idx<int(points_on_plane.size()); ++plane_point_idx) {
+        int point_idx = points_on_plane[plane_point_idx];
+        const PointWithRange& point = points[point_idx];
+        float distance_to_plane = fabsf(plane_d-plane_normal.dot(point.getVector3fMap()));
+        if (distance_to_plane > new_max_plane_error)
+          continue;
+        plane.point_indices.push_back(point_idx);
+        vector_average.add(point.getVector3fMap());
+      }
+      if (vector_average.getNoOfSamples() < 3)
+      {
+        planes.pop_back();
+        continue;
+      }
+      vector_average.doPCA (plane.eigen_values, plane.eigen_vector1, plane.eigen_vector2, plane.eigen_vector3);
+    }
+    else
+    {
+      plane.eigen_values = eigen_values;
+      plane.eigen_vector1 = plane_normal;
+      plane.eigen_vector2 = eigen_vector2;
+      plane.eigen_vector3 = eigen_vector3;
+    }
+    plane.normal = plane.eigen_vector1;
+    plane.mean = vector_average.getMean();
+    plane.d = plane_normal.dot(plane.mean);
+    
+    Eigen::Affine3f trans;
+    getTransformationFromTwoUnitVectorsAndOrigin (plane.eigen_vector2, plane.eigen_vector3, plane.mean, trans);
+    float min_x =  std::numeric_limits<float>::infinity (),
+          max_x = -std::numeric_limits<float>::infinity (),
+          min_y =  std::numeric_limits<float>::infinity (),
+          max_y = -std::numeric_limits<float>::infinity (),
+          min_z =  std::numeric_limits<float>::infinity (),
+          max_z = -std::numeric_limits<float>::infinity ();
+    for (int plane_point_idx=0; plane_point_idx<int(plane.point_indices.size()); ++plane_point_idx) {
+      Eigen::Vector3f trans_point = trans * points[plane.point_indices[plane_point_idx]].getVector3fMap ();
+      min_x = std::min(min_x, trans_point.x());
+      max_x = std::max(max_x, trans_point.x());
+      min_y = std::min(min_y, trans_point.y());
+      max_y = std::max(max_y, trans_point.y());
+      min_z = std::min(min_z, trans_point.z());
+      max_z = std::max(max_z, trans_point.z());
+    }
+    plane.maximum_extensions = Eigen::Vector3f(max_x-min_x, max_y-min_y, max_z-min_z);
+    //cout << "Plane has approximate size "
+         //<< plane.maximum_extensions[0]<<"x"<<plane.maximum_extensions[1]<<"x"<<plane.maximum_extensions[2]
+         //<< "m (sqrt(eigenvalues)="
+         //<< sqrtf(plane.eigen_values[0])<<","<<sqrtf(plane.eigen_values[1])<<","<<sqrtf(plane.eigen_values[2])<<").\n";
+    
+    //for (int plane_point_idx=0; plane_point_idx<int(plane.point_indices.size()); ++plane_point_idx) {
+      //((RangeImage*)this)->points[plane.point_indices[plane_point_idx]].range = NAN;
+    //}
+  }
+  //cout << "\n\n";
 }
 
 }  // namespace end

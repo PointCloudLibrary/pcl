@@ -623,6 +623,35 @@ namespace pcl
              float max_distance_start, float max_distance_end,
              int num_iterations, int pixel_step_start=1, int pixel_step_end=1) const;
       
+
+      /** \brief Helper struct to return the results of a plane extraction */
+      struct ExtractedPlane {
+        Eigen::Vector3f normal;  //!< The normal vector of the plane
+        float d;               //!< Distance of the plane to the origin. normal.dot(x)=d for every point x on the plane
+        Eigen::Vector3f maximum_extensions; //!< Maximum extensions of the plane in the directions of the eigen vectors
+        Eigen::Vector3f mean;            //!< The mean of the points
+        Eigen::Vector3f eigen_values;    //!< The eigen_values of the covariance matrix of the points
+        Eigen::Vector3f eigen_vector1,   //!< The eigen_vector corresponding to the smallest eigen value
+                        eigen_vector2,   //!< The eigen_vector corresponding to the middle eigen value
+                        eigen_vector3;   //!< The eigen_vector corresponding to the largest eigen value
+        std::vector<int> point_indices;  //!< The indices of the points lying on the plane
+      };
+
+      /** \brief Extracts planes from the range image using a region growing approach.
+        * \param initial_max_plane_error the maximum error that a point is allowed to have regarding the current
+        *        plane estimate. This value is used only in the initial plane estimate, which will later on be
+        *        refined, allowing only a maximum error of 3 sigma.
+        * \param planes the found planes. The vector contains the individual found planes.
+        */
+      PCL_EXPORTS void
+      extractPlanes (float initial_max_plane_error, std::vector<ExtractedPlane>& planes) const;
+      
+      /** \brief Comparator to enable us to sort a vector of Planes regarding their size using
+       *         std::sort(begin(), end(), RangeImage::isLargerPlane); */
+      static inline bool
+      isLargerPlane (const ExtractedPlane& p1, const ExtractedPlane& p2)
+                    { return p1.maximum_extensions[2] > p2.maximum_extensions[2]; }
+      
       /** Calculates the overlap of two range images given the relative transformation
        *  (from the given image to *this) */
       PCL_EXPORTS float
@@ -638,7 +667,7 @@ namespace pcl
       getViewingDirection (const Eigen::Vector3f& point, Eigen::Vector3f& viewing_direction) const;
       
       /** Return a newly created Range image.
-       *  Can be reimplmented int derived classes like RangeImagePlanar to return an image of the same type. */
+       *  Can be reimplmented in derived classes like RangeImagePlanar to return an image of the same type. */
       virtual RangeImage* 
       getNew () const { return new RangeImage; }
 
