@@ -132,6 +132,21 @@ Advanced Usage
      .. |au_1| image:: images/pcl_logo.png
                :height: 75px
 
+  * :ref:`writing_new_classes`
+
+     ======  ======
+     |au_2|  Title: **Writing a new PCL class**
+
+             Author: *Radu B. Rusu, Luca Penasa*
+
+             Compatibility: > PCL 0.9, < PCL 2.0
+             
+             This short guide is to serve as both a HowTo and a FAQ for writing new PCL classes, either from scratch, or by adapting old code.
+     ======  ======
+
+     .. |au_2| image:: images/pcl_logo.png
+               :height: 75px
+
 .. _features_tutorial:
 
 Features
