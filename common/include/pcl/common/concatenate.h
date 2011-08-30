@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -40,12 +42,11 @@
 
 namespace pcl
 {
-  /** 
-   * \brief Helper functor structure for concatenate. 
-   * \ingroup common
-   */
+  /** \brief Helper functor structure for concatenate. 
+    * \ingroup common
+    */
   template<typename PointInT, typename PointOutT>
-    struct NdConcatenateFunctor
+  struct NdConcatenateFunctor
   {
     typedef typename traits::POD<PointInT>::type PodIn;
     typedef typename traits::POD<PointOutT>::type PodOut;
@@ -63,9 +64,9 @@ namespace pcl
       BOOST_MPL_ASSERT_MSG((boost::is_same<InT, OutT>::value),
                            POINT_IN_AND_POINT_OUT_HAVE_DIFFERENT_TYPES_FOR_FIELD,
                            (Key, PointInT&, InT, PointOutT&, OutT));
-      memcpy(reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value,
-             reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value,
-             sizeof(InT));
+      memcpy (reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value,
+              reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value,
+              sizeof (InT));
     }
 
     private:

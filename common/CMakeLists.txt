@@ -17,7 +17,8 @@ if(build)
         src/time_trigger.cpp
         )
 
-    set(incs include/pcl/exceptions.h
+    set(incs 
+        include/pcl/exceptions.h
         include/pcl/pcl_base.h
         include/pcl/pcl_macros.h
         include/pcl/point_cloud.h
@@ -32,9 +33,7 @@ if(build)
           include/pcl/PolygonMesh.h
           include/pcl/Vertices.h
           include/pcl/PointIndices.h
-	         # Texture mesh 
           include/pcl/TextureMesh.h
-          # end
         )
 
         set(sensor_msg_incs 
