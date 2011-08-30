@@ -57,14 +57,14 @@ AutotunedSearch<PointT>::initSearchDS (int spatial_locator)
 
     if(spatial_locator == KDTREE_FLANN) {
         // initialize kdtree
-        _searchptr.reset(new KdTree<PointT>());
+        _searchptr.reset(new KdTreeWrapper<PointT>());
     }
     else if(spatial_locator == ORGANIZED_INDEX) {
         _searchptr.reset(new OrganizedNeighborSearch<PointT>());
     }
     else if(spatial_locator == OCTREE) {
 
-      _searchptr.reset(new pcl::octree::OctreePointCloud<PointT>(0.1f));
+      _searchptr.reset(new pcl::octree::OctreeWrapper<PointT>(0.1f));
 	
     }
     else if(spatial_locator == AUTO_TUNED)
@@ -103,7 +103,7 @@ if(search_type == NEAREST_K_SEARCH)
 	k_distances.resize (no_of_neighbors);
 	std::cout << "\n---------------\nKDTree\n---------------\n";
 	double time1 = getTime();
-	_searchptr.reset(new KdTree<PointT>());
+	_searchptr.reset(new KdTreeWrapper<PointT>());
 	_searchptr->setInputCloud(cloudIn);
 	_searchptr->nearestKSearch (searchPoint, no_of_neighbors, k_indices, k_distances);
 	std::cout << "Neighbors are:" << std::endl;
@@ -128,7 +128,7 @@ if(search_type == NEAREST_K_SEARCH)
 
 	std::cout << "\n---------------\nOctree\n---------------\n";
 	double time3 = getTime();
-	_searchptr.reset(new pcl::octree::OctreePointCloud<PointT>(0.1f));
+	_searchptr.reset(new pcl::octree::OctreeWrapper<PointT>(0.1f));
 	_searchptr->setInputCloud(cloudIn);
 	_searchptr->nearestKSearch (searchPoint, no_of_neighbors, k_indices, k_distances);
 	std::cout << "Neighbors are: " << std::endl;
@@ -157,7 +157,7 @@ else if(search_type == NEAREST_RADIUS_SEARCH)
         vector<float> k_distances;
         std::cout << "\n---------------\nKDTree\n---------------\n";
         double time1 = getTime();
-        _searchptr.reset(new KdTree<PointT>());
+        _searchptr.reset(new KdTreeWrapper<PointT>());
         _searchptr->setInputCloud(cloudIn);
         _searchptr->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
         std::cout << "Neighbors are:" << std::endl;
@@ -182,7 +182,7 @@ else if(search_type == NEAREST_RADIUS_SEARCH)
 
         std::cout << "\n---------------\nOctree\n---------------\n";
         double time3 = getTime();
-        _searchptr.reset(new pcl::octree::OctreePointCloud<PointT>(0.1f));
+        _searchptr.reset(new pcl::octree::OctreeWrapper<PointT>(0.1f));
         _searchptr->setInputCloud(cloudIn);
         _searchptr->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
         std::cout << "Neighbors are: " << std::endl;
@@ -212,12 +212,12 @@ exit(0);
 if(time_kdtree < time_organized_data && time_kdtree < time_octree)
 {
 spatial_loc = KDTREE_FLANN;
-_searchptr.reset(new KdTree<PointT>());
+_searchptr.reset(new KdTreeWrapper<PointT>());
 }
 else if(time_octree < time_kdtree && time_octree < time_organized_data)
 {
 spatial_loc = OCTREE;
-_searchptr.reset(new pcl::octree::OctreePointCloud<PointT>(0.1f));
+_searchptr.reset(new pcl::octree::OctreeWrapper<PointT>(0.1f));
 }
 else if(time_organized_data < time_kdtree && time_organized_data < time_octree)
 {

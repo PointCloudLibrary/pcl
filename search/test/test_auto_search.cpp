@@ -247,7 +247,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 }
 
 
-TEST (PCL, KdTree_nearestKSearch)
+TEST (PCL, KdTreeWrapper_nearestKSearch)
 {
 
   Search<PointXYZ>* kdtree = new AutotunedSearch<PointXYZ>(KDTREE_FLANN);

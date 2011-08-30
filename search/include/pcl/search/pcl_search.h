@@ -43,6 +43,7 @@
 #include "pcl/search/octree_pointcloud.h"
 #include "pcl/search/organized_neighbor_search.h"
 #include "pcl/search/auto_tuned_search.h"
+#include "pcl/kdtree/kdtree_flann.h"
 //#include "pcl/search/octree_gpu.h"
 
 

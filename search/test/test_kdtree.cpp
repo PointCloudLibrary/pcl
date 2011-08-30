@@ -43,7 +43,7 @@ void
 TEST (PCL, KdTree_nearestKSearch)
 {
 
-  Search<PointXYZ>* kdtree = new KdTree<PointXYZ>();
+  Search<PointXYZ>* kdtree = new KdTreeWrapper<PointXYZ>();
   kdtree->setInputCloud (cloud.makeShared ());
   PointXYZ test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
@@ -85,7 +85,7 @@ TEST (PCL, KdTree_nearestKSearch)
 
   ScopeTime scopeTime ("FLANN nearestKSearch");
   {
-    Search<PointXYZ>* kdtree = new KdTree<PointXYZ>();
+    Search<PointXYZ>* kdtree = new KdTreeWrapper<PointXYZ>();
 //    kdtree.initSearchDS();
     kdtree->setInputCloud (cloud_big.makeShared ());
     for (size_t i = 0; i < cloud_big.points.size (); ++i)
@@ -104,7 +104,7 @@ int main(int argc, char** argv)
   init ();
 
 /* Testing using explicit instantiation of inherited class */
-  Search<PointXYZ>* kdtree = new KdTree<PointXYZ>();
+  Search<PointXYZ>* kdtree = new KdTreeWrapper<PointXYZ>();
   kdtree->setInputCloud (cloud.makeShared ());
 
   return (RUN_ALL_TESTS ());

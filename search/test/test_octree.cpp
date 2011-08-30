@@ -99,7 +99,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   std::priority_queue<prioPointQueueEntry, std::vector<prioPointQueueEntry, Eigen::aligned_allocator<prioPointQueueEntry> > > pointCandidates;
 
   // create octree
- Search<PointXYZ>* octree = new  OctreePointCloud<PointXYZ>(0.1);
+ Search<PointXYZ>* octree = new  OctreeWrapper<PointXYZ>(0.1);
 
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
@@ -203,7 +203,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
   double voxelResolution = 0.1;
 
   // create octree
-  Search<PointXYZ>* octree = new OctreePointCloud<PointXYZ>(voxelResolution);
+  Search<PointXYZ>* octree = new OctreeWrapper<PointXYZ>(voxelResolution);
 
 
   for (test_id = 0; test_id < test_runs; test_id++)
@@ -261,7 +261,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
   // we should have found the absolute nearest neighbor at least once
   ASSERT_EQ ( (bestMatchCount > 0) , true);
 }
-
+#if 0
 TEST (PCL, Octree_RadiusSearch_GPU)
 {
 	PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
@@ -280,7 +280,7 @@ TEST (PCL, Octree_RadiusSearch_GPU)
 
 
 
-	Search<PointXYZ>* octree = new pcl::octree::OctreePointCloud<PointXYZ>(0.1f);
+	Search<PointXYZ>* octree = new pcl::octree::OctreeWrapper<PointXYZ>(0.1f);
 	octree->setInputCloud(cloudIn);
 
 	std::vector <PointXYZ > point;
@@ -303,6 +303,7 @@ TEST (PCL, Octree_RadiusSearch_GPU)
 	octree->radiusSearch (point, radiuses, k_indices,k_distances,max_nn );
 }
 
+#endif
 TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
 {
 
@@ -335,7 +336,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
                                      5.0 * ((double)rand () / (double)RAND_MAX));
     }
 
-    Search<PointXYZ>* octree = new OctreePointCloud<PointXYZ>(0.001);
+    Search<PointXYZ>* octree = new OctreeWrapper<PointXYZ>(0.001);
 
     // build octree
 

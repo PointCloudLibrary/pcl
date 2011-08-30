@@ -1,7 +1,7 @@
 set(SUBSYS_NAME search)
 set(SUBSYS_DESC "Point cloud generic search library")
 #set(SUBSYS_DEPS common io filters cuda_common gpu_octree gpu_common octree)
-set(SUBSYS_DEPS common io filters octree)
+set(SUBSYS_DEPS common io filters octree kdtree)
 
 
 FIND_PACKAGE (OpenCV)
@@ -47,7 +47,7 @@ if(build)
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     #target_link_libraries(${LIB_NAME} pcl_common pcl_io ${FLANN_LIBRARIES})
 #    target_link_libraries(${LIB_NAME} pcl_common pcl_io ${FLANN_LIBRARIES} pcl_gpu_common pcl_gpu_octree ${OpenCV_LIBS})
-    target_link_libraries(${LIB_NAME} pcl_common pcl_io ${FLANN_LIBRARIES} pcl_octree)
+    target_link_libraries(${LIB_NAME} pcl_common pcl_io ${FLANN_LIBRARIES} pcl_octree pcl_kdtree)
     list(APPEND EXT_DEPS flann)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "{SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
