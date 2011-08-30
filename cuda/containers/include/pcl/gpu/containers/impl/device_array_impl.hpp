@@ -73,7 +73,9 @@ template<class T> inline pcl::gpu::DeviceArray2D<T>& pcl::gpu::DeviceArray2D<T>:
 { DeviceMemory2D::operator=(other); return *this; }
 
 template<class T> inline void pcl::gpu::DeviceArray2D<T>::create(int rows, int cols) { DeviceMemory2D::create(rows, cols * elem_size); }
-template<class T> inline void pcl::gpu::DeviceArray2D<T>::release()  { DeviceArray2D::release(); }
+template<class T> inline void pcl::gpu::DeviceArray2D<T>::release()  { DeviceMemory2D::release(); }
+
+template<class T> inline void pcl::gpu::DeviceArray2D<T>::copyTo(DeviceArray2D& other) const { DeviceMemory2D::copyTo(other); }
 
 template<class T> inline void pcl::gpu::DeviceArray2D<T>::upload(const void *host_ptr, size_t host_step, int rows, int cols) 
 { DeviceMemory2D::upload(host_ptr, host_step, rows, cols * elem_size); }

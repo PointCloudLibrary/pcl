@@ -36,6 +36,7 @@
 
 #include "pcl/gpu/containers/device_memory.hpp"
 #include "cuda_runtime_api.h"
+#include "assert.h"
 
 //temporary dependence, should eliminated in future
 //Replace with THROW_PCL_EXCEPTION from PCL2.0 API
@@ -57,6 +58,7 @@ pcl::gpu::DeviceMemory::DeviceMemory(const DeviceMemory& ) { throw_nogpu(); }
 pcl::gpu::DeviceMemory& pcl::gpu::DeviceMemory::operator=(const pcl::gpu::DeviceMemory&) { throw_nogpu(); return *this;}
 void pcl::gpu::DeviceMemory::create(size_t) { throw_nogpu(); }
 void pcl::gpu::DeviceMemory::release() { throw_nogpu(); }
+void pcl::gpu::DeviceMemory::copyTo(DeviceMemory&) const { throw_nogpu(); }
 void pcl::gpu::DeviceMemory::upload(const void*, size_t) { throw_nogpu(); }
 void pcl::gpu::DeviceMemory::download(void*) const { throw_nogpu(); }
 pcl::gpu::DeviceMemory2D::DeviceMemory2D() { throw_nogpu(); }
@@ -67,6 +69,7 @@ pcl::gpu::DeviceMemory2D::DeviceMemory2D(const DeviceMemory2D&)  { throw_nogpu()
 pcl::gpu::DeviceMemory2D& pcl::gpu::DeviceMemory2D::operator=(const pcl::gpu::DeviceMemory2D&) { throw_nogpu(); return *this;}
 void pcl::gpu::DeviceMemory2D::create(int, int )  { throw_nogpu(); }
 void pcl::gpu::DeviceMemory2D::release()  { throw_nogpu(); }
+void pcl::gpu::DeviceMemory2D::copyTo(DeviceMemory2D&) const  { throw_nogpu(); }
 void pcl::gpu::DeviceMemory2D::upload(const void *, size_t, int, int )  { throw_nogpu(); }
 void pcl::gpu::DeviceMemory2D::download(void *, size_t ) const  { throw_nogpu(); }
 
@@ -106,12 +109,13 @@ void pcl::gpu::DeviceMemory2D::download(void *, size_t ) const  { throw_nogpu();
 ////////////////////////    DeviceArray    /////////////////////////////
     
 pcl::gpu::DeviceMemory::DeviceMemory() : data(0), sizeBytes(0), refcount(0) {}
-pcl::gpu::DeviceMemory::DeviceMemory(void *ptr_arg, size_t sizeBytes_arg) : data((char*)ptr_arg), sizeBytes(sizeBytes_arg), refcount(0) {}
+pcl::gpu::DeviceMemory::DeviceMemory(void *ptr_arg, size_t sizeBytes_arg) : data((char*)ptr_arg), sizeBytes(sizeBytes_arg), refcount(0){}
 pcl::gpu::DeviceMemory::DeviceMemory(size_t sizeBtes_arg)  : data(0), sizeBytes(0), refcount(0) { create(sizeBtes_arg); }
 pcl::gpu::DeviceMemory::~DeviceMemory() { release(); }
 
 
-pcl::gpu::DeviceMemory::DeviceMemory(const DeviceMemory& other_arg) : data(other_arg.data), sizeBytes(other_arg.sizeBytes), refcount(other_arg.refcount)
+pcl::gpu::DeviceMemory::DeviceMemory(const DeviceMemory& other_arg) 
+    : data(other_arg.data), sizeBytes(other_arg.sizeBytes), refcount(other_arg.refcount))
 {
     if( refcount )
         CV_XADD(refcount, 1);
@@ -126,7 +130,7 @@ pcl::gpu::DeviceMemory& pcl::gpu::DeviceMemory::operator = (const pcl::gpu::Devi
         release();
         
         data      = other_arg.data;
-        sizeBytes = other_arg.sizeBytes;        
+        sizeBytes = other_arg.sizeBytes;                
         refcount  = other_arg.refcount;
     }
     return *this;
@@ -150,6 +154,15 @@ void pcl::gpu::DeviceMemory::create(size_t sizeBytes_arg)
         refcount = new int;
         *refcount = 1;
     }
+}
+
+void pcl::gpu::DeviceMemory::copyTo(DeviceMemory& other) const
+{
+    assert(!this.data);
+
+    other.create(sizeBytes);    
+    cudaSafeCall( cudaMemcpy(other.data, data, sizeBytes, cudaMemcpyDeviceToDevice) );
+    cudaSafeCall( cudaDeviceSynchronize() );
 }
 
 void pcl::gpu::DeviceMemory::release()
@@ -252,6 +265,14 @@ void pcl::gpu::DeviceMemory2D::release()
     data = 0;    
     step = 0;
     refcount = 0;
+}
+
+void pcl::gpu::DeviceMemory2D::copyTo(DeviceMemory2D& other) const
+{
+    assert(!this.data);
+    other.create(rows, colsBytes);    
+    cudaSafeCall( cudaMemcpy2D(other.data, other.step, data, step, colsBytes, rows, cudaMemcpyDeviceToDevice) );
+    cudaSafeCall( cudaDeviceSynchronize() );
 }
 
 void pcl::gpu::DeviceMemory2D::upload(const void *host_ptr_arg, size_t host_step_arg, int rows_arg, int colsBytes_arg)

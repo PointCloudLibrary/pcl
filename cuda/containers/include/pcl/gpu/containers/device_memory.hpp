@@ -47,7 +47,7 @@ namespace pcl
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief @b DeviceMemory class
           * 
-          * \note This is a container class with reference counting for GPU memory.          
+          * \note This is a BLOB container class with reference counting for GPU memory.          
           *          
           * \author Anatoly Baksheev
           */
@@ -86,6 +86,11 @@ namespace pcl
             /** \brief Decrements reference counter and releases internal buffer if needed. */
             void release();
 
+            /** \brief Performs data copying. If destination size differs it will be reallocated.
+              * \param other_arg: destination container
+              * */
+            void copyTo(DeviceMemory& other) const;
+
             /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
               * \param host_ptr_arg: pointer to buffer to upload               
               * \param sizeBytes_arg: buffer size
@@ -112,14 +117,15 @@ namespace pcl
             /** \brief Allocated size in bytes. */
             size_t sizeBytes;
 
+        private:
             /** \brief Pointer to reference counter in CPU memory. */
-            int* refcount;            
+            int* refcount;
         };
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /** \brief @b DeviceMemory class
+        /** \brief @b DeviceMemory2D class
           * 
-          * \note This is a container class with reference counting for pitched GPU memory.          
+          * \note This is a BLOB container class with reference counting for pitched GPU memory.          
           *          
           * \author Anatoly Baksheev
           */
@@ -162,6 +168,11 @@ namespace pcl
 
             /** \brief Decrements reference counter and releases internal buffer if needed. */
             void release();
+
+            /** \brief Performs data copying. If destination size differs it will be reallocated.
+              * \param other_arg: destination container
+              * */
+            void copyTo(DeviceMemory2D& other) const;
 
             /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
               * \param host_ptr_arg: pointer to host buffer to upload               
