@@ -35,6 +35,9 @@
  *
  */
 
+#ifndef PCL_PCL_HISTOGRAM_VISUALIZER_IMPL_H_
+#define PCL_PCL_HISTOGRAM_VISUALIZER_IMPL_H_
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
@@ -140,4 +143,5 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
   return (true);
 }
 
+#endif
 

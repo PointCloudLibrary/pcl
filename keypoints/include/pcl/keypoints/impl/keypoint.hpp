@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,8 +35,15 @@
  *
  */
 
+#ifndef PCL_KEYPOINT_IMPL_H_
+#define PCL_KEYPOINT_IMPL_H_
+
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/organized_data.h>
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> inline void
-  pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
+pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
 {
   if (!initCompute ())
   {
@@ -119,3 +128,6 @@ template <typename PointInT, typename PointOutT> inline void
   if (input_ == surface_)
     surface_.reset ();
 }
+
+#endif  //#ifndef PCL_KEYPOINT_IMPL_H_
+

@@ -467,6 +467,7 @@ inline std::ostream& operator << (std::ostream& os, const PointXYZFPFH33& p)
 TEST (PCL, ExtendedIO)
 {
   PointCloud<PointXYZFPFH33> cloud;
+  cloud.width = 2; cloud.height = 1;
   cloud.points.resize (2);
 
   cloud.points[0].x = cloud.points[0].y = cloud.points[0].z = 1;

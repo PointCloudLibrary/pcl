@@ -194,14 +194,14 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
   exit_main_loop_timer_callback_->right_timer_id = -1;
-  interactor_->AddObserver(vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
+  interactor_->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
 
   exit_callback_ = vtkSmartPointer<ExitCallback>::New();
   exit_callback_->pcl_visualizer = this;
-  interactor_->AddObserver(vtkCommand::ExitEvent, exit_callback_);
+  interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
   
   resetStoppedFlag ();
-  
+
   win_->SetWindowName (name.c_str ());
 }
 
@@ -217,14 +217,14 @@ pcl::visualization::PCLVisualizer::~PCLVisualizer ()
 boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
-  return style_->registerKeyboardCallback (callback);
+  return (style_->registerKeyboardCallback (callback));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
-  return style_->registerMouseCallback (callback);
+  return (style_->registerMouseCallback (callback));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -693,7 +693,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
   if (scalars)
     mapper->SetScalarRange (minmax);
   mapper->SetScalarModeToUsePointData ();
-  mapper->InterpolateScalarsBeforeMappingOn();
+  mapper->InterpolateScalarsBeforeMappingOn ();
   mapper->ScalarVisibilityOn ();
   mapper->ImmediateModeRenderingOff ();
 
@@ -1704,8 +1704,9 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
         cell_array->InsertCellPoint (poly_mesh.polygons[i].vertices[j]);
     }
 
-    vtkPolyData* polydata = vtkPolyData::New ();
-    polydata->SetStrips (cell_array);
+    vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
+//    polydata->SetStrips (cell_array);
+    polydata->SetPolys (cell_array);
     polydata->SetPoints (poly_points);
 
     if (has_color)
@@ -1713,7 +1714,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
 
     createActorFromVTKDataSet (polydata, actor);
   } 
-  else 
+  else if (poly_mesh.polygons.size() == 1)
   {
     vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New ();
     size_t n_points = poly_mesh.polygons[0].vertices.size ();
@@ -1730,6 +1731,11 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
 
     createActorFromVTKDataSet (poly_grid, actor);
     actor->GetProperty ()->SetRepresentationToWireframe ();
+  }
+  else
+  {
+    PCL_ERROR("PCLVisualizer::addPolygonMesh: No polygons\n");
+    return false;
   }
 
   actor->GetProperty ()->SetRepresentationToSurface ();
@@ -1956,7 +1962,11 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
   vtkSmartPointer<vtkCamera> cam = vtkSmartPointer<vtkCamera>::New ();
   cam->SetFocalPoint (0, 0, 0);
-  cam->SetViewUp (0, 1, 0);
+
+  Eigen::Vector3f cam_pos_3f(first_cam_pos[0],first_cam_pos[1],first_cam_pos[2]);
+  Eigen::Vector3f perp = cam_pos_3f.cross(Eigen::Vector3f::UnitY());
+  cam->SetViewUp (perp[0], perp[1], perp[2]);
+
   cam->SetPosition (first_cam_pos);
   cam->SetViewAngle (45);
   cam->Modified ();
@@ -1969,7 +1979,21 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     //create temporal virtual camera
     vtkSmartPointer<vtkCamera> cam_tmp = vtkSmartPointer<vtkCamera>::New ();
     cam_tmp->SetViewAngle (45);
-    cam_tmp->SetViewUp (0, 1, 0);
+
+    Eigen::Vector3f cam_pos_3f (cam_pos[0], cam_pos[1], cam_pos[2]);
+    cam_pos_3f = cam_pos_3f.normalized ();
+    Eigen::Vector3f test = Eigen::Vector3f::UnitY ();
+
+    //If the view up is parallel to ray cam_pos - focalPoint then the transformation
+    //is singular and no points are rendered...
+    //make sure it is perpendicular
+    if (fabs (cam_pos_3f.dot (test)) == 1)
+    {
+      //parallel, create
+      test = cam_pos_3f.cross (Eigen::Vector3f::UnitX ());
+    }
+
+    cam_tmp->SetViewUp (test[0], test[1], test[2]);
 
     for (int k = 0; k < 3; k++)
     {
@@ -1977,6 +2001,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     }
 
     cam_tmp->SetPosition (cam_pos);
+    cam_tmp->SetFocalPoint (0, 0, 0);
     cam_tmp->Modified ();
 
     //rotate model so it looks the same as if we would look from the new position
@@ -2348,7 +2373,6 @@ pcl::visualization::PCLVisualizer::allocVtkPolyData (vtkSmartPointer<vtkPolyData
 {
   polydata = vtkSmartPointer<vtkPolyData>::New ();
 }
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::allocVtkUnstructuredGrid (vtkSmartPointer<vtkUnstructuredGrid> &polydata)

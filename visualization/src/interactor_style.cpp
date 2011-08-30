@@ -176,7 +176,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
 
         // Create the new geometry
         PointCloudGeometryHandler<sensor_msgs::PointCloud2>::ConstPtr geometry_handler = act->geometry_handlers[index];
-        //pcl::console::print_debug ("[OnChar] Setting a new geometry handler (%s) for actor %s\n", geometry_handler->getFieldName ().c_str (), (*it).first.c_str ());
 
         // Use the handler to obtain the geometry
         vtkSmartPointer<vtkPoints> points;
@@ -213,8 +212,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
 
         // Get the new color
         PointCloudColorHandler<sensor_msgs::PointCloud2>::ConstPtr color_handler = act->color_handlers[index];
-
-        //pcl::console::print_debug ("[OnChar] Setting a new color handler (%s) for actor %s\n", color_handler->getFieldName ().c_str (), (*it).first.c_str ());
 
         vtkSmartPointer<vtkDataArray> scalars;
         color_handler->getColor (scalars);
@@ -594,14 +591,14 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
 boost::signals2::connection 
 pcl::visualization::PCLVisualizerInteractorStyle::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
-  return mouse_signal_.connect(callback);
+  return (mouse_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection 
 pcl::visualization::PCLVisualizerInteractorStyle::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
-  return keyboard_signal_.connect(callback);
+  return (keyboard_signal_.connect(callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -796,12 +793,6 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnChar ()
     return;
   }
 
-/*  if (!wins_)
-  {
-    pcl::console::print_error ("[PCLHistogramVisualizerInteractorStyle] No renderer-window-interactor map given! Use setRenWinInteractMap () before continuing.\n");
-    return;
-  }*/
-
   FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
 
   if (wif_->GetInput () == NULL)
@@ -820,7 +811,7 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnChar ()
   }
 
   // Get the status of special keys (Cltr+Alt+Shift)
-  bool alt   = Interactor->GetAltKey     ();
+  bool alt = Interactor->GetAltKey ();
 
   //fprintf (stderr, "Key sym: %s\n", Interactor->GetKeySym ());
   // ---[ Check the rest of the key codes 

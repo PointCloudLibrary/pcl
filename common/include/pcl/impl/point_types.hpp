@@ -177,8 +177,8 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW    ;
   }
 
   /** \brief A point structure representing Euclidean xyz coordinates, and the intensity value.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct EIGEN_ALIGN16 PointXYZI
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])

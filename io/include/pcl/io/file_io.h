@@ -266,6 +266,7 @@ namespace pcl
         }
         else
           value = pcl_atoa<Type>(st.c_str ());
+
         memcpy (&cloud.data[point_index * cloud.point_step + 
                             cloud.fields[field_idx].offset + 
                             fields_count * sizeof (Type)], &value, sizeof (Type));

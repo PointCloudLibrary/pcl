@@ -56,7 +56,6 @@ using namespace std;
 
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
-//boost::shared_ptr<vector<int> > indices (new vector<int>);
 KdTree<PointXYZ>::Ptr tree;
 KdTree<PointNormal>::Ptr tree2;
 
@@ -78,8 +77,7 @@ TEST (PCL, MovingLeastSquares)
 
   // Reconstruct
   mls.reconstruct (mls_points);
-	
-	
+
   EXPECT_NEAR (mls_points.points[0].x, 0.005417, 1e-3);
   EXPECT_NEAR (mls_points.points[0].y, 0.113463, 1e-3);
   EXPECT_NEAR (mls_points.points[0].z, 0.040715, 1e-3);
@@ -167,7 +165,7 @@ TEST (PCL, ConvexHull_bunny)
   pcl::ConvexHull<pcl::PointXYZ> chull;
   chull.setInputCloud (cloud);
   chull.reconstruct (hull, polygons);
-  
+
   //PolygonMesh convex;
   //toROSMsg (hull, convex.cloud);
   //convex.polygons = polygons;
@@ -193,9 +191,9 @@ TEST (PCL, ConvexHull_LTable)
   cloud_out_ltable.points.resize (100);
 
   int npoints = 0;
-  for (size_t i = 0; i < 8; i++) 
+  for (size_t i = 0; i < 8; i++)
   {
-    for (size_t j = 0; j <= 2; j++) 
+    for (size_t j = 0; j <= 2; j++)
     {
       cloud_out_ltable.points[npoints].x = (double)(i)*0.5;
       cloud_out_ltable.points[npoints].y = -(double)(j)*0.5;
@@ -204,9 +202,9 @@ TEST (PCL, ConvexHull_LTable)
     }
   }
 
-  for (size_t i = 0; i <= 2; i++) 
+  for (size_t i = 0; i <= 2; i++)
   {
-    for (size_t j = 3; j < 8; j++) 
+    for (size_t j = 3; j < 8; j++)
     {
       cloud_out_ltable.points[npoints].x = (double)(i)*0.5;
       cloud_out_ltable.points[npoints].y = -(double)(j)*0.5;
@@ -220,27 +218,27 @@ TEST (PCL, ConvexHull_LTable)
   cloud_out_ltable.points[npoints].y = 0.5;
   cloud_out_ltable.points[npoints].z = 0;
   npoints++;
-	
+
   cloud_out_ltable.points[npoints].x = 4.5;
   cloud_out_ltable.points[npoints].y = 0.5;
   cloud_out_ltable.points[npoints].z = 0;
   npoints++;
-	
+
   cloud_out_ltable.points[npoints].x = 4.5;
   cloud_out_ltable.points[npoints].y = -1.0;
   cloud_out_ltable.points[npoints].z = 0;
   npoints++;
-  
+
   cloud_out_ltable.points[npoints].x = 1.0;
   cloud_out_ltable.points[npoints].y = -4.5;
   cloud_out_ltable.points[npoints].z = 0;
   npoints++;
-  
+
   cloud_out_ltable.points[npoints].x = -0.5;
   cloud_out_ltable.points[npoints].y = -4.5;
   cloud_out_ltable.points[npoints].z = 0;
   npoints++;
-  
+
   cloud_out_ltable.points.resize (npoints);
 
   pcl::PointCloud<pcl::PointXYZ> hull;
@@ -259,9 +257,9 @@ TEST (PCL, ConcaveHull_bunny)
 {
   //construct dataset
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2D (new pcl::PointCloud<pcl::PointXYZ> (*cloud));
-  for (size_t i = 0; i < cloud2D->points.size (); i++) 
+  for (size_t i = 0; i < cloud2D->points.size (); i++)
     cloud2D->points[i].z = 0;
-  
+
   pcl::PointCloud<pcl::PointXYZ> alpha_shape;
   pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers (new pcl::PointCloud<pcl::PointXYZ>);
   std::vector<pcl::Vertices> polygons_alpha;
@@ -296,7 +294,7 @@ TEST (PCL, ConcaveHull_bunny)
   concave_hull2.reconstruct (alpha_shape2, polygons_alpha2);
 
   EXPECT_EQ (alpha_shape2.points.size (), 81);
-  
+
   //PolygonMesh concave;
   //toROSMsg (alpha_shape2, concave.cloud);
   //concave.polygons = polygons_alpha2;
@@ -311,9 +309,9 @@ TEST (PCL, ConcaveHull_LTable)
   cloud_out_ltable.points.resize (100);
 
   int npoints = 0;
-  for (size_t i = 0; i < 8; i++) 
+  for (size_t i = 0; i < 8; i++)
   {
-    for (size_t j = 0; j <= 2; j++) 
+    for (size_t j = 0; j <= 2; j++)
     {
       cloud_out_ltable.points[npoints].x = (double)(i)*0.5;
       cloud_out_ltable.points[npoints].y = -(double)(j)*0.5;
@@ -322,9 +320,9 @@ TEST (PCL, ConcaveHull_LTable)
     }
   }
 
-  for (size_t i = 0; i <= 2; i++) 
+  for (size_t i = 0; i <= 2; i++)
   {
-    for(size_t j = 3; j < 8; j++) 
+    for(size_t j = 3; j < 8; j++)
     {
       cloud_out_ltable.points[npoints].x = (double)(i)*0.5;
       cloud_out_ltable.points[npoints].y = -(double)(j)*0.5;
@@ -388,10 +386,6 @@ main (int argc, char** argv)
   loadPCDFile (argv[1], cloud_blob);
   fromROSMsg (cloud_blob, *cloud);
 
-  // Set up dummy indices
-  //indices->resize (cloud->points.size ());
-  //for (size_t i = 0; i < indices->size (); ++i) { (*indices)[i] = i; }
-
   // Create search tree
   tree.reset (new KdTreeFLANN<PointXYZ> (false));
   tree->setInputCloud (cloud);
@@ -417,3 +411,4 @@ main (int argc, char** argv)
   return (RUN_ALL_TESTS ());
 }
 /* ]--- */
+

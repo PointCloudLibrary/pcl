@@ -62,10 +62,10 @@ namespace pcl
       typedef typename pcl::PointCloud<PointInT>::Ptr PointCloudPtr;
 
       OrganizedFastMesh()
-      : max_edge_length_squared_(0.025f)
-      , triangle_pixel_size_(1)
+      : max_edge_length_squared_ (0.025f)
+      , triangle_pixel_size_ (1)
       {
-        check_tree_ = false; // tree_.reset(new pcl::KdTreeFLANN<PointInT>());
+        check_tree_ = false;
       };
       ~OrganizedFastMesh(){};
 
@@ -86,7 +86,11 @@ namespace pcl
         max_edge_length_squared_ = max_edge_length*max_edge_length;
       };
 
-      /** Set the edge length (in pixels) used for constructing the fixed mesh. */
+      /**
+       * \brief Set the edge length (in pixels) used for constructing the fixed mesh.
+       * \param triangle_size edge length in pixels
+       * (Default: 1 = neighboring pixels are connected)
+       */
       inline void
       setTrianglePixelSize(int triangle_size)
       {
@@ -139,13 +143,13 @@ namespace pcl
       inline bool
       isShadowed(const PointInT& point_a, const PointInT& point_b)
       {
-          Eigen::Vector3f viewpoint(0.0f, 0.0f, 0.0f); // TODO: allow for passing viewpoint information
-          Eigen::Vector3f dir_a = viewpoint - point_a.getVector3fMap();
-          Eigen::Vector3f dir_b = point_b.getVector3fMap() - point_a.getVector3fMap();
-          float angle = acos( dir_a.dot(dir_b) / (dir_a.norm()*dir_b.norm()) );
-          if ( angle != angle ) angle = 0.0f;
-          float angle_tolerance = pcl::deg2rad(15.0f); // (10 * pi) / 180
-          return ( (angle < angle_tolerance) || (angle > (M_PI - angle_tolerance)) );
+        Eigen::Vector3f viewpoint(0.0f, 0.0f, 0.0f); // TODO: allow for passing viewpoint information
+        Eigen::Vector3f dir_a = viewpoint - point_a.getVector3fMap();
+        Eigen::Vector3f dir_b = point_b.getVector3fMap() - point_a.getVector3fMap();
+        float angle = acos( dir_a.dot(dir_b) / (dir_a.norm()*dir_b.norm()) );
+        if ( angle != angle ) angle = 0.0f;
+        float angle_tolerance = pcl::deg2rad(15.0f); // (10 * pi) / 180
+        return ( (angle < angle_tolerance) || (angle > (M_PI - angle_tolerance)) );
       }
 
       inline bool
