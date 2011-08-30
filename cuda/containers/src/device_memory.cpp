@@ -115,7 +115,7 @@ pcl::gpu::DeviceMemory::~DeviceMemory() { release(); }
 
 
 pcl::gpu::DeviceMemory::DeviceMemory(const DeviceMemory& other_arg) 
-    : data(other_arg.data), sizeBytes(other_arg.sizeBytes), refcount(other_arg.refcount))
+    : data(other_arg.data), sizeBytes(other_arg.sizeBytes), refcount(other_arg.refcount)
 {
     if( refcount )
         CV_XADD(refcount, 1);
