@@ -418,7 +418,7 @@ namespace pcl
       inline double getPitchOffset () const {return pitch_offset_;}
       inline double getYawOffset () const {return yaw_offset_;}
 
-      inline void setTrans (const Eigen::Affine3f& trans) { trans = trans_; }
+      inline void setTrans (const Eigen::Affine3f& trans) { trans_ = trans; }
       
       Eigen::Vector3f
       getOffsetVector ()
