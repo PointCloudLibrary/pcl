@@ -2228,7 +2228,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     {
       int id_mesh = selection->GetValue (sel_id);
 
-      if (id_mesh > polydata->GetNumberOfCells ())
+      if (id_mesh >= polydata->GetNumberOfCells ())
         continue;
 
       vtkCell * cell = polydata->GetCell (id_mesh);
