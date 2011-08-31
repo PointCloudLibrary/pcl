@@ -1872,7 +1872,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (
       // Converting coords, calculating angles and saving the projected near boundary edges
       int nr_edge = 0;
       std::vector<doubleEdge> doubleEdges;
-      for (int i = 1; i < nnn_; i++)
+      for (int i = 1; i < nnn_; i++) // nearest neighbor with index 0 is the query point R_ itself
       {
         // Transforming coordinates
         tmp_ = coords_[nnIdx[i]] - proj_qp_;
@@ -1908,7 +1908,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (
       angles_[0].visible = false;
 
       // Verify the visibility of each potential new vertex
-      for (int i = 1; i < nnn_; i++)
+      for (int i = 1; i < nnn_; i++) // nearest neighbor with index 0 is the query point R_ itself
         if ((angles_[i].visible) && (ffn_[R_] != nnIdx[i]) && (sfn_[R_] != nnIdx[i]))
         {
           bool visibility = true;
@@ -2041,7 +2041,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (
       // Converting coords, calculating angles and saving the projected near boundary edges
       int nr_edge = 0;
       std::vector<doubleEdge> doubleEdges;
-      for (int i = 1; i < nnn_; i++)
+      for (int i = 1; i < nnn_; i++) // nearest neighbor with index 0 is the query point R_ itself
       {
         tmp_ = coords_[nnIdx[i]] - proj_qp_;
         uvn_nn[i][0] = tmp_.dot(u_);
@@ -2142,7 +2142,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (
       angles_[0].visible = false;
 
       // Verify the visibility of each potential new vertex
-      for (int i = 1; i < nnn_; i++)
+      for (int i = 1; i < nnn_; i++) // nearest neighbor with index 0 is the query point R_ itself
         if ((angles_[i].visible) && (ffn_[R_] != nnIdx[i]) && (sfn_[R_] != nnIdx[i]))
         {
           bool visibility = true;
@@ -2290,7 +2290,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::merge2Meshes (
         if (sourceIdx == nnn_)
         {
           int vis_free = NONE, nnCB = NONE; // any free visible and nearest completed or boundary neighbor of R
-          for (int i=0; i<nnn_; i++)
+          for (int i = 1; i < nnn_; i++) // nearest neighbor with index 0 is the query point R_ itself
           {
             // NOTE: nnCB is an index in nnIdx
             if ((state_[nnIdx[i]] == COMPLETED) || (state_[nnIdx[i]] == BOUNDARY))
@@ -2855,7 +2855,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (
       // Converting coords, calculating angles and saving the projected near boundary edges
       int nr_edge = 0;
       std::vector<doubleEdge> doubleEdges;
-      for (int i = 1; i < nnn_; i++)
+      for (int i = 1; i < nnn_; i++) // nearest neighbor with index 0 is the query point R_ itself
       {
         // Transforming coordinates
         tmp_ = coords_[nnIdx[i]] - proj_qp_;
@@ -2891,7 +2891,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (
       angles_[0].visible = false;
 
       // Verify the visibility of each potential new vertex
-      for (int i = 1; i < nnn_; i++)
+      for (int i = 1; i < nnn_; i++) // nearest neighbor with index 0 is the query point R_ itself
         if ((angles_[i].visible) && (ffn_[R_] != nnIdx[i]) && (sfn_[R_] != nnIdx[i]))
         {
           bool visibility = true;
@@ -3024,7 +3024,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (
       // Converting coords, calculating angles and saving the projected near boundary edges
       int nr_edge = 0;
       std::vector<doubleEdge> doubleEdges;
-      for (int i = 1; i < nnn_; i++)
+      for (int i = 1; i < nnn_; i++) // nearest neighbor with index 0 is the query point R_ itself
       {
         tmp_ = coords_[nnIdx[i]] - proj_qp_;
         uvn_nn[i][0] = tmp_.dot(u_);
@@ -3125,7 +3125,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (
       angles_[0].visible = false;
 
       // Verify the visibility of each potential new vertex
-      for (int i = 1; i < nnn_; i++)
+      for (int i = 1; i < nnn_; i++) // nearest neighbor with index 0 is the query point R_ itself
         if ((angles_[i].visible) && (ffn_[R_] != nnIdx[i]) && (sfn_[R_] != nnIdx[i]))
         {
           bool visibility = true;
@@ -3273,7 +3273,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::updateMesh (
         if (sourceIdx == nnn_)
         {
           int vis_free = NONE, nnCB = NONE; // any free visible and nearest completed or boundary neighbor of R
-          for (int i=0; i<nnn_; i++)
+          for (int i = 1; i < nnn_; i++) // nearest neighbor with index 0 is the query point R_ itself
           {
             // NOTE: nnCB is an index in nnIdx
             if ((state_[nnIdx[i]] == COMPLETED) || (state_[nnIdx[i]] == BOUNDARY))
