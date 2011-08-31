@@ -1890,10 +1890,15 @@ pcl::visualization::PCLVisualizer::setRepresentationToSurfaceForAllActors ()
 ///////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
-    int xres, int yres, 
-    std::vector<pcl::PointCloud<pcl::PointXYZ>, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZ> > > & clouds,
-    std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f> > & poses, 
-    std::vector<float> & enthropies, int tesselation_level, float view_angle, float radius_sphere)
+                                                               int xres,
+                                                               int yres,
+                                                               std::vector<pcl::PointCloud<pcl::PointXYZ>,
+                                                                   Eigen::aligned_allocator<pcl::PointCloud<
+                                                                       pcl::PointXYZ> > > & clouds,
+                                                               std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<
+                                                                   Eigen::Matrix4f> > & poses,
+                                                               std::vector<float> & enthropies, int tesselation_level,
+                                                               float view_angle, float radius_sphere, bool use_vertices)
 {
   if (rens_->GetNumberOfItems () > 1)
   {
@@ -1957,7 +1962,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   mapper->GetBounds (bb);
   double ms = (std::max) ((std::fabs) (bb[0] - bb[1]),
                           (std::max) ((std::fabs) (bb[2] - bb[3]), (std::fabs) (bb[4] - bb[5])));
-  double max_side = 0.4;
+  double max_side = radius_sphere / 2.0;
   double scale_factor = max_side / ms;
 
   vtkSmartPointer<vtkTransform> trans_scale = vtkSmartPointer<vtkTransform>::New ();
@@ -2002,11 +2007,42 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   vtkPolyData *sphere = subdivide->GetOutput ();
   sphere->Update ();
 
+  std::vector<Eigen::Vector3f> cam_positions;
+  if (!use_vertices)
+  {
+    vtkSmartPointer<vtkCellArray> cells_sphere = sphere->GetPolys ();
+    cam_positions.resize (sphere->GetNumberOfPolys ());
+
+    size_t i=0;
+    for (cells_sphere->InitTraversal (); cells_sphere->GetNextCell (npts_com, ptIds_com);)
+    {
+      sphere->GetPoint (ptIds_com[0], p1_com);
+      sphere->GetPoint (ptIds_com[1], p2_com);
+      sphere->GetPoint (ptIds_com[2], p3_com);
+      vtkTriangle::TriangleCenter (p1_com, p2_com, p3_com, center);
+      cam_positions[i] = Eigen::Vector3f (center[0], center[1], center[2]);
+      i++;
+    }
+
+  }
+  else
+  {
+    cam_positions.resize (sphere->GetNumberOfPoints ());
+    for (int i = 0; i < sphere->GetNumberOfPoints (); i++)
+    {
+      double cam_pos[3];
+      sphere->GetPoint (i, cam_pos);
+      cam_positions[i] = Eigen::Vector3f (cam_pos[0], cam_pos[1], cam_pos[2]);
+    }
+  }
+
   double camera_radius = radius_sphere;
   double cam_pos[3];
   double first_cam_pos[3];
 
-  sphere->GetPoint (0, first_cam_pos);
+  first_cam_pos[0] = cam_positions[0][0];
+  first_cam_pos[1] = cam_positions[0][1];
+  first_cam_pos[2] = cam_positions[0][2];
 
   //create renderer and window
   vtkSmartPointer<vtkRenderWindow> render_win = vtkSmartPointer<vtkRenderWindow>::New ();
@@ -2021,8 +2057,8 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   vtkSmartPointer<vtkCamera> cam = vtkSmartPointer<vtkCamera>::New ();
   cam->SetFocalPoint (0, 0, 0);
 
-  Eigen::Vector3f cam_pos_3f(first_cam_pos[0],first_cam_pos[1],first_cam_pos[2]);
-  Eigen::Vector3f perp = cam_pos_3f.cross(Eigen::Vector3f::UnitY());
+  Eigen::Vector3f cam_pos_3f = cam_positions[0];
+  Eigen::Vector3f perp = cam_pos_3f.cross (Eigen::Vector3f::UnitY ());
   cam->SetViewUp (perp[0], perp[1], perp[2]);
 
   cam->SetPosition (first_cam_pos);
@@ -2030,9 +2066,11 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   cam->Modified ();
 
   //For each camera position, traposesnsform the object and render view
-  for (int i = 0; i < sphere->GetNumberOfPoints (); i++)
+  for (size_t i = 0; i < cam_positions.size (); i++)
   {
-    sphere->GetPoint (i, cam_pos);
+    cam_pos[0] = cam_positions[i][0];
+    cam_pos[1] = cam_positions[i][1];
+    cam_pos[2] = cam_positions[i][2];
 
     //create temporal virtual camera
     vtkSmartPointer<vtkCamera> cam_tmp = vtkSmartPointer<vtkCamera>::New ();

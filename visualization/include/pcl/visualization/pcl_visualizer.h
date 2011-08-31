@@ -1037,18 +1037,21 @@ namespace pcl
           * in order to simulate partial views of model. The viewpoint locations are the vertices of a tesselated sphere
           * build from an icosaheadron. The tesselation paremeter controls how many times the triangles of the original
           * icosahedron are divided to approximate the sphere and thus the number of partial view generated for a model,
-          * with a tesselation_level of 0, 12 views are generated.
+          * with a tesselation_level of 0, 12 views are generated if use_vertices=true and 20 views if use_vertices=false
           * \param xres and yres are the size of the window used to render the partial view of the object
           * \param cloud is a vector of pointcloud with XYZ information that represent the model as seen from the respective viewpoints.
           * \param poses represent the transformation from object coordinates to camera coordinates for the respective viewpoint.
           * \param enthropies are values between 0 and 1 representing which percentage of the model is seen from the respective viewpoint.
           * \param tesselation_level represents the number of subdivisions applied to the triangles of original icosahedron.
           * \param view_angle field of view of the virtual camera
+          * \param use_vertices if true, use the vertices of tesselated icosahedron (12,42,...) or if false, use the faces of tesselated
+          * icosahedron (20,80,...)
           */
         void
         renderViewTesselatedSphere (int xres, int yres,
         std::vector<pcl::PointCloud<pcl::PointXYZ>,Eigen::aligned_allocator< pcl::PointCloud<pcl::PointXYZ> > > & cloud,
-        std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level, float view_angle=45, float radius_sphere=1);
+        std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level,
+        float view_angle=45, float radius_sphere=1, bool use_vertices=true);
 
         /** \brief Camera view, window position and size. */
         Camera camera_;
