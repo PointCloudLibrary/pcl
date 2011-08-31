@@ -38,14 +38,15 @@
 #include <vtkImageImport.h>
 #include <vtkImageViewer.h>
 #include <vtkRenderWindowInteractor.h>
+#include <vtkImageReslice.h>
 #include <vtkImageViewer.h>
 #include <vtkTransform.h>
+#include <vtkImageChangeInformation.h>
 
+/////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   : image_viewer_ (vtkImageViewer::New ())
 {
-  memset (dummy_, 0, 48);
-  showRGBImage (dummy_, 16, 16);
   image_viewer_->GetRenderWindow ()->SetWindowName (window_title.c_str ());
 
   vtkRenderWindowInteractor *iren = vtkRenderWindowInteractor::New ();
@@ -53,9 +54,9 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   
   iren->SetRenderWindow (image_viewer_->GetRenderWindow ());
   iren->Initialize ();
-
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::ImageViewer::showRGBImage (const unsigned char* rgb_data, unsigned width, unsigned height)
 {
@@ -68,21 +69,19 @@ pcl::visualization::ImageViewer::showRGBImage (const unsigned char* rgb_data, un
   void* data = const_cast<void*> ((const void*)rgb_data);
   importer->SetImportVoidPointer (data, 1);
 
-/*  vtkTransform *imageTransform = vtkTransform::New();
-  imageTransform->PostMultiply();
-  imageTransform->Translate(width/2, height/2, 0.0);
-  imageTransform->RotateZ(180);
-  imageTransform->Translate(-width/2, -height/2, 0.0);
+  vtkSmartPointer<vtkTransform> imageTransform = vtkSmartPointer<vtkTransform>::New ();
+  imageTransform->Translate (width, height, 0.0);
+  imageTransform->RotateZ (180.0);
   // Now create filter and set previously created transformation
-  vtkImageReslice *algo = vtkImageReslice::New();
-  algo->SetInput(importer->GetOutput());
-  algo->SetInformationInput(importer->GetOutput());
-  algo->SetResliceTransform(imageTransform);
-  algo->SetInterpolationModeToLinear();
-  algo->Update();
+  vtkSmartPointer<vtkImageReslice> algo = vtkSmartPointer<vtkImageReslice>::New ();
+  algo->SetInput (importer->GetOutput ());
+  algo->SetInformationInput (importer->GetOutput ());
+  algo->SetResliceTransform (imageTransform);
+  algo->SetInterpolationModeToCubic ();
+  algo->Update ();
 
-  image_viewer_->SetInput (algo->GetOutput());*/
-  image_viewer_->SetInput (importer->GetOutput());
+  image_viewer_->SetInput (algo->GetOutput ());
+  //image_viewer_->SetInput (importer->GetOutput());
   image_viewer_->SetColorLevel (127.5);
   image_viewer_->SetColorWindow (255);
   image_viewer_->SetSize (width, height);

@@ -55,7 +55,6 @@ namespace pcl
 
       protected:
         vtkSmartPointer<vtkImageViewer> image_viewer_;
-        unsigned char dummy_[48];
         bool is_init_;
     };
   }
