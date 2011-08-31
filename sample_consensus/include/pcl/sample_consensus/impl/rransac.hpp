@@ -55,8 +55,6 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
   int n_best_inliers_count = -INT_MAX;
   double k = 1.0;
 
-  std::vector<int> best_model;
-  std::vector<int> best_inliers, inliers;
   std::vector<int> selection;
   Eigen::VectorXf model_coefficients;
   std::set<int> indices_subset;
@@ -95,11 +93,7 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
     }
 
     // Select the inliers that are within threshold_ from the model
-    sac_model_->selectWithinDistance (model_coefficients, threshold_, inliers);
-    //if (inliers.empty () && k > 1.0)
-    //  continue;
-    
-    n_inliers_count = inliers.size ();
+    n_inliers_count = sac_model_->countWithinDistance (model_coefficients, threshold_);
 
     // Better match ?
     if (n_inliers_count > n_best_inliers_count)
@@ -107,7 +101,6 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
       n_best_inliers_count = n_inliers_count;
 
       // Save the current model/inlier/coefficients selection as being the best so far
-      inliers_            = inliers;
       model_              = selection;
       model_coefficients_ = model_coefficients;
 
@@ -135,7 +128,13 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
     PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", (unsigned long)model_.size (), n_best_inliers_count);
 
   if (model_.empty ())
+  {
+    inliers_.clear ();
     return (false);
+  }
+
+  // Get the set of inliers that correspond to the best model found so far
+  sac_model_->selectWithinDistance (model_coefficients_, threshold_, inliers_);
   return (true);
 }
 
