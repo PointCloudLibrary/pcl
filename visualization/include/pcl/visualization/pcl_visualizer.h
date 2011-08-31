@@ -1010,6 +1010,16 @@ namespace pcl
                  const std::string &id = "cone", 
                  int viewport = 0);
 
+        /** \brief Add a cube from a set of given model coefficients 
+          * \param coefficients the model coefficients (Tx, Ty, Tz, Qx, Qy, Qz, Qw, width, height, depth)
+          * \param id the cone id/name (default: "cube")
+          * \param viewport (optional) the id of the new viewport (default: 0)
+          */
+        bool 
+        addCube (const pcl::ModelCoefficients &coefficients, 
+                 const std::string &id = "cube", 
+                 int viewport = 0);
+
         /** \brief Changes the visual representation for all actors to surface representation. */
         void
         setRepresentationToSurfaceForAllActors ();

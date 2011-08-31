@@ -75,6 +75,37 @@ pcl::visualization::createSphere (const pcl::ModelCoefficients &coefficients, in
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 vtkSmartPointer<vtkDataSet> 
+pcl::visualization::createCube (const pcl::ModelCoefficients &coefficients)
+{
+  // coefficients = [Tx, Ty, Tz, Qx, Qy, Qz, Qw, width, height, depth]
+  double theta = acos (coefficients.values[6]) * 2.0;
+  vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New ();
+  t->Identity ();
+  if (sin (theta / 2.0) == 0.0)
+    t->Translate (coefficients.values[0], coefficients.values[1], coefficients.values[2]);
+  else
+  {
+    double ax = coefficients.values[3] / sin (theta / 2.0);
+    double ay = coefficients.values[4] / sin (theta / 2.0);
+    double az = coefficients.values[5] / sin (theta / 2.0);
+    t->Translate (coefficients.values[0], coefficients.values[1], coefficients.values[2]);
+    t->RotateWXYZ (theta, ax, ay, az);
+  }
+  
+  vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New ();
+  cube->SetXLength (coefficients.values[7]);
+  cube->SetYLength (coefficients.values[8]);
+  cube->SetZLength (coefficients.values[9]);
+  
+  vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
+  tf->SetTransform (t);
+  tf->SetInputConnection (cube->GetOutputPort ());
+  
+  return (tf->GetOutput ());
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+vtkSmartPointer<vtkDataSet> 
 pcl::visualization::createLine (const pcl::ModelCoefficients &coefficients)
 {
   vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();

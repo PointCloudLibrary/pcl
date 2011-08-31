@@ -52,6 +52,7 @@
 #include <vtkTransformPolyDataFilter.h>
 #include <vtkLineSource.h>
 #include <vtkTubeFilter.h>
+#include <vtkCubeSource.h>
 
 /**
   * \file pcl/visualization/common/shapes.h
@@ -218,6 +219,13 @@ namespace pcl
     PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
     createCone (const pcl::ModelCoefficients &coefficients);
 
+    /** \brief Creaet a cube shape from a set of model coefficients.
+      * \param coefficients the cube coefficients (Tx, Ty, Tz, Qx, Qy, Qz, Qw, width, height, depth)
+      * \ingroup visualization 
+      */
+    PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
+    createCube (const pcl::ModelCoefficients &coefficients);
+    
     /** \brief Allocate a new unstructured grid smartpointer. Internal */
     PCL_EXPORTS void
     allocVtkUnstructuredGrid (vtkSmartPointer<vtkUnstructuredGrid> &polydata);
