@@ -151,6 +151,6 @@ main (int argc, char** argv)
   compute (cloud, output, mu, radius);
 
   // Save into the second file
-  saveCloud (argv[vtk_file_indices[1]], output);
+  saveCloud (argv[vtk_file_indices[0]], output);
 }
 
