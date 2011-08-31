@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009-2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -102,7 +104,7 @@ namespace pcl
       typedef boost::shared_ptr<SampleConsensusModelNormalParallelPlane> Ptr;
 
       /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
-        * \param cloud the input point cloud dataset
+        * \param[in] cloud the input point cloud dataset
         */
       SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud) : SampleConsensusModelPlane<PointT> (cloud),
                                                                           eps_angle_ (0.0), eps_dist_ (0.0)
@@ -111,8 +113,8 @@ namespace pcl
       }
 
       /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
-        * \param cloud the input point cloud dataset
-        * \param indices a vector of point indices to be used from \a cloud
+        * \param[in] cloud the input point cloud dataset
+        * \param[in] indices a vector of point indices to be used from \a cloud
         */
       SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModelPlane<PointT> (cloud, indices),
                                                                                                            eps_angle_ (0.0), eps_dist_ (0.0)
@@ -121,7 +123,7 @@ namespace pcl
       }
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
-        * \param ax the axis along which we need to search for a plane perpendicular to
+        * \param[in] ax the axis along which we need to search for a plane perpendicular to
         */
       inline void 
       setAxis (const Eigen::Vector3f &ax) { axis_ = ax; }
@@ -131,50 +133,63 @@ namespace pcl
       getAxis () { return (axis_); }
 
       /** \brief Set the angle epsilon (delta) threshold.
-        * \param ea the maximum allowed deviation from 90 degrees between the plane normal and the given axis.
+        * \param[in] ea the maximum allowed deviation from 90 degrees between the plane normal and the given axis.
         * \note You need to specify an angle > 0 in order to activate the axis-angle constraint!
         */
       inline void 
-      setEpsAngle (double ea) { eps_angle_ = ea; }
+      setEpsAngle (const double ea) { eps_angle_ = ea; }
 
       /** \brief Get the angle epsilon (delta) threshold. */
       inline double 
       getEpsAngle () { return (eps_angle_); }
 
       /** \brief Set the distance we expect the plane to be from the origin
-        * \param d distance from the template plane to the origin
+        * \param[in] d distance from the template plane to the origin
         */
       inline void 
-      setDistanceFromOrigin (double d) { distance_from_origin_ = d; }
+      setDistanceFromOrigin (const double d) { distance_from_origin_ = d; }
 
       /** \brief Get the distance of the plane from the origin. */
       inline double 
       getDistanceFromOrigin () { return (distance_from_origin_); }
 
       /** \brief Set the distance epsilon (delta) threshold.
-        * \param delta the maximum allowed deviation from the template distance from the origin
+        * \param[in] delta the maximum allowed deviation from the template distance from the origin
         */
       inline void 
-      setEpsDist (double delta) { eps_dist_ = delta; }
+      setEpsDist (const double delta) { eps_dist_ = delta; }
 
       /** \brief Get the distance epsilon (delta) threshold. */
       inline double 
       getEpsDist () { return (eps_dist_); }
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
-        * \param model_coefficients the coefficients of a plane model that we need to compute distances to
-        * \param inliers the resultant model inliers
-        * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
+        * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
+        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
+        * \param[out] inliers the resultant model inliers
         */
       void 
-      selectWithinDistance (const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers);
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
+                            const double threshold, 
+                            std::vector<int> &inliers);
+
+      /** \brief Count all the points which respect the given model coefficients as inliers. 
+        * 
+        * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
+        * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
+        * \return the resultant number of inliers
+        */
+      virtual int
+      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
+                           const double threshold);
 
       /** \brief Compute all distances from the cloud data to a given plane model.
-        * \param model_coefficients the coefficients of a plane model that we need to compute distances to
-        * \param distances the resultant estimated distances
+        * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
+        * \param[out] distances the resultant estimated distances
         */
       void 
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances);
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
+                           std::vector<double> &distances);
 
       /** \brief Return an unique id for this model (SACMODEL_NORMAL_PARALLEL_PLANE). */
       inline pcl::SacModel 
@@ -184,7 +199,7 @@ namespace pcl
 
     protected:
       /** \brief Check whether a model is valid given the user constraints.
-        * \param model_coefficients the set of model coefficients
+        * \param[in] model_coefficients the set of model coefficients
         */
       bool 
       isModelValid (const Eigen::VectorXf &model_coefficients);

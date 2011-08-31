@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ * 
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -44,7 +46,6 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusModelLine defines a model for 3D line segmentation.
     * The model coefficients are defined as:
     * <ul>
@@ -72,86 +73,115 @@ namespace pcl
       typedef boost::shared_ptr<SampleConsensusModelLine> Ptr;
 
       /** \brief Constructor for base SampleConsensusModelLine.
-        * \param cloud the input point cloud dataset
+        * \param[in] cloud the input point cloud dataset
         */
       SampleConsensusModelLine (const PointCloudConstPtr &cloud) : SampleConsensusModel<PointT> (cloud) {};
 
       /** \brief Constructor for base SampleConsensusModelLine.
-        * \param cloud the input point cloud dataset
-        * \param indices a vector of point indices to be used from \a cloud
+        * \param[in] cloud the input point cloud dataset
+        * \param[in] indices a vector of point indices to be used from \a cloud
         */
       SampleConsensusModelLine (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModel<PointT> (cloud, indices) {};
 
       /** \brief Get 2 random points as data samples and return them as point indices.
-        * \param iterations the internal number of iterations used by SAC methods
-        * \param samples the resultant model samples
+        * \param[out] iterations the internal number of iterations used by SAC methods
+        * \param[out] samples the resultant model samples
         * \note assumes unique points!
         */
-      void getSamples (int &iterations, std::vector<int> &samples);
+      void 
+      getSamples (int &iterations, std::vector<int> &samples);
 
       /** \brief Check whether the given index samples can form a valid line model, compute the model coefficients from
         * these samples and store them internally in model_coefficients_. The line coefficients are represented by a
         * point and a line direction
-        * \param samples the point indices found as possible good candidates for creating a valid model
-        * \param model_coefficients the resultant model coefficients
+        * \param[in] samples the point indices found as possible good candidates for creating a valid model
+        * \param[out] model_coefficients the resultant model coefficients
         */
-      bool computeModelCoefficients (const std::vector<int> &samples, Eigen::VectorXf &model_coefficients);
+      bool 
+      computeModelCoefficients (const std::vector<int> &samples, 
+                                Eigen::VectorXf &model_coefficients);
 
       /** \brief Compute all squared distances from the cloud data to a given line model.
-        * \param model_coefficients the coefficients of a line model that we need to compute distances to
-        * \param distances the resultant estimated squared distances
+        * \param[in] model_coefficients the coefficients of a line model that we need to compute distances to
+        * \param[out] distances the resultant estimated squared distances
         */
-      void getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances);
+      void 
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
+                           std::vector<double> &distances);
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
-        * \param model_coefficients the coefficients of a line model that we need to compute distances to
-        * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
-        * \param inliers the resultant model inliers
+        * \param[in] model_coefficients the coefficients of a line model that we need to compute distances to
+        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
+        * \param[out] inliers the resultant model inliers
         */
-      void selectWithinDistance (const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers);
+      void 
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
+                            const double threshold, 
+                            std::vector<int> &inliers);
+
+      /** \brief Count all the points which respect the given model coefficients as inliers. 
+        * 
+        * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
+        * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
+        * \return the resultant number of inliers
+        */
+      virtual int
+      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
+                           const double threshold);
 
       /** \brief Recompute the line coefficients using the given inlier set and return them to the user.
         * @note: these are the coefficients of the line model after refinement (eg. after SVD)
-        * \param inliers the data inliers found as supporting the model
-        * \param model_coefficients the initial guess for the model coefficients
-        * \param optimized_coefficients the resultant recomputed coefficients after optimization
+        * \param[in] inliers the data inliers found as supporting the model
+        * \param[in] model_coefficients the initial guess for the model coefficients
+        * \param[out] optimized_coefficients the resultant recomputed coefficients after optimization
         */
-      void optimizeModelCoefficients (const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients);
+      void 
+      optimizeModelCoefficients (const std::vector<int> &inliers, 
+                                 const Eigen::VectorXf &model_coefficients, 
+                                 Eigen::VectorXf &optimized_coefficients);
 
       /** \brief Create a new point cloud with inliers projected onto the line model.
-        * \param inliers the data inliers that we want to project on the line model
-        * \param model_coefficients the *normalized* coefficients of a line model
-        * \param projected_points the resultant projected points
-        * \param copy_data_fields set to true if we need to copy the other data fields
+        * \param[in] inliers the data inliers that we want to project on the line model
+        * \param[in] model_coefficients the *normalized* coefficients of a line model
+        * \param[out] projected_points the resultant projected points
+        * \param[in] copy_data_fields set to true if we need to copy the other data fields
         */
-      void projectPoints (const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields = true);
+      void 
+      projectPoints (const std::vector<int> &inliers, 
+                     const Eigen::VectorXf &model_coefficients, 
+                     PointCloud &projected_points, 
+                     bool copy_data_fields = true);
 
       /** \brief Verify whether a subset of indices verifies the given plane model coefficients.
-        * \param indices the data indices that need to be tested against the plane model
-        * \param model_coefficients the plane model coefficients
-        * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
+        * \param[in] indices the data indices that need to be tested against the plane model
+        * \param[in] model_coefficients the plane model coefficients
+        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
-      bool doSamplesVerifyModel (const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, double threshold);
+      bool 
+      doSamplesVerifyModel (const std::set<int> &indices, 
+                            const Eigen::VectorXf &model_coefficients, 
+                            const double threshold);
 
       /** \brief Return an unique id for this model (SACMODEL_LINE). */
-      inline pcl::SacModel getModelType () const { return (SACMODEL_LINE); }
+      inline pcl::SacModel 
+      getModelType () const { return (SACMODEL_LINE); }
 
     protected:
       /** \brief Check whether a model is valid given the user constraints.
-        * \param model_coefficients the set of model coefficients
+        * \param[in] model_coefficients the set of model coefficients
         */
       inline bool 
-        isModelValid (const Eigen::VectorXf &model_coefficients)
+      isModelValid (const Eigen::VectorXf &model_coefficients)
       {
         return (true);
       }
 
       /** \brief Check if a sample of indices results in a good sample of points
-        * indices. Pure virtual.
-        * \param samples the resultant index samples
+        * indices.
+        * \param[in] samples the resultant index samples
         */
       bool
-      isSampleGood(const std::vector<int> &samples) const;
+      isSampleGood (const std::vector<int> &samples) const;
   };
 }
 

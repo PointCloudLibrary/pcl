@@ -101,13 +101,6 @@ pcl::SampleConsensusModelCircle2D<PointT>::computeModelCoefficients (const std::
 template <typename PointT> void
 pcl::SampleConsensusModelCircle2D<PointT>::getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances)
 {
-  // Needs a valid model coefficients
-  if (model_coefficients.size () != 3)
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::getDistancesToModel] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
-    return;
-  }
-
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
   {
@@ -135,13 +128,6 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
     const Eigen::VectorXf &model_coefficients, double threshold, 
     std::vector<int> &inliers)
 {
-  // Needs a valid model coefficients
-  if (model_coefficients.size () != 3)
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
-    return;
-  }
-
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
   {
@@ -171,6 +157,34 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
     }
   }
   inliers.resize (nr_p);
+}
+
+//////////////////////////////////////////////////////////////////////////
+template <typename PointT> int
+pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
+    const Eigen::VectorXf &model_coefficients, double threshold)
+{
+  // Check if the model is valid given the user constraints
+  if (!isModelValid (model_coefficients))
+    return (0);
+  int nr_p = 0;
+
+  // Iterate through the 3d points and calculate the distances from them to the sphere
+  for (size_t i = 0; i < indices_->size (); ++i)
+  {
+    // Calculate the distance from the point to the sphere as the difference between
+    // dist(point,sphere_origin) and sphere_radius
+    float distance = fabs (sqrt (
+                                 ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
+                                 ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
+
+                                 ( input_->points[(*indices_)[i]].y - model_coefficients[1] ) *
+                                 ( input_->points[(*indices_)[i]].y - model_coefficients[1] )
+                                ) - model_coefficients[2]);
+    if (distance < threshold)
+      nr_p++;
+  }
+  return (nr_p);
 }
 
 //////////////////////////////////////////////////////////////////////////
