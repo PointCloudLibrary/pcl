@@ -56,6 +56,18 @@ pcl::SampleConsensusModelParallelLine<PointT>::selectWithinDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////
+template <typename PointT> int
+pcl::SampleConsensusModelParallelLine<PointT>::countWithinDistance (
+      const Eigen::VectorXf &model_coefficients, double threshold)
+{
+  // Check if the model is valid given the user constraints
+  if (!isModelValid (model_coefficients))
+    return (0);
+
+  return (SampleConsensusModelLine<PointT>::countWithinDistance (model_coefficients, threshold));
+}
+
+//////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelParallelLine<PointT>::getDistancesToModel (
       const Eigen::VectorXf &model_coefficients, std::vector<double> &distances)

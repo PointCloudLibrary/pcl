@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -144,65 +146,86 @@ namespace pcl
       typedef boost::shared_ptr<SampleConsensusModelPlane> Ptr;
 
       /** \brief Constructor for base SampleConsensusModelPlane.
-        * \param cloud the input point cloud dataset
+        * \param[in] cloud the input point cloud dataset
         */
       SampleConsensusModelPlane (const PointCloudConstPtr &cloud) : SampleConsensusModel<PointT> (cloud) {};
 
       /** \brief Constructor for base SampleConsensusModelPlane.
-        * \param cloud the input point cloud dataset
-        * \param indices a vector of point indices to be used from \a cloud
+        * \param[in] cloud the input point cloud dataset
+        * \param[in] indices a vector of point indices to be used from \a cloud
         */
       SampleConsensusModelPlane (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModel<PointT> (cloud, indices) {};
 
       /** \brief Check whether the given index samples can form a valid plane model, compute the model coefficients from
         * these samples and store them internally in model_coefficients_. The plane coefficients are:
         * a, b, c, d (ax+by+cz+d=0)
-        * \param samples the point indices found as possible good candidates for creating a valid model
-        * \param model_coefficients the resultant model coefficients
+        * \param[in] samples the point indices found as possible good candidates for creating a valid model
+        * \param[out] model_coefficients the resultant model coefficients
         */
       bool 
-      computeModelCoefficients (const std::vector<int> &samples, Eigen::VectorXf &model_coefficients);
+      computeModelCoefficients (const std::vector<int> &samples, 
+                                Eigen::VectorXf &model_coefficients);
 
       /** \brief Compute all distances from the cloud data to a given plane model.
-        * \param model_coefficients the coefficients of a plane model that we need to compute distances to
-        * \param distances the resultant estimated distances
+        * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
+        * \param[out] distances the resultant estimated distances
         */
       void 
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances);
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
+                           std::vector<double> &distances);
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
-        * \param model_coefficients the coefficients of a plane model that we need to compute distances to
-        * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
-        * \param inliers the resultant model inliers
+        * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
+        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
+        * \param[out] inliers the resultant model inliers
         */
       void 
-      selectWithinDistance (const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers);
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
+                            const double threshold, 
+                            std::vector<int> &inliers);
+
+      /** \brief Count all the points which respect the given model coefficients as inliers. 
+        * 
+        * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
+        * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
+        * \return the resultant number of inliers
+        */
+      virtual int
+      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
+                           const double threshold);
 
       /** \brief Recompute the plane coefficients using the given inlier set and return them to the user.
         * @note: these are the coefficients of the plane model after refinement (eg. after SVD)
-        * \param inliers the data inliers found as supporting the model
-        * \param model_coefficients the initial guess for the model coefficients
-        * \param optimized_coefficients the resultant recomputed coefficients after non-linear optimization
+        * \param[in] inliers the data inliers found as supporting the model
+        * \param[in] model_coefficients the initial guess for the model coefficients
+        * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
         */
       void 
-      optimizeModelCoefficients (const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients);
+      optimizeModelCoefficients (const std::vector<int> &inliers, 
+                                 const Eigen::VectorXf &model_coefficients, 
+                                 Eigen::VectorXf &optimized_coefficients);
 
       /** \brief Create a new point cloud with inliers projected onto the plane model.
-        * \param inliers the data inliers that we want to project on the plane model
-        * \param model_coefficients the *normalized* coefficients of a plane model
-        * \param projected_points the resultant projected points
-        * \param copy_data_fields set to true if we need to copy the other data fields
+        * \param[in] inliers the data inliers that we want to project on the plane model
+        * \param[in] model_coefficients the *normalized* coefficients of a plane model
+        * \param[out] projected_points the resultant projected points
+        * \param[in] copy_data_fields set to true if we need to copy the other data fields
         */
       void 
-      projectPoints (const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields = true);
+      projectPoints (const std::vector<int> &inliers, 
+                     const Eigen::VectorXf &model_coefficients, 
+                     PointCloud &projected_points, 
+                     bool copy_data_fields = true);
 
       /** \brief Verify whether a subset of indices verifies the given plane model coefficients.
-        * \param indices the data indices that need to be tested against the plane model
-        * \param model_coefficients the plane model coefficients
-        * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
+        * \param[in] indices the data indices that need to be tested against the plane model
+        * \param[in] model_coefficients the plane model coefficients
+        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
       bool 
-      doSamplesVerifyModel (const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, double threshold);
+      doSamplesVerifyModel (const std::set<int> &indices, 
+                            const Eigen::VectorXf &model_coefficients, 
+                            const double threshold);
 
       /** \brief Return an unique id for this model (SACMODEL_PLANE). */
       inline pcl::SacModel 
@@ -210,7 +233,7 @@ namespace pcl
 
     protected:
       /** \brief Check whether a model is valid given the user constraints.
-        * \param model_coefficients the set of model coefficients
+        * \param[in] model_coefficients the set of model coefficients
         */
       inline bool 
       isModelValid (const Eigen::VectorXf &model_coefficients)
@@ -226,8 +249,8 @@ namespace pcl
 
     private:
       /** \brief Check if a sample of indices results in a good sample of points
-        * indices. Pure virtual.
-        * \param samples the resultant index samples
+        * indices.
+        * \param[in] samples the resultant index samples
         */
       virtual bool
       isSampleGood (const std::vector<int> &samples) const;

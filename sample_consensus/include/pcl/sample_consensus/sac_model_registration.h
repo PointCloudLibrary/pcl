@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -65,7 +67,7 @@ namespace pcl
       typedef boost::shared_ptr<SampleConsensusModelRegistration> Ptr;
 
       /** \brief Constructor for base SampleConsensusModelRegistration.
-        * \param cloud the input point cloud dataset
+        * \param[in] cloud the input point cloud dataset
         */
       SampleConsensusModelRegistration (const PointCloudConstPtr &cloud) : SampleConsensusModel<PointT> (cloud)
       {
@@ -74,8 +76,8 @@ namespace pcl
       }
 
       /** \brief Constructor for base SampleConsensusModelRegistration.
-        * \param cloud the input point cloud dataset
-        * \param indices a vector of point indices to be used from \a cloud
+        * \param[in] cloud the input point cloud dataset
+        * \param[in] indices a vector of point indices to be used from \a cloud
         */
       SampleConsensusModelRegistration (const PointCloudConstPtr &cloud, 
                                         const std::vector<int> &indices) : 
@@ -87,7 +89,7 @@ namespace pcl
       }
 
       /** \brief Provide a pointer to the input dataset
-        * \param cloud the const boost shared pointer to a PointCloud message
+        * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
       inline virtual void
       setInputCloud (const PointCloudConstPtr &cloud)
@@ -99,7 +101,7 @@ namespace pcl
 
       /** \brief Computes an "optimal" sample distance threshold based on the
         * principal directions of the input cloud.
-        * \param cloud the const boost shared pointer to a PointCloud message
+        * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
       inline void 
       computeSampleDistanceThreshold (const PointCloudConstPtr &cloud)
@@ -136,8 +138,8 @@ namespace pcl
       }
 
       /** \brief Set the input point cloud target.
-        * \param target the input point cloud target
-        * \param indices_tgt a vector of point indices to be used from \a target
+        * \param[in] target the input point cloud target
+        * \param[in] indices_tgt a vector of point indices to be used from \a target
         */
       inline void 
       setInputTarget (const PointCloudConstPtr &target, const std::vector<int> &indices_tgt)
@@ -148,34 +150,45 @@ namespace pcl
       }
 
       /** \brief Compute a 4x4 rigid transformation matrix from the samples given
-        * \param samples the indices found as good candidates for creating a valid model
-        * \param model_coefficients the resultant model coefficients
+        * \param[in] samples the indices found as good candidates for creating a valid model
+        * \param[out] model_coefficients the resultant model coefficients
         */
       bool 
       computeModelCoefficients (const std::vector<int> &samples, 
                                 Eigen::VectorXf &model_coefficients);
 
       /** \brief Compute all distances from the transformed points to their correspondences
-        * \param model_coefficients the 4x4 transformation matrix
-        * \param distances the resultant estimated distances
+        * \param[in] model_coefficients the 4x4 transformation matrix
+        * \param[out] distances the resultant estimated distances
         */
       void 
       getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
                            std::vector<double> &distances);
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
-        * \param model_coefficients the 4x4 transformation matrix
-        * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
-        * \param inliers the resultant model inliers
+        * \param[in] model_coefficients the 4x4 transformation matrix
+        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
+        * \param[out] inliers the resultant model inliers
         */
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
-                            double threshold, std::vector<int> &inliers);
+                            const double threshold, 
+                            std::vector<int> &inliers);
+
+      /** \brief Count all the points which respect the given model coefficients as inliers. 
+        * 
+        * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
+        * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
+        * \return the resultant number of inliers
+        */
+      virtual int
+      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
+                           const double threshold);
 
       /** \brief Recompute the 4x4 transformation using the given inlier set
-        * \param inliers the data inliers found as supporting the model
-        * \param model_coefficients the initial guess for the optimization
-        * \param optimized_coefficients the resultant recomputed transformation
+        * \param[in] inliers the data inliers found as supporting the model
+        * \param[in] model_coefficients the initial guess for the optimization
+        * \param[out] optimized_coefficients the resultant recomputed transformation
         */
       void 
       optimizeModelCoefficients (const std::vector<int> &inliers, 
@@ -193,7 +206,7 @@ namespace pcl
                             const Eigen::VectorXf &model_coefficients, 
                             double threshold)
       {
-        PCL_ERROR ("[pcl::SampleConsensusModelRegistration::doSamplesVerifyModel] called!\n");
+        //PCL_ERROR ("[pcl::SampleConsensusModelRegistration::doSamplesVerifyModel] called!\n");
         return (false);
       }
 
@@ -203,7 +216,7 @@ namespace pcl
 
     protected:
       /** \brief Check whether a model is valid given the user constraints.
-        * \param model_coefficients the set of model coefficients
+        * \param[in] model_coefficients the set of model coefficients
         */
       inline bool 
       isModelValid (const Eigen::VectorXf &model_coefficients)
@@ -216,11 +229,11 @@ namespace pcl
       }
 
       /** \brief Check if a sample of indices results in a good sample of points
-        * indices. Pure virtual.
-        * \param samples the resultant index samples
+        * indices.
+        * \param[in] samples the resultant index samples
         */
       bool
-      isSampleGood(const std::vector<int> &samples) const;
+      isSampleGood (const std::vector<int> &samples) const;
 
     private:
       /** \brief Compute mappings between original indices of the input_/target_ clouds. */

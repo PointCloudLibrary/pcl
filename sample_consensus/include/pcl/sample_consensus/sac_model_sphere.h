@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -71,19 +73,19 @@ namespace pcl
       typedef boost::shared_ptr<SampleConsensusModelSphere> Ptr;
 
       /** \brief Constructor for base SampleConsensusModelSphere.
-        * \param cloud the input point cloud dataset
+        * \param[in] cloud the input point cloud dataset
         */
       SampleConsensusModelSphere (const PointCloudConstPtr &cloud) : SampleConsensusModel<PointT> (cloud) { }
 
       /** \brief Constructor for base SampleConsensusModelSphere.
-        * \param cloud the input point cloud dataset
-        * \param indices a vector of point indices to be used from \a cloud
+        * \param[in] cloud the input point cloud dataset
+        * \param[in] indices a vector of point indices to be used from \a cloud
         */
       SampleConsensusModelSphere (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModel<PointT> (cloud, indices) { }
 
       /** \brief Get 4 random points (3 non-collinear) as data samples and return them as point indices.
-        * \param iterations the internal number of iterations used by SAC methods
-        * \param samples the resultant model samples
+        * \param[out] iterations the internal number of iterations used by SAC methods
+        * \param[out] samples the resultant model samples
         * \note assumes unique points!
         * \note Two different points could be enough in theory, to infere some sort of a center and a radius,
         *       but in practice, we might end up with a lot of points which are just 'close' to one another.
@@ -94,62 +96,84 @@ namespace pcl
       void 
       getSamples (int &iterations, std::vector<int> &samples);
 
-      /** \brief Check whether the given index samples can form a valid sphere model, compute the model coefficients
-        * from these samples and store them internally in model_coefficients. The sphere coefficients are: x, y, z, R.
-        * \param samples the point indices found as possible good candidates for creating a valid model
-        * \param model_coefficients the resultant model coefficients
+      /** \brief Check whether the given index samples can form a valid sphere model, compute the model 
+        * coefficients from these samples and store them internally in model_coefficients. 
+        * The sphere coefficients are: x, y, z, R.
+        * \param[in] samples the point indices found as possible good candidates for creating a valid model
+        * \param[out] model_coefficients the resultant model coefficients
         */
       bool 
-      computeModelCoefficients (const std::vector<int> &samples, Eigen::VectorXf &model_coefficients);
+      computeModelCoefficients (const std::vector<int> &samples, 
+                                Eigen::VectorXf &model_coefficients);
 
       /** \brief Compute all distances from the cloud data to a given sphere model.
-        * \param model_coefficients the coefficients of a sphere model that we need to compute distances to
-        * \param distances the resultant estimated distances
+        * \param[in] model_coefficients the coefficients of a sphere model that we need to compute distances to
+        * \param[out] distances the resultant estimated distances
         */
       void 
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances);
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
+                           std::vector<double> &distances);
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
-        * \param model_coefficients the coefficients of a sphere model that we need to compute distances to
-        * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
-        * \param inliers the resultant model inliers
+        * \param[in] model_coefficients the coefficients of a sphere model that we need to compute distances to
+        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
+        * \param[out] inliers the resultant model inliers
         */
       void 
-      selectWithinDistance (const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers);
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
+                            const double threshold, 
+                            std::vector<int> &inliers);
+
+      /** \brief Count all the points which respect the given model coefficients as inliers. 
+        * 
+        * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
+        * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
+        * \return the resultant number of inliers
+        */
+      virtual int
+      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
+                           const double threshold);
 
       /** \brief Recompute the sphere coefficients using the given inlier set and return them to the user.
         * @note: these are the coefficients of the sphere model after refinement (eg. after SVD)
-        * \param inliers the data inliers found as supporting the model
-        * \param model_coefficients the initial guess for the optimization
-        * \param optimized_coefficients the resultant recomputed coefficients after non-linear optimization
+        * \param[in] inliers the data inliers found as supporting the model
+        * \param[in] model_coefficients the initial guess for the optimization
+        * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
         */
       void 
-      optimizeModelCoefficients (const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients);
+      optimizeModelCoefficients (const std::vector<int> &inliers, 
+                                 const Eigen::VectorXf &model_coefficients, 
+                                 Eigen::VectorXf &optimized_coefficients);
 
       /** \brief Create a new point cloud with inliers projected onto the sphere model.
-        * \param inliers the data inliers that we want to project on the sphere model
-        * \param model_coefficients the coefficients of a sphere model
-        * \param projected_points the resultant projected points
-        * \param copy_data_fields set to true if we need to copy the other data fields
+        * \param[in] inliers the data inliers that we want to project on the sphere model
+        * \param[in] model_coefficients the coefficients of a sphere model
+        * \param[out] projected_points the resultant projected points
+        * \param[in] copy_data_fields set to true if we need to copy the other data fields
         * \todo implement this.
         */
       void 
-      projectPoints (const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields = true);
+      projectPoints (const std::vector<int> &inliers, 
+                     const Eigen::VectorXf &model_coefficients, 
+                     PointCloud &projected_points, 
+                     bool copy_data_fields = true);
 
       /** \brief Verify whether a subset of indices verifies the given sphere model coefficients.
-        * \param indices the data indices that need to be tested against the sphere model
-        * \param model_coefficients the sphere model coefficients
-        * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
+        * \param[in] indices the data indices that need to be tested against the sphere model
+        * \param[in] model_coefficients the sphere model coefficients
+        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
       bool 
-      doSamplesVerifyModel (const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, double threshold);
+      doSamplesVerifyModel (const std::set<int> &indices, 
+                            const Eigen::VectorXf &model_coefficients, 
+                            const double threshold);
 
       /** \brief Return an unique id for this model (SACMODEL_SPHERE). */
       inline pcl::SacModel getModelType () const { return (SACMODEL_SPHERE); }
 
     protected:
       /** \brief Check whether a model is valid given the user constraints.
-        * \param model_coefficients the set of model coefficients
+        * \param[in] model_coefficients the set of model coefficients
         */
       inline bool 
       isModelValid (const Eigen::VectorXf &model_coefficients)
@@ -170,8 +194,8 @@ namespace pcl
       }
 
       /** \brief Check if a sample of indices results in a good sample of points
-        * indices. Pure virtual.
-        * \param samples the resultant index samples
+        * indices.
+        * \param[in] samples the resultant index samples
         */
       bool
       isSampleGood(const std::vector<int> &samples) const;
@@ -183,16 +207,16 @@ namespace pcl
       /** \brief Temporary pointer to a list of given indices for optimizeModelCoefficients () */
       const std::vector<int> *tmp_inliers_;
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////(
       /** \brief Cost function to be minimized
-        * \param p a pointer to our data structure array
-        * \param m the number of functions
-        * \param n the number of variables
-        * \param x a pointer to the variables array
-        * \param fvec a pointer to the resultant functions evaluations
-        * \param iflag set to -1 inside the function to terminate execution
+        * \param[in] p a pointer to our data structure array
+        * \param[in] m the number of functions
+        * \param[in] n the number of variables
+        * \param[in] x a pointer to the variables array
+        * \param[out] fvec a pointer to the resultant functions evaluations
+        * \param[in] iflag set to -1 inside the function to terminate execution
         */
-      static int functionToOptimize (void *p, int m, int n, const double *x, double *fvec, int iflag);
+      static int 
+      functionToOptimize (void *p, int m, int n, const double *x, double *fvec, int iflag);
   };
 }
 

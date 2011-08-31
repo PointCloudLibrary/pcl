@@ -175,6 +175,35 @@ pcl::SampleConsensusModelPlane<PointT>::selectWithinDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////
+template <typename PointT> int
+pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
+      const Eigen::VectorXf &model_coefficients, double threshold)
+{
+  // Needs a valid set of model coefficients
+  if (model_coefficients.size () != 4)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
+    return (0);
+  }
+
+  int nr_p = 0;
+
+  // Iterate through the 3d points and calculate the distances from them to the plane
+  for (size_t i = 0; i < indices_->size (); ++i)
+  {
+    // Calculate the distance from the point to the plane normal as the dot product
+    // D = (P-A).N/|N|
+    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x,
+                        input_->points[(*indices_)[i]].y,
+                        input_->points[(*indices_)[i]].z,
+                        1);
+    if (fabs (model_coefficients.dot (pt)) < threshold)
+      nr_p++;
+  }
+  return (nr_p);
+}
+
+//////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
       const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients)

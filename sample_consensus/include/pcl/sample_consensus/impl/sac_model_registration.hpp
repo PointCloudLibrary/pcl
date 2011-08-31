@@ -43,7 +43,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelRegistration<PointT>::isSampleGood(const std::vector<int> &samples) const
+pcl::SampleConsensusModelRegistration<PointT>::isSampleGood (const std::vector<int> &samples) const
 {
   Eigen::Array4f p1p0, p2p0, p2p1;
 
@@ -163,6 +163,43 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
       inliers[nr_p++] = (*indices_)[i];
   }
   inliers.resize (nr_p);
+} 
+
+//////////////////////////////////////////////////////////////////////////
+template <typename PointT> int
+pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
+    const Eigen::VectorXf &model_coefficients, double threshold)
+{
+  if (indices_->size () != indices_tgt_->size ())
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::selectWithinDistance] Number of source indices (%lu) differs than number of target indices (%lu)!\n", (unsigned long)indices_->size (), (unsigned long)indices_tgt_->size ());
+    return (0);
+  }
+
+  double thresh = threshold * threshold;
+
+  // Check if the model is valid given the user constraints
+  if (!isModelValid (model_coefficients))
+    return (0);
+  
+  Eigen::Matrix4f transform;
+  transform.row (0) = model_coefficients.segment<4>(0);
+  transform.row (1) = model_coefficients.segment<4>(4);
+  transform.row (2) = model_coefficients.segment<4>(8);
+  transform.row (3) = model_coefficients.segment<4>(12);
+
+  int nr_p = 0; 
+  for (size_t i = 0; i < indices_->size (); ++i)
+  {
+    Vector4fMapConst pt_src = input_->points[(*indices_)[i]].getVector4fMap ();
+    Vector4fMapConst pt_tgt = target_->points[(*indices_tgt_)[i]].getVector4fMap ();
+
+    Eigen::Vector4f p_tr  = transform * pt_src;
+    // Calculate the distance from the transformed point to its correspondence
+    if ((p_tr - pt_tgt).squaredNorm () < thresh)
+      nr_p++;
+  }
+  return (nr_p);
 } 
 
 //////////////////////////////////////////////////////////////////////////

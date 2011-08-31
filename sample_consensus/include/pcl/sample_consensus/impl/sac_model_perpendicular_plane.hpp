@@ -56,6 +56,18 @@ pcl::SampleConsensusModelPerpendicularPlane<PointT>::selectWithinDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////
+template <typename PointT> int
+pcl::SampleConsensusModelPerpendicularPlane<PointT>::countWithinDistance (
+      const Eigen::VectorXf &model_coefficients, double threshold)
+{
+  // Check if the model is valid given the user constraints
+  if (!isModelValid (model_coefficients))
+    return (0);
+
+  return (SampleConsensusModelPlane<PointT>::countWithinDistance (model_coefficients, threshold));
+}
+
+//////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelPerpendicularPlane<PointT>::getDistancesToModel (
       const Eigen::VectorXf &model_coefficients, std::vector<double> &distances)

@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -43,7 +45,6 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusModelParallelLine defines a model for 3D line segmentation using additional angular
     * constraints.
     * The model coefficients are defined as:
@@ -69,7 +70,7 @@ namespace pcl
       typedef boost::shared_ptr<SampleConsensusModelParallelLine> Ptr;
 
       /** \brief Constructor for base SampleConsensusModelParallelLine.
-        * \param cloud the input point cloud dataset
+        * \param[in] cloud the input point cloud dataset
         */
       SampleConsensusModelParallelLine (const PointCloudConstPtr &cloud) : SampleConsensusModelLine<PointT> (cloud),
                                                                            eps_angle_ (0.0)
@@ -78,8 +79,8 @@ namespace pcl
       }
 
       /** \brief Constructor for base SampleConsensusModelParallelLine.
-        * \param cloud the input point cloud dataset
-        * \param indices a vector of point indices to be used from \a cloud
+        * \param[in] cloud the input point cloud dataset
+        * \param[in] indices a vector of point indices to be used from \a cloud
         */
       SampleConsensusModelParallelLine (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModelLine<PointT> (cloud, indices),
                                                                                                             eps_angle_ (0.0)
@@ -88,42 +89,62 @@ namespace pcl
       }
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
-        * \param ax the axis along which we need to search for a plane perpendicular to
+        * \param[in] ax the axis along which we need to search for a plane perpendicular to
         */
-      inline void setAxis (const Eigen::Vector3f &ax) { axis_ = ax; axis_.normalize (); }
+      inline void 
+      setAxis (const Eigen::Vector3f &ax) { axis_ = ax; axis_.normalize (); }
 
       /** \brief Get the axis along which we need to search for a plane perpendicular to. */
-      inline Eigen::Vector3f getAxis ()  { return (axis_); }
+      inline Eigen::Vector3f 
+      getAxis ()  { return (axis_); }
 
       /** \brief Set the angle epsilon (delta) threshold.
-        * \param ea the maximum allowed difference between the plane normal and the given axis.
+        * \param[in] ea the maximum allowed difference between the plane normal and the given axis.
         */
-      inline void setEpsAngle (double ea) { eps_angle_ = ea; }
+      inline void 
+      setEpsAngle (const double ea) { eps_angle_ = ea; }
 
       /** \brief Get the angle epsilon (delta) threshold. */
       inline double getEpsAngle () { return (eps_angle_); }
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
-        * \param model_coefficients the coefficients of a line model that we need to compute distances to
-        * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
-        * \param inliers the resultant model inliers
+        * \param[in] model_coefficients the coefficients of a line model that we need to compute distances to
+        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
+        * \param[out] inliers the resultant model inliers
         */
-      void selectWithinDistance (const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers);
+      void 
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
+                            const double threshold, 
+                            std::vector<int> &inliers);
+
+      /** \brief Count all the points which respect the given model coefficients as inliers. 
+        * 
+        * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
+        * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
+        * \return the resultant number of inliers
+        */
+      virtual int
+      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
+                           const double threshold);
 
       /** \brief Compute all squared distances from the cloud data to a given line model.
-        * \param model_coefficients the coefficients of a line model that we need to compute distances to
-        * \param distances the resultant estimated squared distances
+        * \param[in] model_coefficients the coefficients of a line model that we need to compute distances to
+        * \param[out] distances the resultant estimated squared distances
         */
-      void getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances);
+      void 
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
+                           std::vector<double> &distances);
 
       /** \brief Return an unique id for this model (SACMODEL_PARALLEL_LINE). */
-      inline pcl::SacModel getModelType () const { return (SACMODEL_PARALLEL_LINE); }
+      inline pcl::SacModel 
+      getModelType () const { return (SACMODEL_PARALLEL_LINE); }
 
     protected:
       /** \brief Check whether a model is valid given the user constraints.
-        * \param model_coefficients the set of model coefficients
+        * \param[in] model_coefficients the set of model coefficients
         */
-      bool isModelValid (const Eigen::VectorXf &model_coefficients);
+      bool 
+      isModelValid (const Eigen::VectorXf &model_coefficients);
 
     protected:
       /** \brief The axis along which we need to search for a plane perpendicular to. */

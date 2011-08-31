@@ -150,6 +150,46 @@ pcl::SampleConsensusModelLine<PointT>::selectWithinDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////
+template <typename PointT> int
+pcl::SampleConsensusModelLine<PointT>::countWithinDistance (
+      const Eigen::VectorXf &model_coefficients, double threshold)
+{
+  // Needs a valid set of model coefficients
+  if (model_coefficients.size () != 6)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
+    return (0);
+  }
+
+  double sqr_threshold = threshold * threshold;
+
+  int nr_p = 0;
+
+  // Obtain the line point and direction
+  Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
+  Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
+  Eigen::Vector4f line_p2 = line_pt + line_dir;
+
+  // Iterate through the 3d points and calculate the distances from them to the line
+  for (size_t i = 0; i < indices_->size (); ++i)
+  {
+    // Calculate the distance from the point to the line
+    // D = ||(P2-P1) x (P1-P0)|| / ||P2-P1|| = norm (cross (p2-p1, p2-p0)) / norm(p2-p1)
+    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0);
+    Eigen::Vector4f pp = line_p2 - pt;
+
+    Eigen::Vector4f c = pp.cross3 (line_dir);
+    c[3] = 0;
+    //distances[i] = sqrt (c.dot (c)) / line_dir.dot (line_dir);
+    double sqr_distance = c.dot (c) / line_dir.dot (line_dir);
+
+    if (sqr_distance < sqr_threshold)
+      nr_p++;
+  }
+  return (nr_p);
+}
+
+//////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelLine<PointT>::optimizeModelCoefficients (
       const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients)
