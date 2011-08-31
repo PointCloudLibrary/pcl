@@ -75,25 +75,24 @@ Proposals for the 2.x API:
 
   #. Eigen::Vector4f or Eigen::Vector3f ??
   
-  #. 16 byte per point is maximum for GPU. LargerLarger points cause significant perfomance penalty. SOA is better in this case.
+  #. Large points cause significant perfomance penalty for GPU. Let's assume that point sizes up to 16 bytes are suitable. This is some compromise between SOA and AOS. Structures like pcl::Normal (size = 32) is not desirable. SOA is better in this case.
 
 
 1.3 GPU support
 ^^^^^^^^^^^^^^^
- #. Thrust containers are incinvinient. Consider implementing own containers for data in GPU memory preferably with reference counting (like pcl::gpu::DeviceArray, or cv::gpu::GpuMat). 
-
-     * DeviceArray for arbitrary binary data on GPU, DeviceArray_<T> for convenience.
-     * Containes must compile without CUDA Toolkit and just throw exception in this case.
-        
- #. Channels for GPU memory. Say, with "_gpu" postfix.
+ #. Containers for GPU memory. pcl::gpu::DeviceMemory/DeviceMemory2D/DeviceArray<T>/DeviceArray2D<T> (Thrust containers are incinvinient).         
  
-     * cloud["xyz_gpu"] => gets container that points to 3D x,y,z data allocated on GPU.     
-     * gpu::computeNormals function creates cloud["normals_gpu"] and writes there. Users can preallocate the channel and data inside it in order to save time on allocations.
+      * DeviceArray2D<T> is container for organized point cloud data (supports row alignment)
+  
+ #. PointCloud Channels for GPU memory. Say, with "_gpu" postfix.
+ 
+     * cloud["xyz_gpu"] => gets channel with 3D x,y,z data allocated on GPU.     
+     * GPU functions (ex. gpu::computeNormals) create new channel in cloud (ex. "normals_gpu") and write there. Users can preallocate the channel and data inside it in order to save time on allocations.
      * Users must manually invoke uploading/downloading data to/from GPU. This provides better understanding how much each operation costs.
           
  #. Two layers in GPU part:  host layer(nvcc-independent interface) and device(for advanced use, for sharing code compiled by nvcc):
  
-     * namespace pcl::cuda (can depend on CUDA headers) or pcl::gpu (completely independent from CUDA, OpenCL support in future?).     
+     * namespace pcl::cuda (can depend on CUDA headers) or pcl::gpu (completely independent from CUDA, OpenCL support in future?).
      * namespace pcl::device for device layer, only headers.
       
  #. Async operation support???

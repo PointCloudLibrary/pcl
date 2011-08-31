@@ -111,6 +111,9 @@ namespace pcl
             /** \brief Conversion to PtrSz for passing to kernel functions. */
             template <class U> operator PtrSz<U>() const;            
            
+            /** \brief Returns true if unallocated otherwise false. */
+            bool empty() const;
+
             /** \brief Device pointer. */
             char *data;
 
@@ -203,6 +206,9 @@ namespace pcl
 
             /** \brief Conversion to PtrStepSz for passing to kernel functions. */
             template <class U> operator PtrStepSz<U>() const;
+
+            /** \brief Returns true if unallocated otherwise false. */
+            bool empty() const;
 
             /** \brief Width of the buffer in bytes. */
             int colsBytes;
