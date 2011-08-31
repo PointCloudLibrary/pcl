@@ -48,7 +48,9 @@
 #include <vtkTriangle.h>
 #include <vtkTransform.h>
 #include <vtkVisibleCellSelector.h>
+#include <vtkHardwareSelector.h>
 #include <vtkSelection.h>
+#include <vtkSelectionNode.h>
 #include <vtkPointPicker.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -2136,7 +2138,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     renderer->SetActiveCamera (cam_tmp);
     renderer->AddActor (actor_view);
     renderer->Modified ();
-    renderer->ResetCameraClippingRange ();
+    //renderer->ResetCameraClippingRange ();
     render_win->Render ();
 
     //back to real scale transform
@@ -2188,10 +2190,15 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     }
 
     delete[] depth;
+
     //////////////////////////////
     // * Compute area of the mesh
     //////////////////////////////
-    vtkSmartPointer<vtkCellArray> cells = mapper->GetInput ()->GetPolys ();
+
+    vtkSmartPointer<vtkPolyData> polydata = mapper->GetInput ();
+    polydata->BuildCells ();
+
+    vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys ();
     vtkIdType npts = 0, *ptIds = NULL;
 
     double p1[3], p2[3], p3[3], area, totalArea = 0;
@@ -2215,18 +2222,16 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     selector->Select ();
     selector->GetSelectedIds (selection);
 
-    vtkSmartPointer<vtkPolyData> polydata = mapper->GetInput ();
-    polydata->BuildCells ();
-
     double visible_area = 0;
-    for (int sel_id = 0; sel_id < selection->GetNumberOfTuples (); sel_id++)
+    for (int sel_id = 3; sel_id < (selection->GetNumberOfTuples () * selection->GetNumberOfComponents ()); sel_id
+        += selection->GetNumberOfComponents ())
     {
       int id_mesh = selection->GetValue (sel_id);
 
-      if (id_mesh == 0)
+      if (id_mesh > polydata->GetNumberOfCells ())
         continue;
 
-      vtkCell * cell = polydata->GetCell (selection->GetValue (sel_id));
+      vtkCell * cell = polydata->GetCell (id_mesh);
       vtkTriangle* triangle = dynamic_cast<vtkTriangle*> (cell);
       double p0[3];
       double p1[3];
@@ -2236,6 +2241,32 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
       triangle->GetPoints ()->GetPoint (2, p2);
       visible_area += vtkTriangle::TriangleArea (p0, p1, p2);
     }
+
+    //THIS CAN BE USED WHEN VTK >= 5.4 IS REQUIRED... vtkVisibleCellSelector is deprecated from VTK5.4
+    /*vtkSmartPointer<vtkHardwareSelector> hardware_selector = vtkSmartPointer<vtkHardwareSelector>::New ();
+     hardware_selector->ClearBuffers();
+     vtkSmartPointer<vtkSelection> hdw_selection = vtkSmartPointer<vtkSelection>::New ();
+     hardware_selector->SetRenderer (renderer);
+     hardware_selector->SetArea (0, 0, xres - 1, yres - 1);
+     hardware_selector->SetFieldAssociation(vtkDataObject::FIELD_ASSOCIATION_CELLS);
+     hdw_selection = hardware_selector->Select ();
+     vtkSmartPointer<vtkIdTypeArray> ids = vtkSmartPointer<vtkIdTypeArray>::New ();
+     ids = vtkIdTypeArray::SafeDownCast(hdw_selection->GetNode(0)->GetSelectionList());
+     double visible_area = 0;
+     for (int sel_id = 0; sel_id < (ids->GetNumberOfTuples ()); sel_id++)
+     {
+     int id_mesh = selection->GetValue (sel_id);
+     vtkCell * cell = polydata->GetCell (id_mesh);
+     vtkTriangle* triangle = dynamic_cast<vtkTriangle*> (cell);
+     double p0[3];
+     double p1[3];
+     double p2[3];
+     triangle->GetPoints ()->GetPoint (0, p0);
+     triangle->GetPoints ()->GetPoint (1, p1);
+     triangle->GetPoints ()->GetPoint (2, p2);
+     area = vtkTriangle::TriangleArea (p0, p1, p2);
+     visible_area += area;
+     }*/
 
     enthropies.push_back (visible_area / totalArea);
 
