@@ -125,7 +125,7 @@ pcl::SampleConsensusModelRegistration<PointT>::getDistancesToModel (const Eigen:
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers) 
+pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers) 
 {
   if (indices_->size () != indices_tgt_->size ())
   {
@@ -168,11 +168,11 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
-    const Eigen::VectorXf &model_coefficients, double threshold)
+    const Eigen::VectorXf &model_coefficients, const double threshold)
 {
   if (indices_->size () != indices_tgt_->size ())
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::selectWithinDistance] Number of source indices (%lu) differs than number of target indices (%lu)!\n", (unsigned long)indices_->size (), (unsigned long)indices_tgt_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::countWithinDistance] Number of source indices (%lu) differs than number of target indices (%lu)!\n", (unsigned long)indices_->size (), (unsigned long)indices_tgt_->size ());
     return (0);
   }
 

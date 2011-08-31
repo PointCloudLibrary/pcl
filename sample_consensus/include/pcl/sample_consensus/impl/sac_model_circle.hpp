@@ -125,7 +125,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::getDistancesToModel (const Eigen::Vec
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
-    const Eigen::VectorXf &model_coefficients, double threshold, 
+    const Eigen::VectorXf &model_coefficients, const double threshold, 
     std::vector<int> &inliers)
 {
   // Check if the model is valid given the user constraints
@@ -162,7 +162,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
-    const Eigen::VectorXf &model_coefficients, double threshold)
+    const Eigen::VectorXf &model_coefficients, const double threshold)
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -330,7 +330,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelCircle2D<PointT>::doSamplesVerifyModel (
-      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, double threshold)
+      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold)
 {
   // Needs a valid model coefficients
   if (model_coefficients.size () != 3)

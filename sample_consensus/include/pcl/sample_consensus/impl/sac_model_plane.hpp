@@ -55,13 +55,7 @@ pcl::SampleConsensusModelPlane<PointT>::isSampleGood (const std::vector<int> &sa
   pcl::Array4fMapConst p1 = input_->points[samples[1]].getArray4fMap ();
   pcl::Array4fMapConst p2 = input_->points[samples[2]].getArray4fMap ();
 
-  // Compute the segment values (in 3d) between p1 and p0
-  Eigen::Array4f p1p0 = p1 - p0;
-
-  // Compute the segment values (in 3d) between p2 and p0
-  Eigen::Array4f p2p0 = p2 - p0;
-
-  Eigen::Array4f dy1dy2 = p1p0 / p2p0;
+  Eigen::Array4f dy1dy2 = (p1-p0) / (p2-p0);
 
   return ( (dy1dy2[0] != dy1dy2[1]) || (dy1dy2[2] != dy1dy2[1]) );
 }
@@ -143,7 +137,7 @@ pcl::SampleConsensusModelPlane<PointT>::getDistancesToModel (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelPlane<PointT>::selectWithinDistance (
-      const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers)
+      const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers)
 {
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 4)
@@ -177,12 +171,12 @@ pcl::SampleConsensusModelPlane<PointT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
-      const Eigen::VectorXf &model_coefficients, double threshold)
+      const Eigen::VectorXf &model_coefficients, const double threshold)
 {
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 4)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelPlane::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::countWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
     return (0);
   }
 
@@ -338,7 +332,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelPlane<PointT>::doSamplesVerifyModel (
-      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, double threshold)
+      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold)
 {
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 4)

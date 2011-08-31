@@ -43,11 +43,11 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::selectWithinDistance (
-      const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers)
+      const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers)
 {
   if (!normals_)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::getDistancesToModel] No input dataset containing normals was given!\n");
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::selectWithinDistance] No input dataset containing normals was given!\n");
     return;
   }
 
@@ -90,11 +90,11 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::selectWithinDista
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> int
 pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::countWithinDistance (
-      const Eigen::VectorXf &model_coefficients, double threshold)
+      const Eigen::VectorXf &model_coefficients, const double threshold)
 {
   if (!normals_)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::getDistancesToModel] No input dataset containing normals was given!\n");
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalParallelPlane::countWithinDistance] No input dataset containing normals was given!\n");
     return (0);
   }
 

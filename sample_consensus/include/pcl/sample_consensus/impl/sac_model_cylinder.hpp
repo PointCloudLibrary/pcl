@@ -163,7 +163,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getDistancesToModel (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
-      const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers)
+      const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers)
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -211,7 +211,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> int
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::countWithinDistance (
-      const Eigen::VectorXf &model_coefficients, double threshold)
+      const Eigen::VectorXf &model_coefficients, const double threshold)
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -413,7 +413,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::doSamplesVerifyModel (
-      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, double threshold)
+      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold)
 {
   // Needs a valid model coefficients
   if (model_coefficients.size () != 7)

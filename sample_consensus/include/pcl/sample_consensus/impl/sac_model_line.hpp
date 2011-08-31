@@ -107,7 +107,7 @@ pcl::SampleConsensusModelLine<PointT>::getDistancesToModel (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelLine<PointT>::selectWithinDistance (
-      const Eigen::VectorXf &model_coefficients, double threshold, std::vector<int> &inliers)
+      const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers)
 {
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 6)
@@ -152,12 +152,12 @@ pcl::SampleConsensusModelLine<PointT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::SampleConsensusModelLine<PointT>::countWithinDistance (
-      const Eigen::VectorXf &model_coefficients, double threshold)
+      const Eigen::VectorXf &model_coefficients, const double threshold)
 {
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 6)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelLine::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::countWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
     return (0);
   }
 
@@ -311,7 +311,7 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelLine<PointT>::doSamplesVerifyModel (
-      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, double threshold)
+      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold)
 {
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 6)
