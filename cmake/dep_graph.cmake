@@ -4,6 +4,10 @@ function(MAKE_DEP_GRAPH)
     set(_dot_file "${PROJECT_BINARY_DIR}/pcl.dot")
     file(WRITE ${_dot_file} "digraph pcl {\n")
     foreach(_ss ${PCL_SUBSYSTEMS})
+      if(NOT _ss STREQUAL "global_tests" AND
+         NOT _ss STREQUAL "apps" AND
+         NOT _ss STREQUAL "tools" AND
+         NOT _ss STREQUAL "documentation") 
         PCL_GET_SUBSYS_STATUS(_status ${_ss})
         if(_status)
             file(APPEND ${_dot_file}
@@ -16,6 +20,7 @@ function(MAKE_DEP_GRAPH)
         foreach(_dep ${_deps})
             file(APPEND ${_dot_file} "  \"${_ss}\" -> \"${_dep}\";\n")
         endforeach(_dep)
+      endif()
     endforeach(_ss)
 
     file(APPEND ${_dot_file}
