@@ -51,6 +51,15 @@ if (build)
   PCL_ADD_EXECUTABLE (gp3_surface ${SUBSYS_NAME} gp3_surface.cpp)
   target_link_libraries (gp3_surface pcl_common pcl_io pcl_surface)
   
+  PCL_ADD_EXECUTABLE(icp ${SUBSYS_NAME} icp.cpp)
+  target_link_libraries(icp pcl_common pcl_io pcl_registration)
+
+  PCL_ADD_EXECUTABLE(icp2d ${SUBSYS_NAME} icp2d.cpp)
+  target_link_libraries(icp2d pcl_common pcl_io pcl_registration)
+
+  PCL_ADD_EXECUTABLE(elch ${SUBSYS_NAME} elch.cpp)
+  target_link_libraries(elch pcl_common pcl_io pcl_registration)  
+
   if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")

@@ -1,6 +1,6 @@
 set(SUBSYS_NAME registration)
 set(SUBSYS_DESC "Point cloud registration library")
-set(SUBSYS_DEPS common io kdtree sample_consensus features)
+set(SUBSYS_DEPS common kdtree sample_consensus features)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -82,5 +82,5 @@ if(build)
     #PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/stanford_gicp ${stanford_gicp_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
-    add_subdirectory(tools)
+    #add_subdirectory(tools)
 endif(build)
