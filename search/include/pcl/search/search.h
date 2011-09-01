@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -46,95 +48,100 @@
 
 namespace pcl
 {
-
-
+  /** \brief Generic search class. All search wrappers must inherit from this.
+    */
   template <typename PointT>
   class Search
   {
+    public:
+      typedef pcl::PointCloud<PointT> PointCloud;
+      typedef boost::shared_ptr<PointCloud> PointCloudPtr;
+      typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+      typedef boost::shared_ptr<pcl::Search<PointT> > SearchPtr;
+      typedef boost::shared_ptr<const pcl::Search<PointT> > SearchConstPtr;
 
-  public:
-    typedef pcl::PointCloud<PointT> PointCloud;
-    typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-    typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
-    typedef boost::shared_ptr<pcl::Search<PointT> > SearchPtr;
-    typedef boost::shared_ptr<const pcl::Search<PointT> > SearchConstPtr;
+      typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
+      typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
 
-    typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
-    typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
+      /** Constructor. */
+      Search()
+      {
+      }
 
+      /** Destructor. */
+      ~Search(){}
 
+      /** \brief */
+      virtual void
+      evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type)=0;
 
+      /** \brief */
+      virtual void 
+      setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices)=0;
+      
+      /** \brief */
+      virtual void 
+      setInputCloud (const PointCloudConstPtr& cloud)=0;
 
-    Search()
-    {
+      /** \brief */
+      virtual int
+      nearestKSearch (const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)=0;
 
-    }
-
-
-    ~Search(){}
-
-    // declaration of various functions supported by search class
-
-    virtual void
-            evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type)=0;
-
-    
-    virtual void 
-    setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices)=0;
-    
-    virtual void 
-    setInputCloud (const PointCloudConstPtr& cloud)=0;
-
-    virtual int
-    nearestKSearch (const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)=0;
-
-    virtual int
-    nearestKSearch (std::vector<const PointT>& point, std::vector< int >& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances)=0;
+      /** \brief */
+      virtual int
+      nearestKSearch (std::vector<const PointT>& point, std::vector< int >& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances)=0;
 
 
-    virtual int
-    nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)=0;
+      /** \brief */
+      virtual int
+      nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)=0;
 
-    virtual int
-    nearestKSearch (int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)=0;
+      /** \brief */
+      virtual int
+      nearestKSearch (int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)=0;
 
-    virtual int 
-    radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices,    std::vector<float>& k_distances, int max_nn = -1) const =0;
+      /** \brief */
+      virtual int 
+      radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices,    std::vector<float>& k_distances, int max_nn = -1) const =0;
 
-    virtual int 
-    radiusSearch (std::vector< PointT>& point, std::vector < double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn = -1) const=0;
-    
-    virtual int
-    radiusSearch (const PointCloud& cloud, int index, double radius,
-                  std::vector<int>& k_indices, std::vector<float>& k_distances,
-                  int max_nn = -1)=0;
+      /** \brief */
+      virtual int 
+      radiusSearch (std::vector< PointT>& point, std::vector < double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn = -1) const=0;
+      
+      /** \brief */
+      virtual int
+      radiusSearch (const PointCloud& cloud, int index, double radius,
+                    std::vector<int>& k_indices, std::vector<float>& k_distances,
+                    int max_nn = -1)=0;
 
-    virtual int
-    radiusSearch (int index, double radius, std::vector<int>& k_indices,
-                  std::vector<float>& k_distances, int max_nn = -1) const =0;
+      /** \brief */
+      virtual int
+      radiusSearch (int index, double radius, std::vector<int>& k_indices,
+                    std::vector<float>& k_distances, int max_nn = -1) const =0;
 
+      /** \brief */
+      virtual void
+      approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
+                           float &sqr_distance_arg)=0;
 
+      /** \brief */
+      virtual void
+      approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg)=0;
 
-        virtual void
-        approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
-                             float &sqr_distance_arg)=0;
+      /** \brief */
+      virtual void
+      approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg)=0;
 
-        virtual void
-        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg)=0;
+      /** \brief */
+      virtual int
+      approxNearestKSearch (const PointCloudConstPtr& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)=0;
 
-        virtual void
-        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg)=0;
-
-    virtual int
-    approxNearestKSearch (const PointCloudConstPtr& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)=0;
-
-    virtual int
-    approxRadiusSearch (const PointCloudConstPtr& cloud, int index, double radius,
-                  std::vector<int>& k_indices, std::vector<float>& k_distances,
-                  int max_nn = -1)const =0;
-
+      /** \brief */
+      virtual int
+      approxRadiusSearch (const PointCloudConstPtr& cloud, int index, double radius,
+                          std::vector<int>& k_indices, std::vector<float>& k_distances,
+                          int max_nn = -1)const =0;
   };
-
 }
 
 #endif  //#ifndef _PCL_SEARCH_GENERIC_SEARCH_H_
