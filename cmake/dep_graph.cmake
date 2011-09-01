@@ -22,4 +22,9 @@ function(MAKE_DEP_GRAPH)
         endforeach(_dep)
       endif()
     endforeach(_ss)
+
+    #file(APPEND ${_dot_file}
+    #    "  \"test\" [style=\"filled\" fillcolor=\"#A3A27C\" shape=\"box\"];\n ")
+    file(APPEND ${_dot_file} "}\n")
 endfunction(MAKE_DEP_GRAPH)
+
