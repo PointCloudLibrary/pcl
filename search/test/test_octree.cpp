@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,57 +35,44 @@
  *
  *
  */
-/** \author Julius Kammerl (julius@kammerl.de)*/
-
 #include <gtest/gtest.h>
-
 #include <vector>
-
 #include <stdio.h>
-
-using namespace std;
-
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-
-using namespace pcl;
-
 #include <pcl/search/pcl_search.h>
 
-
-
-
+using namespace std;
+using namespace pcl;
 using namespace octree;
 
 // helper class for priority queue
 class prioPointQueueEntry
 {
-public:
-  prioPointQueueEntry ()
-  {
-  }
-  prioPointQueueEntry (PointXYZ& point_arg, double pointDistance_arg, int pointIdx_arg)
-  {
-    point_ = point_arg;
-    pointDistance_ = pointDistance_arg;
-    pointIdx_ = pointIdx_arg;
-  }
+  public:
+    prioPointQueueEntry ()
+    {
+    }
+    prioPointQueueEntry (PointXYZ& point_arg, double pointDistance_arg, int pointIdx_arg)
+    {
+      point_ = point_arg;
+      pointDistance_ = pointDistance_arg;
+      pointIdx_ = pointIdx_arg;
+    }
 
-  bool
-  operator< (const prioPointQueueEntry& rhs_arg) const
-  {
-    return (this->pointDistance_ < rhs_arg.pointDistance_);
-  }
+    bool
+    operator< (const prioPointQueueEntry& rhs_arg) const
+    {
+      return (this->pointDistance_ < rhs_arg.pointDistance_);
+    }
 
-  PointXYZ point_;
-  double pointDistance_;int pointIdx_;
-
+    PointXYZ point_;
+    double pointDistance_;int pointIdx_;
 };
 
 TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 {
-
   const unsigned int test_runs = 1;
   unsigned int test_id;
 
@@ -91,15 +80,13 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
   size_t i;
-
   srand (time (NULL));
-
   unsigned int K;
 
   std::priority_queue<prioPointQueueEntry, std::vector<prioPointQueueEntry, Eigen::aligned_allocator<prioPointQueueEntry> > > pointCandidates;
 
   // create octree
- Search<PointXYZ>* octree = new  OctreeWrapper<PointXYZ>(0.1);
+  Search<PointXYZ>* octree = new  OctreeWrapper<PointXYZ>(0.1);
 
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
@@ -110,7 +97,6 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   for (test_id = 0; test_id < test_runs; test_id++)
   {
     // define a random search point
-
     PointXYZ searchPoint (10.0 * ((double)rand () / (double)RAND_MAX), 10.0 * ((double)rand () / (double)RAND_MAX),
                           10.0 * ((double)rand () / (double)RAND_MAX));
 
@@ -126,7 +112,6 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
                                      10.0 * ((double)rand () / (double)RAND_MAX),
                                      10.0 * ((double)rand () / (double)RAND_MAX));
     }
-
 
     double pointDist;
 
@@ -179,19 +164,14 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 
       k_sqr_distances_bruteforce.pop_back();
       k_sqr_distances.pop_back();
-
     }
-
   }
-
 }
 
 TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 {
-
   const unsigned int test_runs = 100;
   unsigned int test_id;
-
   unsigned int bestMatchCount = 0;
 
   // instantiate point cloud
@@ -205,11 +185,9 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
   // create octree
   Search<PointXYZ>* octree = new OctreeWrapper<PointXYZ>(voxelResolution);
 
-
   for (test_id = 0; test_id < test_runs; test_id++)
   {
     // define a random search point
-
     PointXYZ searchPoint (10.0 * ((double)rand () / (double)RAND_MAX), 10.0 * ((double)rand () / (double)RAND_MAX),
                           10.0 * ((double)rand () / (double)RAND_MAX));
 
@@ -223,8 +201,6 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
                                      10.0 * ((double)rand () / (double)RAND_MAX),
                                      10.0 * ((double)rand () / (double)RAND_MAX));
     }
-
-
     // brute force search
     double pointDist;
     double BFdistance = numeric_limits<double>::max ();
@@ -241,7 +217,6 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
         BFindex = i;
         BFdistance = pointDist;
       }
-
     }
 
     int ANNindex;
@@ -255,9 +230,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
       EXPECT_NEAR (ANNdistance, BFdistance, 1e-4);
       bestMatchCount++;
     }
-
   }
-
   // we should have found the absolute nearest neighbor at least once
   ASSERT_EQ ( (bestMatchCount > 0) , true);
 }
@@ -306,7 +279,6 @@ TEST (PCL, Octree_RadiusSearch_GPU)
 #endif
 TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
 {
-
   const unsigned int test_runs = 100;
   unsigned int test_id;
 
@@ -339,7 +311,6 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     Search<PointXYZ>* octree = new OctreeWrapper<PointXYZ>(0.001);
 
     // build octree
-
     double pointDist;
     double searchRadius = 5.0 * ((double)rand () / (double)RAND_MAX);
 
@@ -385,11 +356,8 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
 
     // check if result limitation works
     octree->radiusSearch(searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
-
     ASSERT_EQ ( cloudNWRRadius.size() <= 5, true);
-
   }
-
 }
 
 /* ---[ */
