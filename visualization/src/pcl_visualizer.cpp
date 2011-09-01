@@ -36,6 +36,7 @@
  */
 
 #include <pcl/common/common_headers.h>
+#include <pcl/ros/conversions.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <vtkTextActor.h>
@@ -48,9 +49,10 @@
 #include <vtkTriangle.h>
 #include <vtkTransform.h>
 #include <vtkVisibleCellSelector.h>
-#include <vtkHardwareSelector.h>
 #include <vtkSelection.h>
-#include <vtkSelectionNode.h>
+// Only available in older versions of VTK
+//#include <vtkHardwareSelector.h>
+//#include <vtkSelectionNode.h>
 #include <vtkPointPicker.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
