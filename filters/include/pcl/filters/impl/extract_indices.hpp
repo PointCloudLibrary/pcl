@@ -38,7 +38,7 @@
 #ifndef PCL_FILTERS_IMPL_EXTRACT_INDICES_H_
 #define PCL_FILTERS_IMPL_EXTRACT_INDICES_H_
 
-#include "pcl/io/io.h"
+#include "pcl/common/io.h"
 #include "pcl/filters/extract_indices.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
