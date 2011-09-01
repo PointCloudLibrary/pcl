@@ -24,6 +24,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ppf_registration.h
         include/pcl/${SUBSYS_NAME}/pyramid_feature_matching.h
         include/pcl/${SUBSYS_NAME}/registration.h
+        include/pcl/${SUBSYS_NAME}/transforms.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_lm.h
