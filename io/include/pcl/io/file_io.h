@@ -39,7 +39,7 @@
 #define PCL_IO_FILE_IO_H_
 
 #include "pcl/win32_macros.h"
-#include "pcl/io/io.h"
+#include "pcl/common/io.h"
 #include <boost/numeric/conversion/cast.hpp>
 #include <cmath>
 

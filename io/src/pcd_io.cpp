@@ -40,7 +40,7 @@
 #include <string>
 #include <stdlib.h>
 #include <boost/algorithm/string.hpp>
-#include "pcl/io/io.h"
+#include "pcl/common/io.h"
 #include "pcl/io/pcd_io.h"
 
 #include <boost/filesystem.hpp>

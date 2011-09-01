@@ -44,7 +44,7 @@
  **/
 
 #include <iostream>
-#include "pcl/io/io.h"
+#include "pcl/common/io.h"
 #include "pcl/io/pcd_io.h"
 
 using namespace std;

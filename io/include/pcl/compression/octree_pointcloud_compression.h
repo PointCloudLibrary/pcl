@@ -38,7 +38,7 @@
 #define OCTREE_COMPRESSION_H
 
 #include "pcl/common/common.h"
-#include "pcl/io/io.h"
+#include "pcl/common/io.h"
 #include "pcl/octree/octree_pointcloud.h"
 #include "entropy_range_coder.h"
 #include "color_coding.h"
