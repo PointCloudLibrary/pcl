@@ -199,6 +199,28 @@ TEST (ExtractIndices, Filters)
   eie.setNegative (true);
   eie.filter (result);
   EXPECT_EQ ((int)result.points.size (), 0);
+
+  /*
+  PointCloud<PointXYZ> sc, scf;
+  sc.points.resize (5); sc.width = 5; sc.height = 1; sc.is_dense = true;
+  for (int i = 0; i < 5; i++)
+  {
+    sc.points[i].x = sc.points[i].z = 0;
+    sc.points[i].y = i;
+  }
+  PassThrough<PointXYZ> ps;
+  ps.setInputCloud (sc.makeShared ());
+  ps.setFilterFieldName ("y");
+  ps.setFilterLimits (0.99, 2.01);
+  for (int i = 0; i < 2; i++)
+  {
+    ps.setFilterLimitsNegative ((bool)i);
+    ps.filter (scf);
+    std::cerr << scf.points.size () << std::endl;
+    for (size_t j = 0; j < scf.points.size (); ++j)
+      std::cerr << scf.points[j] << std::endl;
+  }
+  */
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
