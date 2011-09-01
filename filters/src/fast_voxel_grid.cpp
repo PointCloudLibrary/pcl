@@ -38,7 +38,7 @@
 #include <iostream>
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
-#include "pcl/io/io.h"
+#include "pcl/common/io.h"
 #include "pcl/filters/fast_voxel_grid.h"
 #include "pcl/filters/impl/fast_voxel_grid.hpp"
 
