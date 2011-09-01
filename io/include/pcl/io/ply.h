@@ -39,7 +39,7 @@
 #define PCL_IO_PLY_H_
 
 #include "pcl/point_types.h"
-#include "pcl/io/io.h"
+#include "pcl/common/io.h"
 #include <functional>
 #include <algorithm>
 #include <boost/algorithm/string.hpp>

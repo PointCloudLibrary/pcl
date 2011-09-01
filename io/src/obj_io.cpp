@@ -37,7 +37,7 @@
 #include <pcl/io/obj_io.h>
 #include <fstream>
 #include <iostream>
-#include <pcl/io/io.h>
+#include <pcl/common/io.h>
 
 int
 pcl::io::saveOBJFile (const std::string &file_name,
