@@ -546,7 +546,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   vtkIdType nr_normals = (cloud->points.size () - 1) / level + 1 ;
   float* pts = new float[2 * nr_normals * 3];
 
-  for (size_t i = 0, j = 0; j < nr_normals; j++, i = j * level)
+  for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = j * level)
   {
     PointT p = cloud->points[i];
     p.x += normals->points[i].normal[0] * scale; 

@@ -40,8 +40,8 @@
 
 #include "pcl/surface/grid_projection.h"
 #include <pcl/common/common.h>
+#include <pcl/common/centroid.h>
 #include <pcl/common/vector_average.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/Vertices.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -301,18 +301,37 @@ pcl::GridProjection<PointNT>::getProjection (const Eigen::Vector4f &p,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void 
 pcl::GridProjection<PointNT>::getProjectionWithPlaneFit (const Eigen::Vector4f &p, 
-                                                         std::vector <int> (&pt_union_indices),
+                                                         std::vector<int> (&pt_union_indices),
                                                          Eigen::Vector4f &projection)
 {
   // Compute the plane coefficients
   Eigen::Vector4f model_coefficients;
-  float curvature;
   /// @remark iterative weighted least squares or sac might give better results
-  pcl::computePointNormal (*data_, pt_union_indices, model_coefficients, curvature);
+  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
+  Eigen::Vector4f xyz_centroid;
+
+  // Estimate the XYZ centroid
+  pcl::compute3DCentroid (*data_, pt_union_indices, xyz_centroid);
+
+  // Compute the 3x3 covariance matrix
+  pcl::computeCovarianceMatrix (*data_, pt_union_indices, xyz_centroid, covariance_matrix);
+
+  // Get the plane normal
+  EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
+  EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
+  pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+
+  // The normalization is not necessary, since the eigenvectors from libeigen are already normalized
+  model_coefficients[0] = eigen_vectors (0, 0);
+  model_coefficients[1] = eigen_vectors (1, 0);
+  model_coefficients[2] = eigen_vectors (2, 0);
+  model_coefficients[3] = 0;
+  // Hessian form (D = nc . p_plane (centroid here) + p)
+  model_coefficients[3] = -1 * model_coefficients.dot (xyz_centroid);
 
   // Projected point
   Eigen::Vector3f point (p.x (), p.y (), p.z ());     //= Eigen::Vector3f::MapAligned (&output.points[cp].x, 3);
-  float distance = point.dot (model_coefficients.head < 3 > ()) + model_coefficients[3];
+  float distance = point.dot (model_coefficients.head <3> ()) + model_coefficients[3];
   point -= distance * model_coefficients.head < 3 > ();
 
   projection = Eigen::Vector4f (point[0], point[1], point[2], 0);

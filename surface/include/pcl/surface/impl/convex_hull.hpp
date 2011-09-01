@@ -42,9 +42,11 @@
 #define PCL_SURFACE_IMPL_CONVEX_HULL_H_
 
 #include "pcl/surface/convex_hull.h"
-#include "pcl/common/common.h"
+#include <pcl/common/common.h>
+#include <pcl/common/eigen.h>
 #include "pcl/registration/transforms.h"
-#include "pcl/kdtree/kdtree.h"
+#include <pcl/kdtree/kdtree.h>
+#include <pcl/kdtree/kdtree_flann.h>
 #include <stdio.h>
 #include <stdlib.h>
 
