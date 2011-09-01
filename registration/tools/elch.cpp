@@ -1,6 +1,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include <pcl/registration/transforms.h>
+#include <pcl/common/transforms.h>
 #include <pcl/registration/icp.h>
 
 //#include <boost/graph/graphviz.hpp>
