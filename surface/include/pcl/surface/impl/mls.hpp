@@ -39,7 +39,7 @@
 #define PCL_SURFACE_IMPL_MLS_H_
 
 #include "pcl/surface/mls.h"
-#include <pcl/io/io.h>
+#include <pcl/common/io.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/kdtree/organized_data.h>
 #include <pcl/common/centroid.h>

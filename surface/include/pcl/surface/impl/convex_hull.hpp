@@ -45,7 +45,7 @@
 #include <pcl/common/common.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/transforms.h>
-#include <pcl/io/io.h>
+#include <pcl/common/io.h>
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <stdio.h>
