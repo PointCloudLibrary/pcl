@@ -41,10 +41,12 @@
 #ifndef PCL_SURFACE_IMPL_CONCAVE_HULL_H_
 #define PCL_SURFACE_IMPL_CONCAVE_HULL_H_
 
+#include <map>
 #include <pcl/surface/concave_hull.h>
 #include <pcl/common/common.h>
+#include <pcl/common/eigen.h>
 #include <pcl/registration/transforms.h>
-
+#include <pcl/kdtree/kdtree_flann.h>
 #include <stdio.h>
 #include <stdlib.h>
 

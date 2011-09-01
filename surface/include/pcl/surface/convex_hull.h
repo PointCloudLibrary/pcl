@@ -45,7 +45,6 @@
 #include "pcl/pcl_base.h"
 #include "pcl/io/io.h"
 
-#include "pcl/features/normal_3d.h"
 #include "pcl/ModelCoefficients.h"
 #include "pcl/PolygonMesh.h"
 #include <math.h>

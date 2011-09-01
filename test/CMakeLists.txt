@@ -20,6 +20,13 @@ if(build)
     enable_testing()
     include_directories(${GTEST_INCLUDE_DIRS})
 
+    if(QHULL_FOUND)
+      PCL_ADD_TEST(a_surface_test test_surface
+                   FILES test_surface.cpp
+                   LINK_WITH pcl_io pcl_kdtree pcl_surface pcl_features ${OpenCV_LIBS}
+                   ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
+    endif(QHULL_FOUND)
+
     PCL_ADD_TEST(a_feature_test test_feature
                  FILES test_feature.cpp
                  LINK_WITH pcl_features pcl_kdtree pcl_io

@@ -40,9 +40,10 @@
 
 #include "pcl/surface/mls.h"
 #include "pcl/io/io.h"
-#include "pcl/features/normal_3d.h"
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/kdtree/organized_data.h>
+#include <pcl/common/centroid.h>
+#include <pcl/common/eigen.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename NormalOutT> void
@@ -154,8 +155,34 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
 
     // Compute the plane coefficients
     Eigen::Vector4f model_coefficients;
-    float curvature;
-    pcl::computePointNormal<PointInT> (*input_, nn_indices, model_coefficients, curvature);
+    //pcl::computePointNormal<PointInT> (*input_, nn_indices, model_coefficients, curvature);
+    EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
+    Eigen::Vector4f xyz_centroid;
+
+    // Estimate the XYZ centroid
+    pcl::compute3DCentroid (*input_, nn_indices, xyz_centroid);
+
+    // Compute the 3x3 covariance matrix
+    pcl::computeCovarianceMatrix (*input_, nn_indices, xyz_centroid, covariance_matrix);
+
+    // Get the plane normal
+    EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
+    EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
+    pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+
+    // The normalization is not necessary, since the eigenvectors from libeigen are already normalized
+    model_coefficients[0] = eigen_vectors (0, 0);
+    model_coefficients[1] = eigen_vectors (1, 0);
+    model_coefficients[2] = eigen_vectors (2, 0);
+    model_coefficients[3] = 0;
+    // Hessian form (D = nc . p_plane (centroid here) + p)
+    model_coefficients[3] = -1 * model_coefficients.dot (xyz_centroid);
+
+    float curvature = 0;
+    // Compute the curvature surface change
+    float eig_sum = eigen_values.sum ();
+    if (eig_sum != 0)
+      curvature = fabs (eigen_values[0] / eig_sum);
 
     // Projected point
     Eigen::Vector3f point = output.points[cp].getVector3fMap ();

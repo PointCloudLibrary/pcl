@@ -39,9 +39,9 @@
 #include "pcl/surface/marching_cubes.h"
 #include <pcl/common/common.h>
 #include <pcl/common/vector_average.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/Vertices.h>
 #include <pcl/kdtree/kdtree_flann.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::MarchingCubes<PointNT>::MarchingCubes ()
