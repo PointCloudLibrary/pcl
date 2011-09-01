@@ -1,6 +1,6 @@
 set(SUBSYS_NAME visualization)
 set(SUBSYS_DESC "Point cloud visualization library")
-set(SUBSYS_DEPS common io kdtree octree range_image octree filters sample_consensus)
+set(SUBSYS_DEPS common io kdtree range_image filters)
 
 if(wxWidgets_FOUND)
   include(${wxWidgets_USE_FILE})

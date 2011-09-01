@@ -129,19 +129,15 @@ class SimpleOpenNIViewer
       temp_image.swap (image_);
       return (temp_image);
     }
-    /**
-     * @brief starts the main loop
-     */
+
     void
     run ()
     {
-      string mouseMsg3D("Mouse coordinates in PCL Visualizer");
       string mouseMsg2D("Mouse coordinates in image viewer");
-      string keyMsg3D("Key event for PCL Visualizer");
       string keyMsg2D("Key event for image viewer");
 
-  //    image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
-  //    image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
+      //image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
+      //image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
         
       boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&SimpleOpenNIViewer::image_callback, this, _1);
       boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);

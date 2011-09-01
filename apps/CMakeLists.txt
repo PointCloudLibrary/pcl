@@ -77,8 +77,9 @@ if(build)
 		PCL_ADD_EXECUTABLE(openni_mls_smoothing ${SUBSYS_NAME} src/openni_mls_smoothing.cpp)
 	  target_link_libraries(openni_mls_smoothing pcl_common pcl_io pcl_surface pcl_visualization)
 	 
-	  
-	  
+    PCL_ADD_EXECUTABLE(openni_change_viewer ${SUBSYS_NAME} src/openni_change_viewer.cpp)
+    target_link_libraries(openni_change_viewer pcl_common pcl_io pcl_kdtree pcl_octree
+        pcl_range_image pcl_visualization pcl_filters)
 
     #    PCL_ADD_EXECUTABLE(openni_boundary_estimation ${SUBSYS_NAME} src/openni_boundary_estimation.cpp)
     #    target_link_libraries(openni_boundary_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
