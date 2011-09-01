@@ -82,6 +82,7 @@ different tasks. Here are some requested tasks to support:
  * category and segmentation
  * category and bounding box
 
+
 5.1 Metrics
 """""""""""
 
@@ -115,4 +116,11 @@ used for the purpose of benchmarking object recognition tasks.
 5. Evaluation
 ^^^^^^^^^^^^^
 
+The evaluation output needs to be one of the following:
+
+ * object id
+ * object pose
+ * object category
+ * object bounding box
+ * object mask
 
