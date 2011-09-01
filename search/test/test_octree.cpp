@@ -148,7 +148,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 
     // octree nearest neighbor search
     octree->setInputCloud (cloudIn);
-    octree->nearestKSearch (searchPoint, (int)K, k_indices, k_sqr_distances);
+    //octree->nearestKSearch (searchPoint, (int)K, k_indices, k_sqr_distances);
 
     ASSERT_EQ ( k_indices.size() , k_indices_bruteforce.size() );
 

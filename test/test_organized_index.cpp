@@ -141,7 +141,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
 
     // organized nearest neighbor search
     organizedNeighborSearch->setInputCloud (cloudIn);
-    organizedNeighborSearch->nearestKSearch (searchPoint, (int)K, k_indices, k_sqr_distances);
+//    organizedNeighborSearch->nearestKSearch (searchPoint, (int)K, k_indices, k_sqr_distances);
 
 
     double pointDist;

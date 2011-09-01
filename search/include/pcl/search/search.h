@@ -40,6 +40,7 @@
 #ifndef PCL_SEARCH_GENERIC_SEARCH_H_
 #define PCL_SEARCH_GENERIC_SEARCH_H_
 
+#include <pcl/pcl_base.h>
 #include <limits.h>
 #include "pcl/pcl_macros.h"
 #include "pcl/point_cloud.h"
@@ -64,12 +65,12 @@ namespace pcl
       typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
 
       /** Constructor. */
-      Search()
+      Search ()
       {
       }
 
       /** Destructor. */
-      ~Search(){}
+      virtual ~Search () {}
 
       /** \brief */
       virtual void
@@ -85,7 +86,10 @@ namespace pcl
 
       /** \brief */
       virtual int
-      nearestKSearch (const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)=0;
+      nearestKSearch (const PointT &point, 
+                      int k, 
+                      std::vector<int> &k_indices, 
+                      std::vector<float> &k_sqr_distances) = 0;
 
       /** \brief */
       virtual int

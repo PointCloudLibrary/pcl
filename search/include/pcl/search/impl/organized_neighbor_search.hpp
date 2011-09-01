@@ -134,7 +134,7 @@ namespace pcl
     {
 
       const PointT searchPoint = getPointByIndex (index_arg);
-      return nearestKSearch (searchPoint, k_arg, k_indices_arg, k_sqr_distances_arg);
+//      return nearestKSearch (searchPoint, k_arg, k_indices_arg, k_sqr_distances_arg);
     }
 
   //////////////////////////////////////////////////////////////////////////////////////////////

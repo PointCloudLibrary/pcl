@@ -44,138 +44,136 @@
 #include "pcl/point_cloud.h"
 #include "pcl/point_representation.h"
 #include "pcl/search/search.h"
-//#include "pcl/search/search_flann.h"
 
 namespace pcl
 {
-
-const static int KDTREE_FLANN           = 0;
-const static int ORGANIZED_INDEX        = 1;
-const static int OCTREE                 = 2;
-const static int AUTO_TUNED             = 3;
-const static int NEAREST_K_SEARCH       = 4;
-const static int NEAREST_RADIUS_SEARCH       = 5;
+  const static int KDTREE_FLANN           = 0;
+  const static int ORGANIZED_INDEX        = 1;
+  const static int OCTREE                 = 2;
+  const static int AUTO_TUNED             = 3;
+  const static int NEAREST_K_SEARCH       = 4;
+  const static int NEAREST_RADIUS_SEARCH  = 5;
 
   template <typename PointT>
-  class AutotunedSearch: public Search<PointT>
+  class AutotunedSearch : public Search<PointT>
   {
+    public:
+      typedef pcl::PointCloud<PointT> PointCloud;
+      typedef boost::shared_ptr<PointCloud> PointCloudPtr;
+      typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
-  public:
-    typedef pcl::PointCloud<PointT> PointCloud;
-    typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-    typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+      typedef boost::shared_ptr<pcl::Search<PointT> > SearchPtr;
+      typedef boost::shared_ptr<const pcl::Search<PointT> > SearchConstPtr;
 
-    typedef boost::shared_ptr<pcl::Search<PointT> > AutotunedSearchPtr;
-    typedef boost::shared_ptr<const pcl::Search<PointT> > AutotunedSearchConstPtr;
+      typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
+      typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
 
-    typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
-    typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
+      AutotunedSearch (int spatial_locator) : search_ ()
+      {
+        initSearchDS (spatial_locator);
+      }
 
+      AutotunedSearch () : search_ () {}
 
+      virtual ~AutotunedSearch () {}
 
+      void 
+      initSearchDS (int spatial_locator);
 
-    AutotunedSearch(int spatial_locator)
-    {
-        initSearchDS(spatial_locator);
-
-    }
-
-    AutotunedSearch(){}
-
-
-    ~AutotunedSearch(){}
-
-    void
+      void
 	    evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type);
 
-    void initSearchDS(int spatial_locator);
-    
-    virtual void 
-    setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices);
-    
-    virtual void 
-    setInputCloud (const PointCloudConstPtr& cloud);
+      virtual void 
+      setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices);
 
-    virtual int
-    nearestKSearch (const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
+      virtual void 
+      setInputCloud (const PointCloudConstPtr& cloud);
 
-    virtual int
-    nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
+      virtual int
+      nearestKSearch (const PointT& point, 
+                      int k, 
+                      std::vector<int> &k_indices, 
+                      std::vector<float> &k_sqr_distances);
 
-    virtual int
-    nearestKSearch (int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
+      virtual int
+      nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
 
-    virtual int 
-    radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices,    std::vector<float>& k_distances, int max_nn = -1) const;
+      virtual int
+      nearestKSearch (int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
 
-//    virtual int 
-  //  radiusSearch (const PointT& point, double radius,
-    //              std::vector<int>& k_indices, std::vector<float> &k_sqr_distances_arg);
+      virtual int 
+      radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices,    std::vector<float>& k_distances, int max_nn = -1) const;
 
-//    virtual int 
-//    radiusSearch (const PointT& point, double radius, std::vector<int>& k_indices,    std::vector<float>& k_distances);
+      virtual int
+      radiusSearch (const PointCloud& cloud, int index, double radius,
+                    std::vector<int>& k_indices, std::vector<float>& k_distances,
+                    int max_nn = -1);
 
-    virtual int
-    radiusSearch (const PointCloud& cloud, int index, double radius,
-                  std::vector<int>& k_indices, std::vector<float>& k_distances,
-                  int max_nn = -1);
-
-    virtual int
-    radiusSearch (int index, double radius, std::vector<int>& k_indices,
-                  std::vector<float>& k_distances, int max_nn = -1) const;
+      virtual int
+      radiusSearch (int index, double radius, std::vector<int>& k_indices,
+                    std::vector<float>& k_distances, int max_nn = -1) const;
 
 
 
-        virtual void
-        approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
-                             float &sqr_distance_arg);
+      virtual void
+      approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
+                           float &sqr_distance_arg);
 
-        virtual void
-        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg);
+      virtual void
+      approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg);
 
-        virtual void
-        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg);
+      virtual void
+      approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg);
 
-inline int
-    nearestKSearch (std::vector<const PointT>& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances){
+      inline int
+      nearestKSearch (std::vector<const PointT>& point, 
+                      std::vector <int>& k, 
+                      std::vector<std::vector<int> >& k_indices,
+                      std::vector<std::vector<float> >& k_sqr_distances)
+      {
         std::cerr << "This function is not supported by AutoTunedSearch" << std::endl;
-exit(0);
-};
-inline int
-    radiusSearch (std::vector<PointT>& point, std::vector <  double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const
-{
+      }
 
+      inline int
+      radiusSearch (std::vector<PointT> &point, 
+                    std::vector <double> &radiuses, 
+                    std::vector<std::vector<int> > &k_indices,
+                    std::vector<std::vector<float> > &k_distances, 
+                    int max_nn) const
+      {
         std::cerr << "This function is not supported by AutoTunedSearch" << std::endl;
-exit(0);
-};
+      }
 
 
-inline int
-approxRadiusSearch (const PointCloudConstPtr& cloud, int index, double radius,
-                              std::vector<int>& k_indices, std::vector<float>& k_distances,
-                              int max_nn)const
-{
+      inline int
+      approxRadiusSearch (const PointCloudConstPtr &cloud, 
+                          int index, 
+                          double radius,
+                          std::vector<int> &k_indices, 
+                          std::vector<float> &k_distances,
+                          int max_nn) const
+      {
         std::cerr << "This function is not supported by AutotunedSearch" << std::endl;
-exit(0);
-}
+      }
 
-
-inline int
-approxNearestKSearch (const PointCloudConstPtr& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
-{
+      inline int
+      approxNearestKSearch (const PointCloudConstPtr &cloud, 
+                            int index, 
+                            int k, 
+                            std::vector<int> &k_indices, 
+                            std::vector<float> &k_sqr_distances)
+      {
         std::cerr << "This function is not supported by AutotunedSearch" << std::endl;
-exit(0);
-}
+      }
 
+    private:
 
+      SearchPtr search_;
 
+      int spatial_loc_;
 
-  private:
-    AutotunedSearchPtr _searchptr;
-    int spatial_loc;
-   PointCloudConstPtr _cloudptr;
+      PointCloudConstPtr input_;
   };
-
 }
 
 #endif  //#ifndef _PCL_SEARCH_AUTO_TUNED_SEARCH_H_

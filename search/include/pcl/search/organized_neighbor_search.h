@@ -49,32 +49,26 @@
 namespace pcl
 {
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief @b OrganizedNeighborSearch class
-   *  \note This class provides neighbor search routines for organized point clouds.
-   *  \note
-   *  \note typename: PointT: type of point used in pointcloud
-   *  \author Julius Kammerl (julius@kammerl.de)
-   */
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Provides neighbor search routines for organized point clouds.
+    */
   template<typename PointT>
-    class OrganizedNeighborSearch : public Search<PointT> 
+  class OrganizedNeighborSearch : public Search<PointT> 
+  {
+    // public typedefs
+    typedef pcl::PointCloud<PointT> PointCloud;
+    typedef boost::shared_ptr<PointCloud> PointCloudPtr;
+    typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+    typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
 
-    {
     public:
-
-      /** \brief OrganizedNeighborSearch constructor.
-       * */
-      OrganizedNeighborSearch ():
-        radiusLookupTableWidth_(-1),
-        radiusLookupTableHeight_(-1)
+      /** \brief OrganizedNeighborSearch constructor. */
+      OrganizedNeighborSearch (): radiusLookupTableWidth_ (-1), radiusLookupTableHeight_ (-1)
       {
         max_distance_ = std::numeric_limits<double>::max ();
-
         oneOverFocalLength_ = 1.0f;
-	precision_ = 1;
-	horizontal_window_ = 0;
-	vertical_window_ = 0;
+        precision_ = 1;
+        horizontal_window_ = 0;
+        vertical_window_ = 0;
       }
 
       /** \brief Empty deconstructor. */
@@ -83,57 +77,45 @@ namespace pcl
       {
       }
 
-      // public typedefs
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-      typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
-      typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
-
-
-
       /** \brief Provide a pointer to the input data set.
        *  \param cloud_arg the const boost shared pointer to a PointCloud message
        */
       inline void
       setInputCloud (const PointCloudConstPtr &cloud_arg)
       {
-
         if (input_ != cloud_arg)
+          input_ = cloud_arg;
+
+        if (precision_ == 1)
         {
-		input_ = cloud_arg;
-
-	}
-	if(precision_ == 1)
-	{
-		estimateFocalLengthFromInputCloud ();
-		generateRadiusLookupTable (input_->width, input_->height);
-	}
-
+          estimateFocalLengthFromInputCloud ();
+          generateRadiusLookupTable (input_->width, input_->height);
+        }
       }
 
       inline void 
-      setInputCloud(const PointCloudConstPtr& cloud, const IndicesConstPtr &indices)
+      setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices)
       {
-	std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+        std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
       }
 
-      
-    inline int
-    nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
-{
+        
+      inline int
+      nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
+      {
 
-	std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
-	return 0;
-}
+        std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+        return 0;
+      }
 
-inline int
-radiusSearch (const PointCloud& cloud, int index, double radius,
-                              std::vector<int>& k_indices, std::vector<float>& k_distances,
-                              int max_nn) 
-{
-	std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
-	return 0;
-}
+      inline int
+      radiusSearch (const PointCloud& cloud, int index, double radius,
+                    std::vector<int>& k_indices, std::vector<float>& k_distances,
+                    int max_nn) 
+      {
+        std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+        return 0;
+      }
 
       /** \brief Search for all neighbors of query point that are within a given radius.
        * \param cloud_arg the point cloud data
@@ -242,52 +224,43 @@ radiusSearch (const PointCloud& cloud, int index, double radius,
 
     /* Functions which are not implemented */
       inline void 
-        approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
-                             float &sqr_distance_arg)
-       
-{
-	std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
-exit(0);
-}
+      approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
+                           float &sqr_distance_arg)
+      {
+        std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+      }
 
       inline void 
-        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg){
-	std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
-exit(0);
-};
+      approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg)
+      {
+        std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+      };
 
       inline void 
-        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg){
-	std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
-exit(0);
-};
-
-
-inline void
-            evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type){
-
+      approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg)
+      {
         std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
-exit(0);
-}
+      };
 
-
-inline int
-    nearestKSearch (std::vector<const PointT>& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances){
+      inline void
+      evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type)
+      {
         std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
-exit(0);
-};
+      }
 
 
-inline int
-    radiusSearch (std::vector<PointT>& point, std::vector <  double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const
-{
-
+      inline int
+      nearestKSearch (std::vector<const PointT>& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances)
+      {
         std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
-exit(0);
-};
+      };
 
+      inline int
+      radiusSearch (std::vector<PointT>& point, std::vector <  double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const
+      {
+        std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
+      };
 
-    
       /** \brief Get the maximum allowed distance between the query point and its nearest neighbors. */
       inline double
       getMaxDistance () const
@@ -319,12 +292,6 @@ exit(0);
 
       /** \brief Get the vertical search window in pixels. */
       int getVerticalSearchWindow () const { return (vertical_window_); }
-
-
-
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      // Protected methods
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected:
 
@@ -448,12 +415,8 @@ exit(0);
         return ("Organized_Neighbor_Search");
       }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      // Globals
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      int horizontal_window_;
-
       /** \brief The horizontal search window. */
+      int horizontal_window_;
       int vertical_window_;
       int min_pts_;
       int precision_;
@@ -473,10 +436,7 @@ exit(0);
       int radiusLookupTableHeight_;
 
     };
-
 }
-
-//#include "organized_neighbor_search.hpp"
 
 #endif
 
