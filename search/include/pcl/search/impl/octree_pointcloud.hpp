@@ -34,129 +34,110 @@
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
-#ifndef OCTREE_SEARCH_POINTCLOUD_HPP_
-#define OCTREE_SEARCH_POINTCLOUD_HPP_
+#ifndef PCL_OCTREE_SEARCH_POINTCLOUD_HPP_
+#define PCL_OCTREE_SEARCH_POINTCLOUD_HPP_
 
 #include <vector>
 #include <assert.h>
 
 #include "pcl/common/common.h"
 
-namespace pcl
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafTWrap, typename OctreeT> int
+pcl::octree::OctreeWrapper<PointT, LeafTWrap, OctreeT>::nearestKSearch (
+    const PointCloudConstPtr &cloud_arg, int index_arg, int k_arg,
+    std::vector<int> &k_indices_arg,
+    std::vector<float> &k_sqr_distances_arg)
 {
-   namespace octree
-   {
-    using namespace std;
+  _searchptr->setInputCloud (cloud_arg);
+//   this->addPointsFromInputCloud ();
 
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafTWrap, typename OctreeT>
-      int
-      OctreeWrapper<PointT, LeafTWrap, OctreeT>::nearestKSearch (const PointCloudConstPtr &cloud_arg, int index_arg, int k_arg,
-                                                                std::vector<int> &k_indices_arg,
-                                                                std::vector<float> &k_sqr_distances_arg)
-      {
-        _searchptr->setInputCloud (cloud_arg);
-     //   this->addPointsFromInputCloud ();
-
-        return _searchptr->nearestKSearch (index_arg, k_arg, k_indices_arg, k_sqr_distances_arg);
-      }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafTWrap, typename OctreeT>
-      int
-      OctreeWrapper<PointT, LeafTWrap, OctreeT>::nearestKSearch (const PointT &p_q_arg, int k_arg,
-                                                                std::vector<int> &k_indices_arg,
-                                                                std::vector<float> &k_sqr_distances_arg)
-      {
-	return _searchptr->nearestKSearch(p_q_arg,k_arg,k_indices_arg,k_sqr_distances_arg);
-
-      }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafTWrap, typename OctreeT>
-      int
-      OctreeWrapper<PointT, LeafTWrap, OctreeT>::nearestKSearch (int index_arg, int k_arg,
-                                                                std::vector<int> &k_indices_arg,
-                                                                std::vector<float> &k_sqr_distances_arg)
-      {
-        return _searchptr->nearestKSearch(index_arg,k_arg,k_indices_arg,k_sqr_distances_arg);
-      }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafTWrap, typename OctreeT>
-      void
-      OctreeWrapper<PointT, LeafTWrap, OctreeT>::approxNearestSearch (const PointCloudConstPtr &cloud_arg,
-                                                                     int query_index_arg, int &result_index_arg,
-                                                                     float &sqr_distance_arg)
-      {
-        _searchptr->setInputCloud (cloud_arg);
-       // this->addPointsFromInputCloud ();
-
-        _searchptr->approxNearestSearch (query_index_arg, result_index_arg, sqr_distance_arg);
-      }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafTWrap, typename OctreeT>
-      void
-      OctreeWrapper<PointT, LeafTWrap, OctreeT>::approxNearestSearch (const PointT &p_q_arg, int &result_index_arg,
-                                                                     float &sqr_distance_arg)
-      {
-	_searchptr->approxNearestSearch(p_q_arg,result_index_arg,sqr_distance_arg);
-      }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafTWrap, typename OctreeT>
-      void
-      OctreeWrapper<PointT, LeafTWrap, OctreeT>::approxNearestSearch (int query_index_arg, int &result_index_arg,
-                                                                     float &sqr_distance_arg)
-      {
-	_searchptr->approxNearestSearch(query_index_arg,result_index_arg,sqr_distance_arg);
-      }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafTWrap, typename OctreeT>
-      int
-      OctreeWrapper<PointT, LeafTWrap, OctreeT>::radiusSearch (const PointCloudConstPtr &cloud_arg, int index_arg,
-                                                              double radius_arg, std::vector<int> &k_indices_arg,
-                                                              std::vector<float> &k_sqr_distances_arg, int max_nn_arg)
-      {
-        _searchptr->setInputCloud (cloud_arg);
-     //   this->addPointsFromInputCloud ();
-
-        return _searchptr->radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
-      }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafTWrap, typename OctreeT>
-      int
-      OctreeWrapper<PointT, LeafTWrap, OctreeT>::radiusSearch (const PointT &p_q_arg, const double radius_arg,
-                                                              std::vector<int> &k_indices_arg,
-                                                              std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const
-      {
-
-	_searchptr->radiusSearch(p_q_arg,radius_arg,k_indices_arg,k_sqr_distances_arg,max_nn_arg);
-      }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafTWrap, typename OctreeT>
-      int
-      OctreeWrapper<PointT, LeafTWrap, OctreeT>::radiusSearch (int index_arg, const double radius_arg,
-                                                              std::vector<int> &k_indices_arg,
-                                                              std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const
-      {
-
-
-        return _searchptr->radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
-
-      }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
+  return (_searchptr->nearestKSearch (index_arg, k_arg, k_indices_arg, k_sqr_distances_arg));
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafTWrap, typename OctreeT> int
+pcl::octree::OctreeWrapper<PointT, LeafTWrap, OctreeT>::nearestKSearch (const PointT &p_q_arg, int k_arg,
+                                                            std::vector<int> &k_indices_arg,
+                                                            std::vector<float> &k_sqr_distances_arg)
+{
+  return (_searchptr->nearestKSearch(p_q_arg,k_arg,k_indices_arg,k_sqr_distances_arg));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafTWrap, typename OctreeT> int
+pcl::octree::OctreeWrapper<PointT, LeafTWrap, OctreeT>::nearestKSearch (
+    int index_arg, int k_arg,
+    std::vector<int> &k_indices_arg,
+    std::vector<float> &k_sqr_distances_arg)
+{
+  return _searchptr->nearestKSearch(index_arg,k_arg,k_indices_arg,k_sqr_distances_arg);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafTWrap, typename OctreeT> void
+pcl::octree::OctreeWrapper<PointT, LeafTWrap, OctreeT>::approxNearestSearch (
+    const PointCloudConstPtr &cloud_arg,
+    int query_index_arg, int &result_index_arg,
+    float &sqr_distance_arg)
+{
+  _searchptr->setInputCloud (cloud_arg);
+ // this->addPointsFromInputCloud ();
+
+  _searchptr->approxNearestSearch (query_index_arg, result_index_arg, sqr_distance_arg);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafTWrap, typename OctreeT> void
+pcl::octree::OctreeWrapper<PointT, LeafTWrap, OctreeT>::approxNearestSearch (
+    const PointT &p_q_arg, int &result_index_arg,
+    float &sqr_distance_arg)
+{
+  _searchptr->approxNearestSearch(p_q_arg,result_index_arg,sqr_distance_arg);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafTWrap, typename OctreeT> void
+pcl::octree::OctreeWrapper<PointT, LeafTWrap, OctreeT>::approxNearestSearch (
+    int query_index_arg, int &result_index_arg,
+    float &sqr_distance_arg)
+{
+  _searchptr->approxNearestSearch(query_index_arg,result_index_arg,sqr_distance_arg);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafTWrap, typename OctreeT> int
+pcl::octree::OctreeWrapper<PointT, LeafTWrap, OctreeT>::radiusSearch (
+    const PointCloudConstPtr &cloud_arg, int index_arg,
+    double radius_arg, std::vector<int> &k_indices_arg,
+    std::vector<float> &k_sqr_distances_arg, int max_nn_arg)
+{
+  _searchptr->setInputCloud (cloud_arg);
+ //   this->addPointsFromInputCloud ();
+
+  return (_searchptr->radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafTWrap, typename OctreeT> int
+pcl::octree::OctreeWrapper<PointT, LeafTWrap, OctreeT>::radiusSearch (
+    const PointT &p_q_arg, const double radius_arg,
+    std::vector<int> &k_indices_arg,
+    std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const
+{
+  return (_searchptr->radiusSearch(p_q_arg,radius_arg,k_indices_arg,k_sqr_distances_arg,max_nn_arg));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafTWrap, typename OctreeT> int
+pcl::octree::OctreeWrapper<PointT, LeafTWrap, OctreeT>::radiusSearch (
+    int index_arg, const double radius_arg,
+    std::vector<int> &k_indices_arg,
+    std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const
+{
+  return (_searchptr->radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg));
 }
 
 #define PCL_INSTANTIATE_OctreeSearch(T) template class PCL_EXPORTS pcl::octree::OctreeWrapper<T, pcl::octree::OctreeLeafDataTVector<int> , pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafDataTVector<int> > >;
 
-
-#endif /* OCTREE_POINTCLOUD_HPP_ */
+#endif // PCL_OCTREE_POINTCLOUD_HPP_

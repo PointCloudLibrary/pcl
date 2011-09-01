@@ -131,7 +131,7 @@ namespace pcl
                     std::vector<int>& k_indices, std::vector<float>& k_distances) 
     {
 
-      _searchptr->nearestKSearch(index,k,k_indices,k_distances);
+      return (_searchptr->nearestKSearch(index,k,k_indices,k_distances));
     }
 
     int radiusSearch (const PointT& point, double radius, std::vector<int>& k_indices,
