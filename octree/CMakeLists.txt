@@ -1,6 +1,6 @@
 set(SUBSYS_NAME octree)
 set(SUBSYS_DESC "Point cloud octree library")
-set(SUBSYS_DEPS  common )
+set(SUBSYS_DEPS common)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
