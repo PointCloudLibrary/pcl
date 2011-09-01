@@ -46,7 +46,7 @@
 #include <pcl/PolygonMesh.h>
 #include <boost/function.hpp>
 
-#include "pcl/io/io.h"
+#include "pcl/common/io.h"
 #include <fstream>
 #include <iostream>
 

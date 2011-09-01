@@ -39,7 +39,7 @@
 #define PCL_SURFACE_IMPL_MLS_H_
 
 #include "pcl/surface/mls.h"
-#include "pcl/io/io.h"
+#include <pcl/common/io.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 

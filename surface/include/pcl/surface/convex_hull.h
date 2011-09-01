@@ -43,7 +43,7 @@
 
 // PCL includes
 #include "pcl/pcl_base.h"
-#include "pcl/io/io.h"
+#include "pcl/common/io.h"
 
 #include "pcl/ModelCoefficients.h"
 #include "pcl/PolygonMesh.h"

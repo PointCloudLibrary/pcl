@@ -39,7 +39,7 @@
 #define PCL_SURFACE_ORGANIZED_FAST_MESH_H_
 
 #include <pcl/common/angles.h>
-#include <pcl/io/io.h>
+#include <pcl/common/io.h>
 #include <pcl/surface/reconstruction.h>
 
 namespace pcl

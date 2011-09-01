@@ -43,6 +43,7 @@
 
 #include "pcl/surface/convex_hull.h"
 #include <pcl/common/common.h>
+#include <pcl/common/io.h>
 #include <pcl/common/eigen.h>
 #include "pcl/registration/transforms.h"
 #include <pcl/kdtree/kdtree.h>
