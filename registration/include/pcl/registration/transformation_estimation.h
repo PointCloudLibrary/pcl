@@ -38,7 +38,7 @@
 
 #include <pcl/correspondence.h>
 #include <pcl/features/feature.h>
-#include <pcl/registration/transforms.h>
+#include <pcl/common/transforms.h>
 #include <pcl/registration/correspondence_types.h>
 
 namespace pcl
