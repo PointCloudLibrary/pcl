@@ -1,7 +1,7 @@
 set(SUBSYS_NAME global_tests)
 set(SUBSYS_DESC "Point cloud library global tests")
 set(SUBSYS_DEPS common sample_consensus io kdtree features range_image filters
-    keypoints surface registration segmentation octree)
+    keypoints search surface registration segmentation octree)
 
 find_package(GTest)
 if(GTEST_FOUND)
@@ -67,6 +67,14 @@ if(build)
                  LINK_WITH pcl_io pcl_features
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd)
                  
+    PCL_ADD_TEST(organized_index test_organized_index 
+                 FILES test_organized_index.cpp
+                 LINK_WITH pcl_search pcl_io pcl_filters)
+
+    PCL_ADD_TEST(auto_tuned_search auto_tuned_search
+                 FILES test_auto_search.cpp
+                 LINK_WITH pcl_search pcl_io pcl_filters)
+
     include_directories(${PCL_INCLUDE_DIRS})
     
 #    PCL_ADD_EXECUTABLE (evaluate_feature ${SUBSYS_NAME} evaluate_feature.cpp)

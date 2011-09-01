@@ -1,7 +1,7 @@
 set(SUBSYS_NAME search)
 set(SUBSYS_DESC "Point cloud generic search library")
-#set(SUBSYS_DEPS common io filters cuda_common gpu_octree gpu_common octree)
-set(SUBSYS_DEPS common io octree kdtree)
+#set(SUBSYS_DEPS common io cuda_common gpu_octree gpu_common octree)
+set(SUBSYS_DEPS common octree kdtree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
