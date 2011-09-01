@@ -45,7 +45,7 @@
 #include "pcl/common/transform.h"
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <pcl/registration/transforms.h>
+#include <pcl/common/transforms.h>
 
 using namespace pcl;
 using namespace pcl::io;

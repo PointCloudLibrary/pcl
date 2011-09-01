@@ -22,7 +22,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh.h>
 
-#include <pcl/registration/transforms.h>
+#include <pcl/common/transforms.h>
 
 #include <Eigen/Core>
 #include <Eigen/StdVector>

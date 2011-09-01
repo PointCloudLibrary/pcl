@@ -42,7 +42,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-#include <pcl/registration/transforms.h>
+#include <pcl/common/transforms.h>
 #include <cmath>
 
 using namespace pcl;
