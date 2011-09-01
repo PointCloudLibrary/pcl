@@ -48,7 +48,6 @@
 #include <pcl/TextureMesh.h>
 #include <boost/function.hpp>
 
-#include "pcl/io/io.h"
 #include <fstream>
 #include <iostream>
 

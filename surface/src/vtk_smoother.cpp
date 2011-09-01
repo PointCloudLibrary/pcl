@@ -39,6 +39,7 @@
 #include <pcl/point_types.h>
 #include <pcl/pcl_base.h>
 #include <pcl/ros/conversions.h>
+#include <pcl/io/vtk_lib_io.h>
 #include <pcl/common/common.h>
 #include <vtkCellArray.h>
 #include <vtkPoints.h>

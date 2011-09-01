@@ -40,7 +40,6 @@
 
 #include <pcl/pcl_base.h>
 #include <pcl/PolygonMesh.h>
-#include <pcl/io/vtk_lib_io.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
