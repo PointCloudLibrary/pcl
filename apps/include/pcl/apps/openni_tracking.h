@@ -16,7 +16,7 @@
 
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/registration/transforms.h>
+#include <pcl/common/transforms.h>
 
 namespace pcl
 {

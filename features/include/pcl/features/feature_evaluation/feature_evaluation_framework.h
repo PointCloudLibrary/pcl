@@ -25,7 +25,7 @@
 #include <pcl/features/pfh.h>
 #include <pcl/features/pfhrgb.h>
 
-#include <pcl/registration/transforms.h>
+#include <pcl/common/transforms.h>
 
 #include <Eigen/Core>
 #include <Eigen/StdVector>
