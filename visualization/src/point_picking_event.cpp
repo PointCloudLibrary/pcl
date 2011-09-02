@@ -55,6 +55,19 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
     PointPickingEvent event (idx, x, y, z);
     reinterpret_cast<pcl::visualization::PCLVisualizerInteractorStyle*>(caller)->point_picking_signal_ (event);
   }
+  else if ((eventid == vtkCommand::LeftButtonPressEvent) && (iren->GetAltKey () == 1))
+  {
+    pick_first_ = !pick_first_;
+    float x = 0, y = 0, z = 0;
+    int idx = -1;
+    if (pick_first_)
+      idx_ = performSinglePick (iren, x_, y_, z_);
+    else
+      idx = performSinglePick (iren, x, y, z);
+    // Create a PointPickingEvent
+    PointPickingEvent event (idx_, idx, x_, y_, z_, x, y, z);
+    reinterpret_cast<pcl::visualization::PCLVisualizerInteractorStyle*>(caller)->point_picking_signal_ (event);
+  }
   // Call the parent's class mouse events
   reinterpret_cast<pcl::visualization::PCLVisualizerInteractorStyle*>(caller)->OnLeftButtonDown ();
 }

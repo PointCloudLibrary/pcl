@@ -127,6 +127,17 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
   if (!cloud)
     return;
 
+  // If two points were selected, draw an arrow between them
+  pcl::PointXYZ p1, p2;
+  if (event.getPoints (p1.x, p1.y, p1.z, p2.x, p2.y, p2.z) && p)
+  {
+    std::stringstream ss;
+    ss << p1 << p2;
+    p->addArrow<pcl::PointXYZ, pcl::PointXYZ> (p1, p2, 1.0, 1.0, 1.0, ss.str ());
+    return;
+  }
+
+  // Else, if a single point has been selected
   std::stringstream ss;
   ss << event.getPointIndex ();
   // Get the cloud's fields
