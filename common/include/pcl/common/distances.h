@@ -88,7 +88,84 @@ namespace pcl
     // D = ||(P2-P1) x (P1-P0)|| / ||P2-P1|| = norm (cross (p2-p1, p1-p0)) / norm(p2-p1)
     return (line_dir.cross3 (line_pt - pt)).squaredNorm () / sqr_length;
   }
-}
+
+  /** \brief Obtain the maximum segment in a given set of points, and return the minimum and maximum points.
+    * \param[in] cloud the point cloud dataset
+    * \param[out] pmin the coordinates of the "minimum" point in \ref cloud (one end of the segment)
+    * \param[out] pmin the coordinates of the "maximum" point in \ref cloud (the other end of the segment)
+    * \return the length of segment length
+    * \ingroup common
+    */
+  template <typename PointT> double inline
+  getMaxSegment (const pcl::PointCloud<PointT> &cloud, 
+                 PointT &pmin, PointT &pmax)
+  {
+    double max_dist = std::numeric_limits<double>::min ();
+    int i_min = -1, i_max = -1;
+
+    for (size_t i = 0; i < cloud.points.size (); ++i)
+    {
+      for (size_t j = i; j < cloud.points.size (); ++j)
+      {
+        // Compute the distance 
+        double dist = (cloud.points[i].getVector4fMap () - 
+                       cloud.points[j].getVector4fMap ()).squaredNorm ();
+        if (dist <= max_dist)
+          continue;
+
+        max_dist = dist;
+        i_min = i;
+        i_max = j;
+      }
+    }
+
+    if (i_min == -1 || i_max == -1)
+      return (max_dist = std::numeric_limits<double>::min ());
+
+    pmin = cloud.points[i_min];
+    pmax = cloud.points[i_max];
+    return (std::sqrt (max_dist));
+  }
+ 
+  /** \brief Obtain the maximum segment in a given set of points, and return the minimum and maximum points.
+    * \param[in] cloud the point cloud dataset
+    * \param[in] indices a set of point indices to use from \ref cloud
+    * \param[out] pmin the coordinates of the "minimum" point in \ref cloud (one end of the segment)
+    * \param[out] pmin the coordinates of the "maximum" point in \ref cloud (the other end of the segment)
+    * \return the length of segment length
+    * \ingroup common
+    */
+  template <typename PointT> double inline
+  getMaxSegment (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
+                 PointT &pmin, PointT &pmax)
+  {
+    double max_dist = std::numeric_limits<double>::min ();
+    int i_min = -1, i_max = -1;
+
+    for (size_t i = 0; i < indices.size (); ++i)
+    {
+      for (size_t j = i; j < indices.size (); ++j)
+      {
+        // Compute the distance 
+        double dist = (cloud.points[indices[i]].getVector4fMap () - 
+                       cloud.points[indices[j]].getVector4fMap ()).squaredNorm ();
+        if (dist <= max_dist)
+          continue;
+
+        max_dist = dist;
+        i_min = i;
+        i_max = j;
+      }
+    }
+
+    if (i_min == -1 || i_max == -1)
+      return (max_dist = std::numeric_limits<double>::min ());
+
+    pmin = cloud.points[indices[i_min]];
+    pmax = cloud.points[indices[i_max]];
+    return (std::sqrt (max_dist));
+  }
+ }
 /*@*/
 #endif  //#ifndef PCL_DISTANCES_H_
 
