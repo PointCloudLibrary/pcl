@@ -234,24 +234,48 @@ namespace pcl
       inline void push_back (const PointT& p) { points.push_back (p); }
       inline iterator insert ( iterator position, const PointT& x )
       {
-        return points.insert (position, x);
+        iterator it = points.insert (position, x);
+        width = points.size ();
+        height = 1;
+        return it;
       }
       inline void insert ( iterator position, size_t n, const PointT& x )
       {
         points.insert (position, n, x);
+        width = points.size ();
+        height = 1;
       }
       template <class InputIterator>
       inline void insert ( iterator position, InputIterator first, InputIterator last )
       {
         points.insert(position, first, last);
       }
-      inline iterator erase ( iterator position ) { return points.erase (position); }
+      inline iterator erase ( iterator position )
+      {
+        iterator it = points.erase (position); 
+        width = points.size ();
+        height = 1;
+        return it;
+      }
       inline iterator erase ( iterator first, iterator last )
       {
-        return points.erase (first, last);
+        iterator it = points.erase (first, last);
+        width = points.size ();
+        height = 1;
+        return it;
       }
-      inline void swap (PointCloud<PointT> &rhs) { this->points.swap (rhs.points); }
-      inline void clear () { points.clear (); }
+      inline void swap (PointCloud<PointT> &rhs)
+      {
+        this->points.swap (rhs.points);
+        width = points.size ();
+        height = 1;
+      }
+      inline void clear ()
+      {
+        points.clear ();
+        width = 0;
+        height = 0;
+      }
 
       /** \brief Copy the cloud to the heap and return a smart pointer
         * Note that deep copy is performed, so avoid using this function on non-empty clouds.

@@ -187,6 +187,29 @@ TEST (PCL, PointCloud)
   EXPECT_EQ (mat_yz (0,0), 1);
   EXPECT_EQ (mat_yz (1,cloud.width-1), 3*cloud.width-1);
 #endif
+
+  cloud.clear ();
+  EXPECT_EQ (cloud.width, 0);
+  EXPECT_EQ (cloud.height, 0);
+
+  cloud.width = 640;
+  cloud.height = 480;
+
+  cloud.insert (cloud.end (), PointXYZ (1, 1, 1));
+  EXPECT_EQ (cloud.isOrganized (), false);
+  EXPECT_EQ (cloud.width, 1);
+
+  cloud.insert (cloud.end (), 5, PointXYZ (1, 1, 1));
+  EXPECT_EQ (cloud.isOrganized (), false);
+  EXPECT_EQ (cloud.width, 6);
+
+  cloud.erase (cloud.end ());
+  EXPECT_EQ (cloud.isOrganized (), false);
+  EXPECT_EQ (cloud.width, 5);
+
+  cloud.erase (cloud.begin (), cloud.end ());
+  EXPECT_EQ (cloud.isOrganized (), false);
+  EXPECT_EQ (cloud.width, 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
