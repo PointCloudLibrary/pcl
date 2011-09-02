@@ -134,7 +134,7 @@ namespace pcl
     {
 
       const PointT searchPoint = getPointByIndex (index_arg);
-//      return nearestKSearch (searchPoint, k_arg, k_indices_arg, k_sqr_distances_arg);
+      return nearestKSearch (searchPoint, k_arg, k_indices_arg, k_sqr_distances_arg);
     }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,7 +145,7 @@ namespace pcl
                                                      std::vector<float> &k_sqr_distances_arg)  
     {
       this->setInputCloud (cloud_arg);
-      return nearestKSearch (index_arg, k_arg, k_indices_arg, k_sqr_distances_arg);
+      return (nearestKSearch (index_arg, k_arg, k_indices_arg, k_sqr_distances_arg));
     }
 
   //////////////////////////////////////////////////////////////////////////////////////////////

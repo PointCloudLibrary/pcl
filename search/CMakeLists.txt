@@ -10,7 +10,6 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 if(build)
     set(srcs 
         src/auto_tuned_search.cpp
-        src/search.cpp
         src/kdtree.cpp
         src/organized_neighbor_search.cpp
         src/octree_impl.cpp
@@ -28,7 +27,6 @@ if(build)
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/auto_tuned_search.hpp
-        include/pcl/${SUBSYS_NAME}/impl/search.hpp
         include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_neighbor_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud.hpp

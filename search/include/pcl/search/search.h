@@ -93,8 +93,10 @@ namespace pcl
 
       /** \brief */
       virtual int
-      nearestKSearch (std::vector<const PointT>& point, std::vector< int >& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances)=0;
-
+      nearestKSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, 
+                      std::vector<int> &k, 
+                      std::vector<std::vector<int> > &k_indices,
+                      std::vector<std::vector<float> > &k_sqr_distances) = 0;
 
       /** \brief */
       virtual int
@@ -110,7 +112,11 @@ namespace pcl
 
       /** \brief */
       virtual int 
-      radiusSearch (std::vector< PointT>& point, std::vector < double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn = -1) const=0;
+      radiusSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, 
+                    std::vector<double> &radiuses, 
+                    std::vector<std::vector<int> > &k_indices,
+                    std::vector<std::vector<float> > &k_distances, 
+                    int max_nn = -1) const = 0;
       
       /** \brief */
       virtual int

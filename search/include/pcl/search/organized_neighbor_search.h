@@ -250,16 +250,18 @@ namespace pcl
 
 
       inline int
-      nearestKSearch (std::vector<const PointT>& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances)
+      nearestKSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances)
       {
         std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
-      };
+        return (0);
+      }
 
       inline int
-      radiusSearch (std::vector<PointT>& point, std::vector <  double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const
+      radiusSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, std::vector <  double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const
       {
         std::cerr << "This function is not supported by OrganizedNeighborSearch" << std::endl;
-      };
+        return (0);
+      }
 
       /** \brief Get the maximum allowed distance between the query point and its nearest neighbors. */
       inline double

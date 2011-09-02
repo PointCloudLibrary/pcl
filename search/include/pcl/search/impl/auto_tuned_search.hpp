@@ -89,9 +89,8 @@ pcl::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& c
     double time1 = getTime ();
     search_.reset (new KdTreeWrapper<PointT> ());
     search_->setInputCloud (cloudIn);
-//    search_->nearestKSearch (searchPoint, no_of_neighbors, k_indices, k_distances);
-    std::cout << "Neighbors are:" << std::endl;
-/*    
+    search_->nearestKSearch (searchPoint, no_of_neighbors, k_indices, k_distances);
+    std::cout << "Neighbors are:" << std::endl;    
     for (int i = 0; i < 20; i++)
     {
       std::cout << k_indices[i] << '\t'; 
@@ -134,85 +133,86 @@ pcl::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& c
     time_organized_data = time3 - time2;
     time_octree = getTime () - time3;
     
-    std::cout << "Time Taken: " << "KDTree: " << time_kdtree << '\t' <<"OranizedData: "  << time_organized_data << '\t' << "Octree: " << time_octree << '\t' << std::endl; */
+    std::cout << "Time Taken: " << "KDTree: " << time_kdtree << '\t' <<"OranizedData: "  << time_organized_data << '\t' << "Octree: " << time_octree << '\t' << std::endl;
   }
-/*  else if(search_type == NEAREST_RADIUS_SEARCH)
+  else if (search_type == NEAREST_RADIUS_SEARCH)
   {
+    double searchRadius = 1.0 * ((double)rand () / (double)RAND_MAX);
 
-       double searchRadius = 1.0 * ((double)rand () / (double)RAND_MAX);
+    std::vector<int> k_indices;
+    std::vector<float> k_distances;
+    std::cout << "\n---------------\nKDTree\n---------------\n";
+    double time1 = getTime ();
+    search_.reset (new KdTreeWrapper<PointT> ());
+    search_->setInputCloud (cloudIn);
+    search_->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
+    std::cout << "Neighbors are:" << std::endl;
 
-       std::vector<int> k_indices;
-       std::vector<float> k_distances;
-          std::cout << "\n---------------\nKDTree\n---------------\n";
-          double time1 = getTime();
-          search_.reset(new KdTreeWrapper<PointT>());
-          search_->setInputCloud(cloudIn);
-          search_->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
-          std::cout << "Neighbors are:" << std::endl;
+    for(int i = 0;i < 20; ++i)
+    {
+      std::cout << k_indices[i] << '\t';
+    }
+    std::cout << std::endl;
+    std::cout << "Number of Neighbors: " << k_indices.size () << std::endl; 
+    k_indices.clear (); k_distances.clear ();
 
-          for(int i=0;i<20;i++){
-          std::cout << k_indices[i] << '\t';
-          }
-          std::cout << std::endl;
-          std::cout << "Number of Neighbors: " << k_indices.size() << std::endl; k_indices.clear();k_distances.clear();
+    std::cout << "\n---------------\nOrganizedData\n---------------\n";
+    double time2 = getTime ();
+    search_.reset (new OrganizedNeighborSearch<PointT> ());
+    search_->setInputCloud (cloudIn);
+    search_->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
+    std::cout << "Neighbors are: " << std::endl;
+    for (int i = 0; i < 20; ++i)
+    {
+    std::cout << k_indices[i] << '\t';
+    }
+    std::cout << std::endl;
+    std::cout << "Number of Neigbhors: " << k_indices.size () << std::endl; 
+    k_indices.clear (); k_distances.clear ();
 
-          std::cout << "\n---------------\nOrganizedData\n---------------\n";
-          double time2 = getTime();
-          search_.reset(new OrganizedNeighborSearch<PointT>());
-          search_->setInputCloud(cloudIn);
-          search_->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
-          std::cout << "Neighbors are: " << std::endl;
-          for(int i=0;i<20;i++){
-          std::cout << k_indices[i] << '\t';
-          }
-          std::cout << std::endl;
-          std::cout << "Number of Neigbhors: " << k_indices.size() << std::endl; k_indices.clear();k_distances.clear();
+    std::cout << "\n---------------\nOctree\n---------------\n";
+    double time3 = getTime ();
+    search_.reset (new pcl::octree::OctreeWrapper<PointT> (0.1f));
+    search_->setInputCloud (cloudIn);
+    search_->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
+    std::cout << "Neighbors are: " << std::endl;
+    for (int i = 0; i < 20; ++i) 
+    {
+      std::cout << k_indices[i] << '\t';
+    }
+    std::cout << std::endl;
+    std::cout << "Number of Neighbors: " << k_indices.size () << std::endl; 
+    k_indices.clear (); k_distances.clear ();
+    std::cout << std::endl;
+    std::cout << std::endl;
 
-          std::cout << "\n---------------\nOctree\n---------------\n";
-          double time3 = getTime();
-          search_.reset(new pcl::octree::OctreeWrapper<PointT>(0.1f));
-          search_->setInputCloud(cloudIn);
-          search_->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
-          std::cout << "Neighbors are: " << std::endl;
-          for(int i=0;i<20;i++){
-          std::cout << k_indices[i] << '\t';
-          }
-          std::cout << std::endl;
-          std::cout << "Number of Neighbors: " << k_indices.size() << std::endl; k_indices.clear();k_distances.clear();
-          std::cout << std::endl;
-          std::cout << std::endl;
-
-
-     time_kdtree = time2 - time1;
-     time_organized_data = time3 - time2;
-     time_octree = getTime() - time3;
+    time_kdtree = time2 - time1;
+    time_organized_data = time3 - time2;
+    time_octree = getTime () - time3;
     
     std::cout << "Time Taken: " << "KDTree: " << time_kdtree << '\t' <<"OranizedData: "  << time_organized_data << '\t' << "Octree: " << time_octree << '\t' << std::endl;	
-
   }
   else
   {
-
-  std::cerr << "Only NEAREST_K_SEARCH and NEAREST_RADIUS_SEARCH supported" << std::endl;
-  exit(0);
+    std::cerr << "Only NEAREST_K_SEARCH and NEAREST_RADIUS_SEARCH supported" << std::endl;
+    exit (0);
   }
   // Set the datastructure according to which takes the minimum time
   if(time_kdtree < time_organized_data && time_kdtree < time_octree)
   {
-  spatial_loc_ = KDTREE_FLANN;
-  search_.reset(new KdTreeWrapper<PointT>());
+    spatial_loc_ = KDTREE_FLANN;
+    search_.reset (new KdTreeWrapper<PointT> ());
   }
-  else if(time_octree < time_kdtree && time_octree < time_organized_data)
+  else if (time_octree < time_kdtree && time_octree < time_organized_data)
   {
-  spatial_loc_ = OCTREE;
-  search_.reset(new pcl::octree::OctreeWrapper<PointT>(0.1f));
+    spatial_loc_ = OCTREE;
+    search_.reset (new pcl::octree::OctreeWrapper<PointT> (0.1f));
   }
-  else if(time_organized_data < time_kdtree && time_organized_data < time_octree)
+  else if (time_organized_data < time_kdtree && time_organized_data < time_octree)
   {
-  spatial_loc_ = OCTREE;
-          search_.reset(new OrganizedNeighborSearch<PointT>());
+    spatial_loc_ = OCTREE;
+    search_.reset (new OrganizedNeighborSearch<PointT> ());
   }
-*/
 //  search_->setInputCloud (cloudIn);
 }
 
@@ -241,7 +241,7 @@ pcl::AutotunedSearch<PointT>::nearestKSearch (const PointT &point,
                                               std::vector<int> &k_indices, 
                                               std::vector<float> &k_sqr_distances) 
 {
-  //return (search_->nearestKSearch (point, k, k_indices, k_sqr_distances));
+  return (search_->nearestKSearch (point, k, k_indices, k_sqr_distances));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

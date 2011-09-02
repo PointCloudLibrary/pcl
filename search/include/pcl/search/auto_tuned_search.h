@@ -89,7 +89,7 @@ namespace pcl
       virtual void 
       setInputCloud (const PointCloudConstPtr& cloud);
 
-      virtual int
+      int
       nearestKSearch (const PointT& point, 
                       int k, 
                       std::vector<int> &k_indices, 
@@ -100,6 +100,16 @@ namespace pcl
 
       virtual int
       nearestKSearch (int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances);
+
+      inline int
+      nearestKSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, 
+                      std::vector <int>& k, 
+                      std::vector<std::vector<int> >& k_indices,
+                      std::vector<std::vector<float> >& k_sqr_distances)
+      {
+        std::cerr << "This function is not supported by AutoTunedSearch" << std::endl;
+        return (0);
+      }
 
       virtual int 
       radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices,    std::vector<float>& k_distances, int max_nn = -1) const;
@@ -114,7 +124,6 @@ namespace pcl
                     std::vector<float>& k_distances, int max_nn = -1) const;
 
 
-
       virtual void
       approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
                            float &sqr_distance_arg);
@@ -126,22 +135,14 @@ namespace pcl
       approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg);
 
       inline int
-      nearestKSearch (std::vector<const PointT>& point, 
-                      std::vector <int>& k, 
-                      std::vector<std::vector<int> >& k_indices,
-                      std::vector<std::vector<float> >& k_sqr_distances)
-      {
-        std::cerr << "This function is not supported by AutoTunedSearch" << std::endl;
-      }
-
-      inline int
-      radiusSearch (std::vector<PointT> &point, 
+      radiusSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> > &point, 
                     std::vector <double> &radiuses, 
                     std::vector<std::vector<int> > &k_indices,
                     std::vector<std::vector<float> > &k_distances, 
                     int max_nn) const
       {
         std::cerr << "This function is not supported by AutoTunedSearch" << std::endl;
+        return (0);
       }
 
 
@@ -154,6 +155,7 @@ namespace pcl
                           int max_nn) const
       {
         std::cerr << "This function is not supported by AutotunedSearch" << std::endl;
+        return (0);
       }
 
       inline int
@@ -164,6 +166,7 @@ namespace pcl
                             std::vector<float> &k_sqr_distances)
       {
         std::cerr << "This function is not supported by AutotunedSearch" << std::endl;
+        return (0);
       }
 
     private:
