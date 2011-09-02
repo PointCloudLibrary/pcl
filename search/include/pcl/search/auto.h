@@ -112,7 +112,7 @@ namespace pcl
                         std::vector<std::vector<int> >& k_indices,
                         std::vector<std::vector<float> >& k_sqr_distances)
         {
-          std::cerr << "This function is not supported by AutoTunedSearch" << std::endl;
+          PCL_ERROR("[pcl::search::AutotunedSearch::nearestKSearch] This function is not supported by AutotunedSearch\n");
           return (0);
         }
 
@@ -146,7 +146,7 @@ namespace pcl
                       std::vector<std::vector<float> > &k_distances, 
                       int max_nn) const
         {
-          std::cerr << "This function is not supported by AutoTunedSearch" << std::endl;
+          PCL_ERROR("[pcl::search::AutotunedSearch::radiusSearch] This function is not supported by AutotunedSearch\n");
           return (0);
         }
 
@@ -159,7 +159,7 @@ namespace pcl
                             std::vector<float> &k_distances,
                             int max_nn) const
         {
-          std::cerr << "This function is not supported by AutotunedSearch" << std::endl;
+          PCL_ERROR("[pcl::search::AutotunedSearch::approxRadiusSearch] This function is not supported by AutotunedSearch\n");
           return (0);
         }
 
@@ -170,7 +170,7 @@ namespace pcl
                               std::vector<int> &k_indices, 
                               std::vector<float> &k_sqr_distances)
         {
-          std::cerr << "This function is not supported by AutotunedSearch" << std::endl;
+          PCL_ERROR("[pcl::search::AutotunedSearch::approxNearestKSearch] This function is not supported by AutotunedSearch\n");
           return (0);
         }
 

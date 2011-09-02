@@ -182,7 +182,7 @@ namespace pcl
                              float &sqr_distance_arg)
 
         {
-          std::cerr << "This function is not supported by KdTreeWrapper" << std::endl;
+          PCL_ERROR("[pcl::search::KdTree::approxNearestSearch] This function is not supported by KdTree\n");
         }
 
         inline void
@@ -190,7 +190,7 @@ namespace pcl
                              int &result_index_arg, 
                              float &sqr_distance_arg)
         {
-          std::cerr << "This function is not supported by KdTreeWrapper" << std::endl;
+          PCL_ERROR("[pcl::search::KdTree::approxNearestSearch] This function is not supported by KdTree\n");
         }
 
         inline void
@@ -198,7 +198,7 @@ namespace pcl
                              int &result_index_arg, 
                              float &sqr_distance_arg)
         {
-          std::cerr << "This function is not supported by KdTreeWrapper" << std::endl;
+          PCL_ERROR("[pcl::search::KdTree::approxNearestSearch] This function is not supported by KdTree\n");
         }
 
         inline int
@@ -209,7 +209,7 @@ namespace pcl
                             std::vector<float> &k_distances,
                             int max_nn) const
         {
-          std::cerr << "This function is not supported by KdTreeWrapper" << std::endl;
+          PCL_ERROR("[pcl::search::KdTree::approxRadiusSearch] This function is not supported by KdTree\n");
           return (0);
         }
 
@@ -221,7 +221,7 @@ namespace pcl
                               std::vector<int> &k_indices, 
                               std::vector<float> &k_sqr_distances)
         {
-          std::cerr << "This function is not supported by KdTreeWrapper" << std::endl;
+          PCL_ERROR("[pcl::search::KdTree::approxNearestKSearch] This function is not supported by KdTree\n");
           return (0);
         }
 
@@ -229,7 +229,7 @@ namespace pcl
         evaluateSearchMethods (const PointCloudConstPtr &cloud, 
                                const int search_type)
         {
-          std::cerr << "This function is not supported by KdTreeWrapper" << std::endl;
+          PCL_ERROR("[pcl::search::KdTree::evaluateSearchMethods] This function is not supported by KdTree\n");
         }
 
         inline int
@@ -238,7 +238,7 @@ namespace pcl
                         std::vector<std::vector<int> > &k_indices,
                         std::vector<std::vector<float> > &k_sqr_distances)
         {
-          std::cerr << "This function is not supported by KdTreeWrapper" << std::endl;
+          PCL_ERROR("[pcl::search::KdTree::nearestKSearch] This function is not supported by KdTree\n");
           return (0);
         }
 
@@ -249,7 +249,7 @@ namespace pcl
                       std::vector<std::vector<float> > &k_distances, 
                       int max_nn) const
         {
-          std::cerr << "This function is not supported by KdTreeWrapper" << std::endl;
+          PCL_ERROR("[pcl::search::KdTree::radiusSearch] This function is not supported by KdTree\n");
           return (0);
         }
     };

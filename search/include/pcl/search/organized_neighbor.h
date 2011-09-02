@@ -97,15 +97,15 @@ namespace pcl
         inline void 
         setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices)
         {
-          std::cerr << "This function is not supported by OrganizedNeighbor" << std::endl;
+          PCL_ERROR("[pcl::search::OrganizedNeighbor::setInputCloud] This function is not supported by OrganizedNeighbor\n");
         }
 
           
         inline int
         nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
         {
+          PCL_ERROR("[pcl::search::OrganizedNeighbor::nearestKSearch] This function is not supported by OrganizedNeighbor\n");
 
-          std::cerr << "This function is not supported by OrganizedNeighbor" << std::endl;
           return (0);
         }
 
@@ -114,7 +114,7 @@ namespace pcl
                       std::vector<int>& k_indices, std::vector<float>& k_distances,
                       int max_nn) 
         {
-          std::cerr << "This function is not supported by OrganizedNeighbor" << std::endl;
+          PCL_ERROR("[pcl::search::OrganizedNeighbor::radiusSearch] This function is not supported by OrganizedNeighbor\n");
           return (0);
         }
 
@@ -228,39 +228,39 @@ namespace pcl
         approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
                              float &sqr_distance_arg)
         {
-          std::cerr << "This function is not supported by OrganizedNeighbor" << std::endl;
+          PCL_ERROR("[pcl::search::OrganizedNeighbor::approxNearestSearch] This function is not supported by OrganizedNeighbor\n");
         }
 
         inline void 
         approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg)
         {
-          std::cerr << "This function is not supported by OrganizedNeighbor" << std::endl;
+          PCL_ERROR("[pcl::search::OrganizedNeighbor::approxNearestSearch] This function is not supported by OrganizedNeighbor\n");
         };
 
         inline void 
         approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg)
         {
-          std::cerr << "This function is not supported by OrganizedNeighbor" << std::endl;
+          PCL_ERROR("[pcl::search::OrganizedNeighbor::approxNearestSearch] This function is not supported by OrganizedNeighbor\n");
         };
 
         inline void
         evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type)
         {
-          std::cerr << "This function is not supported by OrganizedNeighbor" << std::endl;
+          PCL_ERROR("[pcl::search::OrganizedNeighbor::evaluateSearchMethods] This function is not supported by OrganizedNeighbor\n");
         }
 
 
         inline int
         nearestKSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances)
         {
-          std::cerr << "This function is not supported by OrganizedNeighbor" << std::endl;
+          PCL_ERROR("[pcl::search::OrganizedNeighbor::nearestKSearch] This function is not supported by OrganizedNeighbor\n");
           return (0);
         }
 
         inline int
         radiusSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, std::vector <  double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const
         {
-          std::cerr << "This function is not supported by OrganizedNeighbor" << std::endl;
+          PCL_ERROR("[pcl::search::OrganizedNeighbor::radiusSearch] This function is not supported by OrganizedNeighbor\n");
           return (0);
         }
 

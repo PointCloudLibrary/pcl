@@ -135,7 +135,7 @@ namespace pcl
                         std::vector<int>& k_indices, 
                         std::vector<float>& k_sqr_distances)
         {
-          std::cerr << "This function is not supported by Octree class" << std::endl;
+          PCL_ERROR("[pcl::search::Octree::nearestKSearch] This function is not supported by Octree\n");
           return (0);
         }
 
@@ -147,7 +147,7 @@ namespace pcl
                       std::vector<float> &k_distances,
                       int max_nn) 
         {
-          std::cerr << "This function is not supported by Octree class" << std::endl;
+          PCL_ERROR("[pcl::search::Octree::radiusSearch] This function is not supported by Octree\n");
           return (0);
         }
 
@@ -159,7 +159,7 @@ namespace pcl
                             std::vector<float> &k_distances,
                             int max_nn) const
         {
-          std::cerr << "This function is not supported by Octree" << std::endl;
+          PCL_ERROR("[pcl::search::Octree::approxRadiusSearch] This function is not supported by Octree\n");
           return (0);
         }
 
@@ -170,14 +170,14 @@ namespace pcl
                               std::vector<int> &k_indices, 
                               std::vector<float> &k_sqr_distances)
         {
-          std::cerr << "This function is not supported by Octree" << std::endl;
+          PCL_ERROR("[pcl::search::Octree::approxNearestKSearch] This function is not supported by Octree\n");
           return (0);
         }
 
         inline void
         evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type)
         {
-          std::cerr << "This function is not supported by Octree" << std::endl;
+          PCL_ERROR("[pcl::search::Octree::evaluateSearchMethods] This function is not supported by Octree\n");
         }
 
 
@@ -187,7 +187,7 @@ namespace pcl
                         std::vector<std::vector<int> > &k_indices,
                         std::vector<std::vector<float> > &k_sqr_distances)
         {
-          std::cerr << "This function is not supported by Octree" << std::endl;
+          PCL_ERROR("[pcl::search::Octree::nearestKSearch] This function is not supported by Octree\n");
           return (0);
         }
 
@@ -198,7 +198,7 @@ namespace pcl
                       std::vector<std::vector<float> > &k_distances, 
                       int max_nn) const
         {
-          std::cerr << "This function is not supported by Octree" << std::endl;
+          PCL_ERROR("[pcl::search::Octree::radiusSearch] This function is not supported by Octree\n");
           return (0);
         }
 
