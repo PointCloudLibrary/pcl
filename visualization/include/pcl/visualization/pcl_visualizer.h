@@ -794,6 +794,19 @@ namespace pcl
         addLine (const P1 &pt1, const P2 &pt2, double r, double g, double b, 
                  const std::string &id = "line", int viewport = 0);
 
+        /** \brief Add a line arrow segment between two points, and display the distance between them
+          * \param pt1 the first (start) point on the line
+          * \param pt2 the second (end) point on the line
+          * \param r the red channel of the color that the line should be rendered with
+          * \param g the green channel of the color that the line should be rendered with
+          * \param b the blue channel of the color that the line should be rendered with
+          * \param id the line id/name (default: "arrow")
+          * \param viewport (optional) the id of the new viewport (default: 0)
+          */
+        template <typename P1, typename P2> bool 
+        addArrow (const P1 &pt1, const P2 &pt2, double r, double g, double b, 
+                  const std::string &id = "arrow", int viewport = 0);
+
         /** \brief Add a sphere shape from a point and a radius
           * \param center the center of the sphere
           * \param radius the radius of the sphere

@@ -41,6 +41,9 @@
 #define PCL_PCL_VISUALIZER_IMPL_H_
 
 #include <vtkCellData.h>
+#include <vtkProperty2D.h>
+#include <vtkMapper2D.h>
+#include <vtkLeaderActor2D.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool 
@@ -349,6 +352,35 @@ pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, double
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
+  return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+template <typename P1, typename P2> bool
+pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, double r, double g, double b, const std::string &id, int viewport)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
+  {
+    PCL_WARN ("[addArrow] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  // Create an Actor
+  vtkSmartPointer<vtkLeaderActor2D> leader = vtkSmartPointer<vtkLeaderActor2D>::New ();
+  leader->GetPositionCoordinate ()->SetCoordinateSystemToWorld ();
+  leader->GetPositionCoordinate ()->SetValue (pt1.x, pt1.y, pt1.z);
+  leader->GetPosition2Coordinate ()->SetCoordinateSystemToWorld ();
+  leader->GetPosition2Coordinate ()->SetValue (pt2.x, pt2.y, pt2.z);
+  leader->SetArrowStyleToFilled ();
+  leader->AutoLabelOn ();
+
+  leader->GetProperty ()->SetColor (r, g, b);
+  addActorToRenderer (leader, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  (*shape_actor_map_)[id] = leader;
   return (true);
 }
 
