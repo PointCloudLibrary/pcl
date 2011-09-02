@@ -203,7 +203,7 @@ TEST (PCL, PointCloud)
   EXPECT_EQ (cloud.isOrganized (), false);
   EXPECT_EQ (cloud.width, 6);
 
-  cloud.erase (cloud.end ());
+  cloud.erase (cloud.end () - 1);
   EXPECT_EQ (cloud.isOrganized (), false);
   EXPECT_EQ (cloud.width, 5);
 
