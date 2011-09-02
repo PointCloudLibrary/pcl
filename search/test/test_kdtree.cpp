@@ -79,7 +79,7 @@ TEST (PCL, KdTree_nearestKSearch)
   for (size_t i = 0; i < cloud.points.size (); ++i)
   {
     float distance = euclideanDistance (cloud.points[i], test_point);
-    sorted_brute_force_result.insert (make_pair (distance, i));
+    sorted_brute_force_result.insert (make_pair (distance, (int) i));
   }
   float max_dist = 0.0f;
   unsigned int counter = 0;

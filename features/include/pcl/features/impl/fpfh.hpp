@@ -192,7 +192,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
     {
         // Special case: When a feature must be computed at every point, there is no need for a neighborhood search
         for (size_t idx = 0; idx < indices_->size (); ++idx)
-            spfh_indices.insert (idx);
+            spfh_indices.insert ((int) idx);
     }
 
     // Initialize the arrays that will store the SPFH signatures
