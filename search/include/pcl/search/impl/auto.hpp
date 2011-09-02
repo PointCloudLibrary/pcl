@@ -40,42 +40,41 @@
 
 #include <pcl/pcl_base.h>
 #include <vector>
-#include "pcl/search/search.h"
+#include "pcl/search/auto.h"
 #include "pcl/search/kdtree.h"
-#include "pcl/search/octree_pointcloud.h"
-#include "pcl/search/organized_neighbor_search.h"
+#include "pcl/search/octree.h"
+#include "pcl/search/organized_neighbor.h"
 #include <pcl/common/time.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
-pcl::AutotunedSearch<PointT>::initSearchDS (int spatial_locator)
+pcl::search::AutotunedSearch<PointT>::initSearchDS (int spatial_locator)
 {
   // specifies the data-structure to be used using spatial_locator flag
-  if (spatial_locator == KDTREE_FLANN)
+  if (spatial_locator == KDTREE)
     // initialize kdtree
-    search_.reset (new KdTreeWrapper<PointT> ());
+    search_.reset (new KdTree<PointT> ());
   else if (spatial_locator == ORGANIZED_INDEX)
-    search_.reset (new OrganizedNeighborSearch<PointT> ());
+    search_.reset (new OrganizedNeighbor<PointT> ());
   else if (spatial_locator == OCTREE)
-    search_.reset (new pcl::octree::OctreeWrapper<PointT> (0.1f));
+    search_.reset (new Octree<PointT> (0.1f));
   else
-    PCL_ERROR ("[pcl::AutotunedSearch::initSearchDS] Spatial locator (%d) unknown!\n", spatial_locator);
+    PCL_ERROR ("[pcl::search::AutotunedSearch::initSearchDS] Spatial locator (%d) unknown!\n", spatial_locator);
    spatial_loc_ = spatial_locator;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
-pcl::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& cloudIn, const int search_type)
+pcl::search::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type)
 {
   // Evaluates different search data-structures for the given data and sets it to the ds having minimum time
 	unsigned int searchIdx;
   while (1)
   {
-    searchIdx = rand()%(cloudIn->width * cloudIn->height);
-    if (cloudIn->points[searchIdx].z < 100)
+    searchIdx = rand()%(cloud->width * cloud->height);
+    if (cloud->points[searchIdx].z < 100)
       break;
    }
-  const PointT& searchPoint = cloudIn->points[searchIdx];
 
   double time_kdtree, time_octree, time_organized_data;
   if (search_type == NEAREST_K_SEARCH)
@@ -87,9 +86,9 @@ pcl::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& c
     k_distances.resize (no_of_neighbors);
     std::cout << "\n---------------\nKDTree\n---------------\n";
     double time1 = getTime ();
-    search_.reset (new KdTreeWrapper<PointT> ());
-    search_->setInputCloud (cloudIn);
-    search_->nearestKSearch (searchPoint, no_of_neighbors, k_indices, k_distances);
+    search_.reset (new KdTree<PointT> ());
+    search_->setInputCloud (cloud);
+    search_->nearestKSearch (cloud->points[searchIdx], no_of_neighbors, k_indices, k_distances);
     std::cout << "Neighbors are:" << std::endl;    
     for (int i = 0; i < 20; i++)
     {
@@ -101,9 +100,9 @@ pcl::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& c
 
     std::cout << "\n---------------\nOrganizedData\n---------------\n";
     double time2 = getTime ();
-    search_.reset (new OrganizedNeighborSearch<PointT>());
-    search_->setInputCloud (cloudIn);
-    search_->nearestKSearch (searchPoint, no_of_neighbors, k_indices, k_distances);
+    search_.reset (new OrganizedNeighbor<PointT>());
+    search_->setInputCloud (cloud);
+    search_->nearestKSearch (cloud->points[searchIdx], no_of_neighbors, k_indices, k_distances);
     std::cout << "Neighbors are: " << std::endl;
     for (int i = 0;i < 20; i++)
     {
@@ -115,9 +114,9 @@ pcl::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& c
 
     std::cout << "\n---------------\nOctree\n---------------\n";
     double time3 = getTime ();
-    search_.reset (new pcl::octree::OctreeWrapper<PointT> (0.1f));
-    search_->setInputCloud (cloudIn);
-    search_->nearestKSearch (searchPoint, no_of_neighbors, k_indices, k_distances);
+    search_.reset (new Octree<PointT> (0.1f));
+    search_->setInputCloud (cloud);
+    search_->nearestKSearch (cloud->points[searchIdx], no_of_neighbors, k_indices, k_distances);
     std::cout << "Neighbors are: " << std::endl;
     for (int i = 0;i < 20; i++)
     {
@@ -143,9 +142,9 @@ pcl::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& c
     std::vector<float> k_distances;
     std::cout << "\n---------------\nKDTree\n---------------\n";
     double time1 = getTime ();
-    search_.reset (new KdTreeWrapper<PointT> ());
-    search_->setInputCloud (cloudIn);
-    search_->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
+    search_.reset (new KdTree<PointT> ());
+    search_->setInputCloud (cloud);
+    search_->radiusSearch (cloud->points[searchIdx], searchRadius, k_indices, k_distances);
     std::cout << "Neighbors are:" << std::endl;
 
     for(int i = 0;i < 20; ++i)
@@ -158,9 +157,9 @@ pcl::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& c
 
     std::cout << "\n---------------\nOrganizedData\n---------------\n";
     double time2 = getTime ();
-    search_.reset (new OrganizedNeighborSearch<PointT> ());
-    search_->setInputCloud (cloudIn);
-    search_->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
+    search_.reset (new OrganizedNeighbor<PointT> ());
+    search_->setInputCloud (cloud);
+    search_->radiusSearch (cloud->points[searchIdx], searchRadius, k_indices, k_distances);
     std::cout << "Neighbors are: " << std::endl;
     for (int i = 0; i < 20; ++i)
     {
@@ -172,9 +171,9 @@ pcl::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& c
 
     std::cout << "\n---------------\nOctree\n---------------\n";
     double time3 = getTime ();
-    search_.reset (new pcl::octree::OctreeWrapper<PointT> (0.1f));
-    search_->setInputCloud (cloudIn);
-    search_->radiusSearch (searchPoint, searchRadius, k_indices, k_distances);
+    search_.reset (new Octree<PointT> (0.1f));
+    search_->setInputCloud (cloud);
+    search_->radiusSearch (cloud->points[searchIdx], searchRadius, k_indices, k_distances);
     std::cout << "Neighbors are: " << std::endl;
     for (int i = 0; i < 20; ++i) 
     {
@@ -198,28 +197,28 @@ pcl::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudConstPtr& c
     exit (0);
   }
   // Set the datastructure according to which takes the minimum time
-  if(time_kdtree < time_organized_data && time_kdtree < time_octree)
+  if (time_kdtree < time_organized_data && time_kdtree < time_octree)
   {
-    spatial_loc_ = KDTREE_FLANN;
-    search_.reset (new KdTreeWrapper<PointT> ());
+    spatial_loc_ = KDTREE;
+    search_.reset (new KdTree<PointT> ());
   }
   else if (time_octree < time_kdtree && time_octree < time_organized_data)
   {
     spatial_loc_ = OCTREE;
-    search_.reset (new pcl::octree::OctreeWrapper<PointT> (0.1f));
+    search_.reset (new Octree<PointT> (0.1f));
   }
   else if (time_organized_data < time_kdtree && time_organized_data < time_octree)
   {
     spatial_loc_ = OCTREE;
-    search_.reset (new OrganizedNeighborSearch<PointT> ());
+    search_.reset (new OrganizedNeighbor<PointT> ());
   }
-//  search_->setInputCloud (cloudIn);
+//  search_->setInputCloud (cloud);
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
-pcl::AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr &cloud, 
+pcl::search::AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr &cloud, 
                                              const IndicesConstPtr &indices)
 {
   input_ = cloud;
@@ -228,7 +227,7 @@ pcl::AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr &cloud,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
-pcl::AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
+pcl::search::AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
 {
   input_ = cloud;
   search_->setInputCloud (cloud);
@@ -236,7 +235,7 @@ pcl::AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int 
-pcl::AutotunedSearch<PointT>::nearestKSearch (const PointT &point,
+pcl::search::AutotunedSearch<PointT>::nearestKSearch (const PointT &point,
                                               int k, 
                                               std::vector<int> &k_indices, 
                                               std::vector<float> &k_sqr_distances) 
@@ -246,7 +245,7 @@ pcl::AutotunedSearch<PointT>::nearestKSearch (const PointT &point,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int 
-pcl::AutotunedSearch<PointT>::nearestKSearch (const PointCloud &cloud, 
+pcl::search::AutotunedSearch<PointT>::nearestKSearch (const PointCloud &cloud, 
                                               int index, 
                                               int k, 
                                               std::vector<int> &k_indices, 
@@ -257,7 +256,7 @@ pcl::AutotunedSearch<PointT>::nearestKSearch (const PointCloud &cloud,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int 
-pcl::AutotunedSearch<PointT>::nearestKSearch (int index, 
+pcl::search::AutotunedSearch<PointT>::nearestKSearch (int index, 
                                               int k, 
                                               std::vector<int> &k_indices, 
                                               std::vector<float> &k_sqr_distances)
@@ -267,7 +266,7 @@ pcl::AutotunedSearch<PointT>::nearestKSearch (int index,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::AutotunedSearch<PointT>::radiusSearch (const PointT &point, 
+pcl::search::AutotunedSearch<PointT>::radiusSearch (const PointT &point, 
                                             const double radius, 
                                             std::vector<int> &k_indices, 
                                             std::vector<float> &k_distances, 
@@ -278,7 +277,7 @@ pcl::AutotunedSearch<PointT>::radiusSearch (const PointT &point,
     
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int 
-pcl::AutotunedSearch<PointT>::radiusSearch (const PointCloud &cloud, 
+pcl::search::AutotunedSearch<PointT>::radiusSearch (const PointCloud &cloud, 
                                             int index, 
                                             double radius,
                                             std::vector<int> &k_indices, 
@@ -290,7 +289,7 @@ pcl::AutotunedSearch<PointT>::radiusSearch (const PointCloud &cloud,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int 
-pcl::AutotunedSearch<PointT>::radiusSearch (int index, 
+pcl::search::AutotunedSearch<PointT>::radiusSearch (int index, 
                                             double radius, 
                                             std::vector<int> &k_indices,
                                             std::vector<float> &k_distances, 
@@ -301,7 +300,7 @@ pcl::AutotunedSearch<PointT>::radiusSearch (int index,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
-pcl::AutotunedSearch<PointT>::approxNearestSearch (const PointCloudConstPtr &cloud_arg, 
+pcl::search::AutotunedSearch<PointT>::approxNearestSearch (const PointCloudConstPtr &cloud_arg, 
                                                    int query_index_arg, 
                                                    int &result_index_arg,
                                                    float &sqr_distance_arg)
@@ -314,7 +313,7 @@ pcl::AutotunedSearch<PointT>::approxNearestSearch (const PointCloudConstPtr &clo
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
-pcl::AutotunedSearch<PointT>::approxNearestSearch (const PointT &p_q_arg, 
+pcl::search::AutotunedSearch<PointT>::approxNearestSearch (const PointT &p_q_arg, 
                                                    int &result_index_arg, 
                                                    float &sqr_distance_arg)
 {
@@ -326,7 +325,7 @@ pcl::AutotunedSearch<PointT>::approxNearestSearch (const PointT &p_q_arg,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
-pcl::AutotunedSearch<PointT>::approxNearestSearch (int query_index_arg, 
+pcl::search::AutotunedSearch<PointT>::approxNearestSearch (int query_index_arg, 
                                                    int &result_index_arg, 
                                                    float &sqr_distance_arg)
 {
@@ -336,6 +335,6 @@ pcl::AutotunedSearch<PointT>::approxNearestSearch (int query_index_arg,
     PCL_ERROR ("approxNearestSearch() works only for OCTREE structure\n");
 }
 
-#define PCL_INSTANTIATE_AutotunedSearch(T) template class PCL_EXPORTS pcl::AutotunedSearch<T>;
+#define PCL_INSTANTIATE_AutotunedSearch(T) template class PCL_EXPORTS pcl::search::AutotunedSearch<T>;
 
 #endif  //#ifndef PCL_SEARCH_AUTO_TUNED_SEARCH_IMPL

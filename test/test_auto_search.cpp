@@ -1,25 +1,56 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id: test_feature.cpp 2177 2011-08-23 13:58:35Z shapovalov $
+ *
+ */
 #include <iostream>
 #include <gtest/gtest.h>
-
-
-using namespace std;
-
 #include <pcl/common/time.h>
-//#include <pcl/kdtree/kdtree_ann.h>
 #include <pcl/search/pcl_search.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-
 #include <pcl/io/pcd_io.h>
 
+using namespace std;
 using namespace pcl;
 
-
-
-
 PointCloud<PointXYZ> cloud, cloud_big;
+
 void
-  init ()
+init ()
 {
   float resolution = 0.1;
   for (float z = -0.5f; z <= 0.5f; z += resolution)
@@ -42,31 +73,29 @@ void
 // helper class for priority queue
 class prioPointQueueEntry
 {
-public:
-  prioPointQueueEntry ()
-  {
-  }
-  prioPointQueueEntry (PointXYZ& point_arg, double pointDistance_arg, int pointIdx_arg)
-  {
-    point_ = point_arg;
-    pointDistance_ = pointDistance_arg;
-    pointIdx_ = pointIdx_arg;
-  }
+  public:
+    prioPointQueueEntry ()
+    {
+    }
+    prioPointQueueEntry (PointXYZ& point_arg, double pointDistance_arg, int pointIdx_arg)
+    {
+      point_ = point_arg;
+      pointDistance_ = pointDistance_arg;
+      pointIdx_ = pointIdx_arg;
+    }
 
-  bool
-  operator< (const prioPointQueueEntry& rhs_arg) const
-  {
-    return (this->pointDistance_ < rhs_arg.pointDistance_);
-  }
+    bool
+    operator< (const prioPointQueueEntry& rhs_arg) const
+    {
+      return (this->pointDistance_ < rhs_arg.pointDistance_);
+    }
 
-  PointXYZ point_;
-  double pointDistance_;int pointIdx_;
-
+    PointXYZ point_;
+    double pointDistance_;int pointIdx_;
 };
 
 TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 {
-
   const unsigned int test_runs = 1;
   unsigned int test_id;
 
@@ -74,15 +103,13 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
   size_t i;
-
   srand (time (NULL));
-
   unsigned int K;
 
   std::priority_queue<prioPointQueueEntry, std::vector<prioPointQueueEntry, Eigen::aligned_allocator<prioPointQueueEntry> > > pointCandidates;
 
   // create octree
- Search<PointXYZ>* octree = new  AutotunedSearch<PointXYZ>(OCTREE);
+  pcl::search::Search<PointXYZ>* octree = new  pcl::search::AutotunedSearch<PointXYZ>(pcl::search::OCTREE);
 
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
@@ -162,16 +189,12 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 
       k_sqr_distances_bruteforce.pop_back();
       k_sqr_distances.pop_back();
-
     }
-
   }
-
 }
 
 TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 {
-
   const unsigned int test_runs = 100;
   unsigned int test_id;
 
@@ -183,10 +206,8 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
   size_t i;
   srand (time (NULL));
 
-  double voxelResolution = 0.1;
-
   // create octree
-  Search<PointXYZ>* octree = new AutotunedSearch<PointXYZ>(OCTREE);
+  pcl::search::Search<PointXYZ>* octree = new pcl::search::AutotunedSearch<PointXYZ>(pcl::search::OCTREE);
 
 
   for (test_id = 0; test_id < test_runs; test_id++)
@@ -250,7 +271,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 TEST (PCL, KdTreeWrapper_nearestKSearch)
 {
 
-  Search<PointXYZ>* kdtree = new AutotunedSearch<PointXYZ>(KDTREE_FLANN);
+  pcl::search::Search<PointXYZ>* kdtree = new pcl::search::AutotunedSearch<PointXYZ>(pcl::search::KDTREE);
   kdtree->setInputCloud (cloud.makeShared ());
   PointXYZ test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
@@ -291,7 +312,8 @@ TEST (PCL, KdTreeWrapper_nearestKSearch)
 
   ScopeTime scopeTime ("FLANN nearestKSearch");
   {
-    Search<PointXYZ>* kdtree = new AutotunedSearch<PointXYZ>(KDTREE_FLANN);
+    pcl::search::Search<PointXYZ>* kdtree = new pcl::search::AutotunedSearch<PointXYZ>(pcl::search::KDTREE);
+    //kdtree->initSearchDS ();
     kdtree->setInputCloud (cloud_big.makeShared ());
     for (size_t i = 0; i < cloud_big.points.size (); ++i)
       kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
@@ -303,39 +325,33 @@ TEST (PCL, KdTreeWrapper_nearestKSearch)
 /* Function to auto evaluate the best search structure for the given dataset */
 TEST (PCL, AutoTunedSearch_Evaluate)
 {
+  pcl::search::Search<PointXYZ>* search = new pcl::search::AutotunedSearch<PointXYZ>(pcl::search::AUTO_TUNED);
 
-  Search<PointXYZ>* search = new AutotunedSearch<PointXYZ>(AUTO_TUNED);
-
-    pcl::PCDReader pcd;
+  pcl::PCDReader pcd;
   pcl::PointCloud<PointXYZ>::Ptr cloudIn (new pcl::PointCloud<PointXYZ>);
-
-  unsigned int searchIdx;
 
   if (pcd.read ("office1.pcd", *cloudIn) == -1)
   {
-        std::cout <<"Couldn't read input cloud" << std::endl;
+    std::cout <<"Couldn't read input cloud" << std::endl;
     return;
   }
 
- search->evaluateSearchMethods(cloudIn, NEAREST_K_SEARCH);
- search->evaluateSearchMethods(cloudIn, NEAREST_RADIUS_SEARCH);
+ search->evaluateSearchMethods (cloudIn, pcl::search::NEAREST_K_SEARCH);
+ search->evaluateSearchMethods (cloudIn, pcl::search::NEAREST_RADIUS_SEARCH);
 }
 
 
 
-int main(int argc, char** argv)
+int 
+main(int argc, char** argv)
 {
-
-
   testing::InitGoogleTest (&argc, argv);
   init ();
 
-/* Testing using explicit instantiation of inherited class */
-   Search<PointXYZ>* kdtree = new AutotunedSearch<PointXYZ>(KDTREE_FLANN);
+  // Testing using explicit instantiation of inherited class
+  pcl::search::Search<PointXYZ>* kdtree = new pcl::search::AutotunedSearch<PointXYZ>(pcl::search::KDTREE);
   kdtree->setInputCloud (cloud.makeShared ());
 
   return (RUN_ALL_TESTS ());
-
-
 };
 /* ]--- */

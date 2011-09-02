@@ -67,9 +67,10 @@ if(build)
                  LINK_WITH pcl_io pcl_features
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd)
                  
-    PCL_ADD_TEST(organized_index test_organized_index 
-                 FILES test_organized_index.cpp
-                 LINK_WITH pcl_search pcl_io pcl_filters)
+               #Needs office1.pcd
+               #PCL_ADD_TEST(organized_index test_organized_index 
+               #  FILES test_organized_index.cpp
+               #  LINK_WITH pcl_search pcl_io pcl_filters)
 
     PCL_ADD_TEST(auto_tuned_search auto_tuned_search
                  FILES test_auto_search.cpp

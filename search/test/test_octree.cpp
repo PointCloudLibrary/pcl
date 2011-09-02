@@ -86,7 +86,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   std::priority_queue<prioPointQueueEntry, std::vector<prioPointQueueEntry, Eigen::aligned_allocator<prioPointQueueEntry> > > pointCandidates;
 
   // create octree
-  Search<PointXYZ>* octree = new  OctreeWrapper<PointXYZ>(0.1);
+  pcl::search::Search<PointXYZ>* octree = new pcl::search::Octree<PointXYZ> (0.1);
 
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
@@ -148,7 +148,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 
     // octree nearest neighbor search
     octree->setInputCloud (cloudIn);
-    //octree->nearestKSearch (searchPoint, (int)K, k_indices, k_sqr_distances);
+    octree->nearestKSearch (searchPoint, (int)K, k_indices, k_sqr_distances);
 
     ASSERT_EQ ( k_indices.size() , k_indices_bruteforce.size() );
 
@@ -183,7 +183,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
   double voxelResolution = 0.1;
 
   // create octree
-  Search<PointXYZ>* octree = new OctreeWrapper<PointXYZ>(voxelResolution);
+  pcl::search::Search<PointXYZ>* octree = new pcl::search::Octree<PointXYZ> (voxelResolution);
 
   for (test_id = 0; test_id < test_runs; test_id++)
   {
@@ -196,11 +196,9 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
     for (i = 0; i < 1000; i++)
-    {
       cloudIn->points[i] = PointXYZ (5.0 * ((double)rand () / (double)RAND_MAX),
                                      10.0 * ((double)rand () / (double)RAND_MAX),
                                      10.0 * ((double)rand () / (double)RAND_MAX));
-    }
     // brute force search
     double pointDist;
     double BFdistance = numeric_limits<double>::max ();
@@ -308,7 +306,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
                                      5.0 * ((double)rand () / (double)RAND_MAX));
     }
 
-    Search<PointXYZ>* octree = new OctreeWrapper<PointXYZ>(0.001);
+    pcl::search::Search<PointXYZ>* octree = new pcl::search::Octree<PointXYZ> (0.001);
 
     // build octree
     double pointDist;

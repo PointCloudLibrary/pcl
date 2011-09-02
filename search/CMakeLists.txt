@@ -9,27 +9,27 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
     set(srcs 
-        src/auto_tuned_search.cpp
+        src/auto.cpp
         src/kdtree.cpp
-        src/organized_neighbor_search.cpp
-        src/octree_impl.cpp
+        src/organized_neighbor.cpp
+        src/octree.cpp
 #        src/octree_gpu.cpp
         )
 
     set(incs 
-        include/pcl/${SUBSYS_NAME}/auto_tuned_search.h
+        include/pcl/${SUBSYS_NAME}/auto.h
         include/pcl/${SUBSYS_NAME}/search.h
         include/pcl/${SUBSYS_NAME}/kdtree.h
-        include/pcl/${SUBSYS_NAME}/organized_neighbor_search.h
-        include/pcl/${SUBSYS_NAME}/octree_pointcloud.h
+        include/pcl/${SUBSYS_NAME}/organized_neighbor.h
+        include/pcl/${SUBSYS_NAME}/octree.h
  #       include/pcl/${SUBSYS_NAME}/octree_gpu.h
         )
 
     set(impl_incs 
-        include/pcl/${SUBSYS_NAME}/impl/auto_tuned_search.hpp
+        include/pcl/${SUBSYS_NAME}/impl/auto.hpp
         include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp
-        include/pcl/${SUBSYS_NAME}/impl/organized_neighbor_search.hpp
-        include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud.hpp
+        include/pcl/${SUBSYS_NAME}/impl/organized_neighbor.hpp
+        include/pcl/${SUBSYS_NAME}/impl/octree.hpp
   #      include/pcl/${SUBSYS_NAME}/impl/octree_gpu.hpp
         )
 
@@ -42,25 +42,7 @@ if(build)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "{SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
-    # Install include files
-    set(incs 
-        include/pcl/${SUBSYS_NAME}/auto_tuned_search.h
-        include/pcl/${SUBSYS_NAME}/search.h
-        include/pcl/${SUBSYS_NAME}/kdtree.h
-        include/pcl/${SUBSYS_NAME}/organized_neighbor_search.h
-        include/pcl/${SUBSYS_NAME}/octree_pointcloud.h
-   #     include/pcl/${SUBSYS_NAME}/octree_gpu.h
-        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-
-    set(impl_incs 
-        include/pcl/${SUBSYS_NAME}/impl/auto_tuned_search.hpp
-        include/pcl/${SUBSYS_NAME}/impl/search.hpp
-        include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp
-        include/pcl/${SUBSYS_NAME}/impl/organized_neighbor_search.hpp
-        include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud.hpp
-        #include/pcl/${SUBSYS_NAME}/impl/octree_gpu.hpp
-        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
     
     add_subdirectory(test)

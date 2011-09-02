@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,60 +35,48 @@
  *
  */
 
-#ifndef PCL_SEARCH_IMPL_FLANN_H_
-#define PCL_SEARCH_IMPL_FLANN_H_
+#ifndef PCL_SEARCH_KDTREE_IMPL_H_
+#define PCL_SEARCH_KDTREE_IMPL_H_
 
 #include "pcl/search/kdtree.h"
-#include <pcl/console/print.h>
-#include <iostream>
-namespace pcl
-{
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
-KdTreeWrapper<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices)
+pcl::search::KdTree<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices)
 {
-   _searchptr->setInputCloud(cloud,indices);
+  tree_->setInputCloud(cloud,indices);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
-KdTreeWrapper<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
+pcl::search::KdTree<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
 {
-    const IndicesConstPtr& indices = IndicesConstPtr();
-    setInputCloud(cloud,indices);
+  const IndicesConstPtr& indices = IndicesConstPtr ();
+  setInputCloud (cloud,indices);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-int
-KdTreeWrapper<PointT>::nearestKSearch (const PointT& point, int k,
-                                     std::vector<int>& k_indices,
-                                     std::vector<float>& k_distances) 
+template <typename PointT> int
+pcl::search::KdTree<PointT>::nearestKSearch (const PointT &point, 
+                                             int k,
+                                             std::vector<int> &k_indices,
+                                             std::vector<float> &k_distances) 
 {
-	return _searchptr->nearestKSearch(point,k,k_indices,k_distances);
-
+	return (tree_->nearestKSearch (point, k, k_indices, k_distances));
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int 
-KdTreeWrapper<PointT>::radiusSearch (const PointT& point, double radius, std::vector<int>& k_indices,
-                                      std::vector<float>& k_squared_distances, int max_nn) const
+pcl::search::KdTree<PointT>::radiusSearch (const PointT &point, 
+                                           double radius, 
+                                           std::vector<int> &k_indices,
+                                           std::vector<float> &k_squared_distances, 
+                                           int max_nn) const
 {
-
-	return _searchptr->radiusSearch(point,radius,k_indices,k_squared_distances,max_nn);
+	return (tree_->radiusSearch (point, radius, k_indices, k_squared_distances, max_nn));
 }
 
+#define PCL_INSTANTIATE_KdTree(T) template class PCL_EXPORTS pcl::search::KdTree<T>;
 
-
-////////////////////////////////////////////////////////////////////////////////////////////
-
-}  // end namespace
-
-#define PCL_INSTANTIATE_KdTreeWrapper(T) template class PCL_EXPORTS pcl::KdTreeWrapper<T>;
-
-#endif  //#ifndef _PCL_KDTREE_KDTREE_IMPL_FLANN_H_
+#endif  //#ifndef PCL_SEARCH_KDTREE_IMPL_H_
 

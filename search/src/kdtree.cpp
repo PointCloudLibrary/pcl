@@ -43,5 +43,5 @@
 #include "pcl/search/impl/kdtree.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(KdTreeWrapper, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(KdTree, PCL_XYZ_POINT_TYPES);
 

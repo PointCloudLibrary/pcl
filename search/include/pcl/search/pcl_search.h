@@ -40,9 +40,9 @@
 
 #include "pcl/search/search.h"
 #include "pcl/search/kdtree.h"
-#include "pcl/search/octree_pointcloud.h"
-#include "pcl/search/organized_neighbor_search.h"
-#include "pcl/search/auto_tuned_search.h"
+#include "pcl/search/octree.h"
+#include "pcl/search/organized_neighbor.h"
+#include "pcl/search/auto.h"
 //#include "pcl/search/octree_gpu.h"
 
 

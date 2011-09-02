@@ -1,7 +1,8 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,20 +32,16 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de)
  */
 
 
-#ifndef OCTREE_SEARCH_POINTCLOUD_H
-#define OCTREE_SEARCH_POINTCLOUD_H
-
-#include "pcl/octree/octree_base.h"
-//#include "octree2buf_base.h"
-//#include "octree_lowmemory_base.h"
+#ifndef PCL_SEARCH_OCTREE_H
+#define PCL_SEARCH_OCTREE_H
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
+#include "pcl/octree/octree_base.h"
 #include "pcl/octree/octree_pointcloud.h"
 #include "pcl/octree/octree_nodes.h"
 #include "pcl/search/search.h"
@@ -55,10 +52,8 @@
 
 namespace pcl
 {
-
-   namespace octree
-   {
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  namespace search
+  {
     /** \brief @b Octree pointcloud class
      *  \note Octree implementation for pointclouds. Only indices are stored by the octree leaf nodes (zero-copy).
      *  \note The octree pointcloud class needs to be initialized with its voxel resolution. Its bounding box is automatically adjusted
@@ -71,17 +66,10 @@ namespace pcl
      *  \ingroup octree
      *  \author Julius Kammerl (julius@kammerl.de)
      */
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafTWrap = OctreeLeafDataTVector<int> , typename OctreeT = OctreeBase<int, LeafTWrap> >
-      class OctreeWrapper :  public pcl::Search<PointT>, public OctreeT
-      {
-
+    template<typename PointT, typename LeafTWrap = pcl::octree::OctreeLeafDataTVector<int> , typename OctreeT = pcl::octree::OctreeBase<int, LeafTWrap> >
+    class Octree : public pcl::search::Search<PointT>, public OctreeT
+    {
       public:
-
-        /** \brief Octree pointcloud constructor.
-         *  \param resolution_arg: octree resolution at lowest octree level
-         * */
-
         // public typedefs
         typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
         typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
@@ -90,46 +78,38 @@ namespace pcl
         typedef boost::shared_ptr<PointCloud> PointCloudPtr;
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
-        // public typedefs for single/double buffering
-//        typedef OctreePointCloud<PointT, LeafT, OctreeBase<int, LeafT> > SingleBuffer;
-  //      typedef OctreePointCloud<PointT, LeafT, Octree2BufBase<int, LeafT> > DoubleBuffer;
-    //    typedef OctreePointCloud<PointT, LeafT, OctreeLowMemBase<int, LeafT> > LowMem;
-
-
-
         // Boost shared pointers
-        typedef boost::shared_ptr<OctreePointCloud<PointT, LeafTWrap, OctreeT> > Ptr;
-        typedef boost::shared_ptr<const OctreePointCloud<PointT, LeafTWrap, OctreeT> > ConstPtr;
-	Ptr _searchptr;
+        typedef boost::shared_ptr<pcl::octree::OctreePointCloud<PointT, LeafTWrap, OctreeT> > Ptr;
+        typedef boost::shared_ptr<const pcl::octree::OctreePointCloud<PointT, LeafTWrap, OctreeT> > ConstPtr;
+        Ptr tree_;
 
         /** \brief Provide a pointer to the input data set.
          *  \param cloud_arg the const boost shared pointer to a PointCloud message
          *  \param indices_arg the point indices subset that is to be used from \a cloud - if 0 the whole point cloud is used
          */
-        OctreeWrapper (const double resolution_arg)
-	{
-		_searchptr.reset (new OctreePointCloud<PointT, LeafTWrap, OctreeT>(resolution_arg) );
+        Octree (const double resolution_arg)
+        {
+          tree_.reset (new pcl::octree::OctreePointCloud<PointT, LeafTWrap, OctreeT> (resolution_arg));
+        }
 
-	}
+        /** \brief Empty Destructor. */
+        virtual ~Octree () {}
 
-        /** \brief Empty deconstructor. */
-        
-        ~OctreeWrapper (){};
+
         inline void
         setInputCloud (const PointCloudConstPtr &cloud_arg)
         {
-	  _searchptr->deleteTree();
-          _searchptr->setInputCloud(cloud_arg);
-	  _searchptr->addPointsFromInputCloud();
-	  
+          tree_->deleteTree ();
+          tree_->setInputCloud (cloud_arg);
+          tree_->addPointsFromInputCloud ();
         }
 
         inline void
         setInputCloud (const PointCloudConstPtr &cloud_arg, const IndicesConstPtr& indices_arg)
         {
-	  _searchptr->deleteTree();
-	  _searchptr->setInputCloud(cloud_arg,indices_arg);
-	  _searchptr->addPointsFromInputCloud();
+          tree_->deleteTree ();
+          tree_->setInputCloud (cloud_arg,indices_arg);
+          tree_->addPointsFromInputCloud ();
         }
 
         /** \brief Search for k-nearest neighbors at the query point.
@@ -142,68 +122,85 @@ namespace pcl
          * \return number of neighbors found
          */
         int
-        nearestKSearch (const PointCloudConstPtr &cloud_arg, int index_arg, int k_arg, std::vector<int> &k_indices_arg,
+        nearestKSearch (const PointCloudConstPtr &cloud_arg, 
+                        int index_arg, 
+                        int k_arg, 
+                        std::vector<int> &k_indices_arg,
                         std::vector<float> &k_sqr_distances_arg);
 
-    inline int
-    nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
-{
+        inline int
+        nearestKSearch (const PointCloud& cloud, 
+                        int index, 
+                        int k, 
+                        std::vector<int>& k_indices, 
+                        std::vector<float>& k_sqr_distances)
+        {
+          std::cerr << "This function is not supported by Octree class" << std::endl;
+          return (0);
+        }
 
-        std::cerr << "This function is not supported by Octree class" << std::endl;
-        return 0;
-}
+        inline int
+        radiusSearch (const PointCloud &cloud,
+                      int index, 
+                      double radius,
+                      std::vector<int> &k_indices, 
+                      std::vector<float> &k_distances,
+                      int max_nn) 
+        {
+          std::cerr << "This function is not supported by Octree class" << std::endl;
+          return (0);
+        }
 
+        inline int
+        approxRadiusSearch (const PointCloudConstPtr &cloud, 
+                            int index, 
+                            double radius,
+                            std::vector<int> &k_indices, 
+                            std::vector<float> &k_distances,
+                            int max_nn) const
+        {
+          std::cerr << "This function is not supported by Octree" << std::endl;
+          return (0);
+        }
 
-inline int
-radiusSearch (const PointCloud& cloud, int index, double radius,
-                              std::vector<int>& k_indices, std::vector<float>& k_distances,
-                              int max_nn) 
-{
-        std::cerr << "This function is not supported by Octree class" << std::endl;
-        return 0;
-}
+        inline int
+        approxNearestKSearch (const PointCloudConstPtr &cloud, 
+                              int index, 
+                              int k, 
+                              std::vector<int> &k_indices, 
+                              std::vector<float> &k_sqr_distances)
+        {
+          std::cerr << "This function is not supported by Octree" << std::endl;
+          return (0);
+        }
 
-inline int
-approxRadiusSearch (const PointCloudConstPtr& cloud, int index, double radius,
-                              std::vector<int>& k_indices, std::vector<float>& k_distances,
-                              int max_nn)const
-{
-        std::cerr << "This function is not supported by Octree" << std::endl;
-exit(0);
-}
-
-
-inline int
-approxNearestKSearch (const PointCloudConstPtr& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
-{
-        std::cerr << "This function is not supported by Octree" << std::endl;
-exit(0);
-}
-
-inline void
-            evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type){
-
-        std::cerr << "This function is not supported by Octree" << std::endl;
-exit(0);
-}
-
-
-inline int
-    nearestKSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances){
-        std::cerr << "This function is not supported by Octree" << std::endl;
-exit(0);
-};
-
-
-inline int
-    radiusSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, std::vector <  double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const
-{
-
-        std::cerr << "This function is not supported by Octree" << std::endl;
-exit(0);
-};
+        inline void
+        evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type)
+        {
+          std::cerr << "This function is not supported by Octree" << std::endl;
+        }
 
 
+        inline int
+        nearestKSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> > &point, 
+                        std::vector<int> &k, 
+                        std::vector<std::vector<int> > &k_indices,
+                        std::vector<std::vector<float> > &k_sqr_distances)
+        {
+          std::cerr << "This function is not supported by Octree" << std::endl;
+          return (0);
+        }
+
+        inline int
+        radiusSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> > &point, 
+                      std::vector<double> &radii, 
+                      std::vector<std::vector<int> > &k_indices,
+                      std::vector<std::vector<float> > &k_distances, 
+                      int max_nn) const
+        {
+          std::cerr << "This function is not supported by Octree" << std::endl;
+          return (0);
+        }
 
         /** \brief Search for k-nearest neighbors at given query point.
          * @param p_q_arg the given query point
@@ -296,12 +293,10 @@ exit(0);
         int
         radiusSearch (int index_arg, const double radius_arg, std::vector<int> &k_indices_arg,
                       std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX) const;
-
-
-      };
-
-}
+    };
+  }
 }
 
-#endif
+#endif    // PCL_SEARCH_OCTREE_H
+ 
 

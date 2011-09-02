@@ -33,15 +33,14 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * 
- *
+ * Author: Julius Kammerl (julius@kammerl.de)
  */
 
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
-#include "pcl/search/auto_tuned_search.h"
-#include "pcl/search/impl/auto_tuned_search.hpp"
+#include "pcl/search/octree.h"
+#include "pcl/search/impl/octree.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(AutotunedSearch, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(Octree, PCL_XYZ_POINT_TYPES);
 
