@@ -194,7 +194,7 @@ pcl::search::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudCon
   else
   {
     PCL_ERROR ("[pcl::search::AutotunedSearch::evaluateSearchMethods] Only NEAREST_K_SEARCH and NEAREST_RADIUS_SEARCH supported\n");
-    return (0);
+    return;
   }
   // Set the datastructure according to which takes the minimum time
   if (time_kdtree < time_organized_data && time_kdtree < time_octree)
