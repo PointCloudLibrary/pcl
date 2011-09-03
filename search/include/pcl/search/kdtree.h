@@ -57,13 +57,7 @@ namespace pcl
     template <typename PointT>
     class KdTree : public pcl::search::Search<PointT>
     {
-      /*
-          using KdTree<PointT>::input_;
-          using KdTree<PointT>::indices_;
-          using KdTree<PointT>::epsilon_;
-          using KdTree<PointT>::sorted_;
-          using KdTree<PointT>::point_representation_;
-       */
+      
       typedef typename Search<PointT>::PointCloud PointCloud;
       typedef typename Search<PointT>::PointCloudConstPtr PointCloudConstPtr;
 
@@ -77,17 +71,7 @@ namespace pcl
         typedef boost::shared_ptr<const pcl::KdTreeFLANN<PointT> > ConstPtr;
         Ptr tree_;
 
-        // Boost shared pointers
-        ////      typedef boost::shared_ptr<KdTree<PointT> > Ptr;
-        //      typedef boost::shared_ptr<const KdTree<PointT> > ConstPtr;
-
-
-        //      KdTree (bool sorted = true) : input_(), indices_(),
-        //                                  epsilon_(0.0), min_pts_(1), sorted_(sorted)
-        //  {
-        //  point_representation_.reset (new DefaultPointRepresentation<PointT>);
-        //     };
-
+        
         KdTree (bool sorted = true)
         {
           tree_.reset (new pcl::KdTreeFLANN<PointT> (sorted));

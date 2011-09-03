@@ -84,11 +84,12 @@ pcl::search::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudCon
     k_indices.resize (no_of_neighbors);
     std::vector<float> k_distances;
     k_distances.resize (no_of_neighbors);
-    std::cout << "\n---------------\nKDTree\n---------------\n";
+    //std::cout << "\n---------------\nKDTree\n---------------\n";
     double time1 = getTime ();
     search_.reset (new KdTree<PointT> ());
     search_->setInputCloud (cloud);
     search_->nearestKSearch (cloud->points[searchIdx], no_of_neighbors, k_indices, k_distances);
+    /*
     std::cout << "Neighbors are:" << std::endl;    
     for (int i = 0; i < 20; i++)
     {
@@ -96,27 +97,31 @@ pcl::search::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudCon
     }
     std::cout << std::endl;
     std::cout << "Number of Neighbors: " << k_indices.size () << std::endl; 
+    */
     k_indices.clear (); k_distances.clear ();
 
-    std::cout << "\n---------------\nOrganizedData\n---------------\n";
+    //std::cout << "\n---------------\nOrganizedData\n---------------\n";
     double time2 = getTime ();
     search_.reset (new OrganizedNeighbor<PointT>());
     search_->setInputCloud (cloud);
     search_->nearestKSearch (cloud->points[searchIdx], no_of_neighbors, k_indices, k_distances);
-    std::cout << "Neighbors are: " << std::endl;
+    //std::cout << "Neighbors are: " << std::endl;
+    /*
     for (int i = 0;i < 20; i++)
     {
       std::cout << k_indices[i] << '\t'; 
     }
     std::cout << std::endl;
     std::cout << "Number of Neigbhors: " << k_indices.size () << std::endl; 
+    */
     k_indices.clear (); k_distances.clear ();
 
-    std::cout << "\n---------------\nOctree\n---------------\n";
+    //std::cout << "\n---------------\nOctree\n---------------\n";
     double time3 = getTime ();
     search_.reset (new Octree<PointT> (0.1f));
     search_->setInputCloud (cloud);
     search_->nearestKSearch (cloud->points[searchIdx], no_of_neighbors, k_indices, k_distances);
+    /*
     std::cout << "Neighbors are: " << std::endl;
     for (int i = 0;i < 20; i++)
     {
@@ -124,15 +129,14 @@ pcl::search::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudCon
     }
     std::cout << std::endl;
     std::cout << "Number of Neighbors: " << k_indices.size () << std::endl; 
+    */
     k_indices.clear (); k_distances.clear ();
-    std::cout << std::endl;
-    std::cout << std::endl;
 
     time_kdtree = time2 - time1;
     time_organized_data = time3 - time2;
     time_octree = getTime () - time3;
     
-    std::cout << "Time Taken: " << "KDTree: " << time_kdtree << '\t' <<"OranizedData: "  << time_organized_data << '\t' << "Octree: " << time_octree << '\t' << std::endl;
+    PCL_INFO("[pcl::search::AutotunedSearch::evaluateSearchMethods::NEAREST_K_SEARCH] Time Taken: KDTree: %lf  OranizedData: %lf Octree: %lf\n",time_kdtree,time_organized_data,time_octree);
   }
   else if (search_type == NEAREST_RADIUS_SEARCH)
   {
@@ -140,11 +144,12 @@ pcl::search::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudCon
 
     std::vector<int> k_indices;
     std::vector<float> k_distances;
-    std::cout << "\n---------------\nKDTree\n---------------\n";
+    //std::cout << "\n---------------\nKDTree\n---------------\n";
     double time1 = getTime ();
     search_.reset (new KdTree<PointT> ());
     search_->setInputCloud (cloud);
     search_->radiusSearch (cloud->points[searchIdx], searchRadius, k_indices, k_distances);
+    /*
     std::cout << "Neighbors are:" << std::endl;
 
     for(int i = 0;i < 20; ++i)
@@ -153,13 +158,15 @@ pcl::search::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudCon
     }
     std::cout << std::endl;
     std::cout << "Number of Neighbors: " << k_indices.size () << std::endl; 
+    */
     k_indices.clear (); k_distances.clear ();
 
-    std::cout << "\n---------------\nOrganizedData\n---------------\n";
+    //std::cout << "\n---------------\nOrganizedData\n---------------\n";
     double time2 = getTime ();
     search_.reset (new OrganizedNeighbor<PointT> ());
     search_->setInputCloud (cloud);
     search_->radiusSearch (cloud->points[searchIdx], searchRadius, k_indices, k_distances);
+    /*
     std::cout << "Neighbors are: " << std::endl;
     for (int i = 0; i < 20; ++i)
     {
@@ -167,13 +174,15 @@ pcl::search::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudCon
     }
     std::cout << std::endl;
     std::cout << "Number of Neigbhors: " << k_indices.size () << std::endl; 
+    */
     k_indices.clear (); k_distances.clear ();
 
-    std::cout << "\n---------------\nOctree\n---------------\n";
+    //std::cout << "\n---------------\nOctree\n---------------\n";
     double time3 = getTime ();
     search_.reset (new Octree<PointT> (0.1f));
     search_->setInputCloud (cloud);
     search_->radiusSearch (cloud->points[searchIdx], searchRadius, k_indices, k_distances);
+    /*
     std::cout << "Neighbors are: " << std::endl;
     for (int i = 0; i < 20; ++i) 
     {
@@ -181,15 +190,14 @@ pcl::search::AutotunedSearch<PointT>::evaluateSearchMethods (const PointCloudCon
     }
     std::cout << std::endl;
     std::cout << "Number of Neighbors: " << k_indices.size () << std::endl; 
+    */
     k_indices.clear (); k_distances.clear ();
-    std::cout << std::endl;
-    std::cout << std::endl;
 
     time_kdtree = time2 - time1;
     time_organized_data = time3 - time2;
     time_octree = getTime () - time3;
     
-    std::cout << "Time Taken: " << "KDTree: " << time_kdtree << '\t' <<"OranizedData: "  << time_organized_data << '\t' << "Octree: " << time_octree << '\t' << std::endl;	
+    PCL_INFO("[pcl::search::AutotunedSearch::evaluateSearchMethods::NEAREST_K_SEARCH] Time Taken: KDTree: %lf  OranizedData: %lf Octree: %lf\n",time_kdtree,time_organized_data,time_octree);
   }
   else
   {
