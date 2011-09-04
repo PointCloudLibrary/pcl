@@ -283,9 +283,10 @@ namespace pcl
           PCL_ERROR("[pcl::search::OrganizedNeighbor::approxNearestSearch] This function is not supported by OrganizedNeighbor\n");
         };
 
-	/** \brief Evaluate the Search Methods.
+
+        /** \brief Evaluate the Search Methods for the given cloud.
         * \param cloud the const boost shared pointer to a PointCloud message
-        * \param search_type the search type
+        * \param search_type the search type NEAREST_K_SEARCH and NEAREST_RADIUS_SEARCH
         */
         inline void
         evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type)

@@ -316,7 +316,7 @@ pcl::search::AutotunedSearch<PointT>::approxNearestSearch (const PointCloudConst
   if(spatial_loc_ == OCTREE)
     search_->approxNearestSearch (cloud_arg, query_index_arg, result_index_arg, sqr_distance_arg);
   else
-    PCL_ERROR ("approxNearestSearch() works only for OCTREE structure\n");
+    PCL_ERROR ("[pcl::search::AutotunedSearch::approxNearestSearch] approxNearestSearch() works only for OCTREE structure\n");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -328,7 +328,7 @@ pcl::search::AutotunedSearch<PointT>::approxNearestSearch (const PointT &p_q_arg
   if (spatial_loc_ == OCTREE)
     search_->approxNearestSearch (p_q_arg, result_index_arg, sqr_distance_arg);
   else
-    PCL_ERROR ("approxNearestSearch() works only for OCTREE structure\n");
+    PCL_ERROR ("[pcl::search::AutotunedSearch::approxNearestSearch] approxNearestSearch() works only for OCTREE structure\n");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -340,7 +340,7 @@ pcl::search::AutotunedSearch<PointT>::approxNearestSearch (int query_index_arg,
   if (spatial_loc_ == OCTREE)
    search_->approxNearestSearch (query_index_arg, result_index_arg, sqr_distance_arg);
   else
-    PCL_ERROR ("approxNearestSearch() works only for OCTREE structure\n");
+    PCL_ERROR ("[pcl::search::AutotunedSearch::approxNearestSearch] approxNearestSearch() works only for OCTREE structure\n");
 }
 
 #define PCL_INSTANTIATE_AutotunedSearch(T) template class PCL_EXPORTS pcl::search::AutotunedSearch<T>;

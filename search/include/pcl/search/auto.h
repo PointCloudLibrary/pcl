@@ -85,16 +85,15 @@ namespace pcl
         virtual ~AutotunedSearch () {}
 
 
-	/** \brief Initiate the Search.
-        * \param spatial_location the spatial locator
+	/** \brief Initiate the search DS to point to spatial_locator
+        * \param spatial_locator the spatial locator KDTREE, ORGANIZED_INDEX, OCTREE or AUTO_TUNED
 	*/
         void 
         initSearchDS (int spatial_locator);
 
-
-	/** \brief Evaluate the Search Methods.
+        /** \brief Evaluate the Search Methods for the given cloud.
         * \param cloud the const boost shared pointer to a PointCloud message
-        * \param search_type the search type
+        * \param search_type the search type NEAREST_K_SEARCH and NEAREST_RADIUS_SEARCH
         */
         void
         evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type);

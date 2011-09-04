@@ -279,9 +279,9 @@ namespace pcl
           return (0);
         }
 
-	/** \brief Evaluate the Search Methods.
+        /** \brief Evaluate the Search Methods for the given cloud.
         * \param cloud the const boost shared pointer to a PointCloud message
-        * \param search_type the search type
+        * \param search_type the search type NEAREST_K_SEARCH and NEAREST_RADIUS_SEARCH
         */
         inline void
         evaluateSearchMethods (const PointCloudConstPtr &cloud, 
