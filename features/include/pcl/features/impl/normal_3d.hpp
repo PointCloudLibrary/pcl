@@ -61,7 +61,7 @@ pcl::NormalEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &outpu
     computePointNormal (*surface_, nn_indices,
                         output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2], output.points[idx].curvature);
 
-    flipNormalTowardsViewpoint (surface_->points[idx], vpx_, vpy_, vpz_,
+    flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx_, vpy_, vpz_,
                                 output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2]);
 
   }
