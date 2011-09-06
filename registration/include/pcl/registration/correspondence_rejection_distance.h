@@ -37,6 +37,8 @@
 #define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_DISTANCE_H_
 
 #include <pcl/registration/correspondence_rejection.h>
+#include <pcl/point_cloud.h>
+#include <pcl/kdtree/kdtree_flann.h>
 
 namespace pcl
 {
