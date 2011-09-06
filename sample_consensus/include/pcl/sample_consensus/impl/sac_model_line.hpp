@@ -44,7 +44,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelLine<PointT>::isSampleGood(const std::vector<int> &samples) const
+pcl::SampleConsensusModelLine<PointT>::isSampleGood (const std::vector<int> &samples) const
 {
   return true;
 }

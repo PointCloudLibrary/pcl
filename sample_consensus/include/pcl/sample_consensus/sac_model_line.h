@@ -126,12 +126,13 @@ namespace pcl
         */
       void projectPoints (const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields = true);
 
-      /** \brief Verify whether a subset of indices verifies the given plane model coefficients.
-        * \param indices the data indices that need to be tested against the plane model
-        * \param model_coefficients the plane model coefficients
-        * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
+      /** \brief Verify whether a subset of indices verifies the given line model coefficients.
+        * \param[in] indices the data indices that need to be tested against the line model
+        * \param[in] model_coefficients the plane model coefficients
+        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
-      bool doSamplesVerifyModel (const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, double threshold);
+      bool 
+      doSamplesVerifyModel (const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, double threshold);
 
       /** \brief Return an unique id for this model (SACMODEL_LINE). */
       inline pcl::SacModel getModelType () const { return (SACMODEL_LINE); }
