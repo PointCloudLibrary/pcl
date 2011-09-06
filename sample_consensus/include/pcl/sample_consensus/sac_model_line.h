@@ -152,9 +152,9 @@ namespace pcl
                      PointCloud &projected_points, 
                      bool copy_data_fields = true);
 
-      /** \brief Verify whether a subset of indices verifies the given plane model coefficients.
-        * \param[in] indices the data indices that need to be tested against the plane model
-        * \param[in] model_coefficients the plane model coefficients
+      /** \brief Verify whether a subset of indices verifies the given line model coefficients.
+        * \param[in] indices the data indices that need to be tested against the line model
+        * \param[in] model_coefficients the line model coefficients
         * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
       bool 
