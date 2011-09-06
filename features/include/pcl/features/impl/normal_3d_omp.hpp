@@ -71,7 +71,7 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
     solvePlaneParameters (covariance_matrix,
                           output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2], output.points[idx].curvature);
 
-    flipNormalTowardsViewpoint (surface_->points[idx], vpx, vpy, vpz,
+    flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx, vpy, vpz,
                                 output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2]);
   }
 }
