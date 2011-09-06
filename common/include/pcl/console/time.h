@@ -48,29 +48,32 @@ namespace pcl
     class TicToc
     {
       public:
-        void tic ()
+        void 
+        tic ()
         {
           tictic = boost::posix_time::microsec_clock::local_time();
         };
 
-        inline double toc ()
+        inline double 
+        toc ()
         {
           toctoc = boost::posix_time::microsec_clock::local_time();
-          return (toctoc - tictic).total_seconds();
+          return (toctoc - tictic).total_milliseconds();
         };
         
-        inline void toc_print ()
+        inline void 
+        toc_print ()
         {
-          double seconds = toc ();
-          int minutes = (int) floor ( seconds / 60.0 );
-          seconds -= minutes * 60.0;
-          if (minutes != 0)
-          {
-            print_value ("%i", minutes);
-            print_info (" minutes, ");
-          }
-          print_value ("%g", seconds);
-          print_info (" seconds\n");
+          double milliseconds = toc ();
+          //int minutes = (int) floor ( seconds / 60.0 );
+          //seconds -= minutes * 60.0;
+          //if (minutes != 0)
+          //{
+          //  print_value ("%i", minutes);
+          //  print_info (" minutes, ");
+          //}
+          print_value ("%g", milliseconds);
+          print_info (" ms\n");
         };
       
       private:
