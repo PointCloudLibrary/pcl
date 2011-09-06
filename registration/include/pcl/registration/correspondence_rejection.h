@@ -39,6 +39,7 @@
 
 #include <pcl/registration/correspondence_types.h>
 #include <pcl/registration/correspondence_sorting.h>
+#include <pcl/console/print.h>
 
 namespace pcl
 {
