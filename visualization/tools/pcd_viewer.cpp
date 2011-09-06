@@ -197,10 +197,9 @@ main (int argc, char** argv)
   pcl::console::parse_argument (argc, argv, "-pc_scale", pc_scale);
 
   // Parse the command line arguments for .pcd files
-  std::vector<int> p_file_indices;
-  p_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
-  std::vector<int> vtk_file_indices;
-  vtk_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".vtk");
+  std::vector<int> p_file_indices   = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
+  std::vector<int> vtk_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".vtk");
+
   if (p_file_indices.size () == 0 && vtk_file_indices.size () == 0)
   {
     print_error ("No .PCD or .VTK file given. Nothing to visualize.\n");
