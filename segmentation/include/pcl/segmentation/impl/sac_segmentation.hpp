@@ -64,7 +64,7 @@
 #include "pcl/sample_consensus/sac_model_perpendicular_plane.h"
 #include "pcl/sample_consensus/sac_model_plane.h"
 #include "pcl/sample_consensus/sac_model_sphere.h"
-
+#include "pcl/sample_consensus/sac_model_stick.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -144,6 +144,19 @@ pcl::SACSegmentation<PointT>::initSACModel (const int model_type)
     {
       PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_LINE\n", getClassName ().c_str ());
       model_.reset (new SampleConsensusModelLine<PointT> (input_, *indices_));
+      break;
+    }
+    case SACMODEL_STICK:
+    {
+      PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_STICK\n", getClassName ().c_str ());
+      model_.reset (new SampleConsensusModelStick<PointT> (input_, *indices_));
+      double min_radius, max_radius;
+      model_->getRadiusLimits (min_radius, max_radius);
+      if (radius_min_ != min_radius && radius_max_ != max_radius)
+      {
+        PCL_DEBUG ("[pcl::%s::initSACModel] Setting radius limits to %f/%f\n", getClassName ().c_str (), radius_min_, radius_max_);
+        model_->setRadiusLimits (radius_min_, radius_max_);
+      }
       break;
     }
     case SACMODEL_CIRCLE2D:
