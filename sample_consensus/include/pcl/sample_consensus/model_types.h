@@ -58,14 +58,15 @@ namespace pcl
     SACMODEL_NORMAL_PLANE,
     SACMODEL_REGISTRATION,
     SACMODEL_PARALLEL_PLANE,
-    SACMODEL_NORMAL_PARALLEL_PLANE
+    SACMODEL_NORMAL_PARALLEL_PLANE,
+    SACMODEL_STICK
   };
 }
 
 // Define the number of samples in SacModel needs
 typedef std::map<pcl::SacModel, unsigned int>::value_type SampleSizeModel;
 const static SampleSizeModel sample_size_pairs[] = {SampleSizeModel (pcl::SACMODEL_PLANE, 3),
-                                                    SampleSizeModel (pcl::SACMODEL_LINE,2),
+                                                    SampleSizeModel (pcl::SACMODEL_LINE, 2),
                                                     SampleSizeModel (pcl::SACMODEL_CIRCLE2D, 3),
                                                     //SampleSizeModel (pcl::SACMODEL_CIRCLE3D, 3),
                                                     SampleSizeModel (pcl::SACMODEL_SPHERE, 4),
@@ -78,7 +79,8 @@ const static SampleSizeModel sample_size_pairs[] = {SampleSizeModel (pcl::SACMOD
                                                     SampleSizeModel (pcl::SACMODEL_NORMAL_PLANE, 3),
                                                     SampleSizeModel (pcl::SACMODEL_REGISTRATION, 3),
                                                     SampleSizeModel (pcl::SACMODEL_PARALLEL_PLANE, 3),
-                                                    SampleSizeModel (pcl::SACMODEL_NORMAL_PARALLEL_PLANE, 3)};
+                                                    SampleSizeModel (pcl::SACMODEL_NORMAL_PARALLEL_PLANE, 3),
+                                                    SampleSizeModel (pcl::SACMODEL_STICK, 2)};
 
 namespace pcl
 {
