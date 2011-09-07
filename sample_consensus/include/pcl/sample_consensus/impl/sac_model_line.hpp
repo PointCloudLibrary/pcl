@@ -96,7 +96,7 @@ pcl::SampleConsensusModelLine<PointT>::getDistancesToModel (
   // Obtain the line point and direction
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
   Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
-  double dir_dot = 1.0 / line_dir.squaredNorm ();
+  line_dir.normalize ();
 
   // Iterate through the 3d points and calculate the distances from them to the line
   for (size_t i = 0; i < indices_->size (); ++i)
@@ -104,7 +104,7 @@ pcl::SampleConsensusModelLine<PointT>::getDistancesToModel (
     // Calculate the distance from the point to the line
     // D = ||(P2-P1) x (P1-P0)|| / ||P2-P1|| = norm (cross (p2-p1, p2-p0)) / norm(p2-p1)
     // Need to estimate sqrt here to keep MSAC and friends general
-    distances[i] = sqrt ((line_pt - input_->points[(*indices_)[i]].getVector4fMap ()).cross3 (line_dir).squaredNorm () * dir_dot);
+    distances[i] = sqrt ((line_pt - input_->points[(*indices_)[i]].getVector4fMap ()).cross3 (line_dir).squaredNorm ());
   }
 }
 
@@ -125,14 +125,14 @@ pcl::SampleConsensusModelLine<PointT>::selectWithinDistance (
   // Obtain the line point and direction
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
   Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
-  double dir_dot = 1.0 / line_dir.dot (line_dir);
+  line_dir.normalize ();
 
   // Iterate through the 3d points and calculate the distances from them to the line
   for (size_t i = 0; i < indices_->size (); ++i)
   {
     // Calculate the distance from the point to the line
     // D = ||(P2-P1) x (P1-P0)|| / ||P2-P1|| = norm (cross (p2-p1, p2-p0)) / norm(p2-p1)
-    double sqr_distance = (line_pt - input_->points[(*indices_)[i]].getVector4fMap ()).cross3 (line_dir).squaredNorm () * dir_dot;
+    double sqr_distance = (line_pt - input_->points[(*indices_)[i]].getVector4fMap ()).cross3 (line_dir).squaredNorm ();
 
     if (sqr_distance < sqr_threshold)
     {
@@ -160,14 +160,14 @@ pcl::SampleConsensusModelLine<PointT>::countWithinDistance (
   // Obtain the line point and direction
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
   Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
-  double dir_dot = 1.0 / line_dir.dot (line_dir);
+  line_dir.normalize ();
 
   // Iterate through the 3d points and calculate the distances from them to the line
   for (size_t i = 0; i < indices_->size (); ++i)
   {
     // Calculate the distance from the point to the line
     // D = ||(P2-P1) x (P1-P0)|| / ||P2-P1|| = norm (cross (p2-p1, p2-p0)) / norm(p2-p1)
-    double sqr_distance = (line_pt - input_->points[(*indices_)[i]].getVector4fMap ()).cross3 (line_dir).squaredNorm () * dir_dot;
+    double sqr_distance = (line_pt - input_->points[(*indices_)[i]].getVector4fMap ()).cross3 (line_dir).squaredNorm ();
 
     if (sqr_distance < sqr_threshold)
       nr_p++;
@@ -299,7 +299,7 @@ pcl::SampleConsensusModelLine<PointT>::doSamplesVerifyModel (
   // Obtain the line point and direction
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
   Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
-  double dir_dot = 1.0 / line_dir.dot (line_dir);
+  line_dir.normalize ();
 
   double sqr_threshold = threshold * threshold;
   // Iterate through the 3d points and calculate the distances from them to the line
@@ -307,7 +307,7 @@ pcl::SampleConsensusModelLine<PointT>::doSamplesVerifyModel (
   {
     // Calculate the distance from the point to the line
     // D = ||(P2-P1) x (P1-P0)|| / ||P2-P1|| = norm (cross (p2-p1, p2-p0)) / norm(p2-p1)
-    if ((line_pt - input_->points[*it].getVector4fMap ()).cross3 (line_dir).squaredNorm () * dir_dot > sqr_threshold)
+    if ((line_pt - input_->points[*it].getVector4fMap ()).cross3 (line_dir).squaredNorm () > sqr_threshold)
       return (false);
   }
 
