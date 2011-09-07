@@ -71,8 +71,8 @@ class OpenNIIntegralImageNormalEstimation
 {
   public:
     typedef pcl::PointCloud<pcl::PointXYZRGBNormal> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    typedef Cloud::Ptr CloudPtr;
+    typedef Cloud::ConstPtr CloudConstPtr;
 
     OpenNIIntegralImageNormalEstimation (const std::string& device_id = "")
       : viewer ("PCL OpenNI NormalEstimation Viewer") 
@@ -88,7 +88,7 @@ class OpenNIIntegralImageNormalEstimation
       pass_.setDownsampleAllData (true);
       pass_.setLeafSize (0.005, 0.005, 0.005);
 
-      typename pcl::OrganizedDataIndex<pcl::PointXYZRGBNormal>::Ptr tree (new pcl::OrganizedDataIndex<pcl::PointXYZRGBNormal>);
+      pcl::OrganizedDataIndex<pcl::PointXYZRGBNormal>::Ptr tree (new pcl::OrganizedDataIndex<pcl::PointXYZRGBNormal>);
       be_.setRadiusSearch (0.02);
       be_.setSearchMethod (tree);
     }
