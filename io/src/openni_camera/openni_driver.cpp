@@ -48,6 +48,7 @@
 #include <locale>
 #include <cctype>
 #include <map>
+#include <XnVersion.h>
 
 #ifndef _WIN32
 #include <libusb-1.0/libusb.h>
@@ -224,7 +225,11 @@ OpenNIDriver::~OpenNIDriver () throw ()
   {
   }
 
+#if (XN_MINOR_VERSION >= 3)
   context_.Release ();
+#else
+  context_.Shutdown ();
+#endif
 }
 
 boost::shared_ptr<OpenNIDevice> OpenNIDriver::createVirtualDevice (const string& path, bool repeat, bool stream) const
