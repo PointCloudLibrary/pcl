@@ -381,6 +381,12 @@ namespace pcl
         filter_name_ = "VoxelGrid";
       }
 
+      /** \brief Destructor. */
+      virtual ~VoxelGrid ()
+      {
+        leaves_.clear();
+      }
+
       /** \brief Set the voxel grid leaf size.
         * \param leaf_size the voxel grid leaf size
         */
