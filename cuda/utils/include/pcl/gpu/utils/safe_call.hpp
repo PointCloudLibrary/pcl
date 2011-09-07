@@ -52,18 +52,25 @@ namespace pcl
     {
         void PCL_EXPORTS error(const char *error_string, const char *file, const int line, const char *func = "");
 
-        static inline void ___cudaSafeCall(cudaError_t err, const char *file, const int line, const char *func = "")
-        {
-            if (cudaSuccess != err)
-                error(cudaGetErrorString(err), file, line, func);
-        }        
-
         static inline int div_up(int total, int grain) { return (total + grain - 1) / grain; }
     }
 
     namespace gpu
     {
         using pcl::device::div_up;        
+    }
+
+    #if defined(__GNUC__)
+    namespace gpu
+    #else
+    namespace device
+    #endif
+    {
+        static inline void ___cudaSafeCall(cudaError_t err, const char *file, const int line, const char *func = "")
+        {
+            if (cudaSuccess != err)
+                ::pcl::device::error(cudaGetErrorString(err), file, line, func);
+        }        
     }
 }
 
