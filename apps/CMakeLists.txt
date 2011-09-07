@@ -1,6 +1,6 @@
 set(SUBSYS_NAME apps)
 set(SUBSYS_DESC "Application examples/samples that show how PCL works")
-set(SUBSYS_DEPS common io filters sample_consensus segmentation visualization kdtree features surface octree registration)
+set(SUBSYS_DEPS common io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints)
 
 if(NOT wxWidgets_FOUND)
   set(DEFAULT TRUE)   # wxWidgets is optional
@@ -81,8 +81,11 @@ if(build)
     target_link_libraries(openni_change_viewer pcl_common pcl_io pcl_kdtree pcl_octree
         pcl_range_image pcl_visualization pcl_filters)
 
-    #    PCL_ADD_EXECUTABLE(openni_boundary_estimation ${SUBSYS_NAME} src/openni_boundary_estimation.cpp)
-    #    target_link_libraries(openni_boundary_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
+    PCL_ADD_EXECUTABLE(openni_uniform_sampling ${SUBSYS_NAME} src/openni_uniform_sampling.cpp)
+    target_link_libraries(openni_uniform_sampling pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_keypoints)
+
+    PCL_ADD_EXECUTABLE(openni_boundary_estimation ${SUBSYS_NAME} src/openni_boundary_estimation.cpp)
+    target_link_libraries(openni_boundary_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
 
 	  if (QHULL_FOUND)
 	    PCL_ADD_EXECUTABLE(openni_3d_convex_hull ${SUBSYS_NAME} src/openni_3d_convex_hull.cpp)
