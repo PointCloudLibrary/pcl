@@ -551,7 +551,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
   int nr_p = 0;
   int nr_removed_p = 0;
 
-  if (keep_organized_)
+  if (!keep_organized_)
   {
     for (size_t cp = 0; cp < input_->points.size (); ++cp)
     {
