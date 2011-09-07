@@ -59,5 +59,5 @@ necessary files to build it.
 
 References
 ----------
-`Latex minimal example <http://www.minimalbeispiel.de/mini-en.html>`_
-`How to Report Bugs Effectively <http://www.chiark.greenend.org.uk/~sgtatham/bugs.html>`_
+- `Latex minimal example <http://www.minimalbeispiel.de/mini-en.html>`_
+- `How to Report Bugs Effectively <http://www.chiark.greenend.org.uk/~sgtatham/bugs.html>`_
