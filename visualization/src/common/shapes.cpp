@@ -35,6 +35,7 @@
  *
  */
 #include <pcl/visualization/common/shapes.h>
+#include <pcl/common/angles.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 vtkSmartPointer<vtkDataSet> 
@@ -78,19 +79,13 @@ vtkSmartPointer<vtkDataSet>
 pcl::visualization::createCube (const pcl::ModelCoefficients &coefficients)
 {
   // coefficients = [Tx, Ty, Tz, Qx, Qy, Qz, Qw, width, height, depth]
-  double theta = acos (coefficients.values[6]) * 2.0;
   vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New ();
   t->Identity ();
-  if (sin (theta / 2.0) == 0.0)
-    t->Translate (coefficients.values[0], coefficients.values[1], coefficients.values[2]);
-  else
-  {
-    double ax = coefficients.values[3] / sin (theta / 2.0);
-    double ay = coefficients.values[4] / sin (theta / 2.0);
-    double az = coefficients.values[5] / sin (theta / 2.0);
-    t->Translate (coefficients.values[0], coefficients.values[1], coefficients.values[2]);
-    t->RotateWXYZ (theta, ax, ay, az);
-  }
+  t->Translate (coefficients.values[0], coefficients.values[1], coefficients.values[2]);
+  
+  Eigen::AngleAxisf a (Eigen::Quaternionf (coefficients.values[6], coefficients.values[3],
+                                           coefficients.values[4], coefficients.values[5]));
+  t->RotateWXYZ (pcl::rad2deg (a.angle ()), a.axis ()[0], a.axis ()[1], a.axis ()[2]);
   
   vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New ();
   cube->SetXLength (coefficients.values[7]);
