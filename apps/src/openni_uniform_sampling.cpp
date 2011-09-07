@@ -64,8 +64,8 @@ class OpenNIUniformSampling
 {
   public:
     typedef pcl::PointCloud<pcl::PointXYZRGB> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    typedef Cloud::Ptr CloudPtr;
+    typedef Cloud::ConstPtr CloudConstPtr;
 
     OpenNIUniformSampling (const std::string& device_id = "", 
                        float leaf_size = 0.05)
