@@ -7,17 +7,23 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
-    set(srcs src/narf_keypoint.cpp
+    set(srcs 
+        src/narf_keypoint.cpp
+        src/uniform_sampling.cpp
 				src/smoothed_surfaces_keypoint.cpp)
 
-    set(incs include/pcl/${SUBSYS_NAME}/keypoint.h
+    set(incs 
+        include/pcl/${SUBSYS_NAME}/keypoint.h
         include/pcl/${SUBSYS_NAME}/narf_keypoint.h
         include/pcl/${SUBSYS_NAME}/sift_keypoint.h
+        include/pcl/${SUBSYS_NAME}/uniform_sampling.h
         include/pcl/${SUBSYS_NAME}/smoothed_surfaces_keypoint.h
         )
 
-    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/keypoint.hpp
+    set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/keypoint.hpp
         include/pcl/${SUBSYS_NAME}/impl/sift_keypoint.hpp
+        include/pcl/${SUBSYS_NAME}/impl/uniform_sampling.hpp
         include/pcl/${SUBSYS_NAME}/impl/smoothed_surfaces_keypoint.hpp
         )
 
