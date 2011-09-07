@@ -43,41 +43,49 @@
 
 
 
-namespace pcl		
+namespace pcl
 {
 
-	
-  template <typename PointT>
-  class OctreeGPU : public pcl::Search<PointT> 
-{
+  namespace search
+  {
 
-   // acts as an interface to the octree GPU implementation
+    template <typename PointT>
+    class OctreeGPU : public pcl::Search<PointT>
+    {
 
-	public:
-OctreeGPU(){}
-~OctreeGPU(){}
+    // acts as an interface to the octree GPU implementation
 
-    typedef typename Search<PointT>::PointCloud PointCloud;
-    typedef typename Search<PointT>::PointCloudConstPtr PointCloudConstPtr;
+      public:
+      OctreeGPU(){}
+      ~OctreeGPU(){}
 
-	/** \brief Provide a pointer to the input dataset.
-        * \param cloud the const boost shared pointer to a PointCloud message
-        */
-       
-    void setInputCloud( const PointCloudConstPtr& cloud);
-   
-	/** \brief Search for all the nearest neighbors of the query points in the given radiuses.
+      typedef typename Search<PointT>::PointCloud PointCloud;
+      typedef typename Search<PointT>::PointCloudConstPtr PointCloudConstPtr;
+
+      /** \brief Provide a pointer to the input dataset.
+      * \param cloud the const boost shared pointer to a PointCloud message
+      */
+
+      void setInputCloud( const PointCloudConstPtr& cloud);
+
+      /** \brief Search for all the nearest neighbors of the query points in the given radiuses.
         * \param point the given query points
         * \param radiuses the radiuses of the sphere bounding all of point's neighbors
         * \param k_indices the resultant indices of the neighboring points
         * \param k_distances the resultant squared distances to the neighboring points
         * \param max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radiuses
-        */
-    int 
-    radiusSearch (std::vector<PointT>& point, std::vector< double>& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const;
+      */
+      int
+      radiusSearch (std::vector<PointT>& point, 
+                    std::vector< double>& radiuses, 
+                    std::vector<std::vector<int> >& k_indices,    
+                    std::vector<std::vector<float> >& k_distances, 
+                    int max_nn) const;
 
-};
+    };
+
+  }
 
 }
 

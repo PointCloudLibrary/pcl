@@ -51,103 +51,107 @@
 
 namespace pcl
 {
-typedef pcl::gpu::Octree::PointType PointType;
-std::vector<PointType> cloud_gpu;
+
+  namespace search
+  {
+
+    typedef pcl::gpu::Octree::PointType PointType;
+    std::vector<PointType> cloud_gpu_;
 
 
 
 
-using namespace std;
-using namespace pcl::gpu;
+    using namespace std;
+    using namespace pcl::gpu;
 
-template <typename PointT> void
-OctreeGPU<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
-{
-	for(int i=0;i<cloud->points.size();i++)
-	{
-		cloud_gpu.push_back(PointXYZ(cloud->points[i].x, cloud->points[i].y, cloud->points[i].z));
+    template <typename PointT>
+    void
+    OctreeGPU<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
+    {
+      for(int i=0; i<cloud->points.size(); i++) {
+        cloud_gpu_.push_back(PointXYZ(cloud->points[i].x, cloud->points[i].y, cloud->points[i].z));
+      }
 
-	}
-	
+    }
 
-}
+    template <typename PointT>
+    int
+    OctreeGPU<PointT>::radiusSearch (std::vector<PointT>& point,
+                                     std::vector < double >& radiuses,
+                                     std::vector<std::vector<int> >& k_indices,
+                                     std::vector<std::vector<float> >& k_distances,
+                                     int max_nn ) const
 
-	template <typename PointT> int
-		OctreeGPU<PointT>::	    radiusSearch (std::vector<PointT>& point, std::vector < double >&radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn ) const
+    {
+      const int max_answers = 333;
 
-		{
-    const int max_answers = 333;
+      std::vector<PointType> pointT;
 
-    std::vector<PointType> pointT;
+      std:: vector < std:: vector < float > > query_vec;
 
-	std:: vector < std:: vector < float > > query_vec;
-	
-		std::vector<float> temp;
-	for(int i=0;i<point.size();i++)
-	{
-		temp.clear();
-		temp.push_back(point[i].x);
-		temp.push_back(point[i].y);
-		temp.push_back(point[i].z);
-		query_vec.push_back(temp);
-	//	std::cout << "check" << std::endl;
-	}
-	pointT.resize(query_vec.size());
-	for(int i=0;i<query_vec.size();i++)
-	{
+      std::vector<float> temp;
+      for(int i=0; i<point.size(); i++) {
+        temp.clear();
+        temp.push_back(point[i].x);
+        temp.push_back(point[i].y);
+        temp.push_back(point[i].z);
+        query_vec.push_back(temp);
+        //	std::cout << "check" << std::endl;
+      }
+      pointT.resize(query_vec.size());
+      for(int i=0; i<query_vec.size(); i++) {
 
-		pointT[i].x = query_vec[i][0];
-		pointT[i].y = query_vec[i][1];
-		pointT[i].z = query_vec[i][2];
-	}
-    
-    pcl::gpu::Octree::PointCloud cloud_device;
-    cloud_device.upload(cloud_gpu);
+        pointT[i].x = query_vec[i][0];
+        pointT[i].y = query_vec[i][1];
+        pointT[i].z = query_vec[i][2];
+      }
 
-    //gpu build 
-    pcl::gpu::Octree octree_device;
-    octree_device.setCloud(cloud_device);
-    octree_device.build();
+      pcl::gpu::Octree::PointCloud cloud_device_;
+      cloud_device_.upload(cloud_gpu_);
 
-    //upload queries
-    pcl::gpu::Octree::BatchQueries queries_device;
-    pcl::gpu::Octree::BatchRadiuses radiuses_device;
-    queries_device.upload(pointT);
+      //gpu build
+      pcl::gpu::Octree octree_device;
+      octree_device.setCloud(cloud_device_);
+      octree_device.build();
 
-    std::vector < float > radius_queries;
-    for(int i=0;i<radiuses.size();i++)
-	{
-		radius_queries.push_back((float)radiuses[i]);
-	}
-    radiuses_device.upload(radius_queries);
+      //upload queries
+      pcl::gpu::Octree::BatchQueries queries_device;
+      pcl::gpu::Octree::BatchRadiuses radiuses_device;
+      queries_device.upload(pointT);
 
-    //prepare output buffers on device
-    pcl::gpu::Octree::BatchResult      result_device1(queries_device.size() * max_answers);
-    pcl::gpu::Octree::BatchResultSizes  sizes_device1(queries_device.size());
+      std::vector < float > radius_queries;
+      for(int i=0; i<radiuses.size(); i++) {
+        radius_queries.push_back((float)radiuses[i]);
+      }
+      radiuses_device.upload(radius_queries);
 
-    //prepare output buffers on host
+      //prepare output buffers on device
+      pcl::gpu::Octree::BatchResult      result_device1(queries_device.size() * max_answers);
+      pcl::gpu::Octree::BatchResultSizes  sizes_device1(queries_device.size());
 
-
-    //search GPU individual
-    octree_device.radiusSearchBatch(queries_device, radiuses_device, max_answers, result_device1, sizes_device1);
+      //prepare output buffers on host
 
 
-    //download results
-    vector<int> sizes1;
-    sizes_device1.download(sizes1);
-
-    vector<int> downloaded_buffer1; 
-    result_device1.download(downloaded_buffer1);
-
-    //fill in k_indices and k_distances
+      //search GPU individual
+      octree_device.radiusSearchBatch(queries_device, radiuses_device, max_answers, result_device1, sizes_device1);
 
 
-return 0;
+      //download results
+      vector<int> sizes1;
+      sizes_device1.download(sizes1);
 
-		};
+      vector<int> downloaded_buffer1;
+      result_device1.download(downloaded_buffer1);
+
+      //fill in k_indices and k_distances
 
 
+      return 0;
 
+    }
+
+
+  }
 
 }
 #define PCL_INSTANTIATE_OctreeGPU(T) template class PCL_EXPORTS pcl::OctreeGPU<T>;
