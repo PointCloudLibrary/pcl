@@ -85,6 +85,9 @@ template <typename PointInT, typename PointNT, typename PointOutT> bool
   }
   std::sort (angles.begin (), angles.end ());
 
+  if (angles.empty ())
+    return (false);
+
   // Compute the maximal angle difference between two consecutive angles
   float max_dif = FLT_MIN, dif;
   for (size_t i = 0; i < angles.size () - 1; ++i)
