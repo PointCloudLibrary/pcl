@@ -78,7 +78,7 @@ pcl::SampleConsensusModelStick<PointT>::computeModelCoefficients (
   model_coefficients[4] = input_->points[samples[1]].y - model_coefficients[1];
   model_coefficients[5] = input_->points[samples[1]].z - model_coefficients[2];
 
-  model_coefficients.template segment<3> (2).normalize ();
+  model_coefficients.template segment<3> (3).normalize ();
   // We don't care about model_coefficients[6] which is the width (radius) of the stick
 
   return (true);
@@ -144,11 +144,8 @@ pcl::SampleConsensusModelStick<PointT>::selectWithinDistance (
     float sqr_distance = (line_pt - input_->points[(*indices_)[i]].getVector4fMap ()).cross3 (line_dir).squaredNorm ();
 
     if (sqr_distance < sqr_threshold)
-    {
       // Returns the indices of the points whose squared distances are smaller than the threshold
-      inliers[nr_p] = (*indices_)[i];
-      nr_p++;
-    }
+      inliers[nr_p++] = (*indices_)[i];
   }
   inliers.resize (nr_p);
 }
@@ -164,7 +161,7 @@ pcl::SampleConsensusModelStick<PointT>::countWithinDistance (
 
   float sqr_threshold = threshold * threshold;
 
-  int nr_i = 0, nr_o = 0;;
+  int nr_i = 0, nr_o = 0;
 
   // Obtain the line point and direction
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
@@ -185,7 +182,7 @@ pcl::SampleConsensusModelStick<PointT>::countWithinDistance (
       nr_o++;
   }
 
-  return (nr_i - nr_o < 0 ? 0 : nr_i - (nr_o * 2));
+  return (nr_i - 2 * nr_o < 0 ? 0 : nr_i - nr_o * 2);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -224,7 +221,7 @@ pcl::SampleConsensusModelStick<PointT>::optimizeModelCoefficients (
   EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
   pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
 
-  optimized_coefficients.template segment<3> (2) = eigen_vectors.col (2).normalized ();
+  optimized_coefficients.template segment<3> (3) = eigen_vectors.col (2).normalized ();
 }
 
 //////////////////////////////////////////////////////////////////////////
