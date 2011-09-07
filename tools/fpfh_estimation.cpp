@@ -74,7 +74,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
   tt.tic ();
   if (loadPCDFile (filename, cloud, translation, orientation) < 0)
     return (false);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
   print_info ("Available dimensions: "); print_value ("%s\n", getFieldsList (cloud).c_str ());
 
   // Check if the dataset has normals
@@ -110,7 +110,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   PointCloud<FPFHSignature33> fpfhs;
   ne.compute (fpfhs);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", fpfhs.width * fpfhs.height); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", fpfhs.width * fpfhs.height); print_info (" points]\n");
 
   // Convert data back
   sensor_msgs::PointCloud2 output_fpfhs;
@@ -128,7 +128,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
   
   io::savePCDFile (filename, output, translation, orientation, true);
   
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
 
 /* ---[ */

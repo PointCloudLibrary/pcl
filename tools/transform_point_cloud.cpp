@@ -70,7 +70,7 @@ printHelp (int argc, char **argv)
 
 void printElapsedTimeAndNumberOfPoints (double t, int w, int h=1)
 {
-  print_info ("[done, "); print_value ("%g", t); print_info (" seconds : "); 
+  print_info ("[done, "); print_value ("%g", t); print_info (" ms : "); 
   print_value ("%d", w*h); print_info (" points]\n");
 }
 

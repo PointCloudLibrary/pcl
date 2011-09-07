@@ -81,7 +81,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
   tt.tic ();
   if (loadPCDFile (filename, cloud, translation, orientation) < 0)
     return (false);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
   print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
 
   return (true);
@@ -114,7 +114,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, std::vector<sensor_msg
   ec.setInputCloud (xyz);
   ec.extract (cluster_indices);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", cluster_indices.size ()); print_info (" clusters]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cluster_indices.size ()); print_info (" clusters]\n");
 
   output.reserve (cluster_indices.size ());
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
@@ -143,7 +143,7 @@ saveCloud (const std::string &filename, const std::vector<sensor_msgs::PointClou
 
     pcl::io::savePCDFile (clustername, *(output[i]), translation, orientation, false);
 
-    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", output[i]->width * output[i]->height); print_info (" points]\n");
+    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output[i]->width * output[i]->height); print_info (" points]\n");
   }
   
 }

@@ -79,7 +79,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
   tt.tic ();
   if (loadPCDFile (filename, cloud) < 0)
     return (false);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
   print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
 
   return (true);
@@ -113,7 +113,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   TicToc tt;
   tt.tic ();
   mls.reconstruct (*xyz_cloud_smoothed);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 
   sensor_msgs::PointCloud2 output_positions, output_normals, output_positions_normals;
   toROSMsg (*xyz_cloud_smoothed, output_positions);
@@ -133,7 +133,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
 
   pcl::io::savePCDFile (filename, output);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
 
 /* ---[ */

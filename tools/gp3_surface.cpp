@@ -71,7 +71,7 @@ loadCloud (const std::string &filename, PointCloud<PointNormal> &cloud)
   tt.tic ();
   if (loadPCDFile<PointNormal> (filename, cloud) < 0)
     return (false);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
   print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
 
   return (true);
@@ -94,7 +94,7 @@ compute (const PointCloud<PointNormal>::Ptr &input, pcl::PolygonMesh &output,
   gpt.setMaximumNearestNeighbors (100);
   gpt.reconstruct (output);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%zu", output.polygons.size ()); print_info (" polygons]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", output.polygons.size ()); print_info (" polygons]\n");
 }
 
 void
@@ -106,7 +106,7 @@ saveCloud (const std::string &filename, const pcl::PolygonMesh &output)
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
   saveVTKFile (filename, output);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%zu", output.polygons.size ()); print_info (" polygons]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", output.polygons.size ()); print_info (" polygons]\n");
 }
 
 /* ---[ */

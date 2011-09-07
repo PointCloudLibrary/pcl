@@ -77,7 +77,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
   tt.tic ();
   if (loadPCDFile (filename, cloud, translation, orientation) < 0)
     return (false);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
   print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
 
   // Check if the dataset has normals
@@ -106,7 +106,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   BoundaryEstimation<pcl::PointNormal, pcl::PointNormal, pcl::Boundary> ne;
   ne.setInputCloud (xyznormals);
   ne.setInputNormals (xyznormals);
-  ne.setSearchMethod (pcl::KdTreeFLANN<pcl::PointNormal>::Ptr (new pcl::KdTreeFLANN<pcl::PointNormal>));
+  //ne.setSearchMethod (pcl::KdTreeFLANN<pcl::PointNormal>::Ptr (new pcl::KdTreeFLANN<pcl::PointNormal>));
   ne.setKSearch (k);
   ne.setAngleThreshold (angle);
   ne.setRadiusSearch (radius);
@@ -114,7 +114,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   PointCloud<Boundary> boundaries;
   ne.compute (boundaries);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", boundaries.width * boundaries.height); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", boundaries.width * boundaries.height); print_info (" points]\n");
 
   // Convert data back
   sensor_msgs::PointCloud2 output_boundaries;
@@ -132,7 +132,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
   
   pcl::io::savePCDFile (filename, output, translation, orientation, false);
   
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
 
 /* ---[ */
