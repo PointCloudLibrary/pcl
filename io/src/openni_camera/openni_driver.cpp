@@ -224,7 +224,7 @@ OpenNIDriver::~OpenNIDriver () throw ()
   {
   }
 
-  context_.Shutdown ();
+  context_.Release ();
 }
 
 boost::shared_ptr<OpenNIDevice> OpenNIDriver::createVirtualDevice (const string& path, bool repeat, bool stream) const
