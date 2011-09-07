@@ -7,11 +7,12 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 if(build)
-    set(srcs 
+    set(srcs
         src/conditional_removal.cpp
         src/extract_indices.cpp
         src/filter.cpp
         src/passthrough.cpp
+        src/color.cpp
         src/project_inliers.cpp
         src/radius_outlier_removal.cpp
         src/statistical_outlier_removal.cpp
@@ -20,11 +21,12 @@ if(build)
         src/bilateral.cpp
         )
 
-    set(incs 
+    set(incs
         include/pcl/${SUBSYS_NAME}/conditional_removal.h
         include/pcl/${SUBSYS_NAME}/extract_indices.h
         include/pcl/${SUBSYS_NAME}/filter.h
         include/pcl/${SUBSYS_NAME}/passthrough.h
+        include/pcl/${SUBSYS_NAME}/color.h
         include/pcl/${SUBSYS_NAME}/project_inliers.h
         include/pcl/${SUBSYS_NAME}/radius_outlier_removal.h
         include/pcl/${SUBSYS_NAME}/statistical_outlier_removal.h
@@ -33,11 +35,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/bilateral.h
         )
 
-    set(impl_incs 
+    set(impl_incs
         include/pcl/${SUBSYS_NAME}/impl/conditional_removal.hpp
         include/pcl/${SUBSYS_NAME}/impl/extract_indices.hpp
         include/pcl/${SUBSYS_NAME}/impl/filter.hpp
         include/pcl/${SUBSYS_NAME}/impl/passthrough.hpp
+        include/pcl/${SUBSYS_NAME}/impl/color.hpp
         include/pcl/${SUBSYS_NAME}/impl/project_inliers.hpp
         include/pcl/${SUBSYS_NAME}/impl/radius_outlier_removal.hpp
         include/pcl/${SUBSYS_NAME}/impl/statistical_outlier_removal.hpp
