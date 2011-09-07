@@ -101,10 +101,6 @@ if(build)
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
        )
 
-    if(CMAKE_COMPILER_IS_GNUCXX)
-        add_definitions("-Wno-unknown-pragmas")
-    endif(CMAKE_COMPILER_IS_GNUCXX)
-
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES})
     link_directories(${VTK_LINK_DIRECTORIES})
