@@ -173,6 +173,12 @@ namespace pcl
       inline bool 
       isModelValid (const Eigen::VectorXf &model_coefficients)
       {
+        if (model_coefficients.size () != 6)
+        {
+          PCL_ERROR ("[pcl::SampleConsensusModelLine::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
+          return (false);
+        }
+
         return (true);
       }
 
