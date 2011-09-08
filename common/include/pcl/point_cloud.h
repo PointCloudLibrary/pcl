@@ -218,7 +218,7 @@ namespace pcl
       inline size_t size () const { return (points.size ()); }
       inline void reserve(size_t n) { points.reserve (n); }
       inline void resize(size_t n) { points.resize (n); }
-      inline bool empty() { return points.empty (); }
+      inline bool empty() const { return points.empty (); }
 
       //element access
       inline const PointT& operator[] (size_t n) const { return points[n]; }
