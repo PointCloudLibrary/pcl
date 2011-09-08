@@ -5,7 +5,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -118,20 +117,6 @@ downsample (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr &input,
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-removeSparseOutliers (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr &input, 
-                      pcl::PointCloud<pcl::PointXYZRGB>::Ptr &output)
-{
-  output = input;
-  return;
-  pcl::RadiusOutlierRemoval<pcl::PointXYZRGB> ror;
-  ror.setInputCloud (input);
-  ror.setMinNeighborsInRadius (3);
-  ror.setRadiusSearch (0.05);
-  ror.filter (*output);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void
 extractLargestCluster (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr &input, 
                        const pcl::PointIndices::Ptr &inliers_all,
                        pcl::PointIndices &inliers)
@@ -149,7 +134,6 @@ extractLargestCluster (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr &input,
 void
 compute (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr &input, 
          pcl::PointCloud<pcl::PointXYZRGB>::Ptr &output,
-         pcl::PointCloud<pcl::PointXYZRGB>::Ptr &output_color,
          pcl::ModelCoefficients &coefficients,
          pcl::PointIndices &inliers)
 {
@@ -163,18 +147,8 @@ compute (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr &input,
     coefficients.values.clear ();
     return;
   }
-  //pcl::PointCloud<pcl::PointXYZRGB>::Ptr output_color (new pcl::PointCloud<pcl::PointXYZRGB>);
-  filterGreen (output_down, output_color);
+  filterGreen (output_down, output);
 
-  if (output_color->points.empty ())
-  {
-    inliers.indices.clear ();
-    coefficients.values.clear ();
-    return;
-  }
-  removeSparseOutliers (output_color, output);
-
-  // Segment
   if (output->points.empty ())
   {
     inliers.indices.clear ();
@@ -225,7 +199,7 @@ main (int argc, char** argv)
     // Compute
     pcl::console::TicToc tt;
     tt.tic ();
-    compute (cloud, cloud_f, cloud_d, coefficients, inliers);
+    compute (cloud, cloud_f, coefficients, inliers);
     tt.toc_print ();
 
     if (inliers.indices.empty ())
@@ -246,10 +220,10 @@ main (int argc, char** argv)
       p.resetCameraViewpoint ("all");
     }
 
-    if (!p.updatePointCloud (cloud_d, "filter"))
-      p.addPointCloud (cloud_d, "filter");
+    if (!p.updatePointCloud (cloud_f, "filter"))
+      p.addPointCloud (cloud_f, "filter");
     p.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 10.0, "filter");
-    p.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.4, "filter");
+    p.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "filter");
 
     if (!p.updatePointCloud (line, "line inliers")) 
       p.addPointCloud (line, "line inliers");
