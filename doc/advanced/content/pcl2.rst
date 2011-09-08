@@ -111,3 +111,6 @@ Minor changes
 =============
 
 
+References
+----------
+- `The Little Manual of API Design <www4.in.tum.de/~blanchet/api-design.pdf>`_
