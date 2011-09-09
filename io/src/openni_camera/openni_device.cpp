@@ -88,19 +88,21 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
 
 
 #else
+
+#if (XN_MINOR_VERSION >= 3)
 // create the production nodes
-  XnStatus status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
+  XnStatus status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node), depth_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating depth generator failed. Reason: %s", xnGetStatusString (status));
 
-  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(image_node));
+  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(image_node), image_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating image generator failed. Reason: %s", xnGetStatusString (status));
 
-  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(ir_node));
+  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(ir_node), ir_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating IR generator failed. Reason: %s", xnGetStatusString (status));
-
+#else
   // get production node instances
   status = depth_node.GetInstance (depth_generator_);
   if (status != XN_STATUS_OK)
@@ -113,9 +115,9 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   status = ir_node.GetInstance (ir_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating IR generator instance failed. Reason: %s", xnGetStatusString (status));
-
+#endif // (XN_MINOR_VERSION >= 3)
   ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewIRDataAvailable, this, ir_callback_handle_);
-#endif
+#endif // __APPLE__
 
   depth_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewDepthDataAvailable, this, depth_callback_handle_);
   image_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewImageDataAvailable, this, image_callback_handle_);
@@ -156,22 +158,13 @@ OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_nod
   XnStatus status;
 
   // create the production nodes
-  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node));
+  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(depth_node), depth_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating depth generator failed. Reason: %s", xnGetStatusString (status));
 
-  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(ir_node));
+  status = context_.CreateProductionTree (const_cast<xn::NodeInfo&>(ir_node), ir_generator_);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating IR generator failed. Reason: %s", xnGetStatusString (status));
-
-  // get production node instances
-  status = depth_node.GetInstance (depth_generator_);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("creating depth generator instance failed. Reason: %s", xnGetStatusString (status));
-
-  status = ir_node.GetInstance (ir_generator_);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("creating IR generator instance failed. Reason: %s", xnGetStatusString (status));
 
   ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewIRDataAvailable, this, ir_callback_handle_);
   #endif

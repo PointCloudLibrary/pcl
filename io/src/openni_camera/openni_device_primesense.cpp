@@ -61,7 +61,7 @@ DevicePrimesense::DevicePrimesense (xn::Context& context, const xn::NodeInfo& de
   unique_lock<mutex> image_lock(image_mutex_);
   XnStatus status = image_generator_.SetIntProperty ("InputFormat", 5);
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("Error setting the image input format to Uncompressed 8-bit BAYER. Reason: %s", xnGetStatusString (status));
+    THROW_OPENNI_EXCEPTION ("Error setting the image input format to Uncompressed YUV422. Reason: %s", xnGetStatusString (status));
 
   status = image_generator_.SetPixelFormat (XN_PIXEL_FORMAT_YUV422);
   if (status != XN_STATUS_OK)
