@@ -69,7 +69,7 @@ namespace pcl
       typedef typename pcl::NormalEstimation<PointNormal, PointNormal> NormalEstimator;
       typedef typename pcl::VFHEstimation<PointInT, PointNT, pcl::VFHSignature308> VFHEstimator;
 
-      //pcl::PointCloud<pcl::PointXYZINormal>::Ptr clusters_colored_;
+      pcl::PointCloud<pcl::PointXYZINormal>::Ptr clusters_colored_;
 
       /** \brief Empty constructor. */
       CVFHEstimation () :
@@ -80,6 +80,7 @@ namespace pcl
         k_ = 1;
         feature_name_ = "CVFHEstimation";
         normalize_bins_ = false;
+        radius_normals_ = leaf_size_ * 3;
       }
       ;
 
@@ -104,6 +105,15 @@ namespace pcl
         vpx_ = vpx;
         vpy_ = vpy;
         vpz_ = vpz;
+      }
+
+      /** \brief Set the radius used to compute normals
+       * \param radius_normals the radius
+       */
+      inline void
+      setRadiusNormals (float radius_normals)
+      {
+        radius_normals_ = radius_normals;
       }
 
       /** \brief Get the viewpoint. 
@@ -163,15 +173,6 @@ namespace pcl
       }
 
       /*
-       * \brief Set resolution of the pointcloud
-       */
-      inline void
-      setLeafSize (float size)
-      {
-        leaf_size_ = size;
-      }
-
-      /*
        * \brief Sets wether if the CVFH signatures should be normalized or not
        */
       inline void
@@ -210,6 +211,10 @@ namespace pcl
        * computation.
        */
       size_t min_points_;
+
+      /** \brief Radius for the normals computation
+        */
+      float radius_normals_;
 
       /** \brief Estimate the Clustered Viewpoint Feature Histograms (CVFH) descriptors at 
        * a set of points given by <setInputCloud (), setIndices ()> using the surface in

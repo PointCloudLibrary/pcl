@@ -253,7 +253,7 @@ template<typename PointInT, typename PointNT, typename PointOutT>
     normals_tree_filtered->setInputCloud (normals_filtered_cloud);
 
     NormalEstimator n3d;
-    n3d.setRadiusSearch (leaf_size_ * 3);
+    n3d.setRadiusSearch (radius_normals_);
     n3d.setSearchMethod (normals_tree_filtered);
     n3d.setInputCloud (normals_filtered_cloud);
     n3d.compute (*normals_filtered_cloud);
@@ -271,19 +271,24 @@ template<typename PointInT, typename PointNT, typename PointOutT>
     clusters_colored_->height = 1;
 
     float intensity = 0.1;
+    int n_points=0;
     for (size_t i = 0; i < clusters.size (); ++i) //for each cluster
     {
       for (size_t j = 0; j < clusters[i].indices.size (); j++)
       {
-        clusters_colored_->points[clusters[i].indices[j]].intensity = intensity;
-        clusters_colored_->points[clusters[i].indices[j]].getVector4fMap() = normals_filtered_cloud->points[clusters[i].indices[j]].getVector4fMap();
-        clusters_colored_->points[clusters[i].indices[j]].getNormalVector4fMap() = normals_filtered_cloud->points[clusters[i].indices[j]].getNormalVector4fMap();
-        clusters_colored_->points[clusters[i].indices[j]].curvature = normals_filtered_cloud->points[clusters[i].indices[j]].curvature;
+        clusters_colored_->points[n_points].intensity = intensity;
+        clusters_colored_->points[n_points].getVector4fMap() = normals_filtered_cloud->points[clusters[i].indices[j]].getVector4fMap();
+        clusters_colored_->points[n_points].getNormalVector4fMap() = normals_filtered_cloud->points[clusters[i].indices[j]].getNormalVector4fMap();
+        clusters_colored_->points[n_points].curvature = normals_filtered_cloud->points[clusters[i].indices[j]].curvature;
 
+        n_points++;
       }
 
       intensity += 0.1;
-    }*/
+    }
+
+    clusters_colored_->points.resize(n_points);
+    clusters_colored_->width = n_points;*/
 
     std::vector<Eigen::Vector3f> dominant_normals;
 
