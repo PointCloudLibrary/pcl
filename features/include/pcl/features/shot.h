@@ -153,9 +153,6 @@ namespace pcl
       /** \brief The squared search radius.*/
       double sqradius_;
 
-      /** \brief 1/4 of the squared search radius. */
-      double sqradius4_;
-
       /** \brief 3/4 of the search radius. */
       double radius3_4_;
 
@@ -212,7 +209,6 @@ namespace pcl
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::nr_grid_sector_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::nr_shape_bins_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::sqradius_;
-      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::sqradius4_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::radius3_4_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::radius1_4_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::radius1_2_;
@@ -285,7 +281,6 @@ namespace pcl
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_grid_sector_;
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_shape_bins_;
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::sqradius_;
-      using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::sqradius4_;
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::radius3_4_;
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_4_;
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_2_;

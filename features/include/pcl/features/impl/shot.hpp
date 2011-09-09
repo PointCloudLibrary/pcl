@@ -38,6 +38,7 @@
 #define PCL_FEATURES_IMPL_SHOT_H_
 
 #include "pcl/features/shot.h"
+#include <utility>
 
 // Useful constants.
 #define PST_PI 3.1415926535897932384626433832795
@@ -170,6 +171,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::getSHOTLocalRF (
     rf.resize (3);
 
   Eigen::Vector4f central_point = cloud.points[index].getVector4fMap ();
+  central_point[3] = 0;
   // Allocate enough space
   Eigen::Vector4d *vij = new Eigen::Vector4d[indices.size ()];
 
@@ -186,8 +188,10 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::getSHOTLocalRF (
       continue;
 
     Eigen::Vector4f pt = cloud.points[indices[i_idx]].getVector4fMap (); 
+	pt[3] = 0;
     // Difference between current point and origin
     vij[valid_nn_points] = (pt - central_point).cast<double> ();
+	vij[valid_nn_points][3] = 0;
 
     distance = search_radius_ - sqrt (dists[i_idx]);
 
@@ -219,8 +223,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::getSHOTLocalRF (
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver (cov_m);
 
   // Disambiguation
-  int plusNormal = 0, plusTangentDirection1=0;
-
+ 
   Eigen::Vector3d v1c = solver.eigenvectors ().col (0);
   Eigen::Vector3d v2c = solver.eigenvectors ().col (1);
   Eigen::Vector3d v3c = solver.eigenvectors ().col (2);
@@ -267,6 +270,10 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::getSHOTLocalRF (
     }
   }
 
+  int plusNormal = 0, plusTangentDirection1=0;
+
+
+
   for (int ne = 0; ne < valid_nn_points; ne++)
   {
     double dp = vij[ne].dot (v1);
@@ -278,11 +285,49 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::getSHOTLocalRF (
       plusNormal++;
   }
 
-  if (plusTangentDirection1 < valid_nn_points - plusTangentDirection1)
-    v1 *= - 1;
+  //TANGENT
+  if( abs ( plusTangentDirection1 - valid_nn_points + plusTangentDirection1 )  > 0 ) {
 
-  if (plusNormal < valid_nn_points - plusNormal)
-    v3 *= - 1;
+
+	  if (plusTangentDirection1 < valid_nn_points - plusTangentDirection1)
+		  v1 *= - 1;
+	 
+  }
+   else{
+
+	   plusTangentDirection1=0;
+		int points = 5; ///std::min(valid_nn_points*2/2+1, 11);
+		int index = valid_nn_points/2;
+
+		for (int i = -points/2; i <= points/2; i++)
+			if ( vij[index- i ].dot (v1) > 0)
+				plusTangentDirection1 ++;	
+		
+		if (plusTangentDirection1 < points/2+1)
+			v1 *= - 1;
+	}
+
+	if( abs ( plusNormal - valid_nn_points + plusNormal )  > 0 ) {
+		if (plusNormal < valid_nn_points - plusNormal)
+			v3 *= - 1;
+
+	}
+	else{
+
+		plusNormal = 0;
+		int points = 5; //std::min(valid_nn_points*2/2+1, 11);
+		//std::cout << points << std::endl;
+		int index = valid_nn_points/2;
+
+		for (int i = -points/2; i <= points/2; i++)
+			if ( vij[index- i ].dot (v3) > 0)
+				plusNormal ++;	
+	
+		if (plusNormal < points/2+1)
+			v3 *= - 1;
+	}
+
+
 
   rf[0] = v1.cast<float>();
   rf[2] = v3.cast<float>();
@@ -316,11 +361,12 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
     Eigen::Vector4f delta = cloud.points[indices[i_idx]].getVector4fMap () - central_point;
+	delta[3] = 0;
 
     // Compute the Euclidean norm
-    double distance_sqr = dists[i_idx]; //delta.squaredNorm ();
+   double distance = sqrt (dists[i_idx]);
 
-    if (areEquals (distance_sqr, 0.0))
+    if (areEquals (distance, 0.0))
       continue;
 
     double xInFeatRef = delta.dot (rf[0]); //(x * feat[i].rf[0] + y * feat[i].rf[1] + z * feat[i].rf[2]);
@@ -353,7 +399,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
     desc_index += zInFeatRef > 0 ? 1 : 0;
 
     // 2 RADII
-    desc_index += (distance_sqr > sqradius4_) ? 2 : 0;
+    desc_index += (distance > radius1_2_) ? 2 : 0;
 
     int step_index = static_cast<int>(floor (binDistance[i_idx] +0.5));
     int volume_index = desc_index * (nr_bins+1);
@@ -368,8 +414,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
       shot[volume_index + ((step_index - 1 + nr_bins) % nr_bins)] += - binDistance[i_idx];
 
     //Interpolation on the distance (adjacent husks)
-    double distance = sqrt (dists[i_idx]); //sqrt(distance_sqr);
-
+   
     if (distance > radius1_2_)   //external sphere
     {
       double radiusDistance = (distance - radius3_4_) / radius1_2_;
@@ -380,7 +425,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
       {
         intWeight += 1 + radiusDistance;
         shot[(desc_index - 2) * (nr_bins+1) + step_index] -= radiusDistance;
-      }
+	  }
     }
     else    //internal sphere
     {
@@ -392,7 +437,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
       {
         intWeight += 1 - radiusDistance;
         shot[(desc_index + 2) * (nr_bins+1) + step_index] += radiusDistance;
-      }
+	  }
     }
 
     //Interpolation on the inclination (adjacent vertical volumes)
@@ -416,7 +461,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
         intWeight += 1 + inclinationDistance;
         assert ((desc_index + 1) * (nr_bins+1) + step_index >= 0 && (desc_index + 1) * (nr_bins+1) + step_index < descLength_);
         shot[(desc_index + 1) * (nr_bins+1) + step_index] -= inclinationDistance;
-      }
+	  }
     }
     else
     {
@@ -428,7 +473,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
         intWeight += 1 - inclinationDistance;
         assert ((desc_index - 1) * (nr_bins+1) + step_index >= 0 && (desc_index - 1) * (nr_bins+1) + step_index < descLength_);
         shot[(desc_index - 1) * (nr_bins+1) + step_index] += inclinationDistance;
-      }
+	  }
     }
 
     if (yInFeatRef != 0.0 || xInFeatRef != 0.0)
@@ -465,6 +510,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
 
     assert (volume_index + step_index >= 0 &&  volume_index + step_index < descLength_);
     shot[volume_index + step_index] += intWeight;
+
   }
 }
 
@@ -494,11 +540,12 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
     Eigen::Vector4f delta = cloud.points[indices[i_idx]].getVector4fMap () - central_point;
+	delta[3] = 0;
 
     // Compute the Euclidean norm
-    double distance_sqr = dists[i_idx]; //delta.squaredNorm ();
+    double distance = sqrt (dists[i_idx]);
 
-    if (areEquals (distance_sqr, 0.0))
+    if (areEquals (distance, 0.0))
       continue;
 
     double xInFeatRef = delta.dot (rf[0]); //(x * feat[i].rf[0] + y * feat[i].rf[1] + z * feat[i].rf[2]);
@@ -530,7 +577,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
     desc_index += zInFeatRef > 0 ? 1 : 0;
 
     // 2 RADII
-    desc_index += (distance_sqr > sqradius4_) ? 2 : 0;
+    desc_index += (distance > radius1_2_) ? 2 : 0;
 
     int step_index_shape = static_cast<int>(floor (binDistanceShape[i_idx] +0.5));
     int step_index_color = static_cast<int>(floor (binDistanceColor[i_idx] +0.5));
@@ -556,8 +603,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
       shot[volume_index_color + ((step_index_color - 1 + nr_bins_color) % nr_bins_color)] -= binDistanceColor[i_idx];
 
     //Interpolation on the distance (adjacent husks)
-    double distance = sqrt (dists[i_idx]); //sqrt(distance_sqr);
-
+   
     if (distance > radius1_2_)   //external sphere
     {
       double radiusDistance = (distance - radius3_4_) / radius1_2_;
@@ -694,6 +740,9 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
   if (rf.size () != 3)
     rf.resize (3);
 
+  // Clear the resultant shot
+  shot.setZero ();
+
   std::vector<double> binDistanceShape;
   std::vector<double> binDistanceColor;
 
@@ -707,10 +756,8 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
   }
 
   //Compute the local Reference Frame for the current 3D point
-  getSHOTLocalRF (cloud, normals, index, indices, dists, rf);
-
-  // Clear the resultant shot
-  shot.setZero ();
+  if (getSHOTLocalRF (cloud, normals, index, indices, dists, rf))
+	  return;
 
   //If shape description is enabled, compute the bins activated by each neighbor of the current feature in the shape histogram
   if (b_describe_shape_)
@@ -803,6 +850,9 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
   if (rf.size () != 3)
     rf.resize (3);
 
+   // Clear the resultant shot
+  shot.setZero ();
+
   std::vector<double> binDistanceShape;
 
   int nNeighbors = indices.size ();
@@ -813,10 +863,9 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
     return;
   }
 
-  getSHOTLocalRF (cloud, normals, index, indices, dists, rf);
+  if (getSHOTLocalRF (cloud, normals, index, indices, dists, rf))
+	  return;
 
-  // Clear the resultant shot
-  shot.setZero ();
 
   binDistanceShape.resize (nNeighbors);
 
@@ -830,6 +879,7 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
       cosineDesc = - 1.0;
 
     binDistanceShape[i_idx] = ((1.0 + cosineDesc) * nr_shape_bins_) / 2;
+
   }
 
   interpolateSingleChannel (cloud, indices, dists, cloud.points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
@@ -842,6 +892,7 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
 
   for (int j=0; j< descLength_; j++)
     shot[j] /= accNorm;
+
 }
 
 
@@ -858,7 +909,6 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (Poin
 
   // Useful values
   sqradius_ = search_radius_*search_radius_;
-  sqradius4_ = sqradius_ / 4;
   radius3_4_ = (search_radius_*3) / 4;
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
@@ -909,7 +959,6 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (PointClou
   descLength_ = nr_grid_sector_ * (nr_shape_bins_+1);
 
   sqradius_ = search_radius_ * search_radius_;
-  sqradius4_ = sqradius_ / 4;
   radius3_4_ = (search_radius_*3) / 4;
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
