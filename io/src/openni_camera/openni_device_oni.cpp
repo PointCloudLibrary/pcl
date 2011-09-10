@@ -54,9 +54,19 @@ DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool re
   , ir_stream_running_ (false)
 {
   XnStatus status;
+#if (XN_MINOR_VERSION >= 3)
+  status = context_.OpenFileRecording(file_name.c_str(), player_);
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION("Could not open ONI file. Reason: %s", xnGetStatusString(status));
+#else
   status = context_.OpenFileRecording(file_name.c_str());
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION("Could not open ONI file. Reason: %s", xnGetStatusString(status));
+
+  status = context.FindExistingNode(XN_NODE_TYPE_PLAYER, player_);
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION("Failed to find player node: %s\n", xnGetStatusString(status));
+#endif
 
   status = context.FindExistingNode(XN_NODE_TYPE_DEPTH, depth_generator_);
   if (status != XN_STATUS_OK)
@@ -77,10 +87,6 @@ DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool re
   status = context.FindExistingNode(XN_NODE_TYPE_IR, ir_generator_);
   if (status == XN_STATUS_OK)
     ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewONIIRDataAvailable, this, ir_callback_handle_);
-
-  status = context.FindExistingNode(XN_NODE_TYPE_PLAYER, player_);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION("Failed to find player node: %s\n", xnGetStatusString(status));
 
   device_node_info_ = player_.GetInfo();
 
