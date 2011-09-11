@@ -113,22 +113,12 @@ public:
     normal_coherence->setWeight (0.1);
     tracker_->addCoherence (normal_coherence);
 
-    // setup range
-    ParticleXYZRPY range;
-    range.x = 1.0;
-    range.y = 1.0;
-    range.z = 1.0;
-    range.roll = 2 * M_PI;
-    range.yaw = 2 * M_PI;
-    range.pitch = 2 * M_PI;
-    tracker_->setRangeState (range);
-
     ParticleXYZRPY offset;
     offset.y = 1.0;
-    offset.z = 0.5;
-    offset.roll = M_PI;
-    offset.yaw = M_PI;
-    offset.pitch = M_PI;
+    offset.z = 0;
+    offset.roll = 0;
+    offset.yaw = 0;
+    offset.pitch = 0;
     tracker_->setOffsetState (offset);
       
     extract_positive_.setNegative (false);
@@ -158,7 +148,7 @@ public:
   void
   drawSearchArea (pcl::visualization::PCLVisualizer& viz)
   {
-    const ParticleXYZRPY zero_particle (0.5, 0.5, 0.5, 0.5, 0.5, 0.5);
+    const ParticleXYZRPY zero_particle;
     
     Eigen::Affine3f search_origin = tracker_->toEigenMatrix (zero_particle);
     Eigen::Quaternionf q = Eigen::Quaternionf (search_origin.rotation ());
@@ -172,10 +162,9 @@ public:
     coefficients.values.push_back (q.z ());
     coefficients.values.push_back (q.w ());
     
-    ParticleXYZRPY range = tracker_->getRangeState ();
-    coefficients.values.push_back (range.x);
-    coefficients.values.push_back (range.y);
-    coefficients.values.push_back (range.z);
+    coefficients.values.push_back (1.0);
+    coefficients.values.push_back (1.0);
+    coefficients.values.push_back (1.0);
     
     viz.removeShape ("searcharea");
     viz.addCube (coefficients, "searcharea");

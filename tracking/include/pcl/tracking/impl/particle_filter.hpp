@@ -141,13 +141,13 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeAngle (const do
 template <typename PointInT, typename StateT> Eigen::Affine3f
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::toEigenMatrix (StateT particle)
 {
-  double xval = range_.x * ( particle.x - 0.5 ) + offset_.x;
-  double yval = range_.y * ( particle.y - 0.5 ) + offset_.y;
-  double zval = range_.z * ( particle.z - 0.5 ) + offset_.z;
+  double xval = particle.x + offset_.x;
+  double yval = particle.y + offset_.y;
+  double zval = particle.z + offset_.z;
   // i need to normalize euler angles?
-  double rollval = normalizeAngle(range_.roll * ( particle.roll - 0.5 ) + offset_.roll);
-  double pitchval = normalizeAngle(range_.pitch * ( particle.pitch - 0.5 ) + offset_.pitch);
-  double yawval = normalizeAngle(range_.yaw * ( particle.yaw - 0.5 ) + offset_.yaw);
+  double rollval = normalizeAngle(particle.roll + offset_.roll);
+  double pitchval = normalizeAngle(particle.pitch + offset_.pitch);
+  double yawval = normalizeAngle(particle.yaw + offset_.yaw);
   
   return trans_ * getTransformation(xval, yval, zval, rollval, pitchval, yawval);
 }
