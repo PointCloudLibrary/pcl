@@ -43,6 +43,8 @@
 #include <vtkTransform.h>
 #include <vtkImageChangeInformation.h>
 
+#include "pcl/common/transformation_from_correspondences.h"
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   : image_viewer_ (vtkImageViewer::New ())
@@ -51,13 +53,13 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
 
   vtkRenderWindowInteractor *iren = vtkRenderWindowInteractor::New ();
   image_viewer_->SetupInteractor (iren);
-  
+
   iren->SetRenderWindow (image_viewer_->GetRenderWindow ());
   iren->Initialize ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::visualization::ImageViewer::showRGBImage (const unsigned char* rgb_data, unsigned width, unsigned height)
 {
   vtkImageImport* importer = vtkImageImport::New ();
@@ -65,13 +67,18 @@ pcl::visualization::ImageViewer::showRGBImage (const unsigned char* rgb_data, un
   importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
   importer->SetDataScalarTypeToUnsignedChar ();
   importer->SetDataExtentToWholeExtent ();
-  
+
   void* data = const_cast<void*> ((const void*)rgb_data);
   importer->SetImportVoidPointer (data, 1);
 
+  vtkSmartPointer<vtkMatrix4x4> transform = vtkSmartPointer<vtkMatrix4x4>::New ();
+  transform->Identity ();
+  transform->SetElement(1,1, -1.0);
+  transform->SetElement(1,3, height);
   vtkSmartPointer<vtkTransform> imageTransform = vtkSmartPointer<vtkTransform>::New ();
-  imageTransform->Translate (width, height, 0.0);
-  imageTransform->RotateZ (180.0);
+  imageTransform->SetMatrix(transform);
+  //imageTransform->Translate (width, height, 0.0);
+  //imageTransform->RotateZ (180.0);
   // Now create filter and set previously created transformation
   vtkSmartPointer<vtkImageReslice> algo = vtkSmartPointer<vtkImageReslice>::New ();
   algo->SetInput (importer->GetOutput ());
