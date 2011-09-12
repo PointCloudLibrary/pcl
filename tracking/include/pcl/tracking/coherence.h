@@ -70,16 +70,33 @@ namespace pcl
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
       
+      typedef typename PointCoherence<PointInT>::Ptr PointCoherencePtr;
+      
       /** \brief empty constructor */
       PointCloudCoherence () {}
 
       /** \brief empty distructor */
       ~PointCloudCoherence () {}
-
       
       /** \brief compute coherence between two pointclouds. */
       inline double
       compute ();
+
+      /** \brief get a list of pcl::tracking::PointCoherence.*/
+      inline std::vector<PointCoherencePtr>
+      getPointCoherences () { return point_coherences_; }
+
+      /** \brief set a list of pcl::tracking::PointCoherence.
+        * \param coherences a list of pcl::tracking::PointCoherence.
+        */
+      inline void
+      setPointCoherences (std::vector<PointCoherencePtr> coherences) { point_coherences_ = coherences; }
+
+      /** \brief add a PointCoherence to the PointCloudCoherence.
+        * \param coherence a pointer to PointCoherence.
+        */
+      inline void
+      addPointCoherence (PointCoherencePtr coherence) { point_coherences_.push_back (coherence); }
       
     protected:
       /** \brief Abstract method to compute coherence. */
@@ -100,7 +117,7 @@ namespace pcl
       PointCloudInConstPtr target_input_;
 
       /** \brief a list of pointers to PointCoherence.*/
-      std::vector<typename PointCoherence<PointInT>::Ptr> point_coherences_;
+      std::vector<PointCoherencePtr> point_coherences_;
     };
     
   }
