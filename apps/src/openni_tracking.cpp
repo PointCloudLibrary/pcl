@@ -419,7 +419,6 @@ public:
     interface->stop ();
   }
   
-  pcl::NormalEstimationOMP<PointType, pcl::Normal> ne_;
   pcl::PassThrough<PointType> pass_;
   pcl::VoxelGrid<PointType> grid_;
   pcl::SACSegmentation<PointType> seg_;
@@ -439,6 +438,7 @@ public:
   boost::mutex mtx_;
   int sensor_view, reference_view;
   bool new_cloud_;
+  pcl::NormalEstimationOMP<PointType, pcl::Normal> ne_;
   boost::shared_ptr<ParticleFilterTracker<RefPointType, ParticleXYZRPY> > tracker_;
 };
 
