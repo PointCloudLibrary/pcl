@@ -140,14 +140,6 @@ pcl::tracking::Tracker<PointInT, StateT>::initCompute ()
     return (false);
   }
 
-  // Check if a space search locator was given
-  if (!tree_)
-  {
-    tree_.reset (new pcl::KdTreeFLANN<PointInT> (false));
-  }
-  // Send the surface dataset to the spatial locator
-  tree_->setInputCloud (input_);
-
   return (true);
 }
 
