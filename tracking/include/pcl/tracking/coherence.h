@@ -104,7 +104,7 @@ namespace pcl
       
     protected:
       /** \brief Abstract method to compute coherence. */
-      virtual inline double
+      virtual double
       computeCoherence () = 0;
 
       inline double calcPointCoherence (PointInT &source, PointInT &target);

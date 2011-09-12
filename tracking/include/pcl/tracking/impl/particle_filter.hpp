@@ -15,6 +15,8 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute ()
     PCL_ERROR ("[pcl::%s::initCompute] Init failed.\n", getClassName ().c_str ());
     return (false);
   }
+
+  coherence_->setTargetCloud (input_);
   
   if (!particles_ || particles_->points.empty ())
     initParticles ();
@@ -24,19 +26,18 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute ()
 template <typename PointInT, typename StateT> double
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcLikelihood (StateT hypothesis)
 {
-  double val = 1.0;
-  // build a pointcloud for hypothesis
   Eigen::Affine3f trans = toEigenMatrix (hypothesis);
-  PointCloudIn transed_reference;
-  pcl::transformPointCloudWithNormals<PointInT> (*ref_, transed_reference, trans);
+  PointCloudInPtr transed_reference = PointCloudInPtr (new PointCloudIn ());
+  pcl::transformPointCloudWithNormals<PointInT> (*ref_, *transed_reference, trans);
 
   // search the nearest pairs
   std::vector<int> k_indices(1);
   std::vector<float> k_distances(1);
   int num_points = 0;
-  for ( size_t i = 0; i < transed_reference.points.size (); i++ )
+  IndicesPtr indices = IndicesPtr (new std::vector<int> ());
+  for ( size_t i = 0; i < transed_reference->points.size (); i++ )
   {
-    PointInT input_point = transed_reference.points[i];
+    PointInT input_point = transed_reference->points[i];
 
     // take occlusion into account
     Eigen::Vector4f p = input_point.getVector4fMap ();
@@ -44,17 +45,14 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcLikelihood (StateT h
     // TODO: check NAN
     if ( pcl::getAngle3D(p, n) > occlusion_angle_thr_ )
     {
-      tree_->nearestKSearch (input_point, 1, k_indices, k_distances); // input_ is set by Tracker::initCompute
-      PointInT target_point = input_->points[k_indices[0]];
-      for (size_t i = 0; i < coherences_.size (); i++)
-      {
-        CoherencePtr coherence = coherences_[i];
-        val *= coherence->compute (input_point, target_point);
-      }
+      indices->push_back (i);
       ++num_points;
     }
   }
-
+  
+  coherence_->setInputCloud (transed_reference);
+  coherence_->setIndices (indices);
+  double val = coherence_->compute ();
   // take min_indices_ into account
   // TODO: normalization of likelihood is required?
   double likelihood;

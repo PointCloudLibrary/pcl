@@ -5,6 +5,8 @@
 #include <pcl/tracking/hsv_color_coherence.h>
 #include <pcl/tracking/normal_coherence.h>
 
+#include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -58,13 +60,13 @@ public:
   typedef typename ParticleFilter::CoherencePtr CoherencePtr;
   
   OpenNITracking (const std::string& device_id, const std::string& pcd_file)
-  : viewer_ ("PCL OpenNI Tracking Viewer")
+  : ne_ (8)                   // 8 threads
+  , viewer_ ("PCL OpenNI Tracking Viewer")
   , device_id_ (device_id)
   , pcd_file_ (pcd_file)
   , sensor_view (0)
   , reference_view (0)
   , new_cloud_ (false)
-  , ne_ (8)                   // 8 threads
   {
     grid_.setFilterFieldName ("z");
     grid_.setFilterLimits (0.0, 2.0);
@@ -101,17 +103,24 @@ public:
     tracker_->setIterationNum (1);
     tracker_->setParticleNum (200);
     // setup coherences
-    boost::shared_ptr<DistanceCoherence<RefPointType> > distance_coherence = boost::shared_ptr<DistanceCoherence<RefPointType> > (new DistanceCoherence<RefPointType> ());
+    NearestPairPointCloudCoherence<RefPointType>::Ptr coherence = NearestPairPointCloudCoherence<RefPointType>::Ptr
+      (new NearestPairPointCloudCoherence<RefPointType> ());
+    boost::shared_ptr<DistanceCoherence<RefPointType> > distance_coherence
+      = boost::shared_ptr<DistanceCoherence<RefPointType> > (new DistanceCoherence<RefPointType> ());
     distance_coherence->setWeight (10.0);
-    tracker_->addCoherence (distance_coherence);
-      
-    boost::shared_ptr<HSVColorCoherence<RefPointType> > color_coherence = boost::shared_ptr<HSVColorCoherence<RefPointType> > (new HSVColorCoherence<RefPointType> ());
+    coherence->addPointCoherence (distance_coherence);
+    
+    boost::shared_ptr<HSVColorCoherence<RefPointType> > color_coherence
+      = boost::shared_ptr<HSVColorCoherence<RefPointType> > (new HSVColorCoherence<RefPointType> ());
     color_coherence->setWeight (0.01);
-    tracker_->addCoherence (color_coherence);
+    coherence->addPointCoherence (color_coherence);
 
-    boost::shared_ptr<NormalCoherence<RefPointType> > normal_coherence = boost::shared_ptr<NormalCoherence<RefPointType> > (new NormalCoherence<RefPointType> ());
+    boost::shared_ptr<NormalCoherence<RefPointType> > normal_coherence
+      = boost::shared_ptr<NormalCoherence<RefPointType> > (new NormalCoherence<RefPointType> ());
     normal_coherence->setWeight (0.1);
-    tracker_->addCoherence (normal_coherence);
+    coherence->addPointCoherence (normal_coherence);
+
+    tracker_->setCloudCoherence (coherence);
 
     ParticleXYZRPY offset;
     offset.y = 1.0;

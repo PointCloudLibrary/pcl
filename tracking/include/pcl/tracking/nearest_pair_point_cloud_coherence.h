@@ -23,6 +23,7 @@ namespace pcl
       using PointCloudCoherence<PointInT>::input_;
       using PointCloudCoherence<PointInT>::target_input_;
       
+      typedef typename PointCloudCoherence<PointInT>::PointCloudInConstPtr PointCloudInConstPtr;
       typedef PointCloudCoherence<PointInT> BaseClass;
       
       typedef boost::shared_ptr< NearestPairPointCloudCoherence<PointInT> > Ptr;
@@ -49,12 +50,25 @@ namespace pcl
       /** \brief Get a pointer to the point cloud dataset. */
       inline KdTreePtr 
       getSearchMethod () { return (tree_); }
+
+      /** \brief add a PointCoherence to the PointCloudCoherence.
+        * \param coherence a pointer to PointCoherence.
+        */
+      inline void
+      setTargetCloud (const PointCloudInConstPtr &cloud)
+      {
+        new_target_ = true;
+        PointCloudCoherence<PointInT>::setTargetCloud (cloud);
+      }
       
     protected:
       using PointCloudCoherence<PointInT>::point_coherences_;
 
       /** \brief This method should get called before starting the actual computation. */
       virtual bool initCompute ();
+
+      /** \brief A flag which is true if target_input_ is updated */
+      bool new_target_;
       
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;

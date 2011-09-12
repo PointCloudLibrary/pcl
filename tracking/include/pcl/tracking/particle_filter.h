@@ -42,6 +42,10 @@ namespace pcl
       typedef PointCoherence<PointInT> Coherence;
       typedef boost::shared_ptr< Coherence > CoherencePtr;
       typedef boost::shared_ptr< const Coherence > CoherenceConstPtr;
+
+      typedef PointCloudCoherence<PointInT> CloudCoherence;
+      typedef boost::shared_ptr< CloudCoherence > CloudCoherencePtr;
+      typedef boost::shared_ptr< const CloudCoherence > CloudCoherenceConstPtr;
       
       /** \brief Empty constructor. */
       ParticleFilterTracker ()
@@ -83,21 +87,16 @@ namespace pcl
       inline PointCloudInConstPtr const
       getReferenceCloud () { return ref_; }
 
-      /** \brief get a list of pcl::tracking::PointCoherence.*/
-      inline std::vector<CoherencePtr>
-      getCoherences () { return coherences_; }
-
-      /** \brief set a list of pcl::tracking::PointCoherence.
-        * \param coherences a list of pcl::tracking::PointCoherence.
+      /** \brief set the PointCloudCoherence as likelihood.
+        * \param coherence a pointer to PointCloudCoherence.
         */
       inline void
-      setCoherences (std::vector<CoherencePtr> coherences) { coherences_ = coherences; }
-
-      /** \brief add a PointCoherence to the likelihood.
-        * \param coherence a pointer to PointCoherence.
-        */
-      inline void
-      addCoherence (CoherencePtr coherence) { coherences_.push_back (coherence); }
+      setCloudCoherence (CloudCoherencePtr coherence) { coherence_ = coherence; }
+      
+      /** \brief get the PointCloudCoherence to compute likelihood. */
+      inline CloudCoherencePtr
+      getCloudCoherence () { return coherence_; }
+      
 
       /** \brief set the covariance of step noise.
         * \param step_noise_covariance the diagonal elements of covariance matrix of step noise.
@@ -241,7 +240,7 @@ namespace pcl
       /** \brief generate the tables for walker's alias method */
       inline void genAliasTable (std::vector<int> &a, std::vector<double> &q);
 
-      /** \brief calculate the likelihood of hypothesis. the likelihood is defined by coherences_.
+      /** \brief calculate the likelihood of hypothesis. the likelihood is defined by coherence_.
         * \param hypothesis an instance of hypothesis.
         */
       inline double calcLikelihood (StateT hypothesis);
@@ -266,8 +265,8 @@ namespace pcl
       /** \brief a pointer to the particles  */
       PointCloudStatePtr particles_;
 
-      /** \brief a list of the instances of PointCoherence. */
-      std::vector<CoherencePtr> coherences_;
+      /** \brief a pointer to PointCloudCoherence. */
+      CloudCoherencePtr coherence_;
 
       /** \brief the diagonal elements of covariance matrix of the step noise. the covariance matrix is used
           at every resample method.
