@@ -60,13 +60,13 @@ public:
   typedef typename ParticleFilter::CoherencePtr CoherencePtr;
   
   OpenNITracking (const std::string& device_id, const std::string& pcd_file)
-  : ne_ (8)                   // 8 threads
-  , viewer_ ("PCL OpenNI Tracking Viewer")
+  : viewer_ ("PCL OpenNI Tracking Viewer")
   , device_id_ (device_id)
   , pcd_file_ (pcd_file)
   , sensor_view (0)
   , reference_view (0)
   , new_cloud_ (false)
+  , ne_ (8)                   // 8 threads
   {
     grid_.setFilterFieldName ("z");
     grid_.setFilterLimits (0.0, 2.0);
