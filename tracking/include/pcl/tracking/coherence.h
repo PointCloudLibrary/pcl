@@ -1,5 +1,6 @@
 #ifndef PCL_TRACKING_COHERENCE_H_
 #define PCL_TRACKING_COHERENCE_H_
+
 namespace pcl
 {
 
@@ -75,9 +76,6 @@ namespace pcl
       /** \brief empty constructor */
       PointCloudCoherence () {}
 
-      /** \brief empty distructor */
-      ~PointCloudCoherence () {}
-      
       /** \brief compute coherence between two pointclouds. */
       inline double
       compute ();
@@ -97,11 +95,19 @@ namespace pcl
         */
       inline void
       addPointCoherence (PointCoherencePtr coherence) { point_coherences_.push_back (coherence); }
+
+      /** \brief add a PointCoherence to the PointCloudCoherence.
+        * \param coherence a pointer to PointCoherence.
+        */
+      inline void
+      setTargetCloud (const PointCloudInConstPtr &cloud) { target_input_ = cloud; }
       
     protected:
       /** \brief Abstract method to compute coherence. */
       virtual inline double
       computeCoherence () = 0;
+
+      inline double calcPointCoherence (PointInT &source, PointInT &target);
       
       /** \brief Get a string representation of the name of this class. */
       inline const std::string& 

@@ -12,6 +12,18 @@ namespace pcl
       return computeCoherence (source, target);
     }
 
+    template <typename PointInT> double
+    PointCloudCoherence<PointInT>::calcPointCoherence (PointInT &source, PointInT &target)
+    {
+      double val = 1.0;
+      for (size_t i = 0; i < point_coherences_.size (); i++)\
+      {
+        PointCoherencePtr coherence = point_coherences_[i];
+        val *= coherence->comput (source, target);
+      }
+      return val;
+    }
+    
     template <typename PointInT> bool
     PointCloudCoherence<PointInT>::initCompute ()
     {
