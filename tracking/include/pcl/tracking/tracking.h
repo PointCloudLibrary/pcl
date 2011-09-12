@@ -85,7 +85,7 @@ namespace pcl
       getSearchMethod () { return (tree_); }
       
       /** \brief Get an instance of the result of tracking. */
-      virtual const StateT& 
+      virtual StateT 
       getResult () const = 0;
       
     private:

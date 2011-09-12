@@ -165,22 +165,22 @@ namespace pcl
       }
 
       /** \brief get the offset to all the particles. */
-      inline const StateT& getOffsetState () const { return offset_; }
+      inline StateT getOffsetState () const { return offset_; }
 
       /** \brief set the transformation from the world coordinates to the frame of the particles.
         * \param trans Affine transformation from the worldcoordinates to the frame of the particles.
         */
       inline void setTrans (const Eigen::Affine3f &trans) { trans_ = trans; }
       /** \brief get the transformation from the world coordinates to the frame of the particles. */
-      inline const Eigen::Affine3f& getTrans () const { return trans_; }
+      inline Eigen::Affine3f getTrans () const { return trans_; }
 
       /** \brief Get an instance of the result of tracking. */
-      inline const StateT& getResult () const { return representative_state_; }
+      inline StateT getResult () const { return representative_state_; }
       
       /** \brief convert a state to affine transformation from the world coordinates frame.
         * \param particle an instance of StateT.
         */
-      inline const Eigen::Affine3f& toEigenMatrix (const StateT& particle);
+      inline Eigen::Affine3f toEigenMatrix (const StateT& particle);
 
       /** \brief get a pointer to a pointcloud of the particles.*/
       inline PointCloudStatePtr getParticles () const { return particles_; }

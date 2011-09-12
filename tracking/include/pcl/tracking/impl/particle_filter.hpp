@@ -136,7 +136,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeAngle (const do
 }
 
 // TODO: should be a method of StateT
-template <typename PointInT, typename StateT> const Eigen::Affine3f&
+template <typename PointInT, typename StateT> Eigen::Affine3f
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::toEigenMatrix (const StateT& particle)
 {
   double xval = particle.x + offset_.x;
