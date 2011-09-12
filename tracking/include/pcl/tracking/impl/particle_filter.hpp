@@ -24,7 +24,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute ()
 }
 
 template <typename PointInT, typename StateT> double
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcLikelihood (StateT hypothesis)
+pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcLikelihood (const StateT &hypothesis)
 {
   Eigen::Affine3f trans = toEigenMatrix (hypothesis);
   PointCloudInPtr transed_reference = PointCloudInPtr (new PointCloudIn ());
@@ -136,8 +136,8 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeAngle (const do
 }
 
 // TODO: should be a method of StateT
-template <typename PointInT, typename StateT> Eigen::Affine3f
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::toEigenMatrix (StateT particle)
+template <typename PointInT, typename StateT> const Eigen::Affine3f&
+pcl::tracking::ParticleFilterTracker<PointInT, StateT>::toEigenMatrix (const StateT& particle)
 {
   double xval = particle.x + offset_.x;
   double yval = particle.y + offset_.y;

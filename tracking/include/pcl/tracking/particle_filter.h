@@ -61,21 +61,21 @@ namespace pcl
         * \param iteration_num the number of iteration.
         */
       inline void
-      setIterationNum (int iteration_num) { iteration_num_ = iteration_num; }
+      setIterationNum (const int iteration_num) { iteration_num_ = iteration_num; }
 
       /** \brief get the number of iteration. */
       inline int
-      getIterationNum () { return iteration_num_; }
+      getIterationNum () const { return iteration_num_; }
 
       /** \brief set the number of the particles.
         * \param particle_num the number of the particles.
         */
       inline void
-      setParticleNum (int particle_num) { particle_num_ = particle_num; }
+      setParticleNum (const int particle_num) { particle_num_ = particle_num; }
 
       /** \brief get the number of the particles. */
       inline int
-      getParticleNum () { return particle_num_; }
+      getParticleNum () const { return particle_num_; }
 
       /** \brief set a pointer to a reference dataset to be tracked.
         * \param cloud a pointer to a PointCloud message
@@ -91,18 +91,18 @@ namespace pcl
         * \param coherence a pointer to PointCloudCoherence.
         */
       inline void
-      setCloudCoherence (CloudCoherencePtr coherence) { coherence_ = coherence; }
+      setCloudCoherence (const CloudCoherencePtr &coherence) { coherence_ = coherence; }
       
       /** \brief get the PointCloudCoherence to compute likelihood. */
       inline CloudCoherencePtr
-      getCloudCoherence () { return coherence_; }
+      getCloudCoherence () const { return coherence_; }
       
 
       /** \brief set the covariance of step noise.
         * \param step_noise_covariance the diagonal elements of covariance matrix of step noise.
         */
       inline void
-      setStepNoiseCovariance (std::vector<double> step_noise_covariance)
+      setStepNoiseCovariance (const std::vector<double> &step_noise_covariance)
       {
         step_noise_covariance_ = step_noise_covariance;
       }
@@ -112,7 +112,7 @@ namespace pcl
         * \param initial_noise_covariance the diagonal elements of covariance matrix of initial noise.
         */
       inline void
-      setInitialNoiseCovariance (std::vector<double> initial_noise_covariance)
+      setInitialNoiseCovariance (const std::vector<double> &initial_noise_covariance)
       {
         initial_noise_covariance_ = initial_noise_covariance;
       }
@@ -122,7 +122,7 @@ namespace pcl
         * \param initial_noise_mean the mean values of initial noise.
         */
       inline void
-      setInitialNoiseMean (std::vector<double> initial_noise_mean)
+      setInitialNoiseMean (const std::vector<double> &initial_noise_mean)
       {
         initial_noise_mean_ = initial_noise_mean;
       }
@@ -131,7 +131,7 @@ namespace pcl
         * \param resample_likelihood_thr threshold to re-initialize.
         */
       inline void
-      setResampleLikelihoodThr (double resample_likelihood_thr)
+      setResampleLikelihoodThr (const double resample_likelihood_thr)
       {
         resample_likelihood_thr_ = resample_likelihood_thr;
       }
@@ -142,7 +142,7 @@ namespace pcl
         * \param occlusion_angle_thr threshold of angle to be considered occlusion.
         */
       inline void
-      setOcclusionAngleThe (double occlusion_angle_thr)
+      setOcclusionAngleThe (const double occlusion_angle_thr)
       {
         occlusion_angle_thr_ = occlusion_angle_thr;
       }
@@ -153,37 +153,37 @@ namespace pcl
         * \param min_indices the minimum number of indices.
         */
       inline void
-      setMinIndices (int min_indices) { min_indices_ = min_indices; }
+      setMinIndices (const int min_indices) { min_indices_ = min_indices; }
 
       /** \brief set the offset to all the particles.
         * \param offset an instance of StateT.
         */
       inline void
-      setOffsetState (StateT offset)
+      setOffsetState (const StateT &offset)
       {
         offset_ = offset;
       }
 
       /** \brief get the offset to all the particles. */
-      inline StateT getOffsetState () { return offset_; }
+      inline const StateT& getOffsetState () const { return offset_; }
 
       /** \brief set the transformation from the world coordinates to the frame of the particles.
         * \param trans Affine transformation from the worldcoordinates to the frame of the particles.
         */
-      inline void setTrans (Eigen::Affine3f trans) { trans_ = trans; }
+      inline void setTrans (const Eigen::Affine3f &trans) { trans_ = trans; }
       /** \brief get the transformation from the world coordinates to the frame of the particles. */
-      inline Eigen::Affine3f getTrans () { return trans_; }
+      inline const Eigen::Affine3f& getTrans () const { return trans_; }
 
       /** \brief Get an instance of the result of tracking. */
-      inline StateT getResult () { return representative_state_; }
+      inline const StateT& getResult () const { return representative_state_; }
       
       /** \brief convert a state to affine transformation from the world coordinates frame.
         * \param particle an instance of StateT.
         */
-      inline Eigen::Affine3f toEigenMatrix (StateT particle);
+      inline const Eigen::Affine3f& toEigenMatrix (const StateT& particle);
 
       /** \brief get a pointer to a pointcloud of the particles.*/
-      inline PointCloudStatePtr getParticles () { return particles_; }
+      inline PointCloudStatePtr getParticles () const { return particles_; }
       
     protected:
       
@@ -243,7 +243,7 @@ namespace pcl
       /** \brief calculate the likelihood of hypothesis. the likelihood is defined by coherence_.
         * \param hypothesis an instance of hypothesis.
         */
-      inline double calcLikelihood (StateT hypothesis);
+      inline double calcLikelihood (const StateT& hypothesis);
       
       /** \brief normalize the radian value in order to be within 0 and 2pi.
         * \param val a radian value.
