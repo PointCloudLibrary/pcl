@@ -9,7 +9,7 @@ namespace pcl
     template <typename PointInT> double
     PointCoherence<PointInT>::compute (PointInT &source, PointInT &target)
     {
-      return computeCoherence ();
+      return computeCoherence (source, target);
     }
 
     template <typename PointInT> bool
