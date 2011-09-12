@@ -19,7 +19,7 @@ namespace pcl
       for (size_t i = 0; i < point_coherences_.size (); i++)\
       {
         PointCoherencePtr coherence = point_coherences_[i];
-        val *= coherence->comput (source, target);
+        val *= coherence->compute (source, target);
       }
       return val;
     }
