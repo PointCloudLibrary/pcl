@@ -155,18 +155,6 @@ namespace pcl
       inline void
       setMinIndices (const int min_indices) { min_indices_ = min_indices; }
 
-      /** \brief set the offset to all the particles.
-        * \param offset an instance of StateT.
-        */
-      inline void
-      setOffsetState (const StateT &offset)
-      {
-        offset_ = offset;
-      }
-
-      /** \brief get the offset to all the particles. */
-      inline StateT getOffsetState () const { return offset_; }
-
       /** \brief set the transformation from the world coordinates to the frame of the particles.
         * \param trans Affine transformation from the worldcoordinates to the frame of the particles.
         */
@@ -289,9 +277,6 @@ namespace pcl
       
       /** \brief the result of tracking. */
       StateT representative_state_;
-
-      /** \brief an instance of StateT to represent the offset to all the particles. */
-      StateT offset_;
 
       /** \brief an affine transformation from the world coordinates frame to the origin of the particles*/
       Eigen::Affine3f trans_;

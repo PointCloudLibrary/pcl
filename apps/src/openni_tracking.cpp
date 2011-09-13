@@ -86,10 +86,12 @@ public:
     std::vector<double> initial_noise_covariance = std::vector<double> (6, 0.1);
     std::vector<double> default_initial_mean = std::vector<double> (6, 0.5);
     default_step_covariance[5] = 0.0;
+    default_initial_mean[0] = 0.0;
+    default_initial_mean[1] = 1.0;
     default_initial_mean[2] = 0.0;
-    default_initial_mean[3] = 0.0;
-    default_initial_mean[4] = 0.0;
-    default_initial_mean[5] = 0.0;
+    default_initial_mean[3] = M_PI;
+    default_initial_mean[4] = M_PI;
+    default_initial_mean[5] = M_PI;
     initial_noise_covariance[2] = 0.0;
     initial_noise_covariance[3] = 0.0;
     initial_noise_covariance[4] = 0.0;
@@ -122,14 +124,6 @@ public:
 
     tracker_->setCloudCoherence (coherence);
 
-    ParticleXYZRPY offset;
-    offset.y = 1.0;
-    offset.z = 0;
-    offset.roll = 0;
-    offset.yaw = 0;
-    offset.pitch = 0;
-    tracker_->setOffsetState (offset);
-      
     extract_positive_.setNegative (false);
   }
 
@@ -196,9 +190,7 @@ public:
       {
         pcl::PointXYZ point;
         
-        //pcl::apps::PF::Particle particle = particles[i];
         ParticleXYZRPY particle = particles->points[i];
-        //Eigen::Affine3f transformation = parameter->toEigenMatrix (particle.getState ());
         Eigen::Affine3f transformation = tracker_->toEigenMatrix (particle);
         Eigen::Vector3f translation = transformation.translation ();
         point.x = translation[0];
@@ -233,7 +225,7 @@ public:
         viz.addPointCloud (result_cloud, red_color, "resultcloud");
     }
   }
-  
+
   void
   viz_cb (pcl::visualization::PCLVisualizer& viz)
   {

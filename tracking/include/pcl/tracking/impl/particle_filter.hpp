@@ -26,10 +26,10 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute ()
 template <typename PointInT, typename StateT> double
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcLikelihood (const StateT &hypothesis)
 {
-  Eigen::Affine3f trans = toEigenMatrix (hypothesis);
+  const Eigen::Affine3f trans = toEigenMatrix (hypothesis);
   PointCloudInPtr transed_reference = PointCloudInPtr (new PointCloudIn ());
   pcl::transformPointCloudWithNormals<PointInT> (*ref_, *transed_reference, trans);
-
+  
   // search the nearest pairs
   std::vector<int> k_indices(1);
   std::vector<float> k_distances(1);
@@ -41,7 +41,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcLikelihood (const St
 
     // take occlusion into account
     Eigen::Vector4f p = input_point.getVector4fMap ();
-    Eigen::Vector4f n(input_point.normal[0], input_point.normal[1], input_point.normal[2], 0.0f);
+    Eigen::Vector4f n (input_point.normal[0], input_point.normal[1], input_point.normal[2], 0.0f);
     // TODO: check NAN
     if ( pcl::getAngle3D(p, n) > occlusion_angle_thr_ )
     {
@@ -138,15 +138,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeAngle (const do
 template <typename PointInT, typename StateT> Eigen::Affine3f
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::toEigenMatrix (const StateT& particle)
 {
-  double xval = particle.x + offset_.x;
-  double yval = particle.y + offset_.y;
-  double zval = particle.z + offset_.z;
-  // i need to normalize euler angles?
-  double rollval = normalizeAngle(particle.roll + offset_.roll);
-  double pitchval = normalizeAngle(particle.pitch + offset_.pitch);
-  double yawval = normalizeAngle(particle.yaw + offset_.yaw);
-  
-  return trans_ * getTransformation(xval, yval, zval, rollval, pitchval, yawval);
+  return trans_ * getTransformation(particle.x, particle.y, particle.z, particle.roll, particle.pitch, particle.yaw);
 }
 
 template <typename PointInT, typename StateT> void
