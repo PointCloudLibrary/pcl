@@ -2,6 +2,7 @@
 #define PCL_TRACKING_IMPL_TRACKING_H_
 
 #include <boost/random.hpp>
+#include <pcl/common/transform.h>
 
 namespace pcl
 {
@@ -83,6 +84,12 @@ namespace pcl
         roll = 0.0;
         pitch = 0.0;
         yaw = 0.0;
+      }
+
+      inline Eigen::Affine3f
+      toEigenMatrix () const
+      {
+        return getTransformation(x, y, z, roll, pitch, yaw);
       }
 
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW

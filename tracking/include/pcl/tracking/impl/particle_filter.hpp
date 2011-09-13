@@ -5,7 +5,7 @@
 
 #include <pcl/common/common.h>
 #include <pcl/common/transform.h>
-#include <pcl/registration/transforms.h>
+#include <pcl/common/transforms.h>
 
 template <typename PointInT, typename StateT> bool
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute ()
@@ -138,7 +138,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeAngle (const do
 template <typename PointInT, typename StateT> Eigen::Affine3f
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::toEigenMatrix (const StateT& particle)
 {
-  return trans_ * getTransformation(particle.x, particle.y, particle.z, particle.roll, particle.pitch, particle.yaw);
+  return trans_ * particle.toEigenMatrix ();
 }
 
 template <typename PointInT, typename StateT> void
