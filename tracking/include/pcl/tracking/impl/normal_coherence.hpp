@@ -20,7 +20,7 @@ namespace pcl
                               0.0f);
       if ( n.norm () <= 1e-5 || n_dash.norm () <= 1e-5 )
       {
-        PCL_ERROR("norm might be ZERO!");
+        PCL_ERROR("norm might be ZERO!\n");
         return 0.0;
       }
       else

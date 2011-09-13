@@ -91,7 +91,6 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::genAliasTable (std::vect
   std::vector<int>::iterator L = HL.end () - 1;
   for ( int i = 0; i < particle_num_; i++ )
     q[i] = particles_->points[i].weight * particle_num_;
-  //q[i] = particles_[i].getWeight() * particle_num_;
   for ( int i = 0; i < particle_num_; i++ )
     a[i] = i;
   // setup H and L
@@ -154,7 +153,6 @@ template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initParticles ()
 {
   std::cout << "initParticles" << std::endl;
-  //particles_ = PointCloudState ();
   particles_.reset( new PointCloudState ());
   
   representative_state_.zero ();
@@ -206,16 +204,13 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resample ()
   particles_->points.clear ();
   // the first particle, it is a just copy of the maximum result
   pcl::tracking::ParticleXYZRPY p = representative_state_;
-  //particles_.push_back (p);
   particles_->points.push_back (p);
   for ( int i = 1; i < particle_num_; i++ )
   {
     int target_particle_index = sampleWithReplacement (a, q);
-    //Particle p = origparticles.points[target_particle_index];
     pcl::tracking::ParticleXYZRPY p = origparticles->points[target_particle_index];
     // add noise using gaussian
     p.sample (zero_mean, step_noise_covariance_);
-    //particles_.push_back (p);
     particles_->points.push_back (p);
   }
 }

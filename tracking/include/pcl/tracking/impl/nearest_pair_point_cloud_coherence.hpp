@@ -39,7 +39,10 @@ namespace pcl
         tree_.reset (new pcl::KdTreeFLANN<PointInT> (false));
       
       if (new_target_)
+      {
         tree_->setInputCloud (target_input_);
+        new_target_ = false;
+      }
       
       return true;
     }
