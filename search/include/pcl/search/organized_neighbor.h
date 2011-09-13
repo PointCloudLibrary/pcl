@@ -104,7 +104,7 @@ namespace pcl
           PCL_ERROR("[pcl::search::OrganizedNeighbor::setInputCloud] This function is not supported by OrganizedNeighbor\n");
         }
 
-        /** \brief Search for k-nearest neighbors for the given query point.
+        /** \brief search for k-nearest neighbors for the given query point.
         * \param cloud the point cloud data
         * \param index the index in \a cloud representing the query point
         * \param k the number of neighbors to search for
@@ -120,7 +120,7 @@ namespace pcl
 
           return (0);
         }
-	/** \brief Search for all the nearest neighbors of the query point in a given radius.
+	/** \brief search for all the nearest neighbors of the query point in a given radius.
          * \param cloud the point cloud data
          * \param index the index in \a cloud representing the query point
          * \param radius the radius of the sphere bounding all of p_q's neighbors
@@ -138,7 +138,7 @@ namespace pcl
           return (0);
         }
 
-        /** \brief Search for all neighbors of query point that are within a given radius.
+        /** \brief search for all neighbors of query point that are within a given radius.
          * \param cloud_arg the point cloud data
          * \param index_arg the index in \a cloud representing the query point
          * \param radius_arg the radius of the sphere bounding all of p_q's neighbors
@@ -152,7 +152,7 @@ namespace pcl
                       std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg,
                       int max_nn_arg = INT_MAX) ;
 
-        /** \brief Search for all neighbors of query point that are within a given radius.
+        /** \brief search for all neighbors of query point that are within a given radius.
          * \param index_arg index representing the query point in the dataset given by \a setInputCloud.
          *        If indices were given in setInputCloud, index will be the position in the indices vector
          * \param radius_arg radius of the sphere bounding all of p_q's neighbors
@@ -165,7 +165,7 @@ namespace pcl
         radiusSearch (int index_arg, const double radius_arg, std::vector<int> &k_indices_arg,
                       std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX) const;
 
-        /** \brief Search for all neighbors of query point that are within a given radius.
+        /** \brief search for all neighbors of query point that are within a given radius.
          * \param p_q_arg the given query point
          * \param radius_arg the radius of the sphere bounding all of p_q's neighbors
          * \param k_indices_arg the resultant indices of the neighboring points
@@ -192,7 +192,7 @@ namespace pcl
                            std::vector<float> &k_distances, int max_nn = INT_MAX) const;
 
 
-        /** \brief Search for k-nearest neighbors at the query point.
+        /** \brief search for k-nearest neighbors at the query point.
          * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
          * \param cloud_arg the point cloud data
          * \param index_arg the index in \a cloud representing the query point
@@ -206,7 +206,7 @@ namespace pcl
         nearestKSearch (const PointCloudConstPtr &cloud_arg, int index_arg, int k_arg, std::vector<int> &k_indices_arg,
                         std::vector<float> &k_sqr_distances_arg) ;
 
-        /** \brief Search for k-nearest neighbors at query point
+        /** \brief search for k-nearest neighbors at query point
          * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
          * \param index_arg index representing the query point in the dataset given by \a setInputCloud.
          *        If indices were given in setInputCloud, index will be the position in the indices vector.
@@ -220,7 +220,7 @@ namespace pcl
         nearestKSearch (int index_arg, int k_arg, std::vector<int> &k_indices_arg,
                         std::vector<float> &k_sqr_distances_arg) ;
 
-        /** \brief Search for k-nearest neighbors at given query point.
+        /** \brief search for k-nearest neighbors at given query point.
          * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
          * @param p_q_arg the given query point
          * @param k_arg the number of neighbors to search for
@@ -233,7 +233,7 @@ namespace pcl
                         std::vector<float> &k_sqr_distances_arg) ;
 
 
-        /** \brief Search for k-nearest neighbors for the given query point.
+        /** \brief search for k-nearest neighbors for the given query point.
           * \param cloud the point cloud data
           * \param index the index in \a cloud representing the query point
           * \param k the number of neighbors to search for (not used)
@@ -246,7 +246,7 @@ namespace pcl
       /* Functions which are not implemented */
 
 
-	/** \brief Search for approx. nearest neighbor at the query point.
+	/** \brief search for approximate nearest neighbor at the query point.
          * \param cloud_arg the const boost shared pointer to a PointCloud message
          * \param query_index_arg the index in \a cloud representing the query point
          * \param result_index_arg the resultant index of the neighbor point
@@ -259,7 +259,7 @@ namespace pcl
           PCL_ERROR("[pcl::search::OrganizedNeighbor::approxNearestSearch] This function is not supported by OrganizedNeighbor\n");
         }
 
-	/** \brief Search for approx. nearest neighbor at the query point.
+	/** \brief Search for approximate nearest neighbor at the query point.
          * @param p_q_arg the given query point
          * \param result_index_arg the resultant index of the neighbor point
          * \param sqr_distance_arg the resultant squared distance to the neighboring point
@@ -271,7 +271,7 @@ namespace pcl
         };
 
 
- 	/** \brief Search for approx. nearest neighbor at the query point.
+ 	/** \brief search for approximate nearest neighbor at the query point.
          * \param query_index_arg index representing the query point in the dataset given by \a setInputCloud.
          *        If indices were given in setInputCloud, index will be the position in the indices vector.
          * \param result_index_arg the resultant index of the neighbor point
@@ -284,7 +284,7 @@ namespace pcl
         };
 
 
-        /** \brief Evaluate the Search Methods for the given cloud.
+        /** \brief Evaluate the search Methods for the given cloud.
         * \param cloud the const boost shared pointer to a PointCloud message
         * \param search_type the search type NEAREST_K_SEARCH and NEAREST_RADIUS_SEARCH
         */
@@ -294,7 +294,7 @@ namespace pcl
           PCL_ERROR("[pcl::search::OrganizedNeighbor::evaluateSearchMethods] This function is not supported by OrganizedNeighbor\n");
         }
 
-	/** \brief Search for k-nearest neighbors for the given query points.
+	/** \brief search for k-nearest neighbors for the given query points.
         * \param point the given query points
         * \param k the numbers of the query point's neighbors to search for
         * \param k_indices the resultant indices of the neighboring points 
@@ -308,7 +308,7 @@ namespace pcl
           return (0);
         }
 
-	/** \brief Approximate Search for all the nearest neighbors of the query points in the given radiuses.
+	/** \brief Approximate search for all the nearest neighbors of the query points in the given radiuses.
         * \param point the given query points
         * \param radiuses the radiuses of the sphere bounding all of point's neighbors
         * \param k_indices the resultant indices of the neighboring points
