@@ -99,8 +99,8 @@ namespace pcl
       /** \brief add a PointCoherence to the PointCloudCoherence.
         * \param coherence a pointer to PointCoherence.
         */
-      inline void
-      setTargetCloud (const PointCloudInConstPtr &cloud) { target_input_ = cloud; }
+      virtual inline void
+      setTargetCloud (const PointCloudInConstPtr &cloud)  { target_input_ = cloud; }
       
     protected:
       /** \brief Abstract method to compute coherence. */
