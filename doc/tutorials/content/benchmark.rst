@@ -37,6 +37,8 @@ Computing higher level representation from the object's appearance (texture + de
 
  * **densely** - at every point/vertex in the input data;
  * at certain **interest points** (i.e., keypoints).
+ 
+The detected keypoint might also contain some meta-information required by some descriptors, like scale or orientation.
 
 3. Descriptors
 ^^^^^^^^^^^^^^
@@ -61,7 +63,8 @@ The distribution of features should be classifiable into distinct, separable
 classes. For local features, we identify two sets of techniques:
 
  * **bag of words**;
- * **voting**.
+ * **voting**;
+ * **supervised voting** (regression from the description to the relative 3D location, e.g. Hough forest).
 
 For global features, any general purpose classification technique should work (e.g., SVMs, nearest neighbors, etc).
 
