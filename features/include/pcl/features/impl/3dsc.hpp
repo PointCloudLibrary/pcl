@@ -179,7 +179,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint(size_t
   /// Find every point within specified search_radius_
   std::vector<int> nn_indices;
   std::vector<float> nn_dists;
-  const size_t neighb_cnt = searchForNeighbors (index, search_parameter_, nn_indices, nn_dists);
+  const size_t neighb_cnt = searchForNeighbors (index, search_radius_, nn_indices, nn_dists);
   /// For each point within radius
   for(size_t ne = 0; ne < neighb_cnt; ne++)
   {
