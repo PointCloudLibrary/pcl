@@ -13,16 +13,16 @@ namespace pcl
     {
       std::vector<int> k_indices(1);
       std::vector<float> k_distances(1);
-      double val = 1.0;
+      double val = 0.0;
       for ( size_t i = 0; i < indices_->size (); i++ )
       {
         PointInT input_point = input_->points[(*indices_)[i]];
         tree_->nearestKSearch (input_point, 1, k_indices, k_distances);
         PointInT target_point = target_input_->points[k_indices[0]];
 
-        val *= calcPointCoherence(input_point, target_point);
+        val += calcPointCoherence(input_point, target_point);
       }
-      return val;
+      return exp(val);
     }
 
     template <typename PointInT> bool

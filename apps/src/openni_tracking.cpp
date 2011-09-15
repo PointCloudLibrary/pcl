@@ -108,13 +108,13 @@ public:
     ne_.setRadiusSearch (0.03);
     //ne_.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<pcl::PointXYZRGB, pcl::Normal>::COVARIANCE_MATRIX);
     //ne_.setRectSize (50, 50);
-
-    std::vector<double> default_step_covariance = std::vector<double> (6, 0.0001);
+    
+    std::vector<double> default_step_covariance = std::vector<double> (6, 0.0002);
     std::vector<double> initial_noise_covariance = std::vector<double> (6, 0.1);
     std::vector<double> default_initial_mean = std::vector<double> (6, 0.5);
-    default_step_covariance[3] = 0.0001;
-    default_step_covariance[4] = 0.0001;
-    default_step_covariance[5] = 0.0001;
+    default_step_covariance[3] = 0.002 * M_PI * 2.0;
+    default_step_covariance[4] = 0.002 * M_PI * 2.0;
+    default_step_covariance[5] = 0.002 * M_PI * 2.0;
     default_initial_mean[0] = 0.0;
     default_initial_mean[1] = 1.0;
     default_initial_mean[2] = 0.0;
@@ -132,7 +132,7 @@ public:
     tracker_->setInitialNoiseCovariance (initial_noise_covariance);
     tracker_->setInitialNoiseMean (default_initial_mean);
     tracker_->setIterationNum (1);
-    tracker_->setParticleNum (400);
+    tracker_->setParticleNum (200);
     // setup coherences
     NearestPairPointCloudCoherence<RefPointType>::Ptr coherence = NearestPairPointCloudCoherence<RefPointType>::Ptr
       (new NearestPairPointCloudCoherence<RefPointType> ());
@@ -143,7 +143,7 @@ public:
     
     boost::shared_ptr<HSVColorCoherence<RefPointType> > color_coherence
       = boost::shared_ptr<HSVColorCoherence<RefPointType> > (new HSVColorCoherence<RefPointType> ());
-    color_coherence->setWeight (0.01);
+    color_coherence->setWeight (0.1);
     coherence->addPointCoherence (color_coherence);
 
     boost::shared_ptr<NormalCoherence<RefPointType> > normal_coherence
@@ -366,7 +366,7 @@ public:
       filterPassThrough (cloud, *cloud_pass_);
       
       planeSegmentation (cloud_pass_, *coefficients, *inliers);
-
+      
       // enough pints...
       if (inliers->indices.size () > 3)
       {
