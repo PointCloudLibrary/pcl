@@ -37,6 +37,8 @@
 #ifndef PCL_GEOMETRY_H_
 #define PCL_GEOMETRY_H_
 
+#include <Eigen/Core>
+
 /**
   * \file geometry.h
   * Defines some geometrical functions and utility functions
