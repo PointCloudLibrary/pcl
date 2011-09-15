@@ -26,6 +26,9 @@ main (int argc, char **argv)
   int iter = 50;
   pcl::console::parse_argument (argc, argv, "-i", iter);
 
+  bool nonLinear = false;
+  pcl::console::parse_argument (argc, argv, "-n", nonLinear);
+
   std::vector<int> pcd_indices;
   pcd_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
 
@@ -54,24 +57,35 @@ main (int argc, char **argv)
     }
     std::cout << argv[pcd_indices[i]] << " width: " << data->width << " height: " << data->height << std::endl;
 
-    pcl::IterativeClosestPoint<PointType, PointType> icp;
+    pcl::IterativeClosestPoint<PointType, PointType> *icp;
 
-    icp.setMaximumIterations (iter);
-    icp.setMaxCorrespondenceDistance (dist);
-    icp.setRANSACOutlierRejectionThreshold (rans);
+    if (nonLinear)
+    {
+      std::cout << "Using IterativeClosestPointNonLinear" << std::endl;
+      icp = new pcl::IterativeClosestPointNonLinear<PointType, PointType>();
+    }
+    else
+    {
+      std::cout << "Using IterativeClosestPoint" << std::endl;
+      icp = new pcl::IterativeClosestPoint<PointType, PointType>();
+    }
 
-    icp.setInputTarget (model);
+    icp->setMaximumIterations (iter);
+    icp->setMaxCorrespondenceDistance (dist);
+    icp->setRANSACOutlierRejectionThreshold (rans);
 
-    icp.setInputCloud (data);
+    icp->setInputTarget (model);
+
+    icp->setInputCloud (data);
 
     CloudPtr tmp (new Cloud);
-    icp.align (*tmp);
+    icp->align (*tmp);
 
-    t = icp.getFinalTransformation () * t;
+    t = icp->getFinalTransformation () * t;
 
     pcl::transformPointCloud (*data, *tmp, t);
 
-    std::cout << icp.getFinalTransformation () << std::endl;
+    std::cout << icp->getFinalTransformation () << std::endl;
 
     *model = *data;
 
