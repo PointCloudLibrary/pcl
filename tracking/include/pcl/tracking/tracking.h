@@ -7,7 +7,6 @@
 #include "pcl/kdtree/kdtree_flann.h"
 #include "pcl/kdtree/organized_data.h"
 
-
 namespace pcl
 {
   namespace tracking

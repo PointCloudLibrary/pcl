@@ -19,6 +19,7 @@ namespace pcl
         PointInT input_point = input_->points[(*indices_)[i]];
         tree_->nearestKSearch (input_point, 1, k_indices, k_distances);
         PointInT target_point = target_input_->points[k_indices[0]];
+
         val *= calcPointCoherence(input_point, target_point);
       }
       return val;
@@ -38,7 +39,7 @@ namespace pcl
       if (!tree_)
         tree_.reset (new pcl::KdTreeFLANN<PointInT> (false));
       
-      if (new_target_)
+      if (new_target_ && target_input_)
       {
         tree_->setInputCloud (target_input_);
         new_target_ = false;

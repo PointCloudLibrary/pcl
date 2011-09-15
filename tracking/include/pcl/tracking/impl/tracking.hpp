@@ -92,6 +92,16 @@ namespace pcl
         return getTransformation(x, y, z, roll, pitch, yaw);
       }
 
+      static pcl::tracking::ParticleXYZRPY
+      toState (const Eigen::Affine3f &trans)
+      {
+        float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
+        getTranslationAndEulerAngles (trans,
+                                      trans_x, trans_y, trans_z,
+                                      trans_roll, trans_pitch, trans_yaw);
+        return pcl::tracking::ParticleXYZRPY (trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
+      }
+      
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
     

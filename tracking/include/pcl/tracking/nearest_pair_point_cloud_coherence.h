@@ -54,7 +54,7 @@ namespace pcl
       /** \brief add a PointCoherence to the PointCloudCoherence.
         * \param coherence a pointer to PointCoherence.
         */
-      inline void
+      virtual inline void
       setTargetCloud (const PointCloudInConstPtr &cloud)
       {
         new_target_ = true;

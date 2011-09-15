@@ -21,6 +21,9 @@ namespace pcl
       if ( n.norm () <= 1e-5 || n_dash.norm () <= 1e-5 )
       {
         PCL_ERROR("norm might be ZERO!\n");
+        std::cout << "source: " << source << std::endl;
+        std::cout << "target: " << target << std::endl;
+        exit (1);
         return 0.0;
       }
       else

@@ -233,11 +233,6 @@ namespace pcl
         */
       inline double calcLikelihood (const StateT& hypothesis);
       
-      /** \brief normalize the radian value in order to be within 0 and 2pi.
-        * \param val a radian value.
-        */
-      inline double normalizeAngle (const double val);
-
       /** \brief the number of iteration of particlefilter. */
       int iteration_num_;
 

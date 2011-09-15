@@ -39,11 +39,15 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcLikelihood (const St
   {
     PointInT input_point = transed_reference->points[i];
 
+    if (!pcl_isfinite(input_point.x) || !pcl_isfinite(input_point.y) || !pcl_isfinite(input_point.z))
+      continue;
     // take occlusion into account
     Eigen::Vector4f p = input_point.getVector4fMap ();
-    Eigen::Vector4f n (input_point.normal[0], input_point.normal[1], input_point.normal[2], 0.0f);
-    // TODO: check NAN
-    if ( pcl::getAngle3D(p, n) > occlusion_angle_thr_ )
+    Eigen::Vector4f n = input_point.getNormalVector4fMap ();
+    double theta = pcl::getAngle3D(p, n);
+
+// TODO: check NAN
+    if ( theta > occlusion_angle_thr_ )
     {
       indices->push_back (i);
       ++num_points;
@@ -53,6 +57,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcLikelihood (const St
   coherence_->setInputCloud (transed_reference);
   coherence_->setIndices (indices);
   double val = coherence_->compute ();
+  
   // take min_indices_ into account
   // TODO: normalization of likelihood is required?
   double likelihood;
@@ -115,41 +120,24 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::genAliasTable (std::vect
   }
 }
 
-template <typename PointInT, typename StateT> double
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeAngle (const double val)
-{
-  if ( val > M_PI * 2.0 )
-  {
-    int offset = val / ( M_PI * 2.0 );
-    return val - M_PI * 2.0 * offset;
-  }
-  else if ( val < 0.0 )
-  {
-    int offset = abs(val) / ( M_PI * 2.0 );
-    return val + M_PI * 2.0 * offset;
-  }
-  else
-  {
-    return val;
-  }
-}
-
-// TODO: should be a method of StateT
 template <typename PointInT, typename StateT> Eigen::Affine3f
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::toEigenMatrix (const StateT& particle)
 {
-  return trans_ * particle.toEigenMatrix ();
+  return particle.toEigenMatrix ();
 }
 
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initParticles ()
 {
-  std::cout << "initParticles" << std::endl;
+  PCL_INFO ("[pcl::%s::initParticles] initializing...\n", getClassName ().c_str ());
   particles_.reset( new PointCloudState ());
   
   representative_state_.zero ();
   representative_state_.weight = 0.0;
-  
+
+  std::vector<double> initial_noise_mean;
+  StateT offset = StateT::toState (trans_);
+  representative_state_ = offset;
   // sampling...
   for ( int i = 0; i < particle_num_; i++ )
   {
@@ -157,6 +145,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initParticles ()
     p.weight = 1.0 / particle_num_;
     p.zero ();
     p.sample (initial_noise_mean_, initial_noise_covariance_);
+    p = p + offset;
     particles_->points.push_back (p); // update
   }
 }
@@ -211,16 +200,19 @@ template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::update ()
 {
   representative_state_.zero ();
-  double maxweight = 0.0;
-  for ( int i = 0; i < particle_num_; i++)
+
+  double maxweight = particles_->points[0].weight;
+  int maxindex = 0;
+  for ( int i = 1; i < particle_num_; i++)
   {
     StateT p = particles_->points[i];
     if (maxweight < p.weight )
+    {
       maxweight = p.weight;
-    representative_state_ = representative_state_ + p * p.weight;
+      maxindex = i;
+    }
   }
-  representative_state_.weight = maxweight;
-  
+  representative_state_ = particles_->points[maxindex];
 }
 
 template <typename PointInT, typename StateT> void
