@@ -71,6 +71,8 @@ if(build)
         include/pcl/common/vector_average.h
         include/pcl/common/pca.h
         include/pcl/common/synchronizer.h
+        include/pcl/common/utils.h
+        include/pcl/common/geometry.h
         )
 
     set(common_incs_impl
