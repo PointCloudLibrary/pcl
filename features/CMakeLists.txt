@@ -27,7 +27,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/pfh.h
         include/pcl/${SUBSYS_NAME}/pfhrgb.h
         include/pcl/${SUBSYS_NAME}/ppf.h
-		include/pcl/${SUBSYS_NAME}/ppfrgb.h
+        include/pcl/${SUBSYS_NAME}/ppfrgb.h
         include/pcl/${SUBSYS_NAME}/shot.h
         include/pcl/${SUBSYS_NAME}/shot_omp.h
         include/pcl/${SUBSYS_NAME}/spin_image.h
@@ -36,8 +36,9 @@ if(build)
         include/pcl/${SUBSYS_NAME}/rsd.h
         include/pcl/${SUBSYS_NAME}/statistical_multiscale_interest_region_extraction.h
         include/pcl/${SUBSYS_NAME}/vfh.h
-		)
-		
+        include/pcl/${SUBSYS_NAME}/3dsc.h
+        )
+    
     set(feature_evaluation_incs
         include/pcl/${SUBSYS_NAME}/feature_evaluation/feature_evaluation_framework.h
         include/pcl/${SUBSYS_NAME}/feature_evaluation/feature_test.h
@@ -69,6 +70,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/rsd.hpp
         include/pcl/${SUBSYS_NAME}/impl/statistical_multiscale_interest_region_extraction.hpp
         include/pcl/${SUBSYS_NAME}/impl/vfh.hpp
+        include/pcl/${SUBSYS_NAME}/impl/3dsc.hpp
         )
 
     set(srcs src/feature.cpp
@@ -88,15 +90,16 @@ if(build)
         src/pfh.cpp
         src/pfhrgb.cpp
         src/ppf.cpp
-		src/ppfrgb.cpp
+        src/ppfrgb.cpp
         src/shot.cpp
         src/shot_omp.cpp
         src/spin_image.cpp
         src/principal_curvatures.cpp
         src/rift.cpp
         src/rsd.cpp 
-        src/statistical_multiscale_interest_region_extraction.cpp                               
+        src/statistical_multiscale_interest_region_extraction.cpp
         src/vfh.cpp
+        src/3dsc.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

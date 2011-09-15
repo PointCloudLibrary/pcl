@@ -117,8 +117,8 @@ namespace pcl
 
       typedef pcl::PointCloud<PointOutT> PointCloudOut;
 
-      typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
-      typedef boost::function<int (const PointCloudIn &cloud, int index, double, std::vector<int> &, std::vector<float> &)> SearchMethodSurface;
+      typedef boost::function<int (size_t, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
+      typedef boost::function<int (const PointCloudIn &cloud, size_t index, double, std::vector<int> &, std::vector<float> &)> SearchMethodSurface;
     
     public:
       /** \brief Empty constructor. */
@@ -196,7 +196,7 @@ namespace pcl
         * k-nearest neighbors
         */
       inline int
-      searchForNeighbors (int index, double parameter, 
+      searchForNeighbors (size_t index, double parameter, 
                           std::vector<int> &indices, std::vector<float> &distances) const
       {
         if (surface_ == input_)       // if the two surfaces are the same
