@@ -56,7 +56,7 @@ namespace pcl
       TransformationEstimation(){};
       virtual ~TransformationEstimation(){};
 
-      /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
+      /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
        * \param cloud_src the source point cloud dataset
        * \param cloud_tgt the target point cloud dataset
        * \param transformation_matrix the resultant transformation matrix
@@ -67,7 +67,7 @@ namespace pcl
           const pcl::PointCloud<PointTarget> &cloud_tgt,
           Eigen::Matrix4f &transformation_matrix) = 0;
 
-      /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
+      /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
        * \param cloud_src the source point cloud dataset
        * \param indices_src the vector of indices describing the points of interest in \a cloud_src
        * \param cloud_tgt the target point cloud dataset
@@ -80,7 +80,7 @@ namespace pcl
           const pcl::PointCloud<PointTarget> &cloud_tgt,
           Eigen::Matrix4f &transformation_matrix) = 0;
 
-      /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
+      /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
        * \param cloud_src the source point cloud dataset
        * \param indices_src the vector of indices describing the points of interest in \a cloud_src
        * \param cloud_tgt the target point cloud dataset
@@ -95,7 +95,7 @@ namespace pcl
           const std::vector<int> &indices_tgt,
           Eigen::Matrix4f &transformation_matrix) = 0;
 
-      /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
+      /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
        * \param cloud_src the source point cloud dataset
        * \param cloud_tgt the target point cloud dataset
        * \param correspondences the vector of correspondences between source and target point cloud
