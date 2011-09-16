@@ -234,7 +234,7 @@ Finally, the following code snippet will estimate a set of surface normals for a
     @PhDThesis{RusuDoctoralDissertation,
     author = {Radu Bogdan Rusu}, 
     title  = {Semantic 3D Object Maps for Everyday Manipulation in Human Living Environments},
-    school = {Computer Science department, Technische Universitaet Muechen, Germany},
+    school = {Computer Science department, Technische Universitaet Muenchen, Germany},
     year   = {2009},
     month  = {October}
     }
