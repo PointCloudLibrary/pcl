@@ -39,11 +39,13 @@ Proposals for the 2.x API:
  * drop templating on point types, thus making :pcl:`PointCloud <pcl::PointCloud>` template free
  * drop the :pcl:`Header <std_msgs::Header>` structure, or consolidate all the above information (width, height, is_dense, sensor_origin, sensor_orientation) into a single struct
  * make sure we can access a slice of the data as a *2D image*, thus allowing fast 2D displaying, [u, v] operations, etc
+ * make sure we can access a slice of the data as a subpoint cloud: only certain points are chosen from the main point cloud
  * implement channels (of a single type!) as data holders, e.g.:
 
    * cloud["xyz"] => gets all 3D x,y,z data
    * cloud["normals"] => gets all surface normal data
    * etc
+ * internals should be hidden : only accessors (begin, end ...) are public, this facilitating the change of the underlying structure
  * Capability to construct point cloud types containing the necessary channels
    *at runtime*. This will be particularly useful for run-time configuration of
    input sensors and for reading point clouds from files, which may contain a
@@ -105,7 +107,10 @@ Proposals for the 2.x API:
  #. There exist different types of keypoints (corners, blobs, regions), so keypoint detector might return some meta-information besides the keypoint locations (scale, orientation etc.). Some channels of that meta-information are required by some descriptors. There are options how to deliver that information from keypoints to descriptor, but it should be easy to pass it if a user doesn't change anything. This interface should be uniform to allow for switching implementations and automated benchmarking. Still one might want to set, say, custom orientations, different from what detector returned. 
 	
 	to be continued...
-  
+
+1.5 Data slices
+^^^^^^^^^^^^^^^
+Anything involving a slice of data should use size_t for indices and not int. E.g the indices of the inliers in RANSAC, the focused points in RANSAC ...
        
 Minor changes
 =============
