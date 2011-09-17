@@ -3,9 +3,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/pcl_base.h>
-#include "pcl/kdtree/kdtree.h"
-#include "pcl/kdtree/kdtree_flann.h"
-#include "pcl/kdtree/organized_data.h"
+#include <pcl/search/search.h>
 
 namespace pcl
 {
@@ -32,10 +30,10 @@ namespace pcl
       typedef PCLBase<PointInT> BaseClass;
       typedef boost::shared_ptr< Tracker<PointInT, StateT> > Ptr;
       typedef boost::shared_ptr< const Tracker<PointInT, StateT> > ConstPtr;
-      
-      typedef typename pcl::KdTree<PointInT> KdTree;
-      typedef typename pcl::KdTree<PointInT>::Ptr KdTreePtr;
-      
+
+      typedef boost::shared_ptr<pcl::search::Search<PointInT> > SearchPtr;
+      typedef boost::shared_ptr<const pcl::search::Search<PointInT> > SearchConstPtr;
+            
       typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
@@ -46,7 +44,7 @@ namespace pcl
       
     public:
       /** \brief Empty constructor. */
-      Tracker (): tree_ () {}
+      Tracker (): search_ () {}
       
       /** \brief Base method for tracking for all points given in 
         * <setInputCloud (), setIndices ()> using the indices in setIndices () 
@@ -59,7 +57,7 @@ namespace pcl
       std::string tracker_name_;
 
       /** \brief A pointer to the spatial search object. */
-      KdTreePtr tree_;
+      SearchPtr search_;
 
       /** \brief Get a string representation of the name of this class. */
       inline const std::string& 
@@ -77,11 +75,11 @@ namespace pcl
        * \param cloud a pointer to a PointCloud message
        */
       inline void 
-      setSearchMethod (const KdTreePtr &tree) { tree_ = tree; }
+      setSearchMethod (const SearchPtr &search) { search_ = search; }
 
       /** \brief Get a pointer to the point cloud dataset. */
-      inline KdTreePtr 
-      getSearchMethod () { return (tree_); }
+      inline SearchPtr 
+      getSearchMethod () { return (search_); }
       
       /** \brief Get an instance of the result of tracking. */
       virtual StateT 

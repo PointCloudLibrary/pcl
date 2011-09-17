@@ -1,6 +1,6 @@
 set(SUBSYS_NAME apps)
 set(SUBSYS_DESC "Application examples/samples that show how PCL works")
-set(SUBSYS_DEPS common io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking)
+set(SUBSYS_DEPS common io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search)
 
 if(NOT wxWidgets_FOUND)
   set(DEFAULT TRUE)   # wxWidgets is optional
@@ -95,7 +95,7 @@ if(build)
 	    target_link_libraries(openni_3d_concave_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
 
             PCL_ADD_EXECUTABLE(openni_tracking ${SUBSYS_NAME} src/openni_tracking.cpp)
-	    target_link_libraries(openni_tracking pcl_common pcl_io pcl_surface pcl_visualization pcl_filters pcl_features pcl_segmentation pcl_tracking)
+	    target_link_libraries(openni_tracking pcl_common pcl_io pcl_surface pcl_visualization pcl_filters pcl_features pcl_segmentation pcl_tracking pcl_search)
             
 	    set(incs include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h)  
 	  	set(impl_incs include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp)

@@ -1,8 +1,8 @@
 #ifndef PCL_TRACKING_IMPL_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
 #define PCL_TRACKING_IMPL_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
 
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/organized_data.h>
+#include <pcl/search/kdtree.h>
+#include <pcl/search/organized_neighbor.h>
 
 namespace pcl
 {
@@ -17,7 +17,7 @@ namespace pcl
       for ( size_t i = 0; i < indices_->size (); i++ )
       {
         PointInT input_point = input_->points[(*indices_)[i]];
-        tree_->nearestKSearch (input_point, 1, k_indices, k_distances);
+        search_->nearestKSearch (input_point, 1, k_indices, k_distances);
         PointInT target_point = target_input_->points[k_indices[0]];
 
         val += calcPointCoherence(input_point, target_point);
@@ -36,12 +36,12 @@ namespace pcl
       }
 
       // initialize tree
-      if (!tree_)
-        tree_.reset (new pcl::KdTreeFLANN<PointInT> (false));
+      if (!search_)
+        search_.reset (new pcl::search::KdTree<PointInT> (false));
       
       if (new_target_ && target_input_)
       {
-        tree_->setInputCloud (target_input_);
+        search_->setInputCloud (target_input_);
         new_target_ = false;
       }
       

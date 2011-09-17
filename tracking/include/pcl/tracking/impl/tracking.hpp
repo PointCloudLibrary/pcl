@@ -3,6 +3,7 @@
 
 #include <boost/random.hpp>
 #include <pcl/common/transform.h>
+#include <ctime>
 
 namespace pcl
 {

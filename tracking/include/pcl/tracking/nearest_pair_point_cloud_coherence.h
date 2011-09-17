@@ -28,11 +28,11 @@ namespace pcl
       
       typedef boost::shared_ptr< NearestPairPointCloudCoherence<PointInT> > Ptr;
       typedef boost::shared_ptr< const NearestPairPointCloudCoherence<PointInT> > ConstPtr;
-      typedef typename pcl::KdTree<PointInT> KdTree;
-      typedef typename pcl::KdTree<PointInT>::Ptr KdTreePtr;
+      typedef boost::shared_ptr<pcl::search::Search<PointInT> > SearchPtr;
+      typedef boost::shared_ptr<const pcl::search::Search<PointInT> > SearchConstPtr;
       
       /** \brief empty constructor */
-      NearestPairPointCloudCoherence (): tree_ ()
+      NearestPairPointCloudCoherence (): search_ ()
       {
         coherence_name_ = "NearestPairPointCloudCoherence";
       }
@@ -45,11 +45,11 @@ namespace pcl
        * \param cloud a pointer to a PointCloud message
        */
       inline void 
-      setSearchMethod (const KdTreePtr &tree) { tree_ = tree; }
+      setSearchMethod (const SearchPtr &search) { search_ = search; }
       
       /** \brief Get a pointer to the point cloud dataset. */
-      inline KdTreePtr 
-      getSearchMethod () { return (tree_); }
+      inline SearchPtr 
+      getSearchMethod () { return (search_); }
 
       /** \brief add a PointCoherence to the PointCloudCoherence.
         * \param coherence a pointer to PointCoherence.
@@ -71,7 +71,7 @@ namespace pcl
       bool new_target_;
       
       /** \brief A pointer to the spatial search object. */
-      KdTreePtr tree_;
+      SearchPtr search_;
       
       /** \brief compute the nearest pairs and compute coherence using point_coherences_ */
       virtual inline double

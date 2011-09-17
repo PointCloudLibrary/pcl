@@ -24,7 +24,7 @@ namespace pcl
       
     public:
       using Tracker<PointInT, StateT>::tracker_name_;
-      using Tracker<PointInT, StateT>::tree_;
+      using Tracker<PointInT, StateT>::search_;
       using Tracker<PointInT, StateT>::input_;
       using Tracker<PointInT, StateT>::indices_;
       using Tracker<PointInT, StateT>::getClassName;
