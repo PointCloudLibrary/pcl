@@ -53,6 +53,8 @@ namespace pcl
     * \param cloud_src the source point cloud dataset
     * \param cloud_tgt the target point cloud dataset
     * \param transformation_matrix the resultant transformation matrix
+    *
+    * This method is an implementation of: Horn, B. “Closed-Form Solution of Absolute Orientation Using Unit Quaternions,” JOSA A, Vol. 4, No. 4, 1987
     * \ingroup common
     */
   template <typename PointSource, typename PointTarget> inline void 
@@ -61,11 +63,13 @@ namespace pcl
                                   Eigen::Matrix4f &transformation_matrix);
 
   /** \brief Estimate a rigid rotation transformation between a source and a target point 
-    * cloud using SVD.
+    * cloud using SVDlosed-form solution of absolute orientation using unit quaternions
     * \param cloud_src the source point cloud dataset
     * \param indices_src the vector of indices describing the points of interest in cloud_src
     * \param cloud_tgt the target point cloud dataset
     * \param transformation_matrix the resultant transformation matrix
+    *
+    * This method is an implementation of: Horn, B. “Closed-Form Solution of Absolute Orientation Using Unit Quaternions,” JOSA A, Vol. 4, No. 4, 1987
     * \ingroup common
     */
   template <typename PointSource, typename PointTarget> inline void 
@@ -82,6 +86,8 @@ namespace pcl
     * \param indices_tgt the vector of indices describing the correspondences of the 
     * interest points from indices_src
     * \param transformation_matrix the resultant transformation matrix
+    *
+    * This method is an implementation of: Horn, B. “Closed-Form Solution of Absolute Orientation Using Unit Quaternions,” JOSA A, Vol. 4, No. 4, 1987
     * \ingroup common
     */
   template <typename PointSource, typename PointTarget> inline void 
