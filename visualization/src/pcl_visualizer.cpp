@@ -56,7 +56,7 @@
 #include <vtkPointPicker.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
+pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const bool create_interactor) :
     rens_ (vtkSmartPointer<vtkRendererCollection>::New ()),
     style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ()),
     cloud_actor_map_ (new CloudActorMap),
@@ -101,39 +101,14 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name) :
   style_->setCloudActorMap (cloud_actor_map_);
   style_->UseTimersOn ();
 
-  // Create the interactor
-  //interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
-  interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
-
-  interactor_->SetRenderWindow (win_);
-  interactor_->SetInteractorStyle (style_);
-  //interactor_->SetStillUpdateRate (30.0);
-  interactor_->SetDesiredUpdateRate (30.0);
-  // Initialize and create timer
-  interactor_->Initialize ();
-  //interactor_->CreateRepeatingTimer (5000L);
-  interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
-
-  // Set a simple PointPicker
-  vtkPointPicker *pp = vtkPointPicker::New ();
-  interactor_->SetPicker (pp);
-
-  exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
-  exit_main_loop_timer_callback_->pcl_visualizer = this;
-  exit_main_loop_timer_callback_->right_timer_id = -1;
-  interactor_->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
-
-  exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
-  exit_callback_->pcl_visualizer = this;
-  interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
-
-  resetStoppedFlag ();
+  if (create_interactor) 
+    createInteractor (); 
 
   win_->SetWindowName (name.c_str ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const std::string &name, PCLVisualizerInteractorStyle* style) : 
+pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const std::string &name, PCLVisualizerInteractorStyle* style, const bool create_interactor) : 
     rens_ (vtkSmartPointer<vtkRendererCollection>::New ()), 
     cloud_actor_map_ (new CloudActorMap),
     shape_actor_map_ (new ShapeActorMap)
@@ -189,15 +164,24 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   style_->setCloudActorMap (cloud_actor_map_);
   style_->UseTimersOn ();
 
-  // Create the interactor
-  //interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
+  if (create_interactor) 
+    createInteractor (); 
+  
+  win_->SetWindowName (name.c_str ());
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::PCLVisualizer::createInteractor ()
+{
   interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
 
   interactor_->SetRenderWindow (win_);
   interactor_->SetInteractorStyle (style_);
   //interactor_->SetStillUpdateRate (30.0);
   interactor_->SetDesiredUpdateRate (30.0);
-  // Initialize and create timer
+
+  // Initialize and create timer, also create window
   interactor_->Initialize ();
   //interactor_->CreateRepeatingTimer (5000L);
   interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
@@ -206,24 +190,23 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   vtkPointPicker *pp = vtkPointPicker::New ();
   interactor_->SetPicker (pp);
 
-  exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New();
+  exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
   exit_main_loop_timer_callback_->right_timer_id = -1;
   interactor_->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
 
-  exit_callback_ = vtkSmartPointer<ExitCallback>::New();
+  exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
   exit_callback_->pcl_visualizer = this;
   interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
   
   resetStoppedFlag ();
-
-  win_->SetWindowName (name.c_str ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::~PCLVisualizer ()
 {
-  interactor_->DestroyTimer (interactor_->timer_id_);
+  if (interactor_ != NULL) 
+    interactor_->DestroyTimer (interactor_->timer_id_);
   // Clear the collections
   rens_->RemoveAllItems ();
 }

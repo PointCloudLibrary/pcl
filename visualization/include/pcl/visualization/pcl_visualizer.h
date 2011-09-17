@@ -91,16 +91,18 @@ namespace pcl
 
         /** \brief PCL Visualizer constructor.
           * \param[in] name the window name (empty by default)
+          * \param[in] create_interactor if true (default), create an interactor, false otherwise
           */
-        PCLVisualizer (const std::string &name = "");
+        PCLVisualizer (const std::string &name = "", const bool create_interactor = true);
         /** \brief PCL Visualizer constructor.
           * \param[in] argc
           * \param[in] argv
           * \param[in] name the window name (empty by default)
           * \param[in] style interactor style (defaults to PCLVisualizerInteractorStyle)
+          * \param[in] create_interactor if true (default), create an interactor, false otherwise
           */
         PCLVisualizer (int &argc, char **argv, const std::string &name = "", 
-            PCLVisualizerInteractorStyle* style = PCLVisualizerInteractorStyle::New ());
+            PCLVisualizerInteractorStyle* style = PCLVisualizerInteractorStyle::New (), const bool create_interactor = true);
 
         /** \brief PCL Visualizer destructor. */
         virtual ~PCLVisualizer ();
@@ -730,11 +732,11 @@ namespace pcl
 
         /** \brief Returns true when the user tried to close the window */
         bool 
-        wasStopped () const { return (interactor_->stopped); }
+        wasStopped () const { if (interactor_ != NULL) return (interactor_->stopped); else return true; }
 
         /** \brief Set the stopped flag back to false */
         void 
-        resetStoppedFlag () { interactor_->stopped = false; }
+        resetStoppedFlag () { if (interactor_ != NULL) interactor_->stopped = false; }
 
         /** \brief Create a new viewport from [xmin,ymin] -> [xmax,ymax].
           * \param xmin the minimum X coordinate for the viewport (0.0 <= 1.0)
@@ -1111,6 +1113,17 @@ namespace pcl
           */
         void
         saveScreenshot (const std::string &file);
+
+        /** \brief Return a pointer to the underlying VTK Render Window used. */
+        vtkSmartPointer<vtkRenderWindow> 
+        getRenderWindow () 
+        {
+          return (win_);
+        }
+
+        /** \brief Create the internal Interactor object. */
+        void 
+        createInteractor ();
 
       protected:
         /** \brief The render window interactor. */
