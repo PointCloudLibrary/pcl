@@ -181,16 +181,16 @@ namespace pcl
       /** \brief weighting phase of particle filter method.
           calculate the likelihood of all of the particles and set the weights.
         */
-      void weight ();
+      virtual void weight ();
       
       /** \brief resampling phase of particle filter method.
           sampling the particles according to the weights calculated in weight method.
           in particular, "sample with replacement" is archieved by walker's alias method.
         */
-      void resample ();
+      virtual void resample ();
       
       /** \brief calculate the weighted mean of the particles and set it as the result */
-      void update ();
+      virtual void update ();
 
       /** \brief normalize the weights of all the particels. */
       void normalizeWeight ();
