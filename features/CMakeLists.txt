@@ -73,7 +73,9 @@ if(build)
 #        include/pcl/${SUBSYS_NAME}/impl/3dsc.hpp
         )
 
-    set(srcs src/feature.cpp
+    set(srcs 
+        src/feature.cpp
+        src/boundary.cpp
         src/cvfh.cpp
         src/fpfh.cpp
         src/fpfh_omp.cpp

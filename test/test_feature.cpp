@@ -363,8 +363,8 @@ TEST (PCL, MomentInvariantsEstimation)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, BoundaryEstimation)
 {
-  Eigen::Vector3f u = Eigen::Vector3f::Zero ();
-  Eigen::Vector3f v = Eigen::Vector3f::Zero ();
+  Eigen::Vector4f u = Eigen::Vector4f::Zero ();
+  Eigen::Vector4f v = Eigen::Vector4f::Zero ();
 
   // Estimate normals first
   NormalEstimation<PointXYZ, Normal> n;
@@ -386,7 +386,7 @@ TEST (PCL, BoundaryEstimation)
   for (size_t i = 0; i < normals->points.size (); ++i)
   {
     b.getCoordinateSystemOnPlane (normals->points[i], u, v);
-    pcl::Vector3fMap n4uv = normals->points[i].getNormalVector3fMap ();
+    pcl::Vector4fMap n4uv = normals->points[i].getNormalVector4fMap ();
     EXPECT_NEAR (n4uv.dot(u), 0, 1e-4);
     EXPECT_NEAR (n4uv.dot(v), 0, 1e-4);
     EXPECT_NEAR (u.dot(v), 0, 1e-4);
