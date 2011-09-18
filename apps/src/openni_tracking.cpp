@@ -419,6 +419,9 @@ public:
 
           //std::cout << "nonplane: " << nonplane_cloud_->points.size () << std::endl; //debug
           pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr tracking_cloud (new pcl::PointCloud<pcl::PointXYZRGBNormal> ());
+          tracking_cloud->width = nonplane_cloud_->width;
+          tracking_cloud->height = nonplane_cloud_->height;
+          tracking_cloud->is_dense = nonplane_cloud_->is_dense;
           for (size_t i = 0; i < nonplane_cloud_->points.size (); i++)
           {
             pcl::PointXYZRGBNormal point;
