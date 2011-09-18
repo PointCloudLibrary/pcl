@@ -54,7 +54,7 @@ if(build)
             )
     endif(OPENNI_FOUND)
 
-    set(srcs src/io.cpp
+    set(srcs
         src/pcd_io.cpp
         src/vtk_io.cpp
         #				src/ply_io.cpp
