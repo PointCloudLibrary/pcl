@@ -45,25 +45,20 @@
 template <typename PointT> bool
 pcl::SampleConsensusModelRegistration<PointT>::isSampleGood (const std::vector<int> &samples) const
 {
-  Eigen::Array4f p1p0, p2p0, p2p1;
-
-  // Get the values at the points
-  pcl::Array4fMapConst p0 = input_->points[samples[0]].getArray4fMap();
-  pcl::Array4fMapConst p1 = input_->points[samples[1]].getArray4fMap();
-  pcl::Array4fMapConst p2 = input_->points[samples[2]].getArray4fMap();
-
-  // Compute the segment values (in 3d) between p1 and p0
-  p1p0 = p1 - p0;
-  p2p0 = p2 - p0;
-  p2p1 = p2 - p1;
-  return ((p1p0.matrix().squaredNorm() > sample_dist_thresh_) && (p2p0.matrix().squaredNorm() > sample_dist_thresh_)
-        && (p2p1.matrix().squaredNorm() > sample_dist_thresh_));
+  return ((input_->points[samples[1]].getArray4fMap () - input_->points[samples[0]].getArray4fMap ()).matrix ().squaredNorm () > sample_dist_thresh_ && 
+          (input_->points[samples[2]].getArray4fMap () - input_->points[samples[0]].getArray4fMap ()).matrix ().squaredNorm () > sample_dist_thresh_ && 
+          (input_->points[samples[2]].getArray4fMap () - input_->points[samples[1]].getArray4fMap ()).matrix ().squaredNorm () > sample_dist_thresh_);
 }
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelRegistration<PointT>::computeModelCoefficients (const std::vector<int> &samples, Eigen::VectorXf &model_coefficients)
 {
+  if (!target_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::computeModelCoefficients] No target dataset given!\n");
+    return (false);
+  }
   // Need 3 samples
   if (samples.size () != 3)
     return (false);
@@ -95,6 +90,11 @@ pcl::SampleConsensusModelRegistration<PointT>::getDistancesToModel (const Eigen:
   {
     PCL_ERROR ("[pcl::SampleConsensusModelRegistration::getDistancesToModel] Number of source indices (%lu) differs than number of target indices (%lu)!\n", (unsigned long)indices_->size (), (unsigned long)indices_tgt_->size ());
     distances.clear ();
+    return;
+  }
+  if (!target_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::getDistanceToModel] No target dataset given!\n");
     return;
   }
   // Check if the model is valid given the user constraints
@@ -131,6 +131,11 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
   {
     PCL_ERROR ("[pcl::SampleConsensusModelRegistration::selectWithinDistance] Number of source indices (%lu) differs than number of target indices (%lu)!\n", (unsigned long)indices_->size (), (unsigned long)indices_tgt_->size ());
     inliers.clear ();
+    return;
+  }
+  if (!target_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::selectWithinDistance] No target dataset given!\n");
     return;
   }
 
@@ -175,6 +180,11 @@ pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
     PCL_ERROR ("[pcl::SampleConsensusModelRegistration::countWithinDistance] Number of source indices (%lu) differs than number of target indices (%lu)!\n", (unsigned long)indices_->size (), (unsigned long)indices_tgt_->size ());
     return (0);
   }
+  if (!target_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::countWithinDistance] No target dataset given!\n");
+    return (0);
+  }
 
   double thresh = threshold * threshold;
 
@@ -214,7 +224,7 @@ pcl::SampleConsensusModelRegistration<PointT>::optimizeModelCoefficients (const 
   }
 
   // Check if the model is valid given the user constraints
-  if (!isModelValid (model_coefficients))
+  if (!isModelValid (model_coefficients) || !target_)
   {
     optimized_coefficients = model_coefficients;
     return;

@@ -41,7 +41,7 @@
 #define PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_H_
 
 #include <boost/unordered_map.hpp>
-
+#include <Eigen/Core>
 #include "pcl/sample_consensus/sac_model.h"
 #include "pcl/sample_consensus/model_types.h"
 #include "pcl/common/centroid.h"
@@ -128,6 +128,7 @@ namespace pcl
       setInputTarget (const PointCloudConstPtr &target)
       {
         target_ = target;
+        indices_tgt_.reset (new std::vector<int>);
         // Cache the size and fill the target indices
         unsigned int target_size = target->size ();
         indices_tgt_->resize (target_size);
@@ -240,7 +241,7 @@ namespace pcl
       void
       computeOriginalIndexMapping () 
       {
-        if ((!indices_tgt_) || (!indices_) || (indices_->empty()) || (indices_->size()!=indices_tgt_->size()))
+        if (!indices_tgt_ || !indices_ || indices_->empty () || indices_->size () != indices_tgt_->size ())
           return;
         for (size_t i = 0; i < indices_->size (); ++i)
           correspondences_[(*indices_)[i]] = (*indices_tgt_)[i];
@@ -257,6 +258,12 @@ namespace pcl
 
       /** \brief Internal distance threshold used for the sample selection step. */
       double sample_dist_thresh_;
+
+      /** \brief Internal input point cloud data centroid. Used to estimate the transformation. */
+      Eigen::Vector4f centroid_src_;
+
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
