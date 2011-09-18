@@ -44,8 +44,8 @@
 #include <Eigen/Core>
 #include "pcl/sample_consensus/sac_model.h"
 #include "pcl/sample_consensus/model_types.h"
-#include "pcl/common/centroid.h"
-#include "pcl/common/eigen.h"
+#include <pcl/common/eigen.h>
+#include <pcl/common/centroid.h>
 
 namespace pcl
 {
@@ -71,8 +71,8 @@ namespace pcl
         */
       SampleConsensusModelRegistration (const PointCloudConstPtr &cloud) : SampleConsensusModel<PointT> (cloud)
       {
+        // Call our own setInputCloud
         setInputCloud (cloud);
-        computeOriginalIndexMapping ();
       }
 
       /** \brief Constructor for base SampleConsensusModelRegistration.
@@ -84,8 +84,7 @@ namespace pcl
         SampleConsensusModel<PointT> (cloud, indices)
       {
         computeOriginalIndexMapping ();
-        input_ = cloud;
-        computeSampleDistanceThreshold (cloud);
+        computeSampleDistanceThreshold (cloud, indices);
       }
 
       /** \brief Provide a pointer to the input dataset
@@ -97,28 +96,6 @@ namespace pcl
         SampleConsensusModel<PointT>::setInputCloud (cloud);
         computeOriginalIndexMapping ();
         computeSampleDistanceThreshold (cloud);
-      }
-
-      /** \brief Computes an "optimal" sample distance threshold based on the
-        * principal directions of the input cloud.
-        * \param[in] cloud the const boost shared pointer to a PointCloud message
-        */
-      inline void 
-      computeSampleDistanceThreshold (const PointCloudConstPtr &cloud)
-      {
-        // Compute the principal directions via PCA
-        Eigen::Vector4f xyz_centroid;
-        compute3DCentroid (*cloud, xyz_centroid);
-        EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
-        computeCovarianceMatrixNormalized (*cloud, xyz_centroid, covariance_matrix);
-        EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
-        EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
-        pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
-
-        // Compute the distance threshold for sample selection
-        sample_dist_thresh_ = eigen_values.array ().sqrt ().sum () / 3.0;
-        sample_dist_thresh_ *= sample_dist_thresh_;
-        PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a sample selection distance threshold of: %f\n", sample_dist_thresh_);
       }
 
       /** \brief Set the input point cloud target.
@@ -236,7 +213,71 @@ namespace pcl
       bool
       isSampleGood (const std::vector<int> &samples) const;
 
+      /** \brief Computes an "optimal" sample distance threshold based on the
+        * principal directions of the input cloud.
+        * \param[in] cloud the const boost shared pointer to a PointCloud message
+        */
+      inline void 
+      computeSampleDistanceThreshold (const PointCloudConstPtr &cloud)
+      {
+        // Compute the principal directions via PCA
+        Eigen::Vector4f xyz_centroid;
+        compute3DCentroid (*cloud, xyz_centroid);
+        EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
+        computeCovarianceMatrixNormalized (*cloud, xyz_centroid, covariance_matrix);
+        EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
+        EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
+        pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+
+        // Compute the distance threshold for sample selection
+        sample_dist_thresh_ = eigen_values.array ().sqrt ().sum () / 3.0;
+        sample_dist_thresh_ *= sample_dist_thresh_;
+        PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a sample selection distance threshold of: %f\n", sample_dist_thresh_);
+      }
+
+      /** \brief Computes an "optimal" sample distance threshold based on the
+        * principal directions of the input cloud.
+        * \param[in] cloud the const boost shared pointer to a PointCloud message
+        */
+      inline void 
+      computeSampleDistanceThreshold (const PointCloudConstPtr &cloud,
+                                      const std::vector<int> &indices) 
+      {
+        // Compute the principal directions via PCA
+        Eigen::Vector4f xyz_centroid;
+        compute3DCentroid (*cloud, indices, xyz_centroid);
+        EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
+        computeCovarianceMatrixNormalized (*cloud, indices, xyz_centroid, covariance_matrix);
+        EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
+        EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
+        pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+
+        // Compute the distance threshold for sample selection
+        sample_dist_thresh_ = eigen_values.array ().sqrt ().sum () / 3.0;
+        sample_dist_thresh_ *= sample_dist_thresh_;
+        PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a sample selection distance threshold of: %f\n", sample_dist_thresh_);
+      }
+
     private:
+
+    /** \brief Estimate a rigid transformation between a source and a target point cloud using an SVD closed-form 
+      * solution of absolute orientation using unit quaternions
+      * \param[in] cloud_src the source point cloud dataset
+      * \param[in] indices_src the vector of indices describing the points of interest in cloud_src
+      * \param[in] cloud_tgt the target point cloud dataset
+      * \param[in] indices_tgt the vector of indices describing the correspondences of the interest points from
+      * indices_src
+      * \param[out] transform the resultant transformation matrix (as model coefficients)
+      *
+      * This method is an implementation of: Horn, B. “Closed-Form Solution of Absolute Orientation Using Unit Quaternions,” JOSA A, Vol. 4, No. 4, 1987
+      */
+      void 
+      estimateRigidTransformationSVD (const pcl::PointCloud<PointT> &cloud_src, 
+                                      const std::vector<int> &indices_src, 
+                                      const pcl::PointCloud<PointT> &cloud_tgt, 
+                                      const std::vector<int> &indices_tgt, 
+                                      Eigen::VectorXf &transform);
+
       /** \brief Compute mappings between original indices of the input_/target_ clouds. */
       void
       computeOriginalIndexMapping () 
@@ -258,10 +299,6 @@ namespace pcl
 
       /** \brief Internal distance threshold used for the sample selection step. */
       double sample_dist_thresh_;
-
-      /** \brief Internal input point cloud data centroid. Used to estimate the transformation. */
-      Eigen::Vector4f centroid_src_;
-
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
