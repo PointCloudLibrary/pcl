@@ -63,7 +63,7 @@ if(build)
         set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
     endif(VTK_FOUND)
 
-    set(srcs src/io.cpp
+    set(srcs 
         src/pcd_io.cpp
         src/vtk_io.cpp
         src/ply_io.cpp

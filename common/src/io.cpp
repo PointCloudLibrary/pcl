@@ -39,7 +39,6 @@
 
 #include "pcl/point_types.h"
 #include "pcl/common/io.h"
-#include "pcl/io/pcd_io.h"
 
 //////////////////////////////////////////////////////////////////////////
 void
