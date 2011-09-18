@@ -15,11 +15,13 @@
 
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
+
 #include <pcl/io/pcd_io.h>
 
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/project_inliers.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/extract_indices.h>
 
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/normal_3d_omp.h>
@@ -27,10 +29,14 @@
 
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
+
 #include <pcl/segmentation/sac_segmentation.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
-#include <pcl/surface/convex_hull.h>  
+
+#include <pcl/surface/convex_hull.h>
+
+#include <pcl/search/auto.h>
+#include <pcl/search/octree.h>
 
 #define FPS_CALC(_WHAT_)                                                \
   do                                                                    \
@@ -151,8 +157,13 @@ public:
     normal_coherence->setWeight (0.1);
     coherence->addPointCoherence (normal_coherence);
 
-    tracker_->setCloudCoherence (coherence);
+    pcl::search::AutotunedSearch<RefPointType>::SearchPtr oct
+      (new pcl::search::AutotunedSearch<RefPointType> (pcl::search::KDTREE));
 
+    //pcl::search::Octree<RefPointType>::Ptr oct (new pcl::search::Octree<RefPointType> (0.01));
+    coherence->setSearchMethod (oct);
+    
+    tracker_->setCloudCoherence (coherence);
     extract_positive_.setNegative (false);
   }
 
@@ -357,8 +368,8 @@ public:
   void
   cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
   {
-      FPS_CALC("computation");
       boost::mutex::scoped_lock lock (mtx_);
+      FPS_CALC_BEGIN;
       cloud_pass_.reset (new Cloud);
       pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
       pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
@@ -428,6 +439,7 @@ public:
         }
         new_cloud_ = true;
       }
+      FPS_CALC_END("computation");
     }
 
   Eigen::Matrix4f 
@@ -444,19 +456,27 @@ public:
       Eigen::Vector3f z = BC.cross (BA);
       z.normalize ();
       // check the direction of z
-      Eigen::Vector3f A (cloud_hull->points[0].x, cloud_hull->points[0].y, cloud_hull->points[0].z);
-      if (A.dot (z) > 0)
+      
+      Eigen::Vector3f B (cloud_hull->points[1].x, cloud_hull->points[1].y, cloud_hull->points[1].z);
+      if (B.dot (z) > 0)
         z = - z;
 
-      Eigen::Vector3f x (1.0, 0.0, 0.0);
 
-      // x should not be parallel with z.
-      if ( fabs (z.dot (x)) > 1.0 - 1.0e-4)
-        x = Eigen::Vector3f (0.0, 1.0, 0.0);
-      // calc y
-      Eigen::Vector3f y = z.cross (x);
+      // calc x, y
+      Eigen::Vector3f xx = BA;
+      xx.normalize ();
+      Eigen::Vector3f yy = z.cross (xx);
+      yy.normalize ();
+      Eigen::Vector3f ux (1.0, 0.0, 0.0);
+      double tmp = ux.dot (yy) / ux.dot (xx);
+      double beta2 = 1 / (1 + tmp * tmp);
+      double beta = - sqrt (beta2);
+      double alpha = - beta * tmp;
+      Eigen::Vector3f y = alpha * xx + beta * yy;
+      Eigen::Vector3f x = y.cross (z);
+      x.normalize ();
       y.normalize ();
-        
+      
       Eigen::Matrix4f ret = Eigen::Matrix4f::Identity ();
 
       // fill rotation
@@ -466,11 +486,11 @@ public:
         ret(i, 1) = y[i];
         ret(i, 2) = z[i];
       }
-        
+      
       Eigen::Vector3f OB (cloud_hull->points[1].x, cloud_hull->points[1].y, cloud_hull->points[1].z);
-      double beta = - OB.dot (y);
-      double gamma = - OB.dot (x);
-      Eigen::Vector3f position = OB + beta * y + gamma * x;
+      double yscale = - OB.dot (y);
+      double xscale = - OB.dot (x);
+      Eigen::Vector3f position = OB + yscale * y + xscale * x;
         
       for (int i = 0; i < 3; i++)
         ret (i, 3) = position[i];
