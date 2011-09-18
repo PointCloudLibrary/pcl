@@ -61,7 +61,15 @@ namespace pcl
       PCL_VISUALIZER_OPACITY,
       PCL_VISUALIZER_LINE_WIDTH,
       PCL_VISUALIZER_FONT_SIZE,
-      PCL_VISUALIZER_COLOR
+      PCL_VISUALIZER_COLOR,
+      PCL_VISUALIZER_REPRESENTATION
+    };
+
+    enum RenderingRepresentationProperties
+    {
+      PCL_VISUALIZER_REPRESENTATION_POINTS,
+      PCL_VISUALIZER_REPRESENTATION_WIREFRAME,
+      PCL_VISUALIZER_REPRESENTATION_SURFACE
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////

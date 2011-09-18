@@ -973,6 +973,29 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       text_actor->Modified ();
       break;
     }
+    case PCL_VISUALIZER_REPRESENTATION:
+    {
+      switch ((int)value)
+      {
+        case PCL_VISUALIZER_REPRESENTATION_POINTS:
+        {
+          actor->GetProperty ()->SetRepresentationToPoints ();
+          break;
+        }
+        case PCL_VISUALIZER_REPRESENTATION_WIREFRAME:
+        {
+          actor->GetProperty ()->SetRepresentationToWireframe ();
+          break;
+        }
+        case PCL_VISUALIZER_REPRESENTATION_SURFACE:
+        {
+          actor->GetProperty ()->SetRepresentationToSurface ();
+          break;
+        }
+      }
+      actor->Modified ();
+      break;
+    }
     default:
     {
       pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
