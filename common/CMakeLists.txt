@@ -64,7 +64,6 @@ if(build)
         include/pcl/common/point_correspondence.h
         include/pcl/common/polynomial_calculations.h
         include/pcl/common/poses_from_matches.h
-        include/pcl/common/rigid_transforms.h
         include/pcl/common/time.h
         include/pcl/common/time_trigger.h
         include/pcl/common/transform.h
@@ -87,7 +86,6 @@ if(build)
         include/pcl/common/impl/norms.hpp
         include/pcl/common/impl/piecewise_linear_function.hpp
         include/pcl/common/impl/polynomial_calculations.hpp
-        include/pcl/common/impl/rigid_transforms.hpp
         include/pcl/common/impl/pca.hpp
         include/pcl/common/impl/transform.hpp
         include/pcl/common/impl/transforms.hpp
