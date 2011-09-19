@@ -52,6 +52,7 @@ pcl::lineWithLineIntersection (const Eigen::VectorXf &line_a,
     point = p1;
     return (true);
   }
+  point.setZero ();
   return (false);
 }
 
