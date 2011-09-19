@@ -37,6 +37,7 @@
 #ifndef PCL_GPU_CONTAINER_DEVICE_ARRAY_HPP_
 #define PCL_GPU_CONTAINER_DEVICE_ARRAY_HPP_
 
+#include "pcl/pcl_macros.h"
 #include <pcl/gpu/containers/device_memory.hpp>
 
 #include <vector>
@@ -109,12 +110,14 @@ namespace pcl
             /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
               * \param data: host vector to upload from              
               * */
-            void upload(const std::vector<T>& data);
+            template<class A>
+            void upload(const std::vector<T, A>& data);
 
              /** \brief Downloads data from internal buffer to CPU memory
                * \param data:  host vector to download to                 
                * */
-            void download(std::vector<T>& data) const;
+            template<typename A>
+            void download(std::vector<T, A>& data) const;
 
             /** \brief Returns pointer for internal buffer in GPU memory. */
             T* ptr(); 
@@ -208,13 +211,15 @@ namespace pcl
               * \param data: host vector to upload from              
               * \param cols: stride in elements between  two consecutive rows in bytes for host buffer
               * */
-            void upload(const std::vector<T>& data, int cols);
+            template<class A>
+            void upload(const std::vector<T, A>& data, int cols);
 
             /** \brief Downloads data from internal buffer to CPU memory
                * \param data: host vector to download to                 
                * \param cols: Output stride in elements between two consecutive rows in bytes for host vector.
                * */
-            void download(std::vector<T>& data, int& cols) const;
+            template<class A>
+            void download(std::vector<T, A>& data, int& cols) const;
                                       
             /** \brief Returns pointer to given row in internal buffer. 
               * \param y_arg: row index   
@@ -243,6 +248,12 @@ namespace pcl
             /** \brief Returns step in elements. */
             int elem_step() const;
         };        
+    }
+
+    namespace device
+    {
+        using pcl::gpu::DeviceArray;
+        using pcl::gpu::DeviceArray2D;
     }
 }
 

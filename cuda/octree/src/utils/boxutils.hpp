@@ -107,9 +107,9 @@ namespace pcl
             float cell_size_y = (res_maxp.y - res_minp.y) / (1 << level);
             float cell_size_z = (res_maxp.z - res_minp.z) / (1 << level);
 
-            res_minp.x = cell_x * cell_size_x;
-            res_minp.y = cell_y * cell_size_y;
-            res_minp.z = cell_z * cell_size_z;
+            res_minp.x += cell_x * cell_size_x;
+            res_minp.y += cell_y * cell_size_y;
+            res_minp.z += cell_z * cell_size_z;
 
             res_maxp.x = res_minp.x + cell_size_x;
             res_maxp.y = res_minp.y + cell_size_y;

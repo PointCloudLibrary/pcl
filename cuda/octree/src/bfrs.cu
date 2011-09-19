@@ -75,14 +75,14 @@ typedef thrust::counting_iterator<int, thrust::use_default, thrust::use_default,
 template<> struct thrust::iterator_difference<It> { typedef int type; };
 
 
-void pcl::gpu::bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, const OctreeImpl::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer)
+void pcl::device::bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, const OctreeImpl::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer)
 {   
     typedef OctreeImpl::PointType PointType;
 
     if (buffer.size() < cloud.size())
         buffer.create(cloud.size());
 
-    pcl::device::InSphere cond(query.x, query.y, query.z, radius);
+    InSphere cond(query.x, query.y, query.z, radius);
 
     device_ptr<const PointType> cloud_ptr((const PointType*)cloud.ptr());
     device_ptr<int> res_ptr(buffer.ptr());

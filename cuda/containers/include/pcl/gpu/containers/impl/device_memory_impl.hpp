@@ -45,7 +45,7 @@ template<class T> inline const T* pcl::gpu::DeviceMemory::ptr() const { return (
 template <class U> inline pcl::gpu::DeviceMemory::operator pcl::gpu::PtrSz<U>() const
 {
     PtrSz<U> result;
-    result.data = ptr<U>();
+    result.data = (U*)ptr<U>();
     result.size = sizeBytes/sizeof(U);
     return result; 
 }

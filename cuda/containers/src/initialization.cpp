@@ -35,13 +35,9 @@
  */
 
 #include "pcl/gpu/containers/initialization.hpp"
-#include "cuda_runtime_api.h"
-
-//temporary dependence, should eliminated in future
-//Replace with THROW_PCL_EXCEPTION from PCL2.0 API
 #include "pcl/gpu/utils/safe_call.hpp"
 
-
+#include "cuda_runtime_api.h"
 
 #define HAVE_CUDA
 //#include "pcl_config.h"

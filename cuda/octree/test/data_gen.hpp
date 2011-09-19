@@ -62,6 +62,8 @@ struct DataGenerator
     std::vector<float> radiuses;
     std::vector< std::vector<int> > bfresutls;
 
+    std::vector<int> indices;
+
     DataGenerator() : data_size(871000), tests_num(10000), cube_size(1024.f)
     {
         max_radius    = cube_size/15.f;
@@ -90,6 +92,9 @@ struct DataGenerator
             queries[i].z = (float)rng * cube_size;  		
             radiuses[i]  = (float)rng * max_radius;	
         };        
+
+        for(int i = 0; i < tests_num/2; ++i)
+            indices.push_back(i*2);
     }
 
     void bruteForceSearch(bool log = false, float radius = -1.f)

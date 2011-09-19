@@ -1,38 +1,38 @@
 /*
- * Software License Agreement (BSD License)
- *
- *  Copyright (c) 2011, Willow Garage, Inc.
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
- */
+* Software License Agreement (BSD License)
+*
+*  Copyright (c) 2011, Willow Garage, Inc.
+*  All rights reserved.
+*
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
+*  are met:
+*
+*   * Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
+*   * Redistributions in binary form must reproduce the above
+*     copyright notice, this list of conditions and the following
+*     disclaimer in the documentation and/or other materials provided
+*     with the distribution.
+*   * Neither the name of Willow Garage, Inc. nor the names of its
+*     contributors may be used to endorse or promote products derived
+*     from this software without specific prior written permission.
+*
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+*  POSSIBILITY OF SUCH DAMAGE.
+*
+*  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
+*/
 
 #include "pcl/gpu/utils/timers_cuda.hpp"
 #include "pcl/gpu/utils/safe_call.hpp"
@@ -50,29 +50,25 @@ namespace pcl
 {
     namespace device
     {
-        namespace getcc
+        __global__ void get_cc_kernel(int *data)
         {
-            __global__ void get_cc_kernel(int *data)
-            {
-                data[threadIdx.x + blockDim.x * blockIdx.x] = threadIdx.x;
-            }
+            data[threadIdx.x + blockDim.x * blockIdx.x] = threadIdx.x;
         }
     }
 }
 
-void  pcl::gpu::OctreeImpl::get_gpu_arch_compiled_for(int& bin, int& ptx)
+void  pcl::device::OctreeImpl::get_gpu_arch_compiled_for(int& bin, int& ptx)
 {
     cudaFuncAttributes attrs;
-    cudaSafeCall( cudaFuncGetAttributes(&attrs, pcl::device::getcc::get_cc_kernel) );  
+    cudaSafeCall( cudaFuncGetAttributes(&attrs, get_cc_kernel) );  
     bin = attrs.binaryVersion;
     ptx = attrs.ptxVersion;
 }
 
-void pcl::gpu::OctreeImpl::setCloud(const PointCloud& input_points)
+void pcl::device::OctreeImpl::setCloud(const PointCloud& input_points)
 {
     points = input_points;
 }
-
 
 int getBitsNum(int interger)
 {
@@ -123,11 +119,11 @@ struct OctreeIteratorHost
             }
             else
                 --level; //goto parent;            
-       }        
+        }        
     }        
 };
 
-void pcl::gpu::OctreeImpl::radiusSearchHost(const PointType& query, float radius, vector<int>& out, int max_nn) const
+void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float radius, vector<int>& out, int max_nn) const
 {            
     out.clear();  
 
@@ -169,7 +165,7 @@ void pcl::gpu::OctreeImpl::radiusSearchHost(const PointType& query, float radius
 
         // test children
         int children_mask = host_octree.nodes[node_idx] & 0xFF;
-        
+
         bool isLeaf = children_mask == 0;
 
         if (isLeaf)
@@ -192,20 +188,20 @@ void pcl::gpu::OctreeImpl::radiusSearchHost(const PointType& query, float radius
 
                 if (dist2 < radius * radius)
                     out.push_back(index);
-                
+
                 if (out.size() == max_nn)
                     return;
             }               
             ++iterator;               
             continue;
         }
-        
+
         int first  = host_octree.nodes[node_idx] >> 8;
         iterator.gotoNextLevel(first, getBitsNum(children_mask));                
     }
 }
 
-void  pcl::gpu::OctreeImpl::approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist) const
+void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist) const
 {
     float3 minp = octreeGlobal.minp;
     float3 maxp = octreeGlobal.maxp;
@@ -225,10 +221,10 @@ void  pcl::gpu::OctreeImpl::approxNearestSearchHost(const PointType& query, int&
 
             int node = host_octree.nodes[node_idx];
             int mask = node & 0xFF;
-                                
+
             if(getBitsNum(mask) == 0)  // leaf
                 break;
-        
+
             if ( (mask & mask_pos) == 0) // no child
                 break;
 
@@ -251,7 +247,7 @@ void  pcl::gpu::OctreeImpl::approxNearestSearchHost(const PointType& query, int&
         float dx = (point_x - query.x);
         float dy = (point_y - query.y);
         float dz = (point_z - query.z);
-        
+
         float d2 = dx * dx + dy * dy + dz * dz;
 
         if (sqr_dist > d2)
@@ -264,7 +260,7 @@ void  pcl::gpu::OctreeImpl::approxNearestSearchHost(const PointType& query, int&
     out_index = host_octree.indices[out_index];
 }
 
-void pcl::gpu::OctreeImpl::internalDownload()
+void pcl::device::OctreeImpl::internalDownload()
 {
     int number;
     DeviceArray<int>(octreeGlobal.nodes_num, 1).download(&number); 

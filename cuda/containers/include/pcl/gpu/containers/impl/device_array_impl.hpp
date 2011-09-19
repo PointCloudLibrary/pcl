@@ -67,8 +67,8 @@ template<class T> inline       T* pcl::gpu::DeviceArray<T>::ptr()       { return
 template<class T> inline const T* pcl::gpu::DeviceArray<T>::ptr() const { return DeviceMemory::ptr<T>(); }
 
 
-template<class T> inline void pcl::gpu::DeviceArray<T>::upload(const std::vector<T>& data) { upload(&data[0], data.size()); }
-template<class T> inline void pcl::gpu::DeviceArray<T>::download(std::vector<T>& data) const { data.resize(size()); if (!data.empty()) download(&data[0]); }
+template<class T> template<class A> inline void pcl::gpu::DeviceArray<T>::upload(const std::vector<T, A>& data) { upload(&data[0], data.size()); }
+template<class T> template<class A> inline void pcl::gpu::DeviceArray<T>::download(std::vector<T, A>& data) const { data.resize(size()); if (!data.empty()) download(&data[0]); }
 
 
 /////////////////////  Inline implementations of DeviceArray2D ////////////////////////////////////////////
@@ -92,10 +92,10 @@ template<class T> inline void pcl::gpu::DeviceArray2D<T>::upload(const void *hos
 template<class T> inline void pcl::gpu::DeviceArray2D<T>::download(void *host_ptr, size_t host_step) const 
 { DeviceMemory2D::download( host_ptr, host_step ); }
 
-template<class T> inline void pcl::gpu::DeviceArray2D<T>::upload(const std::vector<T>& data, int cols) 
+template<class T> template<class A> inline void pcl::gpu::DeviceArray2D<T>::upload(const std::vector<T, A>& data, int cols) 
 { upload(&data[0], cols * elem_size, data.size()/cols, cols); }
 
-template<class T> inline void pcl::gpu::DeviceArray2D<T>::download(std::vector<T>& data, int& elem_step) const 
+template<class T> template<class A> inline void pcl::gpu::DeviceArray2D<T>::download(std::vector<T, A>& data, int& elem_step) const 
 { elem_step = cols(); data.resize(cols() * rows()); if (!data.empty()) download(&data[0], colsBytes);  }
 
 template<class T> inline       T* pcl::gpu::DeviceArray2D<T>::ptr(int y)       { return DeviceMemory2D::ptr<T>(y); }
@@ -104,10 +104,10 @@ template<class T> inline const T* pcl::gpu::DeviceArray2D<T>::ptr(int y) const {
 template<class T> inline pcl::gpu::DeviceArray2D<T>::operator T*() { return ptr(); }
 template<class T> inline pcl::gpu::DeviceArray2D<T>::operator const T*() const { return ptr(); }
 
-template<class T> inline int pcl::gpu::DeviceArray2D<T>::cols() const { return colsBytes/elem_size; }
+template<class T> inline int pcl::gpu::DeviceArray2D<T>::cols() const { return DeviceMemory2D::colsBytes/elem_size; }
 template<class T> inline int pcl::gpu::DeviceArray2D<T>::rows() const { return DeviceMemory2D::rows; }
 
-template<class T> inline int pcl::gpu::DeviceArray2D<T>::elem_step() const { return step/elem_size; }
+template<class T> inline int pcl::gpu::DeviceArray2D<T>::elem_step() const { return DeviceMemory2D::step/elem_size; }
 
 
 #endif /* PCL_GPU_CONTAINER_DEVICE_ARRAY_IMPL_HPP_ */ 

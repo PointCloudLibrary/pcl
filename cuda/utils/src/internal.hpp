@@ -34,12 +34,16 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include<iostream>
-#include<stdlib.h>
-#include "pcl/gpu/utils/safe_call.hpp"
+#ifndef PCL_GPU_UTILS_INTERNAL_HPP_
+#define PCL_GPU_UTILS_INTERNAL_HPP_
 
-void pcl::device::error(const char *error_string, const char *file, const int line, const char *func)
-{	
-    std::cout << "Error: " << error_string << "\t" << file << ":" << line << std::endl;
-    exit(0);
+namespace pcl
+{
+    namespace device
+    {
+
+
+    }
 }
+
+#endif

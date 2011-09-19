@@ -97,7 +97,7 @@ namespace pcl
 }
 
 
-void pcl::gpu::OctreeImpl::build()
+void pcl::device::OctreeImpl::build()
 {       
     using namespace pcl::device;
     host_octree.downloaded = false;

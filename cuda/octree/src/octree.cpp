@@ -44,7 +44,7 @@
 
 #include<assert.h>
 
-using namespace pcl::gpu;
+using namespace pcl::device;
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -61,18 +61,20 @@ pcl::gpu::Octree::Octree() : impl(0)
     cudaSafeCall( cudaGetDeviceProperties( &prop, device) );
 
     if (prop.major < 2)
-        pcl::device::error("This code requires devices with compute capabiliti >= 2.0", __FILE__, __LINE__);
+        pcl::gpu::error("This code requires devices with compute capabiliti >= 2.0", __FILE__, __LINE__);
 
     int bin, ptx;
     OctreeImpl::get_gpu_arch_compiled_for(bin, ptx);
 
     if (bin < 20 && ptx < 20)
-        pcl::device::error("This must be compiled for compute capability >= 2.0", __FILE__, __LINE__);    
+        pcl::gpu::error("This must be compiled for compute capability >= 2.0", __FILE__, __LINE__);    
 
-    impl = new pcl::gpu::OctreeImpl(prop.major < 2 ? 512 : 1024);        
+    impl = new OctreeImpl(prop.major < 2 ? 512 : 1024);        
 }
 
-pcl::gpu::Octree::~Octree() 
+pcl::gpu::Octree::~Octree() { clear(); }
+
+void pcl::gpu::Octree::clear()
 {
     if (impl)
         delete static_cast<OctreeImpl*>(impl);
@@ -140,6 +142,16 @@ void pcl::gpu::Octree::radiusSearch(const Queries& queries, const Radiuses& radi
     
     const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
     static_cast<OctreeImpl*>(impl)->radiusSearch(q, radiuses, results);
+}
+
+void pcl::gpu::Octree::radiusSearch(const Queries& queries, const Indices& indices, float radius, int max_results, NeighborIndices& results) const
+{
+    assert(queries.size() > 0 && indices.size() > 0);
+    results.create(indices.size(), max_results);
+    results.sizes.create(indices.size());
+    
+    const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
+    static_cast<OctreeImpl*>(impl)->radiusSearch(q, indices, radius, results);
 }
 
 void pcl::gpu::Octree::approxNearestSearch(const Queries& queries, NeighborIndices& results) const

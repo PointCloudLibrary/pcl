@@ -310,7 +310,7 @@ namespace pcl { namespace device { namespace appnearest_search
 } } }
 
 
-void pcl::gpu::OctreeImpl::approxNearestSearch(const Queries& queries, NeighborIndices& results) const
+void pcl::device::OctreeImpl::approxNearestSearch(const Queries& queries, NeighborIndices& results) const
 {
     typedef OctreeImpl::PointType PointType;
     typedef pcl::device::appnearest_search::Batch<PointType> BatchType;

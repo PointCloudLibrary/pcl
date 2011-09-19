@@ -50,7 +50,8 @@ namespace pcl
     }
   
     template <template <typename> class Storage, typename InputIteratorT>
-      boost::shared_ptr<typename Storage<float4>::type> computePointNormals (InputIteratorT begin, InputIteratorT end, float focallength, const boost::shared_ptr <const PointCloudAOS <Storage> > &input, float radius, int desired_number_neighbors)
+      boost::shared_ptr<typename Storage<float4>::type> computePointNormals (InputIteratorT begin, InputIteratorT end, 
+          float focallength, const boost::shared_ptr <const PointCloudAOS <Storage> > &input, float radius, int desired_number_neighbors)
     {
       boost::shared_ptr<typename Storage<float4>::type> normals (new typename Storage<float4>::type);
       normals->resize (end - begin);

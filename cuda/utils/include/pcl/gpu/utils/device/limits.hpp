@@ -204,8 +204,8 @@ namespace pcl
             __device__ __forceinline__ static type epsilon() { return 1.192092896e-07f/*FLT_EPSILON*/; };
             __device__ __forceinline__ static type round_error();
             __device__ __forceinline__ static type denorm_min();
-            __device__ __forceinline__ static type infinity();
-            __device__ __forceinline__ static type quiet_NaN();
+            __device__ __forceinline__ static type infinity() { return __int_as_float(0x7f800000); /*CUDART_INF_F*/ };
+            __device__ __forceinline__ static type quiet_NaN() { return __int_as_float(0x7fffffff); /*CUDART_NAN_F*/ };
             __device__ __forceinline__ static type signaling_NaN();
             static const bool is_signed = true;
         };

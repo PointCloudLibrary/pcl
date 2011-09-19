@@ -45,7 +45,7 @@
 
 namespace pcl
 {
-    namespace gpu
+    namespace device
     {          
         class OctreeImpl
         {
@@ -60,6 +60,9 @@ namespace pcl
             typedef DeviceArray<int> BatchResult;            
             typedef DeviceArray<int> BatchResultSizes;
             typedef DeviceArray<float> BatchResultSqrDists;
+            typedef DeviceArray<int> Indices;
+
+            typedef pcl::gpu::NeighborIndices NeighborIndices;
 
             static void get_gpu_arch_compiled_for(int& bin, int& ptr);
 
@@ -74,6 +77,8 @@ namespace pcl
             void radiusSearch(const Queries& queries, float radius, NeighborIndices& results);
             void radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results);
 
+            void radiusSearch(const Queries& queries, const Indices& indices, float radius, NeighborIndices& results);
+
             void approxNearestSearch(const Queries& queries, NeighborIndices& results) const;
 
             //void nearestKSearchBatch(const BatchQueries& queries, int k, BatchResult& results, BatchResultSqrDists& sqr_dists) const;
@@ -86,8 +91,8 @@ namespace pcl
             DeviceArray<int> codes;
             DeviceArray<int> indices;
                         
-            pcl::device::TasksGlobal tasksGlobal;
-            pcl::device::OctreeGlobalWithBox octreeGlobal;    
+            TasksGlobal tasksGlobal;
+            OctreeGlobalWithBox octreeGlobal;    
 
             //storage
             DeviceArray2D<int> storage;            

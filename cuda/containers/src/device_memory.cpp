@@ -35,16 +35,13 @@
  */
 
 #include "pcl/gpu/containers/device_memory.hpp"
+#include "pcl/gpu/utils/safe_call.hpp"
+
 #include "cuda_runtime_api.h"
 #include "assert.h"
 
-//temporary dependence, should eliminated in future
-//Replace with THROW_PCL_EXCEPTION from PCL2.0 API
-#include "pcl/gpu/utils/safe_call.hpp"
-
 #define HAVE_CUDA
 //#include "pcl_config.h"
-
 
 #if !defined(HAVE_CUDA)
 

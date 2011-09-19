@@ -48,9 +48,6 @@ namespace pcl
 {
     namespace gpu
     {   
-        using pcl::PointXYZ;
-        //struct PointXYZ { float x, y, z;  };
-
         class PCL_EXPORTS Octree
         {
         public:
@@ -59,11 +56,12 @@ namespace pcl
 
             /* Types */
 
-            typedef pcl::gpu::PointXYZ PointType;
+            typedef pcl::PointXYZ PointType;
             typedef DeviceArray<PointType> PointCloud;
             
             typedef DeviceArray<PointType> Queries;
             typedef DeviceArray<float> Radiuses;            
+            typedef DeviceArray<int> Indices;    
             
             typedef DeviceArray<float> ResultSqrDists;
             
@@ -79,7 +77,11 @@ namespace pcl
             void radiusSearch(const Queries& centers, float radius, int max_results, NeighborIndices& result) const;
             void radiusSearch(const Queries& centers, const Radiuses& radiuses, int max_results, NeighborIndices& result) const;
 
+            void radiusSearch(const Queries& centers, const Indices& indices, float radius, int max_results, NeighborIndices& result) const;
+
             void approxNearestSearch(const Queries& queries, NeighborIndices& result) const;
+
+            void clear();
             
         private:
             void *impl;            

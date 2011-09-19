@@ -41,6 +41,12 @@ namespace pcl
 {
     namespace device
     {
+        template <class T> 
+        __device__ __host__ __forceinline__ void swap ( T& a, T& b )
+        {
+          T c(a); a=b; b=c;
+        }
+        
         template<typename Iterator, typename T, typename BinaryPredicate>
         __host__ __device__ Iterator lower_bound(Iterator first, Iterator last, const T &val, BinaryPredicate comp)
         {  

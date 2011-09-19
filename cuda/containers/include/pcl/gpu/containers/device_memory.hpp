@@ -226,6 +226,12 @@ namespace pcl
             int* refcount;
         };      
     }
+
+    namespace device
+    {
+        using pcl::gpu::DeviceMemory;
+        using pcl::gpu::DeviceMemory2D;
+    }
 }
 
 #include "pcl/gpu/containers/impl/device_memory_impl.hpp"

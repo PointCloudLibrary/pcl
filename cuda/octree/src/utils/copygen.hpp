@@ -79,28 +79,6 @@ namespace pcl
                 out[idx] = ((pos + threadIdx.x) << 8) + level;
             }
         }
-
-        template<typename T>
-        __device__ __forceinline__ void CopyWarpKernel(const T* in, T* out, int length)
-        {
-            int STRIDE = warpSize;
-            unsigned int laneId = Warp::laneId();
-
-            for (int idx = laneId; idx < length; idx += STRIDE) 
-                out[idx] = in[idx];
-        }
-
-        template<typename T>
-        __device__ __forceinline__ void SetWarpKernel(T value, T* out, int length)
-        {
-            int STRIDE = warpSize;
-            unsigned int laneId = Warp::laneId();
-
-            for (int idx = laneId; idx < length; idx += STRIDE) 
-                out[idx] = value;
-        }
-
-
     }
 }
 

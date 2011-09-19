@@ -99,7 +99,7 @@ namespace pcl
         {
             W w;
             __device__ __host__ __forceinline__ plusWeighted(W weight) : w(weight) {}                
-            __device__ __host__ __forceinline__ float operator()(const float& f1, const float f2) const 
+            __device__ __host__ __forceinline__ float operator()(const T& f1, const T& f2) const 
             {
                 return f1 + f2 * w;
             }

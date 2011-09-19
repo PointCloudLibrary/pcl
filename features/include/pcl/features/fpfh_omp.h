@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: fpfh_omp.h 1747 2011-07-13 21:55:45Z mdixon $
  *
  */
 

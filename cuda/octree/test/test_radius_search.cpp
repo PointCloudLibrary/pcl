@@ -90,6 +90,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
 
     pcl::gpu::NeighborIndices result_device1(queries_device.size(), max_answers);
     pcl::gpu::NeighborIndices result_device2(queries_device.size(), max_answers);
+    pcl::gpu::NeighborIndices result_device3(data.indices.size(), max_answers);
             
     //prepare output buffers on host
     vector< vector<int> > host_search1(data.tests_num);
@@ -98,13 +99,18 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     {
         host_search1[i].reserve(max_answers);
         host_search2[i].reserve(max_answers);
-    }
+    }    
     
     //search GPU shared
     octree_device.radiusSearch(queries_device, data.shared_radius, max_answers, result_device1);
 
     //search GPU individual
     octree_device.radiusSearch(queries_device,    radiuses_device, max_answers, result_device2);
+
+    //search GPU shared with indices
+    pcl::gpu::Octree::Indices indices;
+    indices.upload(data.indices);
+    octree_device.radiusSearch(queries_device, indices, data.shared_radius, max_answers, result_device3);
 
     //search CPU
     octree_device.internalDownload();
@@ -117,12 +123,15 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     //download results
     vector<int> sizes1;
     vector<int> sizes2;
+    vector<int> sizes3;
     result_device1.sizes.download(sizes1);
     result_device2.sizes.download(sizes2);
+    result_device3.sizes.download(sizes3);
 
-    vector<int> downloaded_buffer1, downloaded_buffer2, results_batch;    
+    vector<int> downloaded_buffer1, downloaded_buffer2, downloaded_buffer3, results_batch;    
     result_device1.data.download(downloaded_buffer1);
     result_device2.data.download(downloaded_buffer2);
+    result_device3.data.download(downloaded_buffer3);
         
     //data.bruteForceSearch();
 
@@ -181,9 +190,35 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     float avg_size2 = std::accumulate(sizes2.begin(), sizes2.end(), 0) * (1.f/sizes2.size());
 
     cout << "avg_result_size2 = " << avg_size2 << endl;
-    ASSERT_GT(avg_size2, 5);    
+    ASSERT_GT(avg_size2, 5);
+
+
+    //verify results    
+    for(size_t i = 0; i < data.tests_num; i+=2)
+    {                
+        vector<int>& results_host = host_search1[i];        
+        
+        int beg = i/2 * max_answers;
+        int end = beg + sizes3[i/2];
+
+        results_batch.assign(downloaded_buffer3.begin() + beg, downloaded_buffer3.begin() + end);
+
+        std::sort(results_batch.begin(), results_batch.end());
+        std::sort(results_host.begin(), results_host.end());
+
+        if (results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
+            results_host.resize(max_answers);
+        
+        ASSERT_EQ ( ( results_batch == results_host ), true );       
+       
+        //vector<int>& results_bf = data.bfresutls[i];
+        //ASSERT_EQ ( ( results_bf == results_batch), true );        
+        //ASSERT_EQ ( ( results_bf == results_host ), true );           
+    }
+
+    float avg_size3 = std::accumulate(sizes3.begin(), sizes3.end(), 0) * (1.f/sizes3.size());
+
+    cout << "avg_result_size3 = " << avg_size3 << endl;
+    ASSERT_GT(avg_size3, 5);
 }
-
-
-
 

@@ -58,6 +58,42 @@ namespace pcl
 	            return ret;
             }
 
+            static __device__ __forceinline__ int laneMaskLe()
+            {
+#if (__CUDA_ARCH__ >= 200)
+                unsigned int ret;
+	            asm("mov.u32 %0, %lanemask_le;" : "=r"(ret) );
+	            return ret;
+#else
+                return 0xFFFFFFFF >> (31 - laneId());
+#endif
+            }
+
+            static __device__ __forceinline__ int laneMaskLt()
+            {
+#if (__CUDA_ARCH__ >= 200)
+                unsigned int ret;
+	            asm("mov.u32 %0, %lanemask_lt;" : "=r"(ret) );
+	            return ret;
+#else
+                return 0xFFFFFFFF >> (32 - laneId());
+#endif
+            }
+            static __device__ __forceinline__ unsigned int id()
+            {
+                return threadIdx.x >> LOG_WARP_SIZE;
+            }
+
+            static __device__ __forceinline__ int binaryInclScan(int ballot_mask)
+            {
+                 return __popc(Warp::laneMaskLe() & ballot_mask);
+            }
+
+            static __device__ __forceinline__ int binaryExclScan(int ballot_mask)
+            {
+                 return __popc(Warp::laneMaskLt() & ballot_mask);
+            }
+
             template<typename It, typename T>
             static __device__ __forceinline__ void fill(It beg, It end, const T& value)
             {                
@@ -67,33 +103,42 @@ namespace pcl
 
             template<typename InIt, typename OutIt>
             static __device__ __forceinline__ OutIt copy(InIt beg, InIt end, OutIt out)
-            {                
-                for(InIt t = beg + laneId(); t < end; t += STRIDE, out += STRIDE)
-                    *out = *t;
-                return out;
+            {      
+                unsigned int lane = laneId();               
+                InIt  t = beg + lane;
+                OutIt o = out + lane;
+
+                for(; t < end; t += STRIDE, o += STRIDE)
+                    *o = *t;
+                return o;
             }            
            
             template<typename InIt, typename OutIt, class UnOp>
             static __device__ __forceinline__ OutIt transform(InIt beg, InIt end, OutIt out, UnOp op)
             {
-                for(InIt t = beg + laneId(); t < end; t += STRIDE, out += STRIDE)
-                    *out = op(*t);
-                return out;
+                unsigned int lane = laneId();
+                InIt  t = beg + lane;
+                OutIt o = out + lane;
+
+                for(InIt t = beg + laneId(); t < end; t += STRIDE, o += STRIDE)
+                    *o = op(*t);
+                return o;
             }
 
             template<typename InIt1, typename InIt2, typename OutIt, class BinOp>
             static __device__ __forceinline__ OutIt transform(InIt1 beg1, InIt1 end1, InIt2 beg2, OutIt out, BinOp op)
             {
-                unsigned int lane = laneId();
-                
+                unsigned int lane = laneId();                
                 InIt1 t1 = beg1 + lane; 
                 InIt2 t2 = beg2 + lane;
-                for(; t1 < end1; t1 += STRIDE, t2 += STRIDE, out += STRIDE)
-                    *out = op(*t1, *t2);
-                return out;
+                OutIt o  = out  + lane;
+            
+                for(; t1 < end1; t1 += STRIDE, t2 += STRIDE, o += STRIDE)
+                    *o = op(*t1, *t2);
+                return o;
             }
 
-             template<typename OutIt, typename T>
+            template<typename OutIt, typename T>
             static __device__ __forceinline__ void yota(OutIt beg, OutIt end, T value)
             {
                 unsigned int lane = laneId();                
@@ -102,6 +147,39 @@ namespace pcl
                 for(OutIt t = beg + lane; t < end; t += STRIDE, value += STRIDE)
                     *t = value;
             }
+
+            template<typename T, class BinOp>
+            static __device__ __forceinline__ void reduce(volatile T* buffer, BinOp op)
+            {
+                unsigned int lane = laneId();
+                T val =  buffer[lane];                
+
+                if (lane < 16) 
+                {
+                    buffer[lane] = val = op(val, buffer[lane + 16]);
+                    buffer[lane] = val = op(val, buffer[lane +  8]);
+                    buffer[lane] = val = op(val, buffer[lane +  4]);
+                    buffer[lane] = val = op(val, buffer[lane +  2]);
+                    buffer[lane] = val = op(val, buffer[lane +  1]);
+                }
+            }
+
+            template<typename T, class BinOp>
+            static __device__ __forceinline__ T reduce(volatile T* buffer, T init, BinOp op)
+            {
+                unsigned int lane = laneId();                
+                T val = buffer[lane] = init;
+                
+                if (lane < 16) 
+                {
+                    buffer[lane] = val = op(val, buffer[lane + 16]);
+                    buffer[lane] = val = op(val, buffer[lane +  8]);
+                    buffer[lane] = val = op(val, buffer[lane +  4]);
+                    buffer[lane] = val = op(val, buffer[lane +  2]);
+                    buffer[lane] = val = op(val, buffer[lane +  1]);
+                }
+                return buffer[0];
+            }       
         };
     }
 }
