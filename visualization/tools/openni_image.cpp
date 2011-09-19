@@ -121,15 +121,6 @@ class SimpleOpenNIViewer
       }
     }
 
-    boost::shared_ptr<openni_wrapper::Image>
-    getLatestImage ()
-    {
-      boost::mutex::scoped_lock lock(image_mutex_);
-      boost::shared_ptr<openni_wrapper::Image> temp_image;
-      temp_image.swap (image_);
-      return (temp_image);
-    }
-
     void
     run ()
     {
@@ -149,9 +140,11 @@ class SimpleOpenNIViewer
       
       while (true)
       {
+        boost::mutex::scoped_lock lock (image_mutex_);
         if (image_)
         {
-          boost::shared_ptr<openni_wrapper::Image> image = getLatestImage ();
+          boost::shared_ptr<openni_wrapper::Image> image;
+          image.swap (image_);
 
           if (image->getEncoding() == openni_wrapper::Image::RGB)
             image_viewer_.showRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());

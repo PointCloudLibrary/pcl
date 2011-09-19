@@ -43,8 +43,6 @@
 #include <vtkTransform.h>
 #include <vtkImageChangeInformation.h>
 
-#include "pcl/common/transformation_from_correspondences.h"
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   : image_viewer_ (vtkImageViewer::New ())
@@ -70,14 +68,15 @@ pcl::visualization::ImageViewer::showRGBImage (const unsigned char* rgb_data, un
 
   void* data = const_cast<void*> ((const void*)rgb_data);
   importer->SetImportVoidPointer (data, 1);
+  importer->Update ();
 
   vtkSmartPointer<vtkMatrix4x4> transform = vtkSmartPointer<vtkMatrix4x4>::New ();
   transform->Identity ();
-  transform->SetElement(1,1, -1.0);
-  transform->SetElement(1,3, height);
+  transform->SetElement (1,1, -1.0);
+  transform->SetElement (1,3, height);
   vtkSmartPointer<vtkTransform> imageTransform = vtkSmartPointer<vtkTransform>::New ();
-  imageTransform->SetMatrix(transform);
-  //imageTransform->Translate (width, height, 0.0);
+  imageTransform->SetMatrix (transform);
+  //imageTransform->Translate (width / 2.0, height / 2.0, 0.0);
   //imageTransform->RotateZ (180.0);
   // Now create filter and set previously created transformation
   vtkSmartPointer<vtkImageReslice> algo = vtkSmartPointer<vtkImageReslice>::New ();
