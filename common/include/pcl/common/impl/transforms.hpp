@@ -281,3 +281,11 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   t = translation * rotation;
   transformPointCloudWithNormals (cloud_in, cloud_out, t);
 }
+
+template <typename PointT> inline PointT
+pcl::transformPoint (const PointT &point, const Eigen::Affine3f &tranform)
+{
+  PointT ret = point;
+  ret.getVector3fMap () = tranform * point.getVector3fMap ();
+  return ret;
+}

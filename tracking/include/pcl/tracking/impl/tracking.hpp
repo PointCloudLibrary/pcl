@@ -2,7 +2,7 @@
 #define PCL_TRACKING_IMPL_TRACKING_H_
 
 #include <boost/random.hpp>
-#include <pcl/common/transform.h>
+#include <pcl/common/eigen.h>
 #include <ctime>
 
 namespace pcl

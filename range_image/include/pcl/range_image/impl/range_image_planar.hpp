@@ -35,6 +35,7 @@
  */
 
 #include "pcl/win32_macros.h"
+#include <Eigen/Geometry>
 
 namespace pcl
 {
@@ -65,7 +66,7 @@ RangeImagePlanar::createFromPointCloudWithFixedSize (const PointCloudType& point
   getCoordinateFrameTransformation(coordinate_frame, to_world_system_);
   to_world_system_ = sensor_pose * to_world_system_;
 
-  getInverse(to_world_system_, to_range_image_system_);
+  to_range_image_system_ = to_world_system_.inverse ();
 
   unsigned int size = width*height;
   points.clear();

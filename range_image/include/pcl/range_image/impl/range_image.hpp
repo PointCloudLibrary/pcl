@@ -110,7 +110,7 @@ RangeImage::createFromPointCloud(const PointCloudType& point_cloud, float angula
   getCoordinateFrameTransformation(coordinate_frame, to_world_system_);
   to_world_system_ = sensor_pose * to_world_system_;
   
-  getInverse(to_world_system_, to_range_image_system_);
+  to_range_image_system_ = to_world_system_.inverse ();
   //std::cout << "to_world_system_ is\n"<<to_world_system_<<"\nand to_range_image_system_ is\n"<<to_range_image_system_<<"\n\n";
   
   unsigned int size = width*height;
@@ -157,7 +157,7 @@ RangeImage::createFromPointCloudWithKnownSize(const PointCloudType& point_cloud,
   
   getCoordinateFrameTransformation(coordinate_frame, to_world_system_);
   to_world_system_ = sensor_pose * to_world_system_;
-  getInverse(to_world_system_, to_range_image_system_);
+  to_range_image_system_ = to_world_system_.inverse ();
   
   float max_angle_size = getMaxAngleSize(sensor_pose, point_cloud_center, point_cloud_radius);
   int pixel_radius = pcl_lrint(ceil(0.5f*max_angle_size*angular_resolution_reciprocal_));
@@ -764,7 +764,7 @@ RangeImage::getSurfaceAngleChange(int x, int y, int radius, float& angle_change_
 float 
 RangeImage::getMaxAngleSize(const Eigen::Affine3f& viewer_pose, const Eigen::Vector3f& center, float radius)
 {
-  return 2.0f * asinf(radius/(getTranslation(viewer_pose)-center).norm());
+  return 2.0f * asinf(radius/(viewer_pose.translation ()-center).norm());
 }
 
 /////////////////////////////////////////////////////////////////////////

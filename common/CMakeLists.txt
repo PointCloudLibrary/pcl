@@ -66,7 +66,6 @@ if(build)
         include/pcl/common/poses_from_matches.h
         include/pcl/common/time.h
         include/pcl/common/time_trigger.h
-        include/pcl/common/transform.h
         include/pcl/common/transforms.h
         include/pcl/common/transformation_from_correspondences.h
         include/pcl/common/vector_average.h
@@ -81,13 +80,13 @@ if(build)
         include/pcl/common/impl/bivariate_polynomial.hpp
         include/pcl/common/impl/centroid.hpp
         include/pcl/common/impl/common.hpp
+        include/pcl/common/impl/eigen.hpp
         include/pcl/common/impl/io.hpp
         include/pcl/common/impl/file_io.hpp
         include/pcl/common/impl/norms.hpp
         include/pcl/common/impl/piecewise_linear_function.hpp
         include/pcl/common/impl/polynomial_calculations.hpp
         include/pcl/common/impl/pca.hpp
-        include/pcl/common/impl/transform.hpp
         include/pcl/common/impl/transforms.hpp
         include/pcl/common/impl/transformation_from_correspondences.hpp
         include/pcl/common/impl/vector_average.hpp

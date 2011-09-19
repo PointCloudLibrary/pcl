@@ -4,7 +4,7 @@
 #include <boost/random.hpp>
 
 #include <pcl/common/common.h>
-#include <pcl/common/transform.h>
+#include <pcl/common/eigen.h>
 #include <pcl/common/transforms.h>
 
 template <typename PointInT, typename StateT> bool

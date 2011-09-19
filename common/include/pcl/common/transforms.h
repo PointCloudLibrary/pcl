@@ -144,6 +144,15 @@ namespace pcl
                                   pcl::PointCloud<PointT> &cloud_out, 
                                   const Eigen::Vector3f &offset, 
                                   const Eigen::Quaternionf &rotation);
+  /** \brief Transform a point with members x,y,z
+    * \param transformation the transformation to apply
+    * \param point the point to transform
+    * \return the transformed point
+    * \ingroup common
+    */
+  template <typename PointT> inline PointT
+  transformPoint (const PointT &point, const Eigen::Affine3f &transform);
+  
 }
 
 #include "pcl/common/impl/transforms.hpp"

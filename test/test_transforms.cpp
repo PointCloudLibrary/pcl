@@ -42,7 +42,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include "pcl/io/pcd_io.h"
 #include "pcl/features/feature.h"
-#include "pcl/common/transform.h"
+#include "pcl/common/eigen.h"
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/transforms.h>

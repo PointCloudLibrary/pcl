@@ -151,7 +151,7 @@ main (int argc, char** argv)
     //  io::savePCDFileASCII ("output_subsampled_registered.pcd", cloud_output_subsampled);
 
     PointCloud<PointXYZ>::Ptr cloud_output (new PointCloud<PointXYZ> ());
-    getTransformedPointCloud (*cloud_models[model_i], final_transformation, *cloud_output);
+    pcl::transformPointCloud (*cloud_models[model_i], *cloud_output, final_transformation);
 
 
     stringstream ss; ss << "model_" << model_i;

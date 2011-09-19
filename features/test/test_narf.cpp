@@ -39,7 +39,7 @@
 #include <sstream> 
 #include <gtest/gtest.h>
 #include <pcl/features/narf.h>
-#include <pcl/common/transform.h>
+#include <pcl/common/eigen.h>
 
 using namespace pcl;
 
@@ -47,7 +47,7 @@ TEST (PCL, Narf_save_load)
 {
   Narf narf;
   getTransformation(1.0f, 2.0f, 3.0f, deg2rad(10.0f), deg2rad(20.0f), deg2rad(30.0f), narf.getTransformation());
-  narf.getPosition() = getTranslation(narf.getTransformation().inverse());
+  narf.getPosition() = narf.getTransformation().inverse().translation ();
   narf.getSurfacePatchPixelSize() = 10;
   narf.setSurfacePatch(new float[narf.getSurfacePatchPixelSize()*narf.getSurfacePatchPixelSize()]);
   for (int i=0; i<narf.getSurfacePatchPixelSize()*narf.getSurfacePatchPixelSize(); ++i)

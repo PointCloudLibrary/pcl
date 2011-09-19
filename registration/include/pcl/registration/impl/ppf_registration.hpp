@@ -41,7 +41,7 @@
 
 //#include "pcl/registration/ppf_registration.h"
 #include <pcl/features/ppf.h>
-#include <pcl/common/transform.h>
+#include <pcl/common/transforms.h>
 
 #include <pcl/features/pfh.h>
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -229,7 +229,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
   PoseWithVotesList results;
   clusterPoses (voted_poses, results);
 
-  getTransformedPointCloud (*input_, results.front ().pose, output);
+  pcl::transformPointCloud (*input_, output, results.front ().pose);
 
   transformation_ = final_transformation_ = results.front ().pose.matrix ();
   converged_ = true;
