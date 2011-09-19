@@ -59,6 +59,11 @@ getFieldsSizes (const std::vector<sensor_msgs::PointField> &fields,
   fields_sizes.resize (valid);
 }
 
+bool fieldComp (const sensor_msgs::PointField* i, const sensor_msgs::PointField* j)
+{
+  return i->offset < j->offset;
+}
+
 //////////////////////////////////////////////////////////////////////////
 bool
 pcl::concatenateFields (const sensor_msgs::PointCloud2 &cloud1, 
@@ -89,40 +94,50 @@ pcl::concatenateFields (const sensor_msgs::PointCloud2 &cloud1,
   std::vector<const sensor_msgs::PointField*> cloud1_unique_fields;
   std::vector<int> field_sizes;
 
+  //We need to make sure that the fields for cloud 1 are sorted
+  //by offset so that we can compute sizes correctly. There is no
+  //guarantee that the fields are in the correct order when they come in
+  std::vector<const sensor_msgs::PointField*> cloud1_fields_sorted;
   for(size_t i = 0; i < cloud1.fields.size(); ++i)
+  {
+    cloud1_fields_sorted.push_back(&(cloud1.fields[i]));
+  }
+  std::sort(cloud1_fields_sorted.begin(), cloud1_fields_sorted.end(), fieldComp);
+
+  for(size_t i = 0; i < cloud1_fields_sorted.size(); ++i)
   {
     bool match = false;
     for(size_t j = 0; j < cloud2.fields.size(); ++j)
     {
-      if(cloud1.fields[i].name == cloud2.fields[j].name)
+      if(cloud1_fields_sorted[i]->name == cloud2.fields[j].name)
         match = true;
     }
 
     //if the field is new, we'll increment out total fields
-    if(!match && cloud1.fields[i].name != "_")
+    if(!match && cloud1_fields_sorted[i]->name != "_")
     {
-      cloud1_unique_fields.push_back(&(cloud1.fields[i]));
+      cloud1_unique_fields.push_back(cloud1_fields_sorted[i]);
 
       int size = 0;
       size_t next_valid_field = i + 1;
 
-      while(next_valid_field < cloud1.fields.size())
+      while(next_valid_field < cloud1_fields_sorted.size())
       {
-        if(cloud1.fields[next_valid_field].name != "_")
+        if(cloud1_fields_sorted[next_valid_field]->name != "_")
           break;
         next_valid_field++;
       }
 
 
-      if(next_valid_field < cloud1.fields.size())
+      if(next_valid_field < cloud1_fields_sorted.size())
       {
         //compute the true size of the field, including padding
-        size = cloud1.fields[next_valid_field].offset - cloud1.fields[i].offset;
+        size = cloud1_fields_sorted[next_valid_field]->offset - cloud1_fields_sorted[i]->offset;
       }
       else
       {
         //for the last point, we'll just use the point step to compute the size
-        size = cloud1.point_step - cloud1.fields[i].offset;
+        size = cloud1.point_step - cloud1_fields_sorted[i]->offset;
       }
 
       field_sizes.push_back(size);
