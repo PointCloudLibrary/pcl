@@ -62,23 +62,23 @@ namespace pcl
     * \code
     * IterativeClosestPoint<PointXYZ, PointXYZ> icp;
     * // Set the input source and target
-    * reg.setInputCloud (cloud_source);
-    * reg.setInputTarget (cloud_target);
+    * icp.setInputCloud (cloud_source);
+    * icp.setInputTarget (cloud_target);
     *
     * // Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
-    * reg.setMaxCorrespondenceDistance (0.05);
+    * icp.setMaxCorrespondenceDistance (0.05);
     * // Set the maximum number of iterations (criterion 1)
-    * reg.setMaximumIterations (50);
+    * icp.setMaximumIterations (50);
     * // Set the transformation epsilon (criterion 2)
-    * reg.setTransformationEpsilon (1e-8);
+    * icp.setTransformationEpsilon (1e-8);
     * // Set the euclidean distance difference epsilon (criterion 3)
-    * reg.setEuclideanFitnessEpsilon (1);
+    * icp.setEuclideanFitnessEpsilon (1);
     *
     * // Perform the alignment
-    * reg.align (cloud_source_registered);
+    * icp.align (cloud_source_registered);
     *
     * // Obtain the transformation that aligned cloud_source to cloud_source_registered
-    * Eigen::Matrix4f transformation = reg.getFinalTransformation ();
+    * Eigen::Matrix4f transformation = icp.getFinalTransformation ();
     * \endcode
     *
     * \author Radu Bogdan Rusu, Michael Dixon
