@@ -38,6 +38,7 @@
 #include <gtest/gtest.h>
 #include <pcl/common/common.h>
 #include <pcl/common/distances.h>
+#include <pcl/common/intersections.h>
 #include <pcl/common/eigen.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -231,6 +232,26 @@ TEST (PCL, PointTypes)
   EXPECT_EQ (__alignof (PointXYZRGBNormal), 16);
 }
  
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, Intersections)
+{
+  Eigen::VectorXf zline (6), yline (6);
+  zline[0] = 0.543892; zline[1] = -0.515623; zline[2] = 1.321;   zline[3] = 0.0266191; zline[4] = 0.600215;  zline[5] = -0.0387667;
+  yline[0] = 0.493479; yline[1] = 0.169246;  yline[2] = 1.22677; yline[3] = 0.5992;    yline[4] = 0.0505085; yline[5] = 0.405749;
+
+  Eigen::Vector4f pt;
+  EXPECT_EQ ((pcl::lineWithLineIntersection (zline, yline, pt)), true);
+  EXPECT_NEAR (pt[0], 0.574544, 1e-3);
+  EXPECT_NEAR (pt[1], 0.175526, 1e-3);
+  EXPECT_NEAR (pt[2], 1.27636,  1e-3);
+  EXPECT_EQ (pt[3], 0);
+
+  zline << 0.545203, -0.514419, 1.31967, 0.0243372, 0.597946, -0.0413579;
+  yline << 0.492706,  0.164196, 1.23192, 0.598704,  0.0442014, 0.411328;
+  EXPECT_EQ ((pcl::lineWithLineIntersection (zline, yline, pt)), false);
+  //intersection: [ 3.06416e+08    15.2237     3.06416e+08       4.04468e-34 ]
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
