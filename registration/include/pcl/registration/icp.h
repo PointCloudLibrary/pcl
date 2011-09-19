@@ -39,9 +39,10 @@
 #define PCL_ICP_H_
 
 // PCL includes
+#include <pcl/sample_consensus/ransac.h>
+#include <pcl/sample_consensus/sac_model_registration.h>
 #include "pcl/registration/registration.h"
-#include "pcl/sample_consensus/ransac.h"
-#include "pcl/sample_consensus/sac_model_registration.h"
+#include "pcl/registration/transformation_estimation_svd.h"
 
 namespace pcl
 {
@@ -86,18 +87,37 @@ namespace pcl
   template <typename PointSource, typename PointTarget>
   class IterativeClosestPoint : public Registration<PointSource, PointTarget>
   {
+    typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
+    typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
+    typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+
+    typedef typename Registration<PointSource, PointTarget>::PointCloudTarget PointCloudTarget;
+
+    typedef PointIndices::Ptr PointIndicesPtr;
+    typedef PointIndices::ConstPtr PointIndicesConstPtr;
+
     public:
       /** \brief Empty constructor. */
       IterativeClosestPoint () 
       {
         reg_name_ = "IterativeClosestPoint";
-        void (*rigid_transformation)(const pcl::PointCloud<PointSource> &cloud_src, const std::vector<int> &indices_src,
-                                   const pcl::PointCloud<PointTarget> &cloud_tgt, const std::vector<int> &indices_tgt,
-                                   Eigen::Matrix4f &transformation_matrix) = &pcl::estimateRigidTransformationSVD;
-        rigid_transformation_estimation_ = rigid_transformation;
+        transformation_estimation_.reset (new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>);
       };
 
     protected:
+      /** \brief Rigid transformation computation method.
+        * \param output the transformed input point cloud dataset using the rigid transformation found
+        */
+      virtual void 
+      computeTransformation (PointCloudSource &output);
+
+      /** \brief Rigid transformation computation method  with initial guess.
+        * \param output the transformed input point cloud dataset using the rigid transformation found
+        * \param guess the initial guess of the transformation to compute
+        */
+      virtual void 
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess);
+
       using Registration<PointSource, PointTarget>::reg_name_;
       using Registration<PointSource, PointTarget>::getClassName;
       using Registration<PointSource, PointTarget>::input_;
@@ -116,36 +136,7 @@ namespace pcl
       using Registration<PointSource, PointTarget>::update_visualizer_;
       using Registration<PointSource, PointTarget>::correspondence_distances_;
       using Registration<PointSource, PointTarget>::euclidean_fitness_epsilon_;
-
-      typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
-      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
-
-      typedef typename Registration<PointSource, PointTarget>::PointCloudTarget PointCloudTarget;
-
-      typedef PointIndices::Ptr PointIndicesPtr;
-      typedef PointIndices::ConstPtr PointIndicesConstPtr;
-
-      /** \brief Rigid transformation computation method.
-        * \param output the transformed input point cloud dataset using the rigid transformation found
-        */
-      virtual void 
-      computeTransformation (PointCloudSource &output);
-
-      /** \brief Rigid transformation computation method  with initial guess.
-        * \param output the transformed input point cloud dataset using the rigid transformation found
-        * \param guess the initial guess of the transformation to compute
-        */
-      virtual void 
-      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess);
-
-      /** \brief function to call to estimate the rigid transform */
-      boost::function<void(const pcl::PointCloud<PointSource> &cloud_src, 
-                           const std::vector<int> &indices_src,
-                           const pcl::PointCloud<PointTarget> &cloud_tgt, 
-                           const std::vector<int> &indices_tgt,
-                           Eigen::Matrix4f &transformation_matrix)> rigid_transformation_estimation_;
-
+      using Registration<PointSource, PointTarget>::transformation_estimation_;
   };
 }
 

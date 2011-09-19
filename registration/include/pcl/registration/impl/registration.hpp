@@ -57,43 +57,6 @@ pcl::Registration<PointSource, PointTarget>::setInputTarget (const PointCloudTar
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/*template <typename PointSource, typename PointTarget> void
-pcl::Registration<PointSource, PointTarget>::findFeatureCorrespondences (int index, 
-                                                                         std::vector<int> &correspondence_indices)
-{
-  if (features_map_.empty ())
-  {
-    PCL_ERROR ("[pcl::%s::findFeatureCorrespondences] One or more features must be set before finding correspondences!\n",
-               getClassName ().c_str ());
-    return;
-  }
-
-  std::vector<int> nn_indices;
-  std::vector<float> nn_dists;
-
-  // Find the correspondence indices for the first feature in the features map
-  typename FeaturesMap::const_iterator feature_itr = features_map_.begin ();
-  feature_itr->second->findFeatureCorrespondences (index, correspondence_indices, nn_dists);
-  std::vector<int>::iterator correspondence_indices_end = correspondence_indices.end ();
-  std::sort (correspondence_indices.begin (), correspondence_indices_end);
-
-  // Iterate over the remaining features and continuously narrow down the set of corresponding point
-  for (++feature_itr; feature_itr != features_map_.end (); ++feature_itr)
-  {
-    feature_itr->second->findFeatureCorrespondences (index, nn_indices, nn_dists);
-
-    std::sort (nn_indices.begin (), nn_indices.end ());
-    correspondence_indices_end = std::set_intersection (nn_indices.begin (), nn_indices.end (),
-                                                        correspondence_indices.begin (), correspondence_indices_end, 
-                                                        correspondence_indices.begin ());
-  }
-
-  // 'corresponding_indices' now contains the indices of the points that corresponded to 'index' for *all* features
-  // in 'feature_map_'.
-  correspondence_indices.resize (correspondence_indices_end - correspondence_indices.begin());
-}*/
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline double
 pcl::Registration<PointSource, PointTarget>::getFitnessScore (const std::vector<float> &distances_a, 
                                                               const std::vector<float> &distances_b)

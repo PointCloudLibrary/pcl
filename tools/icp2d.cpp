@@ -3,6 +3,7 @@
 #include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/icp_nl.h>
+#include <pcl/registration/transformation_estimation_lm.h>
 #include <pcl/registration/warp_point_rigid_3d.h>
 
 #include <string>
@@ -59,7 +60,13 @@ main (int argc, char **argv)
 
     boost::shared_ptr<pcl::WarpPointRigid3D<PointType, PointType> > warp_fcn 
       (new pcl::WarpPointRigid3D<PointType, PointType>);
-    icp.setWarpFunction (warp_fcn);
+
+    // Create a TransformationEstimationLM object, and set the warp to it
+    boost::shared_ptr<pcl::registration::TransformationEstimationLM<PointType, PointType> > te (new pcl::registration::TransformationEstimationLM<PointType, PointType>);
+    te->setWarpFunction (warp_fcn);
+
+    // Pass the TransformationEstimation objec to the ICP algorithm
+    icp.setTransformationEstimation (te);
 
     icp.setMaximumIterations (iter);
     icp.setMaxCorrespondenceDistance (dist);

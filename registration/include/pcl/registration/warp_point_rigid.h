@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: warp_point.h 1928 2011-08-05 03:43:20Z rusu $
+ * $Id$
  *
  */
 

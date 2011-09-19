@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -36,8 +38,8 @@
 #ifndef IA_RANSAC_H_
 #define IA_RANSAC_H_
 
-// PCL includes
 #include "pcl/registration/registration.h"
+#include "pcl/registration/transformation_estimation_svd.h"
 
 namespace pcl
 {
@@ -61,6 +63,7 @@ namespace pcl
     using Registration<PointSource, PointTarget>::min_number_correspondences_;
     using Registration<PointSource, PointTarget>::max_iterations_;
     using Registration<PointSource, PointTarget>::tree_;
+    using Registration<PointSource, PointTarget>::transformation_estimation_;
 
     typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
     typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -84,6 +87,7 @@ namespace pcl
         reg_name_ = "SampleConsensusInitialAlignment";
         feature_tree_.reset (new pcl::KdTreeFLANN<FeatureT>);
         max_iterations_ = 1000;
+        transformation_estimation_.reset (new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>);
       };
 
       /** \brief Provide a boost shared pointer to the source point cloud's feature descriptors

@@ -158,7 +158,8 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
     PCL_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %lu points [100.0%%], RANSAC rejected: %lu [%f%%].\n", getClassName ().c_str (), cnt, (cnt * 100.0) / indices_->size (), (unsigned long)indices_->size (), (unsigned long)source_indices.size () - cnt, (source_indices.size () - cnt) * 100.0 / source_indices.size ());
   
     // Estimate the transform
-    rigid_transformation_estimation_(output, source_indices_good, *target_, target_indices_good, transformation_);
+    //rigid_transformation_estimation_(output, source_indices_good, *target_, target_indices_good, transformation_);
+    transformation_estimation_->estimateRigidTransformation (output, source_indices_good, *target_, target_indices_good, transformation_);
 
     // Tranform the data
     transformPointCloud (output, output, transformation_);

@@ -45,16 +45,10 @@
 
 // PCL includes
 #include <pcl/pcl_base.h>
-
-#include "pcl/common/rigid_transforms.h"
-#include "pcl/kdtree/kdtree.h"
-#include "pcl/kdtree/kdtree_flann.h"
-
-#include "pcl/common/transforms.h"
-
-#include <Eigen/SVD>
-
-#include "pcl/win32_macros.h"
+#include <pcl/common/transforms.h>
+#include <pcl/win32_macros.h>
+#include <pcl/kdtree/kdtree_flann.h>
+#include "pcl/registration/transformation_estimation.h"
 
 namespace pcl
 {
@@ -66,8 +60,6 @@ namespace pcl
   template <typename PointSource, typename PointTarget>
   class Registration : public PCLBase<PointSource>
   {
-    class FeatureContainerInterface;
-
     public:
       using PCLBase<PointSource>::initCompute;
       using PCLBase<PointSource>::deinitCompute;
@@ -86,6 +78,10 @@ namespace pcl
       typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
 
       typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
+      
+      typedef typename pcl::registration::TransformationEstimation<PointSource, PointTarget> TransformationEstimation;
+      typedef typename TransformationEstimation::Ptr TransformationEstimationPtr;
+      typedef typename TransformationEstimation::ConstPtr TransformationEstimationConstPtr;
 
       /** \brief Empty constructor. */
       Registration () : target_ (),
@@ -96,7 +92,9 @@ namespace pcl
                         euclidean_fitness_epsilon_ (-std::numeric_limits<double>::max ()),
                         corr_dist_threshold_ (std::sqrt (std::numeric_limits<double>::max ())),
                         inlier_threshold_ (0.05),
-                        converged_ (false), min_number_correspondences_ (3), /*k_ (1),*/ point_representation_ ()
+                        converged_ (false), min_number_correspondences_ (3), 
+                        transformation_estimation_ (),
+                        point_representation_ ()
       {
         tree_.reset (new pcl::KdTreeFLANN<PointTarget>);     // ANN tree for nearest neighbor search
         update_visualizer_ = NULL;
@@ -104,6 +102,9 @@ namespace pcl
 
       /** \brief destructor. */
       virtual ~Registration () {}
+
+      void
+      setTransformationEstimation (const TransformationEstimationPtr &te) { transformation_estimation_ = te; }
 
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)
         * \param cloud the input point cloud target
@@ -212,12 +213,10 @@ namespace pcl
         if (visualizerCallback != NULL)
         {
           update_visualizer_ = visualizerCallback;
-          return true;
+          return (true);
         }
         else
-        {
-          return false;
-        }
+          return (false);
       }
 
       /** \brief Obtain the Euclidean fitness score (e.g., sum of squared distances from the source to the target)
@@ -318,6 +317,9 @@ namespace pcl
         */                                                                                                  
       std::vector<float> correspondence_distances_;                                                              
 
+      /** \brief A TransformationEstimation object, used to calculate the 4x4 rigid transformation. */
+      TransformationEstimationPtr transformation_estimation_;
+
       /** \brief Callback function to update intermediate source point cloud position during it's registration
         * to the target point cloud.
         */
@@ -342,14 +344,6 @@ namespace pcl
         return (true);
       }
 
-      /** \brief Find the indices of the points in the target cloud whose features correspond with the features of the 
-        * given point in the source cloud
-        * \param index the index of the query point (in the source cloud)
-        * \param correspondence_indices the resultant vector of indices representing the query's corresponding features (in the target cloud)
-        */
-/*      inline void 
-      findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices);
-*/
     private:
  
       /** \brief Abstract transformation computation method. */
