@@ -33,12 +33,10 @@
  *
  */
 
-#include "pcl/pcl_macros.h"
+#include <pcl/pcl_macros.h>
+#include <pcl/win32_macros.h>
 
-namespace pcl
-{
-
-void getTransFromUnitVectorsZY(const Eigen::Vector3f& z_axis, const Eigen::Vector3f& y_direction, Eigen::Affine3f& transformation)
+void pcl::getTransFromUnitVectorsZY(const Eigen::Vector3f& z_axis, const Eigen::Vector3f& y_direction, Eigen::Affine3f& transformation)
 {
   Eigen::Vector3f tmp0 = (y_direction.cross(z_axis)).normalized();
   Eigen::Vector3f tmp1 = (z_axis.cross(tmp0)).normalized();
@@ -50,14 +48,14 @@ void getTransFromUnitVectorsZY(const Eigen::Vector3f& z_axis, const Eigen::Vecto
   transformation(3,0)=0.0f;    transformation(3,1)=0.0f;    transformation(3,2)=0.0f;    transformation(3,3)=1.0f;
 }
 
-Eigen::Affine3f getTransFromUnitVectorsZY(const Eigen::Vector3f& z_axis, const Eigen::Vector3f& y_direction)
+Eigen::Affine3f pcl::getTransFromUnitVectorsZY(const Eigen::Vector3f& z_axis, const Eigen::Vector3f& y_direction)
 {
   Eigen::Affine3f transformation;
   getTransFromUnitVectorsZY(z_axis, y_direction, transformation);
   return transformation;
 }
 
-void getTransFromUnitVectorsXY(const Eigen::Vector3f& x_axis, const Eigen::Vector3f& y_direction, Eigen::Affine3f& transformation)
+void pcl::getTransFromUnitVectorsXY(const Eigen::Vector3f& x_axis, const Eigen::Vector3f& y_direction, Eigen::Affine3f& transformation)
 {
   Eigen::Vector3f tmp2 = (x_axis.cross(y_direction)).normalized();
   Eigen::Vector3f tmp1 = (tmp2.cross(x_axis)).normalized();
@@ -69,26 +67,26 @@ void getTransFromUnitVectorsXY(const Eigen::Vector3f& x_axis, const Eigen::Vecto
   transformation(3,0)=0.0f;    transformation(3,1)=0.0f;    transformation(3,2)=0.0f;    transformation(3,3)=1.0f;
 }
 
-Eigen::Affine3f getTransFromUnitVectorsXY(const Eigen::Vector3f& x_axis, const Eigen::Vector3f& y_direction)
+Eigen::Affine3f pcl::getTransFromUnitVectorsXY(const Eigen::Vector3f& x_axis, const Eigen::Vector3f& y_direction)
 {
   Eigen::Affine3f transformation;
   getTransFromUnitVectorsXY(x_axis, y_direction, transformation);
   return transformation;
 }
 
-void getTransformationFromTwoUnitVectors(const Eigen::Vector3f& y_direction, const Eigen::Vector3f& z_axis, Eigen::Affine3f& transformation)
+void pcl::getTransformationFromTwoUnitVectors(const Eigen::Vector3f& y_direction, const Eigen::Vector3f& z_axis, Eigen::Affine3f& transformation)
 {
   getTransFromUnitVectorsZY(z_axis, y_direction, transformation);
 }
 
-Eigen::Affine3f getTransformationFromTwoUnitVectors(const Eigen::Vector3f& y_direction, const Eigen::Vector3f& z_axis)
+Eigen::Affine3f pcl::getTransformationFromTwoUnitVectors(const Eigen::Vector3f& y_direction, const Eigen::Vector3f& z_axis)
 {
   Eigen::Affine3f transformation;
   getTransformationFromTwoUnitVectors(y_direction, z_axis, transformation);
   return transformation;
 }
 
-void getTransformationFromTwoUnitVectorsAndOrigin(const Eigen::Vector3f& y_direction, const Eigen::Vector3f& z_axis,
+void pcl::getTransformationFromTwoUnitVectorsAndOrigin(const Eigen::Vector3f& y_direction, const Eigen::Vector3f& z_axis,
                                                   const Eigen::Vector3f& origin, Eigen::Affine3f& transformation)
 {
   getTransformationFromTwoUnitVectors(y_direction, z_axis, transformation);
@@ -96,69 +94,7 @@ void getTransformationFromTwoUnitVectorsAndOrigin(const Eigen::Vector3f& y_direc
   transformation(0,3)=-translation[0];  transformation(1,3)=-translation[1];  transformation(2,3)=-translation[2];
 }
 
-inline Eigen::Affine3f getRotationOnly(const Eigen::Affine3f& transformation)
-{
-  Eigen::Affine3f ret = transformation;
-  ret(0,3) = ret(1,3) = ret(2,3) = 0.0f;
-  return ret;
-}
-
-inline Eigen::Vector3f getTranslation(const Eigen::Affine3f& transformation)
-{
-  return Eigen::Vector3f(transformation(0,3), transformation(1,3), transformation(2,3));
-}
-
-inline void getInverse(const Eigen::Affine3f& transformation, Eigen::Affine3f& inverse_transformation)
-{
-  inverse_transformation(0,0) = transformation(0,0);
-  inverse_transformation(0,1) = transformation(1,0);
-  inverse_transformation(0,2) = transformation(2,0);
-  inverse_transformation(0,3) = -transformation(0,0)*transformation(0,3) - transformation(1,0)*transformation(1,3) - transformation(2,0)*transformation(2,3);
-  inverse_transformation(1,0) = transformation(0,1);
-  inverse_transformation(1,1) = transformation(1,1);
-  inverse_transformation(1,2) = transformation(2,1);
-  inverse_transformation(1,3) = -transformation(0,1)*transformation(0,3) - transformation(1,1)*transformation(1,3) - transformation(2,1)*transformation(2,3);
-  inverse_transformation(2,0) = transformation(0,2);
-  inverse_transformation(2,1) = transformation(1,2);
-  inverse_transformation(2,2) = transformation(2,2);
-  inverse_transformation(2,3) = -transformation(0,2)*transformation(0,3) - transformation(1,2)*transformation(1,3) - transformation(2,2)*transformation(2,3);
-  inverse_transformation(3,0) = 0.0;
-  inverse_transformation(3,1) = 0.0;
-  inverse_transformation(3,2) = 0.0;
-  inverse_transformation(3,3) = 1.0;
-}
-
-inline Eigen::Affine3f getInverse(const Eigen::Affine3f& transformation)
-{
-  Eigen::Affine3f inverse_transformation;
-  getInverse(transformation, inverse_transformation);
-  return inverse_transformation;
-}
-
-template <typename PointType>
-inline PointType transformXYZ(const Eigen::Affine3f& tranformation, const PointType& point)
-{
-  PointType ret = point;
-  ret.getVector3fMap() = tranformation * point.getVector3fMap();
-  return ret;
-}
-
-template <typename PointCloudType>
-void getTransformedPointCloud(const PointCloudType& input, const Eigen::Affine3f& transformation, PointCloudType& output)
-{
-  output = input;
-  for (unsigned int i=0; i<output.points.size(); ++i)
-    output.points[i].getVector3fMap() = transformation*input.points[i].getVector3fMap();
-}
-
-void getEulerAngles(const Eigen::Affine3f& t, float& roll, float& pitch, float& yaw)
-{
-  roll  = atan2f(t(2,1), t(2,2));
-  pitch = asinf(-t(2,0));
-  yaw   = atan2f(t(1,0), t(0,0));
-}
-
-void getTranslationAndEulerAngles(const Eigen::Affine3f& t, float& x, float& y, float& z, float& roll, float& pitch, float& yaw)
+void pcl::getTranslationAndEulerAngles(const Eigen::Affine3f& t, float& x, float& y, float& z, float& roll, float& pitch, float& yaw)
 {
   x = t(0,3);
   y = t(1,3);
@@ -168,7 +104,7 @@ void getTranslationAndEulerAngles(const Eigen::Affine3f& t, float& x, float& y, 
   yaw   = atan2f(t(1,0), t(0,0));
 }
 
-void getTransformation(float x, float y, float z, float roll, float pitch, float yaw, Eigen::Affine3f& t)
+void pcl::getTransformation(float x, float y, float z, float roll, float pitch, float yaw, Eigen::Affine3f& t)
 {
   float A=cosf(yaw),  B=sinf(yaw),  C=cosf(pitch), D=sinf(pitch),
         E=cosf(roll), F=sinf(roll), DE=D*E,        DF=D*F;
@@ -178,7 +114,7 @@ void getTransformation(float x, float y, float z, float roll, float pitch, float
   t(3,0) = 0;    t(3,1) = 0;           t(3,2) = 0;           t(3,3) = 1;
 }
 
-Eigen::Affine3f getTransformation(float x, float y, float z, float roll, float pitch, float yaw)
+Eigen::Affine3f pcl::getTransformation(float x, float y, float z, float roll, float pitch, float yaw)
 {
   Eigen::Affine3f t;
   getTransformation(x, y, z, roll, pitch, yaw, t);
@@ -186,7 +122,7 @@ Eigen::Affine3f getTransformation(float x, float y, float z, float roll, float p
 }
 
 template <typename Derived>
-void saveBinary(const Eigen::MatrixBase<Derived>& matrix, std::ostream& file)
+void pcl::saveBinary(const Eigen::MatrixBase<Derived>& matrix, std::ostream& file)
 {
   uint32_t rows=matrix.rows(), cols=matrix.cols();
   file.write((char*) &rows, sizeof(rows));
@@ -200,7 +136,7 @@ void saveBinary(const Eigen::MatrixBase<Derived>& matrix, std::ostream& file)
 }
 
 template <typename Derived>
-void loadBinary(Eigen::MatrixBase<Derived>& matrix, std::istream& file)
+void pcl::loadBinary(Eigen::MatrixBase<Derived>& matrix, std::istream& file)
 {
   uint32_t rows, cols;
   file.read((char*) &rows, sizeof(rows));
@@ -220,5 +156,3 @@ void loadBinary(Eigen::MatrixBase<Derived>& matrix, std::istream& file)
       matrix(i,j) = tmp;
     }
 }
-
-}  // namespace end
