@@ -256,7 +256,7 @@ main (int argc, char** argv)
     vtkSmartPointer<vtkPolyData> polydata = reader->GetOutput ();
     if (!polydata)
       return (-1);
-    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", polydata->GetNumberOfPoints ()); print_info (" points]\n");
+    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", polydata->GetNumberOfPoints ()); print_info (" points]\n");
 
     // Create the PCLVisualizer object here on the first encountered XYZ file
     if (!p)
@@ -315,7 +315,7 @@ main (int argc, char** argv)
 
       if (!ph)
         ph.reset (new pcl::visualization::PCLHistogramVisualizer);
-      print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", cloud->fields[0].count); print_info (" points]\n");
+      print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud->fields[0].count); print_info (" points]\n");
 
       pcl::getMinMax (*cloud, 0, cloud->fields[0].name, min_p, max_p);
       ph->addFeatureHistogram (*cloud, cloud->fields[0].name, cloud_name.str ());
@@ -352,7 +352,7 @@ main (int argc, char** argv)
       print_error ("[error: no points found!]\n");
       return (-1);
     }
-    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds : "); print_value ("%d", (int)cloud_xyz->points.size ()); print_info (" points]\n");
+    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", (int)cloud_xyz->points.size ()); print_info (" points]\n");
     print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (*cloud).c_str ());
    
     // If no color was given, get random colors
