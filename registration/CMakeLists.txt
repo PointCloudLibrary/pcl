@@ -11,8 +11,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/correspondence_estimation.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_distance.h
+        include/pcl/${SUBSYS_NAME}/correspondence_rejection_features.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_one_to_one.h
-        include/pcl/${SUBSYS_NAME}/correspondence_rejection_reciprocal.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_sample_consensus.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_trimmed.h
         include/pcl/${SUBSYS_NAME}/correspondence_sorting.h
@@ -21,13 +21,16 @@ if(build)
         include/pcl/${SUBSYS_NAME}/icp.h
         include/pcl/${SUBSYS_NAME}/icp_nl.h
         #include/pcl/${SUBSYS_NAME}/incremental_registration.h
-        #include/pcl/${SUBSYS_NAME}/ppf_registration.h
+        include/pcl/${SUBSYS_NAME}/ppf_registration.h
         include/pcl/${SUBSYS_NAME}/pyramid_feature_matching.h
         include/pcl/${SUBSYS_NAME}/registration.h
+        include/pcl/${SUBSYS_NAME}/transforms.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h
-        include/pcl/${SUBSYS_NAME}/transforms.h
-#        include/pcl/${SUBSYS_NAME}/stanford_gicp.h
+        include/pcl/${SUBSYS_NAME}/transformation_estimation_lm.h
+        include/pcl/${SUBSYS_NAME}/gicp.h
+        include/pcl/${SUBSYS_NAME}/warp_point_rigid.h
+        include/pcl/${SUBSYS_NAME}/warp_point_rigid_6d.h
         )
 
 #    set(stanford_gicp_incs
@@ -40,31 +43,32 @@ if(build)
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_distance.hpp
+        include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_features.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_one_to_one.hpp
-        include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_reciprocal.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_sample_consensus.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_trimmed.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_types.hpp
         include/pcl/${SUBSYS_NAME}/impl/ia_ransac.hpp
         include/pcl/${SUBSYS_NAME}/impl/icp.hpp
         include/pcl/${SUBSYS_NAME}/impl/icp_nl.hpp
-        #include/pcl/${SUBSYS_NAME}/impl/ppf_registration.hpp
+        include/pcl/${SUBSYS_NAME}/impl/ppf_registration.hpp
         include/pcl/${SUBSYS_NAME}/impl/pyramid_feature_matching.hpp
         include/pcl/${SUBSYS_NAME}/impl/registration.hpp
         #include/pcl/${SUBSYS_NAME}/impl/stanford_gicp.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd.hpp
-        include/pcl/${SUBSYS_NAME}/impl/transforms.hpp
+        include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_lm.hpp
+        include/pcl/${SUBSYS_NAME}/impl/gicp.hpp
         )
 
     set(srcs
-      src/registration.cpp
+        src/registration.cpp
       #src/stanford_gicp/bfgs_funcs.cpp
       #src/stanford_gicp/gicp.cpp
       #src/stanford_gicp/optimize.cpp
       #src/stanford_gicp/scan.cpp
       #src/stanford_gicp/transform.cpp
-      #src/ppf_registration.cpp
-      src/pyramid_feature_matching.cpp)
+        src/ppf_registration.cpp
+        src/pyramid_feature_matching.cpp)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -75,5 +79,8 @@ if(build)
       "${SUBSYS_DEPS}" "" "" "" "")
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+    #PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/stanford_gicp ${stanford_gicp_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+
+    #add_subdirectory(tools)
 endif(build)

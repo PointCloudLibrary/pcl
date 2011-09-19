@@ -31,21 +31,44 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_RECIPROCAL_HPP_
-#define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_RECIPROCAL_HPP_
 
-void
-pcl::registration::CorrespondenceRejectorReciprocal::applyRejection(pcl::registration::Correspondences &correspondences)
+
+#ifndef PCL_WARP_POINT_RIGID_6D_H_
+#define PCL_WARP_POINT_RIGID_6D_H_
+
+#include "pcl/registration/warp_point_rigid.h"
+
+namespace pcl
 {
 
+  template <class PointSourceT, class PointTargetT>
+  class WarpPointRigid6D : public WarpPointRigid<PointSourceT, PointTargetT>
+  {
+  public:
+    WarpPointRigid6D ()
+      : WarpPointRigid<PointSourceT, PointTargetT> (6) {}
+
+    virtual void setParam (const Eigen::VectorXf& p)
+    {
+      assert(p.rows () == this->getDimension ());
+      Eigen::Matrix4f& trans = this->transform_matrix_;      
+
+      trans = Eigen::Matrix4f::Zero ();
+      trans (3,3) = 1;
+
+      // Copy the rotation and translation components
+      trans.block <4, 1> (0, 3) = Eigen::Vector4f(p[0], p[1], p[2], 0);
+
+      // Compute w from the unit quaternion
+      Eigen::Quaternionf q (0, p[3], p[4], p[5]);
+      q.w () = sqrt (1 - q.dot (q));
+      trans.topLeftCorner<3, 3> () = q.toRotationMatrix();
+    }
+  };
 }
 
-void
-pcl::registration::CorrespondenceRejectorReciprocal::getCorrespondences(const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences)
-{
+#endif
 
-}
-
-#endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_RECIPROCAL_HPP_ */

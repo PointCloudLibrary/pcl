@@ -37,6 +37,8 @@
 #define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_DISTANCE_H_
 
 #include <pcl/registration/correspondence_rejection.h>
+#include <pcl/point_cloud.h>
+#include <pcl/kdtree/kdtree_flann.h>
 
 namespace pcl
 {
@@ -46,7 +48,12 @@ namespace pcl
       * @b CorrespondenceRejectorDistance implements a simple correspondence
       * rejection method based on thresholding the distances between the
       * correspondences.
-      * \author Dirk Holz
+      *
+      * \note If \ref setInputCloud and \ref setInputTarget are given, then the
+      * distances between correspondences will be estimated using the given XYZ
+      * data, and not read from the set of input correspondences.
+      *
+      * \author Dirk Holz, Radu B. Rusu
       * \ingroup registration
       */
     class CorrespondenceRejectorDistance: public CorrespondenceRejector
@@ -55,31 +62,131 @@ namespace pcl
       using CorrespondenceRejector::rejection_name_;
       using CorrespondenceRejector::getClassName;
 
-    public:
-      CorrespondenceRejectorDistance() : max_distance_(std::numeric_limits<float>::max())
-      {
-        rejection_name_ = "CorrespondenceRejectorDistance";
-      }
+      public:
+        CorrespondenceRejectorDistance () : max_distance_(std::numeric_limits<float>::max ()),
+                                            data_container_ ()
+        {
+          rejection_name_ = "CorrespondenceRejectorDistance";
+        }
 
-      inline void 
-      getCorrespondences (const pcl::registration::Correspondences& original_correspondences, pcl::registration::Correspondences& remaining_correspondences);
+        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
+          * \param original_correspondences the set of initial correspondences given
+          * \param remaining_correspondences the resultant filtered set of remaining correspondences
+          */
+        inline void 
+        getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
+                                     pcl::Correspondences& remaining_correspondences);
 
-      /** \brief Set the maximum distance used for thresholding in correspondence rejection.
-       * \param distance Distance to be used as maximum distance between correspondences. Correspondences with larger distance are rejected.
-       * */
-      virtual inline void 
-      setMaximumDistance (float distance) { max_distance_ = distance; };
+        /** \brief Set the maximum distance used for thresholding in correspondence rejection.
+          * \param distance Distance to be used as maximum distance between correspondences. 
+          * Correspondences with larger distances are rejected.
+          * \note Internally, the distance will be stored squared.
+          */
+        virtual inline void 
+        setMaximumDistance (float distance) { max_distance_ = distance * distance; };
 
-      /** \brief Get the maximum distance used for thresholding in correspondence rejection. */
-      inline float 
-      getMaxmimumDistance () { return max_distance_; };
+        /** \brief Get the maximum distance used for thresholding in correspondence rejection. */
+        inline float 
+        getMaximumDistance () { return std::sqrt (max_distance_); };
 
-    protected:
+        /** \brief Provide a source point cloud dataset (must contain XYZ
+          * data!), used to compute the correspondence distance.  
+          * \param[in] cloud a cloud containing XYZ data
+          */
+        template <typename PointT> inline void 
+        setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
+        {
+          if (!data_container_)
+            data_container_.reset (new DataContainer<PointT>);
+          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputCloud (cloud);
+        }
 
-      void 
-      applyRejection (pcl::registration::Correspondences &correspondences);
+        /** \brief Provide a target point cloud dataset (must contain XYZ
+          * data!), used to compute the correspondence distance.  
+          * \param[in] target a cloud containing XYZ data
+          */
+        template <typename PointT> inline void 
+        setInputTarget (const typename pcl::PointCloud<PointT>::ConstPtr &target)
+        {
+          if (!data_container_)
+            data_container_.reset (new DataContainer<PointT>);
+          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
+        }
 
-      float max_distance_;
+      protected:
+
+        void 
+        applyRejection (pcl::Correspondences &correspondences);
+
+        /** \brief The maximum distance threshold between two correspondent points in source <-> target. If the
+          * distance is larger than this threshold, the points will not be ignored in the alignment process.
+          */
+        float max_distance_;
+
+        class DataContainerInterface
+        {
+          public:
+            virtual double getCorrespondenceScore (int index) = 0;
+            virtual double getCorrespondenceScore (const pcl::Correspondence &) = 0;
+        };
+
+        template <typename PointT>
+        class DataContainer : public DataContainerInterface
+        {
+          typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
+          typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
+          
+          public:
+
+            DataContainer () : input_ (), target_ ()
+            {
+              tree_.reset (new pcl::KdTreeFLANN<PointT>);
+            }
+
+            inline void 
+            setInputCloud (const PointCloudConstPtr &cloud)
+            {
+              input_ = cloud;
+            }
+
+            inline void 
+            setInputTarget (const PointCloudConstPtr &target)
+            {
+              target_ = target;
+              tree_->setInputCloud (target_);
+            }
+
+            inline double 
+            getCorrespondenceScore (int index)
+            {
+              std::vector<int> indices (1);
+              std::vector<float> distances (1);
+              if (tree_->nearestKSearch (input_->points[index], 1, indices, distances))
+              {
+                return (distances[0]);
+              }
+              else
+                return (std::numeric_limits<double>::max ());
+            }
+
+            inline double 
+            getCorrespondenceScore (const pcl::Correspondence &corr)
+            {
+              // Get the source and the target feature from the list
+              const PointT &src = input_->points[corr.index_query];
+              const PointT &tgt = target_->points[corr.index_match];
+
+              return ((src.getVector4fMap () - tgt.getVector4fMap ()).squaredNorm ());
+            }
+
+          private:
+            PointCloudConstPtr input_, target_;
+            KdTreePtr tree_;
+        };
+
+        typedef boost::shared_ptr<DataContainerInterface> DataContainerPtr;
+
+        DataContainerPtr data_container_;
     };
 
   }

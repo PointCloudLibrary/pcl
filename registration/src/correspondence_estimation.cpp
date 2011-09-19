@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,46 +33,15 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id: registration.cpp 2023 2011-08-11 06:17:32Z rusu $
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_
-#define PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_
 
-#include <limits>
-#include <Eigen/Core>
+#include "pcl/impl/instantiate.hpp"
+#include "pcl/point_types.h"
+#include "pcl/registration/correspondence_estimation.h"
+#include "pcl/registration/impl/correspondence_estimation.hpp"
 
-inline void
-pcl::registration::getCorDistMeanStd (const pcl::Correspondences &correspondences, double &mean, double &stddev)
-{
-  if (correspondences.empty ())
-    return;
+// Instantiations of specific point types
+//PCL_INSTANTIATE_PRODUCT(CorrespondenceEstimation, (PCL_POINT_TYPES)(PCL_POINT_TYPES));
 
-  double sum = 0, sq_sum = 0;
-
-  for (size_t i = 0; i < correspondences.size (); ++i)
-  {
-    sum += correspondences[i].distance;
-    sq_sum += correspondences[i].distance * correspondences[i].distance;
-  }
-  mean = sum / correspondences.size();
-  double variance = (double)(sq_sum - sum * sum / correspondences.size ()) / (correspondences.size () - 1);
-  stddev = sqrt (variance);
-}
-
-inline void
-pcl::registration::getQueryIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
-{
-  indices.resize (correspondences.size ());
-  for (size_t i = 0; i < correspondences.size (); ++i)
-    indices[i] = correspondences[i].index_query;
-}
-
-inline void
-pcl::registration::getMatchIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
-{
-  indices.resize (correspondences.size ());
-  for (size_t i = 0; i < correspondences.size (); ++i)
-    indices[i] = correspondences[i].index_match;
-}
-
-#endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_ */

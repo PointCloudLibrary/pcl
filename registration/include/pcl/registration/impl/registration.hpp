@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,7 +37,6 @@
  *
  */
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline void
 pcl::Registration<PointSource, PointTarget>::setInputTarget (const PointCloudTargetConstPtr &cloud)
@@ -56,146 +57,15 @@ pcl::Registration<PointSource, PointTarget>::setInputTarget (const PointCloudTar
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget>
-template <typename FeatureType> inline void 
-pcl::Registration<PointSource, PointTarget>::setSourceFeature (
-    const typename pcl::PointCloud<FeatureType>::ConstPtr &source_feature, std::string key)
+template <typename PointSource, typename PointTarget> inline double
+pcl::Registration<PointSource, PointTarget>::getFitnessScore (const std::vector<float> &distances_a, 
+                                                              const std::vector<float> &distances_b)
 {
-  if (features_map_.count (key) == 0)
-  {
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  }
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setSourceFeature (source_feature);
+  unsigned int nr_elem = std::min (distances_a.size (), distances_b.size ());
+  Eigen::VectorXf map_a = Eigen::VectorXf::MapAligned (&distances_a[0], nr_elem);
+  Eigen::VectorXf map_b = Eigen::VectorXf::MapAligned (&distances_b[0], nr_elem);
+  return ((map_a - map_b).sum () / nr_elem);
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget>
-template <typename FeatureType> inline typename pcl::PointCloud<FeatureType>::ConstPtr 
-pcl::Registration<PointSource, PointTarget>::getSourceFeature (std::string key)
-{
-  if (features_map_.count (key) == 0)
-  {
-    return (boost::shared_ptr<pcl::PointCloud<const FeatureType> > ());
-  }
-  else
-  {
-    return (boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->getSourceFeature ());
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget>
-template <typename FeatureType> inline void 
-pcl::Registration<PointSource, PointTarget>::setTargetFeature (
-    const typename pcl::PointCloud<FeatureType>::ConstPtr &target_feature, std::string key)
-{
-  if (features_map_.count (key) == 0)
-  {
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  }
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setTargetFeature (target_feature);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget>
-template <typename FeatureType> inline typename pcl::PointCloud<FeatureType>::ConstPtr 
-  pcl::Registration<PointSource, PointTarget>::getTargetFeature (std::string key)
-{
-  typedef pcl::PointCloud<FeatureType> FeatureCloud;
-  typedef typename FeatureCloud::ConstPtr FeatureCloudConstPtr;
-
-  if (features_map_.count (key) == 0)
-  {
-    return (boost::shared_ptr<const pcl::PointCloud<FeatureType> > ());
-  }
-  else
-  {
-    return (boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->getTargetFeature ());
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget>
-template <typename FeatureType> inline void 
-pcl::Registration<PointSource, PointTarget>::setRadiusSearch (const typename pcl::KdTree<FeatureType>::Ptr &tree, 
-                                                              float r, std::string key)
-{
-  if (features_map_.count (key) == 0)
-  {
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  }
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setRadiusSearch (tree, r);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> 
-template <typename FeatureType> inline void 
-pcl::Registration<PointSource, PointTarget>::setKSearch (const typename pcl::KdTree<FeatureType>::Ptr &tree,
-                                                         int k, std::string key)
-{
-  if (features_map_.count (key) == 0)
-  {
-    features_map_[key].reset (new FeatureContainer<FeatureType>);
-  }
-  boost::static_pointer_cast<FeatureContainer<FeatureType> > (features_map_[key])->setKSearch (tree, k);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> inline bool
-pcl::Registration<PointSource, PointTarget>::hasValidFeatures ()
-{
-  if (features_map_.empty ())
-  {
-    return (false);
-  }
-  typename FeaturesMap::const_iterator feature_itr;
-  for (feature_itr = features_map_.begin (); feature_itr != features_map_.end (); ++feature_itr)
-  {
-    if (!feature_itr->second->isValid ())
-    {
-      return (false);
-    }
-  }
-  return (true);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> void
-pcl::Registration<PointSource, PointTarget>::findFeatureCorrespondences (int index, 
-                                                                         std::vector<int> &correspondence_indices)
-{
-  if (features_map_.empty ())
-  {
-    PCL_ERROR ("[pcl::%s::findFeatureCorrespondences] One or more features must be set before finding correspondences!\n",
-               getClassName ().c_str ());
-    return;
-  }
-
-  std::vector<int> nn_indices;
-  std::vector<float> nn_dists;
-
-  // Find the correspondence indices for the first feature in the features map
-  typename FeaturesMap::const_iterator feature_itr = features_map_.begin ();
-  feature_itr->second->findFeatureCorrespondences (index, correspondence_indices, nn_dists);
-  std::vector<int>::iterator correspondence_indices_end = correspondence_indices.end ();
-  std::sort (correspondence_indices.begin (), correspondence_indices_end);
-
-  // Iterate over the remaining features and continuously narrow down the set of corresponding point
-  for (++feature_itr; feature_itr != features_map_.end (); ++feature_itr)
-  {
-    feature_itr->second->findFeatureCorrespondences (index, nn_indices, nn_dists);
-
-    std::sort (nn_indices.begin (), nn_indices.end ());
-    correspondence_indices_end = std::set_intersection (nn_indices.begin (), nn_indices.end (),
-                                                        correspondence_indices.begin (), correspondence_indices_end, 
-                                                        correspondence_indices.begin ());
-  }
-
-  // 'corresponding_indices' now contains the indices of the points that corresponded to 'index' for *all* features
-  // in 'feature_map_'.
-  correspondence_indices.resize (correspondence_indices_end - correspondence_indices.begin());
-}
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline double
@@ -341,3 +211,4 @@ pcl::Registration<PointSource, PointTarget>::align (PointCloudSource &output, co
 
   deinitCompute ();
 }
+

@@ -31,46 +31,44 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_
-#define PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_
 
-#include <limits>
-#include <Eigen/Core>
 
-inline void
-pcl::registration::getCorDistMeanStd (const pcl::Correspondences &correspondences, double &mean, double &stddev)
+#ifndef PCL_WARP_POINT_RIGID_3D_H_
+#define PCL_WARP_POINT_RIGID_3D_H_
+
+#include "pcl/registration/warp_point_rigid.h"
+#include <Eigen/Geometry>
+
+namespace pcl
 {
-  if (correspondences.empty ())
-    return;
-
-  double sum = 0, sq_sum = 0;
-
-  for (size_t i = 0; i < correspondences.size (); ++i)
+  template <class PointSourceT, class PointTargetT>
+  class WarpPointRigid3D : public WarpPointRigid<PointSourceT, PointTargetT>
   {
-    sum += correspondences[i].distance;
-    sq_sum += correspondences[i].distance * correspondences[i].distance;
-  }
-  mean = sum / correspondences.size();
-  double variance = (double)(sq_sum - sum * sum / correspondences.size ()) / (correspondences.size () - 1);
-  stddev = sqrt (variance);
+  public:
+    WarpPointRigid3D ()
+      : WarpPointRigid<PointSourceT, PointTargetT> (3) {}
+
+    virtual void setParam (const Eigen::VectorXf & p)
+    {
+      assert(p.rows () == this->getDimension ());
+      Eigen::Matrix4f &trans = this->transform_matrix_;
+
+      trans = Eigen::Matrix4f::Zero ();
+      trans (3, 3) = 1;
+      trans (2, 2) = 1; // Rotation around the Z-axis
+
+      // Copy the rotation and translation components
+      trans.block <4, 1> (0, 3) = Eigen::Vector4f (p[0], p[1], 0, 0);
+
+      // Compute w from the unit quaternion
+      Eigen::Rotation2D<float> r (p[3]);
+      trans.topLeftCorner<2, 2> () = r.toRotationMatrix ();
+    }
+  };
 }
 
-inline void
-pcl::registration::getQueryIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
-{
-  indices.resize (correspondences.size ());
-  for (size_t i = 0; i < correspondences.size (); ++i)
-    indices[i] = correspondences[i].index_query;
-}
+#endif
 
-inline void
-pcl::registration::getMatchIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
-{
-  indices.resize (correspondences.size ());
-  for (size_t i = 0; i < correspondences.size (); ++i)
-    indices[i] = correspondences[i].index_match;
-}
-
-#endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_ */

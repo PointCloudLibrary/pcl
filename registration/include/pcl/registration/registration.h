@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -43,16 +45,10 @@
 
 // PCL includes
 #include <pcl/pcl_base.h>
-
-#include "pcl/common/rigid_transforms.h"
-#include "pcl/kdtree/kdtree.h"
-#include "pcl/kdtree/kdtree_flann.h"
-
-#include "pcl/registration/transforms.h"
-
-#include <Eigen/SVD>
-
-#include "pcl/win32_macros.h"
+#include <pcl/common/transforms.h>
+#include <pcl/win32_macros.h>
+#include <pcl/kdtree/kdtree_flann.h>
+#include "pcl/registration/transformation_estimation.h"
 
 namespace pcl
 {
@@ -64,8 +60,6 @@ namespace pcl
   template <typename PointSource, typename PointTarget>
   class Registration : public PCLBase<PointSource>
   {
-    class FeatureContainerInterface;
-
     public:
       using PCLBase<PointSource>::initCompute;
       using PCLBase<PointSource>::deinitCompute;
@@ -84,23 +78,33 @@ namespace pcl
       typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
 
       typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
-
-      typedef std::map<std::string, boost::shared_ptr<FeatureContainerInterface> > FeaturesMap;
+      
+      typedef typename pcl::registration::TransformationEstimation<PointSource, PointTarget> TransformationEstimation;
+      typedef typename TransformationEstimation::Ptr TransformationEstimationPtr;
+      typedef typename TransformationEstimation::ConstPtr TransformationEstimationConstPtr;
 
       /** \brief Empty constructor. */
       Registration () : target_ (),
                         final_transformation_ (Eigen::Matrix4f::Identity ()),
                         transformation_ (Eigen::Matrix4f::Identity ()),
                         previous_transformation_ (Eigen::Matrix4f::Identity ()),
-                        transformation_epsilon_ (0.0), corr_dist_threshold_ (std::sqrt (std::numeric_limits<double>::max ())),
+                        transformation_epsilon_ (0.0), 
+                        euclidean_fitness_epsilon_ (-std::numeric_limits<double>::max ()),
+                        corr_dist_threshold_ (std::sqrt (std::numeric_limits<double>::max ())),
                         inlier_threshold_ (0.05),
-                        converged_ (false), min_number_correspondences_ (3), /*k_ (1),*/ point_representation_ ()
+                        converged_ (false), min_number_correspondences_ (3), 
+                        transformation_estimation_ (),
+                        point_representation_ ()
       {
         tree_.reset (new pcl::KdTreeFLANN<PointTarget>);     // ANN tree for nearest neighbor search
+        update_visualizer_ = NULL;
       }
 
       /** \brief destructor. */
       virtual ~Registration () {}
+
+      void
+      setTransformationEstimation (const TransformationEstimationPtr &te) { transformation_estimation_ = te; }
 
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)
         * \param cloud the input point cloud target
@@ -111,50 +115,6 @@ namespace pcl
       /** \brief Get a pointer to the input point cloud dataset target. */
       inline PointCloudTargetConstPtr const 
       getInputTarget () { return (target_ ); }
-
-      /** \brief Provide a pointer to a cloud of feature descriptors associated with the source point cloud
-        * \param source_feature a cloud of feature descriptors associated with the source point cloud
-        * \param key a string that uniquely identifies the feature
-        */
-      template <typename FeatureType> inline void 
-      setSourceFeature (const typename pcl::PointCloud<FeatureType>::ConstPtr &source_feature, std::string key);
-
-      /** \brief Get a pointer to the source cloud's feature descriptors, specified by the given \a key
-        * \param key a string that uniquely identifies the feature (must match the key provided by setSourceFeature)
-        */
-      template <typename FeatureType> inline typename pcl::PointCloud<FeatureType>::ConstPtr 
-      getSourceFeature (std::string key);
-
-      /** \brief Provide a pointer to a cloud of feature descriptors associated with the target point cloud
-        * \param target_feature a cloud of feature descriptors associated with the target point cloud
-        * \param key a string that uniquely identifies the feature
-        */
-      template <typename FeatureType> inline void 
-      setTargetFeature (const typename pcl::PointCloud<FeatureType>::ConstPtr &target_feature, std::string key);
-
-      /** \brief Get a pointer to the source cloud's feature descriptors, specified by the given \a key
-        * \param key a string that uniquely identifies the feature (must match the key provided by setTargetFeature)
-        */
-      template <typename FeatureType> inline typename pcl::PointCloud<FeatureType>::ConstPtr 
-      getTargetFeature (std::string key);
-
-      /** \brief Use radius-search as the search method when finding correspondences for the feature associated with the
-        * provided \a key      
-        * \param tree the KdTree to use to compare features
-        * \param r the radius to use when performing the correspondence search
-        * \param key a string that uniquely identifies the feature
-        */
-      template <typename FeatureType> inline void 
-      setRadiusSearch (const typename pcl::KdTree<FeatureType>::Ptr &tree, float r, std::string key);
-
-      /** \brief Use k-nearest-neighbors as the search method when finding correspondences for the feature associated 
-        * with the provided \a key
-        * \param tree the KdTree to use to compare features
-        * \param k the number of nearest neighbors to return in the correspondence search
-        * \param key a string that uniquely identifies the feature
-        */
-      template <typename FeatureType> inline void 
-      setKSearch (const typename pcl::KdTree<FeatureType>::Ptr &tree, int k, std::string key);
 
       /** \brief Get the final transformation matrix estimated by the registration method. */
       inline Eigen::Matrix4f 
@@ -202,19 +162,37 @@ namespace pcl
       inline double 
       getMaxCorrespondenceDistance () { return (corr_dist_threshold_); }
 
-      /** \brief Set the transformation epsilon (maximum allowable difference between two consecutive transformations)
-        * in order for an optimization to be considered as having converged to the final solution.
-        * \param epsilon the transformation epsilon in order for an optimization to be considered as having converged
-        * to the final solution.
+      /** \brief Set the transformation epsilon (maximum allowable difference between two consecutive 
+        * transformations) in order for an optimization to be considered as having converged to the final 
+        * solution.
+        * \param epsilon the transformation epsilon in order for an optimization to be considered as having 
+        * converged to the final solution.
         */
       inline void 
       setTransformationEpsilon (double epsilon) { transformation_epsilon_ = epsilon; }
 
-      /** \brief Get the transformation epsilon (maximum allowable difference between two consecutive transformations)
-        * as set by the user.
+      /** \brief Get the transformation epsilon (maximum allowable difference between two consecutive 
+        * transformations) as set by the user.
         */
       inline double 
       getTransformationEpsilon () { return (transformation_epsilon_); }
+
+      /** \brief Set the maximum allowed Euclidean error between two consecutive steps in the ICP loop, before 
+        * the algorithm is considered to have converged. 
+        * The error is estimated as the sum of the differences between correspondences in an Euclidean sense, 
+        * divided by the number of correspondences.
+        * \param epsilon the maximum allowed distance error before the algorithm will be considered to have
+        * converged
+        */
+
+      inline void 
+      setEuclideanFitnessEpsilon (double epsilon) { euclidean_fitness_epsilon_ = epsilon; }
+
+      /** \brief Get the maximum allowed distance error before the algorithm will be considered to have converged,
+        * as set by the user. See \ref setEuclideanFitnessEpsilon
+        */
+      inline double 
+      getEuclideanFitnessEpsilon () { return (euclidean_fitness_epsilon_); }
 
       /** \brief Provide a boost shared pointer to the PointRepresentation to be used when comparing points
         * \param point_representation the PointRepresentation to be used by the k-D tree
@@ -225,12 +203,36 @@ namespace pcl
         point_representation_ = point_representation;
       }
 
-      /** \brief Obtain the fitness score (e.g., sum of squared distances from the source to the target). 
-        * \param max_range maximum allowable distance between a point and its correspondent neighbor in the target 
+      /** \brief Register the user callback function which will be called from registration thread
+       * in order to update point cloud obtained after each iteration
+       * \param refference of the user callback function
+       */
+      template<typename FunctionSignature> inline bool
+      registerVisualizationCallback (boost::function<FunctionSignature> &visualizerCallback)
+      {
+        if (visualizerCallback != NULL)
+        {
+          update_visualizer_ = visualizerCallback;
+          return (true);
+        }
+        else
+          return (false);
+      }
+
+      /** \brief Obtain the Euclidean fitness score (e.g., sum of squared distances from the source to the target)
+        * \param max_range maximum allowable distance between a point and its correspondence in the target 
         * (default: double::max)
         */
       inline double 
       getFitnessScore (double max_range = std::numeric_limits<double>::max ());
+
+      /** \brief Obtain the Euclidean fitness score (e.g., sum of squared distances from the source to the target)
+        * from two sets of correspondence distances (distances between source and target points)
+        * \param[in] distances_a the first set of distances between correspondences
+        * \param[in] distances_b the second set of distances between correspondences
+        */
+      inline double 
+      getFitnessScore (const std::vector<float> &distances_a, const std::vector<float> &distances_b);
 
       /** \brief Return the state of convergence after the last align run */
       inline bool 
@@ -250,6 +252,10 @@ namespace pcl
         */
       inline void 
       align (PointCloudSource &output, const Eigen::Matrix4f& guess);
+
+      /** \brief Abstract class get name method. */
+      inline const std::string&
+      getClassName () const { return (reg_name_); }
 
     protected:
       /** \brief The registration method name. */
@@ -281,6 +287,12 @@ namespace pcl
         */
       double transformation_epsilon_;
 
+      /** \brief The maximum allowed Euclidean error between two consecutive steps in the ICP loop, before the 
+        * algorithm is considered to have converged. The error is estimated as the sum of the differences between 
+        * correspondences in an Euclidean sense, divided by the number of correspondences.
+        */
+      double euclidean_fitness_epsilon_;
+
       /** \brief The maximum distance threshold between two correspondent points in source <-> target. If the 
         * distance is larger than this threshold, the points will not be ignored in the alignement process.
         */
@@ -300,6 +312,22 @@ namespace pcl
         */
       int min_number_correspondences_;
 
+      /** \brief A set of distances between the points in the source cloud and their correspondences in the 
+        * target.                                                                                           
+        */                                                                                                  
+      std::vector<float> correspondence_distances_;                                                              
+
+      /** \brief A TransformationEstimation object, used to calculate the 4x4 rigid transformation. */
+      TransformationEstimationPtr transformation_estimation_;
+
+      /** \brief Callback function to update intermediate source point cloud position during it's registration
+        * to the target point cloud.
+        */
+      boost::function<void(const pcl::PointCloud<PointSource> &cloud_src,
+                           const std::vector<int> &indices_src,
+                           const pcl::PointCloud<PointTarget> &cloud_tgt,
+                           const std::vector<int> &indices_tgt)> update_visualizer_;
+
       /** \brief Search for the closest nearest neighbor of a given point.
         * \param cloud the point cloud dataset to use for nearest neighbor search
         * \param index the index of the query point
@@ -316,24 +344,6 @@ namespace pcl
         return (true);
       }
 
-      /** \brief Test that all features are valid (i.e., does each key have a valid source cloud, target cloud, and 
-        * search method)
-        */
-      inline bool 
-      hasValidFeatures ();
-
-      /** \brief Find the indices of the points in the target cloud whose features correspond with the features of the 
-        * given point in the source cloud
-        * \param index the index of the query point (in the source cloud)
-        * \param correspondence_indices the resultant vector of indices representing the query's corresponding features (in the target cloud)
-        */
-      inline void 
-      findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices);
-
-      /** \brief Abstract class get name method. */
-      inline const std::string& 
-      getClassName () const { return (reg_name_); }
-
     private:
  
       /** \brief Abstract transformation computation method. */
@@ -344,124 +354,8 @@ namespace pcl
       virtual void 
       computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess) {}
 
-      // /** \brief The number of K nearest neighbors to use for each point. */
-      // int k_;
-
       /** \brief The point representation used (internal). */
       PointRepresentationConstPtr point_representation_;
-
-      /** \brief An STL map containing features to use when performing the correspondence search.*/
-      FeaturesMap features_map_;
-
-
-      /** \brief An inner class containing pointers to the source and target feature clouds along with the KdTree and 
-        * the parameters needed to perform the correspondence search.  This class extends FeatureContainerInterface, 
-        * which contains abstract methods for any methods that do not depend on the FeatureType --- these methods can 
-        * thus be called from a pointer to FeatureContainerInterface without casting to the derived class.
-        */
-      template <typename FeatureType>
-      class FeatureContainer : public pcl::Registration<PointSource, PointTarget>::FeatureContainerInterface
-      {
-        public:
-          typedef typename pcl::PointCloud<FeatureType>::ConstPtr FeatureCloudConstPtr;
-          typedef typename pcl::KdTree<FeatureType> KdTree;
-          typedef typename pcl::KdTree<FeatureType>::Ptr KdTreePtr;
-          typedef boost::function<int (const pcl::PointCloud<FeatureType> &, int, std::vector<int> &, 
-                                        std::vector<float> &)> SearchMethod;
-          
-          FeatureContainer () : k_(0), radius_(0) {}
-
-          void setSourceFeature (const FeatureCloudConstPtr &source_features)
-          {
-            source_features_ = source_features;
-          }
-          
-          FeatureCloudConstPtr getSourceFeature ()
-          {
-            return (source_features_);
-          }
-          
-          void setTargetFeature (const FeatureCloudConstPtr &target_features)
-          {
-            target_features_ = target_features;
-            if (tree_)
-            {
-              tree_->setInputCloud (target_features_);
-            }
-          }
-          
-          FeatureCloudConstPtr getTargetFeature ()
-          {
-            return (target_features_);
-          }
-          
-          void setRadiusSearch (KdTreePtr tree, float r)
-          {
-            tree_ = tree;
-            radius_ = r;
-            k_ = 0;
-            if (target_features_)
-            {
-              tree_->setInputCloud (target_features_);
-            }
-          }
-
-          void setKSearch (KdTreePtr tree, int k)
-          {
-            tree_ = tree;
-            k_ = k;
-            radius_ = 0.0;
-            if (target_features_)
-            {
-              tree_->setInputCloud (target_features_);
-            }
-          }
-          
-          virtual bool isValid ()
-          {
-            if (!source_features_ || !target_features_ || !tree_)
-            {
-              return (false);
-            }
-            else
-            {
-              return (source_features_->points.size () > 0 && 
-                      target_features_->points.size () > 0 &&
-                      (k_ > 0 || radius_ > 0.0));
-            }
-          }
-
-          virtual void findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices, 
-                                                   std::vector<float> &distances)
-          {
-            if (k_ > 0)
-            {
-              correspondence_indices.resize (k_);
-              distances.resize (k_);
-              tree_->nearestKSearch (*source_features_, index, k_, correspondence_indices, distances);
-            }
-            else
-            {
-              tree_->radiusSearch (*source_features_, index, radius_, correspondence_indices, distances);
-            }
-          }
-          
-        private:
-          FeatureCloudConstPtr source_features_, target_features_;
-          KdTreePtr tree_;
-          SearchMethod search_method_;
-          int k_;
-          double radius_;
-      };
-
-      class FeatureContainerInterface
-      {
-        public:
-          virtual bool isValid () = 0;
-          virtual void findFeatureCorrespondences (int index, std::vector<int> &correspondence_indices, 
-                                                   std::vector<float> &distances) = 0;
-      };
-
    };
 }
 
