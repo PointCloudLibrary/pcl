@@ -67,7 +67,6 @@ if(build)
         include/pcl/common/rigid_transforms.h
         include/pcl/common/time.h
         include/pcl/common/time_trigger.h
-        include/pcl/common/transform.h
         include/pcl/common/transforms.h
         include/pcl/common/transformation_from_correspondences.h
         include/pcl/common/vector_average.h
@@ -80,6 +79,7 @@ if(build)
         include/pcl/common/impl/bivariate_polynomial.hpp
         include/pcl/common/impl/centroid.hpp
         include/pcl/common/impl/common.hpp
+        include/pcl/common/impl/eigen.hpp
         include/pcl/common/impl/io.hpp
         include/pcl/common/impl/file_io.hpp
         include/pcl/common/impl/norms.hpp

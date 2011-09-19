@@ -357,6 +357,137 @@ namespace pcl
 	  // Rescale back to the original size.
 	  evals *= scale;
   }
+
+  /** \brief Get the unique 3D rotation that will rotate \a z_axis into (0,0,1) and \a y_direction into a vector 
+    * with x=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis) 
+    * \param z_axis the z-axis
+    * \param y_direction the y direction
+    * \param transformation the resultant 3D rotation
+    * \ingroup common
+    */
+  inline void
+  getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis, const Eigen::Vector3f& y_direction,
+                             Eigen::Affine3f& transformation);
+  
+  /** \brief Get the unique 3D rotation that will rotate \a z_axis into (0,0,1) and \a y_direction into a vector 
+    * with x=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis) 
+    * \param z_axis the z-axis
+    * \param y_direction the y direction
+    * \return the resultant 3D rotation
+    * \ingroup common
+    */
+  inline Eigen::Affine3f
+  getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis, const Eigen::Vector3f& y_direction);
+ 
+  /** \brief Get the unique 3D rotation that will rotate \a x_axis into (1,0,0) and \a y_direction into a vector 
+    * with z=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis)
+    * \param x_axis the x-axis
+    * \param y_direction the y direction
+    * \param transformation the resultant 3D rotation
+    * \ingroup common
+    */
+  inline void
+  getTransFromUnitVectorsXY (const Eigen::Vector3f& x_axis, const Eigen::Vector3f& y_direction,
+                             Eigen::Affine3f& transformation);
+
+  /** \brief Get the unique 3D rotation that will rotate \a x_axis into (1,0,0) and \a y_direction into a vector 
+    * with z=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis)
+    * \param x_axis the x-axis
+    * \param y_direction the y direction
+    * \return the resulting 3D rotation
+    * \ingroup common
+    */
+  inline Eigen::Affine3f
+  getTransFromUnitVectorsXY (const Eigen::Vector3f& x_axis, const Eigen::Vector3f& y_direction);
+  
+  /** Same as getTransFromUnitVectorsZY - for downwards compatibility */
+  inline void
+  getTransformationFromTwoUnitVectors (const Eigen::Vector3f& y_direction, const Eigen::Vector3f& z_axis,
+                                       Eigen::Affine3f& transformation);
+  
+  /** Same as getTransFromUnitVectorsZY - for downwards compatibility */
+  inline Eigen::Affine3f
+  getTransformationFromTwoUnitVectors (const Eigen::Vector3f& y_direction, const Eigen::Vector3f& z_axis);
+
+  /** \brief Get the transformation that will translate \a orign to (0,0,0) and rotate \a z_axis into (0,0,1)
+    * and \a y_direction into a vector with x=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis) 
+    * \param y_direction the y direction
+    * \param z_axis the z-axis
+    * \param origin the origin
+    * \param transformation the resultant transformation matrix
+    * \ingroup common
+    */
+  inline void
+  getTransformationFromTwoUnitVectorsAndOrigin (const Eigen::Vector3f& y_direction, const Eigen::Vector3f& z_axis,
+                                                const Eigen::Vector3f& origin, Eigen::Affine3f& transformation);
+
+  /** \brief Extract the Euler angles (XYZ-convention) from the given transformation
+    * \param t the input transformation matrix
+    * \param roll the resulting roll angle
+    * \param pitch the resulting pitch angle
+    * \param yaw the resulting yaw angle
+    * \ingroup common
+    */
+  inline void
+  getEulerAngles (const Eigen::Affine3f& t, float& roll, float& pitch, float& yaw);
+
+  /** Extract x,y,z and the Euler angles (XYZ-convention) from the given transformation
+    * \param t the input transformation matrix
+    * \param x the resulting x translation
+    * \param y the resulting y translation
+    * \param z the resulting z translation
+    * \param roll the resulting roll angle
+    * \param pitch the resulting pitch angle
+    * \param yaw the resulting yaw angle
+    * \ingroup common
+    */
+  inline void
+  getTranslationAndEulerAngles (const Eigen::Affine3f& t, float& x, float& y, float& z,
+                                float& roll, float& pitch, float& yaw);
+
+  /** \brief Create a transformation from the given translation and Euler angles (XYZ-convention)
+    * \param x the input x translation
+    * \param y the input y translation
+    * \param z the input z translation
+    * \param roll the input roll angle
+    * \param pitch the input pitch angle
+    * \param yaw the input yaw angle
+    * \param t the resulting transformation matrix
+    * \ingroup common
+    */
+  inline void
+  getTransformation (float x, float y, float z, float roll, float pitch, float yaw, Eigen::Affine3f& t);
+
+  /** \brief Create a transformation from the given translation and Euler angles (XYZ-convention)
+    * \param x the input x translation
+    * \param y the input y translation
+    * \param z the input z translation
+    * \param roll the input roll angle
+    * \param pitch the input pitch angle
+    * \param yaw the input yaw angle
+    * \return the resulting transformation matrix
+    * \ingroup common
+    */
+  inline Eigen::Affine3f
+  getTransformation (float x, float y, float z, float roll, float pitch, float yaw);
+  
+  /** \brief Write a matrix to an output stream
+    * \param matrix the matrix to output
+    * \param file the output stream
+    * \ingroup common
+    */
+  template <typename Derived> void
+  saveBinary (const Eigen::MatrixBase<Derived>& matrix, std::ostream& file);
+
+  /** \brief Read a matrix from an input stream
+    * \param matrix the resulting matrix, read from the input stream
+    * \param file the input stream
+    * \ingroup common
+    */
+  template <typename Derived> void
+  loadBinary (Eigen::MatrixBase<Derived>& matrix, std::istream& file);
 }
+
+#include "pcl/common/impl/eigen.hpp"
 
 #endif  //#ifndef PCL_EIGEN_H_

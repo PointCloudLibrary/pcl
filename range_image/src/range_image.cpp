@@ -571,7 +571,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
         world2cell_offset = 0.5f*float (pixel_size)-0.5f;
   float cell2world_factor = cell_size,
         cell2world_offset = -max_dist + 0.5f*cell_size;
-  Eigen::Affine3f inverse_pose = getInverse (pose);
+  Eigen::Affine3f inverse_pose = pose.inverse ();
   
   int no_of_pixels = pixel_size*pixel_size;
   float* surface_patch = new float[no_of_pixels];
@@ -604,7 +604,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
       //                                                                      int (pcl_lrint (ceil (max_y_f))+1));
   //cout << "Searching through range image area of size "<<max_x-min_x<<"x"<<max_y-min_y<<".\n";
   
-  Eigen::Vector3f position = getTranslation (inverse_pose);
+  Eigen::Vector3f position = inverse_pose.translation ();
   int middle_x, middle_y;
   getImagePoint (position, middle_x, middle_y);
   int min_search_radius = 2;
