@@ -57,7 +57,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePairFeatures (
 template <typename PointInT, typename PointNT, typename PointOutT> 
 void pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::
 computePointSPFHSignature (const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
-                           int p_idx, const std::vector<int> &indices,
+                           int p_idx, int row, const std::vector<int> &indices,
                            Eigen::MatrixXf &hist_f1, Eigen::MatrixXf &hist_f2, Eigen::MatrixXf &hist_f3)
 {
     Eigen::Vector4f pfh_tuple;
@@ -84,17 +84,17 @@ computePointSPFHSignature (const pcl::PointCloud<PointInT> &cloud, const pcl::Po
         int h_index = floor (nr_bins_f1 * ((pfh_tuple[0] + M_PI) * d_pi_));
         if (h_index < 0)           h_index = 0;
         if (h_index >= nr_bins_f1) h_index = nr_bins_f1 - 1;
-        hist_f1 (p_idx, h_index) += hist_incr;
+        hist_f1 (row, h_index) += hist_incr;
 
         h_index = floor (nr_bins_f2 * ((pfh_tuple[1] + 1.0) * 0.5));
         if (h_index < 0)           h_index = 0;
         if (h_index >= nr_bins_f2) h_index = nr_bins_f2 - 1;
-        hist_f2 (p_idx, h_index) += hist_incr;
+        hist_f2 (row, h_index) += hist_incr;
 
         h_index = floor (nr_bins_f3 * ((pfh_tuple[2] + 1.0) * 0.5));
         if (h_index < 0)           h_index = 0;
         if (h_index >= nr_bins_f3) h_index = nr_bins_f3 - 1;
-        hist_f3 (p_idx, h_index) += hist_incr;
+        hist_f3 (row, h_index) += hist_incr;
     }
 }
 
@@ -213,7 +213,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
         this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists);
 
         // Estimate the SPFH signature around p_idx
-        computePointSPFHSignature (*surface_, *normals_, i, nn_indices, hist_f1_, hist_f2_, hist_f3_);
+        computePointSPFHSignature (*surface_, *normals_, p_idx, i, nn_indices, hist_f1_, hist_f2_, hist_f3_);
 
         // Populate a lookup table for converting a point index to its corresponding row in the spfh_hist_* matrices
         spfh_hist_lookup[p_idx] = i;

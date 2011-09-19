@@ -110,6 +110,7 @@ namespace pcl
         * \param cloud the dataset containing the XYZ Cartesian coordinates of the two points
         * \param normals the dataset containing the surface normals at each point in \a cloud
         * \param p_idx the index of the query point (source)
+        * \param row the index row in feature histogramms
         * \param indices the k-neighborhood point indices in the dataset
         * \param hist_f1 the resultant SPFH histogram for feature f1
         * \param hist_f2 the resultant SPFH histogram for feature f2
@@ -117,7 +118,7 @@ namespace pcl
         */
       void 
       computePointSPFHSignature (const pcl::PointCloud<PointInT> &cloud, 
-                                 const pcl::PointCloud<PointNT> &normals, int p_idx, 
+                                 const pcl::PointCloud<PointNT> &normals, int p_idx, int row, 
                                  const std::vector<int> &indices, 
                                  Eigen::MatrixXf &hist_f1, Eigen::MatrixXf &hist_f2, Eigen::MatrixXf &hist_f3);
 

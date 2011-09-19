@@ -951,7 +951,7 @@ TEST (PCL, FPFHEstimation)
   Eigen::MatrixXf hist_f1 (indices.size (), nr_subdiv), hist_f2 (indices.size (), nr_subdiv), hist_f3 (indices.size (), nr_subdiv);
   hist_f1.setZero (); hist_f2.setZero (); hist_f3.setZero ();
   for (size_t i = 0; i < indices.size (); ++i)
-  fpfh.computePointSPFHSignature (cloud, *normals, i, indices, hist_f1, hist_f2, hist_f3);
+    fpfh.computePointSPFHSignature (cloud, *normals, i, i, indices, hist_f1, hist_f2, hist_f3);
 
   EXPECT_NEAR (hist_f1 (0, 0), 2.77778, 1e-4);
   EXPECT_NEAR (hist_f1 (0, 1), 1.010101, 1e-4);
