@@ -38,8 +38,8 @@ void
 setViewerPose (pcl::visualization::PCLVisualizer& viewer, const Eigen::Affine3f& viewer_pose)
 {
   Eigen::Vector3f pos_vector = viewer_pose * Eigen::Vector3f(0, 0, 0);
-  Eigen::Vector3f look_at_vector = pcl::getRotationOnly(viewer_pose) * Eigen::Vector3f(0, 0, 1) + pos_vector;
-  Eigen::Vector3f up_vector = pcl::getRotationOnly(viewer_pose) * Eigen::Vector3f(0, -1, 0);
+  Eigen::Vector3f look_at_vector = viewer_pose.rotation () * Eigen::Vector3f(0, 0, 1) + pos_vector;
+  Eigen::Vector3f up_vector = viewer_pose.rotation () * Eigen::Vector3f(0, -1, 0);
   viewer.camera_.pos[0] = pos_vector[0];
   viewer.camera_.pos[1] = pos_vector[1];
   viewer.camera_.pos[2] = pos_vector[2];
