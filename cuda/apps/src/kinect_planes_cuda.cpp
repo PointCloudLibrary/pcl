@@ -44,7 +44,6 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/common/transform.h>
 
 // pcl::cuda includes
 #include "pcl/cuda/time_cpu.h"
