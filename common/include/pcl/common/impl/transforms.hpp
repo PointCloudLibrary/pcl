@@ -38,70 +38,40 @@
 template <typename PointT> void
 pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
                           pcl::PointCloud<PointT> &cloud_out,
-                          const Eigen::Matrix4f &transform)
+                          const Eigen::Affine3f &transform)
 {
   if (&cloud_in != &cloud_out)
   {
     // Note: could be replaced by cloud_out = cloud_in
     cloud_out.header   = cloud_in.header;
+    cloud_out.is_dense = cloud_in.is_dense;
     cloud_out.width    = cloud_in.width;
     cloud_out.height   = cloud_in.height;
-    cloud_out.is_dense = cloud_in.is_dense;
-    cloud_out.points.resize (cloud_in.points.size ());
+    cloud_out.points.reserve (cloud_out.points.size ());
+    cloud_out.points.assign (cloud_in.points.begin (), cloud_in.points.end ());
   }
 
-  //Eigen::Matrix<float, Eigen::Dynamic, 4, Eigen::RowMajor> cloud (cloud_in.points.size (), 4);
-  //Eigen::Matrix<float, Eigen::Dynamic, 4> cloud (cloud_in.points.size (), 4);
-/*  Eigen::MatrixXf cloud (cloud_in.points.size (), 4);
-  for (size_t i = 0; i < cloud_in.points.size (); ++i)
+  if (cloud_in.is_dense)
   {
-    //cloud.row (i) = cloud_in.points[i].getVector4fMap ();
-    cloud (i, 0) = cloud_in.points[i].x;
-    cloud (i, 1) = cloud_in.points[i].y;
-    cloud (i, 2) = cloud_in.points[i].z;
-    cloud (i, 3) = 1.0;
+    // If the dataset is dense, simply transform it!
+    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+      cloud_out.points[i].getVector3fMap () = transform * 
+                                              cloud_in.points[i].getVector3fMap ();
   }
-
-  cloud *= transform.matrix ();*/
-
-  Eigen::MatrixXf cloud (cloud_in.points.size (), 4);
-  for (size_t i = 0; i < cloud_in.points.size (); ++i)
+  else
   {
-    cloud (i, 0) = cloud_in.points[i].x;
-    cloud (i, 1) = cloud_in.points[i].y;
-    cloud (i, 2) = cloud_in.points[i].z;
-    cloud (i, 3) = 1.0;
+    // Dataset might contain NaNs and Infs, so check for them first,
+    // otherwise we get errors during the multiplication (?)
+    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+    {
+      if (!pcl_isfinite (cloud_in.points[i].x) || 
+          !pcl_isfinite (cloud_in.points[i].y) || 
+          !pcl_isfinite (cloud_in.points[i].z))
+        continue;
+      cloud_out.points[i].getVector3fMap () = transform * 
+                                              cloud_in.points[i].getVector3fMap ();
+    }
   }
-
-  cloud *= transform;
-  
-  for (size_t i = 0; i < cloud_out.points.size (); ++i)
-  {
-    cloud_out.points[i].x = cloud (i, 0);
-    cloud_out.points[i].y = cloud (i, 1);
-    cloud_out.points[i].z = cloud (i, 2);
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                          pcl::PointCloud<PointT> &cloud_out,
-                          const Eigen::Affine3f &transform)
-{
-  transformPointCloud (cloud_in, cloud_out, transform.matrix ());
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline void
-pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                          pcl::PointCloud<PointT> &cloud_out,
-                          const Eigen::Vector3f &offset, 
-                          const Eigen::Quaternionf &rotation)
-{
-  // Assemble an Eigen Transform
-  Eigen::Affine3f t (Eigen::Translation3f (offset) * rotation);
-  transformPointCloud (cloud_in, cloud_out, t);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,6 +163,47 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
+pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
+                          pcl::PointCloud<PointT> &cloud_out,
+                          const Eigen::Matrix4f &transform)
+{
+  if (&cloud_in != &cloud_out)
+  {
+    // Note: could be replaced by cloud_out = cloud_in
+    cloud_out.header   = cloud_in.header;
+    cloud_out.width    = cloud_in.width;
+    cloud_out.height   = cloud_in.height;
+    cloud_out.is_dense = cloud_in.is_dense;
+    cloud_out.points.reserve (cloud_out.points.size ());
+    cloud_out.points.assign (cloud_in.points.begin (), cloud_in.points.end ());
+  }
+
+  Eigen::Matrix3f rot   = transform.block<3, 3> (0, 0);
+  Eigen::Vector3f trans = transform.block<3, 1> (0, 3);
+  // If the data is dense, we don't need to check for NaN
+  if (cloud_in.is_dense)
+  {
+    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+      cloud_out.points[i].getVector3fMap () = rot * 
+                                              cloud_in.points[i].getVector3fMap () + trans;
+  }
+  // Dataset might contain NaNs and Infs, so check for them first.
+  else
+  {
+    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+    {
+      if (!pcl_isfinite (cloud_in.points[i].x) || 
+          !pcl_isfinite (cloud_in.points[i].y) || 
+          !pcl_isfinite (cloud_in.points[i].z))
+        continue;
+      cloud_out.points[i].getVector3fMap () = rot * 
+                                              cloud_in.points[i].getVector3fMap () + trans;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
 pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
                                      pcl::PointCloud<PointT> &cloud_out,
                                      const Eigen::Matrix4f &transform)
@@ -245,6 +256,20 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline void
+pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
+                          pcl::PointCloud<PointT> &cloud_out,
+                          const Eigen::Vector3f &offset, 
+                          const Eigen::Quaternionf &rotation)
+{
+  Eigen::Translation3f translation (offset);
+  // Assemble an Eigen Transform
+  Eigen::Affine3f t;
+  t = translation * rotation;
+  transformPointCloud (cloud_in, cloud_out, t);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> inline void
 pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
                                      pcl::PointCloud<PointT> &cloud_out,
                                      const Eigen::Vector3f &offset, 
@@ -257,11 +282,10 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   transformPointCloudWithNormals (cloud_in, cloud_out, t);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline PointT
 pcl::transformPoint (const PointT &point, const Eigen::Affine3f &tranform)
 {
   PointT ret = point;
   ret.getVector3fMap () = tranform * point.getVector3fMap ();
-  return (ret);
+  return ret;
 }
