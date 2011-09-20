@@ -5,6 +5,6 @@ if(BUILD_TESTS)
                  
   PCL_ADD_TEST(octree octree 
                FILES test_octree.cpp
-               LINK_WITH pcl_search pcl_io pcl_filters)
+               LINK_WITH pcl_search pcl_io)
 endif(BUILD_TESTS)
 
