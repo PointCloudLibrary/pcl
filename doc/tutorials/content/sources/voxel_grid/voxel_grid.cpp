@@ -20,7 +20,7 @@ main (int argc, char** argv)
   // Create the filtering object
   pcl::VoxelGrid<sensor_msgs::PointCloud2> sor;
   sor.setInputCloud (cloud);
-  sor.setLeafSize (0.01, 0.01, 0.01);
+  sor.setLeafSize (0.01f, 0.01f, 0.01f);
   sor.filter (*cloud_filtered);
 
   std::cerr << "PointCloud after filtering: " << cloud_filtered->width * cloud_filtered->height 

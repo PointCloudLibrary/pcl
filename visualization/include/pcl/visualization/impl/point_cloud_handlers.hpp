@@ -129,7 +129,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
   int x_idx = -1;
   for (size_t d = 0; d < fields_.size (); ++d)
     if (fields_[d].name == "x")
-      x_idx = d;
+      x_idx = (int) d;
 
   if (x_idx != -1)
   {

@@ -146,7 +146,7 @@ namespace pcl
         * \param n the number of possible indices to choose from
         */
       inline int 
-      getRandomIndex (int n) { return (n * (rand () / (RAND_MAX + 1.0))); };
+      getRandomIndex (int n) { return (n * (rand () / (RAND_MAX + 1))); };
       
       /** \brief Select \a nr_samples sample points from cloud while making sure that their pairwise distances are 
         * greater than a user-defined minimum distance, \a min_sample_distance.

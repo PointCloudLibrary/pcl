@@ -76,12 +76,12 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::select
 
   // Iteratively draw random samples until nr_samples is reached
   int iterations_without_a_sample = 0;
-  int max_iterations_without_a_sample = 3 * cloud.points.size ();
+  int max_iterations_without_a_sample = (int) (3 * cloud.points.size ());
   sample_indices.clear ();
   while ((int) sample_indices.size () < nr_samples)
   {
     // Choose a sample at random
-    int sample_index = getRandomIndex (cloud.points.size ());
+    int sample_index = getRandomIndex ((int) cloud.points.size ());
 
     // Check to see if the sample is 1) unique and 2) far away from the other samples
     bool valid_sample = true;
@@ -156,7 +156,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
   for (size_t i = 0; i < cloud.points.size (); ++i)
   {
     // Find the distance between cloud.points[i] and its nearest neighbor in the target point cloud
-    tree_->nearestKSearch (cloud, i, 1, nn_index, nn_distance);
+    tree_->nearestKSearch (cloud, (int) i, 1, nn_index, nn_distance);
 
     /*
     // Huber penalty measure
@@ -214,7 +214,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
 
     // Tranform the data and compute the error
     transformPointCloud (*input_, input_transformed, transformation_);
-    error = computeErrorMetric (input_transformed, corr_dist_threshold_);
+    error = computeErrorMetric (input_transformed, (float) corr_dist_threshold_);
 
     // If the new error is lower, update the final transformation
     if (i_iter == 0 || error < lowest_error)

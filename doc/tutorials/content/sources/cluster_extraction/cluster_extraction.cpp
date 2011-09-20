@@ -24,7 +24,7 @@ main (int argc, char** argv)
   pcl::VoxelGrid<pcl::PointXYZ> vg;
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
   vg.setInputCloud (cloud);
-  vg.setLeafSize (0.01, 0.01, 0.01);
+  vg.setLeafSize (0.01f, 0.01f, 0.01f);
   vg.filter (*cloud_filtered);
   std::cout << "PointCloud after filtering has: " << cloud_filtered->points.size ()  << " data points." << std::endl; //*
 
@@ -40,7 +40,7 @@ main (int argc, char** argv)
   seg.setMaxIterations (100);
   seg.setDistanceThreshold (0.02);
 
-  int i=0, nr_points = cloud_filtered->points.size ();
+  int i=0, nr_points = (int) cloud_filtered->points.size ();
   while (cloud_filtered->points.size () > 0.3 * nr_points)
   {
     // Segment the largest planar component from the remaining cloud

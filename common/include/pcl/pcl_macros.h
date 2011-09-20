@@ -39,6 +39,10 @@
   #pragma warning disable 2196 2536 279
 #endif
 
+#if defined _MSC_VER
+  #pragma warning (disable : 4521)
+#endif
+
 #include <iostream>
 #include <stdarg.h>
 #include <stdio.h>

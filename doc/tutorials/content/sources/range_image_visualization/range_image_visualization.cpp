@@ -113,7 +113,7 @@ main (int argc, char** argv)
         point_cloud.points.push_back (point);
       }
     }
-    point_cloud.width = point_cloud.points.size ();  point_cloud.height = 1;
+    point_cloud.width = (int) point_cloud.points.size ();  point_cloud.height = 1;
   }
   
   // -----------------------------------------------

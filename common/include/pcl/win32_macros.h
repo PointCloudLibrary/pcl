@@ -56,8 +56,8 @@ namespace pcl
 # define NOMINMAX
 
 # define pcl_isnan(x)    _isnan(x)
-# define pcl_isfinite(x) _finite(x)
-# define pcl_isinf(x)    (!_finite(x))
+# define pcl_isfinite(x) (_finite(x) != 0)
+# define pcl_isinf(x)    (_finite(x) == 0)
 
 # define __PRETTY_FUNCTION__ __FUNCTION__
 # define __func__ __FUNCTION__

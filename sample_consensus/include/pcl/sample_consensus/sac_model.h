@@ -241,7 +241,7 @@ namespace pcl
           // Prepare a set of indices to be used (entire cloud)
           indices_->resize (cloud->points.size ());
           for (size_t i = 0; i < cloud->points.size (); ++i) 
-            (*indices_)[i] = i;
+            (*indices_)[i] = (int) i;
         }
         shuffled_indices_ = *indices_;
       }

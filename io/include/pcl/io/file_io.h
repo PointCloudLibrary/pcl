@@ -248,7 +248,7 @@ namespace pcl
       write (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
              const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
-             bool binary = false) = 0;
+             const bool binary = false) = 0;
 
       /** \brief Save point cloud data to a FILE file containing n-D points
         * \param file_name the output file name
@@ -262,7 +262,7 @@ namespace pcl
       write (const std::string &file_name, const sensor_msgs::PointCloud2::ConstPtr &cloud, 
              const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
-             bool binary = false)
+             const bool binary = false)
       {
         return (write (file_name, *cloud, origin, orientation, binary));
       }
@@ -276,7 +276,7 @@ namespace pcl
       template<typename PointT> inline int
       write (const std::string &file_name, 
              const pcl::PointCloud<PointT> &cloud, 
-             bool binary = false)
+             const bool binary = false)
       {
         Eigen::Vector4f origin = cloud.sensor_origin_;
         Eigen::Quaternionf orientation = cloud.sensor_orientation_;

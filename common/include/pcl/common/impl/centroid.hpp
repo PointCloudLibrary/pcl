@@ -97,7 +97,7 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud, const std::vector<
     for (size_t i = 0; i < indices.size (); ++i)
       centroid += cloud.points[indices[i]].getVector4fMap ();
     centroid[3] = 0;
-    centroid /= indices.size ();
+    centroid /= (float) indices.size ();
   }
   // NaN or Inf values could exist => check for them
   else
@@ -113,8 +113,8 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud, const std::vector<
       centroid += cloud.points[indices[i]].getVector4fMap ();
       cp++;
     }
-    centroid[3] = 0;
-    centroid /= cp;
+    centroid[3] = 0.0f;
+    centroid /= (float) cp;
   }
 }
 

@@ -263,7 +263,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   // Check if the output will be computed for all points or only a subset
   if (indices_->size () != input_->points.size ())
   {
-    output.width    = indices_->size ();
+    output.width    = (int) indices_->size ();
     output.height   = 1;
   }
   else

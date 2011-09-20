@@ -8,7 +8,7 @@
 int
 main (int argc, char** argv)
 {
-  srand (time (NULL));
+  srand ((unsigned int) time (NULL));
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
@@ -19,9 +19,9 @@ main (int argc, char** argv)
 
   for (size_t i = 0; i < cloud->points.size (); ++i)
   {
-    cloud->points[i].x = 1024.0f * rand () / (RAND_MAX + 1.0);
-    cloud->points[i].y = 1024.0f * rand () / (RAND_MAX + 1.0);
-    cloud->points[i].z = 1024.0f * rand () / (RAND_MAX + 1.0);
+    cloud->points[i].x = 1024.0f * rand () / (RAND_MAX + 1.0f);
+    cloud->points[i].y = 1024.0f * rand () / (RAND_MAX + 1.0f);
+    cloud->points[i].z = 1024.0f * rand () / (RAND_MAX + 1.0f);
   }
 
   float resolution = 128.0f;
@@ -33,9 +33,9 @@ main (int argc, char** argv)
 
   pcl::PointXYZ searchPoint;
 
-  searchPoint.x = 1024.0f * rand () / (RAND_MAX + 1.0);
-  searchPoint.y = 1024.0f * rand () / (RAND_MAX + 1.0);
-  searchPoint.z = 1024.0f * rand () / (RAND_MAX + 1.0);
+  searchPoint.x = 1024.0f * rand () / (RAND_MAX + 1.0f);
+  searchPoint.y = 1024.0f * rand () / (RAND_MAX + 1.0f);
+  searchPoint.z = 1024.0f * rand () / (RAND_MAX + 1.0f);
 
   // Neighbors within voxel search
 
@@ -80,7 +80,7 @@ main (int argc, char** argv)
   std::vector<int> pointIdxRadiusSearch;
   std::vector<float> pointRadiusSquaredDistance;
 
-  float radius = 256.0f * rand () / (RAND_MAX + 1.0);
+  float radius = 256.0f * rand () / (RAND_MAX + 1.0f);
 
   std::cout << "Neighbors within radius search at (" << searchPoint.x 
       << " " << searchPoint.y 

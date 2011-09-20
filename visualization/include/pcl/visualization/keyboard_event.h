@@ -137,19 +137,19 @@ namespace pcl
     bool 
     KeyboardEvent::isAltPressed () const
     {
-      return (modifiers_ & Alt);
+      return (modifiers_ & Alt) != 0;
     }
 
     bool 
     KeyboardEvent::isCtrlPressed () const
     {
-      return (modifiers_ & Ctrl);
+      return (modifiers_ & Ctrl) != 0;
     }
 
     bool 
     KeyboardEvent::isShiftPressed () const
     {
-      return (modifiers_ & Shift);
+      return (modifiers_ & Shift) != 0;
     }
 
     unsigned char 

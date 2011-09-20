@@ -126,7 +126,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   std::ostringstream oss;
   oss << generateHeader<PointT> (cloud) << "DATA binary\n";
   oss.flush ();
-  data_idx = oss.tellp ();
+  data_idx = (int) oss.tellp ();
 
 #if _WIN32
   HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
