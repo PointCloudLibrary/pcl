@@ -158,7 +158,7 @@ namespace pcl
     cloud.header   = msg.header;
     cloud.width    = msg.width;
     cloud.height   = msg.height;
-    cloud.is_dense = msg.is_dense;
+    cloud.is_dense = msg.is_dense == 1;
 
     // Copy point data
     uint32_t num_points = msg.width * msg.height;
@@ -218,7 +218,7 @@ namespace pcl
     // Ease the user's burden on specifying width/height for unorganized datasets
     if (cloud.width == 0 && cloud.height == 0)
     {
-      msg.width  = cloud.points.size ();
+      msg.width  = (uint32_t) cloud.points.size ();
       msg.height = 1;
     }
     else

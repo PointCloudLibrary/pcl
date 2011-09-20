@@ -89,7 +89,7 @@ namespace pcl
         {
           this->serializeNewLeafs (indicesVector_arg, minPointsPerLeaf_arg);
 
-          return indicesVector_arg.size();
+          return (int) indicesVector_arg.size();
         }
 
 

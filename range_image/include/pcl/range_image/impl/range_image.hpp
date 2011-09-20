@@ -602,7 +602,7 @@ RangeImage::getImpactAngle(const PointWithRange& point1, const PointWithRange& p
   
   float r1 = (std::min)(point1.range, point2.range),
         r2 = (std::max)(point1.range, point2.range);
-  float impact_angle = (float) 0.5f*M_PI;
+  float impact_angle = (float) (0.5f*M_PI);
   
   if (pcl_isinf(r2)) {
     if (r2 > 0.0f && !pcl_isinf(r1))

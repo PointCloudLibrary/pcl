@@ -101,7 +101,7 @@ main (int argc, char** argv)
         point_cloud.points.push_back (point);
       }
     }
-    point_cloud.width = point_cloud.points.size ();  point_cloud.height = 1;
+    point_cloud.width = (int) point_cloud.points.size ();  point_cloud.height = 1;
   }
   
   // -----------------------------------------------
@@ -173,7 +173,7 @@ main (int argc, char** argv)
   // ------------------------------------
   pcl::visualization::RangeImageVisualizer* range_image_borders_widget = NULL;
   range_image_borders_widget =
-    pcl::visualization::RangeImageVisualizer::getRangeImageBordersWidget (range_image, -INFINITY, INFINITY, false,
+    pcl::visualization::RangeImageVisualizer::getRangeImageBordersWidget (range_image, -std::numeric_limits<float>::infinity (), std::numeric_limits<float>::infinity (), false,
                                                                           border_descriptions, "Range image with borders");
   // -------------------------------------
   

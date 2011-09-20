@@ -128,7 +128,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   std::ostringstream oss;
   oss << generateHeader<PointT> (cloud) << "DATA binary\n";
   oss.flush ();
-  data_idx = oss.tellp ();
+  data_idx = (int) oss.tellp ();
 
 #if _WIN32
   HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -169,7 +169,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
   // Prepare the map
 #if _WIN32
-  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_idx + data_size, NULL);
+  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, (DWORD) (data_idx + data_size), NULL);
   char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
   CloseHandle (fm);
 

@@ -182,7 +182,7 @@ namespace pcl
       bool 
       doSamplesVerifyModel (const std::set<int> &indices, 
                             const Eigen::VectorXf &model_coefficients, 
-                            double threshold)
+                            const double threshold)
       {
         //PCL_ERROR ("[pcl::SampleConsensusModelRegistration::doSamplesVerifyModel] called!\n");
         return (false);

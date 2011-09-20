@@ -8,7 +8,7 @@
 int
 main (int argc, char** argv)
 {
-  srand (time (NULL));
+  srand ((unsigned int) time (NULL));
 
   // Octree resolution - side length of octree voxels
   float resolution = 32.0f;
@@ -25,9 +25,9 @@ main (int argc, char** argv)
 
   for (size_t i = 0; i < cloudA->points.size (); ++i)
   {
-    cloudA->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0);
-    cloudA->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0);
-    cloudA->points[i].z = 64.0f * rand () / (RAND_MAX + 1.0);
+    cloudA->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
+    cloudA->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);
+    cloudA->points[i].z = 64.0f * rand () / (RAND_MAX + 1.0f);
   }
 
   // Add points from cloudA to octree
@@ -46,9 +46,9 @@ main (int argc, char** argv)
 
   for (size_t i = 0; i < cloudB->points.size (); ++i)
   {
-    cloudB->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0);
-    cloudB->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0);
-    cloudB->points[i].z = 64.0f * rand () / (RAND_MAX + 1.0);
+    cloudB->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
+    cloudB->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);
+    cloudB->points[i].z = 64.0f * rand () / (RAND_MAX + 1.0f);
   }
 
   // Add points from cloudB to octree

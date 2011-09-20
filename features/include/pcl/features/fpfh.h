@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: fpfh.h 1747 2011-07-13 21:55:45Z mdixon $
+ * $Id$
  *
  */
 
@@ -83,7 +83,7 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Empty constructor. */
-      FPFHEstimation () : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), d_pi_ (1.0 / (2.0 * M_PI))
+      FPFHEstimation () : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), d_pi_ ((float)(1.0 / (2.0 * M_PI)))
       {
         feature_name_ = "FPFHEstimation";
       };

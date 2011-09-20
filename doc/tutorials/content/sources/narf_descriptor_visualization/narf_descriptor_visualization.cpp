@@ -126,14 +126,14 @@ main (int argc, char** argv)
     for (unsigned int x=0; x<range_image.width; ++x)
     {
       int index = y*range_image.width+x;
-      int percentage = (100*index) / range_image.points.size ();
+      int percentage = (int) ((100*index) / range_image.points.size ());
       if (percentage > last_percentage)
       {
         std::cout << percentage<<"% "<<std::flush;
         last_percentage = percentage;
       }
       pcl::Narf::extractFromRangeImageAndAddToList (range_image, x, y, descriptor_size,
-                                                    support_size, rotation_invariant, narfs[index]);
+                                                    support_size, rotation_invariant != 0, narfs[index]);
       //std::cout << "Extracted "<<narfs[index].size ()<<" features for pixel "<<x<<","<<y<<".\n";
     }
   }
@@ -223,7 +223,7 @@ main (int argc, char** argv)
     for (unsigned int point_index=0; point_index<range_image.points.size (); ++point_index)
     {
       float& descriptor_distance = descriptor_distance_image[point_index];
-      descriptor_distance = INFINITY;
+      descriptor_distance = std::numeric_limits<float>::infinity ();
       std::vector<pcl::Narf*>& narfs_of_current_point = narfs[point_index];
       if (narfs_of_current_point.empty ())
         continue;
@@ -238,7 +238,7 @@ main (int argc, char** argv)
     }
     descriptor_distances_widget.setFloatImage (descriptor_distance_image, range_image.width,
                                                range_image.height, "descriptor distances",
-                                               -INFINITY, INFINITY, true);
+                                               -std::numeric_limits<float>::infinity (), std::numeric_limits<float>::infinity (), true);
     delete[] descriptor_distance_image;
   }
 }

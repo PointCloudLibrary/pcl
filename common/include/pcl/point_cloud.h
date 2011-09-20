@@ -119,7 +119,7 @@ namespace pcl
         for (size_t i = nr_points; i < points.size (); ++i)
           points[i] = rhs.points[i - nr_points];
 
-        width    = points.size ();
+        width    = (uint32_t) points.size ();
         height   = 1;
         if (rhs.is_dense && is_dense)
           is_dense = true;

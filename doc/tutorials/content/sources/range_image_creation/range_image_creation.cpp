@@ -13,13 +13,13 @@ int main (int argc, char** argv) {
       pointCloud.points.push_back(point);
     }
   }
-  pointCloud.width = pointCloud.points.size();
+  pointCloud.width = (uint32_t) pointCloud.points.size();
   pointCloud.height = 1;
   
   // We now want to create a range image from the above point cloud, with a 1deg angular resolution
-  float angularResolution =   1.0f * (M_PI/180.0f);  //   1.0 degree in radians
-  float maxAngleWidth     = 360.0f * (M_PI/180.0f);  // 360.0 degree in radians
-  float maxAngleHeight    = 180.0f * (M_PI/180.0f);  // 180.0 degree in radians
+  float angularResolution = (float) (  1.0f * (M_PI/180.0f));  //   1.0 degree in radians
+  float maxAngleWidth     = (float) (360.0f * (M_PI/180.0f));  // 360.0 degree in radians
+  float maxAngleHeight    = (float) (180.0f * (M_PI/180.0f));  // 180.0 degree in radians
   Eigen::Affine3f sensorPose = (Eigen::Affine3f)Eigen::Translation3f(0.0f, 0.0f, 0.0f);
   pcl::RangeImage::CoordinateFrame coordinate_frame = pcl::RangeImage::CAMERA_FRAME;
   float noiseLevel=0.00;

@@ -148,6 +148,7 @@ if("@HAVE_QHULL@" STREQUAL "ON")
 endif("@HAVE_QHULL@" STREQUAL "ON")
 
 if("@HAVE_WXWIDGETS@" STREQUAL "ON")
+  set(wxWidgets_ROOT_DIR "@wxWidgets_ROOT_DIR@")
   find_package(wxWidgets REQUIRED)
   include("@wxWidgets_USE_FILE@")
   list(APPEND PCL_INCLUDE_DIRS "@wxWidgets_INCLUDE_DIRS@")
@@ -175,7 +176,7 @@ add_definitions(-DEIGEN_USE_NEW_STDVECTOR
 # those are for windows sake
 ##
 if(MSVC)
-  add_definitions(-DBOOST_ALL_NO_LIB)
+  add_definitions(-DBOOST_ALL_NO_LIB -D_CRT_SECURE_NO_WARNINGS)
   if("@FLANN_LIBRARY@" MATCHES "flann_cpp_s")
     add_definitions(-DFLANN_STATIC)
   endif("@FLANN_LIBRARY@" MATCHES "flann_cpp_s")

@@ -317,9 +317,9 @@ main (int argc, char** argv)
       b += 12;
     }
   }
-  basic_cloud_ptr->width = basic_cloud_ptr->points.size ();
+  basic_cloud_ptr->width = (int) basic_cloud_ptr->points.size ();
   basic_cloud_ptr->height = 1;
-  point_cloud_ptr->width = point_cloud_ptr->points.size ();
+  point_cloud_ptr->width = (int) point_cloud_ptr->points.size ();
   point_cloud_ptr->height = 1;
 
   // ----------------------------------------------------------------

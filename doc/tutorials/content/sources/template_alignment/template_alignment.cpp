@@ -23,8 +23,8 @@ class FeatureCloud
 
     FeatureCloud () :
       search_method_xyz_ (new SearchMethod),
-      normal_radius_ (0.02),
-      feature_radius_ (0.02)
+      normal_radius_ (0.02f),
+      feature_radius_ (0.02f)
     {}
 
     ~FeatureCloud () {}
@@ -128,8 +128,8 @@ class TemplateAlignment
     };
 
     TemplateAlignment () :
-      min_sample_distance_ (0.05),
-      max_correspondence_distance_ (0.01*0.01),
+      min_sample_distance_ (0.05f),
+      max_correspondence_distance_ (0.01f*0.01f),
       nr_iterations_ (500)
     {
       // Intialize the parameters in the Sample Consensus Intial Alignment (SAC-IA) algorithm
@@ -166,7 +166,7 @@ class TemplateAlignment
       pcl::PointCloud<pcl::PointXYZ> registration_output;
       sac_ia_.align (registration_output);
 
-      result.fitness_score = sac_ia_.getFitnessScore (max_correspondence_distance_);
+      result.fitness_score = (float) sac_ia_.getFitnessScore (max_correspondence_distance_);
       result.final_transformation = sac_ia_.getFinalTransformation ();
     }
 
@@ -198,7 +198,7 @@ class TemplateAlignment
         if (r.fitness_score < lowest_score)
         {
           lowest_score = r.fitness_score;
-          best_template = i;
+          best_template = (int) i;
         }
       }
 
@@ -216,7 +216,7 @@ class TemplateAlignment
     pcl::SampleConsensusInitialAlignment<pcl::PointXYZ, pcl::PointXYZ, pcl::FPFHSignature33> sac_ia_;
     float min_sample_distance_;
     float max_correspondence_distance_;
-    float nr_iterations_;
+    int nr_iterations_;
 };
 
 // Align a collection of object templates to a sample point cloud
@@ -260,7 +260,7 @@ main (int argc, char **argv)
   pass.filter (*cloud);
 
   // ... and downsampling the point cloud
-  const float voxel_grid_size = 0.005;
+  const float voxel_grid_size = 0.005f;
   pcl::VoxelGrid<pcl::PointXYZ> vox_grid;
   vox_grid.setInputCloud (cloud);
   vox_grid.setLeafSize (voxel_grid_size, voxel_grid_size, voxel_grid_size);

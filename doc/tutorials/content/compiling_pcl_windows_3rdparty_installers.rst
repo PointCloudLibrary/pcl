@@ -1,3 +1,4 @@
+
 .. _compiling_pcl_windows_3rdparty_installers:
 
 Compiling PCL from source in Windows using the 3rd party installers
@@ -8,10 +9,10 @@ Microsoft Windows platforms. In this tutorial, we will be using the dependencies
 installers provided on the `downloads page <http://www.pointclouds.org/downloads/windows.html>`_. 
 
 .. note::
-	
-	If there is no installers for your compiler, it is recommanded that you build the dependencies
-	out of source. The :ref:`compiling_pcl_windows` tutorial should guide you through the download 
-	and the compilation of all the required dependencies.
+
+   If there is no installers for your compiler, it is recommended that you build the dependencies
+   out of source. The :ref:`compiling_pcl_windows` tutorial should guide you through the download 
+   and the compilation of all the required dependencies.
 
 .. image:: images/windows_logo.png
    :alt: Microsoft Windows logo
@@ -31,7 +32,7 @@ used for shared pointers, and threading. **mandatory**
 
 used as the matrix backend for SSE optimized math. **mandatory**
 
-- **CMINPACK** version 1.1.3
+- **CMinpack** version 1.1.3
 
 used in the `sample_consensus` and `registration` modules for non-linear (Levenberg-Marquardt) optimizations. **mandatory**
 
@@ -78,7 +79,7 @@ The download operation of the most recent source from the main development line,
 	
 	- pcl-1.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.x
 	
-	- pcl-1.0.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.0.x
+	- pcl-1.1.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.1.x
 
 First create a folder that will holds PCL source code and binaries. In the remaining of this tutorial we will be using C:\\PCL.
 To checkout PCL source code, navigate to the C:\\PCL folder using Windows file manager. Then right click and choose
@@ -96,7 +97,7 @@ Configuring PCL
 
 On Windows, we recommend to build **shared** PCL libraries with **static** dependencies. In this tutorial, we will use 
 static dependencies when possible to build shared PCL. You can easily switch to using shared dependencies. Then, you need 
-to make sure you put the dependencies' dlls either in your PATH or in the same folder as PCL dlls and executables.
+to make sure you put the dependencies' dlls either in your `PATH` or in the same folder as PCL dlls and executables.
 You can also build static PCL libraries if you want.
 
 Run the CMake-gui application and fill in the fields::
@@ -171,7 +172,7 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		:alt: Eigen include dir
 		:align: center	
 
-- **CMINPACK** :
+- **CMinpack** :
 
 	CMake was able to find my CMinpack installation. By default on windows, PCL will pick the static CMinpack libraries
 	with `_s` suffix. Thus, the **CMINPACK_IS_STATIC** checkbox is checked by default.
@@ -186,10 +187,6 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		**CMINPACK_LIBRARY** and **CMINPACK_LIBRARY_DEBUG** variables to remove the `_s` suffix and do not forget to uncheck 
 		**CMINPACK_IS_STATIC**. Make sure the CMinpack dlls are either in your PATH or in the same folder as your executables.
 
-	.. note::
-		
-		In recent PCL, the **CMINPACK_IS_STATIC** checkbox no longer exists.
-		
 - **FLANN** :
 
 	CMake was able to find my FLANN installation. By default on windows, PCL will pick the static FLANN libraries
@@ -353,4 +350,4 @@ Using PCL
 
 We finally managed to compile the Point Cloud Library (PCL) as binaries for
 Windows. You can start using them in your project by following the
-:ref:`using_pcl` tutorial. 
+:ref:`using_pcl_pcl_config` tutorial. 
