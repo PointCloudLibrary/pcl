@@ -51,7 +51,6 @@ if(build)
             src/openni_grabber.cpp
             src/oni_grabber.cpp
             src/pcd_grabber.cpp
-            src/lzf.cpp
             )
     endif(OPENNI_FOUND)
 
@@ -68,6 +67,7 @@ if(build)
         src/vtk_io.cpp
         src/ply_io.cpp
         src/compression.cpp
+        src/lzf.cpp
         src/obj_io.cpp
         ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
