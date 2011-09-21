@@ -118,6 +118,7 @@ Anything involving a slice of data should use size_t for indices and not int. E.
  * no const-correctness all over, it's pretty scary: all the get should be const, selectWithinDistance and so on too.
  * the getModel, getInliers function should not force you to fill a vector: you should just return a const reference to the internal vector: that could allow you to save a useless copy
  * some private members should be made protected in the sub sac models (like sac_model_registration) so that we can inherit from them.
+ * the SampleConsensusModel should be independent from point clouds so that we can create our own model for whatever library. Then, the one used in the specialize models (like sac_model_registration and so on) should inherit from it and have constructors based on PointClouds like now. Maybe we should name those PclSampleConsensusModel or something (or have SampleConsensusModelBase and keep the naming for SampleConsensusModel).
 
 Minor changes
 =============
