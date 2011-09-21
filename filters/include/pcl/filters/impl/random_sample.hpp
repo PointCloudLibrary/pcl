@@ -42,8 +42,7 @@
 #include "pcl/filters/random_sample.h"
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename PointT>
-void
+template<typename PointT> void
 pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
 {
   // If sample size is 0 or if the sample size is greater then input cloud size
