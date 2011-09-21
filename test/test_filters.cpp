@@ -868,6 +868,68 @@ TEST (RadiusOutlierRemoval, Filters)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (RandomSample, Filters)
+{
+  // Test the PointCloud<PointT> method
+  // Randomly sample 10 points from cloud
+  RandomSample<PointXYZ> sample;
+  sample.setInputCloud (cloud);
+  sample.setSample(10);
+
+  // Indices
+  vector<int> indices;
+  sample.filter(indices);
+
+  EXPECT_EQ((int)indices.size(), 10);
+
+  // Cloud
+  PointCloud<PointXYZ> cloud_out;
+  sample.filter(cloud_out);
+
+  EXPECT_EQ ((int)cloud_out.width, 10);
+  EXPECT_EQ ((int)indices.size(), (int)cloud_out.size());
+
+  for (size_t i = 0; i < indices.size(); i++)
+  {
+    // Compare original points with sampled indices against sampled points
+    EXPECT_NEAR (cloud->points[indices[i]].x, cloud_out.points[i].x, 1e-4);
+    EXPECT_NEAR (cloud->points[indices[i]].y, cloud_out.points[i].y, 1e-4);
+    EXPECT_NEAR (cloud->points[indices[i]].z, cloud_out.points[i].z, 1e-4);
+  }
+
+
+  // Test the sensor_msgs::PointCloud2 method
+  // Randomly sample 10 points from cloud
+  RandomSample<PointCloud2> sample2;
+  sample2.setInputCloud (cloud_blob);
+  sample2.setSample (10);
+
+  // Indices
+  vector<int> indices2;
+  sample2.filter (indices2);
+
+  EXPECT_EQ ((int)indices2.size (), 10);
+
+  // Cloud
+  PointCloud2 cloud_out2;
+  sample2.filter (cloud_out2);
+
+  fromROSMsg (*cloud_blob, *cloud);
+  fromROSMsg (cloud_out2, cloud_out);
+
+  EXPECT_EQ ((int)cloud_out.width, 10);
+  EXPECT_EQ ((int)indices.size (), (int)cloud_out.size ());
+
+  for (size_t i = 0; i < indices.size(); i++)
+  {
+    // Compare original points with sampled indices against sampled points
+    EXPECT_NEAR (cloud->points[indices[i]].x, cloud_out.points[i].x, 1e-4);
+    EXPECT_NEAR (cloud->points[indices[i]].y, cloud_out.points[i].y, 1e-4);
+    EXPECT_NEAR (cloud->points[indices[i]].z, cloud_out.points[i].z, 1e-4);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (StatisticalOutlierRemoval, Filters)
 {
   // Test the PointCloud<PointT> method
