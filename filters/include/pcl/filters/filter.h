@@ -65,9 +65,6 @@ namespace pcl
   template<typename PointT>
   class Filter : public PCLBase<PointT>
   {
-    using PCLBase<PointT>::initCompute;
-    using PCLBase<PointT>::deinitCompute;
-
     public:
       using PCLBase<PointT>::indices_;
       using PCLBase<PointT>::input_;
@@ -179,6 +176,9 @@ namespace pcl
       }
 
     protected:
+
+      using PCLBase<PointT>::initCompute;
+      using PCLBase<PointT>::deinitCompute;
 
       /** \brief Indices of the points that are removed */
       IndicesPtr removed_indices_;

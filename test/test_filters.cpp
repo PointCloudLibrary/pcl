@@ -47,6 +47,7 @@
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/conditional_removal.h>
+#include <pcl/filters/random_sample.h>
 
 using namespace pcl;
 using namespace pcl::io;
