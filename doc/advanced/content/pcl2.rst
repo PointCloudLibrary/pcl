@@ -111,7 +111,14 @@ Proposals for the 2.x API:
 1.5 Data slices
 ^^^^^^^^^^^^^^^
 Anything involving a slice of data should use size_t for indices and not int. E.g the indices of the inliers in RANSAC, the focused points in RANSAC ...
-       
+
+1.6 RANSAC
+^^^^^^^^^^
+ * Renaming the functions and internal variables: everything should be named with _src and _tgt: we have confusing names like indices_ and indices_tgt_ (and no indices_src_), setInputCloud and setInputTarget (duuh, everything is an input, it should be setTarget, setSource), in the code, a sample is named: selection, model_ and samples. getModelCoefficients is confusing with getModel (this one should be getBestSample).
+ * no const-correctness all over, it's pretty scary: all the get should be const, selectWithinDistance and so on too.
+ * the getModel, getInliers function should not force you to fill a vector: you should just return a const reference to the internal vector: that could allow you to save a useless copy
+ * some private members should be made protected in the sub sac models (like sac_model_registration) so that we can inherit from them.
+
 Minor changes
 =============
 
