@@ -19,7 +19,7 @@ if(build)
         src/random_sample.cpp
         src/statistical_outlier_removal.cpp
         src/voxel_grid.cpp
-        src/fast_voxel_grid.cpp
+        src/approximate_voxel_grid.cpp
         src/bilateral.cpp
         )
 
@@ -35,7 +35,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/random_sample.h
         include/pcl/${SUBSYS_NAME}/statistical_outlier_removal.h
         include/pcl/${SUBSYS_NAME}/voxel_grid.h
-        include/pcl/${SUBSYS_NAME}/fast_voxel_grid.h
+        include/pcl/${SUBSYS_NAME}/approximate_voxel_grid.h
         include/pcl/${SUBSYS_NAME}/bilateral.h
         )
 
@@ -51,7 +51,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/random_sample.hpp
         include/pcl/${SUBSYS_NAME}/impl/statistical_outlier_removal.hpp
         include/pcl/${SUBSYS_NAME}/impl/voxel_grid.hpp
-        include/pcl/${SUBSYS_NAME}/impl/fast_voxel_grid.hpp
+        include/pcl/${SUBSYS_NAME}/impl/approximate_voxel_grid.hpp
         include/pcl/${SUBSYS_NAME}/impl/bilateral.hpp
         )
 

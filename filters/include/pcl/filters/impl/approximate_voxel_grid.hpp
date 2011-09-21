@@ -39,11 +39,11 @@
 #define PCL_FILTERS_IMPL_FAST_VOXEL_GRID_H_
 
 #include "pcl/common/common.h"
-#include "pcl/filters/fast_voxel_grid.h"
+#include "pcl/filters/approximate_voxel_grid.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::FastVoxelGrid<PointT>::flush (PointCloud &output, size_t op, he *hhe, int rgba_index, int centroid_size)
+pcl::ApproximateVoxelGrid<PointT>::flush (PointCloud &output, size_t op, he *hhe, int rgba_index, int centroid_size)
 {
   hhe->centroid /= hhe->count;
   pcl::for_each_type <FieldList> (pcl::xNdCopyEigenPointFunctor <PointT> (hhe->centroid, output.points[op]));
@@ -61,7 +61,7 @@ pcl::FastVoxelGrid<PointT>::flush (PointCloud &output, size_t op, he *hhe, int r
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::FastVoxelGrid<PointT>::applyFilter (PointCloud &output)
+pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
 {
   int centroid_size = 4;
   if (downsample_all_data_)
@@ -132,6 +132,6 @@ pcl::FastVoxelGrid<PointT>::applyFilter (PointCloud &output)
   output.is_dense     = false;                 // we filter out invalid points
 }
 
-#define PCL_INSTANTIATE_FastVoxelGrid(T) template class PCL_EXPORTS pcl::FastVoxelGrid<T>;
+#define PCL_INSTANTIATE_ApproximateVoxelGrid(T) template class PCL_EXPORTS pcl::ApproximateVoxelGrid<T>;
 
 #endif    // PCL_FILTERS_IMPL_FAST_VOXEL_GRID_H_

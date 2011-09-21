@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef PCL_FILTERS_FAST_VOXEL_GRID_MAP_H_
-#define PCL_FILTERS_FAST_VOXEL_GRID_MAP_H_
+#ifndef PCL_FILTERS_APPROXIMATE_VOXEL_GRID_MAP_H_
+#define PCL_FILTERS_APPROXIMATE_VOXEL_GRID_MAP_H_
 
 #include "pcl/filters/filter.h"
 #include <boost/mpl/size.hpp>
@@ -97,9 +97,9 @@ namespace pcl
       int f_idx_;
   };
 
-  /** \brief @b FastVoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
+  /** \brief @b ApproximateVoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
     *
-    * The @b FastVoxelGrid class creates a *3D voxel grid* (think about a voxel
+    * The @b ApproximateVoxelGrid class creates a *3D voxel grid* (think about a voxel
     * grid as a set of tiny 3D boxes in space) over the input point cloud data.
     * Then, in each *voxel* (i.e., 3D box), all the points present will be
     * approximated (i.e., *downsampled*) with their centroid. This approach is
@@ -110,7 +110,7 @@ namespace pcl
     * \ingroup filters
     */
   template <typename PointT>
-  class FastVoxelGrid: public Filter<PointT>
+  class ApproximateVoxelGrid: public Filter<PointT>
   {
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::getClassName;
@@ -127,15 +127,15 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      FastVoxelGrid () : downsample_all_data_ (true), histsize(512)
+      ApproximateVoxelGrid () : downsample_all_data_ (true), histsize(512)
       {
         setLeafSize(1, 1, 1);
-        filter_name_ = "FastVoxelGrid";
+        filter_name_ = "ApproximateVoxelGrid";
         history = new he[histsize];
       }
 
       /** \brief Destructor. */
-      virtual ~FastVoxelGrid ()
+      virtual ~ApproximateVoxelGrid ()
       {
       }
 

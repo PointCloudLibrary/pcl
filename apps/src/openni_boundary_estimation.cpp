@@ -41,7 +41,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/openni_camera/openni_driver.h>
-#include <pcl/filters/fast_voxel_grid.h>
+#include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/features/boundary.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/console/parse.h>
@@ -172,7 +172,7 @@ class OpenNIIntegralImageNormalEstimation
       interface->stop ();
     }
 
-    pcl::FastVoxelGrid<pcl::PointXYZRGBNormal> pass_;
+    pcl::ApproximateVoxelGrid<pcl::PointXYZRGBNormal> pass_;
     pcl::IntegralImageNormalEstimation<pcl::PointXYZRGB, pcl::PointXYZRGBNormal> ne_;
     pcl::BoundaryEstimation<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal, pcl::Boundary> be_;
     pcl::visualization::CloudViewer viewer;
