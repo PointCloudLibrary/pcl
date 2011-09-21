@@ -11,10 +11,12 @@ if(build)
         src/conditional_removal.cpp
         src/extract_indices.cpp
         src/filter.cpp
+        src/filter_indices.cpp
         src/passthrough.cpp
         src/color.cpp
         src/project_inliers.cpp
         src/radius_outlier_removal.cpp
+        src/random_sample.cpp
         src/statistical_outlier_removal.cpp
         src/voxel_grid.cpp
         src/fast_voxel_grid.cpp
@@ -25,10 +27,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/conditional_removal.h
         include/pcl/${SUBSYS_NAME}/extract_indices.h
         include/pcl/${SUBSYS_NAME}/filter.h
+        include/pcl/${SUBSYS_NAME}/filter_indices.h
         include/pcl/${SUBSYS_NAME}/passthrough.h
         include/pcl/${SUBSYS_NAME}/color.h
         include/pcl/${SUBSYS_NAME}/project_inliers.h
         include/pcl/${SUBSYS_NAME}/radius_outlier_removal.h
+        include/pcl/${SUBSYS_NAME}/random_sample.h
         include/pcl/${SUBSYS_NAME}/statistical_outlier_removal.h
         include/pcl/${SUBSYS_NAME}/voxel_grid.h
         include/pcl/${SUBSYS_NAME}/fast_voxel_grid.h
@@ -39,10 +43,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/conditional_removal.hpp
         include/pcl/${SUBSYS_NAME}/impl/extract_indices.hpp
         include/pcl/${SUBSYS_NAME}/impl/filter.hpp
+        include/pcl/${SUBSYS_NAME}/impl/filter_indices.hpp
         include/pcl/${SUBSYS_NAME}/impl/passthrough.hpp
         include/pcl/${SUBSYS_NAME}/impl/color.hpp
         include/pcl/${SUBSYS_NAME}/impl/project_inliers.hpp
         include/pcl/${SUBSYS_NAME}/impl/radius_outlier_removal.hpp
+        include/pcl/${SUBSYS_NAME}/impl/random_sample.hpp
         include/pcl/${SUBSYS_NAME}/impl/statistical_outlier_removal.hpp
         include/pcl/${SUBSYS_NAME}/impl/voxel_grid.hpp
         include/pcl/${SUBSYS_NAME}/impl/fast_voxel_grid.hpp
