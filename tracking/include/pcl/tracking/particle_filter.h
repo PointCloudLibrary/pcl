@@ -2,6 +2,7 @@
 #define PCL_TRACKING_PARTICLE_FILTER_H_
 
 #include "pcl/tracking/tracking.h"
+#include "pcl/tracking/tracker.h"
 #include "pcl/tracking/coherence.h"
 #include <Eigen/Dense>
 

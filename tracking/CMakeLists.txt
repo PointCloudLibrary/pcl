@@ -14,6 +14,7 @@ if(build)
 
     set(incs 
         include/pcl/${SUBSYS_NAME}/tracking.h
+        include/pcl/${SUBSYS_NAME}/tracker.h
         include/pcl/${SUBSYS_NAME}/coherence.h
         include/pcl/${SUBSYS_NAME}/nearest_pair_point_cloud_coherence.h
         include/pcl/${SUBSYS_NAME}/distance_coherence.h
@@ -24,6 +25,7 @@ if(build)
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/tracking.hpp
+        include/pcl/${SUBSYS_NAME}/impl/tracker.hpp
         include/pcl/${SUBSYS_NAME}/impl/coherence.hpp
         include/pcl/${SUBSYS_NAME}/impl/nearest_pair_point_cloud_coherence.hpp
         include/pcl/${SUBSYS_NAME}/impl/distance_coherence.hpp
