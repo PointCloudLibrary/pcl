@@ -262,8 +262,8 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level2)
     }
 }
 
-//TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level3)
-TEST(PCL_FeaturesGPU, fpfh_high_level3)
+TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level3)
+//TEST(PCL_FeaturesGPU, fpfh_high_level3)
 {       
     DataSource source;
     source.estimateNormals();    
