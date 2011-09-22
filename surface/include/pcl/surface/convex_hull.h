@@ -82,9 +82,10 @@ namespace pcl
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
       /** \brief Empty constructor. */
-      ConvexHull ()
+      ConvexHull () : total_area_(0), total_volume_(0)
       {
         keep_information_ = false;
+        compute_area_ = false;
       };
 
       /** \brief Compute a convex hull for all points given 
@@ -105,12 +106,39 @@ namespace pcl
 
       /** \brief If keep_information_is set to true the convex hull
         * points keep other information like rgb, normals, ...
-        * \param value where to keep the information or not, default is false
+        * \param value whether to keep information or not, default is false
         */
       void
       setKeepInformation (bool value)
       {
         keep_information_ = value;
+      }
+
+      /** \brief If set to true, the qhull library is called to compute the total area and volume of the convex hull.
+       * NOTE: When this option is activated, the qhull library produces output to the console.
+       * \param value wheter to compute the area and the volume, default is false
+       */
+      void
+      setComputeAreaVolume (bool value)
+      {
+        compute_area_ = value;
+      }
+
+      /** \brief Returns the total area of the convex hull.
+       */
+      double
+      getTotalArea ()
+      {
+        return total_area_;
+      }
+
+      /** \brief Returns the total volume of the convex hull. Only valid for 3-dimensional sets.
+       * For 2D-sets volume is zero.
+       */
+      double
+      getTotalVolume ()
+      {
+        return total_volume_;
       }
 
     private:
@@ -127,6 +155,9 @@ namespace pcl
                              bool fill_polygon_data = false);
 
       bool keep_information_;
+      bool compute_area_;
+      double total_area_;
+      double total_volume_;
 
     protected:
       /** \brief Class get name method. */

@@ -123,10 +123,21 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
 
   // True if qhull should free points in qh_freeqhull() or reallocation
   boolT ismalloc = True;
-  // option flags for qhull, see qh_opt.htm
-  char flags[] = "qhull Tc";
   // output from qh_produce_output(), use NULL to skip qh_produce_output()
   FILE *outfile = NULL;
+
+  std::string flags_str;
+  flags_str = "qhull Tc";
+
+  if (compute_area_)
+  {
+    flags_str.append (" FA");
+    outfile = stderr;
+  }
+
+  // option flags for qhull, see qh_opt.htm
+  //char flags[] = "qhull Tc FA";
+  char * flags = (char *)flags_str.c_str();
   // error messages from qhull code
   FILE *errfile = stderr;
   // 0 if no error from qhull
@@ -216,6 +227,12 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
     ++i;
   }
 
+  if (compute_area_)
+  {
+    total_area_  = qh totarea;
+    total_volume_ = qh totvol;
+  }
+
   if (fill_polygon_data)
   {
     if (dim == 3)
@@ -233,9 +250,10 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
         FOREACHvertex_i_((*facet).vertices)
         //facet_vertices.vertices.push_back (qhid_to_pcidx[vertex->id]);
         polygons[dd].vertices[vertex_i] = qhid_to_pcidx[vertex->id];
-
         ++dd;
       }
+
+
     }
     else
     {
@@ -328,6 +346,14 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
   {
     Eigen::Affine3f transInverse = transform1.inverse ();
     pcl::transformPointCloud (hull, hull, transInverse);
+
+    //for 2D sets, the qhull library delivers the actual area of the 2d hull in the volume
+    if(compute_area_)
+    {
+      total_area_ = total_volume_;
+      total_volume_ = 0.0;
+    }
+
   }
 
   xyz_centroid[0] = -xyz_centroid[0];
