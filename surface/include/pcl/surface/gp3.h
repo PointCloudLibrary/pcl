@@ -233,7 +233,7 @@ namespace pcl
         *       by avoiding connecting points from one side to points from the other through forcing the use of the edge points.
         */
       inline void 
-      setMaximumSurfaceAgle (double eps_angle) { eps_angle_ = eps_angle; }
+      setMaximumSurfaceAngle (double eps_angle) { eps_angle_ = eps_angle; }
 
       /** \brief Get the maximum surface angle. */
       inline double 

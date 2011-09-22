@@ -111,7 +111,7 @@ TEST (PCL, GreedyProjectionTriangulation)
   gp3.setSearchRadius (0.025);
   gp3.setMu (2.5);
   gp3.setMaximumNearestNeighbors (100);
-  gp3.setMaximumSurfaceAgle(M_PI/4); // 45 degrees
+  gp3.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
   gp3.setMinimumAngle(M_PI/18); // 10 degrees
   gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
   gp3.setNormalConsistency(false);
@@ -162,7 +162,7 @@ TEST (PCL, GreedyProjectionTriangulation_Merge2Meshes)
     gp3.setSearchRadius (0.025);
     gp3.setMu (2.5);
     gp3.setMaximumNearestNeighbors (100);
-    gp3.setMaximumSurfaceAgle(M_PI/4); // 45 degrees
+    gp3.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
     gp3.setMinimumAngle(M_PI/18); // 10 degrees
     gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
     gp3.setNormalConsistency(false);
@@ -174,7 +174,7 @@ TEST (PCL, GreedyProjectionTriangulation_Merge2Meshes)
     gp31.setSearchRadius (0.025);
     gp31.setMu (2.5);
     gp31.setMaximumNearestNeighbors (100);
-    gp31.setMaximumSurfaceAgle(M_PI/4); // 45 degrees
+    gp31.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
     gp31.setMinimumAngle(M_PI/18); // 10 degrees
     gp31.setMaximumAngle(2*M_PI/3); // 120 degrees
     gp31.setNormalConsistency(false);
@@ -216,7 +216,7 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
     gp3.setSearchRadius (0.025);
     gp3.setMu (2.5);
     gp3.setMaximumNearestNeighbors (100);
-    gp3.setMaximumSurfaceAgle(M_PI/4); // 45 degrees
+    gp3.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
     gp3.setMinimumAngle(M_PI/18); // 10 degrees
     gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
     gp3.setNormalConsistency(false);
