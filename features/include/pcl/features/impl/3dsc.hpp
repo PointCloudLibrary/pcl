@@ -183,6 +183,8 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint(size_t
   /// For each point within radius
   for(size_t ne = 0; ne < neighb_cnt; ne++)
   {
+	  if (nn_indices[ne] == (*indices_)[index] )
+		  continue;
     /// Get neighbours coordinates
     Eigen::Vector3f neighbour = input[nn_indices[ne]].getVector3fMap ();
 
@@ -211,7 +213,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint(size_t
     Eigen::Vector3f no = neighbour - origin;
     no.normalize ();
     float theta = normal.dot (no);
-    theta = rad2deg (acos(theta));
+    theta = rad2deg (acos(std::min(1.0f, std::max( -1.0f, theta))));
 
     /// Bin (j, k, l)
     size_t j = 0;
@@ -245,10 +247,11 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint(size_t
     std::vector<float> neighbour_didtances;
     size_t point_density = searchForNeighbors (nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_didtances);
     /// point_density is always bigger than 0 because FindPointsWithinRadius returns at least the point itself
-    float w = (1 / point_density) * volume_lut_[ (l*elevation_bins_*radius_bins_) + 
+    float w = (1.0 / point_density) * volume_lut_[ (l*elevation_bins_*radius_bins_) + 
                                                  (k*radius_bins_) + 
                                                  j ];
 			
+	assert(w >= 0.0);
     if(w == std::numeric_limits<float>::infinity())
       PCL_ERROR("Shape Context Error INF!\n");
     if(w != w)
@@ -256,6 +259,8 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint(size_t
 
     /// Accumulate w into correspondant Bin(j,k,l)
     desc[ (l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j ] += w;
+
+	assert(desc[ (l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j ] >= 0);
   } // end for each neighbour
 }
 
