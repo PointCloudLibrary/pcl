@@ -246,6 +246,7 @@ OpenNIDevice::~OpenNIDevice () throw ()
 
 void OpenNIDevice::Init ()
 {
+  quit_ = false;
   XnDouble pixel_size;
 
   // set Depth resolution here only once... since no other mode for kinect is available -> deactivating setDepthResolution method!
@@ -294,8 +295,6 @@ void OpenNIDevice::Init ()
     lock_guard<mutex> ir_lock (ir_mutex_);
     ir_thread_ = boost::thread (&OpenNIDevice::IRDataThreadFunction, this);
   }
-
-  quit_ = false;
 }
 
 void OpenNIDevice::startImageStream ()
