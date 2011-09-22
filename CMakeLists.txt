@@ -9,7 +9,6 @@ endif("${CMAKE_BUILD_TYPE}" STREQUAL "")
 project(PCL)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
     "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -123,6 +122,7 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
 # Find VTK 
 find_package(VTK)
 if(VTK_FOUND)
+	set(VTK_FOUND TRUE)
   message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
   link_directories(${VTK_LIBRARY_DIRS})
   set(HAVE_VTK ON)
@@ -145,21 +145,20 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_tests.cmake)
 
 ### ---[ Add the library subdirectories
 include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
-add_subdirectory(common)
-add_subdirectory(octree)
-add_subdirectory(io)
-add_subdirectory(kdtree)
-add_subdirectory(range_image)
-add_subdirectory(sample_consensus)
-add_subdirectory(filters)
-add_subdirectory(features)
-add_subdirectory(keypoints)
-add_subdirectory(registration)
-add_subdirectory(segmentation)
-add_subdirectory(surface)
-add_subdirectory(visualization)
-add_subdirectory(test)
-add_subdirectory(apps)
+#collect_subproject_directory_names(${PCL_SOURCE_DIR} "CMakeLists.txt" PCL_MODULES_DIRS test tools doc apps cuda python)
+collect_subproject_directory_names(${PCL_SOURCE_DIR} "CMakeLists.txt" PCL_MODULES_DIRS doc)
+set(PCL_MODULES_DIRS ${PCL_MODULES_DIRS})
+topological_sort(PCL_MODULES_DIRS PCL_ _DEPENDS)
+foreach(subdir ${PCL_MODULES_DIRS})
+ 	add_subdirectory(${subdir})
+endforeach(subdir)
+
+### ---[ Add other subdirectories
+# add_subdirectory(test)
+# add_subdirectory(tools)
+# add_subdirectory(apps)
+# add_subdirectory(cuda)
+# add_subdirectory(python)
 
 ### ---[ Documentation
 add_subdirectory(doc)
@@ -207,4 +206,3 @@ install(FILES
         DESTINATION ${CMAKE_INSTALL_DIR})
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
-
