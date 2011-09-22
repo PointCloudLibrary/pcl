@@ -65,8 +65,7 @@ TEST(PCL, pca)
   cloud.points[17].x = 2077; cloud.points[17].y = 181; cloud.points[17].z = 33;
   cloud.points[18].x = 2282; cloud.points[18].y = 190; cloud.points[18].z = 23;
   cloud.points[19].x = 2999; cloud.points[19].y = 202; cloud.points[19].z = 29;  
-  pcl::PCA<pcl::PointXYZ> pca;
-  pca.setInputCloud (cloud.makeShared ());
+  pcl::PCA<pcl::PointXYZ> pca(cloud);
   pcl::PointXYZ projected, reconstructed;
   for(size_t i = 0; i < cloud.size(); i++)
   {
