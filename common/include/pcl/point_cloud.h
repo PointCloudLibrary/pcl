@@ -99,6 +99,21 @@ namespace pcl
         *this = pc;
       }
 
+      /** \brief Copy constructor from point cloud subset
+        * \param pc the cloud to copy into this
+        * \param indices the subset to copy
+        */
+      inline PointCloud (const PointCloud<PointT> &pc, 
+                         const std::vector<size_t> &indices)
+      {
+        assert(indices.size () <= pc.size ());
+        this->resize (indices.size ());
+        for(size_t i = 0; i < indices.size (); i++)
+        {
+          this->push_back (pc[(*indices) i]);
+        }
+      }
+
       ////////////////////////////////////////////////////////////////////////////////////////
       inline PointCloud&
       operator += (const PointCloud& rhs)
@@ -269,8 +284,8 @@ namespace pcl
       inline void swap (PointCloud<PointT> &rhs)
       {
         this->points.swap (rhs.points);
-        width = points.size ();
-        height = 1;
+        std::swap (width, rhs.width);
+        std::swap (height, rhs.height);
       }
       inline void clear ()
       {
