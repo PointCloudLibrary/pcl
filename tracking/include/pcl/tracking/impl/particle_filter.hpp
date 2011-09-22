@@ -46,7 +46,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcLikelihood (const St
     Eigen::Vector4f n = input_point.getNormalVector4fMap ();
     double theta = pcl::getAngle3D(p, n);
 
-// TODO: check NAN
+    // TODO: check NAN
     if ( theta > occlusion_angle_thr_ )
     {
       indices->push_back (i);
@@ -54,9 +54,9 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcLikelihood (const St
     }
   }
   
-  coherence_->setInputCloud (transed_reference);
-  coherence_->setIndices (indices);
-  double val = coherence_->compute ();
+  //coherence_->setInputCloud (transed_reference);
+  //coherence_->setIndices (indices);
+  double val = coherence_->compute (transed_reference, indices);
   
   // take min_indices_ into account
   // TODO: normalization of likelihood is required?
@@ -163,6 +163,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::weight ()
 {
+  coherence_->initCompute ();
   for ( int i = 0; i < particle_num_; i++ )
   {
     double likelihood = calcLikelihood (particles_->points[i]);

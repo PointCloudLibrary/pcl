@@ -54,16 +54,9 @@ namespace pcl
       * \ingroup tracking
       */
     template <typename PointInT>
-    class PointCloudCoherence: public PCLBase<PointInT>
+    class PointCloudCoherence
     {
-    protected:
-      using PCLBase<PointInT>::deinitCompute;
-
     public:
-      using PCLBase<PointInT>::indices_;
-      using PCLBase<PointInT>::input_;
-
-      typedef PCLBase<PointInT> BaseClass;
       typedef boost::shared_ptr< PointCloudCoherence<PointInT> > Ptr;
       typedef boost::shared_ptr< const PointCloudCoherence<PointInT> > ConstPtr;
 
@@ -72,13 +65,12 @@ namespace pcl
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
       
       typedef typename PointCoherence<PointInT>::Ptr PointCoherencePtr;
-      
       /** \brief empty constructor */
       PointCloudCoherence () {}
 
       /** \brief compute coherence between two pointclouds. */
       inline double
-      compute ();
+      compute (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices = IndicesConstPtr ());
 
       /** \brief get a list of pcl::tracking::PointCoherence.*/
       inline std::vector<PointCoherencePtr>
@@ -90,6 +82,9 @@ namespace pcl
       inline void
       setPointCoherences (std::vector<PointCoherencePtr> coherences) { point_coherences_ = coherences; }
 
+      /** \brief This method should get called before starting the actual computation. */
+      virtual bool initCompute ();
+      
       /** \brief add a PointCoherence to the PointCloudCoherence.
         * \param coherence a pointer to PointCoherence.
         */
@@ -105,7 +100,7 @@ namespace pcl
     protected:
       /** \brief Abstract method to compute coherence. */
       virtual double
-      computeCoherence () = 0;
+      computeCoherence (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices) = 0;
 
       inline double calcPointCoherence (PointInT &source, PointInT &target);
       
@@ -113,8 +108,6 @@ namespace pcl
       inline const std::string& 
       getClassName () const { return (coherence_name_); }
       
-      /** \brief This method should get called before starting the actual computation. */
-      virtual bool initCompute ();
       
       /** \brief The coherence name. */
       std::string coherence_name_;

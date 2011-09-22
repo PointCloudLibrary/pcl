@@ -16,11 +16,11 @@ namespace pcl
     class NearestPairPointCloudCoherence: public PointCloudCoherence<PointInT>
     {
     public:
-      using PointCloudCoherence<PointInT>::deinitCompute;
+      //using PointCloudCoherence<PointInT>::deinitCompute;
       using PointCloudCoherence<PointInT>::getClassName;
       using PointCloudCoherence<PointInT>::coherence_name_;
-      using PointCloudCoherence<PointInT>::indices_;
-      using PointCloudCoherence<PointInT>::input_;
+      //using PointCloudCoherence<PointInT>::indices_;
+      //using PointCloudCoherence<PointInT>::input_;
       using PointCloudCoherence<PointInT>::target_input_;
       
       typedef typename PointCloudCoherence<PointInT>::PointCloudInConstPtr PointCloudInConstPtr;
@@ -75,7 +75,7 @@ namespace pcl
       
       /** \brief compute the nearest pairs and compute coherence using point_coherences_ */
       virtual inline double
-      computeCoherence ();
+      computeCoherence (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices);
       
     };
   }

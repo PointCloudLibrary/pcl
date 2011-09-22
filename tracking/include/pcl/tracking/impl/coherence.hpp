@@ -27,17 +27,9 @@ namespace pcl
     template <typename PointInT> bool
     PointCloudCoherence<PointInT>::initCompute ()
     {
-      if (!PCLBase<PointInT>::initCompute ())
-      {
-        PCL_ERROR ("[pcl::%s::initCompute] PCLBase::Init failed.\n", getClassName ().c_str ());
-        deinitCompute ();
-        return (false);
-      }
-
       if (!target_input_ || target_input_->points.empty ())
       {
         PCL_ERROR ("[pcl::%s::compute] target_input_ is empty!\n", getClassName ().c_str ());
-        deinitCompute ();
         return false;
       }
 
@@ -46,7 +38,7 @@ namespace pcl
     }
     
     template <typename PointInT> double
-    PointCloudCoherence<PointInT>::compute ()
+    PointCloudCoherence<PointInT>::compute (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices)
     {
       if (!initCompute ())
       {
@@ -54,7 +46,7 @@ namespace pcl
         return (false);
       }
 
-      return computeCoherence ();
+      return computeCoherence (cloud, indices);
     }
   }
 }

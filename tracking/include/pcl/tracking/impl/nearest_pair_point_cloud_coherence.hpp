@@ -9,19 +9,39 @@ namespace pcl
   namespace tracking
   {
     template <typename PointInT> double
-    NearestPairPointCloudCoherence<PointInT>::computeCoherence ()
+    NearestPairPointCloudCoherence<PointInT>::computeCoherence
+    (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices)
     {
-      std::vector<int> k_indices(1);
-      std::vector<float> k_distances(1);
+      //std::vector<double> vals (indices->size (), 0.0);
       double val = 0.0;
-      for ( size_t i = 0; i < indices_->size (); i++ )
+      if (indices == NULL)
       {
-        PointInT input_point = input_->points[(*indices_)[i]];
-        search_->nearestKSearch (input_point, 1, k_indices, k_distances);
-        PointInT target_point = target_input_->points[k_indices[0]];
-
-        val += calcPointCoherence(input_point, target_point);
+        for (size_t i = 0; i < cloud->points.size (); i++)
+        {
+          std::vector<int> k_indices(1);
+          std::vector<float> k_distances(1);
+          PointInT input_point = cloud->points[i];
+          search_->nearestKSearch (input_point, 1, k_indices, k_distances);
+          PointInT target_point = target_input_->points[k_indices[0]];
+          val += calcPointCoherence(input_point, target_point);
+          //vals[i] = calcPointCoherence(input_point, target_point);
+        }
       }
+      else
+      {
+        for (size_t i = 0; i < indices->size (); i++)
+        {
+          std::vector<int> k_indices(1);
+          std::vector<float> k_distances(1);
+          PointInT input_point = cloud->points[(*indices)[i]];
+          search_->nearestKSearch (input_point, 1, k_indices, k_distances);
+          PointInT target_point = target_input_->points[k_indices[0]];
+          val += calcPointCoherence(input_point, target_point);
+          //vals[i] = calcPointCoherence(input_point, target_point);
+        }
+      }
+      // for ( size_t i = 0; i < indices_->size (); i++ )
+      //   val += vals[i];
       return exp(val);
     }
 
@@ -31,7 +51,7 @@ namespace pcl
       if (!PointCloudCoherence<PointInT>::initCompute ())
       {
         PCL_ERROR ("[pcl::%s::initCompute] PointCloudCoherence::Init failed.\n", getClassName ().c_str ());
-        deinitCompute ();
+        //deinitCompute ();
         return (false);
       }
 
