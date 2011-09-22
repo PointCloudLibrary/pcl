@@ -1,6 +1,6 @@
 set(SUBSYS_NAME python)
 set(SUBSYS_DESC "Python pcl")
-set(SUBSYS_DEPS common filters)
+set(SUBSYS_DEPS common filters test)
 
 if(PYTHONLIBS_FOUND)
     set(DEFAULT TRUE)
@@ -12,7 +12,7 @@ else(PYTHONLIBS_FOUND)
 endif(PYTHONLIBS_FOUND)
 
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
+PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 add_custom_command(
    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/pygen.i

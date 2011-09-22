@@ -13,6 +13,7 @@ endif(${CMAKE_VERSION} VERSION_LESS 2.8.5)
 find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams)
 
 if(Boost_FOUND)
+  set(BOOST_FOUND TRUE)
   # Obtain diagnostic information about Boost's automatic linking outputted 
   # during compilation time.
   add_definitions(${Boost_LIB_DIAGNOSTIC_DEFINITIONS})

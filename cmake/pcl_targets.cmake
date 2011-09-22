@@ -9,22 +9,28 @@ include(${PROJECT_SOURCE_DIR}/cmake/pcl_utils.cmake)
 # ARGV5 The reason for disabling if the default is FALSE.
 macro(PCL_SUBSYS_OPTION _var _name _desc _default)
     set(_opt_name "BUILD_${_name}")
-    option(${_opt_name} ${_desc} ${_default})
-    if(NOT ${_default} AND NOT ${_opt_name})
+		PCL_GET_SUBSYS_HYPERSTATUS(subsys_status ${_name})
+		if(NOT ("${subsys_status}" STREQUAL "AUTO_OFF"))
+			option(${_opt_name} ${_desc} ${_default})
+			if(NOT ${_default} AND NOT ${_opt_name})
         set(${_var} FALSE)
         if(${ARGC} GREATER 4)
-            set(_reason ${ARGV4})
+          set(_reason ${ARGV4})
         else(${ARGC} GREATER 4)
-            set(_reason "Disabled by default.")
+          set(_reason "Disabled by default.")
         endif(${ARGC} GREATER 4)
         PCL_SET_SUBSYS_STATUS(${_name} FALSE ${_reason})
-    elseif(NOT ${_opt_name})
+				PCL_DISABLE_DEPENDIES(${_name})
+			elseif(NOT ${_opt_name})
         set(${_var} FALSE)
         PCL_SET_SUBSYS_STATUS(${_name} FALSE "Disabled manually.")
-    else(NOT ${_default} AND NOT ${_opt_name})
+				PCL_DISABLE_DEPENDIES(${_name})
+			else(NOT ${_default} AND NOT ${_opt_name})
         set(${_var} TRUE)
         PCL_SET_SUBSYS_STATUS(${_name} TRUE)
-    endif(NOT ${_default} AND NOT ${_opt_name})
+				PCL_ENABLE_DEPENDIES(${_name})
+			endif(NOT ${_default} AND NOT ${_opt_name})
+		endif(NOT ("${subsys_status}" STREQUAL "AUTO_OFF"))
     PCL_ADD_SUBSYSTEM(${_name} ${_desc})
 endmacro(PCL_SUBSYS_OPTION)
 
@@ -35,23 +41,39 @@ endmacro(PCL_SUBSYS_OPTION)
 # _var The cumulative build variable. This will be set to FALSE if the
 #   dependencies are not met.
 # _name The name of the subsystem.
-# ARGN The subsystems to depend on.
+# ARGN The subsystems and external libraries to depend on.
 macro(PCL_SUBSYS_DEPEND _var _name)
-    if(${ARGC} GREATER 2)
-        SET_IN_GLOBAL_MAP(PCL_SUBSYS_DEPS ${_name} "${ARGN}")
-    endif(${ARGC} GREATER 2)
-    if(${_var})
-        foreach(_dep ${ARGN})
+    set(options)
+    set(oneValueArgs)
+    set(multiValueArgs DEPS EXT_DEPS OPT_DEPS)
+    cmake_parse_arguments(SUBSYS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+    if(SUBSYS_DEPS)
+        SET_IN_GLOBAL_MAP(PCL_SUBSYS_DEPS ${_name} "${SUBSYS_DEPS}")
+    endif(SUBSYS_DEPS)
+		GET_IN_MAP(subsys_status PCL_SUBSYS_HYPERSTATUS ${_name})
+    if(${_var} AND (NOT ("${subsys_status}" STREQUAL "AUTO_OFF")))
+        if(SUBSYS_DEPS)
+        foreach(_dep ${SUBSYS_DEPS})
             PCL_GET_SUBSYS_STATUS(_status ${_dep})
             if(NOT _status)
                 set(${_var} FALSE)
-                PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires ${_dep}")
+                PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires ${_dep}.")
             else(NOT _status)
                 PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
                 include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
             endif(NOT _status)
         endforeach(_dep)
-    endif(${_var})
+        endif(SUBSYS_DEPS)
+        if(SUBSYS_EXT_DEPS)
+        foreach(_dep ${SUBSYS_EXT_DEPS})
+            string(TOUPPER "${_dep}_found" EXT_DEP_FOUND)
+            if(NOT ${EXT_DEP_FOUND} OR (NOT ("${EXT_DEP_FOUND}" STREQUAL "TRUE")))
+                set(${_var} FALSE)
+                PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires external library ${_dep}.")
+            endif(NOT ${EXT_DEP_FOUND} OR (NOT ("${EXT_DEP_FOUND}" STREQUAL "TRUE")))
+        endforeach(_dep)
+        endif(SUBSYS_EXT_DEPS)
+    endif(${_var} AND (NOT ("${subsys_status}" STREQUAL "AUTO_OFF")))
 endmacro(PCL_SUBSYS_DEPEND)
 
 
@@ -201,7 +223,7 @@ macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
     endif(USE_PROJECT_FOLDERS)
-	
+  
     set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
         COMPONENT ${_component})
@@ -325,6 +347,8 @@ endmacro(PCL_MAKE_PKGCONFIG)
 ###############################################################################
 # Reset the subsystem status map.
 macro(PCL_RESET_MAPS)
+    set(PCL_SUBSYS_HYPERSTATUS "" CACHE INTERNAL
+        "To Build Or Not To Build, That Is The Question." FORCE)
     set(PCL_SUBSYS_STATUS "" CACHE INTERNAL
         "To build or not to build, that is the question." FORCE)
     set(PCL_SUBSYS_REASONS "" CACHE INTERNAL
@@ -363,7 +387,6 @@ macro(PCL_SET_SUBSYS_STATUS _name _status)
     SET_IN_GLOBAL_MAP(PCL_SUBSYS_REASONS ${_name} ${_reason})
 endmacro(PCL_SET_SUBSYS_STATUS)
 
-
 ###############################################################################
 # Get the status of a subsystem
 # _var Destination variable.
@@ -372,6 +395,44 @@ macro(PCL_GET_SUBSYS_STATUS _var _name)
     GET_IN_MAP(${_var} PCL_SUBSYS_STATUS ${_name})
 endmacro(PCL_GET_SUBSYS_STATUS)
 
+###############################################################################
+# Set the hyperstatus of a subsystem and its dependee
+# _name Subsystem name.
+# _dependee Dependant subsystem.
+# _status AUTO_OFF to disable AUTO_ON to enable
+# ARGN[0] Reason for not building.
+macro(PCL_SET_SUBSYS_HYPERSTATUS _name _dependee _status)	
+    SET_IN_GLOBAL_MAP(PCL_SUBSYS_HYPERSTATUS ${_name}_${_dependee} ${_status})
+		if(${ARGC} EQUAL 4)
+			  SET_IN_GLOBAL_MAP(PCL_SUBSYS_REASONS ${_dependee} ${ARGV3})
+		endif(${ARGC} EQUAL 4)
+endmacro(PCL_SET_SUBSYS_HYPERSTATUS)
+
+###############################################################################
+# Get the hyperstatus of a subsystem and its dependee
+# _name IN subsystem name.
+# _dependee IN dependant subsystem.
+# _var OUT hyperstatus
+# ARGN[0] Reason for not building.
+macro(PCL_GET_SUBSYS_HYPERSTATUS _var _name)
+	  set(${_var} "AUTO_ON")
+	  if(${ARGC} EQUAL 3)
+			  GET_IN_MAP(${_var} PCL_SUBSYS_HYPERSTATUS ${_name}_${ARGV2})
+		else(${ARGC} EQUAL 3)
+        foreach(subsys ${PCL_SUBSYS_DEPS_${_name}})
+					  if("${PCL_SUBSYS_HYPERSTATUS_${subsys}_${_name}}" STREQUAL "AUTO_OFF")
+							  set(${_var} "AUTO_OFF")
+								break()
+					  endif("${PCL_SUBSYS_HYPERSTATUS_${subsys}_${_name}}" STREQUAL "AUTO_OFF")
+				endforeach(subsys)
+		endif(${ARGC} EQUAL 3)
+endmacro(PCL_GET_SUBSYS_HYPERSTATUS)
+
+###############################################################################
+# Set the hyperstatus of a subsystem and its dependee
+macro(PCL_UNSET_SUBSYS_HYPERSTATUS _name _dependee)
+    unset(PCL_SUBSYS_HYPERSTATUS_${_name}_${dependee})
+endmacro(PCL_UNSET_SUBSYS_HYPERSTATUS)
 
 ###############################################################################
 # Set the include directory name of a subsystem.
@@ -409,10 +470,79 @@ macro(PCL_WRITE_STATUS_REPORT)
     message(STATUS "The following subsystems will not be built:")
     foreach(_ss ${PCL_SUBSYSTEMS})
         PCL_GET_SUBSYS_STATUS(_status ${_ss})
-        if(NOT _status)
+				PCL_GET_SUBSYS_STATUS(_hyper_status ${_ss})
+        if(NOT _status OR ("${_hyper_status}" STREQUAL "AUTO_OFF"))
             GET_IN_MAP(_reason PCL_SUBSYS_REASONS ${_ss})
             message(STATUS "  ${_ss}: ${_reason}")
-        endif(NOT _status)
+        endif(NOT _status OR ("${_hyper_status}" STREQUAL "AUTO_OFF"))
     endforeach(_ss)
 endmacro(PCL_WRITE_STATUS_REPORT)
 
+##############################################################################
+# Collect subdirectories from dirname that contains filename and store them in
+#  varname.
+# WARNING If extra arguments are given then they are considered as exception 
+# list and varname will contain subdirectories of dirname that contains 
+# fielename but doesn't belong to exception list.
+# dirname IN parent directory
+# filename IN file name to look for in each subdirectory of parent directory
+# varname OUT list of subdirectories containing filename
+# exception_list OPTIONAL and contains list of subdirectories not to account
+macro(collect_subproject_directory_names dirname filename varname)
+    file(GLOB globbed RELATIVE "${dirname}" "${dirname}/*/${filename}")
+    if(${ARGC} GREATER 3)
+        set(exclusion_list ${ARGN})
+        foreach(file ${globbed})
+            get_filename_component(dir ${file} PATH)
+            list(FIND exclusion_list ${dir} excluded)
+            if(excluded EQUAL -1)
+                set(${varname} ${${varname}} ${dir})
+            endif(excluded EQUAL -1)
+        endforeach()
+    else(${ARGC} GREATER 3)
+        foreach(file ${globbed})
+            get_filename_component(dir ${file} PATH)
+            set(${varname} ${${varname}} ${dir})
+        endforeach(file)      
+    endif(${ARGC} GREATER 3)
+    foreach(subdir ${${varname}})
+      file(STRINGS ${PCL_SOURCE_DIR}/${subdir}/CMakeLists.txt  DEPENDENCIES 
+        REGEX "set.*SUBSYS_DEPS *.*")
+      string(REGEX REPLACE "set.*SUBSYS_DEPS" "" DEPENDENCIES "${DEPENDENCIES}")
+      string(REPLACE ")" "" DEPENDENCIES "${DEPENDENCIES}")
+      string(STRIP "${DEPENDENCIES}" DEPENDENCIES)
+      string(REPLACE " " ";" DEPENDENCIES "${DEPENDENCIES}")
+      if(NOT("${DEPENDENCIES}" STREQUAL ""))
+          string(TOUPPER "PCL_${subdir}_DEPENDS" SUBSYS_DEPENDS)
+          set(${SUBSYS_DEPENDS} ${DEPENDENCIES})
+					foreach(dependee ${DEPENDENCIES})
+						  string(TOUPPER "pcl_${dependee}_dependies" SUBSYS_DEPENDIES)
+						  set(${SUBSYS_DEPENDIES} ${${SUBSYS_DEPENDIES}} ${subdir})
+					endforeach(dependee)
+      endif(NOT("${DEPENDENCIES}" STREQUAL ""))
+  endforeach(subdir)
+endmacro()
+
+macro(PCL_DISABLE_DEPENDIES subsys)
+	  string(TOUPPER "pcl_${subsys}_dependies" PCL_SUBSYS_DEPENDIES)
+		if(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
+			  foreach(dep ${${PCL_SUBSYS_DEPENDIES}})
+            PCL_SET_SUBSYS_HYPERSTATUS(${subsys} ${dep} AUTO_OFF "Automatically disabled.")
+						set(BUILD_${dep} OFF CACHE BOOL "Automatically disabled ${dep}" FORCE)
+				endforeach(dep)
+		endif(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
+endmacro(PCL_DISABLE_DEPENDIES subsys)
+
+macro(PCL_ENABLE_DEPENDIES subsys)
+	  string(TOUPPER "pcl_${subsys}_dependies" PCL_SUBSYS_DEPENDIES)
+		if(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
+			  foreach(dep ${${PCL_SUBSYS_DEPENDIES}})
+					  PCL_GET_SUBSYS_HYPERSTATUS(dependee_status ${subsys} ${dep})
+						if("${dependee_status}" STREQUAL "AUTO_OFF")
+								PCL_SET_SUBSYS_HYPERSTATUS(${subsys} ${dep} AUTO_ON)
+								GET_IN_MAP(desc PCL_SUBSYS_DESC ${dep})
+								set(BUILD_${dep} ON CACHE BOOL "${desc}" FORCE)
+					  endif("${dependee_status}" STREQUAL "AUTO_OFF")
+				endforeach(dep)
+		endif(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
+endmacro(PCL_ENABLE_DEPENDIES subsys)
