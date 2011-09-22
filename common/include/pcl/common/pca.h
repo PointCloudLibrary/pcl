@@ -37,7 +37,7 @@
 #ifndef PCL_PCA_HPP
 #define PCL_PCA_HPP
 
-#include <pcl/point_cloud.h>
+#include <pcl/pcl_base.h>
 
 namespace pcl 
 {
@@ -53,10 +53,9 @@ namespace pcl
    *  \ingroup common
    */
   template <typename PointT>
-  class PCA 
+  class PCA : public PCLBase<PointT>
   {
     public:
-    
       /** Updating method flag */
       enum FLAG 
       {
@@ -65,33 +64,27 @@ namespace pcl
         /** preserve subspace dimension */
         preserve
       };
-    
+
+      using PCLBase<PointT>::initCompute;
+      using PCLBase<PointT>::input_;
+      using PCLBase<PointT>::indices_;    
     
       /** \brief Default Constructor
         * \param basis_only flag to compute only the PCA basis
         */
-      PCA (bool basis_only = false) : compute_done_ (false), basis_only_ (basis_only) 
+      PCA (bool basis_only = false) : PCLBase<PointT>(), basis_only_ (basis_only) 
       {}
       
-      /** Constructor with direct computation
-        * \param X input m*n matrix (ie n vectors of R(m))
-        * \param basis_only flag to compute only the PCA basis
-       */
-      PCA(const pcl::PointCloud<PointT>& X, bool basis_only = false) : 
-        compute_done_ (false), basis_only_ (basis_only)
-      {
-        compute (X);
-      }
-
       /** Copy Constructor
         * \param pca_ PCA object
         */
-      PCA (PCA const & pca_) 
+      PCA (PCA const & pca) 
       {
-        mean_         = pca_.mean;
-        eigenvalues_  = pca_.eigenvalues;
-        eigenvectors_ = pca_.eigenvectors;
-        coefficients_ = pca_.coefficients;
+        mean_         = pca.mean_;
+        eigenvalues_  = pca.eigenvalues_;
+        eigenvectors_ = pca.eigenvectors_;
+        coefficients_ = pca.coefficients_;
+        compute_done_ = pca.compute_done_;
       }
 
       /** Assignment operator
@@ -99,10 +92,11 @@ namespace pcl
         */
       inline PCA& operator= (PCA const & pca) 
       {
-        mean_         = pca.mean;
-        eigenvalues_  = pca.eigenvalues;
-        eigenvectors_ = pca.eigenvectors;
-        coefficients_ = pca.coefficients;
+        mean_         = pca.mean_;
+        eigenvalues_  = pca.eigenvalues_;
+        eigenvectors_ = pca.eigenvectors_;
+        coefficients_ = pca.coefficients_;
+        compute_done_ = pca.compute_done_;
         return (*this);
       }
 
@@ -116,7 +110,7 @@ namespace pcl
       }
 
       /// Eigen Vectors accessor
-      inline Eigen::MatrixXf& 
+      inline Eigen::Matrix3f& 
       getEigenVectors () 
       {
         if (!compute_done_)
@@ -125,7 +119,7 @@ namespace pcl
       }
       
       /// Eigen Values accessor
-      inline Eigen::VectorXf& 
+      inline Eigen::Vector3f& 
       getEigenValues ()
       {
         if (!compute_done_)
@@ -146,7 +140,7 @@ namespace pcl
         * \param cloud input point cloud
         */
       inline void 
-      compute (const pcl::PointCloud<PointT>& cloud);
+      compute ();
       
       
       /** update PCA with a new point
@@ -171,11 +165,15 @@ namespace pcl
       reconstruct (const PointT& projection, PointT& input) const;
       
     private:
+      bool 
+      initCompute ();
+      
       bool compute_done_;
       bool basis_only_;
-      Eigen::MatrixXf eigenvectors_, coefficients_;
+      Eigen::Matrix3f eigenvectors_;
+      Eigen::Matrix3f coefficients_;
       Eigen::Vector4f mean_;
-      Eigen::VectorXf eigenvalues_;
+      Eigen::Vector3f eigenvalues_;
   }; // class PCA
 } // namespace pcl
 
