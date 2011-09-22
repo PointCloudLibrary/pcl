@@ -4,39 +4,26 @@
 #include <pcl/console/print.h>
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename PointT> inline bool
-pcl::PCA<PointT>::initCompute () 
+template<typename PointT> inline void 
+pcl::PCA<PointT>::compute (const pcl::PointCloud<PointT>& cloud) 
 {
-  if (!pcl::PCLBase<PointT>::initCompute ())
-  {
-    PCL_ERROR ("[pcl::PCA::initCompute] Init failed.\n");
-    return (false);
-  }
-
   // Compute mean and covariance
-  compute3DCentroid (*input_, *indices_, mean_);
+  mean_ = Eigen::Vector4f::Zero ();
+  compute3DCentroid (cloud, mean_);
   Eigen::Matrix3f covariance;
-  pcl::computeCovarianceMatrixNormalized (*input_, *indices_, mean_, covariance);
+  pcl::computeCovarianceMatrixNormalized (cloud, mean_, covariance);
   
   // Compute demeanished cloud
   Eigen::MatrixXf cloud_demean;
-  demeanPointCloud (*input_, mean_, *indices_, cloud_demean);
+  demeanPointCloud (cloud, mean_, cloud_demean);
 
   // Compute eigen vectors and values
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> evd (covariance, true);
-  eigenvalues_ = evd.eigenvalues ();
-  eigenvectors_ = evd.eigenvectors ();
+  Eigen::EigenSolver<Eigen::Matrix3f> evd (covariance, true);
+  eigenvalues_ = evd.eigenvalues ().real ();
+  eigenvectors_ = evd.eigenvectors ().real ();
   if (!basis_only_)
     coefficients_ = eigenvectors_.transpose() * cloud_demean.topRows<3>();
-
-  return true;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-template<typename PointT> inline void
-pcl::PCA<PointT>::compute () 
-{
-  compute_done_ = initCompute ();
+  compute_done_ = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
