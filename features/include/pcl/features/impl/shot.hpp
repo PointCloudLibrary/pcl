@@ -164,7 +164,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::RGB2CIELAB (unsigned
 template <typename PointInT, typename PointNT, typename PointOutT> float
 pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::getSHOTLocalRF (
   const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
-  const int index, const std::vector<int> &indices, const std::vector<float> &dists, 
+  const double search_radius, const int index, const std::vector<int> &indices, const std::vector<float> &dists, 
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf)
 {
   if (rf.size () != 3)
@@ -193,7 +193,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::getSHOTLocalRF (
     vij[valid_nn_points] = (pt - central_point).cast<double> ();
 	vij[valid_nn_points][3] = 0;
 
-    distance = search_radius_ - sqrt (dists[i_idx]);
+    distance = search_radius - sqrt (dists[i_idx]);
 
     // Multiply vij * vij'
     cov_m += distance * (vij[valid_nn_points].head<3> () * vij[valid_nn_points].head<3> ().transpose ());
@@ -204,7 +204,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::getSHOTLocalRF (
 
   if (valid_nn_points < 5)
   {
-    PCL_ERROR ("[pcl::%s::getSHOTLocalRF] Warning! Neighborhood has less than 5 vertexes. Aborting Local RF computation of feature point with index %d\n", getClassName ().c_str (), index);
+    PCL_ERROR ("[pcl::%s::getSHOTLocalRF] Warning! Neighborhood has less than 5 vertexes. Aborting Local RF computation of feature point with index %d\n", "SHOT", index);
     rf[0].setZero ();
     rf[1].setZero ();
     rf[2].setZero ();
@@ -756,7 +756,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
   }
 
   //Compute the local Reference Frame for the current 3D point
-  if (getSHOTLocalRF (cloud, normals, index, indices, dists, rf))
+  if (getSHOTLocalRF (cloud, normals, search_radius_, index, indices, dists, rf))
 	  return;
 
   //If shape description is enabled, compute the bins activated by each neighbor of the current feature in the shape histogram
@@ -863,7 +863,7 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
     return;
   }
 
-  if (getSHOTLocalRF (cloud, normals, index, indices, dists, rf))
+  if (getSHOTLocalRF (cloud, normals, search_radius_, index, indices, dists, rf))
 	  return;
 
 
