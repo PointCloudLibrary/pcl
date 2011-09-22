@@ -84,7 +84,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
   init_ = true;
 
   stereo_anaglyph_mask_default_ = true;
-  alt_on_key_down_ = false;
 
   // Add our own mouse callback before any user callback. Used for accurate point picking.
   mouse_callback_ = vtkSmartPointer<pcl::visualization::PointPickingCallback>::New ();
@@ -129,6 +128,34 @@ pcl::visualization::PCLVisualizerInteractorStyle::zoomOut ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
 {
+  Superclass::OnChar ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection 
+pcl::visualization::PCLVisualizerInteractorStyle::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
+{
+  return (mouse_signal_.connect (callback));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection 
+pcl::visualization::PCLVisualizerInteractorStyle::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
+{
+  return (keyboard_signal_.connect (callback));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection 
+pcl::visualization::PCLVisualizerInteractorStyle::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
+{
+  return (point_picking_signal_.connect (callback));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
+{
   if (!init_)
   {
     pcl::console::print_error ("[PCLVisualizerInteractorStyle] Interactor style not initialized. Please call Initialize () before continuing.\n");
@@ -161,7 +188,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
   // Get the status of special keys (Cltr+Alt+Shift)
   //bool shift = Interactor->GetShiftKey   ();
   bool ctrl  = Interactor->GetControlKey ();
-  bool alt   = (alt_on_key_down_ || Interactor->GetAltKey ());
+  bool alt   = Interactor->GetAltKey ();
 
   //fprintf (stderr, "Key sym: %s\n", Interactor->GetKeySym ());
   // ---[ Check the rest of the key codes 
@@ -425,9 +452,12 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
       if (alt)
       {
         // Get screen size
-        int *scr_size = Interactor->GetRenderWindow ()->GetScreenSize ();
+        int *temp = Interactor->GetRenderWindow ()->GetScreenSize ();
+        int scr_size[2]; scr_size[0] = temp[0]; scr_size[1] = temp[1];
+
         // Get window size
-        int *win_size = Interactor->GetRenderWindow ()->GetSize ();
+        temp = Interactor->GetRenderWindow ()->GetSize ();
+        int win_size[2]; win_size[0] = temp[0]; win_size[1] = temp[1];
         // Is window size = max?
         if (win_size[0] == max_win_height_ && win_size[1] == max_win_width_)
         {
@@ -496,7 +526,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
         Interactor->Render ();
       }
       else
-        Superclass::OnChar ();
+        Superclass::OnKeyDown ();
       break;
     } 
 
@@ -559,7 +589,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
     {
       if (!alt)
       {
-        Superclass::OnChar ();
+        Superclass::OnKeyDown ();
         break;
       }
       // Get all the data
@@ -593,43 +623,17 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
     }
     default:
     {
-      Superclass::OnChar ();
+      Superclass::OnKeyDown ();
       break;
     }
   }
-  rens_->Render ();
-  Interactor->Render ();
-}
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-boost::signals2::connection 
-pcl::visualization::PCLVisualizerInteractorStyle::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
-{
-  return (mouse_signal_.connect (callback));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-boost::signals2::connection 
-pcl::visualization::PCLVisualizerInteractorStyle::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
-{
-  return (keyboard_signal_.connect (callback));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-boost::signals2::connection 
-pcl::visualization::PCLVisualizerInteractorStyle::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
-{
-  return (point_picking_signal_.connect (callback));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
-{
-  alt_on_key_down_ = Interactor->GetAltKey ();
   KeyboardEvent event (true, Interactor->GetKeySym (), Interactor->GetKeyCode (), Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
   keyboard_signal_ (event);
-  Superclass::OnKeyDown ();
+
+  rens_->Render ();
+  Interactor->Render ();
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -817,7 +821,7 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::saveScreenshot (const
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnChar ()
+pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnKeyDown ()
 {
   if (!init_)
   {
@@ -982,7 +986,7 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnChar ()
         }
       }
       else
-        Superclass::OnChar ();
+        Superclass::OnKeyDown ();
       break;
     }
     case 'q': case 'Q':
@@ -993,7 +997,7 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnChar ()
     // Switch representation to wireframe
     default:
     {
-      Superclass::OnChar ();
+      Superclass::OnKeyDown ();
     }
   }
   Interactor->Render ();
