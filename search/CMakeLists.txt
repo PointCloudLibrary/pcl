@@ -40,7 +40,7 @@ if(build)
     target_link_libraries(${LIB_NAME} pcl_common ${FLANN_LIBRARIES} pcl_octree pcl_kdtree)
     list(APPEND EXT_DEPS flann)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-      "{SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
+      "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
