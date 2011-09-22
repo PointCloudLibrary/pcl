@@ -82,7 +82,7 @@ namespace pcl
         bool stopped;
         int timer_id_;
 
-#ifdef _WIN32
+#if defined _WIN32 || defined VTK_USE_COCOA || defined VTK_USE_CARBON
         int BreakLoopFlag;                // if true quit the GetMessage loop
 
         virtual void 
@@ -98,7 +98,7 @@ namespace pcl
         
         void 
         BreakLoopFlagOn ();               // set BreakLoopFlag to 1 (quit)
-#endif
+#endif // defined _WIN32 || defined VTK_USE_COCOA || defined VTK_USE_CARBON
     };
   }
 }

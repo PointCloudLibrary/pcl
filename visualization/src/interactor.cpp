@@ -97,7 +97,7 @@ namespace pcl
 
       MSG msg;
       this->BreakLoopFlag=0;
-      
+
       while (GetMessage (&msg, NULL, 0, 0) && this->BreakLoopFlag == 0)
       {
         TranslateMessage (&msg);
