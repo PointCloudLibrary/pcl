@@ -110,7 +110,7 @@ namespace pcl
         this->resize (indices.size ());
         for(size_t i = 0; i < indices.size (); i++)
         {
-          this->push_back (pc[(*indices) i]);
+          this->push_back (pc[indices[i]]);
         }
       }
 
