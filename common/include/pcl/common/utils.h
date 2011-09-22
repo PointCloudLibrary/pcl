@@ -45,9 +45,9 @@ namespace pcl
     {
       template<typename T> struct epsilon;
     
-      template<> struct epsilon<float> { static const float value = 1E-8f; };
+      template<> struct epsilon<float> { static const float value; };
 
-      template<> struct epsilon<double> { static const double value = 1E-15; };
+      template<> struct epsilon<double> { static const double value; };
     };
     /**
       * \brief Check if val1 and val2 are equals to an epsilon extent
@@ -63,5 +63,9 @@ namespace pcl
     }
   };
 }
+
+
+float const pcl::utils::details::epsilon<float>::value = 1E-8f;
+double const pcl::utils::details::epsilon<double>::value = 1E-15;
 
 #endif
