@@ -48,6 +48,7 @@
 #include <vtkAbstractPicker.h>
 #include <vtkAbstractPropPicker.h>
 #include <vtkPlanes.h>
+#include <vtkPointPicker.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
