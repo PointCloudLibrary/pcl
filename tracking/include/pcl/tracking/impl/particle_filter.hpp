@@ -62,7 +62,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcLikelihood (const St
   // TODO: normalization of likelihood is required?
   double likelihood;
   if ( num_points >= min_indices_ )
-    likelihood = val;
+    likelihood = val / num_points;
   //likelihood = exp((((ret * ret ) / num) / (- 2.0 * sigma2)));
   else
     likelihood = 0.0;
@@ -130,7 +130,7 @@ template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initParticles ()
 {
   PCL_INFO ("[pcl::%s::initParticles] initializing...\n", getClassName ().c_str ());
-  particles_.reset( new PointCloudState ());
+  particles_.reset (new PointCloudState ());
   
   representative_state_.zero ();
   representative_state_.weight = 0.0;
@@ -142,8 +142,8 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initParticles ()
   for ( int i = 0; i < particle_num_; i++ )
   {
     StateT p;
-    p.weight = 1.0 / particle_num_;
     p.zero ();
+    p.weight = 1.0 / particle_num_;
     p.sample (initial_noise_mean_, initial_noise_covariance_);
     p = p + offset;
     particles_->points.push_back (p); // update
@@ -182,15 +182,15 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resample ()
   const std::vector<double> zero_mean (StateT::stateDimension (), 0.0);
   // memoize the original list of particles
   //std::vector<Particle> origparticles = particles_;
-  PointCloudStatePtr  origparticles = particles_;
+  PointCloudStatePtr origparticles = particles_;
   particles_->points.clear ();
   // the first particle, it is a just copy of the maximum result
-  pcl::tracking::ParticleXYZRPY p = representative_state_;
+  StateT p = representative_state_;
   particles_->points.push_back (p);
   for ( int i = 1; i < particle_num_; i++ )
   {
     int target_particle_index = sampleWithReplacement (a, q);
-    pcl::tracking::ParticleXYZRPY p = origparticles->points[target_particle_index];
+    StateT p = origparticles->points[target_particle_index];
     // add noise using gaussian
     p.sample (zero_mean, step_noise_covariance_);
     particles_->points.push_back (p);
@@ -213,6 +213,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::update ()
       maxindex = i;
     }
   }
+  //if (representative_state_.weight < maxweight)
   representative_state_ = particles_->points[maxindex];
 }
 
