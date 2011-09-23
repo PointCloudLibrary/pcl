@@ -187,7 +187,8 @@ pcl::visualization::PCLVisualizer::createInteractor ()
   interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
 
   // Set a simple PointPicker
-  vtkPointPicker *pp = vtkPointPicker::New ();
+  vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
+  pp->SetTolerance (pp->GetTolerance () * 2);
   interactor_->SetPicker (pp);
 
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
