@@ -58,7 +58,9 @@ namespace pcl
       * <ul>
       * <li> rf float[9] = x_axis | y_axis | normal and represents the local frame </li>
       * <li> desc std::vector<float> which size is determined by the number of bins
-      * radius_bins_ + elevation_bins_ + azimuth_bins_ </li>
+      * radius_bins_ + elevation_bins_ + azimuth_bins_. If shift is required then the 
+      * computed descriptor will be shift along the azimuthal direction.
+      * </li>
       * </ul>
       * \author Federico (original code)
       * \author Nizar Sallem (port to PCL)
@@ -82,13 +84,15 @@ namespace pcl
          typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
          
          /** Constructor
+           * \param shift tells estimator to whether shift computed descriptors along
+           * azmith direction or not .
            * \param random If true the random seed is set to cuurent time else it is set
-           * to 12345. The randomness is used to select X axis 
+           * to 12345. The randomness is used to select X axis.
            */
-         ShapeContext3DEstimation(bool random = false) :
+         ShapeContext3DEstimation(bool shift = false, bool random = false) :
            radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
            azimuth_bins_(12), elevation_bins_(11), radius_bins_(15), 
-           min_radius_(0.1), point_density_radius_(0.2)
+           min_radius_(0.1), point_density_radius_(0.2), shift_(shift)
          {
            feature_name_ = "ShapeContext3DEstimation";
            search_radius_ = 2.5;
@@ -98,7 +102,7 @@ namespace pcl
              srand(12345); 
          }
 
-        ~ShapeContext3DEstimation() {}
+        virtual ~ShapeContext3DEstimation() {}
 
         /** set number of bins along the azimth to \param bins */
         inline void setAzimuthBins(size_t bins) { azimuth_bins_ = bins; }
@@ -137,7 +141,7 @@ namespace pcl
 
         void
         computeFeature(PointCloudOut &output);
-
+        
       protected:
         /** values of the radii interval */
         std::vector<float> radii_interval_;
@@ -161,6 +165,15 @@ namespace pcl
         double point_density_radius_;
         /** descriptor length */
         size_t descriptor_length_;
+        /** whether to shift or not the desciptors*/
+        bool shift_;
+      private:
+        /** Shift computed descriptor "L" times along the azimuthal direction
+         * \param block_size the size of each azimuthal block
+         * \param desc at input desc == original descriptor and on output it contains 
+         * shifted descriptor resized descriptor_length_ * azimuth_bins_
+         */
+        void shiftAlongAzimuth(size_t block_size, std::vector<float>& desc);
     };
   /* }; */
 }
