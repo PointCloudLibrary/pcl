@@ -188,10 +188,10 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::getSHOTLocalRF (
       continue;
 
     Eigen::Vector4f pt = cloud.points[indices[i_idx]].getVector4fMap (); 
-	pt[3] = 0;
+    pt[3] = 0;
     // Difference between current point and origin
     vij[valid_nn_points] = (pt - central_point).cast<double> ();
-	vij[valid_nn_points][3] = 0;
+    vij[valid_nn_points][3] = 0;
 
     distance = search_radius - sqrt (dists[i_idx]);
 
@@ -271,9 +271,6 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::getSHOTLocalRF (
   }
 
   int plusNormal = 0, plusTangentDirection1=0;
-
-
-
   for (int ne = 0; ne < valid_nn_points; ne++)
   {
     double dp = vij[ne].dot (v1);
@@ -286,16 +283,14 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::getSHOTLocalRF (
   }
 
   //TANGENT
-  if( abs ( plusTangentDirection1 - valid_nn_points + plusTangentDirection1 )  > 0 ) {
-
-
+  if( abs ( plusTangentDirection1 - valid_nn_points + plusTangentDirection1 )  > 0 ) 
+  {
 	  if (plusTangentDirection1 < valid_nn_points - plusTangentDirection1)
 		  v1 *= - 1;
-	 
   }
-   else{
-
-	   plusTangentDirection1=0;
+  else
+  {
+    plusTangentDirection1=0;
 		int points = 5; ///std::min(valid_nn_points*2/2+1, 11);
 		int index = valid_nn_points/2;
 
@@ -307,13 +302,14 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::getSHOTLocalRF (
 			v1 *= - 1;
 	}
 
-	if( abs ( plusNormal - valid_nn_points + plusNormal )  > 0 ) {
+  //Normal
+	if( abs ( plusNormal - valid_nn_points + plusNormal )  > 0 ) 
+  {
 		if (plusNormal < valid_nn_points - plusNormal)
 			v3 *= - 1;
-
 	}
-	else{
-
+	else 
+  {
 		plusNormal = 0;
 		int points = 5; //std::min(valid_nn_points*2/2+1, 11);
 		//std::cout << points << std::endl;

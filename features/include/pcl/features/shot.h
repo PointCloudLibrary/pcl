@@ -116,7 +116,7 @@ namespace pcl
       getSHOTLocalRF (const pcl::PointCloud<PointInT> &cloud, 
                       const pcl::PointCloud<PointNT> &normals, 
                       const double search_radius, 
-					  const int index, 
+                      const int index, 
                       const std::vector<int> &indices, 
                       const std::vector<float> &dists, 
                       std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf);
