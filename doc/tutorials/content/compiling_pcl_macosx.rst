@@ -211,7 +211,13 @@ Within the CMake configuration:
    .. note::
       
       If you don't see OPENGL_xmesa_INCLUDE_DIR when you first load it's because
-      VTK_USE_X: OFF.  Once set to ON you should see it
+      VTK_USE_X: OFF.  Once set to ON you should see it.
+
+   .. note::
+
+      VTK *must* be built with X11 support, and wxWidgets *must* be installed,
+      in order for the visualization module to be able to compile. If you do
+      not require visualisation, you may omit this step.
 
 Install wxWidgets
 -----------------
