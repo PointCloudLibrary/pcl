@@ -38,6 +38,8 @@
 #include <pcl/search/auto.h>
 #include <pcl/search/octree.h>
 
+#include <pcl/common/transforms.h>
+
 #define FPS_CALC(_WHAT_)                                                \
   do                                                                    \
   {                                                                     \
@@ -247,23 +249,23 @@ public:
       PCL_WARN ("no particles\n");
   }
   
-  // void
-  // drawResult (pcl::visualization::PCLVisualizer& viz)
-  // {
-  //   ParticleXYZRPY result = tracker_->getResult ();
-  //   //std::cout << "result: " << result << std::endl; //debug
-  //   Eigen::Affine3f transformation = tracker_->toEigenMatrix (result);
-  //   pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr result_cloud (new pcl::PointCloud<pcl::PointXYZRGBNormal> ());
+  void
+  drawResult (pcl::visualization::PCLVisualizer& viz)
+  {
+    ParticleXYZRPY result = tracker_->getResult ();
+    //std::cout << "result: " << result << std::endl; //debug
+    Eigen::Affine3f transformation = tracker_->toEigenMatrix (result);
+    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr result_cloud (new pcl::PointCloud<pcl::PointXYZRGBNormal> ());
     
-  //   pcl::transformPointCloud<pcl::PointXYZRGBNormal> (*(tracker_->getReferenceCloud ()), *result_cloud,
-  //                                                     transformation);
+    pcl::transformPointCloud<pcl::PointXYZRGBNormal> (*(tracker_->getReferenceCloud ()), *result_cloud,
+                                                      transformation);
     
-  //   {
-  //     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGBNormal> red_color (result_cloud, 255, 0, 0);
-  //     if (!viz.updatePointCloud (result_cloud, red_color, "resultcloud"))
-  //       viz.addPointCloud (result_cloud, red_color, "resultcloud");
-  //   }
-  // }
+    {
+      pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGBNormal> red_color (result_cloud, 255, 0, 0);
+      if (!viz.updatePointCloud (result_cloud, red_color, "resultcloud"))
+        viz.addPointCloud (result_cloud, red_color, "resultcloud");
+    }
+  }
 
   void
   viz_cb (pcl::visualization::PCLVisualizer& viz)
@@ -306,7 +308,7 @@ public:
     if (new_cloud_)
     {
       drawParticles (viz);
-      //drawResult (viz);
+      drawResult (viz);
     }
 
     new_cloud_ = false;
