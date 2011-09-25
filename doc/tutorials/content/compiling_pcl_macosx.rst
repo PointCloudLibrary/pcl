@@ -219,6 +219,14 @@ Within the CMake configuration:
       in order for the visualization module to be able to compile. If you do
       not require visualisation, you may omit this step.
 
+   Press [g] to generate the make files.
+   
+   Press [q] to quit.
+
+Then run::
+   
+   $ make && make install
+   
 Install wxWidgets
 -----------------
 ::
