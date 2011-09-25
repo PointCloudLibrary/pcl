@@ -76,7 +76,7 @@ namespace pcl
       SearchPtr search_;
       
       /** \brief compute the nearest pairs and compute coherence using point_coherences_ */
-      virtual inline double
+      virtual double
       computeCoherence (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices);
       
     };
