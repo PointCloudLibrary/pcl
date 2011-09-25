@@ -17,4 +17,7 @@ namespace pcl
     }
   }
 }
+
+#define PCL_INSTANTIATE_DistanceCoherence(T) template class PCL_EXPORTS pcl::tracking::DistanceCoherence<T>;
+
 #endif

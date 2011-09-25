@@ -70,4 +70,6 @@ namespace pcl
   }
 }
 
+#define PCL_INSTANTIATE_NearestPairPointCloudCoherence(T) template class PCL_EXPORTS pcl::tracking::NearestPairPointCloudCoherence<T>;
+
 #endif

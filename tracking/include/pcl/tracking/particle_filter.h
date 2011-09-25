@@ -169,7 +169,10 @@ namespace pcl
       /** \brief convert a state to affine transformation from the world coordinates frame.
         * \param particle an instance of StateT.
         */
-      inline Eigen::Affine3f toEigenMatrix (const StateT& particle);
+      Eigen::Affine3f toEigenMatrix (const StateT& particle)
+      {
+        return particle.toEigenMatrix ();
+      }
 
       /** \brief get a pointer to a pointcloud of the particles.*/
       inline PointCloudStatePtr getParticles () const { return particles_; }
@@ -232,7 +235,7 @@ namespace pcl
       /** \brief calculate the likelihood of hypothesis. the likelihood is defined by coherence_.
         * \param hypothesis an instance of hypothesis.
         */
-      inline double calcLikelihood (const StateT& hypothesis);
+      double calcLikelihood (const StateT& hypothesis);
       
       /** \brief the number of iteration of particlefilter. */
       int iteration_num_;
@@ -282,6 +285,6 @@ namespace pcl
   }
 }
 
-#include "pcl/tracking/impl/particle_filter.hpp"
+// #include "pcl/tracking/impl/particle_filter.hpp"
 
 #endif //PCL_TRACKING_PARTICLE_FILTER_H_

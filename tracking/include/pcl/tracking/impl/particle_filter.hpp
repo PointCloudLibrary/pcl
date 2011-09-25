@@ -54,8 +54,6 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcLikelihood (const St
     }
   }
   
-  //coherence_->setInputCloud (transed_reference);
-  //coherence_->setIndices (indices);
   double val = coherence_->compute (transed_reference, indices);
   
   // take min_indices_ into account
@@ -118,12 +116,6 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::genAliasTable (std::vect
       --H;
     }
   }
-}
-
-template <typename PointInT, typename StateT> Eigen::Affine3f
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::toEigenMatrix (const StateT& particle)
-{
-  return particle.toEigenMatrix ();
 }
 
 template <typename PointInT, typename StateT> void
@@ -234,5 +226,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTracking ()
     initParticles ();
   }
 }
+
+#define PCL_INSTANTIATE_ParticleFilterTracker(T,ST) template class PCL_EXPORTS pcl::tracking::ParticleFilterTracker<T,ST>;
 
 #endif 

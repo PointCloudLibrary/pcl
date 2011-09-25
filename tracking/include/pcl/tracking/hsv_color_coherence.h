@@ -86,7 +86,7 @@ namespace pcl
   }
 }
 
-#include "pcl/tracking/impl/hsv_color_coherence.hpp"
+// #include "pcl/tracking/impl/hsv_color_coherence.hpp"
 
 
 #endif

@@ -14,5 +14,6 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
   normalizeWeight ();
 }
 
+#define PCL_INSTANTIATE_ParticleFilterOMPTracker(T,ST) template class PCL_EXPORTS pcl::tracking::ParticleFilterOMPTracker<T,ST>;
 
 #endif

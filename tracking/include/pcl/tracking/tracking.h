@@ -11,6 +11,9 @@ namespace pcl
   {
     /* state definition */
     struct ParticleXYZRPY;
+
+    /* \brief return the value of normal distribution */
+    double sampleNormal (double mean, double sigma);
   }
 }
 

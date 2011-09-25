@@ -45,6 +45,6 @@ namespace pcl
   }
 }
 
-#include "pcl/tracking/impl/distance_coherence.hpp"
+// #include "pcl/tracking/impl/distance_coherence.hpp"
 
 #endif

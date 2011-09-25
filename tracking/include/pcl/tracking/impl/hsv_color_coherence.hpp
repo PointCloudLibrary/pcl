@@ -122,4 +122,7 @@ namespace pcl
     }
   }
 }
+
+#define PCL_INSTANTIATE_HSVColorCoherence(T) template class PCL_EXPORTS pcl::tracking::HSVColorCoherence<T>;
+
 #endif

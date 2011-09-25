@@ -9,20 +9,6 @@ namespace pcl
 {
   namespace tracking
   {
-    double
-    SampleNormal (double mean, double sigma)
-    {
-      using namespace boost;
-      static mt19937 rng(static_cast<unsigned> (std::time (0)));
-      
-      normal_distribution<double> norm_dist (mean, sqrt (sigma));
-      
-      variate_generator<mt19937&, normal_distribution<double> >
-        normal_sampler (rng, norm_dist);
-      
-      return normal_sampler ();
-    }
-    
     struct _ParticleXYZRPY
     {
       PCL_ADD_POINT4D;
@@ -68,12 +54,12 @@ namespace pcl
       void
       sample (const std::vector<double>& mean, const std::vector<double>& cov)
       {
-        x += SampleNormal (mean[0], cov[0]);
-        y += SampleNormal (mean[1], cov[1]);
-        z += SampleNormal (mean[2], cov[2]);
-        roll += SampleNormal (mean[3], cov[3]);
-        pitch += SampleNormal (mean[4], cov[4]);
-        yaw += SampleNormal (mean[5], cov[5]);
+        x += sampleNormal (mean[0], cov[0]);
+        y += sampleNormal (mean[1], cov[1]);
+        z += sampleNormal (mean[2], cov[2]);
+        roll += sampleNormal (mean[3], cov[3]);
+        pitch += sampleNormal (mean[4], cov[4]);
+        yaw += sampleNormal (mean[5], cov[5]);
       }
 
       void
@@ -139,5 +125,8 @@ namespace pcl
     
   }
 }
+
+#define PCL_STATE_POINT_TYPES \
+  (pcl::tracking::ParticleXYZRPY)
 
 #endif  // 

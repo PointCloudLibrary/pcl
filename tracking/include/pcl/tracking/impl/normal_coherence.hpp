@@ -43,4 +43,7 @@ namespace pcl
     }
   }
 }
+
+#define PCL_INSTANTIATE_NormalCoherence(T) template class PCL_EXPORTS pcl::tracking::NormalCoherence<T>;
+
 #endif
