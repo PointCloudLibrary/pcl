@@ -24,6 +24,8 @@ contains a lonely cpp file name ``pcd_write.cpp`` (copy it from the
 
   $ cp /PATH/TO/WHERE/YOU/DOWNLOADED/FindPCL.cmake .
 
+FindPCL.cmake can be obtaind from: http://svn.pointclouds.org/pcl/trunk/doc/tutorials/content/sources/FindPCL.cmake
+
 And create a file named CMakeLists.txt that contains:
 
 .. code-block:: cmake
