@@ -213,6 +213,14 @@ Within the CMake configuration:
       If you don't see OPENGL_xmesa_INCLUDE_DIR when you first load it's because
       VTK_USE_X: OFF.  Once set to ON you should see it
 
+   Press [g] to generate the make files.
+   
+   Press [q] to quit.
+
+Then run::
+   
+   $ make && make install
+   
 Install wxWidgets
 -----------------
 ::
