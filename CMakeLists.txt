@@ -9,8 +9,7 @@ endif("${CMAKE_BUILD_TYPE}" STREQUAL "")
 project(PCL)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-    "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
 
 # ---[ Release/Debug specific flags
 if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
@@ -187,7 +186,7 @@ if(MSVC)
   # force CPACK_PACKAGE_INSTALL_REGISTRY_KEY because of a known limitation in cmake/cpack to be fixed in next releases
   # http://public.kitware.com/Bug/view.php?id=9094
   # This is to allow a 32bit and a 64bit of PCL to get installed on one system
-  set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${CPACK_PACKAGE_NAME} ${CPACK_PACKAGE_VERSION} ${win_system_name}" )
+  set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${PROJECT_NAME} ${PCL_VERSION} ${win_system_name}" )
 endif(MSVC)
 
 if(CPACK_GENERATOR)
@@ -209,6 +208,6 @@ configure_file("${PCL_SOURCE_DIR}/PCLConfigVersion.cmake.in"
 install(FILES
         "${PCL_BINARY_DIR}/PCLConfig.cmake"
         "${PCL_BINARY_DIR}/PCLConfigVersion.cmake"
-        DESTINATION ${CMAKE_INSTALL_DIR})
+        DESTINATION ${PCLCONFIG_INSTALL_DIR})
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
