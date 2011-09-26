@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -246,7 +248,11 @@ namespace pcl
       inline PointT& back () { return points.back (); }
 
       //modifiers
-      inline void push_back (const PointT& p) { points.push_back (p); }
+      inline void push_back (const PointT& p) {
+        points.push_back (p);
+        width = points.size ();
+        height = 1;
+      }
       inline iterator insert ( iterator position, const PointT& x )
       {
         iterator it = points.insert (position, x);
