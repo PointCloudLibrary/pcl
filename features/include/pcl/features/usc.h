@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef PCL_FEATURES_3DSC_H_
-#define PCL_FEATURES_3DSC_H_
+#ifndef PCL_FEATURES_USC_H_
+#define PCL_FEATURES_USC_H_
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
@@ -45,29 +45,28 @@ namespace pcl
 {
   /* namespace features */
   /* { */
-    /** Class ShapeContext3DEstimation implements the 3D shape context descriptor as
+    /** Class UniqueShapeContext implements the unique shape descriptor
       * described here
       * <ul>
-      * <li> Andrea Frome, Daniel Huber, Ravi Kolluri and Thomas Bülow, Jitendra Malik
-      *      Recognizing Objects in Range Data Using Regional Point Descriptors,
-      *      In proceedings of the 8th European Conference on Computer Vision (ECCV),
-      *      Prague, May 11-14, 2004
+      * <li> F. Tombari, S. Salti, L. Di Stefano, 
+      * “Unique Shape Context for 3D data description”, 
+      * International Workshop on 3D Object Retrieval (3DOR 10) - 
+      * in conjuction with ACM Multimedia 2010
       * </li>
       * </ul>
-      * The 3DSC computed feature has the following structure
+      * The USC computed feature has the following structure
       * <ul>
       * <li> rf float[9] = x_axis | y_axis | normal and represents the local frame </li>
       * <li> desc std::vector<float> which size is determined by the number of bins
-      * radius_bins_ + elevation_bins_ + azimuth_bins_. If shift is required then the 
-      * computed descriptor will be shift along the azimuthal direction.
+      * radius_bins_, elevation_bins_ and azimuth_bins_. 
       * </li>
       * </ul>
       * \author Federico (original code)
       * \author Nizar Sallem (port to PCL)
       * \ingroup features
       */
-    template <typename PointInT, typename PointNT, typename PointOutT> 
-    class ShapeContext3DEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
+    template <typename PointInT, typename PointOutT> 
+    class UniqueShapeContext : public Feature<PointInT, PointOutT>
     {
       public:
          using Feature<PointInT, PointOutT>::feature_name_;
@@ -78,7 +77,6 @@ namespace pcl
          using Feature<PointInT, PointOutT>::surface_;
          using Feature<PointInT, PointOutT>::input_;
          using Feature<PointInT, PointOutT>::searchForNeighbors;
-         using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
          
          typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
          typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
@@ -89,20 +87,21 @@ namespace pcl
            * \param random If true the random seed is set to cuurent time else it is set
            * to 12345. The randomness is used to select X axis.
            */
-         ShapeContext3DEstimation(bool shift = false, bool random = false) :
+         UniqueShapeContext(bool shift = false, bool random = false) :
            radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
            azimuth_bins_(12), elevation_bins_(11), radius_bins_(15), 
-           min_radius_(0.1), point_density_radius_(0.2), shift_(shift)
+           min_radius_(0.1), point_density_radius_(0.2)
          {
-           feature_name_ = "ShapeContext3DEstimation";
+           feature_name_ = "UniqueShapeContext";
            search_radius_ = 2.5;
+           local_radius_ = 2.5;
            if(random)
              srand(time(NULL));
            else
              srand(12345); 
          }
 
-        virtual ~ShapeContext3DEstimation() {}
+        virtual ~UniqueShapeContext() { }
 
         /** set number of bins along the azimth to \param bins */
         inline void setAzimuthBins(size_t bins) { azimuth_bins_ = bins; }
@@ -129,20 +128,33 @@ namespace pcl
         inline void setPointDensityRadius(double radius) { point_density_radius_ = radius; }
         /** \return point density search radius */
         inline double getPointDensityRadius() { return (point_density_radius_); }
+        /** The local RF radius value
+          * \param radius the desired local RF radius
+          */
+        inline void setLocalRadius(float radius) { local_radius_ = radius; }
+        /** \return the local RF radius */
+        inline float getLocalRadius() { return (local_radius_); }
         
       protected:
-        /** initilize computation by allocating all the intervals and the volume look up 
-          * table
+        /** Compute 3D shape context feature descriptor
+          * \param index point index
+          * \param input input point cloud
+          * \param normals point cloud normals
+          * \param rf reference frame
+          * \param desc descriptor to compute
           */
-        bool initCompute() ;
-
         void
-        computePoint(size_t index, const pcl::PointCloud<PointInT> &input, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc);
-
-        void
-        computeFeature(PointCloudOut &output);
+        computePointDescriptor(size_t index, const pcl::PointCloud<PointInT> &input, float rf[9], std::vector<float> &desc);
         
-      private:
+        /** initilize computation by allocating all the intervals and the volume look 
+          * up table
+          */
+        virtual bool initCompute() ;
+
+        virtual void
+        computeFeature(PointCloudOut &output);
+
+      protected:
         /** values of the radii interval */
         std::vector<float> radii_interval_;
         /** theta divisions interval */
@@ -163,18 +175,19 @@ namespace pcl
         double point_density_radius_;
         /** descriptor length */
         size_t descriptor_length_;
-        /** whether to shift or not the desciptors*/
-        bool shift_;
+        float local_radius_;
 
       private:
-        /** Shift computed descriptor "L" times along the azimuthal direction
-         * \param block_size the size of each azimuthal block
-         * \param desc at input desc == original descriptor and on output it contains 
-         * shifted descriptor resized descriptor_length_ * azimuth_bins_
-         */
-        void shiftAlongAzimuth(size_t block_size, std::vector<float>& desc);
+        /** Compute 3D shape context feature local Reference Frame
+          * \param index point index
+          * \param input input point cloud
+          * \param normals point cloud normals
+          * \param rf reference frame to compute
+          */
+        void
+        computePointRF(size_t index, const pcl::PointCloud<PointInT> &input, float rf[9]);
     };
   /* }; */
 }
 
-#endif  //#ifndef PCL_3DSC_H_
+#endif  //#ifndef PCL_USC_H_
