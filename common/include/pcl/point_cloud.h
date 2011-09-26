@@ -248,7 +248,11 @@ namespace pcl
       inline PointT& back () { return points.back (); }
 
       //modifiers
-      inline void push_back (const PointT& p) { points.push_back (p); }
+      inline void push_back (const PointT& p) {
+        points.push_back (p);
+        width = points.size ();
+        height = 1;
+      }
       inline iterator insert ( iterator position, const PointT& x )
       {
         iterator it = points.insert (position, x);
