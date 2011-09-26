@@ -1,186 +1,522 @@
 # ------------------------------------------------------------------------------------
 # Helper to use PCL from outside project
 #
-# target_link_libraries(my_fabulous_target pcl_xxx) where xxx is in
-# - common
-# - cuda
-# - features
-# - filters
-# - io
-# - kdtree
-# - keypoints
-# - octree
-# - range_image
-# - range_image_border_extractor
-# - registration
-# - sample_consensus
-# - segmentation
-# - surface
-# - visualization
-#
-# For compatibility reason we also provide PCL_XXX_LIBRARY, PCL_XXX_LIBRARY_DEBUG
-# and PCL_XXX_LIBRARIES where XXX is upper cased xxx from the components above.
+# target_link_libraries(my_fabulous_target PCL_XXX_LIBRARIES) where XXX is the 
+# upper cased xxx from : 
+# @PCLCONFIG_AVAILABLE_COMPONENTS_LIST@
 #
 # PCL_INCLUDE_DIRS is filled with PCL and available 3rdparty headers
 # PCL_LIBRARY_DIRS is filled with PCL components libraries install directory and
 # 3rdparty libraries paths
 # 
-# Tested with:
-# - PCL 1.0
-# - PCL 1.0.1
-#
 #                                   www.pointclouds.org
 #------------------------------------------------------------------------------------
 
-set(PCL_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/@INCLUDE_INSTALL_ROOT@")
-set(PCL_LIBRARY_DIRS "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@")
-include("@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/pcl/PCLDepends.cmake")
+macro(pcl_report_not_found _reason)
+  unset(PCL_FOUND)
+  unset(PCL_LIBRARIES)
+  unset(PCL_INCLUDE_DIRS)
+  unset(PCL_LIBRARY_DIRS)
+  unset(PCL_DEFINITONS)
+  if(PCL_FIND_REQUIRED)
+    message(FATAL_ERROR ${_reason})
+  elseif(NOT PCL_FIND_QUIETLY)
+    message(WARNING ${_reason})
+  endif()
+  return()
+endmacro(pcl_report_not_found)
 
-if("@PCL_SUBSYS_STATUS_common@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS common)
-endif("@PCL_SUBSYS_STATUS_common@" STREQUAL "TRUE")
+macro(pcl_message)
+  if(NOT PCL_FIND_QUIETLY)
+    message(${ARGN})
+  endif(NOT PCL_FIND_QUIETLY)
+endmacro(pcl_message)
 
-if("@PCL_SUBSYS_STATUS_io@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS io)
-endif("@PCL_SUBSYS_STATUS_io@" STREQUAL "TRUE")
+if(WIN32)
+# PCLConfig.cmake is installed to PCL_ROOT/cmake
+  get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
+else(WIN32)
+# PCLConfig.cmake is installed to PCL_ROOT/share/pcl-x.y
+  get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
+  get_filename_component(PCL_ROOT "${PCL_ROOT}" PATH)
+endif(WIN32)
 
-if("@PCL_SUBSYS_STATUS_filters@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS filters)
-endif("@PCL_SUBSYS_STATUS_filters@" STREQUAL "TRUE")
+# check whether PCLConfig.cmake is found into a PCL installation or in a build tree
+if(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")
+  # Found a PCL installation
+  pcl_message("Found a PCL installation")
+  set(PCL_INCLUDE_DIRS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
+  set(PCL_LIBRARY_DIRS "${PCL_ROOT}/@LIB_INSTALL_DIR@")
+elseif(EXISTS "${PCL_DIR}/include/pcl/pcl_config.h")
+  # Found PCLConfig.cmake in a build tree of PCL
+  pcl_message("PCL found into a build tree.")
+  set(PCL_INCLUDE_DIRS "${PCL_DIR}/include") # for pcl_config.h
+  set(PCL_LIBRARY_DIRS "${PCL_DIR}/@LIB_INSTALL_DIR@")
+  set(PCL_SOURCES_TREE "@CMAKE_SOURCE_DIR@")
+else(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")
+  pcl_report_not_found("PCL can not be found on this machine")  
+endif(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")
 
-if("@PCL_SUBSYS_STATUS_features@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS features)
-endif("@PCL_SUBSYS_STATUS_features@" STREQUAL "TRUE")
+#set a suffix for debug libraries
+set(PCL_DEBUG_SUFFIX "@CMAKE_DEBUG_POSTFIX@")
 
-if("@PCL_SUBSYS_STATUS_kdtree@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS kdtree)
-endif("@PCL_SUBSYS_STATUS_kdtree@" STREQUAL "TRUE")
+set(pcl_all_components @PCLCONFIG_AVAILABLE_COMPONENTS@ )
+list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
 
-if("@PCL_SUBSYS_STATUS_octree@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS octree)
-endif("@PCL_SUBSYS_STATUS_octree@" STREQUAL "TRUE")
+#list each component dependencies IN PCL
+@PCLCONFIG_INTERNAL_DEPENDENCIES@
 
-if("@PCL_SUBSYS_STATUS_range_image@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS range_image)
-  list(APPEND PCL_COMPONENTS range_image_border_extractor)
-endif("@PCL_SUBSYS_STATUS_range_image@" STREQUAL "TRUE")
+#list each component external dependencies (ext means mandatory and opt means optional)
+@PCLCONFIG_EXTERNAL_DEPENDENCIES@
 
-if("@PCL_SUBSYS_STATUS_surface@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS surface)
-endif("@PCL_SUBSYS_STATUS_surface@" STREQUAL "TRUE")
+@PCLCONFIG_OPTIONAL_DEPENDENCIES@
 
-if("@PCL_SUBSYS_STATUS_sample_consensus@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS sample_consensus)
-endif("@PCL_SUBSYS_STATUS_sample_consensus@" STREQUAL "TRUE")
+#if the component doesn't lie in a directory with the same name
+set(range_image_border_extractor_parent features)
 
-if("@PCL_SUBSYS_STATUS_registration@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS registration)
-endif("@PCL_SUBSYS_STATUS_registration@" STREQUAL "TRUE")
+include(FindPackageHandleStandardArgs)
 
-if("@PCL_SUBSYS_STATUS_segmentation@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS segmentation)
-endif("@PCL_SUBSYS_STATUS_segmentation@" STREQUAL "TRUE")
+macro(find_boost)
+  if(NOT BOOST_INCLUDEDIR)
+    set(BOOST_INCLUDEDIR "@Boost_INCLUDE_DIR@")
+  endif(NOT BOOST_INCLUDEDIR)
+  find_package(Boost 1.40.0 ${QUIET_} COMPONENTS system filesystem thread date_time iostreams)
+  set(BOOST_FOUND ${Boost_FOUND})
+  set(BOOST_INCLUDE_DIRS "${Boost_INCLUDE_DIR}")
+  set(BOOST_LIBRARY_DIRS "${Boost_LIBRARY_DIRS}")
+  set(BOOST_LIBRARIES ${Boost_LIBRARIES})
+endmacro(find_boost)
 
-if("@PCL_SUBSYS_STATUS_visualization@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS visualization)
-endif("@PCL_SUBSYS_STATUS_visualization@" STREQUAL "TRUE")
+#remove this as soon as eigen is shipped with FindEigen.cmake
+macro(find_eigen)
+  if(NOT EIGEN_ROOT)
+    get_filename_component(EIGEN_ROOT "@EIGEN_INCLUDE_DIRS@" PATH)
+  endif(NOT EIGEN_ROOT)
+  if(PkgConfig_FOUND)
+    pkg_check_modules(PC_EIGEN eigen3)
+  endif(PkgConfig_FOUND)
+  find_path(EIGEN_INCLUDE_DIRS Eigen/Core
+    HINTS ${PC_EIGEN_INCLUDEDIR} ${PC_EIGEN_INCLUDE_DIRS} 
+          "${EIGEN_ROOT}" "$ENV{EIGEN_ROOT}"
+    PATHS "$ENV{PROGRAMFILES}/Eigen 3.0.0" "$ENV{PROGRAMW6432}/Eigen 3.0.0"
+          "$ENV{PROGRAMFILES}/Eigen" "$ENV{PROGRAMW6432}/Eigen"	  
+    PATH_SUFFIXES eigen3 include/eigen3 include)
+  find_package_handle_standard_args(eigen DEFAULT_MSG EIGEN_INCLUDE_DIRS)
+endmacro(find_eigen)
 
-if("@PCL_SUBSYS_STATUS_keypoints@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS keypoints)
-endif("@PCL_SUBSYS_STATUS_keypoints@" STREQUAL "TRUE")
+#remove this as soon as cminpack is shipped with FindCminpack.cmake
+macro(find_cminpack)
+  if(NOT CMINPACK_ROOT)
+    get_filename_component(CMINPACK_ROOT "@CMINPACK_INCLUDE_DIRS@" PATH)
+  endif(NOT CMINPACK_ROOT)
+  find_path(CMINPACK_INCLUDE_DIRS cminpack.h
+    HINTS ${PC_CMINPACK_INCLUDEDIR} ${PC_CMINPACK_INCLUDE_DIRS} 
+          "${CMINPACK_ROOT}" "$ENV{CMINPACK_ROOT}" 
+          "$ENV{PROGRAMFILES}/CMINPACK 1.1.3" "$ENV{PROGRAMW6432}/CMINPACK 1.1.3" 
+          "$ENV{PROGRAMFILES}/CMINPACK" "$ENV{PROGRAMW6432}/CMINPACK" 
+    PATH_SUFFIXES include/cminpack-1)
 
-if("@PCL_SUBSYS_STATUS_cuda@" STREQUAL "TRUE")
-  list(APPEND PCL_COMPONENTS cuda)
-endif("@PCL_SUBSYS_STATUS_cuda@" STREQUAL "TRUE")
+  # Most likely we are on windows so prefer static libraries over shared ones
+  find_library(CMINPACK_LIBRARY 
+    NAMES cminpack_s cminpack
+    HINTS ${PC_CMINPACK_LIBDIR} ${PC_CMINPACK_LIBRARY_DIRS} 
+          "${CMINPACK_ROOT}" "$ENV{CMINPACK_ROOT}"
+    PATHS "$ENV{PROGRAMFILES}/CMINPACK 1.1.3" "$ENV{PROGRAMW6432}/CMINPACK 1.1.3" 
+          "$ENV{PROGRAMFILES}/CMINPACK" "$ENV{PROGRAMW6432}/CMINPACK"
+    PATH_SUFFIXES lib)
+  
+  find_library(CMINPACK_LIBRARY_DEBUG 
+    NAMES cminpack_s-gd cminpack-gd cminpack_s cminpack
+    HINTS ${PC_CMINPACK_LIBDIR} ${PC_CMINPACK_LIBRARY_DIRS} 
+          "${CMINPACK_ROOT}" "$ENV{CMINPACK_ROOT}"
+    PATHS "$ENV{PROGRAMFILES}/CMINPACK 1.1.3" "$ENV{PROGRAMW6432}/CMINPACK 1.1.3" 
+          "$ENV{PROGRAMFILES}/CMINPACK" "$ENV{PROGRAMW6432}/CMINPACK"
+    PATH_SUFFIXES lib)
 
+  if(NOT CMINPACK_LIBRARY_DEBUG)
+    set(CMINPACK_LIBRARY_DEBUG ${CMINPACK_LIBRARY})
+  endif(NOT CMINPACK_LIBRARY_DEBUG)
+
+  set(CMINPACK_INCLUDE_DIRS ${CMINPACK_INCLUDE_DIR})
+  set(CMINPACK_LIBRARIES optimized ${CMINPACK_LIBRARY} debug ${CMINPACK_LIBRARY_DEBUG})
+  
+  find_package_handle_standard_args(cminpack DEFAULT_MSG CMINPACK_LIBRARY CMINPACK_INCLUDE_DIRS)
+  if(CMINPACK_FOUND)
+    get_filename_component(cminpack_lib ${CMINPACK_LIBRARY} NAME_WE)
+    if("${cminpack_lib}" STREQUAL "cminpack_s")
+      set(IS_CMINPACK_STATIC ON)
+    endif("${cminpack_lib}" STREQUAL "cminpack_s")
+    get_filename_component(CMINPACK_LIBRARY_PATH ${CMINPACK_LIBRARY} PATH)
+    get_filename_component(CMINPACK_LIBRARY_DEBUG_PATH ${CMINPACK_LIBRARY_DEBUG} PATH)
+    set(CMINPACK_LIBRARY_DIRS ${CMINPACK_LIBRARY_PATH} ${CMINPACK_LIBRARY_DEBUG_PATH})
+  endif(CMINPACK_FOUND)
+endmacro(find_cminpack)
+
+#remove this as soon as qhull is shipped with FindQhull.cmake
+macro(find_qhull)
+  if(NOT QHULL_ROOT)
+    get_filename_component(QHULL_ROOT "@QHULL_INCLUDE_DIRS@" PATH)
+  endif(NOT QHULL_ROOT)
+  set(QHULL_MAJOR_VERSION 6)
+
+  find_path(QHULL_INCLUDE_DIRS
+    NAMES libqhull/libqhull.h qhull.h
+    HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
+    PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
+          "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
+    PATH_SUFFIXES qhull src/libqhull libqhull include)
+
+  # Most likely we are on windows so prefer static libraries over shared ones (Mourad's recommend)
+  find_library(QHULL_LIBRARY 
+    NAMES qhullstatic qhull qhull${QHULL_MAJOR_VERSION}
+    HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
+    PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
+          "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
+    PATH_SUFFIXES project build bin lib)
+  
+  find_library(QHULL_LIBRARY_DEBUG 
+    NAMES qhullstatic_d qhull_d qhull_d${QHULL_MAJOR_VERSION} 
+          qhull qhull${QHULL_MAJOR_VERSION}
+    HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
+    PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
+          "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
+    PATH_SUFFIXES project build bin lib)
+  
+  if(NOT QHULL_LIBRARY_DEBUG)
+    set(QHULL_LIBRARY_DEBUG ${QHULL_LIBRARY})
+  endif(NOT QHULL_LIBRARY_DEBUG)
+
+  set(QHULL_LIBRARIES optimized ${QHULL_LIBRARY} debug ${QHULL_LIBRARY_DEBUG})
+
+  find_package_handle_standard_args(qhull DEFAULT_MSG QHULL_LIBRARY QHULL_INCLUDE_DIRS)
+
+  if(QHULL_FOUND)
+    get_filename_component(QHULL_LIBRARY_PATH ${QHULL_LIBRARY} PATH)
+    get_filename_component(QHULL_LIBRARY_DEBUG_PATH ${QHULL_LIBRARY_DEBUG} PATH)
+    set(QHULL_LIBRARY_DIRS ${QHULL_LIBRARY_PATH} ${QHULL_LIBRARY_DEBUG_PATH}) 
+  endif(QHULL_FOUND)
+endmacro(find_qhull)
+
+#remove this as soon as openni-dev is shipped with FindOpenni.cmake
+macro(find_openni)
+  if(NOT OPENNI_ROOT)
+    get_filename_component(OPENNI_ROOT "@OPENNI_INCLUDE_DIRS@" PATH)
+  endif(NOT OPENNI_ROOT)
+  if(PkgConfig_FOUND)
+    pkg_check_modules(PC_OPENNI openni-dev)
+  endif(PkgConfig_FOUND)
+  find_path(OPENNI_INCLUDE_DIRS XnStatus.h
+    HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} 
+          "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
+    PATHS "$ENV{PROGRAMFILES}/OpenNI/Include" "$ENV{PROGRAMW6432}/OpenNI/Include"
+    PATH_SUFFIXES include/openni Include)
+  #add a hint so that it can find it without the pkg-config
+  find_library(OPENNI_LIBRARY 
+    NAMES OpenNI64 OpenNI 
+    HINTS ${PC_OPENNI_LIBDIR} ${PC_OPENNI_LIBRARY_DIRS} 
+          "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
+    PATHS "$ENV{PROGRAMFILES}/OpenNI/Lib" "$ENV{PROGRAMW6432}/OpenNI/Lib64"
+    PATH_SUFFIXES lib Lib Lib64)
+
+  find_package_handle_standard_args(openni DEFAULT_MSG OPENNI_LIBRARY OPENNI_INCLUDE_DIRS)
+
+  if(OPENNI_FOUND)
+    get_filename_component(OPENNI_LIBRARY_PATH ${OPENNI_LIBRARY} PATH)
+    set(OPENNI_LIBRARY_DIRS ${OPENNI_LIBRARY_PATH}) 
+  endif(OPENNI_FOUND)    
+endmacro(find_openni)
+
+#remove this as soon as flann is shipped with FindFlann.cmake
+macro(find_flann)
+  if(NOT FLANN_ROOT)
+    get_filename_component(FLANN_ROOT "@FLANN_INCLUDE_DIRS@" PATH)
+  endif(NOT FLANN_ROOT)
+  if(PkgConfig_FOUND)
+    pkg_check_modules(PC_FLANN flann)
+  endif(PkgConfig_FOUND)
+
+  find_path(FLANN_INCLUDE_DIRS flann/flann.hpp
+    HINTS ${PC_FLANN_INCLUDEDIR} ${PC_FLANN_INCLUDE_DIRS} 
+          "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
+    PATHS "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9"
+          "$ENV{PROGRAMFILES}/flann" "$ENV{PROGRAMW6432}/flann"
+    PATH_SUFFIXES include)
+
+  find_library(FLANN_LIBRARY
+    NAMES flann_cpp_s flann_cpp
+    HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
+    PATHS "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9" 
+          "$ENV{PROGRAMFILES}/flann" "$ENV{PROGRAMW6432}/flann"
+    PATH_SUFFIXES lib)
+
+  find_library(FLANN_LIBRARY_DEBUG 
+    NAMES flann_cpp_s-gd flann_cpp-gd flann_cpp_s flann_cpp
+    HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT} $ENV{FLANN_ROOT}"
+    PATHS "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9" 
+          "$ENV{PROGRAMFILES}/flann" "$ENV{PROGRAMW6432}/flann"
+    PATH_SUFFIXES lib)
+  if(NOT FLANN_LIBRARY_DEBUG)
+    set(FLANN_LIBRARY_DEBUG ${FLANN_LIBRARY})
+  endif(NOT FLANN_LIBRARY_DEBUG)
+
+  find_package_handle_standard_args(Flann DEFAULT_MSG FLANN_LIBRARY FLANN_INCLUDE_DIRS)
+  if(FLANN_FOUND)
+    get_filename_component(flann_lib ${FLANN_LIBRARY} NAME_WE)
+    if("${flann_lib}" STREQUAL "flann_cpp_s") # this a patch
+      set(IS_FLANN_STATIC ON)
+    endif("${flann_lib}" STREQUAL "flann_cpp_s")
+    get_filename_component(FLANN_LIBRARY_PATH ${FLANN_LIBRARY} PATH)
+    get_filename_component(FLANN_LIBRARY_DEBUG_PATH ${FLANN_LIBRARY_DEBUG} PATH)
+    set(FLANN_LIBRARY_DIRS ${FLANN_LIBRARY_PATH} ${FLANN_LIBRARY_DEBUG_PATH}) 
+  endif(FLANN_FOUND)
+endmacro(find_flann)
+
+macro(find_wxWidgets)
+  if(NOT wxWidgets_ROOT_DIR)
+    set(wxWidgets_ROOT_DIR "@wxWidgets_ROOT_DIR@")
+  endif(NOT wxWidgets_ROOT_DIR)
+  find_package(wxWidgets ${QUIET_})
+endmacro(find_wxWidgets)
+
+macro(find_VTK)
+  if(NOT VTK_DIR)
+    set(VTK_DIR "@VTK_DIR@")
+  endif(NOT VTK_DIR)
+  find_package(VTK ${QUIET_})
+  if(VTK_FOUND)
+    set(VTK_LIBRARIES vtkRendering)
+  endif(VTK_FOUND)
+endmacro(find_VTK)
+
+if(PCL_FIND_QUIETLY)
+  set(QUIET_ QUIET)
+else(PCL_FIND_QUIETLY)
+  set(QUIET_)
+endif(PCL_FIND_QUIETLY)
+
+# Finds each component external libraries if any
+# The functioning is as following
+# try to find _lib
+# |--> _lib found ==> include the headers,
+#                     link to its library directories or include _lib_USE_FILE
+# ---> _lib not found
+#                   |--> _lib is optional ==> disable it (thanks to the guardians) 
+#                   |                         and warn
+#                   ---> _lib is required
+#                                       |--> component is required explicitely ==> error
+#                                       ---> component is induced ==> warn and remove it
+#                                                                     from the list
+
+macro(find_external_library _component _lib _is_optional)
+  if("${_lib}" STREQUAL "boost")
+    find_boost()
+  elseif("${_lib}" STREQUAL "eigen")
+    find_eigen()
+  elseif("${_lib}" STREQUAL "flann")
+    find_flann()
+  elseif("${_lib}" STREQUAL "qhull")
+    find_qhull()
+  elseif("${_lib}" STREQUAL "openni")
+    find_openni()
+  elseif("${_lib}" STREQUAL "cminpack")
+    find_cminpack()
+  elseif("${_lib}" STREQUAL "vtk")
+    find_VTK()
+  elseif("${_lib}" STREQUAL "wxwidgets")
+    find_wxWidgets()
+  endif("${_lib}" STREQUAL "boost")
+
+  string(TOUPPER "${_component}" COMPONENT)
+  string(TOUPPER "${_lib}" LIB)
+  if(${LIB}_FOUND)
+    list(APPEND PCL_${COMPONENT}_INCLUDE_DIRS "${${LIB}_INCLUDE_DIRS}")
+    if(${LIB}_USE_FILE)
+      include(${${LIB}_USE_FILE})
+    else(${LIB}_USE_FILE)
+      list(APPEND PCL_${COMPONENT}_LIBRARY_DIRS "${${LIB}_LIBRARY_DIRS}")
+    endif(${LIB}_USE_FILE)
+    if(${LIB}_LIBRARIES)
+      list(APPEND PCL_${COMPONENT}_LIBRARIES "${${LIB}_LIBRARIES}")
+    endif(${LIB}_LIBRARIES)
+  else(${LIB}_FOUND)
+    if("${_is_optional}" STREQUAL "OPTIONAL")
+      add_definitions("-DDISABLE_${LIB}")
+      pcl_message("** WARNING ** ${_component} features related to ${_lib} will be disabled")
+    elseif("${_is_optional}" STREQUAL "REQUIRED")
+      if((NOT PCL_FIND_ALL) OR (PCL_FIND_ALL EQUAL 1))
+        pcl_report_not_found("${_component} is required but ${_lib} was not found")
+      elseif(PCL_FIND_ALL EQUAL 0)
+        # raise error and remove _component from PCL_TO_FIND_COMPONENTS
+        string(TOUPPER "${_component}" COMPONENT)
+        pcl_message("** WARNING ** ${_component} will be disabled cause ${_lib} was not found")
+        list(REMOVE_ITEM PCL_TO_FIND_COMPONENTS ${_component})
+      endif((NOT PCL_FIND_ALL) OR (PCL_FIND_ALL EQUAL 1))
+    endif("${_is_optional}" STREQUAL "OPTIONAL")
+  endif(${LIB}_FOUND)
+endmacro(find_external_library)
+
+macro(pcl_check_external_dependency _component)
+endmacro(pcl_check_external_dependency)
+
+#flatten dependencies recursivity is great \o/
+macro(compute_dependencies TO_FIND_COMPONENTS)
+  foreach(component ${${TO_FIND_COMPONENTS}})
+    set(pcl_component pcl_${component})
+    if(${pcl_component}_int_dep AND (NOT PCL_FIND_ALL))
+      foreach(dependency ${${pcl_component}_int_dep})
+        list(FIND ${TO_FIND_COMPONENTS} ${component} pos)
+        list(FIND ${TO_FIND_COMPONENTS} ${dependency} found)
+        if(found EQUAL -1)
+          set(pcl_dependency pcl_${dependency})
+          if(${pcl_dependency}_int_dep)
+            list(INSERT ${TO_FIND_COMPONENTS} ${pos} ${dependency})
+            if(pcl_${dependency}_ext_dep)
+              list(APPEND pcl_${component}_ext_dep ${pcl_${dependency}_ext_dep})
+            endif(pcl_${dependency}_ext_dep)
+            if(pcl_${dependency}_opt_dep)
+              list(APPEND pcl_${component}_opt_dep ${pcl_${dependency}_opt_dep})
+            endif(pcl_${dependency}_opt_dep)
+            compute_dependencies(${TO_FIND_COMPONENTS})
+          else(${pcl_dependency}_int_dep)
+            list(INSERT ${TO_FIND_COMPONENTS} 0 ${dependency})
+          endif(${pcl_dependency}_int_dep)
+        endif(found EQUAL -1)
+      endforeach(dependency)
+    endif(${pcl_component}_int_dep AND (NOT PCL_FIND_ALL))
+  endforeach(component)
+endmacro(compute_dependencies)
+
+#check if user provided a list of components
+#if no components at all or full list is given set PCL_FIND_ALL
 if(PCL_FIND_COMPONENTS)
-  foreach(comp ${PCL_FIND_COMPONENTS})
-    list(FIND PCL_COMPONENTS ${comp} found)
-    if(found EQUAL -1)
-      message(FATAL_ERROR "requested components ${comp} not found")
-    else(found EQUAL -1)
-      string(TOUPPER "${comp}" COMP)
-      set(PCL_${COMP}_LIBRARY pcl_${comp})
-      set(PCL_${COMP}_LIBRARY_DEBUG pcl_${comp})
-      get_target_property(CONFIGURATIONS pcl_${comp} IMPORTED_CONFIGURATIONS)
-      list(FIND CONFIGURATIONS DEBUG debug_found)
-      if(debug_found EQUAL -1 AND WIN32)
-        message("${comp} not installed in Debug configuration, using default!")
-      endif(debug_found EQUAL -1 AND WIN32)
-      set(PCL_${COMP}_LIBRARIES pcl_${comp})
-      list(APPEND PCL_LIBRARIES ${PCL_${COMP}_LIBRARIES})
-    endif(found EQUAL -1)
-  endforeach(comp)
+  list(LENGTH PCL_FIND_COMPONENTS PCL_FIND_COMPONENTS_LENGTH)
+  if(PCL_FIND_COMPONENTS_LENGTH EQUAL PCL_NB_COMPONENTS)
+    set(PCL_TO_FIND_COMPONENTS ${pcl_all_components})
+    set(PCL_FIND_ALL 1)
+  else(PCL_FIND_COMPONENTS_LENGTH EQUAL PCL_NB_COMPONENTS)
+    set(PCL_TO_FIND_COMPONENTS ${PCL_FIND_COMPONENTS})    
+  endif(PCL_FIND_COMPONENTS_LENGTH EQUAL PCL_NB_COMPONENTS)
 else(PCL_FIND_COMPONENTS)
-  foreach(comp ${PCL_COMPONENTS})
-    string(TOUPPER "${comp}" COMP)
-    set(PCL_${COMP}_LIBRARY pcl_${comp})
-    set(PCL_${COMP}_LIBRARY_DEBUG pcl_${comp})
-    get_target_property(CONFIGURATIONS pcl_${comp} IMPORTED_CONFIGURATIONS)
-    list(FIND CONFIGURATIONS DEBUG debug_found)
-    if(debug_found EQUAL -1 AND WIN32)
-      message("${comp} not installed in Debug configuration, using default!")
-    endif(debug_found EQUAL -1 AND WIN32)
-    set(PCL_${COMP}_LIBRARIES pcl_${comp})
-    list(APPEND PCL_LIBRARIES ${PCL_${COMP}_LIBRARIES})
-  endforeach(comp)
+  set(PCL_TO_FIND_COMPONENTS ${pcl_all_components})
+  set(PCL_FIND_ALL 1)
 endif(PCL_FIND_COMPONENTS)
 
-##
-# append 3rd party stuff
-##
-list(APPEND PCL_INCLUDE_DIRS "@Boost_INCLUDE_DIR@")
+compute_dependencies(PCL_TO_FIND_COMPONENTS)
 
-list(APPEND PCL_INCLUDE_DIRS "@FLANN_INCLUDE_DIRS@")
+# compute external dependencies per component
+foreach(component ${PCL_TO_FIND_COMPONENTS})
+  if(NOT PkgConfig_FOUND)
+    foreach(opt ${pcl_${component}_opt_dep})
+      find_external_library(${component} ${opt} OPTIONAL)
+    endforeach(opt)
+    foreach(ext ${pcl_${component}_ext_dep})
+      find_external_library(${component} ${ext} REQUIRED)
+    endforeach(ext) 
+  endif(NOT PkgConfig_FOUND)
+endforeach(component)
 
-list(APPEND PCL_INCLUDE_DIRS "@CMINPACK_INCLUDE_DIRS@")
+foreach(component ${PCL_TO_FIND_COMPONENTS})
+  set(pcl_component pcl_${component})
+  string(TOUPPER "${component}" COMPONENT)
+  string(TOUPPER "pcl_${component}" PCL_COMPONENT)
+  string(TOUPPER "${pcl_component}_DEFINITIONS" PCL_COMPONENT_DEFINITIONS)
+  string(TOUPPER "${pcl_component}_LIBRARY_DIRS" PCL_COMPONENT_LIBRARY_DIRS)
+  string(TOUPPER "${pcl_component}_LIBRARY" PCL_COMPONENT_LIBRARY)
+  string(TOUPPER "${pcl_component}_LIBRARY_DEBUG" PCL_COMPONENT_LIBRARY_DEBUG)
+  string(TOUPPER "${pcl_component}_LIBRARIES" PCL_COMPONENT_LIBRARIES)
 
-list(APPEND PCL_INCLUDE_DIRS "@EIGEN_INCLUDE_DIRS@")
+  pcl_message(STATUS "looking for ${PCL_COMPONENT}")
 
-list(APPEND PCL_INCLUDE_DIRS "@CMINPACK_INCLUDE_DIRS@")
+  if(${PC_PCL_COMPONENT}_VERSION)
+    if(NOT PCL_FOUND_VERSION VERSION_EQUAL ${PC_PCL_COMPONENT}_VERSION)
+      pcl_report_not_found("PCL component: ${component} should be at version ${PCL_FOUND_VERSION}")
+    endif(NOT PCL_FOUND_VERSION VERSION_EQUAL ${PC_PCL_COMPONENT}_VERSION)
+  endif(${PC_PCL_COMPONENT}_VERSION)
 
-if("@HAVE_OPENNI@" STREQUAL "ON")
-  list(APPEND PCL_INCLUDE_DIRS "@OPENNI_INCLUDE_DIRS@")
-endif("@HAVE_OPENNI@" STREQUAL "ON")
+  string(REGEX REPLACE "^cuda_(.*)$" "\\1" cuda_component "${component}")
+  string(REGEX REPLACE "^gpu_(.*)$" "\\1" gpu_component "${component}")	
 
-if("@HAVE_QHULL@" STREQUAL "ON")
-  list(APPEND PCL_INCLUDE_DIRS "@QHULL_INCLUDE_DIRS@")
-endif("@HAVE_QHULL@" STREQUAL "ON")
+  if(${component}_parent)
+    set(pcl_component_dir_name pcl/${${component}_parent})
+  else(${component}_parent)
+    set(pcl_component_dir_name pcl/${component})
+  endif(${component}_parent)
+  
+  find_path(PCL_${COMPONENT}_INCLUDE_DIR
+    NAMES ${pcl_component_dir_name}
+          pcl/cuda/${cuda_component} pcl/cuda/${gpu_component} pcl/cuda/${component}
+          pcl/gpu/${cuda_component} pcl/gpu/${gpu_component} pcl/gpu/${component}
+    HINTS ${PCL_INCLUDE_DIRS}
+          "${PCL_SOURCES_TREE}"
+    PATH_SUFFIXES
+          ${component}/include ${${component}_parent}/include
+          cuda/${cuda_component}/include cuda/${gpu_component}/include
+    DOC "path to ${component} headers"
+    NO_DEFAULT_PATH)
 
-if("@HAVE_WXWIDGETS@" STREQUAL "ON")
-  set(wxWidgets_ROOT_DIR "@wxWidgets_ROOT_DIR@")
-  find_package(wxWidgets REQUIRED)
-  include("@wxWidgets_USE_FILE@")
-  list(APPEND PCL_INCLUDE_DIRS "@wxWidgets_INCLUDE_DIRS@")
-  list(APPEND PCL_LIBRARY_DIRS "@wxWidgets_LIBRARY_DIRS@")
-endif ("@HAVE_WXWIDGETS@" STREQUAL "ON")
+  list(APPEND PCL_${COMPONENT}_INCLUDE_DIRS "${PCL_${COMPONENT}_INCLUDE_DIR}")
+   
+  find_library(${PCL_COMPONENT_LIBRARY} ${pcl_component}
+    HINTS ${PCL_LIBRARY_DIRS}
+    DOC "path to ${pcl_component} library"
+    NO_DEFAULT_PATH)
+  get_filename_component(${component}_library_path 
+    ${${PCL_COMPONENT_LIBRARY}}
+    PATH)
 
-if("@HAVE_VTK@" STREQUAL "ON")
-  set(VTK_DIR "@VTK_DIR@")
-  find_package(VTK REQUIRED)
-  include ("${VTK_USE_FILE}")
-  list(APPEND PCL_INCLUDE_DIRS "${VTK_INCLUDE_DIRS}")
-  list(APPEND PCL_LIBRARY_DIRS "${VTK_LIBRARY_DIRS}")
-endif("@HAVE_VTK@" STREQUAL "ON")
+  find_library(${PCL_COMPONENT_LIBRARY_DEBUG} ${pcl_component}${PCL_DEBUG_SUFFIX}
+    HINTS ${PCL_LIBRARY_DIRS}
+    DOC "path to ${pcl_component} library debug"
+    NO_DEFAULT_PATH)
+  # if only release found let release be debug too
+  # NOTE: this is only for non Makefile sake
+  if(NOT ${PCL_COMPONENT_LIBRARY_DEBUG} AND ${PCL_COMPONENT_LIBRARY})
+    set(${PCL_COMPONENT_LIBRARY_DEBUG} ${${PCL_COMPONENT_LIBRARY}})
+  endif(NOT ${PCL_COMPONENT_LIBRARY_DEBUG} AND ${PCL_COMPONENT_LIBRARY})
 
-list(SORT PCL_INCLUDE_DIRS)
-list(REMOVE_DUPLICATES PCL_INCLUDE_DIRS)
+  get_filename_component(${component}_library_path_debug 
+    ${${PCL_COMPONENT_LIBRARY}_DEBUG}
+    PATH)
+  
+  find_package_handle_standard_args(${PCL_COMPONENT} DEFAULT_MSG
+    ${PCL_COMPONENT_LIBRARY} ${PCL_COMPONENT_INCLUDE_DIR})
 
-##
-# Add some definitions for eigen sake
-##
-add_definitions(-DEIGEN_USE_NEW_STDVECTOR 
-                -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
+  if(${PCL_COMPONENT}_FOUND)
+    list(APPEND ${PCL_COMPONENT_LIBRARIES} optimized ${${PCL_COMPONENT_LIBRARY}} debug ${${PCL_COMPONENT_LIBRARY_DEBUG}})
+    if(NOT "${PCL_${COMPONENT}_INCLUDE_DIRS}" STREQUAL "")
+      list(REMOVE_DUPLICATES PCL_${COMPONENT}_INCLUDE_DIRS)
+    endif(NOT "${PCL_${COMPONENT}_INCLUDE_DIRS}" STREQUAL "")
+    list(APPEND PCL_INCLUDE_DIRS ${PCL_${COMPONENT}_INCLUDE_DIRS})
+    list(APPEND PCL_LIBRARIES ${${PCL_COMPONENT}_LIBRARIES})
+    list(APPEND PCL_LIBRARY_DIRS ${component_library_path})
+    list(APPEND PCL_LIBRARY_DIRS ${component_library_path_debug})
+    mark_as_advanced(PCL_${COMPONENT}_INCLUDE_DIRS)
+    mark_as_advanced(${PCL_COMPONENT_LIBRARY} ${PCL_COMPONENT_LIBRARY_DEBUG})
+  endif(${PCL_COMPONENT}_FOUND)
+endforeach(component)
 
-##
-# those are for windows sake
-##
-if(MSVC)
-  add_definitions(-DBOOST_ALL_NO_LIB -D_CRT_SECURE_NO_WARNINGS)
-  if("@FLANN_LIBRARY@" MATCHES "flann_cpp_s")
-    add_definitions(-DFLANN_STATIC)
-  endif("@FLANN_LIBRARY@" MATCHES "flann_cpp_s")
-  if("@CMINPACK_LIBRARY@" MATCHES "cminpack_s")
-    add_definitions(-DCMINPACK_NO_DLL)
-  endif("@CMINPACK_LIBRARY@" MATCHES "cminpack_s")
-endif(MSVC)
+if(NOT "${PCL_INCLUDE_DIRS}" STREQUAL "")
+  list(REMOVE_DUPLICATES PCL_INCLUDE_DIRS)
+endif(NOT "${PCL_INCLUDE_DIRS}" STREQUAL "")
+
+if(NOT "${PCL_LIBRARY_DIRS}" STREQUAL "")
+  list(REMOVE_DUPLICATES PCL_LIBRARY_DIRS)
+endif(NOT "${PCL_LIBRARY_DIRS}" STREQUAL "")
+
+find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
+mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS PCL_LIBRARY_DIRS)
+
+if(PCL_FOUND)
+  set(PCL_VERSION ${PCL_FOUND_VERSION})
+  list(APPEND PCL_DEFINITIONS -DEIGEN_USE_NEW_STDVECTOR) 
+  list(APPEND PCL_DEFINITIONS -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
+  if(WIN32)
+    list(APPEND PCL_DEFINITIONS -DBOOST_ALL_NO_LIB)
+    if(IS_FLANN_STATIC)
+      list(APPEND PCL_DEFINITIONS -DFLANN_STATIC)
+    endif(IS_FLANN_STATIC)
+    if(IS_CMINPACK_STATIC)
+      list(APPEND PCL_DEFINITIONS -DCMINPACK_NO_DLL)
+    endif(IS_CMINPACK_STATIC)
+  endif(WIN32)
+endif(PCL_FOUND)

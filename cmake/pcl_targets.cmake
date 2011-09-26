@@ -50,7 +50,13 @@ macro(PCL_SUBSYS_DEPEND _var _name)
     if(SUBSYS_DEPS)
         SET_IN_GLOBAL_MAP(PCL_SUBSYS_DEPS ${_name} "${SUBSYS_DEPS}")
     endif(SUBSYS_DEPS)
-		GET_IN_MAP(subsys_status PCL_SUBSYS_HYPERSTATUS ${_name})
+    if(SUBSYS_EXT_DEPS)
+        SET_IN_GLOBAL_MAP(PCL_SUBSYS_EXT_DEPS ${_name} "${SUBSYS_EXT_DEPS}")
+    endif(SUBSYS_EXT_DEPS)
+    if(SUBSYS_OPT_DEPS)
+        SET_IN_GLOBAL_MAP(PCL_SUBSYS_OPT_DEPS ${_name} "${SUBSYS_OPT_DEPS}")
+    endif(SUBSYS_OPT_DEPS)
+    GET_IN_MAP(subsys_status PCL_SUBSYS_HYPERSTATUS ${_name})
     if(${_var} AND (NOT ("${subsys_status}" STREQUAL "AUTO_OFF")))
         if(SUBSYS_DEPS)
         foreach(_dep ${SUBSYS_DEPS})
@@ -117,11 +123,11 @@ macro(PCL_ADD_LIBRARY _name _component)
       set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
     endif(USE_PROJECT_FOLDERS)
 
-    install(TARGETS ${_name} EXPORT pcl
+    install(TARGETS ${_name}
         RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component}
         LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component})
-    install(EXPORT pcl DESTINATION ${LIB_INSTALL_DIR}/pcl FILE PCLDepends.cmake)
+
 endmacro(PCL_ADD_LIBRARY)
 
 
@@ -354,6 +360,8 @@ macro(PCL_RESET_MAPS)
     set(PCL_SUBSYS_REASONS "" CACHE INTERNAL
         "But why?" FORCE)
     set(PCL_SUBSYS_DEPS "" CACHE INTERNAL "A depends on B and C." FORCE)
+    set(PCL_SUBSYS_EXT_DEPS "" CACHE INTERNAL "A depends on B and C." FORCE)
+    set(PCL_SUBSYS_OPT_DEPS "" CACHE INTERNAL "A depends on B and C." FORCE)
     set(PCL_SUBSYSTEMS "" CACHE INTERNAL "Internal list of subsystems" FORCE)
     set(PCL_SUBSYS_DESC "" CACHE INTERNAL "Subsystem descriptions" FORCE)
 endmacro(PCL_RESET_MAPS)

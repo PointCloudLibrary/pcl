@@ -64,7 +64,7 @@ macro(PCL_CPACK_MAKE_COMPS_OPTS _var _current)
             endif(_status)
         endif("${_ss}" STREQUAL "global_tests")
     endforeach(_ss)
-    set(${_var} "${${_var}}\nset(CPACK_COMPONENTS_ALL${_comps_list})\n")
+    set(${_var} "${${_var}}\nset(CPACK_COMPONENTS_ALL${_comps_list} pclconfig)\n")
 endmacro(PCL_CPACK_MAKE_COMPS_OPTS)
 
 

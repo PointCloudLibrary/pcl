@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project("PCL Tutorials")
 
-# uncomment the next line in case you didn't build PCL out of sources or to use FindPCL.cmake 
-#list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
-
 foreach(subdir 
           cloud_viewer
           cluster_extraction

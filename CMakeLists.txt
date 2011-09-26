@@ -168,6 +168,9 @@ endforeach(subdir)
 ### ---[ Documentation
 add_subdirectory(doc)
 
+### ---[ Configure PCLConfig.cmake
+include(${PCL_SOURCE_DIR}/cmake/pcl_pclconfig.cmake)
+
 ### ---[ Package creation
 include(${PCL_SOURCE_DIR}/cmake/pcl_cpack.cmake)
 set(CPACK_PACKAGE_VERSION "${PCL_VERSION}")
@@ -200,14 +203,5 @@ include(${PCL_SOURCE_DIR}/cmake/dep_graph.cmake)
 MAKE_DEP_GRAPH()
 
 ### ---[ Finish up
-# Configure PCLConfig.cmake
-configure_file("${PCL_SOURCE_DIR}/PCLConfig.cmake.in"
-               "${PCL_BINARY_DIR}/PCLConfig.cmake" @ONLY)
-configure_file("${PCL_SOURCE_DIR}/PCLConfigVersion.cmake.in"
-               "${PCL_BINARY_DIR}/PCLConfigVersion.cmake" @ONLY)
-install(FILES
-        "${PCL_BINARY_DIR}/PCLConfig.cmake"
-        "${PCL_BINARY_DIR}/PCLConfigVersion.cmake"
-        DESTINATION ${PCLCONFIG_INSTALL_DIR})
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
