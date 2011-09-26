@@ -261,7 +261,7 @@ Once CMake has found all the needed dependencies, let's see the PCL specific CMa
 	
 - **PCL_SHARED_LIBS** is checked by default. Uncheck it if you want static PCL libs (not recommanded).
 
-- **CMAKE_INSTALL_DIR** is where PCL will be installed after building it (more information on this later).
+- **CMAKE_INSTALL_PREFIX** is where PCL will be installed after building it (more information on this later).
 	
 If you have the Pro version of Microsoft Visual Studio, you can check **USE_PROJECT_FOLDERS** checkbox to organize PCL
 projects in folders within the PCL solution. If you have an express edition, it is recommended to keep it unchecked, as in
