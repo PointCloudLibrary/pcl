@@ -1100,6 +1100,18 @@ namespace pcl
         void
         resetCameraViewpoint (const std::string &id = "cloud");
 
+        /** \brief Set the camera location and viewup according to the given arguments
+          * \param posX the x co-ordinate of the camera location
+          * \param posY the y co-ordinate of the camera location
+          * \param posZ the z co-ordinate of the camera location
+          * \param viewX the x component of the normal direction of the camera
+          * \param viewY the y component of the normal direction of the camera
+          * \param viewZ the z component of the normal direction of the camera
+          */
+        void
+        setCameraPosition (double posX,double posY, double posZ,
+                           double viewX, double viewY, double viewZ);
+
         /** \brief Get the current camera parameters. */
         void
         getCameras (std::vector<Camera>& cameras);

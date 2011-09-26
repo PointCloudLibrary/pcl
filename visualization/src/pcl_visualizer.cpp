@@ -1103,6 +1103,26 @@ pcl::visualization::PCLVisualizer::resetCamera ()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::visualization::PCLVisualizer::setCameraPosition (double posX,double posY, double posZ,
+                   double viewX, double viewY, double viewZ)
+{
+    // Set position
+    camera_.pos[0] = posX;
+    camera_.pos[1] = posY;
+    camera_.pos[2] = posZ;
+
+    // Set "rotation"
+    camera_.view[0] = viewX;
+    camera_.view[1] = viewY;
+    camera_.view[2] = viewZ;
+
+    updateCamera();
+    //Render one frame from the new camera position
+    spinOnce();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
 {
   // Check to see if the given ID entry exists
