@@ -205,6 +205,22 @@ namespace pcl
           return (search_method_surface_ (*input_, index, parameter, indices, distances));
       }
 
+      /** \brief Search for k-nearest neighbors using the spatial locator from 
+        * \a setSearchmethod, and the given surface from \a setSearchSurface.
+        * \param cloud the query point cloud
+        * \param index the index of the query point in \a cloud
+        * \param parameter the search parameter (either k or radius)
+        * \param indices the resultant vector of indices representing the k-nearest neighbors
+        * \param distances the resultant vector of distances representing the distances from the query point to the
+        * k-nearest neighbors
+        */
+      inline int
+      searchForNeighbors (const PointCloudIn &cloud, size_t index, double parameter, 
+                          std::vector<int> &indices, std::vector<float> &distances) const
+      {
+        return (search_method_surface_ (cloud, index, parameter, indices, distances));
+      }
+
     protected:
       /** \brief The feature name. */
       std::string feature_name_;

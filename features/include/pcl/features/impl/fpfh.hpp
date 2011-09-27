@@ -31,7 +31,7 @@
 *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *
-* $Id: fpfh.hpp 2384 2011-09-02 19:46:16Z bouffa $
+* $Id$
 *
 */
 
@@ -210,7 +210,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
         ++spfh_indices_itr;
 
         // Find the neighborhood around p_idx
-        this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists);
+        this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists);
 
         // Estimate the SPFH signature around p_idx
         computePointSPFHSignature (*surface_, *normals_, p_idx, i, nn_indices, hist_f1_, hist_f2_, hist_f3_);

@@ -1077,6 +1077,58 @@ TEST (PCL, FPFHEstimation)
   EXPECT_NEAR (fpfhs->points[0].histogram[30], 19.1552, 1e-4);
   EXPECT_NEAR (fpfhs->points[0].histogram[31], 9.22763, 1e-4);
   EXPECT_NEAR (fpfhs->points[0].histogram[32], 2.17815, 1e-4);
+
+
+  // Test results when both setIndices and setSearchSurface are used
+
+  PointCloud<PointXYZ>::Ptr search_surface_points = cloud.makeShared ();
+  PointCloud<Normal>::Ptr search_surface_normals = normals;
+
+  // Subsample the search surface to get a different input_ cloud
+  std::vector<int> subsample_inds (0);
+  for (size_t i = 0; i < search_surface_points->size (); i+=3)
+    subsample_inds.push_back (i);
+  PointCloud<PointXYZ>::Ptr full_input_cloud (new PointCloud<PointXYZ>);
+  copyPointCloud (*search_surface_points, subsample_inds, *full_input_cloud);
+
+  // Create some indices
+  boost::shared_ptr<std::vector<int> > inds (new std::vector<int>);
+  for (size_t i = 0; i < (full_input_cloud->size ()/2); i+=2)
+  {
+    inds->push_back (i);
+  }
+
+  // Create a subcloud of "full_input_cloud" based on the indices above
+  PointCloud<PointXYZ>::Ptr partial_input_cloud (new PointCloud<PointXYZ>);
+  copyPointCloud (*full_input_cloud, *inds, *partial_input_cloud);
+
+  // Estimate FPFH with a search surface and with input/indices pair: full_input_cloud + inds 
+  FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh1;
+  fpfh1.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
+  fpfh1.setRadiusSearch (0.05);
+  fpfh1.setSearchSurface (search_surface_points);
+  fpfh1.setInputNormals (search_surface_normals);
+  fpfh1.setInputCloud (full_input_cloud);
+  fpfh1.setIndices (inds);
+  PointCloud<FPFHSignature33> output1;
+  fpfh1.compute (output1);
+
+  // Estimate FPFH with a search surface and with input: partial_input_cloud 
+  FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh2;
+  fpfh2.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
+  fpfh2.setRadiusSearch (0.05);
+  fpfh2.setSearchSurface (search_surface_points);
+  fpfh2.setInputNormals (search_surface_normals);
+  fpfh2.setInputCloud (partial_input_cloud);
+  PointCloud<FPFHSignature33> output2;
+  fpfh2.compute (output2);
+
+  // The two results should be equal
+  ASSERT_EQ (output1.points.size (), output2.points.size ());
+  for (size_t i = 0; i < output1.points.size (); ++i)
+    for (int j = 0; j < 33; ++j)
+      ASSERT_EQ (output1.points[i].histogram[j], output2.points[i].histogram[j]);
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -199,7 +199,7 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
                                     std::vector<float> &k_distances, int max_nn) const = &KdTree::radiusSearch;
         search_method_ = boost::bind (radiusSearch, boost::ref (tree_), _1, _2, _3, _4, INT_MAX);
       }
-      else
+      //else
       {
         // Declare the search locator definition
         int (KdTree::*radiusSearchSurface)(const PointCloudIn &cloud, int index, double radius, std::vector<int> &k_indices,
@@ -219,7 +219,7 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
         int (KdTree::*nearestKSearch)(int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) = &KdTree::nearestKSearch;
         search_method_ = boost::bind (nearestKSearch, boost::ref (tree_), _1, _2, _3, _4);
       }
-      else
+      //else
       {
         // Declare the search locator definition
         int (KdTree::*nearestKSearchSurface)(const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) = &KdTree::nearestKSearch;
