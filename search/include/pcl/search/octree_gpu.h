@@ -49,6 +49,8 @@ namespace pcl
   namespace search
   {
 
+  /** \brief @b search::OctreeGPU is a wrapper class around the octree functions written for GPU 
+     */
     template <typename PointT>
     class OctreeGPU : public pcl::Search<PointT>
     {

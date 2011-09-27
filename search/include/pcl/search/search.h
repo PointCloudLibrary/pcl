@@ -141,7 +141,7 @@ namespace pcl
          *        if indices were given in setInputCloud, index will be the position in the indices vector
          * \param k the number of neighbors to search for
          * \param k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-         * \param k_distances the resultant squared distances to the neighboring points (must be resized to \a k
+         * \param k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
          * a priori!)
          * \return number of neighbors found
          */
@@ -149,7 +149,7 @@ namespace pcl
         nearestKSearch (int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)=0;
 
 	/** \brief search for all the nearest neighbors of the query point in a given radius.
-         * \param cloud the point cloud data
+         * \param point the given query point
          * \param radius the radius of the sphere bounding all of p_q's neighbors
          * \param k_indices the resultant indices of the neighboring points
          * \param k_distances the resultant squared distances to the neighboring points
@@ -246,7 +246,7 @@ namespace pcl
         * \param index the index in \a cloud representing the query point
         * \param radius the radius of the sphere bounding all of point's neighbors
         * \param k_indices the resultant indices of the neighboring points
-        * \param k_sqr_distances the resultant squared distances to the neighboring points
+        * \param k_distances the resultant squared distances to the neighboring points
         * \param max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radius
         */

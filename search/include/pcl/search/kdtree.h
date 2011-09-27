@@ -244,7 +244,7 @@ namespace pcl
         * \param index the index in \a cloud representing the query point
         * \param radius the radius of the sphere bounding all of point's neighbors
         * \param k_indices the resultant indices of the neighboring points
-        * \param k_sqr_distances the resultant squared distances to the neighboring points
+        * \param k_distances the resultant squared distances to the neighboring points
         * \param max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radius
         */

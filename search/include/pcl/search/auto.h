@@ -59,6 +59,11 @@ namespace pcl
       NEAREST_RADIUS_SEARCH
     };
 
+
+  /** \brief @b search::AutotunedSearch is a wrapper class which inherits all the search functions written in PCL
+     *          and provides an intutive interface to all the functions. 
+     */
+
     template <typename PointT>
     class AutotunedSearch : public pcl::search::Search<PointT>
     {
@@ -120,7 +125,7 @@ namespace pcl
         * \return number of neighbors found
         */
         int
-        nearestKSearch (const PointT& point, 
+        	nearestKSearch (const PointT& point, 
                         int k, 
                         std::vector<int> &k_indices, 
                         std::vector<float> &k_sqr_distances);
@@ -261,7 +266,7 @@ namespace pcl
         * \param index the index in \a cloud representing the query point
         * \param radius the radius of the sphere bounding all of point's neighbors
         * \param k_indices the resultant indices of the neighboring points
-        * \param k_sqr_distances the resultant squared distances to the neighboring points
+        * \param k_distances the resultant squared distances to the neighboring points
         * \param max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radius
         */

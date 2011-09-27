@@ -83,10 +83,9 @@ namespace pcl
         typedef boost::shared_ptr<const pcl::octree::OctreePointCloud<PointT, LeafTWrap, OctreeT> > ConstPtr;
         Ptr tree_;
 
-        /** \brief Provide a pointer to the input data set.
-         *  \param cloud_arg the const boost shared pointer to a PointCloud message
-         *  \param indices_arg the point indices subset that is to be used from \a cloud - if 0 the whole point cloud is used
-         */
+        /** \brief Octree constructor.
+         *  \param resolution_arg: octree resolution at lowest octree level
+         * */
         Octree (const double resolution_arg)
         {
           tree_.reset (new pcl::octree::OctreePointCloud<PointT, LeafTWrap, OctreeT> (resolution_arg));
@@ -96,7 +95,7 @@ namespace pcl
         virtual ~Octree () {}
 
 	/** \brief Provide a pointer to the input dataset.
-        * \param cloud the const boost shared pointer to a PointCloud message
+        * \param cloud_arg the const boost shared pointer to a PointCloud message
         */
         inline void
         setInputCloud (const PointCloudConstPtr &cloud_arg)
@@ -138,7 +137,7 @@ namespace pcl
         * \param index the index in \a cloud representing the query point
         * \param k the number of neighbors to search for
         * \param k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param k_distances the resultant squared distances to the neighboring points (must be resized to \a k
+        * \param k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
         * a priori!)
         * \return number of neighbors found
         */
@@ -177,7 +176,7 @@ namespace pcl
         * \param index the index in \a cloud representing the query point
         * \param radius the radius of the sphere bounding all of point's neighbors
         * \param k_indices the resultant indices of the neighboring points
-        * \param k_sqr_distances the resultant squared distances to the neighboring points
+        * \param k_distances the resultant squared distances to the neighboring points
         * \param max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radius
         */
@@ -241,7 +240,7 @@ namespace pcl
 
 	/** \brief search for all the nearest neighbors of the query points in the given radiuses.
         * \param point the given query points
-        * \param radiuses the radiuses of the sphere bounding all of point's neighbors
+        * \param radii the radiuses of the sphere bounding all of point's neighbors
         * \param k_indices the resultant indices of the neighboring points
         * \param k_distances the resultant squared distances to the neighboring points
         * \param max_nn if given, bounds the maximum returned neighbors to this value
