@@ -46,5 +46,7 @@
 
 #include <pcl/octree/impl/octree_pointcloud.hpp>
 
+#include <pcl/octree/impl/octree_iterator.hpp>
+
 
 #endif

@@ -834,6 +834,8 @@ TEST (PCL, Octree_Pointcloud_Test)
 
 }
 
+
+
 TEST (PCL, Octree_Pointcloud_Density_Test)
 {
 
@@ -874,6 +876,65 @@ TEST (PCL, Octree_Pointcloud_Density_Test)
         for (float x = 0.05f; x < 5.0f; x += 0.1f)
         ASSERT_EQ (octreeB.getVoxelDensityAtPoint (PointXYZ(x, y, z)), 1);
       }
+
+
+TEST (PCL, Octree_Pointcloud_Iterator_Test)
+{
+
+  // instantiate point cloud and fill it with point data
+
+  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+
+  for (float z = 0.05f; z < 7.0f; z += 0.1f)
+    for (float y = 0.05f; y < 7.0f; y += 0.1f)
+      for (float x = 0.05f; x < 7.0f; x += 0.1f)
+        cloudIn->points.push_back (PointXYZ (x, y, z));
+
+  cloudIn->width = cloudIn->points.size ();
+  cloudIn->height = 1;
+
+  OctreePointCloud<PointXYZ> octreeA (1.0f); // low resolution
+
+  // add point data to octree
+  octreeA.setInputCloud (cloudIn);
+  octreeA.addPointsFromInputCloud ();
+
+  // instantiate iterator for octreeA
+  OctreePointCloud<PointXYZ>::LeafNodeIterator it1 (octreeA);
+
+  std::vector<int> indexVector;
+  unsigned int leafNodeCounter = 0;
+
+  // test preincrement
+  ++it1;
+  it1.getData (indexVector);
+  leafNodeCounter++;
+
+  // test postincrement
+  it1++;
+  it1.getData (indexVector);
+  leafNodeCounter++;
+
+  while (*++it1)
+  {
+    it1.getData (indexVector);
+    leafNodeCounter++;
+  }
+
+  ASSERT_EQ (indexVector.size(), cloudIn->points.size () );
+  ASSERT_EQ (leafNodeCounter, octreeA.getLeafCount() );
+
+  OctreePointCloud<PointXYZ>::Iterator it2 (octreeA);
+
+  unsigned int traversCounter = 0;
+  while ( *++it2 )
+  {
+    traversCounter++;
+  }
+
+  ASSERT_EQ (traversCounter > octreeA.getLeafCount() + octreeA.getBranchCount() , true );
+
+}
 
 TEST (PCL, Octree_Pointcloud_Occupancy_Test)
 {

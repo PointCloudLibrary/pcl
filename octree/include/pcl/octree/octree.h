@@ -52,4 +52,6 @@
 #include <pcl/octree/octree_pointcloud_changedetector.h>
 #include <pcl/octree/octree_pointcloud_voxelcentroid.h>
 
+#include <pcl/octree/octree_iterator.h>
+
 #endif

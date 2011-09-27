@@ -42,6 +42,8 @@
 
 #include "octree_nodes.h"
 
+#include "octree_iterator.h"
+
 namespace pcl
 {
   namespace octree
@@ -62,8 +64,20 @@ namespace pcl
       */
     template<typename DataT, typename LeafT = OctreeLeafDataT<DataT> >
     class Octree2BufBase
-    {
+      {
+
+        friend class OctreeNodeIterator<DataT, LeafT, Octree2BufBase> ;
+        friend class OctreeLeafNodeIterator<DataT, LeafT, Octree2BufBase> ;
+
       public:
+
+        // Octree iterators
+        typedef OctreeNodeIterator<DataT, LeafT, Octree2BufBase> Iterator;
+        typedef const OctreeNodeIterator<DataT, LeafT, Octree2BufBase> ConstIterator;
+
+        // Octree iterators
+        typedef OctreeLeafNodeIterator<DataT, LeafT, Octree2BufBase> LeafNodeIterator;
+        typedef const OctreeLeafNodeIterator<DataT, LeafT, Octree2BufBase> ConstLeafNodeIterator;
 
         /** \brief Empty constructor. */
         Octree2BufBase ();
@@ -301,6 +315,12 @@ namespace pcl
         // Protected octree methods based on octree keys
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        /** \brief Retrieve root node */
+        const OctreeNode*
+        getRootNode () const
+        {
+          return this->rootNode_;
+        }
 
         /** \brief Virtual method for generating an octree key for a given DataT object.
          *  \param data_arg: reference to DataT object

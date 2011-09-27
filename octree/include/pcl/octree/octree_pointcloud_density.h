@@ -81,7 +81,7 @@ namespace pcl
          *  \param data_arg: reference to return pointer of leaf node DataT element (will be set to 0).
          */
         virtual void
-        getData (const DataT*& data_arg)
+        getData (const DataT*& data_arg) const
         {
           data_arg = 0;
         }
@@ -90,7 +90,7 @@ namespace pcl
        *  \param dataVector_arg: reference to dummy DataT vector that is extended with leaf node DataT elements.
          */
         virtual void
-        getData (std::vector<DataT>& dataVector_arg)
+        getData (std::vector<DataT>& dataVector_arg) const
         {
         }
 
