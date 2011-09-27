@@ -1,0 +1,34 @@
+Android Port for Pointcloud Library
+-----------------------------------
+
+WARNING: currently work in progress / experimental - nothing is guaranteed, try it at your own risk
+
+
+Prerequisites
+-------------
+
+* android-cmake -> by Ethan
+* boost for android -> use Ethan's patches
+* eigen for android (need hack because the android compiler (arm-linux-androideabi-g++) does not pass
+  the math library presence test -> no log function in math.h ??? - need to verify this or find equivalent
+* flann for android -> compiles out of the box
+
+
+Modifications to PCL
+--------------------
+
+* need to eliminate all VTK references from pcl_surface, pcl_io
+* find a solution for endianness checks in some PCL preprocessor directives in 
+  common/include/sensor_msgs/PointCloud2.h and io/include/pcl/io/ply.h
+* boost for android does not have the date-time module
+
+
+
+Roadmap
+-------
+
+* write script for creating .apk application and test it on emulator
+* patch PCL code regarding the issues mentioned above
+* integrate VES
+
+* write a proper README / tutorial :-)
