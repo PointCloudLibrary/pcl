@@ -105,12 +105,12 @@ template<typename PointT, typename LeafTWrap, typename OctreeT> int
 pcl::search::Octree<PointT, LeafTWrap, OctreeT>::radiusSearch (
     const PointCloudConstPtr &cloud_arg, int index_arg,
     double radius_arg, std::vector<int> &k_indices_arg,
-    std::vector<float> &k_sqr_distances_arg, int max_nn_arg)
+    std::vector<float> &k_sqr_distances_arg, int max_nn)
 {
   tree_->setInputCloud (cloud_arg);
  //   this->addPointsFromInputCloud ();
 
-  return (tree_->radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg));
+  return (tree_->radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,9 +118,9 @@ template<typename PointT, typename LeafTWrap, typename OctreeT> int
 pcl::search::Octree<PointT, LeafTWrap, OctreeT>::radiusSearch (
     const PointT &p_q_arg, const double radius_arg,
     std::vector<int> &k_indices_arg,
-    std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const
+    std::vector<float> &k_sqr_distances_arg, int max_nn) const
 {
-  return (tree_->radiusSearch (p_q_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg));
+  return (tree_->radiusSearch (p_q_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,9 +128,9 @@ template<typename PointT, typename LeafTWrap, typename OctreeT> int
 pcl::search::Octree<PointT, LeafTWrap, OctreeT>::radiusSearch (
     int index_arg, const double radius_arg,
     std::vector<int> &k_indices_arg,
-    std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const
+    std::vector<float> &k_sqr_distances_arg, int max_nn) const
 {
-  return (tree_->radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg));
+  return (tree_->radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn));
 }
 
 #define PCL_INSTANTIATE_Octree(T) template class PCL_EXPORTS pcl::search::Octree<T, pcl::octree::OctreeLeafDataTVector<int>, pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafDataTVector<int> > >;

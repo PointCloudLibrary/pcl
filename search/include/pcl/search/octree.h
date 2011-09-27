@@ -316,25 +316,25 @@ namespace pcl
          * \param radius_arg the radius of the sphere bounding all of p_q's neighbors
          * \param k_indices_arg the resultant indices of the neighboring points
          * \param k_sqr_distances_arg the resultant squared distances to the neighboring points
-         * \param max_nn_arg if given, bounds the maximum returned neighbors to this value
+         * \param max_nn if given, bounds the maximum returned neighbors to this value
          * \return number of neighbors found in radius
          */
         int
         radiusSearch (const PointCloudConstPtr &cloud_arg, int index_arg, double radius_arg,
                       std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg,
-                      int max_nn_arg = INT_MAX) ;
+                      int max_nn = INT_MAX) ;
 
         /** \brief search for all neighbors of query point that are within a given radius.
          * \param p_q_arg the given query point
          * \param radius_arg the radius of the sphere bounding all of p_q's neighbors
          * \param k_indices_arg the resultant indices of the neighboring points
          * \param k_sqr_distances_arg the resultant squared distances to the neighboring points
-         * \param max_nn_arg if given, bounds the maximum returned neighbors to this value
+         * \param max_nn if given, bounds the maximum returned neighbors to this value
          * \return number of neighbors found in radius
          */
         int
         radiusSearch (const PointT &p_q_arg, const double radius_arg, std::vector<int> &k_indices_arg,
-                      std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX) const;
+                      std::vector<float> &k_sqr_distances_arg, int max_nn = INT_MAX) const;
 
         /** \brief search for all neighbors of query point that are within a given radius.
          * \param index_arg index representing the query point in the dataset given by \a setInputCloud.
@@ -342,12 +342,12 @@ namespace pcl
          * \param radius_arg radius of the sphere bounding all of p_q's neighbors
          * \param k_indices_arg the resultant indices of the neighboring points
          * \param k_sqr_distances_arg the resultant squared distances to the neighboring points
-         * \param max_nn_arg if given, bounds the maximum returned neighbors to this value
+         * \param max_nn if given, bounds the maximum returned neighbors to this value
          * \return number of neighbors found in radius
          */
         int
         radiusSearch (int index_arg, const double radius_arg, std::vector<int> &k_indices_arg,
-                      std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX) const;
+                      std::vector<float> &k_sqr_distances_arg, int max_nn = INT_MAX) const;
     };
   }
 }
