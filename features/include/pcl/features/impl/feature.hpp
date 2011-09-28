@@ -178,7 +178,9 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
   {
     if (k_ != 0)
     {
-      PCL_ERROR ("[pcl::%s::compute] Both radius (%f) and K (%d) defined! Set one of them to zero first and then re-run compute ().\n", getClassName ().c_str (), search_radius_, k_);
+      PCL_ERROR ("[pcl::%s::compute] ", getClassName ().c_str ());
+      PCL_ERROR ("Both radius (%f) and K (%d) defined! ", search_radius_, k_);
+      PCL_ERROR ("Set one of them to zero first and then re-run compute ().\n");
       // Cleanup
       deinitCompute ();
       // Reset the surface
@@ -189,46 +191,45 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
       }
       return (false);
     }
-    else                  // Use the radiusSearch () function
+    else // Use the radiusSearch () function
     {
       search_parameter_ = search_radius_;
-      if (surface_ == input_)       // if the two surfaces are the same
+      if (surface_ == input_) // if the two surfaces are the same
       {
         // Declare the search locator definition
         int (KdTree::*radiusSearch)(int index, double radius, std::vector<int> &k_indices,
                                     std::vector<float> &k_distances, int max_nn) const = &KdTree::radiusSearch;
         search_method_ = boost::bind (radiusSearch, boost::ref (tree_), _1, _2, _3, _4, INT_MAX);
       }
-      //else
-      {
-        // Declare the search locator definition
-        int (KdTree::*radiusSearchSurface)(const PointCloudIn &cloud, int index, double radius, std::vector<int> &k_indices,
-                                            std::vector<float> &k_distances, int max_nn) const = &KdTree::radiusSearch;
-        search_method_surface_ = boost::bind (radiusSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5, INT_MAX);
-      }
+
+      // Declare the search locator definition
+      int (KdTree::*radiusSearchSurface)(const PointCloudIn &cloud, int index, double radius, 
+                                         std::vector<int> &k_indices, std::vector<float> &k_distances, 
+                                         int max_nn) const = &KdTree::radiusSearch;
+      search_method_surface_ = boost::bind (radiusSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5, INT_MAX);
     }
   }
   else
   {
-    if (k_ != 0)         // Use the nearestKSearch () function
+    if (k_ != 0) // Use the nearestKSearch () function
     {
       search_parameter_ = k_;
-      if (surface_ == input_)       // if the two surfaces are the same
+      if (surface_ == input_) // if the two surfaces are the same
       {
         // Declare the search locator definition
-        int (KdTree::*nearestKSearch)(int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) = &KdTree::nearestKSearch;
+        int (KdTree::*nearestKSearch)(int index, int k, std::vector<int> &k_indices, 
+                                      std::vector<float> &k_distances) = &KdTree::nearestKSearch;
         search_method_ = boost::bind (nearestKSearch, boost::ref (tree_), _1, _2, _3, _4);
       }
-      //else
-      {
-        // Declare the search locator definition
-        int (KdTree::*nearestKSearchSurface)(const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) = &KdTree::nearestKSearch;
-        search_method_surface_ = boost::bind (nearestKSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5);
-      }
+      // Declare the search locator definition
+      int (KdTree::*nearestKSearchSurface)(const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices, 
+                                           std::vector<float> &k_distances) = &KdTree::nearestKSearch;
+      search_method_surface_ = boost::bind (nearestKSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5);
     }
     else
     {
-      PCL_ERROR ("[pcl::%s::compute] Neither radius nor K defined! Set one of them to a positive number first and then re-run compute ().\n", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::compute] Neither radius nor K defined! ", getClassName ().c_str ());
+      PCL_ERROR ("Set one of them to a positive number first and then re-run compute ().\n");
       // Cleanup
       deinitCompute ();
       // Reset the surface
@@ -263,13 +264,13 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   // Check if the output will be computed for all points or only a subset
   if (indices_->size () != input_->points.size ())
   {
-    output.width    = (int) indices_->size ();
-    output.height   = 1;
+    output.width = (int) indices_->size ();
+    output.height = 1;
   }
   else
   {
-    output.width    = input_->width;
-    output.height   = input_->height;
+    output.width = input_->width;
+    output.height = input_->height;
   }
   output.is_dense = input_->is_dense;
 
@@ -309,7 +310,9 @@ pcl::FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
   // Check if the size of normals is the same as the size of the surface
   if (normals_->points.size () != surface_->points.size ())
   {
-    PCL_ERROR ("[pcl::%s::initCompute] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::initCompute] ", getClassName ().c_str ());
+    PCL_ERROR ("The number of points in the input dataset differs from ");
+    PCL_ERROR ("the number of points in the dataset containing the normals!\n");
     Feature<PointInT, PointOutT>::deinitCompute();
     return (false);
   }
