@@ -73,6 +73,91 @@ PointCloud<PointXYZ> cloud;
 vector<int> indices;
 KdTreePtr tree;
 
+template <typename FeatureEstimation, typename PointT, typename NormalT, typename OutputT>
+void
+testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points, 
+                             const typename PointCloud<NormalT>::Ptr & normals,
+                             const boost::shared_ptr<vector<int> > & indices, int ndims)
+{
+  //
+  // Test setIndices and setSearchSurface
+  //
+  PointCloud<OutputT> full_output, output0, output1, output2;
+
+  // Compute for all points and then subsample the results
+  FeatureEstimation est0;
+  est0.setSearchMethod (typename KdTreeFLANN<PointT>::Ptr (new KdTreeFLANN<PointT>));
+  est0.setKSearch (10);
+  est0.setInputCloud (points);
+  est0.setInputNormals (normals);
+  est0.compute (full_output);
+  copyPointCloud (full_output, *indices, output0);
+
+  // Compute with all points as "search surface" and the specified sub-cloud as "input"
+  typename PointCloud<PointT>::Ptr subpoints (new PointCloud<PointT>);
+  copyPointCloud (*points, *indices, *subpoints);
+  FeatureEstimation est1;
+  est1.setSearchMethod (typename KdTreeFLANN<PointT>::Ptr (new KdTreeFLANN<PointT>));
+  est1.setKSearch (10);
+  est1.setInputCloud (subpoints);
+  est1.setSearchSurface (points);
+  est1.setInputNormals (normals);
+  est1.compute (output1);
+
+  // Compute with all points as "input" and the specified indices
+  FeatureEstimation est2;
+  est2.setSearchMethod (typename KdTreeFLANN<PointT>::Ptr (new KdTreeFLANN<PointT>));
+  est2.setKSearch (10);
+  est2.setInputCloud (points);
+  est2.setInputNormals (normals);
+  est2.setIndices (indices);
+  est2.compute (output2);
+
+  // All three of the above cases should produce equivalent results
+  ASSERT_EQ (output0.size (), output1.size ());
+  ASSERT_EQ (output1.size (), output2.size ());
+  for (size_t i = 0; i < output1.size (); ++i)
+  {
+    for (int j = 0; j < ndims; ++j)
+    {
+      ASSERT_EQ (output0.points[i].histogram[j], output1.points[i].histogram[j]);
+      ASSERT_EQ (output1.points[i].histogram[j], output2.points[i].histogram[j]);
+    }
+  }
+
+  //
+  // Test the combination of setIndices and setSearchSurface
+  //
+  PointCloud<OutputT> output3, output4;
+
+  boost::shared_ptr<vector<int> > indices2 (new vector<int> (0));
+  for (size_t i = 0; i < (indices->size ()/2); ++i)
+    indices2->push_back (i);
+
+  // Compute with all points as search surface + the specified sub-cloud as "input" but for only a subset of indices
+  FeatureEstimation est3;
+  est3.setSearchMethod (typename KdTreeFLANN<PointT>::Ptr (new KdTreeFLANN<PointT>));
+  est3.setKSearch (10);
+  est3.setSearchSurface (points);
+  est3.setInputNormals (normals);
+  est3.setInputCloud (subpoints);
+  est3.setIndices (indices2);
+  est3.compute (output3); 
+
+  // Start with features for each point in "subpoints" and then subsample the results
+  copyPointCloud (output0, *indices2, output4); // (Re-using "output0" from above)
+
+  // The two cases above should produce equivalent results
+  ASSERT_EQ (output3.size (), output4.size ());
+  for (size_t i = 0; i < output3.size (); ++i)
+  {
+    for (int j = 0; j < ndims; ++j)
+    {
+      ASSERT_EQ (output3.points[i].histogram[j], output4.points[i].histogram[j]);   
+    }
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, BaseFeature)
 {
@@ -925,6 +1010,17 @@ TEST (PCL, PFHEstimation)
     EXPECT_NEAR (pfhs->points[i].histogram[25], 0.142759, 1e-4);
     EXPECT_NEAR (pfhs->points[i].histogram[26], 0.182098, 1e-4);
   }
+
+
+  // Test results when setIndices and/or setSearchSurface are used
+
+  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
+  for (size_t i = 0; i < cloud.size (); i+=3)
+    test_indices->push_back (i);
+
+  testIndicesAndSearchSurface<PFHEstimation<PointXYZ, Normal, PFHSignature125>, PointXYZ, Normal, PFHSignature125> 
+    (cloud.makeShared (), normals, test_indices, 125);
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1079,74 +1175,14 @@ TEST (PCL, FPFHEstimation)
   EXPECT_NEAR (fpfhs->points[0].histogram[32], 2.17815, 1e-4);
 
 
-  // Test results when both setIndices and setSearchSurface are used
-  PointCloud<PointXYZ>::Ptr search_surface_points = cloud.makeShared ();
-  PointCloud<Normal>::Ptr search_surface_normals = normals;
+  // Test results when setIndices and/or setSearchSurface are used
 
-  // Subsample the search surface to get a different input_ cloud
-  std::vector<int> full_input_indices (0);
-  for (size_t i = 0; i < search_surface_points->size (); i+=3)
-  {
-    full_input_indices.push_back (i);
-  }
-  PointCloud<PointXYZ>::Ptr full_input_cloud (new PointCloud<PointXYZ>);
-  copyPointCloud (*search_surface_points, full_input_indices, *full_input_cloud);
+  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
+  for (size_t i = 0; i < cloud.size (); i+=3)
+    test_indices->push_back (i);
 
-  // Create some indices
-  boost::shared_ptr<std::vector<int> > partial_input_indices (new std::vector<int>);
-  std::vector<int> partial_to_surface_indices;
-  for (size_t i = 0; i < (full_input_cloud->size ()/2); i+=2)
-  {
-    partial_input_indices->push_back (i);
-    partial_to_surface_indices.push_back (full_input_indices[i]);
-  }
-
-  // Create "partial_input_cloud" as a subcloud of "full_input_cloud" based on the "partial_input_indices"
-  PointCloud<PointXYZ>::Ptr partial_input_cloud (new PointCloud<PointXYZ>);
-  copyPointCloud (*full_input_cloud, *partial_input_indices, *partial_input_cloud);
-
-  // Estimate FPFH with all points and then downsample the results to get the features at the "partial_input_points"
-  FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh0;
-  fpfh0.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
-  fpfh0.setRadiusSearch (0.05);
-  fpfh0.setInputCloud (search_surface_points);
-  fpfh0.setInputNormals (search_surface_normals);
-  PointCloud<FPFHSignature33> output_for_entire_search_surface, output0;
-  fpfh0.compute (output_for_entire_search_surface);
-  copyPointCloud (output_for_entire_search_surface, partial_to_surface_indices, output0);
-
-  // Estimate FPFH with a search surface and with input/indices pair: full_input_cloud + partial_input_indices
-  FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh1;
-  fpfh1.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
-  fpfh1.setRadiusSearch (0.05);
-  fpfh1.setSearchSurface (search_surface_points);
-  fpfh1.setInputNormals (search_surface_normals);
-  fpfh1.setInputCloud (full_input_cloud);
-  fpfh1.setIndices (partial_input_indices);
-  PointCloud<FPFHSignature33> output1;
-  fpfh1.compute (output1);
-
-  // Estimate FPFH with a search surface and with input: partial_input_cloud 
-  FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh2;
-  fpfh2.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
-  fpfh2.setRadiusSearch (0.05);
-  fpfh2.setSearchSurface (search_surface_points);
-  fpfh2.setInputNormals (search_surface_normals);
-  fpfh2.setInputCloud (partial_input_cloud);
-  PointCloud<FPFHSignature33> output2;
-  fpfh2.compute (output2);
-
-  // The three results should be equal
-  ASSERT_EQ (output0.points.size (), output1.points.size ());
-  ASSERT_EQ (output1.points.size (), output2.points.size ());
-  for (size_t i = 0; i < output1.points.size (); ++i)
-  {
-    for (int j = 0; j < 33; ++j)
-    {
-      ASSERT_EQ (output0.points[i].histogram[j], output1.points[i].histogram[j]);
-      ASSERT_EQ (output1.points[i].histogram[j], output2.points[i].histogram[j]);
-    }
-  }
+  testIndicesAndSearchSurface<FPFHEstimation<PointXYZ, Normal, FPFHSignature33>, PointXYZ, Normal, FPFHSignature33> 
+    (cloud.makeShared (), normals, test_indices, 33);
 
 }
 
@@ -1214,6 +1250,17 @@ TEST (PCL, FPFHEstimationOpenMP)
   EXPECT_NEAR (fpfhs->points[0].histogram[30], 19.1552, 1e-4);
   EXPECT_NEAR (fpfhs->points[0].histogram[31], 9.22763, 1e-4);
   EXPECT_NEAR (fpfhs->points[0].histogram[32], 2.17815, 1e-4);
+
+
+
+  // Test results when setIndices and/or setSearchSurface are used
+
+  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
+  for (size_t i = 0; i < cloud.size (); i+=3)
+    test_indices->push_back (i);
+
+  testIndicesAndSearchSurface<FPFHEstimationOMP<PointXYZ, Normal, FPFHSignature33>, PointXYZ, Normal, FPFHSignature33> 
+    (cloud.makeShared (), normals, test_indices, 33);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
