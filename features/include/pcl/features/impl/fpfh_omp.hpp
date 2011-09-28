@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: fpfh_omp.hpp 1757 2011-07-14 01:17:04Z bouffa $
+ * $Id$
  *
  */
 
@@ -63,6 +63,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
       
       spfh_indices_set.insert (nn_indices.begin (), nn_indices.end ());
     }
+    spfh_indices_vec.resize (spfh_indices_set.size ());
     std::copy (spfh_indices_set.begin (), spfh_indices_set.end (), spfh_indices_vec.begin ());
   }
   else
@@ -90,7 +91,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     // Find the neighborhood around p_idx
     std::vector<int> nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().
     std::vector<float> nn_dists (k_); 
-    this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists);
+    this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists);
 
     // Estimate the SPFH signature around p_idx
     computePointSPFHSignature (*surface_, *normals_, p_idx, i, nn_indices, hist_f1_, hist_f2_, hist_f3_);
