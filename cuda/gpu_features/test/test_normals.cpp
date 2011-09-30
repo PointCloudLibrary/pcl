@@ -38,7 +38,7 @@
 #include "data_source.hpp"
 #include <iostream>
 
-#include "pcl/gpu/features/normal_3d.hpp"
+#include "pcl/gpu/features/features.hpp"
 
 using namespace std;
 using namespace pcl;

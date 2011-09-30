@@ -121,6 +121,8 @@ TEST(PCL_FeaturesGPU, DISABLED_pfh_high_level1)
     //source.generateSurface();
     //source.generateIndices();
 
+    cout << "!indices, !surface" << endl;
+
     PointCloud<Normal>::Ptr& normals = source.normals;
 
     vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
@@ -196,6 +198,8 @@ TEST(PCL_FeaturesGPU, DISABLED_pfh_high_level2)
   
     //source.generateSurface();
     source.generateIndices();
+
+    cout << "indices, !surface" << endl;
 
     PointCloud<Normal>::Ptr& normals = source.normals;
 
@@ -273,6 +277,8 @@ TEST(PCL_FeaturesGPU, DISABLED_pfh_high_level3)
     source.generateSurface();
     //source.generateIndices();
 
+    cout << "!indices, surface" << endl;
+
     PointCloud<Normal>::Ptr& normals = source.normals_surface;
 
     vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
@@ -348,6 +354,8 @@ TEST(PCL_FeaturesGPU, DISABLED_pfh_high_level4)
     
     source.generateSurface();
     source.generateIndices();
+
+    cout << "indices, surface" << endl;
 
     PointCloud<Normal>::Ptr& normals = source.normals_surface;
 

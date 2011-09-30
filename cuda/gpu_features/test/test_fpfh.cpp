@@ -110,14 +110,15 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_low_level)
     }
 }
 
-TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level1)
-//TEST(PCL_FeaturesGPU, fpfh_high_level1)
+//TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level1)
+TEST(PCL_FeaturesGPU, fpfh_high_level1)
 {       
     DataSource source;
     source.estimateNormals();    
   
     //source.generateSurface();
     //source.generateIndices();
+    cout << "!indices, !surface" << endl;
 
     PointCloud<Normal>::Ptr& normals = source.normals;
 
@@ -176,24 +177,26 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level1)
         for(size_t j = 0; j < FSize; ++j)
         {
             norm_diff += (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
-            norm += cpu.histogram[j] * cpu.histogram[j];
+            norm += cpu.histogram[j] * cpu.histogram[j];            
 
             //ASSERT_NEAR(gpu.histogram[j], cpu.histogram[j], 0.03f);
-        }
+        }        
+
         if (norm != 0)
             ASSERT_EQ(norm_diff/norm < 0.01f/FSize, true);
     }
 }
 
 
-TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level2)
-//TEST(PCL_FeaturesGPU, fpfh_high_level2)
+//TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level2)
+TEST(PCL_FeaturesGPU, fpfh_high_level2)
 {       
     DataSource source;
     source.estimateNormals();          
 
     //source.generateSurface();
     source.generateIndices();
+    cout << "indices, !surface" << endl;
 
     PointCloud<Normal>::Ptr& normals = source.normals;
 
@@ -258,19 +261,19 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level2)
         }
         //cout << i << "->"<< norm_diff/norm << endl;
         if (norm != 0)
-            ASSERT_EQ(norm_diff/norm < 0.03f/FSize, true);
+            ASSERT_EQ(norm_diff/norm < 0.01f/FSize, true);
     }
 }
 
-TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level3)
-//TEST(PCL_FeaturesGPU, fpfh_high_level3)
+//TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level3)
+TEST(PCL_FeaturesGPU, fpfh_high_level3)
 {       
     DataSource source;
     source.estimateNormals();    
   
     source.generateSurface();
     //source.generateIndices();
-
+    cout << "!indices, surface" << endl;
     
     PointCloud<Normal>::Ptr& normals = source.normals_surface;
 
@@ -335,7 +338,7 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level3)
         }
         //cout << i << "->"<< norm_diff/norm << endl;
         if (norm != 0)
-            ASSERT_EQ(norm_diff/norm < 0.03f/FSize, true);
+            ASSERT_EQ(norm_diff/norm < 0.01f/FSize, true);
     }
 }
 
@@ -348,6 +351,7 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level4)
   
     source.generateSurface();
     source.generateIndices();
+    cout << "indices, surface" << endl;
 
     PointCloud<Normal>::Ptr& normals = source.normals_surface;
 
@@ -373,7 +377,7 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level4)
     fe_gpu.setInputNormals (normals_gpu);
     fe_gpu.setRadiusSearch (source.radius, source.max_elements);
     fe_gpu.setIndices(indices_gpu);
-    //fe_gpu.setSearchSurface(surface_gpu);  
+    fe_gpu.setSearchSurface(surface_gpu);  
 
     DeviceArray2D<FPFHSignature33> fpfhs_gpu;
     fe_gpu.compute(fpfhs_gpu);
@@ -408,10 +412,9 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level4)
             norm_diff += (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
             norm += cpu.histogram[j] * cpu.histogram[j];
 
-            ASSERT_NEAR(gpu.histogram[j], cpu.histogram[j], 0.03f);
-        }    
-        //cout << i << "->"<< norm_diff/norm << endl;
+            //ASSERT_NEAR(gpu.histogram[j], cpu.histogram[j], 0.03f);
+        }            
         if (norm != 0)
-            ASSERT_EQ(norm_diff/norm < 0.03f/FSize, true);
+            ASSERT_EQ(norm_diff/norm < 0.01f/FSize, true);
     }
 }

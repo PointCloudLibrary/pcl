@@ -38,7 +38,6 @@
 #define PCL_GPU_FEATURES_INTERNAL_HPP_
 
 #include "pcl/gpu/containers/device_array.hpp"
-#include "pcl/gpu/features/device_format.hpp"
 #include "pcl/gpu/octree/device_format.hpp"
 
 #include <cuda_runtime.h>

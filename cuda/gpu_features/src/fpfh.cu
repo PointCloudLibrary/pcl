@@ -95,7 +95,7 @@ namespace pcl
                 for(int i = lane; i < size; i += Warp::STRIDE)
                 {
                     int point_index = ginds[i];
-                    if (point_index != idx) // skip itself
+                    if (point_index != point_idx) // skip itself
                     {                        
                         float3 p = fetch(point_cloud, point_index);
                         float3 n = fetch(normals, point_index);
