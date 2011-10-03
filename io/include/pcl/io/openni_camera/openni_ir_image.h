@@ -38,6 +38,7 @@
 #define __OPENNI_IR_IMAGE__
 
 #include <XnCppWrapper.h>
+#include <pcl/pcl_macros.h>
 #include "openni_exception.h"
 #include <boost/shared_ptr.hpp>
 
@@ -47,7 +48,7 @@ namespace openni_wrapper
 /**
  * @brief Class containing just a reference to IR meta data.
  */
-class IRImage
+class PCL_EXPORTS IRImage
 {
 public:
   typedef boost::shared_ptr<IRImage> Ptr;

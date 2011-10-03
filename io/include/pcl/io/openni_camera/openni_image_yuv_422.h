@@ -39,6 +39,7 @@
 
 #ifndef __OPENNI_IMAGE_YUV422__
 #define __OPENNI_IMAGE_YUV422__
+#include <pcl/pcl_macros.h>
 #include "openni_image.h"
 
 namespace openni_wrapper
@@ -50,7 +51,7 @@ namespace openni_wrapper
  * @date 02.january 2011
  * @ingroup io
  */
-class ImageYUV422 : public Image
+class PCL_EXPORTS ImageYUV422 : public Image
 {
 public:
   ImageYUV422 (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ();

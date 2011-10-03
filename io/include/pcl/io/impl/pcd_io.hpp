@@ -131,7 +131,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   data_idx = (int) oss.tellp ();
 
 #if _WIN32
-  HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
   if(h_native_file == INVALID_HANDLE_VALUE)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during CreateFile!");
@@ -169,7 +169,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
   // Prepare the map
 #if _WIN32
-  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, (DWORD) (data_idx + data_size), NULL);
+  HANDLE fm = CreateFileMappingA (h_native_file, NULL, PAGE_READWRITE, 0, (DWORD) (data_idx + data_size), NULL);
   char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
   CloseHandle (fm);
 
@@ -228,7 +228,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 #endif
   // Close file
 #if _WIN32
-  CloseHandle(h_native_file);
+  CloseHandle (h_native_file);
 #else
   pcl_close (fd);
 #endif
@@ -252,7 +252,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   data_idx = oss.tellp ();
 
 #if _WIN32
-  HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
   if(h_native_file == INVALID_HANDLE_VALUE)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during CreateFile!");
@@ -375,9 +375,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   char *map = (char*)mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0);
   if (map == MAP_FAILED)
   {
-#if !_WIN32
     pcl_close (fd);
-#endif
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during mmap ()!");
     return (-1);
   }
@@ -581,7 +579,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   data_idx = oss.tellp ();
 
 #if _WIN32
-  HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
   if(h_native_file == INVALID_HANDLE_VALUE)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during CreateFile!");
