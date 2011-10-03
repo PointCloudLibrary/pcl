@@ -108,6 +108,7 @@ endmacro(find_eigen)
 macro(find_cminpack)
   if(NOT CMINPACK_ROOT)
     get_filename_component(CMINPACK_ROOT "@CMINPACK_INCLUDE_DIRS@" PATH)
+    get_filename_component(CMINPACK_ROOT "${CMINPACK_ROOT}" PATH)
   endif(NOT CMINPACK_ROOT)
   find_path(CMINPACK_INCLUDE_DIRS cminpack.h
     HINTS ${PC_CMINPACK_INCLUDEDIR} ${PC_CMINPACK_INCLUDE_DIRS} 

@@ -164,11 +164,10 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
       set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
     endif(USE_PROJECT_FOLDERS)
 
-    install(TARGETS ${_name} EXPORT pcl
+    install(TARGETS ${_name}
         RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component}
         LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component}
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component})
-    install(EXPORT pcl DESTINATION ${LIB_INSTALL_DIR}/pcl FILE PCLDepends.cmake)
 endmacro(PCL_CUDA_ADD_LIBRARY)
 
 
