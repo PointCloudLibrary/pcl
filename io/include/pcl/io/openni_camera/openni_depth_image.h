@@ -42,6 +42,7 @@
 
 #include <XnCppWrapper.h>
 
+#include <pcl/pcl_macros.h>
 #include "openni_exception.h"
 #include <boost/shared_ptr.hpp>
 
@@ -52,7 +53,7 @@ namespace openni_wrapper
 * @author Suat Gedikli
 * @date 02.january 2011
 */
-class DepthImage
+class PCL_EXPORTS DepthImage
 {
 public:
   typedef boost::shared_ptr<DepthImage> Ptr;

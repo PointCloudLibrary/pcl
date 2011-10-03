@@ -39,6 +39,7 @@
 #ifndef __PCL_IO_EXCEPTION__
 #define __PCL_IO_EXCEPTION__
 #include <pcl/exceptions.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/win32_macros.h>
 #include <cstdarg>
 #include <stdio.h>
@@ -49,7 +50,7 @@ namespace pcl
 /** /brief
   * /ingroup io
   */
-class PCLIOException : public PCLException
+class PCL_EXPORTS PCLIOException : public PCLException
 {
   public:
     PCLIOException(const std::string& error_description,

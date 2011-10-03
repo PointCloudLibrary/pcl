@@ -39,6 +39,7 @@
 
 #ifndef __OPENNI_IMAGE_BAYER_GRBG__
 #define __OPENNI_IMAGE_BAYER_GRBG__
+#include <pcl/pcl_macros.h>
 #include "openni_image.h"
 
 namespace openni_wrapper
@@ -49,7 +50,7 @@ namespace openni_wrapper
  * @date 02.january 2011
  * @ingroup io
  */
-class ImageBayerGRBG : public Image
+class PCL_EXPORTS ImageBayerGRBG : public Image
 {
 public:
 
