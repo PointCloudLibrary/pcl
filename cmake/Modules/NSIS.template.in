@@ -642,7 +642,14 @@ Section "-Core installation"
   ;Store installation folder
   WriteRegStr SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "" $INSTDIR
   WriteRegStr SHCTX "Software\Kitware\CMake\Packages\@CPACK_PACKAGE_NAME@" "@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "$INSTDIR\@CPACK_PACKAGE_CONFIG_INSTALL_DIR@"
-    
+  ; HKLM (all users) vs HKCU (current user) defines
+  !define env_hklm 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
+  !define env_hkcu 'HKCU "Environment"'
+  ; set variable
+  WriteRegExpandStr ${env_hklm} PCL_ROOT "$INSTDIR"
+  ; make sure windows knows about the change
+  SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=1000
+   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
   Push "DisplayName"
@@ -840,7 +847,10 @@ Section "Uninstall"
   ; Remove the registry entries.
   DeleteRegKey SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
   DeleteRegKey SHCTX "Software\Kitware\CMake\Packages\@CPACK_PACKAGE_NAME@"
-
+  ; delete variable
+  DeleteRegValue ${env_hklm} PCL_ROOT
+  ; make sure windows knows about the change
+  SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=1000
 
   ; Removes all optional components
   !insertmacro SectionList "RemoveSection"
