@@ -252,16 +252,27 @@ DisparityToCloud::compute (const boost::shared_ptr<openni_wrapper::DepthImage>& 
 
     typename Storage<OpenNIRGB>::type rgb (image_width * image_height);
 
-    if (downsample)
+
+    if (rgb_image->getEncoding () == openni_wrapper::Image::BAYER_GRBG)
     {
-      DebayeringDownsampling<Storage> debayering;
-      debayering.compute (rgb_image, rgb);
+      if (downsample)
+      {
+        DebayeringDownsampling<Storage> debayering;
+        debayering.compute (rgb_image, rgb);
+      }
+      else
+      {
+        Debayering<Storage> debayering;
+        debayering.computeBilinear (rgb_image, rgb);
+      }
     }
-    else
+    else if (rgb_image->getEncoding () == openni_wrapper::Image::YUV422)
     {
-      Debayering<Storage> debayering;
-      debayering.computeBilinear (rgb_image, rgb);
+      OpenNIRGB c;
+      c.r = c.g = c.b = (unsigned char) 128;
+      thrust::fill (rgb.begin (), rgb.end (), c);
     }
+
 
     int output_size = output->width * output->height;
     float baseline = 0.075f;
