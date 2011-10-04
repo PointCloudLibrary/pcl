@@ -36,7 +36,7 @@ parameters are set.  We use the SACMODEL_PLANE to segment this PointCloud, and
 the method used to find this model is SAC_RANSAC.  The actual segmentation
 takes place when `seg.segment (*inliers, *coefficents);` is called.  This
 function stores all of the inlying points (on the plane) to `inliers`, and it
-stores the coefficents to the plane `(a * x + b * y + c * y = d)` in
+stores the coefficents to the plane `(a * x + b * y + c * z = d)` in
 `coefficients`.
 
 .. literalinclude:: sources/concave_hull_2d/concave_hull_2d.cpp
