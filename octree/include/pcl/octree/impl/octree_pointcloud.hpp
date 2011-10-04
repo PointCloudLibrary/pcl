@@ -888,6 +888,26 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
+      void
+      OctreePointCloud<PointT, LeafT, OctreeT>::genVoxelBounds (const OctreeKey & key_arg, unsigned int treeDepth_arg,
+                                                                Eigen::Vector3f &min_pt, Eigen::Vector3f &max_pt) const
+      {
+        // calculate voxel size of current tree depth
+        double voxel_side_len = this->resolution_ * (double)(1 << (this->octreeDepth_ - treeDepth_arg));
+
+        // calculate voxel bounds
+        min_pt(0) = (double)(key_arg.x) * voxel_side_len + this->minX_;
+        min_pt(1) = (double)(key_arg.y) * voxel_side_len + this->minY_;
+        min_pt(2) = (double)(key_arg.z) * voxel_side_len + this->minZ_;
+
+        max_pt(0) = (double)(key_arg.x + 1) * voxel_side_len + this->minX_;
+        max_pt(1) = (double)(key_arg.y + 1) * voxel_side_len + this->minY_;
+        max_pt(2) = (double)(key_arg.z + 1) * voxel_side_len + this->minZ_;
+
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
       double
       OctreePointCloud<PointT, LeafT, OctreeT>::getVoxelSquaredSideLen (unsigned int treeDepth_arg) const
       {

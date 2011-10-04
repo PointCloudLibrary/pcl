@@ -544,6 +544,15 @@ namespace pcl
         void
         genVoxelCenterFromOctreeKey (const OctreeKey & key_arg, unsigned int treeDepth_arg, PointT& point_arg) const ;
 
+        /** \brief Generate bounds of an octree voxel using octree key and tree depth arguments
+         * \param key_arg octree key addressing an octree node.
+         * \param treeDepth_arg octree depth of query voxel
+         * \param min_pt lower bound of voxel
+         * \param max_pt upper bound of voxel
+         */
+        void
+        genVoxelBounds (const OctreeKey & key_arg, unsigned int treeDepth_arg, Eigen::Vector3f &min_pt, Eigen::Vector3f &max_pt) const;
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Octree-based search routines & helpers
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
