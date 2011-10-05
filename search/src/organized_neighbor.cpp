@@ -35,12 +35,11 @@
  *
  * Author: Julius Kammerl (julius@kammerl.de)
  */
-
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
 #include "pcl/search/organized_neighbor.h"
 #include "pcl/search/impl/organized_neighbor.hpp"
-
 // Instantiations of specific point types
-PCL_INSTANTIATE(OrganizedNeighbor, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(OrganizedNeighbor, PCL_XYZ_POINT_TYPES)
+;
 

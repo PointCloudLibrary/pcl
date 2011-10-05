@@ -50,25 +50,25 @@ using namespace octree;
 // helper class for priority queue
 class prioPointQueueEntry
 {
-  public:
-    prioPointQueueEntry ()
-    {
-    }
-    prioPointQueueEntry (PointXYZ& point_arg, double pointDistance_arg, int pointIdx_arg)
-    {
-      point_ = point_arg;
-      pointDistance_ = pointDistance_arg;
-      pointIdx_ = pointIdx_arg;
-    }
+public:
+  prioPointQueueEntry ()
+  {
+  }
+  prioPointQueueEntry (PointXYZ& point_arg, double pointDistance_arg, int pointIdx_arg)
+  {
+    point_ = point_arg;
+    pointDistance_ = pointDistance_arg;
+    pointIdx_ = pointIdx_arg;
+  }
 
-    bool
-    operator< (const prioPointQueueEntry& rhs_arg) const
-    {
-      return (this->pointDistance_ < rhs_arg.pointDistance_);
-    }
+  bool
+  operator< (const prioPointQueueEntry& rhs_arg) const
+  {
+    return (this->pointDistance_ < rhs_arg.pointDistance_);
+  }
 
-    PointXYZ point_;
-    double pointDistance_;int pointIdx_;
+  PointXYZ point_;
+  double pointDistance_;int pointIdx_;
 };
 
 TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
@@ -83,7 +83,8 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   srand (time (NULL));
   unsigned int K;
 
-  std::priority_queue<prioPointQueueEntry, std::vector<prioPointQueueEntry, Eigen::aligned_allocator<prioPointQueueEntry> > > pointCandidates;
+  std::priority_queue<prioPointQueueEntry, std::vector<prioPointQueueEntry, Eigen::aligned_allocator<
+      prioPointQueueEntry> > > pointCandidates;
 
   // create octree
   pcl::search::Search<PointXYZ>* octree = new pcl::search::Octree<PointXYZ> (0.1);
@@ -115,11 +116,11 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 
     double pointDist;
 
-    k_indices.clear();
-    k_sqr_distances.clear();
+    k_indices.clear ();
+    k_sqr_distances.clear ();
 
-    k_indices_bruteforce.clear();
-    k_sqr_distances_bruteforce.clear();
+    k_indices_bruteforce.clear ();
+    k_sqr_distances_bruteforce.clear ();
 
     // push all points and their distance to the search point into a priority queue - bruteforce approach.
     for (i = 0; i < cloudIn->points.size (); i++)
@@ -210,7 +211,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
           + (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y) + (cloudIn->points[i].z
           - searchPoint.z) * (cloudIn->points[i].z - searchPoint.z));
 
-      if (pointDist<BFdistance)
+      if (pointDist < BFdistance)
       {
         BFindex = i;
         BFdistance = pointDist;
@@ -221,9 +222,9 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     float ANNdistance;
 
     octree->setInputCloud (cloudIn);
-    octree->approxNearestSearch (searchPoint,  ANNindex, ANNdistance);
+    octree->approxNearestSearch (searchPoint, ANNindex, ANNdistance);
 
-    if (BFindex==ANNindex)
+    if (BFindex == ANNindex)
     {
       EXPECT_NEAR (ANNdistance, BFdistance, 1e-4);
       bestMatchCount++;
@@ -235,43 +236,40 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 #if 0
 TEST (PCL, Octree_RadiusSearch_GPU)
 {
-	PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
-	// generate point cloud data
-	cloudIn->width = 1000;
-	cloudIn->height = 1;
-	cloudIn->points.resize (cloudIn->width * cloudIn->height);
+  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+  // generate point cloud data
+  cloudIn->width = 1000;
+  cloudIn->height = 1;
+  cloudIn->points.resize (cloudIn->width * cloudIn->height);
 
-	int i=0;
-	for (i = 0; i < 1000; i++)
-	{
-		cloudIn->points[i] = PointXYZ (10.0 * ((double)rand () / (double)RAND_MAX),
-				10.0 * ((double)rand () / (double)RAND_MAX),
-				5.0 * ((double)rand () / (double)RAND_MAX));
-	}
+  int i=0;
+  for (i = 0; i < 1000; i++)
+  {
+    cloudIn->points[i] = PointXYZ (10.0 * ((double)rand () / (double)RAND_MAX),
+        10.0 * ((double)rand () / (double)RAND_MAX),
+        5.0 * ((double)rand () / (double)RAND_MAX));
+  }
 
+  Search<PointXYZ>* octree = new pcl::octree::OctreeWrapper<PointXYZ>(0.1f);
+  octree->setInputCloud(cloudIn);
 
+  std::vector <PointXYZ > point;
+  const PointXYZ searchPoint (10.0 * ((double)rand () / (double)RAND_MAX), 10.0 * ((double)rand () / (double)RAND_MAX),
+      10.0 * ((double)rand () / (double)RAND_MAX));
+  point.push_back(searchPoint);
+  point.push_back(searchPoint);
+  point.push_back(searchPoint);
+  double searchRadius = 5.0 * ((double)rand () / (double)RAND_MAX);
+  double radius =5;
+  vector < double > radiuses;
+  radiuses.push_back(radius);
+  radiuses.push_back(radius);
+  radiuses.push_back(radius);
+  std::vector<std::vector<int> > k_indices;
+  std::vector<std::vector<float> > k_distances;
+  int max_nn = -1;
 
-	Search<PointXYZ>* octree = new pcl::octree::OctreeWrapper<PointXYZ>(0.1f);
-	octree->setInputCloud(cloudIn);
-
-	std::vector <PointXYZ > point;
-	const PointXYZ searchPoint (10.0 * ((double)rand () / (double)RAND_MAX), 10.0 * ((double)rand () / (double)RAND_MAX),
-			10.0 * ((double)rand () / (double)RAND_MAX));
-	point.push_back(searchPoint);
-	point.push_back(searchPoint);
-	point.push_back(searchPoint);
-	double searchRadius = 5.0 * ((double)rand () / (double)RAND_MAX);
-	double radius =5;
-	vector < double > radiuses;
-	radiuses.push_back(radius);
-	radiuses.push_back(radius);
-	radiuses.push_back(radius);
-	std::vector<std::vector<int> > k_indices;    
-	std::vector<std::vector<float> > k_distances; 
-	int max_nn = -1;
-
-
-	octree->radiusSearch (point, radiuses, k_indices,k_distances,max_nn );
+  octree->radiusSearch (point, radiuses, k_indices,k_distances,max_nn );
 }
 
 #endif

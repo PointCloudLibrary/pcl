@@ -36,12 +36,11 @@
  * 
  *
  */
-
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
 #include "pcl/search/auto.h"
 #include "pcl/search/impl/auto.hpp"
-
 // Instantiations of specific point types
-PCL_INSTANTIATE(AutotunedSearch, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(AutotunedSearch, PCL_XYZ_POINT_TYPES)
+;
 

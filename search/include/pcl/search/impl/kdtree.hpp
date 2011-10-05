@@ -41,42 +41,40 @@
 #include "pcl/search/kdtree.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void 
-pcl::search::KdTree<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices)
-{
-  tree_->setInputCloud(cloud,indices);
-}
+template<typename PointT>
+  void
+  pcl::search::KdTree<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices)
+  {
+    tree_->setInputCloud (cloud, indices);
+  }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void 
-pcl::search::KdTree<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
-{
-  const IndicesConstPtr& indices = IndicesConstPtr ();
-  setInputCloud (cloud,indices);
-}
+template<typename PointT>
+  void
+  pcl::search::KdTree<PointT>::setInputCloud (const PointCloudConstPtr& cloud)
+  {
+    const IndicesConstPtr& indices = IndicesConstPtr ();
+    setInputCloud (cloud, indices);
+  }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
-pcl::search::KdTree<PointT>::nearestKSearch (const PointT &point, 
-                                             int k,
-                                             std::vector<int> &k_indices,
-                                             std::vector<float> &k_distances) 
-{
-	return (tree_->nearestKSearch (point, k, k_indices, k_distances));
-}
+template<typename PointT>
+  int
+  pcl::search::KdTree<PointT>::nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices,
+                                               std::vector<float> &k_distances)
+  {
+    return (tree_->nearestKSearch (point, k, k_indices, k_distances));
+  }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> int 
-pcl::search::KdTree<PointT>::radiusSearch (const PointT &point, 
-                                           double radius, 
-                                           std::vector<int> &k_indices,
-                                           std::vector<float> &k_squared_distances, 
-                                           int max_nn) const
-{
-	return (tree_->radiusSearch (point, radius, k_indices, k_squared_distances, max_nn));
-}
+template<typename PointT>
+  int
+  pcl::search::KdTree<PointT>::radiusSearch (const PointT &point, double radius, std::vector<int> &k_indices,
+                                             std::vector<float> &k_squared_distances, int max_nn) const
+  {
+    return (tree_->radiusSearch (point, radius, k_indices, k_squared_distances, max_nn));
+  }
 
 #define PCL_INSTANTIATE_KdTree(T) template class PCL_EXPORTS pcl::search::KdTree<T>;
 
 #endif  //#ifndef PCL_SEARCH_KDTREE_IMPL_H_
-

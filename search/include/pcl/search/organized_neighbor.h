@@ -51,19 +51,20 @@ namespace pcl
   namespace search
   {
     /** \brief Provides neighbor search routines for organized point clouds.
-      */
+     */
     template<typename PointT>
-    class OrganizedNeighbor : public pcl::search::Search<PointT> 
-    {
-      // public typedefs
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-      typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
-      typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
+      class OrganizedNeighbor : public pcl::search::Search<PointT>
+      {
+        // public typedefs
+        typedef pcl::PointCloud<PointT> PointCloud;
+        typedef boost::shared_ptr<PointCloud> PointCloudPtr;
+        typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+        typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
 
       public:
         /** \brief OrganizedNeighbor constructor. */
-        OrganizedNeighbor (): radiusLookupTableWidth_ (-1), radiusLookupTableHeight_ (-1)
+        OrganizedNeighbor () :
+          radiusLookupTableWidth_ (-1), radiusLookupTableHeight_ (-1)
         {
           max_distance_ = std::numeric_limits<double>::max ();
           oneOverFocalLength_ = 1.0f;
@@ -94,33 +95,34 @@ namespace pcl
           }
         }
 
-	/** \brief Provide a pointer to the input dataset.
-        * \param cloud the const boost shared pointer to a PointCloud message
-        * \param indices the point indices subset that is to be used from \a cloud - if NULL the whole point cloud is used
-        */
-        inline void 
+        /** \brief Provide a pointer to the input dataset.
+         * \param cloud the const boost shared pointer to a PointCloud message
+         * \param indices the point indices subset that is to be used from \a cloud - if NULL the whole point cloud is used
+         */
+        inline void
         setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices)
         {
           PCL_ERROR("[pcl::search::OrganizedNeighbor::setInputCloud] This function is not supported by OrganizedNeighbor\n");
         }
 
         /** \brief search for k-nearest neighbors for the given query point.
-        * \param cloud the point cloud data
-        * \param index the index in \a cloud representing the query point
-        * \param k the number of neighbors to search for
-        * \param k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
-        * a priori!)
-        * \return number of neighbors found
-        */ 
+         * \param cloud the point cloud data
+         * \param index the index in \a cloud representing the query point
+         * \param k the number of neighbors to search for
+         * \param k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
+         * \param k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
+         * a priori!)
+         * \return number of neighbors found
+         */
         inline int
-        nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
+        nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices,
+                        std::vector<float>& k_sqr_distances)
         {
           PCL_ERROR("[pcl::search::OrganizedNeighbor::nearestKSearch] This function is not supported by OrganizedNeighbor\n");
 
           return (0);
         }
-	/** \brief search for all the nearest neighbors of the query point in a given radius.
+        /** \brief search for all the nearest neighbors of the query point in a given radius.
          * \param cloud the point cloud data
          * \param index the index in \a cloud representing the query point
          * \param radius the radius of the sphere bounding all of p_q's neighbors
@@ -130,9 +132,8 @@ namespace pcl
          * \return number of neighbors found in radius
          */
         inline int
-        radiusSearch (const PointCloud& cloud, int index, double radius,
-                      std::vector<int>& k_indices, std::vector<float>& k_distances,
-                      int max_nn) 
+        radiusSearch (const PointCloud& cloud, int index, double radius, std::vector<int>& k_indices,
+                      std::vector<float>& k_distances, int max_nn)
         {
           PCL_ERROR("[pcl::search::OrganizedNeighbor::radiusSearch] This function is not supported by OrganizedNeighbor\n");
           return (0);
@@ -150,7 +151,7 @@ namespace pcl
         int
         radiusSearch (const PointCloudConstPtr &cloud_arg, int index_arg, double radius_arg,
                       std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg,
-                      int max_nn_arg = INT_MAX) ;
+                      int max_nn_arg = INT_MAX);
 
         /** \brief search for all neighbors of query point that are within a given radius.
          * \param index_arg index representing the query point in the dataset given by \a setInputCloud.
@@ -173,24 +174,23 @@ namespace pcl
          * \param max_nn_arg if given, bounds the maximum returned neighbors to this value
          * \return number of neighbors found in radius
          */
-  //     int radiusSearch (const PointT& point, double radius_arg,
-    //                  std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg);
+        //     int radiusSearch (const PointT& point, double radius_arg,
+        //                  std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg);
         int
         radiusSearch (const PointT &p_q_arg, const double radius_arg, std::vector<int> &k_indices_arg,
                       std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const;
 
-
         /** \brief Approximate search for neighbors around the given query point within radius.
-          * \param cloud the point cloud data.
-          * \param index the index in \a cloud representing the query point.
-          * \param radius the maximum distance to search for neighbors in.
-          * \param k_indices the resultant point indices
-          * \param k_distances the resultant !squared! point distances
-          * \param max_nn maximum number of points to return
-          */
-        int approxRadiusSearch (const PointCloudConstPtr &cloud, int index, double radius, std::vector<int> &k_indices,
-                           std::vector<float> &k_distances, int max_nn = INT_MAX) const;
-
+         * \param cloud the point cloud data.
+         * \param index the index in \a cloud representing the query point.
+         * \param radius the maximum distance to search for neighbors in.
+         * \param k_indices the resultant point indices
+         * \param k_distances the resultant !squared! point distances
+         * \param max_nn maximum number of points to return
+         */
+        int
+        approxRadiusSearch (const PointCloudConstPtr &cloud, int index, double radius, std::vector<int> &k_indices,
+                            std::vector<float> &k_distances, int max_nn = INT_MAX) const;
 
         /** \brief search for k-nearest neighbors at the query point.
          * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
@@ -204,7 +204,7 @@ namespace pcl
          */
         int
         nearestKSearch (const PointCloudConstPtr &cloud_arg, int index_arg, int k_arg, std::vector<int> &k_indices_arg,
-                        std::vector<float> &k_sqr_distances_arg) ;
+                        std::vector<float> &k_sqr_distances_arg);
 
         /** \brief search for k-nearest neighbors at query point
          * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
@@ -218,7 +218,7 @@ namespace pcl
          */
         int
         nearestKSearch (int index_arg, int k_arg, std::vector<int> &k_indices_arg,
-                        std::vector<float> &k_sqr_distances_arg) ;
+                        std::vector<float> &k_sqr_distances_arg);
 
         /** \brief search for k-nearest neighbors at given query point.
          * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
@@ -230,94 +230,96 @@ namespace pcl
          */
         int
         nearestKSearch (const PointT &p_q_arg, int k_arg, std::vector<int> &k_indices_arg,
-                        std::vector<float> &k_sqr_distances_arg) ;
-
+                        std::vector<float> &k_sqr_distances_arg);
 
         /** \brief search for k-nearest neighbors for the given query point.
-          * \param cloud the point cloud data
-          * \param index the index in \a cloud representing the query point
-          * \param k the number of neighbors to search for (not used)
-          * \param k_indices the resultant point indices (must be resized to \a k beforehand!)
-          * \param k_distances \note this function does not return distances
-          */
-        int approxNearestKSearch (const PointCloudConstPtr &cloud, int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances);
+         * \param cloud the point cloud data
+         * \param index the index in \a cloud representing the query point
+         * \param k the number of neighbors to search for (not used)
+         * \param k_indices the resultant point indices (must be resized to \a k beforehand!)
+         * \param k_distances \note this function does not return distances
+         */
+        int
+        approxNearestKSearch (const PointCloudConstPtr &cloud, int index, int k, std::vector<int> &k_indices,
+                              std::vector<float> &k_distances);
 
+        /* Functions which are not implemented */
 
-      /* Functions which are not implemented */
-
-
-	/** \brief search for approximate nearest neighbor at the query point.
+        /** \brief search for approximate nearest neighbor at the query point.
          * \param cloud_arg the const boost shared pointer to a PointCloud message
          * \param query_index_arg the index in \a cloud representing the query point
          * \param result_index_arg the resultant index of the neighbor point
          * \param sqr_distance_arg the resultant squared distance to the neighboring point
          */
-        inline void 
+        inline void
         approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
                              float &sqr_distance_arg)
         {
           PCL_ERROR("[pcl::search::OrganizedNeighbor::approxNearestSearch] This function is not supported by OrganizedNeighbor\n");
         }
 
-	/** \brief Search for approximate nearest neighbor at the query point.
+        /** \brief Search for approximate nearest neighbor at the query point.
          * @param p_q_arg the given query point
          * \param result_index_arg the resultant index of the neighbor point
          * \param sqr_distance_arg the resultant squared distance to the neighboring point
          */
-        inline void 
+        inline void
         approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg)
         {
           PCL_ERROR("[pcl::search::OrganizedNeighbor::approxNearestSearch] This function is not supported by OrganizedNeighbor\n");
-        };
+        }
+        ;
 
-
- 	/** \brief search for approximate nearest neighbor at the query point.
+        /** \brief search for approximate nearest neighbor at the query point.
          * \param query_index_arg index representing the query point in the dataset given by \a setInputCloud.
          *        If indices were given in setInputCloud, index will be the position in the indices vector.
          * \param result_index_arg the resultant index of the neighbor point
          * \param sqr_distance_arg the resultant squared distance to the neighboring point
          */
-        inline void 
+        inline void
         approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg)
         {
           PCL_ERROR("[pcl::search::OrganizedNeighbor::approxNearestSearch] This function is not supported by OrganizedNeighbor\n");
-        };
-
+        }
+        ;
 
         /** \brief Evaluate the search Methods for the given cloud.
-        * \param cloud the const boost shared pointer to a PointCloud message
-        * \param search_type the search type NEAREST_K_SEARCH and NEAREST_RADIUS_SEARCH
-        */
+         * \param cloud the const boost shared pointer to a PointCloud message
+         * \param search_type the search type NEAREST_K_SEARCH and NEAREST_RADIUS_SEARCH
+         */
         inline void
         evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type)
         {
           PCL_ERROR("[pcl::search::OrganizedNeighbor::evaluateSearchMethods] This function is not supported by OrganizedNeighbor\n");
         }
 
-	/** \brief search for k-nearest neighbors for the given query points.
-        * \param point the given query points
-        * \param k the numbers of the query point's neighbors to search for
-        * \param k_indices the resultant indices of the neighboring points 
-        * \param k_sqr_distances the resultant squared distances to the neighboring points 
-        * \return number of neighbors found
-        */
+        /** \brief search for k-nearest neighbors for the given query points.
+         * \param point the given query points
+         * \param k the numbers of the query point's neighbors to search for
+         * \param k_indices the resultant indices of the neighboring points
+         * \param k_sqr_distances the resultant squared distances to the neighboring points
+         * \return number of neighbors found
+         */
         inline int
-        nearestKSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, std::vector <int>& k, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_sqr_distances)
+        nearestKSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, std::vector<int>& k,
+                        std::vector<std::vector<int> >& k_indices, std::vector<std::vector<float> >& k_sqr_distances)
         {
           PCL_ERROR("[pcl::search::OrganizedNeighbor::nearestKSearch] This function is not supported by OrganizedNeighbor\n");
           return (0);
         }
 
-	/** \brief Approximate search for all the nearest neighbors of the query points in the given radiuses.
-        * \param point the given query points
-        * \param radiuses the radiuses of the sphere bounding all of point's neighbors
-        * \param k_indices the resultant indices of the neighboring points
-        * \param k_distances the resultant squared distances to the neighboring points
-        * \param max_nn if given, bounds the maximum returned neighbors to this value
-        * \return number of neighbors found in radiuses
-        */
+        /** \brief Approximate search for all the nearest neighbors of the query points in the given radiuses.
+         * \param point the given query points
+         * \param radiuses the radiuses of the sphere bounding all of point's neighbors
+         * \param k_indices the resultant indices of the neighboring points
+         * \param k_distances the resultant squared distances to the neighboring points
+         * \param max_nn if given, bounds the maximum returned neighbors to this value
+         * \return number of neighbors found in radiuses
+         */
         inline int
-        radiusSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, std::vector <  double >& radiuses, std::vector<std::vector<int> >& k_indices,    std::vector<std::vector<float> >& k_distances, int max_nn) const
+        radiusSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, std::vector<double>& radiuses,
+                      std::vector<std::vector<int> >& k_indices, std::vector<std::vector<float> >& k_distances,
+                      int max_nn) const
         {
           PCL_ERROR("[pcl::search::OrganizedNeighbor::radiusSearch] This function is not supported by OrganizedNeighbor\n");
           return (0);
@@ -336,10 +338,10 @@ namespace pcl
         {
           max_distance_ = max_dist;
         }
-	/** \brief set the search window (horizontal, vertical) in pixels.
-          * \param horizontal the horizontal window in pixel
-          * \param vertical the vertical window in pixel
-          */
+        /** \brief set the search window (horizontal, vertical) in pixels.
+         * \param horizontal the horizontal window in pixel
+         * \param vertical the vertical window in pixel
+         */
         inline void
         setSearchWindow (int horizontal, int vertical)
         {
@@ -348,15 +350,24 @@ namespace pcl
         }
 
         /** \brief Estimate the search window (horizontal, vertical) in pixels in order to get up to k-neighbors.
-          * \param k the number of neighbors requested
-          */
-        void setSearchWindowAsK (int k);
+         * \param k the number of neighbors requested
+         */
+        void
+        setSearchWindowAsK (int k);
 
         /** \brief Get the horizontal search window in pixels. */
-        int getHorizontalSearchWindow () const { return (horizontal_window_); }
+        int
+        getHorizontalSearchWindow () const
+        {
+          return (horizontal_window_);
+        }
 
         /** \brief Get the vertical search window in pixels. */
-        int getVerticalSearchWindow () const { return (vertical_window_); }
+        int
+        getVerticalSearchWindow () const
+        {
+          return (vertical_window_);
+        }
 
       protected:
 
@@ -385,10 +396,10 @@ namespace pcl
            * @param y_shift shift in y dimension
            */
           void
-          defineShiftedSearchPoint(int x_shift, int y_shift)
+          defineShiftedSearchPoint (int x_shift, int y_shift)
           {
-            x_diff_ =x_shift;
-            y_diff_ =y_shift;
+            x_diff_ = x_shift;
+            y_diff_ = y_shift;
 
             squared_distance_ = x_diff_ * x_diff_ + y_diff_ * y_diff_;
           }
@@ -401,9 +412,7 @@ namespace pcl
           }
 
           // Public globals
-          int x_diff_;
-          int y_diff_;
-          int squared_distance_;
+          int x_diff_;int y_diff_;int squared_distance_;
 
         };
 
@@ -459,13 +468,13 @@ namespace pcl
         inline void
         pointPlaneProjection (const PointT& point, int& xpos, int& ypos) const
         {
-          xpos = (int) pcl_round(point.x / (point.z * oneOverFocalLength_));
-          ypos = (int) pcl_round(point.y / (point.z * oneOverFocalLength_));
+          xpos = (int)pcl_round (point.x / (point.z * oneOverFocalLength_));
+          ypos = (int)pcl_round (point.y / (point.z * oneOverFocalLength_));
         }
 
         void
-        getProjectedRadiusSearchBox (const PointT& point_arg, double squared_radius_arg, int& minX_arg, int& minY_arg, int& maxX_arg, int& maxY_arg ) const;
-
+        getProjectedRadiusSearchBox (const PointT& point_arg, double squared_radius_arg, int& minX_arg, int& minY_arg,
+                                     int& maxX_arg, int& maxY_arg) const;
 
         /** \brief Estimate focal length parameter that was used during point cloud generation
          */
@@ -481,10 +490,7 @@ namespace pcl
         }
 
         /** \brief The horizontal search window. */
-        int horizontal_window_;
-        int vertical_window_;
-        int min_pts_;
-        int precision_;
+        int horizontal_window_;int vertical_window_;int min_pts_;int precision_;
 
         /** \brief Pointer to input point cloud dataset. */
         PointCloudConstPtr input_;
@@ -496,11 +502,10 @@ namespace pcl
         double oneOverFocalLength_;
 
         /** \brief Precalculated radius search lookup vector */
-        std::vector<radiusSearchLoopkupEntry> radiusSearchLookup_;
-        int radiusLookupTableWidth_;
-        int radiusLookupTableHeight_;
+        std::vector<radiusSearchLoopkupEntry> radiusSearchLookup_;int radiusLookupTableWidth_;int
+                                                                                                  radiusLookupTableHeight_;
 
-    };
+      };
   }
 }
 

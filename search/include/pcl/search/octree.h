@@ -34,7 +34,6 @@
  *
  */
 
-
 #ifndef PCL_SEARCH_OCTREE_H
 #define PCL_SEARCH_OCTREE_H
 
@@ -64,9 +63,10 @@ namespace pcl
      *  \ingroup octree
      *  \author Julius Kammerl (julius@kammerl.de)
      */
-    template<typename PointT, typename LeafTWrap = pcl::octree::OctreeLeafDataTVector<int> , typename OctreeT = pcl::octree::OctreeBase<int, LeafTWrap> >
-    class Octree : public pcl::search::Search<PointT>, public OctreeT
-    {
+    template<typename PointT, typename LeafTWrap = pcl::octree::OctreeLeafDataTVector<int>,
+        typename OctreeT = pcl::octree::OctreeBase<int, LeafTWrap> >
+      class Octree : public Search<PointT>
+      {
       public:
         // public typedefs
         typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
@@ -90,11 +90,14 @@ namespace pcl
         }
 
         /** \brief Empty Destructor. */
-        virtual ~Octree () {}
+        virtual
+        ~Octree ()
+        {
+        }
 
-	/** \brief Provide a pointer to the input dataset.
-        * \param cloud_arg the const boost shared pointer to a PointCloud message
-        */
+        /** \brief Provide a pointer to the input dataset.
+         * \param cloud_arg the const boost shared pointer to a PointCloud message
+         */
         inline void
         setInputCloud (const PointCloudConstPtr &cloud_arg)
         {
@@ -102,17 +105,18 @@ namespace pcl
           tree_->setInputCloud (cloud_arg);
           tree_->addPointsFromInputCloud ();
         }
-	/** \brief Provide a pointer to the input dataset.
-        * \param cloud_arg the const boost shared pointer to a PointCloud message
-        * \param indices_arg the point indices subset that is to be used from \a cloud - if NULL the whole point cloud is used
-        */
+        /** \brief Provide a pointer to the input dataset.
+         * \param cloud_arg the const boost shared pointer to a PointCloud message
+         * \param indices_arg the point indices subset that is to be used from \a cloud - if NULL the whole point cloud is used
+         */
         inline void
         setInputCloud (const PointCloudConstPtr &cloud_arg, const IndicesConstPtr& indices_arg)
         {
           tree_->deleteTree ();
-          tree_->setInputCloud (cloud_arg,indices_arg);
+          tree_->setInputCloud (cloud_arg, indices_arg);
           tree_->addPointsFromInputCloud ();
         }
+
 
         /** \brief search for k-nearest neighbors at the query point.
          * \param cloud_arg the point cloud data
@@ -124,32 +128,31 @@ namespace pcl
          * \return number of neighbors found
          */
         int
-        nearestKSearch (const PointCloudConstPtr &cloud_arg, 
-                        int index_arg, 
-                        int k_arg, 
-                        std::vector<int> &k_indices_arg,
-                        std::vector<float> &k_sqr_distances_arg);
+        nearestKSearch (const PointCloudConstPtr &cloud_arg, int index_arg, int k_arg, std::vector<int> &k_indices_arg,
+                        std::vector<float> &k_sqr_distances_arg)
+        {
+          tree_->setInputCloud (cloud_arg);
+          //   this->addPointsFromInputCloud ();
+          return (tree_->nearestKSearch (index_arg, k_arg, k_indices_arg, k_sqr_distances_arg));
+        }
 
         /** \brief search for k-nearest neighbors for the given query point.
-        * \param cloud the point cloud data
-        * \param index the index in \a cloud representing the query point
-        * \param k the number of neighbors to search for
-        * \param k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
-        * a priori!)
-        * \return number of neighbors found
-        */
-	inline int
-        nearestKSearch (const PointCloud& cloud, 
-                        int index, 
-                        int k, 
-                        std::vector<int>& k_indices, 
+         * \param cloud the point cloud data
+         * \param index the index in \a cloud representing the query point
+         * \param k the number of neighbors to search for
+         * \param k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
+         * \param k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
+         * a priori!)
+         * \return number of neighbors found
+         */
+        inline int
+        nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices,
                         std::vector<float>& k_sqr_distances)
         {
           PCL_ERROR("[pcl::search::Octree::nearestKSearch] This function is not supported by Octree\n");
           return (0);
         }
- 	/** \brief search for all the nearest neighbors of the query point in a given radius.
+        /** \brief search for all the nearest neighbors of the query point in a given radius.
          * \param cloud the point cloud data
          * \param index the index in \a cloud representing the query point
          * \param radius the radius of the sphere bounding all of p_q's neighbors
@@ -159,50 +162,39 @@ namespace pcl
          * \return number of neighbors found in radius
          */
         inline int
-        radiusSearch (const PointCloud &cloud,
-                      int index, 
-                      double radius,
-                      std::vector<int> &k_indices, 
-                      std::vector<float> &k_distances,
-                      int max_nn) 
+        radiusSearch (const PointCloud &cloud, int index, double radius, std::vector<int> &k_indices,
+                      std::vector<float> &k_distances, int max_nn)
         {
           PCL_ERROR("[pcl::search::Octree::radiusSearch] This function is not supported by Octree\n");
           return (0);
         }
-	/** \brief Approximate search for all the nearest neighbors of the query point in a given radius.
-        * \param cloud the const boost shared pointer to a PointCloud message
-        * \param index the index in \a cloud representing the query point
-        * \param radius the radius of the sphere bounding all of point's neighbors
-        * \param k_indices the resultant indices of the neighboring points
-        * \param k_distances the resultant squared distances to the neighboring points
-        * \param max_nn if given, bounds the maximum returned neighbors to this value
-        * \return number of neighbors found in radius
-        */
+        /** \brief Approximate search for all the nearest neighbors of the query point in a given radius.
+         * \param cloud the const boost shared pointer to a PointCloud message
+         * \param index the index in \a cloud representing the query point
+         * \param radius the radius of the sphere bounding all of point's neighbors
+         * \param k_indices the resultant indices of the neighboring points
+         * \param k_distances the resultant squared distances to the neighboring points
+         * \param max_nn if given, bounds the maximum returned neighbors to this value
+         * \return number of neighbors found in radius
+         */
         inline int
-        approxRadiusSearch (const PointCloudConstPtr &cloud, 
-                            int index, 
-                            double radius,
-                            std::vector<int> &k_indices, 
-                            std::vector<float> &k_distances,
-                            int max_nn) const
+        approxRadiusSearch (const PointCloudConstPtr &cloud, int index, double radius, std::vector<int> &k_indices,
+                            std::vector<float> &k_distances, int max_nn) const
         {
           PCL_ERROR("[pcl::search::Octree::approxRadiusSearch] This function is not supported by Octree\n");
           return (0);
         }
-  	/** \brief Approximate search for k-nearest neighbors for the given query point.
-        * \param cloud the const boost shared pointer to a PointCloud message
-        * \param index the index in \a cloud representing the query point
-        * \param k the number of neighbors to search for
-        * \param k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
-        * a priori!)
-  	* \return number of neighbors found
-        */
+        /** \brief Approximate search for k-nearest neighbors for the given query point.
+         * \param cloud the const boost shared pointer to a PointCloud message
+         * \param index the index in \a cloud representing the query point
+         * \param k the number of neighbors to search for
+         * \param k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
+         * \param k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
+         * a priori!)
+         * \return number of neighbors found
+         */
         inline int
-        approxNearestKSearch (const PointCloudConstPtr &cloud, 
-                              int index, 
-                              int k, 
-                              std::vector<int> &k_indices, 
+        approxNearestKSearch (const PointCloudConstPtr &cloud, int index, int k, std::vector<int> &k_indices,
                               std::vector<float> &k_sqr_distances)
         {
           PCL_ERROR("[pcl::search::Octree::approxNearestKSearch] This function is not supported by Octree\n");
@@ -210,50 +202,48 @@ namespace pcl
         }
 
         /** \brief Evaluate the search Methods for the given cloud.
-        * \param cloud the const boost shared pointer to a PointCloud message
-        * \param search_type the search type NEAREST_K_SEARCH and NEAREST_RADIUS_SEARCH
-        */
+         * \param cloud the const boost shared pointer to a PointCloud message
+         * \param search_type the search type NEAREST_K_SEARCH and NEAREST_RADIUS_SEARCH
+         */
         inline void
         evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type)
         {
           PCL_ERROR("[pcl::search::Octree::evaluateSearchMethods] This function is not supported by Octree\n");
         }
 
-	/** \brief search for k-nearest neighbors for the given query points.
-        * \param point the given query points
-        * \param k the numbers of the query point's neighbors to search for
-        * \param k_indices the resultant indices of the neighboring points 
-        * \param k_sqr_distances the resultant squared distances to the neighboring points 
-        * \return number of neighbors found
-        */
+        /** \brief search for k-nearest neighbors for the given query points.
+         * \param point the given query points
+         * \param k the numbers of the query point's neighbors to search for
+         * \param k_indices the resultant indices of the neighboring points
+         * \param k_sqr_distances the resultant squared distances to the neighboring points
+         * \return number of neighbors found
+         */
         inline int
-        nearestKSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> > &point, 
-                        std::vector<int> &k, 
-                        std::vector<std::vector<int> > &k_indices,
-                        std::vector<std::vector<float> > &k_sqr_distances)
+        nearestKSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> > &point, std::vector<int> &k,
+                        std::vector<std::vector<int> > &k_indices, std::vector<std::vector<float> > &k_sqr_distances)
         {
           PCL_ERROR("[pcl::search::Octree::nearestKSearch] This function is not supported by Octree\n");
           return (0);
         }
 
-	/** \brief search for all the nearest neighbors of the query points in the given radiuses.
-        * \param point the given query points
-        * \param radii the radiuses of the sphere bounding all of point's neighbors
-        * \param k_indices the resultant indices of the neighboring points
-        * \param k_distances the resultant squared distances to the neighboring points
-        * \param max_nn if given, bounds the maximum returned neighbors to this value
-        * \return number of neighbors found in radiuses
-        */
+        /** \brief search for all the nearest neighbors of the query points in the given radiuses.
+         * \param point the given query points
+         * \param radii the radiuses of the sphere bounding all of point's neighbors
+         * \param k_indices the resultant indices of the neighboring points
+         * \param k_distances the resultant squared distances to the neighboring points
+         * \param max_nn if given, bounds the maximum returned neighbors to this value
+         * \return number of neighbors found in radiuses
+         */
         inline int
-        radiusSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> > &point, 
-                      std::vector<double> &radii, 
-                      std::vector<std::vector<int> > &k_indices,
-                      std::vector<std::vector<float> > &k_distances, 
+        radiusSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> > &point, std::vector<double> &radii,
+                      std::vector<std::vector<int> > &k_indices, std::vector<std::vector<float> > &k_distances,
                       int max_nn) const
         {
           PCL_ERROR("[pcl::search::Octree::radiusSearch] This function is not supported by Octree\n");
           return (0);
         }
+
+
 
         /** \brief search for k-nearest neighbors at given query point.
          * @param p_q_arg the given query point
@@ -264,7 +254,10 @@ namespace pcl
          */
         int
         nearestKSearch (const PointT &p_q_arg, int k_arg, std::vector<int> &k_indices_arg,
-                        std::vector<float> &k_sqr_distances_arg);
+                        std::vector<float> &k_sqr_distances_arg)
+        {
+          return (tree_->nearestKSearch (p_q_arg, k_arg, k_indices_arg, k_sqr_distances_arg));
+        }
 
         /** \brief Search for k-nearest neighbors at query point
          * \param index_arg index representing the query point in the dataset given by \a setInputCloud.
@@ -277,7 +270,10 @@ namespace pcl
          */
         int
         nearestKSearch (int index_arg, int k_arg, std::vector<int> &k_indices_arg,
-                        std::vector<float> &k_sqr_distances_arg);
+                        std::vector<float> &k_sqr_distances_arg)
+        {
+          return (tree_->nearestKSearch (index_arg, k_arg, k_indices_arg, k_sqr_distances_arg));
+        }
 
         /** \brief search for approximate nearest neighbor at the query point.
          * \param cloud_arg the point cloud data
@@ -288,7 +284,12 @@ namespace pcl
          */
         void
         approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
-                             float &sqr_distance_arg);
+                             float &sqr_distance_arg)
+        {
+          tree_->setInputCloud (cloud_arg);
+          // this->addPointsFromInputCloud ();
+          tree_->approxNearestSearch (query_index_arg, result_index_arg, sqr_distance_arg);
+        }
 
         /** \brief search for approximate nearest neighbor at the query point.
          * @param p_q_arg the given query point
@@ -296,7 +297,10 @@ namespace pcl
          * \param sqr_distance_arg the resultant squared distance to the neighboring point
          */
         void
-        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg);
+        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg)
+        {
+          tree_->approxNearestSearch (p_q_arg, result_index_arg, sqr_distance_arg);
+        }
 
         /** \brief search for approximate nearest neighbor at the query point.
          * \param query_index_arg index representing the query point in the dataset given by \a setInputCloud.
@@ -306,7 +310,10 @@ namespace pcl
          * \return number of neighbors found
          */
         void
-        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg);
+        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg)
+        {
+          tree_->approxNearestSearch (query_index_arg, result_index_arg, sqr_distance_arg);
+        }
 
         /** \brief search for all neighbors of query point that are within a given radius.
          * \param cloud_arg the point cloud data
@@ -319,8 +326,13 @@ namespace pcl
          */
         int
         radiusSearch (const PointCloudConstPtr &cloud_arg, int index_arg, double radius_arg,
-                      std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg,
-                      int max_nn = INT_MAX) ;
+                      std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg, int max_nn = INT_MAX)
+        {
+          tree_->setInputCloud (cloud_arg);
+          //   this->addPointsFromInputCloud ();
+
+          return (tree_->radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn));
+        }
 
         /** \brief search for all neighbors of query point that are within a given radius.
          * \param p_q_arg the given query point
@@ -332,7 +344,10 @@ namespace pcl
          */
         int
         radiusSearch (const PointT &p_q_arg, const double radius_arg, std::vector<int> &k_indices_arg,
-                      std::vector<float> &k_sqr_distances_arg, int max_nn = INT_MAX) const;
+                      std::vector<float> &k_sqr_distances_arg, int max_nn = INT_MAX) const
+        {
+          return (tree_->radiusSearch (p_q_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn));
+        }
 
         /** \brief search for all neighbors of query point that are within a given radius.
          * \param index_arg index representing the query point in the dataset given by \a setInputCloud.
@@ -345,11 +360,16 @@ namespace pcl
          */
         int
         radiusSearch (int index_arg, const double radius_arg, std::vector<int> &k_indices_arg,
-                      std::vector<float> &k_sqr_distances_arg, int max_nn = INT_MAX) const;
-    };
+                      std::vector<float> &k_sqr_distances_arg, int max_nn = INT_MAX) const
+        {
+          return (tree_->radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn));
+        }
+
+      };
   }
 }
 
+#define PCL_INSTANTIATE_Octree(T) template class PCL_EXPORTS pcl::search::Octree<T, pcl::octree::OctreeLeafDataTVector<int>, pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafDataTVector<int> > >;
+
 #endif    // PCL_SEARCH_OCTREE_H
- 
 
