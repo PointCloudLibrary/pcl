@@ -15,6 +15,11 @@ set(incs
     include/pcl/cuda/point_cloud.h
     include/pcl/cuda/point_types.h
     include/pcl/cuda/time_gpu.h
+    include/pcl/cuda/time_cpu.h
+    include/pcl/cuda/cutil_inline.h
+    include/pcl/cuda/cutil_inline_bankchecker.h
+    include/pcl/cuda/cutil_inline_drvapi.h
+    include/pcl/cuda/cutil_inline_runtime.h
     )
 set(common_incs 
     include/pcl/cuda/common/eigen.h
