@@ -41,9 +41,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include "pcl/octree/octree_base.h"
-#include "pcl/octree/octree_pointcloud.h"
-#include "pcl/octree/octree_nodes.h"
+#include "pcl/octree/octree_search.h"
 #include "pcl/search/search.h"
 #include <queue>
 #include <vector>
@@ -79,8 +77,8 @@ namespace pcl
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
         // Boost shared pointers
-        typedef boost::shared_ptr<pcl::octree::OctreePointCloud<PointT, LeafTWrap, OctreeT> > Ptr;
-        typedef boost::shared_ptr<const pcl::octree::OctreePointCloud<PointT, LeafTWrap, OctreeT> > ConstPtr;
+        typedef boost::shared_ptr<pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, OctreeT> > Ptr;
+        typedef boost::shared_ptr<const pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, OctreeT> > ConstPtr;
         Ptr tree_;
 
         /** \brief Octree constructor.
@@ -88,7 +86,7 @@ namespace pcl
          * */
         Octree (const double resolution_arg)
         {
-          tree_.reset (new pcl::octree::OctreePointCloud<PointT, LeafTWrap, OctreeT> (resolution_arg));
+          tree_.reset (new pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, OctreeT> (resolution_arg));
         }
 
         /** \brief Empty Destructor. */

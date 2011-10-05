@@ -711,7 +711,7 @@ TEST (PCL, Octree_Pointcloud_Test)
 
   // instantiate OctreePointCloudSinglePoint and OctreePointCloudPointVector classes
   OctreePointCloudSinglePoint<PointXYZ> octreeA (resolution);
-  OctreePointCloudPointVector<PointXYZ> octreeB (resolution);
+  OctreePointCloudSearch<PointXYZ> octreeB (resolution);
   OctreePointCloudPointVector<PointXYZ> octreeC (resolution);
 
   // create shared pointcloud instances
@@ -1136,7 +1136,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   std::priority_queue<prioPointQueueEntry, std::vector<prioPointQueueEntry, Eigen::aligned_allocator<prioPointQueueEntry> > > pointCandidates;
 
   // create octree
-  OctreePointCloud<PointXYZ> octree (0.1);
+  OctreePointCloudSearch<PointXYZ> octree (0.1);
   octree.setInputCloud (cloudIn);
 
   std::vector<int> k_indices;
@@ -1242,7 +1242,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
   double voxelResolution = 0.1;
 
   // create octree
-  OctreePointCloud<PointXYZ> octree (voxelResolution);
+  OctreePointCloudSearch<PointXYZ> octree (voxelResolution);
   octree.setInputCloud (cloudIn);
 
 
@@ -1337,7 +1337,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
                                      5.0 * ((double)rand () / (double)RAND_MAX));
     }
 
-    OctreePointCloud<PointXYZ> octree (0.001);
+    OctreePointCloudSearch<PointXYZ> octree (0.001);
 
     // build octree
     octree.setInputCloud (cloudIn);

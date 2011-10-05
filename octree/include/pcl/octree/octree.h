@@ -54,4 +54,6 @@
 
 #include <pcl/octree/octree_iterator.h>
 
+#include <pcl/octree/octree_search.h>
+
 #endif

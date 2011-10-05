@@ -48,5 +48,6 @@
 
 #include <pcl/octree/impl/octree_iterator.hpp>
 
+#include <pcl/octree/impl/octree_search.hpp>
 
 #endif

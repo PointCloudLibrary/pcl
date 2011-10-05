@@ -22,6 +22,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/octree_pointcloud_voxelcentroid.h
         include/pcl/${SUBSYS_NAME}/octree_pointcloud.h
         include/pcl/${SUBSYS_NAME}/octree_iterator.h
+        include/pcl/${SUBSYS_NAME}/octree_search.h        
         include/pcl/${SUBSYS_NAME}/octree.h
         include/pcl/${SUBSYS_NAME}/octree2buf_base.h
         include/pcl/${SUBSYS_NAME}/octree_lowmemory_base.h
@@ -33,6 +34,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/octree2buf_base.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_lowmemory_base.hpp      
         include/pcl/${SUBSYS_NAME}/impl/octree_iterator.hpp      
+        include/pcl/${SUBSYS_NAME}/impl/octree_search.hpp        
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
