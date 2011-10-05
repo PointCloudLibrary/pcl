@@ -127,7 +127,7 @@ namespace pcl
   {
     Eigen::Vector4f vp (vp_x, vp_y, vp_z, 0);
     // See if we need to flip any plane normals
-    vp -= point.getVector4fConstMap ();
+    vp -= point.getVector4fMap ();
     vp[3] = 0;  // enforce the last coordinate
 
     // Dot product between the (viewpoint - point) and the plane normal
@@ -139,7 +139,7 @@ namespace pcl
       normal *= -1;
       normal[3] = 0;  // enforce the last coordinate;
       // Hessian form (D = nc . p_plane (centroid here) + p)
-      normal[3] = -1 * normal.dot (point.getVector4fConstMap ());
+      normal[3] = -1 * normal.dot (point.getVector4fMap ());
     }
   }
 

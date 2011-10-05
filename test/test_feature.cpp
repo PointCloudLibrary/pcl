@@ -266,7 +266,7 @@ TEST (PCL, NormalEstimation)
   NormalEstimation<PointXYZ, Normal> n;
 
   // computePointNormal (indices, Vector)
-  n.computePointNormal (cloud, indices, plane_parameters, curvature);
+  computePointNormal (cloud, indices, plane_parameters, curvature);
   EXPECT_NEAR (fabs (plane_parameters[0]), 0.035592, 1e-4);
   EXPECT_NEAR (fabs (plane_parameters[1]), 0.369596, 1e-4);
   EXPECT_NEAR (fabs (plane_parameters[2]), 0.928511, 1e-4);
@@ -282,33 +282,26 @@ TEST (PCL, NormalEstimation)
   EXPECT_NEAR (curvature, 0.0693136, 1e-4);
 
   // computePointNormal (Vector)
-  /*  n.computePointNormal (cloud, plane_parameters, curvature);
-   EXPECT_NEAR (plane_parameters[0],  0.035592,  1e-4);
-   EXPECT_NEAR (plane_parameters[1],  0.369596,  1e-4);
-   EXPECT_NEAR (plane_parameters[2],  0.928511,  1e-4);
-   EXPECT_NEAR (plane_parameters[3], -0.0622552, 1e-4);
-   EXPECT_NEAR (curvature,            0.0693136, 1e-4);
-
-   // computePointNormal
-   n.computePointNormal (cloud, nx, ny, nz, curvature);
-   EXPECT_NEAR (nx,        0.035592,  1e-4);
-   EXPECT_NEAR (ny,        0.369596,  1e-4);
-   EXPECT_NEAR (nz,        0.928511,  1e-4);
-   EXPECT_NEAR (curvature, 0.0693136, 1e-4);
-
-   // flipNormalTowardsViewpoint (Vector)
-   n.flipNormalTowardsViewpoint (cloud.points[0], 0, 0, 0, plane_parameters);
-   EXPECT_NEAR (plane_parameters[0], -0.035592,  1e-4);
-   EXPECT_NEAR (plane_parameters[1], -0.369596,  1e-4);
-   EXPECT_NEAR (plane_parameters[2], -0.928511,  1e-4);
-   EXPECT_NEAR (plane_parameters[3],  0.0799743, 1e-4);
-
-   // flipNormalTowardsViewpoint
-   n.flipNormalTowardsViewpoint (cloud.points[0], 0, 0, 0, nx, ny, nz);
-   EXPECT_NEAR (nx, -0.035592, 1e-4);
-   EXPECT_NEAR (ny, -0.369596, 1e-4);
-   EXPECT_NEAR (nz, -0.928511, 1e-4);*/
-
+  computePointNormal (cloud, plane_parameters, curvature);
+  EXPECT_NEAR (plane_parameters[0],  0.035592,  1e-4);
+  EXPECT_NEAR (plane_parameters[1],  0.369596,  1e-4);
+  EXPECT_NEAR (plane_parameters[2],  0.928511,  1e-4);
+  EXPECT_NEAR (plane_parameters[3], -0.0622552, 1e-4);
+  EXPECT_NEAR (curvature,            0.0693136, 1e-4);
+  
+  // flipNormalTowardsViewpoint (Vector)
+  flipNormalTowardsViewpoint (cloud.points[0], 0, 0, 0, plane_parameters);
+  EXPECT_NEAR (plane_parameters[0], -0.035592,  1e-4);
+  EXPECT_NEAR (plane_parameters[1], -0.369596,  1e-4);
+  EXPECT_NEAR (plane_parameters[2], -0.928511,  1e-4);
+  EXPECT_NEAR (plane_parameters[3],  0.0799743, 1e-4);
+  
+  // flipNormalTowardsViewpoint
+  flipNormalTowardsViewpoint (cloud.points[0], 0, 0, 0, nx, ny, nz);
+  EXPECT_NEAR (nx, -0.035592, 1e-4);
+  EXPECT_NEAR (ny, -0.369596, 1e-4);
+  EXPECT_NEAR (nz, -0.928511, 1e-4);
+    
   // Object
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
 
