@@ -74,7 +74,8 @@ template <typename PointType>
 class OpenNISegmentTracking
 {
 public:
-  typedef pcl::PointXYZRGBNormal RefPointType;
+  //typedef pcl::PointXYZRGBNormal RefPointType;
+  typedef pcl::PointXYZRGB RefPointType;
   typedef ParticleXYZRPY ParticleT;
   
   typedef pcl::PointCloud<PointType> Cloud;
@@ -102,7 +103,7 @@ public:
     ne_.setRadiusSearch (0.03);
     
     std::vector<double> default_step_covariance = std::vector<double> (6, 0.02 * 0.02);
-    std::vector<double> initial_noise_covariance = std::vector<double> (6, 0.01);
+    std::vector<double> initial_noise_covariance = std::vector<double> (6, 0.02);
     std::vector<double> default_initial_mean = std::vector<double> (6, 0.0);
     tracker_ = boost::shared_ptr<ParticleFilter> (new ParticleFilter (thread_nr));
     //tracker_ = boost::shared_ptr<ParticleFilter> (new ParticleFilter);
@@ -126,20 +127,22 @@ public:
       = boost::shared_ptr<DistanceCoherence<RefPointType> > (new DistanceCoherence<RefPointType> ());
     coherence->addPointCoherence (distance_coherence);
     
-    // boost::shared_ptr<HSVColorCoherence<RefPointType> > color_coherence
-    //   = boost::shared_ptr<HSVColorCoherence<RefPointType> > (new HSVColorCoherence<RefPointType> ());
-    // color_coherence->setWeight (0.1);
-    // coherence->addPointCoherence (color_coherence);
+    boost::shared_ptr<HSVColorCoherence<RefPointType> > color_coherence
+      = boost::shared_ptr<HSVColorCoherence<RefPointType> > (new HSVColorCoherence<RefPointType> ());
+    color_coherence->setWeight (0.1);
+    coherence->addPointCoherence (color_coherence);
     
-    boost::shared_ptr<NormalCoherence<RefPointType> > normal_coherence
-      = boost::shared_ptr<NormalCoherence<RefPointType> > (new NormalCoherence<RefPointType> ());
-    normal_coherence->setWeight (0.01);
-    coherence->addPointCoherence (normal_coherence);
+    // boost::shared_ptr<NormalCoherence<RefPointType> > normal_coherence
+    //   = boost::shared_ptr<NormalCoherence<RefPointType> > (new NormalCoherence<RefPointType> ());
+    // normal_coherence->setWeight (0.01);
+    // coherence->addPointCoherence (normal_coherence);
     
     // pcl::search::AutotunedSearch<RefPointType>::SearchPtr search
     //   (new pcl::search::AutotunedSearch<RefPointType> (pcl::search::KDTREE));
-    boost::shared_ptr<pcl::search::KdTree<RefPointType> > search (new pcl::search::KdTree<RefPointType> (false));
-    //pcl::search::Octree<RefPointType>::Ptr oct (new pcl::search::Octree<RefPointType> (0.01));
+    //boost::shared_ptr<pcl::search::KdTree<RefPointType> > search (new pcl::search::KdTree<RefPointType> (false));
+    
+    // pcl::search::Octree<RefPointType>::Ptr search (new pcl::search::Octree<RefPointType> (0.01));
+    boost::shared_ptr<pcl::search::Octree<RefPointType> > search (new pcl::search::Octree<RefPointType> (0.01));
     coherence->setSearchMethod (search);
     coherence->setMaximumDistance (0.01);
     tracker_->setCloudCoherence (coherence);
@@ -227,8 +230,8 @@ public:
     FPS_CALC_BEGIN;
     pcl::PassThrough<PointType> pass;
     pass.setFilterFieldName ("z");
-    //pass.setFilterLimits (0.0, 2.0);
-    pass.setFilterLimits (0.0, 1.5);
+    pass.setFilterLimits (0.0, 2.0);
+    //pass.setFilterLimits (0.0, 1.5);
     pass.setKeepOrganized (false);
     pass.setInputCloud (cloud);
     pass.filter (result);
@@ -255,6 +258,7 @@ public:
   {
     FPS_CALC_BEGIN;
     pcl::VoxelGrid<PointType> grid;
+    //pcl::ApproximateVoxelGrid<PointType> grid;
     grid.setLeafSize (leaf_size, leaf_size, leaf_size);
     grid.setInputCloud (cloud);
     grid.filter (result);
@@ -332,9 +336,9 @@ public:
       point.y = cloud->points[i].y;
       point.z = cloud->points[i].z;
       point.rgb = cloud->points[i].rgb;
-      point.normal[0] = normals->points[i].normal[0];
-      point.normal[1] = normals->points[i].normal[1];
-      point.normal[2] = normals->points[i].normal[2];
+      // point.normal[0] = normals->points[i].normal[0];
+      // point.normal[1] = normals->points[i].normal[1];
+      // point.normal[2] = normals->points[i].normal[2];
       result.points.push_back (point);
     }
   }
@@ -384,7 +388,7 @@ public:
     pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
     filterPassThrough (cloud, *cloud_pass_);
     cloud_pass_downsampled_.reset (new Cloud);
-    gridSample (cloud_pass_, *cloud_pass_downsampled_, 0.01);
+    gridSample (cloud_pass_, *cloud_pass_downsampled_, 0.02);
     
     if (firstp_ < 10)
     {
@@ -425,10 +429,11 @@ public:
           int segment_index = rand () % cluster_indices.size ();
           segmented_cloud_.reset (new Cloud);
           extractSegmentCluster (target_cloud, cluster_indices, segment_index, *segmented_cloud_);
-          pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
-          normalEstimation (segmented_cloud_, *normals);
+          //pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
+          //normalEstimation (segmented_cloud_, *normals);
           RefCloudPtr ref_cloud (new RefCloud);
-          addNormalToCloud (segmented_cloud_, normals, *ref_cloud);
+          //addNormalToCloud (segmented_cloud_, normals, *ref_cloud);
+          ref_cloud = segmented_cloud_;
 
           if (!use_cog_)
           {
@@ -442,7 +447,9 @@ public:
             pcl::compute3DCentroid<RefPointType> (*ref_cloud, c);
             Eigen::Affine3f trans = Eigen::Affine3f::Identity ();
             trans.translation () = Eigen::Vector3f (c[0], c[1], c[2]);
-            pcl::transformPointCloudWithNormals<RefPointType> (*ref_cloud, *transed_ref, trans.inverse());
+            //pcl::transformPointCloudWithNormals<RefPointType> (*ref_cloud, *transed_ref, trans.inverse());
+            pcl::transformPointCloud<RefPointType> (*ref_cloud, *transed_ref, trans.inverse());
+            
             std::cout << "N: " << transed_ref->points.size () << std::endl;
             tracker_->setReferenceCloud (transed_ref);
             tracker_->setTrans (trans);
@@ -459,11 +466,12 @@ public:
     }
     else
     {
-      normals_.reset (new pcl::PointCloud<pcl::Normal>);
-      normalEstimation (cloud_pass_downsampled_, *normals_);
-      RefCloudPtr tracking_cloud (new RefCloud ());
-      addNormalToCloud (cloud_pass_downsampled_, normals_, *tracking_cloud);
-      tracking (tracking_cloud);
+      //normals_.reset (new pcl::PointCloud<pcl::Normal>);
+      //normalEstimation (cloud_pass_downsampled_, *normals_);
+      //RefCloudPtr tracking_cloud (new RefCloud ());
+      //addNormalToCloud (cloud_pass_downsampled_, normals_, *tracking_cloud);
+      //tracking_cloud = cloud_pass_downsampled_;
+      tracking (cloud_pass_downsampled_);
     }
     
     new_cloud_ = true;

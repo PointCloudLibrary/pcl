@@ -55,6 +55,7 @@ namespace pcl
       , resample_likelihood_thr_ (0.0)
       , occlusion_angle_thr_ (M_PI / 2.0)
       , alpha_ (15.0)
+      , use_normal_ (false)
       {
         tracker_name_ = "ParticleFilterTracker";
       }
@@ -179,10 +180,6 @@ namespace pcl
       /** \brief get a pointer to a pointcloud of the particles.*/
       inline PointCloudStatePtr getParticles () const { return particles_; }
 
-      void computeTransformedPointCloud (const StateT& particle,
-                                         std::vector<int>& indices,
-                                         PointCloudIn &cloud);
-
       /** \brief normalize the weight of a particle using
           exp(1- alpha ( w - w_{min}) / (w_max - w_min)).
           this method is described in [P.Azad et. al, ICRA11].
@@ -202,8 +199,53 @@ namespace pcl
       
       /** \brief get the value of alpha.*/
       inline double getAlpha () { return alpha_; }
+
+      /** \brief set the value of use_normal_.
+        * \param use_normal the value of use_normal_.
+        */
+      inline void setUseNormal (bool use_normal) { use_normal_ = use_normal; }
+
+      /** \brief get the value of use_normal_. */
+      inline bool getUseNormal () { return use_normal_; }
+      
       
     protected:
+
+      /** \brief compute a reference pointcloud transformed to the pose that
+          hypothesis represents.
+        * \param hypothesis a particle which represents a hypothesis.
+        * \param indices the indices which should be taken into account.
+        * \param cloud the resultant point cloud model dataset which
+                 is transformed to hypothesis.
+       **/
+      void computeTransformedPointCloud (const StateT& hypothesis,
+                                         std::vector<int>& indices,
+                                         PointCloudIn &cloud);
+
+      /** \brief compute a reference pointcloud transformed to the pose that
+          hypothesis represents and calculate indices taking occlusion into \
+          account.
+        * \param hypothesis a particle which represents a hypothesis.
+        * \param indices the indices which should be taken into account.
+        * \param cloud the resultant point cloud model dataset which
+                 is transformed to hypothesis.
+       **/
+      void computeTransformedPointCloudWithNormal (const StateT& hypothesis,
+                                         std::vector<int>& indices,
+                                         PointCloudIn &cloud);
+
+      /** \brief compute a reference pointcloud transformed to the pose that
+          hypothesis represents and calculate indices without taking
+          occlusion into account.
+        * \param hypothesis a particle which represents a hypothesis.
+        * \param indices the indices which should be taken into account.
+        * \param cloud the resultant point cloud model dataset which
+                 is transformed to hypothesis.
+       **/
+      void computeTransformedPointCloudWithoutNormal (const StateT& hypothesis,
+                                                      std::vector<int>& indices,
+                                                      PointCloudIn &cloud);
+
       
       /** \brief This method should get called before starting the actual computation. */
       virtual bool initCompute ();
@@ -317,6 +359,9 @@ namespace pcl
       /** \brief an affine transformation from the world coordinates frame to the origin of the particles*/
       Eigen::Affine3f trans_;
 
+      /** \brief a flag to use normal or not. defaults to false*/
+      bool use_normal_;
+      
     };
     
   }

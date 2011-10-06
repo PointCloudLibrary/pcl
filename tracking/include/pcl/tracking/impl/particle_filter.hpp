@@ -137,7 +137,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
     double sum = 0.0;
     for ( int i = 0; i < particle_num_; i++ )
         sum += particles_->points[i].weight;
-    std::cout << "sum: " << sum << std::endl;
+    //std::cout << "sum: " << sum << std::endl;
     if (sum != 0.0)
     {
         for ( int i = 0; i < particle_num_; i++ )
@@ -156,11 +156,11 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::weight ()
   coherence_->initCompute ();
   for (int i = 0; i < particle_num_; i++)
   {
-      // TODO: "new"s requires giant lock?
-      IndicesPtr indices = IndicesPtr (new std::vector<int> ());
-      PointCloudInPtr transed_reference = PointCloudInPtr (new PointCloudIn ());
-      computeTransformedPointCloud (particles_->points[i], *indices, *transed_reference);
-      coherence_->compute (transed_reference, indices, particles_->points[i].weight);
+    // TODO: "new"s requires giant lock?
+    IndicesPtr indices = IndicesPtr (new std::vector<int> ());
+    PointCloudInPtr transed_reference = PointCloudInPtr (new PointCloudIn ());
+    computeTransformedPointCloud (particles_->points[i], *indices, *transed_reference);
+    coherence_->compute (transed_reference, indices, particles_->points[i].weight);
   }
   normalizeWeight ();
 }
@@ -169,12 +169,32 @@ template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloud
 (const StateT& hypothesis, std::vector<int>& indices, PointCloudIn &cloud)
 {
+  if (use_normal_)
+    computeTransformedPointCloudWithNormal (hypothesis, indices, cloud);
+  else
+    computeTransformedPointCloudWithoutNormal (hypothesis, indices, cloud);
+}
+
+template <typename PointInT, typename StateT> void
+pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithoutNormal
+(const StateT& hypothesis, std::vector<int>& indices, PointCloudIn &cloud)
+{
+  const Eigen::Affine3f trans = toEigenMatrix (hypothesis);
+  // destructively assigns to cloud
+  pcl::transformPointCloud<PointInT> (*ref_, cloud, trans);
+  indices.resize (cloud.points.size ());
+  for ( size_t i = 0; i < cloud.points.size (); i++ )
+    indices[i] = i;
+}
+
+template <typename PointInT, typename StateT> void
+pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal
+(const StateT& hypothesis, std::vector<int>& indices, PointCloudIn &cloud)
+{
+#ifdef PCL_TRACKING_NORMAL_SUPPORTED
   const Eigen::Affine3f trans = toEigenMatrix (hypothesis);
   // destructively assigns to cloud
   pcl::transformPointCloudWithNormals<PointInT> (*ref_, cloud, trans);
-  // search the nearest pairs
-  std::vector<int> k_indices(1);
-  std::vector<float> k_distances(1);
   for ( size_t i = 0; i < cloud.points.size (); i++ )
   {
     PointInT input_point = cloud.points[i];
@@ -189,6 +209,9 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointC
     if ( theta > occlusion_angle_thr_ )
       indices.push_back (i);
   }
+#else
+  PCL_WARN ("[pcl::%s::computeTransformedPointCloudWithoutNormal] use_normal_ == true is not supported in this Point Type.", getClassName ().c_str ());
+#endif
 }
 
 template <typename PointInT, typename StateT> void

@@ -26,9 +26,20 @@ namespace pcl
         std::vector<int> k_indices(1);
         std::vector<float> k_distances(1);
         PointInT input_point = cloud->points[(*indices)[i]];
-        search_->nearestKSearch (input_point, 1, k_indices, k_distances);
+        if (search_method_policy_ == NEAREST_NEIGHBOR)
+        {
+          search_->nearestKSearch (input_point, 1, k_indices, k_distances);
+        }
+        else if (search_method_policy_ == APPROXIMATE_NEIGHBOR)
+        {
+          int k_index;
+          float k_distance;
+          search_->approxNearestSearch(input_point, k_index, k_distance);
+          k_indices[0] = k_index;
+          k_distances[0] = k_distance;
+        }
+        
         if (k_distances[0] < maximum_distance_ * maximum_distance_)
-        //if (k_distances[0] < maximum_distance_)
         {
           nearest_targets.push_back (k_indices[0]);
           nearest_inputs.push_back (i);
