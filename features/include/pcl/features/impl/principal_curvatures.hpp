@@ -103,8 +103,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
   pcy = eigenvectors_ (1, 2);
   pcz = eigenvectors_ (2, 2);
   pc1 = eigenvalues_ (2);  
-  //pc2 = eigenvalues_ (1); Here is an error, min eval has zero index. Fixed in r2635.
-  pc2 = eigenvalues_ (0);   
+  pc2 = eigenvalues_ (1);     
 }
 
 
