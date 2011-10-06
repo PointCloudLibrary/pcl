@@ -169,7 +169,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     using namespace pcl::visualization;
 
-    viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_));
+    viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_, true));
     viewer_->setBackgroundColor (0.1, 0.1, 0.1);
     viewer_->addCoordinateSystem (0.1);
 
@@ -199,9 +199,8 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
         }
       }
       if (viewer_->wasStopped ())
-      {
-          quit_ = true;
-      }else
+        quit_ = true;
+      else
       {
         boost::mutex::scoped_lock lock (spin_mtx_);
         //TODO some smart waitkey like stuff here, so that wasStoped() can hold for a long time
@@ -210,7 +209,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
       }
 
     }
-    viewer_.reset();
+    viewer_.reset ();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,7 +225,6 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     boost::mutex::scoped_lock lock (once_mtx);
     callables_once.push_back (x);
-
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -235,9 +233,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     boost::mutex::scoped_lock lock (c_mtx);
     if (callables.find (key) != callables.end ())
-    {
       callables.erase (key);
-    }
   }
 
   std::string window_name_;
@@ -253,6 +249,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   CallableList callables_once;
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::CloudViewer::CloudViewer (const std::string &window_name) :
   impl_ (new CloudViewer_impl (window_name))
 {}
@@ -263,6 +260,7 @@ pcl::visualization::CloudViewer::~CloudViewer ()
   impl_->viewer_thread_.join();
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::CloudViewer::showCloud (const ColorCloud::ConstPtr &cloud,
                                             const std::string &cloudname)
@@ -272,6 +270,7 @@ pcl::visualization::CloudViewer::showCloud (const ColorCloud::ConstPtr &cloud,
   impl_->block_post_cloud<ColorCloud>(cloud, cloudname);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::CloudViewer::showCloud (const GrayCloud::ConstPtr &cloud,
                                             const std::string &cloudname)
@@ -281,6 +280,7 @@ pcl::visualization::CloudViewer::showCloud (const GrayCloud::ConstPtr &cloud,
   impl_->block_post_cloud<GrayCloud>(cloud, cloudname);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::CloudViewer::showCloud (const MonochromeCloud::ConstPtr &cloud,
                                             const std::string &cloudname)
@@ -290,25 +290,28 @@ pcl::visualization::CloudViewer::showCloud (const MonochromeCloud::ConstPtr &clo
   impl_->block_post_cloud<MonochromeCloud>(cloud, cloudname);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::CloudViewer::runOnVisualizationThread (VizCallable x, const std::string &key)
 {
   impl_->post (x, key);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::CloudViewer::runOnVisualizationThreadOnce (VizCallable x)
 {
   impl_->post (x);
 }
 
-
+////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::CloudViewer::removeVisualizationCallable (const std::string &key)
 {
   impl_->remove (key);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::CloudViewer::wasStopped (int millis)
 {
