@@ -443,7 +443,7 @@ public:
             Eigen::Affine3f trans = Eigen::Affine3f::Identity ();
             trans.translation () = Eigen::Vector3f (c[0], c[1], c[2]);
             pcl::transformPointCloudWithNormals<RefPointType> (*ref_cloud, *transed_ref, trans.inverse());
-          std:;cout << "N: " << transed_ref->points.size () << std::endl;
+            std::cout << "N: " << transed_ref->points.size () << std::endl;
             tracker_->setReferenceCloud (transed_ref);
             tracker_->setTrans (trans);
           }
