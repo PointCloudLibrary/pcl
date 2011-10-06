@@ -7,6 +7,8 @@ function(MAKE_DEP_GRAPH)
       if(NOT _ss STREQUAL "global_tests" AND
          NOT _ss STREQUAL "apps" AND
          NOT _ss STREQUAL "tools" AND
+         NOT _ss STREQUAL "test" AND
+         NOT _ss STREQUAL "python" AND
          NOT _ss STREQUAL "documentation") 
         PCL_GET_SUBSYS_STATUS(_status ${_ss})
         if(_status)
