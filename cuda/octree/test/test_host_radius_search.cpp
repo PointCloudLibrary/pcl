@@ -89,7 +89,7 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
     // build host octree
     float resolution = 25.f;
     cout << "[!]Octree resolution: " << resolution << endl;
-    pcl::octree::OctreePointCloud<pcl::PointXYZ> octree_host(resolution);
+    pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree_host(resolution);
     octree_host.setInputCloud (cloud_host);
     octree_host.addPointsFromInputCloud ();
 

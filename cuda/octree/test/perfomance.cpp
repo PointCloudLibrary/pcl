@@ -118,7 +118,7 @@ TEST(PCL_OctreeGPU, perfomance)
     }
 
     //build host octree
-    pcl::octree::OctreePointCloud<pcl::PointXYZ> octree_host(host_octree_resolution);
+    pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree_host(host_octree_resolution);
     octree_host.setInputCloud (cloud_host);
     {
         ScopeTimerCV t("host-build");	        
