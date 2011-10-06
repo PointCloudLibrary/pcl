@@ -41,6 +41,7 @@
 #include "pcl/io/file_io.h"
 #include "pcl/io/ply.h"
 #include <pcl/PolygonMesh.h>
+#include <sstream>
 
 namespace pcl
 {
@@ -148,7 +149,8 @@ namespace pcl
         static char* char_ptr;
         char_ptr = (char*) data;
         Type value;
-        value = pcl_atoa<Type>(string_value.c_str ());
+        std::istringstream is(string_value);
+        is >> value;
         memcpy (char_ptr+offset, &value, sizeof (Type));
       }
   };
