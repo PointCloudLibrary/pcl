@@ -226,6 +226,21 @@ namespace pcl
                     const Eigen::Vector4f &centroid, 
                     Eigen::MatrixXf &cloud_out);
 
+  /** \brief Subtract a centroid from a point cloud and return the de-meaned
+    * representation as an Eigen matrix
+    * \param cloud_in the input point cloud
+    * \param indices the set of point indices to use from the input point cloud
+    * \param centroid the centroid of the point cloud
+    * \param cloud_out the resultant output XYZ0 dimensions of \a cloud_in as
+    * an Eigen matrix (4 rows, N pts columns)
+    * \ingroup common
+    */
+  template <typename PointT> void 
+  demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
+                    const pcl::PointIndices& indices, 
+                    const Eigen::Vector4f &centroid, 
+                    Eigen::MatrixXf &cloud_out);
+
   /** \brief Helper functor structure for n-D centroid estimation. */
   template<typename PointT>
   struct NdCentroidFunctor
