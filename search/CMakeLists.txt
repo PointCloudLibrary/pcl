@@ -29,6 +29,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/auto.hpp
         include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_neighbor.hpp
+				include/pcl/${SUBSYS_NAME}/impl/octree.hpp
   #      include/pcl/${SUBSYS_NAME}/impl/octree_gpu.hpp
         )
 
