@@ -73,13 +73,6 @@ namespace pcl
         {
         };
 
-        /** \brief Destructor. */
-        ~VTKSmoother ()
-        {
-          if (vtk_polygons_)
-            vtk_polygons_->Delete ();
-        };
-
         /** \brief Convert a PCL PolygonMesh to a VTK vtkPolyData.
           * \param[in] triangles PolygonMesh to be converted to vtkPolyData, stored in the object.
           */
