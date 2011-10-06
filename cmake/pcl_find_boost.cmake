@@ -2,6 +2,7 @@
 
 if(NOT PCL_SHARED_LIBS OR WIN32)
   set(Boost_USE_STATIC_LIBS ON)
+  set(Boost_USE_STATIC ON)
 endif(NOT PCL_SHARED_LIBS OR WIN32)
 
 if(${CMAKE_VERSION} VERSION_LESS 2.8.5)
@@ -10,7 +11,7 @@ else(${CMAKE_VERSION} VERSION_LESS 2.8.5)
   SET(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0")
 endif(${CMAKE_VERSION} VERSION_LESS 2.8.5)
 
-find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time)
+find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams)
 
 if(Boost_FOUND)
   set(BOOST_FOUND TRUE)
