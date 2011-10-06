@@ -26,7 +26,7 @@ main (int argc, char** argv)
 
   float resolution = 128.0f;
 
-  pcl::octree::OctreePointCloud<pcl::PointXYZ> octree (resolution);
+  pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree (resolution);
 
   octree.setInputCloud (cloud);
   octree.addPointsFromInputCloud ();
