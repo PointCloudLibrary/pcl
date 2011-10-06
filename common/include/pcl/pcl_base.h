@@ -118,9 +118,65 @@ namespace pcl
         use_indices_  = true;
       }
 
+      /** \brief Set the indices for the points laying within an interest region of 
+        * the point cloud.
+        * \note you shouldn't call this method on unorganized point clouds!
+        * \param row_start the offset on rows
+        * \param col_start the offset on columns
+        * \param nb_rows the number of rows to be considered row_start included
+        * \param nb_cols the number of columns to be considered col_start included
+        */
+      inline void 
+      setIndices(size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols)
+      {
+        if((nb_rows > input_->height) || (row_start > input_->height))
+        {
+          PCL_ERROR("[PCLBase::setIndices] cloud is only %d height", input_->height);
+          return;
+        }
+
+        if((nb_cols > input_->width) || (col_start > input_->width))
+        {
+          PCL_ERROR("[PCLBase::setIndices] cloud is only %d width", input_->width);
+          return;
+        }
+
+        size_t row_end = row_start + nb_rows;
+        if(row_end > input_->height)
+        {
+          PCL_ERROR("[PCLBase::setIndices] %d is out of rows range %d", row_end, input_->height);
+          return;
+        }
+
+        size_t col_end = col_start + nb_cols;
+        if(col_end > input_->width)
+        {
+          PCL_ERROR("[PCLBase::setIndices] %d is out of columns range %d", col_end, input_->width);
+          return;
+        }
+
+        indices_.reset (new std::vector<int> ());
+        indices_->reserve (nb_cols * nb_rows);
+        for(size_t i = row_start; i < row_end; i++)
+          for(size_t j = col_start; j < col_end; j++)
+            indices_->push_back ((i * input_->width) + j);
+        fake_indices_ = false;
+        use_indices_  = true;
+      }
+
       /** \brief Get a pointer to the vector of indices used. */
       inline IndicesPtr const 
       getIndices () { return (indices_); }
+
+      /** \brief Override PointCloud operator[] to shorten code
+        * \note this method can be called instead of (*input_)[(*indices_)[pos]]
+        * or input_->points[(*indices_)[pos]]
+        * \param pos position in indices_ vector
+        */
+      PointT& operator[] (size_t pos)
+      {
+        return (*input_)((*indices_)[pos]);
+      }
 
     protected:
       /** \brief The input point cloud dataset. */
