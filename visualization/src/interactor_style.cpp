@@ -95,6 +95,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::saveScreenshot (const std::string &file)
 {
+  FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
+  wif_->SetInput (Interactor->GetRenderWindow ());
   wif_->Modified ();      // Update the WindowToImageFilter
   snapshot_writer_->Modified ();
   snapshot_writer_->SetFileName (file.c_str ());
@@ -814,6 +816,8 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::Initialize ()
 void
 pcl::visualization::PCLHistogramVisualizerInteractorStyle::saveScreenshot (const std::string &file)
 {
+  FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
+  wif_->SetInput (Interactor->GetRenderWindow ());
   wif_->Modified ();      // Update the WindowToImageFilter
   snapshot_writer_->Modified ();
   snapshot_writer_->SetFileName (file.c_str ());
