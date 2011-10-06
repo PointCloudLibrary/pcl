@@ -8,43 +8,52 @@ namespace pcl
 {
   namespace tracking
   {
-    template <typename PointInT> double
+    template <typename PointInT> void
     NearestPairPointCloudCoherence<PointInT>::computeCoherence
-    (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices)
+    (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices, float &w)
     {
-      //std::vector<double> vals (indices->size (), 0.0);
-      double val = 0.0;
+      std::vector<size_t> nearest_targets;
+      std::vector<size_t> nearest_inputs;
+      
+      size_t num;
       if (indices == NULL)
-      {
-        for (size_t i = 0; i < cloud->points.size (); i++)
-        {
-          std::vector<int> k_indices(1);
-          std::vector<float> k_distances(1);
-          PointInT input_point = cloud->points[i];
-          search_->nearestKSearch (input_point, 1, k_indices, k_distances);
-          PointInT target_point = target_input_->points[k_indices[0]];
-          val += calcPointCoherence(input_point, target_point);
-          //vals[i] = calcPointCoherence(input_point, target_point);
-        }
-      }
+        num = cloud->points.size ();
       else
+        num = indices->size ();
+      
+      for (size_t i = 0; i < num; i++)
       {
-        for (size_t i = 0; i < indices->size (); i++)
+        std::vector<int> k_indices(1);
+        std::vector<float> k_distances(1);
+        PointInT input_point = cloud->points[(*indices)[i]];
+        search_->nearestKSearch (input_point, 1, k_indices, k_distances);
+        if (k_distances[0] < maximum_distance_ * maximum_distance_)
+        //if (k_distances[0] < maximum_distance_)
         {
-          std::vector<int> k_indices(1);
-          std::vector<float> k_distances(1);
-          PointInT input_point = cloud->points[(*indices)[i]];
-          search_->nearestKSearch (input_point, 1, k_indices, k_distances);
-          PointInT target_point = target_input_->points[k_indices[0]];
-          val += calcPointCoherence(input_point, target_point);
-          //vals[i] = calcPointCoherence(input_point, target_point);
+          nearest_targets.push_back (k_indices[0]);
+          nearest_inputs.push_back (i);
         }
       }
-      // for ( size_t i = 0; i < indices_->size (); i++ )
-      //   val += vals[i];
-      return exp(val);
-    }
 
+      double val = 0.0;
+      for (size_t i = 0; i < nearest_targets.size (); i++)
+      {
+          int input_index = nearest_inputs[i];
+          int target_index = nearest_targets[i];
+          PointInT target_point = target_input_->points[target_index];
+          PointInT input_point = cloud->points[(*indices)[input_index]];
+          double coherence_val = 1.0;
+          for (size_t i = 0; i < point_coherences_.size (); i++)
+          {
+              PointCoherencePtr coherence = point_coherences_[i];  
+              double w = coherence->compute (input_point, target_point);
+              coherence_val *= w;
+          }
+          val += coherence_val;
+      }
+      w = - val;
+    }
+    
     template <typename PointInT> bool
     NearestPairPointCloudCoherence<PointInT>::initCompute ()
     {
@@ -54,7 +63,7 @@ namespace pcl
         //deinitCompute ();
         return (false);
       }
-
+      
       // initialize tree
       if (!search_)
         search_.reset (new pcl::search::KdTree<PointInT> (false));

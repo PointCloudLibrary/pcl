@@ -16,10 +16,15 @@ namespace pcl
     PointCloudCoherence<PointInT>::calcPointCoherence (PointInT &source, PointInT &target)
     {
       double val = 0.0;
-      for (size_t i = 0; i < point_coherences_.size (); i++)\
+      for (size_t i = 0; i < point_coherences_.size (); i++)
       {
         PointCoherencePtr coherence = point_coherences_[i];
-        val += log(coherence->compute (source, target));
+        double d = log(coherence->compute (source, target));
+        //double d = coherence->compute (source, target);
+        if (! pcl_isnan(d))
+          val += d;
+        else
+          PCL_WARN ("nan!\n");
       }
       return val;
     }
@@ -37,16 +42,16 @@ namespace pcl
       
     }
     
-    template <typename PointInT> double
-    PointCloudCoherence<PointInT>::compute (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices)
+    template <typename PointInT> void
+    PointCloudCoherence<PointInT>::compute (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices, float &w)
     {
       if (!initCompute ())
       {
         PCL_ERROR ("[pcl::%s::compute] Init failed.\n", getClassName ().c_str ());
-        return (false);
+        return;
       }
-
-      return computeCoherence (cloud, indices);
+      
+      computeCoherence (cloud, indices, w);
     }
   }
 }

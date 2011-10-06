@@ -29,6 +29,7 @@ namespace pcl
       using ParticleFilterTracker<PointInT, StateT>::particle_num_;
       using ParticleFilterTracker<PointInT, StateT>::calcLikelihood;
       using ParticleFilterTracker<PointInT, StateT>::normalizeWeight;
+      using ParticleFilterTracker<PointInT, StateT>::normalizeParticleWeight;
 
       typedef Tracker<PointInT, StateT> BaseClass;
       

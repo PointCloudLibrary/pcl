@@ -105,13 +105,13 @@ namespace pcl
       // hue value is in 0 ~ 2pi, but circulated.
       const float _h_diff = fabs (source_h - target_h);
       float h_diff;
-      if ( _h_diff > 180.0 / 180.0 * M_PI )
+      if ( _h_diff > 0.5)
       {
-        h_diff = h_weight_ * (_h_diff - M_PI) * (_h_diff - M_PI) / M_PI / M_PI;
+        h_diff = h_weight_ * (_h_diff - 0.5) * (_h_diff - 0.5);
       }
       else
       {
-        h_diff = h_weight_ * _h_diff * _h_diff / M_PI / M_PI;
+        h_diff = h_weight_ * _h_diff * _h_diff;
       }
 
       const float s_diff = s_weight_ * (source_s - target_s) * (source_s - target_s);
