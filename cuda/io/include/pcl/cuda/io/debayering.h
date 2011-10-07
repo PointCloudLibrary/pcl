@@ -100,7 +100,27 @@ namespace pcl
         void
         compute (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, RGBImageType& rgb_image) const;
     };
+
+    template <template <typename> class Storage>
+    struct YUV2RGBKernel
+    {
+  		unsigned width;
+  		unsigned height;
+  		unsigned char *data;
+  		YUV2RGBKernel (unsigned char *yuv_image, unsigned width, unsigned height);
   
+      __inline__ __host__ __device__ OpenNIRGB operator () (int index) const;
+    };
+ 
+    template<template <typename> class Storage>
+    class YUV2RGB
+    {
+      public:
+        typedef typename Storage<OpenNIRGB>::type RGBImageType;
+        void
+        compute (const boost::shared_ptr<openni_wrapper::Image>& yuv_image, RGBImageType& rgb_image) const;
+    };
+
     template<template <typename> class Storage>
     class Debayering
     {

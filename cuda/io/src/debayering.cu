@@ -48,7 +48,43 @@ namespace pcl
 {
   namespace cuda
   {
+    template <template <typename> class Storage>
+    YUV2RGBKernel<Storage>::YUV2RGBKernel
+    (unsigned char *yuv_image, unsigned width, unsigned height)
+      : width(width), height(height), data(yuv_image)
+    {
+    }
   
+    template <template <typename> class Storage>
+    OpenNIRGB YUV2RGBKernel<Storage>::operator () (int index) const
+    {
+      //TODO: assert width/height is modulo 2
+
+      int yuv_index = index * 2; // actual index in byte array
+
+      int u, v;
+      if (index % 2)
+      {
+        u = data[yuv_index + 0] - 128; // current pixel has u value
+        v = data[yuv_index + 2] - 128; // get v from next pixel
+      }
+      else
+      {
+        u = data[yuv_index - 2] - 128; // get u from last pixel
+        v = data[yuv_index + 0] - 128; // current pixel has v value
+      }
+
+      int y = data[yuv_index + 1];
+      
+#define CLIP_CHAR(c) ((c)>255?255:(c)<0?0:(c))
+    	OpenNIRGB result;
+      result.b =  CLIP_CHAR (y + ((v * 18678 + 8192 ) >> 14));
+      result.g =  CLIP_CHAR (y + ((v * -9519 - u * 6472 + 8192 ) >> 14));
+      result.r =  CLIP_CHAR (y + ((u * 33292 + 8192 ) >> 14));
+
+    	return result;
+    }
+
     template <template <typename> class Storage>
     DebayerBilinear<Storage>::DebayerBilinear
     (unsigned char *bayer_image, unsigned width, unsigned height)
@@ -234,6 +270,20 @@ namespace pcl
     	                   rgb_image.begin(),
     	                   DebayerBilinear<Storage> (thrust::raw_pointer_cast (&bayer_data[0]), bayer_image->getWidth (), bayer_image->getHeight ()) );
     }
+
+    template<template <typename> class Storage>
+    void YUV2RGB<Storage>::compute (const boost::shared_ptr<openni_wrapper::Image>& yuv_image, RGBImageType& rgb_image) const
+    {
+    	typename Storage<unsigned char>::type yuv_data (yuv_image->getMetaData().DataSize());
+    	thrust::copy ((unsigned char*)(yuv_image->getMetaData().Data()),
+    	              (unsigned char*)(yuv_image->getMetaData().Data() + yuv_image->getMetaData().DataSize()), 
+    	              yuv_data.begin ());
+    	thrust::counting_iterator<int> first (0);
+    	thrust::transform (first,
+      	                 first + (int)(yuv_image->getWidth () * yuv_image->getHeight ()),
+    	                   rgb_image.begin(),
+    	                   YUV2RGBKernel<Storage> (thrust::raw_pointer_cast (&yuv_data[0]), yuv_image->getWidth (), yuv_image->getHeight ()) );
+    }
     
     template <template <typename> class Storage>
     struct DebayerDownsample
@@ -296,6 +346,8 @@ namespace pcl
     	thrust::transform ( indices.begin(), indices.end(), rgb_image.begin(), DebayerEdgeAware (bayer_image) );
     }*/
     
+    template class PCL_EXPORTS YUV2RGB<Device>;
+    template class PCL_EXPORTS YUV2RGB<Host>;
     template class PCL_EXPORTS Debayering<Device>;
     template class PCL_EXPORTS Debayering<Host>;
     template class PCL_EXPORTS DebayeringDownsampling<Device>;

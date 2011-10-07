@@ -268,9 +268,11 @@ DisparityToCloud::compute (const boost::shared_ptr<openni_wrapper::DepthImage>& 
     }
     else if (rgb_image->getEncoding () == openni_wrapper::Image::YUV422)
     {
-      OpenNIRGB c;
-      c.r = c.g = c.b = (unsigned char) 128;
-      thrust::fill (rgb.begin (), rgb.end (), c);
+      YUV2RGB<Storage> yuv;
+      yuv.compute (rgb_image, rgb);
+//      OpenNIRGB c;
+//      c.r = c.g = c.b = (unsigned char) 128;
+//      thrust::fill (rgb.begin (), rgb.end (), c);
     }
 
 
