@@ -173,7 +173,7 @@ namespace pcl
         * or input_->points[(*indices_)[pos]]
         * \param pos position in indices_ vector
         */
-      PointT& operator[] (size_t pos)
+      const PointT& operator[] (size_t pos)
       {
         return (*input_)[(*indices_)[pos]];
       }
