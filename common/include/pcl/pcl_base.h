@@ -175,7 +175,7 @@ namespace pcl
         */
       PointT& operator[] (size_t pos)
       {
-        return (*input_)((*indices_)[pos]);
+        return (*input_)[(*indices_)[pos]];
       }
 
     protected:
