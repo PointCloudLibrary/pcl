@@ -61,7 +61,6 @@ namespace pcl
      *  \note typename: LeafT:  leaf node class (usuallz templated with integer indices values)
      *  \note typename: OctreeT: octree implementation ()
      *  \ingroup octree
-     *  \author Julius Kammerl (julius@kammerl.de)
      */
     template<typename PointT, typename LeafTWrap = pcl::octree::OctreeLeafDataTVector<int>,
         typename OctreeT = pcl::octree::OctreeBase<int, LeafTWrap> >
@@ -252,7 +251,7 @@ namespace pcl
          * @param k_sqr_distances_arg  the resultant squared distances to the neighboring points (must be resized to k a priori!)
          * @return number of neighbors found
          */
-        int
+        inline int
         nearestKSearch (const PointT &p_q_arg, int k_arg, std::vector<int> &k_indices_arg,
                         std::vector<float> &k_sqr_distances_arg)
         {
@@ -268,7 +267,7 @@ namespace pcl
          * a priori!)
          * \return number of neighbors found
          */
-        int
+        inline int
         nearestKSearch (int index_arg, int k_arg, std::vector<int> &k_indices_arg,
                         std::vector<float> &k_sqr_distances_arg)
         {
@@ -282,7 +281,7 @@ namespace pcl
          * \param sqr_distance_arg the resultant squared distance to the neighboring point
          * \return number of neighbors found
          */
-        void
+        inline void
         approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
                              float &sqr_distance_arg)
         {
@@ -296,7 +295,7 @@ namespace pcl
          * \param result_index_arg the resultant index of the neighbor point
          * \param sqr_distance_arg the resultant squared distance to the neighboring point
          */
-        void
+        inline void
         approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg)
         {
           tree_->approxNearestSearch (p_q_arg, result_index_arg, sqr_distance_arg);
@@ -309,7 +308,7 @@ namespace pcl
          * \param sqr_distance_arg the resultant squared distance to the neighboring point
          * \return number of neighbors found
          */
-        void
+        inline void
         approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg)
         {
           tree_->approxNearestSearch (query_index_arg, result_index_arg, sqr_distance_arg);
@@ -324,7 +323,7 @@ namespace pcl
          * \param max_nn if given, bounds the maximum returned neighbors to this value
          * \return number of neighbors found in radius
          */
-        int
+        inline int
         radiusSearch (const PointCloudConstPtr &cloud_arg, int index_arg, double radius_arg,
                       std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg, int max_nn = INT_MAX)
         {
@@ -342,7 +341,7 @@ namespace pcl
          * \param max_nn if given, bounds the maximum returned neighbors to this value
          * \return number of neighbors found in radius
          */
-        int
+        inline int
         radiusSearch (const PointT &p_q_arg, const double radius_arg, std::vector<int> &k_indices_arg,
                       std::vector<float> &k_sqr_distances_arg, int max_nn = INT_MAX) const
         {
@@ -358,7 +357,7 @@ namespace pcl
          * \param max_nn if given, bounds the maximum returned neighbors to this value
          * \return number of neighbors found in radius
          */
-        int
+        inline int
         radiusSearch (int index_arg, const double radius_arg, std::vector<int> &k_indices_arg,
                       std::vector<float> &k_sqr_distances_arg, int max_nn = INT_MAX) const
         {
@@ -372,4 +371,6 @@ namespace pcl
 #define PCL_INSTANTIATE_Octree(T) template class PCL_EXPORTS pcl::search::Octree<T, pcl::octree::OctreeLeafDataTVector<int>, pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafDataTVector<int> > >;
 
 #endif    // PCL_SEARCH_OCTREE_H
+
+
 
