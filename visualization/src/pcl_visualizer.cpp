@@ -1682,6 +1682,43 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, int ypos, int fontsize, double r, double g, double b, const std::string &id, int viewport)
+{
+  std::string tid;
+  if (id.empty ())
+    tid = text;
+  else
+    tid = id;
+
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
+  if (am_it != shape_actor_map_->end ())
+  {
+    pcl::console::print_warn ("[addText] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
+    return (false);
+  }
+
+  // Create an Actor
+  vtkSmartPointer<vtkTextActor> actor = vtkSmartPointer<vtkTextActor>::New ();
+  actor->SetPosition (xpos, ypos);
+  actor->SetInput (text.c_str ());
+  
+  vtkSmartPointer<vtkTextProperty> tprop = actor->GetTextProperty ();
+  tprop->SetFontSize (fontsize);
+  tprop->SetFontFamilyToArial ();
+  tprop->SetJustificationToLeft ();
+  tprop->BoldOn ();
+  tprop->SetColor (r, g, b);
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  (*shape_actor_map_)[tid] = actor;
+  return (true);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &id, int index)
 {

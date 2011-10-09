@@ -323,6 +323,22 @@ namespace pcl
         addText (const std::string &text, int xpos, int ypos, double r, double g, double b, 
                  const std::string &id = "", int viewport = 0);
 
+        /** \brief Add a text to screen
+          * \param text the text to add
+          * \param xpos the X position on screen where the text should be added
+          * \param ypos the Y position on screen where the text should be added
+          * \param fontsize the fontsize of the text
+          * \param r the red color value
+          * \param g the green color value
+          * \param b the blue color vlaue
+          * \param id the text object id (default: equal to the "text" parameter)
+          * \param viewport the view port (default: all)
+          */
+        bool 
+        addText (const std::string &text, int xpos, int ypos, int fontsize, double r, double g, double b, 
+                 const std::string &id = "", int viewport = 0);
+
+        
         /** \brief Add a 3d text to the scene
           * \param text the text to add
           * \param position the world position where the text should be added
