@@ -45,6 +45,7 @@
 #include "pcl/io/ply_io.h"
 
 #include <locale>
+#include <stdexcept>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -785,20 +786,34 @@ TEST (PCL, Locale)
       cloud.points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
     }
     PCDWriter writer;
+    try
+    {
 #ifdef _WIN32
-    std::locale::global (std::locale ("German_germany"));
+      std::locale::global (std::locale ("German_germany"));
 #else
-    std::locale::global (std::locale ("De_DE.UTF-8"));
+      std::locale::global (std::locale ("de_DE.UTF-8"));
 #endif
+    }
+    catch (std::runtime_error e)
+    {
+      FAIL () << "Failed to set locale, skipping test.";
+    }
     int res = writer.writeASCII<PointXYZ> ("test_pcl_io_ascii.pcd", cloud);
     EXPECT_EQ (res, 0);
 
     PCDReader reader;
+    try
+    {
 #ifdef _WIN32
-    std::locale::global (std::locale ("English_US"));
+      std::locale::global (std::locale ("English_US"));
 #else
-    std::locale::global (std::locale ("En_US.UTF-8"));
+      std::locale::global (std::locale ("en_US.UTF-8"));
 #endif
+    }
+    catch (std::runtime_error e)
+    {
+      FAIL () << "Failed to set locale, skipping test.";
+    }
     reader.read<PointXYZ> ("test_pcl_io_ascii.pcd", cloud2);
     std::locale::global (std::locale::classic ());
 
