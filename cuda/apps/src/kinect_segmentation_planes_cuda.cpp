@@ -54,7 +54,7 @@
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-#include "opencv2/opencv.hpp"
+#include <opencv2/highgui/highgui.hpp>
 #include "opencv2/gpu/gpu.hpp"
 
 #include <iostream>
