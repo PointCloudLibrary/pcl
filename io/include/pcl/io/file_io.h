@@ -153,6 +153,7 @@ namespace pcl
         else
         {
           std::istringstream is(st);
+          is.imbue (std::locale::classic ());
           is >> value;
         }
 

@@ -123,7 +123,11 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
       boost::trim (line);
       boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
 
-      std::string line_type = st.at (0);
+      std::stringstream sstream (line);
+      sstream.imbue (std::locale::classic ());
+
+      std::string line_type;
+      sstream >> line_type;
 
       // Ignore comments
       if (line_type.substr (0, 1) == "#")
@@ -173,7 +177,8 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
         int offset = 0;
         for (int i = 0; i < specified_channel_count; ++i)
         {
-          int col_type = atoi (st.at (i + 1).c_str ());
+          int col_type ;
+          sstream >> col_type;
           cloud.fields[i].offset = offset;                // estimate and save the data offsets
           offset += col_type;
           field_sizes[i] = col_type;                      // save a temporary copy
@@ -225,7 +230,8 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
         for (int i = 0; i < specified_channel_count; ++i)
         {
           cloud.fields[i].offset = offset;
-          int col_count = atoi (st.at (i + 1).c_str ());
+          int col_count;
+          sstream >> col_count;
           cloud.fields[i].count = col_count;
           offset += col_count * field_sizes[i];
         }
@@ -237,7 +243,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
       // Get the width of the data (organized point cloud dataset)
       if (line_type.substr (0, 5) == "WIDTH")
       {
-        cloud.width = atoi (st.at (1).c_str ());
+        sstream >> cloud.width;
         if (cloud.point_step != 0)
           cloud.row_step = cloud.point_step * cloud.width;      // row_step only makes sense for organized datasets
         continue;
@@ -246,7 +252,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
       // Get the height of the data (organized point cloud dataset)
       if (line_type.substr (0, 6) == "HEIGHT")
       {
-        cloud.height = atoi (st.at (1).c_str ());
+        sstream >> cloud.height;
         /* Old, buggy behavior. is_dense does not represent "is_organized"
         if (cloud.height == 1)
           cloud.is_dense = false;
@@ -262,15 +268,18 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
         if (st.size () < 8)
           throw "Not enough number of elements in <VIEWPOINT>! Need 7 values (tx ty tz qw qx qy qz).";
 
-        origin      = Eigen::Vector4f (atof (st.at (1).c_str ()), atof (st.at (2).c_str ()), atof (st.at (3).c_str ()), 0);
-        orientation = Eigen::Quaternionf (atof (st.at (4).c_str ()), atof (st.at (5).c_str ()), atof (st.at (6).c_str ()), atof (st.at (7).c_str ()));
+        float x, y, z, w;
+        sstream >> x >> y >> z ;
+        origin      = Eigen::Vector4f (x, y, z, 0.0f);
+        sstream >> x >> y >> z >> w;
+        orientation = Eigen::Quaternionf (x, y, z, w);
         continue;
       }
 
       // Get the number of points
       if (line_type.substr (0, 6) == "POINTS")
       {
-        nr_points = atoi (st.at (1).c_str ());
+        sstream >> nr_points;
         // Need to allocate: N * point_step
         cloud.data.resize (nr_points * cloud.point_step);
         continue;
@@ -624,12 +633,14 @@ pcl::PCDWriter::generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud,
                                      const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
 {
   std::ostringstream oss;
+  oss.imbue (std::locale::classic ());
 
   oss << "# .PCD v0.7 - Point Cloud Data file format"
          "\nVERSION 0.7"
          "\nFIELDS ";
 
   std::ostringstream stream;
+  stream.imbue (std::locale::classic ());
   std::string result;
 
   for (size_t d = 0; d < cloud.fields.size () - 1; ++d)
@@ -722,6 +733,7 @@ pcl::PCDWriter::generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud,
                                       const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
 {
   std::ostringstream oss;
+  oss.imbue (std::locale::classic ());
 
   oss << "# .PCD v0.7 - Point Cloud Data file format"
          "\nVERSION 0.7"
@@ -810,6 +822,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
 
   std::ofstream fs;
   fs.precision (precision);
+  fs.imbue (std::locale::classic ());
   fs.open (file_name.c_str ());      // Open file
   if (!fs.is_open () || fs.fail ())
   {
@@ -825,6 +838,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
 
   std::ostringstream stream;
   stream.precision (precision);
+  stream.imbue (std::locale::classic ());
 
   // Iterate through the points
   for (int i = 0; i < nr_points; ++i)
@@ -914,6 +928,8 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   }
   int data_idx = 0;
   std::ostringstream oss;
+  oss.imbue (std::locale::classic ());
+
   oss << generateHeaderBinary (cloud, origin, orientation) << "DATA binary\n";
   oss.flush();
   data_idx = oss.tellp ();

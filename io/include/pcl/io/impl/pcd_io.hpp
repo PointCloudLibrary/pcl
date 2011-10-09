@@ -68,6 +68,7 @@ template <typename PointT> std::string
 pcl::PCDWriter::generateHeader (const pcl::PointCloud<PointT> &cloud, const int nr_points)
 {
   std::ostringstream oss;
+  oss.imbue (std::locale::classic ());
 
   oss << "# .PCD v0.7 - Point Cloud Data file format"
          "\nVERSION 0.7"
@@ -421,20 +422,24 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
     return (-1);
   }
 
-  std::ofstream fs;
-  fs.precision (precision);
-  fs.open (file_name.c_str ());      // Open file
-  if (!fs.is_open () || fs.fail ())
-  {
-    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Could not open file for writing!");
-    return (-1);
-  }
-
   if (cloud.width * cloud.height != cloud.points.size ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
     return (-1);
   }
+
+  std::ofstream fs;
+  fs.open (file_name.c_str ());      // Open file
+  
+  if (!fs.is_open () || fs.fail ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Could not open file for writing!");
+    return (-1);
+  }
+  
+  fs.precision (precision);
+  fs.imbue (std::locale::classic ());
+
   std::vector<sensor_msgs::PointField> fields;
   pcl::getFields (cloud, fields);
 
@@ -443,7 +448,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
 
   std::ostringstream stream;
   stream.precision (precision);
-
+  stream.imbue (std::locale::classic ());
   // Iterate through the points
   for (size_t i = 0; i < cloud.points.size (); ++i)
   {
@@ -696,20 +701,22 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
     return (-1);
   }
 
+  if (cloud.width * cloud.height != cloud.points.size ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
+    return (-1);
+  }
+
   std::ofstream fs;
-  fs.precision (precision);
   fs.open (file_name.c_str ());      // Open file
   if (!fs.is_open () || fs.fail ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Could not open file for writing!");
     return (-1);
   }
+  fs.precision (precision);
+  fs.imbue (std::locale::classic ());
 
-  if (cloud.width * cloud.height != cloud.points.size ())
-  {
-    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
-    return (-1);
-  }
   std::vector<sensor_msgs::PointField> fields;
   pcl::getFields (cloud, fields);
 
@@ -718,6 +725,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
 
   std::ostringstream stream;
   stream.precision (precision);
+  stream.imbue (std::locale::classic ());
 
   // Iterate through the points
   for (size_t i = 0; i < indices.size (); ++i)
