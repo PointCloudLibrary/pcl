@@ -86,18 +86,18 @@ find corresponding features to find overlapping parts in the data. Depending on
 the feature type we can use different methods to find the correspondences.
 
 For *point matching* (using the points' xyz-coordinates as features) different
-methods exist for organized and unorganized data.
+methods exist for organized and unorganized data: 
 
-- brute force matching;
-- kd-tree nearest neighbor search (FLANN);
-- searching in the image space of organized data;
-- searching in the index space of organized data;
+- brute force matching, 
+- kd-tree nearest neighbor search (FLANN), 
+- searching in the image space of organized data, and  
+- searching in the index space of organized data.
 
 For *feature matching* (not using the points' coordinates, but certain features)
-only the following methods exist.
+only the following methods exist:
 
-- brute force matching;
-- kd-tree nearest neighbor search (FLANN);
+- brute force matching and
+- kd-tree nearest neighbor search (FLANN). 
 
 In addition to the search, two types of correspondence estimation are 
 distinguished:
