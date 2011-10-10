@@ -224,7 +224,8 @@ macro(find_openni)
   if(OPENNI_FOUND)
     get_filename_component(OPENNI_LIBRARY_PATH ${OPENNI_LIBRARY} PATH)
     set(OPENNI_LIBRARY_DIRS ${OPENNI_LIBRARY_PATH}) 
-  endif(OPENNI_FOUND)    
+    set(OPENNI_LIBRARIES "${OPENNI_LIBRARY}")
+  endif(OPENNI_FOUND)
 endmacro(find_openni)
 
 #remove this as soon as flann is shipped with FindFlann.cmake
@@ -288,7 +289,7 @@ macro(find_VTK)
   endif(NOT VTK_DIR)
   find_package(VTK ${QUIET_})
   if(VTK_FOUND)
-    set(VTK_LIBRARIES vtkRendering)
+    set(VTK_LIBRARIES vtkCommon vtkRendering vtkHybrid)
   endif(VTK_FOUND)
 endmacro(find_VTK)
 
