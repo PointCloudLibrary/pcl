@@ -290,7 +290,7 @@ Filtering
              In this tutorial, we will learn how to remove points whose values fall inside/outside a user given interval along a specified dimension.
      ======  ======
      
-     .. |fi_1| image:: images/passthrough.jpg
+     .. |fi_1| image:: images/passthrough.png
                :height: 100px
 
   * :ref:`voxelgrid`
@@ -336,7 +336,7 @@ Filtering
              In this tutorial, we will learn how to project points to a parametric model (i.e., plane).
      ======  ======
      
-     .. |fi_4| image:: images/project_inliers.jpg
+     .. |fi_4| image:: images/project_inliers.png
                :height: 100px
 
   * :ref:`extract_indices`
