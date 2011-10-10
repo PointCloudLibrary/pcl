@@ -120,8 +120,18 @@ The last step is to actually compute the transformation.
   of points or the keypoints
 - iterate until some convergence criterion is met
 
-An example pipeline
-===================
+Example pipelines
+=================
+
+Iterative Closest Point
+^^^^^^^^^^^^^^^^^^^^^
+1) Search for correspondences.
+2) Reject bad correspondences.
+3) Estimate a transformation using the good correspondences.
+4) Iterate.
+
+Feature based registration
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 1) use SIFT Keypoints (pcl::SIFT...something)
 2) use FPFH descriptors (pcl::FPFHEstimation) at the keypoints (see our tutorials for that, like http://www.pointclouds.org/media/rss2011.html)
 3) get the FPFH descriptors and estimate correspondences using pcl::CorrespondenceEstimation
