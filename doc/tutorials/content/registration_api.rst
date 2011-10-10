@@ -4,7 +4,7 @@ The PCL Registration API
 ------------------------
 
 The problem of consistently aligning various 3D point cloud data views into a
-complete model is known as **registration**. Its goal is to ﬁnd the relative
+complete model is known as **registration**. Its goal is to find the relative
 positions and orientations of the separately acquired views in a global
 coordinate framework, such that the intersecting areas between them overlap
 perfectly. For every set of point cloud datasets acquired from different views,
@@ -47,7 +47,7 @@ An overview of pairwise registration
 We sometimes refer to the problem of registering a pair of point cloud datasets
 together as *pairwise registration*, and its output is usually a rigid
 transformation matrix (4x4) representing the rotation and translation that would
-have to be aplied on one of the datasets (let's call it *source*) in order for
+have to be applied on one of the datasets (let's call it *source*) in order for
 it to be perfectly aligned with the other dataset (let's call it *target*, or
 *model*).
 
@@ -59,35 +59,69 @@ The programmer can decide to loop over any or all of the steps.
     :align: center
 
 
-Registration Components
------------------------
+Registration Steps
+------------------
+Let's have a look at the single steps of the pipeline.
+
+Keypoints estimation
+====================
+A keypoint is an interest point that has a "special property" in the scene,
+like the corner of a book, or the letter "P" on a book that has written "PCL"
+on it. There are a number of different keypoints available in PCL like NARF,
+SIFT and FAST. Alternatively you can take every point, or a subset, as
+keypoints as well. The problem with "feeding two kinect datasets into a correspondence estimation" directly is that you have 300k points in each frame, so there can be 300k^2 correspondences.
 
 
-IterativeClosestPoint
-=====================
-1) Search for correspondences.
-2) Reject bad correspondences.
-3) Estimate a transformation using the good correspondences.
-4) Iterate.
+Feature descriptors estimation
+==============================
+Based on the found keypoints we have to features, where we assemble the
+information and generate vectors to compare them with each other. Again there
+is a number of feature options to choose from, for example NARF, FPFH, BRIEF or
+SIFT.
 
-CorrespondenceEstimation
-========================
-- CorrespondenceEstimation
-- CorrespondenceRejectionXXX
-- TransfromationEstimationYYY
-You can actually use these directly and make a for loop around them. The problem with "feeding two kinect datasets into a correspondence estimation" directly is:
-- You have 300k points in each frame.
-- So there can be 300k^2 correspondences.
-- Even on a beefy computer, this is a lot.
+Correspondences estimation
+==========================
+Given two sets of feature vectors coming from two acquired scans we have to
+find corresponding features to find overlapping parts in the data. Depending on
+the feature type we can use different methods to find the correspondences:
+- kd-tree nearest neighbor search (FLANN);
+- brute force matcher;
+- "Reciprocal": find correspondences from cloud A to cloud B, and from B to A
+  and only use the intersection.
+
+Correspondences rejection
+=========================
+Naturally, not all estimated correspondences are correct. But if the sensor
+data is similar enough, the majority of them should point in the right
+direction. To filter out wrong results we are doing outlier rejection. This
+could be done using RANSAC or by trimming down the amount and using only a
+certain percent of the found correspondences.
+
+A special case are one to many correspondences where one point in the model
+corresponds to a number of points in the source. These could be filtered by
+using only the one with the smallest distance ore my checking for other
+matchings near by.
+
 - Plus rejecting many of those will be problematic, because what do you reject them based on?
 their "color"? not good enough, their "x, y, z" values? also bad
 
-Keypoints
-=========
-That's where feature descriptors come into play and more importantly, keypoints. A keypoint is an interest point that has a "special property" in the scene, like the corner of a book, or the letter "P" on a book that has written "PCL" on it.
+Transformation
+==============
+The last step is to actually compute the transformation.
+- evaluate some error metric based on correspondence
+- estimate a (rigid) transformation between camera poses (motion estimate) and
+  minimize error metric
+- optimize the structure of the points
+- Examples:
+  - SVD for motion estimate;
+  - Levenberg-Marquardt with different kernels for motion estimate;
+- use the rigid transformation to rotate/translate the source onto the target,
+  and potentially run an internal ICP loop with either all points or a subset
+  of points or the keypoints
+- iterate until some convergence criterion is met
 
-Pipeline
-========
+An example pipeline
+===================
 1) use SIFT Keypoints (pcl::SIFT...something)
 2) use FPFH descriptors (pcl::FPFHEstimation) at the keypoints (see our tutorials for that, like http://www.pointclouds.org/media/rss2011.html)
 3) get the FPFH descriptors and estimate correspondences using pcl::CorrespondenceEstimation
