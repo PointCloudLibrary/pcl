@@ -44,11 +44,25 @@ sections will describe each of them individually.
 An overview of pairwise registration
 ------------------------------------
 
+We sometimes refer to the problem of registering a pair of point cloud datasets
+together as *pairwise registration*, and its output is usually a rigid
+transformation matrix (4x4) representing the rotation and translation that would
+have to be aplied on one of the datasets (let's call it *source*) in order for
+it to be perfectly aligned with the other dataset (let's call it *target*, or
+*model*).
+
+The steps performed in a *pairwise registration* step are shown in the diagram
+below. Please note that we are representing a single iteration of the algorithm.
+The programmer can decide to loop over any or all of the steps.
+
 .. image:: images/registration/block_diagram_single_iteration.png
     :align: center
 
+
 Registration Components
 -----------------------
+
+
 IterativeClosestPoint
 =====================
 1) Search for correspondences.
