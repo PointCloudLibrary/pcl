@@ -83,27 +83,48 @@ Correspondences estimation
 ==========================
 Given two sets of feature vectors coming from two acquired scans we have to
 find corresponding features to find overlapping parts in the data. Depending on
-the feature type we can use different methods to find the correspondences:
+the feature type we can use different methods to find the correspondences.
+
+For *point matching* (using the points' xyz-coordinates as features) different
+methods exist for organized and unorganized data.
+
+- brute force matching;
 - kd-tree nearest neighbor search (FLANN);
-- brute force matcher;
-- "Reciprocal": find correspondences from cloud A to cloud B, and from B to A
-  and only use the intersection.
+- searching in the image space of organized data;
+- searching in the index space of organized data;
+
+For *feature matching* (not using the points' coordinates, but certain features)
+only the following methods exist.
+
+- brute force matching;
+- kd-tree nearest neighbor search (FLANN);
+
+In addition to the search, two types of correspondence estimation are 
+distinguished:
+
+- Direct correspondence estimation (default) searches for correspondences
+  in cloud B for every point in cloud A . 
+- "Reciprocal" correspondence estimation searches for correspondences from 
+  cloud A to cloud B, and from B to A and only use the intersection.
 
 Correspondences rejection
 =========================
-Naturally, not all estimated correspondences are correct. But if the sensor
-data is similar enough, the majority of them should point in the right
-direction. To filter out wrong results we are doing outlier rejection. This
-could be done using RANSAC or by trimming down the amount and using only a
+Naturally, not all estimated correspondences are correct. 
+Since wrong correspondences can negatively affect the estimation of the final
+transformation, they need to be rejected.
+This could be done using RANSAC or by trimming down the amount and using only a
 certain percent of the found correspondences.
+
+.. But if the sensor data is similar enough, the majority of them should point in the right direction.  To filter out wrong results we are doing outlier rejection. 
 
 A special case are one to many correspondences where one point in the model
 corresponds to a number of points in the source. These could be filtered by
-using only the one with the smallest distance ore my checking for other
+using only the one with the smallest distance or  by checking for other
 matchings near by.
 
-- Plus rejecting many of those will be problematic, because what do you reject them based on?
-their "color"? not good enough, their "x, y, z" values? also bad
+.. dholz: do not get this here! :)
+.. - Plus rejecting many of those will be problematic, because what do you reject them based on?
+.. their "color"? not good enough, their "x, y, z" values? also bad
 
 Transformation
 ==============
