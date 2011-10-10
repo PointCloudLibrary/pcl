@@ -46,3 +46,36 @@ An overview of pairwise registration
 
 .. image:: images/registration/block_diagram_single_iteration.png
     :align: center
+
+Registration Components
+-----------------------
+IterativeClosestPoint
+=====================
+1) Search for correspondences.
+2) Reject bad correspondences.
+3) Estimate a transformation using the good correspondences.
+4) Iterate.
+
+CorrespondenceEstimation
+========================
+- CorrespondenceEstimation
+- CorrespondenceRejectionXXX
+- TransfromationEstimationYYY
+You can actually use these directly and make a for loop around them. The problem with "feeding two kinect datasets into a correspondence estimation" directly is:
+- You have 300k points in each frame.
+- So there can be 300k^2 correspondences.
+- Even on a beefy computer, this is a lot.
+- Plus rejecting many of those will be problematic, because what do you reject them based on?
+their "color"? not good enough, their "x, y, z" values? also bad
+
+Keypoints
+=========
+That's where feature descriptors come into play and more importantly, keypoints. A keypoint is an interest point that has a "special property" in the scene, like the corner of a book, or the letter "P" on a book that has written "PCL" on it.
+
+Pipeline
+========
+1) use SIFT Keypoints (pcl::SIFT...something)
+2) use FPFH descriptors (pcl::FPFHEstimation) at the keypoints (see our tutorials for that, like http://www.pointclouds.org/media/rss2011.html)
+3) get the FPFH descriptors and estimate correspondences using pcl::CorrespondenceEstimation
+4) reject bad correspondences using one or many of the pcl::CorrespondenceRejectionXXX methods
+5) finally get a transformation as mentioned above
