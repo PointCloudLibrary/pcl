@@ -5,7 +5,7 @@ How to extract borders from a range image
 
 This tutorial demonstrates how to extract borders (traversals from foreground to background) from a range image. We are interested in three different kinds of points: object borders, which are the outermost visible points still belonging to an object, shadow borders, which are points in the background that adjoin occlusions, and veil points, interpolated points between the obstacle border and the shadow border, which are a typical phenomenon in 3D range data obtained by lidars.
 
-.. image:: images/range_image_border_points.gif
+.. image:: images/range_image_border_points.png
   :width: 250
 
 The code

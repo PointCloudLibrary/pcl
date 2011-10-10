@@ -571,7 +571,7 @@ Range Images
              This tutorial demonstrates how to extract borders (traversals from foreground to background) from a range image. 
      ======  ======
 
-     .. |ri_2| image:: images/range_image_border_points.gif
+     .. |ri_2| image:: images/range_image_border_points.png
                :height: 100px
 
 .. _registration_tutorial:
@@ -579,10 +579,25 @@ Range Images
 Registration
 ------------
 
+  * :ref:`registration_api`
+
+     ======  ======
+     |re_1|  Title: **The PCL Registration API**
+
+             Author: *Dirk Holz, Radu B. Rusu, Jochen Sprickerhof*
+
+             Compatibility: PCL 1.2
+
+             In this document, we describe the point cloud registration API and its modules: the estimation and rejection of point correspondences, and the estimation of rigid transformations.
+     ======  ======
+
+     .. |re_1| image:: images/registration/registration_api.png
+               :height: 100px
+
   * :ref:`iterative_closest_point`
 
      ======  ======
-     |re_1|  Title: **How to use iterative closest point algorithm**
+     |re_2|  Title: **How to use iterative closest point algorithm**
 
              Author: *Gabe O'Leary*
 
@@ -591,7 +606,7 @@ Registration
              This tutorial gives an example of how to use the iterative closest point algorithm to see if one PointCloud is just a rigid transformation of another PointCloud.
      ======  ======
 
-     .. |re_1| image:: images/iterative_closest_point.gif
+     .. |re_2| image:: images/iterative_closest_point.gif
                :height: 100px
 
 .. _sample_consensus:
