@@ -131,7 +131,49 @@ pcl::visualization::PCLVisualizerInteractorStyle::zoomOut ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
 {
-  Superclass::OnChar ();
+  // Make sure we ignore the same events we handle in OnKeyDown to avoid calling things twice
+  FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
+  if (Interactor->GetKeyCode () >= '0' && Interactor->GetKeyCode () <= '9')
+    return;
+  std::string key (Interactor->GetKeySym ());
+  if (key.find ("XF86ZoomIn") != std::string::npos)
+    zoomIn ();
+  else if (key.find ("XF86ZoomOut") != std::string::npos)
+    zoomOut ();
+
+  bool alt = Interactor->GetAltKey ();
+  switch (Interactor->GetKeyCode ())
+  {
+    // All of the options below simply exit
+    case 'h': case 'H':
+    case 'l': case 'L':
+    case 'p': case 'P':
+    case 'j': case 'J':
+    case 'c': case 'C':
+    case 43:        // KEY_PLUS
+    case 45:        // KEY_MINUS
+    case 'f': case 'F':
+    case 'g': case 'G':
+    case 'o': case 'O':
+    case 'u': case 'U':
+    case 'q': case 'Q':
+    {
+      break;
+    }
+    // S and R have a special !ALT case
+    case 'r': case 'R':
+    case 's': case 'S':
+    {
+      if (!alt)
+        Superclass::OnChar ();
+      break;
+    }
+    default:
+    {
+      Superclass::OnChar ();
+      break;
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -636,7 +678,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
   rens_->Render ();
   Interactor->Render ();
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
