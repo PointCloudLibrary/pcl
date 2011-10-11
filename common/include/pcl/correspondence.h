@@ -46,9 +46,8 @@ namespace pcl
     * represesented via the indices of a \a source point and a \a target point, and the distance between them.
     *
     * \author Dirk Holz, Radu B. Rusu
-    * \ingroup registration
+    * \ingroup common
     */
-  /** \brief class representing a match between two descriptors */
   struct Correspondence
   {
     /** \brief Index of the query (source) point. */
