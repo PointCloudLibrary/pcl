@@ -165,7 +165,7 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
   // Check if a space search locator was given
   if (!tree_)
   {
-    if (surface_->isOrganized ())
+    if (surface_->isOrganized () && input_->isOrganized ())
       tree_.reset (new pcl::OrganizedDataIndex<PointInT> ());
     else
       tree_.reset (new pcl::KdTreeFLANN<PointInT> (false));
@@ -183,12 +183,6 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
       PCL_ERROR ("Set one of them to zero first and then re-run compute ().\n");
       // Cleanup
       deinitCompute ();
-      // Reset the surface
-      if (fake_surface_)
-      {
-        surface_.reset ();
-        fake_surface_ = false;
-      }
       return (false);
     }
     else // Use the radiusSearch () function
@@ -232,14 +226,21 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
       PCL_ERROR ("Set one of them to a positive number first and then re-run compute ().\n");
       // Cleanup
       deinitCompute ();
-      // Reset the surface
-      if (fake_surface_)
-      {
-        surface_.reset ();
-        fake_surface_ = false;
-      }
       return (false);
     }
+  }
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> bool
+pcl::Feature<PointInT, PointOutT>::deinitCompute ()
+{
+  // Reset the surface
+  if (fake_surface_)
+  {
+    surface_.reset ();
+    fake_surface_ = false;
   }
   return (true);
 }
@@ -278,13 +279,6 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   computeFeature (output);
 
   deinitCompute ();
-
-  // Reset the surface
-  if (fake_surface_)
-  {
-    surface_.reset ();
-    fake_surface_ = false;
-  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
