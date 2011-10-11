@@ -401,54 +401,66 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
         }
 
 
+        size_t total = 0;
         // Copy data
         for (size_t d = 0; d < cloud.fields.size (); ++d)
         {
           // Ignore invalid padded dimensions that are inherited from binary data
           if (cloud.fields[d].name == "_")
+          {
+            total += cloud.fields[d].count; // jump over this many elements in the string token
             continue;
+          }
           for (size_t c = 0; c < cloud.fields[d].count; ++c)
           {
             switch (cloud.fields[d].datatype)
             {
               case sensor_msgs::PointField::INT8:
               {
-                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT8>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT8>::type> (
+                    st.at (total + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::UINT8:
               {
-                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type> (
+                    st.at (total + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::INT16:
               {
-                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT16>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT16>::type> (
+                    st.at (total + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::UINT16:
               {
-                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (
+                    st.at (total + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::INT32:
               {
-                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (
+                    st.at (total + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::UINT32:
               {
-                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (
+                    st.at (total + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::FLOAT32:
               {
-                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type> (
+                    st.at (total + c), cloud, idx, d, c);
                 break;
               }
               case sensor_msgs::PointField::FLOAT64:
               {
-                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type> (st.at (d + c), cloud, idx, d, c);
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type> (
+                    st.at (total + c), cloud, idx, d, c);
                 break;
               }
               default:
@@ -456,8 +468,8 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
                 break;
             }
           }
+          total += cloud.fields[d].count; // jump over this many elements in the string token
         }
-
         idx++;
       }
     }
