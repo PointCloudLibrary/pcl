@@ -532,7 +532,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
 
       if (uncompressed_size != cloud.data.size ())
       {
-        PCL_WARN ("[pcl::read] The estimated cloud.data size (%lu) is smaller than the saved uncompressed value (%lu)! Data corruption?\n", 
+        PCL_WARN ("[pcl::read] The estimated cloud.data size (%lu) is different than the saved uncompressed value (%lu)! Data corruption?\n", 
                   (unsigned long) cloud.data.size (), (unsigned long) uncompressed_size);
         cloud.data.resize (uncompressed_size);
       }
@@ -747,7 +747,7 @@ pcl::PCDWriter::generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud,
   // The size of the fields cannot be larger than point_step
   if (fsize > cloud.point_step)
   {
-    PCL_ERROR ("[pcl::PCDWriter::generateHeader] The size of the fields (%d) is larger than point_step (%d)! Something is wrong here...\n", fsize, cloud.point_step);
+    PCL_ERROR ("[pcl::PCDWriter::generateHeaderBinary] The size of the fields (%d) is larger than point_step (%d)! Something is wrong here...\n", fsize, cloud.point_step);
     return ("");
   }
 
@@ -793,6 +793,59 @@ pcl::PCDWriter::generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud,
     field_sizes << " 1";  // Make size = 1
     field_types << " U";  // Field type = unsigned byte (uint8)
     field_counts << " " << (cloud.point_step - toffset);
+  }
+  oss << field_names.str ();
+  oss << "\nSIZE" << field_sizes.str () 
+      << "\nTYPE" << field_types.str () 
+      << "\nCOUNT" << field_counts.str ();
+  oss << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
+
+  oss << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " << 
+                         orientation.x () << " " << orientation.y () << " " << orientation.z () << "\n";
+  
+  oss << "POINTS " << cloud.width * cloud.height << "\n";
+
+  return (oss.str ());
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+std::string
+pcl::PCDWriter::generateHeaderBinaryCompressed (const sensor_msgs::PointCloud2 &cloud, 
+                                                const Eigen::Vector4f &origin, 
+                                                const Eigen::Quaternionf &orientation)
+{
+  std::ostringstream oss;
+  oss.imbue (std::locale::classic ());
+
+  oss << "# .PCD v0.7 - Point Cloud Data file format"
+         "\nVERSION 0.7"
+         "\nFIELDS";
+
+  // Compute the total size of the fields
+  unsigned int fsize = 0;
+  for (size_t i = 0; i < cloud.fields.size (); ++i)
+    fsize += cloud.fields[i].count * getFieldSize (cloud.fields[i].datatype);
+ 
+  // The size of the fields cannot be larger than point_step
+  if (fsize > cloud.point_step)
+  {
+    PCL_ERROR ("[pcl::PCDWriter::generateHeaderBinaryCompressed] The size of the fields (%d) is larger than point_step (%d)! Something is wrong here...\n", fsize, cloud.point_step);
+    return ("");
+  }
+
+  std::stringstream field_names, field_types, field_sizes, field_counts;
+  // Check if the size of the fields is smaller than the size of the point step
+  for (size_t i = 0; i < cloud.fields.size (); ++i)
+  {
+    if (cloud.fields[i].name == "_")
+      continue;
+    // Add the regular dimension
+    field_names << " " << cloud.fields[i].name;
+    field_sizes << " " << pcl::getFieldSize (cloud.fields[i].datatype);
+    field_types << " " << pcl::getFieldType (cloud.fields[i].datatype);
+    int count = abs ((int)cloud.fields[i].count);
+    if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
+    field_counts << " " << count;
   }
   oss << field_names.str ();
   oss << "\nSIZE" << field_sizes.str () 
@@ -987,6 +1040,12 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   // Copy the data
   memcpy (&map[0] + data_idx, &cloud.data[0], cloud.data.size ());
 
+#if !_WIN32
+  // If the user set the synchronization flag on, call msync
+  if (map_synchronization_)
+    msync (map, data_idx + cloud.data.size (), MS_SYNC);
+#endif
+
   // Unmap the pages of memory
 #if _WIN32
     UnmapViewOfFile (map);
@@ -1004,6 +1063,187 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
 #else
   pcl_close (fd);
 #endif
+  return (0);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud,
+                                       const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
+{
+  if (cloud.data.empty ())
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!\n");
+    return (-1);
+  }
+  int data_idx = 0;
+  std::ostringstream oss;
+  oss.imbue (std::locale::classic ());
+
+  oss << generateHeaderBinaryCompressed (cloud, origin, orientation) << "DATA binary_compressed\n";
+  oss.flush ();
+  data_idx = oss.tellp ();
+
+#if _WIN32
+  HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  if(h_native_file == INVALID_HANDLE_VALUE)
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during CreateFile (%s)!\n", file_name.c_str());
+    return (-1);
+  }
+#else
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+  if (fd < 0)
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during open (%s)!\n", file_name.c_str());
+    return (-1);
+  }
+#endif
+
+  size_t fsize = 0;
+  size_t data_size = 0;
+  size_t nri = 0;
+  std::vector<sensor_msgs::PointField> fields (cloud.fields.size ());
+  std::vector<int> fields_sizes (cloud.fields.size ());
+  // Compute the total size of the fields
+  for (size_t i = 0; i < cloud.fields.size (); ++i)
+  {
+    if (cloud.fields[i].name == "_")
+      continue;
+    
+    fields_sizes[nri] = cloud.fields[i].count * pcl::getFieldSize (cloud.fields[i].datatype);
+    fsize += fields_sizes[nri];
+    fields[nri] = cloud.fields[i];
+    ++nri;
+  }
+  fields_sizes.resize (nri);
+  fields.resize (nri);
+ 
+  // Compute the size of data
+  data_size = cloud.width * cloud.height * fsize;
+
+  //////////////////////////////////////////////////////////////////////
+  // Empty array holding only the valid data
+  // data_size = nr_points * point_size 
+  //           = nr_points * (sizeof_field_1 + sizeof_field_2 + ... sizeof_field_n)
+  //           = sizeof_field_1 * nr_points + sizeof_field_2 * nr_points + ... sizeof_field_n * nr_points
+  char *only_valid_data = (char*)malloc (data_size);
+
+  // Convert the XYZRGBXYZRGB structure to XXYYZZRGBRGB to aid compression. For
+  // this, we need a vector of fields.size () (4 in this case), which points to
+  // each individual plane:
+  //   pters[0] = &only_valid_data[offset_of_plane_x];
+  //   pters[1] = &only_valid_data[offset_of_plane_y];
+  //   pters[2] = &only_valid_data[offset_of_plane_z];
+  //   pters[3] = &only_valid_data[offset_of_plane_RGB];
+  //
+  std::vector<char*> pters (fields.size ());
+  int toff = 0;
+  for (size_t i = 0; i < pters.size (); ++i)
+  {
+    pters[i] = &only_valid_data[toff];
+    toff += fields_sizes[i] * cloud.width * cloud.height;
+  }
+  
+  // Go over all the points, and copy the data in the appropriate places
+  for (size_t i = 0; i < cloud.width * cloud.height; ++i)
+  {
+    for (size_t j = 0; j < pters.size (); ++j)
+    {
+      memcpy (pters[j], &cloud.data[i * cloud.point_step + fields[j].offset], fields_sizes[j]);
+      // Increment the pointer
+      pters[j] += fields_sizes[j];
+    }
+  }
+
+  char* temp_buf = (char*)malloc (data_size * 1.5 + 8);
+  // Compress the valid data
+  unsigned int compressed_size = pcl::lzfCompress (only_valid_data, data_size, &temp_buf[8], data_size * 1.5);
+  unsigned int compressed_final_size = 0;
+  // Was the compression successful?
+  if (compressed_size)
+  {
+    char *header = &temp_buf[0];
+    memcpy (&header[0], &compressed_size, sizeof (unsigned int));
+    memcpy (&header[4], &data_size, sizeof (unsigned int));
+    data_size = compressed_size + 8;
+    compressed_final_size = data_size + data_idx;
+  }
+  else
+  {
+#if !_WIN32
+    pcl_close (fd);
+#endif
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during compression!");
+    return (-1);
+  }
+
+#if !_WIN32
+  // Stretch the file size to the size of the data
+  int result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
+  if (result < 0)
+  {
+    pcl_close (fd);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during lseek ()!\n");
+    return (-1);
+  }
+  // Write a bogus entry so that the new file size comes in effect
+  result = ::write (fd, "", 1);
+  if (result != 1)
+  {
+    pcl_close (fd);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during write ()!\n");
+    return (-1);
+  }
+#endif
+
+  // Prepare the map
+#ifdef _WIN32
+  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, compressed_final_size, NULL);
+  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, compressed_final_size));
+  CloseHandle (fm);
+
+#else
+  char *map = (char*)mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0);
+  if (map == MAP_FAILED)
+  {
+    pcl_close (fd);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during mmap ()!\n");
+    return (-1);
+  }
+#endif
+
+  // copy header
+  memcpy (&map[0], oss.str ().c_str (), data_idx);
+  // Copy the compressed data
+  memcpy (&map[data_idx], temp_buf, data_size);
+
+#if !_WIN32
+  // If the user set the synchronization flag on, call msync
+  if (map_synchronization_)
+    msync (map, compressed_final_size, MS_SYNC);
+#endif
+
+  // Unmap the pages of memory
+#if _WIN32
+    UnmapViewOfFile (map);
+#else
+  if (munmap (map, (compressed_final_size)) == -1)
+  {
+    pcl_close (fd);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during munmap ()!\n");
+    return (-1);
+  }
+#endif
+  // Close file
+#if _WIN32
+  CloseHandle (h_native_file);
+#else
+  pcl_close (fd);
+#endif
+
+  free (only_valid_data);
+  free (temp_buf);
   return (0);
 }
 
