@@ -43,12 +43,116 @@
 #include "pcl/common/io.h"
 #include "pcl/io/pcd_io.h"
 #include "pcl/io/ply_io.h"
-
+#include <fstream>
 #include <locale>
 #include <stdexcept>
 
 using namespace pcl;
 using namespace pcl::io;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, ComplexPCDFileASCII)
+{
+  std::ofstream fs;
+  fs.open ("complex_ascii.pcd");
+  fs << "# .PCD v0.7 - Point Cloud Data file format\n"
+        "VERSION 0.7\n"
+        "FIELDS fpfh _ x y z\n"
+        "SIZE 4 1 4 4 4\n"
+        "TYPE F F F F F\n"
+        "COUNT 33 10 1 1 1\n"
+        "WIDTH 1\n"
+        "HEIGHT 1\n"
+        "VIEWPOINT 0 0 0 1 0 0 0\n"
+        "POINTS 1\n"
+        "DATA ascii\n"
+        "0 0 0 0 0 100 0 0 0 0 0 0 0 0 0 0 100 0 0 0 0 0 0 0 0 0 0 100 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 -69.234001 -65.460999 19.173";
+  fs.close ();
+
+  sensor_msgs::PointCloud2 blob;
+  int res = loadPCDFile ("complex_ascii.pcd", blob);
+  EXPECT_NE ((int)res, -1);
+  EXPECT_EQ (blob.width, 1);
+  EXPECT_EQ (blob.height, 1);
+  EXPECT_EQ (blob.is_dense, true);
+  EXPECT_EQ (blob.data.size (), 4 * 33 + 10 * 1 + 4 * 3);
+
+  // Check fields
+  EXPECT_EQ (blob.fields[0].name, "fpfh");
+  EXPECT_EQ (blob.fields[0].offset, 0);
+  EXPECT_EQ (blob.fields[0].count, 33);
+  EXPECT_EQ (blob.fields[0].datatype, sensor_msgs::PointField::FLOAT32);
+
+  EXPECT_EQ (blob.fields[1].name, "_");
+  EXPECT_EQ (blob.fields[1].offset, 4 * 33);
+  EXPECT_EQ (blob.fields[1].count, 10);
+  EXPECT_EQ (blob.fields[1].datatype, sensor_msgs::PointField::FLOAT32);
+  
+  EXPECT_EQ (blob.fields[2].name, "x");
+  EXPECT_EQ (blob.fields[2].offset, 4 * 33 + 10 * 1);
+  EXPECT_EQ (blob.fields[2].count, 1);
+  EXPECT_EQ (blob.fields[2].datatype, sensor_msgs::PointField::FLOAT32);
+  
+  EXPECT_EQ (blob.fields[3].name, "y");
+  EXPECT_EQ (blob.fields[3].offset, 4 * 33 + 10 * 1 + 4);
+  EXPECT_EQ (blob.fields[3].count, 1);
+  EXPECT_EQ (blob.fields[3].datatype, sensor_msgs::PointField::FLOAT32);
+  
+  EXPECT_EQ (blob.fields[4].name, "z");
+  EXPECT_EQ (blob.fields[4].offset, 4 * 33 + 10 * 1 + 4 + 4);
+  EXPECT_EQ (blob.fields[4].count, 1);
+  EXPECT_EQ (blob.fields[4].datatype, sensor_msgs::PointField::FLOAT32);
+
+  int x_idx = pcl::getFieldIndex (blob, "x");
+  EXPECT_EQ (x_idx, 2);
+  float x, y, z;
+  memcpy (&x, &blob.data[0 * blob.point_step + blob.fields[x_idx + 0].offset], sizeof (float));
+  memcpy (&y, &blob.data[0 * blob.point_step + blob.fields[x_idx + 1].offset], sizeof (float));
+  memcpy (&z, &blob.data[0 * blob.point_step + blob.fields[x_idx + 2].offset], sizeof (float));
+  EXPECT_FLOAT_EQ (x, -69.234001);
+  EXPECT_FLOAT_EQ (y, -65.460999);
+  EXPECT_FLOAT_EQ (z, 19.173);
+
+  int fpfh_idx = pcl::getFieldIndex (blob, "fpfh");
+  EXPECT_EQ (fpfh_idx, 0);
+  float val[33];
+  for (size_t i = 0; i < blob.fields[fpfh_idx].count; ++i)
+    memcpy (&val[i], &blob.data[0 * blob.point_step + blob.fields[fpfh_idx + 0].offset + i * sizeof (float)], sizeof (float));
+
+  EXPECT_EQ (val[0], 0); 
+  EXPECT_EQ (val[1], 0); 
+  EXPECT_EQ (val[2], 0); 
+  EXPECT_EQ (val[3], 0); 
+  EXPECT_EQ (val[4], 0); 
+  EXPECT_EQ (val[5], 100); 
+  EXPECT_EQ (val[6], 0); 
+  EXPECT_EQ (val[7], 0); 
+  EXPECT_EQ (val[8], 0); 
+  EXPECT_EQ (val[9], 0); 
+  EXPECT_EQ (val[10], 0); 
+  EXPECT_EQ (val[11], 0); 
+  EXPECT_EQ (val[12], 0); 
+  EXPECT_EQ (val[13], 0); 
+  EXPECT_EQ (val[14], 0); 
+  EXPECT_EQ (val[15], 0); 
+  EXPECT_EQ (val[16], 100); 
+  EXPECT_EQ (val[17], 0); 
+  EXPECT_EQ (val[18], 0); 
+  EXPECT_EQ (val[19], 0); 
+  EXPECT_EQ (val[20], 0); 
+  EXPECT_EQ (val[21], 0); 
+  EXPECT_EQ (val[22], 0); 
+  EXPECT_EQ (val[23], 0); 
+  EXPECT_EQ (val[24], 0); 
+  EXPECT_EQ (val[25], 0); 
+  EXPECT_EQ (val[26], 0); 
+  EXPECT_EQ (val[27], 100); 
+  EXPECT_EQ (val[28], 0); 
+  EXPECT_EQ (val[29], 0); 
+  EXPECT_EQ (val[30], 0); 
+  EXPECT_EQ (val[31], 0); 
+  EXPECT_EQ (val[32], 0); 
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, ConcatenatePoints)
