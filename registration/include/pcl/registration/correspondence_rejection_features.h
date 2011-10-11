@@ -39,6 +39,8 @@
 #include <boost/function.hpp>
 #include <boost/unordered_map.hpp>
 #include <pcl/registration/correspondence_rejection.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_representation.h>
 
 namespace pcl
 {
