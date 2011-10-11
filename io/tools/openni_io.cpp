@@ -94,6 +94,8 @@ class OpenNIIO
       interface->start ();
       
       PCDWriter w;
+      w.setMapSynchronization (false);    // Setting this to true will enable msync() => drop I/O performance
+
       while (true)
       {
         if (cloud_)

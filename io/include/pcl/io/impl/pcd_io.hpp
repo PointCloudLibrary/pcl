@@ -216,6 +216,10 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     }
   }
 
+  // If the user set the synchronization flag on, call msync
+  if (map_synchronization_)
+    msync (map, data_idx + data_size, MS_SYNC);
+
   // Unmap the pages of memory
 #if _WIN32
     UnmapViewOfFile (map);
@@ -386,6 +390,10 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   memcpy (&map[0], oss.str ().c_str (), data_idx);
   // Copy the compressed data
   memcpy (&map[data_idx], temp_buf, data_size);
+
+  // If the user set the synchronization flag on, call msync
+  if (map_synchronization_)
+    msync (map, compressed_final_size, MS_SYNC);
 
   // Unmap the pages of memory
 #if _WIN32
@@ -667,6 +675,10 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
       out += fields_sizes[nrj++];
     }
   }
+
+  // If the user set the synchronization flag on, call msync
+  if (map_synchronization_)
+    msync (map, data_idx + data_size, MS_SYNC);
 
   // Unmap the pages of memory
 #if _WIN32

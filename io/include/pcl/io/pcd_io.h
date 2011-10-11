@@ -158,8 +158,22 @@ namespace pcl
   class PCL_EXPORTS PCDWriter : public FileWriter
   {
     public:
-      PCDWriter() : FileWriter() {}
+      PCDWriter() : FileWriter(), map_synchronization_(false) {}
       ~PCDWriter() {}
+
+      /** \brief Set whether mmap() synchornization via msync() is desired before munmap() calls. 
+        * Setting this to true could prevent NFS data loss (see
+        * http://www.pcl-developers.org/PCD-IO-consistency-on-NFS-msync-needed-td4885942.html).
+        * Default: false
+        * \note This option should be used by advanced users only!
+        * \note Please note that using msync() on certain systems can reduce the I/O performance by up to 80%!
+        * \param[in] sync set to true if msync() should be called before munmap()
+        */
+      void
+      setMapSynchronization (bool sync)
+      {
+        map_synchronization_ = sync;
+      }
 
       /** \brief Generate the header of a PCD file format
         * \param[in] cloud the point cloud data message
@@ -373,6 +387,11 @@ namespace pcl
         else
           return (writeASCII<PointT> (file_name, cloud, indices));
       }
+
+    private:
+
+      /** \brief Set to true if msync() should be called before munmap(). Prevents data loss on NFS systems. */
+      bool map_synchronization_;
   };
 
   namespace io
