@@ -58,9 +58,17 @@ The programmer can decide to loop over any or all of the steps.
 .. image:: images/registration/block_diagram_single_iteration.png
     :align: center
 
+The computational steps for two datasets are straighforward:
 
-Registration Steps
-------------------
+  * from a set of points, identify **interest points** (i.e., **keypoints**) that best represent the scene in both datasets;
+  * at each keypoint, compute a **feature descriptor**;
+  * from the set of **feature descriptors** together with their XYZ positions in the two datasets, estimate a set of **correspondences**, based on the similarities between features and positions;
+  * given that the data is assumed to be noisy, not all correspondences are valid, so reject those bad correspondences that contribute negatively to the registration process;
+  * from the remaining set of good correspondences, estimate a motion transformation.
+
+Registration modules
+--------------------
+
 Let's have a look at the single steps of the pipeline.
 
 Keypoints estimation
@@ -145,7 +153,7 @@ Example pipelines
 =================
 
 Iterative Closest Point
-^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 1) Search for correspondences.
 2) Reject bad correspondences.
 3) Estimate a transformation using the good correspondences.
