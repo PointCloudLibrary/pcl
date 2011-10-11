@@ -46,9 +46,7 @@ template <typename PointInT, typename PointOutT> bool
 pcl::Keypoint<PointInT, PointOutT>::initCompute ()
 {
   if (!PCLBase<PointInT>::initCompute ())
-  {
-    return false;
-  }
+    return (false);
 
   // Initialize the spatial locator
   if (!tree_)
@@ -58,9 +56,10 @@ pcl::Keypoint<PointInT, PointOutT>::initCompute ()
     else
       tree_.reset (new pcl::KdTreeFLANN<PointInT> (false));
   }
-  return true;
+  return (true);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> inline void
 pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
 {
@@ -72,9 +71,7 @@ pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
 
   // If no search surface has been defined, use the input dataset as the search surface itself
   if (!surface_)
-  {
     surface_ = input_;
-  }
 
   // Send the surface dataset to the spatial locator
   tree_->setInputCloud (surface_);
@@ -132,7 +129,7 @@ pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
   }
 
   // Perform the actual computation
-  detectKeypoints(output);
+  detectKeypoints (output);
 
   deinitCompute ();
 

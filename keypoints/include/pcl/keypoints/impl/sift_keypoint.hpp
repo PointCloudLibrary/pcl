@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,9 +35,16 @@
  *
  */
 
-template <typename PointInT, typename PointOutT>
-void pcl::SIFTKeypoint<PointInT, PointOutT>::
-setScales (float min_scale, int nr_octaves, int nr_scales_per_octave)
+#ifndef PCL_SIFT_KEYPOINT_IMPL_H_
+#define PCL_SIFT_KEYPOINT_IMPL_H_
+
+#include "pcl/keypoints/sift_keypoint.h"
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/approximate_voxel_grid.h>
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void 
+pcl::SIFTKeypoint<PointInT, PointOutT>::setScales (float min_scale, int nr_octaves, int nr_scales_per_octave)
 {
   if (min_scale <= 0)
   {
@@ -63,9 +72,9 @@ setScales (float min_scale, int nr_octaves, int nr_scales_per_octave)
 }
 
 
-template <typename PointInT, typename PointOutT>
-void pcl::SIFTKeypoint<PointInT, PointOutT>::
-setMinimumContrast (float min_contrast)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void 
+pcl::SIFTKeypoint<PointInT, PointOutT>::setMinimumContrast (float min_contrast)
 {
   if (min_contrast < 0)
   {
@@ -76,10 +85,12 @@ setMinimumContrast (float min_contrast)
   min_contrast_ = min_contrast;
 }
 
-template <typename PointInT, typename PointOutT>
-void pcl::SIFTKeypoint<PointInT, PointOutT>::
-detectKeypoints (PointCloudOut &output)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void 
+pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 {
+  tree_.reset (new pcl::KdTreeFLANN<PointInT> (true));
+
   // Check for valid inputs
   if (min_scale_ == 0 || nr_octaves_ == 0 || nr_scales_per_octave_ == 0)
   {
@@ -97,12 +108,12 @@ detectKeypoints (PointCloudOut &output)
   // Create a local copy of the input cloud that will be resized for each octave
   boost::shared_ptr<pcl::PointCloud<PointInT> > cloud (new pcl::PointCloud<PointInT> (*input_));
 
+  VoxelGrid<PointInT> voxel_grid;
   // Search for keypoints at each octave
   float scale = min_scale_;
   for (int i_octave = 0; i_octave < nr_octaves_; ++i_octave)
   {
     // Downsample the point cloud
-    VoxelGrid<PointInT> voxel_grid;
     float s = 1.0 * scale; // note: this can be adjusted
     voxel_grid.setLeafSize (s, s, s);
     voxel_grid.setInputCloud (cloud);
@@ -113,9 +124,7 @@ detectKeypoints (PointCloudOut &output)
     // Make sure the downsampled cloud still has enough points
     const size_t min_nr_points = 25;
     if (cloud->points.size () < min_nr_points)
-    {
       return;
-    }
 
     // Update the KdTree with the downsampled points
     tree_->setInputCloud (cloud);
@@ -126,13 +135,17 @@ detectKeypoints (PointCloudOut &output)
     // Increase the scale by another octave
     scale *= 2;
   }
+
+  output.height = 1;
+  output.width = output.points.size ();
 }
 
 
-template <typename PointInT, typename PointOutT>
-void pcl::SIFTKeypoint<PointInT, PointOutT>::
-detectKeypointsForOctave (const PointCloudIn &input, KdTree &tree, float base_scale, int nr_scales_per_octave, 
-                          PointCloudOut &output)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void 
+pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
+    const PointCloudIn &input, KdTree &tree, float base_scale, int nr_scales_per_octave, 
+    PointCloudOut &output)
 {
   // Compute the difference of Gaussians (DoG) scale space
   std::vector<float> scales (nr_scales_per_octave + 3);
@@ -152,7 +165,7 @@ detectKeypointsForOctave (const PointCloudIn &input, KdTree &tree, float base_sc
   {
     PointOutT keypoint;
     const int &keypoint_index = extrema_indices[i_keypoint];
-
+ 
     keypoint.x = input.points[keypoint_index].x;
     keypoint.y = input.points[keypoint_index].y;
     keypoint.z = input.points[keypoint_index].z;
@@ -163,10 +176,11 @@ detectKeypointsForOctave (const PointCloudIn &input, KdTree &tree, float base_sc
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> 
-void pcl::SIFTKeypoint<PointInT, PointOutT>::
-computeScaleSpace (const PointCloudIn &input, KdTree &tree, const std::vector<float> &scales, 
-                   Eigen::MatrixXf &diff_of_gauss)
+void pcl::SIFTKeypoint<PointInT, PointOutT>::computeScaleSpace (
+    const PointCloudIn &input, KdTree &tree, const std::vector<float> &scales, 
+    Eigen::MatrixXf &diff_of_gauss)
 {
   std::vector<int> nn_indices;
   std::vector<float> nn_dist;
@@ -208,18 +222,16 @@ computeScaleSpace (const PointCloudIn &input, KdTree &tree, const std::vector<fl
 
       // Compute the difference between adjacent scales
       if (i_scale > 0)
-      {
         diff_of_gauss (i_point, i_scale - 1) = filter_response - previous_filter_response;
-      }
-
     }
   }
 }
 
-template <typename PointInT, typename PointOutT>
-void pcl::SIFTKeypoint<PointInT, PointOutT>::
-findScaleSpaceExtrema (const PointCloudIn &input, KdTree &tree, const Eigen::MatrixXf &diff_of_gauss, 
-                       std::vector<int> &extrema_indices, std::vector<int> &extrema_scales)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void 
+pcl::SIFTKeypoint<PointInT, PointOutT>::findScaleSpaceExtrema (
+    const PointCloudIn &input, KdTree &tree, const Eigen::MatrixXf &diff_of_gauss, 
+    std::vector<int> &extrema_indices, std::vector<int> &extrema_scales)
 {
   const int k = 25;
   std::vector<int> nn_indices (k);
@@ -279,3 +291,8 @@ findScaleSpaceExtrema (const PointCloudIn &input, KdTree &tree, const Eigen::Mat
     }
   }
 }
+
+#define PCL_INSTANTIATE_SIFTKeypoint(T,U) template class PCL_EXPORTS pcl::SIFTKeypoint<T,U>;
+
+#endif // #ifndef PCL_SIFT_KEYPOINT_IMPL_H_
+

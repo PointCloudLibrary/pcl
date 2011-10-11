@@ -38,11 +38,8 @@
 
 #include <pcl/keypoints/keypoint.h>
 
-#include "pcl/filters/voxel_grid.h"
-
 namespace pcl
 {
-
   template<typename PointT>
   struct SIFTKeypointFieldSelector
   {
@@ -68,10 +65,11 @@ namespace pcl
     }
   };
 
-
-
-  /** \brief @b SIFTKeypoint detects the Scale Invariant Feature Transform keypoints for a given point cloud dataset 
-    * containing points and intensity.  This implementation adapts the original algorithm from images to point clouds. 
+  /** \brief @b SIFTKeypoint detects the Scale Invariant Feature Transform
+    * keypoints for a given point cloud dataset containing points and intensity.
+    * This implementation adapts the original algorithm from images to point
+    * clouds. 
+    *
     * For more information about the image-based SIFT interest operator, see:
     *
     *    David G. Lowe, "Distinctive image features from scale-invariant keypoints," 
@@ -106,19 +104,22 @@ namespace pcl
         * \param nr_octaves the number of octaves (i.e. doublings of scale) to compute 
         * \param nr_scales_per_octave the number of scales to compute within each octave
         */
-      void setScales (float min_scale, int nr_octaves, int nr_scales_per_octave);
+      void 
+      setScales (float min_scale, int nr_octaves, int nr_scales_per_octave);
 
       /** \brief Provide a threshold to limit detection of keypoints without sufficient contrast
         * \param min_contrast the minimum contrast required for detection
         */
-      void setMinimumContrast (float min_contrast);
+      void 
+      setMinimumContrast (float min_contrast);
 
     protected:
       /** \brief Detect the SIFT keypoints for a set of points given in setInputCloud () using the spatial locator in 
         * setSearchMethod ().
         * \param output the resultant cloud of keypoints
         */
-      void detectKeypoints (PointCloudOut &output);
+      void 
+      detectKeypoints (PointCloudOut &output);
 
     private:
       /** \brief Detect the SIFT keypoints for a given point cloud for a single octave.
@@ -128,9 +129,10 @@ namespace pcl
         * \param nr_scales_per_octave the number of scales to to compute
         * \param output the resultant point cloud containing the SIFT keypoints
         */
-      void detectKeypointsForOctave (const PointCloudIn &input, KdTree &tree, 
-                                     float base_scale, int nr_scales_per_octave, 
-                                     PointCloudOut &output);
+      void 
+      detectKeypointsForOctave (const PointCloudIn &input, KdTree &tree, 
+                                float base_scale, int nr_scales_per_octave, 
+                                PointCloudOut &output);
 
       /** \brief Compute the difference-of-Gaussian (DoG) scale space for the given input and scales
         * \param input the point cloud for which the DoG scale space will be computed
@@ -138,9 +140,10 @@ namespace pcl
         * \param scales a vector containing the scales over which to compute the DoG scale space
         * \param diff_of_gauss the resultant DoG scale space (in a number-of-points by number-of-scales matrix)
         */
-      void computeScaleSpace (const PointCloudIn &input, KdTree &tree, 
-                              const std::vector<float> &scales, 
-                              Eigen::MatrixXf &diff_of_gauss);
+      void 
+      computeScaleSpace (const PointCloudIn &input, KdTree &tree, 
+                         const std::vector<float> &scales, 
+                         Eigen::MatrixXf &diff_of_gauss);
 
       /** \brief Find the local minima and maxima in the provided difference-of-Gaussian (DoG) scale space
         * \param input the input point cloud 
@@ -149,9 +152,10 @@ namespace pcl
         * \param extrema_indices the resultant vector containing the point indices of each keypoint
         * \param extrema_scales the resultant vector containing the scale indices of each keypoint
         */
-      void findScaleSpaceExtrema (const PointCloudIn &input, KdTree &tree, 
-                                  const Eigen::MatrixXf &diff_of_gauss,
-                                  std::vector<int> &extrema_indices, std::vector<int> &extrema_scales);
+      void 
+      findScaleSpaceExtrema (const PointCloudIn &input, KdTree &tree, 
+                             const Eigen::MatrixXf &diff_of_gauss,
+                             std::vector<int> &extrema_indices, std::vector<int> &extrema_scales);
 
 
       /** \brief The standard deviation of the smallest scale in the scale space.*/
@@ -167,7 +171,6 @@ namespace pcl
       float min_contrast_;
 
       SIFTKeypointFieldSelector<PointInT> getFieldValue_;
-
   };
 }
 
