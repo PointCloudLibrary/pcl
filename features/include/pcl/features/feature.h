@@ -97,8 +97,6 @@ namespace pcl
   template <typename PointInT, typename PointOutT>
   class Feature : public PCLBase<PointInT>
   {
-    using PCLBase<PointInT>::deinitCompute;
-
     public:
       using PCLBase<PointInT>::indices_;
       using PCLBase<PointInT>::input_;
