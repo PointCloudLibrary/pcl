@@ -9,7 +9,8 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-    set(incs include/pcl/${SUBSYS_NAME}/cvfh.h
+    set(incs 
+        include/pcl/${SUBSYS_NAME}/cvfh.h
         include/pcl/${SUBSYS_NAME}/feature.h
         include/pcl/${SUBSYS_NAME}/fpfh.h
         include/pcl/${SUBSYS_NAME}/fpfh_omp.h
@@ -38,6 +39,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/vfh.h
         # include/pcl/${SUBSYS_NAME}/3dsc.h
         # include/pcl/${SUBSYS_NAME}/usc.h
+        include/pcl/${SUBSYS_NAME}/boundary.h
+        include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h
         )
     
     set(feature_evaluation_incs
@@ -45,7 +48,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/feature_evaluation/feature_test.h
         )
 
-    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
+    set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/feature.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh_omp.hpp
@@ -73,6 +77,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/vfh.hpp
         # include/pcl/${SUBSYS_NAME}/impl/3dsc.hpp
         # include/pcl/${SUBSYS_NAME}/impl/usc.hpp
+        include/pcl/${SUBSYS_NAME}/impl/boundary.hpp
+        include/pcl/${SUBSYS_NAME}/impl/range_image_border_extractor.hpp
         )
 
     set(srcs 
@@ -105,6 +111,7 @@ if(build)
         src/vfh.cpp
         # src/3dsc.cpp
         # src/usc.cpp
+        src/range_image_border_extractor.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
@@ -120,28 +127,5 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/feature_evaluation ${feature_evaluation_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
-    set(border_srcs src/boundary.cpp
-        src/range_image_border_extractor.cpp
-        )
-
-    set(border_incs include/pcl/${SUBSYS_NAME}/boundary.h
-        include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h
-        )
-
-    set(border_impl_incs include/pcl/${SUBSYS_NAME}/impl/boundary.hpp
-        include/pcl/${SUBSYS_NAME}/impl/range_image_border_extractor.hpp
-        )
-
-    set(LIB_NAME pcl_range_image_border_extractor)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${border_srcs} ${border_incs} ${border_impl_incs})
-    PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_range_image pcl_kdtree)
-    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME}
-        "Point cloud range image border extractor library"
-        "${SUBSYS_DEPS}" "" "" "" "")
-    # Install headers
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${border_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${border_impl_incs})
-    
     add_subdirectory(test)
 endif(build)
