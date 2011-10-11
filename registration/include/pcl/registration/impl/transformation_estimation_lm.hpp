@@ -221,7 +221,17 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
     const std::vector<pcl::Correspondence> &correspondences,
     Eigen::Matrix4f &transformation_matrix)
 {
-  transformation_matrix.setIdentity ();
+  const int nr_correspondences = (int)correspondences.size();
+  std::vector<int> indices_src, indices_tgt;
+  indices_src.resize(nr_correspondences);
+  indices_tgt.resize(nr_correspondences);
+  for (int i = 0; i < nr_correspondences; ++i)
+  {
+    indices_src[i] = correspondences[i].index_query;
+    indices_tgt[i] = correspondences[i].index_match;
+  }
+
+  estimateRigidTransformation(cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
