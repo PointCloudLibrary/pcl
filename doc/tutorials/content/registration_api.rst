@@ -137,9 +137,9 @@ matchings near by.
 Transformation
 ==============
 The last step is to actually compute the transformation.
+
 - evaluate some error metric based on correspondence
-- estimate a (rigid) transformation between camera poses (motion estimate) and
-  minimize error metric
+- estimate a (rigid) transformation between camera poses (motion estimate) and minimize error metric
 - optimize the structure of the points
 - Examples:
   - SVD for motion estimate;
