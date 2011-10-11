@@ -110,7 +110,7 @@ namespace pcl
         * \param cloud the dataset containing the XYZ Cartesian coordinates of the two points
         * \param normals the dataset containing the surface normals at each point in \a cloud
         * \param p_idx the index of the query point (source)
-        * \param row the index of row in SPFH histograms (destination)
+        * \param row the index row in feature histogramms
         * \param indices the k-neighborhood point indices in the dataset
         * \param hist_f1 the resultant SPFH histogram for feature f1
         * \param hist_f2 the resultant SPFH histogram for feature f2

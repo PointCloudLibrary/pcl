@@ -47,7 +47,6 @@
 #include "pcl/common/eigen.h"
 #include "pcl/common/centroid.h"
 
-#include "pcl/kdtree/tree_types.h"
 #include "pcl/kdtree/kdtree.h"
 #include "pcl/kdtree/kdtree_flann.h"
 #include "pcl/kdtree/organized_data.h"
@@ -115,8 +114,8 @@ namespace pcl
 
       typedef pcl::PointCloud<PointOutT> PointCloudOut;
 
-      typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
-      typedef boost::function<int (const PointCloudIn &cloud, int index, double, std::vector<int> &, std::vector<float> &)> SearchMethodSurface;
+      typedef boost::function<int (size_t, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
+      typedef boost::function<int (const PointCloudIn &cloud, size_t index, double, std::vector<int> &, std::vector<float> &)> SearchMethodSurface;
     
     public:
       /** \brief Empty constructor. */
@@ -194,13 +193,29 @@ namespace pcl
         * k-nearest neighbors
         */
       inline int
-      searchForNeighbors (int index, double parameter, 
-                          std::vector<int> &indices, std::vector<float> &distances)
+      searchForNeighbors (size_t index, double parameter, 
+                          std::vector<int> &indices, std::vector<float> &distances) const
       {
         if (surface_ == input_)       // if the two surfaces are the same
           return (search_method_ (index, parameter, indices, distances));
         else
           return (search_method_surface_ (*input_, index, parameter, indices, distances));
+      }
+
+      /** \brief Search for k-nearest neighbors using the spatial locator from 
+        * \a setSearchmethod, and the given surface from \a setSearchSurface.
+        * \param cloud the query point cloud
+        * \param index the index of the query point in \a cloud
+        * \param parameter the search parameter (either k or radius)
+        * \param indices the resultant vector of indices representing the k-nearest neighbors
+        * \param distances the resultant vector of distances representing the distances from the query point to the
+        * k-nearest neighbors
+        */
+      inline int
+      searchForNeighbors (const PointCloudIn &cloud, size_t index, double parameter, 
+                          std::vector<int> &indices, std::vector<float> &distances) const
+      {
+        return (search_method_surface_ (cloud, index, parameter, indices, distances));
       }
 
     protected:
@@ -242,10 +257,10 @@ namespace pcl
       virtual inline bool
       deinitCompute ();
 
-    private:
       /** \brief If no surface is given, we use the input PointCloud as the surface. */
       bool fake_surface_;
 
+    private:
       /** \brief Abstract feature estimation method. */
       virtual void 
       computeFeature (PointCloudOut &output) = 0;
@@ -285,7 +300,10 @@ namespace pcl
 
       /** \brief Provide a pointer to the input dataset that contains the point normals of 
         * the XYZ dataset.
-        * \param normals the const boost shared pointer to a PointCloud message
+        * In case of search surface is set to be different from the input cloud, 
+        * normals should correspond to the search surface, not the input cloud!
+        * \param normals the const boost shared pointer to a PointCloud of normals. 
+        * By convention, L2 norm of each normal should be 1. 
         */
       inline void 
       setInputNormals (const PointCloudNConstPtr &normals) { normals_ = normals; }
