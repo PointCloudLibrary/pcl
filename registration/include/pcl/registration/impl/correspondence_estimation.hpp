@@ -58,7 +58,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setInputT
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
 pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determineCorrespondences (
-    std::vector<pcl::Correspondence> &correspondences, float max_distance)
+    pcl::Correspondences &correspondences, float max_distance)
 {
   typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
 
@@ -105,7 +105,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
 pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determineReciprocalCorrespondences (
-    std::vector<pcl::Correspondence> &correspondences)
+    pcl::Correspondences &correspondences)
 {
   typedef typename pcl::traits::fieldList<PointSource>::type FieldListSource;
   typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;

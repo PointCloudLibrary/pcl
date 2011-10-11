@@ -81,9 +81,9 @@ namespace pcl
     return (os);
   }
 
-  typedef std::vector<pcl::Correspondence> Correspondences;
-  typedef boost::shared_ptr<std::vector<pcl::Correspondence> > CorrespondencesPtr;
-  typedef boost::shared_ptr<const std::vector<pcl::Correspondence> > CorrespondencesConstPtr;
+  typedef std::vector< pcl::Correspondence, Eigen::aligned_allocator<pcl::Correspondence> > Correspondences;
+  typedef boost::shared_ptr<Correspondences> CorrespondencesPtr;
+  typedef boost::shared_ptr<const Correspondences > CorrespondencesConstPtr;
 }
 
 #endif /* PCL_COMMON_CORRESPONDENCE_H_ */

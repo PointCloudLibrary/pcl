@@ -111,14 +111,14 @@ namespace pcl
           * \param max_distance maximum distance between correspondences
           */
         virtual void 
-        determineCorrespondences (std::vector<pcl::Correspondence> &correspondences, 
+        determineCorrespondences (pcl::Correspondences &correspondences,
                                   float max_distance = std::numeric_limits<float>::max ());
 
         /** \brief Determine the correspondences between input and target cloud.
           * \param[out] correspondences the found correspondences (index of query and target point, distance)
           */
         virtual void 
-        determineReciprocalCorrespondences (std::vector<pcl::Correspondence> &correspondences);
+        determineReciprocalCorrespondences (pcl::Correspondences &correspondences);
 
       protected:
         /** \brief The correspondence estimation method name. 

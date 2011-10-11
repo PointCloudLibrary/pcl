@@ -134,6 +134,16 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
 
   // <cloud_src,cloud_src> is the source dataset
   transformation_matrix.setIdentity ();
+
+  const int nr_correspondences = (int)cloud_tgt.points.size ();
+  std::vector<int> indices_tgt;
+  indices_tgt.resize(nr_correspondences);
+  for (int i = 0; i < nr_correspondences; ++i)
+    indices_tgt[i] = i;
+
+  estimateRigidTransformation(cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
+
+
 }
 
 
@@ -218,7 +228,7 @@ template <typename PointSource, typename PointTarget> inline void
 pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    const std::vector<pcl::Correspondence> &correspondences,
+    const pcl::Correspondences &correspondences,
     Eigen::Matrix4f &transformation_matrix)
 {
   const int nr_correspondences = (int)correspondences.size();
