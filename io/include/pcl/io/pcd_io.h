@@ -185,6 +185,16 @@ namespace pcl
                             const Eigen::Vector4f &origin, 
                             const Eigen::Quaternionf &orientation);
 
+      /** \brief Generate the header of a BINARY_COMPRESSED PCD file format
+        * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor acquisition origin
+        * \param[in] orientation the sensor acquisition orientation
+        */
+      std::string
+      generateHeaderBinaryCompressed (const sensor_msgs::PointCloud2 &cloud, 
+                                      const Eigen::Vector4f &origin, 
+                                      const Eigen::Quaternionf &orientation);
+
       /** \brief Generate the header of a PCD file format
         * \param[in] cloud the point cloud data message
         * \param[in] origin the sensor acquisition origin
@@ -236,6 +246,17 @@ namespace pcl
       writeBinary (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud,
                    const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
                    const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
+
+      /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY_COMPRESSED format
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor acquisition origin
+        * \param[in] orientation the sensor acquisition orientation
+        */
+      int 
+      writeBinaryCompressed (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud,
+                             const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
+                             const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
 
       /** \brief Save point cloud data to a PCD file containing n-D points
         * \param[in] file_name the output file name
