@@ -490,7 +490,7 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLVisualizer::deleteText3D (const std::string &id, int viewport)
+pcl::visualization::PCLVisualizer::removeText3D (const std::string &id, int viewport)
 {
   // Check to see if the given ID entry exists
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
@@ -507,6 +507,34 @@ pcl::visualization::PCLVisualizer::deleteText3D (const std::string &id, int view
   // Remove the pointer/ID pair to the global actor map
   shape_actor_map_->erase (am_it);
   return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+pcl::visualization::PCLVisualizer::removeAllPointClouds (int viewport) 
+{ 
+  // Check to see if the given ID entry exists 
+  for (CloudActorMap::iterator am_it = cloud_actor_map_->begin ();  
+       am_it != cloud_actor_map_->end (); 
+       ++am_it) 
+  { 
+    removePointCloud (am_it->first, viewport); 
+  } 
+  return (true); 
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+pcl::visualization::PCLVisualizer::removeAllShapes (int viewport) 
+{ 
+  // Check to see if the given ID entry exists 
+  for (ShapeActorMap::iterator am_it = shape_actor_map_->begin ();  
+       am_it != shape_actor_map_->end (); 
+       ++am_it) 
+  { 
+    removeShape (am_it->first, viewport); 
+  } 
+  return (true); 
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

@@ -286,7 +286,19 @@ namespace pcl
           * \param viewport view port from where the 3D text should be removed (default: all)
           */
         bool 
-        deleteText3D (const std::string &id = "cloud", int viewport = 0);
+        removeText3D (const std::string &id = "cloud", int viewport = 0);
+
+        /** \brief Remove all point cloud data on screen from the given viewport.
+          * \param viewport view port from where the clouds should be removed (default: all)
+          */
+        bool
+        removeAllPointClouds (int viewport = 0);
+
+        /** \brief Remove all 3D shape data on screen from the given viewport.
+          * \param viewport view port from where the shapes should be removed (default: all)
+          */
+        bool
+        removeAllShapes (int viewport = 0);
 
         /** \brief Set the viewport's background color.
           * \param r the red component of the RGB color
@@ -1079,10 +1091,11 @@ namespace pcl
           * icosahedron (20,80,...)
           */
         void
-        renderViewTesselatedSphere (int xres, int yres,
-        std::vector<pcl::PointCloud<pcl::PointXYZ>,Eigen::aligned_allocator< pcl::PointCloud<pcl::PointXYZ> > > & cloud,
-        std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level,
-        float view_angle=45, float radius_sphere=1, bool use_vertices=true);
+        renderViewTesselatedSphere (
+            int xres, int yres,
+            std::vector<pcl::PointCloud<pcl::PointXYZ>,Eigen::aligned_allocator< pcl::PointCloud<pcl::PointXYZ> > > & cloud,
+            std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level,
+            float view_angle = 45, float radius_sphere = 1, bool use_vertices = true);
 
         /** \brief Camera view, window position and size. */
         Camera camera_;
