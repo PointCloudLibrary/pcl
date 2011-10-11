@@ -279,6 +279,24 @@ pcl::MarchingCubes<PointNT>::getNeighborList1D (Leaf leaf, Eigen::Vector3i &inde
 template <typename PointNT> void
 pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
 {
+  if( !(iso_level_ > 0 && iso_level_ < 1) )
+  {
+    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid iso level %f! Please use a number between 0 and 1.\n", getClassName ().c_str (), iso_level_);
+    output.cloud.width = output.cloud.height = 0;
+    output.cloud.data.clear ();
+    output.polygons.clear ();
+    return;
+  }
+  if( leaf_size_ <=0 )
+  {
+    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid leaf size %f! Please use a number greater than 0.\n", getClassName ().c_str (), leaf_size_);
+    output.cloud.width = output.cloud.height = 0;
+    output.cloud.data.clear ();
+    output.polygons.clear ();
+    return;
+    
+  }
+
   getBoundingBox();
 
   // transform the point cloud into a voxel grid
