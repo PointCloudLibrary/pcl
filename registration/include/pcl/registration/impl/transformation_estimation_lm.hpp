@@ -98,8 +98,11 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
   // Compute the norm of the residuals
   PCL_DEBUG ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation]");
   PCL_DEBUG ("LM solver finished with exit code %i, having a residual norm of %g. \n", info, enorm (m, fvec));
-  //PCL_DEBUG ("Final solution: [%f %f %f %f] [%f %f %f]\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
-
+  if(n_unknowns == 7)
+    PCL_DEBUG ("Final solution: [%f %f %f %f] [%f %f %f]\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
+  else
+    PCL_DEBUG ("Final solution: [%f %f %f] [%f %f %f]\n", x[0], x[1], x[2], x[3], x[4], x[5]);
+  
   // Return the correct transformation
   transformation_matrix.setZero ();
 
