@@ -15,6 +15,16 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute ()
     PCL_ERROR ("[pcl::%s::initCompute] Init failed.\n", getClassName ().c_str ());
     return (false);
   }
+
+  if (transed_reference_vector_.empty ())
+  {
+    // only one time allocation
+    transed_reference_vector_.resize (particle_num_);
+    for (int i = 0; i < particle_num_; i++)
+    {
+      transed_reference_vector_[i] = PointCloudInPtr (new PointCloudIn ());
+    }
+  }
   
   coherence_->setTargetCloud (input_);
   
@@ -22,19 +32,6 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute ()
     initParticles (true);
   return (true);
 }
-
-/////////////////////////////////////////////////////
-// deprecated
-template <typename PointInT, typename StateT> double
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcLikelihood (const StateT &hypothesis)
-{
-  IndicesPtr indices = IndicesPtr (new std::vector<int> ());
-  PointCloudInPtr transed_reference = PointCloudInPtr (new PointCloudIn ());
-  computeTransformedPointCloud (hypothesis, *indices, *transed_reference);
-  //return coherence_->compute (transed_reference, indices, hypothesis.weight);
-  return 0.0;
-}
-
 
 template <typename PointInT, typename StateT> int
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::sampleWithReplacement
@@ -118,50 +115,136 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
 {
     // apply exponential function
     double w_min = std::numeric_limits<double>::max ();
-    double w_max = std::numeric_limits<double>::min ();
-    
+    double w_max = - std::numeric_limits<double>::max ();
     for ( int i = 0; i < particle_num_; i++ )
     {
-        double weight = particles_->points[i].weight;
-        if (w_min > weight)
-            w_min = weight;
-        if (w_max < weight)
-            w_max = weight;
+      double weight = particles_->points[i].weight;
+      if (w_min > weight)
+        w_min = weight;
+      if (weight != 0.0 && w_max < weight)
+        w_max = weight;
     }
-    
-    double denom = w_max - w_min;
+
     for ( int i = 0; i < particle_num_; i++ )
-        particles_->points[i].weight
-            = exp (1.0 - alpha_ * (particles_->points[i].weight - w_min) / denom);
+    {
+      if (particles_->points[i].weight != 0.0)
+      {
+        particles_->points[i].weight = normalizeParticleWeight (particles_->points[i].weight, w_min, w_max);
+      }
+    }
+    //std::cout << "w_max: " << w_max << std::endl;
+    //std::cout << "w_min: " << w_min << std::endl;
     
     double sum = 0.0;
     for ( int i = 0; i < particle_num_; i++ )
+    {
         sum += particles_->points[i].weight;
-    //std::cout << "sum: " << sum << std::endl;
+    }
+    
     if (sum != 0.0)
     {
-        for ( int i = 0; i < particle_num_; i++ )
-            particles_->points[i].weight =  particles_->points[i].weight / sum;
+      for ( int i = 0; i < particle_num_; i++ )
+        particles_->points[i].weight =  particles_->points[i].weight / sum;
     }
     else
     {
-        for ( int i = 0; i < particle_num_; i++ )
-            particles_->points[i].weight = 1.0 / particle_num_;
+      for ( int i = 0; i < particle_num_; i++ )
+        particles_->points[i].weight = 1.0 / particle_num_;
     }
+}
+
+
+template <typename PointInT, typename StateT> void
+pcl::tracking::ParticleFilterTracker<PointInT, StateT>::cropInputPointCloud
+(const PointCloudInConstPtr &cloud, PointCloudIn &output)
+{
+  double x_min, y_min, z_min, x_max, y_max, z_max;
+  calcBoundingBox (x_min, x_max, y_min, y_max, z_min, z_max);
+  pass_x_.setFilterLimits (x_min, x_max);
+  pass_y_.setFilterLimits (y_min, y_max);
+  pass_z_.setFilterLimits (z_min, z_max);
+  
+  // x
+  PointCloudInPtr xcloud (new PointCloudIn);
+  pass_x_.setInputCloud (input_);
+  pass_x_.filter (*xcloud);
+  // y
+  PointCloudInPtr ycloud (new PointCloudIn);
+  pass_y_.setInputCloud (xcloud);
+  pass_y_.filter (*ycloud);
+  // z
+  pass_z_.setInputCloud (ycloud);
+  pass_z_.filter (output);
+}
+
+template <typename PointInT, typename StateT> void
+pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcBoundingBox
+(double &x_min, double &x_max, double &y_min, double &y_max, double &z_min, double &z_max)
+{
+  x_min = y_min = z_min = std::numeric_limits<double>::max ();
+  x_max = y_max = z_max = - std::numeric_limits<double>::max ();
+  for (size_t i = 0; i < transed_reference_vector_.size (); i++)
+  {
+    PointCloudInPtr target = transed_reference_vector_[i];
+    PointInT Pmin, Pmax;
+    pcl::getMinMax3D (*target, Pmin, Pmax);
+    if (x_min > Pmin.x)
+      x_min = Pmin.x;
+    if (x_max < Pmax.x)
+      x_max = Pmax.x;
+    if (y_min > Pmin.y)
+      y_min = Pmin.y;
+    if (y_max < Pmax.y)
+      y_max = Pmax.y;
+    if (z_min > Pmin.z)
+      z_min = Pmin.z;
+    if (z_max < Pmax.z)
+      z_max = Pmax.z;
+  }
 }
 
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::weight ()
 {
-  coherence_->initCompute ();
-  for (int i = 0; i < particle_num_; i++)
+  if (!use_normal_)
   {
-    // TODO: "new"s requires giant lock?
-    IndicesPtr indices = IndicesPtr (new std::vector<int> ());
-    PointCloudInPtr transed_reference = PointCloudInPtr (new PointCloudIn ());
-    computeTransformedPointCloud (particles_->points[i], *indices, *transed_reference);
-    coherence_->compute (transed_reference, indices, particles_->points[i].weight);
+    for (int i = 0; i < particle_num_; i++)
+    {
+      IndicesPtr indices;
+      computeTransformedPointCloud (particles_->points[i], *indices, *transed_reference_vector_[i]);
+    }
+    
+    PointCloudInPtr coherence_input (new PointCloudIn);
+    cropInputPointCloud (input_, *coherence_input);
+    
+    coherence_->setTargetCloud (coherence_input);
+    coherence_->initCompute ();
+    for (int i = 0; i < particle_num_; i++)
+    {
+      IndicesPtr indices;
+      coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
+    }
   }
+  else
+  {
+    for (int i = 0; i < particle_num_; i++)
+    {
+      IndicesPtr indices (new std::vector<int>);
+      computeTransformedPointCloud (particles_->points[i], *indices, *transed_reference_vector_[i]);
+    }
+    
+    PointCloudInPtr coherence_input (new PointCloudIn);
+    cropInputPointCloud (input_, *coherence_input);
+    
+    coherence_->setTargetCloud (coherence_input);
+    coherence_->initCompute ();
+    for (int i = 0; i < particle_num_; i++)
+    {
+      IndicesPtr indices (new std::vector<int>);
+      coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
+    }
+  }
+  
   normalizeWeight ();
 }
 
@@ -172,19 +255,16 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointC
   if (use_normal_)
     computeTransformedPointCloudWithNormal (hypothesis, indices, cloud);
   else
-    computeTransformedPointCloudWithoutNormal (hypothesis, indices, cloud);
+    computeTransformedPointCloudWithoutNormal (hypothesis, cloud);
 }
 
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithoutNormal
-(const StateT& hypothesis, std::vector<int>& indices, PointCloudIn &cloud)
+(const StateT& hypothesis, PointCloudIn &cloud)
 {
   const Eigen::Affine3f trans = toEigenMatrix (hypothesis);
   // destructively assigns to cloud
   pcl::transformPointCloud<PointInT> (*ref_, cloud, trans);
-  indices.resize (cloud.points.size ());
-  for ( size_t i = 0; i < cloud.points.size (); i++ )
-    indices[i] = i;
 }
 
 template <typename PointInT, typename StateT> void
@@ -205,12 +285,12 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointC
     Eigen::Vector4f p = input_point.getVector4fMap ();
     Eigen::Vector4f n = input_point.getNormalVector4fMap ();
     double theta = pcl::getAngle3D (p, n);
-    // TODO: check NAN?
     if ( theta > occlusion_angle_thr_ )
       indices.push_back (i);
   }
 #else
-  PCL_WARN ("[pcl::%s::computeTransformedPointCloudWithoutNormal] use_normal_ == true is not supported in this Point Type.", getClassName ().c_str ());
+  PCL_WARN ("[pcl::%s::computeTransformedPointCloudWithoutNormal] use_normal_ == true is not supported in this Point Type.",
+            getClassName ().c_str ());
 #endif
 }
 
@@ -234,7 +314,21 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resampleWithReplacement 
   // the first particle, it is a just copy of the maximum result
   StateT p = representative_state_;
   particles_->points.push_back (p);
-  for ( int i = 1; i < particle_num_; i++ )
+  
+  // with motion
+  int motion_num = (int)(particle_num_ * motion_ratio_);
+  for ( int i = 1; i < motion_num; i++ )
+  {
+    int target_particle_index = sampleWithReplacement (a, q);
+    StateT p = origparticles->points[target_particle_index];
+    // add noise using gaussian
+    p.sample (zero_mean, step_noise_covariance_);
+    p = p + motion_;
+    particles_->points.push_back (p);
+  }
+  
+  // no motion
+  for ( int i = motion_num; i < particle_num_; i++ )
   {
     int target_particle_index = sampleWithReplacement (a, q);
     StateT p = origparticles->points[target_particle_index];
@@ -247,6 +341,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resampleWithReplacement 
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::update ()
 {
+  StateT orig_representative = representative_state_;
   representative_state_.zero ();
   representative_state_.weight = 0.0;
   for ( int i = 0; i < particle_num_; i++)
@@ -255,6 +350,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::update ()
     representative_state_ = representative_state_ + p * p.weight;
   }
   representative_state_.weight = 1.0 / particle_num_;
+  motion_ = representative_state_ - orig_representative;
 }
 
 template <typename PointInT, typename StateT> void
@@ -268,11 +364,11 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTracking ()
     update ();
   }
   
-  if ( getResult ().weight < resample_likelihood_thr_ )
-  {
-    PCL_WARN ("too small likelihood, re-initializing...\n");
-    initParticles (false);
-  }
+  // if ( getResult ().weight < resample_likelihood_thr_ )
+  // {
+  //   PCL_WARN ("too small likelihood, re-initializing...\n");
+  //   initParticles (false);
+  // }
 }
 
 #define PCL_INSTANTIATE_ParticleFilterTracker(T,ST) template class PCL_EXPORTS pcl::tracking::ParticleFilterTracker<T,ST>;

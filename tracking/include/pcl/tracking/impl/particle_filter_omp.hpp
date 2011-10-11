@@ -4,17 +4,51 @@
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
 {
-  coherence_->initCompute ();
-  std::vector<double> w_i (particle_num_, 1.0);
-#pragma omp parallel for schedule (dynamic, threads_)
-  for (int i = 0; i < particle_num_; i++)
+//  if (!use_normal_)
   {
-      // TODO: "new"s requires giant lock?
-      IndicesPtr indices = IndicesPtr (new std::vector<int> ());
-      PointCloudInPtr transed_reference = PointCloudInPtr (new PointCloudIn ());
-      computeTransformedPointCloud (particles_->points[i], *indices, *transed_reference);
-      coherence_->compute (transed_reference, indices, particles_->points[i].weight);
+#pragma omp parallel for schedule (dynamic, threads_)
+    for (int i = 0; i < particle_num_; i++)
+    {
+      IndicesPtr indices;
+      //computeTransformedPointCloud (particles_->points[i], *indices, *transed_reference_vector_[i]);
+      computeTransformedPointCloudWithoutNormal (particles_->points[i], *transed_reference_vector_[i]);
+    }
+    
+    PointCloudInPtr coherence_input (new PointCloudIn);
+    cropInputPointCloud (input_, *coherence_input);
+    
+    coherence_->setTargetCloud (coherence_input);
+    coherence_->initCompute ();
+    
+#pragma omp parallel for schedule (dynamic, threads_)
+    for (int i = 0; i < particle_num_; i++)
+    {
+      IndicesPtr indices;
+      coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
+    }
   }
+//   else
+//   {
+// #pragma omp parallel for schedule (dynamic, threads_)
+//     for (int i = 0; i < particle_num_; i++)
+//     {
+//       IndicesPtr indices (new std::vector<int>);
+//       computeTransformedPointCloud (particles_->points[i], *indices, *transed_reference_vector_[i]);
+//     }
+    
+//     PointCloudInPtr coherence_input (new PointCloudIn);
+//     cropInputPointCloud (input_, *coherence_input, transed_reference_vector_);
+    
+//     coherence_->setTargetCloud (coherence_input);
+//     coherence_->initCompute ();
+// #pragma omp parallel for schedule (dynamic, threads_)
+//     for (int i = 0; i < particle_num_; i++)
+//     {
+//       IndicesPtr indices (new std::vector<int>);
+//       coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
+//     }
+//   }
+  
   normalizeWeight ();
 }
 

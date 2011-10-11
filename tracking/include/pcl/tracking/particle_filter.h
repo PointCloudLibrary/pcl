@@ -4,6 +4,8 @@
 #include "pcl/tracking/tracking.h"
 #include "pcl/tracking/tracker.h"
 #include "pcl/tracking/coherence.h"
+#include "pcl/filters/passthrough.h"
+
 #include <Eigen/Dense>
 
 namespace pcl
@@ -56,8 +58,15 @@ namespace pcl
       , occlusion_angle_thr_ (M_PI / 2.0)
       , alpha_ (15.0)
       , use_normal_ (false)
+      , motion_ratio_ (0.25)
       {
         tracker_name_ = "ParticleFilterTracker";
+        pass_x_.setFilterFieldName ("x");
+        pass_y_.setFilterFieldName ("y");
+        pass_z_.setFilterFieldName ("z");
+        pass_x_.setKeepOrganized (false);
+        pass_y_.setKeepOrganized (false);
+        pass_z_.setKeepOrganized (false);
       }
       
       /** \brief set the number of iteration.
@@ -207,10 +216,39 @@ namespace pcl
 
       /** \brief get the value of use_normal_. */
       inline bool getUseNormal () { return use_normal_; }
-      
+
+      /** \brief set the motion ratio
+        * \param motion_ratio the ratio of hypothesis to use motion model.
+       */
+      inline void setMotionRatio (double motion_ratio) { motion_ratio_ = motion_ratio; }
+
+      /** \brief get the motion ratio */
+      inline double getMotionRatio () { return motion_ratio_;}
       
     protected:
 
+      /** \brief compute the parameters for the bounding box of 
+          hypothesis pointclouds.
+        * \param x_min the minimum value of x axis.
+        * \param x_max the maximum value of x axis.
+        * \param y_min the minimum value of y axis.
+        * \param y_max the maximum value of y axis.
+        * \param z_min the minimum value of z axis.
+        * \param z_max the maximum value of z axis.
+        */
+      void calcBoundingBox (double &x_min, double &x_max,
+                            double &y_min, double &y_max,
+                            double &z_min, double &z_max);
+
+      /** \brief crop the pointcloud by the bounding box calculated
+          from hypothesis and the reference pointcloud.
+        * \param cloud a pointer to pointcloud to be cropped.
+        * \param output a pointer to be assigned the cropped pointcloud.
+        */
+      void cropInputPointCloud (const PointCloudInConstPtr &cloud, PointCloudIn &output);
+                                
+      
+      
       /** \brief compute a reference pointcloud transformed to the pose that
           hypothesis represents.
         * \param hypothesis a particle which represents a hypothesis.
@@ -238,12 +276,10 @@ namespace pcl
           hypothesis represents and calculate indices without taking
           occlusion into account.
         * \param hypothesis a particle which represents a hypothesis.
-        * \param indices the indices which should be taken into account.
         * \param cloud the resultant point cloud model dataset which
                  is transformed to hypothesis.
        **/
       void computeTransformedPointCloudWithoutNormal (const StateT& hypothesis,
-                                                      std::vector<int>& indices,
                                                       PointCloudIn &cloud);
 
       
@@ -265,7 +301,7 @@ namespace pcl
       virtual void update ();
 
       /** \brief normalize the weights of all the particels. */
-      void normalizeWeight ();
+      virtual void normalizeWeight ();
 
       /** \brief initialize the particles. initial_noise_covariance_ and initial_noise_mean_ are
           used for gausiaan sampling.
@@ -306,12 +342,6 @@ namespace pcl
       /** \brief resampling the particle in deterministic way*/
       void resampleDeterministic ();
         
-      
-      /** \brief calculate the likelihood of hypothesis. the likelihood is defined by coherence_.
-        * \param hypothesis an instance of hypothesis.
-        */
-      double calcLikelihood (const StateT& hypothesis);
-      
       /** \brief the number of iteration of particlefilter. */
       int iteration_num_;
 
@@ -361,6 +391,22 @@ namespace pcl
 
       /** \brief a flag to use normal or not. defaults to false*/
       bool use_normal_;
+
+      /** \brief difference between the result in t and t-1*/
+      StateT motion_;
+
+      /** \brief ratio of hypothesis to use motion model*/
+      double motion_ratio_;
+
+      /** \brief pass through filter to crop the pointclouds within the hypothesis bounding box*/
+      pcl::PassThrough<PointInT> pass_x_;
+      /** \brief pass through filter to crop the pointclouds within the hypothesis bounding box*/
+      pcl::PassThrough<PointInT> pass_y_;
+      /** \brief pass through filter to crop the pointclouds within the hypothesis bounding box*/
+      pcl::PassThrough<PointInT> pass_z_;
+
+      /** \brief a list of the pointers to pointclouds*/
+      std::vector<PointCloudInPtr> transed_reference_vector_;
       
     };
     

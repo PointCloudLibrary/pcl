@@ -99,6 +99,7 @@ namespace pcl
       return (os);
     }
     
+    // a * k
     inline pcl::tracking::ParticleXYZRPY operator * (const ParticleXYZRPY& p, double val)
     {
       pcl::tracking::ParticleXYZRPY newp;
@@ -111,6 +112,7 @@ namespace pcl
       return (newp);
     }
 
+    // a + b
     inline pcl::tracking::ParticleXYZRPY operator + (const ParticleXYZRPY& a, const ParticleXYZRPY& b)
     {
       pcl::tracking::ParticleXYZRPY newp;
@@ -120,6 +122,19 @@ namespace pcl
       newp.roll = a.roll + b.roll;
       newp.pitch = a.pitch + b.pitch;
       newp.yaw = a.yaw + b.yaw;
+      return (newp);
+    }
+
+    // a - b
+    inline pcl::tracking::ParticleXYZRPY operator - (const ParticleXYZRPY& a, const ParticleXYZRPY& b)
+    {
+      pcl::tracking::ParticleXYZRPY newp;
+      newp.x = a.x - b.x;
+      newp.y = a.y - b.y;
+      newp.z = a.z - b.z;
+      newp.roll = a.roll - b.roll;
+      newp.pitch = a.pitch - b.pitch;
+      newp.yaw = a.yaw - b.yaw;
       return (newp);
     }
     

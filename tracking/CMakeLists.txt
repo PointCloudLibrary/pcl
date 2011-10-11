@@ -1,6 +1,6 @@
 set(SUBSYS_NAME tracking)
 set(SUBSYS_DESC "Point cloud tracking library")
-set(SUBSYS_DEPS common search kdtree)
+set(SUBSYS_DEPS common search kdtree filters)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -47,7 +47,7 @@ if(build)
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
     PCL_LINK_OPENMP(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_common pcl_kdtree pcl_search)
+    target_link_libraries(${LIB_NAME} pcl_common pcl_kdtree pcl_search pcl_filters)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "" "" "" "")
     # Install include files

@@ -50,7 +50,6 @@ namespace pcl
         PCL_ERROR ("[pcl::%s::compute] Init failed.\n", getClassName ().c_str ());
         return;
       }
-      
       computeCoherence (cloud, indices, w);
     }
   }

@@ -12,56 +12,72 @@ namespace pcl
     NearestPairPointCloudCoherence<PointInT>::computeCoherence
     (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices, float &w)
     {
-      std::vector<size_t> nearest_targets;
-      std::vector<size_t> nearest_inputs;
-      
-      size_t num;
-      if (indices == NULL)
-        num = cloud->points.size ();
-      else
-        num = indices->size ();
-      
-      for (size_t i = 0; i < num; i++)
-      {
-        std::vector<int> k_indices(1);
-        std::vector<float> k_distances(1);
-        PointInT input_point = cloud->points[(*indices)[i]];
-        if (search_method_policy_ == NEAREST_NEIGHBOR)
-        {
-          search_->nearestKSearch (input_point, 1, k_indices, k_distances);
-        }
-        else if (search_method_policy_ == APPROXIMATE_NEIGHBOR)
-        {
-          int k_index;
-          float k_distance;
-          search_->approxNearestSearch(input_point, k_index, k_distance);
-          k_indices[0] = k_index;
-          k_distances[0] = k_distance;
-        }
-        
-        if (k_distances[0] < maximum_distance_ * maximum_distance_)
-        {
-          nearest_targets.push_back (k_indices[0]);
-          nearest_inputs.push_back (i);
-        }
-      }
-
       double val = 0.0;
-      for (size_t i = 0; i < nearest_targets.size (); i++)
+      //for (size_t i = 0; i < indices->size (); i++)
+      for (size_t i = 0; i < cloud->points.size (); i++)
       {
-          int input_index = nearest_inputs[i];
-          int target_index = nearest_targets[i];
-          PointInT target_point = target_input_->points[target_index];
-          PointInT input_point = cloud->points[(*indices)[input_index]];
-          double coherence_val = 1.0;
-          for (size_t i = 0; i < point_coherences_.size (); i++)
+        // // if (search_method_policy_ == NEAREST_NEIGHBOR)
+        // {
+        //   PointInT input_point = cloud->points[i];
+        //   std::vector<int> k_indices(1);
+        //   std::vector<float> k_distances(1);
+        //   search_->nearestKSearch (input_point, 1, k_indices, k_distances);
+        //   int k_index = k_indices[0];
+        //   float k_distance = k_distances[0];
+        //   if (k_distance < maximum_distance_ * maximum_distance_)
+        //   {
+        //     // nearest_targets.push_back (k_index);
+        //     // nearest_inputs.push_back (i);
+        //     PointInT target_point = target_input_->points[k_index];
+        //     double coherence_val = 1.0;
+        //     for (size_t i = 0; i < point_coherences_.size (); i++)
+        //     {
+        //       PointCoherencePtr coherence = point_coherences_[i];  
+        //       double w = coherence->compute (input_point, target_point);
+        //       coherence_val *= w;
+        //     }
+        //     val += coherence_val;
+        //   }
+        // }
+        // else if (search_method_policy_ == APPROXIMATE_NEIGHBOR)
+        {
+          //std::cout << i << std::endl;
+          int k_index = 0;
+          float k_distance = 0.0;
+          //PointInT input_point = cloud->points[(*indices)[i]];
+          PointInT input_point = cloud->points[i];
+          search_->approxNearestSearch(input_point, k_index, k_distance);
+          if (k_distance < maximum_distance_ * maximum_distance_)
           {
+            // nearest_targets.push_back (k_index);
+            // nearest_inputs.push_back (i);
+            PointInT target_point = target_input_->points[k_index];
+            double coherence_val = 1.0;
+            for (size_t i = 0; i < point_coherences_.size (); i++)
+            {
               PointCoherencePtr coherence = point_coherences_[i];  
               double w = coherence->compute (input_point, target_point);
               coherence_val *= w;
+            }
+            val += coherence_val;
           }
-          val += coherence_val;
+        }
       }
+      // for (size_t i = 0; i < nearest_targets.size (); i++)
+      // {
+      //     int input_index = nearest_inputs[i];
+      //     int target_index = nearest_targets[i];
+      //     PointInT target_point = target_input_->points[target_index];
+      //     PointInT input_point = cloud->points[(*indices)[input_index]];
+      //     double coherence_val = 1.0;
+      //     for (size_t i = 0; i < point_coherences_.size (); i++)
+      //     {
+      //         PointCoherencePtr coherence = point_coherences_[i];  
+      //         double w = coherence->compute (input_point, target_point);
+      //         coherence_val *= w;
+      //     }
+      //     val += coherence_val;
+      // }
       w = - val;
     }
     
