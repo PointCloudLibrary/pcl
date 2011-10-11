@@ -41,6 +41,7 @@ So let's look at the code. From *visualization/tools/openni_viewer_simple.cpp*
 .. code-block:: cpp
    :linenos:
 
+    #include <pcl/io/openni_grabber.h>
     #include <pcl/visualization/cloud_viewer.h>
     class SimpleOpenNIViewer
     {
