@@ -5,16 +5,13 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 project(vfh_cluster_classifier)
 
-find_package(PCL 1.1 REQUIRED)
+find_package(PCL 1.3 REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
 find_package(HDF5)
 if(HDF5_FOUND)
-
-  find_package(Boost 1.40.0 COMPONENTS system filesystem thread date_time)
-  include_directories(${Boost_INCLUDE_DIRS})
 
   find_package(Flann)
   include_directories(${FLANN_INCLUDE_DIRS})

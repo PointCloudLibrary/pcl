@@ -28,6 +28,7 @@ foreach(subdir
           range_image_border_extraction
           range_image_creation
           range_image_visualization
+          #registration_api
           resampling
           statistical_removal
           template_alignment
