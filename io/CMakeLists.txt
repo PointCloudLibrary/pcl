@@ -4,7 +4,7 @@ set(SUBSYS_DEPS common octree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni)
+PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
 
 if(build)
     OPTION(BUILD_OPENNI "Build the OpenNI Grabber." ON)
@@ -54,24 +54,24 @@ if(build)
             )
     endif(OPENNI_FOUND)
 
-    set(srcs
+    set(srcs 
         src/pcd_io.cpp
         src/vtk_io.cpp
-        #				src/ply_io.cpp
+        src/ply_io.cpp
         src/compression.cpp
-        #src/obj_io.cpp
+        src/lzf.cpp
         ${OPENNI_GRABBER_SOURCES}
         )
 
     set(incs 
-        include/pcl/${SUBSYS_NAME}/io.h
         include/pcl/${SUBSYS_NAME}/file_io.h
+        include/pcl/${SUBSYS_NAME}/lzf.h
+        include/pcl/${SUBSYS_NAME}/io.h
         include/pcl/${SUBSYS_NAME}/pcd_io.h
         include/pcl/${SUBSYS_NAME}/pcl_io_exception.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
-#        include/pcl/${SUBSYS_NAME}/ply_io.h
-#        include/pcl/${SUBSYS_NAME}/ply.h
-#        include/pcl/${SUBSYS_NAME}/obj_io.h	
+        include/pcl/${SUBSYS_NAME}/ply_io.h
+        include/pcl/${SUBSYS_NAME}/ply.h
         ${OPENNI_GRABBER_INCLUDES}
         )
 
@@ -84,20 +84,21 @@ if(build)
        )
 
     set(impl_incs 
-			  include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp
-#			  include/pcl/${SUBSYS_NAME}/impl/ply_io.hpp
+        include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp
         include/pcl/compression/impl/entropy_range_coder.hpp
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
        )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include) 
+    link_directories(${VTK_LINK_DIRECTORIES})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_common)
+    target_link_libraries(${LIB_NAME} pcl_common) 
     if(OPENNI_FOUND)
-        target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
+      target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
     endif(OPENNI_FOUND)
+
     set(EXT_DEPS eigen3)
     if(OPENNI_FOUND)
       list(APPEND EXT_DEPS openni-dev)

@@ -30,7 +30,7 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *
  * Author: Nico Blodow (blodow@cs.tum.edu), Suat Gedikli (gedikli@willowgarage.com)
  */
 
@@ -63,7 +63,7 @@ typedef union
   long long_value;
 } RGBValue;
 
-OpenNIGrabber::OpenNIGrabber(const std::string& device_id, const Mode& depth_mode, const Mode& image_mode) throw (openni_wrapper::OpenNIException)
+OpenNIGrabber::OpenNIGrabber(const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
 : image_required_(false)
 , depth_required_(false)
 , sync_required_(false)
@@ -104,13 +104,13 @@ OpenNIGrabber::~OpenNIGrabber() throw ()
   try
   {
     stop();
-    
+
     // unregister callbacks
     device_->unregisterDepthCallback(depth_callback_handle);
-    
+
     if (device_->hasImageStream ())
       device_->unregisterImageCallback(image_callback_handle);
-    
+
     if (device_->hasIRStream ())
       device_->unregisterIRCallback(image_callback_handle);
 
@@ -177,7 +177,7 @@ void OpenNIGrabber::checkIRStreamRequired()
     ir_required_ = false;
 }
 
-void OpenNIGrabber::start() throw (pcl::PCLIOException)
+void OpenNIGrabber::start()
 {
   try
   {
@@ -210,7 +210,7 @@ void OpenNIGrabber::start() throw (pcl::PCLIOException)
   }
 }
 
-void OpenNIGrabber::stop() throw (pcl::PCLIOException)
+void OpenNIGrabber::stop()
 {
   try
   {
@@ -222,7 +222,7 @@ void OpenNIGrabber::stop() throw (pcl::PCLIOException)
 
     if (device_->hasIRStream() && device_->isIRStreamRunning())
       device_->stopIRStream();
-    
+
     running_ = false;
   }
   catch (openni_wrapper::OpenNIException& ex)
@@ -231,7 +231,7 @@ void OpenNIGrabber::stop() throw (pcl::PCLIOException)
   }
 }
 
-bool OpenNIGrabber::isRunning() const throw (pcl::PCLIOException)
+bool OpenNIGrabber::isRunning() const
 {
   return running_;
 }
@@ -330,7 +330,7 @@ void OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
     XnMapOutputMode current_depth_md =  device_->getDepthOutputMode();
     if (current_depth_md.nXRes != actual_depth_md.nXRes || current_depth_md.nYRes != actual_depth_md.nYRes )
       device_->setDepthOutputMode(actual_depth_md);
-    
+
     depth_width_ = depth_md.nXRes;
     depth_height_ = depth_md.nYRes;
   }
@@ -374,16 +374,30 @@ void OpenNIGrabber::setupDevice(const std::string& device_id, const Mode& depth_
 
 void OpenNIGrabber::startSynchronization()
 {
-  if (device_->isSynchronizationSupported() && !device_->isSynchronized() &&
-      device_->getImageOutputMode().nFPS == device_->getDepthOutputMode().nFPS &&
-      device_->isImageStreamRunning() && device_->isDepthStreamRunning())
-    device_->setSynchronization(true);
+  try
+  {
+    if (device_->isSynchronizationSupported() && !device_->isSynchronized() &&
+        device_->getImageOutputMode().nFPS == device_->getDepthOutputMode().nFPS &&
+        device_->isImageStreamRunning() && device_->isDepthStreamRunning())
+        device_->setSynchronization(true);
+  }
+  catch (const openni_wrapper::OpenNIException& exception)
+  {
+    THROW_PCL_IO_EXCEPTION("Could not start synchronization %s", exception.what());
+  }
 }
 
 void OpenNIGrabber::stopSynchronization()
 {
-  if (device_->isSynchronizationSupported() && device_->isSynchronized())
-    device_->setSynchronization(false);
+  try
+  {
+    if (device_->isSynchronizationSupported() && device_->isSynchronized())
+      device_->setSynchronization(false);
+  }
+  catch (const openni_wrapper::OpenNIException& exception)
+  {
+    THROW_PCL_IO_EXCEPTION("Could not start synchronization %s", exception.what());
+  }
 }
 
 void OpenNIGrabber::imageCallback(boost::shared_ptr<openni_wrapper::Image> image, void* cookie)
@@ -553,7 +567,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr OpenNIGrabber::convertToXYZRGBPointCloud(
     depth_map = depth_buffer.get();
   }
 
-  // here we need exact the size of the point cloud for a one-one correspondence! 
+  // here we need exact the size of the point cloud for a one-one correspondence!
   if (rgb_array_size < image_width_ * image_height_ * 3)
   {
     rgb_array_size = image_width_ * image_height_ * 3;

@@ -99,13 +99,13 @@ namespace pcl
         * \param[out] origin the sensor acquisition origin (only for > PCD_V7 - null if not present)
         * \param[out] orientation the sensor acquisition orientation (only for > PCD_V7 - identity if not present)
         * \param[out] pcd_version the PCD version of the file (either PCD_V6 or PCD_V7)
-        * \param[out] binary_data is true if the PCD file contains binary data, false if ascii 
+        * \param[out] data_type the type of data (0 = ASCII, 1 = Binary, 2 = Binary compressed) 
         * \param[out] data_idx the offset of cloud data within the file
         */
       int 
       readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version,
-                  bool &binary_data, int &data_idx);
+                  int &data_type, int &data_idx);
 
       /** \brief Read a point cloud data from a PCD file and store it into a sensor_msgs/PointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
@@ -158,8 +158,22 @@ namespace pcl
   class PCL_EXPORTS PCDWriter : public FileWriter
   {
     public:
-      PCDWriter() : FileWriter() {}
+      PCDWriter() : FileWriter(), map_synchronization_(false) {}
       ~PCDWriter() {}
+
+      /** \brief Set whether mmap() synchornization via msync() is desired before munmap() calls. 
+        * Setting this to true could prevent NFS data loss (see
+        * http://www.pcl-developers.org/PCD-IO-consistency-on-NFS-msync-needed-td4885942.html).
+        * Default: false
+        * \note This option should be used by advanced users only!
+        * \note Please note that using msync() on certain systems can reduce the I/O performance by up to 80%!
+        * \param[in] sync set to true if msync() should be called before munmap()
+        */
+      void
+      setMapSynchronization (bool sync)
+      {
+        map_synchronization_ = sync;
+      }
 
       /** \brief Generate the header of a PCD file format
         * \param[in] cloud the point cloud data message
@@ -284,6 +298,14 @@ namespace pcl
       writeBinary (const std::string &file_name, 
                    const pcl::PointCloud<PointT> &cloud);
 
+      /** \brief Save point cloud data to a binary comprssed PCD file
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message
+        */
+      template <typename PointT> int 
+      writeBinaryCompressed (const std::string &file_name, 
+                             const pcl::PointCloud<PointT> &cloud);
+
       /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY format
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data message
@@ -358,13 +380,18 @@ namespace pcl
       write (const std::string &file_name, 
              const pcl::PointCloud<PointT> &cloud, 
              const std::vector<int> &indices,
-             const bool binary = false)
+             bool binary = false)
       {
         if (binary)
           return (writeBinary<PointT> (file_name, cloud, indices));
         else
           return (writeASCII<PointT> (file_name, cloud, indices));
       }
+
+    private:
+
+      /** \brief Set to true if msync() should be called before munmap(). Prevents data loss on NFS systems. */
+      bool map_synchronization_;
   };
 
   namespace io

@@ -42,73 +42,10 @@
 #include "pcl/common/io.h"
 #include <boost/numeric/conversion/cast.hpp>
 #include <cmath>
+#include <sstream>
 
 namespace pcl
 {
-
-  /** templated atoi() / atof() wrapper
-    * \param nptr the string to convert
-    */
-  template <typename T> inline T
-  pcl_atoa(const char *nptr)
-  {
-    T::unimplemented_function;
-  }
-
-  template <> inline char
-  pcl_atoa<char>(const char *nptr)
-  {
-    return atoi(nptr);
-  }
-
-  template <> inline unsigned char
-  pcl_atoa<unsigned char>(const char *nptr)
-  {
-    return atoi(nptr);
-  }
-
-  template <> inline signed char
-  pcl_atoa<signed char>(const char *nptr)
-  {
-    return atoi(nptr);
-  }
-
-  template <> inline short int
-  pcl_atoa<short int>(const char *nptr)
-  {
-    return atoi(nptr);
-  }
-
-  template <> inline short unsigned int
-  pcl_atoa<short unsigned int>(const char *nptr)
-  {
-    return atoi(nptr);
-  }
-
-  template <> inline int
-  pcl_atoa<int>(const char *nptr)
-  {
-    return atoi(nptr);
-  }
-
-  template <> inline unsigned int
-  pcl_atoa<unsigned int>(const char *nptr)
-  {
-    return atoi(nptr);
-  }
-
-  template <> inline float
-  pcl_atoa<float>(const char *nptr)
-  {
-    return atof(nptr);
-  }
-
-  template <> inline double
-  pcl_atoa<double>(const char *nptr)
-  {
-    return atof(nptr);
-  }
-
   /** \brief Point Cloud Data (FILE) file format reader interface.
     * Any (FILE) format file reader should implement its virtual methodes.
     * \author Nizar Sallem
@@ -135,13 +72,13 @@ namespace pcl
         * \param origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
         * \param orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
         * \param file_version the FILE version of the file (either FILE_V6 or FILE_V7)
-        * \param binary_data is true if the FILE file contains binary data, false if ascii 
+        * \param data_type the type of data (binary data=1, ascii=0, etc)
         * \param data_idx the offset of cloud data within the file
         */
       virtual int 
       readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &file_version,
-                  bool &binary_data, int &data_idx) = 0;
+                  int &data_type, int &data_idx) = 0;
 
       /** \brief Read a point cloud data from a FILE file and store it into a sensor_msgs/PointCloud2.
         * \param file_name the name of the file containing the actual PointCloud data
@@ -207,7 +144,6 @@ namespace pcl
       copyStringValue (const std::string &st, sensor_msgs::PointCloud2 &cloud,
                  unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
       {
-        //char value = (char)atoi (st.at (d + c).c_str ());
         Type value;
         if (st == "nan")
         {
@@ -215,7 +151,11 @@ namespace pcl
           cloud.is_dense = false;
         }
         else
-          value = pcl_atoa<Type>(st.c_str ());
+        {
+          std::istringstream is(st);
+          is.imbue (std::locale::classic ());
+          is >> value;
+        }
 
         memcpy (&cloud.data[point_index * cloud.point_step + 
                             cloud.fields[field_idx].offset + 

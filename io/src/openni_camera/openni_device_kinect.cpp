@@ -46,7 +46,7 @@ using namespace boost;
 namespace openni_wrapper
 {
 
-DeviceKinect::DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException)
+DeviceKinect::DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node)
 : OpenNIDevice (context, device_node, image_node, depth_node, ir_node)
 , debayering_method_ (ImageBayerGRBG::EdgeAwareWeighted)
 {
@@ -55,7 +55,7 @@ DeviceKinect::DeviceKinect (xn::Context& context, const xn::NodeInfo& device_nod
   setDepthOutputMode (getDefaultDepthMode ());
   setImageOutputMode (getDefaultImageMode ());
   setIROutputMode (getDefaultIRMode ());
-  
+
   // device specific initialization
   XnStatus status;
 
@@ -70,7 +70,7 @@ DeviceKinect::DeviceKinect (xn::Context& context, const xn::NodeInfo& device_nod
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("Failed to set image pixel format to 8bit-grayscale. Reason: %s", xnGetStatusString (status));
   image_lock.unlock ();
-  
+
   lock_guard<mutex> depth_lock(depth_mutex_);
   // RegistrationType should be 2 (software) for Kinect, 1 (hardware) for PS
   status = depth_generator_.SetIntProperty ("RegistrationType", 2);
@@ -94,7 +94,7 @@ bool DeviceKinect::isImageResizeSupported (unsigned input_width, unsigned input_
   return ImageBayerGRBG::resizingSupported (input_width, input_height, output_width, output_height);
 }
 
-void DeviceKinect::enumAvailableModes () throw (OpenNIException)
+void DeviceKinect::enumAvailableModes () throw ()
 {
   XnMapOutputMode output_mode;
   available_image_modes_.clear();

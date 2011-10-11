@@ -30,7 +30,7 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *
  * Author: Suat Gedikli (gedikli@willowgarage.com)
  */
 
@@ -128,7 +128,7 @@ pcl::PCDGrabberBase::~PCDGrabberBase () throw ()
   delete impl_;
 }
 
-void pcl::PCDGrabberBase::start () throw (pcl::PCLIOException)
+void pcl::PCDGrabberBase::start ()
 {
   if (impl_->frames_per_second_ > 0)
   {
@@ -141,7 +141,7 @@ void pcl::PCDGrabberBase::start () throw (pcl::PCLIOException)
   }
 }
 
-void pcl::PCDGrabberBase::stop () throw (pcl::PCLIOException)
+void pcl::PCDGrabberBase::stop ()
 {
   if (impl_->frames_per_second_ > 0)
   {
@@ -150,7 +150,7 @@ void pcl::PCDGrabberBase::stop () throw (pcl::PCLIOException)
   }
 }
 
-bool pcl::PCDGrabberBase::isRunning () const throw (pcl::PCLIOException)
+bool pcl::PCDGrabberBase::isRunning () const
 {
   return impl_->running_;
 }

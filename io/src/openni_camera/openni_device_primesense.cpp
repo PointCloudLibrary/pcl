@@ -49,7 +49,7 @@ using namespace boost;
 namespace openni_wrapper
 {
 
-DevicePrimesense::DevicePrimesense (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) throw (OpenNIException)
+DevicePrimesense::DevicePrimesense (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node)
 : OpenNIDevice (context, device_node, image_node, depth_node, ir_node)
 {
   // setup stream modes
@@ -61,7 +61,7 @@ DevicePrimesense::DevicePrimesense (xn::Context& context, const xn::NodeInfo& de
   unique_lock<mutex> image_lock(image_mutex_);
   XnStatus status = image_generator_.SetIntProperty ("InputFormat", 5);
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("Error setting the image input format to Uncompressed 8-bit BAYER. Reason: %s", xnGetStatusString (status));
+    THROW_OPENNI_EXCEPTION ("Error setting the image input format to Uncompressed YUV422. Reason: %s", xnGetStatusString (status));
 
   status = image_generator_.SetPixelFormat (XN_PIXEL_FORMAT_YUV422);
   if (status != XN_STATUS_OK)
@@ -94,7 +94,7 @@ bool DevicePrimesense::isImageResizeSupported (unsigned input_width, unsigned in
   return ImageYUV422::resizingSupported (input_width, input_height, output_width, output_height);
 }
 
-//void DevicePrimesense::setImageOutputMode (const XnMapOutputMode& output_mode) throw (OpenNIException)
+//void DevicePrimesense::setImageOutputMode (const XnMapOutputMode& output_mode)
 //{
 //  if (output_mode.nFPS == 30 && output_mode.nXRes == XN_UXGA_X_RES && output_mode.nYRes == XN_UXGA_Y_RES )
 //  {
@@ -135,7 +135,7 @@ bool DevicePrimesense::isImageResizeSupported (unsigned input_width, unsigned in
 //  OpenNIDevice::setImageOutputMode (output_mode);
 //}
 
-void DevicePrimesense::enumAvailableModes () throw (OpenNIException)
+void DevicePrimesense::enumAvailableModes () throw ()
 {
   XnMapOutputMode output_mode;
   available_image_modes_.clear();
@@ -204,7 +204,7 @@ boost::shared_ptr<Image> DevicePrimesense::getCurrentImage (boost::shared_ptr<xn
   return boost::shared_ptr<Image> ( new ImageYUV422 (image_data) );
 }
 
-void DevicePrimesense::startImageStream () throw (OpenNIException)
+void DevicePrimesense::startImageStream ()
 {
   // Suat: Ugly workaround... but on some usb-ports its not possible to start the image stream after the depth stream.
   // turning on and off registration solves for some reason the problem!
@@ -244,7 +244,7 @@ void DevicePrimesense::startImageStream () throw (OpenNIException)
     OpenNIDevice::startImageStream ();
 }
 
-void DevicePrimesense::startDepthStream () throw (OpenNIException)
+void DevicePrimesense::startDepthStream ()
 {
   if (isDepthRegistered ())
   {

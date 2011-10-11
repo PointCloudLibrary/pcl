@@ -47,7 +47,7 @@ using namespace std;
 
 namespace openni_wrapper
 {
-void IRImage::fillRaw (unsigned width, unsigned height, unsigned short* ir_buffer, unsigned line_step) const throw (OpenNIException)
+void IRImage::fillRaw (unsigned width, unsigned height, unsigned short* ir_buffer, unsigned line_step) const
 {
   if (width > ir_md_->XRes () || height > ir_md_->YRes ())
     THROW_OPENNI_EXCEPTION ("upsampling not supported: %d x %d -> %d x %d", ir_md_->XRes (), ir_md_->YRes (), width, height);
@@ -64,7 +64,7 @@ void IRImage::fillRaw (unsigned width, unsigned height, unsigned short* ir_buffe
     memcpy (ir_buffer, ir_md_->Data(), ir_md_->DataSize ());
     return;
   }
-  
+
   // padding skip for destination image
   unsigned bufferSkip = line_step - width * sizeof (unsigned short);
 
@@ -78,7 +78,7 @@ void IRImage::fillRaw (unsigned width, unsigned height, unsigned short* ir_buffe
   {
     for (unsigned xIdx = 0; xIdx < width; ++xIdx, irIdx += xStep, ++ir_buffer)
       *ir_buffer = (unsigned short) (ir_md_->Data()[irIdx]);
-    
+
     // if we have padding
     if (bufferSkip > 0)
     {

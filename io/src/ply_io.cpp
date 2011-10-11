@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: ply_io.cpp 2352 2011-09-01 20:02:47Z rusu $
  *
  */
 
@@ -51,153 +51,22 @@
 int
 pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
                             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
-                            int &ply_version, bool &binary_data, int &data_idx)
+                            int &ply_version, int &data_type, int &data_idx)
 {
   // Default values
   data_idx = 0;
-  binary_data = false;
+  data_type = 0;
   cloud.width = cloud.height = cloud.point_step = cloud.row_step = 0;
   cloud.data.clear ();
 
   // By default, assume that there are _no_ invalid (e.g., NaN) points
   cloud.is_dense = true;
-
-  std::ifstream fs;
-  std::string line;
-
-  // Open file in binary mode to avoid problem of 
-  // std::getline() corrupting the result of ifstream::tellg()
-  fs.open (file_name.c_str (), std::ios::binary);
-  if (!fs.is_open () || fs.fail ())
+  int parsing_result = parser_.parse_header(file_name, data_type, data_idx, swap_bytes_);
+  if(parsing_result)
   {
-    PCL_ERROR ("[pcl::PLYReader::readHeader] Could not open file %s.\n", file_name.c_str ());
-    return (-1);
+    PCL_ERROR("[pcl::PLYReader::readHeader] problem parsing header!\n");
+    return -1;
   }
-
-  std::vector<std::string> st;
-  // Read the header and fill it in with wonderful values
-  try
-  {
-    getline (fs, line);
-    boost::trim (line);
-    boost::split (st, line, boost::is_any_of ( std::string ("\t\r ")), boost::token_compress_on);
-
-    // PLY file always start with magic line "ply"
-    if (st.at (0) !=  "ply")
-    {
-      PCL_ERROR ("[pcl::PLYReader::readHeader] %s is not a valid ply file\n", st[0].c_str());
-      return(-1);
-    }
-
-    while (!fs.eof ())
-    {
-      getline (fs, line);
-      // Ignore empty lines
-      if (line == "")
-        continue;
-
-      // Tokenize the line
-      boost::trim (line);
-      boost::split (st, line, boost::is_any_of (std::string ( "\t\r ")), boost::token_compress_on);
-
-      std::string line_type = st.at (0);
-
-      // read format
-      if (line_type.substr (0, 6) == "format")
-      {
-        float version =  atof(st.at(2).c_str());
-        //check version number
-        if(version != 1.0)
-        {
-          PCL_ERROR ("[pcl::PLYReader::readHeader] can't handle this PLY format version %f\n", version);
-          return (-1);
-        }
-        //check format
-        if("ascii" == st.at(1))
-          binary_data = false;
-        else
-        {
-          if ("binary_big_endian" == st.at(1) || "binary_little_endian" == st.at(1))
-          {
-            binary_data = true;
-            pcl::io::ply::Format format = pcl::io::ply::getEndianess();
-            if ((("binary_big_endian" == st.at(1)) && 
-                 (format == pcl::io::ply::LITTLE_ENDIAN_FORMAT)) ||
-                (("binary_little_endian" == st.at(1)) && 
-                 (format == pcl::io::ply::BIG_ENDIAN_FORMAT)))
-              swap_bytes_ = true;
-          }
-          else
-          {
-            PCL_ERROR ("[pcl::PLYReader::readHeader] unknown format %f\n", st[1].c_str());
-            return (-1);
-          }
-        }
-        continue;
-      }
-      // ignore comments
-      if (line_type.substr (0, 7) == "comment")
-        continue;
-      // read element
-      if (line_type.substr (0, 7) == "element") 
-      {
-        if(st.size() == 3)
-          parser_.push_element(st.at(1), atoi(st.at(2).c_str()));
-        else
-          parser_.push_element(st.at(1), 1);
-        continue;
-      }
-      // read property
-      if (line_type.substr (0, 8) == "property")
-      {
-        // list property
-        if(st.at(1) == "list")
-        {
-          int size_type = pcl::io::ply::getTypeFromTypeName(st.at(2));
-          int data_type = pcl::io::ply::getTypeFromTypeName(st.at(3));
-          if(data_type < -1 || size_type < -1)
-          {
-            PCL_ERROR ("[pcl::PLYReader] parse error property list %s %s %s.\n", st[2].c_str(), st[3].c_str (), st[4].c_str ());
-            return -1;
-          }
-          else
-          {
-            size_t capacity = pcl::io::ply::getMaximumCapacity(size_type);
-            if(capacity == 0)
-            {
-              PCL_ERROR ("[pcl::PLYReader] unhandled size type for property list %s %s %s.\n", st[2].c_str(), st[3].c_str (), st[4].c_str ());
-              return -1;
-            }
-            parser_.push_property(st.at(4), size_type, data_type);
-          }
-        }
-        // scalar property
-        else
-        {
-          int type = pcl::io::ply::getTypeFromTypeName(st.at(1));
-          if(type < -1)
-          {
-            PCL_ERROR ("[pcl::PLYReader] parse error property %s %s.\n", st[1].c_str (), st[2].c_str ());
-            return -1;
-          }
-          else
-            parser_.push_property (st.at(2), type);
-        }
-        continue;
-      }
-      // end of header
-      if (line_type.substr (0, 10) == "end_header") 
-        data_idx = fs.tellg ();
-      break;
-    }
-  }
-  catch (const char *exception)
-  {
-    PCL_ERROR ("[pcl::PLYReader::readHeader] %s\n", exception);
-    return (-1);
-  }
-  fs.close();
-
   pcl::io::ply::element* vertex = NULL;
   pcl::io::ply::element* camera = NULL;
   // this is the most painful part in a PLY file: 
@@ -206,11 +75,6 @@ pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
       elements_it != parser_.end();
       ++elements_it)
   {
-    if((*elements_it)->has_list_properties ())
-    {
-      PCL_ERROR ("[pcl::PLYReader::readHeader] list properties are not handled\n");
-      return (-1);
-    }
     if("vertex" == (*elements_it)->name_)
       vertex = *elements_it;
     if("camera" == (*elements_it)->name_)
@@ -251,7 +115,7 @@ pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   return (0);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 int
 pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
@@ -259,7 +123,7 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
 {
   using namespace pcl::io;
 
-  bool binary_data;
+  int binary_data;
   int data_idx;
   int res = readHeader (file_name, cloud, origin, orientation, ply_version, binary_data, data_idx);
   if (res < 0)
@@ -267,8 +131,6 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   
   int line_count = 0;
   assert(parser_["vertex"] != NULL);
-  // Get the number of points the cloud should have
-  int nr_points = cloud.width * cloud.height;
 
   // if ascii
   if (!binary_data)
@@ -298,100 +160,108 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
             elements_it != parser_.end();
             ++elements_it)
         {
-          for(size_t counter = 0 ; counter < (*elements_it)->count_; counter++)
+          if(associated_data.find((*elements_it)->name_) != associated_data.end())
           {
-            getline (fs, line);
-            // Ignore empty lines
-            if (line == "")
-              continue;
-              
-            // Tokenize the line
-            boost::trim (line);
-            boost::split (st, line, boost::is_any_of (std::string ("\t\r ")), boost::token_compress_on);
-        
-            size_t prop_counter = 0;
-            size_t offset_before = 0;
-            for(pcl::io::ply::element::iterator properties_it = (*elements_it)->properties_.begin();
-                properties_it != (*elements_it)->properties_.end();
-                ++properties_it, prop_counter++)
+            for(size_t counter = 0 ; counter < (*elements_it)->count_; counter++)
             {
-              if((*elements_it)->is_list_property(properties_it))
+              getline (fs, line);
+              // Ignore empty lines
+              if (line == "")
+                continue;
+              
+              // Tokenize the line
+              boost::trim (line);
+              boost::split (st, line, boost::is_any_of (std::string ("\t\r ")), boost::token_compress_on);
+        
+              size_t prop_counter = 0;
+              size_t offset_before = 0;
+              for(pcl::io::ply::element::iterator properties_it = (*elements_it)->properties_.begin();
+                  properties_it != (*elements_it)->properties_.end();
+                  ++properties_it, prop_counter++)
               {
-                size_t list_length = atoi ((st.at(0)).c_str ());
-                pcl::io::ply::list_property* lp = (pcl::io::ply::list_property*) (*properties_it);
-                lp->set_size((st.at(0)).c_str ());
-                for(size_t i = 0; i < list_length; i++)
+                if((*elements_it)->is_list_property(properties_it))
                 {
-                  switch (lp->data_type_)
+                  size_t list_length = atoi ((st.at(0)).c_str ());
+                  pcl::io::ply::list_property* lp = (pcl::io::ply::list_property*) (*properties_it);
+                  lp->set_size((st.at(0)).c_str ());
+                  for(size_t i = 0; i < list_length; i++)
+                  {
+                    switch (lp->data_type_)
+                    {
+                    case sensor_msgs::PointField::INT8:
+                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT8>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                      break;
+                    case sensor_msgs::PointField::UINT8:
+                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                      break;
+                    case sensor_msgs::PointField::INT16:
+                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT16>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                      break;
+                    case sensor_msgs::PointField::UINT16:
+                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                      break;
+                    case sensor_msgs::PointField::INT32:
+                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT32>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                      break;
+                    case sensor_msgs::PointField::UINT32:
+                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                      break;
+                    case sensor_msgs::PointField::FLOAT32:
+                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                      break;
+                    case sensor_msgs::PointField::FLOAT64:
+                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                      break;
+                    default:
+                      PCL_WARN ("[pcl::PCDReader::read] Incorrect data type specified for list element (%d)!\n",lp->data_type_);
+                      break;
+                    }
+                  }
+                }
+                else
+                {
+                  switch ((*properties_it)->data_type_)
                   {
                   case sensor_msgs::PointField::INT8:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT8>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT8>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
                     break;
                   case sensor_msgs::PointField::UINT8:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
                     break;
                   case sensor_msgs::PointField::INT16:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT16>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT16>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
                     break;
                   case sensor_msgs::PointField::UINT16:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
                     break;
                   case sensor_msgs::PointField::INT32:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT32>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT32>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
                     break;
                   case sensor_msgs::PointField::UINT32:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
                     break;
                   case sensor_msgs::PointField::FLOAT32:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
                     break;
                   case sensor_msgs::PointField::FLOAT64:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
                     break;
                   default:
-                    PCL_WARN ("[pcl::PCDReader::read] Incorrect data type specified for list element (%d)!\n",lp->data_type_);
+                    PCL_WARN ("[pcl::PCDReader::read] Incorrect data type specified (%d)!\n",(*properties_it)->data_type_);
                     break;
                   }
                 }
+                offset_before+= (*properties_it)->offset_;
               }
-              else
-              {
-                switch ((*properties_it)->data_type_)
-                {
-                case sensor_msgs::PointField::INT8:
-                  copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT8>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                  break;
-                case sensor_msgs::PointField::UINT8:
-                  copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                  break;
-                case sensor_msgs::PointField::INT16:
-                  copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT16>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                  break;
-                case sensor_msgs::PointField::UINT16:
-                  copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                  break;
-                case sensor_msgs::PointField::INT32:
-                  copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT32>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                  break;
-                case sensor_msgs::PointField::UINT32:
-                  copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                  break;
-                case sensor_msgs::PointField::FLOAT32:
-                  copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                  break;
-                case sensor_msgs::PointField::FLOAT64:
-                  copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                  break;
-                default:
-                  PCL_WARN ("[pcl::PCDReader::read] Incorrect data type specified (%d)!\n",(*properties_it)->data_type_);
-                  break;
-                }
-              }
-              offset_before+= (*properties_it)->offset_;
             }
           }
+          else
+          {
+            for(size_t counter = 0 ; counter < (*elements_it)->count_; counter++)
+              getline (fs, line);
+          }
+          line_count++;
         }
-        line_count++;
       }
     }
     catch (const char *exception)
@@ -406,6 +276,11 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     {
       sensor.ext_to_eigen(origin, orientation);
     }
+    else
+    {
+      origin = Eigen::Vector4f::Zero ();
+      orientation = Eigen::Quaternionf::Identity ();
+    }
   }
   /// ---[ Binary mode only
   /// We must re-open the file and read with mmap () for binary
@@ -415,7 +290,8 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     cloud.is_dense = false;
     // Open for reading
     boost::iostreams::mapped_file_source mapped_file_;
-    mapped_file_.open (file_name, cloud.data.size () + data_idx + sizeof(pcl::io::ply::camera), 0);
+//    mapped_file_.open (file_name, cloud.data.size () + data_idx + sizeof(pcl::io::ply::camera), 0);
+    mapped_file_.open (file_name);
     if (!mapped_file_.is_open())
       return (-1);
     
@@ -431,20 +307,19 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       memcpy (&sensor, &map[0] + data_idx + cloud.data.size (), sizeof(pcl::io::ply::camera));
       sensor.ext_to_eigen(origin, orientation);
     }
+    else
+    {
+      origin = Eigen::Vector4f::Zero ();
+      orientation = Eigen::Quaternionf::Identity ();
+    }
     // Unmap the pages of memory
     mapped_file_.close();
   }
 
-  // if ( (line_count != nr_points) && (!binary_data) )
-  // {
-  //   PCL_ERROR ("[pcl::PLYReader::read] Number of points read (%d) is different than expected (%d)", line_count, nr_points);
-  //   return (-1);
-  // }
-  
   return 0;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 void pcl::PLYWriter::setMaskFromFieldsList(const std::string& fields_list)
 {
@@ -487,6 +362,10 @@ void pcl::PLYWriter::setMaskFromFieldsList(const std::string& fields_list)
     found = fields_list.find("strength", xyz_found);
     if(found != std::string::npos)
       mask_ |= pcl::io::ply::VERTEX_STRENGTH;
+    // Find confidence optional
+    found = fields_list.find("confidence", xyz_found);
+    if(found != std::string::npos)
+      mask_ |= pcl::io::ply::VERTEX_CONFIDENCE;
     // Find viewpoint optional
     found = fields_list.find("vp_x vp_y vp_z", xyz_found);
     if(found != std::string::npos)
@@ -498,7 +377,7 @@ void pcl::PLYWriter::setMaskFromFieldsList(const std::string& fields_list)
   }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 std::string
 pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud, 
@@ -523,7 +402,7 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
 
   // If mask can not be determined
   if(mask_ == 0)
-    return "";
+    throw "Mask can not be determined";
 
   if(mask_ & pcl::io::ply::VERTEX_XYZ)
   {
@@ -608,7 +487,7 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
   return (oss.str ());
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 int
 pcl::PLYWriter::writeASCII (const std::string &file_name, 
@@ -626,6 +505,11 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
   std::ofstream fs;
   fs.precision (precision);
   fs.open (file_name.c_str ());      // Open file
+  if(!fs)
+  {
+    PCL_ERROR ("[pcl::PLYWriter::writeASCII] Error during opening (%s)!\n", file_name.c_str());
+    return (-1);
+  }
 
   int nr_points  = cloud.width * cloud.height;
   int point_size = cloud.data.size () / nr_points;
@@ -713,7 +597,11 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
     fs << std::endl;
   }
   // Append sensor information
-  fs << origin[0] << " " << origin[1] << " " << origin[2] << " ";
+  if(origin[3] != 0)
+    fs << origin[0]/origin[3] << " " << origin[1]/origin[3] << " " << origin[2]/origin[3] << " ";
+  else
+    fs << origin[0] << " " << origin[1] << " " << origin[2] << " ";
+
   Eigen::Matrix3f R = orientation.toRotationMatrix ();
   fs << R(0,0) << " " << R(0,1) << " " << R(0,2) << " ";
   fs << R(1,0) << " " << R(1,1) << " " << R(1,2) << " ";
@@ -735,124 +623,266 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
   return (0);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PLYWriter::writeBinary (const std::string &file_name, 
-                             const sensor_msgs::PointCloud2 &cloud,
-                             const Eigen::Vector4f &origin, 
-                             const Eigen::Quaternionf &orientation)
+                            const sensor_msgs::PointCloud2 &cloud, 
+                            const Eigen::Vector4f &origin, 
+                            const Eigen::Quaternionf &orientation)
 {
   if (cloud.data.empty ())
   {
-    PCL_ERROR ("[pcl::FileWriter::writeBinary] Input point cloud has no data!");
+    PCL_ERROR ("[pcl::PLYWriter::writeBinary] Input point cloud has no data!\n");
     return (-1);
   }
-  int data_idx = 0;
+
   std::ofstream fs;
-
-  // Write the header information
-  std::ostringstream oss;
-  oss << generateHeader (cloud, true);
-  std::string header(oss.str());
-  if("" == header)
+  fs.open (file_name.c_str ());      // Open file
+  if(!fs)
   {
-    std::cout << "unvalid header" << std::endl;
-    return (-1);
-  }
-  oss.flush();
-  data_idx = oss.tellp ();
-
-  // Open for writing
-   boost::iostreams::mapped_file_params file_params_(file_name);
-   file_params_.mode = std::ios_base::out | std::ios_base::binary;
-   file_params_.offset = 0;
-   file_params_.new_file_size = sizeof(pcl::io::ply::camera) + cloud.data.size ()+ getpagesize() - 1;
-  // mapped_file_.open(file_params_);
-  boost::iostreams::mapped_file_sink mapped_file_;
-//  mapped_file_.open (file_name, sizeof(pcl::io::ply::camera) + cloud.data.size ()+ getpagesize() - 1, 0);
-  mapped_file_.open(file_params_);
-  if (!mapped_file_.is_open())
-  {
-    PCL_ERROR ("[pcl::FileWriter::writeBinary] Error during open () %s!\n", file_name.c_str());
+    PCL_ERROR ("[pcl::PLYWriter::writeBinary] Error during opening (%s)!\n", file_name.c_str());
     return (-1);
   }
 
-  // Stretch the file size to the size of the data
-  mapped_file_.resize(getpagesize () + cloud.data.size () + sizeof(pcl::io::ply::camera)  - 1);
-  if (mapped_file_.size() != getpagesize () + cloud.data.size () + sizeof(pcl::io::ply::camera) - 1)
+  int nr_points  = cloud.width * cloud.height;
+  int point_size = cloud.data.size () / nr_points;
+
+  // Write the header information if available
+  fs << generateHeader (cloud, true);
+  // Close the file
+  fs.close();
+  // Open file in binary appendable
+  std::ofstream fpout(file_name.c_str(), std::ios::app | std::ios::binary);
+  if(!fpout)
   {
-    mapped_file_.close();
-    PCL_ERROR ("[pcl::FileWriter::writeBinary] Error during resize ()!\n");
+    PCL_ERROR ("[pcl::PLYWriter::writeBinary] Error during reopening (%s)!\n", file_name.c_str());
     return (-1);
   }
+  // Unlike PCD format file, PLY doesn't like 
+  // Iterate through the points
+  for (int i = 0; i < nr_points; ++i)
+  {
+    for (size_t d = 0; d < cloud.fields.size (); ++d)
+    {
+      int count = cloud.fields[d].count;
+      if (count == 0) 
+        count = 1; //workaround
 
-  // Prepare the map
-  char *map = mapped_file_.data();
+      for (int c = 0; c < count; ++c)
+      {
+        switch (cloud.fields[d].datatype)
+        {
+          case sensor_msgs::PointField::INT8:
+          {
+            char value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (char)], sizeof (char));
+            fpout.write((const char *) &value,sizeof(char));
+            break;
+          }
+          case sensor_msgs::PointField::UINT8:
+          {
+            unsigned char value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned char)], sizeof (unsigned char));
+            fpout.write((const char *) &value,sizeof(unsigned char));
+            break;
+          }
+          case sensor_msgs::PointField::INT16:
+          {
+            short value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (short)], sizeof (short));
+            fpout.write((const char *) &value,sizeof(short));
+            break;
+          }
+          case sensor_msgs::PointField::UINT16:
+          {
+            unsigned short value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned short)], sizeof (unsigned short));
+            fpout.write((const char *) &value,sizeof(unsigned short));
+            break;
+          }
+          case sensor_msgs::PointField::INT32:
+          {
+            int value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (int)], sizeof (int));
+            fpout.write((const char *) &value,sizeof(int));
+            break;
+          }
+          case sensor_msgs::PointField::UINT32:
+          {
+            unsigned int value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned int)], sizeof (unsigned int));
+            fpout.write((const char *) &value,sizeof(unsigned int));
+            break;
+          }
+          case sensor_msgs::PointField::FLOAT32:
+          {
+            float value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+            fpout.write((const char *) &value,sizeof(float));
+            break;
+          }
+          case sensor_msgs::PointField::FLOAT64:
+          {
+            double value;
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (double)], sizeof (double));
+            fpout.write((const char *) &value,sizeof(double));
+            break;
+          }
+          default:
+            PCL_WARN ("[pcl::PLYWriter::writeBinary] Incorrect field data type specified (%d)!\n", cloud.fields[d].datatype);
+            break;
+        }
+      }
+    }
+  }
+  // Append sensor information
+  float t;
+  for(int i = 0; i < 3; i++)
+  {
+    if(origin[3] != 0)
+      t = origin[i]/origin[3];
+    else
+      t = origin[i];
+    fpout.write((const char *) &t,sizeof(float));
+  }
+  Eigen::Matrix3f R = orientation.toRotationMatrix ();
+  for(int i = 0; i < 3; i++)
+    for(int j = 0; j < 3; j++)
+  {
+    t = R(i,j);
+    fpout.write((const char *) &t,sizeof(float));
+  }
 
-  // Copy the header
-  memcpy (&map[0], oss.str().c_str(), data_idx);
+/////////////////////////////////////////////////////
+// Append those properties directly.               //
+// They are for perspective cameras so just put 0  //
+//                                                 //
+// property float focal                            //
+// property float scalex                           //
+// property float scaley                           //
+// property float centerx                          //
+// property float centery                          //
+// property int viewportx                          //
+// property int viewporty                          //
+// property float k1                               //
+// property float k2                               //
+/////////////////////////////////////////////////////
 
-  // Copy the data
-  memcpy (&map[0] + data_idx, &cloud.data[0], cloud.data.size ());
-
-  // Wrap sensor data
-  pcl::io::ply::camera sensor(origin, orientation);
-
-  // Copy the sensor data
-  memcpy (&map[0] + data_idx + cloud.data.size (), &sensor, sizeof(pcl::io::ply::camera));
+  float zerof = 0;
+  for(int i = 0; i < 5; i++)
+    fpout.write((const char *) &zerof,sizeof(float));
+  int zeroi = 0;
+  for(int i = 0; i < 2; i++)
+    fpout.write((const char *) &zeroi,sizeof(float));
+  for(int i = 0; i < 2; i++)
+    fpout.write((const char *) &zerof,sizeof(float));
 
   // Close file
-  mapped_file_.close();
+  fpout.close ();              
+  return (0);
+}
 
-//   // Append sensor information
+////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh, unsigned precision)
+{
+  if (mesh.cloud.data.empty ())
+  {
+    PCL_ERROR ("[pcl::io::savePLYFile] Input point cloud has no data!\n");
+    return (-1);
+  }
+  // Open file
+  std::ofstream fs;
+  fs.precision (precision);
+  fs.open (file_name.c_str ());
+  if(!fs)
+  {
+    PCL_ERROR ("[pcl::io::savePLYFile] Error during opening (%s)!\n", file_name.c_str());
+    return (-1);
+  }
+  
+  // number of points
+  size_t nr_points  = mesh.cloud.width * mesh.cloud.height;
+  size_t point_size = mesh.cloud.data.size () / nr_points;
 
-//   std::ofstream fpout(file_name.c_str(), std::ios::app | std::ios::binary);
-//   if(!fpout)
-//   {
-//     PCL_ERROR ("[pcl::PLYWriter::writeBinary] Error during reopening (%s)!\n", file_name.c_str());
-//     return (-1);
-//   }
+  // mesh size
+  size_t nr_faces = mesh.polygons.size ();
 
-//   float t;
-//   for(int i = 0; i < 3; i++)
-//   {
-//     t = origin[i];
-//     fpout.write((const char *) &t,sizeof(float));
-//   }
-//   Eigen::Matrix3f R = orientation.toRotationMatrix ();
-//   for(int i = 0; i < 3; i++)
-//     for(int j = 0; j < 3; j++)
-//   {
-//     t = R(i,j);
-//     fpout.write((const char *) &t,sizeof(float));
-//   }
+  // Write header
+  fs << "ply";
+  fs << "\nformat ascii 1.0";
+  fs << "\ncomment PCL generated";
+  // Vertices
+  fs << "\nelement vertex "<< mesh.cloud.width * mesh.cloud.height;
+  fs << "\nproperty float x"
+    "\nproperty float y"
+    "\nproperty float z";
+  // Check if we have color on vertices
+  int rgb_index = getFieldIndex (mesh.cloud, "rgb");
+  if(rgb_index != -1)
+  {
+    fs << "\nproperty uchar red"
+      "\nproperty uchar green"
+      "\nproperty uchar blue";    
+  }
+  // Faces
+  fs << "\nelement face "<< nr_faces;
+  fs << "\nproperty list uchar int vertex_index";
+  fs << "\nend_header\n";
 
-
-// /////////////////////////////////////////////////////
-// // Append those properties directly.               //
-// // They are for perspective cameras so just put 0  //
-// //                                                 //
-// // property float focal                            //
-// // property float scalex                           //
-// // property float scaley                           //
-// // property float centerx                          //
-// // property float centery                          //
-// // property int viewportx                          //
-// // property int viewporty                          //
-// // property float k1                               //
-// // property float k2                               //
-// /////////////////////////////////////////////////////
-
-//   float zerof = 0;
-//   for(int i = 0; i < 5; i++)
-//     fpout.write((const char *) &zerof,sizeof(float));
-//   int zeroi = 0;
-//   for(int i = 0; i < 2; i++)
-//     fpout.write((const char *) &zeroi,sizeof(float));
-//   for(int i = 0; i < 2; i++)
-//     fpout.write((const char *) &zerof,sizeof(float));
-
-//   fpout.close();
-
+  // Write down vertices
+  for (size_t i = 0; i < nr_points; ++i)
+  {
+    int xyz = 0;
+    for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
+    {
+      int count = mesh.cloud.fields[d].count;
+      if (count == 0)
+        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
+      int c = 0;
+      
+      // adding vertex
+      if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && (
+          mesh.cloud.fields[d].name == "x" ||
+          mesh.cloud.fields[d].name == "y" ||
+          mesh.cloud.fields[d].name == "z"))
+      {
+        float value;
+        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        fs << value;
+        if (++xyz == 3)
+          break;
+      }
+      fs << " ";
+      if (mesh.cloud.fields[rgb_index].datatype == sensor_msgs::PointField::FLOAT32)
+      {
+        pcl::RGB color;
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
+        int r = color.r;
+        int g = color.g;
+        int b = color.b;
+        fs << r << " " << g << " " << b;
+      }
+    }
+    if (xyz != 3)
+    {
+      PCL_ERROR ("[pcl::io::savePLYFile] Input point cloud has no XYZ data!\n");
+      return (-2);
+    }
+    fs << std::endl;
+  }
+  
+  // Write down faces
+  for(size_t i = 0; i < nr_faces; i++)
+  {
+    fs << mesh.polygons[i].vertices.size () << " ";
+    size_t j = 0;
+    for (j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
+      fs << mesh.polygons[i].vertices[j] << " ";
+    fs << mesh.polygons[i].vertices[j] << std::endl;
+  }
+  
+  // Close file
+  fs.close ();
   return (0);
 }

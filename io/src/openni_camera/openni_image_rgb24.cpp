@@ -14,7 +14,7 @@ ImageRGB24::~ImageRGB24 () throw ()
 {
 }
 
-void ImageRGB24::fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step) const throw (OpenNIException)
+void ImageRGB24::fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step) const
 {
   if (width > image_md_->XRes () || height > image_md_->YRes ())
     THROW_OPENNI_EXCEPTION ("Up-sampling not supported. Request was %d x %d -> %d x %d.", image_md_->XRes (), image_md_->YRes (), width, height);
@@ -23,15 +23,15 @@ void ImageRGB24::fillGrayscale (unsigned width, unsigned height, unsigned char* 
   {
     unsigned src_step = image_md_->XRes () / width;
     unsigned src_skip = (image_md_->YRes () / height - 1) * image_md_->XRes ();
-    
+
     if (gray_line_step == 0)
       gray_line_step = width;
-    
+
     unsigned dst_skip = gray_line_step - width; // skip of padding values in bytes
-    
+
     unsigned char* dst_line = gray_buffer;
     const XnRGB24Pixel* src_line = image_md_->RGB24Data();
-    
+
     for (unsigned yIdx = 0; yIdx < height; ++yIdx, src_line += src_skip, dst_line += dst_skip)
     {
       for (unsigned xIdx = 0; xIdx < width; ++xIdx, src_line += src_step, dst_line ++)
@@ -46,7 +46,7 @@ void ImageRGB24::fillGrayscale (unsigned width, unsigned height, unsigned char* 
   }
 }
 
-void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step) const throw (OpenNIException)
+void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step) const
 {
   if (width > image_md_->XRes () || height > image_md_->YRes ())
     THROW_OPENNI_EXCEPTION ("Up-sampling not supported. Request was %d x %d -> %d x %d.", image_md_->XRes (), image_md_->YRes (), width, height);
@@ -72,22 +72,22 @@ void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_bu
   {
     unsigned src_step = image_md_->XRes () / width;
     unsigned src_skip = (image_md_->YRes () / height - 1) * image_md_->XRes ();
-    
+
     if (rgb_line_step == 0)
       rgb_line_step = width * 3;
-    
+
     unsigned dst_skip = rgb_line_step - width * 3; // skip of padding values in bytes
-    
+
     XnRGB24Pixel* dst_line = (XnRGB24Pixel*)rgb_buffer;
     const XnRGB24Pixel* src_line = image_md_->RGB24Data();
-    
+
     for (unsigned yIdx = 0; yIdx < height; ++yIdx, src_line += src_skip)
     {
       for (unsigned xIdx = 0; xIdx < width; ++xIdx, src_line += src_step, dst_line ++)
       {
         *dst_line = *src_line;
       }
-      
+
       if (dst_skip != 0)
       {
         // use bytes to skip rather than XnRGB24Pixel's, since line_step does not need to be multiple of 3

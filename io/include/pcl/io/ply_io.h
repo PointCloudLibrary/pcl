@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: ply_io.h 2641 2011-10-06 15:31:10Z jspricke $
  *
  */
 
@@ -40,6 +40,8 @@
 
 #include "pcl/io/file_io.h"
 #include "pcl/io/ply.h"
+#include <pcl/PolygonMesh.h>
+#include <sstream>
 
 namespace pcl
 {
@@ -80,7 +82,7 @@ namespace pcl
         */
       int readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
                       Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
-                      int &ply_version, bool &binary_data, int &data_idx);
+                      int &ply_version, int &data_type, int &data_idx);
 
       /** \brief Read a point cloud data from a PLY file and store it into a sensor_msgs/PointCloud2.
         * \param file_name the name of the file containing the actual PointCloud data
@@ -147,7 +149,8 @@ namespace pcl
         static char* char_ptr;
         char_ptr = (char*) data;
         Type value;
-        value = pcl_atoa<Type>(string_value.c_str ());
+        std::istringstream is(string_value);
+        is >> value;
         memcpy (char_ptr+offset, &value, sizeof (Type));
       }
   };
@@ -385,6 +388,16 @@ namespace pcl
       PLYWriter w;
       return (w.write<PointT> (file_name, cloud_out, binary_mode));
     }
+
+    /** \brief Saves a PolygonMesh in ascii PLY format.
+      * \param file_name the name of the file to write to disk
+      * \param triangles the polygonal mesh to save
+      * \param precision the output ASCII precision default 5
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh, unsigned precision = 5);
+
   };
 }
 
