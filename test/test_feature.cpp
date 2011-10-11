@@ -331,6 +331,21 @@ TEST (PCL, NormalEstimation)
   PointCloud<PointXYZ>::Ptr surfaceptr = cloudptr;
   n.setSearchSurface (surfaceptr);
   EXPECT_EQ (n.getSearchSurface (), surfaceptr);
+
+  // Additional test for searchForNeigbhors
+  surfaceptr.reset (new PointCloud<PointXYZ>);
+  *surfaceptr = *cloudptr;
+  surfaceptr->points.resize (640 * 480);
+  surfaceptr->width = 640;
+  surfaceptr->height = 480;
+  EXPECT_EQ (surfaceptr->points.size (), surfaceptr->width * surfaceptr->height);
+  n.setSearchSurface (surfaceptr);
+  tree.reset ();
+  n.setSearchMethod (tree);
+
+  // estimate
+  n.compute (*normals);
+  EXPECT_EQ (normals->points.size (), indices.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

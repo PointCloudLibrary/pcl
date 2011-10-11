@@ -39,6 +39,7 @@
 #define PCL_SIFT_KEYPOINT_IMPL_H_
 
 #include "pcl/keypoints/sift_keypoint.h"
+#include <pcl/common/io.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/approximate_voxel_grid.h>
 
@@ -102,6 +103,9 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
     PCL_WARN ("[pcl::%s::detectKeypoints] : A search surface has be set by setSearchSurface, but this SIFT keypoint detection algorithm does not support search surfaces other than the input cloud.  The cloud provided in setInputCloud is being used instead.\n", name_.c_str ());
   }
 
+  // Check if the output has a "scale" field
+  scale_idx_ = pcl::getFieldIndex<PointOutT> (output, "scale", out_fields_);
+
   // Make sure the output cloud is empty
   output.points.clear ();
 
@@ -160,18 +164,37 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
   std::vector<int> extrema_indices, extrema_scales;
   findScaleSpaceExtrema (input, tree, diff_of_gauss, extrema_indices, extrema_scales);
 
-  // Add keypoints to output
-  for (size_t i_keypoint = 0; i_keypoint < extrema_indices.size (); ++i_keypoint)
+  output.points.reserve (output.points.size () + extrema_indices.size ());
+  // Save scale?
+  if (scale_idx_ != -1)
   {
-    PointOutT keypoint;
-    const int &keypoint_index = extrema_indices[i_keypoint];
- 
-    keypoint.x = input.points[keypoint_index].x;
-    keypoint.y = input.points[keypoint_index].y;
-    keypoint.z = input.points[keypoint_index].z;
-    keypoint.scale = scales[extrema_scales[i_keypoint]];
+    // Add keypoints to output
+    for (size_t i_keypoint = 0; i_keypoint < extrema_indices.size (); ++i_keypoint)
+    {
+      PointOutT keypoint;
+      const int &keypoint_index = extrema_indices[i_keypoint];
+   
+      keypoint.x = input.points[keypoint_index].x;
+      keypoint.y = input.points[keypoint_index].y;
+      keypoint.z = input.points[keypoint_index].z;
+      memcpy (((char*)&keypoint) + out_fields_[scale_idx_].offset, &scales[extrema_scales[i_keypoint]], sizeof (float));
+      output.points.push_back (keypoint); 
+    }
+  }
+  else
+  {
+    // Add keypoints to output
+    for (size_t i_keypoint = 0; i_keypoint < extrema_indices.size (); ++i_keypoint)
+    {
+      PointOutT keypoint;
+      const int &keypoint_index = extrema_indices[i_keypoint];
+   
+      keypoint.x = input.points[keypoint_index].x;
+      keypoint.y = input.points[keypoint_index].y;
+      keypoint.z = input.points[keypoint_index].z;
 
-    output.points.push_back (keypoint); 
+      output.points.push_back (keypoint); 
+    }
   }
 }
 

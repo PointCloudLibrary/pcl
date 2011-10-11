@@ -39,6 +39,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/kdtree/kdtree_flann.h>
 
 #include <pcl/keypoints/sift_keypoint.h>
@@ -53,7 +54,14 @@ struct KeypointT
 {
   float x, y, z, scale;
 };
-  
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (KeypointT,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (float, scale, scale)
+)
+
 PointCloud<PointXYZI>::Ptr cloud_xyzi (new PointCloud<PointXYZI>);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +117,7 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
   KdTreeFLANN<PointXYZI>::Ptr tree_ (new KdTreeFLANN<PointXYZI>);
   boost::shared_ptr<pcl::PointCloud<PointXYZI> > cloud = cloud_xyzi->makeShared ();
 
-  VoxelGrid<PointXYZI> voxel_grid;
+  ApproximateVoxelGrid<PointXYZI> voxel_grid;
   float s = 1.0 * scale; 
   voxel_grid.setLeafSize (s, s, s);
   voxel_grid.setInputCloud (cloud);

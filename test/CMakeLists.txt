@@ -59,7 +59,7 @@ if(build)
 
     PCL_ADD_TEST(a_keypoints_test test_keypoints
                  FILES test_keypoints.cpp
-                 LINK_WITH pcl_io pcl_kdtree pcl_filters
+                 LINK_WITH pcl_io pcl_kdtree pcl_filters pcl_keypoints
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/cturtle.pcd)
 
     PCL_ADD_TEST(a_ii_normals_test test_ii_normals
