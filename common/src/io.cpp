@@ -74,7 +74,7 @@ pcl::concatenateFields (const sensor_msgs::PointCloud2 &cloud1,
   if (cloud1.width != cloud2.width || cloud1.height != cloud2.height)
     return (false);
 
-  if(cloud1.is_bigendian != cloud2.is_bigendian)
+  if (cloud1.is_bigendian != cloud2.is_bigendian)
     return (false);
 
   // Else, copy the second cloud (width, height, header stay the same)
@@ -87,7 +87,7 @@ pcl::concatenateFields (const sensor_msgs::PointCloud2 &cloud1,
   cloud_out.is_bigendian = cloud2.is_bigendian;
 
   //We need to find how many fields overlap between the two clouds
-  size_t total_fields = cloud2.fields.size();
+  size_t total_fields = cloud2.fields.size ();
 
   //for the non-matching fields in cloud1, we need to store the offset
   //from the beginning of the point
@@ -98,49 +98,43 @@ pcl::concatenateFields (const sensor_msgs::PointCloud2 &cloud1,
   //by offset so that we can compute sizes correctly. There is no
   //guarantee that the fields are in the correct order when they come in
   std::vector<const sensor_msgs::PointField*> cloud1_fields_sorted;
-  for(size_t i = 0; i < cloud1.fields.size(); ++i)
-  {
-    cloud1_fields_sorted.push_back(&(cloud1.fields[i]));
-  }
-  std::sort(cloud1_fields_sorted.begin(), cloud1_fields_sorted.end(), fieldComp);
+  for (size_t i = 0; i < cloud1.fields.size (); ++i)
+    cloud1_fields_sorted.push_back (&(cloud1.fields[i]));
 
-  for(size_t i = 0; i < cloud1_fields_sorted.size(); ++i)
+  std::sort (cloud1_fields_sorted.begin (), cloud1_fields_sorted.end (), fieldComp);
+
+  for (size_t i = 0; i < cloud1_fields_sorted.size (); ++i)
   {
     bool match = false;
-    for(size_t j = 0; j < cloud2.fields.size(); ++j)
+    for (size_t j = 0; j < cloud2.fields.size (); ++j)
     {
-      if(cloud1_fields_sorted[i]->name == cloud2.fields[j].name)
+      if (cloud1_fields_sorted[i]->name == cloud2.fields[j].name)
         match = true;
     }
 
     //if the field is new, we'll increment out total fields
-    if(!match && cloud1_fields_sorted[i]->name != "_")
+    if (!match && cloud1_fields_sorted[i]->name != "_")
     {
-      cloud1_unique_fields.push_back(cloud1_fields_sorted[i]);
+      cloud1_unique_fields.push_back (cloud1_fields_sorted[i]);
 
       int size = 0;
       size_t next_valid_field = i + 1;
 
-      while(next_valid_field < cloud1_fields_sorted.size())
+      while (next_valid_field < cloud1_fields_sorted.size())
       {
-        if(cloud1_fields_sorted[next_valid_field]->name != "_")
+        if (cloud1_fields_sorted[next_valid_field]->name != "_")
           break;
         next_valid_field++;
       }
 
-
-      if(next_valid_field < cloud1_fields_sorted.size())
-      {
+      if (next_valid_field < cloud1_fields_sorted.size ())
         //compute the true size of the field, including padding
         size = cloud1_fields_sorted[next_valid_field]->offset - cloud1_fields_sorted[i]->offset;
-      }
       else
-      {
         //for the last point, we'll just use the point step to compute the size
         size = cloud1.point_step - cloud1_fields_sorted[i]->offset;
-      }
 
-      field_sizes.push_back(size);
+      field_sizes.push_back (size);
 
       total_fields++;
     }
@@ -148,10 +142,8 @@ pcl::concatenateFields (const sensor_msgs::PointCloud2 &cloud1,
 
   //we need to compute the size of the additional data added from cloud 1
   uint32_t cloud1_unique_point_step = 0;
-  for(size_t i = 0; i < cloud1_unique_fields.size(); ++i)
-  {
+  for (size_t i = 0; i < cloud1_unique_fields.size (); ++i)
     cloud1_unique_point_step += field_sizes[i];
-  }
 
   //the total size of extra data should be the size of data per point
   //multiplied by the total number of points in the cloud
@@ -189,17 +181,17 @@ pcl::concatenateFields (const sensor_msgs::PointCloud2 &cloud1,
 
     // Copy each individual point, we have to do this on a per-field basis
     // since some fields are not unique
-    for(size_t i = 0; i < cloud1_unique_fields.size(); ++i)
+    for (size_t i = 0; i < cloud1_unique_fields.size (); ++i)
     {
       const sensor_msgs::PointField& f = *cloud1_unique_fields[i];
-      int local_data_size = f.count * pcl::getFieldSize(f.datatype);
+      int local_data_size = f.count * pcl::getFieldSize (f.datatype);
       int padding_size = field_sizes[i] - local_data_size;
       
       memcpy (&cloud_out.data[point_offset + field_offset], &cloud1.data[cp * cloud1.point_step + f.offset], local_data_size);
       field_offset +=  local_data_size;
 
       //make sure that we add padding when its needed
-      if(padding_size > 0)
+      if (padding_size > 0)
         memset (&cloud_out.data[point_offset + field_offset], 0, padding_size);
       field_offset += padding_size;
     }
