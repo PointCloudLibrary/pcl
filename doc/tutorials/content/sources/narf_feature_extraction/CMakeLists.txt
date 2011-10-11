@@ -5,7 +5,6 @@ project(narf_feature_extraction)
 find_package(PCL 1.3 REQUIRED)
 
 if(WXWIDGETS_FOUND)
-  message("Found!!!:"${PCL_LIBRARIES})
   include_directories(${PCL_INCLUDE_DIRS})
   link_directories(${PCL_LIBRARY_DIRS})
   add_definitions(${PCL_DEFINITIONS})
