@@ -94,7 +94,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       SIFTKeypoint () : min_scale_ (0.0), nr_octaves_ (0), nr_scales_per_octave_ (0), 
-        min_contrast_ (-std::numeric_limits<float>::max ())
+        min_contrast_ (-std::numeric_limits<float>::max ()), scale_idx_ (-1)
       {
         name_ = "SIFTKeypoint";
       }
@@ -169,6 +169,13 @@ namespace pcl
 
       /** \brief The minimum contrast required for detection.*/
       float min_contrast_;
+
+      /** \brief Set to a value different than -1 if the output cloud has a "scale" field and we have to save 
+        * the keypoints scales. */
+      int scale_idx_;
+
+      /** \brief The list of fields present in the output point cloud data. */
+      std::vector<sensor_msgs::PointField> out_fields_;
 
       SIFTKeypointFieldSelector<PointInT> getFieldValue_;
   };
