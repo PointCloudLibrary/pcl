@@ -47,7 +47,7 @@ namespace pcl
   namespace registration
   {
     /** @b TransformationEstimationLM implements Levenberg Marquardt-based
-      * estimation of the transformation aligning the given correspondences
+      * estimation of the transformation aligning the given correspondences.
       *
       * \author Radu B. Rusu
       * \ingroup registration

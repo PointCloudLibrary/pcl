@@ -45,8 +45,8 @@ namespace pcl
 {
   namespace registration
   {
-    /** @b TransformationEstimationSVD implements an SVD-based estimation of
-      * the transformation aligning the given correspondences 
+    /** @b TransformationEstimationSVD implements SVD-based estimation of
+      * the transformation aligning the given correspondences.
       *
       * \author Dirk Holz, Radu B. Rusu
       * \ingroup registration
