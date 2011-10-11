@@ -237,8 +237,12 @@ namespace pcl
       getClassName () const { return (feature_name_); }
 
       /** \brief This method should get called before starting the actual computation. */
-      virtual bool
+      virtual inline bool
       initCompute ();
+
+      /** \brief This method should get called after ending the actual computation. */
+      virtual inline bool
+      deinitCompute ();
 
     private:
       /** \brief If no surface is given, we use the input PointCloud as the surface. */
