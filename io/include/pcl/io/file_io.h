@@ -264,7 +264,7 @@ namespace pcl
         */
       template <typename Type> inline void
       copyStringValue (const std::string &st, sensor_msgs::PointCloud2 &cloud,
-                 unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
+                       unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
       {
         //char value = (char)atoi (st.at (d + c).c_str ());
         Type value;
@@ -278,7 +278,7 @@ namespace pcl
 
         memcpy (&cloud.data[point_index * cloud.point_step + 
                             cloud.fields[field_idx].offset + 
-                            fields_count * sizeof (Type)], &value, sizeof (Type));
+                            fields_count * sizeof (Type)], (char*)&value, sizeof (Type));
       }
 
   };
