@@ -60,42 +60,42 @@ computePointSPFHSignature (const pcl::PointCloud<PointInT> &cloud, const pcl::Po
                            int p_idx, int row, const std::vector<int> &indices,
                            Eigen::MatrixXf &hist_f1, Eigen::MatrixXf &hist_f2, Eigen::MatrixXf &hist_f3)
 {
-    Eigen::Vector4f pfh_tuple;
-    // Get the number of bins from the histograms size
-    int nr_bins_f1 = hist_f1.cols ();
-    int nr_bins_f2 = hist_f2.cols ();
-    int nr_bins_f3 = hist_f3.cols ();
+  Eigen::Vector4f pfh_tuple;
+  // Get the number of bins from the histograms size
+  int nr_bins_f1 = hist_f1.cols ();
+  int nr_bins_f2 = hist_f2.cols ();
+  int nr_bins_f3 = hist_f3.cols ();
 
-    // Factorization constant
-    float hist_incr = 100.0 / (float)(indices.size () - 1);
+  // Factorization constant
+  float hist_incr = 100.0 / (float)(indices.size () - 1);
 
-    // Iterate over all the points in the neighborhood
-    for (size_t idx = 0; idx < indices.size (); ++idx)
-    {
-        // Avoid unnecessary returns
-        if (p_idx == indices[idx])
-            continue;
+  // Iterate over all the points in the neighborhood
+  for (size_t idx = 0; idx < indices.size (); ++idx)
+  {
+    // Avoid unnecessary returns
+    if (p_idx == indices[idx])
+        continue;
 
-        // Compute the pair P to NNi
-        if (!computePairFeatures (cloud, normals, p_idx, indices[idx], pfh_tuple[0], pfh_tuple[1], pfh_tuple[2], pfh_tuple[3]))
-            continue;
+    // Compute the pair P to NNi
+    if (!computePairFeatures (cloud, normals, p_idx, indices[idx], pfh_tuple[0], pfh_tuple[1], pfh_tuple[2], pfh_tuple[3]))
+        continue;
 
-        // Normalize the f1, f2, f3 features and push them in the histogram
-        int h_index = floor (nr_bins_f1 * ((pfh_tuple[0] + M_PI) * d_pi_));
-        if (h_index < 0)           h_index = 0;
-        if (h_index >= nr_bins_f1) h_index = nr_bins_f1 - 1;
-        hist_f1 (row, h_index) += hist_incr;
+    // Normalize the f1, f2, f3 features and push them in the histogram
+    int h_index = floor (nr_bins_f1 * ((pfh_tuple[0] + M_PI) * d_pi_));
+    if (h_index < 0)           h_index = 0;
+    if (h_index >= nr_bins_f1) h_index = nr_bins_f1 - 1;
+    hist_f1 (row, h_index) += hist_incr;
 
-        h_index = floor (nr_bins_f2 * ((pfh_tuple[1] + 1.0) * 0.5));
-        if (h_index < 0)           h_index = 0;
-        if (h_index >= nr_bins_f2) h_index = nr_bins_f2 - 1;
-        hist_f2 (row, h_index) += hist_incr;
+    h_index = floor (nr_bins_f2 * ((pfh_tuple[1] + 1.0) * 0.5));
+    if (h_index < 0)           h_index = 0;
+    if (h_index >= nr_bins_f2) h_index = nr_bins_f2 - 1;
+    hist_f2 (row, h_index) += hist_incr;
 
-        h_index = floor (nr_bins_f3 * ((pfh_tuple[2] + 1.0) * 0.5));
-        if (h_index < 0)           h_index = 0;
-        if (h_index >= nr_bins_f3) h_index = nr_bins_f3 - 1;
-        hist_f3 (row, h_index) += hist_incr;
-    }
+    h_index = floor (nr_bins_f3 * ((pfh_tuple[2] + 1.0) * 0.5));
+    if (h_index < 0)           h_index = 0;
+    if (h_index >= nr_bins_f3) h_index = nr_bins_f3 - 1;
+    hist_f3 (row, h_index) += hist_incr;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
