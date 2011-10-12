@@ -514,12 +514,12 @@ bool
 pcl::visualization::PCLVisualizer::removeAllPointClouds (int viewport) 
 { 
   // Check to see if the given ID entry exists 
-  for (CloudActorMap::iterator am_it = cloud_actor_map_->begin ();  
-       am_it != cloud_actor_map_->end (); 
-       ++am_it) 
-  { 
-    removePointCloud (am_it->first, viewport); 
-  } 
+  CloudActorMap::iterator am_it = cloud_actor_map_->begin ();
+  while (am_it != cloud_actor_map_->end () )
+  {  
+    removePointCloud (am_it->first, viewport);
+    am_it = cloud_actor_map_->begin ();
+  }
   return (true); 
 }
 
@@ -528,11 +528,11 @@ bool
 pcl::visualization::PCLVisualizer::removeAllShapes (int viewport) 
 { 
   // Check to see if the given ID entry exists 
-  for (ShapeActorMap::iterator am_it = shape_actor_map_->begin ();  
-       am_it != shape_actor_map_->end (); 
-       ++am_it) 
+  ShapeActorMap::iterator am_it = shape_actor_map_->begin ();  
+  while (am_it != shape_actor_map_->end ())
   { 
     removeShape (am_it->first, viewport); 
+    am_it = shape_actor_map_->begin ();
   } 
   return (true); 
 }
