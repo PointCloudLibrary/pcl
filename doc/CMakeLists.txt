@@ -1,12 +1,6 @@
-set(SUBSYS_NAME documentation)
-set(SUBSYS_DESC "Point clouds library documentation")
-set(SUBSYS_DEPS)
+option(BUILD_documentation "Point clouds library documentation" OFF)
 
-set(build FALSE)
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} OFF)
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
-
-if(build)
+if(BUILD_documentation)
   add_subdirectory(doxygen)
   add_subdirectory(tutorials)
-endif(build)
+endif(BUILD_documentation)
