@@ -235,9 +235,8 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
     Eigen::Matrix4f &transformation_matrix)
 {
   const int nr_correspondences = (int)correspondences.size();
-  std::vector<int> indices_src, indices_tgt;
-  indices_src.resize(nr_correspondences);
-  indices_tgt.resize(nr_correspondences);
+  std::vector<int> indices_src(nr_correspondences);
+  std::vector<int> indices_tgt(nr_correspondences);
   for (int i = 0; i < nr_correspondences; ++i)
   {
     indices_src[i] = correspondences[i].index_query;

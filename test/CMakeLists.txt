@@ -57,6 +57,11 @@ if(build)
                  LINK_WITH pcl_io pcl_registration pcl_features
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd)
 
+    PCL_ADD_TEST(registration_api test_registration_api
+                 FILES test_registration_api.cpp
+                 LINK_WITH pcl_io pcl_registration pcl_features
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd)
+
     PCL_ADD_TEST(a_keypoints_test test_keypoints
                  FILES test_keypoints.cpp
                  LINK_WITH pcl_io pcl_kdtree pcl_filters pcl_keypoints
