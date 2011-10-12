@@ -142,7 +142,7 @@ public:
     
     //boost::shared_ptr<pcl::search::KdTree<RefPointType> > search (new pcl::search::KdTree<RefPointType> (false));
     //coherence->setSearchMethodPolicy (pcl::tracking::NEAREST_NEIGHBOR);
-    boost::shared_ptr<pcl::search::Octree<RefPointType> > search (new pcl::search::Octree<RefPointType> (0.01));
+    boost::shared_ptr<pcl::search::Octree<RefPointType> > search (new pcl::search::Octree<RefPointType> (0.02));
     //boost::shared_ptr<pcl::search::OrganizedNeighbor<RefPointType> > search (new pcl::search::OrganizedNeighbor<RefPointType>);
     coherence->setSearchMethod (search);
     coherence->setMaximumDistance (0.01);
@@ -435,17 +435,12 @@ public:
     pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
     pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
     filterPassThrough (cloud, *cloud_pass_);
-    //gridSample (cloud_pass_, *cloud_pass_downsampled_, 0.015);
-    //gridSample (cloud_pass_, *cloud_pass_downsampled_, 0.015);
-    
-    //cloud_pass_downsampled_ = cloud_pass_;
-    
-    if (firstp_ < 2)
+    if (firstp_ < 3)
     {
       ++firstp_;
       gridSample (cloud_pass_, *cloud_pass_downsampled_, 0.01);
     }
-    else if (firstp_ == 2)
+    else if (firstp_ == 3)
     {
       gridSample (cloud_pass_, *cloud_pass_downsampled_, 0.01);
       ++firstp_;
@@ -552,6 +547,7 @@ public:
       //cloud_pass_downsampled_ = cloud_pass_;
       gridSampleApprox (cloud_pass_, *cloud_pass_downsampled_);
       tracking (cloud_pass_downsampled_);
+      
       //cloud_pass_downsampled_ = cloud_pass_;
       //tracking (cloud_pass_);
       //tracking (reference_);
