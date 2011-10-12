@@ -49,6 +49,45 @@
 /*@{*/
 namespace pcl
 {
+
+  /**
+   * \brief Simple stopwatch.
+   * \ingroup common
+   */
+  class StopWatch
+  {
+    public:
+      StopWatch()
+      {
+        start_time_ = boost::posix_time::microsec_clock::local_time();
+      }
+
+      /** \brief Retrieve the time in milliseconds spent since the last call to \a reset(). */
+      inline float
+      getTime()
+      {
+        boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+        return (float)((end_time - start_time_).total_milliseconds());
+      }
+
+      /** \brief Retrieve the time in seconds spent since the last call to \a reset(). */
+      inline float
+      getTimeSeconds()
+      {
+        return (getTime() * 0.001f);
+      }
+
+      /** \brief Reset the stopwatch to 0. */
+      inline void
+      reset()
+      {
+        start_time_ = boost::posix_time::microsec_clock::local_time();
+      }
+
+    protected:
+      boost::posix_time::ptime start_time_;
+  };
+
   /**
    * \brief Class to measure the time spent in a scope
    *
@@ -56,25 +95,23 @@ namespace pcl
    * just create an instance at the beginning of the function.
    * \ingroup common
    */
-  class ScopeTime 
+  class ScopeTime : public StopWatch
   {
-    public: 
+    public:
       inline ScopeTime (const char* title)
       {
-        start_time_ = boost::posix_time::microsec_clock::local_time();
         title_ = std::string(title);
       }
 
       inline ~ScopeTime ()
       {
-        boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-        std::cerr << title_ << " took " << (end_time - start_time_).total_milliseconds() << "ms.\n";
+        std::cerr << title_ << " took " << getTime() << "ms.\n";
       }
 
     private:
       std::string title_;
-      boost::posix_time::ptime start_time_;
-};
+  };
+
 
 #ifndef MEASURE_FUNCTION_TIME
 #define MEASURE_FUNCTION_TIME \
