@@ -685,7 +685,7 @@ template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addCorrespondences (
    const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
    const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
-   const std::vector<pcl::Correspondence> &correspondences,
+   const pcl::Correspondences &correspondences,
    const std::string &id,
    int viewport)
 {
