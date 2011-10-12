@@ -658,7 +658,7 @@ namespace pcl
         template <typename PointT> bool
         addCorrespondences (const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
                             const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
-                            const std::vector<pcl::Correspondence> &correspondences,
+                            const pcl::Correspondences &correspondences,
                             const std::string &id = "correspondences",
                             int viewport = 0);
         

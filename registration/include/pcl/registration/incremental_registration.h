@@ -133,19 +133,19 @@ namespace pcl
               // determine correspondences
               PointCloudConstPtr cloud_output_ptr = output.makeShared();
 
-              std::vector<Correspondence> correspondences;
+              Correspondences correspondences;
               corr_est_.setInputTarget(cloud_model_ptr_);
               corr_est_.setInputCloud(cloud_output_ptr);
               corr_est_.determineCorrespondences(correspondences, max_dist);
 
               // remove one-to-n correspondences
-              std::vector<Correspondence> correspondeces_one_to_one;
+              Correspondences correspondeces_one_to_one;
               cor_rej_one_to_one_.getCorrespondences(correspondences, correspondeces_one_to_one);
 
               // SAC-based correspondence rejection
               double sac_threshold = max_dist;
               int sac_max_iterations = 100;
-              std::vector<pcl::Correspondence> correspondences_sac;
+              pcl::Correspondences correspondences_sac;
               cor_rej_sac_.setInputCloud(cloud_output_ptr);
               cor_rej_sac_.setTargetCloud(cloud_model_ptr_);
               cor_rej_sac_.setInlierThreshold(sac_threshold);

@@ -110,7 +110,7 @@ namespace pcl
         /** \brief ...
           */
         inline void 
-        getRejectedQueryIndices (const std::vector<pcl::Correspondence> &correspondences, 
+        getRejectedQueryIndices (const pcl::Correspondences &correspondences, 
                                  std::vector<int>& indices)
         {
           if (!input_correspondences_ || input_correspondences_->empty ())
