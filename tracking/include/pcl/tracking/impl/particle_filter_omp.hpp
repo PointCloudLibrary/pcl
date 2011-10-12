@@ -8,23 +8,42 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
   {
 #pragma omp parallel for schedule (dynamic, threads_)
     for (int i = 0; i < particle_num_; i++)
-    {
-      IndicesPtr indices;
-      //computeTransformedPointCloud (particles_->points[i], *indices, *transed_reference_vector_[i]);
       computeTransformedPointCloudWithoutNormal (particles_->points[i], *transed_reference_vector_[i]);
-    }
     
     PointCloudInPtr coherence_input (new PointCloudIn);
     cropInputPointCloud (input_, *coherence_input);
-    
-    coherence_->setTargetCloud (coherence_input);
-    coherence_->initCompute ();
-    
-#pragma omp parallel for schedule (dynamic, threads_)
-    for (int i = 0; i < particle_num_; i++)
+
+    if (change_counter_ == 0)
     {
-      IndicesPtr indices;
-      coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
+      // test change detector
+      if (testChangeDetection (coherence_input))
+      {
+        changed_ = true;
+        change_counter_ = change_detector_interval_;
+        //coherence_->setTargetCloud (changed_input);
+        coherence_->setTargetCloud (coherence_input);
+        coherence_->initCompute ();
+#pragma omp parallel for schedule (dynamic, threads_)
+        for (int i = 0; i < particle_num_; i++)
+        {
+          IndicesPtr indices;
+          coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
+        }
+      }
+      else
+        changed_ = false;
+    }
+    else
+    {
+      --change_counter_;
+      coherence_->setTargetCloud (coherence_input);
+      coherence_->initCompute ();
+#pragma omp parallel for schedule (dynamic, threads_)
+      for (int i = 0; i < particle_num_; i++)
+      {
+        IndicesPtr indices;
+        coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
+      }
     }
   }
 //   else

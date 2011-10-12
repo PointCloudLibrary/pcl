@@ -25,13 +25,18 @@ namespace pcl
       using Tracker<PointInT, StateT>::indices_;
       using Tracker<PointInT, StateT>::getClassName;
       using ParticleFilterTracker<PointInT, StateT>::particles_;
+      using ParticleFilterTracker<PointInT, StateT>::change_detector_;
+      using ParticleFilterTracker<PointInT, StateT>::change_counter_;
+      using ParticleFilterTracker<PointInT, StateT>::change_detector_interval_;
       using ParticleFilterTracker<PointInT, StateT>::pass_x_;
       using ParticleFilterTracker<PointInT, StateT>::pass_y_;
       using ParticleFilterTracker<PointInT, StateT>::pass_z_;
       using ParticleFilterTracker<PointInT, StateT>::alpha_;
+      using ParticleFilterTracker<PointInT, StateT>::changed_;
       using ParticleFilterTracker<PointInT, StateT>::coherence_;
       using ParticleFilterTracker<PointInT, StateT>::use_normal_;
       using ParticleFilterTracker<PointInT, StateT>::particle_num_;
+      using ParticleFilterTracker<PointInT, StateT>::change_detector_filter_;
       using ParticleFilterTracker<PointInT, StateT>::transed_reference_vector_;
       //using ParticleFilterTracker<PointInT, StateT>::calcLikelihood;
       using ParticleFilterTracker<PointInT, StateT>::normalizeWeight;
@@ -93,6 +98,7 @@ namespace pcl
           calculate the likelihood of all of the particles and set the weights.
         */
       virtual void weight ();
+
     };
   }
 }

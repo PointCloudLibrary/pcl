@@ -5,6 +5,7 @@
 #include "pcl/tracking/tracker.h"
 #include "pcl/tracking/coherence.h"
 #include "pcl/filters/passthrough.h"
+#include "pcl/octree/octree.h"
 
 #include <Eigen/Dense>
 
@@ -59,6 +60,10 @@ namespace pcl
       , alpha_ (15.0)
       , use_normal_ (false)
       , motion_ratio_ (0.25)
+      , change_detector_ (new pcl::octree::OctreePointCloudChangeDetector<PointInT> (0.01))
+      , change_counter_ (0)
+      , change_detector_filter_ (10)
+      , change_detector_interval_ (10)
       {
         tracker_name_ = "ParticleFilterTracker";
         pass_x_.setFilterFieldName ("x");
@@ -224,6 +229,34 @@ namespace pcl
 
       /** \brief get the motion ratio */
       inline double getMotionRatio () { return motion_ratio_;}
+
+      /** \brief set the number of interval frames to run change detection.
+        * \param change_detector_interval the number of interval frames.
+        */
+      inline void setIntervalOfChangeDetection (unsigned int change_detector_interval)
+      {
+        change_detector_interval_ = change_detector_interval;
+      }
+
+      /** \brief get the number of interval frames to run change detection.*/
+      inline unsigned int getIntervalOfChangeDetection ()
+      {
+        return change_detector_interval_;
+      }
+
+      /** \brief set the minimum amount of points required within leaf node to become serialized in change detection
+        * \param the minimum amount of points required within leaf node
+       */
+      inline void setMinPointsOfChangeDetection (unsigned int change_detector_filter)
+      {
+        change_detector_filter_ = change_detector_filter;
+      }
+
+      /** \brief get the minimum amount of points required within leaf node to become serialized in change detection */
+      inline unsigned int getMinPointsOfChangeDetection ()
+      {
+        return change_detector_filter_;
+      }
       
     protected:
 
@@ -341,7 +374,12 @@ namespace pcl
       
       /** \brief resampling the particle in deterministic way*/
       void resampleDeterministic ();
-        
+
+      /** \brief run change detection and return true if there is a change.
+        * \param input a pointer to the input pointcloud.
+        */
+      bool testChangeDetection (const PointCloudInConstPtr &input);
+      
       /** \brief the number of iteration of particlefilter. */
       int iteration_num_;
 
@@ -407,7 +445,21 @@ namespace pcl
 
       /** \brief a list of the pointers to pointclouds*/
       std::vector<PointCloudInPtr> transed_reference_vector_;
+
+      /** \brief change detector used as a trigger to track*/
+      boost::shared_ptr<pcl::octree::OctreePointCloudChangeDetector<PointInT> > change_detector_;
+
+      /** \brief a flag to be true when change of pointclouds is detected*/
+      bool changed_;
+
+      /** \brief a counter to skip change detection*/
+      unsigned int change_counter_;
       
+      /** \brief minimum points in a leaf when calling change detector. defaults to 10 */
+      unsigned int change_detector_filter_;
+
+      /** \brief the number of interval frame to run change detection. defaults to 10.*/
+      unsigned int change_detector_interval_;
     };
     
   }

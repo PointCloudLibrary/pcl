@@ -203,6 +203,18 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcBoundingBox
   }
 }
 
+template <typename PointInT, typename StateT> bool
+pcl::tracking::ParticleFilterTracker<PointInT, StateT>::testChangeDetection
+(const PointCloudInConstPtr &input)
+{
+  change_detector_->setInputCloud (input);
+  change_detector_->addPointsFromInputCloud ();
+  std::vector<int> newPointIdxVector;
+  change_detector_->getPointIndicesFromNewVoxels (newPointIdxVector, change_detector_filter_);
+  change_detector_->switchBuffers ();
+  return newPointIdxVector.size () > 0;
+}
+
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::weight ()
 {
@@ -303,44 +315,48 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resample ()
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resampleWithReplacement ()
 {
-  std::vector<int> a (particle_num_);
-  std::vector<double> q (particle_num_);
-  genAliasTable (a, q, particles_);
-  
-  const std::vector<double> zero_mean (StateT::stateDimension (), 0.0);
-  // memoize the original list of particles
-  PointCloudStatePtr origparticles = particles_;
-  particles_->points.clear ();
-  // the first particle, it is a just copy of the maximum result
-  StateT p = representative_state_;
-  particles_->points.push_back (p);
-  
-  // with motion
-  int motion_num = (int)(particle_num_ * motion_ratio_);
-  for ( int i = 1; i < motion_num; i++ )
+  if (changed_)
   {
-    int target_particle_index = sampleWithReplacement (a, q);
-    StateT p = origparticles->points[target_particle_index];
-    // add noise using gaussian
-    p.sample (zero_mean, step_noise_covariance_);
-    p = p + motion_;
-    particles_->points.push_back (p);
-  }
+    std::vector<int> a (particle_num_);
+    std::vector<double> q (particle_num_);
+    genAliasTable (a, q, particles_);
   
-  // no motion
-  for ( int i = motion_num; i < particle_num_; i++ )
-  {
-    int target_particle_index = sampleWithReplacement (a, q);
-    StateT p = origparticles->points[target_particle_index];
-    // add noise using gaussian
-    p.sample (zero_mean, step_noise_covariance_);
+    const std::vector<double> zero_mean (StateT::stateDimension (), 0.0);
+    // memoize the original list of particles
+    PointCloudStatePtr origparticles = particles_;
+    particles_->points.clear ();
+    // the first particle, it is a just copy of the maximum result
+    StateT p = representative_state_;
     particles_->points.push_back (p);
+  
+    // with motion
+    int motion_num = (int)(particle_num_ * motion_ratio_);
+    for ( int i = 1; i < motion_num; i++ )
+    {
+      int target_particle_index = sampleWithReplacement (a, q);
+      StateT p = origparticles->points[target_particle_index];
+      // add noise using gaussian
+      p.sample (zero_mean, step_noise_covariance_);
+      p = p + motion_;
+      particles_->points.push_back (p);
+    }
+  
+    // no motion
+    for ( int i = motion_num; i < particle_num_; i++ )
+    {
+      int target_particle_index = sampleWithReplacement (a, q);
+      StateT p = origparticles->points[target_particle_index];
+      // add noise using gaussian
+      p.sample (zero_mean, step_noise_covariance_);
+      particles_->points.push_back (p);
+    }
   }
 }
 
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::update ()
 {
+  
   StateT orig_representative = representative_state_;
   representative_state_.zero ();
   representative_state_.weight = 0.0;
@@ -361,7 +377,10 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTracking ()
   {
     resample ();
     weight (); // likelihood is called in it
-    update ();
+    if (changed_)
+    {
+      update ();
+    }
   }
   
   // if ( getResult ().weight < resample_likelihood_thr_ )
