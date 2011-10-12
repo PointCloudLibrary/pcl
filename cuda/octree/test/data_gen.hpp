@@ -93,7 +93,7 @@ struct DataGenerator
             radiuses[i]  = (float)rng * max_radius;	
         };        
 
-        for(int i = 0; i < tests_num/2; ++i)
+        for(size_t i = 0; i < tests_num/2; ++i)
             indices.push_back(i*2);
     }
 

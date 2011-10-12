@@ -58,4 +58,4 @@ namespace pcl
     }
 }
 
-#endif PCL_GPU_SCOPE_TIMER_CV_H
+#endif /* PCL_GPU_SCOPE_TIMER_CV_H */

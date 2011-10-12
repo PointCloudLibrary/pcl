@@ -148,7 +148,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
         std::sort(results_batch.begin(), results_batch.end());
         std::sort(results_host.begin(), results_host.end());
 
-        if (results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
+        if ((int)results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
             results_host.resize(max_answers);
         
         ASSERT_EQ ( ( results_batch == results_host ), true );       
@@ -177,7 +177,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
         std::sort(results_batch.begin(), results_batch.end());
         std::sort(results_host.begin(), results_host.end());
 
-        if (results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
+        if ((int)results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
             results_host.resize(max_answers);
 
         ASSERT_EQ ( ( results_batch == results_host ), true );       
@@ -206,7 +206,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
         std::sort(results_batch.begin(), results_batch.end());
         std::sort(results_host.begin(), results_host.end());
 
-        if (results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
+        if ((int)results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
             results_host.resize(max_answers);
         
         ASSERT_EQ ( ( results_batch == results_host ), true );       

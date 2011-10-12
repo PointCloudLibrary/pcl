@@ -76,8 +76,8 @@ namespace pcl
             int max_nn_size;
 
             DataSource(const std::string& file = "d:/office_chair_model.pcd") 
-                : cloud(new PointCloud<PointXYZ>()), normals(new PointCloud<Normal>()), normals_surface(new PointCloud<Normal>()),
-                surface(new PointCloud<PointXYZ>()), indices( new std::vector<int>() )
+                : cloud(new PointCloud<PointXYZ>()), surface(new PointCloud<PointXYZ>()), indices( new std::vector<int>() ),
+                normals(new PointCloud<Normal>()), normals_surface(new PointCloud<Normal>())
             {                
                 PCDReader pcd;
                 pcd.read(file, *cloud);
