@@ -66,6 +66,9 @@ namespace pcl
       using PCLBase<PointSource>::input_;
       using PCLBase<PointSource>::indices_;
 
+      typedef boost::shared_ptr< Registration<PointSource, PointTarget> > Ptr;
+      typedef boost::shared_ptr< const Registration<PointSource, PointTarget> > ConstPtr;
+
       typedef typename pcl::KdTree<PointTarget> KdTree;
       typedef typename pcl::KdTree<PointTarget>::Ptr KdTreePtr;
      

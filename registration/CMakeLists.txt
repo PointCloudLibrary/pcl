@@ -20,6 +20,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ia_ransac.h
         include/pcl/${SUBSYS_NAME}/icp.h
         include/pcl/${SUBSYS_NAME}/icp_nl.h
+        include/pcl/${SUBSYS_NAME}/elch.h
         #include/pcl/${SUBSYS_NAME}/incremental_registration.h
         include/pcl/${SUBSYS_NAME}/ppf_registration.h
         include/pcl/${SUBSYS_NAME}/pyramid_feature_matching.h
@@ -51,6 +52,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/ia_ransac.hpp
         include/pcl/${SUBSYS_NAME}/impl/icp.hpp
         include/pcl/${SUBSYS_NAME}/impl/icp_nl.hpp
+        include/pcl/${SUBSYS_NAME}/impl/elch.hpp
         include/pcl/${SUBSYS_NAME}/impl/ppf_registration.hpp
         include/pcl/${SUBSYS_NAME}/impl/pyramid_feature_matching.hpp
         include/pcl/${SUBSYS_NAME}/impl/registration.hpp
