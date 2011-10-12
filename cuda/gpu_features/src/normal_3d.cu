@@ -68,7 +68,7 @@ namespace pcl
                 c.z = Warp::reduce(buffer, c.z, plus());                                
                 c /= size;                                                  
 
-                //nvcc bug workaraount. if comment this => c.z == 0 at line: float3 d = fetch(*t) - c;
+                //nvcc bug workaround. if comment this => c.z == 0 at line: float3 d = fetch(*t) - c;
                 __threadfence_block();
 
                 //compute covariance matrix        

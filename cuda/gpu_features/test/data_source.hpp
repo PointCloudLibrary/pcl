@@ -50,6 +50,7 @@
 
 #include <Eigen/StdVector>
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::PointXYZ)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::Normal)
 
 #include <algorithm>
 
@@ -85,6 +86,21 @@ namespace pcl
                 pcl::getMinMax3D(*cloud, minp, maxp);
                 float sz = (maxp.x - minp.x + maxp.y - minp.y + maxp.z - minp.z) / 3;
                 radius = sz / 15;
+            }
+
+            void generateColor()
+            {
+                size_t cloud_size = cloud->points.size();
+                for(size_t i = 0; i < cloud_size; ++i)
+                {
+                    PointXYZ& p = cloud->points[i];
+
+                    int r = std::max(1, std::min(255, static_cast<int>((double(rand())/RAND_MAX)*255)));
+                    int g = std::max(1, std::min(255, static_cast<int>((double(rand())/RAND_MAX)*255)));
+                    int b = std::max(1, std::min(255, static_cast<int>((double(rand())/RAND_MAX)*255)));
+
+                    *reinterpret_cast<int*>(&p.data[3]) = (b << 16) + (g << 8) + r;
+                }
             }
 
             void estimateNormals()

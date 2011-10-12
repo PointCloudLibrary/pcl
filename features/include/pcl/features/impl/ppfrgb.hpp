@@ -56,13 +56,13 @@ pcl::PPFRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
         else
         {
           PCL_ERROR ("[pcl::%s::computeFeature] Computing pair feature vector between points %zu and %zu went wrong.\n", getClassName ().c_str (), i, j);
-          p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = 0.0;
+           p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = p.r_ratio = p.g_ratio = p.b_ratio = 0.f;
         }
       }
       // Do not calculate the feature for identity pairs (i, i) as they are not used
       // in the following computations
       else
-        p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = 0.0;
+         p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = p.r_ratio = p.g_ratio = p.b_ratio = 0.f;
 
       output.points[index_i*input_->points.size () + j] = p;
     }

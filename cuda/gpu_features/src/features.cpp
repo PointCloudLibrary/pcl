@@ -7,6 +7,7 @@ using namespace pcl::device;
 /////////////////////////////////////////////////////////////////////////
 /// Feature
 
+pcl::gpu::Feature::Feature() { radius_ = 0.f, max_results_ = 0.f; } 
 void pcl::gpu::Feature::setInputCloud(const PointCloud& cloud) { cloud_ = cloud; }
 void pcl::gpu::Feature::setSearchSurface(const PointCloud& surface) { surface_ = surface; }
 void pcl::gpu::Feature::setIndices(const Indices& indices) { indices_ = indices; }
@@ -85,43 +86,26 @@ void pcl::gpu::NormalEstimation::compute(Normals& normals)
 /////////////////////////////////////////////////////////////////////////
 /// PFHEstimation
 
-pcl::gpu::PFHEstimation::PFHEstimation()
+void pcl::gpu::PFHEstimation::compute(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighbours, DeviceArray2D<PFHSignature125>& features)
 {
-    Static<sizeof(PFHEstimation:: PointType) == sizeof(device:: PointType)>::check();
-    Static<sizeof(PFHEstimation::NormalType) == sizeof(device::NormalType)>::check();    
-
-    impl = new PfhImpl();
-}
-
-pcl::gpu::PFHEstimation::~PFHEstimation()
-{
-    delete static_cast<PfhImpl*>(impl);
-}
-
-void pcl::gpu::PFHEstimation::compute(const PointCloud& cloud, const Normals& normals, const NeighborIndices& indices, DeviceArray2D<PFHSignature125>& features)
-{
-    //assert( cloud.size() == normals.size() );    
-    //assert( indices.validate(cloud.size()) );
+    assert( cloud.size() == normals.size() );    
+    assert( neighbours.validate(cloud.size()) );
 
     const device::PointCloud& c = (const device::PointCloud&)cloud;
     const device::Normals&    n = (const device::Normals&)normals;    
 
-    features.create(indices.sizes.size(), 1);    
-
-    PfhImpl& est = *static_cast<PfhImpl*>(impl);
-    est.cloud = c;
-    est.normals = n;
-    est.neighbours = indices;
+    features.create(neighbours.sizes.size(), 1);
 
     DeviceArray2D<device::PFHSignature125>& f = (DeviceArray2D<device::PFHSignature125>&)features;
 
-    est.compute(f);
+    repackToAosForPfh(c, n, neighbours, data_rpk, max_elems_rpk);
+    computePfh125(data_rpk, max_elems_rpk, neighbours, f);
 }
 
 void pcl::gpu::PFHEstimation::compute(DeviceArray2D<PFHSignature125>& features)
 {
     PointCloud& surface = surface_.empty() ? cloud_ : surface_;
-    
+
     octree_.setCloud(surface);
     octree_.build();
 
@@ -139,7 +123,44 @@ void pcl::gpu::PFHEstimation::compute(DeviceArray2D<PFHSignature125>& features)
     }
 
 }
+  
+void pcl::gpu::PFHRGBEstimation::compute(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighbours, DeviceArray2D<PFHRGBSignature250>& features)
+{
+    assert( cloud.size() == normals.size() );    
+    assert( neighbours.validate(cloud.size()) );
 
+    const device::PointCloud& c = (const device::PointCloud&)cloud;
+    const device::Normals&    n = (const device::Normals&)normals;    
+
+    features.create(neighbours.sizes.size(), 1);
+
+    DeviceArray2D<device::PFHRGBSignature250>& f = (DeviceArray2D<device::PFHRGBSignature250>&)features;
+
+    repackToAosForPfhRgb(c, n, neighbours, data_rpk, max_elems_rpk);
+    computePfhRgb250(data_rpk, max_elems_rpk, neighbours, f);
+}
+
+void pcl::gpu::PFHRGBEstimation::compute(DeviceArray2D<PFHRGBSignature250>& features)
+{
+    PointCloud& surface = surface_.empty() ? cloud_ : surface_;
+
+    octree_.setCloud(surface);
+    octree_.build();
+
+    assert( cloud_.size() == normals_.size());
+
+    if (indices_.empty() || (!indices_.empty() && indices_.size() == cloud_.size()))
+    {        
+        octree_.radiusSearch(cloud_, radius_, max_results_, nn_indices_);       
+        compute(surface, normals_, nn_indices_, features);        
+    }
+    else
+    {        
+        octree_.radiusSearch(cloud_, indices_, radius_, max_results_, nn_indices_);                
+        compute(surface, normals_, nn_indices_, features);
+    }
+}
+    
 /////////////////////////////////////////////////////////////////////////
 /// FPFHEstimation
 
@@ -189,7 +210,7 @@ void pcl::gpu::FPFHEstimation::compute(DeviceArray2D<FPFHSignature33>& features)
     }
 
     PointCloud& surface = surface_.empty() ? cloud_ : surface_;
-    
+
     octree_.setCloud(surface);
     octree_.build();
 
@@ -199,7 +220,7 @@ void pcl::gpu::FPFHEstimation::compute(DeviceArray2D<FPFHSignature33>& features)
         octree_.radiusSearch(cloud_, radius_, max_results_, nn_indices_);
 
     int total = computeUniqueIndices(surface.size(), nn_indices_, unique_indices_storage, lookup);    
-    
+
     DeviceArray<int> unique_indices(unique_indices_storage.ptr(), total);
     octree_.radiusSearch(surface, unique_indices, radius_, max_results_, nn_indices2_);
 
@@ -212,3 +233,169 @@ void pcl::gpu::FPFHEstimation::compute(DeviceArray2D<FPFHSignature33>& features)
     DeviceArray2D<device::FPFHSignature33>& f = (DeviceArray2D<device::FPFHSignature33>&)features;
     device::computeFPFH(c, indices_, s, nn_indices_, lookup, spfh33, f);
 }
+
+
+/////////////////////////////////////////////////////////////////////////
+/// PPFEstimation      
+
+void pcl::gpu::PPFEstimation::compute(DeviceArray<PPFSignature>& features)
+{
+    Static<sizeof(PPFEstimation:: PointType) == sizeof(device:: PointType)>::check();
+    Static<sizeof(PPFEstimation::NormalType) == sizeof(device::NormalType)>::check();    
+
+    assert(this->surface_.empty() && !indices_.empty() && !cloud_.empty() && normals_.size() == cloud_.size());
+    features.create(indices_.size () * cloud_.size ());
+
+    const device::PointCloud& c = (const device::PointCloud&)cloud_;
+    const device::Normals&    n = (const device::Normals&)normals_;
+
+    DeviceArray<device::PPFSignature>& f = (DeviceArray<device::PPFSignature>&)features;    
+    device::computePPF(c, n, indices_, f);    
+}
+
+/////////////////////////////////////////////////////////////////////////
+/// PPFRGBEstimation      
+
+void pcl::gpu::PPFRGBEstimation::compute(DeviceArray<PPFRGBSignature>& features)
+{    
+    Static<sizeof(PPFEstimation:: PointType) == sizeof(device:: PointType)>::check();
+    Static<sizeof(PPFEstimation::NormalType) == sizeof(device::NormalType)>::check();    
+
+    assert(this->surface_.empty() && !indices_.empty() && !cloud_.empty() && normals_.size() == cloud_.size());
+    features.create(indices_.size () * cloud_.size ());
+
+    const device::PointCloud&  c = (const device::PointCloud&)cloud_;
+    const device::Normals&     n = (const device::Normals&)normals_;
+
+    DeviceArray<device::PPFRGBSignature>& f = (DeviceArray<device::PPFRGBSignature>&)features;    
+    device::computePPFRGB(c, n, indices_, f);    
+}
+
+/////////////////////////////////////////////////////////////////////////
+/// PPFRGBRegionEstimation  
+
+void pcl::gpu::PPFRGBRegionEstimation::compute(DeviceArray<PPFRGBSignature>& features)
+{
+    Static<sizeof(PPFRGBRegionEstimation:: PointType) == sizeof(device:: PointType)>::check();
+    Static<sizeof(PPFRGBRegionEstimation::NormalType) == sizeof(device::NormalType)>::check();    
+
+    assert(this->surface_.empty() && !indices_.empty() && !cloud_.empty() && normals_.size() == cloud_.size());
+
+    features.create(indices_.size());
+
+    octree_.setCloud(cloud_);
+    octree_.build();
+
+    octree_.radiusSearch(cloud_, indices_, radius_, max_results_, nn_indices_);
+
+    const device::PointCloud& c = (const device::PointCloud&)cloud_;
+    const device::Normals&    n = (const device::Normals&)normals_;
+
+    DeviceArray<device::PPFRGBSignature>& f = (DeviceArray<device::PPFRGBSignature>&)features;        
+    
+    device::computePPFRGBRegion(c, n, indices_, nn_indices_, f);            
+}
+
+/////////////////////////////////////////////////////////////////////////
+/// PrincipalCurvaturesEstimation
+
+void pcl::gpu::PrincipalCurvaturesEstimation::compute(DeviceArray<PrincipalCurvatures>& features)
+{
+    Static<sizeof(PPFRGBRegionEstimation:: PointType) == sizeof(device:: PointType)>::check();
+    Static<sizeof(PPFRGBRegionEstimation::NormalType) == sizeof(device::NormalType)>::check();    
+
+    assert(/*!indices_.empty() && */!cloud_.empty() && max_results_ > 0 && radius_ > 0.f);
+    assert(surface_.empty() ? normals_.size() == cloud_.size() : normals_.size() == surface_.size());
+
+    PointCloud& surface = surface_.empty() ? cloud_ : surface_;
+
+    octree_.setCloud(surface);
+    octree_.build();
+
+    if(indices_.empty())
+        octree_.radiusSearch(cloud_, radius_, max_results_, nn_indices_);
+    else
+        octree_.radiusSearch(cloud_, indices_, radius_, max_results_, nn_indices_);
+
+    const device::Normals& n = (const device::Normals&)normals_;
+
+    features.create(normals_.size());
+
+    DeviceArray<device::PrincipalCurvatures>& f = (DeviceArray<device::PrincipalCurvatures>&)features;
+
+    device::computePointPrincipalCurvatures(n, indices_, nn_indices_, f, proj_normals_buf);
+}
+
+/////////////////////////////////////////////////////////////////////////
+/// VFHEstimation
+
+//pcl::gpu::VFHEstimation::VFHEstimation()
+//{     
+//    vpx_ =  vpy_ =  vpz_ = 0.f;
+//
+//    //default parameters to compute VFH
+//    use_given_normal_ = false;
+//    use_given_centroid_ = false;
+//    normalize_bins_ = true;
+//    normalize_distances_ = false;
+//    size_component_ = false;    
+//}
+//
+//void pcl::gpu::VFHEstimation::setViewPoint(float  vpx, float  vpy, float  vpz) { vpx_ = vpx; vpy_ = vpy; vpz_ = vpz; }
+//void pcl::gpu::VFHEstimation::getViewPoint(float& vpx, float& vpy, float& vpz) { vpx = vpx_; vpy = vpy_; vpz = vpz_; }      
+//
+//void pcl::gpu::VFHEstimation::setUseGivenNormal (bool use) { use_given_normal_ = use; }
+//void pcl::gpu::VFHEstimation::setNormalToUse (const NormalType& normal)   { normal_to_use_ = normal; }
+//void pcl::gpu::VFHEstimation::setUseGivenCentroid (bool use) { use_given_centroid_ = use; }
+//void pcl::gpu::VFHEstimation::setCentroidToUse (const PointType& centroid)  { centroid_to_use_ = centroid; }
+//
+//void pcl::gpu::VFHEstimation::setNormalizeBins (bool normalize)     { normalize_bins_ = normalize; }
+//void pcl::gpu::VFHEstimation::setNormalizeDistance (bool normalize) { normalize_distances_ = normalize; }
+//void pcl::gpu::VFHEstimation::setFillSizeComponent (bool fill_size) { size_component_ = fill_size; }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+//void pcl::gpu::VFHEstimation::compute(DeviceArray<VFHSignature308>& feature)
+//{   
+//    Static<sizeof(VFHEstimation:: PointType) == sizeof(device:: PointType)>::check();
+//    Static<sizeof(VFHEstimation::NormalType) == sizeof(device::NormalType)>::check();    
+//
+//    feature.create(1);
+//
+//    VFHEstimationImpl impl;
+//
+//    const DeviceArray<device::PointType>& s = (const DeviceArray<device::PointType>&)surface_;
+//    const DeviceArray<device::NormalType>& n = (const DeviceArray<device::NormalType>&)normals_;
+//    
+//    if (use_given_centroid_) 
+//    {
+//        impl.xyz_centroid.x = centroid_to_use_.x;
+//        impl.xyz_centroid.y = centroid_to_use_.y;
+//        impl.xyz_centroid.z = centroid_to_use_.z;
+//    }
+//    else
+//        compute3DCentroid (s, indices_, impl.xyz_centroid);
+//
+//    if (use_given_normal_)
+//    {
+//        impl.normal_centroid.x = normal_to_use_.x;
+//        impl.normal_centroid.y = normal_to_use_.y;
+//        impl.normal_centroid.z = normal_to_use_.z;
+//    }
+//    else
+//        compute3DCentroid (n, indices_, impl.normal_centroid);
+//
+//    impl.viewpoint = make_float3(vpx_, vpy_, vpz_);
+//
+//
+//    impl.indices = indices_;
+//    impl.points = s;
+//    impl.normals = n;
+//
+//    impl.normalize_distances = normalize_distances_;
+//    impl.size_component = size_component_;
+//    impl.normalize_bins = normalize_bins_;
+//
+//    DeviceArray<device::VFHSignature308>& f = (DeviceArray<device::VFHSignature308>&)feature;
+//    impl.compute(f);
+//}

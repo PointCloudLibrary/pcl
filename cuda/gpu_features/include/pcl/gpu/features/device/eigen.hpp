@@ -168,6 +168,7 @@ namespace pcl
             {
                 float3 data[Rows];                
                 __device__ __host__ __forceinline__ float3& operator[](int i) { return data[i]; }
+                __device__ __host__ __forceinline__ const float3& operator[](int i) const { return data[i]; }
             };
             typedef MiniMat<3> Mat33;
             typedef MiniMat<4> Mat43;

@@ -4,8 +4,8 @@
 #include "pcl/gpu/utils/device/warp.hpp"
 #include "pcl/gpu/utils/device/block.hpp"
 #include "utils/vector_operations.hpp"
-#include "utils/pair_features.hpp"
 #include "pcl/gpu/utils/device/funcattrib.hpp"
+#include "pcl/gpu/features/device/pair_features.hpp"
 
 using namespace pcl::gpu;
 
@@ -18,6 +18,7 @@ namespace pcl
 {
     namespace device
     {    
+        template<bool pack_rgb>
         struct Repack
         {   
             enum 
@@ -50,16 +51,28 @@ namespace pcl
                 for(int i = Warp::laneId(); i < size; i += Warp::STRIDE)
                 {
                     int cloud_index = nbeg[i];
-                    float3 p = fetch(cloud, cloud_index);
-                    float3 n = fetch(normals, cloud_index);
+                    
+                    float3 p;
+                    
+                    if (pack_rgb)
+                    {
+                        int color;
+                        p = fetchXYZRGB(cloud, cloud_index, color);
+                        output.ptr(6)[i + idx_shift] = __int_as_float(color);
+                    }
+                    else
+                        p = fetch(cloud, cloud_index);
 
                     output.ptr(0)[i + idx_shift] = p.x;
                     output.ptr(1)[i + idx_shift] = p.y;
                     output.ptr(2)[i + idx_shift] = p.z;
+                    
+                    
+                    float3 n = fetch(normals, cloud_index);
 
                     output.ptr(3)[i + idx_shift] = n.x;
                     output.ptr(4)[i + idx_shift] = n.y;
-                    output.ptr(5)[i + idx_shift] = n.z;                                           
+                    output.ptr(5)[i + idx_shift] = n.z;
                 }
             }
 
@@ -69,8 +82,16 @@ namespace pcl
                 //return tr(ptr[index]);
                 return *(float3*)&ptr[index];
             }
+
+            __forceinline__ __device__ float3 fetchXYZRGB(const PointXYZRGB* data, int index, int& color) const
+            {
+                float4 xyzrgb = data[index];
+                color = __float_as_int(xyzrgb.w);
+                return make_float3(xyzrgb.x, xyzrgb.y, xyzrgb.z);
+            }
         };
 
+        template<bool enable_rgb>
         struct Pfh125
         {
             enum 
@@ -79,8 +100,9 @@ namespace pcl
 
                 NR_SPLIT = 5,
                 NR_SPLIT_2 = NR_SPLIT * NR_SPLIT,
+                NR_SPLIT_3 = NR_SPLIT_2 * NR_SPLIT,
 
-                FSize = NR_SPLIT * NR_SPLIT * NR_SPLIT
+                FSize = NR_SPLIT * NR_SPLIT * NR_SPLIT * (enable_rgb ? 2 : 1)
             };
 
             size_t work_size;
@@ -140,7 +162,8 @@ namespace pcl
 
                         float f1, f2, f3, f4;
                         // Compute the pair NNi to NNj                        
-                        if (computePairFeatures (pi, ni, pj, nj, f1, f2, f3, f4))
+                        computePairFeatures (pi, ni, pj, nj, f1, f2, f3, f4);
+                        //if (computePairFeatures (pi, ni, pj, nj, f1, f2, f3, f4))
                         {                            
                             // Normalize the f1, f2, f3 features and push them in the histogram
                             int find0 = floor( NR_SPLIT * ((f1 + M_PI) * (1.f / (2.f * M_PI))) );                            
@@ -154,6 +177,29 @@ namespace pcl
 
                             int h_index = find0 + NR_SPLIT * find1 + NR_SPLIT_2 * find2;
                             atomicAdd(pfh_histogram + h_index, hist_incr);
+
+                            if (enable_rgb)
+                            {
+                                int ci = __float_as_int(rpk.ptr(6)[i_idx]);
+                                int cj = __float_as_int(rpk.ptr(6)[j_idx]);
+
+                                float f5, f6, f7;
+                                computeRGBPairFeatures_RGBOnly(ci, cj, f5, f6, f7);
+
+                                // color ratios are in [-1, 1]
+                                int find4 = floor (NR_SPLIT * ((f5 + 1.f) * 0.5f));
+                                find4 = min(NR_SPLIT - 1, max(0, find4));
+
+                                int find5 = floor (NR_SPLIT * ((f6 + 1.f) * 0.5f));
+                                find5 = min(NR_SPLIT - 1, max(0, find5));
+
+                                int find6 = floor (NR_SPLIT * ((f7 + 1.f) * 0.5f));
+                                find6 = min(NR_SPLIT - 1, max(0, find6));
+
+                                // and the colors
+                                h_index = NR_SPLIT_3 + find4 + NR_SPLIT * find5 + NR_SPLIT_2 * find6;
+                                atomicAdd(pfh_histogram + h_index, hist_incr);               
+                            }
                         }           
                     }
                 }
@@ -169,17 +215,17 @@ namespace pcl
             }
         };
 
-        __global__ void repackKernel(const Repack repack) { repack(); }
-        __global__ void pfhKernel(const Pfh125 pfh125) { pfh125(); }
+        __global__ void repackKernel(const Repack<false> repack) { repack(); }
+        __global__ void pfhKernel(const Pfh125<false> pfh125) { pfh125(); }
     }    
 }
 
-void pcl::device::PfhImpl::repack()
+void pcl::device::repackToAosForPfh(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighbours, DeviceArray2D<float>& data_rpk, int& max_elems_rpk)
 {   
     max_elems_rpk = (neighbours.max_elems/32 + 1) * 32;
     data_rpk.create(6, neighbours.sizes.size() * max_elems_rpk);
 
-    Repack rpk;
+    Repack<false> rpk;
     rpk.sizes = neighbours.sizes;
     rpk.gindices = neighbours;
 
@@ -190,34 +236,90 @@ void pcl::device::PfhImpl::repack()
     rpk.output = data_rpk;    
     rpk.max_elems = max_elems_rpk;
 
-    int block = Repack::CTA_SIZE;        
-    int grid = divUp(rpk.work_size, Repack::WARPS);
-
-    //printFuncAttrib(repackKernel);
-
+    int block = Repack<false>::CTA_SIZE;        
+    int grid = divUp(rpk.work_size, Repack<false>::WARPS);
+    
     device::repackKernel<<<grid, block>>>(rpk);
     cudaSafeCall( cudaGetLastError() );
     cudaSafeCall( cudaDeviceSynchronize() );
+
+    //printFuncAttrib(repackKernel);
 }
 
-
-void pcl::device::PfhImpl::compute(DeviceArray2D<PFHSignature125>& features)
+void pcl::device::computePfh125(const DeviceArray2D<float>& data_rpk, int max_elems_rpk, const NeighborIndices& neighbours, DeviceArray2D<PFHSignature125>& features)
 {
-    repack();
-
-    Pfh125 fph;
+    Pfh125<false> fph;
     fph.work_size = neighbours.sizes.size();
     fph.sizes = neighbours.sizes;
     fph.rpk = data_rpk;
     fph.max_elems = max_elems_rpk;                       
     fph.output = features;
 
-    int block = Pfh125::CTA_SIZE;        
-    int grid = fph.work_size;
-
-    //printFuncAttrib(pfhKernel);
+    int block = Pfh125<false>::CTA_SIZE;        
+    int grid = fph.work_size;    
 
     device::pfhKernel<<<grid, block>>>(fph);
     cudaSafeCall( cudaGetLastError() );
     cudaSafeCall( cudaDeviceSynchronize() );
+
+    //printFuncAttrib(pfhKernel);
+}
+
+
+namespace pcl
+{
+    namespace device
+    {
+           
+        __global__ void repackRgbKernel(const Repack<true> repack) { repack(); }
+        __global__ void pfhRgbKernel(const Pfh125<true> pfhrgb125) { pfhrgb125(); }
+    }
+}
+
+
+void pcl::device::repackToAosForPfhRgb(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighbours, DeviceArray2D<float>& data_rpk, int& max_elems_rpk)
+{   
+    max_elems_rpk = (neighbours.max_elems/32 + 1) * 32;
+    data_rpk.create(7, neighbours.sizes.size() * max_elems_rpk);
+
+    Repack<true> rpk;
+    rpk.sizes = neighbours.sizes;
+    rpk.gindices = neighbours;
+
+    rpk.cloud = cloud;
+    rpk.normals = normals;
+    rpk.work_size = neighbours.sizes.size();
+    
+    rpk.output = data_rpk;    
+    rpk.max_elems = max_elems_rpk;
+
+    int block = Repack<true>::CTA_SIZE;        
+    int grid = divUp(rpk.work_size, Repack<true>::WARPS);
+    
+    device::repackRgbKernel<<<grid, block>>>(rpk);
+    cudaSafeCall( cudaGetLastError() );
+    cudaSafeCall( cudaDeviceSynchronize() );
+
+    //printFuncAttrib(repackRgbKernel);
+}
+
+
+void pcl::device::computePfhRgb250(const DeviceArray2D<float>& data_rpk, int max_elems_rpk, const NeighborIndices& neighbours, DeviceArray2D<PFHRGBSignature250>& features)
+{
+    Pfh125<true> pfhrgb;
+    pfhrgb.work_size = neighbours.sizes.size();
+    pfhrgb.sizes = neighbours.sizes;
+    pfhrgb.rpk = data_rpk;
+    pfhrgb.max_elems = max_elems_rpk;                       
+    pfhrgb.output = features;
+
+    int block = Pfh125<true>::CTA_SIZE;        
+    int grid = pfhrgb.work_size;    
+
+    device::pfhRgbKernel<<<grid, block>>>(pfhrgb);
+    cudaSafeCall( cudaGetLastError() );
+    cudaSafeCall( cudaDeviceSynchronize() );
+
+    //printFuncAttrib(pfhRgbKernel);
+
 }

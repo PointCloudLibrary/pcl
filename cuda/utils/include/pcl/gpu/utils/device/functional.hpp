@@ -40,7 +40,6 @@
 
 #include <thrust/functional.h>
 
-
 namespace pcl
 {
     namespace device

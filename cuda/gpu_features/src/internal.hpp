@@ -52,14 +52,22 @@ namespace pcl
 
         typedef float4 PointType;
         typedef float4 NormalType;
+        typedef float4 PointXYZRGB;
 
-        typedef DeviceArray< PointType> PointCloud;
+        typedef DeviceArray< PointType> PointCloud;        
         typedef DeviceArray<NormalType> Normals;
         typedef DeviceArray<int> Indices;
+
+        typedef DeviceArray< PointType> PointXYZRGBCloud;
 
         struct PFHSignature125
         {
             float histogram[125];
+        };
+
+        struct PFHRGBSignature250
+        {
+            float histogram[250];
         };
 
         struct FPFHSignature33
@@ -67,35 +75,93 @@ namespace pcl
             float histogram[33];
         };
 
-        struct PfhImpl
+        struct PPFSignature
         {
-            PointCloud cloud;
-            Normals normals;
-
-            NeighborIndices neighbours;
-
-            DeviceArray2D<float> data_rpk;
-            int max_elems_rpk;
-
-            void compute(DeviceArray2D<PFHSignature125>& features);
-
-        private:
-            void repack();
+            float f1, f2, f3, f4;
+            float alpha_m;
         };
 
+        struct PPFRGBSignature
+        {
+            float f1, f2, f3, f4;
+            float r_ratio, g_ratio, b_ratio;
+            float alpha_m;
+        };
+
+        struct VFHSignature308
+        {
+            float histogram[308];
+        };
+
+        struct PrincipalCurvatures
+        {
+            union
+            {
+                float principal_curvature[3];
+                struct
+                {
+                    float principal_curvature_x;
+                    float principal_curvature_y;
+                    float principal_curvature_z;
+                };
+            };
+            float pc1;
+            float pc2;
+        };
+
+        // normals estimation
+        void computeNormals(const PointCloud& cloud, const NeighborIndices& nn_indices, Normals& normals);
+        void flipNormalTowardsViewpoint(const PointCloud& cloud, const float3& vp, Normals& normals);        
+        void flipNormalTowardsViewpoint(const PointCloud& cloud, const Indices& indices, const float3& vp, Normals& normals);
+
+        // pfh estimation        
+        void repackToAosForPfh(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighbours, DeviceArray2D<float>& data_rpk, int& max_elems_rpk);
+        void computePfh125(const DeviceArray2D<float>& data_rpk, int max_elems_rpk, const NeighborIndices& neighbours, DeviceArray2D<PFHSignature125>& features);
+
+        void repackToAosForPfhRgb(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighbours, DeviceArray2D<float>& data_rpk, int& max_elems_rpk);
+        void computePfhRgb250(const DeviceArray2D<float>& data_rpk, int max_elems_rpk, const NeighborIndices& neighbours, DeviceArray2D<PFHRGBSignature250>& features);
+
+
+        // fpfh estimation
         void computeSPFH(const PointCloud& surface, const Normals& normals, const Indices& indices, const NeighborIndices& neighbours, DeviceArray2D<FPFHSignature33>& spfh33);
         void computeFPFH(const PointCloud& cloud, const NeighborIndices& neighbours, const DeviceArray2D<FPFHSignature33>& spfh, DeviceArray2D<FPFHSignature33>& features);
 
         void computeFPFH(const PointCloud& cloud, const Indices& indices, const PointCloud& surface, 
             const NeighborIndices& neighbours, DeviceArray<int>& lookup, const DeviceArray2D<FPFHSignature33>& spfh, DeviceArray2D<FPFHSignature33>& features);
-                
-
-        void computeNormals(const PointCloud& cloud, const NeighborIndices& nn_indices, Normals& normals);
-        void flipNormalTowardsViewpoint(const PointCloud& cloud, const float3& vp, Normals& normals);        
-        void flipNormalTowardsViewpoint(const PointCloud& cloud, const Indices& indices, const float3& vp, Normals& normals);
-
 
         int computeUniqueIndices(size_t surface_size, const NeighborIndices& neighbours, DeviceArray<int>& unique_indices, DeviceArray<int>& lookup);
+
+        // ppf estimation         
+        void computePPF(const PointCloud& input, const Normals& normals, const Indices& indices, DeviceArray<PPFSignature>& output);
+        void computePPFRGB(const PointXYZRGBCloud& input, const Normals& normals, const Indices& indices, DeviceArray<PPFRGBSignature>& output);        
+        void computePPFRGBRegion(const PointXYZRGBCloud& cloud, const Normals& normals, const Indices& indices, 
+            const NeighborIndices& nn_indices, DeviceArray<PPFRGBSignature>& output);
+
+        //PrincipalCurvatures estimation
+        void computePointPrincipalCurvatures(const Normals& normals, const Indices& indices, const NeighborIndices& neighbours, 
+            DeviceArray<PrincipalCurvatures>& output, DeviceArray2D<float>& proj_normals_buf);
+
+
+        //vfh estimation
+        void compute3DCentroid(const DeviceArray<float4>& cloud,  const Indices& indices, float3& centroid);
+        float3 getMaxDistance(const PointCloud& cloud, const Indices& indices, float3 centroid_p);
+
+      /*  struct VFHEstimationImpl
+        {
+            float3 xyz_centroid;
+            float3 normal_centroid;
+            float3 viewpoint;
+
+            Indices indices;
+            PointCloud points;
+            Normals normals;
+
+            bool normalize_distances;
+            bool size_component;
+            bool normalize_bins;
+       
+            void compute(DeviceArray<VFHSignature308>& feature);
+        };*/
     }
 }
 

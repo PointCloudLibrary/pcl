@@ -37,30 +37,19 @@
 #ifndef PCL_GPU_FEATURS_DEVICE_VECTOR_OPERATIONS_HPP_
 #define PCL_GPU_FEATURS_DEVICE_VECTOR_OPERATIONS_HPP_
 
+#include "pcl/gpu/features/device/rodrigues.hpp"
+#include "pcl/gpu/utils/device/vector_math.hpp"
+
 namespace pcl
 {
     namespace device
-    {        
-        __device__ __host__ __forceinline__ float3& operator+=(float3& v, const float3& e)
-        {
-            v.x += e.x; v.y += e.y; v.z += e.z; 
-            return v;
-        }
-
-         __forceinline__ __device__ __host__ float3 operator-(const float3& v1, const float3& v2)
-        {
-            return make_float3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
-        }
-
+    {       
          __forceinline__ __device__ __host__ float3 operator/(const float3& vec, float val)
         {
             return make_float3(vec.x/val, vec.y/val, vec.z/val);
         }
 
-        __forceinline__ __device__ __host__ float3 operator*(const float3& vec, float val)
-        {
-            return make_float3(vec.x * val, vec.y * val, vec.z * val);
-        }
+        
 
         __device__ __host__ __forceinline__ float3& operator/=(float3& v, const float& value)
         {
@@ -70,24 +59,8 @@ namespace pcl
             return v;
         }
 
-        __device__ __host__ __forceinline__ float3& operator*=(float3& v, const float& value)
-        {
-            v.x *= value;
-            v.y *= value;
-            v.z *= value;
-            return v;
-        }
-
-        __device__ __host__ __forceinline__ float dot(const float3& v1, const float3& v2)
-        {
-            return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
-        }
-
-        __device__ __host__ __forceinline__ float norm(const float3& val)
-        {
-            return sqrtf(dot(val, val));
-        }
-
+     
+        
         __device__ __host__ __forceinline__ float norm(const float3& v1, const float3& v2)
         {
             float dx = v1.x - v2.x;
@@ -95,21 +68,15 @@ namespace pcl
             float dz = v1.z - v2.z;
             return sqrtf(dx*dx + dy*dy + dz*dz);
         }
-
-        __device__ __host__ __forceinline__ float3 cross(const float3& v1, const float3& v2)
-        {
-            return make_float3(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
-        }
-
+        
         template<typename T> __device__ __forceinline__ float3 tr(const T& v)
         {
             return make_float3(v.x, v.y, v.z);
         }
 
-        inline __host__ __device__ float3 normalize(float3 v)
+        inline __host__ __device__ float3 normalize(const float3& v)
         {
-            float invLen = rsqrtf(dot(v, v));
-            return v * invLen;
+            return v * inverse_norm(v);
         }
     }
 }

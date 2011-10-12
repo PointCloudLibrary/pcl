@@ -60,6 +60,8 @@ namespace pcl
             typedef DeviceArray<NormalType> Normals;
             typedef DeviceArray<int> Indices;
 
+            Feature();
+
             void setInputCloud(const PointCloud& cloud);
             void setSearchSurface(const PointCloud& surface);
             void setIndices(const Indices& indices);
@@ -92,7 +94,7 @@ namespace pcl
         {
         public:
             // float x, y, z, curvature; -> sizeof(PointXYZ) = 4 * sizeof(float)            
-            typedef NormalEstimation::NormalType NormalType; 
+            typedef Feature::NormalType NormalType; 
  
             NormalEstimation();
             void compute(Normals& normals);
@@ -107,24 +109,33 @@ namespace pcl
             NeighborIndices nn_indices_;
         };        
 
-
         ////////////////////////////////////////////////////////////////////////////////////////////  
         /** \brief @b Class for PFH estimation.  */
         class PCL_EXPORTS PFHEstimation : public FeatureFromNormals
         {
         public:
-            PFHEstimation();
-            virtual ~PFHEstimation();
-
             void compute(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighb_indices, DeviceArray2D<PFHSignature125>& features);
-
             void compute(DeviceArray2D<PFHSignature125>& features);
-
         private:
             NeighborIndices nn_indices_;
-            void *impl;             
+            DeviceArray2D<float> data_rpk;
+            int max_elems_rpk;
         };
 
+         ////////////////////////////////////////////////////////////////////////////////////////////  
+        /** \brief @b Class for PFHRGB estimation.  */
+        class PCL_EXPORTS PFHRGBEstimation : public FeatureFromNormals
+        {
+        public:
+            typedef PointXYZ PointType; //16 bytes for xyzrgb
+            void compute(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighb_indices, DeviceArray2D<PFHRGBSignature250>& features);
+            void compute(DeviceArray2D<PFHRGBSignature250>& features);
+        private:
+            NeighborIndices nn_indices_;
+            DeviceArray2D<float> data_rpk;
+            int max_elems_rpk;
+        };
+        
         ////////////////////////////////////////////////////////////////////////////////////////////  
         /** \brief @b Class for FPFH estimation.  */
         class PCL_EXPORTS FPFHEstimation : public FeatureFromNormals
@@ -145,7 +156,101 @@ namespace pcl
 
             DeviceArray2D<FPFHSignature33> spfh;
         };      
+
+        //////////////////////////////////////////////////////////////////////////////////////////////  
+        ///** \brief @b Class for PPF estimation.  */
+        class PCL_EXPORTS PPFEstimation : public FeatureFromNormals
+        {
+        public:
+            void compute(DeviceArray<PPFSignature>& features);
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////  
+        ///** \brief @b Class for PPFRGB estimation.  */
+
+        class PCL_EXPORTS PPFRGBEstimation : public FeatureFromNormals
+        {
+        public:
+
+            typedef PointXYZ PointType; //16 bytes for xyzrgb
+            void compute(DeviceArray<PPFRGBSignature>& features);
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////  
+        ///** \brief @b Class for PPFRGBRegion estimation.  */
+
+        class PCL_EXPORTS PPFRGBRegionEstimation : public FeatureFromNormals
+        {
+        public:
+            typedef PointXYZ PointType; //16 bytes for xyzrgb
+            void compute(DeviceArray<PPFRGBSignature>& features);
+
+        private:
+            NeighborIndices nn_indices_;
+        }; 
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////  
+        ///** \brief @b Class for PPFRGBRegion estimation.  */
+
+        class PCL_EXPORTS PrincipalCurvaturesEstimation : public FeatureFromNormals
+        {
+        public:
+
+            void compute(DeviceArray<PrincipalCurvatures>& features);                    
+        private:
+            NeighborIndices nn_indices_;
+            DeviceArray2D<float> proj_normals_buf;
+        }; 
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////  
+        ///** \brief @b Class for Viewpoint Feature Histogramm estimation.  */
+
+        /*class PCL_EXPORTS VFHEstimation : public FeatureFromNormals
+        {
+        public:
+
+            enum
+            {
+                BINS1_F1 = 45,
+                BINT2_F2 = 45,
+                BINS3_F3 = 45,
+                BINS4_F4 = 45,
+                BINS_VP = 128
+            };
+
+            VFHEstimation();
+
+            void setViewPoint(float  vpx, float  vpy, float  vpz);  
+            void getViewPoint(float& vpx, float& vpy, float& vpz);      
+
+            void setUseGivenNormal (bool use);
+            void setNormalToUse (const NormalType& normal);
+            void setUseGivenCentroid (bool use);
+            void setCentroidToUse (const PointType& centroid);
+
+            void setNormalizeBins (bool normalize);
+            void setNormalizeDistance (bool normalize);
+            void setFillSizeComponent (bool fill_size);
+          
+            void compute(DeviceArray<VFHSignature308>& feature);
+        private:
+
+            float vpx_, vpy_, vpz_;
+
+            bool use_given_normal_;
+            bool use_given_centroid_;
+            bool normalize_bins_;
+            bool normalize_distances_;
+            bool size_component_;
+
+            NormalType normal_to_use_;
+            PointType centroid_to_use_;
+        }; */
     }
 };
 
 #endif /* _PCL_GPU_FEATURES_HPP_ */
+
+

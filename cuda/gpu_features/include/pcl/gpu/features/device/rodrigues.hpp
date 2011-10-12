@@ -34,59 +34,41 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#include "utils/vector_operations.hpp"
+
+#ifndef PCL_GPU_DEVICE_RODRIGUES_HPP_
+#define PCL_GPU_DEVICE_RODRIGUES_HPP_
+
+#include "pcl/gpu/utils/device/vector_math.hpp"
 
 namespace pcl
 {
     namespace device
     {
-        __device__ __host__ __forceinline__ 
-        bool computePairFeatures (const float3& p1, const float3& n1, const float3& p2, const float3& n2, float &f1, float &f2, float &f3, float &f4)
+        __device__ __host__ __forceinline__ void AngleAxisf(float angle, const float3& r, float3& row1, float3& row2, float3& row3)
         {
-            f1 = f2 = f3 = f4 = 0.0f;
+            float cosA, sinA;
+            sincosf(angle, &sinA, &cosA);
 
-            float3 dp2p1 = p2 - p1;            
-            f4 = norm(dp2p1);
+            row1.x = cosA;  row1.y =  0.f; row1.z =  0.f; 
+            row2.x =  0.f;  row2.y = cosA; row2.z =  0.f; 
+            row3.x =  0.f;  row3.y =  0.f; row3.z = cosA; 
 
-            if (f4 == 0.f)
-                return false;           
+            row1.y += -r.z * sinA; row1.z +=  r.y * sinA; 
+            row2.x +=  r.z * sinA;                        row2.z += -r.x * sinA; 
+            row3.x += -r.y * sinA; row3.y +=  r.x * sinA; 
 
-            float3 n1_copy = n1, n2_copy = n2;
-            float angle1 = dot(n1_copy, dp2p1) / f4;
-            
-#if 0 // disabled this to pass the unit tests
-            float angle2 = -dot(n2_copy, dp2p1) / f4;
-            if (acosf (angle1) > acosf(angle2))
-            {
-                // switch p1 and p2
-                n1_copy = n2;
-                n2_copy = n1;                
-                dp2p1 *= -1;
-                f3 = angle2;
-            }
-            else
-#endif
-            f3 = angle1;
+            row1.x += r.x * r.x * (1 - cosA);  row1.y += r.x * r.y * (1 - cosA); row1.z += r.x * r.z * (1 - cosA); 
+            row2.x += r.y * r.x * (1 - cosA);  row2.y += r.y * r.y * (1 - cosA); row2.z += r.y * r.z * (1 - cosA); 
+            row3.x += r.z * r.x * (1 - cosA);  row3.y += r.z * r.y * (1 - cosA); row3.z += r.z * r.z * (1 - cosA);                             
+        }
 
-            // Create a Darboux frame coordinate system u-v-w
-            // u = n1; v = (p_idx - q_idx) x u / || (p_idx - q_idx) x u ||; w = u x v
-            float3 v = cross(dp2p1, n1_copy);            
-            float v_norm = norm(v);
-            if (v_norm == 0.0f)
-                return false;
-            
-            // Normalize v
-            v /= v_norm;            
-                        
-            // Do not have to normalize w - it is a unit vector by construction            
-            f2 = dot(v, n2_copy);
-            
-            float3 w = cross(n1_copy, v);
-            // Compute f1 = arctan (w * n2, u * n2) i.e. angle of n2 in the x=u, y=w coordinate system            
-            f1 = atan2f (dot(w, n2_copy), dot(n1_copy, n2_copy)); // @todo optimize this
-
-            return true;
+        __device__ __host__ __forceinline__ void Rodrigues(const float3& rvec, float3& row1, float3& row2, float3& row3)
+        {
+            float angle = norm(rvec);
+            float3 unit_axis = make_float3(rvec.x/angle, rvec.y/angle, rvec.z/angle);
+            AngleAxisf(angle, unit_axis, row1, row2, row3);
         }
     }
-
 }
+
+#endif /* PCL_GPU_DEVICE_RODRIGUES_HPP_ */

@@ -5,7 +5,7 @@
 #include "pcl/gpu/utils/device/functional.hpp"
 #include "pcl/gpu/utils/device/funcattrib.hpp"
 #include "pcl/gpu/utils/timers_cuda.hpp"
-#include "utils/pair_features.hpp"
+#include "pcl/gpu/features/device/pair_features.hpp"
 
 #include <iostream>
 
