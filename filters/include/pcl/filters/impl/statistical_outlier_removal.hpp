@@ -52,6 +52,13 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilter (PointCloud &output)
     return;
   }
 
+  if (input_->points.empty ())
+  {
+    output.width = output.height = 0;
+    output.points.clear ();
+    return;
+  }
+
   // Initialize the spatial locator
   //initTree (spatial_locator_type_, tree_, k_);
 
