@@ -38,76 +38,28 @@
 #include <boost/thread/thread.hpp>
 #include <pcl/common/common_headers.h>
 #include <pcl/visualization/common/common.h>
-#include <pcl/visualization/interactor.h>
+#include <vtkRenderWindowInteractor.h>
 #include <pcl/visualization/histogram_visualizer.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () : exit_main_loop_timer_callback_ (vtkSmartPointer<ExitMainLoopTimerCallback>::New ()), exit_callback_ (vtkSmartPointer<ExitCallback>::New ())
+pcl::visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () : 
+  exit_main_loop_timer_callback_ (vtkSmartPointer<ExitMainLoopTimerCallback>::New ()), 
+  exit_callback_ (vtkSmartPointer<ExitCallback>::New ())
 {
-/*  // Create a Renderer
-  vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New ();
-  // Add it to the list of renderers
-  rens_->AddItem (ren);
-  
-  // Create a RendererWindow
-  win_ = vtkSmartPointer<vtkRenderWindow>::New ();
-  win_->SetWindowName (name.c_str ());
-
-  // Get screen size
-  int *scr_size = win_->GetScreenSize ();
-  // Set the window size as 1/2 of the screen size
-  win_->SetSize (scr_size[0] / 2, scr_size[1] / 2);
-  
-  // Add all renderers to the window
-  rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
-    win_->AddRenderer (renderer);
-
-  // Create the interactor style
-  style_->Initialize ();
-  style_->setRendererCollection (rens_);
-  style_->UseTimersOn ();
-
-  interactor_->SetInteractorStyle (style_);
-*/
-  resetStoppedFlag ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Spin once method. Calls the interactor and updates the screen once. */
 void
-pcl::visualization::PCLHistogramVisualizer::spinOnce (int time, bool force_redraw)
+pcl::visualization::PCLHistogramVisualizer::spinOnce (int time)
 {
-  resetStoppedFlag ();
-
-  if (time <= 0)
-    time = 1;
-  
-  if (force_redraw)
-  {
-    for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
-    {
-      (*am_it).second.interactor_->Render ();
-      exit_main_loop_timer_callback_->right_timer_id = (*am_it).second.interactor_->CreateRepeatingTimer (time);
-      // Set the correct interactor to both callbacks
-      exit_callback_->interact = (*am_it).second.interactor_;
-      exit_main_loop_timer_callback_->interact = (*am_it).second.interactor_;
-
-      (*am_it).second.interactor_->Start ();
-      (*am_it).second.interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
-    }
-    return;
-  }
-  
   for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
   {
     DO_EVERY(1.0/(*am_it).second.interactor_->GetDesiredUpdateRate (),
       (*am_it).second.interactor_->Render ();
       exit_main_loop_timer_callback_->right_timer_id = (*am_it).second.interactor_->CreateRepeatingTimer (time);
 
-      // Set the correct interactor to both callbacks
-      exit_callback_->interact = (*am_it).second.interactor_;
+      // Set the correct interactor for callbacks
       exit_main_loop_timer_callback_->interact = (*am_it).second.interactor_;
 
       (*am_it).second.interactor_->Start ();
@@ -120,39 +72,15 @@ pcl::visualization::PCLHistogramVisualizer::spinOnce (int time, bool force_redra
 void
 pcl::visualization::PCLHistogramVisualizer::spin ()
 {
-  resetStoppedFlag ();
+  stopped_ = false;
   do
   {
     spinOnce ();
-    for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
-    {
-      if ((*am_it).second.interactor_->stopped)
-        return;
-    }
+    if (stopped_)
+      break;
     boost::this_thread::sleep (boost::posix_time::seconds (1));
   }
   while (true);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////
-bool 
-pcl::visualization::PCLHistogramVisualizer::wasStopped ()
-{
-  for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
-  {
-    // If any of the interactors was stopped, return true (stop everything else)
-    if ((*am_it).second.interactor_->stopped)
-      return (true);
-  }
-  return (false);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////
-void 
-pcl::visualization::PCLHistogramVisualizer::resetStoppedFlag () 
-{ 
-  for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
-    (*am_it).second.interactor_->stopped = false; 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -287,7 +215,7 @@ pcl::visualization::PCLHistogramVisualizer::createActor (
   style_->Initialize ();
   renwinint.style_ = style_;
   renwinint.style_->UseTimersOn ();
-  renwinint.interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
+  renwinint.interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
   renwinint.interactor_->SetRenderWindow (renwinint.win_);
   renwinint.interactor_->SetInteractorStyle (renwinint.style_);
   // Initialize and create timer
@@ -296,7 +224,7 @@ pcl::visualization::PCLHistogramVisualizer::createActor (
 
   exit_main_loop_timer_callback_->right_timer_id = -1;
   renwinint.interactor_->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
-
+  exit_callback_->his = this;
   renwinint.interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
 }
 
@@ -342,7 +270,6 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
   // Save the pointer/ID pair to the global window map
   wins_[id] = renwinint;
 
-  resetStoppedFlag ();
   return (true);
 }
 
@@ -401,14 +328,6 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
   // Save the pointer/ID pair to the global window map
   wins_[id] = renwinint;
 
-  resetStoppedFlag ();
   return (true);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PCLHistogramVisualizer::~PCLHistogramVisualizer ()
-{
-  for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
-    (*am_it).second.interactor_->DestroyTimer ( (*am_it).second.interactor_->timer_id_);
 }
 

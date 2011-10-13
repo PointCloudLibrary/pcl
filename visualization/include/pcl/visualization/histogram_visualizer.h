@@ -37,7 +37,6 @@
 #ifndef PCL_PCL_HISTOGRAM_VISUALIZER_H_
 #define PCL_PCL_HISTOGRAM_VISUALIZER_H_
 
-#include <pcl/visualization/interactor.h>
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
@@ -47,6 +46,7 @@
 #include <vtkProperty2D.h>
 #include <vtkFieldData.h>
 #include <vtkDoubleArray.h>
+#include <vtkRenderWindowInteractor.h>
 
 namespace pcl
 {
@@ -62,14 +62,12 @@ namespace pcl
         /** \brief PCL histogram visualizer constructor. */
         PCLHistogramVisualizer ();
 
-        ~PCLHistogramVisualizer ();
+        virtual ~PCLHistogramVisualizer () {}
         /** \brief Spin once method. Calls the interactor and updates the screen once. 
           *  \param[in] time - How long (in ms) should the visualization loop be allowed to run.
-          *  \param[in] force_redraw - if false it might return without doing anything if the interactor's
-          *                            framerate does not require a redraw yet.
           */
         void 
-        spinOnce (int time = 1, bool force_redraw = false);
+        spinOnce (int time = 1);
         
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
         void 
@@ -146,15 +144,7 @@ namespace pcl
         /** \brief Update all window positions on screen so that they fit. */
         void 
         updateWindowPositions ();
-
-        /** \brief Returns true when the user tried to close the window */
-        bool 
-        wasStopped ();
         
-        /** \brief Set the stopped flag back to false */
-        void 
-        resetStoppedFlag ();
-
       protected:
 
         /** \brief Create a 2D actor from the given vtkDoubleArray histogram and add it to the screen.
@@ -175,11 +165,12 @@ namespace pcl
 
         struct ExitMainLoopTimerCallback : public vtkCommand
         {
-          static ExitMainLoopTimerCallback* New()
+          static ExitMainLoopTimerCallback* New ()
           {
-            return new ExitMainLoopTimerCallback;
+            return (new ExitMainLoopTimerCallback);
           }
-          virtual void Execute(vtkObject* vtkNotUsed(caller), unsigned long event_id, void* call_data)
+          virtual void 
+          Execute (vtkObject* vtkNotUsed (caller), unsigned long event_id, void* call_data)
           {
             if (event_id != vtkCommand::TimerEvent)
               return;
@@ -189,32 +180,34 @@ namespace pcl
               return;
 
             // Stop vtk loop and send notification to app to wake it up
-            interact->stopLoop ();
+            interact->TerminateApp ();
           }
           int right_timer_id;
-          PCLVisualizerInteractor *interact;
+          vtkRenderWindowInteractor *interact;
         };
         
         struct ExitCallback : public vtkCommand
         {
           static ExitCallback* New ()
           {
-            return new ExitCallback;
+            return (new ExitCallback);
           }
-          virtual void Execute (vtkObject* caller, unsigned long event_id, void* call_data)
+          virtual void 
+          Execute (vtkObject* caller, unsigned long event_id, void* call_data)
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
 
-            interact->stopped = true;
+            his->stopped_ = true;
           }
-          PCLVisualizerInteractor *interact;
+          PCLHistogramVisualizer *his;
         };
-
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;
 
+        /** \brief Set to true when the histogram visualizer is ready to be terminated. */
+        bool stopped_;
     };
   }
 }
