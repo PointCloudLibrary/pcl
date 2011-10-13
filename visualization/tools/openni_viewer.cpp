@@ -34,18 +34,14 @@
  * $Id$
  *
  */
-// PCL
+
 #include <boost/thread/thread.hpp>
-#include <Eigen/Geometry>
-#include <pcl/common/common.h>
 #define MEASURE_FUNCTION_TIME
 #include <pcl/common/time.h> //fps calculations
-#include <pcl/io/pcd_io.h>
 #include <pcl/io/openni_grabber.h>
-#include <cfloat>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/histogram_visualizer.h>
+#include <pcl/visualization/image_viewer.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
@@ -73,27 +69,15 @@ do \
 }while(false)
 #endif
 
-using pcl::console::print_color;
-using pcl::console::print_error;
-using pcl::console::print_error;
-using pcl::console::print_warn;
-using pcl::console::print_info;
-using pcl::console::print_debug;
-using pcl::console::print_value;
-using pcl::console::print_highlight;
-using pcl::console::TT_BRIGHT;
-using pcl::console::TT_RED;
-using pcl::console::TT_GREEN;
-using pcl::console::TT_BLUE;
-
-boost::mutex mutex_;
+boost::mutex cld_mutex, img_mutex;
 pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr g_cloud;
-bool new_cloud = false;
+boost::shared_ptr<openni_wrapper::Image> g_image;
 
 void
 printHelp (int argc, char **argv)
 {
-  //print_error ("Syntax is: %s <file_name 1..N>.pcd <options>\n", argv[0]);
+  using pcl::console::print_error;
+  using pcl::console::print_info;
   print_error ("Syntax is: %s <options>\n", argv[0]);
   print_info ("  where options are:\n");
   print_info ("                     -dev device_id           = device to be used\n");
@@ -104,7 +88,8 @@ printHelp (int argc, char **argv)
 }
 
 // Create the PCLVisualizer object
-boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
+boost::shared_ptr<pcl::visualization::PCLVisualizer> cld;
+boost::shared_ptr<pcl::visualization::ImageViewer> img;
 
 struct EventHelper
 {
@@ -112,19 +97,51 @@ struct EventHelper
   cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr & cloud)
   {
     FPS_CALC ("callback");
-    mutex_.lock ();
+    cld_mutex.lock ();
     g_cloud = cloud;
-    new_cloud = true;
-    mutex_.unlock ();
+    cld_mutex.unlock ();
+  }
+
+  void
+  image_callback (const boost::shared_ptr<openni_wrapper::Image>& image)
+  {
+    FPS_CALC ("image callback");
+    img_mutex.lock ();
+    g_image = image;
+    img_mutex.unlock ();
   }
 };
+
+// Simple callbacks.
+void 
+keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
+{
+  std::string* message = (std::string*)cookie;
+  cout << (*message) << " :: ";
+  if (event.getKeyCode())
+    cout << "the key \'" << event.getKeyCode() << "\' (" << (int)event.getKeyCode() << ") was";
+  else
+    cout << "the special key \'" << event.getKeySym() << "\' was";
+  if (event.keyDown())
+    cout << " pressed" << endl;
+  else
+    cout << " released" << endl;
+}
+
+void 
+mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
+{
+  std::string* message = (std::string*) cookie;
+  if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
+  {
+    cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
+  }
+}
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  srand (time (0));
-
   if (argc > 1)
   {
     for (int i = 1; i < argc; i++)
@@ -137,38 +154,83 @@ main (int argc, char** argv)
     }
   }
 
-  p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "OpenNI Viewer"));
+  cld.reset (new pcl::visualization::PCLVisualizer (argc, argv, "OpenNI Viewer"));
+  img.reset (new pcl::visualization::ImageViewer ("OpenNI Viewer"));
 
   std::string device_id = "";
   pcl::console::parse_argument (argc, argv, "-dev", device_id);
 
   pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
 
+  // Register callbacks
+  std::string mouseMsg3D ("Mouse coordinates in PCL Visualizer");
+  std::string mouseMsg2D ("Mouse coordinates in image viewer");
+  std::string keyMsg3D ("Key event for PCL Visualizer");
+  std::string keyMsg2D ("Key event for image viewer");
+  cld->registerMouseCallback (&mouse_callback, (void*)(&mouseMsg3D));    
+  cld->registerKeyboardCallback(&keyboard_callback, (void*)(&keyMsg3D));
+  img->registerMouseCallback (&mouse_callback, (void*)(&mouseMsg2D));
+  img->registerKeyboardCallback(&keyboard_callback, (void*)(&keyMsg2D));
+
   EventHelper h;
   boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
   boost::signals2::connection c1 = interface->registerCallback (f);
-
+  boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&EventHelper::image_callback, &h, _1);
+  boost::signals2::connection image_connection = interface->registerCallback (image_cb);
+ 
   interface->start ();
-  while (!p->wasStopped ())
+
+  unsigned char* rgb_data = 0;
+  unsigned rgb_data_size = 0;
+
+  bool cld_init = false;
+  // Loop
+  while (!cld->wasStopped ())
   {
-    p->spinOnce ();
-    if (new_cloud && mutex_.try_lock ())
+    // Render and process events in the two interactors
+    cld->spinOnce ();
+    img->spinOnce ();
+    FPS_CALC ("drawing");
+
+    // Add the cloud
+    if (g_cloud && cld_mutex.try_lock ())
     {
-      new_cloud = false;
-      if (g_cloud)
+      if (!cld_init)
       {
-        FPS_CALC ("drawing");
-        pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> handler (g_cloud);
-        if (!p->updatePointCloud (g_cloud, handler, "OpenNICloud"))
-        {
-          p->addPointCloud (g_cloud, handler, "OpenNICloud");
-          p->resetCameraViewpoint ("OpenNICloud");
-        }
+        cld->getRenderWindow ()->SetSize (g_cloud->width, g_cloud->height);
+        cld->getRenderWindow ()->SetPosition (g_cloud->width, 0);
+        cld_init = !cld_init;
       }
-      mutex_.unlock ();
+
+      pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> handler (g_cloud);
+      if (!cld->updatePointCloud (g_cloud, handler, "OpenNICloud"))
+      {
+        cld->addPointCloud (g_cloud, handler, "OpenNICloud");
+        cld->resetCameraViewpoint ("OpenNICloud");
+      }
+      cld_mutex.unlock ();
     }
-    else
-      boost::this_thread::sleep (boost::posix_time::microseconds (1000));
+
+    // Add the image
+    if (g_image && img_mutex.try_lock ())
+    {
+      if (g_image->getEncoding() == openni_wrapper::Image::RGB)
+        img->showRGBImage (g_image->getMetaData ().Data (), 
+                           g_image->getWidth (), g_image->getHeight ());
+      else
+      {
+        if (rgb_data_size < g_image->getWidth () * g_image->getHeight ())
+        {
+          rgb_data_size = g_image->getWidth () * g_image->getHeight ();
+          rgb_data = new unsigned char [rgb_data_size * 3];
+        }
+        g_image->fillRGB (g_image->getWidth (), g_image->getHeight (), rgb_data);
+        img->showRGBImage (rgb_data, g_image->getWidth (), g_image->getHeight ());
+      }
+      img_mutex.unlock ();
+    }
+
+    boost::this_thread::sleep (boost::posix_time::microseconds (100));
   }
 
   interface->stop ();
