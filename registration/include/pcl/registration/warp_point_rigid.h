@@ -62,6 +62,7 @@ namespace pcl
     {
       pnt_out.getVector3fMap () = transform_matrix_.topLeftCorner<3, 3> () * pnt_in.getVector3fMap() + 
         transform_matrix_.block<3,1> (0, 3);
+      pnt_out.data [3] = pnt_in.data [3];
     }
 
     int getDimension () {return nr_dim_;}

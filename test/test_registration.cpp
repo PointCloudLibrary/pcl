@@ -163,7 +163,7 @@ TEST (PCL, IterativeClosestPoint)
 
   Eigen::Matrix4f transformation = reg.getFinalTransformation ();
 
-/*  EXPECT_NEAR (transformation (0, 0), 0.8806,  1e-4);
+  EXPECT_NEAR (transformation (0, 0), 0.8806,  1e-4);
   EXPECT_NEAR (transformation (0, 1), 0.03648, 1e-4);
   EXPECT_NEAR (transformation (0, 2), -0.4724, 1e-4);
   EXPECT_NEAR (transformation (0, 3), 0.03453, 1e-4);
@@ -177,7 +177,7 @@ TEST (PCL, IterativeClosestPoint)
   EXPECT_NEAR (transformation (2, 1), -0.01817, 1e-4);
   EXPECT_NEAR (transformation (2, 2),  0.8808,  1e-4); 
   EXPECT_NEAR (transformation (2, 3),  0.04116, 1e-4);
-*/
+
   EXPECT_EQ (transformation (3, 0), 0);
   EXPECT_EQ (transformation (3, 1), 0);
   EXPECT_EQ (transformation (3, 2), 0);
@@ -187,33 +187,40 @@ TEST (PCL, IterativeClosestPoint)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, IterativeClosestPointNonLinear)
 {
-  IterativeClosestPointNonLinear<PointXYZ, PointXYZ> reg;
-  reg.setInputCloud (cloud_source.makeShared ());
-  reg.setInputTarget (cloud_target.makeShared ());
+  typedef PointXYZRGB PointT;
+  PointCloud<PointT>::Ptr temp_src (new PointCloud<PointT>);
+  copyPointCloud (cloud_source, *temp_src);
+  PointCloud<PointT>::Ptr temp_tgt (new PointCloud<PointT>);
+  copyPointCloud (cloud_target, *temp_tgt);
+  PointCloud<PointT> output;
+
+  IterativeClosestPointNonLinear<PointT, PointT> reg;
+  reg.setInputCloud (temp_src);
+  reg.setInputTarget (temp_tgt);
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
 
   // Register 
-  reg.align (cloud_reg);
-  EXPECT_EQ ((int)cloud_reg.points.size (), (int)cloud_source.points.size ());
+  reg.align (output);
+  EXPECT_EQ ((int)output.points.size (), (int)cloud_source.points.size ());
 
   Eigen::Matrix4f transformation = reg.getFinalTransformation ();
 
-/*  EXPECT_NEAR (transformation (0, 0),  0.951816,  1e-4);
-  EXPECT_NEAR (transformation (0, 1),  0.100689,  1e-4);
-  EXPECT_NEAR (transformation (0, 2), -0.289668,  1e-4);
-  EXPECT_NEAR (transformation (0, 3),  0.0304748, 1e-4);
+  EXPECT_NEAR (transformation (0, 0),  0.941755, 1e-4);
+  EXPECT_NEAR (transformation (0, 1),  0.103078, 1e-4);
+  EXPECT_NEAR (transformation (0, 2), -0.320113, 1e-4);
+  EXPECT_NEAR (transformation (0, 3),  0.029813, 1e-4);
 
-  EXPECT_NEAR (transformation (1, 0), -0.0741127,  1e-4);
-  EXPECT_NEAR (transformation (1, 1),  0.992089,   1e-4);
-  EXPECT_NEAR (transformation (1, 2),  0.101327,   1e-4);
-  EXPECT_NEAR (transformation (1, 3), -0.00429342, 1e-4);
+  EXPECT_NEAR (transformation (1, 0), -0.067404, 1e-4);
+  EXPECT_NEAR (transformation (1, 1),  0.990408, 1e-4);
+  EXPECT_NEAR (transformation (1, 2),  0.120618, 1e-4);
+  EXPECT_NEAR (transformation (1, 3), -0.001864, 1e-4);
 
-  EXPECT_NEAR (transformation (2, 0),  0.297579,  1e-4);
-  EXPECT_NEAR (transformation (2, 1), -0.0749764, 1e-4);
-  EXPECT_NEAR (transformation (2, 2),  0.951748,  1e-4); 
-  EXPECT_NEAR (transformation (2, 3),  0.0406639, 1e-4);
-*/
+  EXPECT_NEAR (transformation (2, 0),  0.329475, 1e-4);
+  EXPECT_NEAR (transformation (2, 1), -0.092015, 1e-4);
+  EXPECT_NEAR (transformation (2, 2),  0.939670, 1e-4); 
+  EXPECT_NEAR (transformation (2, 3),  0.042721, 1e-4);
+
   EXPECT_EQ (transformation (3, 0), 0);
   EXPECT_EQ (transformation (3, 1), 0);
   EXPECT_EQ (transformation (3, 2), 0);
