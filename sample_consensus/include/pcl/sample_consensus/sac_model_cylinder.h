@@ -44,6 +44,7 @@
 #include <pcl/sample_consensus/model_types.h>
 #include <boost/thread/mutex.hpp>
 #include <pcl/common/common.h>
+#include "pcl/common/distances.h"
 
 namespace pcl
 {
@@ -266,16 +267,40 @@ namespace pcl
       /** \brief temporary pointer to a list of given indices for optimizeModelCoefficients () */
       const std::vector<int> *tmp_inliers_;
 
-      /** \brief Cost function to be minimized
-        * \param[in] p a pointer to our data structure array
-        * \param[in] m the number of functions
-        * \param[in] n the number of variables
-        * \param[in] x a pointer to the variables array
-        * \param[out] fvec a pointer to the resultant functions evaluations
-        * \param[in] iflag set to -1 inside the function to terminate execution
-        */
-      static int 
-      functionToOptimize (void *p, int m, int n, const double *x, double *fvec, int iflag);
+      /** \brief Functor for the optimization function */
+      struct OptimizationFunctor : pcl::Functor<double>
+      {
+        /** Functor constructor
+          * \param[in] n the number of variables
+          * \param[in] m the number of functions   
+          * \param[in] estimator pointer to the estimator object
+          * \param[in] distance distance computation function pointer
+          */
+        OptimizationFunctor(int n, int m, pcl::SampleConsensusModelCylinder<PointT, PointNT> *model) : pcl::Functor<double>(m,n), model_(model) {}
+        /** Cost function to be minimized
+          * \param[in] x variables array
+          * \param[out] fvec resultant functions evaluations
+          * \return 0
+          */
+        int operator() (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
+        {
+          Eigen::Vector4f line_pt  (x[0], x[1], x[2], 0);
+          Eigen::Vector4f line_dir (x[3], x[4], x[5], 0);
+          
+          for (int i = 0; i < m_values; ++i)
+          {
+            // dist = f - r
+            Eigen::Vector4f pt (model_->input_->points[(*model_->tmp_inliers_)[i]].x,
+                                model_->input_->points[(*model_->tmp_inliers_)[i]].y,
+                                model_->input_->points[(*model_->tmp_inliers_)[i]].z, 0);
+
+            fvec[i] = pcl::sqrPointToLineDistance (pt, line_pt, line_dir) - x[6]*x[6];
+          }
+          return (0);
+        }
+
+        pcl::SampleConsensusModelCylinder<PointT, PointNT> *model_;
+      };
   };
 }
 

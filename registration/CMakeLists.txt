@@ -29,9 +29,10 @@ if(build)
         include/pcl/${SUBSYS_NAME}/transformation_estimation.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_lm.h
-        include/pcl/${SUBSYS_NAME}/gicp.h
+#       include/pcl/${SUBSYS_NAME}/gicp.h
         include/pcl/${SUBSYS_NAME}/warp_point_rigid.h
         include/pcl/${SUBSYS_NAME}/warp_point_rigid_6d.h
+        include/pcl/${SUBSYS_NAME}/distances.h
         )
 
 #    set(stanford_gicp_incs
@@ -59,7 +60,7 @@ if(build)
         #include/pcl/${SUBSYS_NAME}/impl/stanford_gicp.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_lm.hpp
-        include/pcl/${SUBSYS_NAME}/impl/gicp.hpp
+#       include/pcl/${SUBSYS_NAME}/impl/gicp.hpp
         )
 
     set(srcs

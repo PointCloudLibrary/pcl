@@ -207,16 +207,40 @@ namespace pcl
       /** \brief Temporary pointer to a list of given indices for optimizeModelCoefficients () */
       const std::vector<int> *tmp_inliers_;
 
-      /** \brief Cost function to be minimized
-        * \param[in] p a pointer to our data structure array
-        * \param[in] m the number of functions
-        * \param[in] n the number of variables
-        * \param[in] x a pointer to the variables array
-        * \param[out] fvec a pointer to the resultant functions evaluations
-        * \param[in] iflag set to -1 inside the function to terminate execution
-        */
-      static int 
-      functionToOptimize (void *p, int m, int n, const double *x, double *fvec, int iflag);
+      struct OptimizationFunctor : pcl::Functor<double>
+      {
+        /** Functor constructor
+          * \param[in] n the number of variables
+          * \param[in] m the number of functions   
+          * \param[in] estimator pointer to the estimator object
+          * \param[in] distance distance computation function pointer
+          */
+        OptimizationFunctor(int n, int m, pcl::SampleConsensusModelSphere<PointT> *model) : 
+          pcl::Functor<double>(m,n), model_(model) {}
+        /** Cost function to be minimized
+          * \param[in] x the variables array
+          * \param[out] fvec the resultant functions evaluations
+          * \return 0
+          */
+        int operator() (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
+        {
+          Eigen::Vector4d cen_t;
+          cen_t[3] = 0;
+          for (int i = 0; i < m_values; ++i)
+          {
+            // Compute the difference between the center of the sphere and the datapoint X_i
+            cen_t[0] = model_->input_->points[(*model_->tmp_inliers_)[i]].x - x[0];
+            cen_t[1] = model_->input_->points[(*model_->tmp_inliers_)[i]].y - x[1];
+            cen_t[2] = model_->input_->points[(*model_->tmp_inliers_)[i]].z - x[2];
+            
+            // g = sqrt ((x-a)^2 + (y-b)^2 + (z-c)^2) - R
+            fvec[i] = sqrt (cen_t.dot (cen_t)) - x[3];
+          }
+          return (0);
+        }
+        
+        pcl::SampleConsensusModelSphere<PointT> *model_;
+      };
   };
 }
 

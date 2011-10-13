@@ -110,9 +110,6 @@ add_definitions(-DEIGEN_USE_NEW_STDVECTOR
 # FLANN (required)
 find_package(Flann REQUIRED)
 include_directories(${FLANN_INCLUDE_DIRS})
-# CMinpack
-find_package(CMinpack REQUIRED)
-include_directories(${CMINPACK_INCLUDE_DIRS})
 # OpenMP
 include(${PCL_SOURCE_DIR}/cmake/pcl_openmp.cmake)
 # OpenNI
