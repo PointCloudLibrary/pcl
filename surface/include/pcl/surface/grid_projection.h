@@ -62,7 +62,16 @@ namespace pcl
 
   /** \brief Grid projection surface reconstruction method.
     * \author Rosie Li
-    * \ingroup surface
+    *
+    * @note If you use this code in any academic work, please cite:
+    * <ul>
+    * <li> Ruosi Li, Lu Liu, Ly Phan, Sasakthi Abeysinghe, Cindy Grimm, Tao Ju.
+    *      Polygonizing extremal surfaces with manifold guarantees.
+    *      In Proceedings of the 14th ACM Symposium on Solid and Physical Modeling,
+    *      2010.
+    * </li>
+    * </ul>
+     * \ingroup surface
     */
   template <typename PointNT>
   class GridProjection : public SurfaceReconstruction<PointNT>
