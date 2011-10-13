@@ -638,7 +638,7 @@ namespace pcl
           * \param[in] correspondences The mapping from source points to target points. Each element must be an index into \ref target_points 
           * \param[in] line_ids A vector of strings into which the IDs of the newly drawn lines will be added
           * \param[in] id the polygon object id (default: "correspondences")
-          * \param[in] viewport the view port where the PolygonMesh should be added (default: all)
+          * \param[in] viewport the view port where the correspondences should be added (default: all)
           */
         template <typename PointT> bool
         addCorrespondences (const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
@@ -653,7 +653,7 @@ namespace pcl
           * \param[in] correspondences The mapping from source points to target points. Each element must be an index into \ref target_points
           * \param[in] line_ids A vector of strings into which the IDs of the newly drawn lines will be added
           * \param[in] id the polygon object id (default: "correspondences")
-          * \param[in] viewport the view port where the PolygonMesh should be added (default: all)
+          * \param[in] viewport the view port where the correspondences should be added (default: all)
           */
         template <typename PointT> bool
         addCorrespondences (const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
@@ -664,7 +664,7 @@ namespace pcl
         
         /** \brief Remove the specified correspondences from the display. 
           * \param[in] id the polygon correspondences object id (i.e., given on \ref addCorrespondences)
-          * \param[in] viewport view port from where the polygon should be removed (default: all)
+          * \param[in] viewport view port from where the correspondences should be removed (default: all)
           */
         inline void
         removeCorrespondences (const std::string &id = "correspondences", int viewport = 0)
