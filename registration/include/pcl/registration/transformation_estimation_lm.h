@@ -41,6 +41,7 @@
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/warp_point_rigid.h>
+#include <pcl/registration/distances.h>
 
 namespace pcl
 {
@@ -96,7 +97,8 @@ namespace pcl
          * \param[in] cloud_src the source point cloud dataset
          * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
          * \param[in] cloud_tgt the target point cloud dataset
-         * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
+         * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from 
+         * \a indices_src
          * \param[out] transformation_matrix the resultant transformation matrix
          */
         inline void
@@ -129,7 +131,23 @@ namespace pcl
           warp_point_ = warp_fcn;
         }
 
-      private:
+      protected:
+        /** \brief Compute the distance between a source point and its corresponding target point
+         * \param p_src The source point
+         * \param p_tgt The target point
+         * \return The distance between \a p_src and \a p_tgt
+         *
+         * \note A different distance function can be defined by creating a subclass of TransformationEstimationLM and 
+         * overriding this method. (See \a TransformationEstimationPointToPlane)
+         */
+        virtual double 
+        computeDistance (const PointSource &p_src, const PointTarget &p_tgt)
+        {
+          Vector4fMapConst s = p_src.getVector4fMap ();
+          Vector4fMapConst t = p_tgt.getVector4fMap ();
+          return (pcl::distances::l2Sqr(s, t));
+        }
+
         /** \brief The vector of residual weights. Used internall in the LM loop. */
         std::vector<double> weights_;
 
@@ -145,7 +163,7 @@ namespace pcl
         /** \brief Temporary pointer to the target dataset indices. */
         const std::vector<int> *tmp_idx_tgt_;
 
-        /** \brief Temporary pointer to the target dataset indices. */
+        /** \brief The parameterized function used to warp the source to the target. */
         boost::shared_ptr<WarpPointRigid<PointSource, PointTarget> > warp_point_;
         
         /** Generic functor for the optimization */
@@ -163,57 +181,57 @@ namespace pcl
           
           const int m_inputs, m_values;
           
-          Functor() : m_inputs(InputsAtCompileTime), m_values(ValuesAtCompileTime) {}
-          Functor(int inputs, int values) : m_inputs(inputs), m_values(values) {}
+          Functor () : m_inputs (InputsAtCompileTime), m_values (ValuesAtCompileTime) {}
+          Functor (int inputs, int values) : m_inputs (inputs), m_values (values) {}
           
-          int inputs() const { return m_inputs; }
-          int values() const { return m_values; }
+          int inputs () const { return m_inputs; }
+          int values () const { return m_values; }
         };
 
         struct OptimizationFunctor : Functor<double>
         {
           using Functor<double>::m_values;
-          ///\brief distance function
-          typedef boost::function<double(const Eigen::Vector4f &pt_src, const Eigen::Vector4f &pt_tgt)> DistanceFunction;
+
           /** Functor constructor
            * \param n Number of unknowns to be solved
            * \param m Number of values
            * \param estimator pointer to the estimator object
            * \param distance distance computation function pointer
            */
-          OptimizationFunctor(int n, int m, TransformationEstimationLM<PointSource, PointTarget> *estimator, DistanceFunction distance) : 
-            Functor<double>(n,m), estimator_(estimator), distance_(distance) {}
+          OptimizationFunctor (int n, int m, TransformationEstimationLM<PointSource, PointTarget> *estimator) : 
+            Functor<double> (n,m), estimator_ (estimator) {}
+
           /** Fill fvec from x. For the current state vector x fill the f values
            * \param x state vector
            * \param fvec f values vector
            * \return 0
            */
-          int operator() (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
+          int operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
+
           TransformationEstimationLM<PointSource, PointTarget> *estimator_;
-          DistanceFunction distance_;
         };
 
         struct OptimizationFunctorWithIndices : Functor<double>
         {
           using Functor<double>::m_values;
-          ///\brief distance function
-          typedef boost::function<double(const Eigen::Vector4f &pt_src, const Eigen::Vector4f &pt_tgt)> DistanceFunction;
+
           /** Functor constructor
             * \param n Number of unknowns to be solved
             * \param m Number of values
             * \param estimator pointer to the estimator object
             * \param distance distance computation function pointer
             */
-          OptimizationFunctorWithIndices(int n, int m, TransformationEstimationLM *estimator, DistanceFunction distance) : 
-            Functor<double>(n,m), estimator_(estimator), distance_(distance) {}
+          OptimizationFunctorWithIndices (int n, int m, TransformationEstimationLM *estimator) :
+            Functor<double> (n,m), estimator_(estimator) {}
+
           /** Fill fvec from x. For the current state vector x fill the f values
             * \param x state vector
             * \param fvec f values vector
             * \return 0
             */
-          int operator() (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
+          int operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
+
           TransformationEstimationLM<PointSource, PointTarget> *estimator_;
-          DistanceFunction distance_;
         };
     };
   }

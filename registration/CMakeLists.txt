@@ -29,6 +29,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/transformation_estimation.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_lm.h
+        include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane.h
 #       include/pcl/${SUBSYS_NAME}/gicp.h
         include/pcl/${SUBSYS_NAME}/warp_point_rigid.h
         include/pcl/${SUBSYS_NAME}/warp_point_rigid_6d.h

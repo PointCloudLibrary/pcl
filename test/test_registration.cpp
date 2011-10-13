@@ -46,6 +46,7 @@
 #include "pcl/registration/registration.h"
 #include "pcl/registration/icp.h"
 #include "pcl/registration/icp_nl.h"
+#include "pcl/registration/transformation_estimation_point_to_plane.h"
 #include "pcl/registration/ia_ransac.h"
 #include "pcl/registration/pyramid_feature_matching.h"
 #include "pcl/features/ppf.h"
@@ -226,6 +227,59 @@ TEST (PCL, IterativeClosestPointNonLinear)
   EXPECT_EQ (transformation (3, 2), 0);
   EXPECT_EQ (transformation (3, 3), 1);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, IterativeClosestPoint_PointToPlane)
+{
+  typedef PointNormal PointT;
+  PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
+  copyPointCloud (cloud_source, *src);
+  PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);
+  copyPointCloud (cloud_target, *tgt);
+  PointCloud<PointT> output;
+
+  NormalEstimation<PointNormal, PointNormal> norm_est;
+  norm_est.setSearchMethod (KdTreeFLANN<PointNormal>::Ptr (new KdTreeFLANN<PointNormal>));
+  norm_est.setKSearch (10);
+  norm_est.setInputCloud (tgt);
+  norm_est.compute (*tgt);
+
+  IterativeClosestPointNonLinear<PointT, PointT> reg;
+  typedef registration::TransformationEstimationPointToPlane<PointT, PointT> PointToPlane;
+  boost::shared_ptr<PointToPlane> point_to_plane (new PointToPlane);
+  reg.setTransformationEstimation (point_to_plane);
+  reg.setInputCloud (src);
+  reg.setInputTarget (tgt);
+  reg.setMaximumIterations (50);
+  reg.setTransformationEpsilon (1e-8);
+
+  // Register 
+  reg.align (output);
+  EXPECT_EQ ((int)output.points.size (), (int)cloud_source.points.size ());
+
+  Eigen::Matrix4f transformation = reg.getFinalTransformation ();
+
+  EXPECT_NEAR (transformation (0, 0),  0.941, 1e-2);
+  EXPECT_NEAR (transformation (0, 1),  0.103, 1e-2);
+  EXPECT_NEAR (transformation (0, 2), -0.320, 1e-2);
+  EXPECT_NEAR (transformation (0, 3),  0.029, 1e-2);
+
+  EXPECT_NEAR (transformation (1, 0), -0.067, 1e-2);
+  EXPECT_NEAR (transformation (1, 1),  0.990, 1e-2);
+  EXPECT_NEAR (transformation (1, 2),  0.120, 1e-2);
+  EXPECT_NEAR (transformation (1, 3), -0.001, 1e-2);
+
+  EXPECT_NEAR (transformation (2, 0),  0.329, 1e-2);
+  EXPECT_NEAR (transformation (2, 1), -0.092, 1e-2);
+  EXPECT_NEAR (transformation (2, 2),  0.939, 1e-2); 
+  EXPECT_NEAR (transformation (2, 3),  0.042, 1e-2);
+
+  EXPECT_EQ (transformation (3, 0), 0);
+  EXPECT_EQ (transformation (3, 1), 0);
+  EXPECT_EQ (transformation (3, 2), 0);
+  EXPECT_EQ (transformation (3, 3), 1);
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, SampleConsensusInitialAlignment)

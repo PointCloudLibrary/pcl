@@ -58,16 +58,16 @@ namespace pcl
 
     virtual void setParam (const Eigen::VectorXf& p) = 0;
 
-    void warpPoint (const PointSourceT& pnt_in, PointTargetT& pnt_out)
+    void warpPoint (const PointSourceT& pnt_in, PointSourceT& pnt_out) const
     {
       pnt_out.getVector3fMap () = transform_matrix_.topLeftCorner<3, 3> () * pnt_in.getVector3fMap() + 
         transform_matrix_.block<3,1> (0, 3);
       pnt_out.data [3] = pnt_in.data [3];
     }
 
-    int getDimension () {return nr_dim_;}
+    int getDimension () const {return nr_dim_;}
 
-    const Eigen::Matrix4f& getTransform () { return transform_matrix_; }
+    const Eigen::Matrix4f& getTransform () const { return transform_matrix_; }
     
 
   protected:
