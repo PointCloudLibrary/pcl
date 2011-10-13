@@ -41,8 +41,8 @@
 #include <vtkXYPlotActor.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
 #include <vtkInteractorStyleTrackballCamera.h>
-#include "pcl/visualization/interactor.h"
 #include <map>
 
 namespace pcl
@@ -68,7 +68,7 @@ namespace pcl
         vtkSmartPointer<vtkRenderWindow> win_;
 
         /** \brief The render window interactor. */
-        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
+        vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
 
         /** \brief The render window interactor style. */
         vtkSmartPointer<vtkInteractorStyleTrackballCamera> style_;

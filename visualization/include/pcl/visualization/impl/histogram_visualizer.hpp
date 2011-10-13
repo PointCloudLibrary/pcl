@@ -69,7 +69,6 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
   // Save the pointer/ID pair to the global window map
   wins_[id] = renwinint;
 
-  resetStoppedFlag ();
   return (true);
 }
 
@@ -125,7 +124,6 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
   // Save the pointer/ID pair to the global window map
   wins_[id] = renwinint;
 
-  resetStoppedFlag ();
   return (true);
 }
 

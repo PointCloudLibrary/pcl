@@ -475,14 +475,17 @@ main (int argc, char** argv)
     p->addCoordinateSystem (axes, ax_x, ax_y, ax_z);
   }
 
-  if (p)
-    p->spin ();
   if (ph)
   {
     print_highlight ("Setting the global Y range for all histograms to: "); print_value ("%f -> %f\n", min_p, max_p);
     ph->setGlobalYRange (min_p, max_p);
     ph->updateWindowPositions ();
-    ph->spin ();
+    if (p)
+      p->spin ();
+    else
+      ph->spin ();
   }
+  else if (p)
+    p->spin ();
 }
 /* ]--- */

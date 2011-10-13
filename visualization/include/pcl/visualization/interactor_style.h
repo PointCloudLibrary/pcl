@@ -242,32 +242,12 @@ namespace pcl
         void 
         setRenWinInteractMap (const RenWinInteractMap &wins) { wins_ = wins; }
 
-        /** \brief Save the current rendered image to disk, as a PNG screenshot.
-          * \param[in] file the name of the PNG file
-          */
-        void
-        saveScreenshot (const std::string &file);
-
       private:
         /** \brief A map of all windows on screen (with their renderers and interactors). */
         RenWinInteractMap wins_;
 
         /** \brief Set to true after initialization is complete. */
         bool init_;
-
-        /** \brief The current window width/height. */
-        int win_height_, win_width_;
-
-        /** \brief The current window position x/y. */
-        int win_pos_x_, win_pos_y_;
-
-        /** \brief The maximum resizeable window width/height. */
-        int max_win_height_, max_win_width_;
-
-        /** \brief A PNG writer for screenshot captures. */
-        vtkSmartPointer<vtkPNGWriter> snapshot_writer_;
-        /** \brief Internal window to image filter. Needed by \a snapshot_writer_. */
-        vtkSmartPointer<vtkWindowToImageFilter> wif_;
 
         /** \brief Interactor style internal method. Gets called whenever a key is pressed. */
         void OnKeyDown ();
