@@ -168,11 +168,11 @@ class SimpleOpenNIViewer
       string mouseMsg2D("Mouse coordinates in image viewer");
       string keyMsg3D("Key event for PCL Visualizer");
       string keyMsg2D("Key event for image viewer");
-      //cloud_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg3D));    
-      //cloud_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg3D));
+      cloud_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg3D));    
+      cloud_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg3D));
 
-  //    image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
-  //    image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
+      image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
+      image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
         
       boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&SimpleOpenNIViewer::cloud_callback, this, _1);
       boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
@@ -186,16 +186,16 @@ class SimpleOpenNIViewer
       unsigned rgb_data_size = 0;
       
       //while (!cloud_viewer_.wasStopped ())
-  //    while (!image_viewer_.wasStopped ())
+      //while (!image_viewer_.wasStopped ())
       while (true)
       {
         if (cloud_)
         {
-          //FPS_CALC ("drawing");
+          FPS_CALC ("drawing cloud");
           //the call to get() sets the cloud_ to null;
-          //cloud_viewer_.showCloud (getLatestCloud ());
+          cloud_viewer_.showCloud (getLatestCloud ());
         }
-        //*
+        boost::this_thread::sleep (boost::posix_time::microseconds (1000));
         if (image_)
         {
           boost::shared_ptr<openni_wrapper::Image> image = getLatestImage ();
@@ -214,14 +214,13 @@ class SimpleOpenNIViewer
             image->fillRGB (image->getWidth(), image->getHeight(), rgb_data);
             image_viewer_.showRGBImage(rgb_data, image->getWidth(), image->getHeight());
           }
+          // This will crash: image_viewer_.spinOnce (10);
         }
-  //      image_viewer_.spinOnce (10);
-        //*/
       }
 
       grabber_.stop();
       
-      //cloud_connection.disconnect();
+      cloud_connection.disconnect();
       image_connection.disconnect();
       
       if (rgb_data)
