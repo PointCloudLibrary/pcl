@@ -168,7 +168,7 @@ TEST (PCL, CorrespondenceRejectorSampleConsensus)
 
   // check for correct matches and number of matches
   EXPECT_EQ((int)correspondences_result_rej_sac->size(), nr_correspondences_result_rej_sac);
-  for (int i = 0; i < nr_correspondences_result_rej_sac; ++i)
+  for (int i = 0; i < nr_correspondences_result_rej_sac, i < correspondences_result_rej_sac->size (); ++i)
     EXPECT_EQ ((*correspondences_result_rej_sac)[i].index_match, correspondences_sac[i][1]);
 
   // check for correct transformation

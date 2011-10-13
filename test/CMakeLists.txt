@@ -58,7 +58,7 @@ if(build)
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd)
 
     PCL_ADD_TEST(registration_api test_registration_api
-                 FILES test_registration_api.cpp
+                 FILES test_registration_api.cpp test_registration_api_data.h
                  LINK_WITH pcl_io pcl_registration pcl_features
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd)
 
