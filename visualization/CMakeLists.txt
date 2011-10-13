@@ -41,7 +41,7 @@ if(build)
        )
   endif()
 
-    set(srcs src/interactor.cpp
+    set(srcs
         src/point_picking_event.cpp
         src/interactor_style.cpp
         src/point_cloud_handlers.cpp
@@ -60,7 +60,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/cloud_viewer.h
         include/pcl/${SUBSYS_NAME}/histogram_visualizer.h
         include/pcl/${SUBSYS_NAME}/image_viewer.h
-        include/pcl/${SUBSYS_NAME}/interactor.h
         include/pcl/${SUBSYS_NAME}/interactor_style.h
         include/pcl/${SUBSYS_NAME}/pcl_visualizer.h
         include/pcl/${SUBSYS_NAME}/registration_visualizer.h

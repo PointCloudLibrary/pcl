@@ -46,7 +46,6 @@
 #include <pcl/PolygonMesh.h>
 // 
 #include <pcl/console/print.h>
-#include <pcl/visualization/interactor.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/visualization/window.h>
@@ -69,6 +68,7 @@
 #include <vtkPolyLine.h>
 #include <vtkVectorText.h>
 #include <vtkFollower.h>
+#include <vtkRenderWindowInteractor.h>
 
 namespace pcl
 {
@@ -760,11 +760,11 @@ namespace pcl
 
         /** \brief Returns true when the user tried to close the window */
         bool 
-        wasStopped () const { if (interactor_ != NULL) return (interactor_->stopped); else return true; }
+        wasStopped () const { if (interactor_ != NULL) return (stopped_); else return (true); }
 
         /** \brief Set the stopped flag back to false */
         void 
-        resetStoppedFlag () { if (interactor_ != NULL) interactor_->stopped = false; }
+        resetStoppedFlag () { if (interactor_ != NULL) stopped_ = false; }
 
         /** \brief Create a new viewport from [xmin,ymin] -> [xmax,ymax].
           * \param xmin the minimum X coordinate for the viewport (0.0 <= 1.0)
@@ -1168,7 +1168,7 @@ namespace pcl
 
       protected:
         /** \brief The render window interactor. */
-        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
+        vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
 
       private:
         struct ExitMainLoopTimerCallback : public vtkCommand
@@ -1186,7 +1186,7 @@ namespace pcl
             if (timer_id != right_timer_id)
               return;
             // Stop vtk loop and send notification to app to wake it up
-            pcl_visualizer->interactor_->stopLoop ();
+            pcl_visualizer->interactor_->TerminateApp ();
           }
           int right_timer_id;
           PCLVisualizer* pcl_visualizer;
@@ -1201,13 +1201,19 @@ namespace pcl
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
-            pcl_visualizer->interactor_->stopped = true;
+            pcl_visualizer->stopped_ = true;
             // This tends to close the window...
-            pcl_visualizer->interactor_->stopLoop ();
+            pcl_visualizer->interactor_->TerminateApp ();
           }
           PCLVisualizer* pcl_visualizer;
         };
         
+        /** \brief Set to false if the interaction loop is running. */
+        bool stopped_;
+
+        /** \brief Global timer ID. Used in destructor only. */
+        int timer_id_;
+
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;

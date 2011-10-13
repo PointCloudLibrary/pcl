@@ -42,7 +42,6 @@
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/mouse_event.h>
 #include <pcl/common/time.h>
-#include <pcl/visualization/interactor.h>
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,9 +77,9 @@ pcl::visualization::Window::Window (const std::string& window_name)
   style_->setRendererCollection (rens_);
   style_->UseTimersOn ();
 
- // Create the interactor
-  //interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
-  interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
+  // Create the interactor
+  interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
+  //interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
 
   interactor_->SetRenderWindow (win_);
   interactor_->SetInteractorStyle (style_);
@@ -88,7 +87,8 @@ pcl::visualization::Window::Window (const std::string& window_name)
   // Initialize and create timer
   interactor_->Initialize ();
   //interactor_->CreateRepeatingTimer (5000L);
-  interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
+  timer_id_ = interactor_->CreateRepeatingTimer (5000L);
+//  interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
   //interactor_->timer_id_ = interactor_->CreateRepeatingTimer (30L);
   
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
@@ -106,7 +106,8 @@ pcl::visualization::Window::Window (const std::string& window_name)
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::Window::~Window ()
 {
-  interactor_->DestroyTimer (interactor_->timer_id_);
+  interactor_->DestroyTimer (timer_id_);
+//  interactor_->DestroyTimer (interactor_->timer_id_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
