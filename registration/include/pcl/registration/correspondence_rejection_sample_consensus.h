@@ -62,13 +62,15 @@ namespace pcl
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
       public:
+
+        /** \brief Empty constructor. */
         CorrespondenceRejectorSampleConsensus ()
         {
           rejection_name_ = "CorrespondenceRejectorSampleConsensus";
           inlier_threshold_ = 0.05;
         }
 
-        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
+        /** \brief DEPRECATED: Get a list of valid correspondences after rejection from the original set of correspondences.
           * \param original_correspondences the set of initial correspondences given
           * \param remaining_correspondences the resultant filtered set of remaining correspondences
           */
@@ -76,24 +78,53 @@ namespace pcl
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
                                      pcl::Correspondences& remaining_correspondences);
 
+        /**
+          * \brief Provide a source point cloud dataset (must contain XYZ data!)
+          * \param[in] cloud a cloud containing XYZ data
+          */
         virtual inline void 
         setInputCloud (const PointCloudConstPtr &cloud) { input_ = cloud; }
 
+        /**
+          * \brief Provide a target point cloud dataset (must contain XYZ data!)
+          * \param[in] cloud a cloud containing XYZ data
+          */
         virtual inline void 
         setTargetCloud (const PointCloudConstPtr &cloud) { target_ = cloud; }
 
+        /**
+          * \brief Set the maximum distance between corresponding points.
+          * Correspondences with distances below the threshold are considered as inliers.
+          * \param[in] threshold Distance threshold in the same dimension as source and target data sets.
+          */
         inline void 
         setInlierThreshold (double threshold) { inlier_threshold_ = threshold; };
 
+        /**
+          * \brief Get the maximum distance between corresponding points.
+          * \return Distance threshold in the same dimension as source and target data sets.
+          */
         inline double 
         getInlierThreshold() { return inlier_threshold_; };
 
+        /**
+         * \brief Set the maximum number of iterations.
+         * \param[in] max_iterations Maximum number if iterations to run
+         */
         inline void 
-        setMaxIterations (int max_iterations) {max_iterations_ = max_iterations; };
+        setMaxIterations (int max_iterations) {max_iterations_ = std::max(max_iterations, 0); };
 
+        /**
+         * \brief Get the maximum number of iterations.
+         * \return max_iterations Maximum number if iterations to run
+         */
         inline int 
         getMaxIterations () { return max_iterations_; };
 
+        /**
+         * \brief Get the best transformation after RANSAC rejection.
+         * \return The homogeneous 4x4 transformation yielding the largest number of inliers.
+         */
         inline Eigen::Matrix4f 
         getBestTransformation () { return best_transformation_; };
 

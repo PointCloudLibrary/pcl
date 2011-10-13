@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ *  $Id$
  */
 #ifndef PCL_COMMON_CORRESPONDENCE_H_
 #define PCL_COMMON_CORRESPONDENCE_H_
@@ -83,6 +83,28 @@ namespace pcl
   typedef std::vector< pcl::Correspondence, Eigen::aligned_allocator<pcl::Correspondence> > Correspondences;
   typedef boost::shared_ptr<Correspondences> CorrespondencesPtr;
   typedef boost::shared_ptr<const Correspondences > CorrespondencesConstPtr;
+
+  /**
+    * \brief Get the query points of correspondences that are present in
+    * one correspondence vector but not in the other, e.g., to compare
+    * correspondences before and after rejection.
+    * \param[in] correspondences_before Vector of correspondences before rejection
+    * \param[in] correspondences_after Vector of correspondences after rejection
+    * \param[out] indices Query point indices of correspondences that have been rejected
+    * \param[in] presorting_required Enable/disable internal sorting of vectors.
+    * By default (true), vectors are internally sorted before determining their difference.
+    * If the order of correspondences in \a correspondences_after is not different (has not been changed)
+    * from the order in \b correspondences_before this pre-processing step can be disabled
+    * in order to gain efficiency. In order to disable pre-sorting set \a presorting_requered to false.
+    */
+  void
+  getRejectedQueryIndices (const pcl::Correspondences &correspondences_before,
+                           const pcl::Correspondences &correspondences_after,
+                           std::vector<int>& indices,
+                           bool presorting_required = true);
+
+
+
 }
 
 #endif /* PCL_COMMON_CORRESPONDENCE_H_ */

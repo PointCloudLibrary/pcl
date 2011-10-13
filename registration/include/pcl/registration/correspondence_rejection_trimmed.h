@@ -64,20 +64,14 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
+
+        /** \brief Empty constructor. */
         CorrespondenceRejectorTrimmed () : overlap_ratio_(1.0f)
         {
           rejection_name_ = "CorrespondenceRejectorTrimmed";
           overlap_ratio_ = 0.5;
           nr_min_correspondences_ = 0;
         }
-
-        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
-          * \param original_correspondences the set of initial correspondences given
-          * \param remaining_correspondences the resultant filtered set of remaining correspondences
-          */
-        inline void 
-        getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
-                                     pcl::Correspondences& remaining_correspondences);
 
         /** \brief Set the expected ratio of overlap between point clouds (in
          * terms of correspondences).
@@ -102,6 +96,17 @@ namespace pcl
         /** \brief Get the minimum number of correspondences. */
         inline unsigned int 
         getMinCorrespondences () { return nr_min_correspondences_; };
+
+
+
+        /** \brief DEPRECATED: Get a list of valid correspondences after rejection from the original set of correspondences.
+          * \param original_correspondences the set of initial correspondences given
+          * \param remaining_correspondences the resultant filtered set of remaining correspondences
+          */
+        inline void
+        getRemainingCorrespondences (const pcl::Correspondences& original_correspondences,
+                                     pcl::Correspondences& remaining_correspondences);
+
 
       protected:
 

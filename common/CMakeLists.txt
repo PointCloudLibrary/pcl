@@ -11,6 +11,7 @@ if(build)
         src/pcl_base.cpp
         src/io.cpp
         src/common.cpp
+        src/correspondence.cpp
         src/distances.cpp
         src/intersections.cpp
         src/parse.cpp

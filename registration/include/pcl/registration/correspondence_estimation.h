@@ -52,8 +52,9 @@ namespace pcl
 {
   namespace registration
   {
-    /** @b CorrespondenceEstimation represents the base class for determining correspondences between target 
-      * and query point sets/features.
+    /** \brief @b CorrespondenceEstimation represents the base class for
+      * determining correspondences between target and query point
+      * sets/features.
       * \author Radu Bogdan Rusu, Michael Dixon, Dirk Holz
       * \ingroup registration
       */
@@ -107,8 +108,8 @@ namespace pcl
         }
 
         /** \brief Determine the correspondences between input and target cloud.
-          * \param correspondences the found correspondences (index of query point, index of target point, distance)
-          * \param max_distance maximum distance between correspondences
+          * \param[out] correspondences the found correspondences (index of query point, index of target point, distance)
+          * \param[in] max_distance maximum distance between correspondences
           */
         virtual void 
         determineCorrespondences (pcl::Correspondences &correspondences,
@@ -121,9 +122,7 @@ namespace pcl
         determineReciprocalCorrespondences (pcl::Correspondences &correspondences);
 
       protected:
-        /** \brief The correspondence estimation method name. 
-          * (TODO: does this make sense, will we have other correspondence estimators derived from this one?) 
-          */
+        /** \brief The correspondence estimation method name. */
         std::string corr_name_;
 
         /** \brief A pointer to the spatial search object. */

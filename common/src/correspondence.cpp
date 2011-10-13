@@ -31,45 +31,50 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ *  $Id$
  */
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_TYPES_H_
-#define PCL_REGISTRATION_CORRESPONDENCE_TYPES_H_
 
 #include <pcl/correspondence.h>
+#include <algorithm>
 
-namespace pcl
+//////////////////////////////////////////////////////////////////////////////
+void
+pcl::getRejectedQueryIndices (const pcl::Correspondences &correspondences_before,
+                              const pcl::Correspondences &correspondences_after,
+                              std::vector<int>& indices,
+                              bool presorting_required)
 {
-  namespace registration
+  indices.clear();
+
+  const int nr_correspondences_before = (int)correspondences_before.size();
+  const int nr_correspondences_after = (int)correspondences_after.size();
+
+  if (nr_correspondences_before == 0)
+    return;
+  else if (nr_correspondences_after == 0)
   {
-    /** \brief calculates the mean and standard deviation of descriptor distances from correspondences
-      * \param[in] correspondences list of correspondences
-      * \param[out] mean the mean descriptor distance of correspondences
-      * \param[out] stddev the standard deviation of descriptor distances.
-      * \note The sample varaiance is used to determine the standard deviation
-      */
-    inline void 
-    getCorDistMeanStd (const pcl::Correspondences& correspondences, double &mean, double &stddev);
-
-    /** \brief extracts the query indices
-      * \param[in] correspondences list of correspondences
-      * \param[out] indices array of extracted indices.
-      * \note order of indices corresponds to input list of descriptor correspondences
-      */
-    inline void 
-    getQueryIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices);
-
-    /** \brief extracts the match indices
-      * \param[in] correspondences list of correspondences
-      * \param[out] indices array of extracted indices.
-      * \note order of indices corresponds to input list of descriptor correspondences
-      */
-    inline void 
-    getMatchIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices);
-
+    indices.resize(nr_correspondences_before);
+    for (int i = 0; i < nr_correspondences_before; ++i)
+      indices[i] = correspondences_before[i].index_query;
+    return;
   }
+
+  std::vector<int> indices_before (nr_correspondences_before);
+  for (int i = 0; i < nr_correspondences_before; ++i)
+    indices_before[i] = correspondences_before[i].index_query;
+
+  std::vector<int> indices_after (nr_correspondences_after);
+  for (int i = 0; i < nr_correspondences_after; ++i)
+    indices_after[i] = correspondences_after[i].index_query;
+
+  if (presorting_required)
+  {
+    std::sort (indices_before.begin (), indices_before.end ());
+    std::sort (indices_after.begin (), indices_after.end ());
+  }
+
+  set_difference (
+      indices_before.begin (), indices_before.end (),
+      indices_after.begin (),  indices_after.end (),
+      inserter (indices, indices.begin ()));
 }
-
-#include "pcl/registration/impl/correspondence_types.hpp"
-
-#endif /* PCL_REGISTRATION_CORRESPONDENCE_TYPES_H_ */

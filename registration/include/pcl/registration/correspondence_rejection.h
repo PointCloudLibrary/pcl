@@ -49,18 +49,15 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-
-    // template <typename PointSource, typename PointTarget>
-    // TODO: maybe templated later
-    // (on input and/or target points if these need to be accessible for rejection)
     class CorrespondenceRejector /*: public PCLBase<PointSource> */
     {
       public:
+
         /** \brief Empty constructor. */
         CorrespondenceRejector () : input_correspondences_() {};
 
         /** \brief Provide a pointer to the vector of the input correspondences.
-          * \param correspondences the const boost shared pointer to a std::vector of correspondences
+          * \param[in] correspondences the const boost shared pointer to a correspondence vector
           */
         virtual inline void 
         setInputCorrespondences (const CorrespondencesConstPtr &correspondences) 
@@ -68,24 +65,31 @@ namespace pcl
           input_correspondences_ = correspondences; 
         };
 
-        /** \brief Get a pointer to the vector of the input correspondences. */
+        /** \brief Get a pointer to the vector of the input correspondences.
+          * \return correspondences the const boost shared pointer to a correspondence vector
+          */
         inline CorrespondencesConstPtr 
         getInputCorrespondences () { return input_correspondences_; };
 
+        /** Run correspondence rejection
+         * @param[out] correspondences Vector of correspondences that have not been rejected.
+         */
         inline void 
         getCorrespondences (pcl::Correspondences &correspondences)
         {
-          // something like initCompute() ?
           if (!input_correspondences_ || (input_correspondences_->empty ()))
             return;
 
           applyRejection (correspondences);
-
-          // something like deinintCompute() ?
         }
 
-        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
-          * Pure virtual.
+
+
+
+        /** \brief DEPRECATED: Get a list of valid correspondences after rejection from the original set of correspondences.
+          * Pure virtual. Compared to \a getCorrespondences this function is
+          * stateless, i.e., input correspondences do not need to be provided beforehand,
+          * but are directly provided in the function call.
           * \param original_correspondences the set of initial correspondences given
           * \param remaining_correspondences the resultant filtered set of remaining correspondences
           */
@@ -93,10 +97,9 @@ namespace pcl
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
                                      pcl::Correspondences& remaining_correspondences) = 0;
 
-        /** \brief Simple comparator for two correspondences. Returns true if
+        /** \brief DEPRECATED: Simple comparator for two correspondences. Returns true if
           * the distance of the first correspondence is smaller than the
           * distance of the second.
-          *
           * \param[in] a the first correspondence
           * \param[in] b the second correspondence
           */
@@ -107,7 +110,14 @@ namespace pcl
           return (a.distance < b.distance); 
         }
 
-        /** \brief ...
+        /**
+          * \brief DEPRECATED: Determine the indices of query points of
+          * correspondences that have been rejected, i.e., the difference
+          * between the input correspondences (set via \a setInputCorrespondences)
+          * and the given correspondence vector.
+          * \param[in] correspondences Vector of correspondences after rejection
+          * \param[out] indices Vector of query point indices of those correspondences
+          * that have been rejected.
           */
         inline void 
         getRejectedQueryIndices (const pcl::Correspondences &correspondences, 
@@ -119,24 +129,10 @@ namespace pcl
             return;
           }
 
-          std::vector<int> indices_before, indices_after;
-
-          // Copy the indices
-          indices_before.resize (input_correspondences_->size ());
-          for (size_t i = 0; i < input_correspondences_->size (); ++i)
-            indices_before[i] = (*input_correspondences_)[i].index_query;
-
-          indices_after.resize (correspondences.size ());
-          for (size_t i = 0; i < correspondences.size (); ++i)
-            indices_after[i] = correspondences[i].index_query;
-
-          std::vector<int> remaining_indices;
-          set_difference (
-              indices_before.begin (), indices_before.end (),
-              indices_after.begin (),  indices_after.end (),
-              inserter (remaining_indices, remaining_indices.begin ()));
-          indices =  remaining_indices;
+          pcl::getRejectedQueryIndices(*input_correspondences_, correspondences, indices);
         }
+
+
 
       protected:
 
