@@ -12,6 +12,8 @@
 #                                   www.pointclouds.org
 #------------------------------------------------------------------------------------
 
+### ---[ some useful macros
+
 macro(pcl_report_not_found _reason)
   unset(PCL_FOUND)
   unset(PCL_LIBRARIES)
@@ -31,47 +33,6 @@ macro(pcl_message)
     message(${ARGN})
   endif(NOT PCL_FIND_QUIETLY)
 endmacro(pcl_message)
-
-if(WIN32)
-# PCLConfig.cmake is installed to PCL_ROOT/cmake
-  get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
-else(WIN32)
-# PCLConfig.cmake is installed to PCL_ROOT/share/pcl-x.y
-  get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
-  get_filename_component(PCL_ROOT "${PCL_ROOT}" PATH)
-endif(WIN32)
-
-# check whether PCLConfig.cmake is found into a PCL installation or in a build tree
-if(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")
-  # Found a PCL installation
-  # pcl_message("Found a PCL installation")
-  set(PCL_INCLUDE_DIRS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
-  set(PCL_LIBRARY_DIRS "${PCL_ROOT}/@LIB_INSTALL_DIR@")
-elseif(EXISTS "${PCL_DIR}/include/pcl/pcl_config.h")
-  # Found PCLConfig.cmake in a build tree of PCL
-  # pcl_message("PCL found into a build tree.")
-  set(PCL_INCLUDE_DIRS "${PCL_DIR}/include") # for pcl_config.h
-  set(PCL_LIBRARY_DIRS "${PCL_DIR}/@LIB_INSTALL_DIR@")
-  set(PCL_SOURCES_TREE "@CMAKE_SOURCE_DIR@")
-else(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")
-  pcl_report_not_found("PCL can not be found on this machine")  
-endif(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")
-
-#set a suffix for debug libraries
-set(PCL_DEBUG_SUFFIX "@CMAKE_DEBUG_POSTFIX@")
-
-set(pcl_all_components @PCLCONFIG_AVAILABLE_COMPONENTS@ )
-list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
-
-#list each component dependencies IN PCL
-@PCLCONFIG_INTERNAL_DEPENDENCIES@
-
-#list each component external dependencies (ext means mandatory and opt means optional)
-@PCLCONFIG_EXTERNAL_DEPENDENCIES@
-
-@PCLCONFIG_OPTIONAL_DEPENDENCIES@
-
-include(FindPackageHandleStandardArgs)
 
 macro(find_boost)
   if(NOT BOOST_INCLUDEDIR)
@@ -291,12 +252,6 @@ macro(find_VTK)
   endif(VTK_FOUND)
 endmacro(find_VTK)
 
-if(PCL_FIND_QUIETLY)
-  set(QUIET_ QUIET)
-else(PCL_FIND_QUIETLY)
-  set(QUIET_)
-endif(PCL_FIND_QUIETLY)
-
 # Finds each component external libraries if any
 # The functioning is as following
 # try to find _lib
@@ -389,6 +344,57 @@ macro(compute_dependencies TO_FIND_COMPONENTS)
   endforeach(component)
 endmacro(compute_dependencies)
 
+### ---[ Find PCL
+
+if(PCL_FIND_QUIETLY)
+  set(QUIET_ QUIET)
+else(PCL_FIND_QUIETLY)
+  set(QUIET_)
+endif(PCL_FIND_QUIETLY)
+
+if(WIN32)
+# PCLConfig.cmake is installed to PCL_ROOT/cmake
+  get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
+else(WIN32)
+# PCLConfig.cmake is installed to PCL_ROOT/share/pcl-x.y
+  get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
+  get_filename_component(PCL_ROOT "${PCL_ROOT}" PATH)
+endif(WIN32)
+
+# check whether PCLConfig.cmake is found into a PCL installation or in a build tree
+if(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")
+  # Found a PCL installation
+  # pcl_message("Found a PCL installation")
+  set(PCL_INCLUDE_DIRS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
+  set(PCL_LIBRARY_DIRS "${PCL_ROOT}/@LIB_INSTALL_DIR@")
+elseif(EXISTS "${PCL_DIR}/include/pcl/pcl_config.h")
+  # Found PCLConfig.cmake in a build tree of PCL
+  # pcl_message("PCL found into a build tree.")
+  set(PCL_INCLUDE_DIRS "${PCL_DIR}/include") # for pcl_config.h
+  set(PCL_LIBRARY_DIRS "${PCL_DIR}/@LIB_INSTALL_DIR@")
+  set(PCL_SOURCES_TREE "@CMAKE_SOURCE_DIR@")
+else(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")
+  pcl_report_not_found("PCL can not be found on this machine")  
+endif(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")
+
+#set a suffix for debug libraries
+set(PCL_DEBUG_SUFFIX "@CMAKE_DEBUG_POSTFIX@")
+
+set(pcl_all_components @PCLCONFIG_AVAILABLE_COMPONENTS@ )
+list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
+
+#list each component dependencies IN PCL
+@PCLCONFIG_INTERNAL_DEPENDENCIES@
+
+#list each component external dependencies (ext means mandatory and opt means optional)
+@PCLCONFIG_EXTERNAL_DEPENDENCIES@
+
+@PCLCONFIG_OPTIONAL_DEPENDENCIES@
+
+set(pcl_header_only_components cuda_common)
+
+include(FindPackageHandleStandardArgs)
+
 #check if user provided a list of components
 #if no components at all or full list is given set PCL_FIND_ALL
 if(PCL_FIND_COMPONENTS)
@@ -430,12 +436,6 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
 
   pcl_message(STATUS "looking for ${PCL_COMPONENT}")
 
-  if(${PC_PCL_COMPONENT}_VERSION)
-    if(NOT PCL_FOUND_VERSION VERSION_EQUAL ${PC_PCL_COMPONENT}_VERSION)
-      pcl_report_not_found("PCL component: ${component} should be at version ${PCL_FOUND_VERSION}")
-    endif(NOT PCL_FOUND_VERSION VERSION_EQUAL ${PC_PCL_COMPONENT}_VERSION)
-  endif(${PC_PCL_COMPONENT}_VERSION)
-
   string(REGEX REPLACE "^cuda_(.*)$" "\\1" cuda_component "${component}")
   string(REGEX REPLACE "^gpu_(.*)$" "\\1" gpu_component "${component}")	
   
@@ -457,42 +457,51 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     #pcl_message("No include directory found for pcl_${component}.")
   endif(PCL_${COMPONENT}_INCLUDE_DIR)
   
-  find_library(${PCL_COMPONENT_LIBRARY} ${pcl_component}
-    HINTS ${PCL_LIBRARY_DIRS}
-    DOC "path to ${pcl_component} library"
-    NO_DEFAULT_PATH)
-  get_filename_component(${component}_library_path 
-    ${${PCL_COMPONENT_LIBRARY}}
-    PATH)
+  # Skip find_library for header only modules
+  list(FIND pcl_header_only_components ${component} _is_header_only)
+  if(_is_header_only EQUAL -1)
+    find_library(${PCL_COMPONENT_LIBRARY} ${pcl_component}
+      HINTS ${PCL_LIBRARY_DIRS}
+      DOC "path to ${pcl_component} library"
+      NO_DEFAULT_PATH)
+    get_filename_component(${component}_library_path 
+      ${${PCL_COMPONENT_LIBRARY}}
+      PATH)
 
-  find_library(${PCL_COMPONENT_LIBRARY_DEBUG} ${pcl_component}${PCL_DEBUG_SUFFIX}
-    HINTS ${PCL_LIBRARY_DIRS}
-    DOC "path to ${pcl_component} library debug"
-    NO_DEFAULT_PATH)
-  # if only release found let release be debug too
-  # NOTE: this is only for non Makefile sake
-  if(NOT ${PCL_COMPONENT_LIBRARY_DEBUG} AND ${PCL_COMPONENT_LIBRARY})
-    set(${PCL_COMPONENT_LIBRARY_DEBUG} ${${PCL_COMPONENT_LIBRARY}})
-  endif(NOT ${PCL_COMPONENT_LIBRARY_DEBUG} AND ${PCL_COMPONENT_LIBRARY})
+    find_library(${PCL_COMPONENT_LIBRARY_DEBUG} ${pcl_component}${PCL_DEBUG_SUFFIX}
+      HINTS ${PCL_LIBRARY_DIRS}
+      DOC "path to ${pcl_component} library debug"
+      NO_DEFAULT_PATH)
+    # if only release found let release be debug too
+    # NOTE: this is only for non Makefile sake
+    if(NOT ${PCL_COMPONENT_LIBRARY_DEBUG} AND ${PCL_COMPONENT_LIBRARY})
+      set(${PCL_COMPONENT_LIBRARY_DEBUG} ${${PCL_COMPONENT_LIBRARY}})
+    endif(NOT ${PCL_COMPONENT_LIBRARY_DEBUG} AND ${PCL_COMPONENT_LIBRARY})
 
-  get_filename_component(${component}_library_path_debug 
-    ${${PCL_COMPONENT_LIBRARY}_DEBUG}
-    PATH)
+    get_filename_component(${component}_library_path_debug 
+      ${${PCL_COMPONENT_LIBRARY}_DEBUG}
+      PATH)
   
-  find_package_handle_standard_args(${PCL_COMPONENT} DEFAULT_MSG
-    ${PCL_COMPONENT_LIBRARY} ${PCL_COMPONENT_INCLUDE_DIR})
-
+    find_package_handle_standard_args(${PCL_COMPONENT} DEFAULT_MSG
+      ${PCL_COMPONENT_LIBRARY} PCL_${COMPONENT}_INCLUDE_DIR)
+  else(_is_header_only EQUAL -1)
+    find_package_handle_standard_args(${PCL_COMPONENT} DEFAULT_MSG
+      PCL_${COMPONENT}_INCLUDE_DIR)  
+  endif(_is_header_only EQUAL -1)
+  
   if(${PCL_COMPONENT}_FOUND)
-    list(APPEND ${PCL_COMPONENT_LIBRARIES} optimized ${${PCL_COMPONENT_LIBRARY}} debug ${${PCL_COMPONENT_LIBRARY_DEBUG}})
     if(NOT "${PCL_${COMPONENT}_INCLUDE_DIRS}" STREQUAL "")
       list(REMOVE_DUPLICATES PCL_${COMPONENT}_INCLUDE_DIRS)
     endif(NOT "${PCL_${COMPONENT}_INCLUDE_DIRS}" STREQUAL "")
     list(APPEND PCL_INCLUDE_DIRS ${PCL_${COMPONENT}_INCLUDE_DIRS})
-    list(APPEND PCL_LIBRARIES ${${PCL_COMPONENT}_LIBRARIES})
-    list(APPEND PCL_LIBRARY_DIRS ${component_library_path})
-    list(APPEND PCL_LIBRARY_DIRS ${component_library_path_debug})
     mark_as_advanced(PCL_${COMPONENT}_INCLUDE_DIRS)
-    mark_as_advanced(${PCL_COMPONENT_LIBRARY} ${PCL_COMPONENT_LIBRARY_DEBUG})
+    if(_is_header_only EQUAL -1)
+      list(APPEND ${PCL_COMPONENT_LIBRARIES} optimized ${${PCL_COMPONENT_LIBRARY}} debug ${${PCL_COMPONENT_LIBRARY_DEBUG}})
+      list(APPEND PCL_LIBRARIES ${${PCL_COMPONENT}_LIBRARIES})
+      list(APPEND PCL_LIBRARY_DIRS ${component_library_path})
+      list(APPEND PCL_LIBRARY_DIRS ${component_library_path_debug})
+      mark_as_advanced(${PCL_COMPONENT_LIBRARY} ${PCL_COMPONENT_LIBRARY_DEBUG})
+    endif(_is_header_only EQUAL -1)    
   endif(${PCL_COMPONENT}_FOUND)
 endforeach(component)
 
