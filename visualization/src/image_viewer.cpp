@@ -39,22 +39,59 @@
 #include <vtkImageViewer.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkImageReslice.h>
-#include <vtkImageViewer.h>
 #include <vtkTransform.h>
 #include <vtkImageChangeInformation.h>
+#include <vtkCallbackCommand.h>
+#include <vtkObject.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <pcl/visualization/keyboard_event.h>
+#include <pcl/visualization/mouse_event.h>
+#include <pcl/common/time.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
-  : image_viewer_ (vtkImageViewer::New ())
+  : image_viewer_ (vtkImageViewer::New ()),
+    mouse_command_ (vtkCallbackCommand::New ()), 
+    keyboard_command_ (vtkCallbackCommand::New ()),
+    interactor_ (vtkSmartPointer<vtkRenderWindowInteractor>::New ()),
+    data_size_ (0)
 {
+  // Set the mouse/keyboard callbacks
+  mouse_command_->SetClientData (this);
+  mouse_command_->SetCallback (ImageViewer::MouseCallback);
+  
+  keyboard_command_->SetClientData (this);
+  keyboard_command_->SetCallback (ImageViewer::KeyboardCallback);
+
+  // Create our own  interactor and set the window title
+  image_viewer_->SetupInteractor (interactor_);
   image_viewer_->GetRenderWindow ()->SetWindowName (window_title.c_str ());
 
-  vtkRenderWindowInteractor *iren = vtkRenderWindowInteractor::New ();
-  image_viewer_->SetupInteractor (iren);
+  // Initialize and create timer
+  interactor_->Initialize ();
+  timer_id_ = interactor_->CreateRepeatingTimer (0);
+  
+  // Set the exit callbacks
+  exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
+  exit_main_loop_timer_callback_->window = this;
+  exit_main_loop_timer_callback_->right_timer_id = -1;
+  interactor_->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
 
-  iren->SetRenderWindow (image_viewer_->GetRenderWindow ());
-  iren->Initialize ();
+  exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
+  exit_callback_->window = this;
+  interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
+
+  resetStoppedFlag ();
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+pcl::visualization::ImageViewer::~ImageViewer ()
+{
+   interactor_->DestroyTimer (timer_id_);
+//  interactor_->DestroyTimer (interactor_->timer_id_);
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -76,8 +113,6 @@ pcl::visualization::ImageViewer::showRGBImage (const unsigned char* rgb_data, un
   transform->SetElement (1,3, height);
   vtkSmartPointer<vtkTransform> imageTransform = vtkSmartPointer<vtkTransform>::New ();
   imageTransform->SetMatrix (transform);
-  //imageTransform->Translate (width / 2.0, height / 2.0, 0.0);
-  //imageTransform->RotateZ (180.0);
   // Now create filter and set previously created transformation
   vtkSmartPointer<vtkImageReslice> algo = vtkSmartPointer<vtkImageReslice>::New ();
   algo->SetInput (importer->GetOutput ());
@@ -87,11 +122,188 @@ pcl::visualization::ImageViewer::showRGBImage (const unsigned char* rgb_data, un
   algo->Update ();
 
   image_viewer_->SetInput (algo->GetOutput ());
-  //image_viewer_->SetInput (importer->GetOutput());
   image_viewer_->SetColorLevel (127.5);
   image_viewer_->SetColorWindow (255);
   image_viewer_->SetSize (width, height);
 
   image_viewer_->Render ();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<pcl::PointXYZRGB> &cloud)
+{
+  if (data_size_ < cloud.width * cloud.height)
+  {
+    data_size_ = cloud.width * cloud.height * 3;
+    data_.reset (new unsigned char[data_size_]);
+  }
+
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+    memcpy (&data_[i * 3], (char*)&cloud.points[i].rgb, sizeof (char) * 3);
+  return (showRGBImage (data_.get (), cloud.width, cloud.height));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::ImageViewer::spin ()
+{
+  resetStoppedFlag ();
+  // Render the window before we start the interactor
+  interactor_->Render ();
+  interactor_->Start ();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
+{
+  resetStoppedFlag ();
+
+  if (time <= 0)
+    time = 1;
+  
+  DO_EVERY (1.0 / interactor_->GetDesiredUpdateRate (),
+    interactor_->Render ();
+    exit_main_loop_timer_callback_->right_timer_id = interactor_->CreateRepeatingTimer (time);
+    interactor_->Start ();
+    interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
+  );
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection 
+pcl::visualization::ImageViewer::registerMouseCallback (
+    boost::function<void (const pcl::visualization::MouseEvent&)> callback)
+{
+  // just add observer at first time when a callback is registered
+  if (mouse_signal_.empty ())
+  {
+    interactor_->AddObserver (vtkCommand::MouseMoveEvent, mouse_command_);
+    interactor_->AddObserver (vtkCommand::MiddleButtonPressEvent, mouse_command_);
+    interactor_->AddObserver (vtkCommand::MiddleButtonReleaseEvent, mouse_command_);
+    interactor_->AddObserver (vtkCommand::MouseWheelBackwardEvent, mouse_command_);
+    interactor_->AddObserver (vtkCommand::MouseWheelForwardEvent, mouse_command_);
+    interactor_->AddObserver (vtkCommand::LeftButtonPressEvent, mouse_command_);
+    interactor_->AddObserver (vtkCommand::LeftButtonReleaseEvent, mouse_command_);
+    interactor_->AddObserver (vtkCommand::RightButtonPressEvent, mouse_command_);
+    interactor_->AddObserver (vtkCommand::RightButtonReleaseEvent, mouse_command_);
+  }
+  return (mouse_signal_.connect (callback));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection 
+pcl::visualization::ImageViewer::registerKeyboardCallback (
+    boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
+{
+  // just add observer at first time when a callback is registered
+  if (keyboard_signal_.empty ())
+  {
+    interactor_->AddObserver (vtkCommand::KeyPressEvent, keyboard_command_);
+    interactor_->AddObserver (vtkCommand::KeyReleaseEvent, keyboard_command_);
+  }
+  
+  return (keyboard_signal_.connect (callback));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::ImageViewer::emitMouseEvent (unsigned long event_id)
+{
+  int x,y;
+  interactor_->GetMousePosition (&x, &y);
+  MouseEvent event (MouseEvent::MouseMove, MouseEvent::NoButton, x, y, 
+                    interactor_->GetAltKey (), interactor_->GetControlKey (), interactor_->GetShiftKey ());
+  bool repeat = false;
+  switch (event_id)
+  {
+    case vtkCommand::MouseMoveEvent :
+      event.setType(MouseEvent::MouseMove);
+      break;
+    
+    case vtkCommand::LeftButtonPressEvent :
+      event.setButton(MouseEvent::LeftButton);
+      if (interactor_->GetRepeatCount () == 0)
+        event.setType(MouseEvent::MouseButtonPress);
+      else
+        event.setType(MouseEvent::MouseDblClick);
+      break;
+      
+    case vtkCommand::LeftButtonReleaseEvent :
+      event.setButton(MouseEvent::LeftButton);
+      event.setType(MouseEvent::MouseButtonRelease);
+      break;
+      
+    case vtkCommand::RightButtonPressEvent :
+      event.setButton(MouseEvent::RightButton);
+      if (interactor_->GetRepeatCount () == 0)
+        event.setType(MouseEvent::MouseButtonPress);
+      else
+        event.setType(MouseEvent::MouseDblClick);
+      break;
+      
+    case vtkCommand::RightButtonReleaseEvent :
+      event.setButton(MouseEvent::RightButton);
+      event.setType(MouseEvent::MouseButtonRelease);
+      break;
+      
+    case vtkCommand::MiddleButtonPressEvent :
+      event.setButton(MouseEvent::MiddleButton);
+      if (interactor_->GetRepeatCount () == 0)
+        event.setType(MouseEvent::MouseButtonPress);
+      else
+        event.setType(MouseEvent::MouseDblClick);
+      break;
+      
+    case vtkCommand::MiddleButtonReleaseEvent :
+      event.setButton(MouseEvent::MiddleButton);
+      event.setType(MouseEvent::MouseButtonRelease);
+      break;
+      
+      case vtkCommand::MouseWheelBackwardEvent :
+      event.setButton(MouseEvent::VScroll);
+      event.setType(MouseEvent::MouseScrollDown);
+      if (interactor_->GetRepeatCount () != 0)
+        repeat = true;
+      break;
+      
+    case vtkCommand::MouseWheelForwardEvent :
+      event.setButton(MouseEvent::VScroll);
+      event.setType(MouseEvent::MouseScrollUp);
+      if (interactor_->GetRepeatCount () != 0)
+        repeat = true;
+      break;
+    default:
+      return;
+  }
+  
+  mouse_signal_ (event);
+  if (repeat)
+    mouse_signal_ (event);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::ImageViewer::emitKeyboardEvent (unsigned long event_id)
+{
+  KeyboardEvent event (bool(event_id == vtkCommand::KeyPressEvent), interactor_->GetKeySym (),  interactor_->GetKeyCode (), interactor_->GetAltKey (), interactor_->GetControlKey (), interactor_->GetShiftKey ());
+  keyboard_signal_ (event);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::ImageViewer::MouseCallback (vtkObject*, unsigned long eid, void* clientdata, void* calldata)
+{
+  ImageViewer* window = reinterpret_cast<ImageViewer*> (clientdata);
+  window->emitMouseEvent (eid);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::ImageViewer::KeyboardCallback (vtkObject*, unsigned long eid, void* clientdata, void* calldata)
+{
+  ImageViewer* window = reinterpret_cast<ImageViewer*> (clientdata);
+  window->emitKeyboardEvent (eid);
 }
 
