@@ -170,7 +170,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
 void 
 pcl::visualization::PCLVisualizer::createInteractor ()
 {
-  interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
+  interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
 
   interactor_->SetRenderWindow (win_);
   interactor_->SetInteractorStyle (style_);
@@ -179,8 +179,7 @@ pcl::visualization::PCLVisualizer::createInteractor ()
 
   // Initialize and create timer, also create window
   interactor_->Initialize ();
-  //interactor_->CreateRepeatingTimer (5000L);
-  interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
+  timer_id_ = interactor_->CreateRepeatingTimer (5000L);
 
   // Set a simple PointPicker
   vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
@@ -203,7 +202,7 @@ pcl::visualization::PCLVisualizer::createInteractor ()
 pcl::visualization::PCLVisualizer::~PCLVisualizer ()
 {
   if (interactor_ != NULL) 
-    interactor_->DestroyTimer (interactor_->timer_id_);
+    interactor_->DestroyTimer (timer_id_);
   // Clear the collections
   rens_->RemoveAllItems ();
 }

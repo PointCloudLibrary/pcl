@@ -43,7 +43,7 @@
 #include <boost/signals2.hpp>
 #include <vtkCallbackCommand.h>
 #include <vtkInteractorStyle.h>
-#include <pcl/visualization/interactor.h>
+#include <vtkRenderWindowInteractor.h>
 #include <pcl/visualization/interactor_style.h>
 
 namespace pcl
@@ -73,7 +73,8 @@ namespace pcl
         
         /** \brief Returns true when the user tried to close the window */
         bool 
-        wasStopped () const { return (interactor_->stopped); }
+        //wasStopped () const { return (interactor_->stopped); }
+        wasStopped () const { return (stopped); }
 
         /**
           * @brief registering a callback function for keyboard events
@@ -133,7 +134,9 @@ namespace pcl
 
         /** \brief Set the stopped flag back to false */
         void 
-        resetStoppedFlag () { interactor_->stopped = false; }
+        //resetStoppedFlag () { interactor_->stopped = false; }
+        resetStoppedFlag () { stopped = false; }
+
         /**
           * @brief   registering a callback function for mouse events
           * @param   the boost function that will be registered as a callback for a mouse event
@@ -177,7 +180,8 @@ namespace pcl
             //PCL_WARN ("[pcl::visualization::Window::ExitMainLoopTimerCallback] Timer %d called.\n", timer_id);
             if (timer_id != right_timer_id)
               return;
-            window->interactor_->stopLoop ();
+            window->interactor_->TerminateApp ();
+//            window->interactor_->stopLoop ();
           }
           int right_timer_id;
           Window* window;
@@ -192,20 +196,24 @@ namespace pcl
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
-            window->interactor_->stopped = true;
+            window->interactor_->TerminateApp ();
+            //window->interactor_->stopped = true;
+            window->stopped = true;
             // This tends to close the window...
-            window->interactor_->stopLoop ();
+            //window->interactor_->stopLoop ();
           }
           Window* window;
         };
+
+        bool stopped;
+        int timer_id_;
         
     protected: // member fields
         boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
         boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)> keyboard_signal_;
         
         vtkSmartPointer<vtkRenderWindow> win_;
-        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
-        //vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
+        vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
         vtkCallbackCommand* mouse_command_;
         vtkCallbackCommand* keyboard_command_;
         /** \brief The render window interactor style. */
