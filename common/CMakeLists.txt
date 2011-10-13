@@ -21,6 +21,7 @@ if(build)
         )
 
     set(incs 
+        include/pcl/correspondence.h
         include/pcl/exceptions.h
         include/pcl/pcl_base.h
         include/pcl/pcl_macros.h
