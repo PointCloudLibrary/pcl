@@ -363,6 +363,115 @@ macro(topological_sort LIST PREFIX SUFFIX)
             endwhile(STACK_LENGTH GREATER 0)
         endif (NOT FOUND_${UPPER_VERTEX})
     endforeach(VERTEX)
-		# Somewhere a # slaps into the list so remove it
-		list(REMOVE_ITEM ${LIST} "#")
+    # Somewhere a # slaps into the list so remove it
+    list(REMOVE_ITEM ${LIST} "#")
 endmacro(topological_sort)
+
+##
+# Swaps 2 elements at _pos1 and _pos2 of a list
+# _list [IN/OUT] a list
+# _pos1 [IN] position of the first element
+# _pos2 [IN] position of the second element
+# TODO ensure _pos1 and _pos2 are in range
+##
+macro(swap_elements _list _pos1 _pos2)
+  unset(pos1)
+  unset(pos2)
+  unset(element1)
+  unset(element2)
+  # sort pos1 and pos2 such us pos1 < pos2
+  if(NOT (${_pos1} EQUAL ${_pos2}))
+    if(${_pos1} GREATER ${_pos2})
+      set(pos1 ${${_pos2}})
+      set(pos2 ${${_pos1}})
+    else(${_pos1} GREATER ${_pos2})
+      set(pos1 ${${_pos1}})
+      set(pos2 ${${_pos2}})   
+    endif(${_pos1} GREATER ${_pos2})
+
+    list(GET ${_list} ${pos1} element1)
+    math(EXPR distance "${pos2} - ${pos1}")
+    if(distance GREATER 1)
+      list(GET ${_list} ${pos2} element2)
+      list(INSERT ${_list} ${pos1} ${element2})
+      math(EXPR pos1 "${pos1} + 1")
+      list(REMOVE_AT ${_list} ${pos1})
+      list(INSERT ${_list} ${pos2} ${element1})
+      math(EXPR pos2 "${pos2} + 1")
+      list(REMOVE_AT ${_list} ${pos2})
+    else(distance GREATER 1)
+      list(REMOVE_AT ${_list} ${pos1})
+      list(INSERT ${_list} ${pos2} ${element1})
+    endif(distance GREATER 1)
+  endif(NOT (${_pos1} EQUAL ${_pos2}))
+endmacro(swap_elements)
+
+##
+# Fills a list with _length x _value
+# _list the list to fill
+# _length the desired list size
+# _value the filler
+##
+macro(fill_list _list _length _value)
+  if(${_length} LESS 1)
+    message(FATAL_ERROR "${_length} must be at least equal to 1")
+  endif(${_length} LESS 1)
+  math(EXPR size "${${_length}} - 1")
+  foreach(counter RANGE ${size})
+    list(APPEND ${_list} ${_value})
+  endforeach(counter)
+endmacro(fill_list)
+
+##
+# Set the value at element a known position of a list
+# _list the list to manipulate
+# _position position of the element to set
+# _value new element value
+##
+macro(set_in_list _list _position _value)
+  list(INSERT ${_list} ${${_position}} ${${_value}})
+  math(EXPR next "${${_position}} + 1")
+  list(REMOVE_AT ${_list} ${next})
+endmacro(set_in_list)
+
+###
+# Sorts list B the same way list A was sorted by fetching the indices
+# _list [IN] original list A 
+# _sorted_list [IN] list A after sorting
+# _to_sort_relative [IN/OUT] list B
+##
+macro(sort_relative _list _sorted_list _to_sort_relative)
+  unset(sorted_list_length)
+  unset(list_length)
+  unset(to_sort_list_length)
+  # ensure sizes are equal for the three lists else fail gracefully
+  list(LENGTH ${_sorted_list} sorted_list_length)
+  list(LENGTH ${_list} list_length)
+  list(LENGTH ${_to_sort_relative} to_sort_list_length)
+
+  if(NOT (list_length EQUAL sorted_list_length))
+    message(FATAL_ERROR "size mismatch between ${_sorted_list} and ${_list}")
+  endif(NOT (list_length EQUAL sorted_list_length))
+
+  if(NOT (list_length EQUAL to_sort_list_length))
+    message(FATAL_ERROR "size mismatch between ${_to_sort_relative} ${to_sort_list_length} and ${_list} ${list_length}")
+  endif(NOT (list_length EQUAL to_sort_list_length))
+  # unset the temporary list to avoid suprises (I had some them and were hard to find)
+  unset(tmp_list)
+  # fill it with a dummy value
+  fill_list(tmp_list list_length "#")
+  #iterate over the original list
+  set(counter 0)
+  foreach(loop_var ${${_list}})
+    # get the element position in the sorted list
+    list(FIND ${_sorted_list} ${loop_var} sorted_position)
+    # get the corresponding element from the list to sort
+    list(GET ${_to_sort_relative} ${counter} to_insert)
+    # in the temporary list replace the dummy value by the corresponding
+    set_in_list(tmp_list sorted_position to_insert)
+    # increment the counter
+    math(EXPR counter "${counter} + 1")
+  endforeach(loop_var)
+  # swap the temporary list and list to sort
+  set(${_to_sort_relative} ${tmp_list})
+endmacro(sort_relative)

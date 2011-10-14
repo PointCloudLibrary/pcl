@@ -1,6 +1,6 @@
 set(SUBSYS_NAME python)
 set(SUBSYS_DESC "Python pcl")
-set(SUBSYS_DEPS common filters test)
+set(SUBSYS_DEPS common filters)
 
 if(PYTHONLIBS_FOUND)
     set(DEFAULT TRUE)
