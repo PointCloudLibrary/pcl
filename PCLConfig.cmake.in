@@ -62,55 +62,6 @@ macro(find_eigen)
   find_package_handle_standard_args(eigen DEFAULT_MSG EIGEN_INCLUDE_DIRS)
 endmacro(find_eigen)
 
-#remove this as soon as cminpack is shipped with FindCminpack.cmake
-macro(find_cminpack)
-  if(NOT CMINPACK_ROOT)
-    get_filename_component(CMINPACK_ROOT "@CMINPACK_INCLUDE_DIRS@" PATH)
-    get_filename_component(CMINPACK_ROOT "${CMINPACK_ROOT}" PATH)
-  endif(NOT CMINPACK_ROOT)
-  find_path(CMINPACK_INCLUDE_DIRS cminpack.h
-    HINTS ${PC_CMINPACK_INCLUDEDIR} ${PC_CMINPACK_INCLUDE_DIRS} 
-          "${CMINPACK_ROOT}" "$ENV{CMINPACK_ROOT}" 
-          "$ENV{PROGRAMFILES}/CMINPACK 1.1.3" "$ENV{PROGRAMW6432}/CMINPACK 1.1.3" 
-          "$ENV{PROGRAMFILES}/CMINPACK" "$ENV{PROGRAMW6432}/CMINPACK" 
-    PATH_SUFFIXES include/cminpack-1)
-
-  # Most likely we are on windows so prefer static libraries over shared ones
-  find_library(CMINPACK_LIBRARY 
-    NAMES cminpack_s cminpack
-    HINTS ${PC_CMINPACK_LIBDIR} ${PC_CMINPACK_LIBRARY_DIRS} 
-          "${CMINPACK_ROOT}" "$ENV{CMINPACK_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/CMINPACK 1.1.3" "$ENV{PROGRAMW6432}/CMINPACK 1.1.3" 
-          "$ENV{PROGRAMFILES}/CMINPACK" "$ENV{PROGRAMW6432}/CMINPACK"
-    PATH_SUFFIXES lib)
-  
-  find_library(CMINPACK_LIBRARY_DEBUG 
-    NAMES cminpack_s-gd cminpack-gd cminpack_s cminpack
-    HINTS ${PC_CMINPACK_LIBDIR} ${PC_CMINPACK_LIBRARY_DIRS} 
-          "${CMINPACK_ROOT}" "$ENV{CMINPACK_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/CMINPACK 1.1.3" "$ENV{PROGRAMW6432}/CMINPACK 1.1.3" 
-          "$ENV{PROGRAMFILES}/CMINPACK" "$ENV{PROGRAMW6432}/CMINPACK"
-    PATH_SUFFIXES lib)
-
-  if(NOT CMINPACK_LIBRARY_DEBUG)
-    set(CMINPACK_LIBRARY_DEBUG ${CMINPACK_LIBRARY})
-  endif(NOT CMINPACK_LIBRARY_DEBUG)
-
-  set(CMINPACK_INCLUDE_DIRS ${CMINPACK_INCLUDE_DIR})
-  set(CMINPACK_LIBRARIES optimized ${CMINPACK_LIBRARY} debug ${CMINPACK_LIBRARY_DEBUG})
-  
-  find_package_handle_standard_args(cminpack DEFAULT_MSG CMINPACK_LIBRARY CMINPACK_INCLUDE_DIRS)
-  if(CMINPACK_FOUND)
-    get_filename_component(cminpack_lib ${CMINPACK_LIBRARY} NAME_WE)
-    if("${cminpack_lib}" STREQUAL "cminpack_s")
-      set(IS_CMINPACK_STATIC ON)
-    endif("${cminpack_lib}" STREQUAL "cminpack_s")
-    get_filename_component(CMINPACK_LIBRARY_PATH ${CMINPACK_LIBRARY} PATH)
-    get_filename_component(CMINPACK_LIBRARY_DEBUG_PATH ${CMINPACK_LIBRARY_DEBUG} PATH)
-    set(CMINPACK_LIBRARY_DIRS ${CMINPACK_LIBRARY_PATH} ${CMINPACK_LIBRARY_DEBUG_PATH})
-  endif(CMINPACK_FOUND)
-endmacro(find_cminpack)
-
 #remove this as soon as qhull is shipped with FindQhull.cmake
 macro(find_qhull)
   if(NOT QHULL_ROOT)
@@ -276,8 +227,6 @@ macro(find_external_library _component _lib _is_optional)
     find_qhull()
   elseif("${_lib}" STREQUAL "openni")
     find_openni()
-  elseif("${_lib}" STREQUAL "cminpack")
-    find_cminpack()
   elseif("${_lib}" STREQUAL "vtk")
     find_VTK()
   elseif("${_lib}" STREQUAL "wxwidgets")
