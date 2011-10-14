@@ -72,10 +72,12 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output
   // Initialize the spatial locator
   if (!tree_)
   {
+    KdTreePtr tree;
     if (input_->isOrganized ())
-      tree_.reset (new pcl::OrganizedDataIndex<PointInT> ());
+      tree.reset (new pcl::OrganizedDataIndex<PointInT> ());
     else
-      tree_.reset (new pcl::KdTreeFLANN<PointInT> (false));
+      tree.reset (new pcl::KdTreeFLANN<PointInT> (false));
+    setSearchMethod (tree);
   }
 
   // Send the surface dataset to the spatial locator
