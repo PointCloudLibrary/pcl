@@ -68,12 +68,15 @@ TEST (PCL, CorrespondenceEstimation)
 
   // check for correct order and number of matches
   EXPECT_EQ((int)correspondences->size(), nr_original_correspondences);
-  for (int i = 0; i < nr_original_correspondences; ++i)
-    EXPECT_EQ ((*correspondences)[i].index_query, i);
+  if ((int)correspondences->size() == nr_original_correspondences)
+  {
+    for (int i = 0; i < nr_original_correspondences; ++i)
+      EXPECT_EQ ((*correspondences)[i].index_query, i);
 
-  // check for correct matches
-  for (int i = 0; i < nr_original_correspondences; ++i)
-    EXPECT_EQ ((*correspondences)[i].index_match, correspondences_original[i][1]);
+    // check for correct matches
+    for (int i = 0; i < nr_original_correspondences; ++i)
+      EXPECT_EQ ((*correspondences)[i].index_match, correspondences_original[i][1]);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,8 +93,9 @@ TEST (PCL, CorrespondenceEstimationReciprocal)
 
   // check for correct matches and number of matches
   EXPECT_EQ((int)correspondences->size(), nr_reciprocal_correspondences);
-  for (int i = 0; i < nr_reciprocal_correspondences; ++i)
-    EXPECT_EQ ((*correspondences)[i].index_match, correspondences_reciprocal[i][1]);
+  if ((int)correspondences->size() == nr_reciprocal_correspondences)
+    for (int i = 0; i < nr_reciprocal_correspondences; ++i)
+      EXPECT_EQ ((*correspondences)[i].index_match, correspondences_reciprocal[i][1]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,8 +119,9 @@ TEST (PCL, CorrespondenceRejectorDistance)
 
   // check for correct matches and number of matches
   EXPECT_EQ((int)correspondences_result_rej_dist->size(), nr_correspondences_result_rej_dist);
-  for (int i = 0; i < nr_correspondences_result_rej_dist; ++i)
-    EXPECT_EQ ((*correspondences_result_rej_dist)[i].index_match, correspondences_dist[i][1]);
+  if ((int)correspondences_result_rej_dist->size() == nr_correspondences_result_rej_dist)
+    for (int i = 0; i < nr_correspondences_result_rej_dist; ++i)
+      EXPECT_EQ ((*correspondences_result_rej_dist)[i].index_match, correspondences_dist[i][1]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,8 +144,9 @@ TEST (PCL, CorrespondenceRejectorOneToOne)
 
   // check for correct matches and number of matches
   EXPECT_EQ((int)correspondences_result_rej_one_to_one->size(), nr_correspondences_result_rej_one_to_one);
-  for (int i = 0; i < nr_correspondences_result_rej_one_to_one; ++i)
-    EXPECT_EQ ((*correspondences_result_rej_one_to_one)[i].index_match, correspondences_one_to_one[i][1]);
+  if ((int)correspondences_result_rej_one_to_one->size() == nr_correspondences_result_rej_one_to_one)
+    for (int i = 0; i < nr_correspondences_result_rej_one_to_one; ++i)
+      EXPECT_EQ ((*correspondences_result_rej_one_to_one)[i].index_match, correspondences_one_to_one[i][1]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,8 +174,9 @@ TEST (PCL, CorrespondenceRejectorSampleConsensus)
 
   // check for correct matches and number of matches
   EXPECT_EQ((int)correspondences_result_rej_sac->size(), nr_correspondences_result_rej_sac);
-  for (int i = 0; i < nr_correspondences_result_rej_sac, i < correspondences_result_rej_sac->size (); ++i)
-    EXPECT_EQ ((*correspondences_result_rej_sac)[i].index_match, correspondences_sac[i][1]);
+  if ((int)correspondences_result_rej_sac->size() == nr_correspondences_result_rej_sac)
+    for (int i = 0; i < nr_correspondences_result_rej_sac; ++i)
+      EXPECT_EQ ((*correspondences_result_rej_sac)[i].index_match, correspondences_sac[i][1]);
 
   // check for correct transformation
   for (int i = 0; i < 4; ++i)
@@ -198,10 +205,13 @@ TEST (PCL, CorrespondenceRejectorTrimmed)
 
   // check for correct matches, number of matches, and for sorting (correspondences should be sorted w.r.t. distance)
   EXPECT_EQ((int)correspondences_result_rej_trimmed->size(), nr_correspondences_result_rej_trimmed);
-  for (int i = 0; i < nr_correspondences_result_rej_trimmed; ++i)
-    EXPECT_EQ ((*correspondences_result_rej_trimmed)[i].index_query, correspondences_trimmed[i][0]);
-  for (int i = 0; i < nr_correspondences_result_rej_trimmed; ++i)
-    EXPECT_EQ ((*correspondences_result_rej_trimmed)[i].index_match, correspondences_trimmed[i][1]);
+  if ((int)correspondences_result_rej_trimmed->size() == nr_correspondences_result_rej_trimmed)
+  {
+    for (int i = 0; i < nr_correspondences_result_rej_trimmed; ++i)
+      EXPECT_EQ ((*correspondences_result_rej_trimmed)[i].index_query, correspondences_trimmed[i][0]);
+    for (int i = 0; i < nr_correspondences_result_rej_trimmed; ++i)
+      EXPECT_EQ ((*correspondences_result_rej_trimmed)[i].index_match, correspondences_trimmed[i][1]);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
