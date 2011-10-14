@@ -79,6 +79,9 @@ namespace pcl
         typedef boost::shared_ptr<OctreePointCloudSearch<PointT, LeafT, OctreeT> > Ptr;
         typedef boost::shared_ptr<const OctreePointCloudSearch<PointT, LeafT, OctreeT> > ConstPtr;
 
+        // Eigen aligned allocator
+        typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
+
         typedef typename OctreeT::OctreeBranch OctreeBranch;
         typedef typename OctreeT::OctreeKey OctreeKey;
         typedef typename OctreeT::OctreeLeaf OctreeLeaf;
@@ -217,6 +220,16 @@ namespace pcl
         int
         radiusSearch (int index_arg, const double radius_arg, std::vector<int> &k_indices_arg,
                       std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX) const;
+
+        /** \brief Get a PointT vector of centers of all voxels that intersected by a ray (origin, direction).
+         * \param origin ray origin
+         * \param direction ray direction vector
+         * \param voxelCenterList_arg results are written to this vector of PointT elements
+         * \return number of intersected voxels
+         */
+        int
+        getIntersectedVoxelCenters (Eigen::Vector3f origin, Eigen::Vector3f direction,
+                                    AlignedPointTVector &voxelCenterList_arg) const;
 
       protected:
 
@@ -366,6 +379,115 @@ namespace pcl
         void
         approxNearestSearchRecursive (const PointT & point_arg, const OctreeBranch* node_arg, const OctreeKey& key_arg,
                                       unsigned int treeDepth_arg, int& result_index_arg, float& sqr_distance_arg);
+
+        /** \brief Recursively search the tree for all intersected leaf nodes and return a vector of voxel centers.
+         * This algorithm is based off the paper An Efficient Parametric Algorithm for Octree Traversal:
+         * http://wscg.zcu.cz/wscg2000/Papers_2000/X31.pdf
+         * \param minX octree nodes X coordinate of lower bounding box corner
+         * \param minY octree nodes Y coordinate of lower bounding box corner
+         * \param minZ octree nodes Z coordinate of lower bounding box corner
+         * \param maxX octree nodes X coordinate of upper bounding box corner
+         * \param maxY octree nodes Y coordinate of upper bounding box corner
+         * \param maxZ octree nodes Z coordinate of upper bounding box corner
+         * \param a
+         * \param node_arg current octree node to be explored
+         * \param key_arg octree key addressing a leaf node.
+         * \param voxelCenterList_arg results are written to this vector of PointT elements
+         * \return number of voxels found
+         */
+        int
+        getIntersectedVoxelCentersRecursive (double minX, double minY, double minZ, double maxX, double maxY,
+                                             double maxZ, unsigned char a, const OctreeNode* node_arg,
+                                             const OctreeKey& key_arg, AlignedPointTVector &voxelCenterList_arg) const;
+
+        /** \brief Find first child node ray will enter
+         * \param minX octree nodes X coordinate of lower bounding box corner
+         * \param minY octree nodes Y coordinate of lower bounding box corner
+         * \param minZ octree nodes Z coordinate of lower bounding box corner
+         * \param midX octree nodes X coordinate of bounding box mid line
+         * \param midY octree nodes Y coordinate of bounding box mid line
+         * \param midZ octree nodes Z coordinate of bounding box mid line
+         * \return the first child node ray will enter
+         */
+        inline int
+        getFirstIntersectedNode (double minX, double minY, double minZ, double midX, double midY, double midZ) const
+        {
+          int currNode = 0;
+
+          if (minX > minY)
+          {
+            if (minX > minZ)
+            {
+              // max(minX, minY, minZ) is minX. Entry plane is YZ.
+              if (midY < minX)
+                currNode |= 2;
+              if (midZ < minX)
+                currNode |= 1;
+            }
+            else
+            {
+              // max(minX, minY, minZ) is minZ. Entry plane is XY.
+              if (midX < minZ)
+                currNode |= 4;
+              if (midY < minZ)
+                currNode |= 2;
+            }
+          }
+          else
+          {
+            if (minY > minZ)
+            {
+              // max(minX, minY, minZ) is minY. Entry plane is XZ.
+              if (midX < minY)
+                currNode |= 4;
+              if (midZ < minY)
+                currNode |= 1;
+            }
+            else
+            {
+              // max(minX, minY, minZ) is minZ. Entry plane is XY.
+              if (midX < minZ)
+                currNode |= 4;
+              if (midY < minZ)
+                currNode |= 2;
+            }
+          }
+
+          return currNode;
+        }
+
+        /** \brief Get the next visited node given the current node upper
+         *   bounding box corner. This function accepts three float values, and
+         *   three int values. The function returns the ith integer where the
+         *   ith float value is the minimum of the three float values.
+         * \param x current nodes X coordinate of upper bounding box corner
+         * \param y current nodes Y coordinate of upper bounding box corner
+         * \param z current nodes Z coordinate of upper bounding box corner
+         * \param a next node if exit Plane YZ
+         * \param b next node if exit Plane XZ
+         * \param c next node if exit Plane XY
+         * \return the next child node ray will enter or 8 if exiting
+         */
+        inline int
+        getNextIntersectedNode (double x, double y, double z, int a, int b, int c) const
+        {
+          if (x < y)
+          {
+            if (x < z)
+              return a;
+            else
+              return c;
+          }
+          else
+          {
+            if (y < z)
+              return b;
+            else
+              return c;
+          }
+
+          return 0;
+        }
 
       };
   }

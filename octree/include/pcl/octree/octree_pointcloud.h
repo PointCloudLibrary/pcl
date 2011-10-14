@@ -102,6 +102,9 @@ namespace pcl
         typedef boost::shared_ptr<OctreePointCloud<PointT, LeafT, OctreeT> > Ptr;
         typedef boost::shared_ptr<const OctreePointCloud<PointT, LeafT, OctreeT> > ConstPtr;
 
+        // Eigen aligned allocator
+        typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
+
         /** \brief Provide a pointer to the input data set.
          *  \param cloud_arg the const boost shared pointer to a PointCloud message
          *  \param indices_arg the point indices subset that is to be used from \a cloud - if 0 the whole point cloud is used
@@ -238,7 +241,7 @@ namespace pcl
          * \return number of occupied voxels
          */
         int
-        getOccupiedVoxelCenters (std::vector<PointT, Eigen::aligned_allocator<PointT> > &voxelCenterList_arg) const;
+        getOccupiedVoxelCenters (AlignedPointTVector &voxelCenterList_arg) const;
 
         /** \brief Delete leaf node / voxel at given point
          *  \param point_arg point addressing the voxel to be deleted.
