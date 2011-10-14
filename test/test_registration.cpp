@@ -259,20 +259,20 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
 
   Eigen::Matrix4f transformation = reg.getFinalTransformation ();
 
-  EXPECT_NEAR (transformation (0, 0),  0.941, 1e-2);
-  EXPECT_NEAR (transformation (0, 1),  0.103, 1e-2);
-  EXPECT_NEAR (transformation (0, 2), -0.320, 1e-2);
-  EXPECT_NEAR (transformation (0, 3),  0.029, 1e-2);
+  EXPECT_NEAR (transformation (0, 0),  0.9046, 1e-3);
+  EXPECT_NEAR (transformation (0, 1),  0.0609, 1e-3);
+  EXPECT_NEAR (transformation (0, 2), -0.4219, 1e-3);
+  EXPECT_NEAR (transformation (0, 3),  0.0327, 1e-3);
 
-  EXPECT_NEAR (transformation (1, 0), -0.067, 1e-2);
-  EXPECT_NEAR (transformation (1, 1),  0.990, 1e-2);
-  EXPECT_NEAR (transformation (1, 2),  0.120, 1e-2);
-  EXPECT_NEAR (transformation (1, 3), -0.001, 1e-2);
+  EXPECT_NEAR (transformation (1, 0), -0.0328, 1e-3);
+  EXPECT_NEAR (transformation (1, 1),  0.9968, 1e-3);
+  EXPECT_NEAR (transformation (1, 2),  0.0736, 1e-3);
+  EXPECT_NEAR (transformation (1, 3), -0.0003, 1e-3);
 
-  EXPECT_NEAR (transformation (2, 0),  0.329, 1e-2);
-  EXPECT_NEAR (transformation (2, 1), -0.092, 1e-2);
-  EXPECT_NEAR (transformation (2, 2),  0.939, 1e-2); 
-  EXPECT_NEAR (transformation (2, 3),  0.042, 1e-2);
+  EXPECT_NEAR (transformation (2, 0),  0.4250, 1e-3);
+  EXPECT_NEAR (transformation (2, 1), -0.0527, 1e-3);
+  EXPECT_NEAR (transformation (2, 2),  0.9037, 1e-3); 
+  EXPECT_NEAR (transformation (2, 3),  0.0413, 1e-3);
 
   EXPECT_EQ (transformation (3, 0), 0);
   EXPECT_EQ (transformation (3, 1), 0);
