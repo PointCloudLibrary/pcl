@@ -222,8 +222,6 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::Optimiz
 {
   const PointCloud<PointSource> & src_points = *estimator_->tmp_src_;
   const PointCloud<PointTarget> & tgt_points = *estimator_->tmp_tgt_;
-  const std::vector<int> & src_indices = *estimator_->tmp_idx_src_;
-  const std::vector<int> & tgt_indices = *estimator_->tmp_idx_tgt_;
 
   // Initialize the warp function with the given parameters
   Eigen::VectorXf params = x.cast<float> ();
@@ -232,8 +230,8 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::Optimiz
   // Transform each source point and compute its distance to the corresponding target point
   for (int i = 0; i < m_values; i++)
   {
-    const PointSource & p_src = src_points.points[src_indices[i]];
-    const PointTarget & p_tgt = tgt_points.points[tgt_indices[i]];
+    const PointSource & p_src = src_points.points[i];
+    const PointTarget & p_tgt = tgt_points.points[i];
 
     // Transform the source point based on the current warp parameters
     PointSource p_src_warped;
