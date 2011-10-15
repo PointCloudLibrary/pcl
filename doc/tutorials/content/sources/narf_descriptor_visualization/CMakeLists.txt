@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 
 project(narf_descriptor_visualization)
 
-find_package(PCL 1.3 REQUIRED)
+find_package(PCL 1.2 REQUIRED)
 
 if(WXWIDGETS_FOUND)
   include_directories(${PCL_INCLUDE_DIRS})
