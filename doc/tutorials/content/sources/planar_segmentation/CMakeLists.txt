@@ -8,5 +8,5 @@ include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
-add_executable (planar_segmentation vtk.cpp)
+add_executable (planar_segmentation planar_segmentation.cpp)
 target_link_libraries (planar_segmentation ${PCL_LIBRARIES})
