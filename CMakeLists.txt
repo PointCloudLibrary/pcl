@@ -121,7 +121,7 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
 # Find VTK 
 find_package(VTK)
 if(VTK_FOUND)
-	set(VTK_FOUND TRUE)
+  set(VTK_FOUND TRUE)
   message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
   link_directories(${VTK_LIBRARY_DIRS})
   set(HAVE_VTK ON)
@@ -147,23 +147,14 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_find_python.cmake)
 
 ### ---[ Add the libraries subdirectories
 include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
-#collect_subproject_directory_names(${PCL_SOURCE_DIR} "CMakeLists.txt" PCL_MODULES_DIRS test tools doc apps cuda python)
+
 collect_subproject_directory_names(${PCL_SOURCE_DIR} "CMakeLists.txt" PCL_MODULES_NAMES PCL_MODULES_DIRS geometry doc)
-list(LENGTH PCL_MODULES_DIRS nb_dirs)
-list(LENGTH PCL_MODULES_NAMES nb_names)
 set(PCL_MODULES_NAMES_UNSORTED ${PCL_MODULES_NAMES})
 topological_sort(PCL_MODULES_NAMES PCL_ _DEPENDS)
 sort_relative(PCL_MODULES_NAMES_UNSORTED PCL_MODULES_NAMES PCL_MODULES_DIRS)
 foreach(subdir ${PCL_MODULES_DIRS})
- 	add_subdirectory(${PCL_SOURCE_DIR}/${subdir})
+  add_subdirectory(${PCL_SOURCE_DIR}/${subdir})
 endforeach(subdir)
-
-### ---[ Add other subdirectories
-# add_subdirectory(test)
-# add_subdirectory(tools)
-# add_subdirectory(apps)
-# add_subdirectory(cuda)
-# add_subdirectory(python)
 
 ### ---[ Documentation
 add_subdirectory(doc)
