@@ -277,14 +277,13 @@ namespace pcl
     typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
     typedef typename PointCloudIn::Ptr PointCloudInPtr;
     typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-
-    typedef typename pcl::PointCloud<PointNT> PointCloudN;
-    typedef typename PointCloudN::Ptr PointCloudNPtr;
-    typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
-
     typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
     public:
+      typedef typename pcl::PointCloud<PointNT> PointCloudN;
+      typedef typename PointCloudN::Ptr PointCloudNPtr;
+      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+
       typedef boost::shared_ptr< FeatureFromNormals<PointInT, PointNT, PointOutT> > Ptr;
       typedef boost::shared_ptr< const FeatureFromNormals<PointInT, PointNT, PointOutT> > ConstPtr;
 
