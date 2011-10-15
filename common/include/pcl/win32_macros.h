@@ -53,7 +53,9 @@ namespace pcl
 #if defined _WIN32 && defined _MSC_VER
 
 // Stupid. This should be removed when all the PCL dependencies have min/max fixed.
+#ifndef NOMINMAX
 # define NOMINMAX
+#endif
 
 # define pcl_isnan(x)    _isnan(x)
 # define pcl_isfinite(x) (_finite(x) != 0)
