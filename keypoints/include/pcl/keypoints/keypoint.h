@@ -42,7 +42,7 @@
 #include "pcl/pcl_base.h"
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
-#include "pcl/kdtree/kdtree.h"
+#include "pcl/search/pcl_search.h"
 
 namespace pcl
 {
@@ -58,8 +58,8 @@ namespace pcl
       using PCLBase<PointInT>::input_;
 
       typedef PCLBase<PointInT> BaseClass;
-      typedef typename pcl::KdTree<PointInT> KdTree;
-      typedef typename pcl::KdTree<PointInT>::Ptr KdTreePtr;
+      typedef typename pcl::search::Search<PointInT> KdTree;
+      typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
       typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;

@@ -16,7 +16,7 @@
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/search/pcl_search.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/segmentation/sac_segmentation.h>
@@ -36,7 +36,7 @@ namespace pcl
         typedef pcl::PointCloud<PointType> Cloud;
         typedef typename Cloud::Ptr CloudPtr;
         typedef typename Cloud::ConstPtr CloudConstPtr;
-        typedef typename pcl::KdTree<PointType>::Ptr KdTreePtr;
+        typedef typename pcl::search::KdTree<PointType>::Ptr KdTreePtr;
 
         DominantPlaneSegmentation ()
         {

@@ -28,8 +28,8 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (
   CloudPtr cloud_objects_ (new Cloud ());
   CloudPtr cluster_object_ (new Cloud ());
 
-  KdTreePtr normals_tree_ (new pcl::KdTreeFLANN<PointType>);
-  KdTreePtr clusters_tree_ (new pcl::KdTreeFLANN<PointType>);
+  typename pcl::search::KdTree<PointType>::Ptr normals_tree_ (new pcl::search::KdTree<PointType>);
+  typename pcl::search::KdTree<PointType>::Ptr clusters_tree_ (new pcl::search::KdTree<PointType>);
   clusters_tree_->setEpsilon (1);
 
   // Normal estimation parameters
@@ -197,8 +197,8 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full (
   CloudPtr cloud_objects_ (new Cloud ());
   CloudPtr cluster_object_ (new Cloud ());
 
-  KdTreePtr normals_tree_ (new pcl::KdTreeFLANN<PointType>);
-  KdTreePtr clusters_tree_ (new pcl::KdTreeFLANN<PointType>);
+  KdTreePtr normals_tree_ (new pcl::search::KdTree<PointType>);
+  KdTreePtr clusters_tree_ (new pcl::search::KdTree<PointType>);
   clusters_tree_->setEpsilon (1);
 
   // Normal estimation parameters

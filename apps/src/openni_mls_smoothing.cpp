@@ -102,7 +102,7 @@ class OpenNISmoothing
       smoother_.setPolynomialFit (use_polynomial_fit);
       smoother_.setPolynomialOrder (polynomial_order);
 
-      typename pcl::KdTree<PointType>::Ptr tree (new typename pcl::KdTreeFLANN<PointType> ());
+      typename pcl::search::KdTree<PointType>::Ptr tree (new typename pcl::search::KdTree<PointType> ());
       smoother_.setSearchMethod (tree);
       pcl::PointCloud<pcl::Normal>::Ptr smoother_normals (new pcl::PointCloud<pcl::Normal> ());
       smoother_.setOutputNormals (smoother_normals);

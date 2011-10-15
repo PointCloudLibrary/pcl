@@ -41,9 +41,6 @@
 #include <pcl/pcl_base.h>
 #include <vector>
 #include "pcl/search/auto.h"
-#include "pcl/search/kdtree.h"
-#include "pcl/search/octree.h"
-#include "pcl/search/organized_neighbor.h"
 #include <pcl/common/time.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,11 +51,11 @@ template<typename PointT>
     // specifies the data-structure to be used using spatial_locator flag
     if (spatial_locator == KDTREE)
       // initialize kdtree
-      search_.reset (new KdTree<PointT> ());
+      search_.reset (new pcl::search::KdTree<PointT> ());
     else if (spatial_locator == ORGANIZED_INDEX)
-      search_.reset (new OrganizedNeighbor<PointT> ());
+      search_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
     else if (spatial_locator == OCTREE)
-      search_.reset (new Octree<PointT> (0.1f));
+      search_.reset (new pcl::search::Octree<PointT> (0.1f));
     else
       PCL_ERROR ("[pcl::search::AutotunedSearch::initSearchDS] Spatial locator (%d) unknown!\n", spatial_locator);
     spatial_loc_ = spatial_locator;
@@ -105,7 +102,7 @@ template<typename PointT>
 
       //std::cout << "\n---------------\nOrganizedData\n---------------\n";
       double time2 = getTime ();
-      search_.reset (new OrganizedNeighbor<PointT> ());
+      search_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
       search_->setInputCloud (cloud);
       search_->nearestKSearch (cloud->points[searchIdx], no_of_neighbors, k_indices, k_distances);
       //std::cout << "Neighbors are: " << std::endl;
@@ -122,7 +119,7 @@ template<typename PointT>
 
       //std::cout << "\n---------------\nOctree\n---------------\n";
       double time3 = getTime ();
-      search_.reset (new Octree<PointT> (0.1f));
+      search_.reset (new pcl::search::Octree<PointT> (0.1f));
       search_->setInputCloud (cloud);
       search_->nearestKSearch (cloud->points[searchIdx], no_of_neighbors, k_indices, k_distances);
       /*
@@ -221,12 +218,12 @@ template<typename PointT>
     else if (time_octree < time_kdtree && time_octree < time_organized_data)
     {
       spatial_loc_ = OCTREE;
-      search_.reset (new Octree<PointT> (0.1f));
+      search_.reset (new pcl::search::Octree<PointT> (0.1f));
     }
     else if (time_organized_data < time_kdtree && time_organized_data < time_octree)
     {
       spatial_loc_ = OCTREE;
-      search_.reset (new OrganizedNeighbor<PointT> ());
+      search_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
     }
     //  search_->setInputCloud (cloud);
   }
@@ -237,6 +234,7 @@ template<typename PointT>
   pcl::search::AutotunedSearch<PointT>::setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr &indices)
   {
     input_ = cloud;
+    indices_ = indices;
     search_->setInputCloud (cloud, indices);
   }
 

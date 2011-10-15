@@ -9,21 +9,15 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS flann)
 if(build)
     set(srcs 
         src/kdtree_flann.cpp
-        src/organized_data.cpp
-        src/organized_neighbor_search.cpp
         )
 
     set(incs 
         include/pcl/${SUBSYS_NAME}/kdtree.h
         include/pcl/${SUBSYS_NAME}/kdtree_flann.h
-        include/pcl/${SUBSYS_NAME}/organized_data.h
-        include/pcl/${SUBSYS_NAME}/organized_neighbor_search.h
         )
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/kdtree_flann.hpp
-        include/pcl/${SUBSYS_NAME}/impl/organized_data.hpp
-        include/pcl/${SUBSYS_NAME}/impl/organized_neighbor_search.hpp        
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

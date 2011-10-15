@@ -39,8 +39,6 @@
 #define PCL_FILTERS_BILATERAL_IMPL_H_
 
 #include <pcl/filters/bilateral.h>
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/organized_data.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> double
@@ -83,10 +81,10 @@ pcl::BilateralFilter<PointT>::applyFilter (PointCloud &output)
   {
     // For organized datasets, use an OrganizedDataIndex
     if (input_->isOrganized ())
-      tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+      tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
     // For unorganized data, use a FLANN kdtree
     else
-      tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
+      tree_.reset (new pcl::search::KdTree<PointT> (false));
   }
   tree_->setInputCloud (input_);
 

@@ -42,7 +42,6 @@
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/feature.h>
 #include <pcl/features/normal_3d_omp.h>
 //#include <pcl/features/normal_3d_tbb.h>
@@ -67,7 +66,7 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
-typedef KdTree<PointXYZ>::Ptr KdTreePtr;
+typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
 
 PointCloud<PointXYZ> cloud;
 vector<int> indices;
@@ -86,7 +85,7 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
 
   // Compute for all points and then subsample the results
   FeatureEstimation est0;
-  est0.setSearchMethod (typename KdTreeFLANN<PointT>::Ptr (new KdTreeFLANN<PointT>));
+  est0.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
   est0.setKSearch (10);
   est0.setInputCloud (points);
   est0.setInputNormals (normals);
@@ -97,7 +96,7 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
   typename PointCloud<PointT>::Ptr subpoints (new PointCloud<PointT>);
   copyPointCloud (*points, *indices, *subpoints);
   FeatureEstimation est1;
-  est1.setSearchMethod (typename KdTreeFLANN<PointT>::Ptr (new KdTreeFLANN<PointT>));
+  est1.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
   est1.setKSearch (10);
   est1.setInputCloud (subpoints);
   est1.setSearchSurface (points);
@@ -106,7 +105,7 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
 
   // Compute with all points as "input" and the specified indices
   FeatureEstimation est2;
-  est2.setSearchMethod (typename KdTreeFLANN<PointT>::Ptr (new KdTreeFLANN<PointT>));
+  est2.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
   est2.setKSearch (10);
   est2.setInputCloud (points);
   est2.setInputNormals (normals);
@@ -136,7 +135,7 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
 
   // Compute with all points as search surface + the specified sub-cloud as "input" but for only a subset of indices
   FeatureEstimation est3;
-  est3.setSearchMethod (typename KdTreeFLANN<PointT>::Ptr (new KdTreeFLANN<PointT>));
+  est3.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
   est3.setKSearch (10);
   est3.setSearchSurface (points);
   est3.setInputNormals (normals);
@@ -738,8 +737,8 @@ TEST (PCL, SHOTShapeAndColorEstimation)
   n.setRadiusSearch (20 * mr);
   n.compute (*normals);
 
-  pcl::KdTreeFLANN<pcl::PointXYZRGBA>::Ptr rgbaTree;
-  rgbaTree.reset (new KdTreeFLANN<PointXYZRGBA> (false));
+  pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr rgbaTree;
+  rgbaTree.reset (new search::KdTree<PointXYZRGBA> (false));
 
   // Object
   SHOTEstimation<PointXYZRGBA, Normal, SHOT> shot (true, true);
@@ -855,9 +854,9 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
   n.setRadiusSearch (20 * mr);
   n.compute (*normals);
 
-  pcl::KdTreeFLANN<pcl::PointXYZRGBA>::Ptr rgbaTree;
+  pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr rgbaTree;
 
-  rgbaTree.reset (new KdTreeFLANN<PointXYZRGBA> (false));
+  rgbaTree.reset (new search::KdTree<PointXYZRGBA> (false));
 
   // Object
   SHOTEstimationOMP<pcl::PointXYZRGBA, Normal, SHOT> shot (true, true, -1);
@@ -1453,7 +1452,7 @@ TEST (PCL, IntensityGradientEstimation)
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   NormalEstimation<PointXYZI, Normal> norm_est;
   norm_est.setInputCloud (cloud_ptr);
-  KdTreeFLANN<PointXYZI>::Ptr treept1 (new KdTreeFLANN<PointXYZI> (false));
+  search::KdTree<PointXYZI>::Ptr treept1 (new search::KdTree<PointXYZI> (false));
   norm_est.setSearchMethod (treept1);
   norm_est.setRadiusSearch (0.25);
   norm_est.compute (*normals);
@@ -1463,7 +1462,7 @@ TEST (PCL, IntensityGradientEstimation)
   IntensityGradientEstimation<PointXYZI, Normal, IntensityGradient> grad_est;
   grad_est.setInputCloud (cloud_ptr);
   grad_est.setInputNormals (normals);
-  KdTreeFLANN<PointXYZI>::Ptr treept2 (new KdTreeFLANN<PointXYZI> (false));
+  search::KdTree<PointXYZI>::Ptr treept2 (new search::KdTree<PointXYZI> (false));
   grad_est.setSearchMethod (treept2);
   grad_est.setRadiusSearch (0.25);
   grad_est.compute (gradient);
@@ -1708,7 +1707,7 @@ TEST (PCL, IntensitySpinEstimation)
   // Compute the intensity-domain spin features
   typedef Histogram<20> IntensitySpin;
   IntensitySpinEstimation<PointXYZI, IntensitySpin> ispin_est;
-  KdTreeFLANN<PointXYZI>::Ptr treept3 (new KdTreeFLANN<PointXYZI> (false));
+  search::KdTree<PointXYZI>::Ptr treept3 (new search::KdTree<PointXYZI> (false));
   ispin_est.setSearchMethod (treept3);
   ispin_est.setRadiusSearch (10.0);
   ispin_est.setNrDistanceBins (4);
@@ -1790,7 +1789,7 @@ TEST (PCL, RIFTEstimation)
   // Compute the RIFT features
   typedef Histogram<32> RIFTDescriptor;
   RIFTEstimation<PointXYZI, IntensityGradient, RIFTDescriptor> rift_est;
-  KdTreeFLANN<PointXYZI>::Ptr treept4 (new KdTreeFLANN<PointXYZI> (false));
+  search::KdTree<PointXYZI>::Ptr treept4 (new search::KdTree<PointXYZI> (false));
   rift_est.setSearchMethod (treept4);
   rift_est.setRadiusSearch (10.0);
   rift_est.setNrDistanceBins (4);
@@ -1838,7 +1837,7 @@ main (int argc, char** argv)
     indices[i] = i;
   }
 
-  tree.reset (new KdTreeFLANN<PointXYZ> (false));
+  tree.reset (new search::KdTree<PointXYZ> (false));
   tree->setInputCloud (cloud.makeShared ());
 
   testing::InitGoogleTest (&argc, argv);

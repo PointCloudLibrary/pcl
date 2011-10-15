@@ -38,7 +38,6 @@
 
 #include <gtest/gtest.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/lmeds.h>
 #include <pcl/sample_consensus/ransac.h>
@@ -555,7 +554,7 @@ int
 
   // Estimate surface normals
   NormalEstimation<PointXYZ, Normal> n;
-  KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
+  search::Search<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ>);
   tree->setInputCloud (cloud_);
   n.setInputCloud (cloud_);
   boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices_));

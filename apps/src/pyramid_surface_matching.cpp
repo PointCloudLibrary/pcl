@@ -29,7 +29,7 @@ subsampleAndCalculateNormals (PointCloud<PointXYZ>::Ptr &cloud,
   cloud_subsampled_normals = PointCloud<Normal>::Ptr (new PointCloud<Normal> ());
   NormalEstimation<PointXYZ, Normal> normal_estimation_filter;
   normal_estimation_filter.setInputCloud (cloud_subsampled);
-  KdTreeFLANN<PointXYZ>::Ptr search_tree (new KdTreeFLANN<PointXYZ>);
+  search::KdTree<PointXYZ>::Ptr search_tree (new search::KdTree<PointXYZ>);
   normal_estimation_filter.setSearchMethod (search_tree);
   normal_estimation_filter.setRadiusSearch (normal_estimation_search_radius);
   normal_estimation_filter.compute (*cloud_subsampled_normals);

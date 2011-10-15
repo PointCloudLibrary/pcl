@@ -47,9 +47,7 @@
 #include "pcl/common/eigen.h"
 #include "pcl/common/centroid.h"
 
-#include "pcl/kdtree/kdtree.h"
-#include "pcl/kdtree/kdtree_flann.h"
-#include "pcl/kdtree/organized_data.h"
+#include "pcl/search/search.h"
 
 namespace pcl
 {
@@ -105,8 +103,8 @@ namespace pcl
       typedef boost::shared_ptr< Feature<PointInT, PointOutT> > Ptr;
       typedef boost::shared_ptr< const Feature<PointInT, PointOutT> > ConstPtr;
       
-      typedef typename pcl::KdTree<PointInT> KdTree;
-      typedef typename pcl::KdTree<PointInT>::Ptr KdTreePtr;
+      typedef typename pcl::search::Search<PointInT> KdTree;
+      typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
 
       typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;

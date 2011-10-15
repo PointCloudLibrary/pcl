@@ -39,8 +39,6 @@
 #define PCL_FILTERS_IMPL_RADIUS_OUTLIER_REMOVAL_H_
 
 #include "pcl/filters/radius_outlier_removal.h"
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/organized_data.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -57,9 +55,9 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilter (PointCloud &output)
   if (!tree_)
   {
     if (input_->isOrganized ())
-      tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+      tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
     else
-      tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
+      tree_.reset (new pcl::search::KdTree<PointT> (false));
   }
 
   // Send the input dataset to the spatial locator

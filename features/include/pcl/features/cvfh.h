@@ -41,8 +41,7 @@
 #include <pcl/features/feature.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/vfh.h>
-#include <pcl/kdtree/kdtree.h>
-#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/search/pcl_search.h>
 #include <pcl/common/common.h>
 
 namespace pcl
@@ -65,7 +64,7 @@ namespace pcl
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-      typedef typename pcl::KdTree<PointNormal>::Ptr KdTreePtr;
+      typedef typename pcl::search::Search<PointNormal>::Ptr KdTreePtr;
       typedef typename pcl::NormalEstimation<PointNormal, PointNormal> NormalEstimator;
       typedef typename pcl::VFHEstimation<PointInT, PointNT, pcl::VFHSignature308> VFHEstimator;
 
@@ -242,7 +241,7 @@ namespace pcl
       void
       extractEuclideanClustersSmooth (const pcl::PointCloud<pcl::PointNormal> &cloud,
                                       const pcl::PointCloud<pcl::PointNormal> &normals, float tolerance,
-                                      const pcl::KdTree<pcl::PointNormal>::Ptr &tree,
+                                      const pcl::search::Search<pcl::PointNormal>::Ptr &tree,
                                       std::vector<pcl::PointIndices> &clusters, double eps_angle,
                                       unsigned int min_pts_per_cluster = 1,
                                       unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());

@@ -27,7 +27,7 @@ subsampleAndCalculateNormals (PointCloud<PointXYZ>::Ptr &cloud,
   cloud_subsampled_normals = PointCloud<Normal>::Ptr (new PointCloud<Normal> ());
   NormalEstimation<PointXYZ, Normal> normal_estimation_filter;
   normal_estimation_filter.setInputCloud (cloud_subsampled);
-  KdTreeFLANN<PointXYZ>::Ptr search_tree (new KdTreeFLANN<PointXYZ>);
+  pcl::search::KdTree<PointXYZ>::Ptr search_tree (new pcl::search::KdTree<PointXYZ>);
   normal_estimation_filter.setSearchMethod (search_tree);
   normal_estimation_filter.setRadiusSearch (normal_estimation_search_radius);
   normal_estimation_filter.compute (*cloud_subsampled_normals);
@@ -65,7 +65,7 @@ main (int argc, char **argv)
   FPFHEstimation<PointXYZ, Normal, FPFHSignature33>::Ptr fpfh_estimation (new FPFHEstimation<PointXYZ, Normal, FPFHSignature33> ());
   fpfh_estimation->setInputCloud (cloud_subsampled);
   fpfh_estimation->setInputNormals (cloud_subsampled_normals);
-  KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
+  pcl::search::KdTree<PointXYZ>::Ptr tree (new pcl::search::KdTree<PointXYZ> ());
   fpfh_estimation->setSearchMethod (tree);
   feature_persistence.setFeatureEstimator (fpfh_estimation);
   feature_persistence.setDistanceMetric (pcl::CS);

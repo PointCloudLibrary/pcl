@@ -1,7 +1,7 @@
 set(SUBSYS_NAME search)
 set(SUBSYS_DESC "Point cloud generic search library")
 #set(SUBSYS_DEPS common io cuda_common gpu_octree gpu_common octree)
-set(SUBSYS_DEPS common octree kdtree)
+set(SUBSYS_DEPS common kdtree octree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -38,8 +38,7 @@ if(build)
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} pcl_common ${FLANN_LIBRARIES} pcl_octree pcl_kdtree)
     list(APPEND EXT_DEPS flann)
-    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-      "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
+    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})

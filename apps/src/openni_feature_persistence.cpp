@@ -97,7 +97,7 @@ class OpenNIFeaturePersistence
       std::cout << "\n";
 
       subsampling_filter_.setLeafSize (subsampling_leaf_size, subsampling_leaf_size, subsampling_leaf_size);
-      typename pcl::KdTreeFLANN<PointType>::Ptr normal_search_tree (new typename pcl::KdTreeFLANN<PointType>);
+      typename pcl::search::KdTree<PointType>::Ptr normal_search_tree (new typename pcl::search::KdTree<PointType>);
       normal_estimation_filter_.setSearchMethod (normal_search_tree);
       normal_estimation_filter_.setRadiusSearch (normal_search_radius);
 
@@ -105,7 +105,7 @@ class OpenNIFeaturePersistence
       feature_persistence_.setAlpha (alpha);
 
       fpfh_estimation_.reset (new typename pcl::FPFHEstimationOMP<PointType, pcl::Normal, pcl::FPFHSignature33> ());
-      typename pcl::KdTreeFLANN<PointType>::Ptr fpfh_tree (new typename pcl::KdTreeFLANN<PointType> ());
+      typename pcl::search::KdTree<PointType>::Ptr fpfh_tree (new typename pcl::search::KdTree<PointType> ());
       fpfh_estimation_->setSearchMethod (fpfh_tree);
       feature_persistence_.setFeatureEstimator (fpfh_estimation_);
       feature_persistence_.setDistanceMetric (pcl::CS);

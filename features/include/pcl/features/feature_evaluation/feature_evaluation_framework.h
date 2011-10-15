@@ -14,9 +14,6 @@
 #include <pcl/common/io.h>
 #include <pcl/io/pcd_io.h>
 
-#include <pcl/kdtree/kdtree.h>
-#include <pcl/kdtree/kdtree_flann.h>
-
 #include <pcl/filters/voxel_grid.h>
 
 #include <pcl/features/feature.h>

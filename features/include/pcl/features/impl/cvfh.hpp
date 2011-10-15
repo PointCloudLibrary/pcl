@@ -50,7 +50,7 @@ template<typename PointInT, typename PointNT, typename PointOutT>
                                                                                      const pcl::PointCloud<
                                                                                          pcl::PointNormal> &normals,
                                                                                      float tolerance,
-                                                                                     const pcl::KdTree<pcl::PointNormal>::Ptr &tree,
+                                                                                     const pcl::search::Search<pcl::PointNormal>::Ptr &tree,
                                                                                      std::vector<pcl::PointIndices> &clusters,
                                                                                      double eps_angle,
                                                                                      unsigned int min_pts_per_cluster,
@@ -249,7 +249,7 @@ template<typename PointInT, typename PointNT, typename PointOutT>
     }
 
     //recompute normals normals and use them for clustering!
-    KdTreePtr normals_tree_filtered (new pcl::KdTreeFLANN<pcl::PointNormal> (false));
+    KdTreePtr normals_tree_filtered (new pcl::search::KdTree<pcl::PointNormal> (false));
     normals_tree_filtered->setInputCloud (normals_filtered_cloud);
 
     NormalEstimator n3d;
@@ -258,7 +258,7 @@ template<typename PointInT, typename PointNT, typename PointOutT>
     n3d.setInputCloud (normals_filtered_cloud);
     n3d.compute (*normals_filtered_cloud);
 
-    KdTreePtr normals_tree (new pcl::KdTreeFLANN<pcl::PointNormal> (false));
+    KdTreePtr normals_tree (new pcl::search::KdTree<pcl::PointNormal> (false));
     normals_tree->setInputCloud (normals_filtered_cloud);
     std::vector<pcl::PointIndices> clusters;
 

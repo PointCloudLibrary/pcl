@@ -49,8 +49,7 @@ using namespace std;
 
 using namespace pcl;
 
-#include "pcl/kdtree/organized_neighbor_search.h"
-#include "pcl/kdtree/impl/organized_neighbor_search.hpp"
+#include "pcl/search/organized_neighbor.h"
 
 
 // helper class for priority queue
@@ -78,7 +77,7 @@ public:
 
 };
 
-TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
+TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
 {
 
   const unsigned int test_runs = 2;
@@ -94,7 +93,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
   unsigned int K;
 
   // create organized search
-  OrganizedNeighborSearch<PointXYZ> organizedNeighborSearch;
+	search::OrganizedNeighbor<PointXYZ> organizedNeighborSearch;
 
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
@@ -194,7 +193,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
 
 }
 
-TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
+TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
 {
 
   const unsigned int test_runs = 10;
@@ -204,7 +203,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
 
   srand (time (NULL));
 
-  OrganizedNeighborSearch<PointXYZ> organizedNeighborSearch;
+	search::OrganizedNeighbor<PointXYZ> organizedNeighborSearch;
 
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
@@ -277,8 +276,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
       }
     }
 
-    vector<int> cloudNWRSearch;
-    vector<float> cloudNWRRadius;
+		std::vector<int> cloudNWRSearch;
+		std::vector<float> cloudNWRRadius;
 
     // execute organized search
     organizedNeighborSearch.setInputCloud (cloudIn);

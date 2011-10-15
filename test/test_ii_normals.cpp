@@ -40,14 +40,13 @@
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/integral_image_normal.h>
-#include <pcl/kdtree/kdtree_flann.h>
 
 #include <iostream>
 
 using namespace pcl;
 using namespace std;
 
-typedef KdTree<PointXYZ>::Ptr KdTreePtr;
+typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
 PointCloud<PointXYZ> cloud;
 KdTreePtr tree;
 
@@ -57,7 +56,7 @@ IntegralImageNormalEstimation<PointXYZ, Normal> ne;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, NormalEstimation)
 {
-  tree.reset (new KdTreeFLANN<PointXYZ> (false));
+  tree.reset (new search::KdTree<PointXYZ> (false));
   n.setSearchMethod (tree);
   n.setKSearch (10);
 

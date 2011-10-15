@@ -59,8 +59,8 @@ namespace pcl
         typedef pcl::PointCloud<PointT> PointCloud;
         typedef boost::shared_ptr<PointCloud> PointCloudPtr;
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
-        typedef boost::shared_ptr<pcl::search::Search<PointT> > SearchPtr;
-        typedef boost::shared_ptr<const pcl::search::Search<PointT> > SearchConstPtr;
+        typedef boost::shared_ptr<pcl::search::Search<PointT> > Ptr;
+        typedef boost::shared_ptr<const pcl::search::Search<PointT> > ConstPtr;
 
         typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
         typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
@@ -95,6 +95,12 @@ namespace pcl
          */
         virtual void
         setInputCloud (const PointCloudConstPtr& cloud)=0;
+
+        virtual PointCloudConstPtr
+        getInputCloud () = 0;
+
+        virtual IndicesConstPtr const
+        getIndices () = 0;
 
         /** \brief search for k-nearest neighbors for the given query point.
          * \param point the given query point

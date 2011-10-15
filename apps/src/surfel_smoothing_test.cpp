@@ -26,7 +26,7 @@ main (int argc, char **argv)
 
   NormalEstimation<PointXYZ, Normal> normal_estimation;
   normal_estimation.setInputCloud (cloud);
-  KdTreeFLANN<PointXYZ>::Ptr search_tree (new KdTreeFLANN<PointXYZ>);
+  search::KdTree<PointXYZ>::Ptr search_tree (new search::KdTree<PointXYZ>);
   normal_estimation.setSearchMethod (search_tree);
   normal_estimation.setRadiusSearch (normal_search_radius);
   normal_estimation.compute (*normals);

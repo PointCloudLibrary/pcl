@@ -239,7 +239,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   PointCloud<PointT> output;
 
   NormalEstimation<PointNormal, PointNormal> norm_est;
-  norm_est.setSearchMethod (KdTreeFLANN<PointNormal>::Ptr (new KdTreeFLANN<PointNormal>));
+  norm_est.setSearchMethod (search::KdTree<PointNormal>::Ptr (new search::KdTree<PointNormal>));
   norm_est.setKSearch (10);
   norm_est.setInputCloud (tgt);
   norm_est.compute (*tgt);
@@ -297,7 +297,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
   cloud_target_ptr = cloud_target.makeShared ();
 
   // Initialize estimators for surface normals and FPFH features
-  KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
+  search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ>);
 
   NormalEstimation<PointXYZ, Normal> norm_est;
   norm_est.setSearchMethod (tree);
@@ -349,7 +349,7 @@ TEST (PCL, PyramidFeatureHistogram)
 
   PointCloud<Normal>::Ptr cloud_source_normals (new PointCloud<Normal> ()),
       cloud_target_normals (new PointCloud<Normal> ());
-  KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ>);
+  search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ>);
   NormalEstimation<PointXYZ, Normal> normal_estimator;
   normal_estimator.setSearchMethod (tree);
   normal_estimator.setRadiusSearch (0.05);
@@ -441,7 +441,7 @@ TEST (PCL, PPFRegistration)
 
   // Estimate normals for both clouds
   NormalEstimation<PointXYZ, Normal> normal_estimation;
-  KdTreeFLANN<PointXYZ>::Ptr search_tree (new KdTreeFLANN<PointXYZ> ());
+  search::KdTree<PointXYZ>::Ptr search_tree (new search::KdTree<PointXYZ> ());
   normal_estimation.setSearchMethod (search_tree);
   normal_estimation.setRadiusSearch (0.05);
   PointCloud<Normal>::Ptr normals_target (new PointCloud<Normal> ()),

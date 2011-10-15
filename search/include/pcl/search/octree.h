@@ -116,6 +116,18 @@ namespace pcl
           tree_->addPointsFromInputCloud ();
         }
 
+        PointCloudConstPtr
+        getInputCloud ()
+        {
+          return tree_->getInputCloud ();
+        }
+
+        IndicesConstPtr const
+        getIndices ()
+        {
+          return tree_->getIndices ();
+        }
+
 
         /** \brief search for k-nearest neighbors at the query point.
          * \param cloud_arg the point cloud data

@@ -60,7 +60,7 @@ namespace pcl
 
     // Create an empty kdtree representation, and pass it to the objects.
     // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-    typename KdTreeFLANN<PointT>::Ptr tree (new KdTreeFLANN<PointT> ());
+    typename pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT> ());
 
     // Create the normal estimation class, and pass the input dataset to it
     NormalEstimation<PointT, Normal> ne;

@@ -103,7 +103,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   FPFHEstimation<PointNormal, PointNormal, FPFHSignature33> ne;
   ne.setInputCloud (xyznormals);
   ne.setInputNormals (xyznormals);
-  ne.setSearchMethod (KdTreeFLANN<PointNormal>::Ptr (new KdTreeFLANN<PointNormal>));
+  ne.setSearchMethod (search::KdTree<PointNormal>::Ptr (new search::KdTree<PointNormal>));
   ne.setKSearch (k);
   ne.setRadiusSearch (radius);
   

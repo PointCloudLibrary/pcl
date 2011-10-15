@@ -38,7 +38,6 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/console/print.h>
@@ -102,7 +101,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, std::vector<sensor_msg
   print_highlight (stderr, "Computing ");
 
   // Creating the KdTree object for the search method of the extraction
-  pcl::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::KdTreeFLANN<pcl::PointXYZ>);
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
   tree->setInputCloud (xyz);
 
   std::vector<pcl::PointIndices> cluster_indices;

@@ -39,8 +39,7 @@
 #define PCL_SEGMENT_DIFFERENCES_H_
 
 #include <pcl/pcl_base.h>
-
-#include "pcl/kdtree/kdtree.h"
+#include "pcl/search/pcl_search.h"
 
 namespace pcl
 {
@@ -57,7 +56,7 @@ namespace pcl
   template <typename PointT> 
   void getPointCloudDifference (
       const pcl::PointCloud<PointT> &src, const pcl::PointCloud<PointT> &tgt, 
-      double threshold, const boost::shared_ptr<pcl::KdTree<PointT> > &tree, 
+      double threshold, const boost::shared_ptr<pcl::search::Search<PointT> > &tree,
       pcl::PointCloud<PointT> &output);
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,8 +78,8 @@ namespace pcl
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
-      typedef typename pcl::KdTree<PointT> KdTree;
-      typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
+      typedef typename pcl::search::Search<PointT> KdTree;
+      typedef typename pcl::search::Search<PointT>::Ptr KdTreePtr;
 
       typedef PointIndices::Ptr PointIndicesPtr;
       typedef PointIndices::ConstPtr PointIndicesConstPtr;

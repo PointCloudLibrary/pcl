@@ -105,6 +105,19 @@ namespace pcl
           PCL_ERROR("[pcl::search::OrganizedNeighbor::setInputCloud] This function is not supported by OrganizedNeighbor\n");
         }
 
+        PointCloudConstPtr
+        getInputCloud ()
+        {
+          return input_;
+        }
+
+        IndicesConstPtr const
+        getIndices ()
+        {
+          PCL_ERROR("[pcl::search::OrganizedNeighbor::getIndices] This function is not supported by OrganizedNeighbor\n");
+	  return IndicesConstPtr ();
+        }
+
         /** \brief search for k-nearest neighbors for the given query point.
          * \param cloud the point cloud data
          * \param index the index in \a cloud representing the query point
@@ -133,7 +146,7 @@ namespace pcl
          */
         inline int
         radiusSearch (const PointCloud& cloud, int index, double radius, std::vector<int>& k_indices,
-                      std::vector<float>& k_distances, int max_nn)
+                      std::vector<float>& k_distances, int max_nn = INT_MAX)
         {
           PCL_ERROR("[pcl::search::OrganizedNeighbor::radiusSearch] This function is not supported by OrganizedNeighbor\n");
           return (0);
@@ -178,7 +191,7 @@ namespace pcl
         //                  std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg);
         int
         radiusSearch (const PointT &p_q_arg, const double radius_arg, std::vector<int> &k_indices_arg,
-                      std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const;
+                      std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX) const;
 
         /** \brief Approximate search for neighbors around the given query point within radius.
          * \param cloud the point cloud data.

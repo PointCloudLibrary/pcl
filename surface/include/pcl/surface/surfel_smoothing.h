@@ -39,7 +39,7 @@
 #define PCL_SURFEL_SMOOTHING_H_
 
 #include <pcl/pcl_base.h>
-#include <pcl/kdtree/kdtree.h>
+#include <pcl/search/pcl_search.h>
 
 namespace pcl
 {
@@ -54,8 +54,8 @@ namespace pcl
       typedef typename pcl::PointCloud<PointT>::Ptr PointCloudInPtr;
       typedef pcl::PointCloud<PointNT> NormalCloud;
       typedef typename pcl::PointCloud<PointNT>::Ptr NormalCloudPtr;
-      typedef KdTree<PointT> CloudKdTree;
-      typedef typename KdTree<PointT>::Ptr CloudKdTreePtr;
+      typedef pcl::search::Search<PointT> CloudKdTree;
+      typedef typename pcl::search::Search<PointT>::Ptr CloudKdTreePtr;
 
       SurfelSmoothing (float a_scale = 0.01)
         : PCLBase<PointT> (),

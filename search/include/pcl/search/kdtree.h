@@ -65,11 +65,15 @@ namespace pcl
         typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
         typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
 
+
       public:
         // Boost shared pointers
-        typedef boost::shared_ptr<pcl::KdTreeFLANN<PointT> > Ptr;
-        typedef boost::shared_ptr<const pcl::KdTreeFLANN<PointT> > ConstPtr;
-        Ptr tree_;
+	typedef boost::shared_ptr<KdTree<PointT> > Ptr;
+        typedef boost::shared_ptr<const KdTree<PointT> > ConstPtr;
+
+        typedef boost::shared_ptr<pcl::KdTreeFLANN<PointT> > KdTreeFLANNPtr;
+        typedef boost::shared_ptr<const pcl::KdTreeFLANN<PointT> > KdTreeFLANNConstPtr;
+        KdTreeFLANNPtr tree_; // TODO should be private/protected?
 
         /** \brief Empty constructor for KdTree. */
         KdTree (bool sorted = true)
@@ -82,6 +86,23 @@ namespace pcl
         ~KdTree ()
         {
         }
+
+	/** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
+        * \param eps precision (error bound) for nearest neighbors searches
+        */
+      	inline void
+      	setEpsilon (double eps)
+      	{
+       	  tree_->setEpsilon (eps);
+      	}
+
+      	/** \brief Get the search epsilon precision (error bound) for nearest neighbors searches. */
+      	inline double
+      	getEpsilon ()
+      	{
+       	  return (tree_->getEpsilon ());
+      	}
+
         /** \brief Provide a pointer to the input dataset.
          * \param cloud the const boost shared pointer to a PointCloud message
          * \param indices the point indices subset that is to be used from \a cloud - if NULL the whole point cloud is used
@@ -94,6 +115,18 @@ namespace pcl
          */
         void
         setInputCloud (const PointCloudConstPtr& cloud);
+
+        PointCloudConstPtr
+        getInputCloud ()
+        {
+          return tree_->getInputCloud ();
+        }
+
+        virtual IndicesConstPtr const
+        getIndices ()
+        {
+          return tree_->getIndices ();
+        }
 
         /** \brief search for k-nearest neighbors for the given query point.
          * \param point the given query point

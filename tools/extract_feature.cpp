@@ -47,7 +47,6 @@
 #include <pcl/features/fpfh.h>
 #include <pcl/features/pfh.h>
 #include <pcl/features/vfh.h>
-#include <pcl/kdtree/kdtree_flann.h>
 
 
 using namespace pcl;
@@ -118,7 +117,7 @@ computeFeatureViaNormals (const sensor_msgs::PointCloud2::ConstPtr &input, senso
 
   NormalEstimation<PointIn, NormalT> ne;
   ne.setInputCloud (xyz);
-  ne.setSearchMethod (typename pcl::KdTreeFLANN<PointIn>::Ptr (new pcl::KdTreeFLANN<PointIn>));
+  ne.setSearchMethod (typename pcl::search::KdTree<PointIn>::Ptr (new pcl::search::KdTree<PointIn>));
   ne.setKSearch (n_k);
   ne.setRadiusSearch (n_radius);
 
@@ -129,7 +128,7 @@ computeFeatureViaNormals (const sensor_msgs::PointCloud2::ConstPtr &input, senso
   feature_est.setInputCloud (xyz);
   feature_est.setInputNormals (normals);
 
-  feature_est.setSearchMethod (typename pcl::KdTreeFLANN<PointIn>::Ptr (new pcl::KdTreeFLANN<PointIn>));
+  feature_est.setSearchMethod (typename pcl::search::KdTree<PointIn>::Ptr (new pcl::search::KdTree<PointIn>));
 
   PointCloud<PointOut> output_features;
 

@@ -40,15 +40,13 @@
 
 #include "pcl/segmentation/segment_differences.h"
 #include "pcl/common/concatenate.h"
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/organized_data.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::getPointCloudDifference (
     const pcl::PointCloud<PointT> &src, 
     const pcl::PointCloud<PointT> &tgt, 
-    double threshold, const boost::shared_ptr<pcl::KdTree<PointT> > &tree,
+    double threshold, const boost::shared_ptr<pcl::search::Search<PointT> > &tree,
     pcl::PointCloud<PointT> &output)
 {
   // We're interested in a single nearest neighbor only
@@ -118,9 +116,9 @@ pcl::SegmentDifferences<PointT>::segment (PointCloud &output)
   if (!tree_)
   {
     if (target_->isOrganized ())
-      tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+      tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
     else
-      tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
+      tree_.reset (new pcl::search::KdTree<PointT> (false));
   }
   // Send the input dataset to the spatial locator
   tree_->setInputCloud (target_);
@@ -131,7 +129,7 @@ pcl::SegmentDifferences<PointT>::segment (PointCloud &output)
 }
 
 #define PCL_INSTANTIATE_SegmentDifferences(T) template class PCL_EXPORTS pcl::SegmentDifferences<T>;
-#define PCL_INSTANTIATE_getPointCloudDifference(T) template PCL_EXPORTS void pcl::getPointCloudDifference<T>(const pcl::PointCloud<T> &, const pcl::PointCloud<T> &, double, const boost::shared_ptr<pcl::KdTree<T> > &, pcl::PointCloud<T> &);
+#define PCL_INSTANTIATE_getPointCloudDifference(T) template PCL_EXPORTS void pcl::getPointCloudDifference<T>(const pcl::PointCloud<T> &, const pcl::PointCloud<T> &, double, const boost::shared_ptr<pcl::search::Search<T> > &, pcl::PointCloud<T> &);
 
 #endif        // PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_
 

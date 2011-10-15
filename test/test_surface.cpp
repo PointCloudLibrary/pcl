@@ -41,7 +41,6 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/mls.h>
 #include <pcl/surface/gp3.h>
@@ -61,14 +60,14 @@ using namespace std;
 
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
-KdTree<PointXYZ>::Ptr tree;
-KdTree<PointNormal>::Ptr tree2;
+search::KdTree<PointXYZ>::Ptr tree;
+search::KdTree<PointNormal>::Ptr tree2;
 
 // add by ktran to test update functions
 PointCloud<PointXYZ>::Ptr cloud1 (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
-KdTree<PointXYZ>::Ptr tree3;
-KdTree<PointNormal>::Ptr tree4;
+search::KdTree<PointXYZ>::Ptr tree3;
+search::KdTree<PointNormal>::Ptr tree4;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, MovingLeastSquares)
@@ -634,7 +633,7 @@ main (int argc, char** argv)
   fromROSMsg (cloud_blob, *cloud);
 
   // Create search tree
-  tree.reset (new KdTreeFLANN<PointXYZ> (false));
+  tree.reset (new search::KdTree<PointXYZ> (false));
   tree->setInputCloud (cloud);
 
   // Normal estimation
@@ -650,7 +649,7 @@ main (int argc, char** argv)
   pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
       
   // Create search tree
-  tree2.reset (new KdTreeFLANN<PointNormal>);
+  tree2.reset (new search::KdTree<PointNormal>);
   tree2->setInputCloud (cloud_with_normals);
 
   // Process for update cloud
@@ -659,7 +658,7 @@ main (int argc, char** argv)
     loadPCDFile (argv[2], cloud_blob1);
     fromROSMsg (cloud_blob1, *cloud1);
         // Create search tree
-    tree3.reset (new KdTreeFLANN<PointXYZ> (false));
+    tree3.reset (new search::KdTree<PointXYZ> (false));
     tree3->setInputCloud (cloud1);
 
     // Normal estimation
@@ -674,7 +673,7 @@ main (int argc, char** argv)
     // Concatenate XYZ and normal information
     pcl::concatenateFields (*cloud1, *normals1, *cloud_with_normals1);
     // Create search tree
-    tree4.reset (new KdTreeFLANN<PointNormal>);
+    tree4.reset (new search::KdTree<PointNormal>);
     tree4->setInputCloud (cloud_with_normals1);
   }
 

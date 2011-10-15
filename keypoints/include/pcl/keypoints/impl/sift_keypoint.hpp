@@ -90,7 +90,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::setMinimumContrast (float min_contrast)
 template <typename PointInT, typename PointOutT> void 
 pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 {
-  tree_.reset (new pcl::KdTreeFLANN<PointInT> (true));
+  tree_.reset (new pcl::search::KdTree<PointInT> (true));
 
   // Check for valid inputs
   if (min_scale_ == 0 || nr_octaves_ == 0 || nr_scales_per_octave_ == 0)

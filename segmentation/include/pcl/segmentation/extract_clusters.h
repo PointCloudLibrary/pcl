@@ -40,7 +40,7 @@
 
 #include <pcl/pcl_base.h>
 
-#include "pcl/kdtree/kdtree.h"
+#include "pcl/search/pcl_search.h"
 
 namespace pcl
 {
@@ -55,7 +55,7 @@ namespace pcl
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
     * \ingroup segmentation
     */
-  template <typename PointT> void extractEuclideanClusters (const PointCloud<PointT> &cloud, const boost::shared_ptr<KdTree<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
+  template <typename PointT> void extractEuclideanClusters (const PointCloud<PointT> &cloud, const boost::shared_ptr<search::Search<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
@@ -69,7 +69,7 @@ namespace pcl
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
     * \ingroup segmentation
     */
-  template <typename PointT> void extractEuclideanClusters (const PointCloud<PointT> &cloud, const std::vector<int> &indices, const boost::shared_ptr<KdTree<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
+  template <typename PointT> void extractEuclideanClusters (const PointCloud<PointT> &cloud, const std::vector<int> &indices, const boost::shared_ptr<search::Search<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the euclidean distance between points, and the normal
@@ -289,8 +289,8 @@ namespace pcl
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
-      typedef typename pcl::KdTree<PointT> KdTree;
-      typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
+			typedef typename pcl::search::Search<PointT> KdTree;
+			typedef typename pcl::search::Search<PointT>::Ptr KdTreePtr;
 
       typedef PointIndices::Ptr PointIndicesPtr;
       typedef PointIndices::ConstPtr PointIndicesConstPtr;

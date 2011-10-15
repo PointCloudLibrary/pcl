@@ -43,7 +43,7 @@
 #include "pcl/pcl_macros.h"
 #include "pcl/point_cloud.h"
 #include "pcl/point_representation.h"
-#include "pcl/search/search.h"
+#include "pcl/search/pcl_search.h"
 
 namespace pcl
 {
@@ -109,6 +109,18 @@ namespace pcl
          */
         virtual void
         setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices);
+
+	virtual PointCloudConstPtr
+        getInputCloud ()
+	{
+	   return (input_);
+	}
+
+	virtual IndicesConstPtr const
+        getIndices ()
+	{
+	   return (indices_);
+	}
 
         /** \brief Provide a pointer to the input dataset.
          * \param cloud the const boost shared pointer to a PointCloud message
@@ -291,6 +303,7 @@ namespace pcl
         int spatial_loc_;
 
         PointCloudConstPtr input_;
+	IndicesConstPtr indices_;
       };
   }
 }

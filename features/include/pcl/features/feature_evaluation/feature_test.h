@@ -10,9 +10,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <pcl/kdtree/kdtree.h>
-#include <pcl/kdtree/kdtree_flann.h>
-
 #include <pcl/features/feature.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh.h>
@@ -214,15 +211,15 @@ namespace pcl
     typedef typename Features::Ptr FeaturesPtr;
     typedef typename Features::ConstPtr FeaturesConstPtr;
 
-    typedef typename pcl::KdTree<FeatureDescriptor> KdTree;
-    typedef typename pcl::KdTree<FeatureDescriptor>::Ptr KdTreePtr;
+    typedef typename pcl::search::KdTree<FeatureDescriptor> KdTree;
+    typedef typename pcl::search::KdTree<FeatureDescriptor>::Ptr KdTreePtr;
 
 
     typedef pcl::PointCloud<NormalT> NormalIn;
     typedef typename NormalIn::Ptr NormalInPtr;
     typedef typename NormalIn::ConstPtr NormalInConstPtr;
 
-    typedef typename pcl::KdTreeFLANN<PointIn> KdTreePointIn;
+    typedef typename pcl::search::KdTree<PointIn> KdTreePointIn;
     typedef typename KdTreePointIn::Ptr KdTreePointInPtr;
 
     typedef typename FeatureCorrespondenceTest<PointIn>::ParameterList ParameterList;
@@ -303,15 +300,15 @@ namespace pcl
     typedef typename Features::Ptr FeaturesPtr;
     typedef typename Features::ConstPtr FeaturesConstPtr;
 
-    typedef typename pcl::KdTree<FeatureDescriptor> KdTree;
-    typedef typename pcl::KdTree<FeatureDescriptor>::Ptr KdTreePtr;
+    typedef typename pcl::search::KdTree<FeatureDescriptor> KdTree;
+    typedef typename pcl::search::KdTree<FeatureDescriptor>::Ptr KdTreePtr;
 
 
     typedef pcl::PointCloud<NormalT> NormalIn;
     typedef typename NormalIn::Ptr NormalInPtr;
     typedef typename NormalIn::ConstPtr NormalInConstPtr;
 
-    typedef typename pcl::KdTreeFLANN<PointIn> KdTreePointIn;
+    typedef typename pcl::search::KdTree<PointIn> KdTreePointIn;
     typedef typename KdTreePointIn::Ptr KdTreePointInPtr;
 
     typedef typename FeatureCorrespondenceTest<PointIn>::ParameterList ParameterList;
@@ -394,15 +391,15 @@ namespace pcl
     typedef typename Features::Ptr FeaturesPtr;
     typedef typename Features::ConstPtr FeaturesConstPtr;
 
-    typedef typename pcl::KdTree<FeatureDescriptor> KdTree;
-    typedef typename pcl::KdTree<FeatureDescriptor>::Ptr KdTreePtr;
+    typedef typename pcl::search::KdTree<FeatureDescriptor> KdTree;
+    typedef typename pcl::search::KdTree<FeatureDescriptor>::Ptr KdTreePtr;
 
 
     typedef pcl::PointCloud<NormalT> NormalIn;
     typedef typename NormalIn::Ptr NormalInPtr;
     typedef typename NormalIn::ConstPtr NormalInConstPtr;
 
-    typedef typename pcl::KdTreeFLANN<PointIn> KdTreePointIn;
+    typedef typename pcl::search::KdTree<PointIn> KdTreePointIn;
     typedef typename KdTreePointIn::Ptr KdTreePointInPtr;
 
     typedef typename FeatureCorrespondenceTest<PointIn>::ParameterList ParameterList;
@@ -484,15 +481,15 @@ namespace pcl
     typedef typename Features::Ptr FeaturesPtr;
     typedef typename Features::ConstPtr FeaturesConstPtr;
 
-    typedef typename pcl::KdTree<FeatureDescriptor> KdTree;
-    typedef typename pcl::KdTree<FeatureDescriptor>::Ptr KdTreePtr;
+    typedef typename pcl::search::KdTree<FeatureDescriptor> KdTree;
+    typedef typename pcl::search::KdTree<FeatureDescriptor>::Ptr KdTreePtr;
 
 
     typedef pcl::PointCloud<NormalT> NormalIn;
     typedef typename NormalIn::Ptr NormalInPtr;
     typedef typename NormalIn::ConstPtr NormalInConstPtr;
 
-    typedef typename pcl::KdTreeFLANN<PointIn> KdTreePointIn;
+    typedef typename pcl::search::KdTree<PointIn> KdTreePointIn;
     typedef typename KdTreePointIn::Ptr KdTreePointInPtr;
 
     typedef typename FeatureCorrespondenceTest<PointIn>::ParameterList ParameterList;
@@ -650,7 +647,7 @@ pcl::FPFHTest<PointIn, NormalT, FeatureDescriptor>::computeNormals (float search
   NormalEstimation<PointIn, NormalT> ne_source;
   ne_source.setInputCloud (preprocessed_source_);
 
-  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_source (new search::KdTree<PointIn> ());
   ne_source.setSearchMethod (tree_source);
 
   if (source_normals_ == NULL)
@@ -664,7 +661,7 @@ pcl::FPFHTest<PointIn, NormalT, FeatureDescriptor>::computeNormals (float search
   NormalEstimation<PointIn, NormalT> ne_target;
   ne_target.setInputCloud (preprocessed_target_);
 
-  KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_target (new search::KdTree<PointIn> ());
   ne_target.setSearchMethod (tree_target);
 
   if(target_normals_ == NULL)
@@ -686,7 +683,7 @@ pcl::FPFHTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& tim
   fpfh_source.setInputCloud (preprocessed_source_);
   fpfh_source.setInputNormals (source_normals_);
 
-  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_source (new search::KdTree<PointIn> ());
   fpfh_source.setSearchMethod (tree_source);
 
   if (source_features_ == NULL)
@@ -703,7 +700,7 @@ pcl::FPFHTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& tim
   fpfh_target.setInputCloud (preprocessed_target_);
   fpfh_target.setInputNormals (target_normals_);
 
-  KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_target (new search::KdTree<PointIn> ());
   fpfh_target.setSearchMethod (tree_target);
 
   if (target_features_ == NULL)
@@ -730,7 +727,7 @@ pcl::FPFHTest<PointIn, NormalT, FeatureDescriptor>::computeCorrespondences ()
   if (source_features_ == NULL || target_features_ == NULL)
     return;
 
-  KdTreePtr tree_ = KdTreePtr(new KdTreeFLANN<FeatureDescriptor>);
+  KdTreePtr tree_ = KdTreePtr(new search::KdTree<FeatureDescriptor>);
   tree_->setInputCloud (target_features_);
 
   std::vector<int> nearest_neighbour (1,0);
@@ -784,7 +781,7 @@ pcl::NormalBasedSignatureTest<PointIn, NormalT, FeatureDescriptor>::computeNorma
   NormalEstimation<PointIn, NormalT> ne_source;
   ne_source.setInputCloud (preprocessed_source_);
 
-  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_source (new search::KdTree<PointIn> ());
   ne_source.setSearchMethod (tree_source);
 
   if (source_normals_ == NULL)
@@ -798,7 +795,7 @@ pcl::NormalBasedSignatureTest<PointIn, NormalT, FeatureDescriptor>::computeNorma
   NormalEstimation<PointIn, NormalT> ne_target;
   ne_target.setInputCloud (preprocessed_target_);
 
-  KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_target (new search::KdTree<PointIn> ());
   ne_target.setSearchMethod (tree_target);
 
   if(target_normals_ == NULL)
@@ -820,7 +817,7 @@ pcl::NormalBasedSignatureTest<PointIn, NormalT, FeatureDescriptor>::computeFeatu
   nbs_estimator.setInputCloud (preprocessed_source_);
   nbs_estimator.setInputNormals (source_normals_);
 
-  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_source (new search::KdTree<PointIn> ());
   nbs_estimator.setSearchMethod (tree_source);
 
   if (source_features_ == NULL)
@@ -860,7 +857,7 @@ pcl::NormalBasedSignatureTest<PointIn, NormalT, FeatureDescriptor>::computeCorre
   if (source_features_ == NULL || target_features_ == NULL)
     return;
 
-  KdTreePtr tree_ = KdTreePtr(new KdTreeFLANN<FeatureDescriptor>);
+  KdTreePtr tree_ = KdTreePtr(new search::KdTree<FeatureDescriptor>);
   tree_->setInputCloud (target_features_);
 
   std::vector<int> nearest_neighbour (1,0);
@@ -901,7 +898,7 @@ pcl::PFHTest<PointIn, NormalT, FeatureDescriptor>::computeNormals (float search_
   NormalEstimation<PointIn, NormalT> ne_source;
   ne_source.setInputCloud (preprocessed_source_);
 
-  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_source (new search::KdTree<PointIn> ());
   ne_source.setSearchMethod (tree_source);
 
   if (source_normals_ == NULL)
@@ -915,7 +912,7 @@ pcl::PFHTest<PointIn, NormalT, FeatureDescriptor>::computeNormals (float search_
   NormalEstimation<PointIn, NormalT> ne_target;
   ne_target.setInputCloud (preprocessed_target_);
 
-  KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_target (new search::KdTree<PointIn> ());
   ne_target.setSearchMethod (tree_target);
 
   if(target_normals_ == NULL)
@@ -937,7 +934,7 @@ pcl::PFHTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& time
   pfh_source.setInputCloud (preprocessed_source_);
   pfh_source.setInputNormals (source_normals_);
 
-  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_source (new search::KdTree<PointIn> ());
   pfh_source.setSearchMethod (tree_source);
 
   if (source_features_ == NULL)
@@ -954,7 +951,7 @@ pcl::PFHTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& time
   pfh_target.setInputCloud (preprocessed_target_);
   pfh_target.setInputNormals (target_normals_);
 
-  KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_target (new search::KdTree<PointIn> ());
   pfh_target.setSearchMethod (tree_target);
 
   if (target_features_ == NULL)
@@ -981,7 +978,7 @@ pcl::PFHTest<PointIn, NormalT, FeatureDescriptor>::computeCorrespondences ()
   if (source_features_ == NULL || target_features_ == NULL)
     return;
 
-  KdTreePtr tree_ = KdTreePtr(new KdTreeFLANN<FeatureDescriptor>);
+  KdTreePtr tree_ = KdTreePtr(new search::KdTree<FeatureDescriptor>);
   tree_->setInputCloud (target_features_);
 
   std::vector<int> nearest_neighbour (1,0);
@@ -1020,7 +1017,7 @@ pcl::PFHRGBTest<PointIn, NormalT, FeatureDescriptor>::computeNormals (float sear
   NormalEstimation<PointIn, NormalT> ne_source;
   ne_source.setInputCloud (preprocessed_source_);
 
-  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_source (new search::KdTree<PointIn> ());
   ne_source.setSearchMethod (tree_source);
 
   if (source_normals_ == NULL)
@@ -1034,7 +1031,7 @@ pcl::PFHRGBTest<PointIn, NormalT, FeatureDescriptor>::computeNormals (float sear
   NormalEstimation<PointIn, NormalT> ne_target;
   ne_target.setInputCloud (preprocessed_target_);
 
-  KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_target (new search::KdTree<PointIn> ());
   ne_target.setSearchMethod (tree_target);
 
   if(target_normals_ == NULL)
@@ -1056,7 +1053,7 @@ pcl::PFHRGBTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& t
   pfhrgb_source.setInputCloud (preprocessed_source_);
   pfhrgb_source.setInputNormals (source_normals_);
 
-  KdTreePointInPtr tree_source (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_source (new search::KdTree<PointIn> ());
   pfhrgb_source.setSearchMethod (tree_source);
 
   if (source_features_ == NULL)
@@ -1073,7 +1070,7 @@ pcl::PFHRGBTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& t
   pfhrgb_target.setInputCloud (preprocessed_target_);
   pfhrgb_target.setInputNormals (target_normals_);
 
-  KdTreePointInPtr tree_target (new KdTreeFLANN<PointIn> ());
+  KdTreePointInPtr tree_target (new search::KdTree<PointIn> ());
   pfhrgb_target.setSearchMethod (tree_target);
 
   if (target_features_ == NULL)
@@ -1100,7 +1097,7 @@ pcl::PFHRGBTest<PointIn, NormalT, FeatureDescriptor>::computeCorrespondences ()
   if (source_features_ == NULL || target_features_ == NULL)
     return;
 
-  KdTreePtr tree_ = KdTreePtr(new KdTreeFLANN<FeatureDescriptor>);
+  KdTreePtr tree_ = KdTreePtr(new search::KdTree<FeatureDescriptor>);
   tree_->setInputCloud (target_features_);
 
   std::vector<int> nearest_neighbour (1,0);

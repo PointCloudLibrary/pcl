@@ -40,7 +40,7 @@
 
 #include <pcl/pcl_base.h>
 #include <pcl/PolygonMesh.h>
-#include <pcl/kdtree/kdtree.h>
+#include <pcl/search/pcl_search.h>
 #include <pcl/ros/conversions.h>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
@@ -60,8 +60,8 @@ namespace pcl
       using PCLBase<PointInT>::initCompute;
       using PCLBase<PointInT>::deinitCompute;
 
-      typedef typename pcl::KdTree<PointInT> KdTree;
-      typedef typename pcl::KdTree<PointInT>::Ptr KdTreePtr;
+      typedef typename pcl::search::Search<PointInT> KdTree;
+      typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
 
       /** \brief Constructor. */
       SurfaceReconstruction () : tree_(), check_tree_(true) {}

@@ -37,8 +37,7 @@
 
 #ifndef PCL_SURFACE_RECONSTRUCTION_IMPL_H_
 #define PCL_SURFACE_RECONSTRUCTION_IMPL_H_
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/organized_data.h>
+#include <pcl/search/pcl_search.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
@@ -61,9 +60,9 @@ pcl::SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
     if (!tree_)
     {
       if (input_->isOrganized ())
-        tree_.reset (new pcl::OrganizedDataIndex<PointInT> ());
+        tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
       else
-        tree_.reset (new pcl::KdTreeFLANN<PointInT> (false));
+        tree_.reset (new pcl::search::KdTree<PointInT> (false));
     }
 
     // Send the surface dataset to the spatial locator

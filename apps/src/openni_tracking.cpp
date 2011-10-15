@@ -40,12 +40,7 @@
 
 #include <pcl/surface/convex_hull.h>
 
-#include <pcl/search/auto.h>
-#include <pcl/search/kdtree.h>
-#include <pcl/search/impl/kdtree.hpp>
-#include <pcl/search/octree.h>
-#include <pcl/search/organized_neighbor.h>
-
+#include <pcl/search/pcl_search.h>
 #include <pcl/common/transforms.h>
 
 #include <boost/format.hpp>
@@ -90,7 +85,7 @@ public:
   typedef ParticleFilterOMPTracker<RefPointType, ParticleT> ParticleFilter;
   //typedef ParticleFilterTracker<RefPointType, ParticleT> ParticleFilter;
   typedef typename ParticleFilter::CoherencePtr CoherencePtr;
-  typedef typename pcl::KdTreeFLANN<PointType> KdTree;
+  typedef typename pcl::search::KdTree<PointType> KdTree;
   typedef typename KdTree::Ptr KdTreePtr;
   OpenNISegmentTracking (const std::string& device_id, int thread_nr, bool use_convex_hull, bool use_cog)
   : viewer_ ("PCL OpenNI Tracking Viewer")

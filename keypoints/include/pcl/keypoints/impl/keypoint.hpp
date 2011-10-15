@@ -38,9 +38,6 @@
 #ifndef PCL_KEYPOINT_IMPL_H_
 #define PCL_KEYPOINT_IMPL_H_
 
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/organized_data.h>
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> bool
 pcl::Keypoint<PointInT, PointOutT>::initCompute ()
@@ -52,9 +49,9 @@ pcl::Keypoint<PointInT, PointOutT>::initCompute ()
   if (!tree_)
   {
     if (input_->isOrganized ())
-      tree_.reset (new pcl::OrganizedDataIndex<PointInT> ());
+      tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
     else
-      tree_.reset (new pcl::KdTreeFLANN<PointInT> (false));
+      tree_.reset (new pcl::search::KdTree<PointInT> (false));
   }
   return (true);
 }
@@ -98,7 +95,7 @@ pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
       {
         // Declare the search locator definition
         int (KdTree::*radiusSearchSurface)(const PointCloudIn &cloud, int index, double radius, std::vector<int> &k_indices,
-                                            std::vector<float> &k_distances, int max_nn) const = &KdTree::radiusSearch;
+                                            std::vector<float> &k_distances, int max_nn) = &KdTree::radiusSearch;
         search_method_surface_ = boost::bind (radiusSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5, INT_MAX);
       }
     }

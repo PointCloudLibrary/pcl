@@ -39,7 +39,7 @@
 #define PCL_FILTERS_BILATERAL_H_
 
 #include <pcl/filters/filter.h>
-#include <pcl/kdtree/kdtree.h>
+#include <pcl/search/pcl_search.h>
 
 namespace pcl
 {
@@ -56,7 +56,7 @@ namespace pcl
     using Filter<PointT>::input_;
     using Filter<PointT>::indices_;
     typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
+    typedef typename pcl::search::Search<PointT>::Ptr KdTreePtr;
 
     public:
       /** \brief Constructor. 

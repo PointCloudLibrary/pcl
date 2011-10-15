@@ -42,8 +42,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/surface/mls.h>
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/organized_data.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -103,7 +101,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   mls.setPolynomialFit (use_polynomial_fit);
   mls.setPolynomialOrder (polynomial_order);
 
-  KdTree<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
+  search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ> ());
   mls.setSearchMethod (tree);
   PointCloud<Normal>::Ptr mls_normals (new PointCloud<Normal> ());
   mls.setOutputNormals (mls_normals);

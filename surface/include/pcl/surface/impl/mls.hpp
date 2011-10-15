@@ -40,8 +40,6 @@
 
 #include "pcl/surface/mls.h"
 #include <pcl/common/io.h>
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/organized_data.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 
@@ -74,9 +72,9 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output
   {
     KdTreePtr tree;
     if (input_->isOrganized ())
-      tree.reset (new pcl::OrganizedDataIndex<PointInT> ());
+      tree.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
     else
-      tree.reset (new pcl::KdTreeFLANN<PointInT> (false));
+      tree.reset (new pcl::search::KdTree<PointInT> (false));
     setSearchMethod (tree);
   }
 

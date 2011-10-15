@@ -86,7 +86,7 @@ compute (const PointCloud<PointNormal>::Ptr &input, PointCloud<VFHSignature308> 
   print_highlight (stderr, "Computing ");
 
   VFHEstimation<PointNormal, PointNormal, VFHSignature308> ne;
-  ne.setSearchMethod (KdTreeFLANN<PointNormal>::Ptr (new KdTreeFLANN<PointNormal>));
+  ne.setSearchMethod (search::KdTree<PointNormal>::Ptr (new search::KdTree<PointNormal>));
   ne.setInputCloud (input);
   ne.setInputNormals (input);
   

@@ -39,8 +39,6 @@
 #define PCL_SURFACE_IMPL_SURFEL_SMOOTHING_H_
 
 #include "pcl/surface/surfel_smoothing.h"
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/organized_data.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
@@ -65,9 +63,9 @@ pcl::SurfelSmoothing<PointT, PointNT>::initCompute ()
   if (!tree_)
   {
     if (input_->isOrganized ())
-      tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+      tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
     else
-      tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
+      tree_.reset (new pcl::search::KdTree<PointT> (false));
   }
 
   // create internal copies of the input - these will be modified

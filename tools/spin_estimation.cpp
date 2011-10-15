@@ -170,7 +170,7 @@ main (int argc, char** argv)
   SpinImageEstimation<PointNormal, PointNormal, SpinImage> spin_est (
     image_width, support_angle, min_neigh); 
   spin_est.setInputWithNormals (xyznormals, xyznormals);
-  spin_est.setSearchMethod (KdTreeFLANN<PointNormal>::Ptr (new KdTreeFLANN<PointNormal>));
+  spin_est.setSearchMethod (search::KdTree<PointNormal>::Ptr (new search::KdTree<PointNormal>));
   spin_est.setRadiusSearch (radius);
 
   if (find_argument(argc, argv, "-radial") > 0)
