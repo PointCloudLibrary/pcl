@@ -78,10 +78,19 @@ namespace pcl
 
 
       /** \brief Empty constructor. */
-      GSS3DEstimation ()
+      GSS3DEstimation (std::vector<int> &scales, int window_size)
       {
+        scales_ = scales;
+        window_size_ = window_size;
         feature_name_ = "GSS3DEstimation";
+
+        // Slight hack in order to pass the check for the presence of a search method in Feature::initCompute ()
+        Feature<PointInT, PointOutT>::tree_.reset (new pcl::search::KdTree <PointInT> ());
+        Feature<PointInT, PointOutT>::search_radius_ = 1.0f;
       }
+
+      std::vector<PointCloudNPtr> normal_maps_;
+
 
     protected:
       void
@@ -102,7 +111,10 @@ namespace pcl
                                size_t x1, size_t y1);
 
       /// TODO add a hash map to avoid repeating computations
-      std::map <int, PointCloudNPtr> normal_maps;
+
+      // paramters
+      std::vector<int> scales_;
+      int window_size_;
   };
 }
 
