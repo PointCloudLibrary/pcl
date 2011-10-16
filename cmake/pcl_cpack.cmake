@@ -80,7 +80,7 @@ macro(PCL_MAKE_CPACK_INPUT)
             string(TOUPPER ${dep} DEP)
             set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_${DEP}_GROUP \"ThirdParty\")")
             set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} ${dep}")
-        endforeach(DEP)    
+        endforeach(dep)    
     endif(BUILD_all_in_one_installer)
 
     set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENTS_ALL${CPACK_COMPONENTS_ALL})\n")
