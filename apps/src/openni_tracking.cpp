@@ -9,7 +9,7 @@
 #include <pcl/tracking/hsv_color_coherence.h>
 #include <pcl/tracking/normal_coherence.h>
 
-#include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
+#include <pcl/tracking/approx_nearest_pair_point_cloud_coherence.h>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -132,14 +132,12 @@ public:
     tracker_->setInitialNoiseMean (default_initial_mean);
     tracker_->setIterationNum (1);
     
-    //tracker_->setParticleNum (4000);
     tracker_->setParticleNum (400);
-    //tracker_->setParticleNum (10);
     tracker_->setResampleLikelihoodThr(0.00);
     tracker_->setUseNormal (false);
     // setup coherences
-    NearestPairPointCloudCoherence<RefPointType>::Ptr coherence = NearestPairPointCloudCoherence<RefPointType>::Ptr
-      (new NearestPairPointCloudCoherence<RefPointType> ());
+    ApproxNearestPairPointCloudCoherence<RefPointType>::Ptr coherence = ApproxNearestPairPointCloudCoherence<RefPointType>::Ptr
+      (new ApproxNearestPairPointCloudCoherence<RefPointType> ());
     
     boost::shared_ptr<DistanceCoherence<RefPointType> > distance_coherence
       = boost::shared_ptr<DistanceCoherence<RefPointType> > (new DistanceCoherence<RefPointType> ());
@@ -150,13 +148,7 @@ public:
     color_coherence->setWeight (0.01);
     coherence->addPointCoherence (color_coherence);
     
-    // boost::shared_ptr<NormalCoherence<RefPointType> > normal_coherence
-    //   = boost::shared_ptr<NormalCoherence<RefPointType> > (new NormalCoherence<RefPointType> ());
-    // normal_coherence->setWeight (0.01);
-    // coherence->addPointCoherence (normal_coherence);
-    
     //boost::shared_ptr<pcl::search::KdTree<RefPointType> > search (new pcl::search::KdTree<RefPointType> (false));
-    //coherence->setSearchMethodPolicy (pcl::tracking::NEAREST_NEIGHBOR);
     boost::shared_ptr<pcl::search::Octree<RefPointType> > search (new pcl::search::Octree<RefPointType> (0.01));
     //boost::shared_ptr<pcl::search::OrganizedNeighbor<RefPointType> > search (new pcl::search::OrganizedNeighbor<RefPointType>);
     coherence->setSearchMethod (search);
