@@ -12,7 +12,6 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
     
     PointCloudInPtr coherence_input (new PointCloudIn);
     cropInputPointCloud (input_, *coherence_input);
-
     if (change_counter_ == 0)
     {
       // test change detector
@@ -20,7 +19,6 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
       {
         changed_ = true;
         change_counter_ = change_detector_interval_;
-        //coherence_->setTargetCloud (changed_input);
         coherence_->setTargetCloud (coherence_input);
         coherence_->initCompute ();
 #pragma omp parallel for schedule (dynamic, threads_)

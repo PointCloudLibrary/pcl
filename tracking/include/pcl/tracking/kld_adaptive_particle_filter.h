@@ -1,0 +1,200 @@
+#ifndef PCL_TRACKING_KLD_ADAPTIVE_PARTICLE_FILTER_H_
+#define PCL_TRACKING_KLD_ADAPTIVE_PARTICLE_FILTER_H_
+
+#include "pcl/tracking/tracking.h"
+#include "pcl/tracking/particle_filter.h"
+#include "pcl/tracking/coherence.h"
+
+namespace pcl
+{
+  namespace tracking
+  {
+
+    /** \brief @b KLDAdaptiveParticleFilterTracker tracks the PointCloud which is given by
+        setReferenceCloud within the measured PointCloud using particle filter method.
+        The number of the particles changes adaptively based on KLD sampling [D. Fox, NIPS-01], [D.Fox, IJRR03].
+      * \author Ryohei Ueda
+      * \ingroup tracking
+      */
+    template <typename PointInT, typename StateT>
+    class KLDAdaptiveParticleFilterTracker: public ParticleFilterTracker<PointInT, StateT>
+    {
+    public:
+      using Tracker<PointInT, StateT>::tracker_name_;
+      using Tracker<PointInT, StateT>::search_;
+      using Tracker<PointInT, StateT>::input_;
+      using Tracker<PointInT, StateT>::getClassName;
+      using ParticleFilterTracker<PointInT, StateT>::transed_reference_vector_;
+      using ParticleFilterTracker<PointInT, StateT>::coherence_;
+      using ParticleFilterTracker<PointInT, StateT>::initParticles;
+      using ParticleFilterTracker<PointInT, StateT>::weight;
+      using ParticleFilterTracker<PointInT, StateT>::update;
+      using ParticleFilterTracker<PointInT, StateT>::iteration_num_;
+      using ParticleFilterTracker<PointInT, StateT>::particle_num_;
+      using ParticleFilterTracker<PointInT, StateT>::particles_;
+      using ParticleFilterTracker<PointInT, StateT>::use_normal_;
+      using ParticleFilterTracker<PointInT, StateT>::step_noise_covariance_;
+      using ParticleFilterTracker<PointInT, StateT>::representative_state_;
+      using ParticleFilterTracker<PointInT, StateT>::sampleWithReplacement;
+
+      typedef Tracker<PointInT, StateT> BaseClass;
+      
+      typedef typename Tracker<PointInT, StateT>::PointCloudIn PointCloudIn;
+      typedef typename PointCloudIn::Ptr PointCloudInPtr;
+      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+
+      typedef typename Tracker<PointInT, StateT>::PointCloudState PointCloudState;
+      typedef typename PointCloudState::Ptr PointCloudStatePtr;
+      typedef typename PointCloudState::ConstPtr PointCloudStateConstPtr;
+
+      typedef PointCoherence<PointInT> Coherence;
+      typedef boost::shared_ptr< Coherence > CoherencePtr;
+      typedef boost::shared_ptr< const Coherence > CoherenceConstPtr;
+
+      typedef PointCloudCoherence<PointInT> CloudCoherence;
+      typedef boost::shared_ptr< CloudCoherence > CloudCoherencePtr;
+      typedef boost::shared_ptr< const CloudCoherence > CloudCoherenceConstPtr;
+
+      /** \brief Empty constructor. */
+      KLDAdaptiveParticleFilterTracker ()
+      : ParticleFilterTracker<PointInT, StateT> ()
+      , delta_ (0.99)
+      {
+        tracker_name_ = "KLDAdaptiveParticleFilterTracker";
+      }
+
+      /** \brief set the bin size.
+        * \param bin_size the size of a bin
+        */
+      inline void setBinSize (StateT bin_size) { bin_size_ = bin_size; }
+      
+      /** \brief get the bin size. */
+      inline StateT getBinSize () { return bin_size_; }
+
+      /** \brief set the maximum number of the particles.
+        * \param nr the maximum number of the particles.
+        */
+      inline void setMaximumParticleNum (unsigned int nr) { maximum_particle_number_ = nr; }
+
+      /** \brief get the maximum number of the particles.*/
+      inline unsigned int getMaximumParticleNum () { return maximum_particle_number_; }
+
+      /** \brief set epsilon to be used to calc K-L boundary.
+        * \param eps epsilon
+        */
+      inline void setEpsilon (double eps) { epsilon_ = eps; }
+
+      /** \brief get epsilon to be used to calc K-L boundary. */
+      inline double getEpsilon () { return epsilon_; }
+
+      /** \brief set delta to be used in chi-squared distribution.
+        * \param delta delta of chi-squared distribution.
+        */
+      inline void setDelta (double delta) { delta_ = delta; }
+
+      /** \brief get delta to be used in chi-squared distribution.*/
+      inline double getDelta () { return delta_; }
+      
+    protected:
+
+      /** \brief return true if the two bins are equal.
+        * \param a index of the bin
+        * \param b index of the bin
+        */
+      inline virtual bool equalBin (std::vector<int> a, std::vector<int> b)
+      {
+        int dimension = StateT::stateDimension ();
+        for (int i = 0; i < dimension; i++)
+          if (a[i] != b[i])
+            return false;
+        return true;
+      }
+
+      /** \brief return upper quantile of standard normal distribution.
+        * \param u ratio of quantile.
+        */
+      double normalQuantile(double u)
+      {
+        const double a[9] = {  1.24818987e-4, -1.075204047e-3, 5.198775019e-3,
+                               -0.019198292004, 0.059054035642,-0.151968751364,
+                               0.319152932694,-0.5319230073,   0.797884560593};
+        const double b[15] = { -4.5255659e-5,   1.5252929e-4,  -1.9538132e-5,
+                               -6.76904986e-4,  1.390604284e-3,-7.9462082e-4,
+                               -2.034254874e-3, 6.549791214e-3,-0.010557625006,
+                               0.011630447319,-9.279453341e-3, 5.353579108e-3,
+                               -2.141268741e-3, 5.35310549e-4,  0.999936657524};
+        double w, y, z;
+        int i;
+
+        if(u == 0.)
+          return 0.5;
+        y = u / 2.0;
+        if(y < -6.)
+          return 0.0;
+        if(y > 6.)
+          return 1.0;
+        if(y < 0.0)
+          y = - y;
+        if(y < 1.0)
+        {
+          w = y * y;
+          z = a[0];
+          for(i = 1; i < 9; i++)
+            z = z * w + a[i];
+          z *= (y * 2.0);
+        }
+        else
+        {
+          y -= 2.0;
+          z = b[0];
+          for(i = 1; i < 15; i++)
+            z = z * y + b[i];
+        }
+
+        if(u < 0.0)
+          return (1. - z) / 2.0;
+        return (1. + z) / 2.0;
+      }
+
+      /** \brief calculate K-L boundary. K-L boundary follows 1/2e*chi(k-1, 1-d)^2.
+        * \param k the number of bins and the first parameter of chi distribution.
+        */
+      inline virtual double calcKLBound (int k)
+      {
+        double z = normalQuantile (delta_);
+        double chi = 1.0 - 2.0 / (9.0 * (k - 1)) + sqrt (2.0 / (9.0 * (k - 1))) * z;
+        return (k - 1.0) / (2.0 * epsilon_) * chi * chi * chi;
+      }
+
+      /** \brief insert a bin into the set of the bins. if that bin is already registered,
+          return false. if not, return true.
+        * \param bin a bin to be inserted.
+        * \param B a set of the bins
+        */
+      virtual bool insertIntoBins (std::vector<int> bin, std::vector<std::vector<int> > &B);
+            
+      /** \brief This method should get called before starting the actual computation. */
+      virtual bool initCompute ();
+
+      /** \brief resampling phase of particle filter method.
+          sampling the particles according to the weights calculated in weight method.
+          in particular, "sample with replacement" is archieved by walker's alias method.
+        */
+      virtual void resample ();
+
+      /** \brief the maximum number of the particles. */
+      unsigned int maximum_particle_number_;
+
+      /** \brief error between K-L distance and MLE*/
+      double epsilon_;
+
+      /** \brief probability of distance between K-L distance and MLE is less than epsilon_*/
+      double delta_;
+
+      /** \brief the size of a bin.*/
+      StateT bin_size_;
+    };
+  }
+}
+
+#endif

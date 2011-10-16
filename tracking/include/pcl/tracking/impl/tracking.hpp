@@ -88,6 +88,21 @@ namespace pcl
                                       trans_roll, trans_pitch, trans_yaw);
         return pcl::tracking::ParticleXYZRPY (trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
       }
+
+      // a[i]
+      inline float operator [] (unsigned int i)
+      {
+        switch (i)
+        {
+        case 0: return x;
+        case 1: return y;
+        case 2: return z;
+        case 3: return roll;
+        case 4: return pitch;
+        case 5: return yaw;
+        default: return 0.0;
+        }
+      }
       
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
@@ -111,7 +126,7 @@ namespace pcl
       newp.yaw = p.yaw * val;
       return (newp);
     }
-
+    
     // a + b
     inline pcl::tracking::ParticleXYZRPY operator + (const ParticleXYZRPY& a, const ParticleXYZRPY& b)
     {

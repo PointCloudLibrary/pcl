@@ -41,7 +41,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::sampleWithReplacement
   static mt19937 gen (static_cast<unsigned long>(time (0)));
   uniform_real<> dst (0.0, 1.0);
   variate_generator<mt19937&, uniform_real<> > rand (gen, dst);
-  double rU = rand () * particle_num_;
+  double rU = rand () * particles_->points.size ();
   int k = (int)rU;
   rU -= k;    /* rU - [rU] */
   if ( rU < q[k] )
@@ -55,15 +55,16 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::genAliasTable (std::vect
                                                                        const PointCloudStateConstPtr &particles)
 {
   /* generate an alias table, a and q */
-  std::vector<int> HL (particle_num_);
+  std::vector<int> HL (particles->points.size ());
   std::vector<int>::iterator H = HL.begin ();
   std::vector<int>::iterator L = HL.end () - 1;
-  for ( int i = 0; i < particle_num_; i++ )
-    q[i] = particles->points[i].weight * particle_num_;
-  for ( int i = 0; i < particle_num_; i++ )
+  size_t num = particles->points.size ();
+  for ( size_t i = 0; i < num; i++ )
+    q[i] = particles->points[i].weight * num;
+  for ( size_t i = 0; i < num; i++ )
     a[i] = i;
   // setup H and L
-  for ( int i = 0; i < particle_num_; i++ )
+  for ( size_t i = 0; i < num; i++ )
     if ( q[i] >= 1.0 )
       *H++ = i;
     else
@@ -116,7 +117,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
     // apply exponential function
     double w_min = std::numeric_limits<double>::max ();
     double w_max = - std::numeric_limits<double>::max ();
-    for ( int i = 0; i < particle_num_; i++ )
+    for ( size_t i = 0; i < particles_->points.size (); i++ )
     {
       double weight = particles_->points[i].weight;
       if (w_min > weight)
@@ -125,7 +126,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
         w_max = weight;
     }
 
-    for ( int i = 0; i < particle_num_; i++ )
+    for ( size_t i = 0; i < particles_->points.size (); i++ )
     {
       if (particles_->points[i].weight != 0.0)
       {
@@ -136,20 +137,20 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
     //std::cout << "w_min: " << w_min << std::endl;
     
     double sum = 0.0;
-    for ( int i = 0; i < particle_num_; i++ )
+    for ( size_t i = 0; i < particles_->points.size (); i++ )
     {
         sum += particles_->points[i].weight;
     }
     
     if (sum != 0.0)
     {
-      for ( int i = 0; i < particle_num_; i++ )
+      for ( size_t i = 0; i < particles_->points.size (); i++ )
         particles_->points[i].weight =  particles_->points[i].weight / sum;
     }
     else
     {
-      for ( int i = 0; i < particle_num_; i++ )
-        particles_->points[i].weight = 1.0 / particle_num_;
+      for ( size_t i = 0; i < particles_->points.size (); i++ )
+        particles_->points[i].weight = 1.0 / particles_->points.size ();
     }
 }
 
@@ -220,10 +221,9 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::weight ()
 {
   if (!use_normal_)
   {
-    for (int i = 0; i < particle_num_; i++)
+    for (size_t i = 0; i < particles_->points.size (); i++)
     {
-      IndicesPtr indices;
-      computeTransformedPointCloud (particles_->points[i], *indices, *transed_reference_vector_[i]);
+      computeTransformedPointCloudWithoutNormal (particles_->points[i], *transed_reference_vector_[i]);
     }
     
     PointCloudInPtr coherence_input (new PointCloudIn);
@@ -231,7 +231,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::weight ()
     
     coherence_->setTargetCloud (coherence_input);
     coherence_->initCompute ();
-    for (int i = 0; i < particle_num_; i++)
+    for (size_t i = 0; i < particles_->points.size (); i++)
     {
       IndicesPtr indices;
       coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
@@ -239,10 +239,10 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::weight ()
   }
   else
   {
-    for (int i = 0; i < particle_num_; i++)
+    for (size_t i = 0; i < particles_->points.size (); i++)
     {
       IndicesPtr indices (new std::vector<int>);
-      computeTransformedPointCloud (particles_->points[i], *indices, *transed_reference_vector_[i]);
+      computeTransformedPointCloudWithNormal (particles_->points[i], *indices, *transed_reference_vector_[i]);
     }
     
     PointCloudInPtr coherence_input (new PointCloudIn);
@@ -250,7 +250,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::weight ()
     
     coherence_->setTargetCloud (coherence_input);
     coherence_->initCompute ();
-    for (int i = 0; i < particle_num_; i++)
+    for (size_t i = 0; i < particles_->points.size (); i++)
     {
       IndicesPtr indices (new std::vector<int>);
       coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
@@ -309,47 +309,47 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointC
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resample ()
 {
-  resampleWithReplacement ();
+  if (changed_)
+  {
+    resampleWithReplacement ();
+  }
 }
 
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resampleWithReplacement ()
 {
-  if (changed_)
+  std::vector<int> a (particles_->points.size ());
+  std::vector<double> q (particles_->points.size ());
+  genAliasTable (a, q, particles_);
+  
+  const std::vector<double> zero_mean (StateT::stateDimension (), 0.0);
+  // memoize the original list of particles
+  PointCloudStatePtr origparticles = particles_;
+  particles_->points.clear ();
+  // the first particle, it is a just copy of the maximum result
+  StateT p = representative_state_;
+  particles_->points.push_back (p);
+  
+  // with motion
+  int motion_num = (int)(particles_->points.size () * motion_ratio_);
+  for ( int i = 1; i < motion_num; i++ )
   {
-    std::vector<int> a (particle_num_);
-    std::vector<double> q (particle_num_);
-    genAliasTable (a, q, particles_);
-  
-    const std::vector<double> zero_mean (StateT::stateDimension (), 0.0);
-    // memoize the original list of particles
-    PointCloudStatePtr origparticles = particles_;
-    particles_->points.clear ();
-    // the first particle, it is a just copy of the maximum result
-    StateT p = representative_state_;
+    int target_particle_index = sampleWithReplacement (a, q);
+    StateT p = origparticles->points[target_particle_index];
+    // add noise using gaussian
+    p.sample (zero_mean, step_noise_covariance_);
+    p = p + motion_;
     particles_->points.push_back (p);
+  }
   
-    // with motion
-    int motion_num = (int)(particle_num_ * motion_ratio_);
-    for ( int i = 1; i < motion_num; i++ )
-    {
-      int target_particle_index = sampleWithReplacement (a, q);
-      StateT p = origparticles->points[target_particle_index];
-      // add noise using gaussian
-      p.sample (zero_mean, step_noise_covariance_);
-      p = p + motion_;
-      particles_->points.push_back (p);
-    }
-  
-    // no motion
-    for ( int i = motion_num; i < particle_num_; i++ )
-    {
-      int target_particle_index = sampleWithReplacement (a, q);
-      StateT p = origparticles->points[target_particle_index];
-      // add noise using gaussian
-      p.sample (zero_mean, step_noise_covariance_);
-      particles_->points.push_back (p);
-    }
+  // no motion
+  for ( int i = motion_num; i < particle_num_; i++ )
+  {
+    int target_particle_index = sampleWithReplacement (a, q);
+    StateT p = origparticles->points[target_particle_index];
+    // add noise using gaussian
+    p.sample (zero_mean, step_noise_covariance_);
+    particles_->points.push_back (p);
   }
 }
 
@@ -360,12 +360,12 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::update ()
   StateT orig_representative = representative_state_;
   representative_state_.zero ();
   representative_state_.weight = 0.0;
-  for ( int i = 0; i < particle_num_; i++)
+  for ( size_t i = 0; i < particles_->points.size (); i++)
   {
     StateT p = particles_->points[i];
     representative_state_ = representative_state_ + p * p.weight;
   }
-  representative_state_.weight = 1.0 / particle_num_;
+  representative_state_.weight = 1.0 / particles_->points.size ();
   motion_ = representative_state_ - orig_representative;
 }
 

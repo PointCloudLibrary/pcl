@@ -11,6 +11,8 @@ if(build)
         src/tracking.cpp
         src/particle_filter.cpp
         src/particle_filter_omp.cpp
+        src/kld_adaptive_particle_filter.cpp
+        src/kld_adaptive_particle_filter_omp.cpp
         src/nearest_pair_point_cloud_coherence.cpp
         src/distance_coherence.cpp
         src/normal_coherence.cpp
@@ -27,6 +29,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/normal_coherence.h
         include/pcl/${SUBSYS_NAME}/particle_filter.h
         include/pcl/${SUBSYS_NAME}/particle_filter_omp.h
+        include/pcl/${SUBSYS_NAME}/kld_adaptive_particle_filter.h
+        include/pcl/${SUBSYS_NAME}/kld_adaptive_particle_filter_omp.h
         )
 
     set(impl_incs 
@@ -39,6 +43,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/normal_coherence.hpp
         include/pcl/${SUBSYS_NAME}/impl/particle_filter.hpp
         include/pcl/${SUBSYS_NAME}/impl/particle_filter_omp.hpp
+        include/pcl/${SUBSYS_NAME}/impl/kld_adaptive_particle_filter.hpp
+        include/pcl/${SUBSYS_NAME}/impl/kld_adaptive_particle_filter_omp.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

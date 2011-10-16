@@ -41,7 +41,6 @@ namespace pcl
         // }
         // else if (search_method_policy_ == APPROXIMATE_NEIGHBOR)
         {
-          //std::cout << i << std::endl;
           int k_index = 0;
           float k_distance = 0.0;
           //PointInT input_point = cloud->points[(*indices)[i]];
