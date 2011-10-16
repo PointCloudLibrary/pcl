@@ -60,11 +60,30 @@ set(PCL_CPACK_CFG_FILE "${PCL_BINARY_DIR}/cpack_options.cmake")
 # Make the CPack input file.
 macro(PCL_MAKE_CPACK_INPUT)
     set(_cpack_cfg_in "${PCL_SOURCE_DIR}/cmake/cpack_options.cmake.in")
+    set(${_var} "${${_var}}\nset(CPACK_COMPONENT_GROUP_PCL_DESCRIPTION \"PCL headers and librairies\")\n")
 
     # Prepare the components list
     set(PCL_CPACK_COMPONENTS)
     PCL_CPACK_MAKE_COMPS_OPTS(PCL_CPACK_COMPONENTS "${_comps}")
 
+    # add PCLConfig
+    set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} pclconfig")
+    set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_GROUP \"PCL\")\n")
+    set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_DISPLAY_NAME \"PCLConfig\")\n")
+    set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_DESCRIPTION \"Helper cmake configuration scripts used by find_package(PCL)\")\n")	
+
+    # add 3rdParty libs
+    if(BUILD_all_in_one_installer)
+        set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_GROUP_THIRDPARTY_DISPLAY_NAME \"3rd Party Libraries\")")
+        set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_GROUP_THIRDPARTY_DESCRIPTION \"3rd Party Libraries\")")
+        foreach(dep ${PCL_3RDPARTY_COMPONENTS})
+            string(TOUPPER ${dep} DEP)
+            set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_${DEP}_GROUP \"ThirdParty\")")
+            set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} ${dep}")
+        endforeach(DEP)    
+    endif(BUILD_all_in_one_installer)
+
+    set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENTS_ALL${CPACK_COMPONENTS_ALL})\n")
     configure_file(${_cpack_cfg_in} ${PCL_CPACK_CFG_FILE} @ONLY)
 endmacro(PCL_MAKE_CPACK_INPUT)
 
@@ -82,7 +101,7 @@ macro(PCL_CPACK_MAKE_COMPS_OPTS _var _current)
             endif(_status)
         endif("${_ss}" STREQUAL "global_tests")
     endforeach(_ss)
-    set(${_var} "${${_var}}\nset(CPACK_COMPONENTS_ALL${_comps_list} pclconfig)\n")
+    set(CPACK_COMPONENTS_ALL ${_comps_list})
 endmacro(PCL_CPACK_MAKE_COMPS_OPTS)
 
 
@@ -100,5 +119,7 @@ macro(PCL_CPACK_ADD_COMP_INFO _var _ss)
     endforeach(_dep)
     set(${_var}
         "${${_var}}set(CPACK_COMPONENT_${_comp_name}_DEPENDS ${_deps_str})\n")
+    set(${_var} 
+        "${${_var}}set(CPACK_COMPONENT_${_comp_name}_GROUP \"PCL\")\n")
 endmacro(PCL_CPACK_ADD_COMP_INFO)
 

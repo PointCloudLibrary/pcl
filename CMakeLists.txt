@@ -163,6 +163,7 @@ add_subdirectory(doc)
 include(${PCL_SOURCE_DIR}/cmake/pcl_pclconfig.cmake)
 
 ### ---[ Package creation
+include(${PCL_SOURCE_DIR}/cmake/pcl_all_in_one_installer.cmake)
 include(${PCL_SOURCE_DIR}/cmake/pcl_cpack.cmake)
 
 if(CPACK_GENERATOR)
