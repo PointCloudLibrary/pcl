@@ -47,6 +47,7 @@
 #include "pcl/features/normal_3d.h"
 #include "pcl/visualization/cloud_viewer.h"
 #include "pcl/gpu/containers/kernel_containers.hpp"
+#include <pcl/search/search.h>
 
 #include <Eigen/StdVector>
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::PointXYZ)
@@ -107,7 +108,7 @@ namespace pcl
             {
                 pcl::NormalEstimation<PointXYZ, Normal> ne;
                 ne.setInputCloud (cloud);
-                ne.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
+                ne.setSearchMethod (pcl::search::KdTree<PointXYZ>::Ptr (new pcl::search::KdTree<PointXYZ>));
                 ne.setKSearch (k);
                 //ne.setRadiusSearch (radius);
                 

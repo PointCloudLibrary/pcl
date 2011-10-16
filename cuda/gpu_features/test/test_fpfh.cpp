@@ -43,6 +43,7 @@
 #include "pcl/common/common.h"
 #include "pcl/gpu/features/features.hpp"
 #include "data_source.hpp"
+#include <pcl/search/pcl_search.h>
 
 using namespace std;
 using namespace pcl;
@@ -84,7 +85,7 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_low_level)
     pcl::FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fe;
     fe.setInputCloud (source.cloud);
     fe.setInputNormals (source.normals);
-    fe.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
+    fe.setSearchMethod (pcl::search::KdTree<PointXYZ>::Ptr (new pcl::search::KdTree<PointXYZ>));
     //fe.setKSearch (k);
     fe.setRadiusSearch (source.radius);
 
@@ -153,7 +154,7 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level1)
     pcl::FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fe;
     fe.setInputCloud (source.cloud);
     fe.setInputNormals (normals);
-    fe.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
+    fe.setSearchMethod (pcl::search::KdTree<PointXYZ>::Ptr (new pcl::search::KdTree<PointXYZ>));
     //fe.setKSearch (k);
     fe.setRadiusSearch (source.radius);
     //fe.setIndices(source.indices);
@@ -231,7 +232,7 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level2)
     pcl::FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fe;
     fe.setInputCloud (source.cloud);
     fe.setInputNormals (normals);
-    fe.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
+    fe.setSearchMethod (pcl::search::KdTree<PointXYZ>::Ptr (new pcl::search::KdTree<PointXYZ>));
     //fe.setKSearch (k);
     fe.setRadiusSearch (source.radius);
     fe.setIndices(source.indices);
@@ -308,7 +309,7 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level3)
     pcl::FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fe;
     fe.setInputCloud (source.cloud);
     fe.setInputNormals (normals);
-    fe.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
+    fe.setSearchMethod (pcl::search::KdTree<PointXYZ>::Ptr (new pcl::search::KdTree<PointXYZ>));
     //fe.setKSearch (k);
     fe.setRadiusSearch (source.radius);
     //fe.setIndices(source.indices);
@@ -386,7 +387,7 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level4)
     pcl::FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fe;
     fe.setInputCloud (source.cloud);
     fe.setInputNormals (normals);
-    fe.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
+    fe.setSearchMethod (pcl::search::KdTree<PointXYZ>::Ptr (new pcl::search::KdTree<PointXYZ>));
     //fe.setKSearch (k);
     fe.setRadiusSearch (source.radius);
     fe.setIndices(source.indices);

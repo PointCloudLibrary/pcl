@@ -39,6 +39,7 @@
 #include <iostream>
 
 #include "pcl/gpu/features/features.hpp"
+#include <pcl/search/search.h>
 
 using namespace std;
 using namespace pcl;
@@ -110,7 +111,7 @@ TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_1)
 
     pcl::NormalEstimation<PointXYZ, Normal> ne;
     ne.setInputCloud (source.cloud);
-    ne.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
+    ne.setSearchMethod (pcl::search::KdTree<PointXYZ>::Ptr (new pcl::search::KdTree<PointXYZ>));
     //ne.setKSearch (k);
     ne.setRadiusSearch (source.radius);
     //ne.setSearchSurface(source.surface);
@@ -174,7 +175,7 @@ TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_2)
 
     pcl::NormalEstimation<PointXYZ, Normal> ne;
     ne.setInputCloud (source.cloud);
-    ne.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
+    ne.setSearchMethod (pcl::search::KdTree<PointXYZ>::Ptr (new pcl::search::KdTree<PointXYZ>));
     //ne.setKSearch (k);
     ne.setRadiusSearch (source.radius);
     //ne.setSearchSurface(source.surface);
@@ -239,7 +240,7 @@ TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_3)
 
     pcl::NormalEstimation<PointXYZ, Normal> ne;
     ne.setInputCloud (source.cloud);
-    ne.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
+    ne.setSearchMethod (pcl::search::KdTree<PointXYZ>::Ptr (new pcl::search::KdTree<PointXYZ>));
     //ne.setKSearch (k);
     ne.setRadiusSearch (source.radius);
     ne.setSearchSurface(source.surface);
@@ -313,7 +314,7 @@ TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_4)
 
     pcl::NormalEstimation<PointXYZ, Normal> ne;
     ne.setInputCloud (source.cloud);
-    ne.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
+    ne.setSearchMethod (pcl::search::KdTree<PointXYZ>::Ptr (new pcl::search::KdTree<PointXYZ>));
     //ne.setKSearch (k);
     ne.setRadiusSearch (source.radius);
     ne.setSearchSurface(source.surface);
