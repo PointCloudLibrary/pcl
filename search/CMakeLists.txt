@@ -22,6 +22,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/kdtree.h
         include/pcl/${SUBSYS_NAME}/organized_neighbor.h
         include/pcl/${SUBSYS_NAME}/octree.h
+        include/pcl/${SUBSYS_NAME}/pcl_search.h
  #       include/pcl/${SUBSYS_NAME}/octree_gpu.h
         )
 
