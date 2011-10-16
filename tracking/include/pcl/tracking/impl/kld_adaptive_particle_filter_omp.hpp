@@ -1,8 +1,8 @@
-#ifndef PCL_TRACKING_IMPL_PARTICLE_OMP_FILTER_H_
-#define PCL_TRACKING_IMPL_PARTICLE_OMP_FILTER_H_
+#ifndef PCL_TRACKING_IMPL_KLD_ADAPTIVE_PARTICLE_OMP_FILTER_H_
+#define PCL_TRACKING_IMPL_KLD_ADAPTIVE_PARTICLE_OMP_FILTER_H_
 
 template <typename PointInT, typename StateT> void
-pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
+pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight ()
 {
   if (!use_normal_)
   {
@@ -15,8 +15,9 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
     if (change_counter_ == 0)
     {
       // test change detector
-      if (testChangeDetection (coherence_input))
+      //if (testChangeDetection (coherence_input))
       {
+        
         changed_ = true;
         change_counter_ = change_detector_interval_;
         coherence_->setTargetCloud (coherence_input);
@@ -24,12 +25,12 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
 #pragma omp parallel for schedule (dynamic, threads_)
         for (int i = 0; i < particle_num_; i++)
         {
-          IndicesPtr indices;   // dummy
+          IndicesPtr indices;
           coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
         }
       }
-      else
-        changed_ = false;
+      // else
+      //   changed_ = false;
     }
     else
     {
@@ -39,7 +40,7 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
 #pragma omp parallel for schedule (dynamic, threads_)
       for (int i = 0; i < particle_num_; i++)
       {
-        IndicesPtr indices;     // dummy
+        IndicesPtr indices;
         coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
       }
     }
@@ -72,6 +73,6 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
   normalizeWeight ();
 }
 
-#define PCL_INSTANTIATE_ParticleFilterOMPTracker(T,ST) template class PCL_EXPORTS pcl::tracking::ParticleFilterOMPTracker<T,ST>;
+#define PCL_INSTANTIATE_KLDAdaptiveParticleFilterOMPTracker(T,ST) template class PCL_EXPORTS pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<T,ST>;
 
 #endif
