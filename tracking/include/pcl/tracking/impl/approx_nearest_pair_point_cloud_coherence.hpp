@@ -1,31 +1,27 @@
-#ifndef PCL_TRACKING_IMPL_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
-#define PCL_TRACKING_IMPL_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
+#ifndef PCL_TRACKING_IMPL_APPROX_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
+#define PCL_TRACKING_IMPL_APPROX_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
 
-#include <pcl/search/kdtree.h>
-#include <pcl/search/organized_neighbor.h>
+#include <pcl/search/octree.h>
 
 namespace pcl
 {
   namespace tracking
   {
     template <typename PointInT> void
-    NearestPairPointCloudCoherence<PointInT>::computeCoherence
+    ApproxNearestPairPointCloudCoherence<PointInT>::computeCoherence
     (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices, float &w)
     {
       double val = 0.0;
       //for (size_t i = 0; i < indices->size (); i++)
       for (size_t i = 0; i < cloud->points.size (); i++)
       {
+        int k_index = 0;
+        float k_distance = 0.0;
+        //PointInT input_point = cloud->points[(*indices)[i]];
         PointInT input_point = cloud->points[i];
-        std::vector<int> k_indices(1);
-        std::vector<float> k_distances(1);
-        search_->nearestKSearch (input_point, 1, k_indices, k_distances);
-        int k_index = k_indices[0];
-        float k_distance = k_distances[0];
+        search_->approxNearestSearch(input_point, k_index, k_distance);
         if (k_distance < maximum_distance_ * maximum_distance_)
         {
-          // nearest_targets.push_back (k_index);
-          // nearest_inputs.push_back (i);
           PointInT target_point = target_input_->points[k_index];
           double coherence_val = 1.0;
           for (size_t i = 0; i < point_coherences_.size (); i++)
@@ -39,9 +35,9 @@ namespace pcl
       }
       w = - val;
     }
-    
+
     template <typename PointInT> bool
-    NearestPairPointCloudCoherence<PointInT>::initCompute ()
+    ApproxNearestPairPointCloudCoherence<PointInT>::initCompute ()
     {
       if (!PointCloudCoherence<PointInT>::initCompute ())
       {
@@ -52,7 +48,7 @@ namespace pcl
       
       // initialize tree
       if (!search_)
-        search_.reset (new pcl::search::KdTree<PointInT> (false));
+        search_.reset (new pcl::search::Octree<PointInT> (0.01));
       
       if (new_target_ && target_input_)
       {
@@ -62,9 +58,10 @@ namespace pcl
       
       return true;
     }
+    
   }
 }
 
-#define PCL_INSTANTIATE_NearestPairPointCloudCoherence(T) template class PCL_EXPORTS pcl::tracking::NearestPairPointCloudCoherence<T>;
+#define PCL_INSTANTIATE_ApproxNearestPairPointCloudCoherence(T) template class PCL_EXPORTS pcl::tracking::ApproxNearestPairPointCloudCoherence<T>;
 
 #endif

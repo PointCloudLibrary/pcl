@@ -14,6 +14,7 @@ if(build)
         src/kld_adaptive_particle_filter.cpp
         src/kld_adaptive_particle_filter_omp.cpp
         src/nearest_pair_point_cloud_coherence.cpp
+        src/approx_nearest_pair_point_cloud_coherence.cpp
         src/distance_coherence.cpp
         src/normal_coherence.cpp
         src/hsv_color_coherence.cpp
@@ -24,6 +25,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/tracker.h
         include/pcl/${SUBSYS_NAME}/coherence.h
         include/pcl/${SUBSYS_NAME}/nearest_pair_point_cloud_coherence.h
+        include/pcl/${SUBSYS_NAME}/approx_nearest_pair_point_cloud_coherence.h
         include/pcl/${SUBSYS_NAME}/distance_coherence.h
         include/pcl/${SUBSYS_NAME}/hsv_color_coherence.h
         include/pcl/${SUBSYS_NAME}/normal_coherence.h
@@ -38,6 +40,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/tracker.hpp
         include/pcl/${SUBSYS_NAME}/impl/coherence.hpp
         include/pcl/${SUBSYS_NAME}/impl/nearest_pair_point_cloud_coherence.hpp
+        include/pcl/${SUBSYS_NAME}/impl/approx_nearest_pair_point_cloud_coherence.hpp
         include/pcl/${SUBSYS_NAME}/impl/distance_coherence.hpp
         include/pcl/${SUBSYS_NAME}/impl/hsv_color_coherence.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_coherence.hpp

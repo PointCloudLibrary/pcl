@@ -9,14 +9,8 @@ namespace pcl
 {
   namespace tracking
   {
-    enum SearchMethodPolicy
-    {
-      NEAREST_NEIGHBOR,
-      APPROXIMATE_NEIGHBOR
-    };
-    
     /** \brief @b NearestPairPointCloudCoherence computes coherence between two pointclouds using the
-        nearest point pairs.
+         nearest point pairs.
       * \author Ryohei Ueda
       * \ingroup tracking
       */
@@ -43,7 +37,6 @@ namespace pcl
       , maximum_distance_ (std::numeric_limits<double>::max ())
       {
         coherence_name_ = "NearestPairPointCloudCoherence";
-        search_method_policy_ = APPROXIMATE_NEIGHBOR;
       }
 
       /** \brief Provide a pointer to a dataset to add additional information
@@ -75,14 +68,6 @@ namespace pcl
         */
       inline void setMaximumDistance (double val) { maximum_distance_ = val; }
 
-      /** \brief set search method to calculate the nearest point pair.
-        * \param search_method search method
-        */
-      inline void setSearchMethodPolicy (SearchMethodPolicy search_method) { search_method_policy_ = search_method; }
-      
-      /** \brief get search method to calculate the nearest point pair.*/
-      inline SearchMethodPolicy getSearchMethodPolicy () { return search_method_policy_; }
-      
     protected:
       using PointCloudCoherence<PointInT>::point_coherences_;
 
@@ -102,9 +87,6 @@ namespace pcl
       virtual void
       computeCoherence (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices, float &w_j);
 
-      /** \brief a method to search the nearest point */
-      SearchMethodPolicy search_method_policy_;
-      
     };
   }
 }
