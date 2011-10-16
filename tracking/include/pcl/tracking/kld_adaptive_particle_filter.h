@@ -66,7 +66,7 @@ namespace pcl
       /** \brief set the bin size.
         * \param bin_size the size of a bin
         */
-      inline void setBinSize (StateT bin_size) { bin_size_ = bin_size; }
+      inline void setBinSize (const StateT& bin_size) { bin_size_ = bin_size; }
       
       /** \brief get the bin size. */
       inline StateT getBinSize () { return bin_size_; }
