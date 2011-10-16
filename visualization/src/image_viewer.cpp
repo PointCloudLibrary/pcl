@@ -51,10 +51,10 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
-  : image_viewer_ (vtkImageViewer::New ()),
+  : interactor_ (vtkSmartPointer<vtkRenderWindowInteractor>::New ()),
     mouse_command_ (vtkCallbackCommand::New ()), 
     keyboard_command_ (vtkCallbackCommand::New ()),
-    interactor_ (vtkSmartPointer<vtkRenderWindowInteractor>::New ()),
+    image_viewer_ (vtkImageViewer::New ()),
     data_size_ (0)
 {
   // Set the mouse/keyboard callbacks
