@@ -164,25 +164,6 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_pclconfig.cmake)
 
 ### ---[ Package creation
 include(${PCL_SOURCE_DIR}/cmake/pcl_cpack.cmake)
-set(CPACK_PACKAGE_VERSION "${PCL_VERSION}")
-set(CPACK_PACKAGE_VERSION_MAJOR "${PCL_MAJOR_VERSION}")
-set(CPACK_PACKAGE_VERSION_MINOR "${PCL_MINOR_VERSION}")
-set(CPACK_PACKAGE_VERSION_PATCH "${PCL_REVISION_VERSION}")
-set(CPACK_PACKAGE_CONFIG_INSTALL_DIR ${PCLCONFIG_INSTALL_DIR})
-if(MSVC)
-  if(CMAKE_CL_64)
-    set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
-    set(win_system_name win64)
-  else(CMAKE_CL_64)
-    set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES32")
-    set(win_system_name win32)
-  endif(CMAKE_CL_64)
-  set(CPACK_NSIS_PACKAGE_NAME "${PROJECT_NAME}-${PCL_VERSION}-${win_system_name}")
-  # force CPACK_PACKAGE_INSTALL_REGISTRY_KEY because of a known limitation in cmake/cpack to be fixed in next releases
-  # http://public.kitware.com/Bug/view.php?id=9094
-  # This is to allow a 32bit and a 64bit of PCL to get installed on one system
-  set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${PROJECT_NAME} ${PCL_VERSION} ${win_system_name}" )
-endif(MSVC)
 
 if(CPACK_GENERATOR)
   message(STATUS "Found CPack generators: ${CPACK_GENERATOR}")
