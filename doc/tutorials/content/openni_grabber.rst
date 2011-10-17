@@ -183,6 +183,17 @@ A: most probably this is a problem with the XnSensorServer. Do you have the
 ps-engine package installed? Is there a old process of XnSensorServer hanging
 around, try kill it.
 
+Q: I get an error about a closed network connection:
+
+.. note::
+
+  terminate called after throwing an instance of 'pcl::PCLIOException'
+  what():  No matching device found. openni_wrapper::OpenNIDevice::OpenNIDevice(xn::Context&, const xn::NodeInfo&, const xn::NodeInfo&, const xn::NodeInfo&, const xn::NodeInfo&) @ /home/andreas/pcl/pcl/trunk/io/src/openni_camera/openni_device.cpp @ 96 : creating depth generator failed. Reason: The network connection has been closed!
+
+A: This error can occur with newer Linux kernels that include the *gspca_kinect* kernel module. The module claims the usb interface of the kinect and prevents OpenNI from doing so.
+You can either remove the kernel module (*rmmod gspca_kinect*) or blacklist it (by executing *echo "blacklist gspca_kinect" > /etc/modprobe.d/blacklist-psengine.conf* as root). 
+The OpenNI Ubuntu packages provided by PCL already include this fix, but you might need it in other distributions.
+
 Conclusion
 ----------
 
