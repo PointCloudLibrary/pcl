@@ -1,6 +1,5 @@
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/particle_filter.h>
-#include <pcl/tracking/kld_adaptive_particle_filter.h>
 #include <pcl/tracking/kld_adaptive_particle_filter_omp.h>
 #include <pcl/tracking/particle_filter_omp.h>
 
@@ -85,14 +84,15 @@ public:
   typedef typename Cloud::Ptr CloudPtr;
   typedef typename Cloud::ConstPtr CloudConstPtr;
   //typedef KLDAdaptiveParticleFilterTracker<RefPointType, ParticleT> ParticleFilter;
-  typedef KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT> ParticleFilter;
+  //typedef KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT> ParticleFilter;
   //typedef ParticleFilterOMPTracker<RefPointType, ParticleT> ParticleFilter;
-  //typedef ParticleFilterTracker<RefPointType, ParticleT> ParticleFilter;
+  typedef ParticleFilterTracker<RefPointType, ParticleT> ParticleFilter;
   typedef typename ParticleFilter::CoherencePtr CoherencePtr;
   typedef typename pcl::search::KdTree<PointType> KdTree;
   typedef typename KdTree::Ptr KdTreePtr;
   OpenNISegmentTracking (const std::string& device_id, int thread_nr, bool use_convex_hull, bool use_cog,
-                         bool visualize_non_downsample, bool visualize_particles)
+                         bool visualize_non_downsample, bool visualize_particles,
+                         bool use_fixed)
   : viewer_ ("PCL OpenNI Tracking Viewer")
   , device_id_ (device_id)
   , new_cloud_ (false)
@@ -114,21 +114,30 @@ public:
     
     std::vector<double> initial_noise_covariance = std::vector<double> (6, 0.00001);
     std::vector<double> default_initial_mean = std::vector<double> (6, 0.0);
-    tracker_ = boost::shared_ptr<ParticleFilter> (new ParticleFilter (thread_nr));
-    //tracker_ = boost::shared_ptr<ParticleFilter> (new ParticleFilter ());
-
-    // for KLD
-    tracker_->setMaximumParticleNum (500);
-    tracker_->setDelta (0.99);
-    tracker_->setEpsilon (0.2);
-    ParticleT bin_size;
-    bin_size.x = 0.1;
-    bin_size.y = 0.1;
-    bin_size.z = 0.1;
-    bin_size.roll = 0.1;
-    bin_size.pitch = 0.1;
-    bin_size.yaw = 0.1;
-    tracker_->setBinSize (bin_size);
+    if (use_fixed)
+    {
+      boost::shared_ptr<ParticleFilterOMPTracker<RefPointType, ParticleT> > tracker
+        (new ParticleFilterOMPTracker<RefPointType, ParticleT> (thread_nr));
+      tracker_ = tracker;
+    }
+    else
+    {
+      boost::shared_ptr<KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT> > tracker
+        (new KLDAdaptiveParticleFilterOMPTracker<RefPointType, ParticleT> (thread_nr));
+      tracker->setMaximumParticleNum (500);
+      tracker->setDelta (0.99);
+      tracker->setEpsilon (0.2);
+      ParticleT bin_size;
+      bin_size.x = 0.1;
+      bin_size.y = 0.1;
+      bin_size.z = 0.1;
+      bin_size.roll = 0.1;
+      bin_size.pitch = 0.1;
+      bin_size.yaw = 0.1;
+      tracker->setBinSize (bin_size);
+      tracker_ = tracker;
+    }
+    
     tracker_->setTrans (Eigen::Affine3f::Identity ());
     tracker_->setStepNoiseCovariance (default_step_covariance);
     tracker_->setInitialNoiseCovariance (initial_noise_covariance);
@@ -674,6 +683,7 @@ main (int argc, char** argv)
   bool use_cog = false;
   bool visualize_non_downsample = false;
   bool visualize_particles = true;
+  bool use_fixed = false;
   if (pcl::console::find_argument (argc, argv, "-C") > 0)
     use_convex_hull = false;
   if (pcl::console::find_argument (argc, argv, "-c") > 0)
@@ -682,6 +692,8 @@ main (int argc, char** argv)
     visualize_non_downsample = true;
   if (pcl::console::find_argument (argc, argv, "-P") > 0)
     visualize_particles = false;
+  if (pcl::console::find_argument (argc, argv, "-fixed") > 0)
+    use_fixed = true;
   
   if (argc < 2)
   {
@@ -699,6 +711,7 @@ main (int argc, char** argv)
   
   // open kinect
   OpenNISegmentTracking<pcl::PointXYZRGB> v (device_id, 8, use_convex_hull, use_cog,
-                                             visualize_non_downsample, visualize_particles);
+                                             visualize_non_downsample, visualize_particles,
+                                             use_fixed);
   v.run ();
 }
