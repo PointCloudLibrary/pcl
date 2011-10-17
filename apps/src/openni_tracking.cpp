@@ -674,6 +674,8 @@ usage (char** argv)
             << std::endl;
   std::cout << "  -P: not visualizing particle cloud."
             << std::endl;
+  std::cout << "  -fixed: use the fixed number of the particles."
+            << std::endl;
 }
 
 int
