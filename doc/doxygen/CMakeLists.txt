@@ -17,13 +17,13 @@ if(DOXYGEN_FOUND)
   if(DOCUMENTATION_HTML_HELP STREQUAL YES)
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
             DESTINATION share/doc/pcl
-            COMPONENT ${SUBSYS_NAME}
+            COMPONENT doc
             FILES_MATCHING PATTERN *.chm
             )
   else(DOCUMENTATION_HTML_HELP STREQUAL YES)
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html" 
             DESTINATION share/doc/pcl
-            COMPONENT ${SUBSYS_NAME}
+            COMPONENT doc
             PATTERN "*.md5" EXCLUDE
             PATTERN "*.map" EXCLUDE
             PATTERN "*.chm" EXCLUDE)
