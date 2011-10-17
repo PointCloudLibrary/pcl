@@ -69,7 +69,7 @@ macro(PCL_MAKE_CPACK_INPUT)
     # add documentation
     if(BUILD_documentation)
         set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} doc")
-    if(BUILD_documentation)
+    endif(BUILD_documentation)
     # add PCLConfig
     set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} pclconfig")
     set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_GROUP \"PCL\")\n")
