@@ -53,6 +53,9 @@ endmacro(PCL_MAKE_CPACK_INPUT)
 
 macro(PCL_CPACK_MAKE_COMPS_OPTS _var _current)
     set(_comps_list)
+    if(BUILD_documentation)
+        set(_comps_list " doc")
+    endif(BUILD_documentation)
     foreach(_ss ${PCL_SUBSYSTEMS})
         if("${_ss}" STREQUAL "global_tests")
             # we don't install global_tests
