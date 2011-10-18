@@ -87,7 +87,9 @@ namespace pcl
       typedef typename TransformationEstimation::ConstPtr TransformationEstimationConstPtr;
 
       /** \brief Empty constructor. */
-      Registration () : target_ (),
+      Registration () : nr_iterations_(0),
+                        max_iterations_(10),
+                        target_ (),
                         final_transformation_ (Eigen::Matrix4f::Identity ()),
                         transformation_ (Eigen::Matrix4f::Identity ()),
                         previous_transformation_ (Eigen::Matrix4f::Identity ()),
