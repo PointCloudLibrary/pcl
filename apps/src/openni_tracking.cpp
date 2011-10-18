@@ -9,6 +9,7 @@
 #include <pcl/tracking/normal_coherence.h>
 
 #include <pcl/tracking/approx_nearest_pair_point_cloud_coherence.h>
+#include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -90,7 +91,8 @@ public:
   typedef typename ParticleFilter::CoherencePtr CoherencePtr;
   typedef typename pcl::search::KdTree<PointType> KdTree;
   typedef typename KdTree::Ptr KdTreePtr;
-  OpenNISegmentTracking (const std::string& device_id, int thread_nr, bool use_convex_hull, bool use_cog,
+  OpenNISegmentTracking (const std::string& device_id, int thread_nr, double downsampling_grid_size,
+                         bool use_convex_hull, bool use_cog,
                          bool visualize_non_downsample, bool visualize_particles,
                          bool use_fixed)
   : viewer_ ("PCL OpenNI Tracking Viewer")
@@ -102,12 +104,13 @@ public:
   , use_cog_ (use_cog)
   , visualize_non_downsample_ (visualize_non_downsample)
   , visualize_particles_ (visualize_particles)
+  , downsampling_grid_size_ (downsampling_grid_size)
   {
     KdTreePtr tree (new KdTree (false));
     ne_.setSearchMethod (tree);
     ne_.setRadiusSearch (0.03);
     
-    std::vector<double> default_step_covariance = std::vector<double> (6, 0.012 * 0.012);
+    std::vector<double> default_step_covariance = std::vector<double> (6, 0.015 * 0.015);
     default_step_covariance[3] *= 40.0;
     default_step_covariance[4] *= 40.0;
     default_step_covariance[5] *= 40.0;
@@ -150,6 +153,8 @@ public:
     // setup coherences
     ApproxNearestPairPointCloudCoherence<RefPointType>::Ptr coherence = ApproxNearestPairPointCloudCoherence<RefPointType>::Ptr
       (new ApproxNearestPairPointCloudCoherence<RefPointType> ());
+    // NearestPairPointCloudCoherence<RefPointType>::Ptr coherence = NearestPairPointCloudCoherence<RefPointType>::Ptr
+    //   (new NearestPairPointCloudCoherence<RefPointType> ());
     
     boost::shared_ptr<DistanceCoherence<RefPointType> > distance_coherence
       = boost::shared_ptr<DistanceCoherence<RefPointType> > (new DistanceCoherence<RefPointType> ());
@@ -217,8 +222,6 @@ public:
     else
       pcl::transformPointCloud<RefPointType> (*reference_, *result_cloud, transformation);
 
-    
-    
     {
       pcl::visualization::PointCloudColorHandlerCustom<RefPointType> red_color (result_cloud, 0, 0, 255);
       if (!viz.updatePointCloud (result_cloud, red_color, "resultcloud"))
@@ -500,7 +503,7 @@ public:
     filterPassThrough (cloud, *cloud_pass_);
     if (counter_ < 10)
     {
-      gridSample (cloud_pass_, *cloud_pass_downsampled_, 0.01);
+      gridSample (cloud_pass_, *cloud_pass_downsampled_, downsampling_grid_size_);
     }
     else if (counter_ == 10)
     {
@@ -585,7 +588,7 @@ public:
             //pcl::transformPointCloudWithNormals<RefPointType> (*ref_cloud, *transed_ref, trans.inverse());
             pcl::transformPointCloud<RefPointType> (*nonzero_ref, *transed_ref, trans.inverse());
             CloudPtr transed_ref_downsampled (new Cloud);
-            gridSample (transed_ref, *transed_ref_downsampled, 0.01);
+            gridSample (transed_ref, *transed_ref_downsampled, downsampling_grid_size_);
             tracker_->setReferenceCloud (transed_ref_downsampled);
             tracker_->setTrans (trans);
             reference_ = transed_ref;
@@ -608,7 +611,7 @@ public:
       
       //*cloud_pass_downsampled_ = *cloud_pass_;
       //cloud_pass_downsampled_ = cloud_pass_;
-      gridSampleApprox (cloud_pass_, *cloud_pass_downsampled_);
+      gridSampleApprox (cloud_pass_, *cloud_pass_downsampled_, downsampling_grid_size_);
       tracking (cloud_pass_downsampled_);
     }
     
@@ -660,6 +663,7 @@ public:
   double tracking_time_;
   double computation_time_;
   double downsampling_time_;
+  double downsampling_grid_size_;
   };
 
 void
@@ -676,6 +680,8 @@ usage (char** argv)
             << std::endl;
   std::cout << "  -fixed: use the fixed number of the particles."
             << std::endl;
+  std::cout << "  -d <value>: specify the grid size of downsampling (defaults to 0.01)."
+            << std::endl;
 }
 
 int
@@ -686,6 +692,9 @@ main (int argc, char** argv)
   bool visualize_non_downsample = false;
   bool visualize_particles = true;
   bool use_fixed = false;
+
+  double downsampling_grid_size = 0.01;
+  
   if (pcl::console::find_argument (argc, argv, "-C") > 0)
     use_convex_hull = false;
   if (pcl::console::find_argument (argc, argv, "-c") > 0)
@@ -696,7 +705,7 @@ main (int argc, char** argv)
     visualize_particles = false;
   if (pcl::console::find_argument (argc, argv, "-fixed") > 0)
     use_fixed = true;
-  
+  pcl::console::parse_argument (argc, argv, "-d", downsampling_grid_size);
   if (argc < 2)
   {
     usage (argv);
@@ -712,7 +721,8 @@ main (int argc, char** argv)
   }
   
   // open kinect
-  OpenNISegmentTracking<pcl::PointXYZRGB> v (device_id, 8, use_convex_hull, use_cog,
+  OpenNISegmentTracking<pcl::PointXYZRGB> v (device_id, 8, downsampling_grid_size,
+                                             use_convex_hull, use_cog,
                                              visualize_non_downsample, visualize_particles,
                                              use_fixed);
   v.run ();
