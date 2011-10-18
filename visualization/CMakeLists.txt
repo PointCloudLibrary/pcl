@@ -43,6 +43,7 @@ if(build)
 
     set(srcs
         src/point_picking_event.cpp
+        src/interactor.cpp
         src/interactor_style.cpp
         src/point_cloud_handlers.cpp
         src/pcl_visualizer.cpp

@@ -68,7 +68,11 @@
 #include <vtkPolyLine.h>
 #include <vtkVectorText.h>
 #include <vtkFollower.h>
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#include <pcl/visualization/interactor.h>
+#else
 #include <vtkRenderWindowInteractor.h>
+#endif
 
 namespace pcl
 {
@@ -758,6 +762,15 @@ namespace pcl
          setShapeRenderingProperties (int property, double val1, double val2, double val3,
                                       const std::string &id, int viewport = 0);
 
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+        /** \brief Returns true when the user tried to close the window */
+        bool 
+        wasStopped () const { if (interactor_ != NULL) return (interactor_->stopped); else return true; }
+
+        /** \brief Set the stopped flag back to false */
+        void 
+        resetStoppedFlag () { if (interactor_ != NULL) interactor_->stopped = false; }
+#else
         /** \brief Returns true when the user tried to close the window */
         bool 
         wasStopped () const { if (interactor_ != NULL) return (stopped_); else return (true); }
@@ -765,7 +778,7 @@ namespace pcl
         /** \brief Set the stopped flag back to false */
         void 
         resetStoppedFlag () { if (interactor_ != NULL) stopped_ = false; }
-
+#endif
         /** \brief Create a new viewport from [xmin,ymin] -> [xmax,ymax].
           * \param xmin the minimum X coordinate for the viewport (0.0 <= 1.0)
           * \param ymin the minimum Y coordinate for the viewport (0.0 <= 1.0)
@@ -1168,8 +1181,11 @@ namespace pcl
 
       protected:
         /** \brief The render window interactor. */
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
+#else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-
+#endif
       private:
         struct ExitMainLoopTimerCallback : public vtkCommand
         {
@@ -1186,7 +1202,11 @@ namespace pcl
             if (timer_id != right_timer_id)
               return;
             // Stop vtk loop and send notification to app to wake it up
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+            pcl_visualizer->interactor_->stopLoop ();
+#else
             pcl_visualizer->interactor_->TerminateApp ();
+#endif
           }
           int right_timer_id;
           PCLVisualizer* pcl_visualizer;
@@ -1201,19 +1221,26 @@ namespace pcl
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+            pcl_visualizer->interactor_->stopped = true;
+            // This tends to close the window...
+            pcl_visualizer->interactor_->stopLoop ();
+#else
             pcl_visualizer->stopped_ = true;
             // This tends to close the window...
             pcl_visualizer->interactor_->TerminateApp ();
+#endif
           }
           PCLVisualizer* pcl_visualizer;
         };
-        
+
+#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
         /** \brief Set to false if the interaction loop is running. */
         bool stopped_;
 
         /** \brief Global timer ID. Used in destructor only. */
         int timer_id_;
-
+#endif
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;

@@ -89,7 +89,9 @@ printHelp (int argc, char **argv)
 
 // Create the PCLVisualizer object
 boost::shared_ptr<pcl::visualization::PCLVisualizer> cld;
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))
 boost::shared_ptr<pcl::visualization::ImageViewer> img;
+#endif
 
 struct EventHelper
 {
@@ -102,6 +104,7 @@ struct EventHelper
     cld_mutex.unlock ();
   }
 
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))
   void
   image_callback (const boost::shared_ptr<openni_wrapper::Image>& image)
   {
@@ -110,8 +113,8 @@ struct EventHelper
     g_image = image;
     img_mutex.unlock ();
   }
+#endif  
 };
-
 // Simple callbacks.
 void 
 keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
@@ -154,42 +157,44 @@ main (int argc, char** argv)
     }
   }
 
-  cld.reset (new pcl::visualization::PCLVisualizer (argc, argv, "OpenNI Viewer"));
-  img.reset (new pcl::visualization::ImageViewer ("OpenNI Viewer"));
-
+  EventHelper event_helper;
   std::string device_id = "";
   pcl::console::parse_argument (argc, argv, "-dev", device_id);
 
   pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
 
-  // Register callbacks
+  cld.reset (new pcl::visualization::PCLVisualizer (argc, argv, "OpenNI Viewer"));
+
   std::string mouseMsg3D ("Mouse coordinates in PCL Visualizer");
-  std::string mouseMsg2D ("Mouse coordinates in image viewer");
   std::string keyMsg3D ("Key event for PCL Visualizer");
-  std::string keyMsg2D ("Key event for image viewer");
   cld->registerMouseCallback (&mouse_callback, (void*)(&mouseMsg3D));    
   cld->registerKeyboardCallback(&keyboard_callback, (void*)(&keyMsg3D));
+  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &event_helper, _1);
+  boost::signals2::connection c1 = interface->registerCallback (f);
+
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))
+  img.reset (new pcl::visualization::ImageViewer ("OpenNI Viewer"));
+  // Register callbacks
+  std::string keyMsg2D ("Key event for image viewer");
+  std::string mouseMsg2D ("Mouse coordinates in image viewer");
   img->registerMouseCallback (&mouse_callback, (void*)(&mouseMsg2D));
   img->registerKeyboardCallback(&keyboard_callback, (void*)(&keyMsg2D));
-
-  EventHelper h;
-  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
-  boost::signals2::connection c1 = interface->registerCallback (f);
-  boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&EventHelper::image_callback, &h, _1);
+  boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&EventHelper::image_callback, &event_helper, _1);
   boost::signals2::connection image_connection = interface->registerCallback (image_cb);
- 
-  interface->start ();
-
   unsigned char* rgb_data = 0;
   unsigned rgb_data_size = 0;
-
+#endif 
+  
+  interface->start ();
   bool cld_init = false;
   // Loop
   while (!cld->wasStopped ())
   {
     // Render and process events in the two interactors
     cld->spinOnce ();
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))
     img->spinOnce ();
+#endif
     FPS_CALC ("drawing");
 
     // Add the cloud
@@ -210,7 +215,8 @@ main (int argc, char** argv)
       }
       cld_mutex.unlock ();
     }
-
+    
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))
     // Add the image
     if (g_image && img_mutex.try_lock ())
     {
@@ -229,7 +235,7 @@ main (int argc, char** argv)
       }
       img_mutex.unlock ();
     }
-
+#endif
     boost::this_thread::sleep (boost::posix_time::microseconds (100));
   }
 

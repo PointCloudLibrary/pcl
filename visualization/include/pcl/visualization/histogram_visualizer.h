@@ -46,7 +46,11 @@
 #include <vtkProperty2D.h>
 #include <vtkFieldData.h>
 #include <vtkDoubleArray.h>
+#if ((VTK_MAJOR_VERSION) == 5 && (VTK_MINOR_VERSION == 2))
+#include <pcl/visualization/interactor.h>
+#else
 #include <vtkRenderWindowInteractor.h>
+#endif
 
 namespace pcl
 {
@@ -66,9 +70,13 @@ namespace pcl
         /** \brief Spin once method. Calls the interactor and updates the screen once. 
           *  \param[in] time - How long (in ms) should the visualization loop be allowed to run.
           */
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+        void 
+        spinOnce (int time = 1, bool force_redraw = false);
+#else
         void 
         spinOnce (int time = 1);
-        
+#endif
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
         void 
         spin ();
@@ -144,7 +152,15 @@ namespace pcl
         /** \brief Update all window positions on screen so that they fit. */
         void 
         updateWindowPositions ();
+#if ((VTK_MAJOR_VERSION) == 5 && (VTK_MINOR_VERSION == 2))
+        /** \brief Returns true when the user tried to close the window */
+        bool 
+        wasStopped ();
         
+        /** \brief Set the stopped flag back to false */
+        void 
+        resetStoppedFlag ();
+#endif
       protected:
 
         /** \brief Create a 2D actor from the given vtkDoubleArray histogram and add it to the screen.
@@ -180,10 +196,18 @@ namespace pcl
               return;
 
             // Stop vtk loop and send notification to app to wake it up
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+            interact->stopLoop ();
+#else
             interact->TerminateApp ();
+#endif
           }
           int right_timer_id;
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+          PCLVisualizerInteractor *interact;
+#else
           vtkRenderWindowInteractor *interact;
+#endif
         };
         
         struct ExitCallback : public vtkCommand
@@ -197,17 +221,26 @@ namespace pcl
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
-
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+           interact->stopped = true;
+#else
             his->stopped_ = true;
+#endif
           }
+#if (VTK_MAJOR_VERSION == 5 && (VTK_MINOR_VERSION == 2))
+          PCLVisualizerInteractor *interact;
+#else
           PCLHistogramVisualizer *his;
+#endif
         };
+
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;
-
+#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
         /** \brief Set to true when the histogram visualizer is ready to be terminated. */
         bool stopped_;
+#endif
     };
   }
 }

@@ -169,7 +169,11 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     using namespace pcl::visualization;
 
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+    viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_));
+#else
     viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_, true));
+#endif
     viewer_->setBackgroundColor (0.1, 0.1, 0.1);
     viewer_->addCoordinateSystem (0.1);
 
@@ -199,8 +203,9 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
         }
       }
       if (viewer_->wasStopped ())
-        quit_ = true;
-      else
+      {
+          quit_ = true;
+      }else
       {
         boost::mutex::scoped_lock lock (spin_mtx_);
         //TODO some smart waitkey like stuff here, so that wasStoped() can hold for a long time
