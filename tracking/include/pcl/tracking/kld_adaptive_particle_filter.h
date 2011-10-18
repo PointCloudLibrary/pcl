@@ -33,6 +33,8 @@ namespace pcl
       using ParticleFilterTracker<PointInT, StateT>::particle_num_;
       using ParticleFilterTracker<PointInT, StateT>::particles_;
       using ParticleFilterTracker<PointInT, StateT>::use_normal_;
+      using ParticleFilterTracker<PointInT, StateT>::motion_;
+      using ParticleFilterTracker<PointInT, StateT>::motion_ratio_;
       using ParticleFilterTracker<PointInT, StateT>::step_noise_covariance_;
       using ParticleFilterTracker<PointInT, StateT>::representative_state_;
       using ParticleFilterTracker<PointInT, StateT>::sampleWithReplacement;

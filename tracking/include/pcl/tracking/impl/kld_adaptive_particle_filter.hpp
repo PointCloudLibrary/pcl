@@ -54,13 +54,17 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample ()
   genAliasTable (a, q, particles_);
   
   const std::vector<double> zero_mean (StateT::stateDimension (), 0.0);
-
+  
   // select the particles with KLD sampling
   do
   {
     int j_n = sampleWithReplacement (a, q);
     StateT x_t = particles_->points[j_n];
-    x_t.sample (zero_mean, step_noise_covariance_); // no motion?
+    x_t.sample (zero_mean, step_noise_covariance_);
+    // motion
+    if ((double)rand () / RAND_MAX < motion_ratio_)
+      x_t = x_t + motion_;
+    
     S->points.push_back (x_t);
     // calc bin
     std::vector<int> bin (StateT::stateDimension ());
