@@ -125,13 +125,20 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
       if (weight != 0.0 && w_max < weight)
         w_max = weight;
     }
-
-    for ( size_t i = 0; i < particles_->points.size (); i++ )
+    if (w_max != w_min)
     {
-      if (particles_->points[i].weight != 0.0)
+      for ( size_t i = 0; i < particles_->points.size (); i++ )
       {
-        particles_->points[i].weight = normalizeParticleWeight (particles_->points[i].weight, w_min, w_max);
+        if (particles_->points[i].weight != 0.0)
+        {
+          particles_->points[i].weight = normalizeParticleWeight (particles_->points[i].weight, w_min, w_max);
+        }
       }
+    }
+    else
+    {
+      for ( size_t i = 0; i < particles_->points.size (); i++ )
+        particles_->points[i].weight = 1.0 / particles_->points.size ();
     }
     //std::cout << "w_max: " << w_max << std::endl;
     //std::cout << "w_min: " << w_min << std::endl;
