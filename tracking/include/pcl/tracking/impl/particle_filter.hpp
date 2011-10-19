@@ -125,6 +125,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
       if (weight != 0.0 && w_max < weight)
         w_max = weight;
     }
+    
     if (w_max != w_min)
     {
       for ( size_t i = 0; i < particles_->points.size (); i++ )
@@ -140,8 +141,6 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
       for ( size_t i = 0; i < particles_->points.size (); i++ )
         particles_->points[i].weight = 1.0 / particles_->points.size ();
     }
-    //std::cout << "w_max: " << w_max << std::endl;
-    //std::cout << "w_min: " << w_min << std::endl;
     
     double sum = 0.0;
     for ( size_t i = 0; i < particles_->points.size (); i++ )
@@ -191,6 +190,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcBoundingBox
 {
   x_min = y_min = z_min = std::numeric_limits<double>::max ();
   x_max = y_max = z_max = - std::numeric_limits<double>::max ();
+  
   for (size_t i = 0; i < transed_reference_vector_.size (); i++)
   {
     PointCloudInPtr target = transed_reference_vector_[i];
@@ -316,10 +316,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointC
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resample ()
 {
-  if (changed_)
-  {
-    resampleWithReplacement ();
-  }
+  resampleWithReplacement ();
 }
 
 template <typename PointInT, typename StateT> void
@@ -382,8 +379,13 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTracking ()
   
   for (int i = 0; i < iteration_num_; i++)
   {
-    resample ();
+    if (changed_)
+    {
+      resample ();
+    }
+    
     weight (); // likelihood is called in it
+    
     if (changed_)
     {
       update ();

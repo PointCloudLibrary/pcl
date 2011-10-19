@@ -15,7 +15,7 @@ pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight ()
     if (change_counter_ == 0)
     {
       // test change detector
-      //if (testChangeDetection (coherence_input))
+      if (testChangeDetection (coherence_input))
       {
         
         changed_ = true;
@@ -29,8 +29,8 @@ pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight ()
           coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
         }
       }
-      // else
-      //   changed_ = false;
+      else
+        changed_ = false;
     }
     else
     {
