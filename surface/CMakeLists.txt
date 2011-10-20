@@ -30,6 +30,26 @@ if(build)
         set(VTK_SURFACE_SOURCE src/vtk_smoother.cpp)
         set(VTK_SURFACE_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
     endif(VTK_FOUND)
+    
+    ####### NURBS FITTING by thomas.moerwald #########
+    SET(BUILD_surface_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds" )
+    IF(BUILD_surface_nurbs)
+    
+		# TODO remove this ugly thing
+		set(OPENNURBS_PATH /home/tm/svn-repositories/v4r/trunk/external/opennurbs)
+		
+		include_directories(${OPENNURBS_PATH})
+		set(NURBS_INCLUDES
+			include/pcl/${SUBSYS_NAME}/nurbs/NurbsData.h
+			include/pcl/${SUBSYS_NAME}/nurbs/NurbsFitting.h
+			include/pcl/${SUBSYS_NAME}/nurbs/NurbsTools.h
+			)
+		set(NURBS_SOURCES
+			src/nurbs/NurbsFitting.cpp
+			src/nurbs/NurbsTools.cpp
+			)
+    ENDIF(BUILD_surface_nurbs)
+    
 
     #    # Includes for Misha's Poisson reconstruction code
     #    set(POISSON_INCLUDES
@@ -83,6 +103,7 @@ if(build)
         #src/poisson.cpp
         ${HULL_SOURCES}
         #${POISSON_SOURCES}
+        ${NURBS_SOURCES}
         )
 
     set(incs include/pcl/${SUBSYS_NAME}/ear_clipping.h
@@ -101,6 +122,7 @@ if(build)
         #include/pcl/${SUBSYS_NAME}/poisson.h
         ${HULL_INCLUDES}
         #${POISSON_INCLUDES}
+        ${NURBS_INCLUDES}
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/gp3.hpp
