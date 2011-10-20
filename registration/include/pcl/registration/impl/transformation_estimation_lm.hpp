@@ -88,20 +88,15 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
   // Compute the norm of the residuals
   PCL_DEBUG ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation]");
   PCL_DEBUG ("LM solver finished with exit code %i, having a residual norm of %g. \n", info, lm.fvec.norm ());
-  if(n_unknowns == 7)
-    PCL_DEBUG ("Final solution: [%f %f %f %f] [%f %f %f]\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
-  else
-    PCL_DEBUG ("Final solution: [%f %f %f] [%f %f %f]\n", x[0], x[1], x[2], x[3], x[4], x[5]);
-  
+  PCL_DEBUG ("Final solution: [%f", x[0]);
+  for (int i = 1; i < n_unknowns; ++i) 
+    PCL_DEBUG (" %f", x[i]);
+  PCL_DEBUG ("]\n");
+
   // Return the correct transformation
-  transformation_matrix.setZero ();
-
-  Eigen::Quaternionf q (0, x[3], x[4], x[5]);
-  q.w () = sqrt (1 - q.dot (q));   // Compute w from the unit quaternion
-  transformation_matrix.topLeftCorner<3, 3> () = q.toRotationMatrix ();
-
-  Eigen::Vector4f t (x[0], x[1], x[2], 1.0);
-  transformation_matrix.block <4, 1> (0, 3) = t;
+  Eigen::VectorXf params = x.cast<float> ();
+  warp_point_->setParam (params);
+  transformation_matrix = warp_point_->getTransform ();
 
   tmp_src_ = NULL;
   tmp_tgt_ = NULL;
@@ -179,17 +174,15 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
   // Compute the norm of the residuals
   PCL_DEBUG ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation]");
   PCL_DEBUG ("LM solver finished with exit code %i, having a residual norm of %g. \n", info, lm.fvec.norm ());
-  PCL_DEBUG ("Final solution: [%f %f %f] [%f %f %f]\n", x[0], x[1], x[2], x[3], x[4], x[5]);
+  PCL_DEBUG ("Final solution: [%f", x[0]);
+  for (int i = 1; i < n_unknowns; ++i) 
+    PCL_DEBUG (" %f", x[i]);
+  PCL_DEBUG ("]\n");
 
   // Return the correct transformation
-  transformation_matrix.setZero ();
-
-  Eigen::Quaternionf q (0, x[3], x[4], x[5]);
-  q.w () = sqrt (1 - q.dot (q));   // Compute w from the unit quaternion
-  transformation_matrix.topLeftCorner<3, 3> () = q.toRotationMatrix ();
-
-  Eigen::Vector4f t (x[0], x[1], x[2], 1.0);
-  transformation_matrix.block <4, 1> (0, 3) = t;
+  Eigen::VectorXf params = x.cast<float> ();
+  warp_point_->setParam (params);
+  transformation_matrix = warp_point_->getTransform ();
 
   tmp_src_ = NULL;
   tmp_tgt_ = NULL;
