@@ -15,8 +15,7 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
     if (change_counter_ == 0)
     {
       // test change detector
-      //if (testChangeDetection (coherence_input))
-      if (true)
+      if (!use_change_detector_ || testChangeDetection (coherence_input))
       {
         changed_ = true;
         change_counter_ = change_detector_interval_;

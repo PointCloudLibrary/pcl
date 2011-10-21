@@ -64,6 +64,7 @@ namespace pcl
       , change_counter_ (0)
       , change_detector_filter_ (10)
       , change_detector_interval_ (10)
+      , use_change_detector_ (false)
       {
         tracker_name_ = "ParticleFilterTracker";
         pass_x_.setFilterFieldName ("x");
@@ -221,6 +222,14 @@ namespace pcl
 
       /** \brief get the value of use_normal_. */
       inline bool getUseNormal () { return use_normal_; }
+
+      /** \brief set the value of use_change_detector_.
+        * \param use_normal the value of use_change_detector_.
+        */
+      inline void setUseChangeDetector (bool use_change_detector) { use_change_detector_ = use_change_detector; }
+
+      /** \brief get the value of use_change_detector_. */
+      inline bool getUseChangeDetector () { return use_change_detector_; }
 
       /** \brief set the motion ratio
         * \param motion_ratio the ratio of hypothesis to use motion model.
@@ -460,6 +469,9 @@ namespace pcl
 
       /** \brief the number of interval frame to run change detection. defaults to 10.*/
       unsigned int change_detector_interval_;
+
+      /** \brief the flag which will be true if using change detection*/
+      bool use_change_detector_;
     };
     
   }

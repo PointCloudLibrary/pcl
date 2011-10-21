@@ -28,9 +28,7 @@ namespace pcl
       using ParticleFilterTracker<PointInT, StateT>::change_detector_;
       using ParticleFilterTracker<PointInT, StateT>::change_counter_;
       using ParticleFilterTracker<PointInT, StateT>::change_detector_interval_;
-      using ParticleFilterTracker<PointInT, StateT>::pass_x_;
-      using ParticleFilterTracker<PointInT, StateT>::pass_y_;
-      using ParticleFilterTracker<PointInT, StateT>::pass_z_;
+      using ParticleFilterTracker<PointInT, StateT>::use_change_detector_;
       using ParticleFilterTracker<PointInT, StateT>::alpha_;
       using ParticleFilterTracker<PointInT, StateT>::changed_;
       using ParticleFilterTracker<PointInT, StateT>::coherence_;

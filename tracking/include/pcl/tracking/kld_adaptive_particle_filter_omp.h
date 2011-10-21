@@ -29,6 +29,7 @@ namespace pcl
       using KLDAdaptiveParticleFilterTracker<PointInT, StateT>::change_detector_;
       using KLDAdaptiveParticleFilterTracker<PointInT, StateT>::change_counter_;
       using KLDAdaptiveParticleFilterTracker<PointInT, StateT>::change_detector_interval_;
+      using KLDAdaptiveParticleFilterTracker<PointInT, StateT>::use_change_detector_;
       using KLDAdaptiveParticleFilterTracker<PointInT, StateT>::pass_x_;
       using KLDAdaptiveParticleFilterTracker<PointInT, StateT>::pass_y_;
       using KLDAdaptiveParticleFilterTracker<PointInT, StateT>::pass_z_;

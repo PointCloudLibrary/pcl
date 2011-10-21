@@ -61,6 +61,7 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample ()
     int j_n = sampleWithReplacement (a, q);
     StateT x_t = particles_->points[j_n];
     x_t.sample (zero_mean, step_noise_covariance_);
+    
     // motion
     if ((double)rand () / RAND_MAX < motion_ratio_)
       x_t = x_t + motion_;
@@ -73,8 +74,8 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample ()
     
     // calc bin index... how?
     if (insertIntoBins (bin, B))
-      k++;
-    n++;
+      ++k;
+    ++n;
   }
   while (k < 2 || (n < maximum_particle_number_ && n < calcKLBound (k)));
   
