@@ -48,7 +48,7 @@ To install using the formula, execute the following command::
    for compiling the visualisation module. You must disable it to
    install PCL successfully::
 
-  $ brew install pcl --novis
+     $ brew install pcl --novis
 
 You can specify options to control which parts of PCL are installed. For
 example, to disable the Python bindings and Segmentation, and enable the
@@ -203,12 +203,13 @@ Install CMinPack
 Install VTK
 '''''''''''
 
+::
+
+  $ brew install vtk
+
 .. note::
 
    If you are installing PCL 1.2, you may skip this dependency.
-
-::
-  $ brew install vtk
 
 Install Qhull (optional)
 ''''''''''''''''''''''''
@@ -285,6 +286,13 @@ Create the build directories, configure CMake, build and install::
    $ cmake ..
    $ make
    $ sudo make install
+
+.. note::
+
+   If you are installing PCL 1.2, disable the visualisation module, or
+   compilation will fail::
+
+     $ cmake .. -DBUILD_visualization:BOOL=OFF
 
 The customization of the build process is out of the scope of this tutorial and
 is covered in greater detail in the :ref:`building_pcl` tutorial.
