@@ -266,6 +266,13 @@ namespace pcl
       {
         return change_detector_filter_;
       }
+
+      /** \brief reset the particles to restart tracking*/
+      virtual inline void resetTracking ()
+      {
+        if (particles_)
+          particles_->points.clear ();
+      }
       
     protected:
 
