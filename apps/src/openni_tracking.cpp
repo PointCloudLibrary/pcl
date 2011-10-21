@@ -92,7 +92,7 @@ public:
   typedef typename pcl::search::KdTree<PointType> KdTree;
   typedef typename KdTree::Ptr KdTreePtr;
   OpenNISegmentTracking (const std::string& device_id, int thread_nr, double downsampling_grid_size,
-                         bool use_convex_hull, bool use_cog,
+                         bool use_convex_hull,
                          bool visualize_non_downsample, bool visualize_particles,
                          bool use_fixed)
   : viewer_ ("PCL OpenNI Tracking Viewer")
@@ -101,7 +101,6 @@ public:
   , ne_ (thread_nr)
   , counter_ (0)
   , use_convex_hull_ (use_convex_hull)
-  , use_cog_ (use_cog)
   , visualize_non_downsample_ (visualize_non_downsample)
   , visualize_particles_ (visualize_particles)
   , downsampling_grid_size_ (downsampling_grid_size)
@@ -572,27 +571,19 @@ public:
           RefCloudPtr nonzero_ref (new RefCloud);
           removeZeroPoints (ref_cloud, *nonzero_ref);
           
-          if (!use_cog_)
-          {
-            tracker_->setReferenceCloud (nonzero_ref);
-            reference_ = ref_cloud;
-          }
-          else
-          {
-            PCL_INFO ("calculating cog\n");
-            Eigen::Vector4f c;
-            RefCloudPtr transed_ref (new RefCloud);
-            pcl::compute3DCentroid<RefPointType> (*nonzero_ref, c);
-            Eigen::Affine3f trans = Eigen::Affine3f::Identity ();
-            trans.translation () = Eigen::Vector3f (c[0], c[1], c[2]);
-            //pcl::transformPointCloudWithNormals<RefPointType> (*ref_cloud, *transed_ref, trans.inverse());
-            pcl::transformPointCloud<RefPointType> (*nonzero_ref, *transed_ref, trans.inverse());
-            CloudPtr transed_ref_downsampled (new Cloud);
-            gridSample (transed_ref, *transed_ref_downsampled, downsampling_grid_size_);
-            tracker_->setReferenceCloud (transed_ref_downsampled);
-            tracker_->setTrans (trans);
-            reference_ = transed_ref;
-          }
+          PCL_INFO ("calculating cog\n");
+          
+          RefCloudPtr transed_ref (new RefCloud);
+          pcl::compute3DCentroid<RefPointType> (*nonzero_ref, c);
+          Eigen::Affine3f trans = Eigen::Affine3f::Identity ();
+          trans.translation () = Eigen::Vector3f (c[0], c[1], c[2]);
+          //pcl::transformPointCloudWithNormals<RefPointType> (*ref_cloud, *transed_ref, trans.inverse());
+          pcl::transformPointCloud<RefPointType> (*nonzero_ref, *transed_ref, trans.inverse());
+          CloudPtr transed_ref_downsampled (new Cloud);
+          gridSample (transed_ref, *transed_ref_downsampled, downsampling_grid_size_);
+          tracker_->setReferenceCloud (transed_ref_downsampled);
+          tracker_->setTrans (trans);
+          reference_ = transed_ref;
           tracker_->setMinIndices (ref_cloud->points.size () / 2);
         }
         else
@@ -657,7 +648,6 @@ public:
   boost::shared_ptr<ParticleFilter> tracker_;
   int counter_;
   bool use_convex_hull_;
-  bool use_cog_;
   bool visualize_non_downsample_;
   bool visualize_particles_;
   double tracking_time_;
@@ -671,8 +661,6 @@ usage (char** argv)
 {
   std::cout << "usage: " << argv[0] << " <device_id> [-C] [-g]\n\n";
   std::cout << "  -C:  initialize the pointcloud to track without plane segmentation"
-            << std::endl;
-  std::cout << "  -c: use COG of pointcloud as the origin of pointcloud to track."
             << std::endl;
   std::cout << "  -D: visualizing with non-downsampled pointclouds."
             << std::endl;
@@ -688,7 +676,6 @@ int
 main (int argc, char** argv)
 {
   bool use_convex_hull = true;
-  bool use_cog = false;
   bool visualize_non_downsample = false;
   bool visualize_particles = true;
   bool use_fixed = false;
@@ -697,8 +684,6 @@ main (int argc, char** argv)
   
   if (pcl::console::find_argument (argc, argv, "-C") > 0)
     use_convex_hull = false;
-  if (pcl::console::find_argument (argc, argv, "-c") > 0)
-    use_cog = true;
   if (pcl::console::find_argument (argc, argv, "-D") > 0)
     visualize_non_downsample = true;
   if (pcl::console::find_argument (argc, argv, "-P") > 0)
@@ -722,7 +707,7 @@ main (int argc, char** argv)
   
   // open kinect
   OpenNISegmentTracking<pcl::PointXYZRGB> v (device_id, 8, downsampling_grid_size,
-                                             use_convex_hull, use_cog,
+                                             use_convex_hull,
                                              visualize_non_downsample, visualize_particles,
                                              use_fixed);
   v.run ();
