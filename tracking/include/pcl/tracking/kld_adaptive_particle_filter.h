@@ -34,6 +34,8 @@ namespace pcl
       using ParticleFilterTracker<PointInT, StateT>::particles_;
       using ParticleFilterTracker<PointInT, StateT>::use_normal_;
       using ParticleFilterTracker<PointInT, StateT>::use_change_detector_;
+      using ParticleFilterTracker<PointInT, StateT>::change_detector_resolution_;
+      using ParticleFilterTracker<PointInT, StateT>::change_detector_;
       using ParticleFilterTracker<PointInT, StateT>::motion_;
       using ParticleFilterTracker<PointInT, StateT>::motion_ratio_;
       using ParticleFilterTracker<PointInT, StateT>::step_noise_covariance_;

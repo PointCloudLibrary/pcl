@@ -21,6 +21,9 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::initCompute (
   }
   
   coherence_->setTargetCloud (input_);
+
+  if (!change_detector_)
+    change_detector_ = boost::shared_ptr<pcl::octree::OctreePointCloudChangeDetector<PointInT> >(new pcl::octree::OctreePointCloudChangeDetector<PointInT> (change_detector_resolution_));
   
   if (!particles_ || particles_->points.empty ())
     initParticles (true);

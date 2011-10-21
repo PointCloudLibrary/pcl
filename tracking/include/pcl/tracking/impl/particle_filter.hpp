@@ -25,8 +25,11 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute ()
       transed_reference_vector_[i] = PointCloudInPtr (new PointCloudIn ());
     }
   }
-  
+
   coherence_->setTargetCloud (input_);
+
+  if (!change_detector_)
+    change_detector_ = boost::shared_ptr<pcl::octree::OctreePointCloudChangeDetector<PointInT> >(new pcl::octree::OctreePointCloudChangeDetector<PointInT> (change_detector_resolution_));
   
   if (!particles_ || particles_->points.empty ())
     initParticles (true);

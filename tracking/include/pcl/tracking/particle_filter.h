@@ -60,10 +60,10 @@ namespace pcl
       , alpha_ (15.0)
       , use_normal_ (false)
       , motion_ratio_ (0.25)
-      , change_detector_ (new pcl::octree::OctreePointCloudChangeDetector<PointInT> (0.01))
       , change_counter_ (0)
       , change_detector_filter_ (10)
       , change_detector_interval_ (10)
+      , change_detector_resolution_ (0.01)
       , use_change_detector_ (false)
       {
         tracker_name_ = "ParticleFilterTracker";
@@ -254,13 +254,21 @@ namespace pcl
       }
 
       /** \brief set the minimum amount of points required within leaf node to become serialized in change detection
-        * \param the minimum amount of points required within leaf node
+        * \param change_detector_filter the minimum amount of points required within leaf node
        */
       inline void setMinPointsOfChangeDetection (unsigned int change_detector_filter)
       {
         change_detector_filter_ = change_detector_filter;
       }
 
+      /** \brief set the resolution of change detection.
+        * \param resolution resolution of change detection octree
+        */
+      inline void setResolutionOfChangeDetection (double resolution) { change_detector_resolution_ = resolution; }
+
+      /** \brief get the resolution of change detection. */
+      inline double getResolutionOfChangeDetection () { return change_detector_resolution_; }
+      
       /** \brief get the minimum amount of points required within leaf node to become serialized in change detection */
       inline unsigned int getMinPointsOfChangeDetection ()
       {
@@ -273,7 +281,7 @@ namespace pcl
         if (particles_)
           particles_->points.clear ();
       }
-      
+
     protected:
 
       /** \brief compute the parameters for the bounding box of 
@@ -477,6 +485,9 @@ namespace pcl
       /** \brief the number of interval frame to run change detection. defaults to 10.*/
       unsigned int change_detector_interval_;
 
+      /** \brief resolution of change detector. defaults to 0.01.*/
+      double change_detector_resolution_;
+      
       /** \brief the flag which will be true if using change detection*/
       bool use_change_detector_;
     };
