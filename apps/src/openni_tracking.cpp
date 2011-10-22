@@ -537,6 +537,7 @@ public:
       
       if (target_cloud != NULL)
       {
+        PCL_INFO ("segmentation, please wait...\n");
         std::vector<pcl::PointIndices> cluster_indices;
         euclideanSegment (target_cloud, cluster_indices);
         if (cluster_indices.size () > 0)
