@@ -1,0 +1,12 @@
+*** eigen-android/cmake/FindStandardMathLibrary.cmake_bak	Sat Oct 22 23:13:01 2011
+--- eigen-android/cmake/FindStandardMathLibrary.cmake	Sat Oct 22 23:13:16 2011
+***************
+*** 31,36 ****
+--- 31,37 ----
+    standard_math_library_linked_to_automatically
+  )
+  
++ set (standard_math_library_linked_to_automatically TRUE)
+  if(standard_math_library_linked_to_automatically)
+  
+    # the test program linked successfully without any linker flag.
