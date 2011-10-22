@@ -299,9 +299,9 @@ TEST (RANSAC, SampleConsensusModelSphere)
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ ((int)coeff_refined.size (), 4);
-  EXPECT_NEAR (coeff_refined[0]/coeff_refined[3], 2,  1e-3);
-  EXPECT_NEAR (coeff_refined[1]/coeff_refined[3], 2,  1e-3);
-  EXPECT_NEAR (coeff_refined[2]/coeff_refined[3], 2,  1e-3);
+  EXPECT_NEAR (coeff_refined[0]/coeff_refined[3], 2,  1e-2);
+  EXPECT_NEAR (coeff_refined[1]/coeff_refined[3], 2,  1e-2);
+  EXPECT_NEAR (coeff_refined[2]/coeff_refined[3], 2,  1e-2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
