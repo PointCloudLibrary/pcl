@@ -39,6 +39,8 @@
 #define PCL_GSS3D_H_
 
 #include <pcl/features/feature.h>
+#include <boost/multi_array.hpp>
+
 
 namespace pcl
 {
@@ -73,6 +75,7 @@ namespace pcl
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
+      typedef typename Feature<PointInT, PointOutT>::PointCloudInPtr  PointCloudInPtr;
       typedef typename FeatureFromNormals<PointInT, PointNT, PointOutT>::PointCloudN PointCloudN;
       typedef typename FeatureFromNormals<PointInT, PointNT, PointOutT>::PointCloudNPtr PointCloudNPtr;
 
@@ -91,6 +94,12 @@ namespace pcl
 
       std::vector<PointCloudNPtr> normal_maps_;
 
+      typedef boost::multi_array<float, 3> Array3D;
+      boost::shared_ptr<Array3D> d_horiz_normal_maps_, d_vert_normal_maps_,
+                                 dd_horiz_normal_maps_, dd_vert_normal_maps_,
+                                 laplacians_, grams_;
+      std::vector<PointCloudInPtr> edges_, corners_;
+
 
     protected:
       void
@@ -98,6 +107,13 @@ namespace pcl
 
       void
       calculateGeometricScaleSpace ();
+
+      void
+      computeHorizontalDerivatives ();
+
+      void
+      computeDerivatives ();
+
 
       void
       extractCorners ();
