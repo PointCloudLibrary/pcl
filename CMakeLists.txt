@@ -152,17 +152,11 @@ foreach(subdir ${PCL_MODULES_DIRS})
  	add_subdirectory(${subdir})
 endforeach(subdir)
 
-### ---[ Add other subdirectories
-# add_subdirectory(test)
-# add_subdirectory(tools)
-# add_subdirectory(apps)
-# add_subdirectory(cuda)
-# add_subdirectory(python)
-
 ### ---[ Documentation
 add_subdirectory(doc)
 
 ### ---[ Package creation
+include(${PCL_SOURCE_DIR}/cmake/pcl_all_in_one_installer.cmake)
 include(${PCL_SOURCE_DIR}/cmake/pcl_cpack.cmake)
 
 if(CPACK_GENERATOR)
