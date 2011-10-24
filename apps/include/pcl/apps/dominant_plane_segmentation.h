@@ -52,7 +52,8 @@ namespace pcl
         }
 
         /* \brief Extract the clusters.
-         * \param clusters Clusters extracted from the initial point cloud.
+         * \param clusters Clusters extracted from the initial point cloud at the resolution size
+         * specified by downsample_leaf_
          */
         void
         compute (std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters);
@@ -63,6 +64,14 @@ namespace pcl
          */
         void
         compute_full (std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters);
+
+        /* \brief Extract clusters on a plane using connected components on an organized pointcloud.
+         * The method expects a the input cloud to have the is_dense attribute set to false.
+          * \param clusters Clusters extracted from the initial point cloud. The returned
+          * clusters are not downsampled.
+          */
+        void
+        compute_fast (std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters);
 
         /* \brief Sets the input point cloud.
          * \param cloud_in The input point cloud.

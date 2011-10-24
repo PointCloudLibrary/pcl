@@ -107,7 +107,7 @@ if(build)
     	
     	set(LIB_NAME pcl_${SUBSYS_NAME})
 	    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${impl_incs} ${incs})
-	    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus)
+	    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search)
 	       
 	  	PCL_ADD_SSE_FLAGS(${LIB_NAME})
 	    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" "" "" "" "")
