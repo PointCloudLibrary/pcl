@@ -174,7 +174,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
 void 
 pcl::visualization::PCLVisualizer::createInteractor ()
 {
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
    interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
 #else
   interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
@@ -187,7 +187,7 @@ pcl::visualization::PCLVisualizer::createInteractor ()
 
   // Initialize and create timer, also create window
   interactor_->Initialize ();
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   interactor_->timer_id_ = interactor_->CreateRepeatingTimer (5000L);
 #else
   timer_id_ = interactor_->CreateRepeatingTimer (5000L);
@@ -213,7 +213,7 @@ pcl::visualization::PCLVisualizer::createInteractor ()
 pcl::visualization::PCLVisualizer::~PCLVisualizer ()
 {
   if (interactor_ != NULL) 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
     interactor_->DestroyTimer (interactor_->timer_id_);
 #else
     interactor_->DestroyTimer (timer_id_);

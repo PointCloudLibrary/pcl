@@ -89,7 +89,7 @@ class SimpleOpenNIViewer
     SimpleOpenNIViewer (pcl::OpenNIGrabber& grabber)
       : cloud_viewer_ ("PCL OpenNI Viewer")
       , grabber_ (grabber)
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
       , image_viewer_ ("PCL image viewer")
 #endif
     {
@@ -103,7 +103,7 @@ class SimpleOpenNIViewer
       cloud_ = cloud;
     }
 
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
     void
     image_callback (const boost::shared_ptr<openni_wrapper::Image>& image)
     {
@@ -176,21 +176,24 @@ class SimpleOpenNIViewer
       boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&SimpleOpenNIViewer::cloud_callback, this, _1);
       boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
       
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))
-      string mouseMsg2D("Mouse coordinates in image viewer");
-      string keyMsg2D("Key event for image viewer");
-      image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
-      image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
-      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&SimpleOpenNIViewer::image_callback, this, _1);
-      boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);
-
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
+      boost::signals2::connection image_connection;
+      if (grabber_.providesCallback<void (const boost::shared_ptr<openni_wrapper::Image>&)>())
+      {
+          string mouseMsg2D("Mouse coordinates in image viewer");
+          string keyMsg2D("Key event for image viewer");
+          image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
+          image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
+          boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&SimpleOpenNIViewer::image_callback, this, _1);
+          image_connection = grabber_.registerCallback (image_cb);
+      }
       unsigned char* rgb_data = 0;
       unsigned rgb_data_size = 0;
 #endif        
       
       grabber_.start ();
       
-      while (true)
+      while (!cloud_viewer_.wasStopped(1))
       {
         if (cloud_)
         {
@@ -198,8 +201,7 @@ class SimpleOpenNIViewer
           //the call to get() sets the cloud_ to null;
           cloud_viewer_.showCloud (getLatestCloud ());
         }
-        boost::this_thread::sleep (boost::posix_time::microseconds (1000));
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))        
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))        
         if (image_)
         {
           boost::shared_ptr<openni_wrapper::Image> image = getLatestImage ();
@@ -221,12 +223,14 @@ class SimpleOpenNIViewer
           // This will crash: image_viewer_.spinOnce (10);
         }
 #endif        
+        std::cout << __LINE__ << std::endl;
       }
 
+      std::cout << __LINE__ << std::endl;
       grabber_.stop();
       
       cloud_connection.disconnect();
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))      
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))      
       image_connection.disconnect();
       if (rgb_data)
         delete[] rgb_data;
@@ -238,7 +242,7 @@ class SimpleOpenNIViewer
     boost::mutex cloud_mutex_;
     CloudConstPtr cloud_;
     
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))    
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))    
     boost::mutex image_mutex_;
     boost::shared_ptr<openni_wrapper::Image> image_;
     pcl::visualization::ImageViewer image_viewer_;

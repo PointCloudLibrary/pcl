@@ -89,7 +89,7 @@ printHelp (int argc, char **argv)
 
 // Create the PCLVisualizer object
 boost::shared_ptr<pcl::visualization::PCLVisualizer> cld;
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
 boost::shared_ptr<pcl::visualization::ImageViewer> img;
 #endif
 
@@ -104,7 +104,7 @@ struct EventHelper
     cld_mutex.unlock ();
   }
 
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
   void
   image_callback (const boost::shared_ptr<openni_wrapper::Image>& image)
   {
@@ -172,7 +172,7 @@ main (int argc, char** argv)
   boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &event_helper, _1);
   boost::signals2::connection c1 = interface->registerCallback (f);
 
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
   img.reset (new pcl::visualization::ImageViewer ("OpenNI Viewer"));
   // Register callbacks
   std::string keyMsg2D ("Key event for image viewer");
@@ -192,7 +192,7 @@ main (int argc, char** argv)
   {
     // Render and process events in the two interactors
     cld->spinOnce ();
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
     img->spinOnce ();
 #endif
     FPS_CALC ("drawing");
@@ -216,7 +216,7 @@ main (int argc, char** argv)
       cld_mutex.unlock ();
     }
     
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION == 2))
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
     // Add the image
     if (g_image && img_mutex.try_lock ())
     {

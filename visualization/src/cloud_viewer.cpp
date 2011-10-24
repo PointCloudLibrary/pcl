@@ -169,7 +169,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     using namespace pcl::visualization;
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
     viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_));
 #else
     viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_, true));

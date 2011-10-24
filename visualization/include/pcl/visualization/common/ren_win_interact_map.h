@@ -42,7 +42,7 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkInteractorStyleTrackballCamera.h>
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
 #include "pcl/visualization/interactor.h"
 #else
 #include <vtkRenderWindowInteractor.h>
@@ -73,7 +73,7 @@ namespace pcl
 
         /** \brief The render window interactor. */
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         vtkSmartPointer<PCLVisualizerInteractor> interactor_;
 #else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;

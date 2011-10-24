@@ -68,7 +68,7 @@
 #include <vtkPolyLine.h>
 #include <vtkVectorText.h>
 #include <vtkFollower.h>
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
 #include <pcl/visualization/interactor.h>
 #else
 #include <vtkRenderWindowInteractor.h>
@@ -762,7 +762,7 @@ namespace pcl
          setShapeRenderingProperties (int property, double val1, double val2, double val3,
                                       const std::string &id, int viewport = 0);
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         /** \brief Returns true when the user tried to close the window */
         bool 
         wasStopped () const { if (interactor_ != NULL) return (interactor_->stopped); else return true; }
@@ -1181,7 +1181,7 @@ namespace pcl
 
       protected:
         /** \brief The render window interactor. */
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         vtkSmartPointer<PCLVisualizerInteractor> interactor_;
 #else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
@@ -1202,7 +1202,7 @@ namespace pcl
             if (timer_id != right_timer_id)
               return;
             // Stop vtk loop and send notification to app to wake it up
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
             pcl_visualizer->interactor_->stopLoop ();
 #else
             pcl_visualizer->interactor_->TerminateApp ();
@@ -1221,7 +1221,7 @@ namespace pcl
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
             pcl_visualizer->interactor_->stopped = true;
             // This tends to close the window...
             pcl_visualizer->interactor_->stopLoop ();
@@ -1234,7 +1234,7 @@ namespace pcl
           PCLVisualizer* pcl_visualizer;
         };
 
-#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         /** \brief Set to false if the interaction loop is running. */
         bool stopped_;
 

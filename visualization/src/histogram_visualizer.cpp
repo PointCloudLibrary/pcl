@@ -38,7 +38,7 @@
 #include <boost/thread/thread.hpp>
 #include <pcl/common/common_headers.h>
 #include <pcl/visualization/common/common.h>
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
 #include <pcl/visualization/interactor.h>
 #else
 #include <vtkRenderWindowInteractor.h>
@@ -50,14 +50,14 @@ pcl::visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () :
   exit_main_loop_timer_callback_ (vtkSmartPointer<ExitMainLoopTimerCallback>::New ()), 
   exit_callback_ (vtkSmartPointer<ExitCallback>::New ())
 {
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   resetStoppedFlag ();
 #endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Spin once method. Calls the interactor and updates the screen once. */
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Spin once method. Calls the interactor and updates the screen once. */
 void
@@ -118,7 +118,7 @@ pcl::visualization::PCLHistogramVisualizer::spinOnce (int time)
 }
 #endif
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLHistogramVisualizer::spin ()
@@ -306,7 +306,7 @@ pcl::visualization::PCLHistogramVisualizer::createActor (
   style_->Initialize ();
   renwinint.style_ = style_;
   renwinint.style_->UseTimersOn ();
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   renwinint.interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
 #else
   renwinint.interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
@@ -319,7 +319,7 @@ pcl::visualization::PCLHistogramVisualizer::createActor (
 
   exit_main_loop_timer_callback_->right_timer_id = -1;
   renwinint.interactor_->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
-#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   exit_callback_->his = this;
 #endif
   renwinint.interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
@@ -366,7 +366,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 
   // Save the pointer/ID pair to the global window map
   wins_[id] = renwinint;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   resetStoppedFlag ();
 #endif
   return (true);
@@ -426,7 +426,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 
   // Save the pointer/ID pair to the global window map
   wins_[id] = renwinint;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   resetStoppedFlag ();
 #endif
   return (true);

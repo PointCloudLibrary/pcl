@@ -68,7 +68,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 
   // Save the pointer/ID pair to the global window map
   wins_[id] = renwinint;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   resetStoppedFlag ();
 #endif
   return (true);
@@ -125,7 +125,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 
   // Save the pointer/ID pair to the global window map
   wins_[id] = renwinint;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION == 2))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   resetStoppedFlag ();
 #endif
   return (true);
