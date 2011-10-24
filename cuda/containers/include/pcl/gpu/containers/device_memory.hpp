@@ -214,7 +214,7 @@ namespace pcl
             int colsBytes;
 
             /** \brief Number of rows. */
-            int rows;
+            int rows_;
 
             /** \brief Device pointer. */
             char *data;

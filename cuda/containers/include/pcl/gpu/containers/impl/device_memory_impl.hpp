@@ -69,7 +69,7 @@ template <class U> pcl::gpu::DeviceMemory2D::operator pcl::gpu::PtrStepSz<U>() c
     result.data = (U*)ptr<U>();
     result.step = step;
     result.cols = colsBytes/sizeof(U);
-    result.rows = rows;
+    result.rows_ = rows_;
     return result;
 }
 

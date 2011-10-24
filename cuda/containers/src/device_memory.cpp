@@ -192,22 +192,22 @@ bool pcl::gpu::DeviceMemory::empty() const { return !data; }
 
 ////////////////////////    DeviceArray2D    /////////////////////////////
 
-pcl::gpu::DeviceMemory2D::DeviceMemory2D() : colsBytes(0), rows(0), data(0), step(0), refcount(0) {}
+pcl::gpu::DeviceMemory2D::DeviceMemory2D() : colsBytes(0), rows_(0), data(0), step(0), refcount(0) {}
 
 pcl::gpu::DeviceMemory2D::DeviceMemory2D(int rows_arg, int colsBytes_arg) 
-    : colsBytes(0), rows(0), data(0), step(0), refcount(0) 
+    : colsBytes(0), rows_(0), data(0), step(0), refcount(0) 
 { 
     create(rows_arg, colsBytes_arg); 
 }
 
 pcl::gpu::DeviceMemory2D::DeviceMemory2D(int rows_arg, int colsBytes_arg, void *data_arg, size_t step_arg) 
-    : colsBytes(colsBytes_arg), rows(rows_arg), data((char*)data_arg), step(step_arg), refcount(0) {}
+    : colsBytes(colsBytes_arg), rows_(rows_arg), data((char*)data_arg), step(step_arg), refcount(0) {}
 
 pcl::gpu::DeviceMemory2D::~DeviceMemory2D() { release(); }
 
 
 pcl::gpu::DeviceMemory2D::DeviceMemory2D(const DeviceMemory2D& other_arg) : 
-    colsBytes(other_arg.colsBytes), rows(other_arg.rows), data(other_arg.data), step(other_arg.step), refcount(other_arg.refcount)
+    colsBytes(other_arg.colsBytes), rows_(other_arg.rows_), data(other_arg.data), step(other_arg.step), refcount(other_arg.refcount)
 {
     if( refcount )
         CV_XADD(refcount, 1);
@@ -222,7 +222,7 @@ pcl::gpu::DeviceMemory2D& pcl::gpu::DeviceMemory2D::operator = (const pcl::gpu::
         release();
         
         colsBytes = other_arg.colsBytes;
-        rows = other_arg.rows;
+        rows_ = other_arg.rows_;
         data = other_arg.data;
         step = other_arg.step;
                 
@@ -233,7 +233,7 @@ pcl::gpu::DeviceMemory2D& pcl::gpu::DeviceMemory2D::operator = (const pcl::gpu::
 
 void pcl::gpu::DeviceMemory2D::create(int rows_arg, int colsBytes_arg)
 {
-    if (colsBytes == colsBytes_arg && rows == rows_arg)
+    if (colsBytes == colsBytes_arg && rows_ == rows_arg)
         return;
             
     if( rows_arg > 0 && colsBytes_arg > 0)
@@ -242,9 +242,9 @@ void pcl::gpu::DeviceMemory2D::create(int rows_arg, int colsBytes_arg)
             release();
               
         colsBytes = colsBytes_arg;
-        rows = rows_arg;
+        rows_ = rows_arg;
                         
-        cudaSafeCall( cudaMallocPitch( (void**)&data, &step, colsBytes, rows) );        
+        cudaSafeCall( cudaMallocPitch( (void**)&data, &step, colsBytes, rows_) );        
 
         //refcount = (int*)cv::fastMalloc(sizeof(*refcount));
         refcount = new int;
@@ -262,7 +262,7 @@ void pcl::gpu::DeviceMemory2D::release()
     }
 
     colsBytes = 0;
-    rows = 0;    
+    rows_ = 0;    
     data = 0;    
     step = 0;
     refcount = 0;
@@ -271,20 +271,20 @@ void pcl::gpu::DeviceMemory2D::release()
 void pcl::gpu::DeviceMemory2D::copyTo(DeviceMemory2D& other) const
 {
     assert(data);
-    other.create(rows, colsBytes);    
-    cudaSafeCall( cudaMemcpy2D(other.data, other.step, data, step, colsBytes, rows, cudaMemcpyDeviceToDevice) );
+    other.create(rows_, colsBytes);    
+    cudaSafeCall( cudaMemcpy2D(other.data, other.step, data, step, colsBytes, rows_, cudaMemcpyDeviceToDevice) );
     cudaSafeCall( cudaDeviceSynchronize() );
 }
 
 void pcl::gpu::DeviceMemory2D::upload(const void *host_ptr_arg, size_t host_step_arg, int rows_arg, int colsBytes_arg)
 {
     create(rows_arg, colsBytes_arg);
-    cudaSafeCall( cudaMemcpy2D(data, step, host_ptr_arg, host_step_arg, colsBytes, rows, cudaMemcpyHostToDevice) );        
+    cudaSafeCall( cudaMemcpy2D(data, step, host_ptr_arg, host_step_arg, colsBytes, rows_, cudaMemcpyHostToDevice) );        
 }
 
 void pcl::gpu::DeviceMemory2D::download(void *host_ptr_arg, size_t host_step_arg) const
 {    
-    cudaSafeCall( cudaMemcpy2D(host_ptr_arg, host_step_arg, data, step, colsBytes, rows, cudaMemcpyDeviceToHost) );
+    cudaSafeCall( cudaMemcpy2D(host_ptr_arg, host_step_arg, data, step, colsBytes, rows_, cudaMemcpyDeviceToHost) );
 }      
 
 bool pcl::gpu::DeviceMemory2D::empty() const { return !data; }
