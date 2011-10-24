@@ -104,6 +104,13 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
       // Save the nn_dists[0] to a global vector of distances
       correspondence_distances_[(*indices_)[idx]] = std::min (nn_dists[0], (float)dist_threshold);
     }
+    if (cnt < min_number_correspondences_)
+    {
+      PCL_ERROR ("[pcl::%s::computeTransformation] Not enough correspondences found. Relax your threshold parameters.\n", getClassName ().c_str ());
+      converged_ = false;
+      return;
+    }
+
     // Resize to the actual number of valid correspondences
     source_indices.resize (cnt); target_indices.resize (cnt);
 
