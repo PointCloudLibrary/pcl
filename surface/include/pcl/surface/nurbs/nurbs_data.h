@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
+ *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -42,23 +42,24 @@
 #include <opennurbs.h>
 #include <Eigen/Dense>
 
-namespace nurbsfitting{
+namespace pcl_nurbs
+{
+  struct NurbsData
+  {
+    ON_PointCloud interior;
+    std::vector<double> interior_error;
+    std::vector<Eigen::Vector2d> interior_param;
+    std::vector<Eigen::Vector3d> interior_line_start;
+    std::vector<Eigen::Vector3d> interior_line_end;
 
-struct NurbsData{
-  ON_PointCloud interior;
-  std::vector<double> interior_error;
-  std::vector<Eigen::Vector2d> interior_param;
-  std::vector<Eigen::Vector3d> interior_line_start;
-  std::vector<Eigen::Vector3d> interior_line_end;
+    ON_PointCloud boundary;
+    std::vector<double> boundary_error;
+    std::vector<Eigen::Vector2d> boundary_param;
+    std::vector<Eigen::Vector3d> boundary_line_start;
+    std::vector<Eigen::Vector3d> boundary_line_end;
+  };
 
-  ON_PointCloud boundary;
-  std::vector<double> boundary_error;
-  std::vector<Eigen::Vector2d> boundary_param;
-  std::vector<Eigen::Vector3d> boundary_line_start;
-  std::vector<Eigen::Vector3d> boundary_line_end;
-};
-
-} // namespace nurbsfitting
+} // namespace pcl_nurbs
 
 #endif
 

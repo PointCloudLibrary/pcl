@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
+ *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,15 +37,15 @@
 
 #include <iostream>
 #include <stdexcept>
-#include "pcl/surface/nurbs/NurbsTools.h"
+#include "pcl/surface/nurbs/nurbs_tools.h"
 
-using namespace nurbsfitting;
+using namespace pcl_nurbs;
 using namespace Eigen;
 
 NurbsTools::NurbsTools (ON_NurbsSurface* surf)
 {
 
-  m_surf = surf;
+  surf_ = surf;
 
 }
 
@@ -55,7 +55,7 @@ NurbsTools::x (double u, double v)
   Vector3d result;
 
   double pointAndTangents[3];
-  m_surf->Evaluate (u, v, 0, 3, pointAndTangents);
+  surf_->Evaluate (u, v, 0, 3, pointAndTangents);
 
   result (0) = pointAndTangents[0];
   result (1) = pointAndTangents[1];
@@ -70,7 +70,7 @@ NurbsTools::jacX (double u, double v) // !
   MatrixXd Dx = MatrixXd::Zero (3, 2);
 
   double pointAndTangents[9];
-  m_surf->Evaluate (u, v, 1, 3, pointAndTangents);
+  surf_->Evaluate (u, v, 1, 3, pointAndTangents);
 
   Dx (0, 0) = pointAndTangents[3];
   Dx (1, 0) = pointAndTangents[4];
@@ -91,18 +91,18 @@ NurbsTools::getElementVector (int dim) // !
   if (dim == 0)
   {
     int idx_min = 0;
-    int idx_max = m_surf->m_knot_capacity[0] - 1;
-    if (m_surf->IsClosed (0))
+    int idx_max = surf_->m_knot_capacity[0] - 1;
+    if (surf_->IsClosed (0))
     {
-      idx_min = m_surf->m_order[0] - 2;
-      idx_max = m_surf->m_knot_capacity[0] - m_surf->m_order[0] + 1;
+      idx_min = surf_->m_order[0] - 2;
+      idx_max = surf_->m_knot_capacity[0] - surf_->m_order[0] + 1;
     }
 
-    const double* knotsU = m_surf->Knot (0);
+    const double* knotsU = surf_->Knot (0);
 
     result.push_back (knotsU[idx_min]);
 
-    //for(int E=(m_surf->m_order[0]-2); E<(m_surf->m_knot_capacity[0]-m_surf->m_order[0]+2); E++) {
+    //for(int E=(surf_->m_order[0]-2); E<(surf_->m_knot_capacity[0]-surf_->m_order[0]+2); E++) {
     for (int E = idx_min + 1; E <= idx_max; E++)
     {
 
@@ -115,17 +115,17 @@ NurbsTools::getElementVector (int dim) // !
   else if (dim == 1)
   {
     int idx_min = 0;
-    int idx_max = m_surf->m_knot_capacity[1] - 1;
-    if (m_surf->IsClosed (1))
+    int idx_max = surf_->m_knot_capacity[1] - 1;
+    if (surf_->IsClosed (1))
     {
-      idx_min = m_surf->m_order[1] - 2;
-      idx_max = m_surf->m_knot_capacity[1] - m_surf->m_order[1] + 1;
+      idx_min = surf_->m_order[1] - 2;
+      idx_max = surf_->m_knot_capacity[1] - surf_->m_order[1] + 1;
     }
-    const double* knotsV = m_surf->Knot (1);
+    const double* knotsV = surf_->Knot (1);
 
     result.push_back (knotsV[idx_min]);
 
-    //for(int F=(m_surf->m_order[1]-2); F<(m_surf->m_knot_capacity[1]-m_surf->m_order[1]+2); F++) {
+    //for(int F=(surf_->m_order[1]-2); F<(surf_->m_knot_capacity[1]-surf_->m_order[1]+2); F++) {
     for (int F = idx_min + 1; F <= idx_max; F++)
     {
 
@@ -163,7 +163,7 @@ NurbsTools::getDistanceVector (Vector3d pt, Vector2d params)
   Vector3d r;
   double pointAndTangents[9];
 
-  m_surf->Evaluate (params (0), params (1), 1, 3, pointAndTangents);
+  surf_->Evaluate (params (0), params (1), 1, 3, pointAndTangents);
 
   r (0) = pointAndTangents[0] - pt (0);
   r (1) = pointAndTangents[1] - pt (1);
@@ -195,7 +195,7 @@ NurbsTools::inverseMapping (Vector3d pt, Vector2d hint, double &error, int maxSt
   for (int k = 0; k < maxSteps; k++)
   {
 
-    m_surf->Evaluate (current (0), current (1), 1, 3, pointAndTangents);
+    surf_->Evaluate (current (0), current (1), 1, 3, pointAndTangents);
 
     r (0) = pointAndTangents[0] - pt (0);
     r (1) = pointAndTangents[1] - pt (1);
@@ -312,7 +312,7 @@ NurbsTools::inverseMappingBoundary (Vector3d pt, double &error, int maxSteps, do
   }
 
   double pointAndTangents[9];
-  this->m_surf->Evaluate (result (0), result (1), 1, 3, pointAndTangents);
+  this->surf_->Evaluate (result (0), result (1), 1, 3, pointAndTangents);
 
   error = min_err;
   return result;
@@ -344,7 +344,7 @@ NurbsTools::inverseMappingBoundary (Vector3d pt, int side, double hint, double &
 
         params (0) = minU;
         params (1) = current;
-        m_surf->Evaluate (minU, current, 1, 3, pointAndTangents);
+        surf_->Evaluate (minU, current, 1, 3, pointAndTangents);
 
         t (0) = pointAndTangents[6]; // use tv
         t (1) = pointAndTangents[7];
@@ -355,7 +355,7 @@ NurbsTools::inverseMappingBoundary (Vector3d pt, int side, double hint, double &
 
         params (0) = current;
         params (1) = maxV;
-        m_surf->Evaluate (current, maxV, 1, 3, pointAndTangents);
+        surf_->Evaluate (current, maxV, 1, 3, pointAndTangents);
 
         t (0) = pointAndTangents[3]; // use tu
         t (1) = pointAndTangents[4];
@@ -366,7 +366,7 @@ NurbsTools::inverseMappingBoundary (Vector3d pt, int side, double hint, double &
 
         params (0) = maxU;
         params (1) = current;
-        m_surf->Evaluate (maxU, current, 1, 3, pointAndTangents);
+        surf_->Evaluate (maxU, current, 1, 3, pointAndTangents);
 
         t (0) = pointAndTangents[6]; // use tv
         t (1) = pointAndTangents[7];
@@ -377,7 +377,7 @@ NurbsTools::inverseMappingBoundary (Vector3d pt, int side, double hint, double &
 
         params (0) = current;
         params (1) = minV;
-        m_surf->Evaluate (current, minV, 1, 3, pointAndTangents);
+        surf_->Evaluate (current, minV, 1, 3, pointAndTangents);
 
         t (0) = pointAndTangents[3]; // use tu
         t (1) = pointAndTangents[4];
@@ -488,7 +488,7 @@ NurbsTools::inverseMapping (Vector3d pt, Vector2d* phint, double &error, int max
         double xi = elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]);
         double eta = elementsV[j] + 0.5 * (elementsV[j + 1] - elementsV[j]);
 
-        m_surf->Evaluate (xi, eta, 0, 3, points);
+        surf_->Evaluate (xi, eta, 0, 3, points);
 
         r (0) = points[0] - pt (0);
         r (1) = points[1] - pt (1);

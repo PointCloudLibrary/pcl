@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
+ *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@
 //#undef Success
 #include <Eigen/Dense>
 
-namespace nurbsfitting
+namespace pcl_nurbs
 {
 
   enum
@@ -55,7 +55,7 @@ namespace nurbsfitting
   {
 
   public:
-    ON_NurbsSurface* m_surf;
+    ON_NurbsSurface* surf_;
 
     class myvec
     {
@@ -107,37 +107,37 @@ namespace nurbsfitting
     int
     A (int I, int J)
     {
-      return m_surf->m_cv_count[1] * I + J;
+      return surf_->m_cv_count[1] * I + J;
     } // two global indices to one global index (lexicographic)
 
     int
     a (int i, int j)
     {
-      return m_surf->m_order[1] * i + j;
+      return surf_->m_order[1] * i + j;
     } // two local indices into one local index (lexicographic)
 
     int
     i (int a)
     {
-      return (int)(a / m_surf->m_order[1]);
+      return (int)(a / surf_->m_order[1]);
     } // local lexicographic in local row index
 
     int
     j (int a)
     {
-      return (int)(a % m_surf->m_order[1]);
+      return (int)(a % surf_->m_order[1]);
     } // local lexicographic in local col index
 
     int
     I (int A)
     {
-      return (int)(A / m_surf->m_cv_count[1]);
+      return (int)(A / surf_->m_cv_count[1]);
     } // global lexicographic in global row index
 
     int
     J (int A)
     {
-      return (int)(A % m_surf->m_cv_count[1]);
+      return (int)(A % surf_->m_cv_count[1]);
     } // global lexicographic in global col index
 
     int
@@ -150,17 +150,17 @@ namespace nurbsfitting
     int
     E (double u)
     {
-      return ON_NurbsSpanIndex (m_surf->m_order[0], m_surf->m_cv_count[0], m_surf->m_knot[0], u, 0, 0);
+      return ON_NurbsSpanIndex (surf_->m_order[0], surf_->m_cv_count[0], surf_->m_knot[0], u, 0, 0);
     } // element index in u-direction
 
     int
     F (double v)
     {
-      return ON_NurbsSpanIndex (m_surf->m_order[1], m_surf->m_cv_count[1], m_surf->m_knot[1], v, 0, 0);
+      return ON_NurbsSpanIndex (surf_->m_order[1], surf_->m_cv_count[1], surf_->m_knot[1], v, 0, 0);
     } // element index in v-direction
 
   };
 
-} // namespace nurbsfitting
+} // namespace pcl_nurbs
 
 #endif /* NTOOLS_H_ */

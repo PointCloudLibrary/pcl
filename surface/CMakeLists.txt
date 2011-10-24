@@ -37,7 +37,7 @@ if(build)
     
 		# TODO remove this ugly thing
 		set(OPENNURBS_PATH /home/tm/svn-repositories/v4r/trunk/external/opennurbs)
-		
+		link_directories(${OPENNURBS_PATH})
 		include_directories(${OPENNURBS_PATH})
 		set(NURBS_INCLUDES
 			include/pcl/${SUBSYS_NAME}/nurbs/NurbsData.h
