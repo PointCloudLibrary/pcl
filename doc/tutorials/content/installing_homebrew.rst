@@ -36,7 +36,17 @@ which parts of PCL are installed.
 .. note::
 
    The PCL formula is currently in development. It will be submitted to
-   Homebrew shortly.
+   Homebrew shortly. Until then, you can download it here_. To prepare
+   it, follow these steps:
+
+   .. _here:
+      http://dev.pointclouds.org/attachments/469/pcl.rb
+
+   #. Install Homebrew. See the Homebrew website for instructions.
+   #. Execute ``brew update``.
+   #. Download the formula and place it in
+      ``/usr/local/Library/Formula`` (or an appropriate location if you
+      installed Homebrew somewhere else).
 
 To install using the formula, execute the following command::
 
