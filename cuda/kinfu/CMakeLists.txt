@@ -28,7 +28,7 @@ IF(TRUE)
 		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
 		PCL_CUDA_ADD_EXECUTABLE(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${cuda} ${srcs_utils}  ${dev_incs})
 		PCL_ADD_SSE_FLAGS(${LIB_NAME})
-		target_link_libraries(${LIB_NAME} pcl_gpu_utils pcl_gpu_containers pcl_gpu_octree)
+		target_link_libraries(${LIB_NAME} pcl_gpu_utils pcl_gpu_containers pcl_gpu_octree pcl_visualization)
 		set_target_properties(${LIB_NAME} PROPERTIES FOLDER "Libraries")
 		
 		target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES} ${OpenCV_LIBS})
