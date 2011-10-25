@@ -32,23 +32,24 @@ if(build)
     endif(VTK_FOUND)
     
     ####### NURBS FITTING by thomas.moerwald #########
-    SET(BUILD_surface_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds" )
-    IF(BUILD_surface_nurbs)
+
+    #SET(BUILD_surface_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds" )
+    #IF(BUILD_surface_nurbs)
     
 		# TODO remove this ugly thing
-		set(OPENNURBS_PATH /home/tm/svn-repositories/v4r/trunk/external/opennurbs)
-		link_directories(${OPENNURBS_PATH})
-		include_directories(${OPENNURBS_PATH})
-		set(NURBS_INCLUDES
-			include/pcl/${SUBSYS_NAME}/nurbs/NurbsData.h
-			include/pcl/${SUBSYS_NAME}/nurbs/NurbsFitting.h
-			include/pcl/${SUBSYS_NAME}/nurbs/NurbsTools.h
-			)
-		set(NURBS_SOURCES
-			src/nurbs/NurbsFitting.cpp
-			src/nurbs/NurbsTools.cpp
-			)
-    ENDIF(BUILD_surface_nurbs)
+    #set(OPENNURBS_PATH /home/tm/svn-repositories/v4r/trunk/external/opennurbs)
+    #link_directories(${OPENNURBS_PATH})
+    #include_directories(${OPENNURBS_PATH})
+    #set(NURBS_INCLUDES
+    #		include/pcl/${SUBSYS_NAME}/nurbs/NurbsData.h
+    #		include/pcl/${SUBSYS_NAME}/nurbs/NurbsFitting.h
+    #	include/pcl/${SUBSYS_NAME}/nurbs/NurbsTools.h
+    #		)
+    #set(NURBS_SOURCES
+    #		src/nurbs/NurbsFitting.cpp
+    #		src/nurbs/NurbsTools.cpp
+    #		)
+    #ENDIF(BUILD_surface_nurbs)
     
 
     #    # Includes for Misha's Poisson reconstruction code
