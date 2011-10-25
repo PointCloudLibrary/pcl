@@ -46,6 +46,8 @@
 #include <vtkObject.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
+#include <vtkImageCanvasSource2D.h>
+#include <vtkImageBlend.h>
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/mouse_event.h>
 #include <pcl/common/time.h>
@@ -180,6 +182,27 @@ pcl::visualization::ImageViewer::showShortImage (const unsigned short* short_ima
                                                               min_value, max_value, grayscale);
   showRGBImage (rgb_image, width, height);
   delete[] rgb_image;
+}
+
+void
+pcl::visualization::ImageViewer::markPoint(size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color, float radius)
+{
+  vtkSmartPointer<vtkImageCanvasSource2D> drawing = 
+    vtkSmartPointer<vtkImageCanvasSource2D>::New ();
+  drawing->SetNumberOfScalarComponents (3);
+  drawing->SetScalarTypeToUnsignedChar ();
+  vtkImageData* image_data = image_viewer_->GetInput ();
+  drawing->SetExtent (image_data->GetExtent ());
+  drawing->SetDrawColor (fg_color[0], fg_color[1], fg_color[2]);
+  drawing->DrawPoint (u, v);
+  drawing->SetDrawColor (bg_color[0], bg_color[1], bg_color[2]);
+  drawing->DrawCircle (u, v, radius);
+  vtkSmartPointer<vtkImageBlend> blend = vtkSmartPointer<vtkImageBlend>::New();
+  blend->AddInput (image_data);
+  blend->AddInput (drawing->GetOutput ());
+  blend->SetOpacity (0, 0.6);
+  blend->SetOpacity (1, 0.4);
+  image_viewer_->SetInput (blend->GetOutput ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
