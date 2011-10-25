@@ -19,37 +19,21 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)
 
 if(build)
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs}) 
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-
-    set(incs 
-        include/pcl/${SUBSYS_NAME}/vtkLidarScanner.h
-        )
-    
-    #set(impl_incs 
-        ##include/pcl/${SUBSYS_NAME}/impl/foo.hpp
-        #)
-
-    #set(srcs 
-        #src/proctor.cpp
-        #)
-
-    #set(LIB_NAME pcl_${SUBSYS_NAME})
-    #PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
-    #PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    #PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
-    #PCL_LINK_OPENMP(${LIB_NAME})
-    #target_link_libraries(${LIB_NAME})
-    #PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
-    ## Install headers
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-
-    #add_subdirectory(test)
-
-    include_directories(${SUBSYS_NAME}/include)
-    PCL_ADD_EXECUTABLE (proctor ${SUBSYS_NAME} src/main.cpp src/detector.cpp src/proctor.cpp src/scanner.cpp)
-    target_link_libraries(proctor ${FLANN_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_FEATURES_LIBRARIES} ${PCL_KEYPOINTS_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_VISUALIZATION_LIBRARIES} vtkCommon vtkFiltering vtkGraphics vtkIO)
-
+  include_directories(include/pcl/${SUBSYS_NAME})
+  include_directories(include/pcl/)
+  PCL_ADD_EXECUTABLE(proctor 
+                     ${SUBSYS_NAME} 
+                     src/main.cpp 
+                     src/detector.cpp 
+                     src/proctor.cpp 
+                     src/scanner.cpp)
+  target_link_libraries(proctor 
+                        ${FLANN_LIBRARIES} 
+                        ${PCL_COMMON_LIBRARIES} 
+                        ${PCL_FEATURES_LIBRARIES} 
+                        ${PCL_KEYPOINTS_LIBRARIES} 
+                        ${PCL_IO_LIBRARIES} 
+                        ${PCL_VISUALIZATION_LIBRARIES} 
+                        vtkCommon vtkFiltering vtkGraphics vtkIO)
 endif(build)
 
