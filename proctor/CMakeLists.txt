@@ -26,7 +26,8 @@ if(build)
                      src/main.cpp 
                      src/detector.cpp 
                      src/proctor.cpp 
-                     src/scanner.cpp)
+                     src/scanner.cpp
+                    )
   target_link_libraries(proctor 
                         ${FLANN_LIBRARIES} 
                         pcl_common pcl_features pcl_keypoints pcl_io pcl_search pcl_visualization
