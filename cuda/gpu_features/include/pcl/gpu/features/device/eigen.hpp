@@ -92,12 +92,12 @@
 
 #include "pcl/gpu/utils/device/limits.hpp"
 #include "pcl/gpu/utils/device/algorithm.hpp"
-#include "utils/vector_operations.hpp"
+#include "pcl/gpu/utils/device/vector_math.hpp"
 
 namespace pcl
 {
     namespace device
-    {      
+    {   
         __device__ __forceinline__ void computeRoots2(const float& b, const float& c, float3& roots)
         {
             roots.x = 0.f;
@@ -110,7 +110,6 @@ namespace pcl
             roots.z = 0.5f * (b + sd);
             roots.y = 0.5f * (b - sd);
         }
-
 
         __device__ __forceinline__ void computeRoots3(float c0, float c1, float c2, float3& roots)
         {
@@ -414,8 +413,8 @@ namespace pcl
                     }
 
                     unsigned mid_el = 3 - min_el - max_el;
-                    evecs[min_el] = normalize( cross( evecs[(min_el+1) % 3], evecs[(min_el+2) % 3] ) );
-                    evecs[mid_el] = normalize( cross( evecs[(mid_el+1) % 3], evecs[(mid_el+2) % 3] ) );
+                    evecs[min_el] = normalized( cross( evecs[(min_el+1) % 3], evecs[(min_el+2) % 3] ) );
+                    evecs[mid_el] = normalized( cross( evecs[(mid_el+1) % 3], evecs[(mid_el+2) % 3] ) );
                 }
                 // Rescale back to the original size.
                evals *= scale;

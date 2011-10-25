@@ -66,7 +66,7 @@ namespace pcl
                 c.x = Warp::reduce(buffer, c.x, plus());
                 c.y = Warp::reduce(buffer, c.y, plus());
                 c.z = Warp::reduce(buffer, c.z, plus());                                
-                c /= size;                                                  
+                c *= 1.f/size;                                                  
 
                 //nvcc bug workaround. if comment this => c.z == 0 at line: float3 d = fetch(*t) - c;
                 __threadfence_block();
@@ -115,8 +115,7 @@ namespace pcl
                     Mat33& evecs   = (Mat33&)cov_buffer[3][tid - lane];
                     float3 evals;
 
-                    eigen33.compute(tmp, vec_tmp, evecs, evals);                    
-
+                    eigen33.compute(tmp, vec_tmp, evecs, evals);
                     //evecs[0] - eigenvector with the lowerst eigenvalue
 
                     // Compute the curvature surface change

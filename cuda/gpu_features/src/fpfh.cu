@@ -32,7 +32,7 @@ namespace pcl
                 bins2 = 11,
                 bins3 = 11, 
 
-                FSize = bins1 + bins2 +bins3
+                FSize = bins1 + bins2 + bins3
             };
 
             const PointType* point_cloud;                           

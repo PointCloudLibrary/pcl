@@ -39,52 +39,99 @@
 
 namespace pcl
 {
-    namespace device
-    {
-        struct Block
-        {            
-            static __device__ __forceinline__ unsigned int id()
-            {
-                return blockIdx.x;
-            }
+	namespace device
+	{
+		struct Block
+		{            
+			static __device__ __forceinline__ unsigned int id()
+			{
+				return blockIdx.x;
+			}
 
-            static __device__ __forceinline__ unsigned int stride()
-            {
-                return blockDim.x * blockDim.y * blockDim.z;
-            }
+			static __device__ __forceinline__ unsigned int stride()
+			{
+				return blockDim.x * blockDim.y * blockDim.z;
+			}
 
-            static __device__ __forceinline__ void sync()
-            {
-                __syncthreads();                
-            }
+			static __device__ __forceinline__ void sync()
+			{
+				__syncthreads();                
+			}
 
-            static __device__ __forceinline__ int straightenedThreadId()
-            {
-                return threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
-            }
+			static __device__ __forceinline__ int straightenedThreadId()
+			{
+				return threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
+			}
 
-            template<typename It, typename T>
-            static __device__ __forceinline__ void fill(It beg, It end, const T& value)
-            {
-                int STRIDE = stride();
-                It t = beg + straightenedThreadId(); 
+			template<typename It, typename T>
+			static __device__ __forceinline__ void fill(It beg, It end, const T& value)
+			{
+				int STRIDE = stride();
+				It t = beg + straightenedThreadId(); 
 
-                for(; t < end; t += STRIDE)
-                    *t = value;
-            }
+				for(; t < end; t += STRIDE)
+					*t = value;
+			}
 
-            template<typename InIt, typename OutIt>
-            static __device__ __forceinline__ void copy(InIt beg, InIt end, OutIt out)
-            {
-                int STRIDE = stride();
-                InIt  t = beg + straightenedThreadId();
-                OutIt o = out + (t - beg);
+			template<typename InIt, typename OutIt>
+			static __device__ __forceinline__ void copy(InIt beg, InIt end, OutIt out)
+			{
+				int STRIDE = stride();
+				InIt  t = beg + straightenedThreadId();
+				OutIt o = out + (t - beg);
 
-                for(; t < end; t += STRIDE, o += STRIDE)
-                    *o = *t;
-            }        
-        };
-    }
+				for(; t < end; t += STRIDE, o += STRIDE)
+					*o = *t;
+			}
+			template<int CTA_SIZE, typename T, class BinOp>
+			static __device__ __forceinline__ void reduce(volatile T* buffer, BinOp op)
+			{
+				int tid = straightenedThreadId();
+				T val =  buffer[tid];
+				
+				if (CTA_SIZE >= 1024) { if (tid < 512) buffer[tid] = val = op(val, buffer[tid + 512]); __syncthreads(); }
+				if (CTA_SIZE >=  512) { if (tid < 256) buffer[tid] = val = op(val, buffer[tid + 256]); __syncthreads(); }
+				if (CTA_SIZE >=  256) { if (tid < 128) buffer[tid] = val = op(val, buffer[tid + 128]); __syncthreads(); }
+				if (CTA_SIZE >=  128) { if (tid <  64) buffer[tid] = val = op(val, buffer[tid +  64]); __syncthreads(); }
+
+				if (tid < 32)
+				{
+					if (CTA_SIZE >=   64) { buffer[tid] = val = op(val, buffer[tid +  32]); }
+					if (CTA_SIZE >=   32) { buffer[tid] = val = op(val, buffer[tid +  16]); }
+					if (CTA_SIZE >=   16) { buffer[tid] = val = op(val, buffer[tid +   8]); }
+					if (CTA_SIZE >=    8) { buffer[tid] = val = op(val, buffer[tid +   4]); }
+					if (CTA_SIZE >=    4) { buffer[tid] = val = op(val, buffer[tid +   2]); }
+					if (CTA_SIZE >=    2) { buffer[tid] = val = op(val, buffer[tid +   1]); }
+				}
+			}
+
+			template<int CTA_SIZE, typename T, class BinOp>
+			static __device__ __forceinline__ T reduce(volatile T* buffer, T init, BinOp op)
+			{
+				int tid = straightenedThreadId();
+				T val =  buffer[tid] = init;
+				__syncthreads();
+
+				if (CTA_SIZE >= 1024) { if (tid < 512) buffer[tid] = val = op(val, buffer[tid + 512]); __syncthreads(); }
+				if (CTA_SIZE >=  512) { if (tid < 256) buffer[tid] = val = op(val, buffer[tid + 256]); __syncthreads(); }
+				if (CTA_SIZE >=  256) { if (tid < 128) buffer[tid] = val = op(val, buffer[tid + 128]); __syncthreads(); }
+				if (CTA_SIZE >=  128) { if (tid <  64) buffer[tid] = val = op(val, buffer[tid +  64]); __syncthreads(); }
+
+				if (tid < 32)
+				{
+					if (CTA_SIZE >=   64) { buffer[tid] = val = op(val, buffer[tid +  32]); }
+					if (CTA_SIZE >=   32) { buffer[tid] = val = op(val, buffer[tid +  16]); }
+					if (CTA_SIZE >=   16) { buffer[tid] = val = op(val, buffer[tid +   8]); }
+					if (CTA_SIZE >=    8) { buffer[tid] = val = op(val, buffer[tid +   4]); }
+					if (CTA_SIZE >=    4) { buffer[tid] = val = op(val, buffer[tid +   2]); }
+					if (CTA_SIZE >=    2) { buffer[tid] = val = op(val, buffer[tid +   1]); }
+				}
+				__syncthreads();				
+				return buffer[0];
+			}
+		};
+	}
 }
 
 #endif /* PCL_DEVICE_UTILS_BLOCK_HPP_ */
+

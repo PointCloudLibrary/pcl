@@ -49,8 +49,6 @@ namespace pcl
             return make_float3(vec.x/val, vec.y/val, vec.z/val);
         }
 
-        
-
         __device__ __host__ __forceinline__ float3& operator/=(float3& v, const float& value)
         {
             v.x /= value;
@@ -58,9 +56,7 @@ namespace pcl
             v.z /= value;
             return v;
         }
-
-     
-        
+             
         __device__ __host__ __forceinline__ float norm(const float3& v1, const float3& v2)
         {
             float dx = v1.x - v2.x;

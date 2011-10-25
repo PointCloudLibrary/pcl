@@ -88,7 +88,7 @@ namespace pcl
         template <typename T> struct PtrStepSz : public PtrStep<T>
         {   
             __PCL_GPU_HOST_DEVICE__ PtrStepSz() : cols(0), rows(0) {}
-            __PCL_GPU_HOST_DEVICE__ PtrStepSz(T* data_arg, size_t step_arg, int cols_arg, int rows_arg) 
+            __PCL_GPU_HOST_DEVICE__ PtrStepSz(int rows_arg, int cols_arg, T* data_arg, size_t step_arg) 
                 : PtrStep<T>(data_arg, step_arg), cols(cols_arg), rows(rows_arg) {}
 
             int cols;

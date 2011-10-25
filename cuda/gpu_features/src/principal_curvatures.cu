@@ -151,7 +151,7 @@ namespace pcl
                 centroid.x = Warp::reduce(buffer, centroid.x, plus());
                 centroid.y = Warp::reduce(buffer, centroid.y, plus());
                 centroid.z = Warp::reduce(buffer, centroid.z, plus());                                
-                centroid /= size;  
+                centroid *= 1.f/size;  
 
                 //nvcc bug work workaround.
                 __threadfence_block();

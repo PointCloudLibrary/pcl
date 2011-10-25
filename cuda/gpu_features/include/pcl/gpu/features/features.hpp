@@ -204,50 +204,6 @@ namespace pcl
         }; 
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////////  
-        ///** \brief @b Class for Viewpoint Feature Histogramm estimation.  */
-
-        /*class PCL_EXPORTS VFHEstimation : public FeatureFromNormals
-        {
-        public:
-
-            enum
-            {
-                BINS1_F1 = 45,
-                BINT2_F2 = 45,
-                BINS3_F3 = 45,
-                BINS4_F4 = 45,
-                BINS_VP = 128
-            };
-
-            VFHEstimation();
-
-            void setViewPoint(float  vpx, float  vpy, float  vpz);  
-            void getViewPoint(float& vpx, float& vpy, float& vpz);      
-
-            void setUseGivenNormal (bool use);
-            void setNormalToUse (const NormalType& normal);
-            void setUseGivenCentroid (bool use);
-            void setCentroidToUse (const PointType& centroid);
-
-            void setNormalizeBins (bool normalize);
-            void setNormalizeDistance (bool normalize);
-            void setFillSizeComponent (bool fill_size);
-          
-            void compute(DeviceArray<VFHSignature308>& feature);
-        private:
-
-            float vpx_, vpy_, vpz_;
-
-            bool use_given_normal_;
-            bool use_given_centroid_;
-            bool normalize_bins_;
-            bool normalize_distances_;
-            bool size_component_;
-
-            NormalType normal_to_use_;
-            PointType centroid_to_use_;
-        }; */
     }
 };
 
