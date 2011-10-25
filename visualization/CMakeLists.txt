@@ -43,7 +43,6 @@ if(build)
 
     set(srcs
         src/point_picking_event.cpp
-        src/interactor.cpp
         src/interactor_style.cpp
         src/point_cloud_handlers.cpp
         src/pcl_visualizer.cpp
@@ -56,6 +55,10 @@ if(build)
         src/window.cpp
         ${WXWIDGETS_SOURCES}
         )
+    if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
+        # A custom interactor is necessary on VTK 5.4 and below
+        set(srcs ${srcs} src/interactor.cpp)
+    endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
 
     set(incs 
         include/pcl/${SUBSYS_NAME}/cloud_viewer.h
