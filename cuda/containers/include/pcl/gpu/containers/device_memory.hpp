@@ -122,7 +122,7 @@ namespace pcl
 
         private:
             /** \brief Pointer to reference counter in CPU memory. */
-            int* refcount;
+            int* refcount_;
         };
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -210,20 +210,28 @@ namespace pcl
             /** \brief Returns true if unallocated otherwise false. */
             bool empty() const;
 
-            /** \brief Width of the buffer in bytes. */
-            int colsBytes;
+            /** \brief Returns number of bytes in each row. */
+            int colsBytes() const;
 
-            /** \brief Number of rows. */
-            int rows_;
-
+            /** \brief Returns number of rows. */
+            int rows() const;
+       
             /** \brief Device pointer. */
             char *data;
 
             /** \brief Returns stride between two consecutive rows in bytes for internal buffer. Step is stored always and everywhere in bytes!!! */
             size_t step;
 
+        protected:
+            /** \brief Width of the buffer in bytes. */
+            int colsBytes_;
+
+            /** \brief Number of rows. */
+            int rows_;
+
+        private:
             /** \brief Pointer to reference counter in CPU memory. */
-            int* refcount;
+            int* refcount_;
         };      
     }
 

@@ -49,7 +49,7 @@ namespace pcl
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief @b DeviceArray class
           * 
-          * \note TTyped container for GPU memory with reference counting.          
+          * \note Typed container for GPU memory with reference counting.          
           *          
           * \author Anatoly Baksheev
           */
@@ -141,7 +141,7 @@ namespace pcl
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief @b DeviceArray2D class
           * 
-          * \note TTyped container for pitched GPU memory with reference counting.          
+          * \note Typed container for pitched GPU memory with reference counting.          
           *          
           * \author Anatoly Baksheev
           */
