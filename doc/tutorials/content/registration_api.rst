@@ -71,8 +71,9 @@ Registration modules
 
 Let's have a look at the single steps of the pipeline.
 
-Keypoints estimation
-====================
+Keypoints
+=========
+
 A keypoint is an interest point that has a "special property" in the scene,
 like the corner of a book, or the letter "P" on a book that has written "PCL"
 on it. There are a number of different keypoints available in PCL like NARF,
@@ -80,8 +81,9 @@ SIFT and FAST. Alternatively you can take every point, or a subset, as
 keypoints as well. The problem with "feeding two kinect datasets into a correspondence estimation" directly is that you have 300k points in each frame, so there can be 300k^2 correspondences.
 
 
-Feature descriptors estimation
-==============================
+Feature descriptors
+===================
+
 Based on the found keypoints we have to features, where we assemble the
 information and generate vectors to compare them with each other. Again there
 is a number of feature options to choose from, for example NARF, FPFH, BRIEF or
@@ -89,6 +91,7 @@ SIFT.
 
 Correspondences estimation
 ==========================
+
 Given two sets of feature vectors coming from two acquired scans we have to
 find corresponding features to find overlapping parts in the data. Depending on
 the feature type we can use different methods to find the correspondences.
@@ -117,6 +120,7 @@ distinguished:
 
 Correspondences rejection
 =========================
+
 Naturally, not all estimated correspondences are correct. 
 Since wrong correspondences can negatively affect the estimation of the final
 transformation, they need to be rejected.
@@ -134,8 +138,9 @@ matchings near by.
 .. - Plus rejecting many of those will be problematic, because what do you reject them based on?
 .. their "color"? not good enough, their "x, y, z" values? also bad
 
-Transformation
-==============
+Transformation estimation
+=========================
+
 The last step is to actually compute the transformation.
 
 - evaluate some error metric based on correspondence
@@ -166,3 +171,13 @@ Feature based registration
 3) get the FPFH descriptors and estimate correspondences using pcl::CorrespondenceEstimation
 4) reject bad correspondences using one or many of the pcl::CorrespondenceRejectionXXX methods
 5) finally get a transformation as mentioned above
+
+Example 1: Office scene, Kinect data
+------------------------------------
+
+Example 2: Outdoor scene, Laser (Riegl) data
+--------------------------------------------
+
+Example 3: Indoor scene, Laser (SICK) data
+-------------------------------------------
+

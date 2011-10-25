@@ -56,8 +56,6 @@ You should see something like the following on screen::
  PCL_SHARED_LIBS                  ON
  PCL_VERSION                      1.0.0
  VTK_DIR                          /usr/local/lib/vtk-5.6
- wxWidgets_CONFIG_EXECUTABLE      /usr/bin/wx-config
- wxWidgets_wxrc_EXECUTABLE        /usr/bin/wxrc
 
    
 The explanation
@@ -102,10 +100,6 @@ The explanation
 * `PCL_VERSION`: this is the PCL library version. It affects the built libraries names.
 
 * `VTK_DIR`: directory of VTK library if found
-
-* `wxWidgets_CONFIG_EXECUTABLE`: path to wx-config program
-
-* `wxWidgets_wxrc_EXECUTABLE`: path to wxrc program
 
 The above are called `cmake` cached variables. At this level we only looked at
 the basic ones.

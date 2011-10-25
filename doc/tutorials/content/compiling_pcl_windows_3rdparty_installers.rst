@@ -56,10 +56,6 @@ used to grab point clouds from OpenNI compliant devices. **optional**
 
 is needed only to build PCL tests. We do not provide GTest installers. **optional**
 
-- **wxWidgets** version >= 2.8.1 (http://www.wxwidgets.org/)
-
-used for `pcl::RangeImage` visualizations. . We do not provide wxWidgets installers. **optional**
-	
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
@@ -248,10 +244,6 @@ Let's check whether CMake did actually find the needed third party dependencies 
 - **GTest** :
 
 	If you want to build PCL tests, you need to download GTest and build it yourself. In this tutorial, we will not build tests.
-	
-- **WxWidgets** :
-
-	In this tutorial, we will not use wxWidgets which is optional anyway.
 	
 Once CMake has found all the needed dependencies, let's see the PCL specific CMake variables :
 

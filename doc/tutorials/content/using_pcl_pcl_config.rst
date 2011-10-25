@@ -148,8 +148,6 @@ If you want to see what is written on the CMake cache::
  CMAKE_BUILD_TYPE
  CMAKE_INSTALL_PREFIX             /usr/local
  PCL_DIR                          /usr/local/share/pcl
- wxWidgets_CONFIG_EXECUTABLE      /usr/bin/wx-config
- wxWidgets_wxrc_EXECUTABLE        /usr/bin/wxrc
 
 Now, we can build up our project, simply typing::
 
