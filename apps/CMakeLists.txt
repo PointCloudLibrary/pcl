@@ -2,14 +2,6 @@ set(SUBSYS_NAME apps)
 set(SUBSYS_DESC "Application examples/samples that show how PCL works")
 set(SUBSYS_DEPS common io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search)
 
-if(NOT wxWidgets_FOUND)
-  set(DEFAULT TRUE)   # wxWidgets is optional
-  set(REASON "wxWidgets was not found.")
-else(NOT wxWidgets_FOUND)
-  include(${wxWidgets_USE_FILE})
-  include_directories(${wxWidgets_INCLUDE_DIRS})
-endif(NOT wxWidgets_FOUND)
-
 # Find VTK 
 if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
@@ -30,7 +22,7 @@ else(NOT OPENNI_FOUND)
 endif(NOT OPENNI_FOUND)
 
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk wxwidgets )
+PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
 
 if(build)
 
