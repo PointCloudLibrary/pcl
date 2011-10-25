@@ -75,10 +75,6 @@ The following libraries are **Required** to build PCL.
    Software system for 3D computer graphics, image processing and visualization.
    Used in `visualization` for 3D point cloud rendering and visualization.
 
-- **wxWidgets** version >= 2.8.1 (http://www.wxwidgets.org/)
-   A cross-platform GUI and tools library for GTK, MS Windows, and MacOS. Used
-   for `pcl::RangeImage` visualizations.
-
 Optional
 --------
 
@@ -215,7 +211,7 @@ Within the CMake configuration:
 
    .. note::
 
-      VTK *must* be built with X11 support, and wxWidgets *must* be installed,
+      VTK *must* be built with X11 support and *must* be installed,
       in order for the visualization module to be able to compile. If you do
       not require visualisation, you may omit this step.
 
@@ -226,12 +222,6 @@ Within the CMake configuration:
 Then run::
    
    $ make && make install
-   
-Install wxWidgets
------------------
-::
-
-   $ sudo port install wxgtk
    
 Install Qhull
 -------------

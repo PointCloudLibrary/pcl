@@ -47,10 +47,6 @@ compile a series of 3rd party library dependencies:
 
     used for convex/concave hull decompositions in `surface`. **optional**
 
-	- **wxWidgets** version >= 2.8.1 (http://www.wxwidgets.org/)
-
-    used for `pcl::RangeImage` visualizations. **optional**
-
 	- **OpenNI** version >= 1.1.0.25 (http://www.openni.org/)
 
     used to grab point clouds from OpenNI compliant devices. **optional**
@@ -91,7 +87,6 @@ like::
 	C:/PCL_dependencies/gtest-1.6.0
 	C:/PCL_dependencies/qhull
 	C:/PCL_dependencies/VTK
-	C:/PCL_dependencies/wxWidgets
 	
 Let's start with `Boost`, which does not use CMake. To build Boost, open the
 command prompt and navigate to the Boost folder::
@@ -209,10 +204,6 @@ Then hit "Configure" twice and "Generate". Compile the generated project files.
 
 The procedure is virtually the same for `VTK` so I won't show it again here.
 
-Building `wxWidgets` is a bit different: go to the
-C:/PCL_dependencies/wxWidgets/build/msw folder, open the project file and build
-the "Debug" and "Release" configurations. Don't use the DLL* configurations.
-
 That's it, we're done with the dependencies!
 
 Environment variables
@@ -267,9 +258,9 @@ Now hit the "Configure" button again. Like before, look for the error in the
 log area and sort it out by modifying the related key above the "Configure"
 button. Repeat the process until you've done with the errors.
 
-A little trick: when it comes to BOOST or wxWidgets errors, just set the
-**wxWidgets_ROOT_DIR** and **Boost_INCLUDE_DIR** elements to the appropriate paths. The
-CMake build system will figure out the other related paths automatically.
+A little trick: when it comes to BOOST errors, just set the
+**Boost_INCLUDE_DIR** element to the appropriate paths. The CMake build system
+will figure out the other related paths automatically.
 
 Once all the reported errors are sorted out the "Generate" button becomes
 available. Hit it and a project will be generated in C:/PCL/bin32.
