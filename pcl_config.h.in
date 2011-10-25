@@ -11,8 +11,6 @@
 
 #cmakedefine HAVE_QHULL_2011 1
 
-#cmakedefine HAVE_WXWIDGETS 1
-
 #cmakedefine HAVE_CUDA 1
 
 #ifdef DISABLE_OPENNI
@@ -21,9 +19,5 @@
 
 #ifdef DISABLE_QHULL
 #undef HAVE_QHULL
-#endif
-
-#ifdef DISABLE_WXWIDGETS
-#undef HAVE_WXWIDGETS
 #endif
 
