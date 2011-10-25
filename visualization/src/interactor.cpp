@@ -35,6 +35,8 @@
  *
  */
 
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+
 #include <pcl/visualization/interactor.h>
 #include <vtkCommand.h>
 
@@ -134,3 +136,4 @@ namespace pcl
   }
 }
 
+#endif
