@@ -50,8 +50,11 @@
 #include <pcl/search/search.h>
 
 #include <Eigen/StdVector>
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::PointXYZ)
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::Normal)
+
+#if defined (_WIN32) || defined(_WIN64)
+    EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::PointXYZ)
+    EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::Normal)
+#endif
 
 #include <algorithm>
 
