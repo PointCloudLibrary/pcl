@@ -9,9 +9,11 @@
 #include "proctor/proctor.h"
 #include "proctor/scanner.h"
 
+#if 0
 #include "SyntheticLidarScanner/vtkRay.cxx"
 #include "SyntheticLidarScanner/vtkLidarPoint.cxx"
 #include "SyntheticLidarScanner/vtkLidarScanner.cxx"
+#endif
 
 /** convert radians to degrees. thanks a lot, vtk */
 template <typename T>
@@ -35,6 +37,8 @@ static vtkSmartPointer<vtkTransform> compute_transform(Scanner::Scan scan) {
 static PointCloud<PointXYZ>::Ptr compute_pcxyz(int model, vtkSmartPointer<vtkTransform> transform) {
   // TODO: investigate replacing vtkLidarScanner with vtkRenderWindow::GetZbufferData
   // I think this function leaks memory.
+  PointCloud<PointXYZ>::Ptr pcxyz (new PointCloud<PointXYZ>());
+#if 0
   vtkLidarScanner *ls = vtkLidarScanner::New();
   vtkPolyData *pd = vtkPolyData::New();
 
@@ -46,7 +50,6 @@ static PointCloud<PointXYZ>::Ptr compute_pcxyz(int model, vtkSmartPointer<vtkTra
   ls->SetInputConnection(Proctor::models[model].mesh->GetProducerPort());
   ls->Update();
 
-  PointCloud<PointXYZ>::Ptr pcxyz (new PointCloud<PointXYZ>());
   ls->GetValidOutputPoints(pd);
   float (*points)[3] = reinterpret_cast<float (*)[3]>(vtkFloatArray::SafeDownCast(pd->GetPoints()->GetData())->GetPointer(0));
   int num_points = pd->GetPoints()->GetData()->GetNumberOfTuples();
@@ -59,6 +62,7 @@ static PointCloud<PointXYZ>::Ptr compute_pcxyz(int model, vtkSmartPointer<vtkTra
 
   ls->Delete();
   pd->Delete();
+#endif
   return pcxyz;
 }
 
