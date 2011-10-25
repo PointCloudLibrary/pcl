@@ -17,6 +17,7 @@ else(PYTHONLIBS_FOUND)
     set(REASON "Python libraries were not found")
 endif(PYTHONLIBS_FOUND)
 
+set(DEFAULT FALSE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
@@ -25,7 +26,6 @@ add_custom_command(
    COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/gencode.py" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}"
    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/gencode.py
    )
-
 if(build)
     set(srcs pcl.cpp)
     set(incs pygen.i)
