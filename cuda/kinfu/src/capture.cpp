@@ -89,7 +89,8 @@ pcl::gpu::CaptureOpenNI::CaptureOpenNI(int device) : depth_focal_length_VGA(0), 
 	xn::NodeInfoList::Iterator it = devicesList.Begin();
 	for( int i = 0; i < device; ++i ) it++;
 			
-	rc = impl->context.CreateProductionTree( *it, impl->node );
+    NodeInfo node = *it;
+	rc = impl->context.CreateProductionTree( node, impl->node );
 	if (rc != XN_STATUS_OK)
 	{
 		sprintf(impl->strError, "Init failed: %s\n", xnGetStatusString(rc));
