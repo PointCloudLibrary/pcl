@@ -4,9 +4,9 @@
 #include "pcl/gpu/kinfu/openni_capture.hpp"
 #include "pcl/gpu/containers/initialization.hpp"
 
-using namespace cv;
 using namespace std;
 using namespace pcl;
+using namespace pcl::gpu;
 using namespace xn;
 
 //const std::string XMLConfig =
@@ -182,11 +182,8 @@ pcl::gpu::CaptureOpenNI::CaptureOpenNI(const string& filename) : depth_focal_len
 	getParams();
 }
 
-bool pcl::gpu::CaptureOpenNI::grab(Mat& depth, Mat& rgb24)
+bool pcl::gpu::CaptureOpenNI::grab(PtrStepSz<const unsigned short>& depth, PtrStepSz<const uchar3>& rgb24)
 {
-	depth.release();
-	rgb24.release();
-
 	XnStatus rc = XN_STATUS_OK;
 	
 	rc = impl->context.WaitAndUpdateAll();
@@ -199,7 +196,10 @@ bool pcl::gpu::CaptureOpenNI::grab(Mat& depth, Mat& rgb24)
 		const XnDepthPixel* pDepth = impl->depthMD.Data();
 		int x = impl->depthMD.FullXRes();
 		int y = impl->depthMD.FullYRes();
-        Mat(y, x,  CV_16U, (void*)pDepth).copyTo(depth);		
+        depth.cols = x;
+        depth.rows = y;
+        depth.data = pDepth;
+        depth.step = x * depth.elemSize();
 	}
     else
         printf("no depth\n");
@@ -210,7 +210,11 @@ bool pcl::gpu::CaptureOpenNI::grab(Mat& depth, Mat& rgb24)
 		const XnRGB24Pixel* pImage = impl->imageMD.RGB24Data();	
 		int x = impl->imageMD.FullXRes();
 		int y = impl->imageMD.FullYRes();	
-		rgb24 = Mat(y, x, CV_8UC3, (void*)pImage);
+
+        rgb24.data = (const uchar3*)pImage;
+        rgb24.cols = x;
+        rgb24.rows = y;
+        rgb24.step = x * rgb24.elemSize();                     
 	}
     else
         printf("no image\n");

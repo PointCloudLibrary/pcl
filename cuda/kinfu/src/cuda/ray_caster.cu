@@ -110,9 +110,9 @@ namespace pcl
                 float min_facet_dist = fmin( fmin(xmax, ymax), zmax);
 
                 int3 res;
-                res.x =  xmax == min_facet_dist ? voxel.x + (dir.x > 0 ? 1 : - 1) : voxel.x;
-                res.y =  ymax == min_facet_dist ? voxel.y + (dir.y > 0 ? 1 : - 1) : voxel.y;
-                res.z =  zmax == min_facet_dist ? voxel.z + (dir.z > 0 ? 1 : - 1) : voxel.z;                
+                res.x = xmax == min_facet_dist ? voxel.x + (dir.x > 0 ? 1 : - 1) : voxel.x;
+                res.y = ymax == min_facet_dist ? voxel.y + (dir.y > 0 ? 1 : - 1) : voxel.y;
+                res.z = zmax == min_facet_dist ? voxel.z + (dir.z > 0 ? 1 : - 1) : voxel.z;                
                 return res;
             }
 
@@ -137,7 +137,7 @@ namespace pcl
             __device__ __forceinline__ void operator()() const
             {
                 const float step = fmin(cell_size.x, fmin(cell_size.y, cell_size.z)) / 333;
-                const float min_dist = 10.f; //in mm
+                const float min_dist = 5.f; //in mm
 
                 int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
                 int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
@@ -169,11 +169,8 @@ namespace pcl
                 int3 g = truncateInds(getVoxelFromTime(ray_start, ray_dir, time_start_volume)); //6						
                 float tsdf = readTsdf(g.x, g.y, g.z);
 
-                ray_start = ray_start + ray_dir * time_start_volume;
-
-                //compute voxel exit time
-                float time_exit = computeVoxelExitTime(ray_start, ray_dir, g);
-
+                //ray_start = ray_start + ray_dir * time_start_volume;
+                
                 for(;;) // while voxel g withing volume bounds
                 {			                    
                     int3  g_prev = g;
@@ -195,7 +192,7 @@ namespace pcl
                         float3 point2 = ray_start + ray_dir * time_exit;
 
                         float3 v = (point2 * tsdf_prev + point1 * fabs(tsdf)) * (1.f/(tsdf_prev + fabs(tsdf)));
-
+                        
                         vmap.ptr(y       )[x] = v.x;
                         vmap.ptr(y+  rows)[x] = v.y;
                         vmap.ptr(y+2*rows)[x] = v.z;	

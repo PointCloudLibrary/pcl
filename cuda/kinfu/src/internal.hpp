@@ -10,7 +10,7 @@ namespace pcl
         typedef unsigned short ushort;
         typedef DeviceArray2D<float> MapArr;
         typedef DeviceArray2D<ushort> DepthMap;
-				
+        				
 		enum { VOLUME_X = 512, VOLUME_Y = 512, VOLUME_Z = 512 };
 
 		struct Intr
@@ -34,17 +34,18 @@ namespace pcl
 		//maps
         void createVMap(const Intr& intr, const DepthMap& depth, MapArr& vmap);
         void createNMap(const MapArr& vmap, MapArr& nmap);
-
-		
-        void tranformMaps(const MapArr& vmap_src, const MapArr& nmap_src, const Mat33& Rmat, const float3& tvec, MapArr& vmap_dst, MapArr& nmap_dst);
-
-
         void compteNormalsEigen(const MapArr& vmap, MapArr& nmap);
 
-		//icp
-				
+        void tranformMaps(const MapArr& vmap_src, const MapArr& nmap_src, const Mat33& Rmat, const float3& tvec, MapArr& vmap_dst, MapArr& nmap_dst);
+
+        struct float8 { float x, y, z, w, f1, f2, f3, f4; };
+        template<typename T> void convert(const MapArr& vmap, DeviceArray2D<T>& output);		             
+
+		//icp        
+        typedef float work_type;  
+        //typedef double work_type;
 		void estimateTransform(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, 
-                DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, float* matrixA_host, float* vectorB_host);
+                DeviceArray2D<work_type>& gbuf, DeviceArray<work_type>& mbuf, work_type* matrixA_host, work_type* vectorB_host);
 
 		//tsdf
 		void initVolume(PtrStepSz<float> array);

@@ -6,7 +6,14 @@ namespace pcl
 {
     namespace device
     {   
-        __global__ void computeNmapKernel(int rows, int cols, int kx, int ky, const PtrStep<float> vmap, PtrStep<float> nmap)
+        enum
+        {
+            kx = 7,
+            ky = 7,
+            STEP = 2
+        };
+
+        __global__ void computeNmapKernelEigen(int rows, int cols, const PtrStep<float> vmap, PtrStep<float> nmap)
         {
             int u = threadIdx.x + blockIdx.x * blockDim.x;
             int v = threadIdx.y + blockIdx.y * blockDim.y;
@@ -24,8 +31,8 @@ namespace pcl
 
             float3 centroid = make_float3(0.f, 0.f, 0.f);
             int counter = 0;
-            for (int cy = max(v - ky/2, 0); cy < ty; ++cy)
-                for (int cx = max(u - kx/2, 0); cx < tx; ++cx)
+            for (int cy = max(v - ky/2, 0); cy < ty; cy+=STEP)
+                for (int cx = max(u - kx/2, 0); cx < tx; cx+=STEP)
                 {                    
                     float v_x = vmap.ptr(cy)[cx];
                     if (!isnan(v_x))
@@ -44,8 +51,8 @@ namespace pcl
 
                 float cov[] = {0, 0, 0, 0, 0, 0};
 
-                for (int cy = max(v - ky/2, 0); cy < ty; ++cy)
-                    for (int cx = max(u - kx/2, 0); cx < tx; ++cx)
+                for (int cy = max(v - ky/2, 0); cy < ty; cy+=STEP)
+                    for (int cx = max(u - kx/2, 0); cx < tx; cx+=STEP)
                     {
                         float3 v;
                         v.x = vmap.ptr(cy)[cx];
@@ -88,18 +95,17 @@ namespace pcl
 
 void pcl::device::compteNormalsEigen(const MapArr& vmap, MapArr& nmap)
 {
-    const int kx = 5;
-    const int ky = 5;
-    
     int cols = vmap.cols();
     int rows = vmap.rows()/3;
+
+    nmap.create(vmap.rows(), vmap.cols());
 
     dim3 block(32, 8);
     dim3 grid(1,1,1);
     grid.x = divUp(cols, block.x);
     grid.y = divUp(rows, block.y);
 
-    computeNmapKernel<<<grid, block>>>(rows, cols, kx, ky, vmap, nmap);
+    computeNmapKernelEigen<<<grid, block>>>(rows, cols, vmap, nmap);
     cudaSafeCall( cudaGetLastError() );	
     cudaSafeCall(cudaDeviceSynchronize());
 }

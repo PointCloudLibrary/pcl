@@ -1,8 +1,12 @@
 #pragma once
 
 #include<pcl/gpu/containers/device_array.hpp>
-#include<opencv2/core/core.hpp>
+#include<pcl/gpu/containers/kernel_containers.hpp>
+
+#include<boost/shared_ptr.hpp>
 #include<string>
+
+#include "vector_types.h"
 
 namespace pcl
 {	
@@ -15,7 +19,7 @@ namespace pcl
             CaptureOpenNI(const std::string& filename);
             ~CaptureOpenNI();
 
-            bool grab(cv::Mat& depth, cv::Mat& rgb24);		
+            bool grab(PtrStepSz<const unsigned short>& depth, PtrStepSz<const uchar3>& rgb24);		
 
             //parameters taken from camera/oni
             float depth_focal_length_VGA;		
@@ -27,7 +31,7 @@ namespace pcl
             unsigned short max_depth; //mm
         private:
             struct Impl;
-            cv::Ptr<Impl> impl;
+            boost::shared_ptr<Impl> impl;
             void getParams();
         };	
     }

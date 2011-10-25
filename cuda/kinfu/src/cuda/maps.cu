@@ -178,3 +178,53 @@ void pcl::device::tranformMaps(const MapArr& vmap_src, const MapArr& nmap_src, c
     cudaSafeCall(cudaDeviceSynchronize());
 }
 
+
+namespace pcl
+{
+    namespace device
+    {
+
+        template<typename T>
+        __global__ void convertMapKernel(int rows, int cols, const PtrStep<float> map, PtrStep<T> output)
+        {
+            int x = threadIdx.x + blockIdx.x * blockDim.x;
+            int y = threadIdx.y + blockIdx.y * blockDim.y;
+
+            if (x >= cols || y >= rows)
+                return;
+
+            const float qnan = numeric_limits<float>::quiet_NaN();
+
+            T t;
+            t.x = map.ptr(y)[x];
+            if (!isnan(t.x))
+            {
+                t.y = map.ptr(y+  rows)[x];
+                t.z = map.ptr(y+2*rows)[x];
+            }
+            else
+                t.y = t.z = qnan;
+
+            output.ptr(y)[x] = t;
+        }
+    }
+}
+
+
+template<typename T> void pcl::device::convert(const MapArr& vmap, DeviceArray2D<T>& output)
+{
+    int cols = vmap.cols();
+    int rows = vmap.rows()/3;
+
+    output.create(rows, cols);
+
+    dim3 block(32, 8);
+    dim3 grid(divUp(cols, block.x), divUp(rows, block.y));
+
+    convertMapKernel<T><<<grid, block>>>(rows, cols, vmap, output);
+    cudaSafeCall( cudaGetLastError() );	
+    cudaSafeCall(cudaDeviceSynchronize());
+}
+
+template void pcl::device::convert(const MapArr& vmap, DeviceArray2D<float4>& output);
+template void pcl::device::convert(const MapArr& vmap, DeviceArray2D<float8>& output);
