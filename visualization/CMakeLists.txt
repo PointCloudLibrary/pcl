@@ -50,6 +50,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/mouse_event.h
         include/pcl/${SUBSYS_NAME}/window.h
         include/pcl/${SUBSYS_NAME}/range_image_visualizer.h
+				include/pcl/${SUBSYS_NAME}/interactor.h
         )
 
     set(common_incs 
