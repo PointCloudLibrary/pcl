@@ -139,7 +139,7 @@ int
     //boost::this_thread::sleep(boost::posix_time::microseconds(1000));
   //}
   
-  wxEntryCleanup();  // Free memory allocated by wxEntryStart
+//  wxEntryCleanup();  // Free memory allocated by wxEntryStart
   
   return (0);
 }
