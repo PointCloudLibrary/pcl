@@ -52,35 +52,34 @@ namespace pcl
   template <typename PointSource, typename PointTarget, typename FeatureT>
   class SampleConsensusInitialAlignment : public Registration<PointSource, PointTarget>
   {
-    using Registration<PointSource, PointTarget>::reg_name_;
-    using Registration<PointSource, PointTarget>::getClassName;
-    using Registration<PointSource, PointTarget>::input_;
-    using Registration<PointSource, PointTarget>::indices_;
-    using Registration<PointSource, PointTarget>::target_;
-    using Registration<PointSource, PointTarget>::final_transformation_;
-    using Registration<PointSource, PointTarget>::transformation_;
-    using Registration<PointSource, PointTarget>::corr_dist_threshold_;
-    using Registration<PointSource, PointTarget>::min_number_correspondences_;
-    using Registration<PointSource, PointTarget>::max_iterations_;
-    using Registration<PointSource, PointTarget>::tree_;
-    using Registration<PointSource, PointTarget>::transformation_estimation_;
-
-    typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
-    typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-    typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
-
-    typedef typename Registration<PointSource, PointTarget>::PointCloudTarget PointCloudTarget;
-
-    typedef PointIndices::Ptr PointIndicesPtr;
-    typedef PointIndices::ConstPtr PointIndicesConstPtr;
-
-    typedef pcl::PointCloud<FeatureT> FeatureCloud;
-    typedef typename FeatureCloud::Ptr FeatureCloudPtr;
-    typedef typename FeatureCloud::ConstPtr FeatureCloudConstPtr;
-
-    typedef typename KdTreeFLANN<FeatureT>::Ptr FeatureKdTreePtr; 
-
     public:
+      using Registration<PointSource, PointTarget>::reg_name_;
+      using Registration<PointSource, PointTarget>::input_;
+      using Registration<PointSource, PointTarget>::indices_;
+      using Registration<PointSource, PointTarget>::target_;
+      using Registration<PointSource, PointTarget>::final_transformation_;
+      using Registration<PointSource, PointTarget>::transformation_;
+      using Registration<PointSource, PointTarget>::corr_dist_threshold_;
+      using Registration<PointSource, PointTarget>::min_number_correspondences_;
+      using Registration<PointSource, PointTarget>::max_iterations_;
+      using Registration<PointSource, PointTarget>::tree_;
+      using Registration<PointSource, PointTarget>::transformation_estimation_;
+      using Registration<PointSource, PointTarget>::getClassName;
+
+      typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
+      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
+      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+
+      typedef typename Registration<PointSource, PointTarget>::PointCloudTarget PointCloudTarget;
+
+      typedef PointIndices::Ptr PointIndicesPtr;
+      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+
+      typedef pcl::PointCloud<FeatureT> FeatureCloud;
+      typedef typename FeatureCloud::Ptr FeatureCloudPtr;
+      typedef typename FeatureCloud::ConstPtr FeatureCloudConstPtr;
+
+      typedef typename KdTreeFLANN<FeatureT>::Ptr FeatureKdTreePtr; 
       /** \brief Constructor. */
       SampleConsensusInitialAlignment () : nr_samples_(3), min_sample_distance_ (0), k_correspondences_ (10)
       {

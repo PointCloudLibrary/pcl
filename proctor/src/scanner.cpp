@@ -66,7 +66,7 @@ static PointCloud<PointXYZ>::Ptr compute_pcxyz(int model, vtkSmartPointer<vtkTra
 static PointCloud<Normal>::Ptr compute_pcn(PointCloud<PointXYZ>::ConstPtr in, float vx, float vy, float vz) {
   PointCloud<Normal>::Ptr pcn (new PointCloud<Normal>());
   NormalEstimation<PointXYZ, Normal> ne;
-  KdTree<PointXYZ>::Ptr kdt (new KdTreeFLANN<PointXYZ>());
+  search::KdTree<PointXYZ>::Ptr kdt (new search::KdTree<PointXYZ>());
   ne.setInputCloud(in);
   ne.setSearchMethod(kdt);
   ne.setKSearch(20);

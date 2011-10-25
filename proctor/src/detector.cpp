@@ -220,7 +220,7 @@ PointCloud<Detector::Signature>::Ptr Detector::computeFeatures(PointCloud<PointN
   fpfh.setRadiusSearch(0.1);
   fpfh.setInputCloud(cloud);
   fpfh.setIndices(indices);
-  KdTree<PointNormal>::Ptr kdt (new KdTreeFLANN<PointNormal>());
+  search::KdTree<PointNormal>::Ptr kdt (new search::KdTree<PointNormal>());
   fpfh.setSearchMethod(kdt);
   fpfh.setInputNormals(cloud);
   fpfh.compute(*features);

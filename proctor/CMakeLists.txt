@@ -1,6 +1,6 @@
 set(SUBSYS_NAME proctor)
 set(SUBSYS_DESC "Proctor: 3D feature benchmarking")
-set(SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration visualization keypoints)
+set(SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree search registration visualization keypoints)
 set(DEFAULT OFF)
 set(REASON "")
 
@@ -29,11 +29,7 @@ if(build)
                      src/scanner.cpp)
   target_link_libraries(proctor 
                         ${FLANN_LIBRARIES} 
-                        ${PCL_COMMON_LIBRARIES} 
-                        ${PCL_FEATURES_LIBRARIES} 
-                        ${PCL_KEYPOINTS_LIBRARIES} 
-                        ${PCL_IO_LIBRARIES} 
-                        ${PCL_VISUALIZATION_LIBRARIES} 
+                        pcl_common pcl_features pcl_keypoints pcl_io pcl_search pcl_visualization
                         vtkCommon vtkFiltering vtkGraphics vtkIO)
 endif(build)
 
