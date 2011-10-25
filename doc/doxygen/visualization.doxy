@@ -23,7 +23,7 @@
        \image html http://www.pointclouds.org/documentation/overview/_images/range_image.jpg
   </ul>
 
-  The package makes use of the VTK library for 3D rendering and wxwidgets for range image and 2D operations.
+  The package makes use of the VTK library for 3D rendering for range image and 2D operations.
 
   For implementing your own visualizers, take a look at the tests and examples accompanying the library.
 	
