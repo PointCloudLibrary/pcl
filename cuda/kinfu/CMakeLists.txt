@@ -3,20 +3,14 @@ IF(FALSE)
 	set(SUBSYS_NAME gpu_kinfu)
 	set(SUBSYS_PATH cuda/gpu_kinfu)
 	set(SUBSYS_DESC "Kinnect Fusiion implementation")
-	set(SUBSYS_DEPS common gpu_containers gpu_utils gpu_features)
+	set(SUBSYS_DEPS common gpu_containers gpu_utils gpu_features visualization)
 
 	set(build FALSE)
 	PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 	PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 	PCL_SET_SUBSYS_INCLUDE_DIR(${SUBSYS_NAME} ${SUBSYS_PATH})
 	mark_as_advanced("BUILD_${SUBSYS_NAME}")
-
-	find_package(OpenCV)
-	if (OpenCV_FOUND)
-		add_definitions(-DHAVE_OPENCV)
-	endif()
-
-	include_directories(${OpenCV_LIBS})
+	
 
 	if (build)
 		FILE(GLOB incs include/pcl/gpu/kinfu/*.hpp)
