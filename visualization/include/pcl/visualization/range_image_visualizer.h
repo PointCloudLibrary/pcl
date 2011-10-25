@@ -35,14 +35,14 @@
  */
 
 #include <pcl/pcl_config.h>
-#ifdef HAVE_WXWIDGETS
+#ifdef HAVE_VTK
 
 #ifndef PCL_VISUALIZATION_RANGE_IMAGE_VISUALIZER_H_
 #define PCL_VISUALIZATION_RANGE_IMAGE_VISUALIZER_H_
 
 // PCL includes
 #include <pcl/range_image/range_image.h>
-#include <pcl/visualization/common/image_widget_wx.h>
+#include <pcl/visualization/image_viewer.h>
 
 namespace pcl
 {
@@ -52,7 +52,7 @@ namespace pcl
       * \author Bastian Steder
       * \ingroup visualization
       */
-    class PCL_EXPORTS RangeImageVisualizer : public ImageWidgetWX 
+    class PCL_EXPORTS RangeImageVisualizer : public ImageViewer
     {
       public:
         // =====CONSTRUCTOR & DESTRUCTOR=====
@@ -89,15 +89,21 @@ namespace pcl
 
         
         /** Get a widget visualizing the interest values and extracted interest points.
-         * The interest points will be marked green. 
+         * The interest points will be marked green.
          *  You are responsible for deleting it after usage! */
-        static RangeImageVisualizer* getInterestPointsWidget (const pcl::RangeImage& range_image, float* interest_image, float min_value, float max_value,
+        static RangeImageVisualizer* getInterestPointsWidget (const pcl::RangeImage& range_image, const float* interest_image, float min_value, float max_value,
                                                               const pcl::PointCloud<pcl::InterestPoint>& interest_points, const std::string& name);
 
         // =====PUBLIC METHODS=====
         //! Visualize a range image
+        /* void  */
+        /* setRangeImage (const pcl::RangeImage& range_image,  */
+        /*                float min_value = -std::numeric_limits<float>::infinity (),  */
+        /*                float max_value =  std::numeric_limits<float>::infinity (),  */
+        /*                bool grayscale  = false); */
+
         void 
-        setRangeImage (const pcl::RangeImage& range_image, 
+        showRangeImage (const pcl::RangeImage& range_image, 
                        float min_value = -std::numeric_limits<float>::infinity (), 
                        float max_value =  std::numeric_limits<float>::infinity (), 
                        bool grayscale  = false);

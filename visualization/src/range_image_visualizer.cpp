@@ -33,11 +33,11 @@
  */
 
 #include <pcl/pcl_config.h>
-#ifdef HAVE_WXWIDGETS
+#ifdef HAVE_VTK
 
 #include <pcl/visualization/range_image_visualizer.h>
 
-pcl::visualization::RangeImageVisualizer::RangeImageVisualizer (const std::string& name) : ImageWidgetWX (), name_ (name)
+pcl::visualization::RangeImageVisualizer::RangeImageVisualizer (const std::string& name) : ImageViewer (name)
 {
 }
 
@@ -45,15 +45,21 @@ pcl::visualization::RangeImageVisualizer::~RangeImageVisualizer ()
 {
 }
 
+// void 
+// pcl::visualization::RangeImageVisualizer::setRangeImage (const pcl::RangeImage& range_image, float min_value, float max_value, bool grayscale)
+// {
+//   float* ranges = range_image.getRangesArray ();
+//   setFloatImage(ranges, range_image.width, range_image.height, min_value, max_value, grayscale);
+  
+//   delete[] ranges;
+// }
+
 void 
-pcl::visualization::RangeImageVisualizer::setRangeImage (const pcl::RangeImage& range_image, float min_value, float max_value, bool grayscale)
+pcl::visualization::RangeImageVisualizer::showRangeImage (const pcl::RangeImage& range_image, float min_value, float max_value, bool grayscale)
 {
-  //MEASURE_FUNCTION_TIME;
-  
   float* ranges = range_image.getRangesArray ();
+  showFloatImage(ranges, range_image.width, range_image.height, min_value, max_value, grayscale);
   
-  // Call BaseClass function:
-  setFloatImage (ranges, range_image.width, range_image.height, name_.c_str (), min_value, max_value, grayscale);
   delete[] ranges;
 }
 
@@ -62,7 +68,7 @@ pcl::visualization::RangeImageVisualizer::getRangeImageWidget (
     const pcl::RangeImage& range_image, float min_value, float max_value, bool grayscale, const std::string& name)
 {
   RangeImageVisualizer* range_image_widget = new RangeImageVisualizer (name);
-  range_image_widget->setRangeImage (range_image, min_value, max_value, grayscale);
+  range_image_widget->showRangeImage (range_image, min_value, max_value, grayscale);
   return range_image_widget;
 }
 
@@ -70,26 +76,25 @@ void
 pcl::visualization::RangeImageVisualizer::visualizeBorders (
     const pcl::RangeImage& range_image, float min_value, float max_value, bool grayscale,
     const pcl::PointCloud<pcl::BorderDescription>& border_descriptions)
-{
-  setRangeImage(range_image, min_value, max_value, grayscale);
-  
-  for (int y=0; y<(int)range_image.height; ++y)
+{  
+  showRangeImage(range_image, min_value, max_value, grayscale);
+  for (size_t y=0; y<range_image.height; ++y)
   {
-    for (int x=0; x<(int)range_image.width; ++x)
+    for (size_t x=0; x<range_image.width; ++x)
     {
       const pcl::BorderDescription& border_description = border_descriptions.points[y*range_image.width + x];
       const pcl::BorderTraits& border_traits = border_description.traits;
       if (border_traits[pcl::BORDER_TRAIT__OBSTACLE_BORDER])
       {
-        markPoint (x, y, wxGREEN_PEN);
+        markPoint (x, y, green_color);
         //for (unsigned int i = 0; i < border_description.neighbors.size(); ++i)
           //range_image_widget->markLine (border_description.x, border_description.y,
                                         //border_description.neighbors[i]->x, border_description.neighbors[i]->y, wxGREEN_PEN);
       }
       else if (border_traits[pcl::BORDER_TRAIT__SHADOW_BORDER])
-        markPoint(x, y, wxCYAN_PEN);
+        markPoint(x, y, blue_color);
       else if (border_traits[pcl::BORDER_TRAIT__VEIL_POINT])
-        markPoint(x, y, wxRED_PEN);
+        markPoint(x, y, red_color);
     }
   }
 }
@@ -112,7 +117,8 @@ pcl::visualization::RangeImageVisualizer::getAnglesWidget (const pcl::RangeImage
                                                            const std::string& name)
 {
   RangeImageVisualizer* widget = new RangeImageVisualizer;
-  widget->setAngleImage(angles_image, range_image.width, range_image.height, name.c_str());
+  widget->showAngleImage(angles_image, range_image.width, range_image.height);
+  widget->setName (name);
   return widget;
 }
 
@@ -121,23 +127,25 @@ pcl::visualization::RangeImageVisualizer::getHalfAnglesWidget (const pcl::RangeI
                                                                 float* angles_image, const std::string& name)
 {
   RangeImageVisualizer* widget = new RangeImageVisualizer;
-  widget->setHalfAngleImage(angles_image, range_image.width, range_image.height, name.c_str());
+  widget->showHalfAngleImage(angles_image, range_image.width, range_image.height);
+  widget->setName (name);
   return widget;
 }
 
 pcl::visualization::RangeImageVisualizer* 
 pcl::visualization::RangeImageVisualizer::getInterestPointsWidget (
-    const pcl::RangeImage& range_image, float* interest_image, float min_value, float max_value, 
+    const pcl::RangeImage& range_image, const float* interest_image, float min_value, float max_value, 
     const pcl::PointCloud<pcl::InterestPoint>& interest_points, const std::string& name)
 {
   RangeImageVisualizer* widget = new RangeImageVisualizer;
-  widget->setFloatImage (interest_image, range_image.width, range_image.height, name.c_str (), min_value, max_value);
+  widget->showFloatImage (interest_image, range_image.width, range_image.height, min_value, max_value);
+  widget->setName (name);
   for (unsigned int i=0; i<interest_points.points.size(); ++i)
   {
     const pcl::InterestPoint& interest_point = interest_points.points[i];
     float image_x, image_y;
     range_image.getImagePoint (interest_point.x, interest_point.y, interest_point.z, image_x, image_y);
-    widget->markPoint (image_x, image_y, wxGREEN_PEN, wxRED_BRUSH);
+    widget->markPoint (image_x, image_y, green_color, red_color);
     //cout << "Marking point "<<image_x<<","<<image_y<<"\n";
   }
   return widget;

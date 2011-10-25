@@ -54,6 +54,11 @@ namespace pcl
 {
   namespace visualization
   {
+    typedef Eigen::Array<unsigned char, 3, 1> Vector3ub;
+    static const Vector3ub green_color(0,255,0);
+    static const Vector3ub red_color(255,0,0);
+    static const Vector3ub blue_color(0,0,255);
+
     class PCL_EXPORTS ImageViewer
     {
       public:
@@ -65,6 +70,34 @@ namespace pcl
 
         void 
         showRGBImage (const pcl::PointCloud<pcl::PointXYZRGB> &data);
+
+        void 
+        showFloatImage (const float* data, unsigned int width, unsigned int height, 
+                        float min_value, float max_value, bool grayscale = false);
+        
+        void
+        showShortImage (const unsigned short* short_image, unsigned int width, unsigned int height, 
+                        unsigned short min_value, unsigned short max_value, bool grayscale);
+
+        void 
+        showAngleImage (const float* data, unsigned width, unsigned height);
+
+        void 
+        showHalfAngleImage (const float* data, unsigned width, unsigned height);
+
+        /**\brief Sets the pixel at coordinates(u,v) to color while setting the neighborhood to another
+          * \param fg_color the pixel color
+          * \param bg_color the neighborhood color
+          * \param radius the circle radius around the pixel
+          */
+        void
+        markPoint(size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color = red_color, float radius = 2);
+
+        void
+        setName(const std::string& name)
+        {
+          strcpy(image_viewer_->GetWindowName (), name.c_str ());
+        }
 
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
         void 

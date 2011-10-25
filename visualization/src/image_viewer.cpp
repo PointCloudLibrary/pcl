@@ -35,6 +35,7 @@
  */
 
 #include <pcl/visualization/image_viewer.h>
+#include <pcl/visualization/common/float_image_utils.h>
 #include <vtkImageImport.h>
 #include <vtkImageViewer.h>
 #include <vtkRenderWindowInteractor.h>
@@ -142,6 +143,43 @@ pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<pcl::PointX
   for (size_t i = 0; i < cloud.points.size (); ++i)
     memcpy (&data_[i * 3], (char*)&cloud.points[i].rgb, sizeof (char) * 3);
   return (showRGBImage (data_.get (), cloud.width, cloud.height));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::showFloatImage (const float* float_image, unsigned int width, unsigned int height,
+                                                float min_value, float max_value, bool grayscale)
+{
+  unsigned char* rgb_image = FloatImageUtils::getVisualImage (float_image, width, height,
+                                                              min_value, max_value, grayscale);
+  showRGBImage (rgb_image, width, height);
+  delete[] rgb_image;  
+ }
+ 
+void 
+pcl::visualization::ImageViewer::showAngleImage (const float* angle_image, unsigned int width, unsigned int height)
+{
+  unsigned char* rgb_image = FloatImageUtils::getVisualAngleImage (angle_image, width, height);
+  showRGBImage (rgb_image, width, height);
+  delete[] rgb_image;
+}
+
+void 
+pcl::visualization::ImageViewer::showHalfAngleImage (const float* angle_image, unsigned int width, unsigned int height)
+{
+  unsigned char* rgb_image = FloatImageUtils::getVisualHalfAngleImage (angle_image, width, height);
+  showRGBImage (rgb_image, width, height);
+  delete[] rgb_image;
+}
+
+void 
+pcl::visualization::ImageViewer::showShortImage (const unsigned short* short_image, unsigned int width, unsigned int height, 
+                                                unsigned short min_value, unsigned short max_value, bool grayscale)
+{
+  unsigned char* rgb_image = FloatImageUtils::getVisualImage (short_image, width, height,
+                                                              min_value, max_value, grayscale);
+  showRGBImage (rgb_image, width, height);
+  delete[] rgb_image;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
