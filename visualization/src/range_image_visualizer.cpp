@@ -33,7 +33,6 @@
  */
 
 #include <pcl/pcl_config.h>
-#ifdef HAVE_VTK
 
 #include <pcl/visualization/range_image_visualizer.h>
 
@@ -150,5 +149,3 @@ pcl::visualization::RangeImageVisualizer::getInterestPointsWidget (
   }
   return widget;
 }
-
-#endif
