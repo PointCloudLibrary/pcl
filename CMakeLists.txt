@@ -126,11 +126,6 @@ if(VTK_FOUND)
   link_directories(${VTK_LIBRARY_DIRS})
   set(HAVE_VTK ON)
 endif()
-# Find wxWidgets
-find_package(wxWidgets)
-if(wxWidgets_FOUND)
-  set(HAVE_WXWIDGETS ON)
-endif()
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
@@ -148,7 +143,7 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_find_python.cmake)
 ### ---[ Add the libraries subdirectories
 include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
 
-collect_subproject_directory_names(${PCL_SOURCE_DIR} "CMakeLists.txt" PCL_MODULES_NAMES PCL_MODULES_DIRS geometry doc)
+collect_subproject_directory_names(${PCL_SOURCE_DIR} "CMakeLists.txt" PCL_MODULES_NAMES PCL_MODULES_DIRS doc)
 set(PCL_MODULES_NAMES_UNSORTED ${PCL_MODULES_NAMES})
 topological_sort(PCL_MODULES_NAMES PCL_ _DEPENDS)
 sort_relative(PCL_MODULES_NAMES_UNSORTED PCL_MODULES_NAMES PCL_MODULES_DIRS)
