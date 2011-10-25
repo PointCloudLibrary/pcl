@@ -8,11 +8,6 @@ set(SUBSYS_DEPS cuda_common cuda_io cuda_features cuda_segmentation cuda_sample_
 if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")
-elseif(NOT wxWidgets_FOUND)
-    set(DEFAULT TRUE)   # wxWidgets is optional
-    set(REASON "wxWidgets was not found.")
-    include (${VTK_USE_FILE})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 else(NOT VTK_FOUND)
     set(DEFAULT TRUE)
     set(REASON)
