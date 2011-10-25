@@ -5,6 +5,7 @@ set(SUBSYS_DEPS )
 # pcl_cuda depends on PCL, CUDA, OpenNI, VTK, maybe: OpenCV
 
 # Find CUDA
+set(CUDA_FIND_QUIETLY TRUE)
 find_package(CUDA)
 if(NOT CUDA_FOUND)
     set(DEFAULT FALSE)
@@ -15,7 +16,7 @@ else(NOT CUDA_FOUND)
     message(STATUS "CUDA found (include: ${CUDA_INCLUDE_DIRS}, lib: ${CUDA_LIBRARIES})")
 endif(NOT CUDA_FOUND)
 
-OPTION(BUILD_CUDA "Build the CUDA-related subsystems" ON)
+OPTION(BUILD_CUDA "Build the CUDA-related subsystems" ${DEFAULT})
 
 if(BUILD_CUDA)
     if(CUDA_FOUND)      
