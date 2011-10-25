@@ -11,7 +11,7 @@ IF(FALSE)
 	PCL_SET_SUBSYS_INCLUDE_DIR(${SUBSYS_NAME} ${SUBSYS_PATH})
 	mark_as_advanced("BUILD_${SUBSYS_NAME}")
 
-	find_package(OpenCV REQUIRED)
+	find_package(OpenCV)
 	if (OpenCV_FOUND)
 		add_definitions(-DHAVE_OPENCV)
 	endif()
