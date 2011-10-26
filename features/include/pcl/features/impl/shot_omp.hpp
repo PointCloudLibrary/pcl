@@ -38,6 +38,11 @@
 #define PCL_FEATURES_IMPL_SHOT_OMP_H_
 
 #include "pcl/features/shot_omp.h"
+#include <Eigen/StdVector>
+
+#if defined(_WIN32)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Matrix4f)
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT>
@@ -60,7 +65,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
   int data_size = indices_->size ();
   Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
-  std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Vector4f> > rfs (threads_);
+  std::vector<Eigen::Matrix4f> rfs (threads_);
 
   for (int i = 0; i < threads_; i++)
     shot[i].setZero (descLength_);
