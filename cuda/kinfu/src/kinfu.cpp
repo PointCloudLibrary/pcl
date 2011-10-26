@@ -115,6 +115,10 @@ void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_d
     
     //Matrix<work_type, 6, 1> res = A.llt().solve(b);
     Matrix<work_type, 6, 1> res = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
+
+    /*cout << b << endl;
+    cout << A << endl;
+    cout << res << endl;*/
      
     work_type alpha = res(0);
 	work_type beta  = res(1);
@@ -139,10 +143,7 @@ void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_d
     float data_traslation[] = { tx, ty, tz };
 
     Rrel = Map<Matrix3f>(data_rotation);
-    trel = Map<Vector3f>(data_traslation);
-
-	///*!*/ Rrel = Matrix3f(r11, r12, r13, r21, r22, r23, r31, r32, r33);
-	///*!*/ trel = Vector3f(tx, ty, tz);
+    trel = Map<Vector3f>(data_traslation);	
 }
 
 void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_curr, View& view)
@@ -150,9 +151,9 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_curr, View& view)
     if (global_time == -1)
 	{
         allocateBufffers(depth_curr.rows(), depth_curr.cols());
-        device::initVolume(volume);
-		++global_time = 0;
+        device::initVolume(volume);		
 		view.release();
+        ++global_time;
 	}
 
 	//depth map conversion
@@ -249,14 +250,13 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_curr, View& view)
 	light.pos[0].x = light_x;
 	light.pos[0].y = light_y;
 	light.pos[0].z = light_z;
-    	    
+    	        
     view.create(depth_curr.rows(), depth_curr.cols());
 	generateImage(vmap_g_prev, nmap_g_prev, light, view);
 	   
-    //if (global_time < 10)
-    //device::tranformMaps(vmap_curr, nmap_curr, device_Rcurr, device_tcurr, vmap_g_prev, nmap_g_prev);
+    if (global_time < 5)
+        device::tranformMaps(vmap_curr, nmap_curr, device_Rcurr, device_tcurr, vmap_g_prev, nmap_g_prev);
+
 
     ++global_time;
 }
-
-

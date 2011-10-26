@@ -11,6 +11,8 @@
 #include <pcl/point_types.h>
 #include <pcl/visualization/image_viewer.h>
 
+#include "opencv2/opencv.hpp"
+
 using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
@@ -47,6 +49,14 @@ int main()
                 cout << "Can't grab" << endl;
                 break;
             }
+
+            cv::Mat d(480, 640, CV_16S, (void*)depth.data), d32, d16;
+            d.convertTo(d32, CV_32F);
+            
+            cv::bilateralFilter(d32, d16, 5, 10, 10);
+            d16.convertTo(d16, CV_16U);
+
+            depth.data = d16.ptr<unsigned short>();
 
             viewer.showRGBImage ((unsigned char*)rgb24.data, rgb24.cols, rgb24.rows);
             viewer.spinOnce(3);

@@ -131,7 +131,7 @@ namespace pcl
 							const int w_inc = 1;
 							
 							int w = min(MAX_WEIGHT, w_prev + w_inc);
-							float tsdf_avg = (tsdf_prev * w_prev + w * tsdf)/w;
+							float tsdf_avg = (tsdf_prev * w_prev + w*tsdf)/w;
 
 							*pos = pack(tsdf_avg, w);
 						}

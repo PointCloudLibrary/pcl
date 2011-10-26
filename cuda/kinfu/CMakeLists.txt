@@ -1,4 +1,4 @@
-IF(TRUE)
+IF(FALSE)
 
 	set(SUBSYS_NAME gpu_kinfu)
 	set(SUBSYS_PATH cuda/gpu_kinfu)
@@ -22,6 +22,8 @@ IF(TRUE)
 	PCL_SET_SUBSYS_INCLUDE_DIR(${SUBSYS_NAME} ${SUBSYS_PATH})
 	mark_as_advanced("BUILD_${SUBSYS_NAME}")
 	
+	find_package(OpenCV REQUIRED)
+	
 
 	if (build)
 		FILE(GLOB incs include/pcl/gpu/kinfu/*.hpp)
@@ -34,6 +36,8 @@ IF(TRUE)
 
 		FILE(GLOB srcs_utils src/utils/*.hpp)
 		source_group("Source Files\\utils" FILES ${srcs_utils})
+		
+		include_directories(${VTK_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
 		set(LIB_NAME pcl_${SUBSYS_NAME})
 		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)

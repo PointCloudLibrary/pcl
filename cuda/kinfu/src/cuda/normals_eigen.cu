@@ -10,7 +10,7 @@ namespace pcl
         {
             kx = 7,
             ky = 7,
-            STEP = 2
+            STEP = 1
         };
 
         __global__ void computeNmapKernelEigen(int rows, int cols, const PtrStep<float> vmap, PtrStep<float> nmap)

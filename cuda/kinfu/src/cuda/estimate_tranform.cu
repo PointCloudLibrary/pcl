@@ -57,10 +57,12 @@ namespace pcl
 
                     float b = dot(n, d);
 
+                    
                     s.y = v_src.ptr(y+  rows)[x];
                     s.z = v_src.ptr(y+2*rows)[x];                        
 
                     b = b - dot(n, s);
+
                     row[6] = b;
 
                     *(float3*)&row[0] = cross(s, n);

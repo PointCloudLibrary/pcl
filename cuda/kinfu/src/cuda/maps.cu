@@ -134,10 +134,10 @@ namespace pcl
                     vdst = Rmat * vsrc + tvec;					
 
                     vmap_dst.ptr(y+  rows)[x] = vdst.y;
-                    vmap_dst.ptr(y+2*rows)[x] = vdst.z;
+                    vmap_dst.ptr(y+2*rows)[x] = vdst.z;                 
                 }
 
-                vmap_dst.ptr(y)[x] = vdst.x;				
+                vmap_dst.ptr(y)[x] = vdst.x;
 
                 //normals
                 float3 nsrc, ndst = make_float3(qnan, qnan, qnan);
