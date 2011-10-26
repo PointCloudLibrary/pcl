@@ -49,6 +49,7 @@ namespace pcl
           k_ = 50;
           sac_distance_threshold_ = 0.01;
           downsample_leaf_ = 0.005;
+          wsize_ = 5;
         }
 
         /* \brief Extract the clusters.
@@ -162,6 +163,13 @@ namespace pcl
           downsample_leaf_ = d;
         }
 
+        /* \brief Set window size in pixels for CC used in compute_fast method
+         * \param w window size (in pixels)
+         */
+        void setWSize(int w) {
+         wsize_ = w;
+        }
+
       private:
         //components needed for cluster segmentation and plane extraction
         pcl::PassThrough<PointType> pass_;
@@ -196,6 +204,8 @@ namespace pcl
         double object_cluster_tolerance_;
         /** \brief Minimum size for a cluster, clusters smaller than this won't be returned */
         double object_cluster_min_size_;
+        /** \brief Window size in pixels for CC in compute_fast method */
+        int wsize_;
       };
   }
 }

@@ -99,14 +99,9 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
   grid_.setInputCloud (cloud_filtered_);
   grid_.filter (*cloud_downsampled_);
 
-  PCL_INFO ("[DominantPlaneSegmentation] Number of points left after filtering (%f -> %f): %d out of %d\n",
-      min_z_bounds_, max_z_bounds_, (int)cloud_downsampled_->points.size (), (int)input_->points.size ());
-
   // ---[ Estimate the point normals
   n3d_.setInputCloud (cloud_downsampled_);
   n3d_.compute (*cloud_normals_);
-
-  PCL_INFO ("[DominantPlaneSegmentation] %d normals estimated. \n", (int)cloud_normals_->points.size ());
 
   // ---[ Perform segmentation
   seg_.setInputCloud (cloud_downsampled_);
@@ -120,7 +115,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
   }
 
   // ---[ Extract the plane
-  proj_.setInputCloud (cloud_downsampled_);    pcl::ScopeTime lolo ("Creating intensity image");
+  proj_.setInputCloud (cloud_downsampled_);
   //pcl::copyPointCloud (*input_, *binary_cloud);
 
 
@@ -199,7 +194,7 @@ proj_.setIndices (table_inliers_);
 
   {
 
-    size_t wsize = 5;
+    size_t wsize = wsize_;
     for (size_t i = 0; i < binary_cloud->width; i++)
     {
       for (size_t j = 0; j < binary_cloud->height; j++)
