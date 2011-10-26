@@ -22,10 +22,10 @@ if(OPENNI_FOUND AND BUILD_OPENNI)
     target_link_libraries(pcd_grabber_viewer pcl_common pcl_io pcl_kdtree
     pcl_range_image pcl_visualization)
       
-    PCL_ADD_EXECUTABLE(openni_viewer_simple ${SUBSYS_NAME}
-        openni_viewer_simple.cpp)
-    target_link_libraries(openni_viewer_simple pcl_common pcl_io pcl_kdtree
-        pcl_range_image pcl_visualization)
+    #PCL_ADD_EXECUTABLE(openni_viewer_simple ${SUBSYS_NAME}
+    #    openni_viewer_simple.cpp)
+    #target_link_libraries(openni_viewer_simple pcl_common pcl_io pcl_kdtree
+    #    pcl_range_image pcl_visualization)
 
     PCL_ADD_EXECUTABLE(oni_viewer_simple ${SUBSYS_NAME}
         oni_viewer_simple.cpp)
