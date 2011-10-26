@@ -60,7 +60,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
   int data_size = indices_->size ();
   Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
-  std::vector<Eigen::Matrix4f> rfs (threads_);
+  std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Vector4f> > rfs (threads_);
 
   for (int i = 0; i < threads_; i++)
     shot[i].setZero (descLength_);
