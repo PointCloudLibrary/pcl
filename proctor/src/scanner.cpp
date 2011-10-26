@@ -79,6 +79,13 @@ static PointCloud<Normal>::Ptr compute_pcn(PointCloud<PointXYZ>::ConstPtr in, fl
   return pcn;
 }
 
+/** Scanner */
+const float Scanner::distance_multiplier = 3.0f;
+const double Scanner::fov_x = M_PI / 3;
+const double Scanner::fov_y = M_PI / 4;
+const unsigned int Scanner::res_x = 320;
+const unsigned int Scanner::res_y = 240;
+
 PointCloud<PointNormal>::Ptr Scanner::getCloud(Scan scan) {
   PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal>());
   vtkSmartPointer<vtkTransform> transform = compute_transform(scan);

@@ -6,7 +6,21 @@
 
 #include "proctor/proctor.h"
 
+#ifdef _MSC_VER
+# define snprintf _snprintf
+#endif
+
 Proctor::Model Proctor::models[Config::num_models];
+const float Proctor::theta_start = M_PI / 12;
+const float Proctor::theta_step = 0.0f;
+const int Proctor::theta_count = 1;
+const float Proctor::phi_start = 0.0f;
+const float Proctor::phi_step = M_PI / 6;
+const const int Proctor::phi_count = 12;
+const float Proctor::theta_min = 0.0f;
+const float Proctor::theta_max = M_PI / 6;
+const float Proctor::phi_min = 0.0f;
+const float Proctor::phi_max = M_PI * 2;
 
 IndicesPtr Proctor::randomSubset(int n, int r) {
   IndicesPtr subset (new vector<int>());

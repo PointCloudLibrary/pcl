@@ -82,6 +82,11 @@ private:
   visualization::CloudViewer *vis;
 };
 
+/** Detector */
+const double Detector::keypoint_separation = 0.04;
+const int Detector::max_votes = 5;
+const int Detector::num_registration = 4;
+
 void Detector::train(PointCloud<PointNormal>::Ptr *models) {
   srand(time(NULL));
   PointCloud<Signature>::Ptr features (new PointCloud<Signature>);

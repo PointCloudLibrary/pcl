@@ -58,18 +58,18 @@ public:
   void printResults(Detector &detector);
 
   // parameters for creating registered point cloud
-  static const float theta_start = M_PI / 12;
-  static const float theta_step = 0;
-  static const int theta_count = 1;
-  static const float phi_start = 0;
-  static const float phi_step = M_PI / 6;
-  static const int phi_count = 12;
+  static const float theta_start;
+  static const float theta_step;
+  static const int theta_count;
+  static const float phi_start;
+  static const float phi_step;
+  static const int phi_count;
 
   // parameters for test scans
-  static const float theta_min = 0;
-  static const float theta_max = M_PI / 6;
-  static const float phi_min = 0;
-  static const float phi_max = M_PI * 2;
+  static const float theta_min;
+  static const float theta_max;
+  static const float phi_min;
+  static const float phi_max;
 
   /** database of models and metadata */
   static Model models[Config::num_models];

@@ -10,11 +10,11 @@ using namespace pcl;
 class Scanner {
 public:
 
-  static const float distance_multiplier = 3;
-  static const double fov_x = M_PI / 3;
-  static const double fov_y = M_PI / 4;
-  static const unsigned int res_x = 320;
-  static const unsigned int res_y = 240;
+  static const float distance_multiplier;
+  static const double fov_x;
+  static const double fov_y;
+  static const unsigned int res_x;
+  static const unsigned int res_y;
 
   /** information about a simulated scan */
   typedef struct {

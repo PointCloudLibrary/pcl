@@ -16,13 +16,13 @@ class Detector {
 public:
 
   /** density of keypoints, used as a voxel size */
-  static const double keypoint_separation = 0.04;
+  static const double keypoint_separation;
 
   /** each feature point can vote for up to this many models */
-  static const int max_votes = 5;
+  static const int max_votes;
 
   /** run the registration on this many models */
-  static const int num_registration = 4;
+  static const int num_registration;
 
   enum TimerBin {
     KEYPOINTS_TRAINING,
