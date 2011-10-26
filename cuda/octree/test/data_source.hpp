@@ -40,10 +40,13 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include <opencv2/core/core.hpp>
-
 #include <Eigen/StdVector>
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::PointXYZ)
+#include <cstdlib>
+
+
+#if defined (_WIN32) || defined(_WIN64)
+    EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::PointXYZ)
+#endif
 
 struct DataGenerator
 {
@@ -62,6 +65,8 @@ struct DataGenerator
     std::vector<float> radiuses;
     std::vector< std::vector<int> > bfresutls;
 
+    std::vector<int> indices;
+
     DataGenerator() : data_size(871000), tests_num(10000), cube_size(1024.f)
     {
         max_radius    = cube_size/15.f;
@@ -70,14 +75,14 @@ struct DataGenerator
 
     void operator()()
     {             
-        cv::RNG& rng = cv::theRNG();
+        srand (0);
 
         points.resize(data_size);
         for(size_t i = 0; i < data_size; ++i)
         {            
-            points[i].x = (float)rng * cube_size;  
-            points[i].y = (float)rng * cube_size;  
-            points[i].z = (float)rng * cube_size;
+            points[i].x = ((float)rand())/RAND_MAX * cube_size;  
+            points[i].y = ((float)rand())/RAND_MAX * cube_size;  
+            points[i].z = ((float)rand())/RAND_MAX * cube_size;
         }
         
 
@@ -85,11 +90,14 @@ struct DataGenerator
         radiuses.resize(tests_num);
         for (size_t i = 0; i < tests_num; ++i)
         {            
-            queries[i].x = (float)rng * cube_size;  
-            queries[i].y = (float)rng * cube_size;  
-            queries[i].z = (float)rng * cube_size;  		
-            radiuses[i]  = (float)rng * max_radius;	
+            queries[i].x = ((float)rand())/RAND_MAX * cube_size;  
+            queries[i].y = ((float)rand())/RAND_MAX * cube_size;  
+            queries[i].z = ((float)rand())/RAND_MAX * cube_size;  		
+            radiuses[i]  = ((float)rand())/RAND_MAX * max_radius;	
         };        
+
+        for(size_t i = 0; i < tests_num/2; ++i)
+            indices.push_back(i*2);
     }
 
     void bruteForceSearch(bool log = false, float radius = -1.f)

@@ -49,10 +49,9 @@
 
 #include "pcl/gpu/octree/octree.hpp"
 #include "pcl/gpu/containers/device_array.hpp"
-#include "pcl/gpu/utils/timers_opencv.hpp"
 #include "pcl/gpu/utils/safe_call.hpp"
 
-#include "data_gen.hpp"
+#include "data_source.hpp"
 
 using namespace pcl::gpu;
 using namespace std;

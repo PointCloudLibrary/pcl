@@ -48,16 +48,18 @@
 
 #include "pcl/gpu/octree/octree.hpp"
 #include "pcl/gpu/containers/device_array.hpp"
-#include "pcl/gpu/utils/timers_opencv.hpp"
 #include "pcl/gpu/utils/safe_call.hpp"
-
-#include "data_gen.hpp"
-
-#include <opencv2/contrib/contrib.hpp>
+#include "pcl/common/time.h"
+#include "data_source.hpp"
 
 using namespace pcl::gpu;
 using namespace std;
 
+using pcl::ScopeTime;
+
+#if defined HAVE_OPENCV
+    #include "opencv2/contrib/contrib.hpp"
+#endif
 
 //TEST(PCL_OctreeGPU, DISABLED_perfomance)
 TEST(PCL_OctreeGPU, perfomance)
@@ -108,12 +110,12 @@ TEST(PCL_OctreeGPU, perfomance)
     // build device octree
     pcl::gpu::Octree octree_device;                
     octree_device.setCloud(cloud_device);	    
-    {
-        ScopeTimerCV up("gpu-build");	                
+    {        
+        ScopeTime up("gpu-build");	                
         octree_device.build();
     }    
     {
-        ScopeTimerCV up("gpu-download");	
+        ScopeTime up("gpu-download");	
         octree_device.internalDownload();
     }
 
@@ -121,20 +123,22 @@ TEST(PCL_OctreeGPU, perfomance)
     pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree_host(host_octree_resolution);
     octree_host.setInputCloud (cloud_host);
     {
-        ScopeTimerCV t("host-build");	        
+        ScopeTime t("host-build");	        
         octree_host.addPointsFromInputCloud();
     }
 
     // build opencv octree
+#ifdef HAVE_OPENCV
     cv::Octree octree_opencv;
     const static int opencv_octree_points_per_leaf = 32;    
     vector<cv::Point3f> opencv_points(data.points.size());
     std::transform(data.points.begin(), data.points.end(), opencv_points.begin(), DataGenerator::ConvPoint<cv::Point3f>());
         
     {        
-        ScopeTimerCV t("opencv-build");	        
+        ScopeTime t("opencv-build");	        
         octree_opencv.buildTree(opencv_points, 10, opencv_octree_points_per_leaf); 
     }
+#endif
     
     //// Radius search perfomance ///
 
@@ -145,12 +149,16 @@ TEST(PCL_OctreeGPU, perfomance)
     //host buffers
     vector<int> indeces;
     vector<float> pointRadiusSquaredDistance;
+#ifdef HAVE_OPENCV  
     vector<cv::Point3f> opencv_results;
+#endif
 
     //reserve
     indeces.reserve(data.data_size);
     pointRadiusSquaredDistance.reserve(data.data_size);
+#ifdef HAVE_OPENCV
     opencv_results.reserve(data.data_size);
+#endif
 
     //device buffers
     pcl::gpu::DeviceArray<int> bruteforce_results_device, buffer(cloud_device.size());    
@@ -162,25 +170,25 @@ TEST(PCL_OctreeGPU, perfomance)
     cout << "======  Separate radius for each query =====" << endl;
 
     {
-        ScopeTimerCV up("gpu--radius-search-batch-all");	        
+        ScopeTime up("gpu--radius-search-batch-all");	        
         octree_device.radiusSearch(queries_device, radiuses_device, max_answers, result_device);                        
     }
 
     {
-        ScopeTimerCV up("gpu-radius-search-{host}-all");	
+        ScopeTime up("gpu-radius-search-{host}-all");	
         for(size_t i = 0; i < data.tests_num; ++i)
             octree_device.radiusSearchHost(data.queries[i], data.radiuses[i], indeces, max_answers);                        
     }
 
     {                
-        ScopeTimerCV up("host-radius-search-all");	
+        ScopeTime up("host-radius-search-all");	
         for(size_t i = 0; i < data.tests_num; ++i)
             octree_host.radiusSearch(pcl::PointXYZ(data.queries[i].x, data.queries[i].y, data.queries[i].z), 
                 data.radiuses[i], indeces, pointRadiusSquaredDistance, max_answers);                        
     }
      
     {
-        ScopeTimerCV up("gpu_bruteforce-radius-search-all");	         
+        ScopeTime up("gpu_bruteforce-radius-search-all");	         
         for(size_t i = 0; i < data.tests_num; ++i)
             pcl::gpu::bruteForceRadiusSearchGPU(cloud_device, data.queries[i], data.radiuses[i], bruteforce_results_device, buffer);
     }
@@ -188,25 +196,25 @@ TEST(PCL_OctreeGPU, perfomance)
     cout << "======  Shared radius (" << data.shared_radius << ") =====" << endl;
     
     {
-        ScopeTimerCV up("gpu-radius-search-batch-all");	        
+        ScopeTime up("gpu-radius-search-batch-all");	        
         octree_device.radiusSearch(queries_device, data.shared_radius, max_answers, result_device);                        
     }
 
     {
-        ScopeTimerCV up("gpu-radius-search-{host}-all");
+        ScopeTime up("gpu-radius-search-{host}-all");
         for(size_t i = 0; i < data.tests_num; ++i)
             octree_device.radiusSearchHost(data.queries[i], data.shared_radius, indeces, max_answers);                        
     }
 
     {                
-        ScopeTimerCV up("host-radius-search-all");	
+        ScopeTime up("host-radius-search-all");	
         for(size_t i = 0; i < data.tests_num; ++i)
             octree_host.radiusSearch(pcl::PointXYZ(data.queries[i].x, data.queries[i].y, data.queries[i].z), 
                 data.radiuses[i], indeces, pointRadiusSquaredDistance, max_answers);                        
     }
      
     {
-        ScopeTimerCV up("gpu-radius-bruteforce-search-all");	         
+        ScopeTime up("gpu-radius-bruteforce-search-all");	         
         for(size_t i = 0; i < data.tests_num; ++i)
             pcl::gpu::bruteForceRadiusSearchGPU(cloud_device, data.queries[i], data.shared_radius, bruteforce_results_device, buffer);
     }
@@ -214,30 +222,30 @@ TEST(PCL_OctreeGPU, perfomance)
     cout << "======  Approx nearest search =====" << endl;
 
     {
-        ScopeTimerCV up("gpu-approx-nearest-batch-all");	        
+        ScopeTime up("gpu-approx-nearest-batch-all");	        
         octree_device.approxNearestSearch(queries_device, result_device);                        
     }
 
     {        
-        ScopeTimerCV up("gpu-approx-nearest-search-{host}-all");
+        ScopeTime up("gpu-approx-nearest-search-{host}-all");
         for(size_t i = 0; i < data.tests_num; ++i)
             octree_device.approxNearestSearchHost(data.queries[i], inds, dist);                        
     }
 
     {                
-        ScopeTimerCV up("host-approx-nearest-search-all");	
+        ScopeTime up("host-approx-nearest-search-all");	
         for(size_t i = 0; i < data.tests_num; ++i)
             octree_host.approxNearestSearch(data.queries[i], inds, dist);
     }
 
  /*   cout << "======  knn search ( k fixed to " << k << " ) =====" << endl;    
     {
-        ScopeTimerCV up("gpu-knn-batch-all");	        
+        ScopeTime up("gpu-knn-batch-all");	        
         octree_device.nearestKSearchBatch(queries_device, k, distsKNN_device, indsKNN_device);                        
     }    
 
     {                
-        ScopeTimerCV up("host-knn-search-all");	
+        ScopeTime up("host-knn-search-all");	
         for(size_t i = 0; i < data.tests_num; ++i)
             octree_host.nearestKSearch(data.queries[i], k, indeces, pointRadiusSquaredDistance);
     }*/
