@@ -132,75 +132,10 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computePointRF(size_t index, const
     PCL_WARN ("[pcl::%s::computePointRF] Neighborhood has %d vertices which is less than 5, aborting description of point index %d\n!", getClassName ().c_str (), nb_neighbours, index);
     return;
   }
-  
-  // Get the center point
-  pcl::Vector3fMapConst p = input[(*indices_)[index]].getVector3fMap ();
-  // Compute the USC descriptor
-  Eigen::Matrix3f M = Eigen::Matrix3f::Zero ();
-  float Z = 0;
-  std::vector<Eigen::Vector3f> diffs(nb_neighbours);
-  // valid neighbours only
-  size_t valid_neighbours = 0;
-  for (size_t ne = 0; ne < nb_neighbours; ++ne)
-  {
-    if(nn_indices[ne] == (*indices_)[index])
-      continue;
-    // Compute the gradient magnitude and orientation (relative to the center point)
-    ///Eigen::Map<Eigen::Vector3f> point (& (cloud.points[indices[ne]].x));
-    pcl::Vector3fMapConst p_i = input[nn_indices[ne]].getVector3fMap ();
-    // Compute M matrix
-    Eigen::Vector3f &diff_i = diffs[valid_neighbours] = p - p_i;
-    float di = search_radius_ - sqrt(nn_dists[ne]);
-    Z+= di;
-    M+= di * diff_i * diff_i.transpose();
-    valid_neighbours++;
-  }
-
-  std::cout << "valid neighbours found " << valid_neighbours << std::endl;
-  if(valid_neighbours < 5)
-  {
-    PCL_WARN ("[pcl::%s::computePointRF] Valid neighborhood has %d indices which is less than 5, aborting description of point index %d\n!", getClassName ().c_str (), valid_neighbours, index);
-    rf[0] = 1; rf[1] = 0; rf[2] = 0; 
-    rf[3] = 0; rf[4] = 1; rf[5] = 0;
-    rf[6] = 0; rf[7] = 0; rf[8] = 1;
-    return;
-  }
-
-  Eigen::Map<Eigen::Vector3f> x_axis (rf);
-  Eigen::Map<Eigen::Vector3f> y_axis (rf + 3);
-  Eigen::Map<Eigen::Vector3f> z_axis (rf + 6);
-
-  // Normalize the USC descriptor to unit magnitude
-  M/= Z;
-
-  // EVD decomposition of M
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> evd(M);
-  const Eigen::Matrix3f &vectors = evd.eigenvectors ();
-//  const Eigen::Vector3f &values = evd.eigenvalues ();
-  // TLS direction is given by the eigenvector with smallest eigenvalue
-  // x_axis, y_axis and z_axis represent eigenvectors in decreasing order
-  // x_axis_opp, y_axis_opp and z_axis_opp represent their opposites
-  x_axis = vectors.col (2); Eigen::Vector3f x_axis_opp = -x_axis;
-  z_axis = vectors.col (0); Eigen::Vector3f z_axis_opp = -z_axis;
-  // Disambiguation step from section 3 of the article
-  size_t SplusX = 0, SminusX =0, SminusZ = 0, SplusZ = 0;
-  for (size_t idx = 0; idx < valid_neighbours; idx++)
-  {
-    const Eigen::Vector3f &diff = diffs[idx];
-    if (diff.dot (x_axis) >= 0)
-      SplusX++;
-    if (diff.dot (x_axis_opp) > 0)
-      SminusX++;
-    if (diff.dot (z_axis) >= 0)
-      SplusZ++;
-    if (diff.dot (z_axis_opp) > 0)
-      SminusZ++;
-  }
-  if(SplusX < SminusX)
-    x_axis = x_axis_opp;
-  if(SplusZ < SminusZ)
-    z_axis = z_axis_opp;
-  y_axis = z_axis.cross (x_axis);
+  Eigen::Matrix4f rf_;
+  getLocalRF (*input, local_radius_, (*indices_)[index], nn_indices, nn_dists, rf_);
+  Eigen::Map<Eigen::Matrix3f> rf_mat(rf);
+  rf_mat = rf_.topLeftCorner<3,3> ();
 }
 
 template <typename PointInT, typename PointOutT> void

@@ -40,6 +40,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
+#include <pcl/features/shot.h>
 
 namespace pcl
 {

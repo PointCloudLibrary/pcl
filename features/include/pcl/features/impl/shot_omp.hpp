@@ -60,9 +60,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
   int data_size = indices_->size ();
   Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
-  std::vector<std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > > rfs (threads_);
-  for (size_t i = 0; i < rfs.size (); ++i)
-    rfs[i].resize (3);
+  std::vector<Eigen::Matrix4f> rfs (threads_);
 
   for (int i = 0; i < threads_; i++)
     shot[i].setZero (descLength_);
@@ -92,7 +90,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     for (int d = 0; d < shot[tid].size (); ++d)
       output.points[idx].descriptor[d] = shot[tid][d];
     for (int d = 0; d < 9; ++d)
-      output.points[idx].rf[d] = rfs[tid][d/3][d % 3];
+      output.points[idx].rf[d] = rfs[tid](d/3,d % 3);
   }
   delete[] shot;
 }
@@ -119,9 +117,7 @@ pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (P
 
   int data_size = indices_->size ();
   Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
-  std::vector<std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > > rfs (threads_);
-  for (size_t i = 0; i < rfs.size (); ++i)
-    rfs[i].resize (3);
+  std::vector<Eigen::Matrix4f> rfs (threads_);
 
   for (int i = 0; i < threads_; i++)
     shot[i].setZero (descLength_);
@@ -149,7 +145,7 @@ pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (P
     for (int d = 0; d < shot[tid].size (); ++d)
       output.points[idx].descriptor[d] = shot[tid][d];
     for (int d = 0; d < 9; ++d)
-      output.points[idx].rf[d] = rfs[tid][d / 3][d % 3];
+      output.points[idx].rf[d] = rfs[tid](d/3, d%3);
   }
 
   delete[] shot;
