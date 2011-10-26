@@ -46,6 +46,8 @@ endif()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   add_definitions("-std=gnu++0x")
 endif()
+# For QHULL 2011
+add_definitions("-Dqh_QHpointer")
 
 # ---[ Project folders
 option(USE_PROJECT_FOLDERS "Use folders to organize PCL projects in an IDE." OFF)
