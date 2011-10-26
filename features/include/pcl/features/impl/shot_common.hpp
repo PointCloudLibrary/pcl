@@ -59,8 +59,11 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
                  const int index, 
                  const std::vector<int> &indices, 
                  const std::vector<float> &dists, 
-                 Eigen::Matrix4f &rf)
+  std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf)
 {
+  if (rf.size () != 3)
+    rf.resize (3);
+
   Eigen::Vector4f central_point = cloud.points[index].getVector4fMap ();
   central_point[3] = 0;
   // Allocate enough space
@@ -95,8 +98,14 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
 
   if (valid_nn_points < 5)
   {
-    PCL_ERROR ("[pcl::getLocalRF] Warning! Neighborhood has less than 5 vertexes. Aborting Local RF computation of feature point with index %d\n", index);
-    rf.setIdentity ();
+    PCL_ERROR ("[pcl::%s::getSHOTLocalRF] Warning! Neighborhood has less than 5 vertexes. Aborting Local RF computation of feature point with index %d\n", "SHOT", index);
+    rf[0].setZero ();
+    rf[1].setZero ();
+    rf[2].setZero ();
+
+    rf[0][0] = 1;
+    rf[1][1] = 1;
+    rf[2][2] = 1;
 
     delete [] vij;
 
@@ -208,9 +217,12 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
 			v3 *= - 1;
 	}
 
-  rf.row (0) = v1.cast<float> ();
-  rf.row (2) = v3.cast<float> ();
-  rf.row (3) = rf.row (2).cross3 (rf.row (0));
+
+
+  rf[0] = v1.cast<float>();
+  rf[2] = v3.cast<float>();
+  rf[1] = rf[2].cross3 (rf[0]);
+  rf[0][3] = 0; rf[1][3] = 0; rf[2][3] = 0;
 
   delete [] vij;
 

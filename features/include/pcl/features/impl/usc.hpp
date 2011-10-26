@@ -39,6 +39,7 @@
 #define PCL_FEATURES_IMPL_USC_HPP_
 
 #include <pcl/features/usc.h>
+#include <pcl/features/shot_common.h>
 #include <pcl/common/geometry.h>
 #include <pcl/common/angles.h>
 
@@ -132,10 +133,10 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computePointRF(size_t index, const
     PCL_WARN ("[pcl::%s::computePointRF] Neighborhood has %d vertices which is less than 5, aborting description of point index %d\n!", getClassName ().c_str (), nb_neighbours, index);
     return;
   }
-  Eigen::Matrix4f rf_;
-  getLocalRF (*input, local_radius_, (*indices_)[index], nn_indices, nn_dists, rf_);
-  Eigen::Map<Eigen::Matrix3f> rf_mat(rf);
-  rf_mat = rf_.topLeftCorner<3,3> ();
+  std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > rf_(3);
+  pcl::getLocalRF(*input_, local_radius_, (*indices_)[index], nn_indices, nn_dists, rf_);
+  for (int d = 0; d < 9; ++d)
+    rf[d] = rf_[d/3][d%3];
 }
 
 template <typename PointInT, typename PointOutT> void

@@ -39,7 +39,6 @@
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
-#include <pcl/features/shot_common.h>
 
 namespace pcl
 {
@@ -84,6 +83,7 @@ namespace pcl
       /** \brief Empty constructor. */
       SHOTEstimationBase (int nr_shape_bins = 10) :
         nr_shape_bins_ (nr_shape_bins),
+        rf_ (3),                    // Initialize the placeholder for the point's RF
         nr_grid_sector_ (32),
         maxAngularSectors_ (28),
         descLength_ (0)
@@ -108,7 +108,7 @@ namespace pcl
                         const std::vector<int> &indices, 
                         const std::vector<float> &dists, 
                         Eigen::VectorXf &shot,
-                        Eigen::Matrix4f &rf) = 0;
+                        std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf) = 0;
 
     protected:
 
@@ -125,7 +125,8 @@ namespace pcl
                                 const std::vector<int> &indices,
                                 const std::vector<float> &dists, 
                                 const Eigen::Vector4f &centralPoint, 
-                                const Eigen::Matrix4f &rf,
+                                const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf
+,
                                 std::vector<double> &binDistance, 
                                 const int nr_bins,
                                 Eigen::VectorXf &shot);
@@ -137,7 +138,7 @@ namespace pcl
       Eigen::VectorXf shot_;
 
       /** \brief Placeholder for a point's RF. */
-      Eigen::Matrix4f rf_;
+      std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > rf_;
 
       /** \brief The squared search radius.*/
       double sqradius_;
@@ -230,7 +231,7 @@ namespace pcl
                         const std::vector<int> &indices, 
                         const std::vector<float> &dists, 
                         Eigen::VectorXf &shot,
-                        Eigen::Matrix4f &rf);
+                        std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf);
   };
 
   /** \brief @b SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
@@ -309,7 +310,7 @@ namespace pcl
                         const std::vector<int> &indices, 
                         const std::vector<float> &dists, 
                         Eigen::VectorXf &shot,
-                        Eigen::Matrix4f &rf);
+                        std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf);
 
     protected:
 
@@ -328,24 +329,17 @@ namespace pcl
                                 const std::vector<int> &indices,
                                 const std::vector<float> &dists, 
                                 const Eigen::Vector4f &centralPoint, 
-                                const Eigen::Matrix4f &rf,
+                                const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf,
                                 std::vector<double> &binDistanceShape, 
                                 std::vector<double> &binDistanceColor, 
                                 const int nr_bins_shape,
                                 const int nr_bins_color,
                                 Eigen::VectorXf &shot);
 
-      /** \brief Converts RGB triplets to CIELab space.
-        * \param R red input component(8 bits)
-        * \param G green input component(8 bits)
-        * \param B blue input component(8 bits)
-        * \param L "L" output component(float)
-        * \param a "a" output component(float)
-        * \param b "b" output component(float)
-        */
-      void 
-      RGB2CIELAB (unsigned char R, unsigned char G, unsigned char B, 
-                  float &L, float &A, float &B2);
+      /** \brief
+       */
+      static void 
+      RGB2CIELAB (unsigned char R, unsigned char G, unsigned char B, float &L, float &A, float &B2);
 
       /** \brief Compute shape descriptor. */
       bool b_describe_shape_;
@@ -363,3 +357,5 @@ namespace pcl
 }
 
 #endif  //#ifndef PCL_SHOT_H_
+
+

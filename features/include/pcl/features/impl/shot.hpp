@@ -1,47 +1,49 @@
 /*
- * Software License Agreement (BSD License)
- *
- *  Copyright (c) 2009, Willow Garage, Inc.
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- *
- */
+  * Software License Agreement (BSD License)
+  *
+  *  Copyright (c) 2009, Willow Garage, Inc.
+  *  All rights reserved.
+  *
+  *  Redistribution and use in source and binary forms, with or without
+  *  modification, are permitted provided that the following conditions
+  *  are met:
+  *
+  *   * Redistributions of source code must retain the above copyright
+  *     notice, this list of conditions and the following disclaimer.
+  *   * Redistributions in binary form must reproduce the above
+  *     copyright notice, this list of conditions and the following
+  *     disclaimer in the documentation and/or other materials provided
+  *     with the distribution.
+  *   * Neither the name of Willow Garage, Inc. nor the names of its
+  *     contributors may be used to endorse or promote products derived
+  *     from this software without specific prior written permission.
+  *
+  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  *  POSSIBILITY OF SUCH DAMAGE.
+  *
+  *
+  */
 
 #ifndef PCL_FEATURES_IMPL_SHOT_H_
 #define PCL_FEATURES_IMPL_SHOT_H_
 
 #include "pcl/features/shot.h"
 #include "pcl/features/shot_common.h"
+#include <utility>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Check if val1 and val2 are equals.
+/*!
+  * \brief Check if val1 and val2 are equals.
   *
   * \param val1 first number to check.
   * \param val2 second number to check.
@@ -54,7 +56,8 @@ areEquals (double val1, double val2, double zeroDoubleEps = zeroDoubleEps15)
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Check if val1 and val2 are equals.
+/*!
+  * \brief Check if val1 and val2 are equals.
   *
   * \param val1 first number to check.
   * \param val2 second number to check.
@@ -66,7 +69,6 @@ areEquals (float val1, float val2, float zeroFloatEps = zeroFloatEps8)
   return (fabs (val1 - val2)<zeroFloatEps);
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT, typename PointOutT> float
 pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::sRGB_LUT[256] = {- 1};
@@ -76,6 +78,16 @@ template <typename PointNT, typename PointOutT> float
 pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::sXYZ_LUT[4000] = {- 1};
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+/*!
+  * \brief Converts RGB triplets to CIELab space.
+  *
+  * \param R red input component(8 bits)
+  * \param G green input component(8 bits)
+  * \param B blue input component(8 bits)
+  * \param L "L" output component(float)
+  * \param a "a" output component(float)
+  * \param b "b" output component(float)
+  */
 template <typename PointNT, typename PointOutT> void
 pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::RGB2CIELAB (unsigned char R, unsigned char G,
                                                                         unsigned char B, float &L, float &A,
@@ -144,11 +156,17 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
     const std::vector<int> &indices,
     const std::vector<float> &dists,
     const Eigen::Vector4f &central_point,
-    const Eigen::Matrix4f &rf,
+    const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf,
     std::vector<double> &binDistance,
     const int nr_bins,
     Eigen::VectorXf &shot)
 {
+  if (rf.size () != 3)
+  {
+    PCL_ERROR ("[pcl::%s::interpolateSingleChannel] RF size different than 9! Aborting...\n");
+    return;
+  }
+
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
     Eigen::Vector4f delta = cloud.points[indices[i_idx]].getVector4fMap () - central_point;
@@ -160,9 +178,9 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
     if (areEquals (distance, 0.0))
       continue;
 
-    double xInFeatRef = delta.dot (rf.row (0)); //(x * feat[i].rf[0] + y * feat[i].rf[1] + z * feat[i].rf[2]);
-    double yInFeatRef = delta.dot (rf.row (1)); //(x * feat[i].rf[3] + y * feat[i].rf[4] + z * feat[i].rf[5]);
-    double zInFeatRef = delta.dot (rf.row (2)); //(x * feat[i].rf[6] + y * feat[i].rf[7] + z * feat[i].rf[8]);
+    double xInFeatRef = delta.dot (rf[0]); //(x * feat[i].rf[0] + y * feat[i].rf[1] + z * feat[i].rf[2]);
+    double yInFeatRef = delta.dot (rf[1]); //(x * feat[i].rf[3] + y * feat[i].rf[4] + z * feat[i].rf[5]);
+    double zInFeatRef = delta.dot (rf[2]); //(x * feat[i].rf[6] + y * feat[i].rf[7] + z * feat[i].rf[8]);
 
     // To avoid numerical problems afterwards
     if (fabs (yInFeatRef) < 1E-30)
@@ -313,13 +331,19 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
   const std::vector<int> &indices, 
   const std::vector<float> &dists,
   const Eigen::Vector4f &central_point, 
-  const Eigen::Matrix4f &rf,
+  const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf,
   std::vector<double> &binDistanceShape,
   std::vector<double> &binDistanceColor, 
   const int nr_bins_shape, 
   const int nr_bins_color, 
   Eigen::VectorXf &shot)
 {
+  if (rf.size () != 3)
+  {
+    PCL_ERROR ("[pcl::%s::interpolateDoubleChannel] RF size different than 9! Aborting...\n");
+    return;
+  }
+
   int shapeToColorStride = nr_grid_sector_*(nr_bins_shape+1);
 
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
@@ -333,9 +357,9 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
     if (areEquals (distance, 0.0))
       continue;
 
-    double xInFeatRef = delta.dot (rf.row (0)); //(x * feat[i].rf[0] + y * feat[i].rf[1] + z * feat[i].rf[2]);
-    double yInFeatRef = delta.dot (rf.row (1)); //(x * feat[i].rf[3] + y * feat[i].rf[4] + z * feat[i].rf[5]);
-    double zInFeatRef = delta.dot (rf.row (2)); //(x * feat[i].rf[6] + y * feat[i].rf[7] + z * feat[i].rf[8]);
+    double xInFeatRef = delta.dot (rf[0]); //(x * feat[i].rf[0] + y * feat[i].rf[1] + z * feat[i].rf[2]);
+    double yInFeatRef = delta.dot (rf[1]); //(x * feat[i].rf[3] + y * feat[i].rf[4] + z * feat[i].rf[5]);
+    double zInFeatRef = delta.dot (rf[2]); //(x * feat[i].rf[6] + y * feat[i].rf[7] + z * feat[i].rf[8]);
 
     // To avoid numerical problems afterwards
     if (fabs (yInFeatRef) < 1E-30)
@@ -514,13 +538,17 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
   }
 }
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT, typename PointOutT> void
 pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
   const pcl::PointCloud<pcl::PointXYZRGBA> &cloud, const pcl::PointCloud<PointNT> &normals,
   const int index, const std::vector<int> &indices, const std::vector<float> &dists, Eigen::VectorXf &shot,
-  Eigen::Matrix4f &rf)
+  std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf)
 {
+  if (rf.size () != 3)
+    rf.resize (3);
+
   // Clear the resultant shot
   shot.setZero ();
 
@@ -547,7 +575,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
 
     for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
     {
-      double cosineDesc = normals.points[indices[i_idx]].getNormalVector4fMap ().dot (rf.row(2)); //feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
+      double cosineDesc = normals.points[indices[i_idx]].getNormalVector4fMap ().dot (rf[2]); //feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
 
       if (cosineDesc > 1.0)
         cosineDesc = 1.0;
@@ -626,8 +654,11 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
   const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
   const int index, const std::vector<int> &indices, const std::vector<float> &dists, Eigen::VectorXf &shot,
-  Eigen::Matrix4f &rf)
+  std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf)
 {
+  if (rf.size () != 3)
+    rf.resize (3);
+
    // Clear the resultant shot
   shot.setZero ();
 
@@ -644,11 +675,12 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
   if (pcl::getLocalRF (cloud, search_radius_, index, indices, dists, rf))
 	  return;
 
+
   binDistanceShape.resize (nNeighbors);
 
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
-    double cosineDesc = normals.points[indices[i_idx]].getNormalVector4fMap ().dot (rf.row(2)); //feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
+    double cosineDesc = normals.points[indices[i_idx]].getNormalVector4fMap ().dot (rf[2]); //feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
 
     if (cosineDesc > 1.0)
       cosineDesc = 1.0;
@@ -677,6 +709,9 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
 template <typename PointNT, typename PointOutT> void
 pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
+  if (rf_.size () != 3)
+    rf_.resize (3);
+
   // Compute the current length of the descriptor
   descLength_ = (b_describe_shape_) ? nr_grid_sector_*(nr_shape_bins_+1) : 0;
   descLength_ +=   (b_describe_color_) ? nr_grid_sector_*(nr_color_bins_+1) : 0;
@@ -688,7 +723,9 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (Poin
   radius1_2_ = search_radius_ / 2;
 
   shot_.setZero (descLength_);
-  rf_.setZero ();
+  rf_[0].setZero ();
+  rf_[1].setZero ();
+  rf_[2].setZero ();
 
   if (output.points[0].descriptor.size () != (size_t)descLength_)
     for (size_t idx = 0; idx < indices_->size (); ++idx)
@@ -716,7 +753,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (Poin
     for (int d = 0; d < shot_.size (); ++d)
       output.points[idx].descriptor[d] = shot_[d];
     for (int d = 0; d < 9; ++d)
-      output.points[idx].rf[d] = rf_(d/3,d%3);
+      output.points[idx].rf[d] = rf_[d/3][d%3];
   }
 }
 
@@ -725,6 +762,9 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (Poin
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
+  if (rf_.size () != 3)
+    rf_.resize (3);
+
   descLength_ = nr_grid_sector_ * (nr_shape_bins_+1);
 
   sqradius_ = search_radius_ * search_radius_;
@@ -733,7 +773,9 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (PointClou
   radius1_2_ = search_radius_ / 2;
 
   shot_.setZero (descLength_);
-  rf_.setZero ();
+  rf_[0].setZero ();
+  rf_[1].setZero ();
+  rf_[2].setZero ();
 
   if (output.points[0].descriptor.size () != (size_t)descLength_)
     for (size_t idx = 0; idx < indices_->size (); ++idx)
@@ -761,7 +803,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (PointClou
     for (int d = 0; d < shot_.size (); ++d)
       output.points[idx].descriptor[d] = shot_[d];
     for (int d = 0; d < 9; ++d)
-      output.points[idx].rf[d] = rf_(d/3,d%3);
+      output.points[idx].rf[d] = rf_[d/3][d%3];
   }
 }
 
