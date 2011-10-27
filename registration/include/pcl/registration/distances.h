@@ -122,6 +122,18 @@ namespace pcl
     ///\brief pointer to l1 function
     double(*l1FunctionPtr) (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt) = &pcl::distances::l1;
 
+    /** \brief Compute the Euclidean distance between two eigen vectors.
+      * \param[in] p_src the first eigen vector
+      * \param[in] p_tgt the second eigen vector
+      */
+    inline double
+    l2 (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt) 
+    {
+      return ((p_src - p_tgt).norm ());
+    }
+    ///\brief pointer to l2 function
+    double(*l2FunctionPtr) (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt) = &pcl::distances::l2;
+
     /** \brief Compute the squared Euclidean distance between two eigen vectors.
       * \param[in] p_src the first eigen vector
       * \param[in] p_tgt the second eigen vector

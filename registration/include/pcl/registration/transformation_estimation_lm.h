@@ -145,7 +145,7 @@ namespace pcl
         {
           Vector4fMapConst s = p_src.getVector4fMap ();
           Vector4fMapConst t = p_tgt.getVector4fMap ();
-          return (pcl::distances::l2Sqr(s, t));
+          return (pcl::distances::l2S (s, t));
         }
 
         /** \brief The vector of residual weights. Used internall in the LM loop. */
