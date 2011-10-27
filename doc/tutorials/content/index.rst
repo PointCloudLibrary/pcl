@@ -686,7 +686,7 @@ Segmentation
 
              Author: *Serkan Tuerker*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > PCL 1.3
 
              In this tutorial we will learn how to extract Euclidean clusters with the ``pcl::EuclideanClusterExtraction`` class.
      ======  ======
