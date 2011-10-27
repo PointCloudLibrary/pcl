@@ -91,7 +91,7 @@ namespace pcl
           * \param radius the circle radius around the pixel
           */
         void
-        markPoint(size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color = red_color, float radius = 2);
+        markPoint (size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color = red_color, float radius = 2);
 
         void
         setName(const std::string& name)

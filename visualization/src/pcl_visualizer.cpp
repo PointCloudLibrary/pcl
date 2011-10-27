@@ -1099,6 +1099,7 @@ pcl::visualization::PCLVisualizer::getCameras (std::vector<pcl::visualization::C
     cameras.back ().view[0] = renderer->GetActiveCamera ()->GetViewUp ()[0];
     cameras.back ().view[1] = renderer->GetActiveCamera ()->GetViewUp ()[1];
     cameras.back ().view[2] = renderer->GetActiveCamera ()->GetViewUp ()[2];
+    cameras.back().fovy = renderer->GetActiveCamera ()->GetViewAngle () / 180.0 * M_PI;
     cameras.back ().window_size[0] = renderer->GetRenderWindow ()->GetSize()[0];
     cameras.back ().window_size[1] = renderer->GetRenderWindow ()->GetSize()[1];
     cameras.back ().window_pos[0] = 0;
@@ -1240,9 +1241,9 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
       }
 
       // look for '/' as a separator
-      if (camera.size () != 6)
+      if (camera.size () != 7)
       {
-        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Camera parameters given, but with an invalid number of options (%lu vs 6)!\n", (unsigned long)camera.size ());
+        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Camera parameters given, but with an invalid number of options (%lu vs 7)!\n", (unsigned long)camera.size ());
         return (false);
       }
 
@@ -1250,8 +1251,9 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
       std::string focal_str = camera.at (1);
       std::string pos_str   = camera.at (2);
       std::string view_str  = camera.at (3);
-      std::string win_size_str = camera.at (4);
-      std::string win_pos_str  = camera.at (5);
+      std::string fovy_str  = camera.at (4);
+      std::string win_size_str = camera.at (5);
+      std::string win_pos_str  = camera.at (6);
 
       // Get each camera setting separately and parse for ','
       std::vector<std::string> clip_st;
@@ -1296,6 +1298,15 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
       camera_.view[0] = atof (view_st.at (0).c_str ());
       camera_.view[1] = atof (view_st.at (1).c_str ());
       camera_.view[2] = atof (view_st.at (2).c_str ());
+
+      std::vector<std::string> fovy_size_st;
+      boost::split (fovy_size_st, fovy_str, boost::is_any_of (","), boost::token_compress_on);
+      if (fovy_size_st.size () != 1)
+      {
+        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for field of view angle!\n");
+        return (false);
+      }
+      camera_.fovy = atof (fovy_size_st.at (0).c_str ());
 
       std::vector<std::string> win_size_st;
       boost::split (win_size_st, win_size_str, boost::is_any_of (","), boost::token_compress_on);

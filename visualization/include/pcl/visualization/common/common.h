@@ -77,10 +77,13 @@ namespace pcl
     class Camera
     {
       public:
-        double clip[2];     // clipping range
         double focal[3];    // focal point
         double pos[3];      // position
         double view[3];     // viewup
+
+        double clip[2];     // clipping range
+        double fovy;         // field of view angle 
+                             // in y direction (radians)
 
         double window_size[2];  // window size
         double window_pos[2];   // window position

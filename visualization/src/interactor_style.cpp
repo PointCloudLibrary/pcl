@@ -435,7 +435,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       int *win_size = Interactor->GetRenderWindow ()->GetSize ();
       ofs_cam << clip[0]  << "," << clip[1]  << "/" << focal[0] << "," << focal[1] << "," << focal[2] << "/" <<
                  pos[0]   << "," << pos[1]   << "," << pos[2]   << "/" << view[0]  << "," << view[1]  << "," << view[2] << "/" << 
-                 win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
+                 cam->GetViewAngle () / 180.0 * M_PI  << "/" << win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
               << endl;
       ofs_cam.close ();
 
@@ -455,7 +455,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       int *win_size = Interactor->GetRenderWindow ()->GetSize ();
       std::cerr << clip[0]  << "," << clip[1]  << "/" << focal[0] << "," << focal[1] << "," << focal[2] << "/" <<
                    pos[0]   << "," << pos[1]   << "," << pos[2]   << "/" << view[0]  << "," << view[1]  << "," << view[2] << "/" <<
-                   win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
+                   cam->GetViewAngle () / 180.0 * M_PI  << "/" << win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
                 << endl;
       break;
     }
