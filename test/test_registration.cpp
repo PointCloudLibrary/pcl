@@ -211,16 +211,16 @@ TEST (PCL, IterativeClosestPointNonLinear)
       tolerance for these to be higher that usual.  We eventually need to find the cause of the inconsistency 
       and set a lower tolerance. */
   EXPECT_NEAR (transformation (0, 0),  0.941755, 1e-2);
-  EXPECT_NEAR (transformation (0, 1),  0.103078, 1e-2);
-  EXPECT_NEAR (transformation (0, 2), -0.320113, 1e-2);
+  EXPECT_NEAR (transformation (0, 1),  0.147362, 1e-2);
+  EXPECT_NEAR (transformation (0, 2), -0.281285, 1e-2);
   EXPECT_NEAR (transformation (0, 3),  0.029813, 1e-2);
 
-  EXPECT_NEAR (transformation (1, 0), -0.067404, 1e-2);
+  EXPECT_NEAR (transformation (1, 0), -0.111655, 1e-2);
   EXPECT_NEAR (transformation (1, 1),  0.990408, 1e-2);
-  EXPECT_NEAR (transformation (1, 2),  0.120618, 1e-2);
+  EXPECT_NEAR (transformation (1, 2),  0.139090, 1e-2);
   EXPECT_NEAR (transformation (1, 3), -0.001864, 1e-2);
 
-  EXPECT_NEAR (transformation (2, 0),  0.329475, 1e-2);
+  EXPECT_NEAR (transformation (2, 0),  0.297271, 1e-2);
   EXPECT_NEAR (transformation (2, 1), -0.092015, 1e-2);
   EXPECT_NEAR (transformation (2, 2),  0.939670, 1e-2); 
   EXPECT_NEAR (transformation (2, 3),  0.042721, 1e-2);
@@ -272,11 +272,11 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
 
   EXPECT_NEAR (transformation (1, 0), -0.0328, 1e-2);
   EXPECT_NEAR (transformation (1, 1),  0.9968, 1e-2);
-  EXPECT_NEAR (transformation (1, 2),  0.0736, 1e-2);
+  EXPECT_NEAR (transformation (1, 2),  0.0851, 1e-2);
   EXPECT_NEAR (transformation (1, 3), -0.0003, 1e-2);
 
   EXPECT_NEAR (transformation (2, 0),  0.4250, 1e-2);
-  EXPECT_NEAR (transformation (2, 1), -0.0527, 1e-2);
+  EXPECT_NEAR (transformation (2, 1), -0.0641, 1e-2);
   EXPECT_NEAR (transformation (2, 2),  0.9037, 1e-2); 
   EXPECT_NEAR (transformation (2, 3),  0.0413, 1e-2);
 
