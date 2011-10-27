@@ -122,7 +122,8 @@ Compiling and running the project
 Make a directory called ``build``, in which the compilation will be
 done. Do::
 
-  $ Gd build
+  $ mkdir build
+  $ cd build
   $ cmake ..
 
 You will see something similar to::
