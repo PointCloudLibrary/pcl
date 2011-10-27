@@ -9,7 +9,7 @@
 #include "proctor/proctor.h"
 #include "proctor/scanner.h"
 
-#if 0
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 8))
 #include "SyntheticLidarScanner/vtkRay.cxx"
 #include "SyntheticLidarScanner/vtkLidarPoint.cxx"
 #include "SyntheticLidarScanner/vtkLidarScanner.cxx"
@@ -38,7 +38,7 @@ static PointCloud<PointXYZ>::Ptr compute_pcxyz(int model, vtkSmartPointer<vtkTra
   // TODO: investigate replacing vtkLidarScanner with vtkRenderWindow::GetZbufferData
   // I think this function leaks memory.
   PointCloud<PointXYZ>::Ptr pcxyz (new PointCloud<PointXYZ>());
-#if 0
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 8))
   vtkLidarScanner *ls = vtkLidarScanner::New();
   vtkPolyData *pd = vtkPolyData::New();
 
