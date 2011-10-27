@@ -184,12 +184,14 @@ void OpenNIGrabber::start()
     // check if we need to start/stop any stream
     if (image_required_ && !device_->isImageStreamRunning())
     {
+      block_signals();
       device_->startImageStream();
       //startSynchronization ();
     }
 
     if (depth_required_ && !device_->isDepthStreamRunning())
     {
+      block_signals();
       if (device_->hasImageStream() && !device_->isDepthRegistered() && device_->isDepthRegistrationSupported())
       {
         device_->setDepthRegistration(true);
@@ -200,6 +202,7 @@ void OpenNIGrabber::start()
 
     if (ir_required_ && !device_->isIRStreamRunning())
     {
+      block_signals();
       device_->startIRStream();
     }
     running_ = true;
@@ -208,6 +211,9 @@ void OpenNIGrabber::start()
   {
     THROW_PCL_IO_EXCEPTION("Could not start streams. Reason: %s", ex.what());
   }
+  // workaround, since the first frame is corrupted
+  boost::this_thread::sleep (boost::posix_time::seconds (1));
+  unblock_signals();
 }
 
 void OpenNIGrabber::stop()
