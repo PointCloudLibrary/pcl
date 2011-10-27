@@ -671,7 +671,7 @@ Segmentation
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > PCL 1.3
 
              In this tutorial, we will learn how to segment arbitrary cylindrical models from a given point cloud dataset.
      ======  ======
@@ -786,7 +786,7 @@ Visualization
 
              Author: *Geoffrey Biggs*
 
-             Compatibility: >= PCL 1.0
+             Compatibility: >= PCL 1.3
 
              This tutorial demonstrates how to use the PCLVisualizer class for powerful visualisation of point clouds and related data.
      ======  ======
@@ -821,7 +821,7 @@ Applications
 
              Author: *Michael Dixon*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > PCL 1.3
 
              This tutorial gives an example of how some of the tools covered in the previous tutorials can be combined to solve a higher level problem --- aligning a previously captured model of an object to some newly captured data.
      ======  ======

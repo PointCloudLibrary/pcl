@@ -14,7 +14,7 @@ int
   pcl::fromROSMsg (cloud_blob, *cloud);
 
   // Create a KD-Tree
-  pcl::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::KdTreeFLANN<pcl::PointXYZ>);
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
   tree->setInputCloud (cloud);
 
   // Output has the same type as the input one, it will be only smoothed

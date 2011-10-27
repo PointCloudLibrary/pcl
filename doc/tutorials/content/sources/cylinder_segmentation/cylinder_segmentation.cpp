@@ -21,7 +21,7 @@ main (int argc, char** argv)
   pcl::PCDWriter writer;
   pcl::ExtractIndices<PointT> extract;
   pcl::ExtractIndices<pcl::Normal> extract_normals;
-  pcl::KdTreeFLANN<PointT>::Ptr tree (new pcl::KdTreeFLANN<PointT> ());
+  pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT> ());
 
   // Datasets
   pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
