@@ -69,7 +69,11 @@ macro(PCL_MAKE_CPACK_INPUT)
     if(BUILD_documentation)
         set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} doc")
     endif(BUILD_documentation)
-
+    # add PCLConfig
+    set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} pclconfig")
+    set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_GROUP \"PCL\")\n")
+    set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_DISPLAY_NAME \"PCLConfig\")\n")
+    set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_DESCRIPTION \"Helper cmake configuration scripts used by find_package(PCL)\")\n")	
     # add 3rdParty libs
     if(BUILD_all_in_one_installer)
         set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_GROUP_THIRDPARTY_DISPLAY_NAME \"3rd Party Libraries\")")
