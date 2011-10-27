@@ -191,6 +191,7 @@ macro(find_flann)
     get_filename_component(FLANN_LIBRARY_PATH ${FLANN_LIBRARY} PATH)
     get_filename_component(FLANN_LIBRARY_DEBUG_PATH ${FLANN_LIBRARY_DEBUG} PATH)
     set(FLANN_LIBRARY_DIRS ${FLANN_LIBRARY_PATH} ${FLANN_LIBRARY_DEBUG_PATH}) 
+    set(FLANN_LIBRARIES optimized ${FLANN_LIBRARY} debug ${FLANN_LIBRARY_DEBUG})
   endif(FLANN_FOUND)
 endmacro(find_flann)
 
