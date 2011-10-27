@@ -42,6 +42,7 @@
 #include <pcl/point_types.h>
 #include "pcl/features/feature.h"
 #include "pcl/features/integral_image_2d.h"
+#include "pcl/features/integral_image2D.h"
 
 namespace pcl
 {
@@ -74,6 +75,7 @@ namespace pcl
         normal_estimation_method_(AVERAGE_3D_GRADIENT),
         integral_image_x_(NULL), integral_image_y_(NULL), 
         integral_image_xyz_(NULL), integral_image_(NULL),
+        integral_image_XYZ_ (1, 1, true),
         diff_x_(NULL), diff_y_(NULL), depth_data_(NULL),
         use_depth_dependent_smoothing_(false),
         max_depth_change_factor_(20.0f*0.001f),
@@ -203,6 +205,8 @@ namespace pcl
       IntegralImage2D<float, double> *integral_image_xyz_;
       /** integral image */
       IntegralImage2D<float, double> *integral_image_;
+      /** integral image xyz */
+      IntegralImage2Dim<float, 3> integral_image_XYZ_;
 
       /** derivatives in x-direction */
       float *diff_x_;

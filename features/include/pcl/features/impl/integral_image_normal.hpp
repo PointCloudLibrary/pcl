@@ -35,9 +35,10 @@
 
 #ifndef PCL_FEATURES_INTEGRALIMAGE_BASED_IMPL_NORMAL_ESTIMATOR_H_
 #define PCL_FEATURES_INTEGRALIMAGE_BASED_IMPL_NORMAL_ESTIMATOR_H_
+#define EIGEN_II_METHOD 1
 
 #include "pcl/features/integral_image_normal.h"
-
+#include "pcl/common/time.h"
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::~IntegralImageNormalEstimation ()
@@ -91,9 +92,13 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMet
   int row_stride     = element_stride * input_->width;
   
   float *data_ = reinterpret_cast<float*>((PointInT*)(&(input_->points[0])));
-  // compute integral images
+  
+ // compute integral images
+ #if EIGEN_II_METHOD
+  integral_image_XYZ_.setInput(data_, input_->width, input_->height, element_stride, row_stride);
+#else
   integral_image_xyz_ = new pcl::IntegralImage2D<float, double>(data_, input_->width, input_->height, 3, true, element_stride, row_stride);
-      
+#endif  
   init_covariance_matrix_ = true;
   init_average_3d_gradient_ = init_depth_change_ = false;
 }
@@ -182,7 +187,35 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
   {
     if (!init_covariance_matrix_)
       initCovarianceMatrixMethod ();
+    
+#if EIGEN_II_METHOD
+    EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
+    Eigen::Vector3f center;
+    EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
+    EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
+    typename IntegralImage2Dim<float, 3>::SecondOrderType so_elements;
+  
+    center = integral_image_XYZ_.getFirstOrderSum(pos_x - (rect_width_ >> 1), pos_y - (rect_height_ >> 1), rect_width_, rect_height_).cast<float> ();
+    so_elements = integral_image_XYZ_.getSecondOrderSum(pos_x - (rect_width_ >> 1), pos_y - (rect_height_ >> 1), rect_width_, rect_height_);
+    covariance_matrix (0, 0) = so_elements [0];
+    covariance_matrix (0, 1) = covariance_matrix (1, 0) = so_elements [1];
+    covariance_matrix (0, 2) = covariance_matrix (2, 0) = so_elements [2];
+    covariance_matrix (1, 1) = so_elements [3];
+    covariance_matrix (1, 2) = covariance_matrix (2, 1) = so_elements [4];
+    covariance_matrix (2, 2) = so_elements [5];
+    covariance_matrix -= (center * center.transpose()) / (rect_width_ * rect_height_);
+    pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+    if (eigen_vectors (2, 0) < 0.0f)
+      normal.getNormalVector4fMap () = Eigen::Vector4f (eigen_vectors (0, 0), eigen_vectors (1, 0), eigen_vectors (2, 0), 0);
+    else
+      normal.getNormalVector4fMap () = Eigen::Vector4f (-eigen_vectors (0, 0), -eigen_vectors (1, 0), -eigen_vectors (2, 0), 0);
 
+    // Compute the curvature surface change
+    if (eigen_values [2] > 0.0)
+      normal.curvature = fabs ( eigen_values[0] / eigen_values.sum () );
+    else
+      normal.curvature = 0;
+#else
     const float mean_x = integral_image_xyz_->getSum(pos_x-rect_width_/2, pos_y-rect_height_/2, rect_width_, rect_height_, 0);
     const float mean_y = integral_image_xyz_->getSum(pos_x-rect_width_/2, pos_y-rect_height_/2, rect_width_, rect_height_, 1);
     const float mean_z = integral_image_xyz_->getSum(pos_x-rect_width_/2, pos_y-rect_height_/2, rect_width_, rect_height_, 2);
@@ -225,6 +258,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
       normal.curvature = fabs ( eigen_values[0] / eig_sum );
     else
       normal.curvature = 0;
+#endif    
     return;
   }
   else if (normal_estimation_method_ == AVERAGE_3D_GRADIENT)
