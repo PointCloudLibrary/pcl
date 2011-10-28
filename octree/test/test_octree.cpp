@@ -1410,6 +1410,9 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
   // Voxels in ray
   std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> > voxelsInRay;
 
+  // Indices in ray
+  std::vector<int> indicesInRay;
+
   srand (time (NULL));
 
   for (test_id = 0; test_id < test_runs; test_id++)
@@ -1450,9 +1453,12 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
     octree_search.addPointsFromInputCloud ();
 
     octree_search.getIntersectedVoxelCenters (o, dir, voxelsInRay);
+    octree_search.getIntersectedVoxelIndices (o, dir, indicesInRay);
 
     // check if all voxels in the cloud are penetraded by the ray
     ASSERT_EQ ( voxelsInRay.size () , cloudIn->points.size () );
+    // check if all indices of penetrated voxels are in cloud
+    ASSERT_EQ ( indicesInRay.size () , cloudIn->points.size () );
   }
 
 }

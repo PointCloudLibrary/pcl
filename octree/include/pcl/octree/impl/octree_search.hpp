@@ -589,6 +589,8 @@ namespace pcl
 
       }
 
+
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT>
       int
@@ -603,52 +605,42 @@ namespace pcl
         voxelCenterList_arg.clear ();
         voxelCenterList_arg.reserve (this->leafCount_);
 
-        // Account for division by zero when direction vector is 0.0
-        const double epsilon = 1e-10;
-
-        if (direction.x () == 0.0)
-          direction.x () = epsilon;
-        if (direction.y () == 0.0)
-          direction.y () = epsilon;
-        if (direction.z () == 0.0)
-          direction.z () = epsilon;
-
         // Voxel childIdx remapping
         unsigned char a = 0;
-
-        // Handle negative axis direction vector
-        if (direction.x () < 0.0)
-        {
-          origin.x () = this->minX_ + this->maxX_ - origin.x ();
-          direction.x () = -direction.x ();
-          a |= 4;
-        }
-        if (direction.y () < 0.0)
-        {
-          origin.y () = this->minY_ + this->maxY_ - origin.y ();
-          direction.y () = -direction.y ();
-          a |= 2;
-        }
-        if (direction.z () < 0.0)
-        {
-          origin.z () = this->minZ_ + this->maxZ_ - origin.z ();
-          direction.z () = -direction.z ();
-          a |= 1;
-        }
-
         double minX, minY, minZ, maxX, maxY, maxZ;
 
-        minX = (this->minX_ - origin.x ()) / direction.x ();
-        maxX = (this->maxX_ - origin.x ()) / direction.x ();
-        minY = (this->minY_ - origin.y ()) / direction.y ();
-        maxY = (this->maxY_ - origin.y ()) / direction.y ();
-        minZ = (this->minZ_ - origin.z ()) / direction.z ();
-        maxZ = (this->maxZ_ - origin.z ()) / direction.z ();
+        initIntersectedVoxel(origin, direction, minX, minY, minZ, maxX, maxY, maxZ, a);
 
         if (max (max (minX, minY), minZ) < min (min (maxX, maxY), maxZ))
           return getIntersectedVoxelCentersRecursive (minX, minY, minZ, maxX, maxY, maxZ, a, this->rootNode_, key,
                                                       voxelCenterList_arg);
 
+        return 0;
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      int
+      OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxelIndices (
+                                                                                  Eigen::Vector3f origin,
+                                                                                  Eigen::Vector3f direction,
+                                                                                  std::vector<int> &k_indices_arg) const
+      {
+        OctreeKey key;
+        key.x = key.y = key.z = 0;
+
+        k_indices_arg.clear ();
+        k_indices_arg.reserve (this->leafCount_);
+
+        // Voxel childIdx remapping
+        unsigned char a = 0;
+        double minX, minY, minZ, maxX, maxY, maxZ;
+
+        initIntersectedVoxel(origin, direction, minX, minY, minZ, maxX, maxY, maxZ, a);
+
+        if (max (max (minX, minY), minZ) < min (min (maxX, maxY), maxZ))
+          return getIntersectedVoxelIndicesRecursive (minX, minY, minZ, maxX, maxY, maxZ, a, this->rootNode_, key,
+                                                      k_indices_arg);
         return 0;
       }
 
@@ -776,6 +768,139 @@ namespace pcl
 	      break;                                                                                 
 	    }                                                                                          
 	} while (currNode < 8);                                                                      
+
+        return voxelCount;
+      }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT, typename LeafT, typename OctreeT>
+      int
+      OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxelIndicesRecursive (
+                                                                                           double minX,
+                                                                                           double minY,
+                                                                                           double minZ,
+                                                                                           double maxX,
+                                                                                           double maxY,
+                                                                                           double maxZ,
+                                                                                           unsigned char a,
+                                                                                           const OctreeNode* node_arg,
+                                                                                           const OctreeKey& key_arg,
+                                                                                           std::vector<int> &k_indices_arg) const
+      {
+
+        if (maxX < 0.0 || maxY < 0.0 || maxZ < 0.0)
+          return 0;
+
+        // If leaf node, get voxel center and increment intersection count
+        if (node_arg->getNodeType () == LEAF_NODE)
+        {
+          OctreeLeaf* leaf = (OctreeLeaf*)node_arg;
+          vector<int> indices;
+
+          // decode leaf node into decodedPointVector
+          leaf->getData (indices);
+          for (size_t i = 0; i < indices.size (); i++)
+          {
+
+            k_indices_arg.push_back (indices[i]);
+          }
+
+          return 1;
+        }
+
+        // Voxel intersection count for branches children
+        int voxelCount = 0;
+
+        // Voxel mid lines
+        double midX = 0.5 * (minX + maxX);
+        double midY = 0.5 * (minY + maxY);
+        double midZ = 0.5 * (minZ + maxZ);
+
+        // First voxel node ray will intersect
+        int currNode = getFirstIntersectedNode (minX, minY, minZ, midX, midY, midZ);
+
+        // Child index, node and key
+        unsigned char childIdx;
+        const OctreeNode *childNode;
+        OctreeKey childKey;
+
+        do
+        {
+          if (currNode != 0)
+            childIdx = currNode ^ a;
+          else
+            childIdx = a;
+
+          // childNode == 0 if childNode doesn't exist
+          childNode = getBranchChild ((OctreeBranch&)*node_arg, childIdx);
+
+          // Generate new key for current branch voxel
+          childKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
+          childKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
+          childKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+
+          // Recursively call each intersected child node, selecting the next
+          //   node intersected by the ray.  Children that do not intersect will
+          //   not be traversed.
+          switch(currNode)
+          {
+            case 0:
+              if (childNode)
+                voxelCount += getIntersectedVoxelIndicesRecursive (minX, minY, minZ, midX, midY, midZ, a,
+                                                                   childNode, childKey, k_indices_arg);
+              currNode = getNextIntersectedNode(midX, midY, midZ, 4, 2, 1);
+              break;
+
+            case 1:
+              if (childNode)
+                voxelCount += getIntersectedVoxelIndicesRecursive (minX, minY, midZ, midX, midY, maxZ, a,
+                                                                   childNode, childKey, k_indices_arg);
+              currNode = getNextIntersectedNode(midX, midY, maxZ, 5, 3, 8);
+              break;
+
+            case 2:
+              if (childNode)
+                voxelCount += getIntersectedVoxelIndicesRecursive (minX, midY, minZ, midX, maxY, midZ, a,
+                                                                   childNode, childKey, k_indices_arg);
+              currNode = getNextIntersectedNode(midX, maxY, midZ, 6, 8, 3);
+              break;
+
+            case 3:
+              if (childNode)
+                voxelCount += getIntersectedVoxelIndicesRecursive (minX, midY, midZ, midX, maxY, maxZ, a,
+                                                                   childNode, childKey, k_indices_arg);
+              currNode = getNextIntersectedNode(midX, maxY, maxZ, 7, 8, 8);
+              break;
+
+            case 4:
+              if (childNode)
+                voxelCount += getIntersectedVoxelIndicesRecursive (midX, minY, minZ, maxX, midY, midZ, a,
+                                                                   childNode, childKey, k_indices_arg);
+              currNode = getNextIntersectedNode(maxX, midY, midZ, 8, 6, 5);
+              break;
+
+            case 5:
+              if (childNode)
+                voxelCount += getIntersectedVoxelIndicesRecursive (midX, minY, midZ, maxX, midY, maxZ, a,
+                                                                   childNode, childKey, k_indices_arg);
+              currNode = getNextIntersectedNode(maxX, midY, maxZ, 8, 7, 8);
+              break;
+
+            case 6:
+              if (childNode)
+                voxelCount += getIntersectedVoxelIndicesRecursive (midX, midY, minZ, maxX, maxY, midZ, a,
+                                                                   childNode, childKey, k_indices_arg);
+              currNode = getNextIntersectedNode(maxX, maxY, midZ, 8, 8, 7);
+              break;
+
+            case 7:
+              if (childNode)
+                voxelCount += getIntersectedVoxelIndicesRecursive (midX, midY, midZ, maxX, maxY, maxZ, a,
+                                                                   childNode, childKey, k_indices_arg);
+              currNode = 8;
+              break;
+          }
+        } while (currNode < 8);
 
         return voxelCount;
       }
