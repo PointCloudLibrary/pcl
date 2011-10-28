@@ -33,13 +33,13 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de)
+ * $Id$
  */
+
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
 #include "pcl/search/octree.h"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(Octree, PCL_XYZ_POINT_TYPES)
-;
+PCL_INSTANTIATE(Octree, PCL_XYZ_POINT_TYPES);
 

@@ -1,7 +1,8 @@
 #ifndef PCL_TRACKING_APPROX_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
 #define PCL_TRACKING_APPROX_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
 
-#include "pcl/search/search.h"
+#include <pcl/search/search.h>
+#include <pcl/search/octree.h>
 #include "pcl/tracking/nearest_pair_point_cloud_coherence.h"
 namespace pcl
 {
@@ -18,7 +19,7 @@ namespace pcl
     public:
       typedef typename NearestPairPointCloudCoherence<PointInT>::PointCoherencePtr PointCoherencePtr;
       typedef typename NearestPairPointCloudCoherence<PointInT>::PointCloudInConstPtr PointCloudInConstPtr;
-      using NearestPairPointCloudCoherence<PointInT>::search_;
+      //using NearestPairPointCloudCoherence<PointInT>::search_;
       using NearestPairPointCloudCoherence<PointInT>::maximum_distance_;
       using NearestPairPointCloudCoherence<PointInT>::target_input_;
       using NearestPairPointCloudCoherence<PointInT>::point_coherences_;
@@ -41,6 +42,7 @@ namespace pcl
       virtual void
       computeCoherence (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices, float &w_j);
 
+      typename boost::shared_ptr<pcl::search::Octree<PointInT> > search_;
     };
   }
 }

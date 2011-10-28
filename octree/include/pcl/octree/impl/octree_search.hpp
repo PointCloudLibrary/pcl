@@ -45,19 +45,19 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> bool
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::voxelSearch (
-    const PointT& point_arg, std::vector<int>& pointIdx_data_arg)
+    const PointT& point, std::vector<int>& pointIdx_data)
 {
   OctreeKey key;
   bool b_success = false;
 
   // generate key
-  genOctreeKeyforPoint (point_arg, key);
+  genOctreeKeyforPoint (point, key);
 
   LeafT* leaf = getLeaf (key);
 
   if (leaf)
   {
-    leaf->getData (pointIdx_data_arg);
+    leaf->getData (pointIdx_data);
     b_success = true;
   }
 
@@ -67,28 +67,16 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::voxelSearch (
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> bool
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::voxelSearch (
-    const int index_arg, std::vector<int>& pointIdx_data_arg)
+    const int index, std::vector<int>& pointIdx_data)
 {
-  const PointT search_point = this->getPointByIndex (index_arg);
-  return (this->voxelSearch (search_point, pointIdx_data_arg));
+  const PointT search_point = this->getPointByIndex (index);
+  return (this->voxelSearch (search_point, pointIdx_data));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::nearestKSearch (
-    const PointCloudConstPtr &cloud_arg,
-    int index_arg, int k_arg, std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg)
-{
-  this->setInputCloud (cloud_arg);
-  this->addPointsFromInputCloud ();
-
-  return (nearestKSearch (index_arg, k_arg, k_indices_arg, k_sqr_distances_arg));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename OctreeT> int
-pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::nearestKSearch (
-    const PointT &p_q_arg, int k_arg, std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg)
+    const PointT &p_q, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
 {
   unsigned int i;
   unsigned int resultCount;
@@ -104,10 +92,10 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::nearestKSearch (
   // initalize smallest point distance in search with high value
   double smallestDist = numeric_limits<double>::max ();
 
-  k_indices_arg.clear ();
-  k_sqr_distances_arg.clear ();
+  k_indices.clear ();
+  k_sqr_distances.clear ();
 
-  getKNearestNeighborRecursive (p_q_arg, k_arg, this->rootNode_, key, 1, smallestDist, pointCandidates);
+  getKNearestNeighborRecursive (p_q, k, this->rootNode_, key, 1, smallestDist, pointCandidates);
 
   resultCount = pointCandidates.size ();
 
@@ -115,105 +103,83 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::nearestKSearch (
   {
     pointEntry = pointCandidates.back ();
 
-    k_indices_arg.push_back (pointEntry.pointIdx_);
-    k_sqr_distances_arg.push_back (pointEntry.pointDistance_);
+    k_indices.push_back (pointEntry.pointIdx_);
+    k_sqr_distances.push_back (pointEntry.pointDistance_);
 
     pointCandidates.pop_back ();
   }
 
-  return k_indices_arg.size ();
+  return k_indices.size ();
 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::nearestKSearch (
-    int index_arg, int k_arg, std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg)
+    int index, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
 {
-  const PointT search_point = this->getPointByIndex (index_arg);
-  return (nearestKSearch (search_point, k_arg, k_indices_arg, k_sqr_distances_arg));
+  const PointT search_point = this->getPointByIndex (index);
+  return (nearestKSearch (search_point, k, k_indices, k_sqr_distances));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> void
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::approxNearestSearch (
-    const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg, float &sqr_distance_arg)
-{
-  this->setInputCloud (cloud_arg);
-  this->addPointsFromInputCloud ();
-  return (approxNearestSearch (query_index_arg, result_index_arg, sqr_distance_arg));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename OctreeT> void
-pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::approxNearestSearch (
-    const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg)
+    const PointT &p_q, int &result_index, float &sqr_distance)
 {
   assert (this->leafCount_>0);
 
   OctreeKey key;
   key.x = key.y = key.z = 0;
 
-  approxNearestSearchRecursive (p_q_arg, this->rootNode_, key, 1, result_index_arg, sqr_distance_arg);
+  approxNearestSearchRecursive (p_q, this->rootNode_, key, 1, result_index, sqr_distance);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> void
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::approxNearestSearch (
-    int query_index_arg, int &result_index_arg, float &sqr_distance_arg)
+    int query_index, int &result_index, float &sqr_distance)
 {
-  const PointT searchPoint = this->getPointByIndex (query_index_arg);
+  const PointT searchPoint = this->getPointByIndex (query_index);
 
-  return (approxNearestSearch (searchPoint, result_index_arg, sqr_distance_arg));
+  return (approxNearestSearch (searchPoint, result_index, sqr_distance));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::radiusSearch (
-    const PointCloudConstPtr &cloud_arg, int index_arg, double radius_arg, std::vector<int> &k_indices_arg,
-    std::vector<float> &k_sqr_distances_arg, int max_nn_arg)
-{
-  this->setInputCloud (cloud_arg);
-  this->addPointsFromInputCloud ();
-
-  return (radiusSearch (index_arg, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename OctreeT> int
-pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::radiusSearch (
-    const PointT &p_q_arg, const double radius_arg, std::vector<int> &k_indices_arg, 
-    std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const
+    const PointT &p_q, const double radius, std::vector<int> &k_indices, 
+    std::vector<float> &k_sqr_distances, int max_nn) const
 {
   OctreeKey key;
   key.x = key.y = key.z = 0;
 
-  k_indices_arg.clear ();
-  k_sqr_distances_arg.clear ();
+  k_indices.clear ();
+  k_sqr_distances.clear ();
 
-  getNeighborsWithinRadiusRecursive (p_q_arg, radius_arg * radius_arg, this->rootNode_, key, 1, k_indices_arg,
-                                     k_sqr_distances_arg, max_nn_arg);
+  getNeighborsWithinRadiusRecursive (p_q, radius * radius, this->rootNode_, key, 1, k_indices,
+                                     k_sqr_distances, max_nn);
 
-  return (k_indices_arg.size ());
+  return (k_indices.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::radiusSearch (
-    int index_arg, const double radius_arg, std::vector<int> &k_indices_arg,
-    std::vector<float> &k_sqr_distances_arg, int max_nn_arg) const
+    int index, const double radius, std::vector<int> &k_indices,
+    std::vector<float> &k_sqr_distances, int max_nn) const
 {
-  const PointT search_point = this->getPointByIndex (index_arg);
+  const PointT search_point = this->getPointByIndex (index);
 
-  return (radiusSearch (search_point, radius_arg, k_indices_arg, k_sqr_distances_arg, max_nn_arg));
+  return (radiusSearch (search_point, radius, k_indices, k_sqr_distances, max_nn));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> double
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getKNearestNeighborRecursive (
-    const PointT & point_arg, unsigned int K_arg, const OctreeBranch* node_arg, const OctreeKey& key_arg,
-    unsigned int treeDepth_arg, const double squaredSearchRadius_arg, 
-    std::vector<prioPointQueueEntry>& pointCandidates_arg) const
+    const PointT & point, unsigned int K, const OctreeBranch* node, const OctreeKey& key,
+    unsigned int treeDepth, const double squaredSearchRadius, 
+    std::vector<prioPointQueueEntry>& pointCandidates) const
 {
   std::vector<prioBranchQueueEntry> searchEntryHeap;
   searchEntryHeap.resize (8);
@@ -222,28 +188,28 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getKNearestNeighbor
 
   OctreeKey newKey;
 
-  double smallestSquaredDist = squaredSearchRadius_arg;
+  double smallestSquaredDist = squaredSearchRadius;
 
   // get spatial voxel information
-  double voxelSquaredDiameter = this->getVoxelSquaredDiameter (treeDepth_arg);
+  double voxelSquaredDiameter = this->getVoxelSquaredDiameter (treeDepth);
 
   // iterate over all children
   for (childIdx = 0; childIdx < 8; childIdx++)
   {
-    if (branchHasChild (*node_arg, childIdx))
+    if (branchHasChild (*node, childIdx))
     {
       PointT voxelCenter;
 
-      searchEntryHeap[childIdx].key.x = (key_arg.x << 1) + (!!(childIdx & (1 << 2)));
-      searchEntryHeap[childIdx].key.y = (key_arg.y << 1) + (!!(childIdx & (1 << 1)));
-      searchEntryHeap[childIdx].key.z = (key_arg.z << 1) + (!!(childIdx & (1 << 0)));
+      searchEntryHeap[childIdx].key.x = (key.x << 1) + (!!(childIdx & (1 << 2)));
+      searchEntryHeap[childIdx].key.y = (key.y << 1) + (!!(childIdx & (1 << 1)));
+      searchEntryHeap[childIdx].key.z = (key.z << 1) + (!!(childIdx & (1 << 0)));
 
       // generate voxel center point for voxel at key
-      genVoxelCenterFromOctreeKey (searchEntryHeap[childIdx].key, treeDepth_arg, voxelCenter);
+      genVoxelCenterFromOctreeKey (searchEntryHeap[childIdx].key, treeDepth, voxelCenter);
 
       // generate new priority queue element
-      searchEntryHeap[childIdx].node = getBranchChild (*node_arg, childIdx);
-      searchEntryHeap[childIdx].pointDistance = pointSquaredDist (voxelCenter, point_arg);
+      searchEntryHeap[childIdx].node = getBranchChild (*node, childIdx);
+      searchEntryHeap[childIdx].pointDistance = pointSquaredDist (voxelCenter, point);
     }
     else
     {
@@ -264,12 +230,12 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getKNearestNeighbor
     childNode = searchEntryHeap.back ().node;
     newKey = searchEntryHeap.back ().key;
 
-    if (treeDepth_arg < this->octreeDepth_)
+    if (treeDepth < this->octreeDepth_)
     {
       // we have not reached maximum tree depth
-      smallestSquaredDist = getKNearestNeighborRecursive (point_arg, K_arg, (OctreeBranch*)childNode, newKey,
-                                                          treeDepth_arg + 1, smallestSquaredDist,
-                                                          pointCandidates_arg);
+      smallestSquaredDist = getKNearestNeighborRecursive (point, K, (OctreeBranch*)childNode, newKey,
+                                                          treeDepth + 1, smallestSquaredDist,
+                                                          pointCandidates);
     }
     else
     {
@@ -291,7 +257,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getKNearestNeighbor
         const PointT& candidatePoint = this->getPointByIndex (decodedPointVector[i]);
 
         // calculate point distance to search point
-        squaredDist = pointSquaredDist (candidatePoint, point_arg);
+        squaredDist = pointSquaredDist (candidatePoint, point);
 
         // check if a closer match is found
         if (squaredDist < smallestSquaredDist)
@@ -300,18 +266,18 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getKNearestNeighbor
 
           pointEntry.pointDistance_ = squaredDist;
           pointEntry.pointIdx_ = decodedPointVector[i];
-          pointCandidates_arg.push_back (pointEntry);
+          pointCandidates.push_back (pointEntry);
         }
       }
 
-      std::sort (pointCandidates_arg.begin (), pointCandidates_arg.end ());
+      std::sort (pointCandidates.begin (), pointCandidates.end ());
 
-      if (pointCandidates_arg.size () > K_arg)
-        pointCandidates_arg.resize (K_arg);
+      if (pointCandidates.size () > K)
+        pointCandidates.resize (K);
 
-      if (pointCandidates_arg.size () == K_arg)
+      if (pointCandidates.size () == K)
       {
-        smallestSquaredDist = pointCandidates_arg.back ().pointDistance_;
+        smallestSquaredDist = pointCandidates.back ().pointDistance_;
       }
     }
     // pop element from priority queue
@@ -324,51 +290,51 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getKNearestNeighbor
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> void
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getNeighborsWithinRadiusRecursive (
-    const PointT & point_arg, const double radiusSquared_arg, const OctreeBranch* node_arg,
-    const OctreeKey& key_arg, unsigned int treeDepth_arg, std::vector<int>& k_indices_arg,
-    std::vector<float>& k_sqr_distances_arg, int max_nn_arg) const
+    const PointT & point, const double radiusSquared, const OctreeBranch* node,
+    const OctreeKey& key, unsigned int treeDepth, std::vector<int>& k_indices,
+    std::vector<float>& k_sqr_distances, int max_nn) const
 {
   // child iterator
   unsigned char childIdx;
 
   // get spatial voxel information
-  double voxelSquaredDiameter = this->getVoxelSquaredDiameter (treeDepth_arg);
+  double voxelSquaredDiameter = this->getVoxelSquaredDiameter (treeDepth);
 
   // iterate over all children
   for (childIdx = 0; childIdx < 8; childIdx++)
   {
-    if (!branchHasChild (*node_arg, childIdx))
+    if (!branchHasChild (*node, childIdx))
       continue;
 
     const OctreeNode* childNode;
-    childNode = getBranchChild (*node_arg, childIdx);
+    childNode = getBranchChild (*node, childIdx);
 
     OctreeKey newKey;
     PointT voxelCenter;
     double squaredDist;
 
     // generate new key for current branch voxel
-    newKey.x = (key_arg.x << 1) + (!!(childIdx & (1 << 2)));
-    newKey.y = (key_arg.y << 1) + (!!(childIdx & (1 << 1)));
-    newKey.z = (key_arg.z << 1) + (!!(childIdx & (1 << 0)));
+    newKey.x = (key.x << 1) + (!!(childIdx & (1 << 2)));
+    newKey.y = (key.y << 1) + (!!(childIdx & (1 << 1)));
+    newKey.z = (key.z << 1) + (!!(childIdx & (1 << 0)));
 
     // generate voxel center point for voxel at key
-    genVoxelCenterFromOctreeKey (newKey, treeDepth_arg, voxelCenter);
+    genVoxelCenterFromOctreeKey (newKey, treeDepth, voxelCenter);
 
     // calculate distance to search point
-    squaredDist = pointSquaredDist ((const PointT &)voxelCenter, point_arg);
+    squaredDist = pointSquaredDist ((const PointT &)voxelCenter, point);
 
     // if distance is smaller than search radius
-    if (squaredDist + this->epsilon_ <= voxelSquaredDiameter / 4.0 + radiusSquared_arg
-        + sqrt (voxelSquaredDiameter * radiusSquared_arg))
+    if (squaredDist + this->epsilon_ <= voxelSquaredDiameter / 4.0 + radiusSquared
+        + sqrt (voxelSquaredDiameter * radiusSquared))
     {
 
-      if (treeDepth_arg < this->octreeDepth_)
+      if (treeDepth < this->octreeDepth_)
       {
         // we have not reached maximum tree depth
-        getNeighborsWithinRadiusRecursive (point_arg, radiusSquared_arg, (OctreeBranch*)childNode, newKey,
-                                           treeDepth_arg + 1, k_indices_arg, k_sqr_distances_arg, max_nn_arg);
-        if (k_indices_arg.size () == (unsigned int)max_nn_arg)
+        getNeighborsWithinRadiusRecursive (point, radiusSquared, (OctreeBranch*)childNode, newKey,
+                                           treeDepth + 1, k_indices, k_sqr_distances, max_nn);
+        if (k_indices.size () == (unsigned int)max_nn)
           return;
       }
       else
@@ -388,17 +354,17 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getNeighborsWithinR
           const PointT& candidatePoint = this->getPointByIndex (decodedPointVector[i]);
 
           // calculate point distance to search point
-          squaredDist = pointSquaredDist (candidatePoint, point_arg);
+          squaredDist = pointSquaredDist (candidatePoint, point);
 
           // check if a match is found
-          if (squaredDist > radiusSquared_arg)
+          if (squaredDist > radiusSquared)
             continue;
 
           // add point to result vector
-          k_indices_arg.push_back (decodedPointVector[i]);
-          k_sqr_distances_arg.push_back (squaredDist);
+          k_indices.push_back (decodedPointVector[i]);
+          k_sqr_distances.push_back (squaredDist);
 
-          if (k_indices_arg.size () == (unsigned int)max_nn_arg)
+          if (k_indices.size () == (unsigned int)max_nn)
             return;
         }
       }
@@ -409,8 +375,8 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getNeighborsWithinR
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> void
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::approxNearestSearchRecursive (
-    const PointT & point_arg, const OctreeBranch* node_arg, const OctreeKey& key_arg, 
-    unsigned int treeDepth_arg, int& result_index_arg, float& sqr_distance_arg)
+    const PointT & point, const OctreeBranch* node, const OctreeKey& key, 
+    unsigned int treeDepth, int& result_index, float& sqr_distance)
 {
   unsigned char childIdx;
   unsigned char minChildIdx;
@@ -429,20 +395,20 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::approxNearestSearch
   // iterate over all children
   for (childIdx = 0; childIdx < 8; childIdx++)
   {
-    if (!branchHasChild (*node_arg, childIdx))
+    if (!branchHasChild (*node, childIdx))
       continue;
 
     PointT voxelCenter;
     double voxelPointDist;
 
-    newKey.x = (key_arg.x << 1) + (!!(childIdx & (1 << 2)));
-    newKey.y = (key_arg.y << 1) + (!!(childIdx & (1 << 1)));
-    newKey.z = (key_arg.z << 1) + (!!(childIdx & (1 << 0)));
+    newKey.x = (key.x << 1) + (!!(childIdx & (1 << 2)));
+    newKey.y = (key.y << 1) + (!!(childIdx & (1 << 1)));
+    newKey.z = (key.z << 1) + (!!(childIdx & (1 << 0)));
 
     // generate voxel center point for voxel at key
-    genVoxelCenterFromOctreeKey (newKey, treeDepth_arg, voxelCenter);
+    genVoxelCenterFromOctreeKey (newKey, treeDepth, voxelCenter);
 
-    voxelPointDist = pointSquaredDist (voxelCenter, point_arg);
+    voxelPointDist = pointSquaredDist (voxelCenter, point);
 
     // search for child voxel with shortest distance to search point
     if (voxelPointDist >= minVoxelCenterDistance)
@@ -456,13 +422,13 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::approxNearestSearch
   // make sure we found at least one branch child
   assert (minChildIdx<8);
 
-  childNode = getBranchChild (*node_arg, minChildIdx);
+  childNode = getBranchChild (*node, minChildIdx);
 
-  if (treeDepth_arg < this->octreeDepth_)
+  if (treeDepth < this->octreeDepth_)
   {
     // we have not reached maximum tree depth
-    approxNearestSearchRecursive (point_arg, (OctreeBranch*)childNode, minChildKey, treeDepth_arg + 1,
-                                  result_index_arg, sqr_distance_arg);
+    approxNearestSearchRecursive (point, (OctreeBranch*)childNode, minChildKey, treeDepth + 1,
+                                  result_index, sqr_distance);
   }
   else
   {
@@ -487,14 +453,14 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::approxNearestSearch
       const PointT& candidatePoint = this->getPointByIndex (decodedPointVector[i]);
 
       // calculate point distance to search point
-      squaredDist = pointSquaredDist (candidatePoint, point_arg);
+      squaredDist = pointSquaredDist (candidatePoint, point);
 
       // check if a closer match is found
       if (squaredDist >= smallestSquaredDist)
         continue;
 
-      result_index_arg = decodedPointVector[i];
-      sqr_distance_arg = smallestSquaredDist = squaredDist;
+      result_index = decodedPointVector[i];
+      sqr_distance = smallestSquaredDist = squaredDist;
     }
   }
 }
@@ -502,29 +468,29 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::approxNearestSearch
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> double
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::pointSquaredDist (
-    const PointT & pointA_arg, const PointT & pointB_arg) const
+    const PointT & pointA, const PointT & pointB) const
 {
   double distX, distY, distZ;
 
-  // distance between pointA_arg and pointB_arg for each axis
-  distX = pointA_arg.x - pointB_arg.x;
-  distY = pointA_arg.y - pointB_arg.y;
-  distZ = pointA_arg.z - pointB_arg.z;
+  // distance between pointA and pointB for each axis
+  distX = pointA.x - pointB.x;
+  distY = pointA.y - pointB.y;
+  distZ = pointA.z - pointB.z;
 
-  // return squared absolute distance between pointA_arg and pointB_arg
+  // return squared absolute distance between pointA and pointB
   return (distX * distX + distY * distY + distZ * distZ);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxelCenters (
-    Eigen::Vector3f origin, Eigen::Vector3f direction, AlignedPointTVector &voxelCenterList_arg) const
+    Eigen::Vector3f origin, Eigen::Vector3f direction, AlignedPointTVector &voxelCenterList) const
 {
   OctreeKey key;
   key.x = key.y = key.z = 0;
 
-  voxelCenterList_arg.clear ();
-  voxelCenterList_arg.reserve (this->leafCount_);
+  voxelCenterList.clear ();
+  voxelCenterList.reserve (this->leafCount_);
 
   // Voxel childIdx remapping
   unsigned char a = 0;
@@ -535,7 +501,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
 
   if (max (max (minX, minY), minZ) < min (min (maxX, maxY), maxZ))
     return getIntersectedVoxelCentersRecursive (minX, minY, minZ, maxX, maxY, maxZ, a, this->rootNode_, key,
-                                                voxelCenterList_arg);
+                                                voxelCenterList);
 
   return (0);
 }
@@ -543,13 +509,13 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxelIndices (
-    Eigen::Vector3f origin, Eigen::Vector3f direction, std::vector<int> &k_indices_arg) const
+    Eigen::Vector3f origin, Eigen::Vector3f direction, std::vector<int> &k_indices) const
 {
   OctreeKey key;
   key.x = key.y = key.z = 0;
 
-  k_indices_arg.clear ();
-  k_indices_arg.reserve (this->leafCount_);
+  k_indices.clear ();
+  k_indices.reserve (this->leafCount_);
 
   // Voxel childIdx remapping
   unsigned char a = 0;
@@ -559,7 +525,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
 
   if (max (max (minX, minY), minZ) < min (min (maxX, maxY), maxZ))
     return getIntersectedVoxelIndicesRecursive (minX, minY, minZ, maxX, maxY, maxZ, a, this->rootNode_, key,
-                                                k_indices_arg);
+                                                k_indices);
   return 0;
 }
 
@@ -568,20 +534,20 @@ template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxelCentersRecursive (
     double minX, double minY, double minZ,
     double maxX, double maxY, double maxZ,
-    unsigned char a, const OctreeNode* node_arg, const OctreeKey& key_arg,
-    AlignedPointTVector &voxelCenterList_arg) const
+    unsigned char a, const OctreeNode* node, const OctreeKey& key,
+    AlignedPointTVector &voxelCenterList) const
 {
   if (maxX < 0.0 || maxY < 0.0 || maxZ < 0.0)
     return (0);
 
   // If leaf node, get voxel center and increment intersection count
-  if (node_arg->getNodeType () == LEAF_NODE)
+  if (node->getNodeType () == LEAF_NODE)
   {
     PointT newPoint;
 
-    genLeafNodeCenterFromOctreeKey (key_arg, newPoint);
+    genLeafNodeCenterFromOctreeKey (key, newPoint);
 
-    voxelCenterList_arg.push_back (newPoint);
+    voxelCenterList.push_back (newPoint);
 
     return (1);
   }
@@ -610,12 +576,12 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
       childIdx = a;
 
     // childNode == 0 if childNode doesn't exist
-    childNode = getBranchChild ((OctreeBranch&)*node_arg, childIdx);
+    childNode = getBranchChild ((OctreeBranch&)*node, childIdx);
 
     // Generate new key for current branch voxel
-    childKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
-    childKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
-    childKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+    childKey.x = (key.x << 1) | (!!(childIdx & (1 << 2)));
+    childKey.y = (key.y << 1) | (!!(childIdx & (1 << 1)));
+    childKey.z = (key.z << 1) | (!!(childIdx & (1 << 0)));
 
     // Recursively call each intersected child node, selecting the next
     //   node intersected by the ray.  Children that do not intersect will
@@ -626,56 +592,56 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
 	    case 0:                                                                                    
 	      if (childNode)                                                                           
           voxelCount += getIntersectedVoxelCentersRecursive (minX, minY, minZ, midX, midY, midZ, a, 
-                       childNode, childKey, voxelCenterList_arg);  
+                       childNode, childKey, voxelCenterList);  
         currNode = getNextIntersectedNode(midX, midY, midZ, 4, 2, 1);                            
 	      break;                                                                                   
                                                                                              
 	    case 1:                                                                                    
 	      if (childNode)                                                                           
           voxelCount += getIntersectedVoxelCentersRecursive (minX, minY, midZ, midX, midY, maxZ, a, 
-                       childNode, childKey, voxelCenterList_arg);    
+                       childNode, childKey, voxelCenterList);    
 	      currNode = getNextIntersectedNode(midX, midY, maxZ, 5, 3, 8);                            
 	      break;                                                                                   
                                                                                              
 	    case 2:                                                                                    
 	      if (childNode)                                                                           
           voxelCount += getIntersectedVoxelCentersRecursive (minX, midY, minZ, midX, maxY, midZ, a, 
-                       childNode, childKey, voxelCenterList_arg);    
+                       childNode, childKey, voxelCenterList);    
 	      currNode = getNextIntersectedNode(midX, maxY, midZ, 6, 8, 3);                            
 	      break;                                                                                   
                                                                                              
 	    case 3:                                                                                    
 	      if (childNode)                                                                           
           voxelCount += getIntersectedVoxelCentersRecursive (minX, midY, midZ, midX, maxY, maxZ, a, 
-                       childNode, childKey, voxelCenterList_arg);    
+                       childNode, childKey, voxelCenterList);    
 	      currNode = getNextIntersectedNode(midX, maxY, maxZ, 7, 8, 8);                            
 	      break;                                                                                   
                                                                                              
 	    case 4:                                                                                    
 	      if (childNode)                                                                           
           voxelCount += getIntersectedVoxelCentersRecursive (midX, minY, minZ, maxX, midY, midZ, a, 
-                       childNode, childKey, voxelCenterList_arg);    
+                       childNode, childKey, voxelCenterList);    
 	      currNode = getNextIntersectedNode(maxX, midY, midZ, 8, 6, 5);                            
 	      break;                                                                                   
                                                                                              
 	    case 5:                                                                                  
 	      if (childNode)                                                                         
           voxelCount += getIntersectedVoxelCentersRecursive (midX, minY, midZ, maxX, midY, maxZ, a, 
-                       childNode, childKey, voxelCenterList_arg);  
+                       childNode, childKey, voxelCenterList);  
 	      currNode = getNextIntersectedNode(maxX, midY, maxZ, 8, 7, 8);                          
 	      break;                                                                                 
                                                                                               
 	    case 6:                                                                                  
 	      if (childNode)                                                                         
           voxelCount += getIntersectedVoxelCentersRecursive (midX, midY, minZ, maxX, maxY, midZ, a, 
-                       childNode, childKey, voxelCenterList_arg);  
+                       childNode, childKey, voxelCenterList);  
 	      currNode = getNextIntersectedNode(maxX, maxY, midZ, 8, 8, 7);                          
 	      break;                                                                                 
                                                                                               
 	    case 7:                                                                                  
 	      if (childNode)                                                                         
           voxelCount += getIntersectedVoxelCentersRecursive (midX, midY, midZ, maxX, maxY, maxZ, a, 
-                       childNode, childKey, voxelCenterList_arg);  
+                       childNode, childKey, voxelCenterList);  
 	      currNode = 8;                                                                          
 	      break;                                                                                 
 	    }                                                                                          
@@ -689,23 +655,23 @@ template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxelIndicesRecursive (
     double minX, double minY, double minZ,
     double maxX, double maxY, double maxZ,
-    unsigned char a, const OctreeNode* node_arg, const OctreeKey& key_arg,
-    std::vector<int> &k_indices_arg) const
+    unsigned char a, const OctreeNode* node, const OctreeKey& key,
+    std::vector<int> &k_indices) const
 {
   if (maxX < 0.0 || maxY < 0.0 || maxZ < 0.0)
     return 0;
 
   // If leaf node, get voxel center and increment intersection count
-  if (node_arg->getNodeType () == LEAF_NODE)
+  if (node->getNodeType () == LEAF_NODE)
   {
-    OctreeLeaf* leaf = (OctreeLeaf*)node_arg;
+    OctreeLeaf* leaf = (OctreeLeaf*)node;
     vector<int> indices;
 
     // decode leaf node into decodedPointVector
     leaf->getData (indices);
     for (size_t i = 0; i < indices.size (); i++)
     {
-      k_indices_arg.push_back (indices[i]);
+      k_indices.push_back (indices[i]);
     }
 
     return 1;
@@ -734,11 +700,11 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
       childIdx = a;
 
     // childNode == 0 if childNode doesn't exist
-    childNode = getBranchChild ((OctreeBranch&)*node_arg, childIdx);
+    childNode = getBranchChild ((OctreeBranch&)*node, childIdx);
     // Generate new key for current branch voxel
-    childKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
-    childKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
-    childKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+    childKey.x = (key.x << 1) | (!!(childIdx & (1 << 2)));
+    childKey.y = (key.y << 1) | (!!(childIdx & (1 << 1)));
+    childKey.z = (key.z << 1) | (!!(childIdx & (1 << 0)));
 
     // Recursively call each intersected child node, selecting the next
     //   node intersected by the ray.  Children that do not intersect will
@@ -748,56 +714,56 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
       case 0:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (minX, minY, minZ, midX, midY, midZ, a,
-                                                             childNode, childKey, k_indices_arg);
+                                                             childNode, childKey, k_indices);
         currNode = getNextIntersectedNode(midX, midY, midZ, 4, 2, 1);
         break;
 
       case 1:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (minX, minY, midZ, midX, midY, maxZ, a,
-                                                             childNode, childKey, k_indices_arg);
+                                                             childNode, childKey, k_indices);
         currNode = getNextIntersectedNode(midX, midY, maxZ, 5, 3, 8);
         break;
 
       case 2:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (minX, midY, minZ, midX, maxY, midZ, a,
-                                                             childNode, childKey, k_indices_arg);
+                                                             childNode, childKey, k_indices);
         currNode = getNextIntersectedNode(midX, maxY, midZ, 6, 8, 3);
         break;
 
       case 3:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (minX, midY, midZ, midX, maxY, maxZ, a,
-                                                             childNode, childKey, k_indices_arg);
+                                                             childNode, childKey, k_indices);
         currNode = getNextIntersectedNode(midX, maxY, maxZ, 7, 8, 8);
         break;
 
       case 4:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (midX, minY, minZ, maxX, midY, midZ, a,
-                                                             childNode, childKey, k_indices_arg);
+                                                             childNode, childKey, k_indices);
         currNode = getNextIntersectedNode(maxX, midY, midZ, 8, 6, 5);
         break;
 
       case 5:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (midX, minY, midZ, maxX, midY, maxZ, a,
-                                                             childNode, childKey, k_indices_arg);
+                                                             childNode, childKey, k_indices);
         currNode = getNextIntersectedNode(maxX, midY, maxZ, 8, 7, 8);
         break;
 
       case 6:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (midX, midY, minZ, maxX, maxY, midZ, a,
-                                                             childNode, childKey, k_indices_arg);
+                                                             childNode, childKey, k_indices);
         currNode = getNextIntersectedNode(maxX, maxY, midZ, 8, 8, 7);
         break;
 
       case 7:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (midX, midY, midZ, maxX, maxY, maxZ, a,
-                                                             childNode, childKey, k_indices_arg);
+                                                             childNode, childKey, k_indices);
         currNode = 8;
         break;
     }

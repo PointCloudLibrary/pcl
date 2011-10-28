@@ -115,7 +115,7 @@ namespace pcl
         getIndices ()
         {
           PCL_ERROR("[pcl::search::OrganizedNeighbor::getIndices] This function is not supported by OrganizedNeighbor\n");
-	  return IndicesConstPtr ();
+          return IndicesConstPtr ();
         }
 
         /** \brief search for k-nearest neighbors for the given query point.
@@ -515,9 +515,10 @@ namespace pcl
         double oneOverFocalLength_;
 
         /** \brief Precalculated radius search lookup vector */
-        std::vector<radiusSearchLoopkupEntry> radiusSearchLookup_;int radiusLookupTableWidth_;int
-                                                                                                  radiusLookupTableHeight_;
-
+        std::vector<radiusSearchLoopkupEntry> radiusSearchLookup_;
+        
+        int radiusLookupTableWidth_;
+        int radiusLookupTableHeight_;
       };
   }
 }

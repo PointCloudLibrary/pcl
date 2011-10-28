@@ -19,6 +19,7 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 if(build)
     enable_testing()
     include_directories(${GTEST_INCLUDE_DIRS})
+    include_directories(${PCL_INCLUDE_DIRS})
 
     if(QHULL_FOUND)
       PCL_ADD_TEST(a_surface_test test_surface
@@ -77,11 +78,10 @@ if(build)
                #  FILES test_organized_index.cpp
                #  LINK_WITH pcl_search pcl_io pcl_filters)
 
-    PCL_ADD_TEST(auto_tuned_search auto_tuned_search
-                 FILES test_auto_search.cpp
-                 LINK_WITH pcl_search pcl_io pcl_filters)
+               #PCL_ADD_TEST(auto_tuned_search auto_tuned_search
+               # FILES test_auto_search.cpp
+               # LINK_WITH pcl_search pcl_io pcl_filters)
 
-    include_directories(${PCL_INCLUDE_DIRS})
     
 #    PCL_ADD_EXECUTABLE (evaluate_feature ${SUBSYS_NAME} evaluate_feature.cpp)
 #    target_link_libraries (evaluate_feature pcl_io pcl_features pcl_kdtree pcl_filters)

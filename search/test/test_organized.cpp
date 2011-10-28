@@ -49,7 +49,7 @@ using namespace std;
 
 using namespace pcl;
 
-#include "pcl/search/organized_neighbor.h"
+#include <pcl/search/pcl_search.h>
 
 
 // helper class for priority queue

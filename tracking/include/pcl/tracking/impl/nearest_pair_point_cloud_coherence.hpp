@@ -2,7 +2,7 @@
 #define PCL_TRACKING_IMPL_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
 
 #include <pcl/search/kdtree.h>
-#include <pcl/search/organized_neighbor.h>
+#include <pcl/search/organized.h>
 
 namespace pcl
 {

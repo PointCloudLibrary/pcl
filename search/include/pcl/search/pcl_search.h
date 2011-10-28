@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,19 +33,17 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ * $Id: kdtree_flann.h 36261 2011-02-26 01:34:42Z mariusm $
  *
  */
 
-#ifndef PCL_SEARCH_HEADER_
-#define PCL_SEARCH_HEADER_
+#ifndef PCL_SEARCH_PCL_SEARCH_H_
+#define PCL_SEARCH_PCL_SEARCH_H_
 
-#include "pcl/search/search.h"
-#include "pcl/search/kdtree.h"
-#include "pcl/search/octree.h"
-#include "pcl/search/organized_neighbor.h"
-#include "pcl/search/auto.h"
-//#include "pcl/search/octree_gpu.h"
+#include <pcl/search/search.h>
+#include <pcl/search/kdtree.h>
+#include <pcl/search/octree.h>
+#include <pcl/search/organized.h>
 
+#endif    // PCL_SEARCH_PCL_SEARCH_H_
 
-#endif

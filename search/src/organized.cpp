@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,17 +33,14 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de)
+ * $Id$
  */
 
 #include "pcl/impl/instantiate.hpp"
-#include <pcl/point_cloud.h>
 #include "pcl/point_types.h"
-
-#include "pcl/search/octree_gpu.h"
-#include "pcl/search/impl/octree_gpu.hpp"
+#include "pcl/search/organized.h"
+#include "pcl/search/impl/organized.hpp"
 
 // Instantiations of specific point types
-//PCL_INSTANTIATE(OctreeGPU, PCL_XYZ_POINT_TYPES);
-
+PCL_INSTANTIATE(OrganizedNeighbor, PCL_XYZ_POINT_TYPES);
 

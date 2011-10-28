@@ -159,8 +159,8 @@ namespace pcl
         * \return number of neighbors found
         */
       template <typename PointTDiff> inline int 
-      nearestKSearch (const PointTDiff &point, int k, 
-                      std::vector<int> &k_indices, std::vector<float> &k_distances)
+      nearestKSearchT (const PointTDiff &point, int k, 
+                       std::vector<int> &k_indices, std::vector<float> &k_distances)
       {
         PointT p;
         // Copy all the data fields from the input cloud to the output one
@@ -218,8 +218,8 @@ namespace pcl
         * \return number of neighbors found in radius
         */
       template <typename PointTDiff> inline int 
-      radiusSearch (const PointTDiff &point, double radius, std::vector<int> &k_indices,
-                    std::vector<float> &k_distances, int max_nn = -1) const
+      radiusSearchT (const PointTDiff &point, double radius, std::vector<int> &k_indices,
+                     std::vector<float> &k_distances, int max_nn = -1) const
       {
         PointT p;
         // Copy all the data fields from the input cloud to the output one

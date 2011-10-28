@@ -50,15 +50,12 @@ namespace pcl
 {
   namespace octree
   {
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b Octree pointcloud search class
      *  \note This class provides several methods for spatial neighbor search based on octree structure
      *  \note typename: PointT: type of point used in pointcloud
      *  \ingroup octree
      *  \author Julius Kammerl (julius@kammerl.de)
      */
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT = OctreeLeafDataTVector<int> , typename OctreeT = OctreeBase<int, LeafT> >
     class OctreePointCloudSearch : public OctreePointCloud<PointT, LeafT, OctreeT>
     {
@@ -88,10 +85,10 @@ namespace pcl
         typedef typename OctreeT::OctreeLeaf OctreeLeaf;
 
         /** \brief Constructor.
-         *  \param resolution_arg: octree resolution at lowest octree level
-         * */
-        OctreePointCloudSearch (const double resolution_arg) :
-          OctreePointCloud<PointT, LeafT, OctreeT> (resolution_arg)
+          *  \param resolution: octree resolution at lowest octree level
+          */
+        OctreePointCloudSearch (const double resolution) :
+          OctreePointCloud<PointT, LeafT, OctreeT> (resolution)
         {
         }
 
@@ -102,145 +99,154 @@ namespace pcl
         }
 
         /** \brief Search for neighbors within a voxel at given point
-         *  \param point_arg point addressing a leaf node voxel
-         *  \param pointIdx_data_arg the resultant indices of the neighboring voxel points
-         *  \return "true" if leaf node exist; "false" otherwise
-         * */
+          * \param[in] point point addressing a leaf node voxel
+          * \param[out] pointIdx_data the resultant indices of the neighboring voxel points
+          * \return "true" if leaf node exist; "false" otherwise
+          */
         bool
-        voxelSearch (const PointT& point_arg, std::vector<int>& pointIdx_data_arg);
+        voxelSearch (const PointT& point, std::vector<int>& pointIdx_data);
 
         /** \brief Search for neighbors within a voxel at given point referenced by a point index
-         *  \param index_arg the index in input cloud defining the query point
-         *  \param pointIdx_data_arg the resultant indices of the neighboring voxel points
-         *  \return "true" if leaf node exist; "false" otherwise
-         * */
+          * \param[in] index the index in input cloud defining the query point
+          * \param[out] pointIdx_data the resultant indices of the neighboring voxel points
+          * \return "true" if leaf node exist; "false" otherwise
+          */
         bool
-        voxelSearch (const int index_arg, std::vector<int>& pointIdx_data_arg);
+        voxelSearch (const int index, std::vector<int>& pointIdx_data);
 
         /** \brief Search for k-nearest neighbors at the query point.
-         * \param cloud_arg the point cloud data
-         * \param index_arg the index in \a cloud representing the query point
-         * \param k_arg the number of neighbors to search for
-         * \param k_indices_arg the resultant indices of the neighboring points (must be resized to \a k a priori!)
-         * \param k_sqr_distances_arg the resultant squared distances to the neighboring points (must be resized to \a k
+         * \param cloud the point cloud data
+         * \param index the index in \a cloud representing the query point
+         * \param k the number of neighbors to search for
+         * \param k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
+         * \param k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
          * a priori!)
          * \return number of neighbors found
          */
-        int
-        nearestKSearch (const PointCloudConstPtr &cloud_arg, int index_arg, int k_arg, std::vector<int> &k_indices_arg,
-                        std::vector<float> &k_sqr_distances_arg);
+        inline int
+        nearestKSearch (const PointCloud &cloud, int index, int k, std::vector<int> &k_indices,
+                        std::vector<float> &k_sqr_distances)
+        {
+          return (nearestKSearch (cloud[index], k, k_indices, k_sqr_distances));
+        }
 
         /** \brief Search for k-nearest neighbors at given query point.
-         * @param p_q_arg the given query point
-         * @param k_arg the number of neighbors to search for
-         * @param k_indices_arg the resultant indices of the neighboring points (must be resized to k a priori!)
-         * @param k_sqr_distances_arg  the resultant squared distances to the neighboring points (must be resized to k a priori!)
+         * @param p_q the given query point
+         * @param k the number of neighbors to search for
+         * @param k_indices the resultant indices of the neighboring points (must be resized to k a priori!)
+         * @param k_sqr_distances  the resultant squared distances to the neighboring points (must be resized to k a priori!)
          * @return number of neighbors found
          */
         int
-        nearestKSearch (const PointT &p_q_arg, int k_arg, std::vector<int> &k_indices_arg,
-                        std::vector<float> &k_sqr_distances_arg);
+        nearestKSearch (const PointT &p_q, int k, std::vector<int> &k_indices,
+                        std::vector<float> &k_sqr_distances);
 
         /** \brief Search for k-nearest neighbors at query point
-         * \param index_arg index representing the query point in the dataset given by \a setInputCloud.
+         * \param index index representing the query point in the dataset given by \a setInputCloud.
          *        If indices were given in setInputCloud, index will be the position in the indices vector.
-         * \param k_arg the number of neighbors to search for
-         * \param k_indices_arg the resultant indices of the neighboring points (must be resized to \a k a priori!)
-         * \param k_sqr_distances_arg the resultant squared distances to the neighboring points (must be resized to \a k
+         * \param k the number of neighbors to search for
+         * \param k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
+         * \param k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
          * a priori!)
          * \return number of neighbors found
          */
         int
-        nearestKSearch (int index_arg, int k_arg, std::vector<int> &k_indices_arg,
-                        std::vector<float> &k_sqr_distances_arg);
+        nearestKSearch (int index, int k, std::vector<int> &k_indices,
+                        std::vector<float> &k_sqr_distances);
 
         /** \brief Search for approx. nearest neighbor at the query point.
-         * \param cloud_arg the point cloud data
-         * \param query_index_arg the index in \a cloud representing the query point
-         * \param result_index_arg the resultant index of the neighbor point
-         * \param sqr_distance_arg the resultant squared distance to the neighboring point
+         * \param cloud the point cloud data
+         * \param query_index the index in \a cloud representing the query point
+         * \param result_index the resultant index of the neighbor point
+         * \param sqr_distance the resultant squared distance to the neighboring point
          * \return number of neighbors found
          */
-        void
-        approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
-                             float &sqr_distance_arg);
+        inline void
+        approxNearestSearch (const PointCloud &cloud, int query_index, int &result_index,
+                             float &sqr_distance)
+        {
+          return (approxNearestSearch (cloud.points[query_index], result_index, sqr_distance));
+        }
 
         /** \brief Search for approx. nearest neighbor at the query point.
-         * @param p_q_arg the given query point
-         * \param result_index_arg the resultant index of the neighbor point
-         * \param sqr_distance_arg the resultant squared distance to the neighboring point
+         * @param p_q the given query point
+         * \param result_index the resultant index of the neighbor point
+         * \param sqr_distance the resultant squared distance to the neighboring point
          */
         void
-        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg);
+        approxNearestSearch (const PointT &p_q, int &result_index, float &sqr_distance);
 
         /** \brief Search for approx. nearest neighbor at the query point.
-         * \param query_index_arg index representing the query point in the dataset given by \a setInputCloud.
+         * \param query_index index representing the query point in the dataset given by \a setInputCloud.
          *        If indices were given in setInputCloud, index will be the position in the indices vector.
-         * \param result_index_arg the resultant index of the neighbor point
-         * \param sqr_distance_arg the resultant squared distance to the neighboring point
+         * \param result_index the resultant index of the neighbor point
+         * \param sqr_distance the resultant squared distance to the neighboring point
          * \return number of neighbors found
          */
         void
-        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg);
+        approxNearestSearch (int query_index, int &result_index, float &sqr_distance);
 
         /** \brief Search for all neighbors of query point that are within a given radius.
-         * \param cloud_arg the point cloud data
-         * \param index_arg the index in \a cloud representing the query point
-         * \param radius_arg the radius of the sphere bounding all of p_q's neighbors
-         * \param k_indices_arg the resultant indices of the neighboring points
-         * \param k_sqr_distances_arg the resultant squared distances to the neighboring points
-         * \param max_nn_arg if given, bounds the maximum returned neighbors to this value
+         * \param cloud the point cloud data
+         * \param index the index in \a cloud representing the query point
+         * \param radius the radius of the sphere bounding all of p_q's neighbors
+         * \param k_indices the resultant indices of the neighboring points
+         * \param k_sqr_distances the resultant squared distances to the neighboring points
+         * \param max_nn if given, bounds the maximum returned neighbors to this value
          * \return number of neighbors found in radius
          */
         int
-        radiusSearch (const PointCloudConstPtr &cloud_arg, int index_arg, double radius_arg,
-                      std::vector<int> &k_indices_arg, std::vector<float> &k_sqr_distances_arg,
-                      int max_nn_arg = INT_MAX);
+        radiusSearch (const PointCloud &cloud, int index, double radius,
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+                      int max_nn = INT_MAX)
+        {
+          return (radiusSearch (cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
+        }
 
         /** \brief Search for all neighbors of query point that are within a given radius.
-         * \param p_q_arg the given query point
-         * \param radius_arg the radius of the sphere bounding all of p_q's neighbors
-         * \param k_indices_arg the resultant indices of the neighboring points
-         * \param k_sqr_distances_arg the resultant squared distances to the neighboring points
-         * \param max_nn_arg if given, bounds the maximum returned neighbors to this value
+         * \param p_q the given query point
+         * \param radius the radius of the sphere bounding all of p_q's neighbors
+         * \param k_indices the resultant indices of the neighboring points
+         * \param k_sqr_distances the resultant squared distances to the neighboring points
+         * \param max_nn if given, bounds the maximum returned neighbors to this value
          * \return number of neighbors found in radius
          */
         int
-        radiusSearch (const PointT &p_q_arg, const double radius_arg, std::vector<int> &k_indices_arg,
-                      std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX) const;
+        radiusSearch (const PointT &p_q, const double radius, std::vector<int> &k_indices,
+                      std::vector<float> &k_sqr_distances, int max_nn = INT_MAX) const;
 
         /** \brief Search for all neighbors of query point that are within a given radius.
-         * \param index_arg index representing the query point in the dataset given by \a setInputCloud.
+         * \param index index representing the query point in the dataset given by \a setInputCloud.
          *        If indices were given in setInputCloud, index will be the position in the indices vector
-         * \param radius_arg radius of the sphere bounding all of p_q's neighbors
-         * \param k_indices_arg the resultant indices of the neighboring points
-         * \param k_sqr_distances_arg the resultant squared distances to the neighboring points
-         * \param max_nn_arg if given, bounds the maximum returned neighbors to this value
+         * \param radius radius of the sphere bounding all of p_q's neighbors
+         * \param k_indices the resultant indices of the neighboring points
+         * \param k_sqr_distances the resultant squared distances to the neighboring points
+         * \param max_nn if given, bounds the maximum returned neighbors to this value
          * \return number of neighbors found in radius
          */
         int
-        radiusSearch (int index_arg, const double radius_arg, std::vector<int> &k_indices_arg,
-                      std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX) const;
+        radiusSearch (int index, const double radius, std::vector<int> &k_indices,
+                      std::vector<float> &k_sqr_distances, int max_nn = INT_MAX) const;
 
         /** \brief Get a PointT vector of centers of all voxels that intersected by a ray (origin, direction).
           * \param[in] origin ray origin
           * \param[in] direction ray direction vector
-          * \param[out] voxelCenterList_arg results are written to this vector of PointT elements
+          * \param[out] voxelCenterList results are written to this vector of PointT elements
           * \return number of intersected voxels
           */
         int
         getIntersectedVoxelCenters (Eigen::Vector3f origin, Eigen::Vector3f direction,
-                                    AlignedPointTVector &voxelCenterList_arg) const;
+                                    AlignedPointTVector &voxelCenterList) const;
 
         /** \brief Get indices of all voxels that are intersected by a ray (origin, direction).
           * \param[in] origin ray origin
           * \param[in] direction ray direction vector
-          * \param[out] k_indices_arg resulting indices
+          * \param[out] k_indices resulting indices
           * \return number of intersected voxels
           */
         int
         getIntersectedVoxelIndices (Eigen::Vector3f origin, Eigen::Vector3f direction,
-                                    std::vector<int> &k_indices_arg) const;
+                                    std::vector<int> &k_indices) const;
 
 
       protected:
@@ -266,22 +272,22 @@ namespace pcl
           }
 
           /** \brief Constructor for initializing priority queue entry.
-           * \param node_arg pointer to octree node
-           * \param key_arg octree key addressing voxel in octree structure
-           * \param pointDistance_arg distance of query point to voxel center
+           * \param node pointer to octree node
+           * \param key octree key addressing voxel in octree structure
+           * \param pointDistance distance of query point to voxel center
            * */
-          prioBranchQueueEntry (OctreeNode* node_arg, OctreeKey& key_arg, double pointDistance_arg)
+          prioBranchQueueEntry (OctreeNode* node, OctreeKey& key, double pointDistance)
           {
-            node = node_arg;
-            pointDistance = pointDistance_arg;
-            key = key_arg;
+            node = node;
+            pointDistance = pointDistance;
+            key = key;
           }
 
           /** \brief Operator< for comparing priority queue entries with each other.  */
           bool
-          operator< (const prioBranchQueueEntry rhs_arg) const
+          operator< (const prioBranchQueueEntry rhs) const
           {
-            return (this->pointDistance > rhs_arg.pointDistance);
+            return (this->pointDistance > rhs.pointDistance);
           }
 
           // pointer to octree node
@@ -311,20 +317,20 @@ namespace pcl
           }
 
           /** \brief Constructor for initializing priority queue entry.
-           * \param pointIdx_arg an index representing a point in the dataset given by \a setInputCloud
-           * \param pointDistance_arg distance of query point to voxel center
+           * \param pointIdx an index representing a point in the dataset given by \a setInputCloud
+           * \param pointDistance distance of query point to voxel center
            * */
-          prioPointQueueEntry (unsigned int& pointIdx_arg, double pointDistance_arg)
+          prioPointQueueEntry (unsigned int& pointIdx, double pointDistance)
           {
-            pointIdx_ = pointIdx_arg;
-            pointDistance_ = pointDistance_arg;
+            pointIdx_ = pointIdx;
+            pointDistance_ = pointDistance;
           }
 
           /** \brief Operator< for comparing priority queue entries with each other.  */
           bool
-          operator< (const prioPointQueueEntry& rhs_arg) const
+          operator< (const prioPointQueueEntry& rhs) const
           {
-            return (this->pointDistance_ < rhs_arg.pointDistance_);
+            return (this->pointDistance_ < rhs.pointDistance_);
           }
 
           // index representing a point in the dataset given by \a setInputCloud
@@ -336,12 +342,12 @@ namespace pcl
         };
 
         /** \brief Helper function to calculate the squared distance between two points
-         * \param pointA_arg point A
-         * \param pointB_arg point B
+         * \param pointA point A
+         * \param pointB point B
          * \return squared distance between point A and point B
          */
         double
-        pointSquaredDist (const PointT & pointA_arg, const PointT & pointB_arg) const;
+        pointSquaredDist (const PointT & pointA, const PointT & pointB) const;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Recursive search routine methods
@@ -349,48 +355,48 @@ namespace pcl
 
 
         /** \brief Recursive search method that explores the octree and finds neighbors within a given radius
-         * \param point_arg query point
-         * \param radiusSquared_arg squared search radius
-         * \param node_arg current octree node to be explored
-         * \param key_arg octree key addressing a leaf node.
-         * \param treeDepth_arg current depth/level in the octree
-         * \param k_indices_arg vector of indices found to be neighbors of query point
-         * \param k_sqr_distances_arg squared distances of neighbors to query point
-         * \param max_nn_arg maximum of neighbors to be found
+         * \param point query point
+         * \param radiusSquared squared search radius
+         * \param node current octree node to be explored
+         * \param key octree key addressing a leaf node.
+         * \param treeDepth current depth/level in the octree
+         * \param k_indices vector of indices found to be neighbors of query point
+         * \param k_sqr_distances squared distances of neighbors to query point
+         * \param max_nn maximum of neighbors to be found
          */
         void
-        getNeighborsWithinRadiusRecursive (const PointT & point_arg, const double radiusSquared_arg,
-                                           const OctreeBranch* node_arg, const OctreeKey& key_arg,
-                                           unsigned int treeDepth_arg, std::vector<int>& k_indices_arg,
-                                           std::vector<float>& k_sqr_distances_arg, int max_nn_arg) const;
+        getNeighborsWithinRadiusRecursive (const PointT & point, const double radiusSquared,
+                                           const OctreeBranch* node, const OctreeKey& key,
+                                           unsigned int treeDepth, std::vector<int>& k_indices,
+                                           std::vector<float>& k_sqr_distances, int max_nn) const;
 
         /** \brief Recursive search method that explores the octree and finds the K nearest neighbors
-         * \param point_arg query point
-         * \param K_arg amount of nearest neighbors to be found
-         * \param node_arg current octree node to be explored
-         * \param key_arg octree key addressing a leaf node.
-         * \param treeDepth_arg current depth/level in the octree
-         * \param squaredSearchRadius_arg squared search radius distance
-         * \param pointCandidates_arg priority queue of nearest neigbor point candidates
+         * \param point query point
+         * \param K amount of nearest neighbors to be found
+         * \param node current octree node to be explored
+         * \param key octree key addressing a leaf node.
+         * \param treeDepth current depth/level in the octree
+         * \param squaredSearchRadius squared search radius distance
+         * \param pointCandidates priority queue of nearest neigbor point candidates
          * \return squared search radius based on current point candidate set found
          */
         double
-        getKNearestNeighborRecursive (const PointT & point_arg, unsigned int K_arg, const OctreeBranch* node_arg,
-                                      const OctreeKey& key_arg, unsigned int treeDepth_arg,
-                                      const double squaredSearchRadius_arg,
-                                      std::vector<prioPointQueueEntry>& pointCandidates_arg) const;
+        getKNearestNeighborRecursive (const PointT & point, unsigned int K, const OctreeBranch* node,
+                                      const OctreeKey& key, unsigned int treeDepth,
+                                      const double squaredSearchRadius,
+                                      std::vector<prioPointQueueEntry>& pointCandidates) const;
 
         /** \brief Recursive search method that explores the octree and finds the approximate nearest neighbor
-         * \param point_arg query point
-         * \param node_arg current octree node to be explored
-         * \param key_arg octree key addressing a leaf node.
-         * \param treeDepth_arg current depth/level in the octree
-         * \param result_index_arg result index is written to this reference
-         * \param sqr_distance_arg squared distance to search
+         * \param point query point
+         * \param node current octree node to be explored
+         * \param key octree key addressing a leaf node.
+         * \param treeDepth current depth/level in the octree
+         * \param result_index result index is written to this reference
+         * \param sqr_distance squared distance to search
          */
         void
-        approxNearestSearchRecursive (const PointT & point_arg, const OctreeBranch* node_arg, const OctreeKey& key_arg,
-                                      unsigned int treeDepth_arg, int& result_index_arg, float& sqr_distance_arg);
+        approxNearestSearchRecursive (const PointT & point, const OctreeBranch* node, const OctreeKey& key,
+                                      unsigned int treeDepth, int& result_index, float& sqr_distance);
 
         /** \brief Recursively search the tree for all intersected leaf nodes and return a vector of voxel centers.
          * This algorithm is based off the paper An Efficient Parametric Algorithm for Octree Traversal:
@@ -402,15 +408,15 @@ namespace pcl
          * \param maxY octree nodes Y coordinate of upper bounding box corner
          * \param maxZ octree nodes Z coordinate of upper bounding box corner
          * \param a
-         * \param node_arg current octree node to be explored
-         * \param key_arg octree key addressing a leaf node.
-         * \param voxelCenterList_arg results are written to this vector of PointT elements
+         * \param node current octree node to be explored
+         * \param key octree key addressing a leaf node.
+         * \param voxelCenterList results are written to this vector of PointT elements
          * \return number of voxels found
          */
         int
         getIntersectedVoxelCentersRecursive (double minX, double minY, double minZ, double maxX, double maxY,
-                                             double maxZ, unsigned char a, const OctreeNode* node_arg,
-                                             const OctreeKey& key_arg, AlignedPointTVector &voxelCenterList_arg) const;
+                                             double maxZ, unsigned char a, const OctreeNode* node,
+                                             const OctreeKey& key, AlignedPointTVector &voxelCenterList) const;
 
         /** \brief Recursively search the tree for all intersected leaf nodes and return a vector of indices.
           * This algorithm is based off the paper An Efficient Parametric Algorithm for Octree Traversal:
@@ -422,16 +428,16 @@ namespace pcl
           * \param maxY octree nodes Y coordinate of upper bounding box corner
           * \param maxZ octree nodes Z coordinate of upper bounding box corner
           * \param a
-          * \param node_arg current octree node to be explored
-          * \param key_arg octree key addressing a leaf node.
-          * \param k_indices_arg resulting indices
+          * \param node current octree node to be explored
+          * \param key octree key addressing a leaf node.
+          * \param k_indices resulting indices
           * \return number of voxels found
           */
         int
         getIntersectedVoxelIndicesRecursive (double minX, double minY, double minZ,
                                              double maxX, double maxY, double maxZ,
-                                             unsigned char a, const OctreeNode* node_arg, const OctreeKey& key_arg,
-                                             std::vector<int> &k_indices_arg) const;
+                                             unsigned char a, const OctreeNode* node, const OctreeKey& key,
+                                             std::vector<int> &k_indices) const;
         /** \brief Initialize raytracing algorithm
           * \param minX octree nodes X coordinate of lower bounding box corner
           * \param minY octree nodes Y coordinate of lower bounding box corner

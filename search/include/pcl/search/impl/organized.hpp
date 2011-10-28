@@ -37,7 +37,7 @@
 #ifndef PCL_SEARCH_SEARCH_IMPL_ORGANIZED_NEIGHBOR_SEARCH_H_
 #define PCL_SEARCH_SEARCH_IMPL_ORGANIZED_NEIGHBOR_SEARCH_H_
 
-#include "pcl/search/organized_neighbor.h"
+#include "pcl/search/organized.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT>
