@@ -33,7 +33,8 @@
  *
  *
  */
-/** \author Julius Kammerl (julius@kammerl.de)*/
+/** \author Julius Kammerl (julius@kammerl.de),
+    Christian Potthast (potthast@usc.edu*/
 
 #include <gtest/gtest.h>
 
@@ -1393,6 +1394,70 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
   }
 
 }
+
+
+TEST (PCL, Octree_Pointcloud_Ray_Traversal)
+{
+
+  const unsigned int test_runs = 100;
+  unsigned int test_id;
+
+  // instantiate point clouds
+  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+
+  octree::OctreePointCloudSearch<PointXYZ> octree_search (0.02f);
+
+  // Voxels in ray
+  std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> > voxelsInRay;
+
+  srand (time (NULL));
+
+  for (test_id = 0; test_id < test_runs; test_id++)
+  {
+    // delete octree
+    octree_search.deleteTree ();
+    // define octree bounding box 10x10x10
+    octree_search.defineBoundingBox (0.0, 0.0, 0.0, 10.0, 10.0, 10.0);
+
+    cloudIn->width = 4;
+    cloudIn->height = 1;
+    cloudIn->points.resize (cloudIn->width * cloudIn->height);
+
+    Eigen::Vector3f p (10.0 * ((double)rand () / (double)RAND_MAX),
+		       10.0 * ((double)rand () / (double)RAND_MAX),
+		       10.0 * ((double)rand () / (double)RAND_MAX));
+
+    // origin
+    Eigen::Vector3f o (12.0 * ((double)rand () / (double)RAND_MAX),
+		       12.0 * ((double)rand () / (double)RAND_MAX),
+		       12.0 * ((double)rand () / (double)RAND_MAX));    
+
+    cloudIn->points[0] = pcl::PointXYZ (p[0], p[1], p[2]);
+
+    // direction vector
+    Eigen::Vector3f dir(p - o);
+
+    float tmin = 1.0;
+    for (unsigned int j=1; j<4; j++)
+      {
+        tmin = tmin - 0.25;
+	Eigen::Vector3f n_p = o + (tmin * dir);
+        cloudIn->points[j] = pcl::PointXYZ (n_p[0], n_p[1], n_p[2]);
+      }
+    
+    // insert cloud point into octree
+    octree_search.setInputCloud (cloudIn);
+    octree_search.addPointsFromInputCloud ();
+
+    octree_search.getIntersectedVoxelCenters (o, dir, voxelsInRay);
+
+    // check if all voxels in the cloud are penetraded by the ray
+    ASSERT_EQ ( voxelsInRay.size () , cloudIn->points.size () );
+  }
+
+}
+
+
 
 /* ---[ */
 int
