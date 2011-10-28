@@ -43,7 +43,6 @@
 #include <cstdio>
 #include <pcl/kdtree/kdtree.h>
 #include <boost/thread/mutex.hpp>
-#include <pcl/common/io.h>
 
 namespace flann
 {
@@ -161,28 +160,6 @@ namespace pcl
                       std::vector<int> &k_indices, std::vector<float> &k_distances);
 
       /** \brief Search for k-nearest neighbors for the given query point.
-        * \param[in] point the given query point
-        * \param[in[ k the number of neighbors to search for
-        * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k 
-        * a priori!)
-        * \return number of neighbors found
-        */
-      template <typename PointTDiff> int 
-      nearestKSearch (const PointTDiff &point, int k, 
-                      std::vector<int> &k_indices, std::vector<float> &k_distances)
-      {
-        PointT p;
-        // Copy all the data fields from the input cloud to the output one
-        typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
-        typedef typename pcl::traits::fieldList<PointTDiff>::type FieldListOutT;
-        typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
-        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointTDiff> (
-              point, p));
-        return (nearestKSearch (p, k, k_indices, k_distances));
-      }
-
-      /** \brief Search for k-nearest neighbors for the given query point.
         * \param[in] cloud the point cloud data
         * \param[in] index the index in \a cloud representing the query point
         * \param[in] k the number of neighbors to search for
@@ -238,28 +215,6 @@ namespace pcl
       int 
       radiusSearch (const PointT &point, double radius, std::vector<int> &k_indices,
                     std::vector<float> &k_distances, int max_nn = -1) const;
-
-      /** \brief Search for all the nearest neighbors of the query point in a given radius.
-        * \param[in] point the given query point
-        * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
-        * \param[out] k_indices the resultant indices of the neighboring points
-        * \param[out] k_distances the resultant squared distances to the neighboring points
-        * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
-        * \return number of neighbors found in radius
-        */
-      template <typename PointTDiff> int 
-      radiusSearch (const PointTDiff &point, double radius, std::vector<int> &k_indices,
-                    std::vector<float> &k_distances, int max_nn = -1) const
-      {
-        PointT p;
-        // Copy all the data fields from the input cloud to the output one
-        typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
-        typedef typename pcl::traits::fieldList<PointTDiff>::type FieldListOutT;
-        typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
-        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointTDiff> (
-              point, p));
-        return (radiusSearch (p, radius, k_indices, k_distances, max_nn));
-      }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
         * \param[in] cloud the point cloud data
