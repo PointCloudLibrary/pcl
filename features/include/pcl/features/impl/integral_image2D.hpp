@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,31 +33,15 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id: feature.h 2784 2011-10-15 22:05:38Z aichim $
  */
 
-/* \author Stefan Suat Gedikli */
-
-
-// for ND
+#ifndef PCL_INTEGRAL_IMAGE2D_IMPL_H_
+#define PCL_INTEGRAL_IMAGE2D_IMPL_H_
 
 #include <cstddef>
-template <typename DataType, unsigned Dimension>
-pcl::IntegralImage2Dim<DataType, Dimension>::IntegralImage2Dim (unsigned width, const unsigned height, bool compute_second_order_integral_images)
-: width_(width)
-, height_(height)
-, compute_second_order_integral_images_(compute_second_order_integral_images)
-{
-  first_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
-  if (compute_second_order_integral_images_)
-    second_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
-}
 
-// ---------------------------------------------------------------------------- 
-template <typename DataType, unsigned Dimension>
-pcl::IntegralImage2Dim<DataType, Dimension>::~IntegralImage2Dim()
-{
-}
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename DataType, unsigned Dimension> void
 pcl::IntegralImage2Dim<DataType, Dimension>::setInput (const DataType * data, unsigned width,unsigned height, unsigned element_stride, unsigned row_stride)
 {
@@ -70,9 +56,10 @@ pcl::IntegralImage2Dim<DataType, Dimension>::setInput (const DataType * data, un
   computeIntegralImages (data, row_stride, element_stride);
 }
 
-// ---------------------------------------------------------------------------- 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename DataType, unsigned Dimension> typename pcl::IntegralImage2Dim<DataType, Dimension>::ElementType
-pcl::IntegralImage2Dim<DataType, Dimension>::getFirstOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const
+pcl::IntegralImage2Dim<DataType, Dimension>::getFirstOrderSum (
+    unsigned start_x, unsigned start_y, unsigned width, unsigned height) const
 {
   const unsigned upper_left_idx      = start_y * (width_ + 1) + start_x;
   const unsigned upper_right_idx     = upper_left_idx + width;
@@ -83,8 +70,10 @@ pcl::IntegralImage2Dim<DataType, Dimension>::getFirstOrderSum (unsigned start_x,
           first_order_integral_image_[upper_right_idx] - first_order_integral_image_[lower_left_idx]  );
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename DataType, unsigned Dimension> typename pcl::IntegralImage2Dim<DataType, Dimension>::SecondOrderType
-pcl::IntegralImage2Dim<DataType, Dimension>::getSecondOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const
+pcl::IntegralImage2Dim<DataType, Dimension>::getSecondOrderSum (
+    unsigned start_x, unsigned start_y, unsigned width, unsigned height) const
 {
   const unsigned upper_left_idx      = start_y * (width_ + 1) + start_x;
   const unsigned upper_right_idx     = upper_left_idx + width;
@@ -95,9 +84,10 @@ pcl::IntegralImage2Dim<DataType, Dimension>::getSecondOrderSum (unsigned start_x
           second_order_integral_image_[upper_right_idx] - second_order_integral_image_[lower_left_idx]  );
 }
 
-// ---------------------------------------------------------------------------- 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename DataType, unsigned Dimension> void
-pcl::IntegralImage2Dim<DataType, Dimension>::computeIntegralImages (const DataType *data, unsigned row_stride, unsigned element_stride)
+pcl::IntegralImage2Dim<DataType, Dimension>::computeIntegralImages (
+    const DataType *data, unsigned row_stride, unsigned element_stride)
 {
   ElementType* previous_row = &first_order_integral_image_[0];
   ElementType* current_row = previous_row + (width_ + 1);
@@ -112,7 +102,7 @@ pcl::IntegralImage2Dim<DataType, Dimension>::computeIntegralImages (const DataTy
       {
         current_row [colIdx + 1] = previous_row [colIdx + 1] + current_row [colIdx] - previous_row [colIdx];
         const InputType* element = reinterpret_cast <const InputType*> (&data [valIdx]);
-        if (pcl_isfinite (element->sum()))
+        if (pcl_isfinite (element->sum ()))
         {
           current_row [colIdx + 1] += element->template cast<typename IntegralImageTypeTraits<DataType>::IntegralType>();
         }
@@ -151,81 +141,5 @@ pcl::IntegralImage2Dim<DataType, Dimension>::computeIntegralImages (const DataTy
   }
 }
 
-// Specialization for 1Dimensional integral image
+#endif    // PCL_INTEGRAL_IMAGE2D_IMPL_H_
 
-template <typename DataType>
-pcl::IntegralImage2Dim<DataType, 1>::IntegralImage2Dim (unsigned width, const unsigned height, bool compute_second_order_integral_images)
-: width_(width)
-, height_(height)
-, compute_second_order_integral_images_(compute_second_order_integral_images)
-{
-  integral_image_.resize ( (width_ + 1) * (height+1) );
-}
-
-// ---------------------------------------------------------------------------- 
-template <typename DataType>
-pcl::IntegralImage2Dim<DataType, 1>::~IntegralImage2Dim()
-{
-}
-
-template <typename DataType> void
-pcl::IntegralImage2Dim<DataType, 1>::setInput (const DataType * data, unsigned width,unsigned height, unsigned element_stride, unsigned row_stride)
-{
-  if ((width_ + 1) * (height+1) < integral_image_.size () )
-  {
-    width_  = width;
-    height_ = height;
-    integral_image_.resize ( (width_ + 1) * (height+1) );
-  }
-  
-  computeIntegralImages (data, row_stride, element_stride);
-}
-
-// ---------------------------------------------------------------------------- 
-template <typename DataType> typename pcl::IntegralImage2Dim<DataType, 1>::VectorType
-pcl::IntegralImage2Dim<DataType, 1>::getSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const
-{
-  const unsigned upper_left_idx      = start_y * (width_ + 1) + start_x;
-  const unsigned upper_right_idx     = upper_left_idx + width;
-  const unsigned lower_left_idx      = (start_y + height) * (width_ + 1) + start_x;
-  const unsigned lower_right_idx     = lower_left_idx + width;
-  
-  return (integral_image_[lower_right_idx] + integral_image_[upper_left_idx]  -
-          integral_image_[upper_right_idx] - integral_image_[lower_left_idx]  );
-}
-
-// ---------------------------------------------------------------------------- 
-template <typename DataType> void
-pcl::IntegralImage2Dim<DataType, 1>::computeIntegralImages (const DataType *data, unsigned row_stride, unsigned element_stride)
-{
-  VectorType* previous_row = &integral_image_[0];
-  VectorType* current_row = previous_row + (width_ + 1);
-  memset (previous_row, 0, sizeof (VectorType) * (width_ + 1));    
-
-  VectorType element = VectorType::Zero ();
-  if (!compute_second_order_integral_images_)
-  {
-    for (unsigned rowIdx = 0, valIdx = 0; rowIdx < height_; ++rowIdx, previous_row = current_row, current_row += (width_ + 1))
-    {
-      current_row [0].setZero ();
-      for (unsigned colIdx = 0; colIdx < width_; ++colIdx, valIdx += element_stride)
-      {
-        element[0] = pcl_isfinite (data [valIdx])?data [valIdx]:DataType (0);
-        current_row [colIdx + 1] = previous_row [colIdx + 1] + current_row [colIdx] - previous_row [colIdx] + element;
-      }
-    }
-  }
-  else
-  {
-    for (unsigned rowIdx = 0, valIdx = 0; rowIdx < height_; ++rowIdx, previous_row = current_row, current_row += (width_ + 1))
-    {
-      current_row [0].setZero ();
-      for (unsigned colIdx = 0; colIdx < width_; ++colIdx, valIdx += element_stride)
-      {
-        element[0] = pcl_isfinite (data [valIdx])?data [valIdx]:DataType (0);
-        element[1] = element[0] * element[0];
-        current_row [colIdx + 1] = previous_row [colIdx + 1] + current_row [colIdx] - previous_row [colIdx] + element;
-      }
-    }
-  }
-}

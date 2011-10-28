@@ -1,7 +1,9 @@
 /*
-* Software License Agreement (BSD License)
+ * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,8 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-/* \author Stefan Holzer */
 
 #ifndef PCL_INTEGRALIMAGE_BASED_NORMAL_ESTIMATOR_H_
 #define PCL_INTEGRALIMAGE_BASED_NORMAL_ESTIMATOR_H_
@@ -75,7 +75,7 @@ namespace pcl
         normal_estimation_method_(AVERAGE_3D_GRADIENT),
         integral_image_x_(NULL), integral_image_y_(NULL), 
         integral_image_xyz_(NULL), integral_image_(NULL),
-        integral_image_XYZ_ (1, 1, true),
+        integral_image_XYZ_ (true),
         diff_x_(NULL), diff_y_(NULL), depth_data_(NULL),
         use_depth_dependent_smoothing_(false),
         max_depth_change_factor_(20.0f*0.001f),

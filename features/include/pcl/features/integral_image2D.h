@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,9 +33,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id: feature.h 2784 2011-10-15 22:05:38Z aichim $
  */
-
-/* \author Suat Gedikli */
 
 #ifndef PCL_INTEGRAL_IMAGE2D_H_
 #define PCL_INTEGRAL_IMAGE2D_H_
@@ -97,72 +98,84 @@ namespace pcl
     typedef unsigned int Type;
     typedef unsigned long IntegralType;
   };
-  
-  template <class DataType, unsigned Dimensions>
+
+  /** \brief Determines an integral image representation for a given organized data array
+    * \author Suat Gedikli
+    */
+  template <class DataType, unsigned Dimension>
   class IntegralImage2Dim
   {
     public:
-      static const unsigned second_order_size = (Dimensions * (Dimensions + 1)) >> 1;
-      typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, Dimensions, 1> ElementType;
+      static const unsigned second_order_size = (Dimension * (Dimension + 1)) >> 1;
+      typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, Dimension, 1> ElementType;
       typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, second_order_size, 1> SecondOrderType;
       
-      IntegralImage2Dim (unsigned width, unsigned height, bool compute_second_order_integral_images);
+      /** \brief Constructor for an Integral Image 
+        * \param[in] compute_second_order_integral_images set to true if we want to compute a second order image
+        */
+      IntegralImage2Dim (bool compute_second_order_integral_images)
+        : width_ (1), height_ (1), compute_second_order_integral_images_ (compute_second_order_integral_images)
+      {
+      }
       
-      virtual ~IntegralImage2Dim ();
+      /** \brief Destructor */
+      virtual 
+      ~IntegralImage2Dim () { }
       
-      void setInput (const DataType * data, unsigned width, unsigned height, unsigned element_stride, unsigned row_stride);
+      /** \brief Set the input data to compute the integral image for
+        * \param[in] data the input data
+        * \param[in] width the width of the data
+        * \param[in] height the height of the data
+        * \param[in] element_stride the element stride of the data
+        * \param[in] row_stride the row stride of the data
+        */
+      void 
+      setInput (const DataType * data, 
+                unsigned width, unsigned height, unsigned element_stride, unsigned row_stride);
       
-      ElementType getFirstOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
-      SecondOrderType getSecondOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
+      /** \brief Compute the first order sum
+        * \param[in] start_x
+        * \param[in] start_y
+        * \param[in] width
+        * \param[in] height
+        */
+      inline ElementType 
+      getFirstOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
+
+      /** \brief Compute the second order sum
+        * \param[in] start_x
+        * \param[in] start_y
+        * \param[in] width
+        * \param[in] height
+        */
+      inline SecondOrderType 
+      getSecondOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
     
     private:
-      typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::Type, Dimensions, 1> InputType;
+      typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::Type, Dimension, 1> InputType;
 
-      void computeIntegralImages (const DataType * data, unsigned row_stride, unsigned element_stride);
+      /** \brief Compute the actual integral image data
+        * \param[in] data the input data
+        * \param[in] element_stride the element stride of the data
+        * \param[in] row_stride the row stride of the data
+        */ 
+      void 
+      computeIntegralImages (const DataType * data, unsigned row_stride, unsigned element_stride);
       
       std::vector<ElementType, Eigen::aligned_allocator<ElementType> > first_order_integral_image_;
       std::vector<SecondOrderType, Eigen::aligned_allocator<SecondOrderType> > second_order_integral_image_;
       
-      /** the width of the 2d input data array */
+      /** \brief The width of the 2d input data array */
       unsigned width_;
-      /** the height of the 2d input data array */
+      /** \brief The height of the 2d input data array */
       unsigned height_;
       
-      /** indicates whether second order integral images are available **/
+      /** \brief Indicates whether second order integral images are available **/
       bool compute_second_order_integral_images_;
-  };
-  
-  template <typename DataType>
-  class IntegralImage2Dim<DataType, 1>
-  {
-    public:
-      typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, 2, 1> VectorType;
-      
-      IntegralImage2Dim (unsigned width, unsigned height, bool compute_second_order_integral_images);
-      
-      virtual ~IntegralImage2Dim ();
-      
-      void setInput (const DataType * data, unsigned width, unsigned height, unsigned element_stride, unsigned row_stride);
-      
-      VectorType getSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
-      
-    private:
-      void computeIntegralImages (const DataType * data, unsigned row_stride, unsigned element_stride);
-      
-      std::vector<VectorType, Eigen::aligned_allocator<VectorType> > integral_image_;
-      
-      /** the width of the 2d input data array */
-      unsigned width_;
-      /** the height of the 2d input data array */
-      unsigned height_;
-      
-      /** indicates whether second order integral images are available **/
-      bool compute_second_order_integral_images_;
-  };
-}
+   };
+ }
 
 #include <pcl/features/impl/integral_image2D.hpp>
 
-#endif
-
+#endif    // PCL_INTEGRAL_IMAGE2D_H_
 

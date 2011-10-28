@@ -95,7 +95,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMet
   
  // compute integral images
  #if EIGEN_II_METHOD
-  integral_image_XYZ_.setInput(data_, input_->width, input_->height, element_stride, row_stride);
+  integral_image_XYZ_.setInput (data_, input_->width, input_->height, element_stride, row_stride);
 #else
   integral_image_xyz_ = new pcl::IntegralImage2D<float, double>(data_, input_->width, input_->height, 3, true, element_stride, row_stride);
 #endif  
@@ -203,7 +203,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     covariance_matrix (1, 1) = so_elements [3];
     covariance_matrix (1, 2) = covariance_matrix (2, 1) = so_elements [4];
     covariance_matrix (2, 2) = so_elements [5];
-    covariance_matrix -= (center * center.transpose()) / (rect_width_ * rect_height_);
+    covariance_matrix -= (center * center.transpose ()) / (rect_width_ * rect_height_);
     pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
     if (eigen_vectors (2, 0) < 0.0f)
       normal.getNormalVector4fMap () = Eigen::Vector4f (eigen_vectors (0, 0), eigen_vectors (1, 0), eigen_vectors (2, 0), 0);
