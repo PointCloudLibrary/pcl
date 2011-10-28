@@ -78,7 +78,7 @@ namespace pcl
         * \param min_pt
         */
       inline void
-      setMin (Eigen::Vector4f min_pt)
+      setMin (const Eigen::Vector4f &min_pt)
       {
         min_pt_ = min_pt;
       }
@@ -95,7 +95,7 @@ namespace pcl
         * \param max_pt
         */
       inline void
-      setMax (Eigen::Vector4f max_pt)
+      setMax (const Eigen::Vector4f &max_pt)
       {
         max_pt_ = max_pt;
       }
@@ -112,7 +112,7 @@ namespace pcl
         * \param transformation
         */
       inline void
-      setTranslation (Eigen::Vector3f translation)
+      setTranslation (const Eigen::Vector3f &translation)
       {
         translation_ = translation;
       }
@@ -129,7 +129,7 @@ namespace pcl
         * \param transformation
         */
       inline void
-      setRotation (Eigen::Vector3f rotation)
+      setRotation (const Eigen::Vector3f &rotation)
       {
         rotation_ = rotation;
       }
@@ -146,7 +146,7 @@ namespace pcl
         * \param pt_transformation
         */
       inline void
-      setTransform (Eigen::Affine3f transfrom)
+      setTransform (const Eigen::Affine3f &transfrom)
       {
         transform_ = transfrom;
       }
@@ -212,7 +212,7 @@ namespace pcl
         * \param min_pt
         */
       inline void
-      setMin (Eigen::Vector4f min_pt)
+      setMin (const Eigen::Vector4f& min_pt)
       {
         min_pt_ = min_pt;
       }
@@ -229,7 +229,7 @@ namespace pcl
         * \param max_pt
         */
       inline void
-      setMax (Eigen::Vector4f max_pt)
+      setMax (const Eigen::Vector4f &max_pt)
       {
         max_pt_ = max_pt;
       }
@@ -246,7 +246,7 @@ namespace pcl
         * \param transformation
         */
       inline void
-      setTranlation (Eigen::Vector3f translation)
+      setTranlation (const Eigen::Vector3f &translation)
       {
         translation_ = translation;
       }
@@ -263,7 +263,7 @@ namespace pcl
         * \param transformation
         */
       inline void
-      setRotation (Eigen::Vector3f rotation)
+      setRotation (const Eigen::Vector3f &rotation)
       {
         rotation_ = rotation;
       }
@@ -280,7 +280,7 @@ namespace pcl
         * \param pt_transformation
         */
       inline void
-      setTransform (Eigen::Affine3f transform)
+      setTransform (const Eigen::Affine3f &transform)
       {
         transform_ = transform;
       }
