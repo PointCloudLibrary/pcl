@@ -13,10 +13,12 @@ if(build)
 
     set(incs 
         include/pcl/${SUBSYS_NAME}/kdtree.h
+        include/pcl/${SUBSYS_NAME}/io.h
         include/pcl/${SUBSYS_NAME}/kdtree_flann.h
         )
 
     set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/io.hpp
         include/pcl/${SUBSYS_NAME}/impl/kdtree_flann.hpp
         )
 
