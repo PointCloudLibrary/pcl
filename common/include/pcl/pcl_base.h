@@ -127,35 +127,35 @@ namespace pcl
         * \param nb_cols the number of columns to be considered col_start included
         */
       inline void 
-      setIndices(size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols)
+      setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols)
       {
-        if((nb_rows > input_->height) || (row_start > input_->height))
+        if ((nb_rows > input_->height) || (row_start > input_->height))
         {
-          PCL_ERROR("[PCLBase::setIndices] cloud is only %d height", input_->height);
+          PCL_ERROR ("[PCLBase::setIndices] cloud is only %d height", input_->height);
           return;
         }
 
-        if((nb_cols > input_->width) || (col_start > input_->width))
+        if ((nb_cols > input_->width) || (col_start > input_->width))
         {
-          PCL_ERROR("[PCLBase::setIndices] cloud is only %d width", input_->width);
+          PCL_ERROR ("[PCLBase::setIndices] cloud is only %d width", input_->width);
           return;
         }
 
         size_t row_end = row_start + nb_rows;
-        if(row_end > input_->height)
+        if (row_end > input_->height)
         {
-          PCL_ERROR("[PCLBase::setIndices] %d is out of rows range %d", row_end, input_->height);
+          PCL_ERROR ("[PCLBase::setIndices] %d is out of rows range %d", row_end, input_->height);
           return;
         }
 
         size_t col_end = col_start + nb_cols;
-        if(col_end > input_->width)
+        if (col_end > input_->width)
         {
-          PCL_ERROR("[PCLBase::setIndices] %d is out of columns range %d", col_end, input_->width);
+          PCL_ERROR ("[PCLBase::setIndices] %d is out of columns range %d", col_end, input_->width);
           return;
         }
 
-        indices_.reset (new std::vector<int> ());
+        indices_.reset (new std::vector<int>);
         indices_->reserve (nb_cols * nb_rows);
         for(size_t i = row_start; i < row_end; i++)
           for(size_t j = col_start; j < col_end; j++)
@@ -175,7 +175,7 @@ namespace pcl
         */
       const PointT& operator[] (size_t pos)
       {
-        return (*input_)[(*indices_)[pos]];
+        return ((*input_)[(*indices_)[pos]]);
       }
 
     protected:
