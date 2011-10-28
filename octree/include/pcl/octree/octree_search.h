@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,11 +33,11 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de)
+ * $Id: pcl_base.h 2939 2011-10-28 06:19:16Z rusu $
  */
 
-#ifndef OCTREE_SEARCH_H
-#define OCTREE_SEARCH_H
+#ifndef PCL_OCTREE_SEARCH_H_
+#define PCL_OCTREE_SEARCH_H_
 
 #include "octree_pointcloud.h"
 
@@ -58,9 +60,8 @@ namespace pcl
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT = OctreeLeafDataTVector<int> , typename OctreeT = OctreeBase<int, LeafT> >
-      class OctreePointCloudSearch : public OctreePointCloud<PointT, LeafT, OctreeT>
-      {
-
+    class OctreePointCloudSearch : public OctreePointCloud<PointT, LeafT, OctreeT>
+    {
       public:
         // public typedefs
         typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
@@ -222,24 +223,25 @@ namespace pcl
                       std::vector<float> &k_sqr_distances_arg, int max_nn_arg = INT_MAX) const;
 
         /** \brief Get a PointT vector of centers of all voxels that intersected by a ray (origin, direction).
-         * \param origin ray origin
-         * \param direction ray direction vector
-         * \param voxelCenterList_arg results are written to this vector of PointT elements
-         * \return number of intersected voxels
-         */
+          * \param[in] origin ray origin
+          * \param[in] direction ray direction vector
+          * \param[out] voxelCenterList_arg results are written to this vector of PointT elements
+          * \return number of intersected voxels
+          */
         int
         getIntersectedVoxelCenters (Eigen::Vector3f origin, Eigen::Vector3f direction,
                                     AlignedPointTVector &voxelCenterList_arg) const;
 
         /** \brief Get indices of all voxels that are intersected by a ray (origin, direction).
-         * \param origin ray origin
-         * \param direction ray direction vector
-         * \param k_indices_arg resulting indices
-         * \return number of intersected voxels
-         */
+          * \param[in] origin ray origin
+          * \param[in] direction ray direction vector
+          * \param[out] k_indices_arg resulting indices
+          * \return number of intersected voxels
+          */
         int
         getIntersectedVoxelIndices (Eigen::Vector3f origin, Eigen::Vector3f direction,
                                     std::vector<int> &k_indices_arg) const;
+
 
       protected:
 
@@ -411,45 +413,42 @@ namespace pcl
                                              const OctreeKey& key_arg, AlignedPointTVector &voxelCenterList_arg) const;
 
         /** \brief Recursively search the tree for all intersected leaf nodes and return a vector of indices.
-         * This algorithm is based off the paper An Efficient Parametric Algorithm for Octree Traversal:
-         * http://wscg.zcu.cz/wscg2000/Papers_2000/X31.pdf
-         * \param minX octree nodes X coordinate of lower bounding box corner
-         * \param minY octree nodes Y coordinate of lower bounding box corner
-         * \param minZ octree nodes Z coordinate of lower bounding box corner
-         * \param maxX octree nodes X coordinate of upper bounding box corner
-         * \param maxY octree nodes Y coordinate of upper bounding box corner
-         * \param maxZ octree nodes Z coordinate of upper bounding box corner
-         * \param a
-         * \param node_arg current octree node to be explored
-         * \param key_arg octree key addressing a leaf node.
-         * \param k_indices_arg resulting indices
-         * \return number of voxels found
-         */
+          * This algorithm is based off the paper An Efficient Parametric Algorithm for Octree Traversal:
+          * http://wscg.zcu.cz/wscg2000/Papers_2000/X31.pdf
+          * \param minX octree nodes X coordinate of lower bounding box corner
+          * \param minY octree nodes Y coordinate of lower bounding box corner
+          * \param minZ octree nodes Z coordinate of lower bounding box corner
+          * \param maxX octree nodes X coordinate of upper bounding box corner
+          * \param maxY octree nodes Y coordinate of upper bounding box corner
+          * \param maxZ octree nodes Z coordinate of upper bounding box corner
+          * \param a
+          * \param node_arg current octree node to be explored
+          * \param key_arg octree key addressing a leaf node.
+          * \param k_indices_arg resulting indices
+          * \return number of voxels found
+          */
         int
         getIntersectedVoxelIndicesRecursive (double minX, double minY, double minZ,
                                              double maxX, double maxY, double maxZ,
                                              unsigned char a, const OctreeNode* node_arg, const OctreeKey& key_arg,
                                              std::vector<int> &k_indices_arg) const;
-
         /** \brief Initialize raytracing algorithm
-         * \param minX octree nodes X coordinate of lower bounding box corner
-         * \param minY octree nodes Y coordinate of lower bounding box corner
-         * \param minZ octree nodes Z coordinate of lower bounding box corner
-         * \param maxX octree nodes X coordinate of upper bounding box corner
-         * \param maxY octree nodes Y coordinate of upper bounding box corner
-         * \param maxZ octree nodes Z coordinate of upper bounding box corner
-         * \param a
-         */
+          * \param minX octree nodes X coordinate of lower bounding box corner
+          * \param minY octree nodes Y coordinate of lower bounding box corner
+          * \param minZ octree nodes Z coordinate of lower bounding box corner
+          * \param maxX octree nodes X coordinate of upper bounding box corner
+          * \param maxY octree nodes Y coordinate of upper bounding box corner
+          * \param maxZ octree nodes Z coordinate of upper bounding box corner
+          * \param a
+          */
         inline void
         initIntersectedVoxel (Eigen::Vector3f &origin, Eigen::Vector3f &direction,
                               double &minX, double &minY, double &minZ,
                               double &maxX, double &maxY, double &maxZ,
                               unsigned char &a) const
         {
-
           // Account for division by zero when direction vector is 0.0
           const double epsilon = 1e-10;
-
           if (direction.x () == 0.0)
             direction.x () = epsilon;
           if (direction.y () == 0.0)
@@ -479,7 +478,6 @@ namespace pcl
             direction.z () = -direction.z ();
             a |= 1;
           }
-
           minX = (this->minX_ - origin.x ()) / direction.x ();
           maxX = (this->maxX_ - origin.x ()) / direction.x ();
           minY = (this->minY_ - origin.y ()) / direction.y ();
@@ -583,4 +581,4 @@ namespace pcl
 
 #define PCL_INSTANTIATE_OctreePointCloudSearch(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudSearch<T>;
 
-#endif
+#endif    // PCL_OCTREE_SEARCH_H_
