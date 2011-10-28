@@ -83,7 +83,7 @@ namespace pcl
         init_covariance_matrix_(false), init_average_3d_gradient_(false), init_depth_change_(false)
       {
         feature_name_ = "IntegralImagesNormalEstimation";
-        tree_.reset (new pcl::search::OrganizedNeighbor<PointInT>);
+        tree_.reset ();
         k_ = 1;
       }
 
