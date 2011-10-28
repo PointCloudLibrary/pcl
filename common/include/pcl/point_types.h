@@ -66,6 +66,9 @@ namespace pcl
   struct PointXYZRGB;
   // Members: float x, y, z, rgb;
 
+  struct PointXYZHSV;
+  // Members: float x, y, z, h, s, v;
+
   struct PointXY;
   // Members: float x, y;
 
@@ -218,6 +221,16 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGB,
     (float, rgb, rgb)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGB, pcl::_PointXYZRGB)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZHSV,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (float, h, h)
+    (float, s, s)
+    (float, v, v)
+)
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZHSV, pcl::_PointXYZHSV)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXY,
     (float, x, x)

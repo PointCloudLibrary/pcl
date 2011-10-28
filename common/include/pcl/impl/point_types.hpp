@@ -44,6 +44,7 @@
   (pcl::PointXYZI)              \
   (pcl::PointXYZRGBA)           \
   (pcl::PointXYZRGB)            \
+  (pcl::PointXYZHSV)            \
   (pcl::PointXY)                \
   (pcl::InterestPoint)          \
   (pcl::Normal)                 \
@@ -73,6 +74,7 @@
   (pcl::PointXYZI)            \
   (pcl::PointXYZRGBA)         \
   (pcl::PointXYZRGB)          \
+  (pcl::PointXYZHSV)          \
   (pcl::InterestPoint)        \
   (pcl::PointNormal)          \
   (pcl::PointXYZRGBNormal)    \
@@ -148,9 +150,8 @@ namespace pcl
 
   struct _PointXYZ
   {
-    PCL_ADD_POINT4D
-    ; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW    ;
+    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
   };
 
   /*struct PointXYZ
@@ -369,6 +370,42 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW    ;
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.rgb << ")";
     return (os);
   }
+
+  struct _PointXYZHSV
+  {
+    PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    union
+    {
+      struct
+      {
+        float h;
+        float s;
+        float v;
+      };
+      float data_c[4];
+    };
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  } EIGEN_ALIGN16;
+
+  struct EIGEN_ALIGN16 PointXYZHSV : public _PointXYZHSV
+  {
+    inline PointXYZHSV ()
+    {
+      data_c[3] = 0;
+    }
+    inline PointXYZHSV (float _h, float _v, float _s)
+    {
+      h = _h; v = _v; s = _s;
+      data_c[3] = 0;
+    }
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+  inline std::ostream& operator << (std::ostream& os, const PointXYZHSV& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.h << " , " <<  p.s << " , " << p.v << ")";
+    return (os);
+  }
+
 
   /** \brief A 2D point structure representing Euclidean xy coordinates.
    * \ingroup common

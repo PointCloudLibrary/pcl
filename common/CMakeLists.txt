@@ -26,6 +26,7 @@ if(build)
         include/pcl/pcl_base.h
         include/pcl/pcl_macros.h
         include/pcl/point_cloud.h
+        include/pcl/point_types_conversion.h
         include/pcl/point_representation.h
         include/pcl/correspondence.h
         include/pcl/point_types.h
