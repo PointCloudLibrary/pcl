@@ -60,7 +60,7 @@ if(build)
         set(VTK_IO_INCLUDES include/pcl/${SUBSYS_NAME}/vtk_lib_io.h)
         set(VTK_IO_SOURCE src/vtk_lib_io.cpp)
         set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
-      endif ()
+    endif ()
 
     set(srcs 
         src/pcd_io.cpp
