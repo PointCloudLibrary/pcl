@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,11 +33,12 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de), Nico Blodow (blodow@cs.tum.edu)
+ * $Id$
+ *
  */
 
-#ifndef PCL_SEARCH_SEARCH_ORGANIZED_NEIGHBOR_SEARCH_H_
-#define PCL_SEARCH_SEARCH_ORGANIZED_NEIGHBOR_SEARCH_H_
+#ifndef PCL_SEARCH_ORGANIZED_NEIGHBOR_SEARCH_H_
+#define PCL_SEARCH_ORGANIZED_NEIGHBOR_SEARCH_H_
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -256,88 +259,6 @@ namespace pcl
         approxNearestKSearch (const PointCloudConstPtr &cloud, int index, int k, std::vector<int> &k_indices,
                               std::vector<float> &k_distances);
 
-        /* Functions which are not implemented */
-
-        /** \brief search for approximate nearest neighbor at the query point.
-         * \param cloud_arg the const boost shared pointer to a PointCloud message
-         * \param query_index_arg the index in \a cloud representing the query point
-         * \param result_index_arg the resultant index of the neighbor point
-         * \param sqr_distance_arg the resultant squared distance to the neighboring point
-         */
-        inline void
-        approxNearestSearch (const PointCloudConstPtr &cloud_arg, int query_index_arg, int &result_index_arg,
-                             float &sqr_distance_arg)
-        {
-          PCL_ERROR("[pcl::search::OrganizedNeighbor::approxNearestSearch] This function is not supported by OrganizedNeighbor\n");
-        }
-
-        /** \brief Search for approximate nearest neighbor at the query point.
-         * @param p_q_arg the given query point
-         * \param result_index_arg the resultant index of the neighbor point
-         * \param sqr_distance_arg the resultant squared distance to the neighboring point
-         */
-        inline void
-        approxNearestSearch (const PointT &p_q_arg, int &result_index_arg, float &sqr_distance_arg)
-        {
-          PCL_ERROR("[pcl::search::OrganizedNeighbor::approxNearestSearch] This function is not supported by OrganizedNeighbor\n");
-        }
-        ;
-
-        /** \brief search for approximate nearest neighbor at the query point.
-         * \param query_index_arg index representing the query point in the dataset given by \a setInputCloud.
-         *        If indices were given in setInputCloud, index will be the position in the indices vector.
-         * \param result_index_arg the resultant index of the neighbor point
-         * \param sqr_distance_arg the resultant squared distance to the neighboring point
-         */
-        inline void
-        approxNearestSearch (int query_index_arg, int &result_index_arg, float &sqr_distance_arg)
-        {
-          PCL_ERROR("[pcl::search::OrganizedNeighbor::approxNearestSearch] This function is not supported by OrganizedNeighbor\n");
-        }
-        ;
-
-        /** \brief Evaluate the search Methods for the given cloud.
-         * \param cloud the const boost shared pointer to a PointCloud message
-         * \param search_type the search type NEAREST_K_SEARCH and NEAREST_RADIUS_SEARCH
-         */
-        inline void
-        evaluateSearchMethods (const PointCloudConstPtr& cloud, const int search_type)
-        {
-          PCL_ERROR("[pcl::search::OrganizedNeighbor::evaluateSearchMethods] This function is not supported by OrganizedNeighbor\n");
-        }
-
-        /** \brief search for k-nearest neighbors for the given query points.
-         * \param point the given query points
-         * \param k the numbers of the query point's neighbors to search for
-         * \param k_indices the resultant indices of the neighboring points
-         * \param k_sqr_distances the resultant squared distances to the neighboring points
-         * \return number of neighbors found
-         */
-        inline int
-        nearestKSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, std::vector<int>& k,
-                        std::vector<std::vector<int> >& k_indices, std::vector<std::vector<float> >& k_sqr_distances)
-        {
-          PCL_ERROR("[pcl::search::OrganizedNeighbor::nearestKSearch] This function is not supported by OrganizedNeighbor\n");
-          return (0);
-        }
-
-        /** \brief Approximate search for all the nearest neighbors of the query points in the given radiuses.
-         * \param point the given query points
-         * \param radiuses the radiuses of the sphere bounding all of point's neighbors
-         * \param k_indices the resultant indices of the neighboring points
-         * \param k_distances the resultant squared distances to the neighboring points
-         * \param max_nn if given, bounds the maximum returned neighbors to this value
-         * \return number of neighbors found in radiuses
-         */
-        inline int
-        radiusSearch (std::vector<PointT, Eigen::aligned_allocator<PointT> >& point, std::vector<double>& radiuses,
-                      std::vector<std::vector<int> >& k_indices, std::vector<std::vector<float> >& k_distances,
-                      int max_nn) const
-        {
-          PCL_ERROR("[pcl::search::OrganizedNeighbor::radiusSearch] This function is not supported by OrganizedNeighbor\n");
-          return (0);
-        }
-
         /** \brief Get the maximum allowed distance between the query point and its nearest neighbors. */
         inline double
         getMaxDistance () const
@@ -434,8 +355,6 @@ namespace pcl
          *  \note This class defines entries for the nearest neighbor candidate queue
          *  \author Julius Kammerl (julius@kammerl.de)
          */
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         class nearestNeighborCandidate
         {
         public:
@@ -494,7 +413,6 @@ namespace pcl
         void
         estimateFocalLengthFromInputCloud ();
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief Class getName method. */
         virtual std::string
         getName () const
