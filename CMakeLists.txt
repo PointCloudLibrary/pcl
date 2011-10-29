@@ -19,6 +19,8 @@ if(WIN32)
   set(CMAKE_DEBUG_POSTFIX "-gd")
 endif()
 
+include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
+
 # ---[ Unix/Darwin/Windows specific flags
 if(UNIX OR APPLE)
   add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing -pthread")
@@ -56,7 +58,6 @@ if(USE_PROJECT_FOLDERS)
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif(USE_PROJECT_FOLDERS)
 
-include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
 include(${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake)
 set(PCL_VERSION 1.3.0 CACHE STRING "PCL version")
 DISSECT_VERSION()
