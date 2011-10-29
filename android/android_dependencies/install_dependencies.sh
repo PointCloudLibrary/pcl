@@ -49,7 +49,7 @@ mkdir build
 cd build
 `$android_cmake ..`
 make -j4
-sudo make install
+make install
 
 echo "Done ...
 
@@ -69,7 +69,7 @@ mkdir build
 cd build
 `$android_cmake ..`
 make -j4
-sudo make install
+make install
 
 echo "Done ...
 
@@ -85,4 +85,4 @@ mkdir build
 cd build
 `$android_cmake -DBUILD_MATLAB_BINDINGS=0 -DBUILD_PYTHON_BINDINGS=0 -DBUILD_CUDA_LIB=0 ..`
 make -j4
-sudo make install
+make install
