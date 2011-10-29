@@ -54,13 +54,13 @@ if(build)
             )
     endif(OPENNI_FOUND)
 
-    if(VTK_FOUND)
+    if (VTK_FOUND AND NOT ANDROID_NDK)
         set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
         include (${VTK_USE_FILE})
         set(VTK_IO_INCLUDES include/pcl/${SUBSYS_NAME}/vtk_lib_io.h)
         set(VTK_IO_SOURCE src/vtk_lib_io.cpp)
         set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
-    endif(VTK_FOUND)
+      endif ()
 
     set(srcs 
         src/pcd_io.cpp
