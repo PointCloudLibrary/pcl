@@ -22,6 +22,10 @@ endif()
 include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
 
 # ---[ Unix/Darwin/Windows specific flags
+if (ANDROID_NDK)
+  set (PCL_SHARED_LIBS FALSE)
+  #message ("PCL shared libs on Android must be: ${PCL_SHARED_LIBS}")
+endif()
 if(UNIX OR APPLE)
   add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing -pthread")
   if(CMAKE_COMPILER_IS_GNUCXX)
