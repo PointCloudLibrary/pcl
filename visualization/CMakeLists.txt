@@ -13,6 +13,11 @@ else(NOT VTK_FOUND)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 endif(NOT VTK_FOUND)
 
+if (VTK AND ANDROID_NDK)
+    set(DEFAULT FALSE)
+    set(REASON "VTK was found, but cannot be compiled for Android. Please use VES instead.")
+endif ()
+
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk OPT_DEPS openni)
 
