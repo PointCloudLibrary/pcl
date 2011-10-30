@@ -179,11 +179,11 @@ endmacro(PCL_CUDA_ADD_LIBRARY)
 macro(PCL_ADD_EXECUTABLE _name _component)
     add_executable(${_name} ${ARGN})
     # must link explicitly against boost.
-    if(UNIX)
+    if(UNIX AND NOT ANDROID_NDK)
       target_link_libraries(${_name} ${Boost_LIBRARIES} pthread)
-    else(UNIX)
+    else()
       target_link_libraries(${_name} ${Boost_LIBRARIES})
-    endif(UNIX)
+    endif()
     #
     # Only link if needed
     if(WIN32 AND MSVC)
@@ -255,7 +255,7 @@ macro(PCL_ADD_TEST _name _exename)
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
       set_target_properties(${_exename} PROPERTIES LINK_FLAGS -Wl)
       target_link_libraries(${_exename} pthread)
-    elseif(UNIX)
+    elseif(UNIX AND NOT ANDROID_NDK)
       set_target_properties(${_exename} PROPERTIES LINK_FLAGS -Wl,--as-needed)
       # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
       target_link_libraries(${_exename} pthread)
