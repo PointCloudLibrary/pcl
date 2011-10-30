@@ -18,6 +18,10 @@ endif(NOT VTK_FOUND)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)
 
+if (ANDROID_NDK)
+  set (build FALSE)
+endif ()
+
 if(build)
   include_directories(include/pcl/${SUBSYS_NAME})
   include_directories(include/pcl/)
