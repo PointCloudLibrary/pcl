@@ -51,7 +51,9 @@
 namespace pcl
 {
   // Forward declaration
+#ifndef __ANDROID__
   template<class T> class ProgressiveSampleConsensus;
+#endif
 
   /** \brief @b SampleConsensusModel represents the base model class. All sample consensus models must inherit 
     * from this class.
@@ -313,9 +315,9 @@ namespace pcl
         min_radius = radius_min_;
         max_radius = radius_max_;
       }
-
+#ifndef __ANDROID__
       friend class ProgressiveSampleConsensus<PointT>;
-
+#endif
     protected:
       /** \brief Fills a sample array with random samples from the indices_ vector
         * \param[out] sample the set of indices of target_ to analyze
