@@ -61,6 +61,7 @@ set(PCL_CPACK_CFG_FILE "${PCL_BINARY_DIR}/cpack_options.cmake")
 macro(PCL_MAKE_CPACK_INPUT)
     set(_cpack_cfg_in "${PCL_SOURCE_DIR}/cmake/cpack_options.cmake.in")
     set(${_var} "${${_var}}\nset(CPACK_COMPONENT_GROUP_PCL_DESCRIPTION \"PCL headers and librairies\")\n")
+
     # Prepare the components list
     set(PCL_CPACK_COMPONENTS)
     PCL_CPACK_MAKE_COMPS_OPTS(PCL_CPACK_COMPONENTS "${_comps}")
@@ -74,6 +75,7 @@ macro(PCL_MAKE_CPACK_INPUT)
     set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_GROUP \"PCL\")\n")
     set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_DISPLAY_NAME \"PCLConfig\")\n")
     set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_PCLCONFIG_DESCRIPTION \"Helper cmake configuration scripts used by find_package(PCL)\")\n")	
+
     # add 3rdParty libs
     if(BUILD_all_in_one_installer)
         set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_GROUP_THIRDPARTY_DISPLAY_NAME \"3rd Party Libraries\")")

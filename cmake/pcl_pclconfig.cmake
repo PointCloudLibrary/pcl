@@ -1,6 +1,6 @@
 
 set(PCL_SUBSYSTEMS_MODULES ${PCL_SUBSYSTEMS})
-list(REMOVE_ITEM PCL_SUBSYSTEMS_MODULES tools global_tests apps)
+list(REMOVE_ITEM PCL_SUBSYSTEMS_MODULES tools cuda_apps global_tests proctor gpu_kinfu)
 
 set(PCLCONFIG_AVAILABLE_COMPONENTS)
 set(PCLCONFIG_AVAILABLE_COMPONENTS_LIST)
@@ -38,14 +38,6 @@ foreach(_ss ${PCL_SUBSYSTEMS_MODULES})
         endif(_opt_deps)
     endif(_status)
 endforeach(_ss)
-
-# apped range_image_border_extractor
-PCL_GET_SUBSYS_STATUS(_status features)
-if(_status)
-    set(PCLCONFIG_AVAILABLE_COMPONENTS "${PCLCONFIG_AVAILABLE_COMPONENTS} range_image_border_extractor")
-    set(PCLCONFIG_AVAILABLE_COMPONENTS_LIST "${PCLCONFIG_AVAILABLE_COMPONENTS_LIST}\n# - range_image_border_extractor")
-    set(PCLCONFIG_INTERNAL_DEPENDENCIES "${PCLCONFIG_INTERNAL_DEPENDENCIES}set(pcl_range_image_border_extractor_int_dep common kdtree range_image)\n")
-endif(_status)
 
 configure_file("${PCL_SOURCE_DIR}/PCLConfig.cmake.in"
                "${PCL_BINARY_DIR}/PCLConfig.cmake" @ONLY)
