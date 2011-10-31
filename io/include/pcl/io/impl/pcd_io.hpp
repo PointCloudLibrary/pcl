@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pcd_io.hpp 2664 2011-10-09 13:27:06Z bouffa $
+ * $Id: pcd_io.hpp 2693 2011-10-11 03:45:58Z rusu $
  *
  */
 

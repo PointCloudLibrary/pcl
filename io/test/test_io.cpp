@@ -937,6 +937,7 @@ TEST (PCL, LZFExtended)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Locale)
 {
+#ifndef __APPLE__
   try
   {
     PointCloud<PointXYZ> cloud, cloud2;
@@ -1008,7 +1009,9 @@ TEST (PCL, Locale)
   catch(std::exception& e)
   {
   }
+#endif
 }
+
 /* ---[ */
 int
   main (int argc, char** argv)

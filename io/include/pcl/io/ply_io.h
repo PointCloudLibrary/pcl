@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: ply_io.h 2641 2011-10-06 15:31:10Z jspricke $
+ * $Id$
  *
  */
 

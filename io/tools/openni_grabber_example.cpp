@@ -36,12 +36,16 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/common/time.h>
 
 class SimpleOpenNIProcessor
 {
   public:
+
+    bool save;
+
     void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
       static unsigned count = 0;
@@ -53,10 +57,20 @@ class SimpleOpenNIProcessor
         count = 0;
         last = now;
       }
+
+      if (save)
+      {
+        std::stringstream ss;
+        ss << std::setprecision(12) << pcl::getTime () * 100 << ".pcd";
+        pcl::io::savePCDFile (ss.str (), *cloud);
+        std::cout << "wrote point clouds to file " << ss.str() << std::endl;
+      }
     }
     
     void run ()
     {
+      save = false;
+
       // create a new grabber for OpenNI devices
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
@@ -72,6 +86,7 @@ class SimpleOpenNIProcessor
 
       std::cout << "<Esc>, \'q\', \'Q\': quit the program" << std::endl;
       std::cout << "\' \': pause" << std::endl;
+      std::cout << "\'s\': save" << std::endl;
       char key;
       do
       {
@@ -83,6 +98,8 @@ class SimpleOpenNIProcessor
               interface->stop();
             else
               interface->start();
+          case 's':
+            save = !save;
         }
       } while (key != 27 && key != 'q' && key != 'Q');
 

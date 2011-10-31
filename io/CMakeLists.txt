@@ -54,12 +54,22 @@ if(build)
             )
     endif(OPENNI_FOUND)
 
+    if (VTK_FOUND AND NOT ANDROID_NDK)
+        set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
+        include (${VTK_USE_FILE})
+        set(VTK_IO_INCLUDES include/pcl/${SUBSYS_NAME}/vtk_lib_io.h)
+        set(VTK_IO_SOURCE src/vtk_lib_io.cpp)
+        set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
+    endif ()
+
     set(srcs 
         src/pcd_io.cpp
         src/vtk_io.cpp
         src/ply_io.cpp
         src/compression.cpp
         src/lzf.cpp
+        src/obj_io.cpp
+        ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
         )
 
@@ -72,6 +82,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/vtk_io.h
         include/pcl/${SUBSYS_NAME}/ply_io.h
         include/pcl/${SUBSYS_NAME}/ply.h
+        include/pcl/${SUBSYS_NAME}/obj_io.h 
+        ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         )
 
@@ -90,11 +102,11 @@ if(build)
        )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include) 
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES})
     link_directories(${VTK_LINK_DIRECTORIES})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_common) 
+    target_link_libraries(${LIB_NAME} pcl_common ${VTK_IO_TARGET_LINK_LIBRARIES})
     if(OPENNI_FOUND)
       target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
     endif(OPENNI_FOUND)

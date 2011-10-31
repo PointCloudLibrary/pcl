@@ -112,9 +112,15 @@ class Grabber
     template<typename T> boost::signals2::signal<T>* find_signal () const;
     template<typename T> int num_slots () const;
     template<typename T> void disconnect_all_slots ();
+    template<typename T> void block_signal ();
+    template<typename T> void unblock_signal ();
+    inline void block_signals ();
+    inline void unblock_signals ();
 
     template<typename T> boost::signals2::signal<T>* createSignal ();
     std::map<std::string, boost::signals2::signal_base*> signals_;
+    std::map<std::string, std::vector<boost::signals2::connection> > connections_;
+    std::map<std::string, std::vector<boost::signals2::shared_connection_block> > shared_connections_;
 };
 
 Grabber::~Grabber () throw ()
@@ -143,6 +149,34 @@ template<typename T> void Grabber::disconnect_all_slots ()
     Signal* signal = dynamic_cast<Signal*> (signals_[typeid(T).name()]);
     signal->disconnect_all_slots ();
   }
+}
+
+template<typename T> void Grabber::block_signal ()
+{
+  if (connections_.find (typeid(T).name()) != connections_.end ())
+    for (std::vector<boost::signals2::shared_connection_block>::iterator cIt = shared_connections_[typeid(T).name()].begin(); cIt != shared_connections_[typeid(T).name()].end(); ++cIt)
+      cIt->block ();
+}
+
+template<typename T> void Grabber::unblock_signal ()
+{
+  if (connections_.find (typeid(T).name()) != connections_.end ())
+    for (std::vector<boost::signals2::shared_connection_block>::iterator cIt = shared_connections_[typeid(T).name()].begin(); cIt != shared_connections_[typeid(T).name()].end(); ++cIt)
+      cIt->unblock ();
+}
+
+void Grabber::block_signals ()
+{
+  for (std::map<std::string, boost::signals2::signal_base*>::iterator signal_it = signals_.begin (); signal_it != signals_.end (); ++signal_it)
+    for (std::vector<boost::signals2::shared_connection_block>::iterator cIt = shared_connections_[signal_it->first].begin(); cIt != shared_connections_[signal_it->first].end(); ++cIt)
+      cIt->block ();    
+}
+
+void Grabber::unblock_signals ()
+{
+  for (std::map<std::string, boost::signals2::signal_base*>::iterator signal_it = signals_.begin (); signal_it != signals_.end (); ++signal_it)
+    for (std::vector<boost::signals2::shared_connection_block>::iterator cIt = shared_connections_[signal_it->first].begin(); cIt != shared_connections_[signal_it->first].end(); ++cIt)
+      cIt->unblock ();    
 }
 
 template<typename T> int Grabber::num_slots () const
@@ -194,6 +228,8 @@ template<typename T> boost::signals2::connection Grabber::registerCallback (cons
   Signal* signal = dynamic_cast<Signal*> (signals_[typeid(T).name()]);
   boost::signals2::connection ret = signal->connect (callback);
 
+  connections_[typeid(T).name()].push_back(ret);
+  shared_connections_[typeid(T).name()].push_back(boost::signals2::shared_connection_block(connections_[typeid(T).name()].back()));
   signalsChanged ();
   return (ret);
 }
