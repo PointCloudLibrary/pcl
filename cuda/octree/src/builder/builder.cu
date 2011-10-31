@@ -156,7 +156,7 @@ void pcl::device::OctreeImpl::build()
         tasksGlobal.line[0]  = storage.ptr(8);
         tasksGlobal.line[1]  = storage.ptr(9);
 
-        points_sorted = DeviceArray2D<float>(3, points_num, storage.ptr(10), storage.step);
+        points_sorted = DeviceArray2D<float>(3, points_num, storage.ptr(10), storage.step());
         tasksGlobal.active_selector = 0;        
     }
 

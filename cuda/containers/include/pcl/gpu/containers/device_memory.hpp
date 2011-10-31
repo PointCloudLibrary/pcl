@@ -101,6 +101,11 @@ namespace pcl
               * \param host_ptr_arg: pointer to buffer to download               
               * */
             void download(void *host_ptr_arg) const;
+
+            /** \brief Performs swap of data pointed with another device memory. 
+              * \param other: device memory to swap with   
+              * */
+            void swap(DeviceMemory& other_arg);
             
             /** \brief Returns pointer for internal buffer in GPU memory. */
             template<class T> T* ptr();
@@ -113,14 +118,16 @@ namespace pcl
            
             /** \brief Returns true if unallocated otherwise false. */
             bool empty() const;
-
+            
+            size_t sizeBytes() const;
+        
+        private:
             /** \brief Device pointer. */
-            char *data;
+            void *data_;
 
             /** \brief Allocated size in bytes. */
-            size_t sizeBytes;
-
-        private:
+            size_t sizeBytes_;
+        
             /** \brief Pointer to reference counter in CPU memory. */
             int* refcount_;
         };
@@ -190,6 +197,11 @@ namespace pcl
               * \param host_step_arg: stride between two consecutive rows in bytes for host buffer             
               * */
             void download(void *host_ptr_arg, size_t host_step_arg) const;
+
+            /** \brief Performs swap of data pointed with another device memory. 
+              * \param other: device memory to swap with   
+              * */
+            void swap(DeviceMemory2D& other_arg);
             
             /** \brief Returns pointer to given row in internal buffer. 
               * \param y_arg: row index   
@@ -215,21 +227,22 @@ namespace pcl
 
             /** \brief Returns number of rows. */
             int rows() const;
-       
-            /** \brief Device pointer. */
-            char *data;
 
             /** \brief Returns stride between two consecutive rows in bytes for internal buffer. Step is stored always and everywhere in bytes!!! */
-            size_t step;
+            size_t step() const;                               
+        private:
+            /** \brief Device pointer. */
+            void *data_;
 
-        protected:
+            /** \brief Stride between two consecutive rows in bytes for internal buffer. Step is stored always and everywhere in bytes!!! */
+            size_t step_;
+
             /** \brief Width of the buffer in bytes. */
             int colsBytes_;
 
             /** \brief Number of rows. */
             int rows_;
 
-        private:
             /** \brief Pointer to reference counter in CPU memory. */
             int* refcount_;
         };      

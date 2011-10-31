@@ -119,6 +119,11 @@ namespace pcl
             template<typename A>
             void download(std::vector<T, A>& data) const;
 
+            /** \brief Performs swap of data pointed with another device array. 
+              * \param other: device array to swap with   
+              * */
+            void swap(DeviceArray& other_arg);
+
             /** \brief Returns pointer for internal buffer in GPU memory. */
             T* ptr(); 
 
@@ -206,6 +211,11 @@ namespace pcl
               * \param host_step: stride between two consecutive rows in bytes for host buffer             
               * */
             void download(void *host_ptr, size_t host_step) const;
+
+            /** \brief Performs swap of data pointed with another device array. 
+              * \param other: device array to swap with   
+              * */
+            void swap(DeviceArray2D& other_arg);
 
             /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
               * \param data: host vector to upload from              

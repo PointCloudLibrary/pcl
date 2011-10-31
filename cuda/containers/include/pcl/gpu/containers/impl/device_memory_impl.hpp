@@ -39,27 +39,27 @@
 
 /////////////////////  Inline implementations of DeviceMemory ////////////////////////////////////////////
 
-template<class T> inline       T* pcl::gpu::DeviceMemory::ptr()       { return (      T*)data; }
-template<class T> inline const T* pcl::gpu::DeviceMemory::ptr() const { return (const T*)data; }
+template<class T> inline       T* pcl::gpu::DeviceMemory::ptr()       { return (      T*)data_; }
+template<class T> inline const T* pcl::gpu::DeviceMemory::ptr() const { return (const T*)data_; }
                         
 template <class U> inline pcl::gpu::DeviceMemory::operator pcl::gpu::PtrSz<U>() const
 {
     PtrSz<U> result;
     result.data = (U*)ptr<U>();
-    result.size = sizeBytes/sizeof(U);
+    result.size = sizeBytes_/sizeof(U);
     return result; 
 }
 
 /////////////////////  Inline implementations of DeviceMemory2D ////////////////////////////////////////////
                
-template<class T>        T* pcl::gpu::DeviceMemory2D::ptr(int y_arg)       { return (      T*)(data + y_arg * step); }
-template<class T>  const T* pcl::gpu::DeviceMemory2D::ptr(int y_arg) const { return (const T*)(data + y_arg * step); }
+template<class T>        T* pcl::gpu::DeviceMemory2D::ptr(int y_arg)       { return (      T*)((      char*)data_ + y_arg * step_); }
+template<class T>  const T* pcl::gpu::DeviceMemory2D::ptr(int y_arg) const { return (const T*)((const char*)data_ + y_arg * step_); }
   
 template <class U> pcl::gpu::DeviceMemory2D::operator pcl::gpu::PtrStep<U>() const
 {
     PtrStep<U> result;
     result.data = (U*)ptr<U>();
-    result.step = step;
+    result.step = step_;
     return result;
 }
 
@@ -67,7 +67,7 @@ template <class U> pcl::gpu::DeviceMemory2D::operator pcl::gpu::PtrStepSz<U>() c
 {
     PtrStepSz<U> result;
     result.data = (U*)ptr<U>();
-    result.step = step;
+    result.step = step_;
     result.cols = colsBytes_/sizeof(U);
     result.rows = rows_;
     return result;
