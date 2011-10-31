@@ -110,7 +110,7 @@ namespace pcl
             std::vector<Vector3f> tvecs;
            
             void allocateBufffers(int rows, int cols);
-            void estimateTrel(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, Matrix3f& Rrel, Vector3f& trel);
+            void estimateTrel(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const CorespMap& coresp, Matrix3f& Rrel, Vector3f& trel);
         };	
     }
 };

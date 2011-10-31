@@ -1,38 +1,38 @@
 /*
- * Software License Agreement (BSD License)
- *
- *  Copyright (c) 2011, Willow Garage, Inc.
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
- */
+* Software License Agreement (BSD License)
+*
+*  Copyright (c) 2011, Willow Garage, Inc.
+*  All rights reserved.
+*
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
+*  are met:
+*
+*   * Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
+*   * Redistributions in binary form must reproduce the above
+*     copyright notice, this list of conditions and the following
+*     disclaimer in the documentation and/or other materials provided
+*     with the distribution.
+*   * Neither the name of Willow Garage, Inc. nor the names of its
+*     contributors may be used to endorse or promote products derived
+*     from this software without specific prior written permission.
+*
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+*  POSSIBILITY OF SUCH DAMAGE.
+*
+*  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
+*/
 
 #include "device.hpp"
 
@@ -60,8 +60,7 @@ namespace pcl
             PtrStep<float> v_dst;
             PtrStep<float> n_dst;			
             PtrStep<float> v_src;
-            int rows;
-            int cols;
+            PtrStepSz<short2> coresp;
 
             mutable PtrStep<T> gbuf;
 
@@ -70,48 +69,44 @@ namespace pcl
                 int x = threadIdx.x + blockIdx.x * blockDim.x;
                 int y = threadIdx.y + blockIdx.y * blockDim.y;
 
-                if (x >= cols || y >= rows)
-                    return;
-
                 float row[7];               
                 row[0] = row[1] = row[2] = row[3] = row[4] = row[5] = row[6] = 0.f;
 
-                float3 n, s;
-
-                n.x = n_dst.ptr(y)[x];
-                s.x = v_src.ptr(y)[x];
-
-                if (!isnan(n.x) && !isnan(s.x))
+                if (x < coresp.cols || y < coresp.rows)
                 {
-                    n.y = n_dst.ptr(y+  rows)[x];
-                    n.z = n_dst.ptr(y+2*rows)[x];                        
+                    short2 ukr = coresp.ptr(y)[x];
 
-                    float3 d;
-                    d.x = v_dst.ptr(y       )[x];
-                    d.y = v_dst.ptr(y+  rows)[x];
-                    d.z = v_dst.ptr(y+2*rows)[x];
+                    if (ukr.x != -1)
+                    {
+                        float3 n;                                                
+                        n.x = n_dst.ptr(ukr.y              )[ukr.x];
+                        n.y = n_dst.ptr(ukr.y+  coresp.rows)[ukr.x];
+                        n.z = n_dst.ptr(ukr.y+2*coresp.rows)[ukr.x];
 
-                    float b = dot(n, d);
+                        float3 d;
+                        d.x = v_dst.ptr(ukr.y              )[ukr.x];
+                        d.y = v_dst.ptr(ukr.y+  coresp.rows)[ukr.x];
+                        d.z = v_dst.ptr(ukr.y+2*coresp.rows)[ukr.x];                        
 
-                    
-                    s.y = v_src.ptr(y+  rows)[x];
-                    s.z = v_src.ptr(y+2*rows)[x];                        
+                        float3 s;
+                        s.x = v_src.ptr(y              )[x];
+                        s.y = v_src.ptr(y+  coresp.rows)[x];
+                        s.z = v_src.ptr(y+2*coresp.rows)[x];        
 
-                    b = b - dot(n, s);
-
-                    row[6] = b;
-
-                    *(float3*)&row[0] = cross(s, n);
-                    *(float3*)&row[3] = n;                     
+                        float b = dot(n, d - s);
+                        
+                        *(float3*)&row[0] = cross(s, n);
+                        *(float3*)&row[3] = n;
+                        row[6] = b;
+                    }
                 }
-                
+
                 __shared__ T smem[CTA_SIZE];
                 int tid = Block::straightenedThreadId();
 
                 int shift = 0;
-                
-                
                 for(int i = 0; i < 6; ++i) //rows
+                {
                     #pragma unroll
                     for(int j = i; j < 7; ++j) // cols + b
                     {
@@ -122,6 +117,7 @@ namespace pcl
                         if (tid == 0)
                             gbuf.ptr(shift++)[blockIdx.x + gridDim.x * blockIdx.y] = smem[0];
                     }
+                }
             }
         };
 
@@ -175,42 +171,38 @@ namespace pcl
     }
 }
 
-void pcl::device::estimateTransform(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, 
+void pcl::device::estimateTransform(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const PtrStepSz<short2>& coresp, 
                                     DeviceArray2D<work_type>& gbuf, DeviceArray<work_type>& mbuf, work_type* matrixA_host, work_type* vectorB_host)
 {	
     typedef TransformEstimator<work_type> TEst;
     typedef TranformReduction<work_type> TRed;
 
-    int cols = v_dst.cols();
-    int rows = v_dst.rows()/3;
-
     dim3 block(TEst::CTA_SIZE_X, TEst::CTA_SIZE_Y);
     dim3 grid(1,1,1);
-    grid.x = divUp(cols, block.x);
-    grid.y = divUp(rows, block.y);
+    grid.x = divUp(coresp.cols, block.x);
+    grid.y = divUp(coresp.rows, block.y);
 
-    gbuf.create(TRed::TOTAL, grid.x * grid.y);
+    mbuf.create(TRed::TOTAL);
+    if (gbuf.rows() != TRed::TOTAL || gbuf.cols() < grid.x * grid.y)
+        gbuf.create(TRed::TOTAL, grid.x * grid.y);
 
     TEst te;	
-    te.n_dst = n_dst;
-    te.v_dst = v_dst;			
-    te.v_src = v_src;
+    te.n_dst  = n_dst;
+    te.v_dst  = v_dst;			
+    te.v_src  = v_src;
+    te.coresp = coresp; 
     te.gbuf = gbuf;
-    te.rows = rows;
-    te.cols = cols;
 
     TransformEstimatorKernel1<<<grid, block>>>(te);
     cudaSafeCall( cudaGetLastError() );	
-    cudaSafeCall(cudaDeviceSynchronize());
-
-    mbuf.create(TRed::TOTAL);
+    cudaSafeCall(cudaDeviceSynchronize());    
 
     TRed tr;
     tr.gbuf = gbuf;			
-    tr.length = gbuf.cols();
+    tr.length = grid.x * grid.y;
     tr.output = mbuf;	
 
-    TransformEstimatorKernel2<<<gbuf.rows(), TRed::CTA_SIZE>>>(tr);
+    TransformEstimatorKernel2<<<TRed::TOTAL, TRed::CTA_SIZE>>>(tr);
 
     cudaSafeCall( cudaGetLastError() );	
     cudaSafeCall(cudaDeviceSynchronize());

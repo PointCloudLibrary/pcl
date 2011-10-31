@@ -46,6 +46,7 @@ namespace pcl
         typedef unsigned short ushort;
         typedef DeviceArray2D<float> MapArr;
         typedef DeviceArray2D<ushort> DepthMap;
+               
 
 		enum { VOLUME_X = 512, VOLUME_Y = 512, VOLUME_Z = 512 };
 
@@ -88,11 +89,11 @@ namespace pcl
         //icp        
 
         void findCoresp(const MapArr& vmap_g_curr, const MapArr& nmap_g_curr, const Mat33& Rprev_inv, const float3& tprev, const Intr& intr, 
-            const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, float distThres, float angleThres, PtrStepSz<short2>& coresp);
+            const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, float distThres, float angleThres, PtrStepSz<short2> coresp);
 
         typedef float work_type;  
         //typedef double work_type;
-		void estimateTransform(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, 
+		void estimateTransform(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const PtrStepSz<short2>& coresp,
                 DeviceArray2D<work_type>& gbuf, DeviceArray<work_type>& mbuf, work_type* matrixA_host, work_type* vectorB_host);
 
 		//tsdf

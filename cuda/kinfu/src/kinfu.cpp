@@ -117,16 +117,15 @@ void pcl::gpu::KinfuTracker::allocateBufffers(int rows, int cols)
     sumbuf.create(27);
 }
 
-void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, Matrix3f& Rinc, Vector3f& tinc)
+void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const CorespMap& coresp, Matrix3f& Rinc, Vector3f& tinc)
 {    
     work_type A_data[36];
-    work_type b_data[6];
-                
-    device::estimateTransform(v_dst, n_dst, v_src, gbuf, sumbuf, A_data, b_data);
+    Matrix<work_type, 6, 1> b;
+                    
+    device::estimateTransform(v_dst, n_dst, v_src, coresp, gbuf, sumbuf, A_data, b.data());
 
-    Map<Matrix6f> A(A_data);
-    Map<Vector6f> b(b_data);
-    
+    Map<Matrix6f> A(A_data);        
+
     Matrix<work_type, 6, 1> res = A.llt().solve(b);
     //Matrix<work_type, 6, 1> res = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
 
@@ -186,12 +185,6 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth, View& view)
 
         for(int i = 0; i < LEVELS; ++i)
             device::tranformMaps(vmaps_curr[i], nmaps_curr[i], device_Rcam, device_tcam, vmaps_g_prev[i], nmaps_g_prev[i]);
-
-        /*for(int i = 0; i < LEVELS; ++i)
-        {
-            vmaps_curr[i].swap(vmaps_g_prev[i]);
-            nmaps_curr[i].swap(nmaps_g_prev[i]);
-        }*/
         		
 		++global_time;
 		view.release();
@@ -239,7 +232,7 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth, View& view)
             
             Matrix3f Rinc;
 		    Vector3f tinc;
-            estimateTrel(vmap_g_prev, nmap_g_prev, vmap_g_curr, Rinc, tinc);
+            estimateTrel(vmap_g_prev, nmap_g_prev, vmap_g_curr, coresp, Rinc, tinc);
 
 		    //compose
 		    tcurr = Rinc * tcurr + tinc;
@@ -250,13 +243,7 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth, View& view)
 	//save tranform
 	rmats.push_back(Rcurr);
 	tvecs.push_back(tcurr);		
-
-	//prepare data for next frame
-	Mat33&  device_Rcurr = device_cast<Mat33> (Rcurr);
-	float3& device_tcurr = device_cast<float3>(tcurr);
-    for(int i = 0; i < LEVELS; ++i)
-        device::tranformMaps(vmaps_curr[i], nmaps_curr[i], device_Rcurr, device_tcurr, vmaps_g_prev[i], nmaps_g_prev[i]);
-
+	
 	///////////////////////////////////////////////////////////////////////////////////////////
 	// Volume integration
 
@@ -280,6 +267,14 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth, View& view)
 	///////////////////////////////////////////////////////////////////////////////////////////
 	// image generation
 
+
+    //prepare data for next frame
+	Mat33&  device_Rcurr = device_cast<Mat33> (Rcurr);
+	float3& device_tcurr = device_cast<float3>(tcurr);
+    for(int i = 0; i < LEVELS; ++i)
+        device::tranformMaps(vmaps_curr[i], nmaps_curr[i], device_Rcurr, device_tcurr, vmaps_g_prev[i], nmaps_g_prev[i]);
+
+
 	cout << "Starting image generation" << endl;
 	device::LightSource light;
 	light.number = 1;
@@ -287,7 +282,11 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth, View& view)
 	    	        
     view.create(rows_, cols_);
 	generateImage(vmaps_g_prev[0], nmaps_g_prev[0], light, view);
-	   
+	
+
+
+
+
     if (global_time < 5)
         for(int i = 0; i < LEVELS; ++i)
             device::tranformMaps(vmaps_curr[i], nmaps_curr[i], device_Rcurr, device_tcurr, vmaps_g_prev[i], nmaps_g_prev[i]);
