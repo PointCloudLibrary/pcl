@@ -1,3 +1,5 @@
+if(FALSE)
+
 set(SUBSYS_NAME gpu_kinfu)
 set(SUBSYS_PATH cuda/gpu_kinfu)
 set(SUBSYS_DESC "Kinnect Fusiion implementation")
@@ -58,3 +60,6 @@ if (OpenCV_FOUND)
 	endif()
 endif()
 
+
+
+endif()
