@@ -14,12 +14,14 @@ if(build)
         )
 
     set(incs include/pcl/${SUBSYS_NAME}/extract_clusters.h
+        include/pcl/${SUBSYS_NAME}/extract_labeled_clusters.h
         include/pcl/${SUBSYS_NAME}/extract_polygonal_prism_data.h
         include/pcl/${SUBSYS_NAME}/sac_segmentation.h
         include/pcl/${SUBSYS_NAME}/segment_differences.h
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/extract_clusters.hpp
+        include/pcl/${SUBSYS_NAME}/impl/extract_labeled_clusters.hpp
         include/pcl/${SUBSYS_NAME}/impl/extract_polygonal_prism_data.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/segment_differences.hpp

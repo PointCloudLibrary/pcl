@@ -39,8 +39,12 @@
 #include "pcl/point_types.h"
 #include "pcl/segmentation/extract_clusters.h"
 #include "pcl/segmentation/impl/extract_clusters.hpp"
+#include "pcl/segmentation/extract_labeled_clusters.h"
+#include "pcl/segmentation/impl/extract_labeled_clusters.hpp"
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(EuclideanClusterExtraction, PCL_XYZ_POINT_TYPES);
 PCL_INSTANTIATE(extractEuclideanClusters, PCL_XYZ_POINT_TYPES);
 PCL_INSTANTIATE(extractEuclideanClusters_indices, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(LabeledEuclideanClusterExtraction, PCL_XYZL_POINT_TYPES);
+PCL_INSTANTIATE(extractLabeledEuclideanClusters, PCL_XYZL_POINT_TYPES);
