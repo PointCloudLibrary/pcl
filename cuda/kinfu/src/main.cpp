@@ -59,15 +59,15 @@ int main()
     {
         //BufferedRecorder recorder;
         //CaptureOpenNI cap(0);
-        CaptureOpenNI cap("d:/onis/20111013-224932.oni");
-        //CaptureOpenNI cap("d:/onis/20111013-224551.oni");
+        //CaptureOpenNI cap("d:/onis/20111013-224932.oni");
+        CaptureOpenNI cap("d:/onis/20111013-224551.oni");
         //CaptureOpenNI cap("d:/onis/20111013-224719.oni");
 
         KinfuTracker kinfu(480, 640);
 
         kinfu.fx = kinfu.fy = cap.depth_focal_length_VGA;
 
-        pcl::visualization::ImageViewer viewer("Image");
+        //pcl::visualization::ImageViewer viewer("Image");
         pcl::visualization::ImageViewer viewer3d("3D");        
 
         KinfuTracker::DepthMap depth_device;
@@ -84,15 +84,7 @@ int main()
                 cout << "Can't grab" << endl;
                 break;
             }
-
-            cv::Mat d(480, 640, CV_16S, (void*)depth.data), d32, d16;
-            d.convertTo(d32, CV_32F);
-            
-            cv::bilateralFilter(d32, d16, 5, 10, 10);
-            d16.convertTo(d16, CV_16U);
-
-            depth.data = d16.ptr<unsigned short>();
-            
+                        
             /*double maxval;
             cv::minMaxLoc(depth, 0, &maxval);
             depth.convertTo(du8, CV_8U, 255.0/maxval);
@@ -108,9 +100,39 @@ int main()
                 viewer3d.showRGBImage((unsigned char*)&view3d_host[0], view_device.cols(), view_device.rows());
             }
 
-            viewer.showRGBImage ((unsigned char*)rgb24.data, rgb24.cols, rgb24.rows);
-            viewer.spinOnce(3);            
+            //viewer.showRGBImage ((unsigned char*)rgb24.data, rgb24.cols, rgb24.rows);
+            //viewer.spinOnce(3);            
             viewer3d.spinOnce(3);
+
+
+            //if (!view_device.empty())
+            //{
+            //    cv::Mat all(480, 640*3, CV_8UC3), t;
+            //    t = all.colRange(0, 640);
+
+            //    cv::Mat im(480, 640, CV_8UC3, (void*)rgb24.data);
+            //    cvtColor(im, t, CV_BGR2RGB);
+
+            //    t = all.colRange(640, 640+640);
+
+            //    cv::Mat d(480, 640, CV_16U, (void*)depth.data);
+            //    double maxval;
+            //    cv::minMaxLoc(d, 0, &maxval);
+            //    d.convertTo(d, CV_8U, 255.0/maxval);
+            //    cv::cvtColor(d, t, CV_GRAY2BGR);
+
+            //    t = all.colRange(640+640, 640+640+640);
+            //    cv::Mat v(480, 640, CV_8UC3, &view3d_host[0]);
+            //    v.copyTo(t);
+
+            //    char buf[100];
+            //    sprintf(buf, "c:/%d.png", i);
+            //    cv::imwrite(buf, all);
+            //}
+
+            //if (i == 500)
+            //    break;
+
            
             //recorder.push_back(bgr, du8, res);            
         }

@@ -95,7 +95,7 @@ namespace pcl
 
 				for(int z = 0; z < VOLUME_Z; ++z, pos += elem_step)
 				{
-					float3 v_g = getVoxelGCoo(x, y, z);   //3 // p
+					float3 v_g = getVoxelGCoo(x, y, z);   //3 // p                    
 					
 					//tranform to curr cam coo space 
 					float3 v = Rcurr_inv * (v_g - tcurr); //4 
@@ -103,25 +103,27 @@ namespace pcl
 					int2 coo; //project to current cam
 					coo.x = __float2int_rn(v.x * intr.fx/v.z + intr.cx); 
 					coo.y = __float2int_rn(v.y * intr.fy/v.z + intr.cy); 
-
+                    
 					if (coo.x >= 0 && coo.y >= 0 && coo.x < depth_raw.cols && coo.y < depth_raw.rows) //6
 					{
 						int Dp = depth_raw.ptr(coo.y)[coo.x];
 
 						if (Dp != 0)
 						{                                           
-                            float x = (coo.x - intr.cx)/intr.fx;
-                            float y = (coo.y - intr.cy)/intr.fy;                            
-                            float lambda = sqrtf(x * x + y * y + 1);
+                            float xl = (coo.x - intr.cx)/intr.fx;
+                            float yl = (coo.y - intr.cy)/intr.fy;                            
+                            float lambda_inv = rsqrtf(xl * xl + yl * yl + 1);
 
-							float sdf = norm(tcurr - v_g)/lambda - Dp;
+							float sdf = norm(tcurr - v_g) * lambda_inv - Dp;
 
-                            // sfd < -tranc_dist => uninitialized memory or surface measured from another cam pos
+                            sdf *= (-1);
+                                                       
                             if (sdf >= -tranc_dist) 
                             {
-                                float sign = sdf > 0.f ? 1.f : 0.f;                             
-                                float tsdf = sign * fmin(1, sdf/tranc_dist);
+                                float tsdf = fmin(1, sdf/tranc_dist);
 
+                                //printf("(%f, %f, %f) (%d, %d) -> Dp: %d - Dist: %f - sdf: %f >> tsdf: %f\n", v_g.x, v_g.y, v_g.z, coo.x, coo.y, Dp, norm(tcurr - v_g)*lambda_inv, sdf, tsdf);
+                                
                                 int weight_prev;
 							    float tsdf_prev;					
 							
@@ -134,7 +136,13 @@ namespace pcl
                                 int weight_new = min(weight_prev + Wrk, MAX_WEIGHT);
 														    
 							    *pos = pack_tsdf(tsdf_new, weight_new);                            
-                            }                            													
+                            }   
+                            else
+                            {
+
+                                //printf("(%f, %f, %f) (%d, %d) -> Dp: %d - Dist: %f - sdf: %f >> tsdf: null\n", v_g.x, v_g.y, v_g.z, coo.x, coo.y, Dp, norm(tcurr - v_g)*lambda_inv, sdf);
+
+                            }
 						}
 					}
 				}				
@@ -175,7 +183,7 @@ void pcl::device::integrateTsdfVolume(const PtrStepSz<ushort>& depth_raw, const 
 	dim3 block(Tsdf::CTA_SIZE_X, Tsdf::CTA_SIZE_Y);
 	dim3 grid(divUp(VOLUME_X, block.x), divUp(VOLUME_Y, block.y));
 	
-	integrateTsdfKernel<<<grid, block>>>(tsdf);
+	integrateTsdfKernel<<<grid, block>>>(tsdf);    
 	cudaSafeCall( cudaGetLastError() );
 	cudaSafeCall(cudaDeviceSynchronize());
 }

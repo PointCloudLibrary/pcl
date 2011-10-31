@@ -39,20 +39,20 @@ namespace pcl
 {
     namespace device
     {	
-        __device__ __forceinline__ float getMinTime(const float3& volume_min, const float3& volume_max, const float3& origin, const float3& dir)
+        __device__ __forceinline__ float getMinTime(const float3& volume_max, const float3& origin, const float3& dir)
         {						
-            float txmin = ( (dir.x > 0 ? volume_min.x : volume_max.x) - origin.x) / dir.x;
-            float tymin = ( (dir.y > 0 ? volume_min.y : volume_max.y) - origin.y) / dir.y;
-            float tzmin = ( (dir.z > 0 ? volume_min.z : volume_max.z) - origin.z) / dir.z;
+            float txmin = ( (dir.x > 0 ? 0.f : volume_max.x) - origin.x) / dir.x;
+            float tymin = ( (dir.y > 0 ? 0.f : volume_max.y) - origin.y) / dir.y;
+            float tzmin = ( (dir.z > 0 ? 0.f : volume_max.z) - origin.z) / dir.z;
 
             return fmax( fmax(txmin, tymin), tzmin);
         }
 
-        __device__ __forceinline__ float getMaxTime(const float3& volume_min, const float3& volume_max, const float3& origin, const float3& dir)
+        __device__ __forceinline__ float getMaxTime(const float3& volume_max, const float3& origin, const float3& dir)
         {						
-            float txmax = ( (dir.x > 0 ? volume_max.x : volume_min.x) - origin.x) / dir.x;
-            float tymax = ( (dir.y > 0 ? volume_max.y : volume_min.y) - origin.y) / dir.y;
-            float tzmax = ( (dir.z > 0 ? volume_max.z : volume_min.z) - origin.z) / dir.z;
+            float txmax = ( (dir.x > 0 ? volume_max.x : 0.f) - origin.x) / dir.x;
+            float tymax = ( (dir.y > 0 ? volume_max.y : 0.f) - origin.y) / dir.y;
+            float tzmax = ( (dir.z > 0 ? volume_max.z : 0.f) - origin.z) / dir.z;
 
             return fmin(fmin(txmax, tymax), tzmax);			
         }
@@ -61,24 +61,21 @@ namespace pcl
         {
             enum { CTA_SIZE_X = 32,  CTA_SIZE_Y = 8 };
 
-            Intr intr;           
             Mat33  Rcurr;
             float3 tcurr;
 
             float time_step;
-
-      const float3 volume_min; // !!! must be set to {0, 0, 0}
-            float3 volume_max;						
+            float3 volume_size;						
 
             float3 cell_size;
             int cols, rows;
            
             PtrStep<short2> volume;
 
+            Intr intr;
+
             mutable PtrStep<float> nmap;
             mutable PtrStep<float> vmap;
-
-            RayCaster() : volume_min(make_float3(0.f, 0.f, 0.f)) {}
 
             __device__ __forceinline__ float3 get_ray_next(int x, int y) const
             {
@@ -113,13 +110,13 @@ namespace pcl
                 float3 point = origin + dir * time;
                 int3 g = getVoxel(point);
 
-                if (g.x <= 0 && g.x >= VOLUME_X - 1)
+                if (g.x <= 0 || g.x >= VOLUME_X - 1)
                     return numeric_limits<float>::quiet_NaN();
 
-                if (g.y <- 0 && g.y >= VOLUME_Y - 1)
+                if (g.y <= 0 || g.y >= VOLUME_Y - 1)
                     return numeric_limits<float>::quiet_NaN();
 
-                if (g.z <= 0 && g.z >= VOLUME_Z - 1)
+                if (g.z <= 0 || g.z >= VOLUME_Z - 1)
                     return numeric_limits<float>::quiet_NaN();
 
                 float vx = (g.x + 0.5f) * cell_size.x;
@@ -153,11 +150,9 @@ namespace pcl
                 if (x >= cols || y >= rows)
                     return;
  
-                if (x != cols/2 || y != rows/2)
-                    return;
-                
-                printf("aaaa\n");
-
+                /*if (x != cols/2 || y != rows/2)
+                    return;*/
+                                
                 vmap.ptr(y)[x] = numeric_limits<float>::quiet_NaN();
                 nmap.ptr(y)[x] = numeric_limits<float>::quiet_NaN();
 
@@ -166,55 +161,83 @@ namespace pcl
 
                 float3 ray_dir = normalized(ray_next - ray_start); 
 
+                //if (isnan(ray_start.x))
+                //{
+                //    printf("nan raycaser\n");
+                //    return;
+
+                //}
+
                 //ensure that it isn't a degenerate case				
                 ray_dir.x  = (ray_dir.x == 0.f) ? 1e-15 : ray_dir.x;
                 ray_dir.y  = (ray_dir.y == 0.f) ? 1e-15 : ray_dir.y;
                 ray_dir.z  = (ray_dir.z == 0.f) ? 1e-15 : ray_dir.z;								
 
                 // computer time when entry and exit volume
-                float time_start_volume = getMinTime(volume_min, volume_max, ray_start, ray_dir);
-                float time_exit_volume  = getMaxTime(volume_min, volume_max, ray_start, ray_dir);								
+                float time_start_volume = getMinTime(volume_size, ray_start, ray_dir);
+                float time_exit_volume  = getMaxTime(volume_size, ray_start, ray_dir);								
 
+                //printf("aaaa\n");
                 const float min_dist = 50.f; //in mm
                 time_start_volume = fmax(time_start_volume, min_dist);
                 if (time_start_volume >= time_exit_volume)
                     return;
 
+                //printf("bbb\n");
+
+                //printf(">>> %f - %f\n", time_start_volume, time_exit_volume);
+
                 int time_curr = time_start_volume;
                 int3 g = getVoxel(ray_start + ray_dir * time_curr); 						
-                if(!checkInds(g))
-                    return;
+                g.x = max(0, min(g.x, VOLUME_X-1));
+                g.y = max(0, min(g.y, VOLUME_Y-1));
+                g.z = max(0, min(g.z, VOLUME_Z-1));
 
-                printf("%f - %f\n", time_start_volume, time_exit_volume);
+                //printf("%f - %f\n", time_start_volume, time_exit_volume);
 
                 float tsdf = readTsdf(g.x, g.y, g.z);
+
+                //printf("tsdf %f\n", tsdf);
                                 
                 //for(int i = 0; i < 512; ++i) 
-                for(;;) 
+                for(;; time_curr += time_step) 
                 {
                     float tsdf_prev = tsdf;   
 
-                    printf("%f\n", time_curr);
+                    //printf("%f %f\n", time_curr, time_step);
 
-                    float time_next = time_curr + time_step;
-                    int3 g = getVoxel( ray_start + ray_dir * time_next );
+                    int3 g = getVoxel(  ray_start + ray_dir * (time_curr + time_step)  );
+                    //printf("%d %d %d\n", g.x, g.y, g.z);
                     if(!checkInds(g))
+                    {
+                        //printf("case0\n");
                         break;                 
+                    }
 
                     tsdf = readTsdf(g.x, g.y, g.z);
+                    //printf("tsdf %f\n", tsdf);
 
                     if (tsdf_prev < 0.f && tsdf > 0.f)
+                    {
+                        //printf("case1\n");
                         break;
+                    }
 
                     if (tsdf_prev > 0.f && tsdf < 0.f) //zero crossing
                     {	
                         float Ftdt = interpolateTrilineary(ray_start, ray_dir, time_curr + time_step);
                         if (isnan(Ftdt))
+                        {
+                            //printf("case2\n");
                             break;
+                        }
 
                         float Ft = interpolateTrilineary(ray_start, ray_dir, time_curr);
-                        if (isnan(Ftdt))
+                        if (isnan(Ft))
+                        {
+                            //printf("case3\n");
                             break;
+                        }
                         
                         float Ts = time_curr - time_step * Ft/(Ftdt - Ft);
 
@@ -225,7 +248,7 @@ namespace pcl
                         vmap.ptr(y+2*rows)[x] = vetex_found.z;	
 
                         int3 g = getVoxel( ray_start + ray_dir * time_curr );
-                        if (g.x != 0 && g.y != 0 && g.z != 0 && g.x != VOLUME_X - 1 && g.y != VOLUME_Y - 1 && g.z != VOLUME_Z - 1)
+                        //if (g.x != 0 && g.y != 0 && g.z != 0 && g.x != VOLUME_X - 1 && g.y != VOLUME_Y - 1 && g.z != VOLUME_Z - 1)
                         {                                                                                                              
                             float3 normal;
 
@@ -245,11 +268,14 @@ namespace pcl
                             nmap.ptr(y+  rows)[x] = normal.y;
                             nmap.ptr(y+2*rows)[x] = normal.z;
                         }
+                        //printf("case4\n");
+                        break;                        
+                    }                    
 
-                        break;
-                    }
-                    time_curr += time_step;
-                }
+                }  /* for(;;)  */
+
+
+                //printf("aaaaaaaaaaaaaaaaaaaa===================aaaaaaaaaaaaaaaaaa\n");
             }
         };
 
@@ -263,14 +289,13 @@ void pcl::device::raycast(const Intr& intr, const Mat33& Rcurr, const float3& tc
                           const PtrStep<short2>& volume, MapArr& vmap, MapArr& nmap)
 {
     RayCaster rc;
-
-    rc.intr = intr;
+    
     rc.Rcurr = Rcurr;
     rc.tcurr = tcurr;
    
     rc.time_step = tranc_dist * 0.95f;
 
-    rc.volume_max = volume_size;
+    rc.volume_size = volume_size;
 
     rc.cell_size.x = volume_size.x / VOLUME_X;
     rc.cell_size.y = volume_size.y / VOLUME_Y;         
@@ -279,11 +304,11 @@ void pcl::device::raycast(const Intr& intr, const Mat33& Rcurr, const float3& tc
     rc.cols = vmap.cols();
     rc.rows = vmap.rows()/3;
 
+    rc.intr = intr;
+
     rc.volume = volume;
     rc.vmap = vmap;
     rc.nmap = nmap;
-
-    printf("==========================\n");
 
     dim3 block(RayCaster::CTA_SIZE_X, RayCaster::CTA_SIZE_Y);
     dim3 grid(divUp(rc.cols, block.x), divUp(rc.rows, block.y));
