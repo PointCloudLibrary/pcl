@@ -109,11 +109,17 @@ namespace pcl
       // =====PROTECTED METHODS=====
       //! check if fabs(d)<zeroValue
       inline bool
-      isNearlyZero (real d) { return fabs (d)<parameters_.zero_value;}
+      isNearlyZero (real d) const 
+      { 
+        return (fabs (d) < parameters_.zero_value);
+      }
       
       //! check if sqrt(fabs(d))<zeroValue
       inline bool
-      sqrtIsNearlyZero (real d) { return fabs (d)<parameters_.sqr_zero_value;}
+      sqrtIsNearlyZero (real d) const 
+      { 
+        return (fabs (d) < parameters_.sqr_zero_value);
+      }
       
       // =====PROTECTED MEMBERS=====
       Parameters parameters_;

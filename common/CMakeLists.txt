@@ -11,6 +11,7 @@ if(build)
         src/pcl_base.cpp
         src/io.cpp
         src/common.cpp
+        src/correspondence.cpp
         src/distances.cpp
         src/intersections.cpp
         src/parse.cpp
@@ -20,14 +21,16 @@ if(build)
         )
 
     set(incs 
+        include/pcl/correspondence.h
         include/pcl/exceptions.h
         include/pcl/pcl_base.h
         include/pcl/pcl_macros.h
         include/pcl/point_cloud.h
+        include/pcl/point_types_conversion.h
         include/pcl/point_representation.h
+        include/pcl/correspondence.h
         include/pcl/point_types.h
         include/pcl/win32_macros.h
-        include/pcl/correspondence.h
         )
         
     if(NOT USE_ROS)
@@ -64,7 +67,6 @@ if(build)
         include/pcl/common/point_correspondence.h
         include/pcl/common/polynomial_calculations.h
         include/pcl/common/poses_from_matches.h
-        include/pcl/common/rigid_transforms.h
         include/pcl/common/time.h
         include/pcl/common/time_trigger.h
         include/pcl/common/transforms.h
@@ -72,6 +74,8 @@ if(build)
         include/pcl/common/vector_average.h
         include/pcl/common/pca.h
         include/pcl/common/synchronizer.h
+        include/pcl/common/utils.h
+        include/pcl/common/geometry.h
         )
 
     set(common_incs_impl
@@ -85,7 +89,6 @@ if(build)
         include/pcl/common/impl/norms.hpp
         include/pcl/common/impl/piecewise_linear_function.hpp
         include/pcl/common/impl/polynomial_calculations.hpp
-        include/pcl/common/impl/rigid_transforms.hpp
         include/pcl/common/impl/pca.hpp
         include/pcl/common/impl/transforms.hpp
         include/pcl/common/impl/transformation_from_correspondences.hpp

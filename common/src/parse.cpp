@@ -99,7 +99,7 @@ pcl::console::parse_argument (int argc, char** argv, const char* str, int &val)
   if (index > 0 && index < argc )
     val = atoi (argv[index]);
 
-  return (index);
+  return (index - 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -42,8 +42,11 @@
 #define PCL_POINT_TYPES         \
   (pcl::PointXYZ)               \
   (pcl::PointXYZI)              \
+  (pcl::PointXYZL)              \
   (pcl::PointXYZRGBA)           \
   (pcl::PointXYZRGB)            \
+  (pcl::PointXYZRGBL)           \
+  (pcl::PointXYZHSV)            \
   (pcl::PointXY)                \
   (pcl::InterestPoint)          \
   (pcl::Normal)                 \
@@ -57,7 +60,9 @@
   (pcl::Boundary)               \
   (pcl::PrincipalCurvatures)    \
   (pcl::PFHSignature125)        \
+  (pcl::PFHRGBSignature250)     \
   (pcl::PPFSignature)           \
+  (pcl::PPFRGBSignature)        \
   (pcl::NormalBasedSignature12) \
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
@@ -69,8 +74,11 @@
 #define PCL_XYZ_POINT_TYPES   \
   (pcl::PointXYZ)             \
   (pcl::PointXYZI)            \
+  (pcl::PointXYZL)            \
   (pcl::PointXYZRGBA)         \
   (pcl::PointXYZRGB)          \
+  (pcl::PointXYZRGBL)         \
+  (pcl::PointXYZHSV)          \
   (pcl::InterestPoint)        \
   (pcl::PointNormal)          \
   (pcl::PointXYZRGBNormal)    \
@@ -78,6 +86,11 @@
   (pcl::PointWithRange)       \
   (pcl::PointWithViewpoint)   \
   (pcl::PointWithScale)
+
+// Define all point types with XYZ and label
+#define PCL_XYZL_POINT_TYPES  \
+  (pcl::PointXYZL)            \
+  (pcl::PointXYZRGBL)
 
 // Define all point types that include normal[3] data
 #define PCL_NORMAL_POINT_TYPES  \
@@ -89,7 +102,9 @@
 // Define all point types that represent features
 #define PCL_FEATURE_POINT_TYPES \
   (pcl::PFHSignature125)        \
+  (pcl::PFHRGBSignature250)     \
   (pcl::PPFSignature)           \
+  (pcl::PPFRGBSignature)        \
   (pcl::NormalBasedSignature12) \
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
@@ -144,9 +159,8 @@ namespace pcl
 
   struct _PointXYZ
   {
-    PCL_ADD_POINT4D
-    ; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW    ;
+    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
   };
 
   /*struct PointXYZ
@@ -232,6 +246,25 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW    ;
     return (os);
   }
 
+  struct EIGEN_ALIGN16 PointXYZL
+  {
+    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    union
+    {
+      struct
+      {
+        uint8_t label;
+      };
+      uint32_t data_l;
+    };
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+  inline std::ostream& operator << (std::ostream& os, const PointXYZL& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << ")";
+    return (os);
+  }
+
   /** \brief A point structure representing Euclidean xyz coordinates, and the RGBA color.
    *
    * The RGBA information is available either as separate r, g, b, or as a
@@ -252,7 +285,7 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW    ;
    *
    * \ingroup common
    */
-  struct EIGEN_ALIGN16 PointXYZRGBA
+  struct EIGEN_ALIGN16 _PointXYZRGBA
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     EIGEN_ALIGN16
@@ -267,8 +300,18 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW    ;
       };
       uint32_t rgba;
     };
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
+
+  struct PointXYZRGBA : public _PointXYZRGBA
+  {
+    inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
+    inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
+    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, 0)); }
+    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, 0)); }
+  };
+
   inline std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p)
   {
     unsigned char* rgba_ptr = (unsigned char*)&p.rgba;
@@ -291,6 +334,24 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW    ;
           uint8_t _unused;
         };
         float rgb;
+      };
+      uint32_t rgba;
+    };
+
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+
+  struct EIGEN_ALIGN16 _PointXYZRGBL
+  {
+    PCL_ADD_POINT4D; // Thi adds the members x,y,z which can also be accessed using the point (which is float[4])
+    union
+    {
+      struct
+      {
+        uint8_t b;
+        uint8_t g;
+        uint8_t r;
+        uint8_t label;
       };
       uint32_t rgba;
     };
@@ -341,13 +402,76 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW    ;
       b = _b;
       _unused = 0;
     }
+
+    inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
+    inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
+    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, 0)); }
+    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, 0)); }
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
   inline std::ostream& operator << (std::ostream& os, const PointXYZRGB& p)
   {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.rgb << ")";
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.r << "," << p.g << "," << p.b << ")";
     return (os);
   }
+
+  struct EIGEN_ALIGN16 PointXYZRGBL : public _PointXYZRGBL
+  {
+    inline PointXYZRGBL ()
+    {
+      label = 255;
+    }
+    inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _label)
+    {
+      r = _r;
+      g = _g;
+      b = _b;
+      label = _label;
+    }
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+  inline std::ostream& operator << (std::ostream& os, const PointXYZRGBL& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.r << "," << p.g << "," << p.b << " - " << p.label << ")";
+    return (os);
+  }
+
+  struct _PointXYZHSV
+  {
+    PCL_ADD_POINT4D;    // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    union
+    {
+      struct
+      {
+        float h;
+        float s;
+        float v;
+      };
+      float data_c[4];
+    };
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  } EIGEN_ALIGN16;
+
+  struct EIGEN_ALIGN16 PointXYZHSV : public _PointXYZHSV
+  {
+    inline PointXYZHSV ()
+    {
+      data_c[3] = 0;
+    }
+    inline PointXYZHSV (float _h, float _v, float _s)
+    {
+      h = _h; v = _v; s = _s;
+      data_c[3] = 0;
+    }
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+  inline std::ostream& operator << (std::ostream& os, const PointXYZHSV& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.h << " , " <<  p.s << " , " << p.v << ")";
+    return (os);
+  }
+
 
   /** \brief A 2D point structure representing Euclidean xy coordinates.
    * \ingroup common
@@ -494,6 +618,11 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW    ;
       data[3] = 1.0f;
       data_n[3] = 0.0f;
     }
+
+    inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
+    inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
+    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, 0)); }
+    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, 0)); }
   };
   inline std::ostream& operator << (std::ostream& os, const PointXYZRGBNormal& p)
   {
@@ -657,6 +786,20 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW    ;
     return (os);
   }
 
+  /** \brief A point structure representing the Point Feature Histogram with colors (PFHRGB).
+   * \ingroup common
+   */
+  struct PFHRGBSignature250
+  {
+    float histogram[250];
+  };
+  inline std::ostream& operator << (std::ostream& os, const PFHRGBSignature250& p)
+  {
+    for (int i = 0; i < 250; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 249 ? ", " : ")");
+    return (os);
+  }
+
   /** \brief A point structure for storing the Point Pair Feature (PPF) values
    * \ingroup common
    */
@@ -670,6 +813,22 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW    ;
     os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.alpha_m << ")";
     return (os);
   }
+
+  /** \brief A point structure for storing the Point Pair Color Feature (PPFRGB) values
+    * \ingroup common
+    */
+   struct PPFRGBSignature
+   {
+     float f1, f2, f3, f4;
+     float r_ratio, g_ratio, b_ratio;
+     float alpha_m;
+   };
+   inline std::ostream& operator << (std::ostream& os, const PPFRGBSignature& p)
+   {
+     os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " <<
+         p.r_ratio << ", " << p.g_ratio << ", " << p.b_ratio << ", " << p.alpha_m << ")";
+     return (os);
+   }
 
   /** \brief A point structure representing the Normal Based Signature for
    * a feature matrix of 4-by-3

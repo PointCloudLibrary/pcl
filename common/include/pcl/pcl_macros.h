@@ -159,4 +159,30 @@
     #define PCLAPI(rettype) PCL_EXTERN_C PCL_EXPORTS rettype PCL_CDECL
 #endif
 
+// Macro to deprecate old functions
+//
+// Usage:
+// don't use me any more
+// PCL_DEPRECATED(void OldFunc(int a, float b), "Use newFunc instead, this functions will be gone in the next major release");
+// use me instead
+// void NewFunc(int a, double b);
+
+// gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
+#ifdef __GNUC__
+#define GCC_VERSION (__GNUC__ * 10000 \
+    + __GNUC_MINOR__ * 100 \
+    + __GNUC_PATCHLEVEL__)
+#if GCC_VERSION < 40500
+#define PCL_DEPRECATED(func, message) func __attribute__ ((deprecated))
+#else
+#define PCL_DEPRECATED(func, message) func __attribute__ ((deprecated(message)))
+#endif
+
+#elif defined(_MSC_VER)
+#define PCL_DEPRECATED(func, message) __declspec(deprecated(message)) func
+#else
+#pragma message("WARNING: You need to implement PCL_DEPRECATED for this compiler")
+#define PCL_DEPRECATED(func) func
+#endif
+
 #endif  //#ifndef PCL_MACROS_H_

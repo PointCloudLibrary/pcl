@@ -366,6 +366,16 @@ pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
+                       const pcl::PointIndices &indices,
+                       const Eigen::Vector4f &centroid, 
+                       Eigen::MatrixXf &cloud_out)
+{
+  return (pcl::demeanPointCloud (cloud_in, indices.indices, centroid, cloud_out));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline void
 pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud, Eigen::VectorXf &centroid)
 {

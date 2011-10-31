@@ -60,11 +60,20 @@ namespace pcl
   struct PointXYZI;
   // Members: float x, y, z, intensity; 
 
+  struct PointXYZL;
+  // Members: float x, y, z, uin8_t label;
+
   struct PointXYZRGBA;
   // Members: float x, y, z; uint32_t rgba;
 
   struct PointXYZRGB;
   // Members: float x, y, z, rgb;
+
+  struct PointXYZRGBL;
+  // Members: float x, y, z, rgb, uint8_t label;
+
+  struct PointXYZHSV;
+  // Members: float x, y, z, h, s, v;
 
   struct PointXY;
   // Members: float x, y;
@@ -116,8 +125,14 @@ namespace pcl
   struct PFHSignature125;
   // Members: float pfh[125];
 
+  struct PFHRGBSignature250;
+  // Members: float pfhrgb[250];
+
   struct PPFSignature;
   // Members: float f1, f2, f3, f4, alpha_m;
+
+  struct PPFRGBSignature;
+  // Members: float f1, f2, f3, f4, r_ratio, g_ratio, b_ratio, alpha_m
 
   struct NormalBasedSignature12;
   // Members: float values[12];
@@ -197,12 +212,14 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZ,
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZ, pcl::_PointXYZ)
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZRGBA,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGBA,
     (float, x, x)
     (float, y, y)
     (float, z, z)
     (uint32_t, rgba, rgba)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGBA, pcl::_PointXYZRGBA)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGB,
     (float, x, x)
     (float, y, y)
@@ -210,6 +227,25 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGB,
     (float, rgb, rgb)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGB, pcl::_PointXYZRGB)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGBL,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (uint32_t, rgba, rgba)
+    (uint8_t, label, label)
+)
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGBL, pcl::_PointXYZRGBL)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZHSV,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (float, h, h)
+    (float, s, s)
+    (float, v, v)
+)
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZHSV, pcl::_PointXYZHSV)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXY,
     (float, x, x)
@@ -228,6 +264,13 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZI,
     (float, y, y)
     (float, z, z)
     (float, intensity, intensity)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZL,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (uint8_t, label, label)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Normal,
@@ -310,11 +353,26 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PFHSignature125,
     (float[125], histogram, pfh)
 )
 
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PFHRGBSignature250,
+    (float[250], histogram, pfhrgb)
+)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFSignature,
     (float, f1, f1)
     (float, f2, f2)
     (float, f3, f3)
     (float, f4, f4)
+    (float, alpha_m, alpha_m)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFRGBSignature,
+    (float, f1, f1)
+    (float, f2, f2)
+    (float, f3, f3)
+    (float, f4, f4)
+    (float, r_ratio, r_ratio)
+    (float, g_ratio, g_ratio)
+    (float, b_ratio, b_ratio)
     (float, alpha_m, alpha_m)
 )
 
