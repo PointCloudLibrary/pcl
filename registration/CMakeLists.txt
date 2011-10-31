@@ -33,6 +33,7 @@ if(build)
 #       include/pcl/${SUBSYS_NAME}/gicp.h
         include/pcl/${SUBSYS_NAME}/warp_point_rigid.h
         include/pcl/${SUBSYS_NAME}/warp_point_rigid_6d.h
+        include/pcl/${SUBSYS_NAME}/warp_point_rigid_3d.h
         include/pcl/${SUBSYS_NAME}/distances.h
         )
 
