@@ -42,8 +42,10 @@
 #define PCL_POINT_TYPES         \
   (pcl::PointXYZ)               \
   (pcl::PointXYZI)              \
+  (pcl::PointXYZL)              \
   (pcl::PointXYZRGBA)           \
   (pcl::PointXYZRGB)            \
+  (pcl::PointXYZRGBL)           \
   (pcl::PointXYZHSV)            \
   (pcl::PointXY)                \
   (pcl::InterestPoint)          \
@@ -72,8 +74,10 @@
 #define PCL_XYZ_POINT_TYPES   \
   (pcl::PointXYZ)             \
   (pcl::PointXYZI)            \
+  (pcl::PointXYZL)            \
   (pcl::PointXYZRGBA)         \
   (pcl::PointXYZRGB)          \
+  (pcl::PointXYZRGBL)         \
   (pcl::PointXYZHSV)          \
   (pcl::InterestPoint)        \
   (pcl::PointNormal)          \
@@ -82,6 +86,11 @@
   (pcl::PointWithRange)       \
   (pcl::PointWithViewpoint)   \
   (pcl::PointWithScale)
+
+// Define all point types with XYZ and label
+#define PCL_XYZL_POINT_TYPES  \
+  (pcl::PointXYZL)            \
+  (pcl::PointXYZRGBL)
 
 // Define all point types that include normal[3] data
 #define PCL_NORMAL_POINT_TYPES  \
@@ -237,6 +246,25 @@ namespace pcl
     return (os);
   }
 
+  struct EIGEN_ALIGN16 PointXYZL
+  {
+    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    union
+    {
+      struct
+      {
+        uint8_t label;
+      };
+      uint32_t data_l;
+    };
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+  inline std::ostream& operator << (std::ostream& os, const PointXYZL& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << ")";
+    return (os);
+  }
+
   /** \brief A point structure representing Euclidean xyz coordinates, and the RGBA color.
    *
    * The RGBA information is available either as separate r, g, b, or as a
@@ -313,6 +341,23 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  struct EIGEN_ALIGN16 _PointXYZRGBL
+  {
+    PCL_ADD_POINT4D; // Thi adds the members x,y,z which can also be accessed using the point (which is float[4])
+    union
+    {
+      struct
+      {
+        uint8_t b;
+        uint8_t g;
+        uint8_t r;
+        uint8_t label;
+      };
+      uint32_t rgba;
+    };
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+
   /** \brief A point structure representing Euclidean xyz coordinates, and the RGB color.
    *
    * Due to historical reasons (PCL was first developed as a ROS package), the
@@ -367,7 +412,28 @@ namespace pcl
   };
   inline std::ostream& operator << (std::ostream& os, const PointXYZRGB& p)
   {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.rgb << ")";
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.r << "," << p.g << "," << p.b << ")";
+    return (os);
+  }
+
+  struct EIGEN_ALIGN16 PointXYZRGBL : public _PointXYZRGBL
+  {
+    inline PointXYZRGBL ()
+    {
+      label = 255;
+    }
+    inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _label)
+    {
+      r = _r;
+      g = _g;
+      b = _b;
+      label = _label;
+    }
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+  inline std::ostream& operator << (std::ostream& os, const PointXYZRGBL& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.r << "," << p.g << "," << p.b << " - " << p.label << ")";
     return (os);
   }
 
