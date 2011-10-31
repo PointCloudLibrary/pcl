@@ -88,7 +88,7 @@ namespace pcl
                         weight *= fabs(dot(vec, n));					
                     }
 
-                    int br = (int)(255*weight) + 50;
+                    int br = (int)(205*weight) + 50;
                     br = max(0, min(255, br));
                     color = make_uchar3(br, br, br);
                 }				

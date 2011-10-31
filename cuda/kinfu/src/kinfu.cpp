@@ -45,6 +45,7 @@
 #include <Eigen/Core>
 #include <Eigen/SVD>
 #include <Eigen/Cholesky>
+#include <Eigen/Geometry>
 #include <Eigen/LU> 
 
 #include <opencv2/opencv.hpp>
@@ -74,7 +75,7 @@ pcl::gpu::KinfuTracker::KinfuTracker(int rows, int cols) : rows_(rows), cols_(co
 
     tranc_dist = 30;
 
-    volume_size = Vector3f::Constant(2000);
+    volume_size = Vector3f::Constant(1000);
     init_Rcam   = Matrix3f::Identity();
     init_tcam   = volume_size * 0.5f;
     
@@ -134,21 +135,18 @@ void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_d
 
     Map<Matrix6f> A(A_data);        
 
-    Matrix<float, 6, 1> res = A.llt().solve(b);
+    Matrix<float, 6, 1> result = A.llt().solve(b);
     //Matrix<float, 6, 1> res = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
 
     //cout << b << endl;
     //cout << A << endl;
     //cout << res << endl;
      
-    float alpha = res(0);
-	float beta  = res(1);
-	float gamma = res(2);
-	float tx = res(3);
-	float ty = res(4);
-	float tz = res(5);
+    float alpha = result(0);
+	float beta  = result(1);
+	float gamma = result(2);
 
-	float r11 =  cos(gamma)*cos(beta);
+	/*float r11 =  cos(gamma)*cos(beta);
 	float r12 = -sin(gamma)*cos(alpha) + cos(gamma)*sin(beta)*sin(alpha);
 	float r13 =  sin(gamma)*sin(alpha) + cos(gamma)*sin(beta)*cos(alpha);
 
@@ -161,10 +159,10 @@ void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_d
 	float r33 =  cos(beta)*cos(alpha);
 
     float data_rotation[] = { r11, r12, r13, r21, r22, r23, r31, r32, r33 };
-    float data_traslation[] = { tx, ty, tz };
-
-    Rinc = Map<Matrix3f>(data_rotation);
-    tinc = Map<Vector3f>(data_traslation);	
+    Rinc = Map<Matrix3f>(data_rotation);*/
+    
+    Rinc = AngleAxisf(gamma, Vector3f::UnitZ()) * AngleAxisf(beta, Vector3f::UnitY()) * AngleAxisf(alpha, Vector3f::UnitX());
+    tinc = result.tail<3>();
 }
 
 void slice_volume(const PtrStepSz<short2>& volume)
@@ -315,7 +313,7 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
             {
 	            for(int iter = 0; iter < iter_num; ++iter) 
 	            {			
-                    ScopeTimerCV time("    icp-iter"); 
+                    //ScopeTimerCV time("    icp-iter"); 
 		            Mat33&  device_Rcurr = device_cast<Mat33> (Rcurr);
 		            float3& device_tcurr = device_cast<float3>(tcurr);
 
@@ -327,6 +325,14 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
                         findCoresp(vmap_g_curr, nmap_g_curr, device_Rprev_inv, device_tprev, intr(level_index), 
                                      vmap_g_prev, nmap_g_prev, distThres, angleThres, coresp);
                     }
+
+                    cv::gpu::GpuMat ma(coresp.rows(), coresp.cols(), CV_32S, coresp.ptr(), coresp.step());
+                    
+                    cv::Mat cpu;
+                        ma.download(cpu);
+
+                        cout << "Total = " << cv::countNonZero(cpu == -1) << endl;
+                        cout << "640x480 = " << 640*480 << endl;
                     
                    /* if (global_time == 5)
                     {

@@ -1,11 +1,22 @@
 #include "device.hpp"
 
+#include "pcl/gpu/utils/device/block.hpp"
+
 namespace pcl
 {
     namespace device
     {
+        __device__ unsigned int count = 0;
+
         struct CorespSearch
         {
+            enum { CTA_SIZE_X = 32, CTA_SIZE_Y = 8, CTA_SIZE = CTA_SIZE_X * CTA_SIZE_Y };
+
+            struct plus 
+            {              
+                __forceinline__ __device__ int operator()(const int &lhs, const volatile int& rhs) const { return lhs + rhs; }
+            };  
+
             PtrStep<float> vmap_g_curr;
             PtrStep<float> nmap_g_curr;
 
@@ -22,13 +33,15 @@ namespace pcl
 
             mutable PtrStepSz<short2> coresp;
 
-            __device__ __forceinline__ void operator()() const
+            mutable int* gbuf;
+            
+            __device__ __forceinline__ int search() const
             {
                 int x = threadIdx.x + blockIdx.x * blockDim.x;
                 int y = threadIdx.y + blockIdx.y * blockDim.y;
 
                 if (x >= coresp.cols || y >= coresp.rows)
-                    return;
+                    return 0;
 
                 coresp.ptr(y)[x] = make_short2(-1, -1);
 
@@ -36,7 +49,7 @@ namespace pcl
                 ncurr_g.x = nmap_g_curr.ptr(y)[x];
 
                 if (isnan(ncurr_g.x))
-                    return;
+                    return 0;
                 
                 float3 vcurr_g;
                 vcurr_g.x = vmap_g_curr.ptr(y              )[x];
@@ -50,13 +63,13 @@ namespace pcl
 				ukr.y = __float2int_rn(vcurr_cp.y * intr.fy/vcurr_cp.z + intr.cy); //4
 
                 if (ukr.x < 0 || ukr.y < 0 || ukr.x >= coresp.cols || ukr.y >= coresp.rows)
-                    return;
+                    return 0;
 
                 float3 nprev_g;
                 nprev_g.x = nmap_g_prev.ptr(ukr.y)[ukr.x];
 
                 if (isnan(nprev_g.x))
-                    return;                
+                    return 0;                
 
                 float3 vprev_g;
                 vprev_g.x = vmap_g_prev.ptr(y              )[x];
@@ -65,7 +78,7 @@ namespace pcl
 
                 float dist = norm(vcurr_g - vprev_g);
                 if (dist > distThres)
-                    return;
+                    return 0;
                 
                 ncurr_g.y = nmap_g_curr.ptr(y+  coresp.rows)[x];
                 ncurr_g.z = nmap_g_curr.ptr(y+2*coresp.rows)[x];
@@ -75,8 +88,60 @@ namespace pcl
 
                 float sine = norm(cross(ncurr_g, nprev_g));
 
-                if (sine < 1 && asin(sine) < angleThres)
-                    coresp.ptr(y)[x] = make_short2(ukr.x, ukr.y);					                
+                if (sine >= 1 || asin(sine) >= angleThres)
+                    return 0;
+                
+                coresp.ptr(y)[x] = make_short2(ukr.x, ukr.y);
+                return 1;                
+            }                      
+
+            __device__ __forceinline__ void reduce(int i) const
+            {                
+                __shared__ volatile int smem[CTA_SIZE];                
+
+                int tid = Block::straightenedThreadId();
+
+                smem[tid] = i;
+                __syncthreads();
+
+                Block::reduce<CTA_SIZE>(smem, plus());
+
+                __shared__ bool isLastBlockDone;
+
+                if (tid == 0)
+                {
+                    gbuf[blockIdx.x + gridDim.x * blockIdx.y] = smem[0];
+                    __threadfence();
+
+                    unsigned int value = atomicInc(&count, gridDim.x * gridDim.y);
+
+                    isLastBlockDone = (value == (gridDim.x * gridDim.y - 1));
+                }
+                __syncthreads();
+
+                if (isLastBlockDone) 
+                {
+                    int sum = 0;
+                    int stride = Block::stride();
+                    for(int pos = tid; pos < gridDim.x * gridDim.y; pos += stride)
+                        sum += gbuf[pos];
+
+                    smem[tid] = sum;
+                    __syncthreads();
+                    Block::reduce<CTA_SIZE>(smem, plus());
+
+                    if (tid == 0) 
+                    { 
+                        gbuf[0] = smem[0]; 
+                        count = 0; 
+                    }
+                }
+            }
+            
+            __device__ __forceinline__ void operator()() const
+            {
+                int mask = search();
+                //reduce(mask); if uncomment -> need to allocate and set gbuf 
             }
         };
 
@@ -106,7 +171,7 @@ void pcl::device::findCoresp(const MapArr& vmap_g_curr, const MapArr& nmap_g_cur
 
     cs.coresp = coresp;
 
-    dim3 block(32, 8);
+    dim3 block(CorespSearch::CTA_SIZE_X, CorespSearch::CTA_SIZE_Y);
     dim3 grid(divUp(coresp.cols, block.x), divUp(coresp.rows, block.y));
 
     corespKernel<<<grid, block>>>(cs);
