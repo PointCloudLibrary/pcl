@@ -2157,9 +2157,9 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   double cam_pos[3];
   double first_cam_pos[3];
 
-  first_cam_pos[0] = cam_positions[0][0];
-  first_cam_pos[1] = cam_positions[0][1];
-  first_cam_pos[2] = cam_positions[0][2];
+  first_cam_pos[0] = cam_positions[0][0] * radius_sphere;
+  first_cam_pos[1] = cam_positions[0][1] * radius_sphere;
+  first_cam_pos[2] = cam_positions[0][2] * radius_sphere;
 
   //create renderer and window
   vtkSmartPointer<vtkRenderWindow> render_win = vtkSmartPointer<vtkRenderWindow>::New ();
