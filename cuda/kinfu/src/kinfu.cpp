@@ -130,13 +130,32 @@ void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_d
 {    
     float A_data[36];
     Matrix<float, 6, 1> b;
-                    
-    device::estimateTransform(v_dst, n_dst, v_src, coresp, gbuf, sumbuf, A_data, b.data());
+    
+    cv::gpu::GpuMat ma(coresp.rows(), coresp.cols(), CV_32S, (void*)coresp.ptr(), coresp.step());    
+    cv::Mat cpu;
+    ma.download(cpu);
+    cout << "(" << coresp.cols() * coresp.rows() <<") Total = " << cv::countNonZero(cpu == -1) << endl;
 
+
+    device::estimateTransform(v_dst, n_dst, v_src, coresp, gbuf, sumbuf, A_data, b.data());
+    
+    
     Map<Matrix6f> A(A_data);        
 
     Matrix<float, 6, 1> result = A.llt().solve(b);
     //Matrix<float, 6, 1> res = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
+
+    cout << result.transpose() << endl;
+
+    if(_isnan(result(0)))
+    {
+        cout << A << endl;
+        cout << b << endl;
+
+    }
+
+
+
 
     //cout << b << endl;
     //cout << A << endl;
@@ -326,13 +345,6 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
                                      vmap_g_prev, nmap_g_prev, distThres, angleThres, coresp);
                     }
 
-                    cv::gpu::GpuMat ma(coresp.rows(), coresp.cols(), CV_32S, coresp.ptr(), coresp.step());
-                    
-                    cv::Mat cpu;
-                        ma.download(cpu);
-
-                        cout << "Total = " << cv::countNonZero(cpu == -1) << endl;
-                        cout << "640x480 = " << 640*480 << endl;
                     
                    /* if (global_time == 5)
                     {

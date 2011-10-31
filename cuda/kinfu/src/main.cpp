@@ -60,9 +60,9 @@ int main()
     {
         //BufferedRecorder recorder;
         //CaptureOpenNI cap(0);
-        //CaptureOpenNI cap("d:/onis/20111013-224932.oni");
+        CaptureOpenNI cap("d:/onis/20111013-224932.oni");
         //CaptureOpenNI cap("d:/onis/20111013-224551.oni");
-        CaptureOpenNI cap("d:/onis/20111013-224719.oni");
+        //CaptureOpenNI cap("d:/onis/20111013-224719.oni");
 
         KinfuTracker kinfu(480, 640);
 
