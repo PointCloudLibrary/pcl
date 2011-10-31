@@ -66,6 +66,8 @@ pcl::gpu::KinfuTracker::KinfuTracker(int rows, int cols) : rows_(rows), cols_(co
 	 distThres = 100; //mm
 	angleThres = 20.f * 3.14159254f/180.f;
 
+    tranc_dist = 30;
+
     volume_size = Vector3f::Constant(2000);
     init_Rcam   = Matrix3f::Identity();
     init_tcam   = volume_size * 0.5f;
@@ -159,11 +161,11 @@ void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_d
     tinc = Map<Vector3f>(data_traslation);	
 }
 
-void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth, View& view)
+void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
 {				        	
 	device::Intr intr(fx, fy, cx, cy);
 
-    device::bilateralFilter(depth, depths_curr[0]);
+    device::bilateralFilter(depth_raw, depths_curr[0]);
     device::pyrDown(depths_curr[0], depths_curr[1]);
     device::pyrDown(depths_curr[1], depths_curr[2]);
 
@@ -249,12 +251,13 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth, View& view)
 
 	cout << "Starting Volume integration" << endl;
 
-	float3& device_volume_size = *reinterpret_cast<float3*>(volume_size.data());
+	float3 device_volume_size = device_cast<float3>(volume_size);
 
-	Matrix3f Rcurr_inv = Rcurr.inverse();// Rcurr.t(); //Rcurr.inv();
-	Mat33&  device_Rcurr_inv = device_cast<Mat33> (Rcurr_inv);
-
-	integrateTsdfVolume(depth, intr, device_volume_size, device_Rcurr_inv, device_tcurr, volume);
+    Matrix3f Rcurr_inv = Rcurr.inverse();    
+    Mat33&  device_Rcurr_inv = device_cast<Mat33> (Rcurr_inv);
+	float3& device_tcurr = device_cast<float3>(tcurr);	
+	
+	integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcurr_inv, device_tcurr, tranc_dist, volume);
 
     //slice_volume(volume);
 
@@ -270,7 +273,6 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth, View& view)
 
     //prepare data for next frame
 	Mat33&  device_Rcurr = device_cast<Mat33> (Rcurr);
-	float3& device_tcurr = device_cast<float3>(tcurr);
     for(int i = 0; i < LEVELS; ++i)
         device::tranformMaps(vmaps_curr[i], nmaps_curr[i], device_Rcurr, device_tcurr, vmaps_g_prev[i], nmaps_g_prev[i]);
 

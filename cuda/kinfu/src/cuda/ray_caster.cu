@@ -82,7 +82,7 @@ namespace pcl
             float3 cell_size;
             int cols, rows;
 
-            PtrStep<float> volume;
+            PtrStep<short2> volume;
 
             mutable PtrStep<float> nmap;
             mutable PtrStep<float> vmap;
@@ -98,7 +98,7 @@ namespace pcl
                 float3 ray_next;
                 ray_next.x = (x - cx) * fx_inv;
                 ray_next.y = (y - cy) * fy_inv;
-                ray_next.z = 1;				    
+                ray_next.z = 1;
                 return ray_next;		
             }
 
@@ -262,7 +262,7 @@ namespace pcl
 
 
 void pcl::device::raycast(const Mat33& Rcurr, const float3& tcurr, const Intr& intr, const float3& volume_size, 
-                            const PtrStep<float>& volume, MapArr vmap, MapArr nmap)
+                            const PtrStep<short2>& volume, MapArr vmap, MapArr nmap)
 {
     RayCaster rc;
 

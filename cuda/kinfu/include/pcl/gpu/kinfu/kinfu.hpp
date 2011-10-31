@@ -70,6 +70,8 @@ namespace pcl
             float  distThres;
             float angleThres;
 
+            float tranc_dist;
+
             Vector3f volume_size;        // sizeof volume in mm
             Matrix3f init_Rcam; // init camera rotaion in volume coo space
             Vector3f init_tcam;          // init camera pos in volume coo space
@@ -101,7 +103,7 @@ namespace pcl
 
             std::vector<CorespMap> coresps;
 
-            DeviceArray2D<float> volume;
+            DeviceArray2D<int> volume;
             
             DeviceArray2D<float> gbuf;
             DeviceArray<float> sumbuf; 

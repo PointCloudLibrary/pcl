@@ -97,14 +97,14 @@ namespace pcl
                 DeviceArray2D<work_type>& gbuf, DeviceArray<work_type>& mbuf, work_type* matrixA_host, work_type* vectorB_host);
 
 		//tsdf
-		void initVolume(PtrStepSz<float> array);
-		void integrateTsdfVolume(const PtrStepSz<ushort>& depth_curr, const Intr& intr, const float3& volume_size, 
-			const Mat33& Rcurr_inv, const float3& tcurr, PtrStep<float> volume);
+		void initVolume(PtrStepSz<short2> array);
+		void integrateTsdfVolume(const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
+			const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<short2> volume);
 		
 
 		//raycast
 		void raycast(const Mat33& Rcurr, const float3& tcurr, const Intr& intr, const float3& volume_size, 
-				const PtrStep<float>& volume, MapArr vmap, MapArr nmap);
+				const PtrStep<short2>& volume, MapArr vmap, MapArr nmap);
 
 		void generateImage(const MapArr& vmap, const MapArr& nmap, const LightSource& light, PtrStepSz<uchar3> dst);
 
