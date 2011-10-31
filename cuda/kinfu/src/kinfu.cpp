@@ -38,6 +38,7 @@
 #include<fstream>
 
 #include "pcl/common/time.h"
+#include "pcl/gpu/utils/timers_opencv.hpp"
 #include "pcl/gpu/kinfu/kinfu.hpp"
 #include "internal.hpp"
 
@@ -45,8 +46,6 @@
 #include <Eigen/SVD>
 #include <Eigen/Cholesky>
 #include <Eigen/LU> 
-
-
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/gpu/gpu.hpp>
@@ -57,6 +56,8 @@ using namespace Eigen;
 
 template<class D, class Matx> 
 D& device_cast(Matx& matx) { return *reinterpret_cast<D*>(matx.data()); }
+
+cudaStream_t pcl::device::stream = 0;
 
 pcl::gpu::KinfuTracker::KinfuTracker(int rows, int cols) : rows_(rows), cols_(cols), global_time(0) 
 {
@@ -73,11 +74,11 @@ pcl::gpu::KinfuTracker::KinfuTracker(int rows, int cols) : rows_(rows), cols_(co
 
     tranc_dist = 30;
 
-    volume_size = Vector3f::Constant(3000);
+    volume_size = Vector3f::Constant(2000);
     init_Rcam   = Matrix3f::Identity();
     init_tcam   = volume_size * 0.5f;
     
-    init_tcam(2) -= volume_size(2)/2;
+    init_tcam(2) -= volume_size(2)/2 * 1.5;
 
     light_pos = volume_size * (-10.f);
 
@@ -230,22 +231,19 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
 	device::Intr intr(fx, fy, cx, cy);
 
     {
-        ScopeTime time("bilateral"); 
+        ScopeTimerCV time("bilateral"); 
         //depth_raw.copyTo(depths_curr[0]);
         device::bilateralFilter(depth_raw, depths_curr[0]);
     }
 
     {
-        ScopeTime time("pyr-down-all"); 
+        ScopeTimerCV time("pyr-down-all"); 
         for(int i = 1; i < LEVELS; ++i)
-        {
-            ScopeTime time("pyr-down");
             device::pyrDown(depths_curr[i-1], depths_curr[i]);
-        }
     }
 
     {
-        ScopeTime time("create-maps-all"); 
+        ScopeTimerCV time("create-maps-all"); 
         for(int i = 0; i < LEVELS; ++i)
         {
             device::createVMap(intr(i), depths_curr[i], vmaps_curr[i]);
@@ -262,19 +260,15 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
 
         Mat33&  device_Rcam = device_cast<Mat33> (init_Rcam);
 		float3& device_tcam = device_cast<float3>(init_tcam);
-
+        
+        Matrix3f init_Rcam_inv = init_Rcam.inverse();    
+        Mat33&  device_Rcam_inv = device_cast<Mat33> (init_Rcam_inv);
         float3 device_volume_size = device_cast<float3>(volume_size);
-
-        Matrix3f Rcurr_inv = init_Rcam.inverse();    
-        Mat33&  device_Rcurr_inv = device_cast<Mat33> (Rcurr_inv);
-	    float3& device_tcurr = device_cast<float3>(init_tcam);	
         	
-	    integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcurr_inv, device_tcurr, tranc_dist, volume);
+	    integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcam_inv, device_tcam, tranc_dist, volume);
 
-           /*slice_volume(volume);
-        cout << "zz" << endl;
-        cin.get();*/
-
+        //slice_volume(volume);
+        
         for(int i = 0; i < LEVELS; ++i)
             device::tranformMaps(vmaps_curr[i], nmaps_curr[i], device_Rcam, device_tcam, vmaps_g_prev[i], nmaps_g_prev[i]);
         		
@@ -298,13 +292,9 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
     Matrix3f Rcurr = Rprev; // tranform to global coo for ith camera pose
     Vector3f tcurr = tprev; 
 
-    if (global_time == 5)
-    {
-        cout << endl;
-    }
 
     {
-        ScopeTime time("icp-all"); 
+        ScopeTimerCV time("icp-all"); 
 
         for(int level_index = LEVELS-1; level_index>=0; --level_index)
         {
@@ -321,34 +311,42 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
 
             CorespMap& coresp = coresps[level_index];
           
-	        for(int iter = 0; iter < iter_num; ++iter) 
-	        {			
-		        Mat33&  device_Rcurr = device_cast<Mat33> (Rcurr);
-		        float3& device_tcurr = device_cast<float3>(tcurr);
+            ScopeTimerCV time("  icp-level"); 
+            {
+	            for(int iter = 0; iter < iter_num; ++iter) 
+	            {			
+                    ScopeTimerCV time("    icp-iter"); 
+		            Mat33&  device_Rcurr = device_cast<Mat33> (Rcurr);
+		            float3& device_tcurr = device_cast<float3>(tcurr);
 
-                device::tranformMaps(vmap_curr, nmap_curr, device_Rcurr, device_tcurr, vmap_g_curr, nmap_g_curr);
+                    device::tranformMaps(vmap_curr, nmap_curr, device_Rcurr, device_tcurr, vmap_g_curr, nmap_g_curr);
 
-                findCoresp(vmap_g_curr, nmap_g_curr, device_Rprev_inv, device_tprev, intr(level_index), 
-                                 vmap_g_prev, nmap_g_prev, distThres, angleThres, coresp);
-                
-               /* if (global_time == 5)
-                {
-                    cv::gpu::GpuMat ma(coresp.rows(), coresp.cols(), CV_32S, coresp.ptr(), coresp.step());
-                    cv::Mat cpu;
-                    ma.download(cpu);
+                    
+                    {
+                        //ScopeTimerCV time("      coresp");
+                        findCoresp(vmap_g_curr, nmap_g_curr, device_Rprev_inv, device_tprev, intr(level_index), 
+                                     vmap_g_prev, nmap_g_prev, distThres, angleThres, coresp);
+                    }
+                    
+                   /* if (global_time == 5)
+                    {
+                        cv::gpu::GpuMat ma(coresp.rows(), coresp.cols(), CV_32S, coresp.ptr(), coresp.step());
+                        cv::Mat cpu;
+                        ma.download(cpu);
 
-                    cv::imshow("coresp whi == -1", cpu == -1);
-                    cv::waitKey();
-                }*/
-                
-                Matrix3f Rinc;
-		        Vector3f tinc;
-                estimateTrel(vmap_g_prev, nmap_g_prev, vmap_g_curr, coresp, Rinc, tinc);
+                        cv::imshow("coresp whi == -1", cpu == -1);
+                        cv::waitKey();
+                    }*/
+                    
+                    Matrix3f Rinc;
+		            Vector3f tinc;
+                    estimateTrel(vmap_g_prev, nmap_g_prev, vmap_g_curr, coresp, Rinc, tinc);
 
-		        //compose
-		        tcurr = Rinc * tcurr + tinc;
-		        Rcurr = Rinc * Rcurr;        
-	        }
+		            //compose
+		            tcurr = Rinc * tcurr + tinc;
+		            Rcurr = Rinc * Rcurr;        
+	            }
+            }
         }
     }
     
@@ -371,7 +369,7 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
 	float3& device_tcurr = device_cast<float3>(tcurr);	
 	
     { 
-        ScopeTime time("tsdf"); 
+        ScopeTimerCV time("tsdf"); 
 	    integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcurr_inv, device_tcurr, tranc_dist, volume);
     }
 
@@ -389,7 +387,7 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
 
     
     { 
-        ScopeTime time("ray-cast-all"); 
+        ScopeTimerCV time("ray-cast-all"); 
         for(int i = 0; i < LEVELS; ++i)   
             raycast(intr(i), device_Rcurr, device_tcurr, tranc_dist, device_volume_size, volume, vmaps_g_prev[i], nmaps_g_prev[i]);
     }
@@ -408,7 +406,7 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
     view.create(rows_, cols_);
 
     { 
-        ScopeTime time("generate-view"); 
+        ScopeTimerCV time("generate-view"); 
 	    generateImage(vmaps_g_prev[0], nmaps_g_prev[0], light, view);
     }
 	    

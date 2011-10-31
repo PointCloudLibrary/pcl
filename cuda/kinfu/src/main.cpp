@@ -42,6 +42,7 @@
 #include "pcl/gpu/kinfu/kinfu.hpp"
 //#include "pcl/gpu/kinfu/video_recorder.hpp"
 
+#include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/image_viewer.h>
@@ -92,7 +93,10 @@ int main()
 
             depth_device.upload(depth.data, depth.step, depth.rows, depth.cols);
 
-            kinfu(depth_device, view_device);
+            {
+                ScopeTime whole("total-for-frame");
+                kinfu(depth_device, view_device);
+            }
             if (!view_device.empty())
             {
                 int cols;
@@ -133,6 +137,8 @@ int main()
             //if (i == 500)
             //    break;
 
+            /*if (i == 5)
+                break;*/
            
             //recorder.push_back(bgr, du8, res);            
         }

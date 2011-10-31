@@ -37,6 +37,8 @@
 #include "device.hpp"
 
 #include "pcl/gpu/utils/device/block.hpp"
+#include "pcl/gpu/utils/device/funcattrib.hpp"
+#include "pcl/gpu/utils/timers_cuda.hpp"
 
 namespace pcl
 {
@@ -163,8 +165,8 @@ namespace pcl
             }
         };
 
-        __global__ void TransformEstimatorKernel1(const TransformEstimator<double> te) { te(); }
-        __global__ void TransformEstimatorKernel2(const TranformReduction<double> tr) { tr(); }
+        /*__global__ void TransformEstimatorKernel1(const TransformEstimator<double> te) { te(); }
+        __global__ void TransformEstimatorKernel2(const TranformReduction<double> tr) { tr(); }*/
 
         __global__ void TransformEstimatorKernel1(const TransformEstimator<float> te) { te(); }
         __global__ void TransformEstimatorKernel2(const TranformReduction<float> tr) { tr(); }
@@ -193,19 +195,27 @@ void pcl::device::estimateTransform(const MapArr& v_dst, const MapArr& n_dst, co
     te.coresp = coresp; 
     te.gbuf = gbuf;
 
-    TransformEstimatorKernel1<<<grid, block>>>(te);
+    {
+        pcl::gpu::ScopeTimer timer("TEst1");
+    TransformEstimatorKernel1<<<grid, block>>>(te);    
     cudaSafeCall( cudaGetLastError() );	
     cudaSafeCall(cudaDeviceSynchronize());    
+    }
+
+    //printFuncAttrib(TransformEstimatorKernel1);
 
     TRed tr;
     tr.gbuf = gbuf;			
     tr.length = grid.x * grid.y;
     tr.output = mbuf;	
 
+     {
+    pcl::gpu::ScopeTimer timer("TEst2");
     TransformEstimatorKernel2<<<TRed::TOTAL, TRed::CTA_SIZE>>>(tr);
 
     cudaSafeCall( cudaGetLastError() );	
     cudaSafeCall(cudaDeviceSynchronize());
+     }
 
     work_type host_data[TRed::TOTAL];
     mbuf.download(host_data);

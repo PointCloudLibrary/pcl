@@ -122,9 +122,11 @@ void pcl::device::createVMap(const Intr& intr, const DepthMap& depth, MapArr& vm
     float fx = intr.fx, cx = intr.cx;
     float fy = intr.fy, cy = intr.cy;
 
-    computeVmapKernel<<<grid, block>>>(depth, vmap, 1.f/fx, 1.f/fy, cx, cy);
+    computeVmapKernel<<<grid, block, 0, stream>>>(depth, vmap, 1.f/fx, 1.f/fy, cx, cy);
     cudaSafeCall( cudaGetLastError() );
-    cudaSafeCall(cudaDeviceSynchronize());
+
+    if (stream == 0)
+        cudaSafeCall(cudaDeviceSynchronize());    
 }
 
 void pcl::device::createNMap(const MapArr& vmap, MapArr& nmap)
@@ -139,9 +141,11 @@ void pcl::device::createNMap(const MapArr& vmap, MapArr& nmap)
     grid.x = divUp(cols, block.x);
     grid.y = divUp(rows, block.y);
 
-    computeNmapKernel<<<grid, block>>>(rows, cols, vmap, nmap);
+    computeNmapKernel<<<grid, block, 0, stream>>>(rows, cols, vmap, nmap);
     cudaSafeCall( cudaGetLastError() );
-    cudaSafeCall(cudaDeviceSynchronize());
+
+    if (stream == 0)
+        cudaSafeCall(cudaDeviceSynchronize());
 }
 
 namespace pcl
@@ -209,9 +213,11 @@ void pcl::device::tranformMaps(const MapArr& vmap_src, const MapArr& nmap_src, c
     grid.x = divUp(cols, block.x);
     grid.y = divUp(rows, block.y);
 
-    tranformMapsKernel<<<grid, block>>>(rows, cols, vmap_src, nmap_src, Rmat, tvec, vmap_dst, nmap_dst);
+    tranformMapsKernel<<<grid, block, 0, stream>>>(rows, cols, vmap_src, nmap_src, Rmat, tvec, vmap_dst, nmap_dst);
     cudaSafeCall( cudaGetLastError() );	
-    cudaSafeCall(cudaDeviceSynchronize());
+
+    if (stream == 0)
+        cudaSafeCall(cudaDeviceSynchronize());
 }
 
 
@@ -257,9 +263,11 @@ template<typename T> void pcl::device::convert(const MapArr& vmap, DeviceArray2D
     dim3 block(32, 8);
     dim3 grid(divUp(cols, block.x), divUp(rows, block.y));
 
-    convertMapKernel<T><<<grid, block>>>(rows, cols, vmap, output);
+    convertMapKernel<T><<<grid, block, 0, stream>>>(rows, cols, vmap, output);
     cudaSafeCall( cudaGetLastError() );	
-    cudaSafeCall(cudaDeviceSynchronize());
+
+    if (stream == 0)
+        cudaSafeCall(cudaDeviceSynchronize());    
 }
 
 template void pcl::device::convert(const MapArr& vmap, DeviceArray2D<float4>& output);

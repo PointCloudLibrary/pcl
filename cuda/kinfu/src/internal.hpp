@@ -39,6 +39,8 @@
 #include "pcl/gpu/containers/device_array.hpp"
 #include "pcl/gpu/utils/safe_call.hpp"
 
+
+
 namespace pcl
 {
 	namespace device
@@ -73,6 +75,8 @@ namespace pcl
 			float3 pos[1];						
 			int number;
 		};
+
+        extern cudaStream_t stream;
 
         void bilateralFilter(const DepthMap& src, DepthMap& dst);
         void pyrDown(const DepthMap& src, DepthMap& dst);
@@ -112,5 +116,7 @@ namespace pcl
         {
             return *reinterpret_cast<int*>(&value) != 0x7fffffff;
         }
+
+        inline void sync() { cudaSafeCall(cudaDeviceSynchronize()); }
 	}
 }
