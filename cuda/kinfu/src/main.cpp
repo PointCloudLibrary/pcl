@@ -63,7 +63,8 @@ int main()
         //CaptureOpenNI cap("d:/onis/20111013-224551.oni");
         //CaptureOpenNI cap("d:/onis/20111013-224719.oni");
 
-        KinfuTracker kinfu;
+        KinfuTracker kinfu(480, 640);
+
         kinfu.fx = kinfu.fy = cap.depth_focal_length_VGA;
 
         pcl::visualization::ImageViewer viewer;

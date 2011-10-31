@@ -50,22 +50,23 @@ namespace pcl
     {
         class KinfuTracker
         {
-        public:	            
+        public:	       
+            enum { LEVELS = 3 };
+
             typedef unsigned short ushort;
             typedef DeviceArray2D<float> MapArr;
-            typedef DeviceArray2D<ushort> DepthMap;
+            typedef DeviceArray2D<unsigned short> DepthMap;            
             typedef DeviceArray2D<uchar3> View;
 
             //typedef Eigen::Matrix3f Matrix3f;
             typedef Eigen::Matrix<float, 3, 3, Eigen::RowMajor> Matrix3f;
-            typedef Eigen::Vector3f Vector3f;
-            
+            typedef Eigen::Vector3f Vector3f;            
 
-            KinfuTracker();
+            KinfuTracker(int rows_arg, int cols_arg);
 
             float fx, fy, cx, cy;		
 
-            int icp_iterations_number; //somewhere 20 I think
+            int icp_iterations_numbers[LEVELS];           
             float distThres;
             float normalThres;
 
@@ -73,28 +74,37 @@ namespace pcl
             Matrix3f init_Rcam; // init camera rotaion in volume coo space
             Vector3f init_tcam;          // init camera pos in volume coo space
 
-            float light_x, light_y, light_z;
-
-            void operator()(const DepthMap& depth, View& view);
-        private:
+            Vector3f light_pos;
             
+            void operator()(const DepthMap& depth, View& view);
+        private:      
+            
+
             typedef Eigen::Matrix<float, 6, 6> Matrix6f;
             typedef Eigen::Matrix<float, 6, 1> Vector6f;
 
-            DeviceArray2D<float> volume;
+            int rows_; 
+            int cols_;
+            int global_time;
 
-            MapArr vmap_curr, nmap_curr;
-            MapArr vmap_g_curr, nmap_g_curr;
-            MapArr vmap_g_prev, nmap_g_prev;
-            DeviceArray2D<unsigned short> depth_curr;
+            std::vector<DepthMap> depths_curr;
+            std::vector<MapArr> vmaps_g_curr;
+            std::vector<MapArr> nmaps_g_curr;
+
+            std::vector<MapArr> vmaps_g_prev;
+            std::vector<MapArr> nmaps_g_prev;
+
+            std::vector<MapArr> vmaps_curr;
+            std::vector<MapArr> nmaps_curr;
+
+            DeviceArray2D<float> volume;
+            
             DeviceArray2D<float> gbuf;
             DeviceArray<float> sumbuf; 
 
             std::vector<Matrix3f> rmats;
             std::vector<Vector3f> tvecs;
-
-            int global_time;
-
+           
             void allocateBufffers(int rows, int cols);
             void estimateTrel(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, Matrix3f& Rrel, Vector3f& trel);
         };	

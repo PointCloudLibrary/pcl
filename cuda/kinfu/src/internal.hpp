@@ -46,7 +46,7 @@ namespace pcl
         typedef unsigned short ushort;
         typedef DeviceArray2D<float> MapArr;
         typedef DeviceArray2D<ushort> DepthMap;
-        				
+
 		enum { VOLUME_X = 512, VOLUME_Y = 512, VOLUME_Z = 512 };
 
 		struct Intr
@@ -54,6 +54,12 @@ namespace pcl
 			float fx, fy, cx, cy;
 			Intr() {}
 			Intr(float fx_, float fy_, float cx_, float cy_) : fx(fx_), fy(fy_), cx(cx_), cy(cy_) {}
+
+            Intr operator()(int level_index) const 
+            { 
+                int div = 1 << level_index; 
+                return Intr(fx/div, fy/div, cx/div, cy/div);
+            }            
 		};
 
 		struct Mat33
@@ -67,7 +73,9 @@ namespace pcl
 			int number;
 		};
 
-		//maps
+        void bilateralFilter(const DepthMap& src, DepthMap& dst);
+        void pyrDown(const DepthMap& src, DepthMap& dst);
+
         void createVMap(const Intr& intr, const DepthMap& depth, MapArr& vmap);
         void createNMap(const MapArr& vmap, MapArr& nmap);
         void compteNormalsEigen(const MapArr& vmap, MapArr& nmap);

@@ -162,7 +162,6 @@ namespace pcl
 
             /** \brief Empty constructor. */
             DeviceArray2D();
-
             
             /** \brief Allocates internal buffer in GPU memory
               * \param rows: number of rows to allocate
