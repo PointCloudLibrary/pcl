@@ -63,8 +63,8 @@ pcl::gpu::KinfuTracker::KinfuTracker(int rows, int cols) : rows_(rows), cols_(co
     icp_iterations_numbers[1] = 5;
     icp_iterations_numbers[2] = 4;
 	
-	distThres = 100; //mm
-	normalThres = 20.f * 3.14159254f/180.f;
+	 distThres = 100; //mm
+	angleThres = 20.f * 3.14159254f/180.f;
 
     volume_size = Vector3f::Constant(2000);
     init_Rcam   = Matrix3f::Identity();
@@ -91,6 +91,8 @@ void pcl::gpu::KinfuTracker::allocateBufffers(int rows, int cols)
 
     vmaps_curr.resize(LEVELS);
     nmaps_curr.resize(LEVELS);
+
+    coresps.resize(LEVELS);
     
     for(int i = 0; i < LEVELS; ++i)
     {
@@ -107,70 +109,26 @@ void pcl::gpu::KinfuTracker::allocateBufffers(int rows, int cols)
 
         vmaps_curr[i].create(pyr_rows*3, pyr_cols);
         nmaps_curr[i].create(pyr_rows*3, pyr_cols);
+
+        coresps[i].create(pyr_rows, pyr_cols);
     }
                              
     gbuf.create(27, 20*60);
     sumbuf.create(27);
 }
 
-void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, Matrix3f& Rrel, Vector3f& trel)
+void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, Matrix3f& Rinc, Vector3f& tinc)
 {    
     work_type A_data[36];
     work_type b_data[6];
                 
     device::estimateTransform(v_dst, n_dst, v_src, gbuf, sumbuf, A_data, b_data);
 
-#if 0
-    int cols;
-    vector<float4> sv, dv, nv;
-    DeviceArray2D<float4> s, d, n;
-    device::convert(v_src, s);
-    device::convert(v_dst, d);
-    device::convert(n_dst, n);
-    s.download(sv, cols);
-    d.download(dv, cols);
-    n.download(nv, cols);
-
-    Mat totalA(640*480, 6, cv::DataDepth<work_type>::value);
-    Mat totalb(640*480, 1, cv::DataDepth<work_type>::value);
-
-    int pos = 0;
-    for(size_t i = 0; i < sv.size(); ++i)
-    {
-        float4 s = sv[i];
-        float4 d = dv[i];
-        float4 n = nv[i];
-        
-        if (_isnan(n.x) || _isnan(s.x))
-            continue;
-
-        totalA.at<work_type>(pos, 0) = n.z * s.y - n.y * s.z;
-        totalA.at<work_type>(pos, 1) = n.x * s.z - n.z * s.x;
-        totalA.at<work_type>(pos, 2) = n.y * s.x - n.x * s.y;
-        totalA.at<work_type>(pos, 3) = n.x;
-        totalA.at<work_type>(pos, 4) = n.y;
-        totalA.at<work_type>(pos, 5) = n.z;
-        totalb.at<work_type>(pos, 0) = n.x*d.x + n.y*d.y + n.z*d.z - n.x*s.x - n.y*s.y - n.z*s.z;
-        ++pos;
-    }
-
-    cout << "Total: " << pos << "\tRadtio:" << float(pos)/640/480 * 100 << endl;
-    totalA = totalA.rowRange(0, pos);
-    totalb = totalb.rowRange(0, pos);
-
-    Mat Acpu = totalA.t() * totalA;
-    Mat Bcpu = totalA.t() * totalb;      
-
-    cout << "==\n Acpu -> \n" << Acpu << endl << endl;
-    cout << "==\n Bcpu -> \n" << Bcpu << endl << endl;
-
-#endif
-
     Map<Matrix6f> A(A_data);
     Map<Vector6f> b(b_data);
     
-    //Matrix<work_type, 6, 1> res = A.llt().solve(b);
-    Matrix<work_type, 6, 1> res = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
+    Matrix<work_type, 6, 1> res = A.llt().solve(b);
+    //Matrix<work_type, 6, 1> res = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
 
     /*cout << b << endl;
     cout << A << endl;
@@ -198,8 +156,8 @@ void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_d
     float data_rotation[] = { r11, r12, r13, r21, r22, r23, r31, r32, r33 };
     float data_traslation[] = { tx, ty, tz };
 
-    Rrel = Map<Matrix3f>(data_rotation);
-    trel = Map<Vector3f>(data_traslation);	
+    Rinc = Map<Matrix3f>(data_rotation);
+    tinc = Map<Vector3f>(data_traslation);	
 }
 
 void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth, View& view)
@@ -266,21 +224,26 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth, View& view)
 
         MapArr& vmap_g_prev = vmaps_g_prev[level_index];
         MapArr& nmap_g_prev = nmaps_g_prev[level_index];
+
+        CorespMap& coresp = coresps[level_index];
       
 	    for(int iter = 0; iter < iter_num; ++iter) 
 	    {			
 		    Mat33&  device_Rcurr = device_cast<Mat33> (Rcurr);
 		    float3& device_tcurr = device_cast<float3>(tcurr);
 
-            device::tranformMaps(vmap_curr, nmap_curr, device_Rcurr, device_tcurr, vmap_g_curr, nmap_g_curr);		
+            device::tranformMaps(vmap_curr, nmap_curr, device_Rcurr, device_tcurr, vmap_g_curr, nmap_g_curr);
 
-            Matrix3f Rrel;
-		    Vector3f trel;
-            estimateTrel(vmap_g_prev, nmap_g_prev, vmap_g_curr, Rrel, trel);
+            findCoresp(vmap_g_curr, nmap_g_curr, device_Rprev_inv, device_tprev, intr(level_index), 
+                             vmap_g_prev, nmap_g_prev, distThres, angleThres, coresp);
+            
+            Matrix3f Rinc;
+		    Vector3f tinc;
+            estimateTrel(vmap_g_prev, nmap_g_prev, vmap_g_curr, Rinc, tinc);
 
 		    //compose
-		    tcurr = Rrel * tcurr + trel;
-		    Rcurr = Rrel * Rcurr;        
+		    tcurr = Rinc * tcurr + tinc;
+		    Rcurr = Rinc * Rcurr;        
 	    }
     }
         
@@ -304,7 +267,7 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth, View& view)
 	Matrix3f Rcurr_inv = Rcurr.inverse();// Rcurr.t(); //Rcurr.inv();
 	Mat33&  device_Rcurr_inv = device_cast<Mat33> (Rcurr_inv);
 
-	integrateTsdfVolume(depths_curr[0], intr, device_volume_size, device_Rcurr_inv, device_tcurr, volume);
+	integrateTsdfVolume(depth, intr, device_volume_size, device_Rcurr_inv, device_tcurr, volume);
 
     //slice_volume(volume);
 

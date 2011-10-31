@@ -67,8 +67,8 @@ namespace pcl
             float fx, fy, cx, cy;		
 
             int icp_iterations_numbers[LEVELS];           
-            float distThres;
-            float normalThres;
+            float  distThres;
+            float angleThres;
 
             Vector3f volume_size;        // sizeof volume in mm
             Matrix3f init_Rcam; // init camera rotaion in volume coo space
@@ -77,7 +77,8 @@ namespace pcl
             Vector3f light_pos;
             
             void operator()(const DepthMap& depth, View& view);
-        private:      
+        private:  
+            typedef DeviceArray2D<int> CorespMap;
             
 
             typedef Eigen::Matrix<float, 6, 6> Matrix6f;
@@ -87,6 +88,7 @@ namespace pcl
             int cols_;
             int global_time;
 
+            
             std::vector<DepthMap> depths_curr;
             std::vector<MapArr> vmaps_g_curr;
             std::vector<MapArr> nmaps_g_curr;
@@ -96,6 +98,8 @@ namespace pcl
 
             std::vector<MapArr> vmaps_curr;
             std::vector<MapArr> nmaps_curr;
+
+            std::vector<CorespMap> coresps;
 
             DeviceArray2D<float> volume;
             

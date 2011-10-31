@@ -47,7 +47,7 @@ namespace pcl
         }
 
 
-        __device__ int fetch(int y, int x, const PtrStepSz<ushort>& src)
+        __device__ __forceinline__ int fetch(int y, int x, const PtrStepSz<ushort>& src)
         {
             x = max(0, min(x, src.cols-1));
             y = max(0, min(y, src.rows-1));
