@@ -272,3 +272,75 @@ template<typename T> void pcl::device::convert(const MapArr& vmap, DeviceArray2D
 
 template void pcl::device::convert(const MapArr& vmap, DeviceArray2D<float4>& output);
 template void pcl::device::convert(const MapArr& vmap, DeviceArray2D<float8>& output);
+
+
+
+
+namespace pcl
+{
+    namespace device
+    {        
+        __global__ void resizeMapKernel(const PtrStepSz<float> input, PtrStepSz<float> output)
+        {
+            int x = threadIdx.x + blockIdx.x * blockDim.x;
+            int y = threadIdx.y + blockIdx.y * blockDim.y;
+
+            if (x >= output.cols || y >= output.rows)
+                return;
+
+            const float qnan = numeric_limits<float>::quiet_NaN();
+
+            int xs = x * 2;
+            int ys = x * 2;
+            
+            float x00 = input.ptr(ys+0)[xs+0];
+            float x01 = input.ptr(ys+0)[xs+1];
+            float x10 = input.ptr(ys+1)[xs+0];
+            float x11 = input.ptr(ys+1)[xs+1];
+
+            if (isnan(x00) || isnan(x01) || isnan(x10) || isnan(x11))
+            {
+                output.ptr(y)[x] = qnan;
+                return;
+            }
+            else
+            {
+                output.ptr(y)[x] = (x00 + x01 + x10 + x11)/4;
+
+                float y00 = input.ptr(ys+input.rows+0)[xs+0];
+                float y01 = input.ptr(ys+input.rows+0)[xs+1];
+                float y10 = input.ptr(ys+input.rows+1)[xs+0];
+                float y11 = input.ptr(ys+input.rows+1)[xs+1];
+
+                output.ptr(y+output.rows)[x] = (y00 + y01 + y10 + y11)/4;
+
+                float z00 = input.ptr(ys+2*input.rows+0)[xs+0];
+                float z01 = input.ptr(ys+2*input.rows+0)[xs+1];
+                float z10 = input.ptr(ys+2*input.rows+1)[xs+0];
+                float z11 = input.ptr(ys+2*input.rows+1)[xs+1];
+
+                output.ptr(y+2*output.rows)[x] = (z00 + z01 + z10 + z11)/4;
+            }           
+        }
+    }
+}
+
+
+void pcl::device::resizeMap(const MapArr& input, MapArr& output)
+{
+    int in_cols = input.cols(); 
+    int in_rows = input.rows()/3;
+
+    int out_cols = in_cols/2;
+    int out_rows = in_rows/2;
+
+    output.create(out_rows * 3, out_cols);
+
+    dim3 block(32, 8);
+    dim3 grid(divUp(out_cols, block.x), divUp(out_rows, block.y));
+    resizeMapKernel<<<grid, block>>>(input, output);
+    cudaSafeCall( cudaGetLastError() );	
+
+    if (stream == 0)
+        cudaSafeCall(cudaDeviceSynchronize());    
+}

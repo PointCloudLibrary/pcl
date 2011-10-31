@@ -109,6 +109,7 @@ namespace pcl
 
 		void generateImage(const MapArr& vmap, const MapArr& nmap, const LightSource& light, PtrStepSz<uchar3> dst);
 
+        void resizeMap(const MapArr& input, MapArr& output);
 
         inline bool valid_host(float value)
         {
