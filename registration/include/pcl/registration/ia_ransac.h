@@ -79,6 +79,47 @@ namespace pcl
       typedef typename FeatureCloud::Ptr FeatureCloudPtr;
       typedef typename FeatureCloud::ConstPtr FeatureCloudConstPtr;
 
+
+      class ErrorFunctor
+      {
+        public:
+          virtual float operator () (float d) const = 0;
+      };
+
+      class HuberPenalty : public ErrorFunctor
+      {
+        private:
+          HuberPenalty () {}
+        public:
+          HuberPenalty (float threshold)  : threshold_ (threshold) {}
+          virtual float operator () (float e) const
+          { 
+            if (e <= threshold_)
+              return (0.5 * e*e); 
+            else
+              return (0.5 * threshold_ * (2.0 * fabs (e) - threshold_));
+          }
+        protected:
+          float threshold_;
+      };
+
+      class TruncatedError : public ErrorFunctor
+      {
+        private:
+          TruncatedError () {}
+        public:
+          TruncatedError (float threshold) : threshold_ (threshold) {}
+          virtual float operator () (float e) const
+          { 
+            if (e <= threshold_)
+              return (e / threshold_);
+            else
+              return (1.0);
+          }
+        protected:
+          float threshold_;
+      };
+
       typedef typename KdTreeFLANN<FeatureT>::Ptr FeatureKdTreePtr; 
       /** \brief Constructor. */
       SampleConsensusInitialAlignment () : nr_samples_(3), min_sample_distance_ (0), k_correspondences_ (10)
@@ -137,8 +178,21 @@ namespace pcl
       setCorrespondenceRandomness (int k) { k_correspondences_ = k; }
 
       /** \brief Get the number of neighbors used when selecting a random feature correspondence, as set by the user */
-      void
+      int
       getCorrespondenceRandomness () { return (k_correspondences_); }
+
+      /** \brief Specify the error function to minimize
+       * \note This call is optional.  TruncatedError will be used by default
+       * \param A shared pointer to a subclass of SampleConsensusInitialAlignment::ErrorFunctor
+       */
+      void
+      setErrorFunction (const boost::shared_ptr<ErrorFunctor> & error_functor) { error_functor_ = error_functor; }
+
+      /** \brief Get a shared pointer to the ErrorFunctor that is to be minimized  
+       * \return A shared pointer to a subclass of SampleConsensusInitialAlignment::ErrorFunctor
+       */
+      boost::shared_ptr<ErrorFunctor>
+      getErrorFunction () { return (error_functor_); }
 
     protected:
       /** \brief Choose a random index between 0 and n-1
@@ -199,6 +253,9 @@ namespace pcl
      
       /** \brief The KdTree used to compare feature descriptors. */
       FeatureKdTreePtr feature_tree_;               
+
+      /** */
+      boost::shared_ptr<ErrorFunctor> error_functor_;
 
   };
 }
