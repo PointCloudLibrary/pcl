@@ -4,9 +4,9 @@ namespace pcl
 {
     namespace device
     {
-        const float sigma_color = 5; //in mm
-        const float sigma_space = 2; // in pixels
-        const int R = 3; //static_cast<int>(sigma_space * 1.5);
+        const float sigma_color = 10; //in mm
+        const float sigma_space = 3; // in pixels
+        const int R = 4; //static_cast<int>(sigma_space * 1.5);
         const int D = R * 2 + 1; 
 
         __global__ void bilateralKernel(const PtrStepSz<ushort> src, PtrStep<ushort> dst, float sigma_space2, float sigma_color2)

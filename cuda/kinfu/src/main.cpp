@@ -58,8 +58,8 @@ int main()
     try
     {
         //BufferedRecorder recorder;
-        CaptureOpenNI cap(0);
-        //CaptureOpenNI cap("d:/onis/20111013-224932.oni");
+        //CaptureOpenNI cap(0);
+        CaptureOpenNI cap("d:/onis/20111013-224932.oni");
         //CaptureOpenNI cap("d:/onis/20111013-224551.oni");
         //CaptureOpenNI cap("d:/onis/20111013-224719.oni");
 
@@ -67,8 +67,8 @@ int main()
 
         kinfu.fx = kinfu.fy = cap.depth_focal_length_VGA;
 
-        pcl::visualization::ImageViewer viewer;
-        pcl::visualization::ImageViewer viewer3d;        
+        pcl::visualization::ImageViewer viewer("Image");
+        pcl::visualization::ImageViewer viewer3d("3D");        
 
         KinfuTracker::DepthMap depth_device;
         KinfuTracker::View view_device;       
@@ -92,10 +92,7 @@ int main()
             d16.convertTo(d16, CV_16U);
 
             depth.data = d16.ptr<unsigned short>();
-
-            viewer.showRGBImage ((unsigned char*)rgb24.data, rgb24.cols, rgb24.rows);
-            viewer.spinOnce(3);
-
+            
             /*double maxval;
             cv::minMaxLoc(depth, 0, &maxval);
             depth.convertTo(du8, CV_8U, 255.0/maxval);
@@ -110,7 +107,9 @@ int main()
                 view_device.download(view3d_host, cols);
                 viewer3d.showRGBImage((unsigned char*)&view3d_host[0], view_device.cols(), view_device.rows());
             }
-            
+
+            viewer.showRGBImage ((unsigned char*)rgb24.data, rgb24.cols, rgb24.rows);
+            viewer.spinOnce(3);            
             viewer3d.spinOnce(3);
            
             //recorder.push_back(bgr, du8, res);            

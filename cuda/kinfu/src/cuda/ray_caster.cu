@@ -57,31 +57,22 @@ namespace pcl
             return fmin(fmin(txmax, tymax), tzmax);			
         }
 
-        __device__ __forceinline__ float unpack(float value)
-        {	
-            float tmp = fabsf(value);
-            int weight = __float2int_rz(tmp/2);
-            tmp = tmp - weight * 2;
-            return value < 0 ? -tmp : tmp;
-        }
-
         struct RayCaster
         {
-            enum
-            {
-                CTA_SIZE_X = 32,  CTA_SIZE_Y = 8
-            };
+            enum { CTA_SIZE_X = 32,  CTA_SIZE_Y = 8 };
 
-            float fx_inv, fy_inv, cx, cy;
+            Intr intr;           
             Mat33  Rcurr;
             float3 tcurr;
 
-            const float3 volume_min; // !!! must be set to {0, 0, 0}
+            float time_step;
+
+      const float3 volume_min; // !!! must be set to {0, 0, 0}
             float3 volume_max;						
 
             float3 cell_size;
             int cols, rows;
-
+           
             PtrStep<short2> volume;
 
             mutable PtrStep<float> nmap;
@@ -89,30 +80,13 @@ namespace pcl
 
             RayCaster() : volume_min(make_float3(0.f, 0.f, 0.f)) {}
 
-            __device__ __forceinline__ float3 get_ray_start(int x, int y) const
-            {
-                return make_float3(0.f, 0.f, 0.f);
-            }
             __device__ __forceinline__ float3 get_ray_next(int x, int y) const
             {
                 float3 ray_next;
-                ray_next.x = (x - cx) * fx_inv;
-                ray_next.y = (y - cy) * fy_inv;
+                ray_next.x = (x - intr.cx) / intr.fx;
+                ray_next.y = (y - intr.cy) / intr.fy;
                 ray_next.z = 1;
                 return ray_next;		
-            }
-
-            __device__ __forceinline__ float3 cvtToGlobalCoo(const float3& v) const
-            {
-                return Rcurr * v + tcurr;
-            }
-
-            __device__ __forceinline__ int3 truncateInds(const int3& g) const 
-            {
-                int x = max(0, min(g.x, VOLUME_X-1));
-                int y = max(0, min(g.y, VOLUME_Y-1));
-                int z = max(0, min(g.z, VOLUME_Z-1));
-                return make_int3(x, y, z);
             }
 
             __device__ __forceinline__ bool checkInds(const int3& g) const
@@ -122,71 +96,75 @@ namespace pcl
 
             __device__ __forceinline__ float readTsdf(int x, int y, int z) const
             {
-                return unpack(volume.ptr(VOLUME_Y * z + y)[x]);
+                return unpack_tsdf(volume.ptr(VOLUME_Y * z + y)[x]);
             }
 
-            __device__ __forceinline__ int3 getVoxelFromTime(const float3& origin, const float3& dir, float time) const
+            __device__ __forceinline__ int3 getVoxel(float3 point) const 
             {
-                float3 intersect = origin + dir * time;				
-                int vx = __float2int_rz(intersect.x / cell_size.x);
-                int vy = __float2int_rz(intersect.y / cell_size.y);
-                int vz = __float2int_rz(intersect.z / cell_size.z);
+                int vx = __float2int_rd(point.x / cell_size.x); // round to negative infinity
+                int vy = __float2int_rd(point.y / cell_size.y);
+                int vz = __float2int_rd(point.z / cell_size.z);
 
                 return make_int3(vx, vy, vz);				
-            }	
+            }
 
-            __device__ __forceinline__ int3 computeNextVoxel(const float3& origin, const float3& dir, const int3& voxel) const
+            __device__ __forceinline__ float interpolateTrilineary(const float3& origin, const float3& dir, float time) const
             {
-                float exit_time = computeVoxelExitTime(origin, dir, voxel);
-                float xmax = fabs( voxel.x * cell_size.x + (dir.x > 0 ? cell_size.x : 0.f) - origin.x - exit_time * dir.x);
-                float ymax = fabs( voxel.y * cell_size.y + (dir.y > 0 ? cell_size.y : 0.f) - origin.y - exit_time * dir.y);
-                float zmax = fabs( voxel.z * cell_size.z + (dir.z > 0 ? cell_size.z : 0.f) - origin.z - exit_time * dir.z);
+                float3 point = origin + dir * time;
+                int3 g = getVoxel(point);
 
-                float min_facet_dist = fmin( fmin(xmax, ymax), zmax);
+                if (g.x <= 0 && g.x >= VOLUME_X - 1)
+                    return numeric_limits<float>::quiet_NaN();
 
-                int3 res;
-                res.x = xmax == min_facet_dist ? voxel.x + (dir.x > 0 ? 1 : - 1) : voxel.x;
-                res.y = ymax == min_facet_dist ? voxel.y + (dir.y > 0 ? 1 : - 1) : voxel.y;
-                res.z = zmax == min_facet_dist ? voxel.z + (dir.z > 0 ? 1 : - 1) : voxel.z;                
+                if (g.y <- 0 && g.y >= VOLUME_Y - 1)
+                    return numeric_limits<float>::quiet_NaN();
+
+                if (g.z <= 0 && g.z >= VOLUME_Z - 1)
+                    return numeric_limits<float>::quiet_NaN();
+
+                float vx = (g.x + 0.5f) * cell_size.x;
+                float vy = (g.y + 0.5f) * cell_size.y;
+                float vz = (g.z + 0.5f) * cell_size.z;
+                            
+                g.x = (point.x < vx) ? (g.x - 1) : g.x;
+                g.y = (point.y < vy) ? (g.y - 1) : g.y;
+                g.z = (point.z < vz) ? (g.z - 1) : g.z;
+
+                float a = (point.x - (g.x + 0.5f) * cell_size.x)/cell_size.x;
+                float b = (point.y - (g.y + 0.5f) * cell_size.y)/cell_size.y;
+                float c = (point.z - (g.z + 0.5f) * cell_size.z)/cell_size.z;
+
+                float res = readTsdf(g.x+0, g.y+0, g.z+0) * (1-a)*(1-b)*(1-c) +
+                            readTsdf(g.x+0, g.y+0, g.z+1) * (1-a)*(1-b)*   c  +
+                            readTsdf(g.x+0, g.y+1, g.z+0) * (1-a)*   b *(1-c) +
+                            readTsdf(g.x+0, g.y+1, g.z+1) * (1-a)*   b *   c  +
+                            readTsdf(g.x+1, g.y+0, g.z+0) *    a *(1-b)*(1-c) +
+                            readTsdf(g.x+1, g.y+0, g.z+1) *    a *(1-b)*   c  +
+                            readTsdf(g.x+1, g.y+1, g.z+0) *    a *   b *(1-c) +
+                            readTsdf(g.x+1, g.y+1, g.z+1) *    a *   b *   c  ;
                 return res;
             }
 
-            __device__ __forceinline__ float computeVoxelExitTime(const float3& origin, const float3& dir, const int3& voxel) const
-            {	            
-                float txmax = ( voxel.x * cell_size.x + (dir.x > 0 ? cell_size.x : 0.f) - origin.x) / dir.x;
-                float tymax = ( voxel.y * cell_size.y + (dir.y > 0 ? cell_size.y : 0.f) - origin.y) / dir.y;
-                float tzmax = ( voxel.z * cell_size.z + (dir.z > 0 ? cell_size.z : 0.f) - origin.z) / dir.z;
-
-                return fmin( fmin(txmax, tymax), tzmax);
-            }
-
-            __device__ __forceinline__ float computeVoxelEntryTime(const float3& origin, const float3& dir, const int3& voxel) const
-            {	            
-                float txmin = ( voxel.x * cell_size.x + (dir.x > 0 ? 0.f : cell_size.x) - origin.x) / dir.x;
-                float tymin = ( voxel.y * cell_size.y + (dir.y > 0 ? 0.f : cell_size.y) - origin.y) / dir.y;
-                float tzmin = ( voxel.z * cell_size.z + (dir.z > 0 ? 0.f : cell_size.z) - origin.z) / dir.z;
-
-                return fmax( fmax(txmin, tymin), tzmin);
-            }
-
             __device__ __forceinline__ void operator()() const
-            {
-                const float step = fmin(cell_size.x, fmin(cell_size.y, cell_size.z)) / 333;
-                const float min_dist = 5.f; //in mm
-
+            {                
                 int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
                 int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
 
                 if (x >= cols || y >= rows)
                     return;
+ 
+                if (x != cols/2 || y != rows/2)
+                    return;
+                
+                printf("aaaa\n");
 
                 vmap.ptr(y)[x] = numeric_limits<float>::quiet_NaN();
                 nmap.ptr(y)[x] = numeric_limits<float>::quiet_NaN();
 
-                float3 ray_start = cvtToGlobalCoo(get_ray_start(x, y)); // 2
-                float3 ray_next  = cvtToGlobalCoo(get_ray_next (x, y)); // 3		
+                float3 ray_start = tcurr; 
+                float3 ray_next  = Rcurr * get_ray_next(x, y) + tcurr; 		
 
-                float3 ray_dir = normalized(ray_next - ray_start); //4
+                float3 ray_dir = normalized(ray_next - ray_start); 
 
                 //ensure that it isn't a degenerate case				
                 ray_dir.x  = (ray_dir.x == 0.f) ? 1e-15 : ray_dir.x;
@@ -197,50 +175,69 @@ namespace pcl
                 float time_start_volume = getMinTime(volume_min, volume_max, ray_start, ray_dir);
                 float time_exit_volume  = getMaxTime(volume_min, volume_max, ray_start, ray_dir);								
 
+                const float min_dist = 50.f; //in mm
                 time_start_volume = fmax(time_start_volume, min_dist);
                 if (time_start_volume >= time_exit_volume)
                     return;
 
-                int3 g = truncateInds(getVoxelFromTime(ray_start, ray_dir, time_start_volume)); //6						
+                int time_curr = time_start_volume;
+                int3 g = getVoxel(ray_start + ray_dir * time_curr); 						
+                if(!checkInds(g))
+                    return;
+
+                printf("%f - %f\n", time_start_volume, time_exit_volume);
+
                 float tsdf = readTsdf(g.x, g.y, g.z);
+                                
+                //for(int i = 0; i < 512; ++i) 
+                for(;;) 
+                {
+                    float tsdf_prev = tsdf;   
 
-                //ray_start = ray_start + ray_dir * time_start_volume;
-                
-                for(;;) // while voxel g withing volume bounds
-                {			                    
-                    int3  g_prev = g;
-                    float tsdf_prev = tsdf;
+                    printf("%f\n", time_curr);
 
-                    g = computeNextVoxel(ray_start, ray_dir, g_prev);
+                    float time_next = time_curr + time_step;
+                    int3 g = getVoxel( ray_start + ray_dir * time_next );
                     if(!checkInds(g))
-                        break;                   
+                        break;                 
 
                     tsdf = readTsdf(g.x, g.y, g.z);
 
-                    if (tsdf_prev > 0.f && tsdf < 0.f) //13 zero crossing
-                    {												
-                        //my guess how to do                        
-                        float time_start = computeVoxelEntryTime(ray_start, ray_dir, g_prev);
-                        float time_exit = computeVoxelExitTime(ray_start, ray_dir, g);
+                    if (tsdf_prev < 0.f && tsdf > 0.f)
+                        break;
 
-                        float3 point1 = ray_start + ray_dir * time_start;
-                        float3 point2 = ray_start + ray_dir * time_exit;
+                    if (tsdf_prev > 0.f && tsdf < 0.f) //zero crossing
+                    {	
+                        float Ftdt = interpolateTrilineary(ray_start, ray_dir, time_curr + time_step);
+                        if (isnan(Ftdt))
+                            break;
 
-                        float3 v = (point2 * tsdf_prev + point1 * fabs(tsdf)) * (1.f/(tsdf_prev + fabs(tsdf)));
+                        float Ft = interpolateTrilineary(ray_start, ray_dir, time_curr);
+                        if (isnan(Ftdt))
+                            break;
                         
-                        vmap.ptr(y       )[x] = v.x;
-                        vmap.ptr(y+  rows)[x] = v.y;
-                        vmap.ptr(y+2*rows)[x] = v.z;	
+                        float Ts = time_curr - time_step * Ft/(Ftdt - Ft);
 
-                        //printf("(%d,%d) %d %d %d - %f %f - - - %d %d %d\n",x, y, g.x, g.y, g.z, tsdf_prev, tsdf, g_prev.x, g_prev.y, g_prev.z);
+                        float3 vetex_found = ray_start + ray_dir * Ts;
 
+                        vmap.ptr(y       )[x] = vetex_found.x;
+                        vmap.ptr(y+  rows)[x] = vetex_found.y;
+                        vmap.ptr(y+2*rows)[x] = vetex_found.z;	
+
+                        int3 g = getVoxel( ray_start + ray_dir * time_curr );
                         if (g.x != 0 && g.y != 0 && g.z != 0 && g.x != VOLUME_X - 1 && g.y != VOLUME_Y - 1 && g.z != VOLUME_Z - 1)
-                        {
-                            //extract grad(tsdf_volume)
+                        {                                                                                                              
                             float3 normal;
+
+                            //extract gradient
                             normal.x = readTsdf(g.x+1, g.y, g.z) - readTsdf(g.x-1, g.y, g.z);
                             normal.y = readTsdf(g.x, g.y+1, g.z) - readTsdf(g.x, g.y-1, g.z);
-                            normal.z = readTsdf(g.x, g.y, g.z+1) - readTsdf(g.x, g.y, g.z-1);								
+                            normal.z = readTsdf(g.x, g.y, g.z+1) - readTsdf(g.x, g.y, g.z-1);
+
+                            //normalize if volume isn't cubic
+                            normal.x /= cell_size.x;
+                            normal.y /= cell_size.y;
+                            normal.z /= cell_size.z;
 
                             normal = normalized(normal);
 
@@ -251,6 +248,7 @@ namespace pcl
 
                         break;
                     }
+                    time_curr += time_step;
                 }
             }
         };
@@ -261,28 +259,31 @@ namespace pcl
 
 
 
-void pcl::device::raycast(const Mat33& Rcurr, const float3& tcurr, const Intr& intr, const float3& volume_size, 
-                            const PtrStep<short2>& volume, MapArr vmap, MapArr nmap)
+void pcl::device::raycast(const Intr& intr, const Mat33& Rcurr, const float3& tcurr, float tranc_dist, const float3& volume_size, 
+                          const PtrStep<short2>& volume, MapArr& vmap, MapArr& nmap)
 {
     RayCaster rc;
 
-    rc.fx_inv = 1.f/intr.fx;  rc.cx = intr.cx;
-    rc.fy_inv = 1.f/intr.fy;  rc.cy = intr.cy;		
-
+    rc.intr = intr;
     rc.Rcurr = Rcurr;
     rc.tcurr = tcurr;
-    rc.volume_max = volume_size;		
+   
+    rc.time_step = tranc_dist * 0.95f;
+
+    rc.volume_max = volume_size;
 
     rc.cell_size.x = volume_size.x / VOLUME_X;
-    rc.cell_size.y = volume_size.y / VOLUME_Y;
+    rc.cell_size.y = volume_size.y / VOLUME_Y;         
     rc.cell_size.z = volume_size.z / VOLUME_Z;
 
     rc.cols = vmap.cols();
     rc.rows = vmap.rows()/3;
 
-    rc.volume = volume;		
-    rc.nmap = nmap;
+    rc.volume = volume;
     rc.vmap = vmap;
+    rc.nmap = nmap;
+
+    printf("==========================\n");
 
     dim3 block(RayCaster::CTA_SIZE_X, RayCaster::CTA_SIZE_Y);
     dim3 grid(divUp(rc.cols, block.x), divUp(rc.rows, block.y));

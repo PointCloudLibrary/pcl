@@ -88,8 +88,8 @@ namespace pcl
                         weight *= fabs(dot(vec, n));					
                     }
 
-                    int br = (int)(255*weight);
-                    br = max(50, min(255, br));
+                    int br = (int)(255*weight) + 50;
+                    br = max(0, min(255, br));
                     color = make_uchar3(br, br, br);
                 }				
                 dst.ptr(y)[x] = color;

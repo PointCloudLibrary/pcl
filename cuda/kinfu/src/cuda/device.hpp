@@ -58,8 +58,13 @@ namespace pcl
 		__device__ __forceinline__ void unpack_tsdf(short2 value, float& tsdf, int& weight)		
         {	            
             weight = value.y;
-            tsdf = static_cast<float>(value.x)/DIVISOR;            
+            tsdf = static_cast<float>(value.x)/DIVISOR;
 		}
+
+        __device__ __forceinline__ float unpack_tsdf(short2 value)
+        {
+            return static_cast<float>(value.x)/DIVISOR;            
+        }
 
          __device__ __forceinline__ float3 operator*(const Mat33& m, const float3& vec)
         {

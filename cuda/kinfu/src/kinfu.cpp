@@ -45,6 +45,9 @@
 #include <Eigen/Cholesky>
 #include <Eigen/LU> 
 
+#include <opencv2/opencv.hpp>
+#include <opencv2/gpu/gpu.hpp>
+
 using namespace std;		
 using namespace pcl::device;
 using namespace Eigen;
@@ -131,9 +134,9 @@ void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_d
     Matrix<work_type, 6, 1> res = A.llt().solve(b);
     //Matrix<work_type, 6, 1> res = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
 
-    /*cout << b << endl;
-    cout << A << endl;
-    cout << res << endl;*/
+    //cout << b << endl;
+    //cout << A << endl;
+    //cout << res << endl;
      
     work_type alpha = res(0);
 	work_type beta  = res(1);
@@ -190,6 +193,7 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
         		
 		++global_time;
 		view.release();
+        return;
 	}
     
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -232,6 +236,14 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
             findCoresp(vmap_g_curr, nmap_g_curr, device_Rprev_inv, device_tprev, intr(level_index), 
                              vmap_g_prev, nmap_g_prev, distThres, angleThres, coresp);
             
+
+            cv::gpu::GpuMat ma(coresp.rows(), coresp.cols(), CV_32S, coresp.ptr(), coresp.step());
+            cv::Mat cpu;
+            ma.download(cpu);
+
+            cv::imshow("coresp", cpu == -1);
+            cv::waitKey();
+            
             Matrix3f Rinc;
 		    Vector3f tinc;
             estimateTrel(vmap_g_prev, nmap_g_prev, vmap_g_curr, coresp, Rinc, tinc);
@@ -245,6 +257,9 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
 	//save tranform
 	rmats.push_back(Rcurr);
 	tvecs.push_back(tcurr);		
+
+    //cout << "FinalR:\n" << Rcurr << endl;
+    //cout << "FinalT:\n" << tcurr << endl;
 	
 	///////////////////////////////////////////////////////////////////////////////////////////
 	// Volume integration
@@ -265,18 +280,21 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
 	// Ray casting     
 
 	cout << "Starting raycasting" << endl;
-    raycast(device_Rcurr, device_tcurr, intr, device_volume_size, volume, vmaps_g_prev[0], nmaps_g_prev[0]);
-                    
-	///////////////////////////////////////////////////////////////////////////////////////////
-	// image generation
+    Mat33&  device_Rcurr = device_cast<Mat33> (Rcurr);
 
+    /*raycast(intr(0), device_Rcurr, device_tcurr, tranc_dist, device_volume_size, volume, vmaps_g_prev[0], nmaps_g_prev[0]);
+        
+    cin.get();
 
-    //prepare data for next frame
-	Mat33&  device_Rcurr = device_cast<Mat33> (Rcurr);
+    for(int i = 0; i < LEVELS; ++i)   
+        raycast(intr(i), device_Rcurr, device_tcurr, tranc_dist, device_volume_size, volume, vmaps_g_prev[i], nmaps_g_prev[i]);*/
+        
     for(int i = 0; i < LEVELS; ++i)
         device::tranformMaps(vmaps_curr[i], nmaps_curr[i], device_Rcurr, device_tcurr, vmaps_g_prev[i], nmaps_g_prev[i]);
-
-
+                        
+	///////////////////////////////////////////////////////////////////////////////////////////
+	// image generation
+    	 
 	cout << "Starting image generation" << endl;
 	device::LightSource light;
 	light.number = 1;
@@ -284,14 +302,6 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
 	    	        
     view.create(rows_, cols_);
 	generateImage(vmaps_g_prev[0], nmaps_g_prev[0], light, view);
-	
-
-
-
-
-    if (global_time < 5)
-        for(int i = 0; i < LEVELS; ++i)
-            device::tranformMaps(vmaps_curr[i], nmaps_curr[i], device_Rcurr, device_tcurr, vmaps_g_prev[i], nmaps_g_prev[i]);
-
+	    
     ++global_time;
 }

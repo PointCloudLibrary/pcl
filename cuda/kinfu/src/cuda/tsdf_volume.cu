@@ -134,7 +134,6 @@ namespace pcl
                                 int weight_new = min(weight_prev + Wrk, MAX_WEIGHT);
 														    
 							    *pos = pack_tsdf(tsdf_new, weight_new);                            
-
                             }                            													
 						}
 					}

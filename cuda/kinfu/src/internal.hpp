@@ -101,10 +101,9 @@ namespace pcl
 		void integrateTsdfVolume(const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
 			const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<short2> volume);
 		
-
 		//raycast
-		void raycast(const Mat33& Rcurr, const float3& tcurr, const Intr& intr, const float3& volume_size, 
-				const PtrStep<short2>& volume, MapArr vmap, MapArr nmap);
+		void raycast(const Intr& intr, const Mat33& Rcurr, const float3& tcurr, float tranc_dist, const float3& volume_size, 
+                          const PtrStep<short2>& volume, MapArr& vmap, MapArr& nmap);
 
 		void generateImage(const MapArr& vmap, const MapArr& nmap, const LightSource& light, PtrStepSz<uchar3> dst);
 
