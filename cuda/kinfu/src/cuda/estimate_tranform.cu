@@ -165,19 +165,16 @@ namespace pcl
             }
         };
 
-        /*__global__ void TransformEstimatorKernel1(const TransformEstimator<double> te) { te(); }
-        __global__ void TransformEstimatorKernel2(const TranformReduction<double> tr) { tr(); }*/
-
         __global__ void TransformEstimatorKernel1(const TransformEstimator<float> te) { te(); }
         __global__ void TransformEstimatorKernel2(const TranformReduction<float> tr) { tr(); }
     }
 }
 
 void pcl::device::estimateTransform(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const PtrStepSz<short2>& coresp, 
-                                    DeviceArray2D<work_type>& gbuf, DeviceArray<work_type>& mbuf, work_type* matrixA_host, work_type* vectorB_host)
+                                    DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, float* matrixA_host, float* vectorB_host)
 {	
-    typedef TransformEstimator<work_type> TEst;
-    typedef TranformReduction<work_type> TRed;
+    typedef TransformEstimator<float> TEst;
+    typedef TranformReduction<float> TRed;
 
     dim3 block(TEst::CTA_SIZE_X, TEst::CTA_SIZE_Y);
     dim3 grid(1,1,1);
@@ -185,7 +182,7 @@ void pcl::device::estimateTransform(const MapArr& v_dst, const MapArr& n_dst, co
     grid.y = divUp(coresp.rows, block.y);
 
     mbuf.create(TRed::TOTAL);
-    if (gbuf.rows() != TRed::TOTAL || gbuf.cols() < grid.x * grid.y)
+    if (gbuf.rows() != TRed::TOTAL || gbuf.cols() < (int)(grid.x * grid.y))
         gbuf.create(TRed::TOTAL, grid.x * grid.y);
 
     TEst te;	
@@ -196,7 +193,7 @@ void pcl::device::estimateTransform(const MapArr& v_dst, const MapArr& n_dst, co
     te.gbuf = gbuf;
 
     {
-        pcl::gpu::ScopeTimer timer("TEst1");
+        //pcl::gpu::ScopeTimer timer("TEst1");
     TransformEstimatorKernel1<<<grid, block>>>(te);    
     cudaSafeCall( cudaGetLastError() );	
     cudaSafeCall(cudaDeviceSynchronize());    
@@ -210,21 +207,21 @@ void pcl::device::estimateTransform(const MapArr& v_dst, const MapArr& n_dst, co
     tr.output = mbuf;	
 
      {
-    pcl::gpu::ScopeTimer timer("TEst2");
+    //pcl::gpu::ScopeTimer timer("TEst2");
     TransformEstimatorKernel2<<<TRed::TOTAL, TRed::CTA_SIZE>>>(tr);
 
     cudaSafeCall( cudaGetLastError() );	
     cudaSafeCall(cudaDeviceSynchronize());
      }
 
-    work_type host_data[TRed::TOTAL];
+    float host_data[TRed::TOTAL];
     mbuf.download(host_data);
 
     int shift = 0;
     for(int i = 0; i < 6; ++i) //rows
         for(int j = i; j < 7; ++j) // cols + b
         {
-            work_type value = host_data[shift++];
+            float value = host_data[shift++];
             if (j == 6) // vector b
                 vectorB_host[i] = value;
             else

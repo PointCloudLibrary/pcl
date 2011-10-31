@@ -127,26 +127,26 @@ void pcl::gpu::KinfuTracker::allocateBufffers(int rows, int cols)
 
 void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const CorespMap& coresp, Matrix3f& Rinc, Vector3f& tinc)
 {    
-    work_type A_data[36];
-    Matrix<work_type, 6, 1> b;
+    float A_data[36];
+    Matrix<float, 6, 1> b;
                     
     device::estimateTransform(v_dst, n_dst, v_src, coresp, gbuf, sumbuf, A_data, b.data());
 
     Map<Matrix6f> A(A_data);        
 
-    Matrix<work_type, 6, 1> res = A.llt().solve(b);
-    //Matrix<work_type, 6, 1> res = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
+    Matrix<float, 6, 1> res = A.llt().solve(b);
+    //Matrix<float, 6, 1> res = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
 
     //cout << b << endl;
     //cout << A << endl;
     //cout << res << endl;
      
-    work_type alpha = res(0);
-	work_type beta  = res(1);
-	work_type gamma = res(2);
-	work_type tx = res(3);
-	work_type ty = res(4);
-	work_type tz = res(5);
+    float alpha = res(0);
+	float beta  = res(1);
+	float gamma = res(2);
+	float tx = res(3);
+	float ty = res(4);
+	float tz = res(5);
 
 	float r11 =  cos(gamma)*cos(beta);
 	float r12 = -sin(gamma)*cos(alpha) + cos(gamma)*sin(beta)*sin(alpha);
