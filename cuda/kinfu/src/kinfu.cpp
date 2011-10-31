@@ -238,7 +238,10 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
     {
         ScopeTime time("pyr-down-all"); 
         for(int i = 1; i < LEVELS; ++i)
+        {
+            ScopeTime time("pyr-down");
             device::pyrDown(depths_curr[i-1], depths_curr[i]);
+        }
     }
 
     {

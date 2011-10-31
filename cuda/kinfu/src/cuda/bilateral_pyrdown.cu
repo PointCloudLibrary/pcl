@@ -54,7 +54,6 @@ namespace pcl
             return src.ptr(y)[x];
         }
 
-
         __global__ void pyrDownKernel(const PtrStepSz<ushort> src, PtrStepSz<ushort> dst, float sigma_color)
         {            
             int x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -65,18 +64,19 @@ namespace pcl
 
             const int D = 5;
 
-            int center = fetch(2*y, 2*x, src);
+            int center = src.ptr(2*y)[2*x];
 
             int tx = min(2*x - D/2 + D, src.cols-1);
             int ty = min(2*y - D/2 + D, src.rows-1);
+            int cy = max(0, 2*y - D/2);
 
             int sum = 0;
             int count = 0;
 
-            for (int cy = max(y - D/2, 0); cy < ty; ++cy)
-                for (int cx = max(x - D/2, 0); cx < tx; ++cx)
+            for (; cy < ty; ++cy)
+                for (int cx = max(0, 2*x - D/2); cx < tx; ++cx)
                 {
-                    int val = fetch(cy, cx, src);
+                    int val = src.ptr(cy)[cx];
                     if (abs(val - center) < 3 * sigma_color)
                     {
                         sum += val;
