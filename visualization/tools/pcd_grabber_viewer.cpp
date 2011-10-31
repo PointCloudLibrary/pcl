@@ -44,31 +44,11 @@
 #include <pcl/console/print.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-using pcl::console::print_color;
 using pcl::console::print_error;
-using pcl::console::print_error;
-using pcl::console::print_warn;
 using pcl::console::print_info;
-using pcl::console::print_debug;
 using pcl::console::print_value;
-using pcl::console::print_highlight;
-using pcl::console::TT_BRIGHT;
-using pcl::console::TT_RED;
-using pcl::console::TT_GREEN;
-using pcl::console::TT_BLUE;
-//using namespace boost::filesystem;
 
-typedef pcl::visualization::PointCloudColorHandler<pcl::PointCloud<pcl::PointXYZ> > ColorHandler;
-typedef ColorHandler::Ptr ColorHandlerPtr;
-typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
-
-typedef pcl::visualization::PointCloudGeometryHandler<pcl::PointCloud<pcl::PointXYZ> > GeometryHandler;
-typedef GeometryHandler::Ptr GeometryHandlerPtr;
-typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 boost::mutex mutex_;
-
-#define NORMALS_SCALE 0.01
-#define PC_SCALE 0.001
 
 void
 printHelp (int argc, char **argv)
@@ -80,87 +60,56 @@ printHelp (int argc, char **argv)
   print_info ("                     -dir directory_path      = directory path to PCD file(s) to be read from\n");
   print_info ("                     -fps frequency           = frames per second\n");
   print_info ("                     -repeat                  = optional parameter that tells wheter the PCD file(s) should be \"grabbed\" in a endless loop.\n");
-  print_info ("                     -bc r,g,b                = background color\n");
-  print_info ("                     -fc r,g,b                = foreground color\n");
-  print_info ("                     -ps X                    = point size (");
-  print_value ("1..64");
-  print_info (") \n");
-  print_info ("                     -opaque X                = rendered point cloud opacity (");
-  print_value ("0..1");
-  print_info (")\n");
-
-  print_info ("                     -ax ");
-  print_value ("n");
-  print_info ("                    = enable on-screen display of ");
-  print_color (stdout, TT_BRIGHT, TT_RED, "X");
-  print_color (stdout, TT_BRIGHT, TT_GREEN, "Y");
-  print_color (stdout, TT_BRIGHT, TT_BLUE, "Z");
-  print_info (" axes and scale them to ");
-  print_value ("n\n");
-  print_info ("                     -ax_pos X,Y,Z            = if axes are enabled, set their X,Y,Z position in space (default ");
-  print_value ("0,0,0");
-  print_info (")\n");
-
   print_info ("\n");
   print_info ("                     -cam (*)                 = use given camera settings as initial view\n");
   print_info (stderr, " (*) [Clipping Range / Focal Point / Position / ViewUp / Distance / Window Size / Window Pos] or use a <filename.cam> that contains the same information.\n");
-
-  print_info ("\n");
-  print_info ("                     -multiview 0/1           = enable/disable auto-multi viewport rendering (default ");
-  print_value ("disabled");
-  print_info (")\n");
-  print_info ("\n");
-
-  print_info ("\n");
-  print_info ("                     -normals 0/X             = disable/enable the display of every Xth point's surface normal as lines (default ");
-  print_value ("disabled");
-  print_info (")\n");
-  print_info ("                     -normals_scale X         = resize the normal unit vector size to X (default ");
-  print_value ("0.02");
-  print_info (")\n");
-  print_info ("\n");
-  print_info ("                     -pc 0/X                  = disable/enable the display of every Xth point's principal curvatures as lines (default ");
-  print_value ("disabled");
-  print_info (")\n");
-  print_info ("                     -pc_scale X              = resize the principal curvatures vectors size to X (default ");
-  print_value ("0.02");
-  print_info (")\n");
-  print_info ("\n");
-
-  print_info ("\n(Note: for multiple .pcd files, provide multiple -{fc,ps,opaque} parameters; they will be automatically assigned to the right file)\n");
 }
 
 // Create the PCLVisualizer object
 boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
-ColorHandlerPtr color_handler;
-GeometryHandlerPtr geometry_handler;
 std::vector<double> fcolor_r, fcolor_b, fcolor_g;
 bool fcolorparam = false;
 
 struct EventHelper
 {
-
-  void cloud_cb (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr & cloud)
+  void 
+  cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr & cloud)
   {
-    //std::cout << __PRETTY_FUNCTION__ << " " << cloud->width << std::endl;
-    // Add the dataset with a XYZ and a random handler 
-    //  geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PointCloud<pcl::PointXYZRGB> > (*cloud));
-
-    //// If color was given, ues that
-    //if (fcolorparam)
-    //  color_handler.reset (new pcl::visualization::PointCloudColorHandlerCustom<pcl::PointCloud<pcl::PointXYZRGB> > (cloud, fcolor_r, fcolor_g, fcolor_b));
-    //else
-    //  color_handler.reset (new pcl::visualization::PointCloudColorHandlerRandom<pcl::PointCloud<pcl::PointXYZRGB> > (cloud));
-
     // Add the cloud to the renderer
-
     boost::mutex::scoped_lock lock (mutex_);
     if (!cloud)
       return;
-    p->removePointCloud ("PCDCloud");
-    p->addPointCloud<pcl::PointXYZ> (cloud, "PCDCloud");
+    if (!p->updatePointCloud (cloud, "PCDCloud"))
+    {
+      p->addPointCloud (cloud, "PCDCloud");
+      p->resetCameraViewpoint ("PCDCloud");
+    }
   }
 };
+
+void 
+keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
+{
+  std::string* message = (std::string*)cookie;
+  cout << (*message) << " :: ";
+  if (event.getKeyCode())
+    cout << "the key \'" << event.getKeyCode() << "\' (" << (int)event.getKeyCode() << ") was";
+  else
+    cout << "the special key \'" << event.getKeySym() << "\' was";
+  if (event.keyDown())
+    cout << " pressed" << endl;
+  else
+    cout << " released" << endl;
+}
+
+void mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
+{
+  std::string* message = (std::string*) cookie;
+  if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
+  {
+    cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
+  }
+}
 
 /* ---[ */
 int
@@ -204,13 +153,6 @@ main (int argc, char** argv)
 
   p->setBackgroundColor (bcolor[0], bcolor[1], bcolor[2]);
 
-
-
-  //boost::signals2::connection c = interface->registerCallback (boost::bind (&bla::blatestpointcloudrgb, *this, _1));
-  //boost::function<void (boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >)> f = boost::bind (&bla::blatestpointcloudrgb, this, _1);
-  //boost::signals2::connection c =
-  //  interface->registerCallback <void(boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >)> (boost::bind (&bla::blatestpointcloudrgb, *this, _1).);
-
   // Read axes settings
   double axes = 0.0;
   pcl::console::parse_argument (argc, argv, "-ax", axes);
@@ -238,7 +180,7 @@ main (int argc, char** argv)
   std::cout << "path: " << path << std::endl;
   if (path != "" && boost::filesystem::exists (path))
   {
-    grabber = new pcl::PCDGrabber<pcl::PointXYZ > (path, frames_per_second, repeat);
+    grabber = new pcl::PCDGrabber<pcl::PointXYZRGB> (path, frames_per_second, repeat);
   }
   else
   {
@@ -261,13 +203,19 @@ main (int argc, char** argv)
     {
       std::cout << "Neither a pcd file given using the \"-file\" option, nor given a directory containing pcd files using the \"-dir\" option." << std::endl;
     }
-    grabber = new pcl::PCDGrabber<pcl::PointXYZ > (pcd_files, frames_per_second, repeat);
+    grabber = new pcl::PCDGrabber<pcl::PointXYZRGB> (pcd_files, frames_per_second, repeat);
   }
 
   EventHelper h;
-  boost::function<void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
+  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
   boost::signals2::connection c1 = grabber->registerCallback (f);
 
+  std::string mouseMsg3D ("Mouse coordinates in PCL Visualizer");
+  std::string keyMsg3D ("Key event for PCL Visualizer");
+
+  p->registerMouseCallback (&mouse_callback, (void*)(&mouseMsg3D));    
+  p->registerKeyboardCallback(&keyboard_callback, (void*)(&keyMsg3D));
+        
   grabber->start ();
   while (true)
   {

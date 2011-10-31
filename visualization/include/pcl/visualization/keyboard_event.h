@@ -61,8 +61,8 @@ namespace pcl
           * \param[in] key_sym   the key-name that caused the action
           * \param[in] key       the key code that caused the action
           * \param[in] alt       whether the alt key was pressed at the time where this event was triggered
-          * \param[in] ctrl      whether the alt ctrl was pressed at the time where this event was triggered
-          * \param[in] shift     whether the alt shift was pressed at the time where this event was triggered
+          * \param[in] ctrl      whether the ctrl was pressed at the time where this event was triggered
+          * \param[in] shift     whether the shift was pressed at the time where this event was triggered
           */
         inline KeyboardEvent (bool action, const std::string& key_sym, unsigned char key, 
                               bool alt, bool ctrl, bool shift);
@@ -74,13 +74,13 @@ namespace pcl
         isAltPressed () const;
         
         /**
-          * \return whether the alt ctrl was pressed at the time where this event was triggered
+          * \return whether the ctrl was pressed at the time where this event was triggered
           */
         inline bool 
         isCtrlPressed () const;
         
         /**
-          * \return whether the alt shift was pressed at the time where this event was triggered
+          * \return whether the shift was pressed at the time where this event was triggered
           */
         inline bool 
         isShiftPressed () const;

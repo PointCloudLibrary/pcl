@@ -38,7 +38,7 @@
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/console/time.h>
 #include <pcl/win32_macros.h>
-#include <pcl/io/io.h>
+#include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

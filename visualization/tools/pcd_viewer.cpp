@@ -97,7 +97,7 @@ printHelp (int argc, char **argv)
 
   print_info ("\n");
   print_info ("                     -cam (*)                 = use given camera settings as initial view\n");
-  print_info (stderr, " (*) [Clipping Range / Focal Point / Position / ViewUp / Distance / Window Size / Window Pos] or use a <filename.cam> that contains the same information.\n");
+  print_info (stderr, " (*) [Clipping Range / Focal Point / Position / ViewUp / Distance / Field of View Y / Window Size / Window Pos] or use a <filename.cam> that contains the same information.\n");
 
   print_info ("\n");
   print_info ("                     -multiview 0/1           = enable/disable auto-multi viewport rendering (default "); print_value ("disabled"); print_info (")\n");

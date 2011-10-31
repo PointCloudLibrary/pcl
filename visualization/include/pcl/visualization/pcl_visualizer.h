@@ -68,7 +68,11 @@
 #include <vtkPolyLine.h>
 #include <vtkVectorText.h>
 #include <vtkFollower.h>
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+#include <pcl/visualization/interactor.h>
+#else
 #include <vtkRenderWindowInteractor.h>
+#endif
 
 namespace pcl
 {
@@ -286,7 +290,19 @@ namespace pcl
           * \param viewport view port from where the 3D text should be removed (default: all)
           */
         bool 
-        deleteText3D (const std::string &id = "cloud", int viewport = 0);
+        removeText3D (const std::string &id = "cloud", int viewport = 0);
+
+        /** \brief Remove all point cloud data on screen from the given viewport.
+          * \param viewport view port from where the clouds should be removed (default: all)
+          */
+        bool
+        removeAllPointClouds (int viewport = 0);
+
+        /** \brief Remove all 3D shape data on screen from the given viewport.
+          * \param viewport view port from where the shapes should be removed (default: all)
+          */
+        bool
+        removeAllShapes (int viewport = 0);
 
         /** \brief Set the viewport's background color.
           * \param r the red component of the RGB color
@@ -323,6 +339,22 @@ namespace pcl
         addText (const std::string &text, int xpos, int ypos, double r, double g, double b, 
                  const std::string &id = "", int viewport = 0);
 
+        /** \brief Add a text to screen
+          * \param text the text to add
+          * \param xpos the X position on screen where the text should be added
+          * \param ypos the Y position on screen where the text should be added
+          * \param fontsize the fontsize of the text
+          * \param r the red color value
+          * \param g the green color value
+          * \param b the blue color vlaue
+          * \param id the text object id (default: equal to the "text" parameter)
+          * \param viewport the view port (default: all)
+          */
+        bool 
+        addText (const std::string &text, int xpos, int ypos, int fontsize, double r, double g, double b, 
+                 const std::string &id = "", int viewport = 0);
+
+        
         /** \brief Add a 3d text to the scene
           * \param text the text to add
           * \param position the world position where the text should be added
@@ -610,7 +642,7 @@ namespace pcl
           * \param[in] correspondences The mapping from source points to target points. Each element must be an index into \ref target_points 
           * \param[in] line_ids A vector of strings into which the IDs of the newly drawn lines will be added
           * \param[in] id the polygon object id (default: "correspondences")
-          * \param[in] viewport the view port where the PolygonMesh should be added (default: all)
+          * \param[in] viewport the view port where the correspondences should be added (default: all)
           */
         template <typename PointT> bool
         addCorrespondences (const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
@@ -625,7 +657,7 @@ namespace pcl
           * \param[in] correspondences The mapping from source points to target points. Each element must be an index into \ref target_points
           * \param[in] line_ids A vector of strings into which the IDs of the newly drawn lines will be added
           * \param[in] id the polygon object id (default: "correspondences")
-          * \param[in] viewport the view port where the PolygonMesh should be added (default: all)
+          * \param[in] viewport the view port where the correspondences should be added (default: all)
           */
         template <typename PointT> bool
         addCorrespondences (const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
@@ -636,7 +668,7 @@ namespace pcl
         
         /** \brief Remove the specified correspondences from the display. 
           * \param[in] id the polygon correspondences object id (i.e., given on \ref addCorrespondences)
-          * \param[in] viewport view port from where the polygon should be removed (default: all)
+          * \param[in] viewport view port from where the correspondences should be removed (default: all)
           */
         inline void
         removeCorrespondences (const std::string &id = "correspondences", int viewport = 0)
@@ -730,6 +762,15 @@ namespace pcl
          setShapeRenderingProperties (int property, double val1, double val2, double val3,
                                       const std::string &id, int viewport = 0);
 
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+        /** \brief Returns true when the user tried to close the window */
+        bool 
+        wasStopped () const { if (interactor_ != NULL) return (interactor_->stopped); else return true; }
+
+        /** \brief Set the stopped flag back to false */
+        void 
+        resetStoppedFlag () { if (interactor_ != NULL) interactor_->stopped = false; }
+#else
         /** \brief Returns true when the user tried to close the window */
         bool 
         wasStopped () const { if (interactor_ != NULL) return (stopped_); else return (true); }
@@ -737,7 +778,7 @@ namespace pcl
         /** \brief Set the stopped flag back to false */
         void 
         resetStoppedFlag () { if (interactor_ != NULL) stopped_ = false; }
-
+#endif
         /** \brief Create a new viewport from [xmin,ymin] -> [xmax,ymax].
           * \param xmin the minimum X coordinate for the viewport (0.0 <= 1.0)
           * \param ymin the minimum Y coordinate for the viewport (0.0 <= 1.0)
@@ -1035,7 +1076,6 @@ namespace pcl
                  const std::string &id = "cube", 
                  int viewport = 0);
 
-        
         /** \brief Changes the visual representation for all actors to surface representation. */
         void
         setRepresentationToSurfaceForAllActors ();
@@ -1053,18 +1093,22 @@ namespace pcl
           * in order to simulate partial views of model. The viewpoint locations are the vertices of a tesselated sphere
           * build from an icosaheadron. The tesselation paremeter controls how many times the triangles of the original
           * icosahedron are divided to approximate the sphere and thus the number of partial view generated for a model,
-          * with a tesselation_level of 0, 12 views are generated.
+          * with a tesselation_level of 0, 12 views are generated if use_vertices=true and 20 views if use_vertices=false
           * \param xres and yres are the size of the window used to render the partial view of the object
           * \param cloud is a vector of pointcloud with XYZ information that represent the model as seen from the respective viewpoints.
           * \param poses represent the transformation from object coordinates to camera coordinates for the respective viewpoint.
           * \param enthropies are values between 0 and 1 representing which percentage of the model is seen from the respective viewpoint.
           * \param tesselation_level represents the number of subdivisions applied to the triangles of original icosahedron.
           * \param view_angle field of view of the virtual camera
+          * \param use_vertices if true, use the vertices of tesselated icosahedron (12,42,...) or if false, use the faces of tesselated
+          * icosahedron (20,80,...)
           */
         void
-        renderViewTesselatedSphere (int xres, int yres,
-        std::vector<pcl::PointCloud<pcl::PointXYZ>,Eigen::aligned_allocator< pcl::PointCloud<pcl::PointXYZ> > > & cloud,
-        std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level, float view_angle=45);
+        renderViewTesselatedSphere (
+            int xres, int yres,
+            std::vector<pcl::PointCloud<pcl::PointXYZ>,Eigen::aligned_allocator< pcl::PointCloud<pcl::PointXYZ> > > & cloud,
+            std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level,
+            float view_angle = 45, float radius_sphere = 1, bool use_vertices = true);
 
         /** \brief Camera view, window position and size. */
         Camera camera_;
@@ -1098,6 +1142,18 @@ namespace pcl
         void
         resetCameraViewpoint (const std::string &id = "cloud");
 
+        /** \brief Set the camera location and viewup according to the given arguments
+          * \param posX the x co-ordinate of the camera location
+          * \param posY the y co-ordinate of the camera location
+          * \param posZ the z co-ordinate of the camera location
+          * \param viewX the x component of the normal direction of the camera
+          * \param viewY the y component of the normal direction of the camera
+          * \param viewZ the z component of the normal direction of the camera
+          */
+        void
+        setCameraPosition (double posX,double posY, double posZ,
+                           double viewX, double viewY, double viewZ);
+
         /** \brief Get the current camera parameters. */
         void
         getCameras (std::vector<Camera>& cameras);
@@ -1125,8 +1181,11 @@ namespace pcl
 
       protected:
         /** \brief The render window interactor. */
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
+#else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-
+#endif
       private:
         struct ExitMainLoopTimerCallback : public vtkCommand
         {
@@ -1143,7 +1202,11 @@ namespace pcl
             if (timer_id != right_timer_id)
               return;
             // Stop vtk loop and send notification to app to wake it up
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+            pcl_visualizer->interactor_->stopLoop ();
+#else
             pcl_visualizer->interactor_->TerminateApp ();
+#endif
           }
           int right_timer_id;
           PCLVisualizer* pcl_visualizer;
@@ -1158,19 +1221,26 @@ namespace pcl
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+            pcl_visualizer->interactor_->stopped = true;
+            // This tends to close the window...
+            pcl_visualizer->interactor_->stopLoop ();
+#else
             pcl_visualizer->stopped_ = true;
             // This tends to close the window...
             pcl_visualizer->interactor_->TerminateApp ();
+#endif
           }
           PCLVisualizer* pcl_visualizer;
         };
-        
+
+#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         /** \brief Set to false if the interaction loop is running. */
         bool stopped_;
 
         /** \brief Global timer ID. Used in destructor only. */
         int timer_id_;
-
+#endif
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;
@@ -1330,11 +1400,21 @@ namespace pcl
                               const std::string &id, 
                               int viewport);
 
-        /** \brief Allocate a new polydata smartpointer. Internal */
+        /** \brief Allocate a new polydata smartpointer. Internal 
+          * \param[out] polydata the resultant poly data
+          */
+        void
+        allocVtkPolyData (vtkSmartPointer<vtkAppendPolyData> &polydata);
+
+        /** \brief Allocate a new polydata smartpointer. Internal 
+          * \param[out] polydata the resultant poly data
+          */
         void
         allocVtkPolyData (vtkSmartPointer<vtkPolyData> &polydata);
 
-        /** \brief Allocate a new unstructured grid smartpointer. Internal */
+        /** \brief Allocate a new unstructured grid smartpointer. Internal 
+          * \param[out] polydata the resultant poly data
+          */
         void
         allocVtkUnstructuredGrid (vtkSmartPointer<vtkUnstructuredGrid> &polydata);
     };

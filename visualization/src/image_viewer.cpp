@@ -35,6 +35,7 @@
  */
 
 #include <pcl/visualization/image_viewer.h>
+#include <pcl/visualization/common/float_image_utils.h>
 #include <vtkImageImport.h>
 #include <vtkImageViewer.h>
 #include <vtkRenderWindowInteractor.h>
@@ -45,16 +46,18 @@
 #include <vtkObject.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
+#include <vtkImageCanvasSource2D.h>
+#include <vtkImageBlend.h>
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/mouse_event.h>
 #include <pcl/common/time.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
-  : image_viewer_ (vtkImageViewer::New ()),
+  : interactor_ (vtkSmartPointer<vtkRenderWindowInteractor>::New ()),
     mouse_command_ (vtkCallbackCommand::New ()), 
     keyboard_command_ (vtkCallbackCommand::New ()),
-    interactor_ (vtkSmartPointer<vtkRenderWindowInteractor>::New ()),
+    image_viewer_ (vtkImageViewer::New ()),
     data_size_ (0)
 {
   // Set the mouse/keyboard callbacks
@@ -142,6 +145,64 @@ pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<pcl::PointX
   for (size_t i = 0; i < cloud.points.size (); ++i)
     memcpy (&data_[i * 3], (char*)&cloud.points[i].rgb, sizeof (char) * 3);
   return (showRGBImage (data_.get (), cloud.width, cloud.height));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::showFloatImage (const float* float_image, unsigned int width, unsigned int height,
+                                                float min_value, float max_value, bool grayscale)
+{
+  unsigned char* rgb_image = FloatImageUtils::getVisualImage (float_image, width, height,
+                                                              min_value, max_value, grayscale);
+  showRGBImage (rgb_image, width, height);
+  delete[] rgb_image;  
+ }
+ 
+void 
+pcl::visualization::ImageViewer::showAngleImage (const float* angle_image, unsigned int width, unsigned int height)
+{
+  unsigned char* rgb_image = FloatImageUtils::getVisualAngleImage (angle_image, width, height);
+  showRGBImage (rgb_image, width, height);
+  delete[] rgb_image;
+}
+
+void 
+pcl::visualization::ImageViewer::showHalfAngleImage (const float* angle_image, unsigned int width, unsigned int height)
+{
+  unsigned char* rgb_image = FloatImageUtils::getVisualHalfAngleImage (angle_image, width, height);
+  showRGBImage (rgb_image, width, height);
+  delete[] rgb_image;
+}
+
+void 
+pcl::visualization::ImageViewer::showShortImage (const unsigned short* short_image, unsigned int width, unsigned int height, 
+                                                unsigned short min_value, unsigned short max_value, bool grayscale)
+{
+  unsigned char* rgb_image = FloatImageUtils::getVisualImage (short_image, width, height,
+                                                              min_value, max_value, grayscale);
+  showRGBImage (rgb_image, width, height);
+  delete[] rgb_image;
+}
+
+void
+pcl::visualization::ImageViewer::markPoint(size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color, float radius)
+{
+  vtkSmartPointer<vtkImageCanvasSource2D> drawing = 
+    vtkSmartPointer<vtkImageCanvasSource2D>::New ();
+  drawing->SetNumberOfScalarComponents (3);
+  drawing->SetScalarTypeToUnsignedChar ();
+  vtkImageData* image_data = image_viewer_->GetInput ();
+  drawing->SetExtent (image_data->GetExtent ());
+  drawing->SetDrawColor (fg_color[0], fg_color[1], fg_color[2]);
+  drawing->DrawPoint (u, v);
+  drawing->SetDrawColor (bg_color[0], bg_color[1], bg_color[2]);
+  drawing->DrawCircle (u, v, radius);
+  vtkSmartPointer<vtkImageBlend> blend = vtkSmartPointer<vtkImageBlend>::New();
+  blend->AddInput (image_data);
+  blend->AddInput (drawing->GetOutput ());
+  blend->SetOpacity (0, 0.6);
+  blend->SetOpacity (1, 0.4);
+  image_viewer_->SetInput (blend->GetOutput ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

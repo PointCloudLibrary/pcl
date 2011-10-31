@@ -43,7 +43,7 @@
 // PCL includes
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <pcl/io/io.h>
+#include <pcl/common/io.h>
 // VTK includes
 #include <vtkSmartPointer.h>
 #include <vtkDataArray.h>

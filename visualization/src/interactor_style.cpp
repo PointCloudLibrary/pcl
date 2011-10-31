@@ -131,7 +131,49 @@ pcl::visualization::PCLVisualizerInteractorStyle::zoomOut ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
 {
-  Superclass::OnChar ();
+  // Make sure we ignore the same events we handle in OnKeyDown to avoid calling things twice
+  FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
+  if (Interactor->GetKeyCode () >= '0' && Interactor->GetKeyCode () <= '9')
+    return;
+  std::string key (Interactor->GetKeySym ());
+  if (key.find ("XF86ZoomIn") != std::string::npos)
+    zoomIn ();
+  else if (key.find ("XF86ZoomOut") != std::string::npos)
+    zoomOut ();
+
+  bool alt = Interactor->GetAltKey ();
+  switch (Interactor->GetKeyCode ())
+  {
+    // All of the options below simply exit
+    case 'h': case 'H':
+    case 'l': case 'L':
+    case 'p': case 'P':
+    case 'j': case 'J':
+    case 'c': case 'C':
+    case 43:        // KEY_PLUS
+    case 45:        // KEY_MINUS
+    case 'f': case 'F':
+    case 'g': case 'G':
+    case 'o': case 'O':
+    case 'u': case 'U':
+    case 'q': case 'Q':
+    {
+      break;
+    }
+    // S and R have a special !ALT case
+    case 'r': case 'R':
+    case 's': case 'S':
+    {
+      if (!alt)
+        Superclass::OnChar ();
+      break;
+    }
+    default:
+    {
+      Superclass::OnChar ();
+      break;
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -393,7 +435,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       int *win_size = Interactor->GetRenderWindow ()->GetSize ();
       ofs_cam << clip[0]  << "," << clip[1]  << "/" << focal[0] << "," << focal[1] << "," << focal[2] << "/" <<
                  pos[0]   << "," << pos[1]   << "," << pos[2]   << "/" << view[0]  << "," << view[1]  << "," << view[2] << "/" << 
-                 win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
+                 cam->GetViewAngle () / 180.0 * M_PI  << "/" << win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
               << endl;
       ofs_cam.close ();
 
@@ -413,7 +455,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       int *win_size = Interactor->GetRenderWindow ()->GetSize ();
       std::cerr << clip[0]  << "," << clip[1]  << "/" << focal[0] << "," << focal[1] << "," << focal[2] << "/" <<
                    pos[0]   << "," << pos[1]   << "," << pos[2]   << "/" << view[0]  << "," << view[1]  << "," << view[2] << "/" <<
-                   win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
+                   cam->GetViewAngle () / 180.0 * M_PI  << "/" << win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
                 << endl;
       break;
     }
@@ -636,7 +678,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
   rens_->Render ();
   Interactor->Render ();
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -652,8 +693,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyUp ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnMouseMove ()
 {
-  int x,y;
-  Interactor->GetMousePosition (&x, &y);  
+  int x = this->Interactor->GetEventPosition()[0];
+  int y = this->Interactor->GetEventPosition()[1];
   MouseEvent event (MouseEvent::MouseMove, MouseEvent::NoButton, x, y, Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
   mouse_signal_ (event);
   Superclass::OnMouseMove ();
@@ -663,8 +704,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMouseMove ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnLeftButtonDown ()
 {
-  int x,y;
-  Interactor->GetMousePosition (&x, &y);  
+
+  int x = this->Interactor->GetEventPosition()[0];
+  int y = this->Interactor->GetEventPosition()[1];
+
   if (Interactor->GetRepeatCount () == 0)
   {
     MouseEvent event (MouseEvent::MouseButtonPress, MouseEvent::LeftButton, x, y, Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
@@ -682,8 +725,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnLeftButtonDown ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnLeftButtonUp ()
 {
-  int x,y;
-  Interactor->GetMousePosition (&x, &y);  
+  int x = this->Interactor->GetEventPosition()[0];
+  int y = this->Interactor->GetEventPosition()[1];
   MouseEvent event (MouseEvent::MouseButtonRelease, MouseEvent::LeftButton, x, y, Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
   mouse_signal_ (event);
   Superclass::OnLeftButtonUp ();
@@ -693,8 +736,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnLeftButtonUp ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnMiddleButtonDown ()
 {
-  int x,y;
-  Interactor->GetMousePosition (&x, &y);  
+  int x = this->Interactor->GetEventPosition()[0];
+  int y = this->Interactor->GetEventPosition()[1];
   if (Interactor->GetRepeatCount () == 0)
   {
     MouseEvent event (MouseEvent::MouseButtonPress, MouseEvent::MiddleButton, x, y, Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
@@ -712,8 +755,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMiddleButtonDown ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnMiddleButtonUp ()
 {
-  int x,y;
-  Interactor->GetMousePosition (&x, &y);
+  int x = this->Interactor->GetEventPosition()[0];
+  int y = this->Interactor->GetEventPosition()[1];
   MouseEvent event (MouseEvent::MouseButtonRelease, MouseEvent::MiddleButton, x, y, Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
   mouse_signal_ (event);
   Superclass::OnMiddleButtonUp ();
@@ -723,8 +766,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMiddleButtonUp ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnRightButtonDown ()
 {
-  int x,y;
-  Interactor->GetMousePosition (&x, &y);
+  int x = this->Interactor->GetEventPosition()[0];
+  int y = this->Interactor->GetEventPosition()[1];
   if (Interactor->GetRepeatCount () == 0)
   {
     MouseEvent event (MouseEvent::MouseButtonPress, MouseEvent::RightButton, x, y, Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
@@ -742,8 +785,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnRightButtonDown ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnRightButtonUp ()
 {
-  int x,y;
-  Interactor->GetMousePosition (&x, &y);
+  int x = this->Interactor->GetEventPosition()[0];
+  int y = this->Interactor->GetEventPosition()[1];
   MouseEvent event (MouseEvent::MouseButtonRelease, MouseEvent::RightButton, x, y, Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
   mouse_signal_ (event);
   Superclass::OnRightButtonUp ();
@@ -753,8 +796,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnRightButtonUp ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnMouseWheelForward ()
 {
-  int x,y;
-  Interactor->GetMousePosition (&x, &y);
+  int x = this->Interactor->GetEventPosition()[0];
+  int y = this->Interactor->GetEventPosition()[1];
   MouseEvent event (MouseEvent::MouseScrollUp, MouseEvent::VScroll, x, y, Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
   mouse_signal_ (event);
   if (Interactor->GetRepeatCount ())
@@ -766,8 +809,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMouseWheelForward ()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnMouseWheelBackward ()
 {
-  int x,y;
-  Interactor->GetMousePosition (&x, &y);
+  int x = this->Interactor->GetEventPosition()[0];
+  int y = this->Interactor->GetEventPosition()[1];
   MouseEvent event (MouseEvent::MouseScrollDown, MouseEvent::VScroll, x, y, Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
   mouse_signal_ (event);
   if (Interactor->GetRepeatCount ())
