@@ -19,9 +19,20 @@ if(WIN32)
   set(CMAKE_DEBUG_POSTFIX "-gd")
 endif()
 
+# ---[ Android check
+if (ANDROID_NDK)
+  set (PCL_SHARED_LIBS OFF)
+  message ("PCL shared libs on Android must be: ${PCL_SHARED_LIBS}")
+endif()
+
+include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
+
 # ---[ Unix/Darwin/Windows specific flags
 if(UNIX OR APPLE)
   add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing -pthread")
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    add_definitions("-Wno-unknown-pragmas")
+  endif(CMAKE_COMPILER_IS_GNUCXX)
 else(UNIX OR APPLE)
   if(MSVC)
     add_definitions ("-W0 -DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS /bigobj -DNOMINMAX")
@@ -43,6 +54,8 @@ endif()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   add_definitions("-std=gnu++0x")
 endif()
+# For QHULL 2011
+add_definitions("-Dqh_QHpointer")
 
 # ---[ Project folders
 option(USE_PROJECT_FOLDERS "Use folders to organize PCL projects in an IDE." OFF)
@@ -51,7 +64,6 @@ if(USE_PROJECT_FOLDERS)
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif(USE_PROJECT_FOLDERS)
 
-include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
 include(${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake)
 set(PCL_VERSION 1.3.0 CACHE STRING "PCL version")
 DISSECT_VERSION()
@@ -107,9 +119,6 @@ add_definitions(-DEIGEN_USE_NEW_STDVECTOR
 # FLANN (required)
 find_package(Flann REQUIRED)
 include_directories(${FLANN_INCLUDE_DIRS})
-# CMinpack
-find_package(CMinpack REQUIRED)
-include_directories(${CMINPACK_INCLUDE_DIRS})
 # OpenMP
 include(${PCL_SOURCE_DIR}/cmake/pcl_openmp.cmake)
 # OpenNI
@@ -121,15 +130,10 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
 # Find VTK 
 find_package(VTK)
 if(VTK_FOUND)
-	set(VTK_FOUND TRUE)
+  set(VTK_FOUND TRUE)
   message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
   link_directories(${VTK_LIBRARY_DIRS})
   set(HAVE_VTK ON)
-endif()
-# Find wxWidgets
-find_package(wxWidgets)
-if(wxWidgets_FOUND)
-  set(HAVE_WXWIDGETS ON)
 endif()
 
 ### ---[ Create the config.h file
@@ -142,14 +146,18 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 ### ---[ Set up for tests
 include(${PCL_SOURCE_DIR}/cmake/pcl_tests.cmake)
 
-### ---[ Add the library subdirectories
+### ---[ Python
+include(${PCL_SOURCE_DIR}/cmake/pcl_find_python.cmake)
+
+### ---[ Add the libraries subdirectories
 include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
-#collect_subproject_directory_names(${PCL_SOURCE_DIR} "CMakeLists.txt" PCL_MODULES_DIRS test tools doc apps cuda python)
-collect_subproject_directory_names(${PCL_SOURCE_DIR} "CMakeLists.txt" PCL_MODULES_DIRS doc)
-set(PCL_MODULES_DIRS ${PCL_MODULES_DIRS})
-topological_sort(PCL_MODULES_DIRS PCL_ _DEPENDS)
+
+collect_subproject_directory_names(${PCL_SOURCE_DIR} "CMakeLists.txt" PCL_MODULES_NAMES PCL_MODULES_DIRS doc)
+set(PCL_MODULES_NAMES_UNSORTED ${PCL_MODULES_NAMES})
+topological_sort(PCL_MODULES_NAMES PCL_ _DEPENDS)
+sort_relative(PCL_MODULES_NAMES_UNSORTED PCL_MODULES_NAMES PCL_MODULES_DIRS)
 foreach(subdir ${PCL_MODULES_DIRS})
- 	add_subdirectory(${subdir})
+  add_subdirectory(${PCL_SOURCE_DIR}/${subdir})
 endforeach(subdir)
 
 ### ---[ Documentation
