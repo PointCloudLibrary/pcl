@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: test_filters.cpp -1   $
+ * $Id: test_filters.cpp 3030 2011-11-01 04:19:07Z jrosen $
  *
  */
 /** \author Radu Bogdan Rusu */
@@ -47,6 +47,7 @@
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/conditional_removal.h>
+#include <pcl/filters/random_sample.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -865,6 +866,67 @@ TEST (RadiusOutlierRemoval, Filters)
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].x, -0.077893, 1e-4);
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].y, 0.16039, 1e-4);
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].z, -0.021299, 1e-4);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (RandomSample, Filters)
+{
+  // Test the PointCloud<PointT> method
+  // Randomly sample 10 points from cloud
+  RandomSample<PointXYZ> sample;
+  sample.setInputCloud (cloud);
+  sample.setSample (10);
+
+  // Indices
+  vector<int> indices;
+  sample.filter (indices);
+
+  EXPECT_EQ((int)indices.size (), 10);
+
+  // Cloud
+  PointCloud<PointXYZ> cloud_out;
+  sample.filter(cloud_out);
+
+  EXPECT_EQ ((int)cloud_out.width, 10);
+  EXPECT_EQ ((int)indices.size (), (int)cloud_out.size ());
+
+  for (size_t i = 0; i < indices.size (); ++i)
+  {
+    // Compare original points with sampled indices against sampled points
+    EXPECT_NEAR (cloud->points[indices[i]].x, cloud_out.points[i].x, 1e-4);
+    EXPECT_NEAR (cloud->points[indices[i]].y, cloud_out.points[i].y, 1e-4);
+    EXPECT_NEAR (cloud->points[indices[i]].z, cloud_out.points[i].z, 1e-4);
+  }
+
+
+  // Test the sensor_msgs::PointCloud2 method
+  // Randomly sample 10 points from cloud
+  RandomSample<PointCloud2> sample2;
+  sample2.setInputCloud (cloud_blob);
+  sample2.setSample (10);
+
+  // Indices
+  vector<int> indices2;
+  sample2.filter (indices2);
+
+  EXPECT_EQ ((int)indices2.size (), 10);
+
+  // Cloud
+  PointCloud2 output_blob;
+  sample2.filter (output_blob);
+
+  fromROSMsg (output_blob, cloud_out);
+
+  EXPECT_EQ ((int)cloud_out.width, 10);
+  EXPECT_EQ ((int)indices2.size (), (int)cloud_out.size ());
+
+  for (size_t i = 0; i < indices2.size (); ++i)
+  {
+    // Compare original points with sampled indices against sampled points
+    EXPECT_NEAR (cloud->points[indices2[i]].x, cloud_out.points[i].x, 1e-4);
+    EXPECT_NEAR (cloud->points[indices2[i]].y, cloud_out.points[i].y, 1e-4);
+    EXPECT_NEAR (cloud->points[indices2[i]].z, cloud_out.points[i].z, 1e-4);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

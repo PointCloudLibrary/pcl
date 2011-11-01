@@ -1,7 +1,7 @@
 set(SUBSYS_NAME global_tests)
 set(SUBSYS_DESC "Point cloud library global tests")
 set(SUBSYS_DEPS common sample_consensus io kdtree features range_image filters
-    keypoints surface registration segmentation octree)
+    keypoints search surface registration segmentation octree)
 
 find_package(GTest)
 if(GTEST_FOUND)
@@ -19,6 +19,7 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 if(build)
     enable_testing()
     include_directories(${GTEST_INCLUDE_DIRS})
+    include_directories(${PCL_INCLUDE_DIRS})
 
     if(QHULL_FOUND)
       PCL_ADD_TEST(a_surface_test test_surface
@@ -54,6 +55,11 @@ if(build)
 
     PCL_ADD_TEST(a_registration_test test_registration
                  FILES test_registration.cpp
+                 LINK_WITH pcl_io pcl_registration pcl_features pcl_search pcl_kdtree
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd)
+
+    PCL_ADD_TEST(registration_api test_registration_api
+                 FILES test_registration_api.cpp test_registration_api_data.h
                  LINK_WITH pcl_io pcl_registration pcl_features
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd)
 
@@ -66,5 +72,18 @@ if(build)
                  FILES test_ii_normals.cpp
                  LINK_WITH pcl_io pcl_features
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd)
+                 
+               #Needs office1.pcd
+               #PCL_ADD_TEST(organized_index test_organized_index 
+               #  FILES test_organized_index.cpp
+               #  LINK_WITH pcl_search pcl_io pcl_filters)
 
+               #PCL_ADD_TEST(auto_tuned_search auto_tuned_search
+               # FILES test_auto_search.cpp
+               # LINK_WITH pcl_search pcl_io pcl_filters)
+
+    
+#    PCL_ADD_EXECUTABLE (evaluate_feature ${SUBSYS_NAME} evaluate_feature.cpp)
+#    target_link_libraries (evaluate_feature pcl_io pcl_features pcl_kdtree pcl_filters)
+    
 endif(build)

@@ -41,7 +41,6 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/mls.h>
 #include <pcl/surface/gp3.h>
@@ -49,16 +48,26 @@
 #include <pcl/surface/convex_hull.h>
 #include <pcl/surface/concave_hull.h>
 #include <pcl/surface/organized_fast_mesh.h>
+#include <pcl/surface/ear_clipping.h>
 #include <pcl/common/common.h>
 
+#include <pcl/io/obj_io.h>
+#include <pcl/TextureMesh.h>
+#include <pcl/surface/texture_mapping.h>
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
-KdTree<PointXYZ>::Ptr tree;
-KdTree<PointNormal>::Ptr tree2;
+search::KdTree<PointXYZ>::Ptr tree;
+search::KdTree<PointNormal>::Ptr tree2;
+
+// add by ktran to test update functions
+PointCloud<PointXYZ>::Ptr cloud1 (new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
+search::KdTree<PointXYZ>::Ptr tree3;
+search::KdTree<PointNormal>::Ptr tree4;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, MovingLeastSquares)
@@ -133,6 +142,149 @@ TEST (PCL, GreedyProjectionTriangulation)
   EXPECT_EQ (states[0], gp3.COMPLETED);
   EXPECT_EQ (parts[393], 5);
   EXPECT_EQ (states[393], gp3.BOUNDARY);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, GreedyProjectionTriangulation_Merge2Meshes)
+{
+  // check if exist update cloud
+  if(cloud_with_normals1->width * cloud_with_normals1->height > 0){
+    // Init objects
+    PolygonMesh triangles;
+    PolygonMesh triangles1;
+    GreedyProjectionTriangulation<PointNormal> gp3;
+    GreedyProjectionTriangulation<PointNormal> gp31;
+
+    // Set parameters
+    gp3.setInputCloud (cloud_with_normals);
+    gp3.setSearchMethod (tree2);
+    gp3.setSearchRadius (0.025);
+    gp3.setMu (2.5);
+    gp3.setMaximumNearestNeighbors (100);
+    gp3.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
+    gp3.setMinimumAngle(M_PI/18); // 10 degrees
+    gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
+    gp3.setNormalConsistency(false);
+
+    // for mesh 2
+    // Set parameters
+    gp31.setInputCloud (cloud_with_normals1);
+    gp31.setSearchMethod (tree4);
+    gp31.setSearchRadius (0.025);
+    gp31.setMu (2.5);
+    gp31.setMaximumNearestNeighbors (100);
+    gp31.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
+    gp31.setMinimumAngle(M_PI/18); // 10 degrees
+    gp31.setMaximumAngle(2*M_PI/3); // 120 degrees
+    gp31.setNormalConsistency(false);
+
+
+    // Reconstruct
+    gp3.reconstruct (triangles);
+
+    saveVTKFile ("bun01.vtk", triangles);
+
+    gp31.reconstruct (triangles1);
+    saveVTKFile ("bun02.vtk", triangles1);
+
+    gp3.removeOverlapTriangles(triangles, triangles1);
+    gp31.removeOverlapTriangles(triangles1, triangles);
+
+    std::vector<int> states1 = gp31.getPointStates();
+    std::vector<int> sfn1 = gp31.getSFN();
+    std::vector<int> ffn1 = gp31.getFFN();
+
+    gp3.merge2Meshes(triangles, triangles1, states1, sfn1, ffn1);
+
+    saveVTKFile ("bun_merged.vtk", triangles);
+  }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, UpdateMesh_With_TextureMapping)
+{
+  if(cloud_with_normals1->width * cloud_with_normals1->height > 0){
+    // Init objects
+    PolygonMesh triangles;
+    PolygonMesh triangles1;
+    GreedyProjectionTriangulation<PointNormal> gp3;
+    GreedyProjectionTriangulation<PointNormal> gp31;
+
+    // Set parameters
+    gp3.setInputCloud (cloud_with_normals);
+    gp3.setSearchMethod (tree2);
+    gp3.setSearchRadius (0.025);
+    gp3.setMu (2.5);
+    gp3.setMaximumNearestNeighbors (100);
+    gp3.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
+    gp3.setMinimumAngle(M_PI/18); // 10 degrees
+    gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
+    gp3.setNormalConsistency(false);
+
+    gp3.reconstruct (triangles);
+
+    EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
+    EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
+    EXPECT_EQ ((int)triangles.polygons.size(), 685);
+
+    // update with texture mapping
+    // set 2 texture for 2 mesh
+    std::vector<std::string> tex_files;
+    tex_files.push_back("tex4.jpg");
+
+    // initialize texture mesh
+    TextureMesh tex_mesh;
+    tex_mesh.header = triangles.header;
+    tex_mesh.cloud = triangles.cloud;
+
+    // add the 1st mesh
+    tex_mesh.tex_polygons.push_back(triangles.polygons);
+
+    // update mesh and texture mesh
+    gp3.updateMesh(cloud_with_normals1, triangles, tex_mesh);
+
+    // set texture for added cloud
+    tex_files.push_back("tex8.jpg");
+
+    // save updated mesh
+    saveVTKFile ("update_bunny.vtk", triangles);
+
+    TextureMapping<PointXYZ> tm;
+
+    // set mesh scale control
+    tm.setF(0.01);
+
+    // set vector field
+    tm.setVectorField(1, 0, 0);
+
+    TexMaterial tex_material;
+
+    // default texture materials parameters
+    tex_material.tex_Ka.r = 0.2f;
+    tex_material.tex_Ka.g = 0.2f;
+    tex_material.tex_Ka.b = 0.2f;
+
+    tex_material.tex_Kd.r = 0.8f;
+    tex_material.tex_Kd.g = 0.8f;
+    tex_material.tex_Kd.b = 0.8f;
+
+    tex_material.tex_Ks.r = 1.0f;
+    tex_material.tex_Ks.g = 1.0f;
+    tex_material.tex_Ks.b = 1.0f;
+    tex_material.tex_d = 1.0f;
+    tex_material.tex_Ns = 0.0f;
+    tex_material.tex_illum = 2;
+
+    // set texture material paramaters
+    tm.setTextureMaterials(tex_material);
+
+    // set texture files
+    tm.setTextureFiles(tex_files);
+
+    // mapping
+    tm.mapTexture2Mesh(tex_mesh);
+
+    saveOBJFile ("update_bunny.obj", tex_mesh);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -421,6 +573,50 @@ TEST (PCL, ConcaveHull_LTable)
   EXPECT_EQ (alpha_shape2.points.size (), 19);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, EarClipping)
+{
+  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>());
+  cloud->height = 1;
+  cloud->points.push_back (PointXYZ ( 0, 0, 0.5));
+  cloud->points.push_back (PointXYZ ( 5, 0, 0.6));
+  cloud->points.push_back (PointXYZ ( 9, 4, 0.5));
+  cloud->points.push_back (PointXYZ ( 4, 7, 0.5));
+  cloud->points.push_back (PointXYZ ( 2, 5, 0.5));
+  cloud->points.push_back (PointXYZ (-1, 8, 0.5));
+  cloud->width = cloud->points.size();
+
+  Vertices vertices;
+  vertices.vertices.resize (cloud->points.size ());
+  for (int i = 0; i < (int) vertices.vertices.size (); ++i)
+    vertices.vertices[i] = i;
+
+  PolygonMesh::Ptr mesh (new PolygonMesh);
+  toROSMsg (*cloud, mesh->cloud);
+  mesh->polygons.push_back (vertices);
+
+  EarClipping clipper;
+  clipper.setInputPolygonMesh (mesh);
+
+  PolygonMesh triangulated_mesh;
+  clipper.triangulate (triangulated_mesh);
+
+  EXPECT_EQ (triangulated_mesh.polygons.size (), 4);
+  for (int i = 0; i < (int)triangulated_mesh.polygons.size (); ++i)
+    EXPECT_EQ (triangulated_mesh.polygons[i].vertices.size (), 3);
+
+  const int truth[][3] = { {5, 0, 1},
+                           {2, 3, 4},
+                           {4, 5, 1},
+                           {1, 2, 4} };
+
+  for (int pi = 0; pi < (int) triangulated_mesh.polygons.size (); ++pi)
+  for (int vi = 0; vi < 3; ++vi)
+  {
+    EXPECT_EQ (triangulated_mesh.polygons[pi].vertices[vi], truth[pi][vi]);
+  }
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
@@ -437,7 +633,7 @@ main (int argc, char** argv)
   fromROSMsg (cloud_blob, *cloud);
 
   // Create search tree
-  tree.reset (new KdTreeFLANN<PointXYZ> (false));
+  tree.reset (new search::KdTree<PointXYZ> (false));
   tree->setInputCloud (cloud);
 
   // Normal estimation
@@ -453,8 +649,33 @@ main (int argc, char** argv)
   pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
       
   // Create search tree
-  tree2.reset (new KdTreeFLANN<PointNormal>);
+  tree2.reset (new search::KdTree<PointNormal>);
   tree2->setInputCloud (cloud_with_normals);
+
+  // Process for update cloud
+  if(argc == 3){
+    sensor_msgs::PointCloud2 cloud_blob1;
+    loadPCDFile (argv[2], cloud_blob1);
+    fromROSMsg (cloud_blob1, *cloud1);
+        // Create search tree
+    tree3.reset (new search::KdTree<PointXYZ> (false));
+    tree3->setInputCloud (cloud1);
+
+    // Normal estimation
+    NormalEstimation<PointXYZ, Normal> n1;
+    PointCloud<Normal>::Ptr normals1 (new PointCloud<Normal> ());
+    n1.setInputCloud (cloud1);
+
+    n1.setSearchMethod (tree3);
+    n1.setKSearch (20);
+    n1.compute (*normals1);
+
+    // Concatenate XYZ and normal information
+    pcl::concatenateFields (*cloud1, *normals1, *cloud_with_normals1);
+    // Create search tree
+    tree4.reset (new search::KdTree<PointNormal>);
+    tree4->setInputCloud (cloud_with_normals1);
+  }
 
   // Testing
   testing::InitGoogleTest (&argc, argv);

@@ -40,7 +40,6 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/approximate_voxel_grid.h>
-#include <pcl/kdtree/kdtree_flann.h>
 
 #include <pcl/keypoints/sift_keypoint.h>
 
@@ -71,7 +70,7 @@ TEST (PCL, SIFTKeypoint)
 
   // Compute the SIFT keypoints
   SIFTKeypoint<PointXYZI, KeypointT> sift_detector;
-  KdTreeFLANN<PointXYZI>::Ptr tree (new KdTreeFLANN<PointXYZI>);
+	search::KdTree<PointXYZI>::Ptr tree (new search::KdTree<PointXYZI>);
   sift_detector.setSearchMethod (tree);
   sift_detector.setScales (0.02, 5, 3);
   sift_detector.setMinimumContrast (0.03);
