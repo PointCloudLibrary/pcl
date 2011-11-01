@@ -61,10 +61,10 @@ namespace pcl
       trans (2, 2) = 1; // Rotation around the Z-axis
 
       // Copy the rotation and translation components
-      trans.block <4, 1> (0, 3) = Eigen::Vector4f (p[0], p[1], 0, 0);
+      trans.block <4, 1> (0, 3) = Eigen::Vector4f (p[0], p[1], 0, 1.0);
 
       // Compute w from the unit quaternion
-      Eigen::Rotation2D<float> r (p[3]);
+      Eigen::Rotation2D<float> r (p[2]);
       trans.topLeftCorner<2, 2> () = r.toRotationMatrix ();
     }
   };

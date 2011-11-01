@@ -41,8 +41,8 @@
 
 #include "pcl/registration/warp_point_rigid.h"
 #include "pcl/registration/warp_point_rigid_6d.h"
-#include <cminpack.h>
-
+#include "pcl/registration/distances.h"
+#include <unsupported/Eigen/NonLinearOptimization>
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
 pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimateRigidTransformation (
@@ -50,6 +50,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     Eigen::Matrix4f &transformation_matrix)
 {
+
   // <cloud_src,cloud_src> is the source dataset
   if (cloud_src.points.size () != cloud_tgt.points.size ())
   {
@@ -72,53 +73,33 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
 
   int n_unknowns = warp_point_->getDimension ();
   int m = cloud_src.points.size ();
-  double *fvec = new double[m];
-  int *iwa = new int[n_unknowns];
-  int lwa = m * n_unknowns + 5 * n_unknowns + m;
-  double *wa = new double[lwa];
-
-  // Set the initial solution
-  double *x = new double[n_unknowns];
-  for (int i=0; i<n_unknowns; i++)
-    x[i] = 0.0;
-
+  Eigen::VectorXd x(n_unknowns);
+  x.setZero ();
+  
   // Set temporary pointers
   tmp_src_ = &cloud_src;
   tmp_tgt_ = &cloud_tgt;
 
-  // Set tol to the square root of the machine. Unless high solutions are required, these are the recommended settings.
-  double tol = sqrt (dpmpar (1));
-
-  // Optimize using forward-difference approximation LM
-  //int info = lmdif1 (&pcl::IterativeClosestPointNonLinear<PointSource, PointTarget>::functionToOptimize, 
-  //                   this, m, n_unknowns, x, fvec, tol, iwa, wa, lwa);
-  int info = lmdif1 (&pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::functionToOptimize, 
-                     this, m, n_unknowns, x, fvec, tol, iwa, wa, lwa);
+  OptimizationFunctor functor (n_unknowns, m, this);
+  Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor> > lm (num_diff);
+  int info = lm.minimize (x);
 
   // Compute the norm of the residuals
   PCL_DEBUG ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation]");
-  PCL_DEBUG ("LM solver finished with exit code %i, having a residual norm of %g. \n", info, enorm (m, fvec));
-  if(n_unknowns == 7)
-    PCL_DEBUG ("Final solution: [%f %f %f %f] [%f %f %f]\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
-  else
-    PCL_DEBUG ("Final solution: [%f %f %f] [%f %f %f]\n", x[0], x[1], x[2], x[3], x[4], x[5]);
+  PCL_DEBUG ("LM solver finished with exit code %i, having a residual norm of %g. \n", info, lm.fvec.norm ());
+  PCL_DEBUG ("Final solution: [%f", x[0]);
+  for (int i = 1; i < n_unknowns; ++i) 
+    PCL_DEBUG (" %f", x[i]);
+  PCL_DEBUG ("]\n");
 
   // Return the correct transformation
-  transformation_matrix.setZero ();
+  Eigen::VectorXf params = x.cast<float> ();
+  warp_point_->setParam (params);
+  transformation_matrix = warp_point_->getTransform ();
 
-  Eigen::Quaternionf q (0, x[3], x[4], x[5]);
-  q.w () = sqrt (1 - q.dot (q));   // Compute w from the unit quaternion
-  transformation_matrix.topLeftCorner<3, 3> () = q.toRotationMatrix ();
-
-  Eigen::Vector4f t (x[0], x[1], x[2], 1.0);
-  transformation_matrix.block <4, 1> (0, 3) = t;
-
-  tmp_src_ = tmp_tgt_ = NULL;
-
-  delete [] fvec;
-  delete[] iwa;
-  delete [] wa;
-  delete[] x;
+  tmp_src_ = NULL;
+  tmp_tgt_ = NULL;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -137,8 +118,15 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
 
   // <cloud_src,cloud_src> is the source dataset
   transformation_matrix.setIdentity ();
-}
 
+  const int nr_correspondences = (int)cloud_tgt.points.size ();
+  std::vector<int> indices_tgt;
+  indices_tgt.resize(nr_correspondences);
+  for (int i = 0; i < nr_correspondences; ++i)
+    indices_tgt[i] = i;
+
+  estimateRigidTransformation(cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline void
@@ -169,15 +157,8 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
 
   int n_unknowns = warp_point_->getDimension ();  // get dimension of unknown space
   int m = indices_src.size ();
-  double *fvec = new double[m];
-  int *iwa = new int[n_unknowns];
-  int lwa = m * n_unknowns + 5 * n_unknowns + m;
-  double *wa = new double[lwa];
-
-  // Set the initial solution
-  double *x = new double[n_unknowns];
-  for (int i=0; i<n_unknowns; i++)
-    x[i] = 0.0;
+  Eigen::VectorXd x(n_unknowns);
+  x.setConstant (n_unknowns, 0);
 
   // Set temporary pointers
   tmp_src_ = &cloud_src;
@@ -185,35 +166,27 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
   tmp_idx_src_ = &indices_src;
   tmp_idx_tgt_ = &indices_tgt;
 
-  // Set tol to the square root of the machine. Unless high solutions are required, these are the recommended settings.
-  double tol = sqrt (dpmpar (1));
-
-  // Optimize using forward-difference approximation LM
-  int info = lmdif1 (&pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::functionToOptimizeIndices, 
-                     this, m, n_unknowns, x, fvec, tol, iwa, wa, lwa);
+  OptimizationFunctorWithIndices functor (n_unknowns, m, this);
+  Eigen::NumericalDiff<OptimizationFunctorWithIndices> num_diff (functor);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctorWithIndices> > lm (num_diff);
+  int info = lm.minimize (x);
 
   // Compute the norm of the residuals
   PCL_DEBUG ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation]");
-  PCL_DEBUG ("LM solver finished with exit code %i, having a residual norm of %g. \n", info, enorm (m, fvec));
-  PCL_DEBUG ("Final solution: [%f %f %f %f] [%f %f %f]\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
+  PCL_DEBUG ("LM solver finished with exit code %i, having a residual norm of %g. \n", info, lm.fvec.norm ());
+  PCL_DEBUG ("Final solution: [%f", x[0]);
+  for (int i = 1; i < n_unknowns; ++i) 
+    PCL_DEBUG (" %f", x[i]);
+  PCL_DEBUG ("]\n");
 
   // Return the correct transformation
-  transformation_matrix.setZero ();
+  Eigen::VectorXf params = x.cast<float> ();
+  warp_point_->setParam (params);
+  transformation_matrix = warp_point_->getTransform ();
 
-  Eigen::Quaternionf q (0, x[3], x[4], x[5]);
-  q.w () = sqrt (1 - q.dot (q));   // Compute w from the unit quaternion
-  transformation_matrix.topLeftCorner<3, 3> () = q.toRotationMatrix ();
-
-  Eigen::Vector4f t (x[0], x[1], x[2], 1.0);
-  transformation_matrix.block <4, 1> (0, 3) = t;
-
-  tmp_src_ = tmp_tgt_ = NULL;
+  tmp_src_ = NULL;
+  tmp_tgt_ = NULL;
   tmp_idx_src_ = tmp_idx_tgt_ = NULL;
-
-  delete [] fvec;
-  delete[] iwa;
-  delete [] wa;
-  delete[] x;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -221,52 +194,77 @@ template <typename PointSource, typename PointTarget> inline void
 pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    const std::vector<pcl::Correspondence> &correspondences,
+    const pcl::Correspondences &correspondences,
     Eigen::Matrix4f &transformation_matrix)
 {
-  transformation_matrix.setIdentity ();
+  const int nr_correspondences = (int)correspondences.size();
+  std::vector<int> indices_src(nr_correspondences);
+  std::vector<int> indices_tgt(nr_correspondences);
+  for (int i = 0; i < nr_correspondences; ++i)
+  {
+    indices_src[i] = correspondences[i].index_query;
+    indices_tgt[i] = correspondences[i].index_match;
+  }
+
+  estimateRigidTransformation(cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> inline int 
-pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::functionToOptimize (
-    void *p, int m, int n, const double *x, double *fvec, int iflag)
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget> int 
+pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::OptimizationFunctor::operator() (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
 {
-  TransformationEstimationLM *model = (TransformationEstimationLM*)p;
+  const PointCloud<PointSource> & src_points = *estimator_->tmp_src_;
+  const PointCloud<PointTarget> & tgt_points = *estimator_->tmp_tgt_;
 
-  // Copy the rotation and translation components
-  Eigen::Vector4f t (x[0], x[1], x[2], 1.0);
+  // Initialize the warp function with the given parameters
+  Eigen::VectorXf params = x.cast<float> ();
+  estimator_->warp_point_->setParam (params);
 
-  // Compute w from the unit quaternion
-  Eigen::Quaternionf q (0, x[3], x[4], x[5]);
-  q.w () = sqrt (1 - q.dot (q));
-
-  // If the quaternion is used to rotate several points (>1) then it is much more efficient to first convert it
-  // to a 3x3 Matrix. Comparison of the operation cost for n transformations:
-  // * Quaternion: 30n
-  // * Via a Matrix3: 24 + 15n
-  Eigen::Matrix4f transformation_matrix = Eigen::Matrix4f::Zero ();
-  transformation_matrix.topLeftCorner<3, 3> () = q.toRotationMatrix ();
-  transformation_matrix.block <4, 1> (0, 3) = t;
-
-  //double sigma = model->getMaxCorrespondenceDistance ();
-  for (int i = 0; i < m; ++i)
+  // Transform each source point and compute its distance to the corresponding target point
+  for (int i = 0; i < m_values; i++)
   {
-    // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
-    Vector4fMapConst p_src = model->tmp_src_->points[i].getVector4fMap ();
-    // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
-    Vector4fMapConst p_tgt = model->tmp_tgt_->points[i].getVector4fMap ();
+    const PointSource & p_src = src_points.points[i];
+    const PointTarget & p_tgt = tgt_points.points[i];
 
-    Eigen::Vector4f pp = transformation_matrix * p_src;
-
+    // Transform the source point based on the current warp parameters
+    PointSource p_src_warped;
+    estimator_->warp_point_->warpPoint (p_src, p_src_warped);
+    
     // Estimate the distance (cost function)
-    fvec[i] = model->distL2Sqr (p_tgt, pp);
-    //fvec[i] = model->distL1 (pp, p_tgt);
-    //fvec[i] = model->distHuber (pp, p_tgt, sigma);
+    fvec[i] = estimator_->computeDistance (p_src_warped, p_tgt);
+  }
+  return 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget> int
+pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::OptimizationFunctorWithIndices::operator() (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
+{
+  const PointCloud<PointSource> & src_points = *estimator_->tmp_src_;
+  const PointCloud<PointTarget> & tgt_points = *estimator_->tmp_tgt_;
+  const std::vector<int> & src_indices = *estimator_->tmp_idx_src_;
+  const std::vector<int> & tgt_indices = *estimator_->tmp_idx_tgt_;
+
+  // Initialize the warp function with the given parameters
+  Eigen::VectorXf params = x.cast<float> ();
+  estimator_->warp_point_->setParam (params);
+
+  // Transform each source point and compute its distance to the corresponding target point
+  for (int i = 0; i < m_values; ++i)
+  {
+    const PointSource & p_src = src_points.points[src_indices[i]];
+    const PointTarget & p_tgt = tgt_points.points[tgt_indices[i]];
+
+    // Transform the source point based on the current warp parameters
+    PointSource p_src_warped;
+    estimator_->warp_point_->warpPoint (p_src, p_src_warped);
+    
+    // Estimate the distance (cost function)
+    fvec[i] = estimator_->computeDistance (p_src_warped, p_tgt);
   }
   return (0);
 }
-
+/*
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline double 
 pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::computeMedian (double *fvec, int m)
@@ -285,52 +283,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::compute
     median = data[mid];
   return (median);
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> inline int 
-pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::functionToOptimizeIndices (
-    void *p, int m, int n, const double *x, double *fvec, int iflag)
-{
-  TransformationEstimationLM *model = (TransformationEstimationLM*)p;
-  
-  // Line below does not work because of conflicting float-double
-  //Eigen::Map<const Eigen::VectorXf> params(x, n, 1);
-  // Instead copy parameters manually
-  Eigen::VectorXf params(n);
-  for (int i=0; i<n; i++)
-    params[i] = (float)(x[i]);
-  model->warp_point_->setParam (params);
-
-  //double sigma = model->getMaxCorrespondenceDistance ();
-  for (int i = 0; i < m; ++i)
-  {
-    // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
-    PointSource p_src = model->tmp_src_->points[(*model->tmp_idx_src_)[i]];
-    // The last coordinate, p_tgt[3] is guaranteed to be set to 1.0 in registration.hpp
-    Vector4fMapConst p_tgt = model->tmp_tgt_->points[(*model->tmp_idx_tgt_)[i]].getVector4fMap ();
-
-    PointTarget pp;
-    model->warp_point_->warpPoint (p_src, pp);
-
-    // Estimate the distance (cost function)
-    fvec[i] = model->distL2Sqr (p_tgt, pp.getVector4fMap());
-    //fvec[i] = model->distL1 (pp, p_tgt);
-    //fvec[i] = model->distHuber (pp, p_tgt, sigma);
-  }
-/*  // Compute the median
-  double median = model->computeMedian (fvec, m);
-
-  double stddev = 1.4826 * median;
-
-  std::vector<double> weights (m);
-  // For all points, compute weights
-  for (int i = 0; i < m; ++i)
-  {
-    weights[i] = model->distHuber (fvec[i], stddev);
-    fvec[i] *= weights[i];
-  }*/
-  return (0);
-}
+*/
 
 //#define PCL_INSTANTIATE_TransformationEstimationLM(T,U) template class PCL_EXPORTS pcl::registration::TransformationEstimationLM<T,U>;
 

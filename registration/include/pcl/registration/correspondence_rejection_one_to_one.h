@@ -59,12 +59,14 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
+
+        /** \brief Empty constructor. */
         CorrespondenceRejectorOneToOne ()
         {
           rejection_name_ = "CorrespondenceRejectorOneToOne";
         }
 
-        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
+        /** \brief DEPRECATED: Get a list of valid correspondences after rejection from the original set of correspondences.
           * \param original_correspondences the set of initial correspondences given
           * \param remaining_correspondences the resultant filtered set of remaining correspondences
           */

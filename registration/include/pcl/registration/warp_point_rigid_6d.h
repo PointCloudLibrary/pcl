@@ -60,7 +60,7 @@ namespace pcl
       trans (3,3) = 1;
 
       // Copy the rotation and translation components
-      trans.block <4, 1> (0, 3) = Eigen::Vector4f(p[0], p[1], p[2], 0);
+      trans.block <4, 1> (0, 3) = Eigen::Vector4f(p[0], p[1], p[2], 1.0);
 
       // Compute w from the unit quaternion
       Eigen::Quaternionf q (0, p[3], p[4], p[5]);

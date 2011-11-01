@@ -67,14 +67,6 @@ namespace pcl
     inline void 
     getMatchIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices);
 
-//    inline void getNonMatchingQueryIndices()
-//    {
-//      // Get the diference
-//      std::vector<int> remaining_indices;
-//      set_difference (all_indices.begin (), all_indices.end (), indices.begin (), indices.end (),
-//                      inserter (remaining_indices, remaining_indices.begin ()));
-//    }
-
   }
 }
 

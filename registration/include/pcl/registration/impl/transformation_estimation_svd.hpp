@@ -134,7 +134,7 @@ template <typename PointSource, typename PointTarget> inline void
 pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    const std::vector<pcl::Correspondence> &correspondences,
+    const pcl::Correspondences &correspondences,
     Eigen::Matrix4f &transformation_matrix)
 {
   std::vector<int> indices_src, indices_tgt;

@@ -151,6 +151,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
   std::vector<int> nn_index (1);
   std::vector<float> nn_distance (1);
 
+  const ErrorFunctor & compute_error = *error_functor_;
   float error = 0;
 
   for (size_t i = 0; i < cloud.points.size (); ++i)
@@ -158,21 +159,8 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
     // Find the distance between cloud.points[i] and its nearest neighbor in the target point cloud
     tree_->nearestKSearch (cloud, (int) i, 1, nn_index, nn_distance);
 
-    /*
-    // Huber penalty measure
-    float e = nn_distance[0];
-    if (e <= threshold)
-      error += 0.5 * e*e; 
-    else
-      error += 0.5 * threshold * (2.0 * fabs (e) - threshold);
-    */
-
-    // Truncated error
-    float e = nn_distance[0];
-    if (e <= threshold)
-      error += e / threshold;
-    else
-      error += 1.0;
+    // Compute the error
+    error += compute_error (nn_distance[0]);
   }
   return (error);
 }
@@ -192,6 +180,11 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
     PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName ().c_str ());
     PCL_ERROR ("No target features were given! Call setTargetFeatures before aligning.\n");
     return;
+  }
+
+  if (!error_functor_)
+  {
+    error_functor_.reset (new TruncatedError (min_sample_distance_));
   }
 
   std::vector<int> sample_indices (nr_samples_);

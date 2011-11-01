@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: icp.h 1928 2011-08-05 03:43:20Z rusu $
+ * $Id$
  *
  */
 #ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_H_
@@ -41,13 +41,14 @@
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/warp_point_rigid.h>
+#include <pcl/registration/distances.h>
 
 namespace pcl
 {
   namespace registration
   {
     /** @b TransformationEstimationLM implements Levenberg Marquardt-based
-      * estimation of the transformation aligning the given correspondences
+      * estimation of the transformation aligning the given correspondences.
       *
       * \author Radu B. Rusu
       * \ingroup registration
@@ -96,7 +97,8 @@ namespace pcl
          * \param[in] cloud_src the source point cloud dataset
          * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
          * \param[in] cloud_tgt the target point cloud dataset
-         * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
+         * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from 
+         * \a indices_src
          * \param[out] transformation_matrix the resultant transformation matrix
          */
         inline void
@@ -117,7 +119,7 @@ namespace pcl
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            const std::vector<pcl::Correspondence> &correspondences,
+            const pcl::Correspondences &correspondences,
             Eigen::Matrix4f &transformation_matrix);
 
         /** \brief Set the function we use to warp points. Defaults to rigid 6D warp.
@@ -129,101 +131,21 @@ namespace pcl
           warp_point_ = warp_fcn;
         }
 
-      private:
-        /** \brief Cost function to be minimized
-          * \param[in] p a pointer to our data structure array
-          * \param[in] m the number of functions
-          * \param[in] n the number of variables
-          * \param[out] x a pointer to the variables array
-          * \param[out] fvec a pointer to the resultant functions evaluations
-          * \param[in] iflag set to -1 inside the function to terminate execution
-          */
-        static int 
-        functionToOptimize (void *p, int m, int n, const double *x, double *fvec, int iflag);
-
-        /** \brief Cost function to be minimized
-          * \param[in] p a pointer to our data structure array
-          * \param[in] m the number of functions
-          * \param[in] n the number of variables
-          * \param[out] x a pointer to the variables array
-          * \param[out] fvec a pointer to the resultant functions evaluations
-          * \param[in] iflag set to -1 inside the function to terminate execution
-          */
-        static int 
-        functionToOptimizeIndices (void *p, int m, int n, const double *x, double *fvec, int iflag);
-
-        /** \brief Compute the median value from a set of doubles
-          * \param[in] fvec the set of doubles
-          * \param[in] m the number of doubles in the set
-          */
-        inline double 
-        computeMedian (double *fvec, int m);
-
-        /** \brief Use a Huber kernel to estimate the distance between two vectors
-          * \param[in] p_src the first eigen vector
-          * \param[in] p_tgt the second eigen vector
-          * \param[in] sigma the sigma value
-          */
-        inline double
-        distHuber (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt, double sigma)
+      protected:
+        /** \brief Compute the distance between a source point and its corresponding target point
+         * \param p_src The source point
+         * \param p_tgt The target point
+         * \return The distance between \a p_src and \a p_tgt
+         *
+         * \note A different distance function can be defined by creating a subclass of TransformationEstimationLM and 
+         * overriding this method. (See \a TransformationEstimationPointToPlane)
+         */
+        virtual double 
+        computeDistance (const PointSource &p_src, const PointTarget &p_tgt)
         {
-          Eigen::Array4f diff = (p_tgt.array () - p_src.array ()).abs ();
-          double norm = 0.0;
-          for (int i = 0; i < 3; ++i)
-          {
-            if (diff[i] < sigma)
-              norm += diff[i] * diff[i];
-            else
-              norm += 2.0 * sigma * diff[i] - sigma * sigma;
-          }
-          return (norm);
-        }
-
-        /** \brief Use a Huber kernel to estimate the distance between two vectors
-          * \param[in] diff the norm difference between two vectors
-          * \param[in] sigma the sigma value
-          */
-        inline double
-        distHuber (double diff, double sigma)
-        {
-          double norm = 0.0;
-          if (diff < sigma)
-            norm += diff * diff;
-          else
-            norm += 2.0 * sigma * diff - sigma * sigma;
-          return (norm);
-        }
-
-        /** \brief Use a Gedikli kernel to estimate the distance between two vectors
-          * (for more information, see 
-          * \param[in] val the norm difference between two vectors
-          * \param[in] clipping the clipping value
-          */
-        inline double
-        distGedikli (double val, double clipping)
-        {
-          clipping *= 1.5;
-          return (1.0 / (1.0 + pow (val / clipping, 4)));
-        }
-
-        /** \brief Compute the Manhattan distance between two eigen vectors.
-          * \param[in] p_src the first eigen vector
-          * \param[in] p_tgt the second eigen vector
-          */
-        inline double
-        distL1 (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt)
-        {
-          return ((p_src.array () - p_tgt.array ()).abs ().sum ());
-        }
-
-        /** \brief Compute the squared Euclidean distance between two eigen vectors.
-          * \param[in] p_src the first eigen vector
-          * \param[in] p_tgt the second eigen vector
-          */
-        inline double
-        distL2Sqr (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt)
-        {
-          return ((p_src - p_tgt).squaredNorm ());
+          Vector4fMapConst s = p_src.getVector4fMap ();
+          Vector4fMapConst t = p_tgt.getVector4fMap ();
+          return (pcl::distances::l2 (s, t));
         }
 
         /** \brief The vector of residual weights. Used internall in the LM loop. */
@@ -241,8 +163,76 @@ namespace pcl
         /** \brief Temporary pointer to the target dataset indices. */
         const std::vector<int> *tmp_idx_tgt_;
 
-        /** \brief Temporary pointer to the target dataset indices. */
+        /** \brief The parameterized function used to warp the source to the target. */
         boost::shared_ptr<WarpPointRigid<PointSource, PointTarget> > warp_point_;
+        
+        /** Generic functor for the optimization */
+        template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
+        struct Functor
+        {
+          typedef _Scalar Scalar;
+          enum {
+            InputsAtCompileTime = NX,
+            ValuesAtCompileTime = NY
+          };
+          typedef Eigen::Matrix<Scalar,InputsAtCompileTime,1> InputType;
+          typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,1> ValueType;
+          typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
+          
+          const int m_inputs, m_values;
+          
+          Functor () : m_inputs (InputsAtCompileTime), m_values (ValuesAtCompileTime) {}
+          Functor (int inputs, int values) : m_inputs (inputs), m_values (values) {}
+          
+          int inputs () const { return m_inputs; }
+          int values () const { return m_values; }
+        };
+
+        struct OptimizationFunctor : Functor<double>
+        {
+          using Functor<double>::m_values;
+
+          /** Functor constructor
+           * \param n Number of unknowns to be solved
+           * \param m Number of values
+           * \param estimator pointer to the estimator object
+           * \param distance distance computation function pointer
+           */
+          OptimizationFunctor (int n, int m, TransformationEstimationLM<PointSource, PointTarget> *estimator) : 
+            Functor<double> (n,m), estimator_ (estimator) {}
+
+          /** Fill fvec from x. For the current state vector x fill the f values
+           * \param x state vector
+           * \param fvec f values vector
+           * \return 0
+           */
+          int operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
+
+          TransformationEstimationLM<PointSource, PointTarget> *estimator_;
+        };
+
+        struct OptimizationFunctorWithIndices : Functor<double>
+        {
+          using Functor<double>::m_values;
+
+          /** Functor constructor
+            * \param n Number of unknowns to be solved
+            * \param m Number of values
+            * \param estimator pointer to the estimator object
+            * \param distance distance computation function pointer
+            */
+          OptimizationFunctorWithIndices (int n, int m, TransformationEstimationLM *estimator) :
+            Functor<double> (n,m), estimator_(estimator) {}
+
+          /** Fill fvec from x. For the current state vector x fill the f values
+            * \param x state vector
+            * \param fvec f values vector
+            * \return 0
+            */
+          int operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
+
+          TransformationEstimationLM<PointSource, PointTarget> *estimator_;
+        };
     };
   }
 }

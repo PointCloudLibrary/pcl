@@ -50,7 +50,7 @@ pcl::registration::CorrespondenceRejectorFeatures::applyRejection (
     for (FeaturesMap::const_iterator it = features_map_.begin (); it != features_map_.end (); ++it)
     {
       // Check if the score in feature space is above the given threshold
-      // (assume that the number of feature correspondenecs is the same as the number of point correspondences)
+      // (assume that the number of feature correspondences is the same as the number of point correspondences)
       if (!it->second->isCorrespondenceValid (i))
         break;
 

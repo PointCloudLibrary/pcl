@@ -63,13 +63,15 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
+
+        /** \brief Empty constructor. */
         CorrespondenceRejectorDistance () : max_distance_(std::numeric_limits<float>::max ()),
                                             data_container_ ()
         {
           rejection_name_ = "CorrespondenceRejectorDistance";
         }
 
-        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
+        /** \brief DEPRECATED: Get a list of valid correspondences after rejection from the original set of correspondences.
           * \param original_correspondences the set of initial correspondences given
           * \param remaining_correspondences the resultant filtered set of remaining correspondences
           */

@@ -114,7 +114,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
     const pcl::Correspondences& original_correspondences, 
     pcl::Correspondences& remaining_correspondences)
 {
-  int nr_correspondences = input_correspondences_->size ();
+  int nr_correspondences = (int)original_correspondences.size ();
   std::vector<int> source_indices (nr_correspondences);
   std::vector<int> target_indices (nr_correspondences);
 
@@ -154,13 +154,13 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
 
        if (inliers.size () < 3)
        {
-         remaining_correspondences = *input_correspondences_;
+         remaining_correspondences = original_correspondences;
          best_transformation_.setIdentity ();
          return;
        }
        boost::unordered_map<int, int> index_to_correspondence;
        for (int i = 0; i < nr_correspondences; ++i)
-         index_to_correspondence[(*input_correspondences_)[i].index_query] = i;
+         index_to_correspondence[original_correspondences[i].index_query] = i;
 
        remaining_correspondences.resize (inliers.size ());
        for (size_t i = 0; i < inliers.size (); ++i)

@@ -36,27 +36,31 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_H_
+#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_LLS_H_ 
+#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_LLS_H_
 
 #include <pcl/registration/transformation_estimation.h>
+#include <pcl/registration/warp_point_rigid.h>
 
 namespace pcl
 {
   namespace registration
   {
-    /** @b TransformationEstimationSVD implements SVD-based estimation of
-      * the transformation aligning the given correspondences.
+    /** \brief @b TransformationEstimationPointToPlaneLLS implements a Linear Least Squares (LLS) approximation
+      * for minimizing the point-to-plane distance between two clouds of corresponding points with normals.
       *
-      * \author Dirk Holz, Radu B. Rusu
+      * For additional details, see 
+      *   "Linear Least-Squares Optimization for Point-to-Plane ICP Surface Registration", Kok-Lim Low, 2004
+      *
+      * \author Michael Dixon
       * \ingroup registration
       */
     template <typename PointSource, typename PointTarget>
-    class TransformationEstimationSVD : public TransformationEstimation<PointSource, PointTarget>
+    class TransformationEstimationPointToPlaneLLS : public TransformationEstimation<PointSource, PointTarget>
     {
       public:
-        TransformationEstimationSVD () {};
-        virtual ~TransformationEstimationSVD () {};
+        TransformationEstimationPointToPlaneLLS () {};
+        virtual ~TransformationEstimationPointToPlaneLLS () {};
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -111,25 +115,24 @@ namespace pcl
             Eigen::Matrix4f &transformation_matrix);
 
       protected:
+        /** \brief Construct a 4 by 4 tranformation matrix from the provided rotation and translation.
+          * \param[in] alpha the rotation about the x-axis
+          * \param[in] beta the rotation about the y-axis
+          * \param[in] gamma the rotation about the z-axis
+          * \param[in] tx the x translation
+          * \param[in] ty the y translation
+          * \param[in] tz the z translation
+          * \param[out] transformation the resultant transformation matrix
+          */
+        inline void
+        constructTransformationMatrix (const float & alpha, const float & beta, const float & gamma,
+                                       const float & tx, const float & ty, const float & tz,
+                                       Eigen::Matrix4f &transformation_matrix);
 
-        /** \brief Obtain a 4x4 rigid transformation matrix from a correlation matrix H = src * tgt'
-          * \param[in] cloud_src_demean the input source cloud, demeaned, in Eigen format
-          * \param[in] centroid_src the input source centroid, in Eigen format
-          * \param[in] cloud_tgt_demean the input target cloud, demeaned, in Eigen format
-          * \param[in] centroid_tgt the input target cloud, in Eigen format
-          * \param[out] transformation_matrix the resultant 4x4 rigid transformation matrix
-          */ 
-        void
-        getTransformationFromCorrelation (const Eigen::MatrixXf &cloud_src_demean,
-                                          const Eigen::Vector4f &centroid_src,
-                                          const Eigen::MatrixXf &cloud_tgt_demean,
-                                          const Eigen::Vector4f &centroid_tgt,
-                                          Eigen::Matrix4f &transformation_matrix);
     };
-
   }
 }
 
-#include <pcl/registration/impl/transformation_estimation_svd.hpp>
+#include <pcl/registration/impl/transformation_estimation_point_to_plane_lls.hpp>
 
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_H_ */
+#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_H_LLS_ */
