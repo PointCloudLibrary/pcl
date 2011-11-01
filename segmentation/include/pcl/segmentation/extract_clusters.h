@@ -40,8 +40,7 @@
 
 #include <pcl/pcl_base.h>
 
-#include "pcl/kdtree/kdtree.h"
-#include "pcl/kdtree/tree_types.h"
+#include "pcl/search/pcl_search.h"
 
 namespace pcl
 {
@@ -56,7 +55,7 @@ namespace pcl
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
     * \ingroup segmentation
     */
-  template <typename PointT> void extractEuclideanClusters (const PointCloud<PointT> &cloud, const boost::shared_ptr<KdTree<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
+  template <typename PointT> void extractEuclideanClusters (const PointCloud<PointT> &cloud, const boost::shared_ptr<search::Search<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
@@ -70,7 +69,7 @@ namespace pcl
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
     * \ingroup segmentation
     */
-  template <typename PointT> void extractEuclideanClusters (const PointCloud<PointT> &cloud, const std::vector<int> &indices, const boost::shared_ptr<KdTree<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
+  template <typename PointT> void extractEuclideanClusters (const PointCloud<PointT> &cloud, const std::vector<int> &indices, const boost::shared_ptr<search::Search<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the euclidean distance between points, and the normal
@@ -290,15 +289,15 @@ namespace pcl
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
-      typedef typename pcl::KdTree<PointT> KdTree;
-      typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
+      typedef typename pcl::search::Search<PointT> KdTree;
+      typedef typename pcl::search::Search<PointT>::Ptr KdTreePtr;
 
       typedef PointIndices::Ptr PointIndicesPtr;
       typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
-      EuclideanClusterExtraction () : tree_ (), spatial_locator_ (0), min_pts_per_cluster_ (1), 
+      EuclideanClusterExtraction () : tree_ (), min_pts_per_cluster_ (1), 
                                       max_pts_per_cluster_ (std::numeric_limits<int>::max ())
       {};
 
@@ -339,12 +338,6 @@ namespace pcl
         */
       void extract (std::vector<PointIndices> &clusters);
 
-      /** \brief Set the spatial locator type to use.
-        * \param locator the spatial locator type
-        */
-      inline void setSpatialLocator (int locator) { spatial_locator_ = locator; }
-      /** \brief Get the spatial locator type used. */
-       inline int  getSpatialLocator ()            { return (spatial_locator_);  }
     protected:
       // Members derived from the base class
       using BasePCLBase::input_;
@@ -354,13 +347,6 @@ namespace pcl
 
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;
-
-      /** \brief Parameter for the spatial locator tree. By convention, the values represent:
-        * 0: ANN (Approximate Nearest Neigbor library) kd-tree
-        * 1: FLANN (Fast Library for Approximate Nearest Neighbors) kd-tree
-        * 2: Organized spatial dataset index
-        */
-      int spatial_locator_;
 
       /** \brief The spatial cluster tolerance as a measure in the L2 Euclidean space. */
       double cluster_tolerance_;
