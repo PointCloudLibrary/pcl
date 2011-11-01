@@ -56,13 +56,15 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     output.data.resize (sample_ * input_->point_step);
 
     // Copy the common fields
+    output.fields = input_->fields;
     output.is_bigendian = input_->is_bigendian;
+    output.row_step = input_->row_step;
     output.point_step = input_->point_step;
     output.height = 1;
 
     // Fill output cloud with first sample points from input cloud
     for (size_t i = 0; i < sample_; ++i)
-      output.data[i * output.point_step] = input_->data[i * input_->point_step];
+      memcpy (&output.data[i * output.point_step], &input_->data[i * output.point_step], output.point_step);
 
     // Set random seed so derived indices are the same each time the filter runs
     std::srand (seed_);
@@ -73,7 +75,7 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     {
       size_t index = std::rand () % (i + 1);
       if (index < sample_)
-        output.data[index * output.point_step] = input_->data[i * input_->point_step];
+        memcpy (&output.data[index * output.point_step], &input_->data[i * output.point_step], output.point_step);
     }
     output.width = sample_;
     output.row_step = output.point_step * output.width;

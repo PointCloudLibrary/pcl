@@ -869,7 +869,7 @@ TEST (RadiusOutlierRemoval, Filters)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*TEST (RandomSample, Filters)
+TEST (RandomSample, Filters)
 {
   // Test the PointCloud<PointT> method
   // Randomly sample 10 points from cloud
@@ -912,23 +912,22 @@ TEST (RadiusOutlierRemoval, Filters)
   EXPECT_EQ ((int)indices2.size (), 10);
 
   // Cloud
-  PointCloud2 cloud_out2;
-  sample2.filter (cloud_out2);
+  PointCloud2 output_blob;
+  sample2.filter (output_blob);
 
-  fromROSMsg (*cloud_blob, *cloud);
-  fromROSMsg (cloud_out2, cloud_out);
+  fromROSMsg (output_blob, cloud_out);
 
   EXPECT_EQ ((int)cloud_out.width, 10);
-  EXPECT_EQ ((int)indices.size (), (int)cloud_out.size ());
+  EXPECT_EQ ((int)indices2.size (), (int)cloud_out.size ());
 
-  for (size_t i = 0; i < indices.size (); ++i)
+  for (size_t i = 0; i < indices2.size (); ++i)
   {
     // Compare original points with sampled indices against sampled points
-    EXPECT_NEAR (cloud->points[indices[i]].x, cloud_out.points[i].x, 1e-4);
-    EXPECT_NEAR (cloud->points[indices[i]].y, cloud_out.points[i].y, 1e-4);
-    EXPECT_NEAR (cloud->points[indices[i]].z, cloud_out.points[i].z, 1e-4);
+    EXPECT_NEAR (cloud->points[indices2[i]].x, cloud_out.points[i].x, 1e-4);
+    EXPECT_NEAR (cloud->points[indices2[i]].y, cloud_out.points[i].y, 1e-4);
+    EXPECT_NEAR (cloud->points[indices2[i]].z, cloud_out.points[i].z, 1e-4);
   }
-}*/
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (StatisticalOutlierRemoval, Filters)
