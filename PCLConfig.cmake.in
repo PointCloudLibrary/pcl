@@ -115,9 +115,10 @@ endmacro(find_qhull)
 
 #remove this as soon as openni-dev is shipped with FindOpenni.cmake
 macro(find_openni)
-  if(NOT OPENNI_ROOT)
-    get_filename_component(OPENNI_ROOT "@OPENNI_INCLUDE_DIRS@" PATH)
-  endif(NOT OPENNI_ROOT)
+  if(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
+    set(OPENNI_INCLUDE_DIRS "@OPENNI_INCLUDE_DIRS@")
+    set(OPENNI_LIBRARY "@OPENNI_LIBRARY@")
+  else(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
   if(PkgConfig_FOUND)
     pkg_check_modules(PC_OPENNI openni-dev)
   endif(PkgConfig_FOUND)
@@ -133,7 +134,7 @@ macro(find_openni)
           "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
     PATHS "$ENV{PROGRAMFILES}/OpenNI/Lib" "$ENV{PROGRAMW6432}/OpenNI/Lib64"
     PATH_SUFFIXES lib Lib Lib64)
-
+  endif(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
   find_package_handle_standard_args(openni DEFAULT_MSG OPENNI_LIBRARY OPENNI_INCLUDE_DIRS)
 
   if(OPENNI_FOUND)
