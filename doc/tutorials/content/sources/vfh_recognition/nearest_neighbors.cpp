@@ -1,7 +1,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/common.h>
-#include <pcl/registration/transforms.h>
+#include <pcl/common/transforms.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
@@ -29,8 +29,8 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
     pcl::PCDReader r;
-    bool binary; int idx;
-    r.readHeader (path.string (), cloud, origin, orientation, version, binary, idx);
+    int type; int idx;
+    r.readHeader (path.string (), cloud, origin, orientation, version, type, idx);
 
     vfh_idx = pcl::getFieldIndex (cloud, "vfh");
     if (vfh_idx == -1)

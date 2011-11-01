@@ -19,7 +19,7 @@ class FeatureCloud
     typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
     typedef pcl::PointCloud<pcl::Normal> SurfaceNormals;
     typedef pcl::PointCloud<pcl::FPFHSignature33> LocalFeatures;
-    typedef pcl::KdTreeFLANN<pcl::PointXYZ> SearchMethod;
+    typedef pcl::search::KdTree<pcl::PointXYZ> SearchMethod;
 
     FeatureCloud () :
       search_method_xyz_ (new SearchMethod),
