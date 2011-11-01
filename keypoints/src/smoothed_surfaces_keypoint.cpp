@@ -1,8 +1,8 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
- *
+ *  Copyright (c) 2011, Alexandru-Eugen Ichim
+ *                      Willow Garage, Inc
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,14 +32,14 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: uniform_sampling.cpp 2414 2011-09-07 07:01:06Z svn $
+ * $Id: smoothed_surfaces_keypoint.cpp 2008 2011-08-10 19:34:52Z aichim $
  */
 
-#include "pcl/keypoints/uniform_sampling.h"
-#include "pcl/keypoints/impl/uniform_sampling.hpp"
+#include "pcl/keypoints/smoothed_surfaces_keypoint.h"
+#include "pcl/keypoints/impl/smoothed_surfaces_keypoint.hpp"
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(UniformSampling, (PCL_XYZ_POINT_TYPES));
+PCL_INSTANTIATE_PRODUCT(SmoothedSurfacesKeypoint, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));

@@ -1,16 +1,19 @@
 set(SUBSYS_NAME keypoints)
 set(SUBSYS_DESC "Point cloud keypoints library")
-set(SUBSYS_DEPS common kdtree range_image features filters)
+set(SUBSYS_DEPS common search kdtree octree range_image features filters)
+
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 if(build)
-    set(srcs
+    set(srcs 
         src/narf_keypoint.cpp
-        src/sift_keypoint.cpp
         src/uniform_sampling.cpp
+        src/sift_keypoint.cpp
+				src/smoothed_surfaces_keypoint.cpp
+        src/harris_keypoint3D.cpp
         )
 
     set(incs 
@@ -18,12 +21,16 @@ if(build)
         include/pcl/${SUBSYS_NAME}/narf_keypoint.h
         include/pcl/${SUBSYS_NAME}/sift_keypoint.h
         include/pcl/${SUBSYS_NAME}/uniform_sampling.h
+        include/pcl/${SUBSYS_NAME}/smoothed_surfaces_keypoint.h
+        include/pcl/${SUBSYS_NAME}/harris_keypoint3D.h
         )
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/keypoint.hpp
         include/pcl/${SUBSYS_NAME}/impl/sift_keypoint.hpp
         include/pcl/${SUBSYS_NAME}/impl/uniform_sampling.hpp
+        include/pcl/${SUBSYS_NAME}/impl/smoothed_surfaces_keypoint.hpp
+        include/pcl/${SUBSYS_NAME}/impl/harris_keypoint3D.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
@@ -31,8 +38,7 @@ if(build)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_range_image_border_extractor pcl_filters)
-    list(APPEND SUBSYS_DEPS pcl_range_image_border_extractor)
+    target_link_libraries(${LIB_NAME} pcl_features pcl_filters)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "" "" "" "")
 
