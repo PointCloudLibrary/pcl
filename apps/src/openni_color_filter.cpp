@@ -30,7 +30,8 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *
+ *  Author: Suat Gedikli (gedikli@willowgarage.com)
  */
 
 #include <boost/thread/thread.hpp>
@@ -40,115 +41,117 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
+#include <pcl/filters/color.h>
 #include <pcl/console/parse.h>
-#include <pcl/sample_consensus/method_types.h>
-#include <pcl/sample_consensus/model_types.h>
-#include <pcl/segmentation/sac_segmentation.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/approximate_voxel_grid.h>
-#include <pcl/filters/extract_indices.h>
+#include <pcl/common/time.h>
+
+#define FPS_CALC(_WHAT_) \
+do \
+{ \
+    static unsigned count = 0;\
+    static double last = pcl::getTime ();\
+    double now = pcl::getTime (); \
+    ++count; \
+    if (now - last >= 1.0) \
+    { \
+      std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
+      count = 0; \
+      last = now; \
+    } \
+}while(false)
 
 
 template <typename PointType>
-class OpenNIPlanarSegmentation
+class OpenNIPassthrough
 {
   public:
     typedef pcl::PointCloud<PointType> Cloud;
     typedef typename Cloud::Ptr CloudPtr;
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
-    OpenNIPlanarSegmentation (const std::string& device_id = "", double threshold = 0.01)
-      : viewer ("PCL OpenNI Planar Segmentation Viewer"),
-        device_id_ (device_id)
+    OpenNIPassthrough (pcl::OpenNIGrabber& grabber, unsigned char red, unsigned char green, unsigned char blue, unsigned char radius)
+    : viewer ("PCL OpenNI ColorFilter Viewer")
+    , grabber_(grabber)
     {
-      grid_.setFilterFieldName ("z");
-      grid_.setFilterLimits (0.0, 3.0);
-      grid_.setLeafSize (0.01, 0.01, 0.01);
+      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIPassthrough::cloud_cb_, this, _1);
+      boost::signals2::connection c = grabber_.registerCallback (f);
 
-      seg_.setOptimizeCoefficients (true);
-      seg_.setModelType (pcl::SACMODEL_PLANE);
-      seg_.setMethodType (pcl::SAC_RANSAC);
-      seg_.setMaxIterations (1000);
-      seg_.setDistanceThreshold (threshold);
-
-      extract_.setNegative (false);
+      std::vector<bool> lookup(1<<24, false);
+      fillLookup (lookup, red, green, blue, radius);
+      unsigned set = 0;
+      for (unsigned i = 0; i < (1<<24); ++i)
+       if (lookup[i])
+        ++set;
+        
+      cout << "used colors: " << set << endl;
+      
+      color_filter_.setLookUpTable (lookup);
     }
 
-    void 
-    cloud_cb_ (const CloudConstPtr& cloud)
-    {
-      set (cloud);
+    void fillLookup (std::vector<bool>& lookup, unsigned char red, unsigned char green, unsigned char blue, unsigned radius)
+    {      
+      unsigned radius_sqr = radius * radius;
+      pcl::RGB color;
+      for (color.rgba = 0; color.rgba < (1<<24); ++color.rgba)
+      {
+        unsigned dist = (unsigned(color.r) - unsigned(red)) * (unsigned(color.r) - unsigned(red)) +
+                        (unsigned(color.g) - unsigned(green)) * (unsigned(color.g) - unsigned(green)) +
+                        (unsigned(color.b) - unsigned(blue)) * (unsigned(color.b) - unsigned(blue));
+        if (dist < radius_sqr)
+          lookup [color.rgba] = true;
+        else
+          lookup [color.rgba] = false;
+      }
     }
 
     void
-    set (const CloudConstPtr& cloud)
+    cloud_cb_ (const CloudConstPtr& cloud)
     {
-      //lock while we set our cloud;
       boost::mutex::scoped_lock lock (mtx_);
+      FPS_CALC ("computation");
+
+      cloud_color_.reset (new Cloud);
+      // Computation goes here
+      color_filter_.setInputCloud (cloud);
+      color_filter_.filter (*cloud_color_);
       cloud_  = cloud;
-    }
-
-    CloudPtr
-    get ()
-    {
-      //lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock (mtx_);
-      CloudPtr temp_cloud (new Cloud);
-      CloudPtr temp_cloud2 (new Cloud);
-
-      grid_.setInputCloud (cloud_);
-      grid_.filter (*temp_cloud);
-
-      pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
-      pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
-
-      seg_.setInputCloud (temp_cloud);
-      seg_.segment (*inliers, *coefficients);
-
-      extract_.setInputCloud (temp_cloud);
-      extract_.setIndices (inliers);
-      extract_.filter (*temp_cloud2);
-
-      return (temp_cloud2);
     }
 
     void
     run ()
     {
-      pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIPlanarSegmentation::cloud_cb_, this, _1);
-      boost::signals2::connection c = interface->registerCallback (f);
-      
-      interface->start ();
-      
+      grabber_.start ();
+
       while (!viewer.wasStopped ())
       {
-        if (cloud_)
+        if (cloud_color_)
         {
-          //the call to get() sets the cloud_ to null;
-          viewer.showCloud (get ());
+          boost::mutex::scoped_lock lock (mtx_);
+
+          FPS_CALC ("visualization");
+          CloudPtr temp_cloud;
+          temp_cloud.swap (cloud_color_); //here we set cloud_ to null, so that
+          viewer.showCloud (temp_cloud);
         }
       }
 
-      interface->stop ();
+      grabber_.stop ();
     }
 
+    pcl::ColorFilter<PointType> color_filter_;
     pcl::visualization::CloudViewer viewer;
-    pcl::VoxelGrid<PointType> grid_;
-    pcl::SACSegmentation<PointType> seg_;
-    pcl::ExtractIndices<PointType> extract_;
-
+    pcl::OpenNIGrabber& grabber_;
     std::string device_id_;
     boost::mutex mtx_;
     CloudConstPtr cloud_;
+    CloudPtr cloud_color_;
 };
 
 void
 usage (char ** argv)
 {
-  std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n"
-            << "where options are:\n         -thresh X        :: set the planar segmentation threshold (default: 0.5)\n";
+  std::cout << "usage: " << argv[0] << " <device_id> [-rgb <red> <green> <blue> [-radius <radius>] ]\n\n" << std::endl;
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
   if (driver.getNumberDevices () > 0)
@@ -166,7 +169,7 @@ usage (char ** argv)
     cout << "No devices connected." << endl;
 }
 
-int 
+int
 main (int argc, char ** argv)
 {
   if (argc < 2)
@@ -176,26 +179,45 @@ main (int argc, char ** argv)
   }
 
   std::string arg (argv[1]);
-  
+
   if (arg == "--help" || arg == "-h")
   {
     usage (argv);
     return 1;
   }
 
-  double threshold = 0.05;
-  pcl::console::parse_argument (argc, argv, "-thresh", threshold);
+  unsigned char red = 0, green = 0, blue = 0;
+  int rr, gg, bb;
+  unsigned char radius = 442; // all colors!
+  int rad;
 
+  if (pcl::console::parse_3x_arguments (argc, argv, "-rgb", rr, gg, bb, true) != -1 )
+  {
+    cout << "-rgb present" << endl;
+    int idx = pcl::console::parse_argument (argc, argv, "-radius", rad);
+    if (idx != -1)
+    {
+      if (rad > 0)
+        radius = rad;
+    }
+    if (rr >= 0 && rr < 256)
+      red = (unsigned char) rr;
+    if (gg >= 0 && gg < 256)
+      green = (unsigned char) gg;
+    if (bb >= 0 && bb < 256)
+      blue = (unsigned char) bb;
+  }
+  
   pcl::OpenNIGrabber grabber (arg);
+  
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {
-    OpenNIPlanarSegmentation<pcl::PointXYZRGB> v (arg, threshold);
+    OpenNIPassthrough<pcl::PointXYZRGB> v (grabber, red, green, blue, radius);
     v.run ();
   }
   else
   {
-    OpenNIPlanarSegmentation<pcl::PointXYZ> v (arg, threshold);
-    v.run ();
+    cout << "device does not provide rgb stream" << endl;
   }
 
   return (0);

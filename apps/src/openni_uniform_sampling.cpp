@@ -40,76 +40,79 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
+#include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/console/parse.h>
-#include <pcl/sample_consensus/method_types.h>
-#include <pcl/sample_consensus/model_types.h>
-#include <pcl/segmentation/sac_segmentation.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/approximate_voxel_grid.h>
-#include <pcl/filters/extract_indices.h>
+#include <pcl/common/time.h>
+
+#define FPS_CALC(_WHAT_) \
+do \
+{ \
+    static unsigned count = 0;\
+    static double last = pcl::getTime ();\
+    double now = pcl::getTime (); \
+    ++count; \
+    if (now - last >= 1.0) \
+    { \
+      std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
+      count = 0; \
+      last = now; \
+    } \
+}while(false)
 
 
-template <typename PointType>
-class OpenNIPlanarSegmentation
+class OpenNIUniformSampling
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    typedef pcl::PointCloud<pcl::PointXYZRGB> Cloud;
+    typedef Cloud::Ptr CloudPtr;
+    typedef Cloud::ConstPtr CloudConstPtr;
 
-    OpenNIPlanarSegmentation (const std::string& device_id = "", double threshold = 0.01)
-      : viewer ("PCL OpenNI Planar Segmentation Viewer"),
-        device_id_ (device_id)
+    OpenNIUniformSampling (const std::string& device_id = "", 
+                       float leaf_size = 0.05)
+    : viewer ("PCL OpenNI PassThrough Viewer")
+    , device_id_(device_id)
     {
-      grid_.setFilterFieldName ("z");
-      grid_.setFilterLimits (0.0, 3.0);
-      grid_.setLeafSize (0.01, 0.01, 0.01);
-
-      seg_.setOptimizeCoefficients (true);
-      seg_.setModelType (pcl::SACMODEL_PLANE);
-      seg_.setMethodType (pcl::SAC_RANSAC);
-      seg_.setMaxIterations (1000);
-      seg_.setDistanceThreshold (threshold);
-
-      extract_.setNegative (false);
+      pass_.setRadiusSearch (leaf_size);
     }
 
     void 
     cloud_cb_ (const CloudConstPtr& cloud)
     {
-      set (cloud);
+      boost::mutex::scoped_lock lock (mtx_);
+      FPS_CALC ("computation");
+
+      cloud_.reset (new Cloud);
+      indices_.reset (new pcl::PointCloud<int>);
+      keypoints_.reset (new pcl::PointCloud<pcl::PointXYZ>);
+      // Computation goes here
+      pass_.setInputCloud (cloud);
+      pass_.compute (*indices_);
+      *cloud_  = *cloud;
+      
+      pcl::copyPointCloud<pcl::PointXYZRGB, pcl::PointXYZ> (*cloud, indices_->points, *keypoints_);
     }
 
     void
-    set (const CloudConstPtr& cloud)
+    viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
-      //lock while we set our cloud;
       boost::mutex::scoped_lock lock (mtx_);
-      cloud_  = cloud;
-    }
+      if (!keypoints_ && !cloud_)
+      {
+        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        return;
+      }
 
-    CloudPtr
-    get ()
-    {
-      //lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock (mtx_);
-      CloudPtr temp_cloud (new Cloud);
-      CloudPtr temp_cloud2 (new Cloud);
+      FPS_CALC ("visualization");
+      viz.removePointCloud ("raw");
+      pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler (cloud_);
+      viz.addPointCloud<pcl::PointXYZRGB> (cloud_, color_handler, "raw");
 
-      grid_.setInputCloud (cloud_);
-      grid_.filter (*temp_cloud);
-
-      pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
-      pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
-
-      seg_.setInputCloud (temp_cloud);
-      seg_.segment (*inliers, *coefficients);
-
-      extract_.setInputCloud (temp_cloud);
-      extract_.setIndices (inliers);
-      extract_.filter (*temp_cloud2);
-
-      return (temp_cloud2);
+      if (!viz.updatePointCloud<pcl::PointXYZ> (keypoints_, "keypoints"))
+      {
+        viz.addPointCloud<pcl::PointXYZ> (keypoints_, "keypoints");
+        viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5.0, "keypoints");
+        viz.resetCameraViewpoint ("keypoints");
+      }
     }
 
     void
@@ -117,38 +120,35 @@ class OpenNIPlanarSegmentation
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIPlanarSegmentation::cloud_cb_, this, _1);
+      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIUniformSampling::cloud_cb_, this, _1);
       boost::signals2::connection c = interface->registerCallback (f);
+      viewer.runOnVisualizationThread (boost::bind(&OpenNIUniformSampling::viz_cb, this, _1), "viz_cb");
       
       interface->start ();
       
       while (!viewer.wasStopped ())
       {
-        if (cloud_)
-        {
-          //the call to get() sets the cloud_ to null;
-          viewer.showCloud (get ());
-        }
+        boost::this_thread::sleep(boost::posix_time::seconds(1));
       }
 
       interface->stop ();
     }
 
+    pcl::UniformSampling<pcl::PointXYZRGB> pass_;
     pcl::visualization::CloudViewer viewer;
-    pcl::VoxelGrid<PointType> grid_;
-    pcl::SACSegmentation<PointType> seg_;
-    pcl::ExtractIndices<PointType> extract_;
-
     std::string device_id_;
     boost::mutex mtx_;
-    CloudConstPtr cloud_;
+    CloudPtr cloud_;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_;
+    pcl::PointCloud<int>::Ptr indices_;
 };
 
 void
 usage (char ** argv)
 {
   std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n"
-            << "where options are:\n         -thresh X        :: set the planar segmentation threshold (default: 0.5)\n";
+            << "where options are:\n"
+            << "                             -leaf X  :: set the UniformSampling leaf size (default: 0.01)\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
   if (driver.getNumberDevices () > 0)
@@ -183,20 +183,13 @@ main (int argc, char ** argv)
     return 1;
   }
 
-  double threshold = 0.05;
-  pcl::console::parse_argument (argc, argv, "-thresh", threshold);
+  double leaf_res = 0.05;
+  pcl::console::parse_argument (argc, argv, "-leaf", leaf_res);
+  PCL_INFO ("Using %f as a leaf size for UniformSampling.\n", leaf_res);
 
   pcl::OpenNIGrabber grabber (arg);
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
-  {
-    OpenNIPlanarSegmentation<pcl::PointXYZRGB> v (arg, threshold);
-    v.run ();
-  }
-  else
-  {
-    OpenNIPlanarSegmentation<pcl::PointXYZ> v (arg, threshold);
-    v.run ();
-  }
+  OpenNIUniformSampling v (arg, leaf_res);
+  v.run ();
 
   return (0);
 }

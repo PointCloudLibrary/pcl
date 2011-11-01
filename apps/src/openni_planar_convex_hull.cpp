@@ -45,9 +45,8 @@
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/approximate_voxel_grid.h>
-#include <pcl/filters/extract_indices.h>
-
+#include <pcl/filters/project_inliers.h>
+#include <pcl/surface/convex_hull.h>
 
 template <typename PointType>
 class OpenNIPlanarSegmentation
@@ -58,7 +57,7 @@ class OpenNIPlanarSegmentation
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
     OpenNIPlanarSegmentation (const std::string& device_id = "", double threshold = 0.01)
-      : viewer ("PCL OpenNI Planar Segmentation Viewer"),
+      : viewer ("PCL OpenNI Planar Hull Segmentation Viewer"),
         device_id_ (device_id)
     {
       grid_.setFilterFieldName ("z");
@@ -71,7 +70,7 @@ class OpenNIPlanarSegmentation
       seg_.setMaxIterations (1000);
       seg_.setDistanceThreshold (threshold);
 
-      extract_.setNegative (false);
+      proj_.setModelType (pcl::SACMODEL_PLANE);
     }
 
     void 
@@ -105,11 +104,16 @@ class OpenNIPlanarSegmentation
       seg_.setInputCloud (temp_cloud);
       seg_.segment (*inliers, *coefficients);
 
-      extract_.setInputCloud (temp_cloud);
-      extract_.setIndices (inliers);
-      extract_.filter (*temp_cloud2);
+      // Project the model inliers 
+      proj_.setInputCloud (temp_cloud);
+      proj_.setModelCoefficients (coefficients);
+      proj_.filter (*temp_cloud2);
 
-      return (temp_cloud2);
+      // Create a Convex Hull representation of the projected inliers
+      chull_.setInputCloud (temp_cloud2);
+      chull_.reconstruct (*temp_cloud);
+
+      return (temp_cloud);
     }
 
     void
@@ -137,7 +141,8 @@ class OpenNIPlanarSegmentation
     pcl::visualization::CloudViewer viewer;
     pcl::VoxelGrid<PointType> grid_;
     pcl::SACSegmentation<PointType> seg_;
-    pcl::ExtractIndices<PointType> extract_;
+    pcl::ProjectInliers<PointType> proj_;
+    pcl::ConvexHull<PointType> chull_;
 
     std::string device_id_;
     boost::mutex mtx_;
@@ -158,7 +163,7 @@ usage (char ** argv)
       cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
               << ", connected: " << (int)driver.getBus (deviceIdx) << " @ " << (int)driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
       cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << endl
-           << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << endl
+           << "                 bus@address for the device connected to a specific usb-bus / address combination (wotks only in Linux) or" << endl
            << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << endl;
     }
   }

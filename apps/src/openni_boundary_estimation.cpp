@@ -34,16 +34,23 @@
  */
 
 #include <boost/thread/thread.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/openni_camera/openni_driver.h>
+#include <pcl/filters/approximate_voxel_grid.h>
+#include <pcl/features/boundary.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/cloud_viewer.h>
+
+typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
+typedef ColorHandler::Ptr ColorHandlerPtr;
+typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
 #define FPS_CALC(_WHAT_) \
 do \
@@ -60,37 +67,55 @@ do \
     } \
 }while(false)
 
-template <typename PointType>
 class OpenNIIntegralImageNormalEstimation
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    typedef pcl::PointCloud<pcl::PointXYZRGBNormal> Cloud;
+    typedef Cloud::Ptr CloudPtr;
+    typedef Cloud::ConstPtr CloudConstPtr;
 
     OpenNIIntegralImageNormalEstimation (const std::string& device_id = "")
-      : //viewer ("PCL OpenNI NormalEstimation Viewer"), 
-        device_id_(device_id)
+      : viewer ("PCL OpenNI NormalEstimation Viewer") 
+    , device_id_(device_id)
     {
-//      ne_.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointType, pcl::Normal>::AVERAGE_3D_GRADIENT);
-      ne_.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointType, pcl::Normal>::COVARIANCE_MATRIX);
+      ne_.setNormalEstimationMethod (ne_.AVERAGE_3D_GRADIENT);
+      //ne_.setNormalEstimationMethod (ne_.COVARIANCE_MATRIX);
       ne_.setRectSize (10, 10);
       new_cloud_ = false;
-    }
 
+      pass_.setFilterFieldName ("z");
+      pass_.setFilterLimits (0.0, 1.0);
+      pass_.setDownsampleAllData (true);
+      pass_.setLeafSize (0.005, 0.005, 0.005);
+
+      pcl::search::OrganizedNeighbor<pcl::PointXYZRGBNormal>::Ptr tree (new pcl::search::OrganizedNeighbor<pcl::PointXYZRGBNormal>);
+      be_.setRadiusSearch (0.02);
+      be_.setSearchMethod (tree);
+    }
     
     void 
-    cloud_cb (const CloudConstPtr& cloud)
+    cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
     {
       boost::mutex::scoped_lock lock (mtx_);
       //lock while we set our cloud;
       FPS_CALC ("computation");
+
+      cloud_.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+
       // Estimate surface normals
       ne_.setInputCloud (cloud);
+      ne_.compute (*cloud_);
+      copyPointCloud (*cloud, *cloud_);
 
-      normals_.reset (new pcl::PointCloud<pcl::Normal>);
-      ne_.compute (*normals_);
-      cloud_ = cloud;
+//      cloud_pass_.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+      // Passthrough
+//      pass_.setInputCloud (cloud_);
+//      pass_.filter (*cloud_pass_);
+
+      be_.setInputCloud (cloud_);
+      be_.setInputNormals (cloud_);
+      boundaries_.reset (new pcl::PointCloud<pcl::Boundary>);
+      be_.compute (*boundaries_);
 
       new_cloud_ = true;
     }
@@ -105,19 +130,24 @@ class OpenNIIntegralImageNormalEstimation
         return;
       }
 
-      CloudConstPtr temp_cloud;
-      temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
-
-      if (!viz.updatePointCloud (temp_cloud, "OpenNICloud"))
-      {
-        viz.addPointCloud (temp_cloud, "OpenNICloud");
-        viz.resetCameraViewpoint ("OpenNICloud");
-      }
       // Render the data 
-      if (new_cloud_ && normals_)
+      if (new_cloud_ && cloud_ && boundaries_)
       {
+        CloudPtr temp_cloud;
+        temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
+
+//        if (!viz.updatePointCloud<pcl::PointXYZRGBNormal> (temp_cloud, "OpenNICloud"))
+//        {
+//          viz.addPointCloud<pcl::PointXYZRGBNormal> (temp_cloud, "OpenNICloud");
+//          viz.resetCameraViewpoint ("OpenNICloud");
+//        }
+
         viz.removePointCloud ("normalcloud");
-        viz.addPointCloudNormals<PointType, pcl::Normal> (temp_cloud, normals_, 200, 0.05, "normalcloud");
+        sensor_msgs::PointCloud2::Ptr cloud2 (new sensor_msgs::PointCloud2);
+        pcl::toROSMsg (*boundaries_, *cloud2);
+        ColorHandlerConstPtr color_handler (new pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2> (cloud2, "boundary_point"));
+        viz.addPointCloud<pcl::PointXYZRGBNormal> (temp_cloud, color_handler, "normalcloud");
+        viz.resetCameraViewpoint ("normalcloud");
         new_cloud_ = false;
       }
     }
@@ -127,15 +157,14 @@ class OpenNIIntegralImageNormalEstimation
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIIntegralImageNormalEstimation::cloud_cb, this, _1);
+      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &)> f = boost::bind (&OpenNIIntegralImageNormalEstimation::cloud_cb, this, _1);
       boost::signals2::connection c = interface->registerCallback (f);
      
-      //viewer.runOnVisualizationThread (boost::bind(&OpenNIIntegralImageNormalEstimation::viz_cb, this, _1), "viz_cb");
+      viewer.runOnVisualizationThread (boost::bind(&OpenNIIntegralImageNormalEstimation::viz_cb, this, _1), "viz_cb");
 
       interface->start ();
       
-      //while (!viewer.wasStopped ())
-      while (true)
+      while (!viewer.wasStopped ())
       {
         boost::this_thread::sleep(boost::posix_time::seconds(1));
       }
@@ -143,13 +172,15 @@ class OpenNIIntegralImageNormalEstimation
       interface->stop ();
     }
 
-    pcl::IntegralImageNormalEstimation<PointType, pcl::Normal> ne_;
-    //pcl::visualization::CloudViewer viewer;
+    pcl::ApproximateVoxelGrid<pcl::PointXYZRGBNormal> pass_;
+    pcl::IntegralImageNormalEstimation<pcl::PointXYZRGB, pcl::PointXYZRGBNormal> ne_;
+    pcl::BoundaryEstimation<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal, pcl::Boundary> be_;
+    pcl::visualization::CloudViewer viewer;
     std::string device_id_;
     boost::mutex mtx_;
     // Data
-    pcl::PointCloud<pcl::Normal>::Ptr normals_;
-    CloudConstPtr cloud_;
+    pcl::PointCloud<pcl::Boundary>::Ptr boundaries_;
+    CloudPtr cloud_, cloud_pass_;
     bool new_cloud_;
 };
 
@@ -190,16 +221,11 @@ main (int argc, char ** argv)
   pcl::OpenNIGrabber grabber ("");
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {
-    PCL_INFO ("PointXYZRGB mode enabled.\n");
-    OpenNIIntegralImageNormalEstimation<pcl::PointXYZRGB> v ("");
+    OpenNIIntegralImageNormalEstimation v ("");
     v.run ();
   }
   else
-  {
-    PCL_INFO ("PointXYZ mode enabled.\n");
-    OpenNIIntegralImageNormalEstimation<pcl::PointXYZ> v ("");
-    v.run ();
-  }
+    PCL_ERROR ("The input device does not provide a PointXYZRGB mode.\n");
 
   return (0);
 }
