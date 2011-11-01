@@ -7,9 +7,9 @@ project(HelloPCLWorld)
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic" )
 
 
-find_package(Boost 1.40.0 REQUIRED COMPONENTS date_time system filesystem thread iostreams)
+find_package(Boost 1.45.0 REQUIRED COMPONENTS date_time system filesystem thread iostreams)
 include_directories(${Boost_INCLUDE_DIRS})
-find_package(PCL 1.2 REQUIRED COMPONENTS common io octree kdtree)
+find_package(PCL 1.3 REQUIRED COMPONENTS common io octree kdtree)
 include_directories(${PCL_INCLUDE_DIRS})  
 
 #IMPORTANT
@@ -33,9 +33,9 @@ set( LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/lib/pc CACHE PATH
 #java
 
 add_library(helloPCLWorld SHARED jni/hello-pcl.cpp)
-target_link_libraries(helloPCLWorld ${Boost_LIBRARIES}
+target_link_libraries(helloPCLWorld ${BOOST_LIBRARIES}
+/Users/alex/Work/Android/android-ndk-r6b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/user/lib/libboost_filesystem.a
 log
-boost_system
 pcl_kdtree
 pcl_io
 flann_cpp_s pcl_common)

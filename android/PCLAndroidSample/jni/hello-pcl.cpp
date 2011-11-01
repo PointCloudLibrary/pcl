@@ -68,14 +68,17 @@ JNIEXPORT jstring JNICALL Java_org_pointclouds_PCLAndroidSample_HelloPCL_boostMk
 	LOGI ("Doing stuff with PCL on Android");
 	
 	
-//  pcl::io::savePCDFile ("output.pcd", *cloud);
-
+  pcl::io::savePCDFileASCII ("/mnt/sdcard/KiwiViewer/output.pcd", *cloud);
 	
+	
+	std::ofstream file ("/mnt/sdcard/KiwiViewer/caca.caca");
+	file << "caca caca caca\n";
+	file.close ();
 	
 	printf ("Doing stuff with PCL on Android; cloud size: %d %d\n", cloud->width, cloud->height);
 	
-		
-
+	
+	
 	return env->NewStringUTF("caca masii de pe noul PCL Android care merge bine");
 }
 
