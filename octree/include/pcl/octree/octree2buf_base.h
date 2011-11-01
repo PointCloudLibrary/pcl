@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de)
+ * $Id$
  */
 
 #ifndef OCTREE_TREE_2BUF_BASE_H
@@ -42,11 +44,12 @@
 
 #include "octree_nodes.h"
 
+#include "octree_iterator.h"
+
 namespace pcl
 {
   namespace octree
   {
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b Octree double buffer class
       * 
       * \note This octree implementation keeps two separate octree structures
@@ -62,8 +65,20 @@ namespace pcl
       */
     template<typename DataT, typename LeafT = OctreeLeafDataT<DataT> >
     class Octree2BufBase
-    {
+      {
+
+        friend class OctreeNodeIterator<DataT, LeafT, Octree2BufBase> ;
+        friend class OctreeLeafNodeIterator<DataT, LeafT, Octree2BufBase> ;
+
       public:
+
+        // Octree iterators
+        typedef OctreeNodeIterator<DataT, LeafT, Octree2BufBase> Iterator;
+        typedef const OctreeNodeIterator<DataT, LeafT, Octree2BufBase> ConstIterator;
+
+        // Octree iterators
+        typedef OctreeLeafNodeIterator<DataT, LeafT, Octree2BufBase> LeafNodeIterator;
+        typedef const OctreeLeafNodeIterator<DataT, LeafT, Octree2BufBase> ConstLeafNodeIterator;
 
         /** \brief Empty constructor. */
         Octree2BufBase ();
@@ -301,6 +316,12 @@ namespace pcl
         // Protected octree methods based on octree keys
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        /** \brief Retrieve root node */
+        const OctreeNode*
+        getRootNode () const
+        {
+          return this->rootNode_;
+        }
 
         /** \brief Virtual method for generating an octree key for a given DataT object.
          *  \param data_arg: reference to DataT object

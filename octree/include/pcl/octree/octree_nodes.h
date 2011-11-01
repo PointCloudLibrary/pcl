@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de)
+ * $Id$
  */
 
 #ifndef OCTREE_NODE_H
@@ -105,13 +107,13 @@ namespace pcl
          *  \param data_arg: reference to return pointer of leaf node DataT element.
          */
         virtual void
-        getData (const DataT*& data_arg) = 0;
+        getData (const DataT*& data_arg) const = 0;
 
         /** \brief Pure virtual method for retrieving a vector of DataT elements from the octree laef node
          *  \param dataVector_arg: reference to DataT vector that is extended with leaf node DataT elements.
          */
         virtual void
-        getData (std::vector<leaf_data_t>& dataVector_arg) = 0;
+        getData (std::vector<leaf_data_t>& dataVector_arg) const = 0;
 
         /** \brief Pure virtual method for resetting the data storage of the octree leaf node */
         virtual void
@@ -151,7 +153,7 @@ namespace pcl
          *  \param data_arg: reference to return pointer of leaf node DataT element (will be set to 0).
          */
         virtual void
-        getData (const DataT*& data_arg)
+        getData (const DataT*& data_arg) const
         {
           data_arg = 0;
         }
@@ -160,7 +162,7 @@ namespace pcl
        *  \param dataVector_arg: reference to dummy DataT vector that is extended with leaf node DataT elements.
          */
         virtual void
-        getData (std::vector<DataT>& dataVector_arg)
+        getData (std::vector<DataT>& dataVector_arg) const
         {
         }
 
@@ -204,7 +206,7 @@ namespace pcl
          *  \param data_arg: reference to return pointer of leaf node DataT element.
          * */
         virtual void
-        getData (const DataT*& data_arg)
+        getData (const DataT*& data_arg) const
         {
           data_arg = &data_;
         }
@@ -213,7 +215,7 @@ namespace pcl
          *  \param dataVector_arg: reference to DataT vector that is to be extended with leaf node DataT elements.
          * */
         virtual void
-        getData (std::vector<DataT>& dataVector_arg)
+        getData (std::vector<DataT>& dataVector_arg) const
         {
           dataVector_arg.push_back (this->data_);
         }
@@ -263,14 +265,14 @@ namespace pcl
          *  \param data_arg: reference to return pointer of most recently added leaf node DataT element.
          * */
         virtual void
-        getData (const DataT*& data_arg)
+        getData (const DataT*& data_arg) const
         {
           DataT* result = 0;
 
           if (leafDataTVector_.size () > 0)
             result = (DataT*)&leafDataTVector_.back ();
 
-          result = result;
+          data_arg = result;
 
         }
 
@@ -278,7 +280,7 @@ namespace pcl
          * \param dataVector_arg: reference to DataT vector that is to be extended with leaf node DataT elements.
          * */
         virtual void
-        getData (std::vector<DataT>& dataVector_arg)
+        getData (std::vector<DataT>& dataVector_arg) const
         {
 
           dataVector_arg.insert (dataVector_arg.end (), leafDataTVector_.begin (), leafDataTVector_.end ());

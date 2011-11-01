@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de)
+ * $Id$
  */
 
 #ifndef OCTREE_DENSITY_H
@@ -81,7 +83,7 @@ namespace pcl
          *  \param data_arg: reference to return pointer of leaf node DataT element (will be set to 0).
          */
         virtual void
-        getData (const DataT*& data_arg)
+        getData (const DataT*& data_arg) const
         {
           data_arg = 0;
         }
@@ -90,7 +92,7 @@ namespace pcl
        *  \param dataVector_arg: reference to dummy DataT vector that is extended with leaf node DataT elements.
          */
         virtual void
-        getData (std::vector<DataT>& dataVector_arg)
+        getData (std::vector<DataT>& dataVector_arg) const
         {
         }
 

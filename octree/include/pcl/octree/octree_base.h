@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de)
+ * $Id$
  */
 
 #ifndef OCTREE_TREE_BASE_H
@@ -42,6 +44,8 @@
 #include <math.h>
 
 #include "octree_nodes.h"
+
+#include "octree_iterator.h"
 
 namespace pcl
 {
@@ -60,7 +64,18 @@ namespace pcl
       class OctreeBase
       {
 
+        friend class OctreeNodeIterator<DataT, LeafT, OctreeBase> ;
+        friend class OctreeLeafNodeIterator<DataT, LeafT, OctreeBase> ;
+
       public:
+
+        // Octree iterators
+        typedef OctreeNodeIterator<DataT, LeafT, OctreeBase> Iterator;
+        typedef const OctreeNodeIterator<DataT, LeafT, OctreeBase> ConstIterator;
+
+        // Octree iterators
+        typedef OctreeLeafNodeIterator<DataT, LeafT, OctreeBase> LeafNodeIterator;
+        typedef const OctreeLeafNodeIterator<DataT, LeafT, OctreeBase> ConstLeafNodeIterator;
 
         /** \brief Empty constructor. */
         OctreeBase ();
@@ -85,7 +100,7 @@ namespace pcl
          *  \return depth_arg: maximum depth of octree
          * */
         inline unsigned int
-        getTreeDepth ()
+        getTreeDepth () const
         {
           return this->octreeDepth_;
         }
@@ -262,6 +277,13 @@ namespace pcl
         // Protected octree methods based on octree keys
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+        /** \brief Retrieve root node */
+        const OctreeNode*
+        getRootNode () const
+        {
+          return this->rootNode_;
+        }
 
         /** \brief Virtual method for generating an octree key for a given DataT object.
          *  \param data_arg: reference to DataT object

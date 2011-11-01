@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de)
+ * $Id$
  */
 
 #ifndef OCTREE_LOWMEM_TREE_BASE_H
@@ -42,6 +44,8 @@
 #include <math.h>
 
 #include "octree_nodes.h"
+
+#include "octree_iterator.h"
 
 namespace pcl
 {
@@ -60,7 +64,18 @@ namespace pcl
       class OctreeLowMemBase
       {
 
+        friend class OctreeNodeIterator<DataT, LeafT, OctreeLowMemBase> ;
+        friend class OctreeLeafNodeIterator<DataT, LeafT, OctreeLowMemBase> ;
+
       public:
+
+        // Octree iterators
+        typedef OctreeNodeIterator<DataT, LeafT, OctreeLowMemBase> Iterator;
+        typedef const OctreeNodeIterator<DataT, LeafT, OctreeLowMemBase> ConstIterator;
+
+        // Octree iterators
+        typedef OctreeLeafNodeIterator<DataT, LeafT, OctreeLowMemBase> LeafNodeIterator;
+        typedef const OctreeLeafNodeIterator<DataT, LeafT, OctreeLowMemBase> ConstLeafNodeIterator;
 
         /** \brief Empty constructor. */
         OctreeLowMemBase ();
@@ -146,7 +161,6 @@ namespace pcl
         }
 
         /** \brief Delete the octree structure and its leaf nodes.
-         *  \param freeMemory_arg: if "true", allocated octree nodes are deleted, otherwise they are pushed to the octree node pool
          * */
         void
         deleteTree ( );
@@ -291,6 +305,12 @@ namespace pcl
         // Protected octree methods based on octree keys
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        /** \brief Retrieve root node */
+        const OctreeNode*
+        getRootNode () const
+        {
+          return this->rootNode_;
+        }
 
         /** \brief Virtual method for generating an octree key for a given DataT object.
          *  \param data_arg: reference to DataT object
