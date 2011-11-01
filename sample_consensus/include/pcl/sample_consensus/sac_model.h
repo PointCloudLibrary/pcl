@@ -51,7 +51,9 @@
 namespace pcl
 {
   // Forward declaration
+#ifndef __ANDROID__
   template<class T> class ProgressiveSampleConsensus;
+#endif
 
   /** \brief @b SampleConsensusModel represents the base model class. All sample consensus models must inherit 
     * from this class.
@@ -313,9 +315,9 @@ namespace pcl
         min_radius = radius_min_;
         max_radius = radius_max_;
       }
-
+#ifndef __ANDROID__
       friend class ProgressiveSampleConsensus<PointT>;
-
+#endif
     protected:
       /** \brief Fills a sample array with random samples from the indices_ vector
         * \param[out] sample the set of indices of target_ to analyze
@@ -419,6 +421,31 @@ namespace pcl
         * of the XYZ dataset. 
         */
       PointCloudNConstPtr normals_;
+  };
+
+  /** Base functor all the models that need non linear optimization must
+    * define their own one and implement operator() (const Eigen::VectorXd& x, Eigen::VectorXd& fvec)
+    * or operator() (const Eigen::VectorXf& x, Eigen::VectorXf& fvec) dependening on the choosen _Scalar
+    */
+  template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
+  struct Functor
+  {
+    typedef _Scalar Scalar;
+    enum {
+      InputsAtCompileTime = NX,
+      ValuesAtCompileTime = NY
+    };
+    typedef Eigen::Matrix<Scalar,InputsAtCompileTime,1> InputType;
+    typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,1> ValueType;
+    typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
+    
+    const int m_inputs, m_values;
+    
+    Functor() : m_inputs(InputsAtCompileTime), m_values(ValuesAtCompileTime) {}
+    Functor(int inputs, int values) : m_inputs(inputs), m_values(values) {}
+  
+    int inputs() const { return m_inputs; }
+    int values() const { return m_values; }
   };
 }
 

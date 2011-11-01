@@ -39,9 +39,8 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
 
 #include "pcl/sample_consensus/sac_model_cylinder.h"
-#include "pcl/common/distances.h"
 #include "pcl/common/concatenate.h"
-#include <cminpack.h>
+#include <unsupported/Eigen/NonLinearOptimization>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
@@ -274,54 +273,23 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::optimizeModelCoefficients (
   tmp_inliers_ = &inliers;
   int m = inliers.size ();
 
-  double *fvec = new double[m];
+  Eigen::VectorXd x(n_unknowns);
+  for(int d = 0; d < n_unknowns; d++)
+    x[d] = model_coefficients[d];
 
-  int iwa[n_unknowns];
-
-  int lwa = m * n_unknowns + 5 * n_unknowns + m;
-  double *wa = new double[lwa];
-
-  // Set the initial solution
-  double x[n_unknowns];
-  for (int d = 0; d < n_unknowns; ++d)
-    x[d] = model_coefficients[d];   // initial guess
-
-  // Set tol to the square root of the machine. Unless high solutions are required, these are the recommended settings.
-  double tol = sqrt (dpmpar (1));
-
-  // Optimize using forward-difference approximation LM
-  int info = lmdif1 (&pcl::SampleConsensusModelCylinder<PointT, PointNT>::functionToOptimize, this, m, n_unknowns, x, fvec, tol, iwa, wa, lwa);
-
+  OptimizationFunctor functor(n_unknowns, m, this);
+  Eigen::NumericalDiff<OptimizationFunctor > num_diff(functor);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor> > lm(num_diff);
+  int info = lm.minimize(x);
+  
   // Compute the L2 norm of the residuals
   PCL_DEBUG ("[pcl::SampleConsensusModelCylinder::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g %g %g %g \nFinal solution: %g %g %g %g %g %g %g\n",
-             info, enorm (m, fvec), model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3],
+             info, lm.fvec.norm (), model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3],
              model_coefficients[4], model_coefficients[5], model_coefficients[6], x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
 
   optimized_coefficients.resize (n_unknowns);
   for (int d = 0; d < n_unknowns; ++d)
     optimized_coefficients[d] = x[d];
-
-  free (wa); free (fvec);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////(
-template <typename PointT, typename PointNT> int
-pcl::SampleConsensusModelCylinder<PointT, PointNT>::functionToOptimize (void *p, int m, int n, const double *x, double *fvec, int iflag)
-{
-  SampleConsensusModelCylinder *model = (SampleConsensusModelCylinder*)p;
-
-  Eigen::Vector4f line_pt  (x[0], x[1], x[2], 0);
-  Eigen::Vector4f line_dir (x[3], x[4], x[5], 0);
-
-  for (int i = 0; i < m; ++i)
-  {
-    // dist = f - r
-    Eigen::Vector4f pt (model->input_->points[(*model->tmp_inliers_)[i]].x,
-                        model->input_->points[(*model->tmp_inliers_)[i]].y,
-                        model->input_->points[(*model->tmp_inliers_)[i]].z, 0);
-    fvec[i] = pcl::sqrPointToLineDistance (pt, line_pt, line_dir) - x[6]*x[6];
-  }
-  return (0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -4,14 +4,19 @@ set(SUBSYS_DEPS common)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS cminpack)
+PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 if(build)
+    if (NOT ANDROID_NDK)
+      set (ANDROID_PROBLEM_INCLUDES include/pcl/${SUBSYS_NAME}/prosac.h)
+      set (ANDROID_PROBLEM_IMPL_INCLUDES include/pcl/${SUBSYS_NAME}/impl/prosac.hpp)
+      set (ANDROID_PROBLEM_SOURCES src/prosac.cpp)
+    endif()
+
     set(srcs 
         src/lmeds.cpp
         src/mlesac.cpp
         src/msac.cpp
-        src/prosac.cpp
         src/ransac.cpp
         src/rmsac.cpp
         src/rransac.cpp
@@ -27,6 +32,7 @@ if(build)
         src/sac_model_plane.cpp
         src/sac_model_registration.cpp
         src/sac_model_sphere.cpp
+        ${ANDROID_PROBLEM_SOURCES}
         )
         
     set(incs 
@@ -35,7 +41,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/mlesac.h
         include/pcl/${SUBSYS_NAME}/model_types.h
         include/pcl/${SUBSYS_NAME}/msac.h
-        include/pcl/${SUBSYS_NAME}/prosac.h
         include/pcl/${SUBSYS_NAME}/ransac.h
         include/pcl/${SUBSYS_NAME}/rmsac.h
         include/pcl/${SUBSYS_NAME}/rransac.h
@@ -53,13 +58,13 @@ if(build)
         include/pcl/${SUBSYS_NAME}/sac_model_plane.h
         include/pcl/${SUBSYS_NAME}/sac_model_registration.h
         include/pcl/${SUBSYS_NAME}/sac_model_sphere.h
+        ${ANDROID_PROBLEM_INCLUDES}
         )
         
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/lmeds.hpp
         include/pcl/${SUBSYS_NAME}/impl/mlesac.hpp
         include/pcl/${SUBSYS_NAME}/impl/msac.hpp
-        include/pcl/${SUBSYS_NAME}/impl/prosac.hpp
         include/pcl/${SUBSYS_NAME}/impl/ransac.hpp
         include/pcl/${SUBSYS_NAME}/impl/rmsac.hpp
         include/pcl/${SUBSYS_NAME}/impl/rransac.hpp
@@ -75,17 +80,16 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/sac_model_plane.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_registration.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_sphere.hpp
+        ${ANDROID_PROBLEM_IMPL_INCLUDES}
         )
-        
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_common ${CMINPACK_LIBRARIES})
-    set(EXT_DEPS cminpack)
+    target_link_libraries(${LIB_NAME} pcl_common)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-      "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
+      "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
