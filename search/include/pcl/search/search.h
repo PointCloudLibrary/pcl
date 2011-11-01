@@ -78,7 +78,7 @@ namespace pcl
           * \param[in] indices the point indices subset that is to be used from the cloud
           */
         virtual void
-        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices) = 0;
+        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices) {}
 
         /** \brief Pass the input dataset that the search will be performed on.
           * \param[in] cloud a const pointer to the PointCloud data
@@ -92,7 +92,7 @@ namespace pcl
 
         /** \brief Get a pointer to the vector of indices used. */
         virtual IndicesConstPtr const
-        getIndices () = 0;
+        getIndices () { return (IndicesConstPtr ()); }
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] point the given query point
