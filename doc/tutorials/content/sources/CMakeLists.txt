@@ -12,9 +12,9 @@ foreach(subdir
           cylinder_segmentation
           extract_indices
           greedy_projection
-          narf_descriptor_visualization
-          narf_feature_extraction
-          narf_keypoint_extraction
+          #narf_descriptor_visualization
+          #narf_feature_extraction
+          #narf_keypoint_extraction
           octree_change_detection
           octree_search
           openni_grabber
@@ -25,9 +25,9 @@ foreach(subdir
           planar_segmentation
           point_cloud_compression
           project_inliers
-          range_image_border_extraction
-          range_image_creation
-          range_image_visualization
+          #range_image_border_extraction
+          #range_image_creation
+          #range_image_visualization
           registration_api
           resampling
           statistical_removal
@@ -36,6 +36,6 @@ foreach(subdir
           voxel_grid
        )
 
-#      add_subdirectory(${subdir})
+      add_subdirectory(${subdir})
 
 endforeach()
