@@ -13,6 +13,7 @@ if(build)
         src/uniform_sampling.cpp
         src/sift_keypoint.cpp
 				src/smoothed_surfaces_keypoint.cpp
+        src/harris_keypoint3D.cpp
         )
 
     set(incs 
@@ -21,6 +22,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/sift_keypoint.h
         include/pcl/${SUBSYS_NAME}/uniform_sampling.h
         include/pcl/${SUBSYS_NAME}/smoothed_surfaces_keypoint.h
+        include/pcl/${SUBSYS_NAME}/harris_keypoint3D.h
         )
 
     set(impl_incs 
@@ -28,6 +30,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/sift_keypoint.hpp
         include/pcl/${SUBSYS_NAME}/impl/uniform_sampling.hpp
         include/pcl/${SUBSYS_NAME}/impl/smoothed_surfaces_keypoint.hpp
+        include/pcl/${SUBSYS_NAME}/impl/harris_keypoint3D.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
