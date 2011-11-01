@@ -2,7 +2,7 @@ set(SUBSYS_NAME apps)
 set(SUBSYS_DESC "Application examples/samples that show how PCL works")
 set(SUBSYS_DEPS common io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search)
 
-# Find VTK 
+# Find VTK
 if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")
@@ -28,95 +28,117 @@ if(build)
 
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-  PCL_ADD_EXECUTABLE(nn_classification_example ${SUBSYS_NAME} src/nn_classification_example.cpp)
-  target_link_libraries(nn_classification_example pcl_common pcl_io pcl_features pcl_kdtree)
+  PCL_ADD_EXECUTABLE(eigen33_test ${SUBSYS_NAME} src/eigen33_test.cpp)
+  target_link_libraries(eigen33_test pcl_common)
 
-  PCL_ADD_EXECUTABLE(pyramid_surface_matching ${SUBSYS_NAME} src/pyramid_surface_matching.cpp)
-  target_link_libraries(pyramid_surface_matching pcl_common pcl_io pcl_features pcl_registration pcl_filters)
-  
-  PCL_ADD_EXECUTABLE(statistical_multiscale_interest_region_extraction_example ${SUBSYS_NAME} src/statistical_multiscale_interest_region_extraction_example.cpp)
-  target_link_libraries(statistical_multiscale_interest_region_extraction_example pcl_common pcl_io pcl_features pcl_filters)
+  #PCL_ADD_EXECUTABLE(nn_classification_example ${SUBSYS_NAME} src/nn_classification_example.cpp)
+  #target_link_libraries(nn_classification_example pcl_common pcl_io pcl_features pcl_kdtree)
+
+  #PCL_ADD_EXECUTABLE(test_harris ${SUBSYS_NAME} src/test_harris.cpp)
+  #target_link_libraries(test_harris cv highgui pcl_io)
+
+  #PCL_ADD_EXECUTABLE(pyramid_surface_matching ${SUBSYS_NAME} src/pyramid_surface_matching.cpp)
+  #target_link_libraries(pyramid_surface_matching pcl_common pcl_io pcl_features pcl_registration pcl_filters)
+
+  #PCL_ADD_EXECUTABLE(statistical_multiscale_interest_region_extraction_example ${SUBSYS_NAME} src/statistical_multiscale_interest_region_extraction_example.cpp)
+  #target_link_libraries(statistical_multiscale_interest_region_extraction_example pcl_common pcl_io pcl_features pcl_filters)
 
   if (VTK_FOUND)
-    PCL_ADD_EXECUTABLE(ppf_object_recognition ${SUBSYS_NAME} src/ppf_object_recognition.cpp)
-    target_link_libraries(ppf_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_registration pcl_visualization pcl_sample_consensus pcl_segmentation)  
-    
- 	PCL_ADD_EXECUTABLE(multiscale_feature_persistence_example ${SUBSYS_NAME} src/multiscale_feature_persistence_example.cpp)
-    target_link_libraries(multiscale_feature_persistence_example pcl_common pcl_io pcl_filters pcl_features pcl_visualization)
-    
-    PCL_ADD_EXECUTABLE(surfel_smoothing_test ${SUBSYS_NAME} src/surfel_smoothing_test.cpp)
-    target_link_libraries(surfel_smoothing_test pcl_common pcl_io pcl_surface pcl_filters pcl_features pcl_visualization)
-    
-    if (OPENNI_FOUND AND BUILD_OPENNI)  
-	  PCL_ADD_EXECUTABLE(openni_voxel_grid ${SUBSYS_NAME} src/openni_voxel_grid.cpp)
-	  target_link_libraries(openni_voxel_grid pcl_common pcl_io pcl_filters pcl_visualization)
+   # PCL_ADD_EXECUTABLE(ppf_object_recognition ${SUBSYS_NAME} src/ppf_object_recognition.cpp)
+    #target_link_libraries(ppf_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_registration pcl_visualization pcl_sample_consensus pcl_segmentation)
 
-	  PCL_ADD_EXECUTABLE(openni_passthrough ${SUBSYS_NAME} src/openni_passthrough.cpp)
-	  target_link_libraries(openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization)
-	
-	  PCL_ADD_EXECUTABLE(openni_stream_compression ${SUBSYS_NAME} src/openni_stream_compression.cpp)
-	  target_link_libraries(openni_stream_compression pcl_common pcl_io pcl_filters pcl_visualization pcl_octree)
-	
-	  PCL_ADD_EXECUTABLE(openni_planar_segmentation ${SUBSYS_NAME} src/openni_planar_segmentation.cpp)
-	  target_link_libraries(openni_planar_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus)
-	
-	  PCL_ADD_EXECUTABLE(openni_ii_normal_estimation ${SUBSYS_NAME} src/openni_ii_normal_estimation.cpp)
+ 	#PCL_ADD_EXECUTABLE(multiscale_feature_persistence_example ${SUBSYS_NAME} src/multiscale_feature_persistence_example.cpp)
+    #target_link_libraries(multiscale_feature_persistence_example pcl_common pcl_io pcl_filters pcl_features pcl_visualization)
+
+    #PCL_ADD_EXECUTABLE(surfel_smoothing_test ${SUBSYS_NAME} src/surfel_smoothing_test.cpp)
+    #target_link_libraries(surfel_smoothing_test pcl_common pcl_io pcl_surface pcl_filters pcl_features pcl_visualization)
+
+    if (OPENNI_FOUND AND BUILD_OPENNI)
+	  #PCL_ADD_EXECUTABLE(openni_voxel_grid ${SUBSYS_NAME} src/openni_voxel_grid.cpp)
+	  #target_link_libraries(openni_voxel_grid pcl_common pcl_io pcl_filters pcl_visualization)
+
+	  #PCL_ADD_EXECUTABLE(openni_passthrough ${SUBSYS_NAME} src/openni_passthrough.cpp)
+	  #target_link_libraries(openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization)
+
+	  PCL_ADD_EXECUTABLE(pcd_keypoints ${SUBSYS_NAME} src/pcd_keypoints.cpp)
+	  target_link_libraries(pcd_keypoints pcl_common pcl_io pcl_filters pcl_visualization pcl_features)
+
+	  #PCL_ADD_EXECUTABLE(openni_stream_compression ${SUBSYS_NAME} src/openni_stream_compression.cpp)
+	  #target_link_libraries(openni_stream_compression pcl_common pcl_io pcl_filters pcl_visualization pcl_octree)
+
+	  #PCL_ADD_EXECUTABLE(openni_planar_segmentation ${SUBSYS_NAME} src/openni_planar_segmentation.cpp)
+	  #target_link_libraries(openni_planar_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus)
+
+    PCL_ADD_EXECUTABLE(openni_ii_normal_estimation ${SUBSYS_NAME} src/openni_ii_normal_estimation.cpp)
 	  target_link_libraries(openni_ii_normal_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
-	  
-	  PCL_ADD_EXECUTABLE(openni_feature_persistence ${SUBSYS_NAME} src/openni_feature_persistence.cpp)
-	  target_link_libraries(openni_feature_persistence pcl_common pcl_io pcl_filters pcl_visualization pcl_features)
-		
-		PCL_ADD_EXECUTABLE(openni_mls_smoothing ${SUBSYS_NAME} src/openni_mls_smoothing.cpp)
-	  target_link_libraries(openni_mls_smoothing pcl_common pcl_io pcl_surface pcl_visualization)
-	 
-    PCL_ADD_EXECUTABLE(openni_change_viewer ${SUBSYS_NAME} src/openni_change_viewer.cpp)
-    target_link_libraries(openni_change_viewer pcl_common pcl_io pcl_kdtree pcl_octree
-        pcl_range_image pcl_visualization pcl_filters)
 
-    PCL_ADD_EXECUTABLE(openni_uniform_sampling ${SUBSYS_NAME} src/openni_uniform_sampling.cpp)
-    target_link_libraries(openni_uniform_sampling pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_keypoints)
+#    PCL_ADD_EXECUTABLE(openni_ii2_normal_estimation ${SUBSYS_NAME} src/openni_ii2_normal_estimation.cpp)
+#	  target_link_libraries(openni_ii2_normal_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
 
-    PCL_ADD_EXECUTABLE(openni_boundary_estimation ${SUBSYS_NAME} src/openni_boundary_estimation.cpp)
-    target_link_libraries(openni_boundary_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
+	  #PCL_ADD_EXECUTABLE(openni_feature_persistence ${SUBSYS_NAME} src/openni_feature_persistence.cpp)
+	  #target_link_libraries(openni_feature_persistence pcl_common pcl_io pcl_filters pcl_visualization pcl_features)
+
+		#PCL_ADD_EXECUTABLE(openni_mls_smoothing ${SUBSYS_NAME} src/openni_mls_smoothing.cpp)
+	  #target_link_libraries(openni_mls_smoothing pcl_common pcl_io pcl_surface pcl_visualization)
+
+    #PCL_ADD_EXECUTABLE(openni_change_viewer ${SUBSYS_NAME} src/openni_change_viewer.cpp)
+    #target_link_libraries(openni_change_viewer pcl_common pcl_io pcl_kdtree pcl_octree
+    #    pcl_range_image pcl_visualization pcl_filters)
+
+    #    PCL_ADD_EXECUTABLE(openni_boundary_estimation ${SUBSYS_NAME} src/openni_boundary_estimation.cpp)
+    #    target_link_libraries(openni_boundary_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
+
+    #PCL_ADD_EXECUTABLE(openni_uniform_sampling ${SUBSYS_NAME} src/openni_uniform_sampling.cpp)
+    #target_link_libraries(openni_uniform_sampling pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_keypoints)
+
+    #PCL_ADD_EXECUTABLE(openni_boundary_estimation ${SUBSYS_NAME} src/openni_boundary_estimation.cpp)
+    #target_link_libraries(openni_boundary_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
 
 	  if (QHULL_FOUND)
-	    PCL_ADD_EXECUTABLE(openni_3d_convex_hull ${SUBSYS_NAME} src/openni_3d_convex_hull.cpp)
-	    target_link_libraries(openni_3d_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
-	  
+	    #PCL_ADD_EXECUTABLE(openni_3d_convex_hull ${SUBSYS_NAME} src/openni_3d_convex_hull.cpp)
+	    #target_link_libraries(openni_3d_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
+
 	    PCL_ADD_EXECUTABLE(openni_3d_concave_hull ${SUBSYS_NAME} src/openni_3d_concave_hull.cpp)
 	    target_link_libraries(openni_3d_concave_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
+
+	    PCL_ADD_EXECUTABLE(pcd_3d_concave_hull ${SUBSYS_NAME} src/pcd_3d_concave_hull.cpp)
+	    target_link_libraries(pcd_3d_concave_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
+
+      #PCL_ADD_EXECUTABLE(openni_tracking ${SUBSYS_NAME} src/openni_tracking.cpp)
+	    #target_link_libraries(openni_tracking pcl_common pcl_io pcl_surface pcl_visualization pcl_filters pcl_features pcl_segmentation)
 
             PCL_ADD_EXECUTABLE(openni_tracking ${SUBSYS_NAME} src/openni_tracking.cpp)
 	    target_link_libraries(openni_tracking pcl_common pcl_io pcl_surface pcl_visualization pcl_filters pcl_features pcl_segmentation pcl_tracking pcl_search)
             
 	    set(incs include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h)  
+
 	  	set(impl_incs include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp)
 	    set(srcs src/dominant_plane_segmentation.cpp)
-	    
+
       # Install include files
       PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
       PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-    	
+
     	set(LIB_NAME pcl_${SUBSYS_NAME})
 	    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${impl_incs} ${incs})
-	    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search)
-	       
+	    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus)
+
 	  	PCL_ADD_SSE_FLAGS(${LIB_NAME})
 	    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" "" "" "" "")
-	      
+
 	  endif() # QHULL_FOUND
 
 	  #PCL_ADD_EXECUTABLE(openni_planar_convex_hull ${SUBSYS_NAME} src/openni_planar_convex_hull.cpp)
 	  #target_link_libraries(openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
-	
+
 	  #PCL_ADD_EXECUTABLE(openni_range_image_viewer ${SUBSYS_NAME} src/openni_range_image_viewer.cpp)
 	  #target_link_libraries(openni_range_image_viewer pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
-	
+
 	  #PCL_ADD_EXECUTABLE(openni_icp_reg ${SUBSYS_NAME} src/openni_icp_reg.cpp)
 	  #target_link_libraries(openni_icp_reg pcl_common pcl_kdtree pcl_registration pcl_visualization gsl gslcblas ann)
-    
+
   endif() # OPENNI_FOUND + BUILD_OPENNI
-    
+
   endif() # VTK_FOUND
 
 endif(build)

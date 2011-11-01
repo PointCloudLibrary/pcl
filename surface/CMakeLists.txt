@@ -22,7 +22,7 @@ if(build)
             src/convex_hull.cpp
             )
     endif(QHULL_FOUND)
-    
+
     if (VTK_FOUND AND NOT ANDROID_NDK)
         set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
         include (${VTK_USE_FILE})
@@ -104,7 +104,6 @@ if(build)
         #src/poisson.cpp
         ${HULL_SOURCES}
         #${POISSON_SOURCES}
-        ${NURBS_SOURCES}
         )
 
     set(incs include/pcl/${SUBSYS_NAME}/ear_clipping.h
@@ -117,13 +116,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/organized_fast_mesh.h
         include/pcl/${SUBSYS_NAME}/reconstruction.h
         include/pcl/${SUBSYS_NAME}/simplification_remove_unused_vertices.h
-        include/pcl/${SUBSYS_NAME}/surfel_smoothing.h        
+        include/pcl/${SUBSYS_NAME}/surfel_smoothing.h
         include/pcl/${SUBSYS_NAME}/texture_mapping.h
         ${VTK_SURFACE_INCLUDES}
         #include/pcl/${SUBSYS_NAME}/poisson.h
         ${HULL_INCLUDES}
         #${POISSON_INCLUDES}
-        ${NURBS_INCLUDES}
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/gp3.hpp
