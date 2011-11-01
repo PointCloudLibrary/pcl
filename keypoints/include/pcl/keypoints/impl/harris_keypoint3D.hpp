@@ -74,6 +74,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT>::setNonMaxSupression (bool nonmax)
 template <typename PointInT, typename PointOutT> void 
 pcl::HarrisKeypoint3D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 {
+  std::cout << "input size: " << input_->points.size () << std::endl;
   boost::shared_ptr<pcl::PointCloud<PointInT> > cloud (new pcl::PointCloud<PointInT> ());
   pcl::PassThrough<PointInT> pass_;
 #if 0  
@@ -89,6 +90,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outp
     extract.setIndices (indices_);
     extract.setInputCloud (input_);
     extract.filter (*sub_cloud);  
+    std::cout << "sub_cloud size: " << sub_cloud->points.size () << std::endl;
     pass_.setInputCloud (sub_cloud);
   }
 #else
@@ -96,30 +98,37 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outp
 #endif
   
   pass_.filter (*cloud);
+  std::cout << "pass size: " << cloud->points.size () << std::endl;
   // estimate normals
   boost::shared_ptr<pcl::PointCloud<pcl::Normal> > normals (new pcl::PointCloud<Normal> ());
   pcl::NormalEstimation<PointInT, pcl::Normal> normal_estimation;
   normal_estimation.setInputCloud(cloud);
   normal_estimation.setRadiusSearch(radius_);
   normal_estimation.compute (*normals);
+  std::cout << "normals size: " << normals->points.size () << std::endl;
   
   boost::shared_ptr<pcl::PointCloud<PointOutT> > response (new pcl::PointCloud<PointOutT> ());
   switch (method_)
   {
     case HARRIS:
       responseHarris(cloud, normals, *response);
+      std::cout << "calling responseHarris" << std::endl;
       break;
     case NOBLE:
       responseNoble(cloud, normals, *response);
+      std::cout << "calling responseNoble" << std::endl;
       break;
     case LOWE:
       responseLowe(cloud, normals, *response);
+      std::cout << "calling responseLowe" << std::endl;
       break;
     case CURVATURE:
       responseCurvature(cloud, normals, *response);
+      std::cout << "calling responseCurvature" << std::endl;
       break;
     case TOMASI:
       responseTomasi(cloud, normals, *response);
+      std::cout << "calling responseTomasi" << std::endl;
       break;     
   }
   

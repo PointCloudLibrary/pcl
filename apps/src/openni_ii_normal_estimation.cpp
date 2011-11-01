@@ -74,7 +74,7 @@ class OpenNIIntegralImageNormalEstimation
     {
 //      ne_.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointType, pcl::Normal>::AVERAGE_3D_GRADIENT);
       ne_.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointType, pcl::Normal>::COVARIANCE_MATRIX);
-      ne_.setRectSize (21, 21);
+      ne_.setRectSize (50, 50);
       new_cloud_ = false;
     }
 
@@ -82,42 +82,14 @@ class OpenNIIntegralImageNormalEstimation
     void 
     cloud_cb (const CloudConstPtr& cloud)
     {
-FPS_CALC("cloud_cb");
       boost::mutex::scoped_lock lock (mtx_);
-//      double time1, time2;
-      //static double sum1 = 0;
-     // static double sum2 = 0;
-      //double start = pcl::getTime ();
       //lock while we set our cloud;
+      FPS_CALC ("computation");
       // Estimate surface normals
       ne_.setInputCloud (cloud);
 
-      //double integral_time = pcl::getTime ();
       normals_.reset (new pcl::PointCloud<pcl::Normal>);
       ne_.compute (*normals_);
-//      double end = pcl::getTime ();
-//      std::cout << "time1 integral: " << 1000.0f * (integral_time - start) << " ms" << std::endl;
-//      std::cout << "time1 normals : " << 1000.0f * (end - integral_time) << " ms" << std::endl;
-//      std::cout << "time1 overall : " << 1000.0f * (end - start) << " ms" << std::endl;
-//
-//      time1 = end - start;
-//      start = pcl::getTime ();
-//      //lock while we set our cloud;
-//      // Estimate surface normals
-//
-//      integral_time = pcl::getTime ();
-//      normals_.reset (new pcl::PointCloud<pcl::Normal>);
-//      end = pcl::getTime ();
-//      std::cout << "time2 integral: " << 1000.0f * (integral_time - start) << " ms" << std::endl;
-//      std::cout << "time2 normals : " << 1000.0f * (end - integral_time) << " ms" << std::endl;
-//      std::cout << "time2 overall : " << 1000.0f * (end - start) << " ms" << std::endl;
-//
-//      time2 = end - start;
-//      sum1 += time1;
-//      sum2 += time2;
-//      std::cout << " speedup: " << time1 / time2 << " avg: " << sum1 / sum2 << std::endl;
-      
-      
       cloud_ = cloud;
 
       new_cloud_ = true;
@@ -145,7 +117,7 @@ FPS_CALC("cloud_cb");
       if (new_cloud_ && normals_)
       {
         viz.removePointCloud ("normalcloud");
-        viz.addPointCloudNormals<PointType, pcl::Normal> (temp_cloud, normals_, 50, 0.05, "normalcloud");
+        viz.addPointCloudNormals<PointType, pcl::Normal> (temp_cloud, normals_, 200, 0.05, "normalcloud");
         new_cloud_ = false;
       }
     }
@@ -158,7 +130,7 @@ FPS_CALC("cloud_cb");
       boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIIntegralImageNormalEstimation::cloud_cb, this, _1);
       boost::signals2::connection c = interface->registerCallback (f);
      
-      //viewer.runOnVisualizationThread (boost::bind(&OpenNIIntegralImageNormalEstimation::viz_cb, this, _1), "viz_cb");
+      viewer.runOnVisualizationThread (boost::bind(&OpenNIIntegralImageNormalEstimation::viz_cb, this, _1), "viz_cb");
 
       interface->start ();
       
