@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -47,9 +49,7 @@
 #include "pcl/common/eigen.h"
 #include "pcl/common/centroid.h"
 
-#include "pcl/kdtree/kdtree.h"
-#include "pcl/kdtree/kdtree_flann.h"
-#include "pcl/kdtree/organized_data.h"
+#include "pcl/search/search.h"
 
 namespace pcl
 {
@@ -105,8 +105,8 @@ namespace pcl
       typedef boost::shared_ptr< Feature<PointInT, PointOutT> > Ptr;
       typedef boost::shared_ptr< const Feature<PointInT, PointOutT> > ConstPtr;
       
-      typedef typename pcl::KdTree<PointInT> KdTree;
-      typedef typename pcl::KdTree<PointInT>::Ptr KdTreePtr;
+      typedef typename pcl::search::Search<PointInT> KdTree;
+      typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
 
       typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
@@ -279,14 +279,13 @@ namespace pcl
     typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
     typedef typename PointCloudIn::Ptr PointCloudInPtr;
     typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-
-    typedef typename pcl::PointCloud<PointNT> PointCloudN;
-    typedef typename PointCloudN::Ptr PointCloudNPtr;
-    typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
-
     typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
     public:
+      typedef typename pcl::PointCloud<PointNT> PointCloudN;
+      typedef typename PointCloudN::Ptr PointCloudNPtr;
+      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+
       typedef boost::shared_ptr< FeatureFromNormals<PointInT, PointNT, PointOutT> > Ptr;
       typedef boost::shared_ptr< const FeatureFromNormals<PointInT, PointNT, PointOutT> > ConstPtr;
 

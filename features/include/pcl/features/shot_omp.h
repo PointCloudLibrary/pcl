@@ -81,7 +81,6 @@ namespace pcl
       using SHOTEstimation<PointInT, PointNT, PointOutT>::nr_grid_sector_;
       using SHOTEstimation<PointInT, PointNT, PointOutT>::nr_shape_bins_;
       using SHOTEstimation<PointInT, PointNT, PointOutT>::sqradius_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT>::sqradius4_;
       using SHOTEstimation<PointInT, PointNT, PointOutT>::radius3_4_;
       using SHOTEstimation<PointInT, PointNT, PointOutT>::radius1_4_;
       using SHOTEstimation<PointInT, PointNT, PointOutT>::radius1_2_;
@@ -138,8 +137,7 @@ namespace pcl
       using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_grid_sector_;
       using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_shape_bins_;
       using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::sqradius_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::sqradius4_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::radius3_4_;
+       using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::radius3_4_;
       using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_4_;
       using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_2_;
       using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::rf_;

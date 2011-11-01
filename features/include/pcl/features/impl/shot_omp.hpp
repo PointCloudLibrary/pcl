@@ -50,7 +50,6 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   descLength_ = nr_grid_sector_ * (nr_shape_bins_ + 1);
 
   sqradius_ = search_radius_ * search_radius_;
-  sqradius4_ = sqradius_ / 4;
   radius3_4_ = (search_radius_ * 3) / 4;
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
@@ -68,28 +67,28 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   for (int i = 0; i < threads_; i++)
     shot[i].setZero (descLength_);
 
-  int tid;
+  
 
   // Iterating over the entire index vector
-#pragma omp parallel for private(tid) num_threads(threads_)
+  #pragma omp parallel for num_threads(threads_)
   for (int idx = 0; idx < data_size; ++idx)
   {
-    // Allocate enough space to hold the results
+	 // Allocate enough space to hold the results
     // \note This resize is irrelevant for a radiusSearch ().
     std::vector<int> nn_indices (k_);
     std::vector<float> nn_dists (k_);
 
     this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
-    // Estimate the SHOT at each patch
+	// Estimate the SHOT at each patch
 #ifdef _OPENMP
-    tid = omp_get_thread_num ();
+    int tid = omp_get_thread_num ();
 #else
-    tid = 0;
+    int tid = 0;
 #endif
-    computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], rfs[tid]);
+	computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], rfs[tid]);
 
-    // Copy into the resultant cloud
+	// Copy into the resultant cloud
     for (int d = 0; d < shot[tid].size (); ++d)
       output.points[idx].descriptor[d] = shot[tid][d];
     for (int d = 0; d < 9; ++d)
@@ -110,7 +109,6 @@ pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (P
   descLength_ += (b_describe_color_) ? nr_grid_sector_ * (nr_color_bins_ + 1) : 0;
 
   sqradius_ = search_radius_ * search_radius_;
-  sqradius4_ = sqradius_ / 4;
   radius3_4_ = (search_radius_ * 3) / 4;
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
@@ -128,10 +126,8 @@ pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (P
   for (int i = 0; i < threads_; i++)
     shot[i].setZero (descLength_);
 
-  int tid;
-
   // Iterating over the entire index vector
-#pragma omp parallel for private(tid) num_threads(threads_)
+#pragma omp parallel for num_threads(threads_)
   for (int idx = 0; idx < data_size; ++idx)
   {
     // Allocate enough space to hold the results
@@ -143,9 +139,9 @@ pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (P
 
     // Estimate the SHOT at each patch
 #ifdef _OPENMP
-    tid = omp_get_thread_num ();
+    int tid = omp_get_thread_num ();
 #else
-    tid = 0;
+    int tid = 0;
 #endif
     computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], rfs[tid]);
 

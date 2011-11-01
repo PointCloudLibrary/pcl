@@ -1,6 +1,6 @@
 set(SUBSYS_NAME features)
 set(SUBSYS_DESC "Point cloud features library")
-set(SUBSYS_DEPS common kdtree range_image)
+set(SUBSYS_DEPS common search kdtree octree range_image)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -9,11 +9,13 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-    set(incs include/pcl/${SUBSYS_NAME}/cvfh.h
+    set(incs 
+        include/pcl/${SUBSYS_NAME}/cvfh.h
         include/pcl/${SUBSYS_NAME}/feature.h
         include/pcl/${SUBSYS_NAME}/fpfh.h
         include/pcl/${SUBSYS_NAME}/fpfh_omp.h
         include/pcl/${SUBSYS_NAME}/integral_image_2d.h
+        include/pcl/${SUBSYS_NAME}/integral_image2D.h
         include/pcl/${SUBSYS_NAME}/integral_image_normal.h
         include/pcl/${SUBSYS_NAME}/intensity_gradient.h
         include/pcl/${SUBSYS_NAME}/intensity_spin.h
@@ -23,22 +25,38 @@ if(build)
         include/pcl/${SUBSYS_NAME}/narf_descriptor.h
         include/pcl/${SUBSYS_NAME}/normal_3d.h
         include/pcl/${SUBSYS_NAME}/normal_3d_omp.h
+        include/pcl/${SUBSYS_NAME}/normal_based_signature.h
         include/pcl/${SUBSYS_NAME}/pfh.h
+        include/pcl/${SUBSYS_NAME}/pfhrgb.h
         include/pcl/${SUBSYS_NAME}/ppf.h
+        include/pcl/${SUBSYS_NAME}/ppfrgb.h
         include/pcl/${SUBSYS_NAME}/shot.h
+        include/pcl/${SUBSYS_NAME}/shot_common.h
         include/pcl/${SUBSYS_NAME}/shot_omp.h
+        include/pcl/${SUBSYS_NAME}/spin_image.h
         include/pcl/${SUBSYS_NAME}/principal_curvatures.h
         include/pcl/${SUBSYS_NAME}/rift.h
         include/pcl/${SUBSYS_NAME}/rsd.h
         include/pcl/${SUBSYS_NAME}/statistical_multiscale_interest_region_extraction.h
         include/pcl/${SUBSYS_NAME}/vfh.h
-		)
+        include/pcl/${SUBSYS_NAME}/3dsc.h
+        include/pcl/${SUBSYS_NAME}/usc.h
+        include/pcl/${SUBSYS_NAME}/boundary.h
+        include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h
+        )
+    
+    set(feature_evaluation_incs
+        include/pcl/${SUBSYS_NAME}/feature_evaluation/feature_evaluation_framework.h
+        include/pcl/${SUBSYS_NAME}/feature_evaluation/feature_test.h
+        )
 
-    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
+    set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/feature.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/integral_image_2d.hpp
+        include/pcl/${SUBSYS_NAME}/impl/integral_image2D.hpp
         include/pcl/${SUBSYS_NAME}/impl/integral_image_normal.hpp
         include/pcl/${SUBSYS_NAME}/impl/intensity_gradient.hpp
         include/pcl/${SUBSYS_NAME}/impl/intensity_spin.hpp
@@ -47,15 +65,24 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/narf.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d_omp.hpp
+        include/pcl/${SUBSYS_NAME}/impl/normal_based_signature.hpp
         include/pcl/${SUBSYS_NAME}/impl/pfh.hpp
+        include/pcl/${SUBSYS_NAME}/impl/pfhrgb.hpp
         include/pcl/${SUBSYS_NAME}/impl/ppf.hpp
+        include/pcl/${SUBSYS_NAME}/impl/ppfrgb.hpp
         include/pcl/${SUBSYS_NAME}/impl/shot.hpp
+        include/pcl/${SUBSYS_NAME}/impl/shot_common.hpp
         include/pcl/${SUBSYS_NAME}/impl/shot_omp.hpp
+        include/pcl/${SUBSYS_NAME}/impl/spin_image.hpp
         include/pcl/${SUBSYS_NAME}/impl/principal_curvatures.hpp
         include/pcl/${SUBSYS_NAME}/impl/rift.hpp
         include/pcl/${SUBSYS_NAME}/impl/rsd.hpp
         include/pcl/${SUBSYS_NAME}/impl/statistical_multiscale_interest_region_extraction.hpp
         include/pcl/${SUBSYS_NAME}/impl/vfh.hpp
+        include/pcl/${SUBSYS_NAME}/impl/3dsc.hpp
+        include/pcl/${SUBSYS_NAME}/impl/usc.hpp
+        include/pcl/${SUBSYS_NAME}/impl/boundary.hpp
+        include/pcl/${SUBSYS_NAME}/impl/range_image_border_extractor.hpp
         )
 
     set(srcs 
@@ -73,15 +100,22 @@ if(build)
         src/narf_descriptor.cpp
         src/normal_3d.cpp
         src/normal_3d_omp.cpp
+        src/normal_based_signature.cpp
         src/pfh.cpp
+        src/pfhrgb.cpp
         src/ppf.cpp
+        src/ppfrgb.cpp
         src/shot.cpp
         src/shot_omp.cpp
+        src/spin_image.cpp
         src/principal_curvatures.cpp
         src/rift.cpp
         src/rsd.cpp 
-#        src/statistical_multiscale_interest_region_extraction.cpp                               
+        src/statistical_multiscale_interest_region_extraction.cpp
         src/vfh.cpp
+        src/3dsc.cpp
+        src/usc.cpp
+        src/range_image_border_extractor.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
@@ -89,11 +123,12 @@ if(build)
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
     PCL_LINK_OPENMP(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_range_image pcl_kdtree)
+    target_link_libraries(${LIB_NAME} pcl_range_image pcl_search pcl_kdtree pcl_octree)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "" "" "" "")
     # Install headers
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/feature_evaluation ${feature_evaluation_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
     set(border_srcs src/boundary.cpp
@@ -111,7 +146,7 @@ if(build)
     set(LIB_NAME pcl_range_image_border_extractor)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${border_srcs} ${border_incs} ${border_impl_incs})
     PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_range_image pcl_kdtree)
+    target_link_libraries(${LIB_NAME} pcl_range_image pcl_search pcl_kdtree pcl_octree)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME}
         "Point cloud range image border extractor library"
         "${SUBSYS_DEPS}" "" "" "" "")

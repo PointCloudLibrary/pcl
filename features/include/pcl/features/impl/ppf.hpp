@@ -48,7 +48,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::PPFEstimation ()
 {
   feature_name_ = "PPFEstimation";
   // Slight hack in order to pass the check for the presence of a search method in Feature::initCompute ()
-  Feature<PointInT, PointOutT>::tree_.reset (new KdTreeFLANN <PointInT> ());
+  Feature<PointInT, PointOutT>::tree_.reset (new pcl::search::KdTree <PointInT> ());
   Feature<PointInT, PointOutT>::search_radius_ = 1.0f;
 };
 
@@ -71,7 +71,9 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
       PointOutT p;
       if (i != j)
       {
-        if (/*pcl::computePPFPairFeature*/pcl::computePairFeatures (input_->points[i].getVector4fMap (),
+        if (//pcl::computePPFPairFeature
+            pcl::computePairFeatures
+            (input_->points[i].getVector4fMap (),
                                    normals_->points[i].getNormalVector4fMap (),
                                    input_->points[j].getVector4fMap (),
                                    normals_->points[j].getNormalVector4fMap (),
@@ -84,12 +86,16 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
           Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                          model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
           Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
-          p.alpha_m = acos (Eigen::Vector3f::UnitY ().dot ((transform_mg * model_point).normalized ()));
+
+          Eigen::Vector3f model_point_transformed = transform_mg * model_point;
+          float angle = atan2f ( -model_point_transformed(2), model_point_transformed(1));
+          if (sin (angle) * model_point_transformed(2) < 0.0f)
+            angle *= (-1);
+          p.alpha_m = -angle;
         }
         else
         {
-          PCL_ERROR ("[pcl::%s::computeFeature] Computing pair feature vector between points %lu and %lu went wrong.\n", 
-                     getClassName ().c_str (), (unsigned long) i, (unsigned long) j);
+          PCL_ERROR ("[pcl::%s::computeFeature] Computing pair feature vector between points %lu and %lu went wrong.\n", getClassName ().c_str (), (unsigned long) i, (unsigned long) j);
           p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = 0.0;
         }
       }

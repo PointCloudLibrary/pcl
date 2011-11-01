@@ -102,8 +102,8 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
   pcx = eigenvectors_ (0, 2);
   pcy = eigenvectors_ (1, 2);
   pcz = eigenvectors_ (2, 2);
-  pc1 = eigenvalues_ (2);
-  pc2 = eigenvalues_ (1);
+  pc1 = eigenvalues_ (2);  
+  pc2 = eigenvalues_ (1);     
 }
 
 
