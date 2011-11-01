@@ -17,7 +17,7 @@ if(OPENNI_FOUND AND BUILD_OPENNI)
     target_link_libraries(oni_viewer pcl_common pcl_io pcl_kdtree pcl_range_image pcl_visualization)
 
     PCL_ADD_EXECUTABLE(openni_viewer ${SUBSYS_NAME} openni_viewer.cpp)
-    target_link_libraries(openni_viewer pcl_common pcl_io pcl_kdtree pcl_surface pcl_range_image pcl_visualization)
+    target_link_libraries(openni_viewer pcl_common pcl_io pcl_kdtree pcl_range_image pcl_visualization)
 
     PCL_ADD_EXECUTABLE(openni_image ${SUBSYS_NAME} openni_image.cpp)
     target_link_libraries(openni_image pcl_common pcl_io pcl_kdtree pcl_range_image pcl_visualization)
