@@ -60,6 +60,7 @@
 #include <pcl/features/intensity_gradient.h>
 #include <pcl/features/intensity_spin.h>
 #include <pcl/features/rift.h>
+#include <pcl/features/3dsc.h>
 #include <iostream>
 
 using namespace pcl;
@@ -1810,6 +1811,77 @@ TEST (PCL, RIFTEstimation)
   {
     EXPECT_NEAR (rift.histogram[i], correct_rift_feature_values[i], 1e-4);
   }
+}
+
+TEST (PCL, 3DSCEstimation)
+{
+  float meshRes = 0.002;
+  size_t nBinsL = 4;
+  size_t nBinsK = 4;
+  size_t nBinsJ = 4;
+  float radius = 20.0 * meshRes;
+  float rmin = radius / 10.0;
+  float ptDensityRad = radius / 5.0;
+
+  // Estimate normals first
+  NormalEstimation<PointXYZ, Normal> ne;
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+  // set parameters
+  ne.setInputCloud (cloud.makeShared ());
+  ne.setSearchMethod (tree);
+  ne.setRadiusSearch (radius);
+  // estimate
+  ne.compute (*normals);
+  ShapeContext3DEstimation<pcl::PointXYZ, pcl::Normal, pcl::SHOT> sc3d(false);
+  sc3d.setInputCloud (cloud.makeShared ());
+  sc3d.setInputNormals (normals);
+  sc3d.setSearchMethod (tree);
+  sc3d.setRadiusSearch (radius);
+  sc3d.setAzimuthBins (nBinsL);
+  sc3d.setElevationBins (nBinsK);
+  sc3d.setRadiusBins (nBinsJ);
+  sc3d.setMinimalRadius (rmin);
+  sc3d.setPointDensityRadius (ptDensityRad);
+  // Compute the features
+  pcl::PointCloud<pcl::SHOT>::Ptr sc3ds (new pcl::PointCloud<pcl::SHOT> ());
+  sc3d.compute (*sc3ds);
+  EXPECT_EQ (sc3ds->size (), cloud.size ());
+
+  EXPECT_NEAR ((*sc3ds)[0].rf[0], 0.322523, 1e-4);
+  EXPECT_NEAR ((*sc3ds)[0].rf[1], 0.722581, 1e-4);
+  EXPECT_NEAR ((*sc3ds)[0].rf[2], -0.611438, 1e-4);
+  EXPECT_NEAR ((*sc3ds)[0].rf[3], 0.938128, 1e-4);
+  EXPECT_NEAR ((*sc3ds)[0].rf[4], -0.330049, 1e-4);
+  EXPECT_NEAR ((*sc3ds)[0].rf[5], 0.104803, 1e-4);
+  EXPECT_NEAR ((*sc3ds)[0].rf[6], -0.126075, 1e-4);
+  EXPECT_NEAR ((*sc3ds)[0].rf[7], -0.607408, 1e-4);
+  EXPECT_NEAR ((*sc3ds)[0].rf[8], -0.784322, 1e-4);
+
+  EXPECT_EQ ((*sc3ds)[0].descriptor.size (), 64);
+  EXPECT_NEAR ((*sc3ds)[0].descriptor[4], 52.2474, 1e-4);
+  EXPECT_NEAR ((*sc3ds)[0].descriptor[6], 95.828, 1e-4);
+  EXPECT_NEAR ((*sc3ds)[0].descriptor[7], 159.806, 1e-4);
+  EXPECT_NEAR ((*sc3ds)[0].descriptor[8], 69.6632, 1e-4);
+  
+  ShapeContext3DEstimation<pcl::PointXYZ, pcl::Normal, pcl::SHOT> sc3d_with_shift(true);
+  sc3d_with_shift.setInputCloud (cloud.makeShared ());
+  sc3d_with_shift.setInputNormals (normals);
+  sc3d_with_shift.setSearchMethod (tree);
+  sc3d_with_shift.setRadiusSearch (radius);
+  sc3d_with_shift.setAzimuthBins (nBinsL);
+  sc3d_with_shift.setElevationBins (nBinsK);
+  sc3d_with_shift.setRadiusBins (nBinsJ);
+  sc3d_with_shift.setMinimalRadius (rmin);
+  sc3d_with_shift.setPointDensityRadius (ptDensityRad);
+  // Compute the features
+  pcl::PointCloud<pcl::SHOT>::Ptr sc3ds_with_shift (new pcl::PointCloud<pcl::SHOT> ());
+  sc3d_with_shift.compute (*sc3ds_with_shift);
+  EXPECT_EQ (sc3ds_with_shift->size(), sc3ds->size ());
+  EXPECT_EQ ((*sc3ds_with_shift)[0].descriptor.size (), 64 * nBinsL);
+  int nb_points = sc3ds->size ();
+  for(int i = 0; i < nb_points; i++)
+    for(int j = 0; j < 64; j++)
+      EXPECT_EQ((*sc3ds_with_shift)[i].descriptor[j], (*sc3ds)[i].descriptor[j]);
 }
 
 /* ---[ */
