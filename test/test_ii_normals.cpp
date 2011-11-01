@@ -53,6 +53,168 @@ KdTreePtr tree;
 NormalEstimation<PointXYZ, Normal> n;
 IntegralImageNormalEstimation<PointXYZ, Normal> ne;
 
+TEST(PCL, IntegralImage)
+{
+  const unsigned width = 640;
+  const unsigned height = 480;
+  const unsigned max_window_size = 11;
+  IntegralImage2Dim<float,1> integral_image(true);
+  
+  // test for dense data with elementstride = 1
+  float* data = new float[width * height];
+  for(unsigned yIdx = 0; yIdx < height; ++yIdx)
+  {
+    for(unsigned xIdx = 0; xIdx < width; ++xIdx)
+    {
+      data[width * yIdx + xIdx] = 1;
+    }
+  }
+  integral_image.setInput (data, width, height, 1, width);
+  
+  for (unsigned window_width = 2; window_width < max_window_size; ++window_width)
+  {
+    for (unsigned window_height = 2; window_height < max_window_size; ++window_height)
+    {
+      for(unsigned yIdx = 0; yIdx < height - window_height; ++yIdx)
+      {
+        for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
+        {
+          //std::cout << xIdx << " , " << yIdx << " - " << window_width << " x " << window_height << " : " << integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height)[0] << std::endl;
+          EXPECT_EQ (window_width * window_height, integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height)[0]);
+        }
+      }
+    } 
+  }
+  delete[] data;
+
+  //now test with element-stride 2
+  unsigned element_stride = 2;
+  unsigned row_stride = width * element_stride;  
+  data = new float[row_stride * height];
+  for(unsigned yIdx = 0; yIdx < height; ++yIdx)
+  {
+    for(unsigned xIdx = 0; xIdx < row_stride; xIdx += element_stride)
+    {
+      data[row_stride * yIdx + xIdx] = 1;
+      data[row_stride * yIdx + xIdx + 1] = -1;
+    }
+  }
+  integral_image.setInput (data, width, height, element_stride, row_stride);
+  for (unsigned window_width = 1; window_width < max_window_size; ++window_width)
+  {
+    for (unsigned window_height = 1; window_height < max_window_size; ++window_height)
+    {
+      for(unsigned yIdx = 0; yIdx < height - window_height; ++yIdx)
+      {
+        for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
+        {
+          //std::cout << xIdx << " , " << yIdx << " - " << window_width << " x " << window_height << " : " << integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height)[0] << std::endl;
+          EXPECT_EQ (window_width * window_height, integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height)[0]);
+        }
+      }
+    } 
+  }
+  delete[] data;
+
+  //now test with odd element-stride 3 and modulo-uneven row_stride
+  element_stride = 3;
+  row_stride = width * element_stride + 1;
+  data = new float[row_stride * height];
+  for(unsigned yIdx = 0; yIdx < height; ++yIdx)
+  {
+    for(unsigned xIdx = 0; xIdx < row_stride; xIdx += element_stride)
+    {
+      data[row_stride * yIdx + xIdx] = 1;
+      data[row_stride * yIdx + xIdx + 1] = 2;
+      data[row_stride * yIdx + xIdx + 2] = xIdx;
+    }
+  }
+  integral_image.setInput (data, width, height, element_stride, row_stride);
+  for (unsigned window_width = 1; window_width < max_window_size; ++window_width)
+  {
+    for (unsigned window_height = 1; window_height < max_window_size; ++window_height)
+    {
+      for(unsigned yIdx = 0; yIdx < height - window_height; ++yIdx)
+      {
+        for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
+        {
+          EXPECT_EQ (window_width * window_height, integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height)[0]);
+          EXPECT_EQ (window_width * window_height, integral_image.getSecondOrderSum (xIdx, yIdx, window_width, window_height)[0]);
+//std::cout << xIdx << " , " << yIdx << " - " << window_width << " x " << window_height << " : " << integral_image.getSecondOrderSum (xIdx, yIdx, window_width, window_height)[0] << std::endl;
+        }
+      }
+    } 
+  }
+  delete[] data;
+
+  // now test multidimensional case with 3D but element_stride = 4 and row_stride non-dividable by element_stride
+  IntegralImage2Dim<float, 3> integral_image3(true);
+  element_stride = 4;
+  row_stride = width * element_stride + 1;
+  data = new float[row_stride * height];
+  for(unsigned yIdx = 0; yIdx < height; ++yIdx)
+  {
+    for(unsigned xIdx = 0; xIdx < width; ++xIdx)
+    {
+      data[row_stride * yIdx + xIdx * element_stride] = xIdx;
+      data[row_stride * yIdx + xIdx * element_stride + 1] = yIdx;
+      data[row_stride * yIdx + xIdx * element_stride + 2] = xIdx + yIdx;
+    }
+  }
+  integral_image3.setInput (data, width, height, element_stride, row_stride);
+  for (unsigned window_width = 1; window_width < max_window_size; ++window_width)
+  {
+    for (unsigned window_height = 1; window_height < max_window_size; ++window_height)
+    {
+      for(unsigned yIdx = 0; yIdx < height - window_height; ++yIdx)
+      {
+        for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
+        {
+          IntegralImage2Dim<float, 3>::ElementType sum = integral_image3.getFirstOrderSum (xIdx, yIdx, window_width, window_height);
+
+          EXPECT_EQ (window_height * window_width * (window_width + 2 * xIdx - 1), sum[0] * 2);
+          EXPECT_EQ (window_width * window_height * (window_height + 2 * yIdx - 1), sum[1] * 2);
+          EXPECT_EQ (window_width * window_height * (window_height + 2 * yIdx - 1) + window_height * window_width * (window_width + 2 * xIdx - 1), sum[2] * 2);
+
+          IntegralImage2Dim<float, 3>::SecondOrderType sumSqr = integral_image3.getSecondOrderSum (xIdx, yIdx, window_width, window_height);
+  
+          IntegralImage2Dim<float, 3>::SecondOrderType ground_truth;
+          ground_truth.setZero ();
+          for (unsigned wy = yIdx; wy < yIdx + window_height; ++wy)
+          {
+            for (unsigned wx = xIdx; wx < xIdx + window_width; ++wx)
+            {
+              float* val = data + (wy * row_stride + wx * element_stride);
+              //ground_truth[0] += val[0] * val[0];
+              ground_truth[1] += val[0] * val[1];
+              ground_truth[2] += val[0] * val[2];
+              //ground_truth[3] += val[1] * val[1];
+              ground_truth[4] += val[1] * val[2];
+              ground_truth[5] += val[2] * val[2];
+            }
+          }
+
+          //EXPECT_EQ (ground_truth [0], sumSqr[0]);
+          EXPECT_EQ (ground_truth [1], sumSqr[1]);
+          EXPECT_EQ (ground_truth [2], sumSqr[2]);
+          //EXPECT_EQ (ground_truth [3], sumSqr[3]);
+          EXPECT_EQ (ground_truth [4], sumSqr[4]);
+          EXPECT_EQ (ground_truth [5], sumSqr[5]);
+
+          int w = window_width + xIdx - 1;
+          long result = w * (w + 1) * (2*w + 1) - xIdx * (xIdx - 1) * (2*xIdx - 1);
+
+          EXPECT_EQ (window_height * result, sumSqr[0] * 6);
+
+          int h = window_height + yIdx - 1;
+          result = h * (h + 1) * (2*h + 1) - yIdx * (yIdx - 1) * (2*yIdx - 1);
+          EXPECT_EQ (window_width * result, sumSqr[3] * 6);
+        }
+      }
+    } 
+  }
+  delete[] data;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, NormalEstimation)
 {
