@@ -105,6 +105,11 @@ computeTransformation (PointCloudSource &output)
     return;
   }
 
+  if (!error_functor_)
+  {
+    error_functor_.reset (new TruncatedError (min_sample_distance_));
+  }
+
   std::vector<int> sample_indices_features (nr_samples_);
   std::vector<int> sample_indices_cloud (nr_samples_);
   std::vector<int> corresponding_indices_cloud (nr_samples_);

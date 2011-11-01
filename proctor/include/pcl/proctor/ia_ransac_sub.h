@@ -31,10 +31,14 @@ public:
   using SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::target_features_;
   using SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::transformation_;
   using SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::update_visualizer_;
+  using SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::error_functor_;
   using Registration<PointSource, PointTarget>::transformation_estimation_;
 
   typedef typename SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::PointCloudSource PointCloudSource;
   typedef typename SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::FeatureCloud FeatureCloud;
+  typedef typename SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::ErrorFunctor ErrorFunctor;
+  typedef typename SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::HuberPenalty HuberPenalty;
+  typedef typename SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::TruncatedError TruncatedError;
 
   /** \brief Constructor. */
   SubsetSAC_IA ()
