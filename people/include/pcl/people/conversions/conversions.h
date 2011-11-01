@@ -37,6 +37,7 @@
 #define PCL_PEOPLE_CONVERSION_H_
 
 #include <pcl/pcl_base.h>
+#include <pcl/people/conversions/colormap.h>
 
 namespace pcl
 {
@@ -84,6 +85,56 @@ namespace pcl
       p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
 
       p.label = lmap[i];
+      cloud_out.points.push_back(p);
+    }
+  }
+  void
+  colorLabelPointCloudfromArray (
+                const PointCloud<PointXYZRGB>&  cloud_in,
+                const uint8_t*                  lmap,
+                PointCloud<PointXYZRGBL>&       cloud_out)
+  {
+    assert(cloud_in.isOrganized());
+
+    int width = cloud_in.width;
+    int height = cloud_in.height;
+
+    cloud_out.width = width;
+    cloud_out.height = height;
+
+    for(unsigned int i = 0; i < cloud_in.points.size(); i++)
+    {
+      PointXYZRGBL p;
+      p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
+      p.label = lmap[i];
+      p.b = LUT_color_label[3 * p.label + 2];
+      p.g = LUT_color_label[3 * p.label + 1];
+      p.r = LUT_color_label[3 * p.label + 0];
+      cloud_out.points.push_back(p);
+    }
+  }
+  void
+  colorLabelPointCloudfromArray (
+                const PointCloud<PointXYZ>&     cloud_in,
+                const uint8_t*                  lmap,
+                PointCloud<PointXYZRGBL>&       cloud_out)
+  {
+    assert(cloud_in.isOrganized());
+
+    int width = cloud_in.width;
+    int height = cloud_in.height;
+
+    cloud_out.width = width;
+    cloud_out.height = height;
+
+    for(unsigned int i = 0; i < cloud_in.points.size(); i++)
+    {
+      PointXYZRGBL p;
+      p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
+      p.label = lmap[i];
+      p.b = LUT_color_label[3 * p.label + 2];
+      p.g = LUT_color_label[3 * p.label + 1];
+      p.r = LUT_color_label[3 * p.label + 0];
       cloud_out.points.push_back(p);
     }
   }
