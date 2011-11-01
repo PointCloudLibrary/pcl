@@ -189,7 +189,19 @@ namespace pcl
                                           float max_angle_width, float max_angle_height,
                                           CoordinateFrame coordinate_frame=CAMERA_FRAME, float noise_level=0.0f,
                                           float min_range=0.0f, int border_size=0);
+
+      /** \brief Create an empty depth image (filled with unobserved points)
+        * \param angular_resolution the angle between each sample in the depth image
+        * \param sensor_pose an affine matrix defining the pose of the sensor (defaults to Identity)
+        * \param coordinate_frame the coordinate frame (defaults to CAMERA_FRAME)
+        * \param max_angle_width an angle defining the horizontal bounds of the sensor (defaults to full 360deg)
+        * \param max_angle_height an angle defining the vertical bounds of the sensor (defaults to full 180deg
+        */
+      void
+      createEmpty(float angular_resolution, const Eigen::Affine3f& sensor_pose=Eigen::Affine3f::Identity(),
+                  RangeImage::CoordinateFrame coordinate_frame=CAMERA_FRAME, float angle_width=pcl::deg2rad(360.0f), float angle_height=pcl::deg2rad(180.0f));
       
+      /** \brief Integrates the given far range measurements into the range image */
       PCL_EXPORTS void
       integrateFarRanges (const PointCloud<PointWithViewpoint>& far_ranges);
       
@@ -611,6 +623,35 @@ namespace pcl
              float max_distance_start, float max_distance_end,
              int num_iterations, int pixel_step_start=1, int pixel_step_end=1) const;
       
+
+      /** \brief Helper struct to return the results of a plane extraction */
+      struct ExtractedPlane {
+        Eigen::Vector3f normal;  //!< The normal vector of the plane
+        float d;               //!< Distance of the plane to the origin. normal.dot(x)=d for every point x on the plane
+        Eigen::Vector3f maximum_extensions; //!< Maximum extensions of the plane in the directions of the eigen vectors
+        Eigen::Vector3f mean;            //!< The mean of the points
+        Eigen::Vector3f eigen_values;    //!< The eigen_values of the covariance matrix of the points
+        Eigen::Vector3f eigen_vector1,   //!< The eigen_vector corresponding to the smallest eigen value
+                        eigen_vector2,   //!< The eigen_vector corresponding to the middle eigen value
+                        eigen_vector3;   //!< The eigen_vector corresponding to the largest eigen value
+        std::vector<int> point_indices;  //!< The indices of the points lying on the plane
+      };
+
+      /** \brief Extracts planes from the range image using a region growing approach.
+        * \param initial_max_plane_error the maximum error that a point is allowed to have regarding the current
+        *        plane estimate. This value is used only in the initial plane estimate, which will later on be
+        *        refined, allowing only a maximum error of 3 sigma.
+        * \param planes the found planes. The vector contains the individual found planes.
+        */
+      PCL_EXPORTS void
+      extractPlanes (float initial_max_plane_error, std::vector<ExtractedPlane>& planes) const;
+      
+      /** \brief Comparator to enable us to sort a vector of Planes regarding their size using
+       *         std::sort(begin(), end(), RangeImage::isLargerPlane); */
+      static inline bool
+      isLargerPlane (const ExtractedPlane& p1, const ExtractedPlane& p2)
+                    { return p1.maximum_extensions[2] > p2.maximum_extensions[2]; }
+      
       /** Calculates the overlap of two range images given the relative transformation
        *  (from the given image to *this) */
       PCL_EXPORTS float
@@ -626,7 +667,7 @@ namespace pcl
       getViewingDirection (const Eigen::Vector3f& point, Eigen::Vector3f& viewing_direction) const;
       
       /** Return a newly created Range image.
-       *  Can be reimplmented int derived classes like RangeImagePlanar to return an image of the same type. */
+       *  Can be reimplmented in derived classes like RangeImagePlanar to return an image of the same type. */
       virtual RangeImage* 
       getNew () const { return new RangeImage; }
 
