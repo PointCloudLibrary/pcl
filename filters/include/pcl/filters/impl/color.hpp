@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2011, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,74 +31,78 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ *  Author: Suat Gedikli (gedikli@willowgarage.com)
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_RADIUS_OUTLIER_REMOVAL_H_
-#define PCL_FILTERS_IMPL_RADIUS_OUTLIER_REMOVAL_H_
+#ifndef PCL_FILTERS_IMPL_COLOR_H_
+#define PCL_FILTERS_IMPL_COLOR_H_
 
-#include "pcl/filters/radius_outlier_removal.h"
+#include "pcl/filters/color.h"
+#include "pcl/common/io.h"
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::RadiusOutlierRemoval<PointT>::applyFilter (PointCloud &output)
+pcl::ColorFilter<PointT>::applyFilter (PointCloud &output)
 {
-  if (search_radius_ == 0.0)
+  // Has the input dataset been set already?
+  if (!input_)
   {
-    PCL_ERROR ("[pcl::%s::applyFilter] No radius defined!\n", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
   }
-  // Initialize the spatial locator
-  if (!tree_)
+  // Check if we're going to keep the organized structure of the cloud or not
+  if (keep_organized_)
   {
-    if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
-    else
-      tree_.reset (new pcl::search::KdTree<PointT> (false));
+    output.width  = input_->width;
+    output.height = input_->height;
+    output.is_dense = false;
   }
-
-  // Send the input dataset to the spatial locator
-  tree_->setInputCloud (input_);
-
-  // Allocate enough space to hold the results
-  std::vector<int> nn_indices (indices_->size ());
-  std::vector<float> nn_dists (indices_->size ());
-
-
-  output.points.resize (input_->points.size ());      // reserve enough space
+  else
+  {
+    output.height = 1;
+    output.is_dense = input_->is_dense;
+  }
+  output.points.resize (input_->points.size ());
   removed_indices_->resize (input_->points.size ());
   
   int nr_p = 0;
   int nr_removed_p = 0;
+  float nan = std::numeric_limits<float>::quiet_NaN ();
   
-  // Go over all the points and check which doesn't have enough neighbors
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  if (keep_organized_)
   {
-    int k = tree_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_dists);
-    // Check if the number of neighbors is larger than the user imposed limit
-    if (k < min_pts_radius_)
+    for (size_t cp = 0; cp < input_->points.size (); ++cp)
     {
-      if (extract_removed_indices_)
+      if (lookup_[input_->points[cp].rgba])
+        output.points [cp] = input_->points[cp];
+      else
       {
-        (*removed_indices_)[nr_removed_p] = cp;
-        nr_removed_p++;
+        output.points [cp].x = output.points[cp].y = output.points[cp].z = nan;
+        // dont loose color information
+        output.points [cp].rgba = input_->points[cp].rgba;
       }
-      continue;
     }
-
-    output.points[nr_p++] = input_->points[(*indices_)[cp]];
+    nr_p = input_->points.size ();
   }
-  removed_indices_->resize (nr_removed_p);
-  output.points.resize (nr_p);
-  output.width  = nr_p;
-  output.height = 1;
-  output.is_dense = true; // radiusSearch filters invalid points
+  else // Remove filtered points
+  {
+    for (size_t cp = 0; cp < input_->points.size (); ++cp)
+    {
+      if (lookup_[input_->points[cp].rgba])
+        output.points [nr_p++] = input_->points[cp];
+      else if (extract_removed_indices_)
+          (*removed_indices_)[nr_removed_p++] = cp;
+    }
+    output.width = nr_p;
+  } // !keep_organized_
+  output.points.resize (output.width * output.height);
+  removed_indices_->resize(nr_removed_p);
 }
 
-#define PCL_INSTANTIATE_RadiusOutlierRemoval(T) template class PCL_EXPORTS pcl::RadiusOutlierRemoval<T>;
+#define PCL_INSTANTIATE_ColorFilter(T) template class PCL_EXPORTS pcl::ColorFilter<T>;
 
-#endif    // PCL_FILTERS_IMPL_RADIUS_OUTLIER_REMOVAL_H_
+#endif    // PCL_FILTERS_IMPL_COLOR_H_
 

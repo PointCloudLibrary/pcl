@@ -40,7 +40,7 @@
 
 #include "pcl/filters/filter.h"
 #include "pcl/point_types.h"
-#include "pcl/kdtree/kdtree_flann.h"
+#include "pcl/search/pcl_search.h"
 
 namespace pcl
 {
@@ -62,8 +62,8 @@ namespace pcl
     using Filter<PointT>::removed_indices_;
     using Filter<PointT>::extract_removed_indices_;
 
-    typedef typename pcl::KdTree<PointT> KdTree;
-    typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
+    typedef typename pcl::search::Search<PointT> KdTree;
+    typedef typename pcl::search::Search<PointT>::Ptr KdTreePtr;
 
     typedef typename Filter<PointT>::PointCloud PointCloud;
     typedef typename PointCloud::Ptr PointCloudPtr;
@@ -148,8 +148,8 @@ namespace pcl
     using Filter<sensor_msgs::PointCloud2>::removed_indices_;
     using Filter<sensor_msgs::PointCloud2>::extract_removed_indices_;
 
-    typedef pcl::KdTree<pcl::PointXYZ> KdTree;
-    typedef pcl::KdTree<pcl::PointXYZ>::Ptr KdTreePtr;
+    typedef pcl::search::Search<pcl::PointXYZ> KdTree;
+    typedef pcl::search::Search<pcl::PointXYZ>::Ptr KdTreePtr;
 
     typedef sensor_msgs::PointCloud2 PointCloud2;
     typedef PointCloud2::Ptr PointCloud2Ptr;

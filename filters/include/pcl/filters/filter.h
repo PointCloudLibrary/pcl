@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -65,9 +67,6 @@ namespace pcl
   template<typename PointT>
   class Filter : public PCLBase<PointT>
   {
-    using PCLBase<PointT>::initCompute;
-    using PCLBase<PointT>::deinitCompute;
-
     public:
       using PCLBase<PointT>::indices_;
       using PCLBase<PointT>::input_;
@@ -179,6 +178,9 @@ namespace pcl
       }
 
     protected:
+
+      using PCLBase<PointT>::initCompute;
+      using PCLBase<PointT>::deinitCompute;
 
       /** \brief Indices of the points that are removed */
       IndicesPtr removed_indices_;

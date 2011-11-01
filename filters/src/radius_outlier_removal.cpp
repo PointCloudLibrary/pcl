@@ -40,8 +40,6 @@
 #include "pcl/filters/radius_outlier_removal.h"
 #include "pcl/filters/impl/radius_outlier_removal.hpp"
 #include <pcl/ros/conversions.h>
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/kdtree/organized_data.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -72,9 +70,9 @@ pcl::RadiusOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &o
   if (!tree_)
   {
     if (cloud->isOrganized ())
-      tree_.reset (new pcl::OrganizedDataIndex<pcl::PointXYZ> ());
+      tree_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
     else
-      tree_.reset (new pcl::KdTreeFLANN<pcl::PointXYZ> (false));
+      tree_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
   }
   tree_->setInputCloud (cloud);
 
