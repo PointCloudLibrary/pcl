@@ -63,19 +63,19 @@ pcl::MarchingCubes<PointNT>::getBoundingBox ()
   Eigen::Vector4f bounding_box_size = max_p_ - min_p_;
 
   bounding_box_size = max_p_ - min_p_;
-  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Size of Bounding Box is [%f, %f, %f]\n",
+  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Size of Bounding Box is [%f, %f, %f]\n",
       bounding_box_size.x (), bounding_box_size.y (), bounding_box_size.z ());
   double max_size =
     (std::max) ((std::max)(bounding_box_size.x (), bounding_box_size.y ()),
                 bounding_box_size.z ());
 
   data_size_ = max_size / leaf_size_;
-  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Lower left point is [%f, %f, %f]\n",
+  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Lower left point is [%f, %f, %f]\n",
       min_p_.x (), min_p_.y (), min_p_.z ());
-  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Upper left point is [%f, %f, %f]\n",
+  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Upper left point is [%f, %f, %f]\n",
       max_p_.x (), max_p_.y (), max_p_.z ());
-  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Padding size: %d\n", padding_size_);
-  PCL_DEBUG ("[pcl::GridProjection::getBoundingBox] Leaf size: %f\n", leaf_size_);
+  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Padding size: %d\n", padding_size_);
+  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Leaf size: %f\n", leaf_size_);
 
   gaussian_scale_ = pow ((padding_size_+1) * leaf_size_ / 2.0, 2.0);
 }
@@ -279,6 +279,24 @@ pcl::MarchingCubes<PointNT>::getNeighborList1D (Leaf leaf, Eigen::Vector3i &inde
 template <typename PointNT> void
 pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
 {
+  if( !(iso_level_ > 0 && iso_level_ < 1) )
+  {
+    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid iso level %f! Please use a number between 0 and 1.\n", getClassName ().c_str (), iso_level_);
+    output.cloud.width = output.cloud.height = 0;
+    output.cloud.data.clear ();
+    output.polygons.clear ();
+    return;
+  }
+  if( leaf_size_ <=0 )
+  {
+    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid leaf size %f! Please use a number greater than 0.\n", getClassName ().c_str (), leaf_size_);
+    output.cloud.width = output.cloud.height = 0;
+    output.cloud.data.clear ();
+    output.polygons.clear ();
+    return;
+    
+  }
+
   getBoundingBox();
 
   // transform the point cloud into a voxel grid

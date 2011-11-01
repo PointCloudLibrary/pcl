@@ -67,13 +67,15 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output
     return;
   }
 
-  // Check if a space search locator was given
+  // Initialize the spatial locator
   if (!tree_)
   {
-    PCL_ERROR ("[pcl::%s::compute] No spatial search method was given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
-    return;
+    KdTreePtr tree;
+    if (input_->isOrganized ())
+      tree.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
+    else
+      tree.reset (new pcl::search::KdTree<PointInT> (false));
+    setSearchMethod (tree);
   }
 
   // Send the surface dataset to the spatial locator

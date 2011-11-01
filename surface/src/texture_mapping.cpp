@@ -31,53 +31,16 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: texture_mapping.cpp 1006 2011-07-13 13:07:00 ktran $
  *
  */
 
-#ifndef PCL_SURFACE_RECONSTRUCTION_IMPL_H_
-#define PCL_SURFACE_RECONSTRUCTION_IMPL_H_
-#include <pcl/search/pcl_search.h>
+/** \author Khai Tran */
+#include "pcl/impl/instantiate.hpp"
+#include "pcl/point_types.h"
+#include "pcl/surface/texture_mapping.h"
+#include "pcl/surface/impl/texture_mapping.hpp"
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> void
-pcl::SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
-{
-  // Copy the header
-  output.header = input_->header;
 
-  if (!initCompute ()) 
-  {
-    output.cloud.width = output.cloud.height = 0;
-    output.cloud.data.clear ();
-    output.polygons.clear ();
-    return;
-  }
-
-  // Check if a space search locator was given
-  if (check_tree_)
-  {
-    if (!tree_)
-    {
-      if (input_->isOrganized ())
-        tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
-      else
-        tree_.reset (new pcl::search::KdTree<PointInT> (false));
-    }
-
-    // Send the surface dataset to the spatial locator
-    tree_->setInputCloud (input_, indices_);
-  }
-
-  // Set up the output dataset
-  pcl::toROSMsg (*input_, output.cloud); /// NOTE: passing in boost shared pointer with * as const& should be OK here
-  output.polygons.clear ();
-  output.polygons.reserve (2*indices_->size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
-  // Perform the actual surface reconstruction
-  performReconstruction (output);
-
-  deinitCompute ();
-}
-
-#endif  // PCL_SURFACE_RECONSTRUCTION_IMPL_H_
-
+// Instantiations of specific point types
+PCL_INSTANTIATE(TextureMapping, (pcl::PointXYZ));

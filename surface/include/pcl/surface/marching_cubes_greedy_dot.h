@@ -31,53 +31,61 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
-#ifndef PCL_SURFACE_RECONSTRUCTION_IMPL_H_
-#define PCL_SURFACE_RECONSTRUCTION_IMPL_H_
-#include <pcl/search/pcl_search.h>
+#ifndef PCL_SURFACE_MARCHING_CUBES_GREEDY_DOT_H_
+#define PCL_SURFACE_MARCHING_CUBES_GREEDY_DOT_H_
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> void
-pcl::SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
+#include <pcl/surface/marching_cubes.h>
+
+namespace pcl
 {
-  // Copy the header
-  output.header = input_->header;
 
-  if (!initCompute ()) 
+  /** \brief The marching cubes surface reconstruction algorithm, using a "greedy" voxelization algorithm combined with a dot product, to remove the double surface effect
+    * \author Gregory Long
+    * \ingroup surface
+    */
+  template <typename PointNT>
+  class MarchingCubesGreedyDot : public MarchingCubes<PointNT>
   {
-    output.cloud.width = output.cloud.height = 0;
-    output.cloud.data.clear ();
-    output.polygons.clear ();
-    return;
-  }
+    public:
+      using SurfaceReconstruction<PointNT>::input_;
+      using MarchingCubes<PointNT>::cell_hash_map_;
 
-  // Check if a space search locator was given
-  if (check_tree_)
-  {
-    if (!tree_)
-    {
-      if (input_->isOrganized ())
-        tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
-      else
-        tree_.reset (new pcl::search::KdTree<PointInT> (false));
-    }
+      typedef typename MarchingCubes<PointNT>::Leaf Leaf;
 
-    // Send the surface dataset to the spatial locator
-    tree_->setInputCloud (input_, indices_);
-  }
+      typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudPtr;
 
-  // Set up the output dataset
-  pcl::toROSMsg (*input_, output.cloud); /// NOTE: passing in boost shared pointer with * as const& should be OK here
-  output.polygons.clear ();
-  output.polygons.reserve (2*indices_->size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
-  // Perform the actual surface reconstruction
-  performReconstruction (output);
+      typedef typename pcl::KdTree<PointNT> KdTree;
+      typedef typename pcl::KdTree<PointNT>::Ptr KdTreePtr;
+      typedef boost::unordered_map<int, Leaf, boost::hash<int>, std::equal_to<int>, Eigen::aligned_allocator<int> > HashMap;
 
-  deinitCompute ();
+      /** \brief Constructor. */ 
+      MarchingCubesGreedyDot ();
+
+      /** \brief Destructor. */
+      ~MarchingCubesGreedyDot ();
+
+      /** \brief set the dot product threshold. */
+      inline void setDpThreshold (float thresh)
+      {
+        dp_threshold_ = thresh;
+      }
+
+    protected:
+
+    private:
+
+      /** \brief Convert the point cloud into voxel data. */
+      void
+      voxelizeData ();
+
+      /** \brief Theshold value for whether to skip the voxel.  Typically set to 0.*/
+      float dp_threshold_;
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
 }
 
-#endif  // PCL_SURFACE_RECONSTRUCTION_IMPL_H_
-
+#endif  // PCL_SURFACE_MARCHING_CUBES_GREEDY_DOT_H_
+ 

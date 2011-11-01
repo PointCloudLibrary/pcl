@@ -43,15 +43,26 @@
 
 #include "pcl/ros/conversions.h"
 #include "pcl/kdtree/kdtree.h"
+#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/PolygonMesh.h>
+#include <pcl/TextureMesh.h>
 #include <boost/function.hpp>
 
-#include "pcl/common/io.h"
 #include <fstream>
 #include <iostream>
 
+// add by ktran to export update function
+#include <pcl/pcl_macros.h>
+#include <pcl/point_types.h>
+
+
 namespace pcl
 {
+  // add by ktran for Kdtree_flaan search
+  struct SearchPoint : public PointXYZ
+  {
+    SearchPoint(float x, float y, float z) {this->x=x; this->y=y; this->z=z;}
+  };
 
   /** \brief Returns if a point X is visible from point R (or the origin)
     * when taking into account the segment between the points S1 and S2
@@ -138,7 +149,6 @@ namespace pcl
       using SurfaceReconstruction<PointInT>::tree_;
       using SurfaceReconstruction<PointInT>::input_;
       using SurfaceReconstruction<PointInT>::indices_;
-      using SurfaceReconstruction<PointInT>::search_method_;
 
       typedef typename pcl::KdTree<PointInT> KdTree;
       typedef typename pcl::KdTree<PointInT>::Ptr KdTreePtr;
@@ -251,6 +261,42 @@ namespace pcl
       inline std::vector<int> 
       getPartIDs () { return (part_); }
 
+
+      // add by ktran for update & merge meshes
+      /** \brief Get the sfn list.
+       */
+      inline std::vector<int>
+      getSFN () { return (sfn_); }
+
+      /** \brief Get the sfn list.
+       */
+      inline std::vector<int>
+      getFFN () { return (ffn_); }
+
+      /** \brief update mesh when new point cloud is added without recreating mesh.
+      * \param point cloud update and update mesh output
+      */
+      void
+      updateMesh (const PointCloudInConstPtr &update, pcl::PolygonMesh &output);
+
+      /** \brief update texture mesh when new point cloud is added without recreating mesh.
+        * \param point cloud update and update texture mesh output
+        */
+      void
+      updateMesh (const PointCloudInConstPtr &update, pcl::PolygonMesh &output, pcl::TextureMesh &tex_mesh);
+
+      /** \brief remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
+      * \param polygonMesh 1st and 2nd mesh.
+      */
+      void
+      merge2Meshes (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2, std::vector<int> state2, std::vector<int> sfn2, std::vector<int> ffn2);
+
+      /** \brief remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
+      * \param polygonMesh 1st and 2nd mesh.
+      */
+      void
+      removeOverlapTriangles (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2);
+
     protected:
       /** \brief The maximum number of nearest neighbors accepted by searching. */
       int nnn_;
@@ -272,20 +318,6 @@ namespace pcl
 
       /** \brief Set this to true if the normals of the input are consistently oriented. */
       bool consistent_;
-
-      /** \brief Search for the nnn_ nearest neighbors of a given point
-        * \param index the index of the query point
-        * \param indices the resultant vector of indices representing the k-nearest neighbors
-        * \param distances the resultant distances from the query point to the k-nearest neighbors
-        * \note The final neighborhood will be limited by the search radius, but we need
-        *       the maximal set of neighbors for increasing the chance of determining the
-        *       direction of the advancing front (see the "source" array) -- adds no overhead.
-        */
-      inline int
-      searchForNeighbors (int index, std::vector<int> &indices, std::vector<float> &distances)
-      {
-        return (search_method_ (index, nnn_, indices, distances));
-      }
 
     private:
       /** \brief Struct for storing the angles to nearest neighbors **/
@@ -407,6 +439,15 @@ namespace pcl
       void 
       closeTriangle (pcl::PolygonMesh &output);
 
+
+      // add by ktran
+      /** \brief get the list of containing triangles for each vertex in a PolygonMesh
+        * \param polygonMesh
+        */
+      std::vector<std::vector<size_t> >
+      getTriangleList (pcl::PolygonMesh input);
+
+
       /** \brief Add a new triangle to the current polygon mesh
         * \param a index of the first vertex
         * \param b index of the second vertex
@@ -453,3 +494,4 @@ namespace pcl
 } // namespace pcl
 
 #endif  //#ifndef PCL_GP3_H_
+

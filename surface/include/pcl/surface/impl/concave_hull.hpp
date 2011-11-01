@@ -44,10 +44,11 @@
 #include <map>
 #include <pcl/surface/concave_hull.h>
 #include <pcl/common/common.h>
-#include <pcl/common/io.h>
 #include <pcl/common/eigen.h>
-#include <pcl/registration/transforms.h>
+#include <pcl/common/centroid.h>
+#include <pcl/common/transforms.h>
 #include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/common/io.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -205,8 +206,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
   if (exitcode != 0)
   {
-    PCL_ERROR ("[pcl::%s::performReconstrution] ERROR: qhull was unable to compute a concave hull for the given point cloud (%lu)!\n", 
-               getClassName ().c_str (), (unsigned long) cloud_transformed.points.size ());
+    PCL_ERROR ("[pcl::%s::performReconstrution] ERROR: qhull was unable to compute a concave hull for the given point cloud (%lu)!\n", getClassName ().c_str (), (unsigned long) cloud_transformed.points.size ());
 
     //check if it fails because of NaN values...
     if (!cloud_transformed.is_dense)
