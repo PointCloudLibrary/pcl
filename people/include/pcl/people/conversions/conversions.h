@@ -54,7 +54,7 @@ namespace pcl
     cloud_out.width = width;
     cloud_out.height = height;
 
-    for(unsigned int i; i < cloud_in.points.size(); i++)
+    for(unsigned int i = 0; i < cloud_in.points.size(); i++)
     {
       PointXYZRGBL p;
       p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
@@ -78,7 +78,7 @@ namespace pcl
     cloud_out.width = width;
     cloud_out.height = height;
 
-    for(unsigned int i; i < cloud_in.points.size(); i++)
+    for(unsigned int i = 0; i < cloud_in.points.size(); i++)
     {
       PointXYZL p;
       p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
