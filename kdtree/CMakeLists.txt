@@ -8,24 +8,18 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS flann)
 
 if(build)
     set(srcs 
-        src/kdtree.cpp
         src/kdtree_flann.cpp
-        src/organized_data.cpp
-        src/tree_types.cpp
-        src/organized_neighbor_search.cpp
         )
 
     set(incs 
         include/pcl/${SUBSYS_NAME}/kdtree.h
+        include/pcl/${SUBSYS_NAME}/io.h
         include/pcl/${SUBSYS_NAME}/kdtree_flann.h
-        include/pcl/${SUBSYS_NAME}/organized_data.h
-        include/pcl/${SUBSYS_NAME}/tree_types.h
         )
 
     set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/io.hpp
         include/pcl/${SUBSYS_NAME}/impl/kdtree_flann.hpp
-        include/pcl/${SUBSYS_NAME}/impl/organized_data.hpp
-        include/pcl/${SUBSYS_NAME}/impl/tree_types.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
@@ -38,22 +32,7 @@ if(build)
                        "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
     # Install include files
-    set(incs 
-        include/pcl/${SUBSYS_NAME}/kdtree.h
-        include/pcl/${SUBSYS_NAME}/kdtree_flann.h
-        include/pcl/${SUBSYS_NAME}/organized_data.h
-        include/pcl/${SUBSYS_NAME}/organized_neighbor_search.h
-        include/pcl/${SUBSYS_NAME}/tree_types.h
-        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-
-    set(impl_incs 
-        include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp
-        include/pcl/${SUBSYS_NAME}/impl/kdtree_flann.hpp
-        include/pcl/${SUBSYS_NAME}/impl/organized_data.hpp
-        include/pcl/${SUBSYS_NAME}/impl/organized_neighbor_search.hpp        
-        include/pcl/${SUBSYS_NAME}/impl/tree_types.hpp
-        )
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
     add_subdirectory(test)

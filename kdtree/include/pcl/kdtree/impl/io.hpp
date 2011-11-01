@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,14 +33,55 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id$
+ *
  */
 
-#ifndef PCL_KDTREE_KDTREE_IMPL
-#define PCL_KDTREE_KDTREE_IMPL
+#ifndef PCL_KDTREE_IO_IMPL_HPP_
+#define PCL_KDTREE_IO_IMPL_HPP_
 
-#include "pcl/kdtree/kdtree.h"
+#include <pcl/kdtree/io.h>
+#include <pcl/kdtree/kdtree_flann.h>
 
-#define PCL_INSTANTIATE_KdTree(T) template class PCL_EXPORTS pcl::KdTree<T>;
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename Point1T, typename Point2T> void
+pcl::getApproximateIndices (
+    const typename pcl::PointCloud<Point1T>::Ptr &cloud_in, 
+    const typename pcl::PointCloud<Point2T>::Ptr &cloud_ref, 
+    std::vector<int> &indices)
+{
+  pcl::KdTreeFLANN<Point2T> tree;
+  tree.setInputCloud (cloud_ref);
 
-#endif  //#ifndef _PCL_KDTREE_KDTREE_IMPL
+  std::vector<int> nn_idx (1);
+  std::vector<float> nn_dists (1);
+  indices.resize (cloud_in->points.size ());
+  for (size_t i = 0; i < cloud_in->points.size (); ++i)
+  {
+    tree.nearestKSearch (*cloud_in, i, 1, nn_idx, nn_dists);
+    indices[i] = nn_idx[0];
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::getApproximateIndices (
+    const typename pcl::PointCloud<PointT>::Ptr &cloud_in, 
+    const typename pcl::PointCloud<PointT>::Ptr &cloud_ref, 
+    std::vector<int> &indices)
+{
+  pcl::KdTreeFLANN<PointT> tree;
+  tree.setInputCloud (cloud_ref);
+
+  std::vector<int> nn_idx (1);
+  std::vector<float> nn_dists (1);
+  indices.resize (cloud_in->points.size ());
+  for (size_t i = 0; i < cloud_in->points.size (); ++i)
+  {
+    tree.nearestKSearch (*cloud_in, i, 1, nn_idx, nn_dists);
+    indices[i] = nn_idx[0];
+  }
+}
+
+#endif // PCL_KDTREE_IO_IMPL_H_
 

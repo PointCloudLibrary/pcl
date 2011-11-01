@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: kdtree_flann.cpp 34690 2010-12-12 05:05:16Z rusu $
+ * $Id$
  *
  */
 
