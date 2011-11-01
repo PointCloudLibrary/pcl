@@ -95,10 +95,10 @@ pcl::IntegralImage2Dim<DataType, Dimension>::computeIntegralImages (
 
   if (!compute_second_order_integral_images_)
   {
-    for (unsigned rowIdx = 0, valIdx = 0; rowIdx < height_; ++rowIdx, previous_row = current_row, current_row += (width_ + 1))
+    for (unsigned rowIdx = 0; rowIdx < height_; ++rowIdx, previous_row = current_row, current_row += (width_ + 1), data += row_stride)
     {
       current_row [0].setZero ();
-      for (unsigned colIdx = 0; colIdx < width_; ++colIdx, valIdx += element_stride)
+      for (unsigned colIdx = 0, valIdx = 0; colIdx < width_; ++colIdx, valIdx += element_stride)
       {
         current_row [colIdx + 1] = previous_row [colIdx + 1] + current_row [colIdx] - previous_row [colIdx];
         const InputType* element = reinterpret_cast <const InputType*> (&data [valIdx]);
@@ -113,16 +113,16 @@ pcl::IntegralImage2Dim<DataType, Dimension>::computeIntegralImages (
   {
     SecondOrderType* so_previous_row = &second_order_integral_image_[0];
     SecondOrderType* so_current_row  = so_previous_row + (width_ + 1);
-    memset (previous_row, 0, sizeof (SecondOrderType) * (width_ + 1));    
+    memset (so_previous_row, 0, sizeof (SecondOrderType) * (width_ + 1));    
     
     SecondOrderType so_element;
-    for (unsigned rowIdx = 0, valIdx = 0; rowIdx < height_; ++rowIdx, 
+    for (unsigned rowIdx = 0; rowIdx < height_; ++rowIdx, 
          previous_row = current_row, current_row += (width_ + 1), 
-         so_previous_row = so_current_row, so_current_row += (width_ + 1))
+         so_previous_row = so_current_row, so_current_row += (width_ + 1), data += row_stride)
     {
       current_row [0].setZero ();
       so_current_row [0].setZero ();
-      for (unsigned colIdx = 0; colIdx < width_; ++colIdx, valIdx += element_stride)
+      for (unsigned colIdx = 0, valIdx = 0; colIdx < width_; ++colIdx, valIdx += element_stride)
       {
         current_row [colIdx + 1] = previous_row [colIdx + 1] + current_row [colIdx] - previous_row [colIdx];
         so_current_row [colIdx + 1] = so_previous_row [colIdx + 1] + so_current_row [colIdx] - so_previous_row [colIdx];
