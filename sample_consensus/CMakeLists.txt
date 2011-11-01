@@ -7,13 +7,7 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 if(build)
-    if (NOT ANDROID_NDK)
-      set (ANDROID_PROBLEM_INCLUDES include/pcl/${SUBSYS_NAME}/prosac.h)
-      set (ANDROID_PROBLEM_IMPL_INCLUDES include/pcl/${SUBSYS_NAME}/impl/prosac.hpp)
-      set (ANDROID_PROBLEM_SOURCES src/prosac.cpp)
-    endif()
-
-    set(srcs 
+   set(srcs 
         src/lmeds.cpp
         src/mlesac.cpp
         src/msac.cpp
@@ -32,7 +26,7 @@ if(build)
         src/sac_model_plane.cpp
         src/sac_model_registration.cpp
         src/sac_model_sphere.cpp
-        ${ANDROID_PROBLEM_SOURCES}
+		src/prosac.cpp
         )
         
     set(incs 
@@ -58,7 +52,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/sac_model_plane.h
         include/pcl/${SUBSYS_NAME}/sac_model_registration.h
         include/pcl/${SUBSYS_NAME}/sac_model_sphere.h
-        ${ANDROID_PROBLEM_INCLUDES}
+		include/pcl/${SUBSYS_NAME}/prosac.h
         )
         
     set(impl_incs 
@@ -80,7 +74,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/sac_model_plane.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_registration.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_sphere.hpp
-        ${ANDROID_PROBLEM_IMPL_INCLUDES}
+		include/pcl/${SUBSYS_NAME}/impl/prosac.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
