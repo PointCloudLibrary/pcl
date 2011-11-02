@@ -81,6 +81,9 @@ if (build)
       
       PCL_ADD_EXECUTABLE(mesh_sampling ${SUBSYS_NAME} mesh_sampling.cpp)
       target_link_libraries(mesh_sampling pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
+      
+      PCL_ADD_EXECUTABLE(virtual_scanner ${SUBSYS_NAME} virtual_scanner.cpp)
+      target_link_libraries(virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon)
   endif(NOT VTK_FOUND)
 
   PCL_ADD_EXECUTABLE (transform_point_cloud ${SUBSYS_NAME} transform_point_cloud.cpp)
