@@ -1,4 +1,4 @@
-if(TRUE)
+if(FALSE)
 
 set(SUBSYS_NAME gpu_kinfu)
 set(SUBSYS_PATH cuda/gpu_kinfu)
