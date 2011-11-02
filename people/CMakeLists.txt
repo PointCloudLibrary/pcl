@@ -11,6 +11,7 @@ if(build)
         )
 
     set(incs include/pcl/${SUBSYS_NAME}/conversions/conversions.h
+             include/pcl/${SUBSYS_NAME}/conversions/colormap.h
         )
 
     #set(impl_incs include/pcl/${SUBSYS_NAME}/conversions/conversions.hpp
