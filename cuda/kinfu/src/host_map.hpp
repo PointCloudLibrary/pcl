@@ -34,43 +34,33 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#pragma once 
+#pragma once
 
-#include "pcl/gpu/utils/device/limits.hpp"
-#include "pcl/gpu/utils/device/vector_math.hpp"
+#include "pcl/gpu/kinfu/kinfu.hpp"
+#include <vector>
 
-#include "internal.hpp"
 
 namespace pcl
 {
-    namespace device
-    {       
-        const int DIVISOR = 32767; // SHRT_MAX;
-        #define INV_DIV 3.051850947599719e-5f
-                
-        __device__ __forceinline__ short2 pack_tsdf(float tsdf, int weight)
-		{
-			//assumming that fabs(tsdf) <= 1 and weight is interger
-            
-            int fixedp = max(-DIVISOR, min(DIVISOR, __float2int_rz(tsdf * DIVISOR)));
-            //int fixedp = __float2int_rz(tsdf * DIVISOR);
-            return make_short2(fixedp, weight);			
-		}
-
-		__device__ __forceinline__ void unpack_tsdf(short2 value, float& tsdf, int& weight)		
-        {	            
-            weight = value.y;
-            tsdf = __int2float_rn(value.x)/DIVISOR;//*/ * INV_DIV;  
-		}
-
-        __device__ __forceinline__ float unpack_tsdf(short2 value)
+    namespace gpu
+    {
+        struct HostMap
         {
-            return static_cast<float>(value.x)/DIVISOR;//*/ * INV_DIV;            
-        }
+            typedef KinfuTracker::MapArr MapArr;
 
-         __device__ __forceinline__ float3 operator*(const Mat33& m, const float3& vec)
-        {
-            return make_float3(dot(m.data[0], vec), dot(m.data[1], vec), dot(m.data[2], vec));
-        }     
+            HostMap(const MapArr& map)
+            {
+                rows = map.rows()/3;
+                map.download(data, cols);
+            }
+
+            const float* ptrX(int y = 0) const { return &data[0] +  y         * cols; }
+            const float* ptrY(int y = 0) const { return &data[0] + (y+  rows) * cols; }
+            const float* ptrZ(int y = 0) const { return &data[0] + (y+2*rows) * cols; }
+                        
+            int cols;
+            int rows;
+            std::vector<float> data;
+        };
     }
 }

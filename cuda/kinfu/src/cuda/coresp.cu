@@ -124,7 +124,10 @@ namespace pcl
 
                 float sine = norm(cross(ncurr_g, nprev_g));
 
-                if (sine >= 1 || asin(sine) >= angleThres)
+                /*if (sine >= 1 || asinf(sine) >= angleThres)
+                    return 0;*/
+
+                if (sine >= 1 || sine >= angleThres)
                     return 0;
                 
                 coresp.ptr(y)[x] = make_short2(ukr.x, ukr.y);

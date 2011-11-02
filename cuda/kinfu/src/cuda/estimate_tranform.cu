@@ -193,28 +193,20 @@ void pcl::device::estimateTransform(const MapArr& v_dst, const MapArr& n_dst, co
     te.v_src  = v_src;
     te.coresp = coresp; 
     te.gbuf = gbuf;
-
-    {
-        //pcl::gpu::ScopeTimer timer("TEst1");
+    
     TransformEstimatorKernel1<<<grid, block>>>(te);    
     cudaSafeCall( cudaGetLastError() );	
-    cudaSafeCall(cudaDeviceSynchronize());    
-    }
-
-    //printFuncAttrib(TransformEstimatorKernel1);
+    //cudaSafeCall(cudaDeviceSynchronize());    
 
     TRed tr;
     tr.gbuf = gbuf;			
     tr.length = grid.x * grid.y;
     tr.output = mbuf;	
 
-     {
-        //pcl::gpu::ScopeTimer timer("TEst2");
-        TransformEstimatorKernel2<<<TRed::TOTAL, TRed::CTA_SIZE>>>(tr);
+    TransformEstimatorKernel2<<<TRed::TOTAL, TRed::CTA_SIZE>>>(tr);
 
-        cudaSafeCall( cudaGetLastError() );	
-        cudaSafeCall(cudaDeviceSynchronize());
-     }
+    cudaSafeCall( cudaGetLastError() );	
+    cudaSafeCall(cudaDeviceSynchronize());
 
     float host_data[TRed::TOTAL];
     mbuf.download(host_data);

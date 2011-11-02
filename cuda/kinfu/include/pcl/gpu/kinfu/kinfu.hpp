@@ -60,7 +60,9 @@ namespace pcl
 
             //typedef Eigen::Matrix3f Matrix3f;
             typedef Eigen::Matrix<float, 3, 3, Eigen::RowMajor> Matrix3f;
-            typedef Eigen::Vector3f Vector3f;            
+            typedef Eigen::Vector3f Vector3f; 
+            typedef Eigen::Matrix<float, 6, 6> Matrix6f;
+            typedef Eigen::Matrix<float, 6, 1> Vector6f;
 
             KinfuTracker(int rows_arg, int cols_arg);
 
@@ -83,8 +85,7 @@ namespace pcl
             typedef DeviceArray2D<int> CorespMap;
             
 
-            typedef Eigen::Matrix<float, 6, 6> Matrix6f;
-            typedef Eigen::Matrix<float, 6, 1> Vector6f;
+            
 
             int rows_; 
             int cols_;
@@ -114,6 +115,8 @@ namespace pcl
            
             void allocateBufffers(int rows, int cols);
             bool estimateTrel(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const CorespMap& coresp, Matrix3f& Rrel, Vector3f& trel);
+
+            void reset();
         };	
     }
 };

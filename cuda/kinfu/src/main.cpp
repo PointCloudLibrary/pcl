@@ -59,9 +59,9 @@ int main()
     try
     {
         //BufferedRecorder recorder;
-        //CaptureOpenNI cap(0);
+        CaptureOpenNI cap(0);
         //CaptureOpenNI cap("d:/onis/20111013-224932.oni");
-        CaptureOpenNI cap("d:/onis/20111013-224551.oni");
+        //CaptureOpenNI cap("d:/onis/20111013-224551.oni");
         //CaptureOpenNI cap("d:/onis/20111013-224719.oni");
 
         KinfuTracker kinfu(480, 640);
@@ -76,10 +76,10 @@ int main()
         vector<uchar3> view3d_host;
         for(int i = 0;;++i)
         {                        
-            cout << i << endl;
+            //cout << i << endl;
 
-            if (i == 10)
-                break;
+            /*if (i == 10)
+                break;*/
             
             PtrStepSz<const unsigned short> depth;
             PtrStepSz<const uchar3> rgb24;

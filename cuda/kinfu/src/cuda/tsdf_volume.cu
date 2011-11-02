@@ -121,9 +121,7 @@ namespace pcl
                             if (sdf >= -tranc_dist) 
                             {
                                 float tsdf = fmin(1, sdf/tranc_dist);
-
-                                //printf("(%f, %f, %f) (%d, %d) -> Dp: %d - Dist: %f - sdf: %f >> tsdf: %f\n", v_g.x, v_g.y, v_g.z, coo.x, coo.y, Dp, norm(tcurr - v_g)*lambda_inv, sdf, tsdf);
-
+                                
                                 int weight_prev;
                                 float tsdf_prev;					
 
@@ -136,13 +134,7 @@ namespace pcl
                                 int weight_new = min(weight_prev + Wrk, MAX_WEIGHT);
 
                                 *pos = pack_tsdf(tsdf_new, weight_new);                            
-                            }   
-                            else
-                            {
-
-                                //printf("(%f, %f, %f) (%d, %d) -> Dp: %d - Dist: %f - sdf: %f >> tsdf: null\n", v_g.x, v_g.y, v_g.z, coo.x, coo.y, Dp, norm(tcurr - v_g)*lambda_inv, sdf);
-
-                            }
+                            }                               
                         }
                     }
                 }				
@@ -375,24 +367,6 @@ void pcl::device::integrateTsdfVolume(const PtrStepSz<ushort>& depth, const Intr
                                       PtrStep<short2> volume, DeviceArray2D<float>& depthScaled)
 {	
     depthScaled.create(depth.rows, depth.cols);    
-	/*Tsdf tsdf;
-    
-	tsdf.volume = volume;
-	tsdf.volume_size = volume_size;
-
-	tsdf.intr = intr;
-
-	tsdf.Rcurr_inv = Rcurr_inv;
-	tsdf.tcurr = tcurr;
-	tsdf.depth_raw = depth_raw;
-
-	tsdf.tranc_dist = tranc_dist;
-
-    dim3 block(Tsdf::CTA_SIZE_X, Tsdf::CTA_SIZE_Y);
-	dim3 grid(divUp(VOLUME_X, block.x), divUp(VOLUME_Y, block.y));
-
-	integrateTsdfKernel<<<grid, block>>>(tsdf);*/
-
     
     {
         dim3 block(32, 8);

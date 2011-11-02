@@ -131,11 +131,11 @@ void pcl::device::bilateralFilter(const DepthMap& src, DepthMap& dst)
     dim3 grid(divUp(src.cols(), block.x), divUp(src.rows(), block.y));
 
     cudaFuncSetCacheConfig(bilateralKernel, cudaFuncCachePreferL1);
-    bilateralKernel<<<grid, block, 0, stream>>>(src, dst, 0.5f / (sigma_space * sigma_space), 0.5f / (sigma_color * sigma_color));
+    bilateralKernel<<<grid, block/*, 0, stream*/>>>(src, dst, 0.5f / (sigma_space * sigma_space), 0.5f / (sigma_color * sigma_color));
 
     cudaSafeCall( cudaGetLastError() );	
-    if (stream == 0)
-        cudaSafeCall(cudaDeviceSynchronize());
+    /*if (stream == 0)
+        cudaSafeCall(cudaDeviceSynchronize());*/
 };
 
 void pcl::device::pyrDown(const DepthMap& src, DepthMap& dst)
@@ -145,10 +145,10 @@ void pcl::device::pyrDown(const DepthMap& src, DepthMap& dst)
     dim3 block(32, 8);
     dim3 grid(divUp(dst.cols(), block.x), divUp(dst.rows(), block.y));
     
-    pyrDownKernel<<<grid, block, 0, stream>>>(src, dst, sigma_color);    
+    pyrDownKernel<<<grid, block/*, 0, stream*/>>>(src, dst, sigma_color);    
     cudaSafeCall( cudaGetLastError() );	
-    if (stream == 0)
-        cudaSafeCall(cudaDeviceSynchronize());
+    /*if (stream == 0)
+        cudaSafeCall(cudaDeviceSynchronize());*/
 };
 
 

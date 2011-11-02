@@ -167,14 +167,10 @@ namespace pcl
                 float time_start_volume = getMinTime(volume_size, ray_start, ray_dir);
                 float time_exit_volume  = getMaxTime(volume_size, ray_start, ray_dir);								
 
-                //printf("aaaa\n");
                 const float min_dist = 0.f; //in mm
                 time_start_volume = fmax(time_start_volume, min_dist);
                 if (time_start_volume >= time_exit_volume)
                     return;
-
-                //printf("bbb\n");
-                //printf(">>> %f - %f\n", time_start_volume, time_exit_volume);
 
                 int time_curr = time_start_volume;
                 int3 g = getVoxel(ray_start + ray_dir * time_curr); 						
@@ -182,54 +178,33 @@ namespace pcl
                 g.y = max(0, min(g.y, VOLUME_Y-1));
                 g.z = max(0, min(g.z, VOLUME_Z-1));
 
-                //printf("%f - %f\n", time_start_volume, time_exit_volume);
-
                 float tsdf = readTsdf(g.x, g.y, g.z);
-
-                //printf("tsdf %f\n", tsdf);
 
                 //infinite loop guard
                 const float max_time = 3 * (volume_size.x + volume_size.y + volume_size.z);
                                 
-                //for(int i = 0; i < 512; ++i) 
                 for(; time_curr < max_time; time_curr += time_step) 
                 {
                     float tsdf_prev = tsdf;   
 
-                    //printf("%f %f\n", time_curr, time_step);
-
                     int3 g = getVoxel(  ray_start + ray_dir * (time_curr + time_step)  );
-                    //printf("%d %d %d\n", g.x, g.y, g.z);
                     if(!checkInds(g))
-                    {
-                        //printf("case0\n");
                         break;                 
-                    }
 
                     tsdf = readTsdf(g.x, g.y, g.z);
-                    //printf("tsdf %f\n", tsdf);
 
                     if (tsdf_prev < 0.f && tsdf > 0.f)
-                    {
-                        //printf("case1\n");
                         break;
-                    }
 
                     if (tsdf_prev > 0.f && tsdf < 0.f) //zero crossing
                     {	
                         float Ftdt = interpolateTrilineary(ray_start, ray_dir, time_curr + time_step);
                         if (isnan(Ftdt))
-                        {
-                            //printf("case2\n");
                             break;
-                        }
 
                         float Ft = interpolateTrilineary(ray_start, ray_dir, time_curr);
                         if (isnan(Ft))
-                        {
-                            //printf("case3\n");
                             break;
-                        }
                         
                         float Ts = time_curr - time_step * Ft/(Ftdt - Ft);
 
@@ -260,14 +235,9 @@ namespace pcl
                             nmap.ptr(y+  rows)[x] = normal.y;
                             nmap.ptr(y+2*rows)[x] = normal.z;
                         }
-                        //printf("case4\n");
                         break;                        
-                    }                    
-
-                }  /* for(;;)  */
-
-
-                //printf("aaaaaaaaaaaaaaaaaaaa===================aaaaaaaaaaaaaaaaaa\n");
+                    }
+                }  /* for(;;)  */                
             }
         };
 
@@ -307,6 +277,6 @@ void pcl::device::raycast(const Intr& intr, const Mat33& Rcurr, const float3& tc
 
     rayCastKernel<<<grid, block>>>(rc);
     cudaSafeCall( cudaGetLastError() );
-    cudaSafeCall(cudaDeviceSynchronize());
+    //cudaSafeCall(cudaDeviceSynchronize());
 }
 

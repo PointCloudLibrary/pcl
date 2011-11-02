@@ -122,11 +122,11 @@ void pcl::device::createVMap(const Intr& intr, const DepthMap& depth, MapArr& vm
     float fx = intr.fx, cx = intr.cx;
     float fy = intr.fy, cy = intr.cy;
 
-    computeVmapKernel<<<grid, block, 0, stream>>>(depth, vmap, 1.f/fx, 1.f/fy, cx, cy);
+    computeVmapKernel<<<grid, block/*, 0, stream*/>>>(depth, vmap, 1.f/fx, 1.f/fy, cx, cy);
     cudaSafeCall( cudaGetLastError() );
 
-    if (stream == 0)
-        cudaSafeCall(cudaDeviceSynchronize());    
+    /*if (stream == 0)
+        cudaSafeCall(cudaDeviceSynchronize());    */
 }
 
 void pcl::device::createNMap(const MapArr& vmap, MapArr& nmap)
@@ -141,11 +141,11 @@ void pcl::device::createNMap(const MapArr& vmap, MapArr& nmap)
     grid.x = divUp(cols, block.x);
     grid.y = divUp(rows, block.y);
 
-    computeNmapKernel<<<grid, block, 0, stream>>>(rows, cols, vmap, nmap);
+    computeNmapKernel<<<grid, block/*, 0, stream*/>>>(rows, cols, vmap, nmap);
     cudaSafeCall( cudaGetLastError() );
 
-    if (stream == 0)
-        cudaSafeCall(cudaDeviceSynchronize());
+    /*if (stream == 0)
+        cudaSafeCall(cudaDeviceSynchronize());*/
 }
 
 namespace pcl
@@ -220,62 +220,6 @@ void pcl::device::tranformMaps(const MapArr& vmap_src, const MapArr& nmap_src, c
         cudaSafeCall(cudaDeviceSynchronize());
 }
 
-
-namespace pcl
-{
-    namespace device
-    {
-
-        template<typename T>
-        __global__ void convertMapKernel(int rows, int cols, const PtrStep<float> map, PtrStep<T> output)
-        {
-            int x = threadIdx.x + blockIdx.x * blockDim.x;
-            int y = threadIdx.y + blockIdx.y * blockDim.y;
-
-            if (x >= cols || y >= rows)
-                return;
-
-            const float qnan = numeric_limits<float>::quiet_NaN();
-
-            T t;
-            t.x = map.ptr(y)[x];
-            if (!isnan(t.x))
-            {
-                t.y = map.ptr(y+  rows)[x];
-                t.z = map.ptr(y+2*rows)[x];
-            }
-            else
-                t.y = t.z = qnan;
-
-            output.ptr(y)[x] = t;
-        }
-    }
-}
-
-
-template<typename T> void pcl::device::convert(const MapArr& vmap, DeviceArray2D<T>& output)
-{
-    int cols = vmap.cols();
-    int rows = vmap.rows()/3;
-
-    output.create(rows, cols);
-
-    dim3 block(32, 8);
-    dim3 grid(divUp(cols, block.x), divUp(rows, block.y));
-
-    convertMapKernel<T><<<grid, block, 0, stream>>>(rows, cols, vmap, output);
-    cudaSafeCall( cudaGetLastError() );	
-
-    if (stream == 0)
-        cudaSafeCall(cudaDeviceSynchronize());    
-}
-
-template void pcl::device::convert(const MapArr& vmap, DeviceArray2D<float4>& output);
-template void pcl::device::convert(const MapArr& vmap, DeviceArray2D<float8>& output);
-
-
-
-
 namespace pcl
 {
     namespace device
@@ -347,10 +291,8 @@ namespace pcl
             dim3 block(32, 8);
             dim3 grid(divUp(out_cols, block.x), divUp(out_rows, block.y));
             resizeMapKernel<normalize><<<grid, block>>>(out_rows, out_cols, in_rows, input, output);
-            cudaSafeCall( cudaGetLastError() );	
-
-            if (stream == 0)
-                cudaSafeCall(cudaDeviceSynchronize());    
+            cudaSafeCall( cudaGetLastError() );	            
+            cudaSafeCall(cudaDeviceSynchronize());
         }
     }
 }
@@ -360,3 +302,53 @@ void pcl::device::resizeVMap(const MapArr& input, MapArr& output)
 
 void pcl::device::resizeNMap(const MapArr& input, MapArr& output)
 { resizeMap<true>(input, output); }
+
+namespace pcl
+{
+    namespace device
+    {
+
+        template<typename T>
+        __global__ void convertMapKernel(int rows, int cols, const PtrStep<float> map, PtrStep<T> output)
+        {
+            int x = threadIdx.x + blockIdx.x * blockDim.x;
+            int y = threadIdx.y + blockIdx.y * blockDim.y;
+
+            if (x >= cols || y >= rows)
+                return;
+
+            const float qnan = numeric_limits<float>::quiet_NaN();
+
+            T t;
+            t.x = map.ptr(y)[x];
+            if (!isnan(t.x))
+            {
+                t.y = map.ptr(y+  rows)[x];
+                t.z = map.ptr(y+2*rows)[x];
+            }
+            else
+                t.y = t.z = qnan;
+
+            output.ptr(y)[x] = t;
+        }
+    }
+}
+
+
+template<typename T> void pcl::device::convert(const MapArr& vmap, DeviceArray2D<T>& output)
+{
+    int cols = vmap.cols();
+    int rows = vmap.rows()/3;
+
+    output.create(rows, cols);
+
+    dim3 block(32, 8);
+    dim3 grid(divUp(cols, block.x), divUp(rows, block.y));
+
+    convertMapKernel<T><<<grid, block/*, 0, stream*/>>>(rows, cols, vmap, output);
+    cudaSafeCall( cudaGetLastError() );	
+    cudaSafeCall(cudaDeviceSynchronize());    
+}
+
+template void pcl::device::convert(const MapArr& vmap, DeviceArray2D<float4>& output);
+template void pcl::device::convert(const MapArr& vmap, DeviceArray2D<float8>& output);

@@ -40,14 +40,14 @@ if (OpenCV_FOUND)
 		
 		if(TRUE)
 		
-			list(REMOVE_ITEM cuda ${est})
-			CUDA_COMPILE(est_objs ${est})		
+			#list(REMOVE_ITEM cuda ${est})
+			#CUDA_COMPILE(est_objs ${est})		
 		
-			set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "--ftz=true;--prec-div=false;--prec-sqrt=false") 
+			set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} "--ftz=true;--prec-div=false;--prec-sqrt=false") 
 			CUDA_COMPILE(cuda_objs ${cuda})		
 			
-			LIST(APPEND cuda ${est})
-		    LIST(APPEND cuda_objs ${est_objs})
+			#LIST(APPEND cuda ${est})
+		    #LIST(APPEND cuda_objs ${est_objs})
 							
 		else()		
 			list(REMOVE_ITEM cuda ${tsdf})
