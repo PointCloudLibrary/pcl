@@ -59,6 +59,8 @@ using namespace std;
 using namespace sensor_msgs;
 using namespace Eigen;
 
+const double PI = 3.141592;
+
 PointCloud2::Ptr cloud_blob (new PointCloud2);
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 vector<int> indices_;
@@ -938,81 +940,150 @@ TEST (RandomSample, Filters)
 TEST (CropBox, Filters)
 {
 
+  // PointT
+  // -------------------------------------------------------------------------
+
   // Create cloud with center point and corner points
   PointCloud<PointXYZ>::Ptr input (new PointCloud<PointXYZ> ());
 
-  input->points.push_back (PointXYZ (0.0, 0.0, 0.0));
-  input->points.push_back (PointXYZ (0.9, 0.9, 0.9));
-  input->points.push_back (PointXYZ (0.9, 0.9, -0.9));
-  input->points.push_back (PointXYZ (0.9, -0.9, 0.9));
-  input->points.push_back (PointXYZ (-0.9, 0.9, 0.9));
-  input->points.push_back (PointXYZ (0.9, -0.9, -0.9));
-  input->points.push_back (PointXYZ (-0.9, -0.9, 0.9));
-  input->points.push_back (PointXYZ (-0.9, 0.9, -0.9));
-  input->points.push_back (PointXYZ (-0.9, -0.9, -0.9));
+  input->push_back (PointXYZ (0.0, 0.0, 0.0));
+  input->push_back (PointXYZ (0.9, 0.9, 0.9));
+  input->push_back (PointXYZ (0.9, 0.9, -0.9));
+  input->push_back (PointXYZ (0.9, -0.9, 0.9));
+  input->push_back (PointXYZ (-0.9, 0.9, 0.9));
+  input->push_back (PointXYZ (0.9, -0.9, -0.9));
+  input->push_back (PointXYZ (-0.9, -0.9, 0.9));
+  input->push_back (PointXYZ (-0.9, 0.9, -0.9));
+  input->push_back (PointXYZ (-0.9, -0.9, -0.9));
 
   // Test the PointCloud<PointT> method
   CropBox<PointXYZ> cropBoxFilter;
-  cropBoxFilter.setInputCloud(input);
-  Eigen::Vector4f min_pt(-1, -1, -1, 1);
-  Eigen::Vector4f max_pt(1, 1, 1, 1);
+  cropBoxFilter.setInputCloud (input);
+  Eigen::Vector4f min_pt (-1, -1, -1, 1);
+  Eigen::Vector4f max_pt (1, 1, 1, 1);
 
   // Cropbox slighlty bigger then bounding box of points
-  cropBoxFilter.setMin(min_pt);
-  cropBoxFilter.setMax(max_pt);
+  cropBoxFilter.setMin (min_pt);
+  cropBoxFilter.setMax (max_pt);
 
   // Indices
   vector<int> indices;
-  cropBoxFilter.filter(indices);
+  cropBoxFilter.filter (indices);
 
   // Cloud
   PointCloud<PointXYZ> cloud_out;
-  cropBoxFilter.filter(cloud_out);
+  cropBoxFilter.filter (cloud_out);
 
   // Should contain all
-  EXPECT_EQ((int)indices.size (), 9);
-  EXPECT_EQ ((int)indices.size (), (int)cloud_out.size ());
+  EXPECT_EQ ((int)indices.size (), 9);
+  EXPECT_EQ ((int)cloud_out.size (), 9);
 
   // Translate crop box up by 1
   cropBoxFilter.setTranslation(Eigen::Vector3f(0, 1, 0));
-  cropBoxFilter.filter(indices);
-  cropBoxFilter.filter(cloud_out);
+  cropBoxFilter.filter (indices);
+  cropBoxFilter.filter (cloud_out);
 
-  EXPECT_EQ((int)indices.size (), 5);
-  EXPECT_EQ ((int)indices.size (), (int)cloud_out.size ());
+  EXPECT_EQ ((int)indices.size (), 5);
+  EXPECT_EQ ((int)cloud_out.size (), 5);
 
   // Rotate crop box up by 45
-  cropBoxFilter.setRotation(Eigen::Vector3f(0, 45, 0));
-  cropBoxFilter.filter(indices);
-  cropBoxFilter.filter(cloud_out);
+  cropBoxFilter.setRotation(Eigen::Vector3f(0, 45*PI/180, 0));
+  cropBoxFilter.filter (indices);
+  cropBoxFilter.filter (cloud_out);
 
-  EXPECT_EQ((int)indices.size (), 1);
-  EXPECT_EQ ((int)indices.size (), (int)cloud_out.size ());
+  EXPECT_EQ ((int)indices.size (), 1);
+  EXPECT_EQ ((int)cloud_out.size (), 1);
 
   // Rotate point cloud by -45
-  cropBoxFilter.setTransform(getTransformation(0, 0, 0, 0, 0, -45));
-  cropBoxFilter.filter(indices);
-  cropBoxFilter.filter(cloud_out);
+  cropBoxFilter.setTransform(getTransformation(0, 0, 0, 0, 0, -45*PI/180));
+  cropBoxFilter.filter (indices);
+  cropBoxFilter.filter (cloud_out);
 
-  EXPECT_EQ((int)indices.size (), 3);
-  EXPECT_EQ ((int)indices.size (), (int)cloud_out.size ());
+  EXPECT_EQ ((int)indices.size (), 3);
+  EXPECT_EQ ((int)cloud_out.size (), 3);
 
   // Translate point cloud down by -1
-  cropBoxFilter.setTransform(getTransformation(0, -1, 0, 0, 0, -45));
-  cropBoxFilter.filter(indices);
-  cropBoxFilter.filter(cloud_out);
+  cropBoxFilter.setTransform (getTransformation(0, -1, 0, 0, 0, -45*PI/180));
+  cropBoxFilter.filter (indices);
+  cropBoxFilter.filter (cloud_out);
 
-  EXPECT_EQ((int)indices.size (), 2);
-  EXPECT_EQ ((int)indices.size (), (int)cloud_out.size ());
+  EXPECT_EQ ((int)indices.size (), 2);
+  EXPECT_EQ ((int)cloud_out.size (), 2);
 
   // Remove point cloud rotation
-  cropBoxFilter.setTransform(getTransformation(0, -1, 0, 0, 0, 0));
-  cropBoxFilter.filter(indices);
-  cropBoxFilter.filter(cloud_out);
+  cropBoxFilter.setTransform (getTransformation(0, -1, 0, 0, 0, 0));
+  cropBoxFilter.filter (indices);
+  cropBoxFilter.filter (cloud_out);
 
-  EXPECT_EQ((int)indices.size (), 0);
-  EXPECT_EQ ((int)indices.size (), (int)cloud_out.size ());
+  EXPECT_EQ ((int)indices.size (), 0);
+  EXPECT_EQ ((int)cloud_out.size (), 0);
 
+  // PointCloud2
+  // -------------------------------------------------------------------------
+
+  // Create cloud with center point and corner points
+  PointCloud2::Ptr input2 (new PointCloud2);
+  pcl::toROSMsg (*input, *input2);
+
+  // Test the PointCloud<PointT> method
+  CropBox<PointCloud2> cropBoxFilter2;
+  cropBoxFilter2.setInputCloud (input2);
+
+  // Cropbox slighlty bigger then bounding box of points
+  cropBoxFilter2.setMin (min_pt);
+  cropBoxFilter2.setMax (max_pt);
+
+  // Indices
+  vector<int> indices2;
+  cropBoxFilter2.filter (indices2);
+
+  // Cloud
+  PointCloud2 cloud_out2;
+  cropBoxFilter2.filter (cloud_out2);
+
+  // Should contain all
+  EXPECT_EQ((int)indices2.size (), 9);
+  EXPECT_EQ ((int)indices2.size (), (int)cloud_out2.width * (int)cloud_out2.height);
+
+  // Translate crop box up by 1
+  cropBoxFilter2.setTranslation (Eigen::Vector3f(0, 1, 0));
+  cropBoxFilter2.filter (indices2);
+  cropBoxFilter2.filter (cloud_out2);
+
+  EXPECT_EQ ((int)indices2.size (), 5);
+  EXPECT_EQ ((int)indices2.size (), (int)cloud_out2.width * (int)cloud_out2.height);
+
+  // Rotate crop box up by 45
+  cropBoxFilter2.setRotation (Eigen::Vector3f(0, 45*PI/180, 0));
+  cropBoxFilter2.filter (indices2);
+  cropBoxFilter2.filter (cloud_out2);
+
+  EXPECT_EQ ((int)indices2.size (), 1);
+  EXPECT_EQ ((int)indices2.size (), (int)cloud_out2.width * (int)cloud_out2.height);
+
+  // Rotate point cloud by -45
+  cropBoxFilter2.setTransform (getTransformation(0, 0, 0, 0, 0, -45*PI/180));
+  cropBoxFilter2.filter (indices2);
+  cropBoxFilter2.filter (cloud_out2);
+
+  EXPECT_EQ((int)indices2.size (), 3);
+  EXPECT_EQ ((int)cloud_out2.width * (int)cloud_out2.height, 3);
+
+  // Translate point cloud down by -1
+  cropBoxFilter2.setTransform (getTransformation(0, -1, 0, 0, 0, -45*PI/180));
+  cropBoxFilter2.filter (indices2);
+  cropBoxFilter2.filter (cloud_out2);
+
+  EXPECT_EQ ((int)indices2.size (), 2);
+  EXPECT_EQ ((int)cloud_out2.width * (int)cloud_out2.height, 2);
+
+  // Remove point cloud rotation
+  cropBoxFilter2.setTransform (getTransformation(0, -1, 0, 0, 0, 0));
+  cropBoxFilter2.filter (indices2);
+  cropBoxFilter2.filter (cloud_out2);
+
+  EXPECT_EQ ((int)indices2.size (), 0);
+  EXPECT_EQ ((int)cloud_out2.width * (int)cloud_out2.height, 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

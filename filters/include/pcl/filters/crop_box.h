@@ -246,7 +246,7 @@ namespace pcl
         * \param transformation
         */
       inline void
-      setTranlation (const Eigen::Vector3f &translation)
+      setTranslation (const Eigen::Vector3f &translation)
       {
         translation_ = translation;
       }
