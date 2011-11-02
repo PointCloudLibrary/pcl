@@ -343,15 +343,19 @@ namespace pcl
 
   struct EIGEN_ALIGN16 _PointXYZRGBL
   {
-    PCL_ADD_POINT4D; // Thi adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     union
     {
-      struct
+      union
       {
-        uint8_t b;
-        uint8_t g;
-        uint8_t r;
-        uint8_t label;
+        struct
+        {
+          uint8_t b;
+          uint8_t g;
+          uint8_t r;
+          uint8_t label;
+        };
+        float rgb;
       };
       uint32_t rgba;
     };
