@@ -37,7 +37,7 @@
 #define PCL_PEOPLE_CONVERSION_H_
 
 #include <pcl/pcl_base.h>
-#include <pcl/people/conversions/colormap.h>
+#include <pcl/people/colormap.h>
 
 namespace pcl
 {
