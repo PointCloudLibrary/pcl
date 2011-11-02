@@ -75,9 +75,7 @@ namespace pcl
             float3 pos[1];						
             int number;
         };
-
-        extern cudaStream_t stream;
-
+        
         void bilateralFilter(const DepthMap& src, DepthMap& dst);
         void pyrDown(const DepthMap& src, DepthMap& dst);
 
@@ -86,34 +84,57 @@ namespace pcl
         void compteNormalsEigen(const MapArr& vmap, MapArr& nmap);
 
         void tranformMaps(const MapArr& vmap_src, const MapArr& nmap_src, const Mat33& Rmat, const float3& tvec, MapArr& vmap_dst, MapArr& nmap_dst);
-
-        struct float8 { float x, y, z, w, f1, f2, f3, f4; };
-        template<typename T> void convert(const MapArr& vmap, DeviceArray2D<T>& output);		             
-
+        
         //icp        
-
         void findCoresp(const MapArr& vmap_g_curr, const MapArr& nmap_g_curr, const Mat33& Rprev_inv, const float3& tprev, const Intr& intr, 
             const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, float distThres, float angleThres, PtrStepSz<short2> coresp);
 
         void estimateTransform(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const PtrStepSz<short2>& coresp,
             DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, float* matrixA_host, float* vectorB_host);
 
-        //tsdf
-        void initVolume(PtrStepSz<short2> array);
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////   TSDF volume functions        
+
+        typedef short2 volume_elem_type;
+        //typedef ushort2 volume_elem_type;
+        template<typename T> void initVolume(PtrStepSz<T> array);
+
+        //first version
         void integrateTsdfVolume(const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
             const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<short2> volume);
 
+        //second version
         void integrateTsdfVolume(const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
             const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<short2> volume, DeviceArray2D<float>& depthRawScaled);
 
-        //raycast
+        //third version (half)
+        void integrateTsdfVolume(const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
+            const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<ushort2> volume, DeviceArray2D<float>& depthRawScaled);
+
+
+        // Dispatcher
+        inline void integrateVolume(const PtrStepSz<ushort>& depth, const Intr& intr, const float3& volume_size, const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, 
+            DeviceArray2D<int>& volume, DeviceArray2D<float>& depthRawScaled)
+        {
+            integrateTsdfVolume(depth, intr, volume_size, Rcurr_inv, tcurr, tranc_dist, (PtrStep<volume_elem_type>) volume, depthRawScaled);
+        }
+        
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////   Raycast and view generation        
         void raycast(const Intr& intr, const Mat33& Rcurr, const float3& tcurr, float tranc_dist, const float3& volume_size, 
-            const PtrStep<short2>& volume, MapArr& vmap, MapArr& nmap);
+            const PtrStep<volume_elem_type>& volume, MapArr& vmap, MapArr& nmap);
 
         void generateImage(const MapArr& vmap, const MapArr& nmap, const LightSource& light, PtrStepSz<uchar3> dst);
 
         void resizeVMap(const MapArr& input, MapArr& output);
         void resizeNMap(const MapArr& input, MapArr& output);
+        
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////   Utuility
+        struct float8 { float x, y, z, w, f1, f2, f3, f4; };
+        template<typename T> void convert(const MapArr& vmap, DeviceArray2D<T>& output);
+
 
         inline bool valid_host(float value)
         {

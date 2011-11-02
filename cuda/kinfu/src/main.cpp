@@ -37,7 +37,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <iostream>
-//#include <opencv2/opencv.hpp>
+
 #include "pcl/gpu/kinfu/openni_capture.hpp"
 #include "pcl/gpu/kinfu/kinfu.hpp"
 //#include "pcl/gpu/kinfu/video_recorder.hpp"
@@ -47,7 +47,9 @@
 #include <pcl/point_types.h>
 #include <pcl/visualization/image_viewer.h>
 
-#include "opencv2/opencv.hpp"
+#ifdef HAVE_OPENCV
+    #include "opencv2/opencv.hpp"
+#endif
 
 using namespace std;
 using namespace pcl;

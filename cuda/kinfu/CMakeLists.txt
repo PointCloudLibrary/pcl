@@ -7,7 +7,8 @@ set(SUBSYS_DEPS common gpu_containers gpu_utils gpu_features visualization)
 
 find_package(OpenCV QUIET)
 
-if (OpenCV_FOUND)
+#if (OpenCV_FOUND)
+if (TRUE)
 	if(NOT VTK_FOUND)
 	  set(DEFAULT FALSE)
 	  set(REASON "VTK was not found.")
@@ -24,6 +25,10 @@ if (OpenCV_FOUND)
 	PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 	PCL_SET_SUBSYS_INCLUDE_DIR(${SUBSYS_NAME} ${SUBSYS_PATH})
 	mark_as_advanced("BUILD_${SUBSYS_NAME}")
+	
+	if(OpenCV_FOUND)
+		add_definitions(-DHAVE_OPENCV)	
+	endif()
 
 	if (build)
 		FILE(GLOB incs include/pcl/gpu/kinfu/*.hpp)
@@ -61,9 +66,13 @@ if (OpenCV_FOUND)
 		 
 		PCL_ADD_EXECUTABLE(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${cuda} ${cuda_objs})
 		PCL_ADD_SSE_FLAGS(${LIB_NAME})
-		target_link_libraries(${LIB_NAME} pcl_gpu_utils pcl_gpu_containers pcl_gpu_octree pcl_visualization ${OpenCV_LIBS} ${OPENNI_LIBRARIES})
+		target_link_libraries(${LIB_NAME} pcl_gpu_utils pcl_gpu_containers pcl_gpu_octree pcl_visualization ${OPENNI_LIBRARIES})
 		set_target_properties(${LIB_NAME} PROPERTIES FOLDER "Libraries")		
-
+		
+		if(OpenCV_FOUND)
+			target_link_libraries(${LIB_NAME} ${OpenCV_LIBS})
+		endif()
+		 
 		set(EXT_DEPS "")
 		#set(EXT_DEPS CUDA)
 		PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")

@@ -127,7 +127,7 @@ namespace pcl
                 /*if (sine >= 1 || asinf(sine) >= angleThres)
                     return 0;*/
 
-                if (sine >= 1 || sine >= angleThres)
+                if (/*sine >= 1 || */sine >= angleThres)
                     return 0;
                 
                 coresp.ptr(y)[x] = make_short2(ukr.x, ukr.y);

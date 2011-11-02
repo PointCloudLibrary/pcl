@@ -70,7 +70,7 @@ namespace pcl
             float3 cell_size;
             int cols, rows;
            
-            PtrStep<short2> volume;
+            PtrStep<volume_elem_type> volume;
 
             Intr intr;
 
@@ -248,7 +248,7 @@ namespace pcl
 
 
 void pcl::device::raycast(const Intr& intr, const Mat33& Rcurr, const float3& tcurr, float tranc_dist, const float3& volume_size, 
-                          const PtrStep<short2>& volume, MapArr& vmap, MapArr& nmap)
+                          const PtrStep<volume_elem_type>& volume, MapArr& vmap, MapArr& nmap)
 {
     RayCaster rc;
     

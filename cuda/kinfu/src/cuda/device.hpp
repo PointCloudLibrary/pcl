@@ -45,16 +45,20 @@ namespace pcl
 {
     namespace device
     {       
+
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////        
+        /// for old format
+
         const int DIVISOR = 32767; // SHRT_MAX;
         #define INV_DIV 3.051850947599719e-5f
                 
-        __device__ __forceinline__ short2 pack_tsdf(float tsdf, int weight)
+        __device__ __forceinline__ void pack_tsdf(float tsdf, int weight, short2& value)
 		{
-			//assumming that fabs(tsdf) <= 1 and weight is interger
-            
             int fixedp = max(-DIVISOR, min(DIVISOR, __float2int_rz(tsdf * DIVISOR)));
             //int fixedp = __float2int_rz(tsdf * DIVISOR);
-            return make_short2(fixedp, weight);			
+            value = make_short2(fixedp, weight);			
 		}
 
 		__device__ __forceinline__ void unpack_tsdf(short2 value, float& tsdf, int& weight)		
@@ -67,6 +71,30 @@ namespace pcl
         {
             return static_cast<float>(value.x)/DIVISOR;//*/ * INV_DIV;            
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+        /// for half
+         __device__ __forceinline__ void pack_tsdf(float tsdf, int weight, ushort2& value)
+		{
+            value = make_ushort2(__float2half_rn(tsdf), weight);			
+		}
+
+		__device__ __forceinline__ void unpack_tsdf(ushort2 value, float& tsdf, int& weight)		
+        {	            
+            tsdf = __half2float(value.x);
+            weight = value.y;
+		}
+
+        __device__ __forceinline__ float unpack_tsdf(ushort2 value)
+        {
+            return __half2float(value.x);
+        }
+
+
+
+
 
          __device__ __forceinline__ float3 operator*(const Mat33& m, const float3& vec)
         {

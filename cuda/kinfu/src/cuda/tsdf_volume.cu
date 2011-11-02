@@ -41,15 +41,38 @@ namespace pcl
 {
     namespace device
     {
-        __global__ void initializeVolume(PtrStepSz<short2> array)
+        template<typename T>
+        __global__ void initializeVolume(PtrStepSz<T> volume)
         {
             int x = threadIdx.x + blockIdx.x * blockDim.x;
             int y = threadIdx.y + blockIdx.y * blockDim.y;
 
-            if (x < array.cols && y < array.rows)
-                array.ptr(y)[x] = pack_tsdf(0.f, 0);
+            if (x < volume.cols && y < volume.rows)
+                pack_tsdf(0.f, 0, volume.ptr(y)[x]);
         }
 
+        template<typename T>
+        void initVolume(PtrStepSz<T> volume)
+        {
+            dim3 block(32, 16);
+            dim3 grid(1,1,1);
+            grid.x = divUp(volume.cols, block.x);
+            grid.y = divUp(volume.rows, block.y);
+
+            initializeVolume<<<grid, block>>>(volume);
+            cudaSafeCall( cudaGetLastError() );
+            cudaSafeCall(cudaDeviceSynchronize());
+        }
+    }
+}
+
+template void pcl::device::initVolume(PtrStepSz<short2> volume);
+template void pcl::device::initVolume(PtrStepSz<ushort2> volume);
+
+namespace pcl
+{
+    namespace device
+    {
         struct Tsdf
         {	
             enum
@@ -133,7 +156,7 @@ namespace pcl
                                 float tsdf_new = (tsdf_prev*weight_prev + Wrk*tsdf)/(weight_prev+Wrk);
                                 int weight_new = min(weight_prev + Wrk, MAX_WEIGHT);
 
-                                *pos = pack_tsdf(tsdf_new, weight_new);                            
+                                pack_tsdf(tsdf_new, weight_new, *pos);
                             }                               
                         }
                     }
@@ -163,7 +186,7 @@ namespace pcl
             float v_y = Rcurr_inv.data[1].x*v_g_x + Rcurr_inv.data[1].y*v_g_y + Rcurr_inv.data[1].z*v_g_z;
             float v_z = Rcurr_inv.data[2].x*v_g_x + Rcurr_inv.data[2].y*v_g_y + Rcurr_inv.data[2].z*v_g_z;
 
-#pragma unroll
+//#pragma unroll
             for(int z = 0; z < VOLUME_Z; ++z)
             {                   
                 float3 vr;
@@ -209,7 +232,7 @@ namespace pcl
                             float tsdf_new = (tsdf_prev*weight_prev + Wrk*tsdf)/(weight_prev+Wrk);
                             int weight_new = min(weight_prev + Wrk, Tsdf::MAX_WEIGHT);
 
-                            *pos = pack_tsdf(tsdf_new, weight_new);                            
+                            pack_tsdf(tsdf_new, weight_new, *pos);
                         }   
                     }
                 }
@@ -219,17 +242,6 @@ namespace pcl
     }
 }
 
-void pcl::device::initVolume(PtrStepSz<short2> array)
-{
-    dim3 block(32, 16);
-    dim3 grid(1,1,1);
-    grid.x = divUp(array.cols, block.x);
-    grid.y = divUp(array.rows, block.y);
-
-    initializeVolume<<<grid, block>>>(array);
-    cudaSafeCall( cudaGetLastError() );
-    cudaSafeCall(cudaDeviceSynchronize());
-}
 
 void pcl::device::integrateTsdfVolume(const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
                                       const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<short2> volume)
@@ -250,13 +262,15 @@ void pcl::device::integrateTsdfVolume(const PtrStepSz<ushort>& depth_raw, const 
     dim3 block(Tsdf::CTA_SIZE_X, Tsdf::CTA_SIZE_Y);
     dim3 grid(divUp(VOLUME_X, block.x), divUp(VOLUME_Y, block.y));
 
-    float3 cell_size;
-    cell_size.x = volume_size.x / VOLUME_X;
-    cell_size.y = volume_size.y / VOLUME_Y;
-    cell_size.z = volume_size.z / VOLUME_Z;
+#if 0
+    //float3 cell_size;
+    //cell_size.x = volume_size.x / VOLUME_X;
+    //cell_size.y = volume_size.y / VOLUME_Y;
+    //cell_size.z = volume_size.z / VOLUME_Z;
     //tsdf2<<<grid, block>>>(volume, volume_size, tranc_dist, Rcurr_inv, tcurr, intr, depth_raw, cell_size);
-
+else
     integrateTsdfKernel<<<grid, block>>>(tsdf);    
+#endif
     cudaSafeCall( cudaGetLastError() );
     cudaSafeCall(cudaDeviceSynchronize());
 }
@@ -312,7 +326,7 @@ namespace pcl
             short2* pos = volume.ptr(y) + x;
             int elem_step = volume.step * VOLUME_Y / sizeof(short2);
 
-#pragma unroll
+//#pragma unroll
             for(int z = 0; z < VOLUME_Z; 
                 ++z,
                 v_g_z += cell_size.z, 
@@ -350,7 +364,7 @@ namespace pcl
                         float tsdf_new = (tsdf_prev * weight_prev + Wrk * tsdf) / (weight_prev + Wrk);
                         int weight_new = min(weight_prev + Wrk, Tsdf::MAX_WEIGHT);
 
-                        *pos = pack_tsdf(tsdf_new, weight_new);
+                        pack_tsdf(tsdf_new, weight_new, *pos);
                     }
                 }
             } // for(int z = 0; z < VOLUME_Z; ++z)
@@ -387,6 +401,119 @@ void pcl::device::integrateTsdfVolume(const PtrStepSz<ushort>& depth, const Intr
 	    dim3 grid(divUp(VOLUME_X, block.x), divUp(VOLUME_Y, block.y));
 
         tsdf23<<<grid, block>>>(depthScaled, volume, tranc_dist, Rcurr_inv, tcurr, intr, cell_size);
+	    cudaSafeCall( cudaGetLastError() );
+    }
+	  
+	cudaSafeCall(cudaDeviceSynchronize());
+}
+
+namespace pcl
+{
+    namespace device
+    {
+         __global__ void tsdf24(const PtrStepSz<float> depthScaled, PtrStep<ushort2> volume, 
+            const float tranc_dist, const Mat33 Rcurr_inv, const float3 tcurr, const Intr intr, const float3 cell_size)
+        {
+            const int x = threadIdx.x + blockIdx.x * blockDim.x;
+            const int y = threadIdx.y + blockIdx.y * blockDim.y;
+
+            if (x >= VOLUME_X || y >= VOLUME_Y)
+                return;
+
+            float v_g_x = (x + 0.5f) * cell_size.x - tcurr.x;
+            float v_g_y = (y + 0.5f) * cell_size.y - tcurr.y;
+            float v_g_z = (0 + 0.5f) * cell_size.z - tcurr.z;
+
+            const float v_g_part_norm = v_g_x * v_g_x + v_g_y * v_g_y;
+
+            float v_x = (Rcurr_inv.data[0].x * v_g_x + Rcurr_inv.data[0].y * v_g_y + Rcurr_inv.data[0].z * v_g_z) * intr.fx;
+            float v_y = (Rcurr_inv.data[1].x * v_g_x + Rcurr_inv.data[1].y * v_g_y + Rcurr_inv.data[1].z * v_g_z) * intr.fy;
+            float v_z = (Rcurr_inv.data[2].x * v_g_x + Rcurr_inv.data[2].y * v_g_y + Rcurr_inv.data[2].z * v_g_z);
+
+            float z_scaled = 0;
+
+            const float Rcurr_inv_0_z_scaled = Rcurr_inv.data[0].z * cell_size.z * intr.fx;
+            const float Rcurr_inv_1_z_scaled = Rcurr_inv.data[1].z * cell_size.z * intr.fy;
+
+            const float tranc_dist_inv = 1.0f / tranc_dist;
+
+            ushort2* voxel = volume.ptr(y) + x;
+            const int elem_step = volume.step * VOLUME_Y / sizeof(ushort2);
+            const ushort2* end_voxel = volume.ptr(y + VOLUME_Y * VOLUME_Z);
+
+            while(voxel < end_voxel)
+            {
+                float inv_z = 1.0f / __fmaf_rn(Rcurr_inv.data[2].z, z_scaled, v_z);
+
+                // project to current cam
+                int2 coo = 
+                {
+                    __float2int_rn(__fmaf_rn(v_x, inv_z, intr.cx)),
+                    __float2int_rn(__fmaf_rn(v_y, inv_z, intr.cy)) 
+                };
+
+                if (coo.x >= 0 && coo.y >= 0 && coo.x < depthScaled.cols && coo.y < depthScaled.rows) //6
+                {
+                    float Dp_scaled = depthScaled.ptr(coo.y)[coo.x];
+
+                    float sdf = Dp_scaled - sqrtf(__fmaf_rn(v_g_z, v_g_z, v_g_part_norm));
+
+                    if (Dp_scaled != 0 && sdf >= -tranc_dist)
+                    {
+                        float tsdf = fmin(1.0f, sdf * tranc_dist_inv);
+
+                        float tsdf_prev;
+                        int weight_prev;
+                        unpack_tsdf(*voxel, tsdf_prev, weight_prev);
+
+                        //const int Wrk = 1;
+
+                        float tsdf_new = __fmaf_rn(tsdf_prev, weight_prev, tsdf) / (weight_prev + 1);
+                        int weight_new = min(weight_prev + 1, Tsdf::MAX_WEIGHT);
+
+                         pack_tsdf(tsdf_new, weight_new, *voxel);
+                    }
+                }
+
+                v_g_z += cell_size.z;
+
+                z_scaled += cell_size.z;
+
+                v_x += Rcurr_inv_0_z_scaled;
+                v_y += Rcurr_inv_1_z_scaled; 
+
+                voxel += elem_step;
+            } // for(int z = 0; z < VOLUME_Z; ++z)
+        }  // __global__
+
+    }
+}
+
+void pcl::device::integrateTsdfVolume(const PtrStepSz<ushort>& depth, const Intr& intr, 
+                                      const float3& volume_size, const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, 
+                                      PtrStep<ushort2> volume, DeviceArray2D<float>& depthRawScaled)
+{    
+    depthRawScaled.create(depth.rows, depth.cols);
+    {
+        dim3 block(32, 8);
+	    dim3 grid(divUp(depth.cols, block.x), divUp(depth.rows, block.y));
+
+        scaleDepth<<<grid, block>>>(depth, depthRawScaled, intr);
+	    cudaSafeCall( cudaGetLastError() );
+    }
+
+    {
+        float3 cell_size;
+        cell_size.x = volume_size.x / VOLUME_X;
+        cell_size.y = volume_size.y / VOLUME_Y;
+        cell_size.z = volume_size.z / VOLUME_Z;
+
+        dim3 block(Tsdf::CTA_SIZE_X, Tsdf::CTA_SIZE_Y);
+	    dim3 grid(divUp(VOLUME_X, block.x), divUp(VOLUME_Y, block.y));
+
+        cudaFuncSetCacheConfig(tsdf24, cudaFuncCachePreferL1);
+
+        tsdf24<<<grid, block>>>(depthRawScaled, volume, tranc_dist, Rcurr_inv, tcurr, intr, cell_size);
 	    cudaSafeCall( cudaGetLastError() );
     }
 	  

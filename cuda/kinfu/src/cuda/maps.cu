@@ -213,11 +213,10 @@ void pcl::device::tranformMaps(const MapArr& vmap_src, const MapArr& nmap_src, c
     grid.x = divUp(cols, block.x);
     grid.y = divUp(rows, block.y);
 
-    tranformMapsKernel<<<grid, block, 0, stream>>>(rows, cols, vmap_src, nmap_src, Rmat, tvec, vmap_dst, nmap_dst);
+    tranformMapsKernel<<<grid, block>>>(rows, cols, vmap_src, nmap_src, Rmat, tvec, vmap_dst, nmap_dst);
     cudaSafeCall( cudaGetLastError() );	
-
-    if (stream == 0)
-        cudaSafeCall(cudaDeviceSynchronize());
+    
+    cudaSafeCall(cudaDeviceSynchronize());
 }
 
 namespace pcl
