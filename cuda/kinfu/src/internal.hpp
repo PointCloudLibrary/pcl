@@ -100,8 +100,11 @@ namespace pcl
 
 		//tsdf
 		void initVolume(PtrStepSz<short2> array);
-		void integrateTsdfVolume(const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
+        void integrateTsdfVolume(const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
 			const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<short2> volume);
+
+		void integrateTsdfVolume(const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
+			const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<short2> volume, DeviceArray2D<float>& depthRawScaled);
 		
 		//raycast
 		void raycast(const Intr& intr, const Mat33& Rcurr, const float3& tcurr, float tranc_dist, const float3& volume_size, 
@@ -109,7 +112,8 @@ namespace pcl
 
 		void generateImage(const MapArr& vmap, const MapArr& nmap, const LightSource& light, PtrStepSz<uchar3> dst);
 
-        void resizeMap(const MapArr& input, MapArr& output);
+        void resizeVMap(const MapArr& input, MapArr& output);
+        void resizeNMap(const MapArr& input, MapArr& output);
 
         inline bool valid_host(float value)
         {

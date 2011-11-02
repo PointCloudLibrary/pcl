@@ -280,18 +280,19 @@ namespace pcl
 {
     namespace device
     {        
-        __global__ void resizeMapKernel(const PtrStepSz<float> input, PtrStepSz<float> output)
+        template<bool normalize>
+        __global__ void resizeMapKernel(int drows, int dcols, int srows, const PtrStep<float> input, PtrStep<float> output)
         {
             int x = threadIdx.x + blockIdx.x * blockDim.x;
             int y = threadIdx.y + blockIdx.y * blockDim.y;
 
-            if (x >= output.cols || y >= output.rows)
+            if (x >= dcols || y >= drows)
                 return;
 
             const float qnan = numeric_limits<float>::quiet_NaN();
 
             int xs = x * 2;
-            int ys = x * 2;
+            int ys = y * 2;
             
             float x00 = input.ptr(ys+0)[xs+0];
             float x01 = input.ptr(ys+0)[xs+1];
@@ -305,42 +306,57 @@ namespace pcl
             }
             else
             {
-                output.ptr(y)[x] = (x00 + x01 + x10 + x11)/4;
+                float3 n;
 
-                float y00 = input.ptr(ys+input.rows+0)[xs+0];
-                float y01 = input.ptr(ys+input.rows+0)[xs+1];
-                float y10 = input.ptr(ys+input.rows+1)[xs+0];
-                float y11 = input.ptr(ys+input.rows+1)[xs+1];
+                n.x = (x00 + x01 + x10 + x11)/4;
 
-                output.ptr(y+output.rows)[x] = (y00 + y01 + y10 + y11)/4;
+                float y00 = input.ptr(ys+srows+0)[xs+0];
+                float y01 = input.ptr(ys+srows+0)[xs+1];
+                float y10 = input.ptr(ys+srows+1)[xs+0];
+                float y11 = input.ptr(ys+srows+1)[xs+1];
 
-                float z00 = input.ptr(ys+2*input.rows+0)[xs+0];
-                float z01 = input.ptr(ys+2*input.rows+0)[xs+1];
-                float z10 = input.ptr(ys+2*input.rows+1)[xs+0];
-                float z11 = input.ptr(ys+2*input.rows+1)[xs+1];
+                n.y = (y00 + y01 + y10 + y11)/4;
 
-                output.ptr(y+2*output.rows)[x] = (z00 + z01 + z10 + z11)/4;
+                float z00 = input.ptr(ys+2*srows+0)[xs+0];
+                float z01 = input.ptr(ys+2*srows+0)[xs+1];
+                float z10 = input.ptr(ys+2*srows+1)[xs+0];
+                float z11 = input.ptr(ys+2*srows+1)[xs+1];
+
+                n.z = (z00 + z01 + z10 + z11)/4;
+
+                if (normalize)
+                    n = normalized(n);
+
+                output.ptr(y        )[x] = n.x;
+                output.ptr(y+  drows)[x] = n.y; 
+                output.ptr(y+2*drows)[x] = n.z;
             }           
+        }
+
+        template<bool normalize>
+        void resizeMap(const MapArr& input, MapArr& output)
+        {
+            int in_cols = input.cols(); 
+            int in_rows = input.rows()/3;
+
+            int out_cols = in_cols/2;
+            int out_rows = in_rows/2;
+
+            output.create(out_rows * 3, out_cols);
+
+            dim3 block(32, 8);
+            dim3 grid(divUp(out_cols, block.x), divUp(out_rows, block.y));
+            resizeMapKernel<normalize><<<grid, block>>>(out_rows, out_cols, in_rows, input, output);
+            cudaSafeCall( cudaGetLastError() );	
+
+            if (stream == 0)
+                cudaSafeCall(cudaDeviceSynchronize());    
         }
     }
 }
 
+void pcl::device::resizeVMap(const MapArr& input, MapArr& output)
+{ resizeMap<false>(input, output); }
 
-void pcl::device::resizeMap(const MapArr& input, MapArr& output)
-{
-    int in_cols = input.cols(); 
-    int in_rows = input.rows()/3;
-
-    int out_cols = in_cols/2;
-    int out_rows = in_rows/2;
-
-    output.create(out_rows * 3, out_cols);
-
-    dim3 block(32, 8);
-    dim3 grid(divUp(out_cols, block.x), divUp(out_rows, block.y));
-    resizeMapKernel<<<grid, block>>>(input, output);
-    cudaSafeCall( cudaGetLastError() );	
-
-    if (stream == 0)
-        cudaSafeCall(cudaDeviceSynchronize());    
-}
+void pcl::device::resizeNMap(const MapArr& input, MapArr& output)
+{ resizeMap<true>(input, output); }

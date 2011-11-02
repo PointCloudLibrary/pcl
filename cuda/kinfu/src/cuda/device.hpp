@@ -46,29 +46,31 @@ namespace pcl
     namespace device
     {       
         const int DIVISOR = 32767; // SHRT_MAX;
-        
+        #define INV_DIV 3.051850947599719e-5f
+                
         __device__ __forceinline__ short2 pack_tsdf(float tsdf, int weight)
 		{
 			//assumming that fabs(tsdf) <= 1 and weight is interger
             
             int fixedp = max(-DIVISOR, min(DIVISOR, __float2int_rz(tsdf * DIVISOR)));
+            //int fixedp = __float2int_rz(tsdf * DIVISOR);
             return make_short2(fixedp, weight);			
 		}
 
 		__device__ __forceinline__ void unpack_tsdf(short2 value, float& tsdf, int& weight)		
         {	            
             weight = value.y;
-            tsdf = static_cast<float>(value.x)/DIVISOR;
+            tsdf = __int2float_rn(value.x)/*/DIVISOR;//*/ * INV_DIV;  
 		}
 
         __device__ __forceinline__ float unpack_tsdf(short2 value)
         {
-            return static_cast<float>(value.x)/DIVISOR;            
+            return static_cast<float>(value.x)/*/DIVISOR;//*/ * INV_DIV;            
         }
 
          __device__ __forceinline__ float3 operator*(const Mat33& m, const float3& vec)
         {
-            return make_float3(dot(m.data[0], vec), dot(m.data[1], vec), dot(m.data[2], vec));			
+            return make_float3(dot(m.data[0], vec), dot(m.data[1], vec), dot(m.data[2], vec));
         }
     }
 }

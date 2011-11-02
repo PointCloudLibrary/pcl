@@ -149,10 +149,7 @@ namespace pcl
 
                 if (x >= cols || y >= rows)
                     return;
- 
-                /*if (x != cols/2 || y != rows/2)
-                    return;*/
-                                
+                                                 
                 vmap.ptr(y)[x] = numeric_limits<float>::quiet_NaN();
                 nmap.ptr(y)[x] = numeric_limits<float>::quiet_NaN();
 
@@ -160,13 +157,6 @@ namespace pcl
                 float3 ray_next  = Rcurr * get_ray_next(x, y) + tcurr; 		
 
                 float3 ray_dir = normalized(ray_next - ray_start); 
-
-                //if (isnan(ray_start.x))
-                //{
-                //    printf("nan raycaser\n");
-                //    return;
-
-                //}
 
                 //ensure that it isn't a degenerate case				
                 ray_dir.x  = (ray_dir.x == 0.f) ? 1e-15 : ray_dir.x;
@@ -178,13 +168,12 @@ namespace pcl
                 float time_exit_volume  = getMaxTime(volume_size, ray_start, ray_dir);								
 
                 //printf("aaaa\n");
-                const float min_dist = 50.f; //in mm
+                const float min_dist = 0.f; //in mm
                 time_start_volume = fmax(time_start_volume, min_dist);
                 if (time_start_volume >= time_exit_volume)
                     return;
 
                 //printf("bbb\n");
-
                 //printf(">>> %f - %f\n", time_start_volume, time_exit_volume);
 
                 int time_curr = time_start_volume;
@@ -198,9 +187,12 @@ namespace pcl
                 float tsdf = readTsdf(g.x, g.y, g.z);
 
                 //printf("tsdf %f\n", tsdf);
+
+                //infinite loop guard
+                const float max_time = 3 * (volume_size.x + volume_size.y + volume_size.z);
                                 
                 //for(int i = 0; i < 512; ++i) 
-                for(;; time_curr += time_step) 
+                for(; time_curr < max_time; time_curr += time_step) 
                 {
                     float tsdf_prev = tsdf;   
 

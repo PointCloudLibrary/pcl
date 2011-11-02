@@ -112,8 +112,10 @@ namespace pcl
                     #pragma unroll
                     for(int j = i; j < 7; ++j) // cols + b
                     {
+                        __syncthreads();
                         smem[tid] = row[i] * row[j];
                         __syncthreads();
+                        
                         Block::reduce<CTA_SIZE>(smem, plus());
 
                         if (tid == 0)
@@ -207,11 +209,11 @@ void pcl::device::estimateTransform(const MapArr& v_dst, const MapArr& n_dst, co
     tr.output = mbuf;	
 
      {
-    //pcl::gpu::ScopeTimer timer("TEst2");
-    TransformEstimatorKernel2<<<TRed::TOTAL, TRed::CTA_SIZE>>>(tr);
+        //pcl::gpu::ScopeTimer timer("TEst2");
+        TransformEstimatorKernel2<<<TRed::TOTAL, TRed::CTA_SIZE>>>(tr);
 
-    cudaSafeCall( cudaGetLastError() );	
-    cudaSafeCall(cudaDeviceSynchronize());
+        cudaSafeCall( cudaGetLastError() );	
+        cudaSafeCall(cudaDeviceSynchronize());
      }
 
     float host_data[TRed::TOTAL];

@@ -40,18 +40,19 @@ namespace pcl
 {
     namespace device
     {
-        const float sigma_color = 10; //in mm
-        const float sigma_space = 3; // in pixels
-        const int R = 4; //static_cast<int>(sigma_space * 1.5);
-        const int D = R * 2 + 1; 
-
-        __global__ void bilateralKernel(const PtrStepSz<ushort> src, PtrStep<ushort> dst, float sigma_space2, float sigma_color2)
+        const float sigma_color = 30; //in mm
+        const float sigma_space = 4.5; // in pixels
+        
+        __global__ void bilateralKernel(const PtrStepSz<ushort> src, PtrStep<ushort> dst, float sigma_space2_inv_half, float sigma_color2_inv_half)
         {
             int x = threadIdx.x + blockIdx.x * blockDim.x;
             int y = threadIdx.y + blockIdx.y * blockDim.y;
 
             if (x >= src.cols || y >= src.rows)
                 return;
+
+            const int R = 6; //static_cast<int>(sigma_space * 1.5);
+            const int D = R * 2 + 1; 
 
             int value = src.ptr(y)[x];
 
@@ -62,24 +63,23 @@ namespace pcl
             float sum2 = 0;
 
             for (int cy = max(y - D/2, 0); cy < ty; ++cy)
+            {
                 for (int cx = max(x - D/2, 0); cx < tx; ++cx)
                 {
                     int tmp = src.ptr(cy)[cx];
 
-                    float space2  = (x - cx)*(x - cx) + (y - cy)*(y - cy);
+                    float space2 = (x - cx)*(x - cx) + (y - cy)*(y - cy);
                     float color2 = (value - tmp) * (value - tmp);
 
-                    float wd  = __expf(-space2/sigma_space2 * 0.5f); 
-                    float wc =  __expf(-color2/sigma_color2 * 0.5f);
-
-                    float weight = wd * wc;
+                    float weight = __expf(-(space2 * sigma_space2_inv_half + color2 * sigma_color2_inv_half));
 
                     sum1 += tmp * weight;
                     sum2 += weight;
                 }
+            }
 
-                int res = __float2int_rn(sum1/sum2);
-                dst.ptr(y)[x] = max(0, min(res, numeric_limits<short>::max()));
+            int res = __float2int_rn(sum1 / sum2);
+            dst.ptr(y)[x] = max(0, min(res, numeric_limits<short>::max()));
         }
 
 
@@ -130,7 +130,9 @@ void pcl::device::bilateralFilter(const DepthMap& src, DepthMap& dst)
     dim3 block(32, 8);
     dim3 grid(divUp(src.cols(), block.x), divUp(src.rows(), block.y));
 
-    bilateralKernel<<<grid, block, 0, stream>>>(src, dst, sigma_space * sigma_space, sigma_color * sigma_color);
+    cudaFuncSetCacheConfig(bilateralKernel, cudaFuncCachePreferL1);
+    bilateralKernel<<<grid, block, 0, stream>>>(src, dst, 0.5f / (sigma_space * sigma_space), 0.5f / (sigma_color * sigma_color));
+
     cudaSafeCall( cudaGetLastError() );	
     if (stream == 0)
         cudaSafeCall(cudaDeviceSynchronize());

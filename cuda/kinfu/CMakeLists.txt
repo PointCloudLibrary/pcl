@@ -1,4 +1,4 @@
-if(FALSE)
+if(TRUE)
 
 set(SUBSYS_NAME gpu_kinfu)
 set(SUBSYS_PATH cuda/gpu_kinfu)
@@ -29,32 +29,47 @@ if (OpenCV_FOUND)
 		FILE(GLOB incs include/pcl/gpu/kinfu/*.hpp)
 		FILE(GLOB srcs src/*.cpp src/*.hpp)
 		FILE(GLOB cuda src/cuda/*.cu src/cuda/*.h*)
-		FILE(GLOB dev_incs include/pcl/gpu/features/device/*.h*)  
-		source_group("Header Files\\device" FILES ${dev_incs})
+		FILE(GLOB tsdf src/cuda/tsdf_volume.cu)
+		FILE(GLOB est src/cuda/estimate_tranform.cu)
+				
 		source_group("Source Files\\cuda" FILES ${cuda} )    
-		source_group("Source Files" FILES ${srcs} )
-
-		FILE(GLOB srcs_utils src/utils/*.hpp)
-		source_group("Source Files\\utils" FILES ${srcs_utils})
-		
-		include_directories(${VTK_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
-
+		source_group("Source Files" FILES ${srcs} )		
+	    
 		set(LIB_NAME pcl_${SUBSYS_NAME})
-		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
-		PCL_CUDA_ADD_EXECUTABLE(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${cuda} ${srcs_utils}  ${dev_incs})
-		PCL_ADD_SSE_FLAGS(${LIB_NAME})
-		target_link_libraries(${LIB_NAME} pcl_gpu_utils pcl_gpu_containers pcl_gpu_octree pcl_visualization ${OpenCV_LIBS})
-		set_target_properties(${LIB_NAME} PROPERTIES FOLDER "Libraries")
+		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src ${VTK_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS})			
 		
-		target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES} pcl_visualization)
-		#vtkCommon vtkWidgets vtkHybrid)
+		if(TRUE)
+		
+			list(REMOVE_ITEM cuda ${est})
+			CUDA_COMPILE(est_objs ${est})		
+		
+			set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "--ftz=true;--prec-div=false;--prec-sqrt=false") 
+			CUDA_COMPILE(cuda_objs ${cuda})		
+			
+			LIST(APPEND cuda ${est})
+		    LIST(APPEND cuda_objs ${est_objs})
+							
+		else()		
+			list(REMOVE_ITEM cuda ${tsdf})
+			CUDA_COMPILE(cuda_objs ${cuda})		
+			set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "--ftz=true;--prec-div=false;--prec-sqrt=false") 
+			CUDA_COMPILE(tsdf_obj ${tsdf})
+		
+		    LIST(APPEND cuda ${tsdf})
+		    LIST(APPEND cuda_objs ${tsdf_obj})
+		endif()
+		 
+		PCL_ADD_EXECUTABLE(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${cuda} ${cuda_objs})
+		PCL_ADD_SSE_FLAGS(${LIB_NAME})
+		target_link_libraries(${LIB_NAME} pcl_gpu_utils pcl_gpu_containers pcl_gpu_octree pcl_visualization ${OpenCV_LIBS} ${OPENNI_LIBRARIES})
+		set_target_properties(${LIB_NAME} PROPERTIES FOLDER "Libraries")		
 
 		set(EXT_DEPS "")
 		#set(EXT_DEPS CUDA)
 		PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
 		# Install include files
-		PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_PATH} ${incs} ${dev_incs})
+		PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_PATH} ${incs})
 		
 		add_subdirectory(test)
 	endif()

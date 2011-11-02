@@ -108,9 +108,9 @@ namespace pcl
                     return 0;                
 
                 float3 vprev_g;
-                vprev_g.x = vmap_g_prev.ptr(y              )[x];
-                vprev_g.y = vmap_g_prev.ptr(y+  coresp.rows)[x];
-                vprev_g.z = vmap_g_prev.ptr(y+2*coresp.rows)[x];
+                vprev_g.x = vmap_g_prev.ptr(ukr.y              )[ukr.x];
+                vprev_g.y = vmap_g_prev.ptr(ukr.y+  coresp.rows)[ukr.x];
+                vprev_g.z = vmap_g_prev.ptr(ukr.y+2*coresp.rows)[ukr.x];
 
                 float dist = norm(vcurr_g - vprev_g);
                 if (dist > distThres)

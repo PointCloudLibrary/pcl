@@ -60,8 +60,8 @@ int main()
     {
         //BufferedRecorder recorder;
         //CaptureOpenNI cap(0);
-        CaptureOpenNI cap("d:/onis/20111013-224932.oni");
-        //CaptureOpenNI cap("d:/onis/20111013-224551.oni");
+        //CaptureOpenNI cap("d:/onis/20111013-224932.oni");
+        CaptureOpenNI cap("d:/onis/20111013-224551.oni");
         //CaptureOpenNI cap("d:/onis/20111013-224719.oni");
 
         KinfuTracker kinfu(480, 640);
@@ -77,6 +77,9 @@ int main()
         for(int i = 0;;++i)
         {                        
             cout << i << endl;
+
+            if (i == 10)
+                break;
             
             PtrStepSz<const unsigned short> depth;
             PtrStepSz<const uchar3> rgb24;
@@ -94,7 +97,7 @@ int main()
             depth_device.upload(depth.data, depth.step, depth.rows, depth.cols);
 
             {
-                ScopeTime whole("total-for-frame");
+                ScopeTime time("total-for-frame");
                 kinfu(depth_device, view_device);
             }
             if (!view_device.empty())

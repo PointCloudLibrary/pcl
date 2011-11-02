@@ -75,11 +75,11 @@ pcl::gpu::KinfuTracker::KinfuTracker(int rows, int cols) : rows_(rows), cols_(co
 
     tranc_dist = 30;
 
-    volume_size = Vector3f::Constant(1000);
-    init_Rcam   = Matrix3f::Identity();
+    volume_size = Vector3f::Constant(4000);
+    init_Rcam   = Matrix3f::Identity() * AngleAxisf(-30.f/180*3.1415926, Vector3f::UnitX());
     init_tcam   = volume_size * 0.5f;
     
-    init_tcam(2) -= volume_size(2)/2 * 1.5;
+    init_tcam(2) -= volume_size(2)/2 * 1.f;
 
     light_pos = volume_size * (-10.f);
 
@@ -120,61 +120,38 @@ void pcl::gpu::KinfuTracker::allocateBufffers(int rows, int cols)
         nmaps_curr[i].create(pyr_rows*3, pyr_cols);
 
         coresps[i].create(pyr_rows, pyr_cols);
-    }
-                             
+    }                      
+    depthRawScaled.create(rows, cols);
+
     gbuf.create(27, 20*60);
     sumbuf.create(27);
 }
 
-void pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const CorespMap& coresp, Matrix3f& Rinc, Vector3f& tinc)
+bool pcl::gpu::KinfuTracker::estimateTrel(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const CorespMap& coresp, Matrix3f& Rinc, Vector3f& tinc)
 {    
     float A_data[36];
     Matrix<float, 6, 1> b;
     
-    cv::gpu::GpuMat ma(coresp.rows(), coresp.cols(), CV_32S, (void*)coresp.ptr(), coresp.step());    
+    /*cv::gpu::GpuMat ma(coresp.rows(), coresp.cols(), CV_32S, (void*)coresp.ptr(), coresp.step());    
     cv::Mat cpu;
-    ma.download(cpu);
-    cout << "(" << coresp.cols() * coresp.rows() <<") Total = " << cv::countNonZero(cpu == -1) << endl;
+    ma.download(cpu);*/
+    //cout << "(" << coresp.cols() * coresp.rows() <<") Total = " << cv::countNonZero(cpu == -1) << endl;
 
     device::estimateTransform(v_dst, n_dst, v_src, coresp, gbuf, sumbuf, A_data, b.data());
+
+    if (b == Vector6f::Constant(0))
+        return false;
         
     Map<Matrix6f> A(A_data);        
-
     Matrix<float, 6, 1> result = A.llt().solve(b);
     //Matrix<float, 6, 1> res = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
 
-    cout << result.transpose() << endl;
+    //cout << result.transpose() << endl;
 
-    if(_isnan(result(0)))
-    {
-        cout << A << endl;
-        cout << b << endl;
-
-    }
-
-    //cout << b << endl;
-    //cout << A << endl;
-    //cout << res << endl;
-     
     float alpha = result(0);
 	float beta  = result(1);
 	float gamma = result(2);
 
-	/*float r11 =  cos(gamma)*cos(beta);
-	float r12 = -sin(gamma)*cos(alpha) + cos(gamma)*sin(beta)*sin(alpha);
-	float r13 =  sin(gamma)*sin(alpha) + cos(gamma)*sin(beta)*cos(alpha);
-
-	float r21 =  sin(gamma)*cos(beta);
-	float r22 =  cos(gamma)*cos(alpha) + sin(gamma)*sin(beta)*sin(alpha);
-	float r23 = -cos(gamma)*sin(alpha) + sin(gamma)*sin(beta)*cos(alpha);
-
-	float r31 = -sin(beta);
-	float r32 =  cos(beta)*sin(alpha);
-	float r33 =  cos(beta)*cos(alpha);
-
-    float data_rotation[] = { r11, r12, r13, r21, r22, r23, r31, r32, r33 };
-    Rinc = Map<Matrix3f>(data_rotation);*/
-    
     Rinc = AngleAxisf(gamma, Vector3f::UnitZ()) * AngleAxisf(beta, Vector3f::UnitY()) * AngleAxisf(alpha, Vector3f::UnitX());
     tinc = result.tail<3>();
 }
@@ -260,7 +237,7 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
         {
             device::createVMap(intr(i), depths_curr[i], vmaps_curr[i]);
             device::createNMap(vmaps_curr[i], nmaps_curr[i]);
-            //compteNormalsEigen(vmap_curr, nmap_curr);
+            //compteNormalsEigen(vmaps_curr[i], nmaps_curr[i]);
         }
     }
     
@@ -304,12 +281,13 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
     Matrix3f Rcurr = Rprev; // tranform to global coo for ith camera pose
     Vector3f tcurr = tprev; 
 
-
     {
         ScopeTime time("icp-all"); 
 
         for(int level_index = LEVELS-1; level_index>=0; --level_index)
         {
+            std::string names[] = { "l1", "l2", "l3" };
+
             int iter_num = icp_iterations_numbers[level_index];
 
             MapArr& vmap_curr = vmaps_curr[level_index];
@@ -339,20 +317,25 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
                                      vmap_g_prev, nmap_g_prev, distThres, angleThres, coresp);
                     }
 
-                    
-                   /* if (global_time == 5)
+                    //if (global_time == 5)
                     {
-                        cv::gpu::GpuMat ma(coresp.rows(), coresp.cols(), CV_32S, coresp.ptr(), coresp.step());
+                      /*  cv::gpu::GpuMat ma(coresp.rows(), coresp.cols(), CV_32S, coresp.ptr(), coresp.step());
                         cv::Mat cpu;
                         ma.download(cpu);
 
-                        cv::imshow("coresp whi == -1", cpu == -1);
-                        cv::waitKey();
-                    }*/
+                        cv::imshow(names[level_index] + string(" --- coresp white == -1"), cpu == -1);
+                        cv::waitKey(2);*/
+                    }
                     
                     Matrix3f Rinc;
 		            Vector3f tinc;
-                    estimateTrel(vmap_g_prev, nmap_g_prev, vmap_g_curr, coresp, Rinc, tinc);
+                    if (!estimateTrel(vmap_g_prev, nmap_g_prev, vmap_g_curr, coresp, Rinc, tinc))
+                    {
+                        cout << "no corespondances: " << level_index << endl;
+
+                        cv::waitKey(0);
+
+                    }
 
 		            //compose
 		            tcurr = Rinc * tcurr + tinc;
@@ -382,7 +365,8 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
 	
     { 
         ScopeTime time("tsdf"); 
-	    integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcurr_inv, device_tcurr, tranc_dist, volume);
+	    //integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcurr_inv, device_tcurr, tranc_dist, volume);
+        integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcurr_inv, device_tcurr, tranc_dist, volume, depthRawScaled);
     }
 
     //slice_volume(volume);
@@ -401,12 +385,12 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
     { 
         ScopeTime time("ray-cast-all"); 
         
-#if 0        
+#if 1       
         raycast(intr, device_Rcurr, device_tcurr, tranc_dist, device_volume_size, volume, vmaps_g_prev[0], nmaps_g_prev[0]);        
         for(int i = 1; i < LEVELS; ++i)   
         {
-            resizeMap(vmaps_g_prev[i-1], vmaps_g_prev[i]);
-            resizeMap(nmaps_g_prev[i-1], nmaps_g_prev[i]);
+            resizeVMap(vmaps_g_prev[i-1], vmaps_g_prev[i]);
+            resizeNMap(nmaps_g_prev[i-1], nmaps_g_prev[i]);
         }
 #else
           
@@ -414,6 +398,9 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
             raycast(intr(i), device_Rcurr, device_tcurr, tranc_dist, device_volume_size, volume, vmaps_g_prev[i], nmaps_g_prev[i]);
 #endif
     }
+
+
+    
         
     /*for(int i = 0; i < LEVELS; ++i)
         device::tranformMaps(vmaps_curr[i], nmaps_curr[i], device_Rcurr, device_tcurr, vmaps_g_prev[i], nmaps_g_prev[i]);*/
@@ -425,12 +412,62 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
 	device::LightSource light;
 	light.number = 1;
     light.pos[0] = device_cast<float3>(light_pos);
+
+
+
+#if 0
+    DeviceArray2D<uchar3> view1(vmaps_g_prev[1].rows()/3, vmaps_g_prev[1].cols());
+    generateImage(vmaps_g_prev[1], nmaps_g_prev[1], light, view1);
+
+    cv::gpu::GpuMat view1cv(view1.rows(), view1.cols(), CV_8UC3, (void*)view1.ptr(), view1.step());
+
+    cv::namedWindow("view1", 0);
+    cv::imshow("view1", (cv::Mat)view1cv);
+    cv::waitKey();
+#endif
+
+
 	    	        
     view.create(rows_, cols_);
 
     { 
         ScopeTime time("generate-view"); 
 	    generateImage(vmaps_g_prev[0], nmaps_g_prev[0], light, view);
+        
+
+      /*  int cols;
+        std::vector<uchar3> data;
+        view.download(data, cols);
+
+        cv::Mat m(480, 640, CV_8UC3, (void*)&data[0], cols * 3);
+        
+        vector<cv::Point> points;
+        for(int x = 1; x < 2; ++x)
+            for(int y = 0; y < 2; ++y)
+                for(int z = 0; z < 2; ++z)
+                {
+                    Vector3f v;
+                    v(0) = x * volume_size(0);
+                    v(1) = y * volume_size(1);
+                    v(2) = z * volume_size(2);
+
+                    Vector3f cam = Rcurr_inv * (v - tcurr);
+
+                    int coo_x = cvRound(cam(0)/cam(2) * intr.fx + intr.cx);
+                    int coo_y = cvRound(cam(1)/cam(2) * intr.fy + intr.cy);                    
+
+                    points.push_back(cv::Point(coo_x, coo_y));                     
+                }
+
+                for(size_t t1 = 0; t1 < points.size(); ++t1)
+                    for(size_t t2 = 0; t2 < points.size(); ++t2)
+                    {                        
+                        cv::line(m, points[t1], points[t2], CV_RGB(0, 255, 0));
+                    }
+
+                cv::imshow("M", m);
+                cv::waitKey(3);*/
+                     
     }
 	    
     ++global_time;

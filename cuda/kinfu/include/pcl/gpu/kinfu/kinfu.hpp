@@ -90,7 +90,7 @@ namespace pcl
             int cols_;
             int global_time;
 
-            
+                        
             std::vector<DepthMap> depths_curr;
             std::vector<MapArr> vmaps_g_curr;
             std::vector<MapArr> nmaps_g_curr;
@@ -104,6 +104,7 @@ namespace pcl
             std::vector<CorespMap> coresps;
 
             DeviceArray2D<int> volume;
+            DeviceArray2D<float> depthRawScaled;
             
             DeviceArray2D<float> gbuf;
             DeviceArray<float> sumbuf; 
@@ -112,7 +113,7 @@ namespace pcl
             std::vector<Vector3f> tvecs;
            
             void allocateBufffers(int rows, int cols);
-            void estimateTrel(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const CorespMap& coresp, Matrix3f& Rrel, Vector3f& trel);
+            bool estimateTrel(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const CorespMap& coresp, Matrix3f& Rrel, Vector3f& trel);
         };	
     }
 };
