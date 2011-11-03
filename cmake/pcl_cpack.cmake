@@ -36,7 +36,15 @@ if(WIN32)
     set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES32")
     set(win_system_name win32)
   endif(CMAKE_CL_64)
-  set(CPACK_NSIS_PACKAGE_NAME "${PROJECT_NAME}-${PCL_VERSION}-${win_system_name}")
+  set(CPACK_NSIS_PACKAGE_NAME "${PROJECT_NAME}-${PCL_VERSION}")
+  if(BUILD_all_in_one_installer)
+    set(CPACK_NSIS_PACKAGE_NAME "${PROJECT_NAME}-${PCL_VERSION}-AllInOne")
+  endif(BUILD_all_in_one_installer)
+  if(MSVC10)
+    set(CPACK_NSIS_PACKAGE_NAME "${CPACK_NSIS_PACKAGE_NAME}-msvc2010-${win_system_name}")
+  else(MSVC10)
+    set(CPACK_NSIS_PACKAGE_NAME "${CPACK_NSIS_PACKAGE_NAME}-${win_system_name}")
+  endif(MSVC10)
   # force CPACK_PACKAGE_INSTALL_REGISTRY_KEY because of a known limitation in cmake/cpack to be fixed in next releases
   # http://public.kitware.com/Bug/view.php?id=9094
   # This is to allow a 32bit and a 64bit of PCL to get installed on one system
