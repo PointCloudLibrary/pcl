@@ -16,9 +16,9 @@ if(SPHINX_FOUND)
   endif(USE_PROJECT_FOLDERS)
   install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
           DESTINATION share/doc/pcl/tutorials
-          COMPONENT ${SUBSYS_NAME})
+          COMPONENT doc)
   install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/content/sources"
           DESTINATION share/doc/pcl/tutorials
-          COMPONENT ${SUBSYS_NAME}
+          COMPONENT doc
           PATTERN ".svn" EXCLUDE)
 endif(SPHINX_FOUND)
