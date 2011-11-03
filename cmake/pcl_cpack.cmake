@@ -69,6 +69,9 @@ macro(PCL_MAKE_CPACK_INPUT)
     # add documentation
     if(BUILD_documentation)
         set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} doc")
+        set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_DOC_GROUP \"PCL\")\n")
+        set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_DOC_DISPLAY_NAME \"Documentation\")\n")
+        set(PCL_CPACK_COMPONENTS "${PCL_CPACK_COMPONENTS}\nset(CPACK_COMPONENT_DOC_DESCRIPTION \"API documentation and tutorials\")\n")	
     endif(BUILD_documentation)
     # add PCLConfig
     set(CPACK_COMPONENTS_ALL "${CPACK_COMPONENTS_ALL} pclconfig")
