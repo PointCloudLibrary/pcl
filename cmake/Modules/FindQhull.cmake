@@ -44,7 +44,7 @@ if(WIN32)
                PATH_SUFFIXES project build bin lib)
 
   find_library(QHULL_LIBRARY_DEBUG 
-               NAMES qhullstatic_d qhull_d qhull_d${QHULL_MAJOR_VERSION} qhull qhull${QHULL_MAJOR_VERSION}
+               NAMES qhullstatic_d qhull_d qhull${QHULL_MAJOR_VERSION}_d qhull qhull${QHULL_MAJOR_VERSION}
                HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
                PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull" 
                      "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
@@ -76,5 +76,9 @@ mark_as_advanced(QHULL_LIBRARY QHULL_LIBRARY_DEBUG QHULL_INCLUDE_DIR)
 
 if(QHULL_FOUND)
   set(HAVE_QHULL ON)
+  get_filename_component(qhull_lib ${QHULL_LIBRARY} NAME_WE)
+  if(NOT "${qhull_lib}" STREQUAL "qhullstatic")
+    add_definitions("-Dqh_QHpointer")
+  endif(NOT "${qhull_lib}" STREQUAL "qhullstatic")
   message(STATUS "QHULL found (include: ${QHULL_INCLUDE_DIRS}, lib: ${QHULL_LIBRARIES})")
 endif(QHULL_FOUND)
