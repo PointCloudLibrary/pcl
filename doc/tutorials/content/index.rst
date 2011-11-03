@@ -265,7 +265,7 @@ Features
 
              Author: *Bastian Steder*
 
-             Compatibility: > PCL 1.0
+             Compatibility: < 1.3
 
              In this tutorial, we will learn how to extract NARF features from a range image.
      ======  ======
@@ -476,7 +476,7 @@ Keypoints
 
              Author: *Bastian Steder*
 
-             Compatibility: > PCL 1.0
+             Compatibility: < 1.3
 
              In this tutorial, we will learn how to extract NARF keypoints from a range image.
      ======  ======
@@ -801,7 +801,7 @@ Visualization
 
              Author: *Bastian Steder*
 
-             Compatibility: > PCL 1.0
+             Compatibility: < 1.3
 
              This tutorial is about the visualization of how the NARF descriptor is calculated and to test how the descriptor distances between certain points in a range image behave.
      ======  ======
