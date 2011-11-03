@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,6 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id: point_cloud.h 2596 2011-09-26 20:06:51Z jspricke $
  */
 
 #ifndef PCL_TYPE_CONVERSIONS_H
@@ -43,53 +46,77 @@ namespace pcl
   // s, v values are from 0 to 1
   // if s = 0 > h = -1 (undefined)
 
-  void PointXYZRGBtoXYZI ( PointXYZRGB&  in,
-                           PointXYZI&    out)
+  /** \brief Convert a XYZRGB point type to a XYZI
+    * \param[in] in the input XYZRGB point 
+    * \param[out] out the output XYZI point
+    */
+  void 
+  PointXYZRGBtoXYZI (PointXYZRGB&  in,
+                     PointXYZI&    out)
   {
     out.x = in.x; out.y = in.y; out.z = in.z;
     out.intensity = 0.299 * in.r + 0.587 * in.g + 0.114 * in.b;
   }
-  void PointXYZRGBtoXYZHSV (  PointXYZRGB& in,
-                              PointXYZHSV& out)
+
+  
+  /** \brief Convert a XYZRGB point type to a XYZHSV
+    * \param[in] in the input XYZRGB point 
+    * \param[out] out the output XYZHSV point
+    */
+  void 
+  PointXYZRGBtoXYZHSV (PointXYZRGB& in,
+                       PointXYZHSV& out)
   {
     float min;
 
     out.x = in.x; out.y = in.y; out.z = in.z;
 
-    out.v = std::max(in.r, std::max(in.g, in.b));
-    min = std::min(in.r, std::min(in.g, in.b));
+    out.v = std::max (in.r, std::max (in.g, in.b));
+    min = std::min (in.r, std::min (in.g, in.b));
 
-    if( out.v != 0)
-      out.s = (out.v - min)/out.v;
-    else{
+    if (out.v != 0)
+      out.s = (out.v - min) / out.v;
+    else
+    {
       out.s = 0;
       out.h = -1;
       return;
     }
-    if( in.r == out.v )
-      out.h = ( in.g - in.b )/(out.v - min);
-    else if( in.g == out.v )
-      out.h = 2 + ( in.b - in.r)/(out.v - min);
+
+    if (in.r == out.v)
+      out.h = (in.g - in.b) / (out.v - min);
+    else if (in.g == out.v)
+      out.h = 2 + (in.b - in.r) / (out.v - min);
     else 
-      out.h = 4 + ( in.r - in.g)/(out.v - min);
+      out.h = 4 + (in.r - in.g) / (out.v - min);
     out.h *= 60;
-    if( out.h < 0)
+    if (out.h < 0)
       out.h += 360;
   }
-  void PointXYZHSVtoXYZRGB (  PointXYZHSV&  in,
-                              PointXYZRGB&  out)
+
+
+  /** \brief Convert a XYZHSV point type to a XYZRGB
+    * \param[in] in the input XYZHSV point 
+    * \param[out] out the output XYZRGB point
+    */
+  void 
+  PointXYZHSVtoXYZRGB (PointXYZHSV&  in,
+                       PointXYZRGB&  out)
   {
-    if( in.s == 0){
+    if (in.s == 0)
+    {
       out.r = out.g = out.b = in.v;
       return;
-    }
-    float a = in.h/60;
-    int i = floor(a);
+    } 
+    float a = in.h / 60;
+    int i = floor (a);
     float f = a - i;
-    float p = in.v * ( 1 - in.s);
-    float q = in.v * ( 1 - in.s * f);
-    float t = in.v * ( 1 - in.s * (1 - f));
-    switch( i ) {
+    float p = in.v * (1 - in.s);
+    float q = in.v * (1 - in.s * f);
+    float t = in.v * (1 - in.s * (1 - f));
+    
+    switch (i) 
+    {
       case 0:
         out.r = in.v; out.g = t; out.b = p; break;
       case 1:
@@ -104,17 +131,26 @@ namespace pcl
         out.r = in.v; out.g = p; out.b = q; break;
     }
   }
-  void PointCloudXYZRGBtoYZHSV (  PointCloud<PointXYZRGB>&  in,
-                                  PointCloud<PointXYZHSV>&  out)
+
+
+  /** \brief Convert a XYZRGB point cloud to a XYZHSV
+    * \param[in] in the input XYZRGB point cloud
+    * \param[out] out the output XYZHSV point cloud
+    */
+  void 
+  PointCloudXYZRGBtoXYZHSV (PointCloud<PointXYZRGB>& in,
+                            PointCloud<PointXYZHSV>& out)
   {
     out.width   = in.width;
     out.height  = in.height;
-    for(size_t i = 0; i < in.points.size(); i++){
+    for (size_t i = 0; i < in.points.size (); i++)
+    {
       PointXYZHSV p;
-      PointXYZRGBtoXYZHSV( in.points[i], p );
-      out.points.push_back(p);
+      PointXYZRGBtoXYZHSV (in.points[i], p);
+      out.points.push_back (p);
     }
   }
 }
+
 #endif //#ifndef PCL_TYPE_CONVERSIONS_H
 
