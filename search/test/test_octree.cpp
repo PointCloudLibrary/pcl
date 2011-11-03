@@ -169,6 +169,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   }
 }
 
+#if 0
 TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 {
   const unsigned int test_runs = 100;
@@ -222,17 +223,18 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     float ANNdistance;
 
     octree->setInputCloud (cloudIn);
-/*    octree->approxNearestSearch (searchPoint, ANNindex, ANNdistance);
+    octree->approxNearestSearch (searchPoint, ANNindex, ANNdistance);
 
     if (BFindex == ANNindex)
     {
       EXPECT_NEAR (ANNdistance, BFdistance, 1e-4);
       bestMatchCount++;
-    }*/
+    }
   }
   // we should have found the absolute nearest neighbor at least once
   //ASSERT_EQ ( (bestMatchCount > 0) , true);
 }
+#endif
 #if 0
 TEST (PCL, Octree_RadiusSearch_GPU)
 {
