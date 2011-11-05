@@ -45,6 +45,7 @@ if(WIN32)
   else(MSVC10)
     set(CPACK_NSIS_PACKAGE_NAME "${CPACK_NSIS_PACKAGE_NAME}-${win_system_name}")
   endif(MSVC10)
+  set(CPACK_PACKAGE_FILE_NAME ${CPACK_NSIS_PACKAGE_NAME})
   # force CPACK_PACKAGE_INSTALL_REGISTRY_KEY because of a known limitation in cmake/cpack to be fixed in next releases
   # http://public.kitware.com/Bug/view.php?id=9094
   # This is to allow a 32bit and a 64bit of PCL to get installed on one system
