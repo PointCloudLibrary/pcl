@@ -128,7 +128,7 @@ namespace pcl
 
         /** \brief Getter for the last scan of a loop. */
         inline PointCloudConstPtr
-        getLoopend ()
+        getLoopEnd ()
         {
           return (loop_end_);
         }
