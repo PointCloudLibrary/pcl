@@ -82,7 +82,7 @@ namespace pcl
         typedef typename Registration::ConstPtr RegistrationConstPtr;
 
         /** \brief Empty constructor. */
-        ELCH () : loop_graph_ (), loop_start_ (), loop_end_ (), reg_ (pcl::IterativeClosestPoint<PointT, PointT> ())
+        ELCH () : loop_graph_ (), loop_start_ (), loop_end_ (), reg_(new pcl::IterativeClosestPoint<PointT, PointT>)
         {};
 
         /** \brief Add a new point cloud to the internal graph.
@@ -159,7 +159,7 @@ namespace pcl
         }
 
         /** \brief Getter for the transformation between the first and the last scan. */
-        inline Eigen::Affine3f &
+        inline Eigen::Matrix4f &
         getLoopTransform ()
         {
           return (loop_transform_);
@@ -169,7 +169,7 @@ namespace pcl
          * \param[in] loop_transform the transformation between the first and the last scan
          */
         inline void
-        setLoopTransform (Eigen::Affine3f &loop_transform)
+        setLoopTransform (Eigen::Matrix4f &loop_transform)
         {
           loop_transform_ = loop_transform;
         }
@@ -216,10 +216,10 @@ namespace pcl
         PointCloudConstPtr loop_end_;
 
         /** \brief The registration object used to close the loop. */
-        RegistrationConstPtr reg_;
+        RegistrationPtr reg_;
 
         /** \brief The transformation between that start and end of the loop. */
-        Eigen::Affine3f *loop_transform_;
+        Eigen::Matrix4f *loop_transform_;
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW

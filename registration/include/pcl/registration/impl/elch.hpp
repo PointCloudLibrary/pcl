@@ -188,7 +188,8 @@ pcl::registration::ELCH<PointT>::initCompute ()
     pcl::compute3DCentroid (*loop_end_, pose_end);
 
     PointCloudPtr tmp (new PointCloud);
-    pcl::transformPointCloud (*loop_end_, *tmp, pose_end - pose_start);
+    Eigen::Vector3f ce2 (pose_end[0] - pose_start[0], pose_end[1] - pose_start[1], pose_end[2] - pose_start[2]);
+    pcl::transformPointCloud (*loop_end_, *tmp, ce2, Eigen::Quaternionf::Identity ());
 
     //reg_->setMaximumIterations (50);
     //setMaxCorrespondenceDistance (1.5);
@@ -201,7 +202,7 @@ pcl::registration::ELCH<PointT>::initCompute ()
 
     reg_->align (*tmp);
 
-    loop_transform_ = reg_->getFinalTransformation ();
+    *loop_transform_ = reg_->getFinalTransformation ();
     //TODO hack
     //t += ce2;
 
