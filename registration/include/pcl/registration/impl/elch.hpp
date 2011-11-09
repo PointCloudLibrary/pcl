@@ -188,8 +188,10 @@ pcl::registration::ELCH<PointT>::initCompute ()
     pcl::compute3DCentroid (*loop_end_, pose_end);
 
     PointCloudPtr tmp (new PointCloud);
-    Eigen::Vector3f ce2 (pose_end[0] - pose_start[0], pose_end[1] - pose_start[1], pose_end[2] - pose_start[2]);
-    pcl::transformPointCloud (*loop_end_, *tmp, ce2, Eigen::Quaternionf::Identity ());
+    Eigen::Vector4f diff = pose_end - pose_start;
+    Eigen::Translation3f translation (diff.head (3));
+    Eigen::Affine3f trans = translation * Eigen::Quaternionf::Identity ();
+    pcl::transformPointCloud (*loop_end_, *tmp, trans);
 
     //reg_->setMaximumIterations (50);
     //setMaxCorrespondenceDistance (1.5);
@@ -204,7 +206,7 @@ pcl::registration::ELCH<PointT>::initCompute ()
 
     *loop_transform_ = reg_->getFinalTransformation ();
     //TODO hack
-    //t += ce2;
+    *loop_transform_ *= trans.matrix ();
 
   }
 
@@ -239,7 +241,7 @@ pcl::registration::ELCH<PointT>::compute ()
   //TODO use pose
   Eigen::Vector4f cend;
   pcl::compute3DCentroid (*loop_end_, cend);
-  Eigen::Translation3f tend (cend[0], cend[1], cend[2]);
+  Eigen::Translation3f tend (cend.head (3));
   Eigen::Affine3f aend (tend);
   Eigen::Affine3f aendI = aend.inverse ();
 
@@ -248,9 +250,9 @@ pcl::registration::ELCH<PointT>::compute ()
   for (tie (vertex_it, vertex_it_end) = vertices (loop_graph_); vertex_it != vertex_it_end; vertex_it++)
   {
     Eigen::Vector3f t2;
-    //t2[0] = loop_transform_->translation ()[0] * weights[0][i]; //TODO
-    //t2[1] = loop_transform_->translation ()[1] * weights[1][i];
-    //t2[2] = loop_transform_->translation ()[2] * weights[2][i];
+    t2[0] = loop_transform_ (3, 0) * weights[0][i]; //TODO
+    t2[1] = loop_transform_ (3, 1) * weights[1][i];
+    t2[2] = loop_transform_ (3, 2) * weights[2][i];
 
     Eigen::Quaternionf q2;
     //q2 = Eigen::Quaternionf::Identity ().slerp (weights[3][i], q); //TODO
