@@ -283,7 +283,7 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
             }
         }
 
-        sync();
+        pcl::device::sync();
     }
 
 	//can't perform more on first frame
@@ -458,7 +458,7 @@ void pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw, View& view)
 
         generateImage(vmaps_g_prev[0], nmaps_g_prev[0], light, view);
 
-        sync();
+        pcl::device::sync();
     }               
                 
     ++global_time;
