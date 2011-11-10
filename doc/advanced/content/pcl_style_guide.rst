@@ -282,7 +282,13 @@ As you edit a file, Eclipse should use this new profile to format your code
 following the PCL conventions. To reformat an entire file, select **Edit ->
 Format**.
 
-2.6.2 UniversalIndent
+2.6.2 Uncrustify
+""""""""""""""""
+
+You can find a config for `Uncrustify <http://uncrustify.sourceforge.net/>`_
+`here <http://dev.pointclouds.org/attachments/download/537/uncrustify.cfg>`_
+
+2.6.3 UniversalIndent
 """""""""""""""""""""
 
 TBD...
