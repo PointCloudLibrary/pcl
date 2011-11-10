@@ -953,9 +953,15 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     case PCL_VISUALIZER_COLOR:
     {
       actor->GetProperty ()->SetColor (val1, val2, val3);
-      actor->GetProperty ()->SetAmbientColor  (val1, val2, val3);
-      actor->GetProperty ()->SetSpecularColor (val1, val2, val3);
+      actor->GetProperty ()->SetEdgeColor (val1, val2, val3);
+      // The following 3 are set by SetColor automatically according to the VTK docs
+      //actor->GetProperty ()->SetAmbientColor  (val1, val2, val3);
+      //actor->GetProperty ()->SetDiffuseColor (val1, val2, val3);
+      //actor->GetProperty ()->SetSpecularColor (val1, val2, val3);
       actor->GetProperty ()->SetAmbient (0.8);
+      actor->GetProperty ()->SetDiffuse (0.8);
+      actor->GetProperty ()->SetSpecular (0.8);
+      actor->GetProperty ()->SetLighting (0);
       actor->Modified ();
       break;
     }
