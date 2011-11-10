@@ -271,8 +271,8 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
         float x, y, z, w;
         sstream >> x >> y >> z ;
         origin      = Eigen::Vector4f (x, y, z, 0.0f);
-        sstream >> x >> y >> z >> w;
-        orientation = Eigen::Quaternionf (x, y, z, w);
+        sstream >> w >> x >> y >> z;
+        orientation = Eigen::Quaternionf (w, x, y, z);
         continue;
       }
 
