@@ -210,7 +210,7 @@ void Proctor::printPrecisionRecall() {
   }
   sort(detections.begin(), detections.end());
   int correct = 0;
-  for (int di = 0; di < detections.size(); di++) {
+  for (size_t di = 0; di < detections.size(); di++) {
     if (detections[di].mi == scenes[detections[di].ni].mi) {
       correct++;
       printf(

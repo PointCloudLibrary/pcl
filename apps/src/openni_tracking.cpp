@@ -185,7 +185,6 @@ public:
         {
           pcl::PointXYZ point;
           
-          ParticleXYZRPY particle = particles->points[i];
           point.x = particles->points[i].x;
           point.y = particles->points[i].y;
           point.z = particles->points[i].z;

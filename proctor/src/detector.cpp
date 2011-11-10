@@ -129,7 +129,7 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, doubl
   // let each point cast votes
   timer.start();
   memset(classifier, 0, Config::num_models * sizeof(*classifier));
-  for (int pi = 0; pi < e.indices->size(); pi++) {
+  for (size_t pi = 0; pi < e.indices->size(); pi++) {
     vector<int> indices;
     vector<float> distances;
     tree->nearestKSearch(*e.features, pi, max_votes, indices, distances);
@@ -139,7 +139,7 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, doubl
       int index = indices[ri];
       int mi;
       for (mi = 0; mi < Config::num_models; mi++) {
-        if (index < database[mi].indices->size()) break;
+        if (index < (int)database[mi].indices->size()) break;
         index -= database[mi].indices->size();
       }
       // TODO: is this appropriate weighting?
