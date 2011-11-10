@@ -961,7 +961,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       actor->GetProperty ()->SetAmbient (0.8);
       actor->GetProperty ()->SetDiffuse (0.8);
       actor->GetProperty ()->SetSpecular (0.8);
-      actor->GetProperty ()->SetLighting (0);
+      //actor->GetProperty ()->SetLighting (0);
       actor->Modified ();
       break;
     }
