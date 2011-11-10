@@ -95,6 +95,17 @@ namespace pcl
        * @brief rewinds to the first PCD file in the list.
        */
       virtual void rewind ();
+      
+      /**
+       * @brief returns the frames_per_second. 0 if grabber is trigger-based
+       */
+      virtual float getFramesPerSecond () const;
+      
+      /**
+       * @brief returns wheter the repeat flag is on
+       */
+      bool isRepeatOn () const;
+      
     private:
       virtual void publish (const sensor_msgs::PointCloud2& blob) const = 0;
 

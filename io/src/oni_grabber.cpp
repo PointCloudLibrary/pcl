@@ -178,6 +178,14 @@ std::string ONIGrabber::getName() const
   return std::string("ONIGrabber");
 }
 
+float ONIGrabber::getFramesPerSecond () const
+{
+  if (device_->isStreaming())
+    return (float)device_->getDepthOutputMode().nFPS;
+  else
+    return 0;
+}
+
 void ONIGrabber::imageCallback(boost::shared_ptr<openni_wrapper::Image> image, void* cookie)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb > () > 0 ||

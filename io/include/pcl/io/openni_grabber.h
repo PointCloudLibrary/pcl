@@ -120,6 +120,8 @@ namespace pcl
       virtual std::string
       getName () const;
 
+      virtual float getFramesPerSecond () const;
+      
       /** \brief ... */
       inline boost::shared_ptr<openni_wrapper::OpenNIDevice>
       getDevice () const;
@@ -142,6 +144,7 @@ namespace pcl
 
       float getFocalLength (unsigned image_width) const;
 
+      
     private:
       /** \brief ... */
       void

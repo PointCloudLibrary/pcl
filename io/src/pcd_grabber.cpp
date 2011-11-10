@@ -165,4 +165,13 @@ void pcl::PCDGrabberBase::rewind ()
   impl_->pcd_iterator_ = impl_->pcd_files_.begin ();
 }
 
+float pcl::PCDGrabberBase::getFramesPerSecond () const
+{
+  return impl_->frames_per_second_;
+}
+
+bool pcl::PCDGrabberBase::isRepeatOn () const
+{
+  return impl_->repeat_;
+}
 #endif

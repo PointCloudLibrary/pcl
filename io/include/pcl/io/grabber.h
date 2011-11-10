@@ -107,6 +107,12 @@ class Grabber
      * @return true if grabber is running / streaming. False otherwise.
      */
     virtual bool isRunning () const = 0;
+    
+    /**
+     * @brief returns fps. 0 if trigger based.
+     */
+    virtual float getFramesPerSecond () const = 0;
+    
   protected:
     virtual void signalsChanged () {}
     template<typename T> boost::signals2::signal<T>* find_signal () const;
@@ -229,7 +235,7 @@ template<typename T> boost::signals2::connection Grabber::registerCallback (cons
   boost::signals2::connection ret = signal->connect (callback);
 
   connections_[typeid(T).name()].push_back(ret);
-  shared_connections_[typeid(T).name()].push_back(boost::signals2::shared_connection_block(connections_[typeid(T).name()].back()));
+  shared_connections_[typeid(T).name()].push_back(boost::signals2::shared_connection_block(connections_[typeid(T).name()].back(), false));
   signalsChanged ();
   return (ret);
 }

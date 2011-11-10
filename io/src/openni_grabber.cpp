@@ -479,7 +479,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr OpenNIGrabber::convertToXYZPointCloud(const 
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud <pcl::PointXYZ>);
 
-  // TODO cloud->header.stamp = time;
+  cloud->header.stamp = depth_image->getTimeStamp();
   cloud->height = depth_height_;
   cloud->width = depth_width_;
   cloud->is_dense = false;
@@ -763,6 +763,11 @@ std::vector<std::pair<int, XnMapOutputMode> > OpenNIGrabber::getAvailableImageMo
   }
 
   return result;
+}
+
+float OpenNIGrabber::getFramesPerSecond() const
+{
+  return (float)(device_->getDepthOutputMode().nFPS);
 }
 
 } // namespace

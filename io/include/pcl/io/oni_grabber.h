@@ -104,6 +104,11 @@ namespace pcl
      */
     virtual bool isRunning () const;
 
+    /**
+     * @brief returns the frames pre second. 0 if it is trigger based.
+     */
+    virtual float getFramesPerSecond () const;
+    
   protected:
     void
     imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie);
