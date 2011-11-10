@@ -285,7 +285,8 @@ pcl::computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
                                         const Eigen::Vector4f &centroid, 
                                         Eigen::Matrix3f &covariance_matrix)
 {
-  return (pcl::computeCovarianceMatrix (cloud, indices.indices, centroid, covariance_matrix));
+  pcl::computeCovarianceMatrix (cloud, indices.indices, centroid, covariance_matrix);
+  covariance_matrix /= indices.indices.size ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
