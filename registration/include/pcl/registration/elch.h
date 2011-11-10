@@ -42,6 +42,7 @@
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_traits.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include <Eigen/Geometry>
 
@@ -70,19 +71,27 @@ namespace pcl
         typedef typename PointCloud::Ptr PointCloudPtr;
         typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
+        struct Vertex
+        {
+          PointCloudPtr cloud;
+          std::string name;
+        };
+
         /** \brief graph structure to hold the SLAM graph */
         typedef boost::adjacency_list<
-          boost::vecS, boost::vecS, boost::undirectedS,
-          PointCloudPtr,
+          boost::listS, boost::vecS, boost::undirectedS,
+          Vertex,
           boost::no_property>
         LoopGraph;
+
+        typedef boost::shared_ptr< LoopGraph > LoopGraphPtr;
 
         typedef typename pcl::Registration<PointT, PointT> Registration;
         typedef typename Registration::Ptr RegistrationPtr;
         typedef typename Registration::ConstPtr RegistrationConstPtr;
 
         /** \brief Empty constructor. */
-        ELCH () : loop_graph_ (), loop_start_ (), loop_end_ (), reg_(new pcl::IterativeClosestPoint<PointT, PointT>)
+        ELCH () : loop_graph_ (new LoopGraph), loop_start_ (0), loop_end_ (0), reg_(new pcl::IterativeClosestPoint<PointT, PointT>), compute_loop_(true)
         {};
 
         /** \brief Add a new point cloud to the internal graph.
@@ -92,10 +101,11 @@ namespace pcl
         addPointCloud (PointCloudConstPtr cloud)
         {
           add_vertex (loop_graph_, cloud);
+          //TODO add edge as well
         }
 
         /** \brief Getter for the internal graph. */
-        inline LoopGraph
+        inline LoopGraphPtr
         getLoopGraph ()
         {
           return (loop_graph_);
@@ -105,13 +115,13 @@ namespace pcl
          * \param[in] loop_graph the new graph
          */
         inline void
-        setLoopGraph (LoopGraph loop_graph)
+        setLoopGraph (LoopGraphPtr loop_graph)
         {
           loop_graph_ = loop_graph;
         }
 
         /** \brief Getter for the first scan of a loop. */
-        inline PointCloudConstPtr
+        inline int
         getLoopStart ()
         {
           return (loop_start_);
@@ -121,13 +131,13 @@ namespace pcl
          * \param[in] loop_start the scan that starts the loop
          */
         inline void
-        setLoopStart (PointCloudConstPtr loop_start)
+        setLoopStart (int loop_start)
         {
           loop_start_ = loop_start;
         }
 
         /** \brief Getter for the last scan of a loop. */
-        inline PointCloudConstPtr
+        inline int
         getLoopEnd ()
         {
           return (loop_end_);
@@ -137,7 +147,7 @@ namespace pcl
          * \param[in] loop_end the scan that ends the loop
          */
         inline void
-        setLoopend (PointCloudConstPtr loop_end)
+        setLoopEnd (int loop_end)
         {
           loop_end_ = loop_end;
         }
@@ -159,7 +169,7 @@ namespace pcl
         }
 
         /** \brief Getter for the transformation between the first and the last scan. */
-        inline Eigen::Matrix4f &
+        inline Eigen::Matrix4f
         getLoopTransform ()
         {
           return (loop_transform_);
@@ -169,9 +179,10 @@ namespace pcl
          * \param[in] loop_transform the transformation between the first and the last scan
          */
         inline void
-        setLoopTransform (Eigen::Matrix4f &loop_transform)
+        setLoopTransform (Eigen::Matrix4f loop_transform)
         {
           loop_transform_ = loop_transform;
+          compute_loop_ = false;
         }
 
         /** \brief Computes now poses for all point clouds by closing the loop
@@ -191,7 +202,7 @@ namespace pcl
       private:
         /** \brief graph structure for the internal optimization graph */
         typedef boost::adjacency_list<
-          boost::vecS, boost::vecS, boost::undirectedS,
+          boost::listS, boost::vecS, boost::undirectedS,
           boost::no_property,
           boost::property< boost::edge_weight_t, double > >
         LOAGraph;
@@ -204,22 +215,25 @@ namespace pcl
          * @param[out] weights array for the weights
          */
         void
-        loopOptimizerAlgorithm (LOAGraph &g, int f, int l, double *weights);
+        loopOptimizerAlgorithm (LOAGraph &g, double *weights);
 
         /** \brief The internal loop graph. */
-        LoopGraph *loop_graph_;
+        LoopGraphPtr loop_graph_;
 
         /** \brief The first scan of the loop. */
-        PointCloudConstPtr loop_start_;
+        //PointCloudConstPtr loop_start_; //TODO
+        int loop_start_;
 
         /** \brief The last scan of the loop. */
-        PointCloudConstPtr loop_end_;
+        //PointCloudConstPtr loop_end_; //TODO
+        int loop_end_;
 
         /** \brief The registration object used to close the loop. */
         RegistrationPtr reg_;
 
         /** \brief The transformation between that start and end of the loop. */
-        Eigen::Matrix4f *loop_transform_;
+        Eigen::Matrix4f loop_transform_;
+        bool compute_loop_;
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
