@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: point_cloud.h 2596 2011-09-26 20:06:51Z jspricke $
+ * $Id: point_type_conversions.h 2596 2011-09-26 20:06:51Z jspricke $
  */
 
 #ifndef PCL_TYPE_CONVERSIONS_H

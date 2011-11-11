@@ -10,6 +10,7 @@ if(build)
     set(srcs src/extract_clusters.cpp
         src/extract_polygonal_prism_data.cpp
         src/sac_segmentation.cpp
+        src/seeded_hue_segmentation.cpp
         src/segment_differences.cpp
         )
 
@@ -17,6 +18,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/extract_labeled_clusters.h
         include/pcl/${SUBSYS_NAME}/extract_polygonal_prism_data.h
         include/pcl/${SUBSYS_NAME}/sac_segmentation.h
+        include/pcl/${SUBSYS_NAME}/seeded_hue_segmentation.h
         include/pcl/${SUBSYS_NAME}/segment_differences.h
         )
 
@@ -24,6 +26,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/extract_labeled_clusters.hpp
         include/pcl/${SUBSYS_NAME}/impl/extract_polygonal_prism_data.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_segmentation.hpp
+        include/pcl/${SUBSYS_NAME}/impl/seeded_hue_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/segment_differences.hpp
         )
 
