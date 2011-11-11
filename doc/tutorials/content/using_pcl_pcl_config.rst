@@ -1,10 +1,9 @@
 .. _using_pcl_pcl_config:
 
-Using PCL in your own project with PCLConfig.cmake
---------------------------------------------------
+Using PCL in your own project
+-----------------------------
 
-This tutorial explains how to use PCL in your own projects if you have
-built and installed it from sources.
+This tutorial explains how to use PCL in your own projects.
 
 
 Prerequisites
@@ -17,23 +16,19 @@ Project settings
 ----------------
 Let us say the project is placed under /PATH/TO/MY/GRAND/PROJECT that
 contains a lonely cpp file name ``pcd_write.cpp`` (copy it from the
-:ref:`writing_pcd` tutorial). Do::
-
-
-  $ cd /PATH/TO/MY/GRAND/PROJECT
-
-And create a file named CMakeLists.txt that contains:
+:ref:`writing_pcd` tutorial). In the same folder, create a file named 
+CMakeLists.txt that contains:
 
 .. code-block:: cmake
    
    cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
    project(MY_GRAND_PROJECT)
-   find_package(PCL 1.0 REQUIRED COMPONENTS io)
+   find_package(PCL 1.3 REQUIRED COMPONENTS io)
    include_directories(${PCL_INCLUDE_DIRS})
    link_directories(${PCL_LIBRARY_DIRS})
    add_definitions(${PCL_DEFINITIONS})
    add_executable(pcd_write_test pcd_write.cpp)
-   target_link_libraries(pcd_write_test pcl_io)
+   target_link_libraries(pcd_write_test ${PCL_IO_LIBRARIES})
 
 The explanation
 ---------------
@@ -58,15 +53,15 @@ invoking cmake (MY_GRAND_PROJECT_BINARY_DIR).
 
 .. code-block:: cmake
 
-   find_package(PCL 1.0 REQUIRED COMPONENTS io)
+   find_package(PCL 1.3 REQUIRED COMPONENTS io)
 
 We are requesting to find the PCL package at minimum version 1.0. We
 also says that it is ``REQUIRED`` meaning that cmake will fail
 gracefully if it can't be found. As PCL is modular one can request:
 
-* only one component: find_package(PCL 1.0 REQUIRED COMPONENTS io)
-* several: find_package(PCL 1.0 REQUIRED COMPONENTS io common)
-* all existing: find_package(PCL 1.0 REQUIRED)
+* only one component: find_package(PCL 1.3 REQUIRED COMPONENTS io)
+* several: find_package(PCL 1.3 REQUIRED COMPONENTS io common)
+* all existing: find_package(PCL 1.3 REQUIRED)
 
 .. code-block:: cmake
 
@@ -119,9 +114,13 @@ targets` and acts just like anyother target.
 Compiling and running the project
 ---------------------------------
 
+Using command line CMake
+========================
+
 Make a directory called ``build``, in which the compilation will be
 done. Do::
 
+  $ cd /PATH/TO/MY/GRAND/PROJECT
   $ mkdir build
   $ cd build
   $ cmake ..
@@ -176,6 +175,19 @@ Which leads to this::
     -0.734766 0.854581 -0.0361733
     -0.4607 -0.277468 -0.916762
 
+Using CMake gui (e.g. Windows)
+==============================
+
+Run CMake GUI, and fill these fields :
+
+  - ``Where is the source code`` : this is the folder containing the CMakeLists.txt file and the sources.
+  - ``Where to build the binaries`` : this is where the Visual Studio project files will be generated
+  
+Then, click ``Configure``. You will be prompted for a generator/compiler. Then click the ``Generate``
+button. If there is no errors, the project files will be generated into the ``Where to build the binaries``
+folder.
+
+Open the sln file, and build your project!
 
 Weird installations
 -------------------
@@ -192,29 +204,5 @@ before this one:
 
 .. code-block:: cmake
 
-   find_package(PCL 1.0 REQUIRED COMPONENTS io)
+   find_package(PCL 1.3 REQUIRED COMPONENTS io)
      ...
-
-Important note
---------------
-In the tutorials after, whenever you see:
-
-.. code-block:: cmake
-
-   link_target(any_tutorial_target ${PCL_XXX_LIBRARY})
-
-or:
-
-.. code-block:: cmake
-
-   link_target(any_tutorial_target ${PCL_XXX_LIBRARIES})
-
-you can replace it with:
-
-.. code-block:: cmake
-
-   link_target(any_tutorial_target pcl_xxx)
-
-with ``xxx`` the lowercase counterpart of ``XXX``.
-
-..  LocalWords:  refered PCLConfig anyother CXX ABI FindXXX XXXConfig

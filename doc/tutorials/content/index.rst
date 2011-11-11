@@ -37,7 +37,7 @@ Table of contents
 Basic Usage
 -----------
 
-  * :ref:`using_pcl`
+  * :ref:`using_pcl_pcl_config`
 
      ======  ======
      |mi_1|  Title: **Using PCL in own project**
