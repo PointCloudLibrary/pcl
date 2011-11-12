@@ -1,5 +1,5 @@
-#ifndef RANGE_LIKELIHOOD
-#define RANGE_LIKELIHOOD
+#ifndef PCL_RANGE_LIKELIHOOD
+#define PCL_RANGE_LIKELIHOOD
 
 #include <time.h>
 

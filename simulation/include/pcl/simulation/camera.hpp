@@ -1,5 +1,5 @@
-#ifndef MRG_CAMERA_HPP_
-#define MRG_CAMERA_HPP_
+#ifndef PCL_CAMERA_HPP_
+#define PCL_CAMERA_HPP_
 
 #include <boost/shared_ptr.hpp>
 #include <Eigen/Dense>
@@ -60,4 +60,4 @@ private:
   
 };
 }
-#endif /* MRG_CAMERA_HPP_ */
+#endif /* PCL_CAMERA_HPP_ */

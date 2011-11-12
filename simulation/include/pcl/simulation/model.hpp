@@ -1,5 +1,5 @@
-#ifndef MRG_MODEL_HPP_
-#define MRG_MODEL_HPP_
+#ifndef PCL_MODEL_HPP_
+#define PCL_MODEL_HPP_
 
 #include <boost/shared_ptr.hpp>
 #include <pcl/io/pcd_io.h>
@@ -72,4 +72,4 @@ private:
 
 }
 
-#endif /* MRG_MODEL_HPP_ */
+#endif /* PCL_MODEL_HPP_ */

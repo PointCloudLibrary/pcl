@@ -5,8 +5,8 @@
  *      Author: Hordur Johannsson
  */
 
-#ifndef MRG_SCENE_HPP_
-#define MRG_SCENE_HPP_
+#ifndef PCL_SCENE_HPP_
+#define PCL_SCENE_HPP_
 
 #include <boost/shared_ptr.hpp>
 
