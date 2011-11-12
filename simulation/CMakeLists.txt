@@ -60,7 +60,7 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openni_camera ${OPENNI_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
-    add_subdirectory(tools)
+    #add_subdirectory(tools)
     #add_subdirectory(test)
 endif(build)
 
