@@ -961,7 +961,9 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       actor->GetProperty ()->SetAmbient (0.8);
       actor->GetProperty ()->SetDiffuse (0.8);
       actor->GetProperty ()->SetSpecular (0.8);
-      //actor->GetProperty ()->SetLighting (0);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 4))
+      actor->GetProperty ()->SetLighting (0);
+#endif
       actor->Modified ();
       break;
     }
