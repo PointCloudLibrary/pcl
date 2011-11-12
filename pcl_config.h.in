@@ -13,6 +13,8 @@
 
 #cmakedefine HAVE_CUDA 1
 
+#cmakedefine USE_ROS
+
 #ifdef DISABLE_OPENNI
 #undef HAVE_OPENNI
 #endif
