@@ -114,22 +114,23 @@ class OpenNISmoothing
       viewer.setBackgroundColor (0, 0, 0, viewport_smoothed_);
 
       stop_computing_.reset (new bool(true));
+      cloud_.reset ();
+      cloud_smoothed_.reset (new Cloud);
     }
 
     void
     cloud_cb_ (const CloudConstPtr& cloud)
     {
-      boost::mutex::scoped_lock lock (mtx_);
       FPS_CALC ("computation");
 
-      cloud_smoothed_.reset (new Cloud);
-
+      mtx_.lock ();
       if (! *stop_computing_)
       {
         smoother_.setInputCloud (cloud);
         smoother_.reconstruct (*cloud_smoothed_);
       }
-      cloud_  = cloud;
+      cloud_ = cloud;
+      mtx_.unlock ();
     }
 
 
@@ -149,19 +150,17 @@ class OpenNISmoothing
 
       while (!viewer.wasStopped ())
       {
-        if (cloud_smoothed_)
-        {
-          boost::mutex::scoped_lock lock (mtx_);
-
-          FPS_CALC ("visualization");
-          CloudPtr temp_cloud;
-          temp_cloud.swap (cloud_smoothed_); //here we set cloud_ to null, so that
-          viewer.removePointCloud ("input_cloud", viewport_input_);
-          viewer.addPointCloud (cloud_, "input_cloud", viewport_input_);
-          viewer.removePointCloud ("smoothed_cloud", viewport_smoothed_);
-          viewer.addPointCloud (temp_cloud, "smoothed_cloud", viewport_smoothed_);
-        }
+        FPS_CALC ("visualization");
         viewer.spinOnce ();
+
+        if (cloud_ && mtx_.try_lock ())
+        {
+          if (!viewer.updatePointCloud (cloud_, "input_cloud"))
+            viewer.addPointCloud (cloud_, "input_cloud", viewport_input_);
+          if (! *stop_computing_ && !viewer.updatePointCloud (cloud_smoothed_, "smoothed_cloud"))
+            viewer.addPointCloud (cloud_smoothed_, "smoothed_cloud", viewport_smoothed_);
+          mtx_.unlock ();
+        }
       }
 
       interface->stop ();
