@@ -6,9 +6,10 @@
 #include <pcl/point_types.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <bot_vis/bot_vis.h>
+//RWX support disabled due to libbot depencency
+//#include <bot_vis/bot_vis.h>
 
-namespace mrg
+namespace pcl
 {
 
 class Model
@@ -19,6 +20,9 @@ public:
   typedef boost::shared_ptr<Model> Ptr;
   typedef boost::shared_ptr<const Model> ConstPtr;
 };
+
+/*
+ * RWX support disabled due to libbot depencency
 
 class RWXModel : public Model
 {
@@ -34,8 +38,8 @@ private:
   BotRwxModel* rwx_model_;
   bool display_list_ready_;
   GLuint rwx_dl_;
-
 };
+*/
 
 class PointCloudModel : public Model
 {

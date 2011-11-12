@@ -5,7 +5,7 @@
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
 
-namespace mrg
+namespace pcl
 {
 
 class Camera

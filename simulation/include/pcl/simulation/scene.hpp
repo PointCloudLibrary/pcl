@@ -13,7 +13,7 @@
 #include "camera.hpp"
 #include "model.hpp"
 
-namespace mrg
+namespace pcl
 {
 
 class Scene

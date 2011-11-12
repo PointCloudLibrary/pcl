@@ -9,9 +9,9 @@
 #include <math.h>
 #include <Eigen/StdVector>
 
-namespace mrg
+namespace pcl
 {
-class Time
+class RangeLikelihoodTime
 {
 public:
   static double get_time() {
