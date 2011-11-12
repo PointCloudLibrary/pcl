@@ -479,7 +479,9 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr OpenNIGrabber::convertToXYZPointCloud(const 
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud <pcl::PointXYZ>);
 
+#ifndef ROS_VERSION_MAJOR
   cloud->header.stamp = depth_image->getTimeStamp();
+#endif
   cloud->height = depth_height_;
   cloud->width = depth_width_;
   cloud->is_dense = false;
