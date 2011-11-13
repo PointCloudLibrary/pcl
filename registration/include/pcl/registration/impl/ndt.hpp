@@ -354,8 +354,8 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
       float (score.value), xytheta_transformation[0], xytheta_transformation[1], xytheta_transformation[2]
     );
 
-    std::cout << "grad:\n"    << score.grad << std::endl;
-    std::cout << "hessian:\n" << score.hessian << std::endl;
+    //std::cout << "grad:\n"    << score.grad << std::endl;
+    //std::cout << "hessian:\n" << score.hessian << std::endl;
     
     if (score.value != 0)
     {
@@ -394,7 +394,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
       transformation.block<3,3> (0,0) = Eigen::Matrix3f (Eigen::AngleAxisf (xytheta_transformation[2], Eigen::Vector3f::UnitZ ()));
       transformation.block<3,1> (0,3) = Eigen::Vector3f (xytheta_transformation[0], xytheta_transformation[1], 0);
 
-      std::cout << "new transformation:\n" << transformation << std::endl;
+      //std::cout << "new transformation:\n" << transformation << std::endl;
     }
     else
     {
@@ -409,7 +409,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
     if (update_visualizer_ != 0)
       update_visualizer_ (output, *indices_, *target_, *indices_);
 
-    std::cout << "eps=" << fabs ((transformation - previous_transformation_).sum ()) << std::endl;
+    //std::cout << "eps=" << fabs ((transformation - previous_transformation_).sum ()) << std::endl;
 
     if (nr_iterations_ > max_iterations_ ||
        fabs ((transformation - previous_transformation_).sum ()) < transformation_epsilon_)
