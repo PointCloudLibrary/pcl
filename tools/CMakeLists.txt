@@ -58,7 +58,10 @@ if (build)
   target_link_libraries(icp2d pcl_common pcl_io pcl_registration)
 
   PCL_ADD_EXECUTABLE(elch ${SUBSYS_NAME} elch.cpp)
-  target_link_libraries(elch pcl_common pcl_io pcl_registration)  
+  target_link_libraries(elch pcl_common pcl_io pcl_registration)
+
+  PCL_ADD_EXECUTABLE(ndt2d ${SUBSYS_NAME} ndt2d.cpp)
+  target_link_libraries(ndt2d pcl_common pcl_io pcl_registration)
 
   if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
