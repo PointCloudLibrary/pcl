@@ -35,6 +35,9 @@
  *
  */
 
+#include "opencv2/opencv.hpp"
+#include "opencv2/gpu/gpu.hpp"
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/win32_macros.h>
@@ -65,22 +68,31 @@ class NormalEstimation
     void viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
       static bool first_time = true;
+      double psize = 1.0,opacity = 1.0,linesize =1.0;
+      std::string cloud_name ("cloud");
       boost::mutex::scoped_lock l(m_mutex);
       if (new_cloud)
       {
         //typedef pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal> ColorHandler;
         typedef pcl::visualization::PointCloudColorHandlerGenericField <pcl::PointXYZRGBNormal> ColorHandler;
+        //ColorHandler Color_handler (normal_cloud);
         ColorHandler Color_handler (normal_cloud,"curvature");
         if (!first_time)
         {
-          viz.removePointCloud ("normalcloud");
+          viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+          viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+          viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
+          //viz.removePointCloud ("normalcloud");
           viz.removePointCloud ("cloud");
         }
         else
           first_time = false;
 
-        viz.addPointCloudNormals<pcl::PointXYZRGBNormal> (normal_cloud, 200, 0.1, "normalcloud");
+        //viz.addPointCloudNormals<pcl::PointXYZRGBNormal> (normal_cloud, 139, 0.1, "normalcloud");
         viz.addPointCloud<pcl::PointXYZRGBNormal> (normal_cloud, Color_handler, std::string("cloud"), 0);
+        viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+        viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+        viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
         new_cloud = false;
       }
     }
@@ -127,6 +139,13 @@ class NormalEstimation
               const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, 
               float constant)
     {
+      static int smoothing_nr_iterations = 10;
+      static int smoothing_filter_size = 2;
+      cv::namedWindow("Parameters", CV_WINDOW_NORMAL);
+      cvCreateTrackbar ("iterations", "Parameters", &smoothing_nr_iterations, 50, NULL);
+      cvCreateTrackbar ("filter_size", "Parameters", &smoothing_filter_size, 10, NULL);
+      cv::waitKey (2);
+
       static unsigned count = 0;
       static double last = getTime ();
       double now = getTime ();
@@ -142,13 +161,15 @@ class NormalEstimation
 
       ScopeTimeCPU timer ("All: ");
       // Compute the PointCloud on the device
-      d2c.compute<Storage> (depth_image, image, constant, data, true, 2);
+      d2c.compute<Storage> (depth_image, image, constant, data, false, 1, smoothing_nr_iterations, smoothing_filter_size);
+      //d2c.compute<Storage> (depth_image, image, constant, data, true, 2);
 
       boost::shared_ptr<typename Storage<float4>::type> normals;
       float focallength = 580/2.0;
       {
         ScopeTimeCPU time ("Normal Estimation");
-        normals = computePointNormals<Storage, typename PointIterator<Storage,PointXYZRGB>::type > (data->points.begin (), data->points.end (), focallength, data, 0.05, 30);
+        normals = computeFastPointNormals<Storage> (data);
+        //normals = computePointNormals<Storage, typename PointIterator<Storage,PointXYZRGB>::type > (data->points.begin (), data->points.end (), focallength, data, 0.05, 30);
       }
 
       boost::mutex::scoped_lock l(m_mutex);

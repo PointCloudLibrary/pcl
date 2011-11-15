@@ -95,11 +95,14 @@ class Segmentation
   public:
     Segmentation () 
       : viewer ("PCL CUDA - Segmentation"),
-      new_cloud(false), go_on(true), enable_color(1), normal_method(0), nr_neighbors (36), radius_cm (5), normal_viz_step(200) {}
+      new_cloud(false), go_on(true), enable_color(1), normal_method(0), nr_neighbors (36), radius_cm (5), normal_viz_step(200)
+      , enable_normal_viz(false)
+    {}
 
     void viz_cb (pcl::visualization::PCLVisualizer& viz)
     {
       static bool first_time = true;
+      static bool last_enable_normal_viz = enable_normal_viz;
       boost::mutex::scoped_lock l(m_mutex);
       if (new_cloud)
       {
@@ -111,13 +114,15 @@ class Segmentation
           viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
           viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
           viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
-          viz.removePointCloud ("normalcloud");
+          if (last_enable_normal_viz)
+            viz.removePointCloud ("normalcloud");
           viz.removePointCloud ("cloud");
         }
         else
           first_time = false;
 
-        viz.addPointCloudNormals<pcl::PointXYZRGBNormal> (normal_cloud, normal_viz_step, 0.1, "normalcloud");
+        if (enable_normal_viz)
+          viz.addPointCloudNormals<pcl::PointXYZRGBNormal> (normal_cloud, normal_viz_step, 0.1, "normalcloud");
 
         if (enable_color == 1)
         {
@@ -136,6 +141,7 @@ class Segmentation
         viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
         new_cloud = false;
       }
+      last_enable_normal_viz = enable_normal_viz;
     }
 
     template <template <typename> class Storage> void 
@@ -191,7 +197,7 @@ class Segmentation
         last = now;
       }
 
-      static int smoothing_nr_iterations = 0;
+      static int smoothing_nr_iterations = 10;
       static int smoothing_filter_size = 2;
       static int enable_visualization = 1;
       static int enable_mean_shift = 0;
@@ -335,13 +341,16 @@ class Segmentation
         cvCreateTrackbar( "meanshift_sr", "Parameters", &meanshift_sr, 100, NULL);
         cvCreateTrackbar( "meanshift_minsize", "Parameters", &meanshift_minsize, 500, NULL);
         cvCreateTrackbar( "enable_plane_fitting", "Parameters", &enable_plane_fitting, 1, NULL);
+        cvCreateTrackbar( "enable_normal_viz", "Parameters", &enable_normal_viz, 1, NULL);
         if (enable_visualization == 1)
         {
 
+          cv::Mat temp;
           if (enable_mean_shift == 1)
-            cv::imshow ("NormalImage", seg);
+            cv::cvtColor(seg,temp,CV_BGR2RGB);
           else
-            cv::imshow ("NormalImage", cv::Mat(normal_image));
+            cv::cvtColor(cv::Mat(normal_image),temp,CV_BGR2RGB);
+          cv::imshow ("NormalImage", temp);
 
           boost::mutex::scoped_lock l(m_mutex);
           normal_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
@@ -426,6 +435,7 @@ class Segmentation
     int nr_neighbors;
     int radius_cm;
     int normal_viz_step;
+    int enable_normal_viz;
 };
 
 int 

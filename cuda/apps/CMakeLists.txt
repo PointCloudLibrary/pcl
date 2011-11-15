@@ -28,7 +28,8 @@ if(build)
     target_link_libraries (kinect_viewer_cuda pcl_io pcl_cuda_io pcl_visualization pcl_common pcl_kdtree pcl_range_image)
 
     PCL_CUDA_ADD_EXECUTABLE(kinect_normals_cuda ${SUBSYS_NAME} src/kinect_normals_cuda.cpp)
-    target_link_libraries (kinect_normals_cuda pcl_io pcl_cuda_io pcl_cuda_features pcl_visualization pcl_common pcl_kdtree pcl_range_image)
+    target_link_libraries (kinect_normals_cuda pcl_io pcl_cuda_io pcl_cuda_features pcl_cuda_segmentation pcl_cuda_sample_consensus pcl_visualization pcl_common pcl_kdtree pcl_range_image ${OpenCV_LIBS})
+    #target_link_libraries (kinect_normals_cuda pcl_io pcl_cuda_io pcl_cuda_features pcl_visualization pcl_common pcl_kdtree pcl_range_image)
 
     if (OpenCV_FOUND)
       PCL_CUDA_ADD_EXECUTABLE(kinect_segmentation_cuda ${SUBSYS_NAME} src/kinect_segmentation_cuda.cpp)

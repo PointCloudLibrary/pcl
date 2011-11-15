@@ -35,6 +35,9 @@
  *
  */
 
+#include "opencv2/opencv.hpp"
+#include "opencv2/gpu/gpu.hpp"
+
 // pcl::cuda includes
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -83,19 +86,27 @@ class MultiRansac
       boost::mutex::scoped_lock l(m_mutex);
       if (new_cloud)
       {
+        double psize = 1.0,opacity = 1.0,linesize =1.0;
+        std::string cloud_name ("cloud");
         typedef pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal> ColorHandler;
 
         ColorHandler Color_handler (normal_cloud);
         if (!first_time)
         {
-          viz.removePointCloud ("normalcloud");
+          viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+          viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+          viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
+          //viz.removePointCloud ("normalcloud");
           viz.removePointCloud ("cloud");
         }
         else
           first_time = false;
 
-        viz.addPointCloudNormals<pcl::PointXYZRGBNormal> (normal_cloud, 200, 0.1, "normalcloud");
+        //viz.addPointCloudNormals<pcl::PointXYZRGBNormal> (normal_cloud, 139, 0.1, "normalcloud");
         viz.addPointCloud<pcl::PointXYZRGBNormal> (normal_cloud, Color_handler, std::string("cloud"), 0);
+        viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+        viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+        viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
         new_cloud = false;
       }
     }
@@ -121,9 +132,14 @@ class MultiRansac
       typename SampleConsensusModel1PointPlane<Storage>::Ptr sac_model;
       {
       ScopeTimeCPU timer ("All: ");
+      static int threshold_x100 = 25;
+      static int smoothing_nr_iterations = 10;
+      static int smoothing_filter_size = 2;
+      static int enable_coloring = 1;
 
       // Compute the PointCloud on the device
-      d2c.compute<Storage> (depth_image, image, constant, data, true, 2);
+      //d2c.compute<Storage> (depth_image, image, constant, data, true, 2);
+      d2c.compute<Storage> (depth_image, image, constant, data, true, 2, smoothing_nr_iterations, smoothing_filter_size);
 
       // Compute normals
       boost::shared_ptr<typename Storage<float4>::type> normals;
@@ -131,7 +147,8 @@ class MultiRansac
         ScopeTimeCPU time ("Normal Estimation");
         //normals = computeFastPointNormals<Storage> (data);
         float focallength = 580/2.0;
-        normals = computePointNormals<Storage> (data->points.begin (), data->points.end (), focallength, data, 0.11f, 36);
+        //normals = computePointNormals<Storage> (data->points.begin (), data->points.end (), focallength, data, 0.11f, 36);
+        normals = computeFastPointNormals<Storage> (data);
       }
 
       // Create sac_model
@@ -145,7 +162,7 @@ class MultiRansac
       sac.setMinimumCoverage (0.90); // at least 95% points should be explained by planes
       sac.setMaximumBatches (5);
       sac.setIerationsPerBatch (1000);
-      sac.setDistanceThreshold (0.05);
+      sac.setDistanceThreshold (threshold_x100 / 100.0);
 
       {
         ScopeTimeCPU timer ("computeModel: ");
@@ -193,6 +210,7 @@ class MultiRansac
               color.r = (int)(rand () * trand);
               color.g = (int)(rand () * trand);
               color.b = (int)(rand () * trand);
+              if (enable_coloring)
               {
                 ScopeTimeCPU t ("coloring planes");
                 colorIndices<Storage> (data, inliers_stencil, color);
@@ -245,6 +263,12 @@ class MultiRansac
           //  viewer.showCloud (dummy_cloud, ss.str ());
           //}
           //nr_planes_last_time = planes.size ();
+          cv::namedWindow("Parameters", CV_WINDOW_NORMAL);
+          cvCreateTrackbar( "iterations", "Parameters", &smoothing_nr_iterations, 50, NULL);
+          cvCreateTrackbar( "filter_size", "Parameters", &smoothing_filter_size, 10, NULL);
+          cvCreateTrackbar( "enable_coloring", "Parameters", &enable_coloring, 1, NULL);
+          cvCreateTrackbar( "threshold", "Parameters", &threshold_x100, 100, NULL);
+          cv::waitKey (2);
         }
       }
 
