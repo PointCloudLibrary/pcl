@@ -192,7 +192,7 @@ namespace pcl
     {
         typedef typename pcl::PointCloud<PointT> PointCloud;
         typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
-        typedef NormalDist<PointT> NormalDist;
+        typedef typename pcl::ndt::NormalDist<PointT> NormalDist;
       public:
         NDTSingleGrid (PointCloudConstPtr cloud,
                        const Eigen::Vector2f& about,
