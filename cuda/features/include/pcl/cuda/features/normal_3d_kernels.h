@@ -126,7 +126,7 @@ namespace pcl
         if (!west_valid & east_valid)
           horiz = points_[idx+1] - points_[idx];
         if (!west_valid & !east_valid)
-          return make_float4 (0.0f,0.0f,0.0f,0.0f);
+          return make_float4 (0.0f,0.0f,0.0f,1.0f);
 
         if (south_valid & north_valid)
           vert = points_[idx-width_] - points_[idx+width_];
@@ -135,11 +135,13 @@ namespace pcl
         if (!south_valid & north_valid)
           vert = points_[idx-width_] - points_[idx];
         if (!south_valid & !north_valid)
-          return make_float4 (0.0f,0.0f,0.0f,0.0f);
+          return make_float4 (0.0f,0.0f,0.0f,1.0f);
 
         float3 normal = cross (horiz, vert);
 
         float curvature = length (normal);
+        curvature = fabs(horiz.z) > 0.04 | fabs(vert.z) > 0.04 | !west_valid | !east_valid | !north_valid | !south_valid;
+
         float3 mc = normalize (normal);
         if ( dot (query_pt, mc) > 0 )
           mc = -mc;
