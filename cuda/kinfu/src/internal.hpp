@@ -34,21 +34,24 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#pragma once
+#ifndef PCL_KINFU_INTERNAL_HPP_
+#define PCL_KINFU_INTERNAL_HPP_
 
 #include "pcl/gpu/containers/device_array.hpp"
 #include "pcl/gpu/utils/safe_call.hpp"
-
-
 
 namespace pcl
 {
     namespace device
     {
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////   Types
+
         typedef unsigned short ushort;
         typedef DeviceArray2D<float> MapArr;
         typedef DeviceArray2D<ushort> DepthMap;
 
+        typedef float4 PointType;
 
         enum { VOLUME_X = 512, VOLUME_Y = 512, VOLUME_Z = 512 };
 
@@ -75,6 +78,9 @@ namespace pcl
             float3 pos[1];						
             int number;
         };
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////   Maps
         
         void bilateralFilter(const DepthMap& src, DepthMap& dst);
         void pyrDown(const DepthMap& src, DepthMap& dst);
@@ -84,13 +90,20 @@ namespace pcl
         void compteNormalsEigen(const MapArr& vmap, MapArr& nmap);
 
         void tranformMaps(const MapArr& vmap_src, const MapArr& nmap_src, const Mat33& Rmat, const float3& tvec, MapArr& vmap_dst, MapArr& nmap_dst);
-        
-        //icp        
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////   ICP 
+                
         void findCoresp(const MapArr& vmap_g_curr, const MapArr& nmap_g_curr, const Mat33& Rprev_inv, const float3& tprev, const Intr& intr, 
             const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, float distThres, float angleThres, PtrStepSz<short2> coresp);
 
         void estimateTransform(const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const PtrStepSz<short2>& coresp,
             DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, float* matrixA_host, float* vectorB_host);
+
+
+        void estimateCombined(const Mat33& Rcurr, const float3& tcurr, const MapArr& vmap_curr, const MapArr& nmap_curr, const Mat33& Rprev_inv, const float3& tprev, const Intr& intr, 
+                             const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, float distThres, float angleThres, 
+                             DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, float* matrixA_host, float* vectorB_host);
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /////////////   TSDF volume functions        
@@ -129,6 +142,11 @@ namespace pcl
 
         void resizeVMap(const MapArr& input, MapArr& output);
         void resizeNMap(const MapArr& input, MapArr& output);
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////   Cloud extraction 
+        size_t extractCloud(const PtrStep<volume_elem_type>& volume, const float3& volume_size, PtrSz<PointType> output, bool connected26);
         
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /////////////   Utuility
@@ -138,9 +156,11 @@ namespace pcl
 
         inline bool valid_host(float value)
         {
-            return *reinterpret_cast<int*>(&value) != 0x7fffffff;
+            return *reinterpret_cast<int*>(&value) != 0x7fffffff; //QNAN
         }
 
         inline void sync() { cudaSafeCall(cudaDeviceSynchronize()); }
     }
 }
+
+#endif /* PCL_KINFU_INTERNAL_HPP_ */

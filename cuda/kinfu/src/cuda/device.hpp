@@ -34,7 +34,8 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#pragma once 
+#ifndef PCL_GPU_KINFU_DEVICE_HPP_
+#define PCL_GPU_KINFU_DEVICE_HPP_
 
 #include "pcl/gpu/utils/device/limits.hpp"
 #include "pcl/gpu/utils/device/vector_math.hpp"
@@ -45,9 +46,6 @@ namespace pcl
 {
     namespace device
     {       
-
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////        
         /// for old format
 
@@ -73,9 +71,7 @@ namespace pcl
         }
 
         //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
-        /// for half
+        /// for half float
          __device__ __forceinline__ void pack_tsdf(float tsdf, int weight, ushort2& value)
 		{
             value = make_ushort2(__float2half_rn(tsdf), weight);			
@@ -92,13 +88,11 @@ namespace pcl
             return __half2float(value.x);
         }
 
-
-
-
-
          __device__ __forceinline__ float3 operator*(const Mat33& m, const float3& vec)
         {
             return make_float3(dot(m.data[0], vec), dot(m.data[1], vec), dot(m.data[2], vec));
-        }     
+        }
     }
 }
+
+#endif /* PCL_GPU_KINFU_DEVICE_HPP_ */

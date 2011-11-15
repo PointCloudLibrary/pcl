@@ -41,8 +41,7 @@ using namespace pcl::device;
 namespace pcl
 {
     namespace device
-    {        
-
+    {
         struct ImageGenerator
         {
             enum 

@@ -82,14 +82,6 @@ namespace pcl
             dst.ptr(y)[x] = max(0, min(res, numeric_limits<short>::max()));
         }
 
-
-        __device__ __forceinline__ int fetch(int y, int x, const PtrStepSz<ushort>& src)
-        {
-            x = max(0, min(x, src.cols-1));
-            y = max(0, min(y, src.rows-1));
-            return src.ptr(y)[x];
-        }
-
         __global__ void pyrDownKernel(const PtrStepSz<ushort> src, PtrStepSz<ushort> dst, float sigma_color)
         {            
             int x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -119,7 +111,6 @@ namespace pcl
                         ++count;
                     }                    
                 }
-            
             dst.ptr(y)[x] = sum / count;
         }
     }
@@ -131,11 +122,9 @@ void pcl::device::bilateralFilter(const DepthMap& src, DepthMap& dst)
     dim3 grid(divUp(src.cols(), block.x), divUp(src.rows(), block.y));
 
     cudaFuncSetCacheConfig(bilateralKernel, cudaFuncCachePreferL1);
-    bilateralKernel<<<grid, block/*, 0, stream*/>>>(src, dst, 0.5f / (sigma_space * sigma_space), 0.5f / (sigma_color * sigma_color));
+    bilateralKernel<<<grid, block>>>(src, dst, 0.5f / (sigma_space * sigma_space), 0.5f / (sigma_color * sigma_color));
 
     cudaSafeCall( cudaGetLastError() );	
-    /*if (stream == 0)
-        cudaSafeCall(cudaDeviceSynchronize());*/
 };
 
 void pcl::device::pyrDown(const DepthMap& src, DepthMap& dst)
@@ -145,10 +134,6 @@ void pcl::device::pyrDown(const DepthMap& src, DepthMap& dst)
     dim3 block(32, 8);
     dim3 grid(divUp(dst.cols(), block.x), divUp(dst.rows(), block.y));
     
-    pyrDownKernel<<<grid, block/*, 0, stream*/>>>(src, dst, sigma_color);    
-    cudaSafeCall( cudaGetLastError() );	
-    /*if (stream == 0)
-        cudaSafeCall(cudaDeviceSynchronize());*/
+    pyrDownKernel<<<grid, block>>>(src, dst, sigma_color);    
+    cudaSafeCall( cudaGetLastError() );	    
 };
-
-

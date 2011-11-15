@@ -56,9 +56,13 @@ namespace pcl
         __device__ __host__ __forceinline__ type & operator op (type & v1, const type & v2) { v1.x op v2.x; v1.y op v2.y; v1.z op v2.z; return v1; } \
         __device__ __host__ __forceinline__ type & operator op (type & v, scalar val)       {  v.x op val;   v.y op val;   v.z op val;  return v;  }
 
-        PCL_GPU_IMPLEMENT_COMPOUND_VEC3_OP(float3, float, -=)
+        PCL_GPU_IMPLEMENT_COMPOUND_VEC3_OP(float3, float, -=)    
         PCL_GPU_IMPLEMENT_COMPOUND_VEC3_OP(float3, float, +=)
         PCL_GPU_IMPLEMENT_COMPOUND_VEC3_OP(float3, float, *=)
+
+        PCL_GPU_IMPLEMENT_COMPOUND_VEC3_OP(short3, short, -=) 
+
+        PCL_GPU_IMPLEMENT_COMPOUND_VEC3_OP(int3, int, +=)
 
 #undef PCL_GPU_IMPLEMENT_COMPOUND_VEC3_OP
 
@@ -66,7 +70,7 @@ namespace pcl
         {
             return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
         }
-
+        
         __device__ __host__ __forceinline__ float3 cross(const float3& v1, const float3& v2)
         {
             return make_float3(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
@@ -86,6 +90,10 @@ namespace pcl
         PCL_GPU_IMPLEMENT_VEC_BINOP(float3, float, -, -=)
         PCL_GPU_IMPLEMENT_VEC_BINOP(float3, float, +, +=)
         PCL_GPU_IMPLEMENT_VEC_BINOP(float3, float, *, *=)
+
+        PCL_GPU_IMPLEMENT_VEC_BINOP(short3, short, -, -=)
+
+        PCL_GPU_IMPLEMENT_VEC_BINOP(int3, int, +, +=)
 
 #undef PCL_GPU_IMPLEMENT_VEC_BINOP
 

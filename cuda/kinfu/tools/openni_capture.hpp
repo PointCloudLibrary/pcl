@@ -42,7 +42,7 @@
 #include<boost/shared_ptr.hpp>
 #include<string>
 
-#include "vector_types.h"
+#include "pcl/gpu/kinfu/kinfu.hpp"
 
 namespace pcl
 {	
@@ -51,11 +51,14 @@ namespace pcl
         class CaptureOpenNI
         {
         public:				
-            CaptureOpenNI(int device);
-            CaptureOpenNI(const std::string& filename);
-            ~CaptureOpenNI();
+            typedef KinfuTracker::RGB RGB;
 
-            bool grab(PtrStepSz<const unsigned short>& depth, PtrStepSz<const uchar3>& rgb24);		
+
+            CaptureOpenNI(int device);
+            CaptureOpenNI(const std::string& oni_filename);
+            ~CaptureOpenNI();
+                                    
+            bool grab(PtrStepSz<const unsigned short>& depth, PtrStepSz<const RGB>& rgb24);		
 
             //parameters taken from camera/oni
             float depth_focal_length_VGA;		
@@ -67,7 +70,7 @@ namespace pcl
             unsigned short max_depth; //mm
         private:
             struct Impl;
-            boost::shared_ptr<Impl> impl;
+            boost::shared_ptr<Impl> impl_;
             void getParams();
         };	
     }

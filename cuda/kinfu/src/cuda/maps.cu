@@ -122,11 +122,8 @@ void pcl::device::createVMap(const Intr& intr, const DepthMap& depth, MapArr& vm
     float fx = intr.fx, cx = intr.cx;
     float fy = intr.fy, cy = intr.cy;
 
-    computeVmapKernel<<<grid, block/*, 0, stream*/>>>(depth, vmap, 1.f/fx, 1.f/fy, cx, cy);
-    cudaSafeCall( cudaGetLastError() );
-
-    /*if (stream == 0)
-        cudaSafeCall(cudaDeviceSynchronize());    */
+    computeVmapKernel<<<grid, block>>>(depth, vmap, 1.f/fx, 1.f/fy, cx, cy);
+    cudaSafeCall( cudaGetLastError() );    
 }
 
 void pcl::device::createNMap(const MapArr& vmap, MapArr& nmap)
@@ -141,11 +138,8 @@ void pcl::device::createNMap(const MapArr& vmap, MapArr& nmap)
     grid.x = divUp(cols, block.x);
     grid.y = divUp(rows, block.y);
 
-    computeNmapKernel<<<grid, block/*, 0, stream*/>>>(rows, cols, vmap, nmap);
+    computeNmapKernel<<<grid, block>>>(rows, cols, vmap, nmap);
     cudaSafeCall( cudaGetLastError() );
-
-    /*if (stream == 0)
-        cudaSafeCall(cudaDeviceSynchronize());*/
 }
 
 namespace pcl
@@ -344,7 +338,7 @@ template<typename T> void pcl::device::convert(const MapArr& vmap, DeviceArray2D
     dim3 block(32, 8);
     dim3 grid(divUp(cols, block.x), divUp(rows, block.y));
 
-    convertMapKernel<T><<<grid, block/*, 0, stream*/>>>(rows, cols, vmap, output);
+    convertMapKernel<T><<<grid, block>>>(rows, cols, vmap, output);
     cudaSafeCall( cudaGetLastError() );	
     cudaSafeCall(cudaDeviceSynchronize());    
 }

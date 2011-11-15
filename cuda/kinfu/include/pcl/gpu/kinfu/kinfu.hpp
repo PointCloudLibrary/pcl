@@ -34,87 +34,130 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  *///M*/
 
+#ifndef PCL_KINFU_KINFUTRACKER_HPP_
+#define PCL_KINFU_KINFUTRACKER_HPP_
 
+#include <pcl/pcl_macros.h>
 
-#pragma once
-
-#include<pcl/gpu/containers/device_array.hpp>
-#include<vector>
-#include "vector_types.h"
+#include <pcl/gpu/containers/device_array.hpp>
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
 
 #include <Eigen/Core>
+#include <vector>
 
 namespace pcl
 {
     namespace gpu
     {
-        class KinfuTracker
+        class PCL_EXPORTS KinfuTracker
         {
-        public:	       
-            enum { LEVELS = 3 };
+        public:                                    
+            struct RGB { unsigned char r, g, b; };
+            typedef DeviceArray2D<RGB> View;
+            typedef DeviceArray2D<unsigned short> DepthMap;
 
-            typedef unsigned short ushort;
-            typedef DeviceArray2D<float> MapArr;
-            typedef DeviceArray2D<unsigned short> DepthMap;            
-            typedef DeviceArray2D<uchar3> View;
+            typedef pcl::PointXYZ PointType;
+            typedef pcl::Normal NormalType;
 
-            //typedef Eigen::Matrix3f Matrix3f;
-            typedef Eigen::Matrix<float, 3, 3, Eigen::RowMajor> Matrix3f;
-            typedef Eigen::Vector3f Vector3f; 
-            typedef Eigen::Matrix<float, 6, 6> Matrix6f;
-            typedef Eigen::Matrix<float, 6, 1> Vector6f;
+            KinfuTracker(int rows = 480, int cols = 640);
 
-            KinfuTracker(int rows_arg, int cols_arg);
+            /** \brief Sets Tsdf volume size for each dimention in mm */
+            void setDepthIntrinsics(float fx, float fy, float cx = -1, float cy = -1);
+                        
+            /** \brief Sets Tsdf volume size for each dimention in mm */
+            void setVolumeSize(const Eigen::Vector3f& volume_size);
 
-            float fx, fy, cx, cy;		
+            /** \brief Sets initial camera pose relative to volume coordiante space */
+            void setInitalCameraPose(const Eigen::Affine3f& pose);
 
-            int icp_iterations_numbers[LEVELS];           
-            float  distThres;
-            float angleThres;
+            /** \brief Returns cols passed to ctor */
+            int cols();
 
-            float tranc_dist;
+            /** \brief Returns rows passed to ctor */
+            int rows();
+                                    
+            /** \brief Processes next frame.        
+              * \param[in] Depth next frame        
+              * \return true if can generate image for human. 
+              */
+            bool operator()(const DepthMap& depth);
 
-            Vector3f volume_size;        // sizeof volume in mm
-            Matrix3f init_Rcam; // init camera rotaion in volume coo space
-            Vector3f init_tcam;          // init camera pos in volume coo space
+            /** \brief Returns camera pose at given time, default the last pose */
+            Eigen::Affine3f getCameraPose(int time = -1);
 
-            Vector3f light_pos;
+            /** \brief Generates image for human */
+            void getImage(View& view) const;
+
+            /** \brief Generates image for human */
+            void getImage(View& view, const Eigen::Vector3f& light_source_pose) const;
+
+            /** \brief Returns point cloud abserved from last camera pose */
+            void getLastFrameCloud(DeviceArray2D<PointType>& cloud) const;
+
+            /** \brief Returns point cloud abserved from last camera pose */
+            void getLastFrameNormals(DeviceArray2D<NormalType>& normals) const;
+
+            /** \brief Generates cloud on CPU */
+            void getCloudFromVolumeHost(PointCloud<PointType>& cloud, bool connected26 = false);
+
+            /** \brief Generates cloud on GPU */           
+            DeviceArray<PointType> getCloudFromVolume(DeviceArray<PointType>& cloud_buffer, bool connected26 = false);            
             
-            void operator()(const DepthMap& depth, View& view);
         private:  
-            typedef DeviceArray2D<int> CorespMap;
-            
+            enum 
+            { 
+                LEVELS = 3, 
+                DEFAULT_VOLUME_CLOUD_BUFFER_SIZE = 10 * 1000 * 1000,                
+            };
 
-            
+            typedef DeviceArray2D<int> CorespMap;
+            typedef DeviceArray2D<float> MapArr;
+
+            typedef Eigen::Matrix<float, 3, 3, Eigen::RowMajor> Matrix3frm;
+            typedef Eigen::Vector3f Vector3f; 
 
             int rows_; 
             int cols_;
-            int global_time;
+            int global_time_;
 
+            float fx_, fy_, cx_, cy_;
+
+            Vector3f volume_size_; // sizeof volume in mm
+            Matrix3frm init_Rcam_;   // init camera rotaion in volume coo space
+            Vector3f   init_tcam_;   // init camera pos in volume coo space
+
+            int icp_iterations_[LEVELS];           
+            float  distThres_;
+            float angleThres_;
+            float tranc_dist_;
+            Vector3f light_pose_;                                    
                         
-            std::vector<DepthMap> depths_curr;
-            std::vector<MapArr> vmaps_g_curr;
-            std::vector<MapArr> nmaps_g_curr;
+            std::vector<DepthMap> depths_curr_;
+            std::vector<MapArr> vmaps_g_curr_;
+            std::vector<MapArr> nmaps_g_curr_;
 
-            std::vector<MapArr> vmaps_g_prev;
-            std::vector<MapArr> nmaps_g_prev;
+            std::vector<MapArr> vmaps_g_prev_;
+            std::vector<MapArr> nmaps_g_prev_;
 
-            std::vector<MapArr> vmaps_curr;
-            std::vector<MapArr> nmaps_curr;
+            std::vector<MapArr> vmaps_curr_;
+            std::vector<MapArr> nmaps_curr_;
 
-            std::vector<CorespMap> coresps;
+            std::vector<CorespMap> coresps_;
 
-            DeviceArray2D<int> volume;
-            DeviceArray2D<float> depthRawScaled;
+            DeviceArray2D<int> volume_;
+            DeviceArray2D<float> depthRawScaled_;
             
-            DeviceArray2D<float> gbuf;
-            DeviceArray<float> sumbuf; 
+            DeviceArray2D<float> gbuf_;
+            DeviceArray<float> sumbuf_; 
 
-            std::vector<Matrix3f> rmats;
-            std::vector<Vector3f> tvecs;
+            std::vector<Matrix3frm> rmats_;
+            std::vector<Vector3f>   tvecs_;
            
-            void allocateBufffers(int rows, int cols);
+            void allocateBufffers(int rows_arg, int cols_arg);
             void reset();
         };	
     }
 };
+
+#endif /* PCL_KINFU_KINFUTRACKER_HPP_ */
