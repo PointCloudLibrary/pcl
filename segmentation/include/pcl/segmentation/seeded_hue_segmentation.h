@@ -31,6 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $id: $
  */
 
 #ifndef PCL_SEEDED_HUE_SEGMENTATION_H_
@@ -55,6 +56,14 @@ namespace pcl
   void 
   seededHueSegmentation ( const PointCloud<PointXYZRGB>                           &cloud, 
                           const boost::shared_ptr<search::Search<PointXYZRGB> >   &tree, 
+                          float                                                   tolerance, 
+                          PointIndices                                            &indices_in, 
+                          PointIndices                                            &indices_out, 
+                          float                                                   delta_hue_ = 0.0);
+
+  void 
+  seededHueSegmentation ( const PointCloud<PointXYZRGB>                           &cloud, 
+                          const boost::shared_ptr<search::Search<PointXYZRGBL> >  &tree, 
                           float                                                   tolerance, 
                           PointIndices                                            &indices_in, 
                           PointIndices                                            &indices_out, 

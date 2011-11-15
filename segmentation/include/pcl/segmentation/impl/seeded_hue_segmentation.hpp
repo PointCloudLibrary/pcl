@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ * $id $
  */
 
 #ifndef PCL_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_
@@ -113,6 +113,78 @@ pcl::seededHueSegmentation (  const PointCloud<PointXYZRGB>                     
   std::sort (indices_out.indices.begin (), indices_out.indices.end ());
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::seededHueSegmentation (  const PointCloud<PointXYZRGB>                           &cloud, 
+                              const boost::shared_ptr<search::Search<PointXYZRGBL> >  &tree,
+                              float                                                   tolerance, 
+                              PointIndices                                            &indices_in,
+                              PointIndices                                            &indices_out,
+                              float                                                   delta_hue)
+{
+  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+  {
+    PCL_ERROR ("[pcl::seededHueSegmentation] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", (unsigned long)tree->getInputCloud ()->points.size (), (unsigned long)cloud.points.size ());
+    return;
+  }
+  // Create a bool vector of processed point indices, and initialize it to false
+  std::vector<bool> processed (cloud.points.size (), false);
+
+  std::vector<int> nn_indices;
+  std::vector<float> nn_distances;
+
+  // Process all points in the indices vector
+  for (size_t k = 0; k < indices_in.indices.size (); ++k)
+  {
+    int i = indices_in.indices[k];
+    if (processed[i])
+      continue;
+
+    processed[i] = true;
+
+    std::vector<int> seed_queue;
+    int sq_idx = 0;
+    seed_queue.push_back (i);
+
+    PointXYZRGB  p;
+    p = cloud.points[i];
+    PointXYZHSV h;
+    PointXYZRGBtoXYZHSV(p, h);
+
+    while (sq_idx < (int)seed_queue.size ())
+    {
+      // Search for sq_idx
+      if (!tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances))
+      {
+        sq_idx++;
+        continue;
+      }
+
+      for (size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
+      {
+        if (processed[nn_indices[j]])                             // Has this point been processed before ?
+          continue;
+
+        PointXYZRGB  p_l;
+        p_l = cloud.points[nn_indices[j]];
+        PointXYZHSV h_l;
+        PointXYZRGBtoXYZHSV(p_l, h_l);
+
+        if (fabs(h_l.h - h.h) < delta_hue)
+        {
+          seed_queue.push_back (nn_indices[j]);
+          processed[nn_indices[j]] = true;
+        }
+      }
+
+      sq_idx++;
+    }
+    // Copy the seed queue into the output indices
+    for (size_t l = 0; l < seed_queue.size (); ++l)
+      indices_out.indices.push_back(seed_queue[l]);
+  }
+  // This is purely esthetical, can be removed for speed purposes
+  std::sort (indices_out.indices.begin (), indices_out.indices.end ());
+}
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
