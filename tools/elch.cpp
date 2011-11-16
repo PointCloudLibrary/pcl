@@ -177,7 +177,7 @@ loopOptimizerAlgorithm (Graph &g, int f, int l, double *weights)
     s = branches.front ();
     branches.pop_front ();
 
-    for (tie (adjacent_it, adjacent_it_end) = adjacent_vertices (s, g); adjacent_it != adjacent_it_end; ++adjacent_it)
+    for (boost::tuples::tie (adjacent_it, adjacent_it_end) = adjacent_vertices (s, g); adjacent_it != adjacent_it_end; ++adjacent_it)
     {
       weights[*adjacent_it] = weights[s];
       if (degree (*adjacent_it, g) > 1)
@@ -232,7 +232,7 @@ elch (int start, int end, const CloudVector &clouds)
   Graph grb[4];
 
   graph_traits<Graph>::edge_iterator edge_it, edge_it_end;
-  for (tie (edge_it, edge_it_end) = edges (g); edge_it != edge_it_end; edge_it++)
+  for (boost::tuples::tie (edge_it, edge_it_end) = edges (g); edge_it != edge_it_end; edge_it++)
   {
     for (int j = 0; j < 4; j++)
       add_edge (source (*edge_it, g), target (*edge_it, g), 1, grb[j]);  //TODO add variance
