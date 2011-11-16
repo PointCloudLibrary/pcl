@@ -49,6 +49,7 @@ namespace pcl
     * In Proceedings of the IEEE International Conference on Computer Vision,
     * 1998.</b>
     * \author Luca Penasa
+    * \ingroup filters
     */
   template<typename PointT>
   class BilateralFilter : public Filter<PointT>
