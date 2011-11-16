@@ -25,10 +25,7 @@ endif()
 
 # NSIS
 if(WIN32)
-  find_program(NSIS_PROGRAM makensis MakeNSIS)
-  if(EXISTS ${NSIS_PROGRAM})
-    list(APPEND CPACK_GENERATOR "NSIS")
-  endif(EXISTS ${NSIS_PROGRAM})
+  list(APPEND CPACK_GENERATOR "NSIS")
   if(CMAKE_CL_64)
     set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
     set(win_system_name win64)
