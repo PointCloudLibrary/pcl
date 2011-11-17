@@ -102,8 +102,9 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
   pcx = eigenvectors_ (0, 2);
   pcy = eigenvectors_ (1, 2);
   pcz = eigenvectors_ (2, 2);
-  pc1 = eigenvalues_ (2);  
-  pc2 = eigenvalues_ (1);     
+  float indices_size = 1.0f / indices.size ();
+  pc1 = eigenvalues_ (2) * indices_size;
+  pc2 = eigenvalues_ (1) * indices_size;
 }
 
 
