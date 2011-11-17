@@ -344,6 +344,10 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
     else
       THROW_PCL_IO_EXCEPTION ("could not retrieve device. Reason %s", exception.what ());
   }
+  catch (const pcl::PCLIOException& exception)
+  {
+    throw;
+  } 
   catch (...)
   {
     THROW_PCL_IO_EXCEPTION ("unknown error occured");
