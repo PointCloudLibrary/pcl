@@ -274,7 +274,7 @@ namespace pcl
       for (size_t x = 0; x < cloud.width; x++)
       {
         uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        memcpy(pixel, &cloud.at(x, y).rgb, 3 * sizeof(uint8_t));
+        memcpy(pixel, &cloud (x, y).rgb, 3 * sizeof(uint8_t));
       }
     }
   }
