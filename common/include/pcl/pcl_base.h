@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: pcl_base.h 1376 2011-06-19 03:01:22Z rusu $
  *
  */
 #ifndef PCL_PCL_BASE_H_

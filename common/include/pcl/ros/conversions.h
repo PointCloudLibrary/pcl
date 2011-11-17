@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: conversions.h 2319 2011-08-30 20:40:06Z jspricke $
  *
  */
 
@@ -274,7 +274,7 @@ namespace pcl
       for (size_t x = 0; x < cloud.width; x++)
       {
         uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        memcpy(pixel, &cloud.at(x, y).rgb, 3 * sizeof(uint8_t));
+        memcpy(pixel, &cloud (x, y).rgb, 3 * sizeof(uint8_t));
       }
     }
   }

@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: test_feature.cpp 2631 2011-10-05 00:27:56Z mdixon $
  *
  */
 /** \author Radu Bogdan Rusu */

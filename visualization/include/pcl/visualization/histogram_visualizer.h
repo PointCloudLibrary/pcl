@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: histogram_visualizer.h 2316 2011-08-30 19:45:01Z jspricke $
  *
  */
 #ifndef PCL_PCL_HISTOGRAM_VISUALIZER_H_

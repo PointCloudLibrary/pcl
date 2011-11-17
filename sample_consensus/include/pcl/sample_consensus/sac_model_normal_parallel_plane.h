@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: sac_model_normal_parallel_plane.h 1850 2011-07-20 21:45:01Z rusu $
  *
  */
 

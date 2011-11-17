@@ -31,7 +31,7 @@
   *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   *  POSSIBILITY OF SUCH DAMAGE.
   *
-  * $Id$
+  * $Id: concave_hull.hpp 2284 2011-08-29 17:51:31Z bouffa $
   *
   */
 

@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: point_representation.h 2319 2011-08-30 20:40:06Z jspricke $
  *
  */
 #ifndef PCL_POINT_REPRESENTATION_H_

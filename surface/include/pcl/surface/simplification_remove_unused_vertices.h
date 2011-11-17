@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: simplification_remove_unused_vertices.h 2050 2011-08-12 15:26:19Z bouffa $
  *
  */
 

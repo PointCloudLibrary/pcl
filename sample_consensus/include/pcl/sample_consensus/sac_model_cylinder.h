@@ -31,7 +31,7 @@
 *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *
-* $Id$
+* $Id: sac_model_cylinder.h 1711 2011-07-12 22:32:55Z rusu $
 *
 */
 

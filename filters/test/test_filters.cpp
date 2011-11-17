@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: test_filters.cpp 2445 2011-09-09 22:09:30Z mdixon $
  *
  */
 /** \author Radu Bogdan Rusu */

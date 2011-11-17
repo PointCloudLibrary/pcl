@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: test_io.cpp 2722 2011-10-11 23:45:11Z rusu $
  *
  */
 /** \author Radu Bogdan Rusu */
