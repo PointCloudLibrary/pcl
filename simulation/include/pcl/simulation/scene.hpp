@@ -23,6 +23,8 @@ public:
 
   void add(Model::Ptr model);
 
+  void addCompleteModel(std::vector<Model::Ptr> model);
+  
   typedef boost::shared_ptr<Scene> Ptr;
   typedef boost::shared_ptr<Scene> ConstPtr;
 private:

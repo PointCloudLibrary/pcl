@@ -3,6 +3,61 @@
 namespace pcl
 {
 
+//PolygonMeshModel::PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg) : mode_(mode)
+PolygonMeshModel::PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg ) : mode_(mode)
+{
+  pcl::PointCloud<pcl::PointXYZ> newcloud;  
+  pcl::fromROSMsg(plg->cloud, newcloud);
+  Eigen::Vector3f tmp;
+  for(size_t i=0; i< plg->polygons.size (); i++){ // each triangle/polygon
+    pcl::Vertices apoly_in = plg->polygons[i];
+    SinglePoly apoly;
+    apoly.nvertices_ =apoly_in.vertices.size ();
+    apoly.vertices_ = new float[3*apoly_in.vertices.size ()];
+    apoly.colors_ = new float[4*apoly_in.vertices.size ()]; 
+
+    for(size_t j=0; j< apoly_in.vertices.size (); j++){ // each point
+      uint32_t pt = apoly_in.vertices[j];
+      tmp = newcloud.points[pt].getVector3fMap();
+      
+      // x,y,z
+      apoly.vertices_[3*j + 0] = (float) tmp(0);
+      apoly.vertices_[3*j + 1] = (float) tmp(1);
+      apoly.vertices_[3*j + 2] = (float) tmp(2);  
+      
+      // Color: currently using red
+      apoly.colors_[4*j + 3] =(float) 0.0/255.0; // transparancy? 
+      apoly.colors_[4*j + 2] =(float) 0.0/255.0; // Blue
+      apoly.colors_[4*j + 1] =(float) 0.0/255.0; // Green
+      apoly.colors_[4*j + 0] =(float) 255.0/255.0;  // Red  
+    }
+    polygons.push_back(apoly);
+  }
+}
+
+PolygonMeshModel::~PolygonMeshModel(){
+  // TODO: memory management!
+  
+}
+
+void PolygonMeshModel::draw()
+{
+  // This might be a little quicker than drawing using individual polygons
+  // TODO: test by how much
+  glEnable(GL_DEPTH_TEST);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_COLOR_ARRAY);
+
+  for (size_t i=0; i < polygons.size(); i++){
+    glVertexPointer(3, GL_FLOAT, 0, polygons[i].vertices_);
+    glColorPointer(4, GL_FLOAT, 0, polygons[i].colors_);
+    glDrawArrays(mode_, 0, polygons[i].nvertices_);
+  }
+  glDisableClientState(GL_COLOR_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+  
 /* RWX support disabled due to libbot depencency
 RWXModel::RWXModel(const std::string & filename) :
     filename_(filename),
@@ -48,9 +103,9 @@ PointCloudModel::PointCloudModel(GLenum mode, pcl::PointCloud<pcl::PointXYZRGBA>
 
   for (size_t i = 0; i < pc->points.size (); ++i)
   {
+    /*
     unsigned char* rgba_ptr = (unsigned char*)&pc->points[i].rgba;
 
-    /*
     std::cout << "    " << pc->points[i].x
                 << " "    << pc->points[i].y
                 << " "    << pc->points[i].z
