@@ -43,7 +43,7 @@
 //#undef Success
 #include <Eigen/Dense>
 
-namespace pcl_nurbs
+namespace pcl
 {
 
   enum

@@ -41,7 +41,7 @@
 #include "pcl/surface/nurbs/nurbs_tools.h"
 #include "pcl/surface/nurbs/nurbs_data.h"
 
-namespace pcl_nurbs
+namespace pcl
 {
 
   class NurbsFitting

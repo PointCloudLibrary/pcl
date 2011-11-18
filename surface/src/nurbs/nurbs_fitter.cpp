@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer
+ *  Copyright (c) 2010, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Thomas Mörwald or Jonathan Balzer nor the names of its
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,55 +31,14 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * @author thomas.moerwald
+ * $Id: gp3.cpp 1370 2011-06-19 01:06:01Z jspricke $
  *
  */
 
-#ifndef _NURBS_DATA_H_
-#define _NURBS_DATA_H_
-
-#include <vector>
-#include <Eigen/Dense>
-#include "pcl/point_cloud.h"
+#include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
+#include "pcl/surface/nurbs/nurbs_fitter.h"
+#include "pcl/surface/impl/nurbs/nurbs_fitter.hpp"
 
-namespace pcl
-{
-  struct NurbsData
-  {
-    PointCloud<pcl::PointXYZ>::Ptr interior;
-    std::vector<double> interior_error;
-    std::vector<Eigen::Vector2d> interior_param;
-    std::vector<Eigen::Vector3d> interior_line_start;
-    std::vector<Eigen::Vector3d> interior_line_end;
-
-    PointCloud<pcl::PointXYZ>::Ptr boundary;
-    std::vector<double> boundary_error;
-    std::vector<Eigen::Vector2d> boundary_param;
-    std::vector<Eigen::Vector3d> boundary_line_start;
-    std::vector<Eigen::Vector3d> boundary_line_end;
-
-    inline void
-    clear_interior ()
-    {
-      interior->clear();
-      interior_error.clear ();
-      interior_param.clear ();
-      interior_line_start.clear ();
-      interior_line_end.clear ();
-    }
-
-    inline void
-    clear_boundary ()
-    {
-      boundary->clear ();
-      boundary_error.clear ();
-      boundary_param.clear ();
-      boundary_line_start.clear ();
-      boundary_line_end.clear ();
-    }
-  };
-
-} // namespace pcl_nurbs
-
-#endif
+// Instantiations of specific point types
+PCL_INSTANTIATE(NurbsFitter, (pcl::PointXYZ));

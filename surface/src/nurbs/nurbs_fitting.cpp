@@ -38,11 +38,13 @@
 #include <map>
 #include <stdexcept>
 #include "pcl/surface/nurbs/nurbs_fitting.h"
+#include "pcl/common/common.h"
 
-using namespace pcl_nurbs;
+using namespace pcl;
 using namespace Eigen;
 
-NurbsFitting::NurbsFitting (int order, NurbsData *nurbs_data_, ON_3dPoint ll, ON_3dPoint lr, ON_3dPoint ur, ON_3dPoint ul)
+NurbsFitting::NurbsFitting (int order, NurbsData *nurbs_data_, ON_3dPoint ll, ON_3dPoint lr, ON_3dPoint ur,
+                            ON_3dPoint ul)
 {
   if (order < 2)
     throw std::runtime_error ("[NurbsFitting::NurbsFitting] Error order to low (order<2).");
@@ -147,7 +149,14 @@ NurbsFitting::NurbsFitting (int order, NurbsData *nurbs_data_)
   double m_max[3];
   double m_mid[3];
 
-  nurbs_data_->boundary.GetBBox (m_min, m_max);
+  pcl::PointXYZ min, max;
+  pcl::getMinMax3D (*nurbs_data_->boundary, min, max);
+  m_min[0] = min.x;
+  m_min[1] = min.y, m_min[2] = min.z;
+  m_max[0] = max.x;
+  m_max[1] = max.y, m_max[2] = max.z;
+
+  //  nurbs_data_->boundary.GetBBox (m_min, m_max);
 
   m_mid[0] = m_min[0] + (m_max[0] - m_min[0]) * 0.5;
   m_mid[1] = m_min[1] + (m_max[1] - m_min[1]) * 0.5;
@@ -267,7 +276,7 @@ NurbsFitting::assemble ()
   NurbsTools ntools (nurbs_patch_);
 
   int ncp = nurbs_patch_->m_cv_count[0] * nurbs_patch_->m_cv_count[1];
-  int nInt = nurbs_data_->interior.PointCount ();
+  int nInt = nurbs_data_->interior->size ();
   int nCageRegInt = (nurbs_patch_->m_cv_count[0] - 2) * (nurbs_patch_->m_cv_count[1] - 2);
   int nCageRegBnd = 2 * (nurbs_patch_->m_cv_count[0] - 1) + 2 * (nurbs_patch_->m_cv_count[1] - 1);
 
@@ -289,16 +298,17 @@ NurbsFitting::assemble ()
   for (int p = 0; p < nInt; p++)
   {
     Vector3d pcp;
-    pcp (0) = nurbs_data_->interior[p].x;
-    pcp (1) = nurbs_data_->interior[p].y;
-    pcp (2) = nurbs_data_->interior[p].z;
+    pcp (0) = nurbs_data_->interior->at (p).x;
+    pcp (1) = nurbs_data_->interior->at (p).y;
+    pcp (2) = nurbs_data_->interior->at (p).z;
 
     // inverse mapping
     Vector2d params;
     double error;
     if (p < (int)nurbs_data_->interior_param.size ())
     {
-      params = ntools.inverseMapping (pcp, &nurbs_data_->interior_param[p], error, inv_map_iter_int_, inv_map_accuracy_int_);
+      params = ntools.inverseMapping (pcp, &nurbs_data_->interior_param[p], error, inv_map_iter_int_,
+                                      inv_map_accuracy_int_);
       nurbs_data_->interior_param[p] = params;
     }
     else
@@ -345,10 +355,10 @@ NurbsFitting::assemble ()
 void
 NurbsFitting::assemble (std::vector<double> &wBnd, std::vector<double> &wInt, double wCageRegBnd, double wCageRegInt)
 {
-  if (wBnd.size () > (unsigned)nurbs_data_->boundary.PointCount ())
+  if (wBnd.size () > (unsigned)nurbs_data_->boundary->size ())
     throw std::runtime_error ("[NurbsFitting::assemble] Size of weight vector greater than point size (boundary).");
 
-  if (wInt.size () > (unsigned)nurbs_data_->interior.PointCount ())
+  if (wInt.size () > (unsigned)nurbs_data_->interior->size ())
     throw std::runtime_error ("[NurbsFitting::assemble] Size of weight vector greater than point size (interior).");
 
   NurbsTools ntools (nurbs_patch_);
@@ -381,9 +391,9 @@ NurbsFitting::assemble (std::vector<double> &wBnd, std::vector<double> &wInt, do
   for (int p = 0; p < nBnd; p++)
   {
     Vector3d pcp;
-    pcp (0) = nurbs_data_->boundary[p].x;
-    pcp (1) = nurbs_data_->boundary[p].y;
-    pcp (2) = nurbs_data_->boundary[p].z;
+    pcp (0) = nurbs_data_->boundary->at (p).x;
+    pcp (1) = nurbs_data_->boundary->at (p).y;
+    pcp (2) = nurbs_data_->boundary->at (p).z;
 
     double error;
     Vector2d params = ntools.inverseMappingBoundary (pcp, error, inv_map_iter_bnd_, inv_map_accuracy_bnd_);
@@ -417,16 +427,17 @@ NurbsFitting::assemble (std::vector<double> &wBnd, std::vector<double> &wInt, do
   for (int p = 0; p < nInt; p++)
   {
     Vector3d pcp;
-    pcp (0) = nurbs_data_->interior[p].x;
-    pcp (1) = nurbs_data_->interior[p].y;
-    pcp (2) = nurbs_data_->interior[p].z;
+    pcp (0) = nurbs_data_->interior->at (p).x;
+    pcp (1) = nurbs_data_->interior->at (p).y;
+    pcp (2) = nurbs_data_->interior->at (p).z;
 
     // inverse mapping
     Vector2d params;
     double error;
     if (p < (int)nurbs_data_->interior_param.size ())
     {
-      params = ntools.inverseMapping (pcp, &nurbs_data_->interior_param[p], error, inv_map_iter_int_, inv_map_accuracy_int_);
+      params = ntools.inverseMapping (pcp, &nurbs_data_->interior_param[p], error, inv_map_iter_int_,
+                                      inv_map_accuracy_int_);
       nurbs_data_->interior_param[p] = params;
     }
     else
@@ -479,8 +490,8 @@ NurbsFitting::assemble (int resU, int resV, double wBnd, double wInt, double wCu
   clock_t time_start, time_end;
   time_start = clock ();
 
-  int nBnd = nurbs_data_->boundary.PointCount ();
-  int nInt = nurbs_data_->interior.PointCount ();
+  int nBnd = nurbs_data_->boundary->size ();
+  int nInt = nurbs_data_->interior->size ();
   int nCurInt = resU * resV;
   int nCurBnd = 2 * resU + 2 * resV;
   int nCageReg = (nurbs_patch_->m_cv_count[0] - 2) * (nurbs_patch_->m_cv_count[1] - 2);
@@ -517,9 +528,9 @@ NurbsFitting::assemble (int resU, int resV, double wBnd, double wInt, double wCu
   for (int p = 0; p < nBnd; p++)
   {
     Vector3d pcp;
-    pcp (0) = nurbs_data_->boundary[p].x;
-    pcp (1) = nurbs_data_->boundary[p].y;
-    pcp (2) = nurbs_data_->boundary[p].z;
+    pcp (0) = nurbs_data_->boundary->at (p).x;
+    pcp (1) = nurbs_data_->boundary->at (p).y;
+    pcp (2) = nurbs_data_->boundary->at (p).z;
 
     double error;
     Vector2d params = ntools.inverseMappingBoundary (pcp, error, inv_map_iter_bnd_, inv_map_accuracy_bnd_);
@@ -553,16 +564,17 @@ NurbsFitting::assemble (int resU, int resV, double wBnd, double wInt, double wCu
   for (int p = 0; p < nInt; p++)
   {
     Vector3d pcp;
-    pcp (0) = nurbs_data_->interior[p].x;
-    pcp (1) = nurbs_data_->interior[p].y;
-    pcp (2) = nurbs_data_->interior[p].z;
+    pcp (0) = nurbs_data_->interior->at (p).x;
+    pcp (1) = nurbs_data_->interior->at (p).y;
+    pcp (2) = nurbs_data_->interior->at (p).z;
 
     // inverse mapping
     Vector2d params;
     double error;
     if (p < (int)nurbs_data_->interior_param.size ())
     {
-      params = ntools.inverseMapping (pcp, &nurbs_data_->interior_param[p], error, inv_map_iter_int_, inv_map_accuracy_int_);
+      params = ntools.inverseMapping (pcp, &nurbs_data_->interior_param[p], error, inv_map_iter_int_,
+                                      inv_map_accuracy_int_);
       nurbs_data_->interior_param[p] = params;
     }
     else
@@ -615,14 +627,14 @@ NurbsFitting::assemble (int resU, int resV, double wBnd, double wInt, double wCu
     addCageCornerRegularisation (wCageRegBnd * 4.0, row);
   }
 
-  // corners of surface should lie on boundary
-  if (nCorner > 0)
-  {
-    addBoundaryPointConstraint (min_u_, min_v_, 1.0, row);
-    addBoundaryPointConstraint (min_u_, max_v_, 1.0, row);
-    addBoundaryPointConstraint (max_u_, min_v_, 1.0, row);
-    addBoundaryPointConstraint (max_u_, max_v_, 1.0, row);
-  }
+  //  // corners of surface should lie on boundary
+  //  if (nCorner > 0)
+  //  {
+  //    addBoundaryPointConstraint (min_u_, min_v_, 1.0, row);
+  //    addBoundaryPointConstraint (min_u_, max_v_, 1.0, row);
+  //    addBoundaryPointConstraint (max_u_, min_v_, 1.0, row);
+  //    addBoundaryPointConstraint (max_u_, max_v_, 1.0, row);
+  //  }
 
   time_end = clock ();
   if (!quiet_)
@@ -731,50 +743,50 @@ NurbsFitting::addPointConstraint (Vector2d params, Vector3d point, double weight
 
 }
 
-void
-NurbsFitting::addBoundaryPointConstraint (double paramU, double paramV, double weight, int &row)
-{
-  // edges on surface
-  NurbsTools ntools (nurbs_patch_);
-
-  double N0[nurbs_patch_->m_order[0] * nurbs_patch_->m_order[0]];
-  double N1[nurbs_patch_->m_order[1] * nurbs_patch_->m_order[1]];
-
-  double points[3];
-  int E, F;
-  ON_3dPoint closest;
-  int closest_idx;
-
-  nurbs_patch_->Evaluate (paramU, paramV, 0, 3, points);
-  closest.x = points[0];
-  closest.y = points[1];
-  closest.z = points[2];
-  nurbs_data_->boundary.GetClosestPoint (closest, &closest_idx);
-
-  E = ntools.E (paramU);
-  F = ntools.F (paramV);
-  ON_EvaluateNurbsBasis (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, paramU, N0);
-  ON_EvaluateNurbsBasis (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, paramV, N1);
-
-  f_eig_ (row, 0) = nurbs_data_->boundary[closest_idx].x * weight;
-  f_eig_ (row, 1) = nurbs_data_->boundary[closest_idx].y * weight;
-  f_eig_ (row, 2) = nurbs_data_->boundary[closest_idx].z * weight;
-
-  for (int i = 0; i < nurbs_patch_->m_order[0]; i++)
-  {
-
-    for (int j = 0; j < nurbs_patch_->m_order[1]; j++)
-    {
-
-      K_eig_ (row, ntools.A (E, F, i, j)) = N0[i] * N1[j] * weight;
-
-    } // j
-
-  } // i
-
-  row++;
-
-}
+//void
+//NurbsFitting::addBoundaryPointConstraint (double paramU, double paramV, double weight, int &row)
+//{
+//  // edges on surface
+//  NurbsTools ntools (nurbs_patch_);
+//
+//  double N0[nurbs_patch_->m_order[0] * nurbs_patch_->m_order[0]];
+//  double N1[nurbs_patch_->m_order[1] * nurbs_patch_->m_order[1]];
+//
+//  double points[3];
+//  int E, F;
+//  ON_3dPoint closest;
+//  int closest_idx;
+//
+//  nurbs_patch_->Evaluate (paramU, paramV, 0, 3, points);
+//  closest.x = points[0];
+//  closest.y = points[1];
+//  closest.z = points[2];
+//  nurbs_data_->boundary.GetClosestPoint (closest, &closest_idx);
+//
+//  E = ntools.E (paramU);
+//  F = ntools.F (paramV);
+//  ON_EvaluateNurbsBasis (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, paramU, N0);
+//  ON_EvaluateNurbsBasis (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, paramV, N1);
+//
+//  f_eig_ (row, 0) = nurbs_data_->boundary[closest_idx].x * weight;
+//  f_eig_ (row, 1) = nurbs_data_->boundary[closest_idx].y * weight;
+//  f_eig_ (row, 2) = nurbs_data_->boundary[closest_idx].z * weight;
+//
+//  for (int i = 0; i < nurbs_patch_->m_order[0]; i++)
+//  {
+//
+//    for (int j = 0; j < nurbs_patch_->m_order[1]; j++)
+//    {
+//
+//      K_eig_ (row, ntools.A (E, F, i, j)) = N0[i] * N1[j] * weight;
+//
+//    } // j
+//
+//  } // i
+//
+//  row++;
+//
+//}
 
 void
 NurbsFitting::addCageInteriorRegularisation (double weight, int &row)
@@ -1006,8 +1018,8 @@ NurbsFitting::addBoundaryRegularisation (int order, int resU, int resV, double w
       for (int j = 0; j < nurbs_patch_->m_order[1]; j++)
       {
 
-        K_eig_ (row, ntools.A (E, F, i, j)) = weight * (N0[order * nurbs_patch_->m_order[0] + i] * N1[j] + N0[i] * N1[order
-            * nurbs_patch_->m_order[1] + j]);
+        K_eig_ (row, ntools.A (E, F, i, j)) = weight * (N0[order * nurbs_patch_->m_order[0] + i] * N1[j] + N0[i]
+            * N1[order * nurbs_patch_->m_order[1] + j]);
 
       } // i
     } // j
@@ -1040,8 +1052,8 @@ NurbsFitting::addBoundaryRegularisation (int order, int resU, int resV, double w
       for (int j = 0; j < nurbs_patch_->m_order[1]; j++)
       {
 
-        K_eig_ (row, ntools.A (E, F, i, j)) = weight * (N0[order * nurbs_patch_->m_order[0] + i] * N1[j] + N0[i] * N1[order
-            * nurbs_patch_->m_order[1] + j]);
+        K_eig_ (row, ntools.A (E, F, i, j)) = weight * (N0[order * nurbs_patch_->m_order[0] + i] * N1[j] + N0[i]
+            * N1[order * nurbs_patch_->m_order[1] + j]);
 
       } // i
     } // j
@@ -1074,8 +1086,8 @@ NurbsFitting::addBoundaryRegularisation (int order, int resU, int resV, double w
       for (int j = 0; j < nurbs_patch_->m_order[1]; j++)
       {
 
-        K_eig_ (row, ntools.A (E, F, i, j)) = weight * (N0[order * nurbs_patch_->m_order[0] + i] * N1[j] + N0[i] * N1[order
-            * nurbs_patch_->m_order[1] + j]);
+        K_eig_ (row, ntools.A (E, F, i, j)) = weight * (N0[order * nurbs_patch_->m_order[0] + i] * N1[j] + N0[i]
+            * N1[order * nurbs_patch_->m_order[1] + j]);
 
       } // i
     } // j
@@ -1108,8 +1120,8 @@ NurbsFitting::addBoundaryRegularisation (int order, int resU, int resV, double w
       for (int j = 0; j < nurbs_patch_->m_order[1]; j++)
       {
 
-        K_eig_ (row, ntools.A (E, F, i, j)) = weight * (N0[order * nurbs_patch_->m_order[0] + i] * N1[j] + N0[i] * N1[order
-            * nurbs_patch_->m_order[1] + j]);
+        K_eig_ (row, ntools.A (E, F, i, j)) = weight * (N0[order * nurbs_patch_->m_order[0] + i] * N1[j] + N0[i]
+            * N1[order * nurbs_patch_->m_order[1] + j]);
 
       } // i
     } // j

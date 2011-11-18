@@ -35,19 +35,23 @@ if(build)
 
     #SET(BUILD_surface_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds" )
     #IF(BUILD_surface_nurbs)
-    
 		# TODO remove this ugly thing
     #set(OPENNURBS_PATH /home/tm/svn-repositories/v4r/trunk/external/opennurbs)
     #link_directories(${OPENNURBS_PATH})
     #include_directories(${OPENNURBS_PATH})
     #set(NURBS_INCLUDES
-    #		include/pcl/${SUBSYS_NAME}/nurbs/NurbsData.h
-    #		include/pcl/${SUBSYS_NAME}/nurbs/NurbsFitting.h
-    #	include/pcl/${SUBSYS_NAME}/nurbs/NurbsTools.h
+    #		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_data.h
+    #		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_fitting.h
+    #		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_tools.h
+    #		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_fitter.h
     #		)
     #set(NURBS_SOURCES
-    #		src/nurbs/NurbsFitting.cpp
-    #		src/nurbs/NurbsTools.cpp
+    #		src/nurbs/nurbs_fitting.cpp
+    #		src/nurbs/nurbs_tools.cpp
+    #		src/nurbs/nurbs_fitter.cpp
+    #		)
+    #set(NURBS_IMPL
+    #		include/pcl/${SUBSYS_NAME}/impl/nurbs/nurbs_fitter.hpp
     #		)
     #ENDIF(BUILD_surface_nurbs)
     
@@ -138,6 +142,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
         #include/pcl/${SUBSYS_NAME}/impl/poisson.hpp
         ${HULL_IMPLS}
+        ${NURBS_IMPLS}
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

@@ -39,7 +39,7 @@
 #include <stdexcept>
 #include "pcl/surface/nurbs/nurbs_tools.h"
 
-using namespace pcl_nurbs;
+using namespace pcl;
 using namespace Eigen;
 
 NurbsTools::NurbsTools (ON_NurbsSurface* surf)
