@@ -1,6 +1,10 @@
 #ifndef PCL_MODEL_HPP_
 #define PCL_MODEL_HPP_
 
+#if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__)
+# define WIN32_LEAN_AND_MEAN 1
+# include <windows.h>
+#endif
 #include <GL/gl.h>
 #include <GL/glu.h>
 
