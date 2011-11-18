@@ -89,7 +89,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
       random_access[i][j] = itr;
     }
   }
-  unsigned int start_index[normals_hg.size ()];
+  unsigned int* start_index = new unsigned int[normals_hg.size ()];
   start_index[0] = 0;
   unsigned int prev_index = start_index[0];
   for (unsigned int i = 1; i < normals_hg.size (); i++)
@@ -140,6 +140,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
       }
     }
   }
+  delete start_index;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -176,7 +177,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int 
   unsigned int k = 0;
   for (float i = min_cos; (i + bin_size) < (max_cos - bin_size); i += bin_size , k++)
   {
-    if (dcos >= i and dcos <= (i+bin_size))
+    if (dcos >= i && dcos <= (i+bin_size))
     {
       break;
     }
@@ -190,7 +191,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int 
   k = 0;
   for (float i = min_cos; (i + bin_size) < (max_cos - bin_size); i += bin_size , k++)
   {
-    if (dcos >= i and dcos <= (i+bin_size))
+    if (dcos >= i && dcos <= (i+bin_size))
     {
       break;
     }
@@ -204,7 +205,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int 
   k = 0;
   for (float i = min_cos; (i + bin_size) < (max_cos - bin_size); i += bin_size , k++)
   {
-    if (dcos >= i and dcos <= (i+bin_size))
+    if (dcos >= i && dcos <= (i+bin_size))
     {
       break;
     }
@@ -260,7 +261,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
       random_access[i][j] = itr;
     }
   }
-  unsigned int start_index[normals_hg.size ()];
+  unsigned int* start_index = new unsigned int[normals_hg.size ()];
   start_index[0] = 0;
   unsigned int prev_index = start_index[0];
   for (unsigned int i = 1; i < normals_hg.size (); i++)
@@ -312,6 +313,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
       }
     }
   }
+  delete start_index;
 }
 
 #define PCL_INSTANTIATE_NormalSpaceSampling(T,NT) template class PCL_EXPORTS pcl::NormalSpaceSampling<T,NT>;
