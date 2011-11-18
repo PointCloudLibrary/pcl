@@ -77,9 +77,7 @@ pcl::gpu::KinfuTracker::KinfuTracker(int rows, int cols) : rows_(rows), cols_(co
     init_Rcam_   = Eigen::Matrix3f::Identity();// * AngleAxisf(-30.f/180*3.1415926, Vector3f::UnitX());
     init_tcam_   = volume_size_ * 0.5f;    
     init_tcam_(2) -= volume_size_(2)/2 * 1.2f;
-
-    light_pose_ = volume_size_ * (-3.f);
-
+    
     const int iters[] = {10, 5, 4};
     std::copy(iters, iters + LEVELS, icp_iterations_);
 
@@ -340,8 +338,8 @@ Eigen::Affine3f pcl::gpu::KinfuTracker::getCameraPose(int time)
 }
 
 void pcl::gpu::KinfuTracker::getImage(View& view) const
-{
-    getImage(view, light_pose_);
+{    
+    getImage(view, volume_size_ * (-3.f));
 }
 
 void pcl::gpu::KinfuTracker::getImage(View& view_arg, const Eigen::Vector3f& light_source_pose) const

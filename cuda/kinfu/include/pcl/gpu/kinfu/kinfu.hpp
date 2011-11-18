@@ -131,7 +131,6 @@ namespace pcl
             float  distThres_;
             float angleThres_;
             float tranc_dist_;
-            Vector3f light_pose_;                                    
                         
             std::vector<DepthMap> depths_curr_;
             std::vector<MapArr> vmaps_g_curr_;
