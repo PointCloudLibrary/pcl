@@ -8,27 +8,16 @@ using namespace std;
 #include "pcl/common/common_headers.h"
 #include "pcl/visualization/range_image_visualizer.h"
 #include "pcl/visualization/pcl_visualizer.h"
-#include "pcl/features/range_image_border_extractor.h"
-#include "pcl/keypoints/narf_keypoint.h"
 #include "pcl/console/parse.h"
 
 std::string device_id = "#1";
 
-float angular_resolution = 0.4;
-float support_size = 0.2f;
-bool set_unseen_to_max_range = true;
+float angular_resolution = -1.0f;
 
-boost::mutex depth_image_mutex,
-             ir_image_mutex,
-             image_mutex;
-pcl::PointCloud<pcl::PointXYZ>::ConstPtr point_cloud_ptr;
+boost::mutex depth_image_mutex;
 boost::shared_ptr<openni_wrapper::DepthImage> depth_image_ptr;
-boost::shared_ptr<openni_wrapper::IRImage> ir_image_ptr;
-boost::shared_ptr<openni_wrapper::Image> image_ptr;
+bool received_new_depth_data = false;
 
-bool received_new_depth_data = false,
-     received_new_ir_image   = false,
-     received_new_image   = false;
 struct EventHelper
 {
   void
@@ -43,7 +32,6 @@ struct EventHelper
   }
 };
 
-
 void
 printUsage (const char* progName)
 {
@@ -52,8 +40,6 @@ printUsage (const char* progName)
        << "-------------------------------------------\n"
        << "-d <device_id>  set the device id (default \""<<device_id<<"\")\n"
        << "-r <float>      angular resolution in degrees (default "<<angular_resolution<<")\n"
-       << "-s <float>      support size for the interest points (diameter of the used sphere in meters)"
-       <<                 " (default "<<support_size<<")\n"
        << "-h              this help\n"
        << "\n\n";
 }
@@ -72,8 +58,6 @@ int main (int argc, char** argv)
     cout << "Using device id \""<<device_id<<"\".\n";
   if (pcl::console::parse (argc, argv, "-r", angular_resolution) >= 0)
     cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
-  if (pcl::console::parse (argc, argv, "-s", support_size) >= 0)
-    cout << "Setting support size to "<<angular_resolution<<"m.\n";
   angular_resolution = pcl::deg2rad (angular_resolution);
   
   pcl::visualization::RangeImageVisualizer range_image_widget ("Range Image");
@@ -82,6 +66,7 @@ int main (int argc, char** argv)
   viewer.addCoordinateSystem (1.0f);
   viewer.setBackgroundColor (1, 1, 1);
   
+  // Set the viewing pose so that the openni cloud is visible
   viewer.initCameraParameters ();
   viewer.camera_.pos[0] = 0.0;
   viewer.camera_.pos[1] = -0.3;
@@ -125,29 +110,19 @@ int main (int argc, char** argv)
   boost::shared_ptr<pcl::RangeImagePlanar> range_image_planar_ptr (new pcl::RangeImagePlanar);
   pcl::RangeImagePlanar& range_image_planar = *range_image_planar_ptr;
   
-  pcl::RangeImageBorderExtractor range_image_border_extractor;
-  pcl::NarfKeypoint narf_keypoint_detector;
-  narf_keypoint_detector.setRangeImageBorderExtractor (&range_image_border_extractor);
-  narf_keypoint_detector.getParameters ().support_size = support_size;
-  //narf_keypoint_detector.getParameloadters ().add_points_on_straight_edges = true;
-  //narf_keypoint_detector.getParameters ().distance_for_additional_points = 0.5;
-  
-  pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_cloud_ptr (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PointCloud<pcl::PointXYZ>& keypoints_cloud = *keypoints_cloud_ptr;
-  
   while (!viewer.wasStopped ())
   {
-    viewer.spinOnce ();
-    range_image_widget.spinOnce ();  // process GUI events
+    viewer.spinOnce ();  // process 3D Viewer events
+    range_image_widget.spinOnce ();  // process Image Viewer events
     pcl_sleep (0.01);
     
     bool got_new_range_image = false;
     if (received_new_depth_data && depth_image_mutex.try_lock ())
     {
       received_new_depth_data = false;
-      
-      //unsigned long time_stamp = depth_image_ptr->getTimeStamp ();
-      //int frame_id = depth_image_ptr->getFrameID ();
+
+      int frame_id = depth_image_ptr->getFrameID ();
+      cout << "Visualizing frame "<<frame_id<<"\n";
       const unsigned short* depth_map = depth_image_ptr->getDepthMetaData ().Data ();
       int width = depth_image_ptr->getWidth (), height = depth_image_ptr->getHeight ();
       float center_x = width/2, center_y = height/2;
@@ -163,42 +138,14 @@ int main (int argc, char** argv)
     if (!got_new_range_image)
       continue;
     
-    // --------------------------------
-    // -----Extract NARF keypoints-----
-    // --------------------------------
-    if (set_unseen_to_max_range)
-      range_image_planar.setUnseenToMaxRange ();
-    narf_keypoint_detector.setRangeImage (&range_image_planar);
-    pcl::PointCloud<int> keypoint_indices;
-    narf_keypoint_detector.compute (keypoint_indices);
-    std::cout << "Found "<<keypoint_indices.points.size ()<<" key points.\n";
-    
-    // ----------------------------------------------
-    // -----Show keypoints in range image widget-----
-    // ----------------------------------------------
+    // Show range image in the image widget
     range_image_widget.showRangeImage (range_image_planar, 0.5f, 10.0f);
-    //for (size_t i=0; i<keypoint_indices.points.size (); ++i)
-      //range_image_widget.markPoint (keypoint_indices.points[i]%range_image_planar.width,
-                                    //keypoint_indices.points[i]/range_image_planar.width,
-                                    //pcl::visualization::Vector3ub (0,255,0));
     
-    // -------------------------------------
-    // -----Show keypoints in 3D viewer-----
-    // -------------------------------------
+    // Show range image in the 3D viewer
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointWithRange> color_handler_cloud
       (range_image_planar_ptr, 0, 0, 0);
     if (!viewer.updatePointCloud<pcl::PointWithRange> (range_image_planar_ptr, color_handler_cloud, "range image"))
       viewer.addPointCloud<pcl::PointWithRange> (range_image_planar_ptr, color_handler_cloud, "range image");
-    
-    keypoints_cloud.points.resize (keypoint_indices.points.size ());
-    for (size_t i=0; i<keypoint_indices.points.size (); ++i)
-      keypoints_cloud.points[i].getVector3fMap () =
-        range_image_planar.points[keypoint_indices.points[i]].getVector3fMap ();
-    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_handler_keypoints
-      (keypoints_cloud_ptr, 0, 255, 0);
-    if (!viewer.updatePointCloud (keypoints_cloud_ptr, color_handler_keypoints, "keypoints"))
-      viewer.addPointCloud (keypoints_cloud_ptr, color_handler_keypoints, "keypoints");
-    viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, "keypoints");
   }
 
   interface->stop ();
