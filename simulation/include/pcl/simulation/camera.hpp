@@ -5,10 +5,12 @@
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
 
+#include <pcl/pcl_macros.h>
+
 namespace pcl
 {
 
-class Camera
+class PCL_EXPORTS Camera
 {
 public:
   Camera() : x_(0), y_(0), z_(0), roll_(0), pitch_(0), yaw_(0) {

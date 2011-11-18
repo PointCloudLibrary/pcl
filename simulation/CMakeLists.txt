@@ -40,7 +40,7 @@ if(build)
 	${VTK_IO_TARGET_LINK_LIBRARIES} 
 	${OPENNI_INCLUDES})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_common ${VTK_IO_TARGET_LINK_LIBRARIES})
+    target_link_libraries(${LIB_NAME} pcl_common pcl_io ${VTK_IO_TARGET_LINK_LIBRARIES})
 
     set(EXT_DEPS eigen3)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"

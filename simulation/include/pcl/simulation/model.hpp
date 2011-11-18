@@ -9,6 +9,7 @@
 #include <GL/glu.h>
 
 #include <boost/shared_ptr.hpp>
+#include <pcl/pcl_macros.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 //RWX support disabled due to libbot depencency
@@ -58,7 +59,7 @@ private:
 };
 */
 
-class PolygonMeshModel : public Model
+class PCL_EXPORTS PolygonMeshModel : public Model
 {
 public:
   PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg);
@@ -87,7 +88,7 @@ private:
 
 
 
-class PointCloudModel : public Model
+class PCL_EXPORTS PointCloudModel : public Model
 {
 public:
   PointCloudModel(GLenum mode, pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pc);

@@ -10,13 +10,15 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <pcl/win32_macros.h>
+
 #include "camera.hpp"
 #include "model.hpp"
 
 namespace pcl
 {
 
-class Scene
+class PCL_EXPORTS Scene
 {
 public:
   void draw();

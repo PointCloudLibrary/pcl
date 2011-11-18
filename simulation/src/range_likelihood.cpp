@@ -1,6 +1,7 @@
-#include <GL/gl.h>
-#include <GL/glu.h>
+//#include <GL/gl.h>
+//#include <GL/glu.h>
 
+#include <pcl/common/time.h>
 #include "pcl/simulation/range_likelihood.hpp"
 
 using namespace std;
@@ -78,7 +79,7 @@ void RangeLikelihood::compute_likelihoods(float* reference,
 {
   double start_time; 
   double stop_time;
-  if (1==0){ start_time= pcl::RangeLikelihoodTime::get_time();}
+  if (1==0){ start_time= pcl::getTime ();}
 
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClearDepth(1.0);
@@ -111,7 +112,7 @@ void RangeLikelihood::compute_likelihoods(float* reference,
 		 reference, depth_buffer_, scores, depth_field,do_depth_field);
 
   if (1==0){
-    stop_time = pcl::RangeLikelihoodTime::get_time();
+    stop_time = pcl::getTime ();
     double dt = stop_time-start_time;
     std::cout << "Time: " << 1000*dt << " fps: " << 1.0/dt << "\n\n\n" ;  
   }
