@@ -80,7 +80,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   cloud.data.clear ();
 
   // By default, assume that there are _no_ invalid (e.g., NaN) points
-  cloud.is_dense = true;
+  //cloud.is_dense = true;
 
   int nr_points = 0;
   std::ifstream fs;
@@ -253,11 +253,6 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
       if (line_type.substr (0, 6) == "HEIGHT")
       {
         sstream >> cloud.height;
-        /* Old, buggy behavior. is_dense does not represent "is_organized"
-        if (cloud.height == 1)
-          cloud.is_dense = false;
-        else
-          cloud.is_dense = true;*/
         continue;
       }
 
@@ -487,8 +482,6 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   /// ---[ Binary mode only
   /// We must re-open the file and read with mmap () for binary
   {
-    // Set the is_dense mode to false -- otherwise we would have to iterate over all points and check them 1 by 1
-    cloud.is_dense = false;
     // Open for reading
     int fd = pcl_open (file_name.c_str (), O_RDONLY);
     if (fd == -1)
@@ -618,6 +611,45 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   {
     PCL_ERROR ("[pcl::PCDReader::read] Number of points read (%d) is different than expected (%d)\n", idx, nr_points);
     return (-1);
+  }
+
+  // Get the X-Y-Z offset
+  int x_idx = -1, y_idx = -1, z_idx = -1;
+  for (size_t d = 0; d < cloud.fields.size (); ++d)                            
+  {
+    if (cloud.fields[d].name == "x")
+    {
+      x_idx = d;
+      continue;
+    }
+    if (cloud.fields[d].name == "y")
+    {
+      y_idx = d;
+      continue;
+    }
+    if (cloud.fields[d].name == "z")
+    {
+      z_idx = d;
+      continue;
+    }
+  }
+  // No sense in checking anything if the X-Y-Z fields are not found
+  if (x_idx == -1 || y_idx == -1 || z_idx == -1)
+    return (0);
+
+  cloud.is_dense = true;
+  // We want to make sure that is_dense is set accordingly on read, and must therefore check for invalid data here
+  float xval, yval, zval;
+  for (size_t i = 0; i < cloud.width * cloud.height; ++i)
+  {
+    memcpy (&xval, &cloud.data[cloud.fields[x_idx].offset], sizeof (float));
+    memcpy (&yval, &cloud.data[cloud.fields[y_idx].offset], sizeof (float));
+    memcpy (&zval, &cloud.data[cloud.fields[z_idx].offset], sizeof (float));
+    if (!pcl_isfinite (xval) || !pcl_isfinite (yval) || !pcl_isfinite (zval))
+    {
+      cloud.is_dense = false;
+      break;
+    }
   }
 
   return (0);

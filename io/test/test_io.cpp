@@ -394,7 +394,7 @@ TEST (PCL, IO)
   EXPECT_NE ((int)res, -1);                               // test for loadPCDFile ()
   EXPECT_EQ ((uint32_t)cloud_blob.width, cloud.width);    // test for loadPCDFile ()
   EXPECT_EQ ((uint32_t)cloud_blob.height, cloud.height);  // test for loadPCDFile ()
-  EXPECT_EQ ((bool)cloud_blob.is_dense, false);  // @todo: let is_dense be false for now when reading from binary files
+  EXPECT_EQ ((bool)cloud_blob.is_dense, cloud.is_dense);
   EXPECT_EQ ((size_t)cloud_blob.data.size () * 2,         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
 
@@ -429,7 +429,7 @@ TEST (PCL, IO)
   EXPECT_NE ((int)res, -1);                               // test for loadPCDFile ()
   EXPECT_EQ ((uint32_t)cloud_blob.width, cloud.width);    // test for loadPCDFile ()
   EXPECT_EQ ((uint32_t)cloud_blob.height, cloud.height);  // test for loadPCDFile ()
-  EXPECT_EQ ((bool)cloud_blob.is_dense, false);
+  EXPECT_EQ ((bool)cloud_blob.is_dense, cloud.is_dense);
   EXPECT_EQ ((size_t)cloud_blob.data.size () * 2,         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
 
@@ -501,7 +501,7 @@ TEST (PCL, IO)
   EXPECT_NE ((int)res, -1);                               // test for loadPCDFile ()
   EXPECT_EQ ((uint32_t)cloud_blob.width, cloud.width * cloud.height / 2);    // test for loadPCDFile ()
   EXPECT_EQ ((uint32_t)cloud_blob.height, 1);  // test for loadPCDFile ()
-  EXPECT_EQ ((bool)cloud_blob.is_dense, false);
+  EXPECT_EQ ((bool)cloud_blob.is_dense, cloud.is_dense);
   EXPECT_EQ ((size_t)cloud_blob.data.size () * 2,         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
 
@@ -594,7 +594,7 @@ TEST (PCL, PCDReaderWriter)
   reader.read ("test_pcl_io.pcd", cloud_blob);
   EXPECT_EQ ((uint32_t)cloud_blob.width, cloud.width);
   EXPECT_EQ ((uint32_t)cloud_blob.height, cloud.height);
-  EXPECT_EQ ((bool)cloud_blob.is_dense, false);   // @todo: let is_dense be false for now when reading from binary files
+  EXPECT_EQ ((bool)cloud_blob.is_dense, cloud.is_dense);
   //EXPECT_EQ ((size_t)cloud_blob.data.size () * 2,         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
   //           cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
   EXPECT_EQ ((size_t)cloud_blob.data.size (),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
@@ -854,7 +854,7 @@ TEST (PCL, LZF)
 
   EXPECT_EQ (cloud2.width, cloud.width);
   EXPECT_EQ (cloud2.height, cloud.height);
-  EXPECT_EQ (cloud2.is_dense, false);
+  EXPECT_EQ (cloud2.is_dense, cloud.is_dense);
   EXPECT_EQ (cloud2.points.size (), cloud.points.size ());
 
   for (size_t i = 0; i < cloud2.points.size (); ++i)
@@ -873,7 +873,7 @@ TEST (PCL, LZF)
 
   EXPECT_EQ (cloud2.width, blob.width);
   EXPECT_EQ (cloud2.height, blob.height);
-  EXPECT_EQ (cloud2.is_dense, false);
+  EXPECT_EQ (cloud2.is_dense, cloud.is_dense);
   EXPECT_EQ (cloud2.points.size (), cloud.points.size ());
 
   for (size_t i = 0; i < cloud2.points.size (); ++i)
@@ -919,7 +919,7 @@ TEST (PCL, LZFExtended)
 
   EXPECT_EQ (cloud2.width, blob.width);
   EXPECT_EQ (cloud2.height, blob.height);
-  EXPECT_EQ (cloud2.is_dense, false);
+  EXPECT_EQ (cloud2.is_dense, cloud.is_dense);
   EXPECT_EQ (cloud2.points.size (), cloud.points.size ());
 
   for (size_t i = 0; i < cloud2.points.size (); ++i)
