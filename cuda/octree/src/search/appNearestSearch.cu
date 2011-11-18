@@ -45,7 +45,6 @@
 #include "utils/copygen.hpp"
 #include "utils/boxutils.hpp"
 #include "utils/scan_block.hpp"
-#include "utils/emulation.hpp"
 
 #include "search/octree_iterator.hpp"
 
@@ -159,11 +158,7 @@ namespace pcl { namespace device { namespace appnearest_search
 
 		__device__ __forceinline__ void processNode(int node_idx)
 		{   
-#if __CUDA_ARCH__ >= 200
 			int mask = __ballot(node_idx != -1);            
-#else
-            int mask = Emulation::Ballot(node_idx != -1, storage.cta_buffer_int);            
-#endif
 
 			while(mask)
 			{                

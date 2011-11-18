@@ -43,7 +43,6 @@
 #include "utils/copygen.hpp"
 #include "utils/boxutils.hpp"
 #include "utils/scan_block.hpp"
-#include "utils/emulation.hpp"
 
 #include "search/octree_iterator.hpp"
 
@@ -221,11 +220,7 @@ namespace pcl
 
             __device__ __forceinline__ void processLeaf(int leaf)
             {   
-#if __CUDA_ARCH__ >= 200
                 int mask = __ballot(leaf != -1);            
-#else
-                int mask = Emulation::Ballot(leaf != -1, storage.cta_buffer);            
-#endif
 
                 while(mask)
                 {                

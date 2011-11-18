@@ -54,13 +54,7 @@ namespace pcl
                 {
                     LEVEL_BITS_NUM = 3,
                     ARITY = 1 << LEVEL_BITS_NUM,
-
-#if (__CUDA_ARCH__ >= 200)
-                    CTA_SIZE = 1024,
-#else
-                    CTA_SIZE = 512,
-#endif
-                    
+                    CTA_SIZE = 1024,                   
                     GRID_SIZE = 1,
                     PROCESS_STRIDE = CTA_SIZE * GRID_SIZE
                 };
@@ -154,7 +148,7 @@ namespace pcl
             };
 
             template<typename KernelPolicy>
-            __global__ void Kernel(TasksGlobal tasks_global, OctreeGlobal octree_global, const int *codes)
+            __global__ void __launch_bounds__(KernelPolicy::CTA_SIZE) Kernel(TasksGlobal tasks_global, OctreeGlobal octree_global, const int *codes)
             {   
                 typedef typename KernelPolicy::SmemStorage SmemStorage;
 

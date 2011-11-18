@@ -66,7 +66,7 @@ namespace pcl
 
             static void get_gpu_arch_compiled_for(int& bin, int& ptr);
 
-            OctreeImpl(int max_threads_x_arg) : max_threads_x(max_threads_x_arg) {};
+            OctreeImpl() {};
             ~OctreeImpl() {};
 
             void setCloud(const PointCloud& input_points);           
@@ -117,7 +117,6 @@ namespace pcl
 
                         
             void internalDownload(); 
-            int max_threads_x;
         private:
             template<typename BatchType>
             void radiusSearchEx(BatchType& batch, const Queries& queries, NeighborIndices& results);

@@ -61,7 +61,7 @@ pcl::gpu::Octree::Octree() : impl(0)
     cudaSafeCall( cudaGetDeviceProperties( &prop, device) );
 
     if (prop.major < 2)
-        pcl::gpu::error("This code requires devices with compute capabiliti >= 2.0", __FILE__, __LINE__);
+        pcl::gpu::error("This code requires devices with compute capability >= 2.0", __FILE__, __LINE__);
 
     int bin, ptx;
     OctreeImpl::get_gpu_arch_compiled_for(bin, ptx);
@@ -69,7 +69,7 @@ pcl::gpu::Octree::Octree() : impl(0)
     if (bin < 20 && ptx < 20)
         pcl::gpu::error("This must be compiled for compute capability >= 2.0", __FILE__, __LINE__);    
 
-    impl = new OctreeImpl(prop.major < 2 ? 512 : 1024);        
+    impl = new OctreeImpl();        
 }
 
 pcl::gpu::Octree::~Octree() { clear(); }

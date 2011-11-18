@@ -80,7 +80,7 @@ namespace pcl
                 int tid = straightenedThreadId();                                
                 value += tid;
 
-                for(It t = beg + tid; t < end; t += STRIDE, value += STRIDE)
+                for(OutIt t = beg + tid; t < end; t += STRIDE, value += STRIDE)
 					*t = value;                
             }
 

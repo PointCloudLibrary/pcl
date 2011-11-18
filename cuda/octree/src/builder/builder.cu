@@ -219,7 +219,7 @@ void pcl::device::OctreeImpl::build()
         //printFuncAttrib(initial::Kernel<KernelPolicy>);        
 
         //ScopeTimer timer("KernelInitial"); 
-        initial::Kernel<KernelPolicy><<<KernelPolicy::GRID_SIZE, max_threads_x>>>(tasksGlobal, octreeGlobal, codes.ptr(), points_num);
+        initial::Kernel<KernelPolicy><<<KernelPolicy::GRID_SIZE, KernelPolicy::CTA_SIZE>>>(tasksGlobal, octreeGlobal, codes.ptr(), points_num);
         cudaSafeCall( cudaGetLastError() );
         cudaSafeCall( cudaDeviceSynchronize() );
     }
@@ -229,7 +229,7 @@ void pcl::device::OctreeImpl::build()
         //printFuncAttrib(syncstep::Kernel<KernelPolicy>);
 
         //ScopeTimer timer("Kernelsync"); 
-        syncstep::Kernel<KernelPolicy><<<KernelPolicy::GRID_SIZE, max_threads_x>>>(tasksGlobal, octreeGlobal, codes);
+        syncstep::Kernel<KernelPolicy><<<KernelPolicy::GRID_SIZE, KernelPolicy::CTA_SIZE>>>(tasksGlobal, octreeGlobal, codes);
         cudaSafeCall( cudaGetLastError() );
         cudaSafeCall( cudaDeviceSynchronize() );
     }    
