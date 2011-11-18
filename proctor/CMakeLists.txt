@@ -25,8 +25,28 @@ endif ()
 if(build)
   include_directories(include/pcl/${SUBSYS_NAME})
   include_directories(include/pcl/)
+
+  set(incs
+      include/pcl/${SUBSYS_NAME}/config.h
+      include/pcl/${SUBSYS_NAME}/detector.h
+      include/pcl/${SUBSYS_NAME}/ia_ransac_sub.h
+      include/pcl/${SUBSYS_NAME}/proctor.h
+      include/pcl/${SUBSYS_NAME}/scanner.h
+      include/pcl/${SUBSYS_NAME}/timer.h
+      include/pcl/${SUBSYS_NAME}/vtkLidarPoint.h
+      include/pcl/${SUBSYS_NAME}/vtkLidarScanner.h
+      include/pcl/${SUBSYS_NAME}/vtkRay.h
+      )
+
+  set(impl_incs
+      include/pcl/${SUBSYS_NAME}/impl/ia_ransac_sub.hpp
+      include/pcl/${SUBSYS_NAME}/impl/timer.hpp
+      )
+
   PCL_ADD_EXECUTABLE(proctor 
                      ${SUBSYS_NAME} 
+                     ${incs}
+                     ${impl_incs}
                      src/main.cpp 
                      src/detector.cpp 
                      src/proctor.cpp 
