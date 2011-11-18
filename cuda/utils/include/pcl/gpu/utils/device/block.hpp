@@ -73,6 +73,17 @@ namespace pcl
 					*t = value;
 			}
 
+            template<typename OutIt, typename T>
+            static __device__ __forceinline__ void yota(OutIt beg, OutIt end, T value)
+            {
+                int STRIDE = stride();
+                int tid = straightenedThreadId();                                
+                value += tid;
+
+                for(It t = beg + tid; t < end; t += STRIDE, value += STRIDE)
+					*t = value;                
+            }
+
 			template<typename InIt, typename OutIt>
 			static __device__ __forceinline__ void copy(InIt beg, InIt end, OutIt out)
 			{
