@@ -47,6 +47,44 @@ namespace pcl
 namespace cuda
 {
 
+template <template <typename> class Storage, class T>
+void extractMask (const typename PointCloudAOS<Storage>::Ptr &input,
+                        T* mask, 
+                        typename PointCloudAOS<Storage>::Ptr &output)
+{
+  if (!output)
+    output.reset (new PointCloudAOS<Storage>);
+
+  output->points.resize (input->points.size ());
+
+  typename Storage<T>::type mask_device (input->points.size());
+  thrust::copy (mask, (T*)(&mask[input->points.size()]), mask_device.begin ());
+
+  typename PointCloudAOS<Storage>::iterator it = thrust::copy_if (input->points.begin (), input->points.end (), mask_device.begin (), output->points.begin (), isNotZero<T> ());
+  output->points.resize (it - output->points.begin ());
+
+  output->width = (unsigned int) output->points.size();
+  output->height = 1;
+  output->is_dense = false;
+}
+
+template <template <typename> class Storage, class DataT, class MaskT>
+void extractMask (const boost::shared_ptr<typename Storage<DataT>::type> &input,
+                        MaskT* mask, 
+                        boost::shared_ptr<typename Storage<DataT>::type> &output)
+{
+  if (!output)
+    output.reset (new typename Storage<DataT>::type);
+  output->resize (input->size ());
+
+  typename Storage<MaskT>::type mask_device (input->size());
+  thrust::copy (mask, (MaskT*)(&mask[input->size()]), mask_device.begin ());
+
+  typename Storage<DataT>::type::iterator it = 
+    thrust::copy_if (input->begin (), input->end (), mask_device.begin (), output->begin (), isNotZero<MaskT> ());
+  output->resize (it - output->begin ());
+}
+
 
 template <template <typename> class Storage>
 void extractIndices (const typename PointCloudAOS<Storage>::Ptr &input,
@@ -175,6 +213,19 @@ template PCL_EXPORTS void colorIndices<Device> (PointCloudAOS<Device>::Ptr &inpu
                                                           const OpenNIRGB& color);
 template PCL_EXPORTS void colorCloud<Host>  (PointCloudAOS<Host>::Ptr &input, Host<char4>::type &colors);
 template PCL_EXPORTS void colorCloud<Device>(PointCloudAOS<Device>::Ptr &input, Device<char4>::type &colors);
+
+template PCL_EXPORTS 
+void extractMask<Device,unsigned char> (const PointCloudAOS<Device>::Ptr &input, unsigned char* mask, PointCloudAOS<Device>::Ptr &output);
+template PCL_EXPORTS 
+void extractMask<Host,unsigned char> (const PointCloudAOS<Host>::Ptr &input, unsigned char* mask, PointCloudAOS<Host>::Ptr &output);
+template PCL_EXPORTS
+void extractMask<Device,float4,unsigned char> (const boost::shared_ptr<Device<float4>::type> &input,
+                        unsigned char* mask, 
+                        boost::shared_ptr<Device<float4>::type> &output);
+template PCL_EXPORTS
+void extractMask<Host,float4,unsigned char> (const boost::shared_ptr<Host<float4>::type> &input,
+                        unsigned char* mask, 
+                        boost::shared_ptr<Host<float4>::type> &output);
 
 } // namespace
 } // namespace

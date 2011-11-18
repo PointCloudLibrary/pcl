@@ -112,6 +112,14 @@ namespace cuda
                typename PointCloudAOS<Storage>::Ptr &output,
                bool downsample = false, int stride = 2, int smoothing_nr_iterations = 0, int smoothing_filter_size = 2);
 
+      template <template <typename> class Storage> void
+      compute (const uint16_t* depth_image,
+               const OpenNIRGB* rgb_image,
+               int width, int height,
+               float constant,
+               typename PointCloudAOS<Storage>::Ptr &output,
+               int smoothing_nr_iterations = 0, int smoothing_filter_size = 2);
+
       // compute using OpenNI images, Host output
 /*      void
       compute (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image,

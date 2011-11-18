@@ -50,6 +50,13 @@ namespace pcl
 {
 namespace cuda
 {
+  template <class T>
+  struct isNotZero
+  {
+      __inline__ __host__ __device__ bool 
+      operator()(T x) { return (x != 0); }
+  };
+
   struct isInlier
   {
       __inline__ __host__ __device__ bool 

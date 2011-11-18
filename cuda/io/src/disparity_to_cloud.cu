@@ -183,6 +183,72 @@ ComputeXYZRGB::operator () (const Tuple &t)
 
 //////////////////////////////////////////////////////////////////////////
 template <template <typename> class Storage> void
+DisparityToCloud::compute (const uint16_t* depth_image,
+                           const OpenNIRGB* rgb_image,
+                           int width, int height,
+                           float constant,
+                           typename PointCloudAOS<Storage>::Ptr &output,
+                           int smoothing_nr_iterations, int smoothing_filter_size) 
+{
+  using namespace thrust;
+  if (!output)
+    output.reset (new PointCloudAOS<Storage>);
+
+  int output_size = width * height;
+  float baseline = 0.075f;
+  float disp_thresh = 0.001f/8.0f;
+
+  output->height = height;
+  output->width  = width;
+
+  output->is_dense = false;
+  output->points.resize (output_size);
+
+  // copy to float
+  typename Storage<float>::type depth (output_size);
+  copy (depth_image, (const unsigned short*)(&depth_image[output_size]), depth.begin ());
+
+  typename Storage<OpenNIRGB>::type rgb (output_size);
+  copy (rgb_image, (const OpenNIRGB*)(&rgb_image[output_size]), rgb.begin());
+
+  if (smoothing_nr_iterations > 0)
+  {
+    typename Storage<float3>::type disp_helper_map (output_size);
+
+    transform (counting_iterator<int>(0),
+               counting_iterator<int>(0) + output_size,
+               disp_helper_map.begin (), 
+               DisparityHelperMap (raw_pointer_cast<float>(&depth[0]), width, height, smoothing_filter_size, baseline, 1.0f/constant, disp_thresh));
+
+    for (int iter = 0; iter < smoothing_nr_iterations; iter++)
+    {
+      transform (
+          make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))),
+          make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))) + output_size,
+          depth.begin (), DisparityClampedSmoothing (raw_pointer_cast<float>(&depth[0]), raw_pointer_cast<float3>(&disp_helper_map[0]), width, height, smoothing_filter_size));
+    }
+
+    // Send the data to the device
+    transform (
+        make_zip_iterator (make_tuple (depth.begin (), rgb.begin(), counting_iterator<int>(0))),
+        make_zip_iterator (make_tuple (depth.begin (), rgb.begin(), counting_iterator<int>(0))) + output_size,
+        output->points.begin (), 
+        ComputeXYZRGB (width, height, 
+                       width >> 1, height >> 1, constant));
+  }
+  else
+  {
+    transform (
+        make_zip_iterator (make_tuple (depth.begin(), rgb.begin(), counting_iterator<int>(0))),
+        make_zip_iterator (make_tuple (depth.begin(), rgb.begin(), counting_iterator<int>(0))) + output_size,
+        output->points.begin (), 
+        ComputeXYZRGB (width, height, 
+                       width >> 1, height >> 1, constant));
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+template <template <typename> class Storage> void
 DisparityToCloud::compute (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image,
                                      const boost::shared_ptr<openni_wrapper::Image>& rgb_image,
                                      float constant,
@@ -442,6 +508,20 @@ DisparityToCloud::compute<Device> (const boost::shared_ptr<openni_wrapper::Depth
                                      float constant,
                                      PointCloudAOS<Device>::Ptr &output,
                                      bool downsample, int stridem, int, int);
+template PCL_EXPORTS void
+DisparityToCloud::compute<Host> (const uint16_t* depth_image,
+                                 const OpenNIRGB* rgb_image,
+                                 int width, int height,
+                                 float constant,
+                                 typename PointCloudAOS<Host>::Ptr &output,
+                                 int smoothing_nr_iterations, int smoothing_filter_size);
+template PCL_EXPORTS void
+DisparityToCloud::compute<Device> (const uint16_t* depth_image,
+                                   const OpenNIRGB* rgb_image,
+                                   int width, int height,
+                                   float constant,
+                                   typename PointCloudAOS<Device>::Ptr &output,
+                                   int smoothing_nr_iterations, int smoothing_filter_size);
 } // namespace
 } // namespace
 

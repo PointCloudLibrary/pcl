@@ -44,6 +44,15 @@ namespace pcl
 {
 namespace cuda
 {
+  template <template <typename> class Storage, class DataT, class MaskT>
+  void extractMask (const boost::shared_ptr<typename Storage<DataT>::type> &input,
+                          MaskT* mask, 
+                          boost::shared_ptr<typename Storage<DataT>::type> &output);
+  template <template <typename> class Storage, class T>
+  void extractMask (const typename PointCloudAOS<Storage>::Ptr &input,
+                          T* mask, 
+                          typename PointCloudAOS<Storage>::Ptr &output);
+
   template <template <typename> class Storage>
   void extractIndices (const typename PointCloudAOS<Storage>::Ptr &input,
                        typename Storage<int>::type& indices, 
