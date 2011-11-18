@@ -144,33 +144,37 @@ main (int argc, char** argv)
   //---------------------
   // -----Show image-----
   // --------------------
-  pcl::visualization::RangeImageVisualizer range_image_widget ("Scene range image");
-  range_image_widget.setRangeImage (range_image);
-  range_image_widget.visualize_selected_point = true;
+  pcl::visualization::RangeImageVisualizer range_image_widget ("Scene range image"),
+                                           surface_patch_widget("Descriptor's surface patch"),
+                                           descriptor_widget("Descriptor"),
+                                           descriptor_distances_widget("descriptor distances");
+  range_image_widget.showRangeImage (range_image);
+  //range_image_widget.visualize_selected_point = true;
 
   //--------------------
   // -----Main loop-----
   //--------------------
-  while (range_image_widget.isShown ()) 
+  while (true) 
   {
-    pcl::visualization::ImageWidgetWX::spinOnce ();  // process GUI events
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    range_image_widget.spinOnce ();  // process GUI events
+    surface_patch_widget.spinOnce ();  // process GUI events
+    descriptor_widget.spinOnce ();  // process GUI events
+    pcl_sleep(0.01);
     
-    if (!range_image_widget.mouse_click_happened)
+    //if (!range_image_widget.mouse_click_happened)
       continue;
-    range_image_widget.mouse_click_happened = false;
-    float clicked_pixel_x_f = range_image_widget.last_clicked_point_x,
-          clicked_pixel_y_f = range_image_widget.last_clicked_point_y;
+    //range_image_widget.mouse_click_happened = false;
+    //float clicked_pixel_x_f = range_image_widget.last_clicked_point_x,
+          //clicked_pixel_y_f = range_image_widget.last_clicked_point_y;
     int clicked_pixel_x, clicked_pixel_y;
-    range_image.real2DToInt2D (clicked_pixel_x_f, clicked_pixel_y_f, clicked_pixel_x, clicked_pixel_y);
+    //range_image.real2DToInt2D (clicked_pixel_x_f, clicked_pixel_y_f, clicked_pixel_x, clicked_pixel_y);
     if (!range_image.isValid (clicked_pixel_x, clicked_pixel_y))
       continue;
       //Vector3f clicked_3d_point;
       //range_image.getPoint (clicked_pixel_x, clicked_pixel_y, clicked_3d_point);
     
-    static pcl::visualization::ImageWidgetWX surface_patch_widget, descriptor_widget;
-    surface_patch_widget.show (false);
-    descriptor_widget.show (false);
+    //surface_patch_widget.show (false);
+    //descriptor_widget.show (false);"
     
     int selected_index = clicked_pixel_y*range_image.width + clicked_pixel_x;
     pcl::Narf narf;
@@ -182,9 +186,8 @@ main (int argc, char** argv)
     
     int surface_patch_pixel_size = narf.getSurfacePatchPixelSize ();
     float surface_patch_world_size = narf.getSurfacePatchWorldSize ();
-    surface_patch_widget.setFloatImage (narf.getSurfacePatch (), surface_patch_pixel_size, surface_patch_pixel_size,
-                                       "Descriptor's surface patch", -0.5f*surface_patch_world_size,
-                                       0.5f*surface_patch_world_size, true);
+    surface_patch_widget.showFloatImage (narf.getSurfacePatch (), surface_patch_pixel_size, surface_patch_pixel_size,
+                                         -0.5f*surface_patch_world_size, 0.5f*surface_patch_world_size, true);
     float surface_patch_rotation = narf.getSurfacePatchRotation ();
     float patch_middle = 0.5f* (float (surface_patch_pixel_size-1));
     float angle_step_size = pcl::deg2rad (360.0f)/narf.getDescriptorSize ();
@@ -195,20 +198,19 @@ main (int argc, char** argv)
     for (int descriptor_value_idx=0; descriptor_value_idx<narf.getDescriptorSize (); ++descriptor_value_idx)
     {
       float angle = descriptor_value_idx*angle_step_size + surface_patch_rotation;
-      surface_patch_widget.markLine (patch_middle, patch_middle, patch_middle+line_length*sinf (angle),
-                                     patch_middle+line_length*-cosf (angle));
+      //surface_patch_widget.markLine (patch_middle, patch_middle, patch_middle+line_length*sinf (angle),
+                                     //patch_middle+line_length*-cosf (angle), pcl::visualization::Vector3ub (0,255,0));
     }
     std::vector<float> rotations, strengths;
     narf.getRotations (rotations, strengths);
     float radius = 0.5f*surface_patch_pixel_size;
     for (unsigned int i=0; i<rotations.size (); ++i)
     {
-      surface_patch_widget.markLine (radius-0.5, radius-0.5, radius-0.5f + 2.0f*radius*sinf (rotations[i]),
-                                                radius-0.5f - 2.0f*radius*cosf (rotations[i]), wxRED_PEN);
+      //surface_patch_widget.markLine (radius-0.5, radius-0.5, radius-0.5f + 2.0f*radius*sinf (rotations[i]),
+                                                //radius-0.5f - 2.0f*radius*cosf (rotations[i]), pcl::visualization::Vector3ub (255,0,0));
     }
     
-    descriptor_widget.setFloatImage (narf.getDescriptor (), narf.getDescriptorSize (), 1, "Descriptor",
-                                     -0.1f, 0.3f, true);
+    descriptor_widget.showFloatImage (narf.getDescriptor (), narf.getDescriptorSize (), 1, -0.1f, 0.3f, true);
 
     //===================================
     //=====Compare with all features=====
@@ -217,8 +219,7 @@ main (int argc, char** argv)
     if (narfs_of_selected_point.empty ())
       continue;
     
-    static pcl::visualization::ImageWidgetWX descriptor_distances_widget;
-    descriptor_distances_widget.show (false);
+    //descriptor_distances_widget.show (false);
     float* descriptor_distance_image = new float[range_image.points.size ()];
     for (unsigned int point_index=0; point_index<range_image.points.size (); ++point_index)
     {
@@ -236,8 +237,7 @@ main (int argc, char** argv)
         }
       }
     }
-    descriptor_distances_widget.setFloatImage (descriptor_distance_image, range_image.width,
-                                               range_image.height, "descriptor distances",
+    descriptor_distances_widget.showFloatImage (descriptor_distance_image, range_image.width, range_image.height,
                                                -std::numeric_limits<float>::infinity (), std::numeric_limits<float>::infinity (), true);
     delete[] descriptor_distance_image;
   }
