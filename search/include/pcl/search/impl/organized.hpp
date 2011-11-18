@@ -428,10 +428,10 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const pcl::PointCloud<Poin
   k_indices.clear ();
   k_distances.clear ();
 
-  if (cloud.isOrganized ())
+  if (!cloud.isOrganized ())
   {
     PCL_ERROR ("[pcl::%s::nearestKSearch] Input dataset is not organized!\n", getName ().c_str ());
-    return 0;
+    return (0);
   }
   int data_size = cloud.points.size ();
   if (index >= data_size)
@@ -442,9 +442,9 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const pcl::PointCloud<Poin
 
   int y = index / width, x = index - y * width;
 
-  const std::vector<PointT, Eigen::aligned_allocator<PointT> >& points = cloud.points;
-  const PointT& point = points[index];
-  if (!pcl_isfinite (point.x))
+  if (!pcl_isfinite (cloud.points[index].x) ||
+      !pcl_isfinite (cloud.points[index].y) ||
+      !pcl_isfinite (cloud.points[index].z))
     return (0);
 
   // Put point itself into results
@@ -470,14 +470,18 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const pcl::PointCloud<Poin
       if (x2 < 0 || x2 >= width || y2 < 0 || y2 >= height)
         continue;
       int neighbor_index = y2 * width + x2;
-      const PointT& neighbor = points[neighbor_index];
-      if (!pcl_isfinite(neighbor.x))
+
+      if (!pcl_isfinite (cloud.points[neighbor_index].x) ||
+          !pcl_isfinite (cloud.points[neighbor_index].y) ||
+          !pcl_isfinite (cloud.points[neighbor_index].z))
         continue;
-      float distance_squared = squaredEuclideanDistance (point, neighbor);
+
+      float distance_squared = squaredEuclideanDistance (cloud.points[index], cloud.points[neighbor_index]);
       if (distance_squared > max_dist_squared)
         continue;
-      //cout << "Radius "<<radius<<": found "<<neighbor_index << " with distance "<<sqrtf(distance_squared)<<"\n";
+
       still_in_range = true;
+      // The capacity should change here if the new neighborhood has more points than the previous one
       k_indices.push_back (neighbor_index);
       k_distances.push_back (distance_squared);
       if ((int)k_indices.size () >= max_nn)
@@ -521,12 +525,12 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (int index,
 
   int y = index / width, x = index - y * width;
 
-  const std::vector<PointT, Eigen::aligned_allocator<PointT> >& points = input_->points;
-  const PointT& point = points[index];
-  if (!pcl_isfinite (point.x))
+  if (!pcl_isfinite (input_->points[index].x) ||
+      !pcl_isfinite (input_->points[index].y) ||
+      !pcl_isfinite (input_->points[index].z))
     return (0);
 
-  // Put point itself into results
+  // Put point itself into results. The vector capacity should be unchanged.
   k_indices.push_back (index);
   k_distances.push_back (0.0f);
 
@@ -549,14 +553,18 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (int index,
       if (x2 < 0 || x2 >= width || y2 < 0 || y2 >= height)
         continue;
       int neighbor_index = y2 * width + x2;
-      const PointT& neighbor = points[neighbor_index];
-      if (!pcl_isfinite(neighbor.x))
+
+      if (!pcl_isfinite (input_->points[neighbor_index].x) ||
+          !pcl_isfinite (input_->points[neighbor_index].y) ||
+          !pcl_isfinite (input_->points[neighbor_index].z))
         continue;
-      float distance_squared = squaredEuclideanDistance (point, neighbor);
+
+      float distance_squared = squaredEuclideanDistance (input_->points[index], input_->points[neighbor_index]);
       if (distance_squared > max_dist_squared)
         continue;
-      //cout << "Radius "<<radius<<": found "<<neighbor_index << " with distance "<<sqrtf(distance_squared)<<"\n";
+
       still_in_range = true;
+      // The capacity should change here if the new neighborhood has more points than the previous one
       k_indices.push_back (neighbor_index);
       k_distances.push_back (distance_squared);
       if ((int)k_indices.size () >= max_nn)
