@@ -3,12 +3,17 @@
 namespace pcl
 {
 
-//PolygonMeshModel::PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg) : mode_(mode)
+// Create a PolygonMeshModel by converting the PolygonMesh to our format
+// TODO: support color. I had a look but it seems that PointClouds that
+//       get as far as here only have x,y,z fields but no rgb[a] fields
+//       this might be because the vtk file reader doesnt read any color
+//       info from what im providing as input - but i dont know much about
+//       these file types to be sure. mfallon
 PolygonMeshModel::PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg ) : mode_(mode)
 {
   pcl::PointCloud<pcl::PointXYZ> newcloud;  
   pcl::fromROSMsg(plg->cloud, newcloud);
-  Eigen::Vector3f tmp;
+  Eigen::Vector4f tmp;
   for(size_t i=0; i< plg->polygons.size (); i++){ // each triangle/polygon
     pcl::Vertices apoly_in = plg->polygons[i];
     SinglePoly apoly;
@@ -18,14 +23,14 @@ PolygonMeshModel::PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg ) : mo
 
     for(size_t j=0; j< apoly_in.vertices.size (); j++){ // each point
       uint32_t pt = apoly_in.vertices[j];
-      tmp = newcloud.points[pt].getVector3fMap();
+      tmp = newcloud.points[pt].getVector4fMap();
       
       // x,y,z
       apoly.vertices_[3*j + 0] = (float) tmp(0);
       apoly.vertices_[3*j + 1] = (float) tmp(1);
       apoly.vertices_[3*j + 2] = (float) tmp(2);  
       
-      // Color: currently using red
+      // Color: currently using red in place of true color
       apoly.colors_[4*j + 3] =(float) 0.0/255.0; // transparancy? 
       apoly.colors_[4*j + 2] =(float) 0.0/255.0; // Blue
       apoly.colors_[4*j + 1] =(float) 0.0/255.0; // Green
@@ -92,45 +97,21 @@ void RWXModel::draw()
 
 PointCloudModel::PointCloudModel(GLenum mode, pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pc) : mode_(mode)
 {
-//   std::cout << "Loaded "
-//       << pc->width * pc->height
-//       << " data points. "
-//       << std::endl;
-
   nvertices_ = pc->points.size();
   vertices_ = new float[3*nvertices_];
   colors_ = new float[4*nvertices_];
 
   for (size_t i = 0; i < pc->points.size (); ++i)
   {
-    /*
-    unsigned char* rgba_ptr = (unsigned char*)&pc->points[i].rgba;
-
-    std::cout << "    " << pc->points[i].x
-                << " "    << pc->points[i].y
-                << " "    << pc->points[i].z
-                << " "    << static_cast<int>(*rgba_ptr)
-                << " "    << static_cast<int>(*rgba_ptr+1)
-                << " "    << static_cast<int>(*rgba_ptr+2)
-                << " "    << static_cast<int>(*rgba_ptr+3)
-                << std::endl;
-    */
     vertices_[3*i + 0] = pc->points[i].x;
     vertices_[3*i + 1] = pc->points[i].y;
     vertices_[3*i + 2] = pc->points[i].z;
-
 
     int rgba_one = *reinterpret_cast<int*>(&pc->points[i].rgba);
     colors_[4*i + 3] =((float) ((rgba_one >> 24) & 0xff))/255.0;
     colors_[4*i + 2] =((float) ((rgba_one >> 16) & 0xff))/255.0;
     colors_[4*i + 1] =((float) ((rgba_one >> 8) & 0xff))/255.0;
-    colors_[4*i + 0] =((float) (rgba_one & 0xff) )/255.0;
-/*
-    colors_[4*i + 0] = static_cast<int>(*rgba_ptr)/255.0;
-    colors_[4*i + 1] = static_cast<int>(*rgba_ptr+1)/255.0;
-    colors_[4*i + 2] = static_cast<int>(*rgba_ptr+2)/255.0;
-    colors_[4*i + 3] = static_cast<int>(*rgba_ptr+3)/255.0;
-    */
+    colors_[4*i + 0] =((float) (rgba_one & 0xff) )/255.0;    
   }
 }
 
@@ -156,4 +137,3 @@ void PointCloudModel::draw()
   glDisableClientState(GL_VERTEX_ARRAY);
 }
 }
-

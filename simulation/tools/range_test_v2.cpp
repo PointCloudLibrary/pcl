@@ -41,8 +41,13 @@
 #include "pcl/simulation/scene.hpp"
 #include "pcl/simulation/range_likelihood.hpp"
 
+#include <pcl/console/print.h>
+#include <pcl/console/parse.h>
+#include <pcl/console/time.h>
+
 using namespace Eigen;
 using namespace pcl;
+using namespace pcl::console;
 
 using namespace std;
 
@@ -56,6 +61,21 @@ int window_width_;
 int window_height_;
 bool paused_;
 
+void
+printHelp (int argc, char **argv)
+{
+  print_error ("Syntax is: %s <options>\n", argv[0]);
+  print_info ("  where options are:\n");
+  print_info ("        -method X = type of input files [0=stack of pcd files, 1=obj,vtk,ply]\n");
+  print_info ("        -map    X = type of input files [path to map file(s)]\n");
+//  print_value ("%s", default_field_name.c_str ()); print_info (")\n");
+//  print_info ("                     -min X = lower limit of the filter (default: ");
+//  print_value ("%f", default_min); print_info (")\n");
+//  print_info ("                     -max X = upper limit of the filter (default: ");
+//  print_value ("%f", default_max); print_info (")\n");
+//  print_info ("                     -inside X = keep the points inside the [min, max] interval or not (default: ");
+//  print_value ("%d", default_inside); print_info (")\n");
+}
 
 void wait()
 {
@@ -376,19 +396,42 @@ void initialize(int argc, char** argv)
   // works for small files:
   camera_->set(-5.0, 0.0, 1.0, 0.0, 0.0, 0.0);
 
-  std::vector<std::string> files;
-  for (int i=1; i<argc; ++i) files.push_back(argv[i]);
+  int method;	
+  std::string map_file = "" ;
+  parse_argument (argc, argv, "-method", method);
+  parse_argument (argc, argv, "-map", map_file);
+  
+  if (method==0){
+    cout << method << " pcd file stack\n";
+    
+    cout << "TODO: parse the file path from something like:\n";
+    cout << "    /data/rgbd/freenect/2011_06_10_trolley/submaps_new/submap_0*\n";
+    printHelp (argc, argv);
+    exit(-1);
+    
+    // this used to work:
+    std::vector<std::string> files;
+    for (int i=1; i<argc; ++i) files.push_back(argv[i]);
+  }else if (method==1){
+    //map_file = "/home/mfallon/data/models/obj_samples/teapot.obj";
+    cout << "About to read: " << map_file.c_str() << endl;
+    load_PolygonMesh_model(map_file);
+  }else{
+    cout << "Method not correctly specfied\n";
+    printHelp (argc, argv);
+    exit(-1); 
+  }
+    
+  
+  //if (method ==0){ ///raw pcd 
 
   
   // TODO: choose between modes at arguments:
   //load_rwx_models(files); // disabled
   //load_PCDstack_model(files);
   
-  string polygon_file = "/home/mfallon/data/models/obj_samples/teapot.obj";
+  
   //string polygon_file = "/home/mfallon/data/pcd_data/example_data/example_output/mesh.vtk";
-  load_PolygonMesh_model(polygon_file);
-  
-  
   
   wait();
 
@@ -402,14 +445,31 @@ void initialize(int argc, char** argv)
   paused_ = false;
 }
 
+
+
 int main(int argc, char** argv)
 {
+  print_info ("Manually generate a simulated RGB-D point cloud using pcl::simulation. For more information, use: %s -h\n", argv[0]);
+
+  if (argc < 5)
+  {
+    printHelp (argc, argv);
+    return (-1);
+  }  
+
+
+  
+  
   camera_ = Camera::Ptr(new Camera());
   scene_ = Scene::Ptr(new Scene());
 
   range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_, 640));
 //  range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
   //range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_));
+
+  // Actually corresponds to default parameters:
+  range_likelihood_->set_CameraIntrinsicsParameters(640,480,576.09757860,
+	    576.09757860, 321.06398107,  242.97676897);
 
   window_width_ = range_likelihood_->width() * 2;
   window_height_ = range_likelihood_->height();

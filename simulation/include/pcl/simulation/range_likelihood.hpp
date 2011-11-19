@@ -49,6 +49,20 @@ public:
     std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses, std::vector<float> & scores,
   float *depth_field,bool do_depth_field );
 
+  /**
+   * Set the basic camera intrinsic parameters
+   */
+  void set_CameraIntrinsicsParameters(int camera_width_in,int camera_height_in,
+      float camera_fx_in,float camera_fy_in,
+      float camera_cx_in,float camera_cy_in){
+   camera_width_ = camera_width_in;
+   camera_height_ = camera_height_in;
+   camera_fx_ = camera_fx_in;
+   camera_fy_ = camera_fy_in;
+   camera_cx_ = camera_cx_in;
+   camera_cy_ = camera_cy_in;   
+  }
+  
   int rows() {return rows_;}
   int cols() {return cols_;}
   int row_height() {return row_height_;}
@@ -57,12 +71,12 @@ public:
   int height() {return height_;}
   const float* depth_buffer() const {return depth_buffer_;}
   const uint8_t* color_buffer() const {return color_buffer_;}
+  
 
   typedef boost::shared_ptr<RangeLikelihood> Ptr;
   typedef boost::shared_ptr<const RangeLikelihood> ConstPtr;
   
-  void wait()
-  {
+  void wait()  {
 	std::cout << "Press enter to continue";
 	getchar();
 	std::cout << "\n\n";
@@ -75,6 +89,7 @@ private:
   void compute_scores(int cols, int rows, 
       int col_width, int row_height, float* reference, float* depth_buffer, 
       std::vector<float> & scores, float* depth_field, bool do_depth_field);
+  
   void setup_projection_matrix();
 
   Scene::Ptr scene_;
@@ -86,7 +101,22 @@ private:
   int height_;
   float* depth_buffer_;
   uint8_t* color_buffer_;
+  
+  // Offset for visualization, for operation will be zero
   int x_offset_;
+  
+  // Camera Intrinsic Parameters
+  int camera_width_;
+  int camera_height_;
+  float camera_fx_;
+  float camera_fy_;  
+  float camera_cx_;
+  float camera_cy_;
+  
+  // min and max range of the rgbd sensor
+  // everything outside this doesnt appear in depth images
+  float z_near_;
+  float z_far_;  
 };
 
 template<class T>

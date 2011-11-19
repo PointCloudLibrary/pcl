@@ -12,12 +12,10 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-//RWX support disabled due to libbot depencency
-//#include <bot_vis/bot_vis.h>
-
-// Polygons:
 #include <pcl/io/vtk_lib_io.h>
 
+//RWX support disabled due to libbot depencency
+//#include <bot_vis/bot_vis.h>
 
 namespace pcl
 {
@@ -101,7 +99,6 @@ private:
   float* vertices_;
   float* colors_;
   
-
   /*
     GL_POINTS;
     GL_LINE_STRIP;
@@ -117,7 +114,5 @@ private:
   GLenum mode_;
   size_t nvertices_;
 };
-
 }
-
 #endif /* PCL_MODEL_HPP_ */

@@ -4,6 +4,8 @@
 #include <pcl/common/time.h>
 #include "pcl/simulation/range_likelihood.hpp"
 
+#define DO_TIMING 0
+
 using namespace std;
 
 // 301 values, 0.0 uniform  1.0 normal. properly truncated/normalized
@@ -31,6 +33,20 @@ RangeLikelihood::RangeLikelihood(int rows, int cols, int row_height, int col_wid
 
   depth_buffer_ = new float[width_*height_];
   color_buffer_ = new uint8_t[width_*height_*3];
+  
+  // Set Default Camera Intrinstic Parameters. techquad
+  // Correspond closely to those stated here:
+  // http://www.ros.org/wiki/kinect_calibration/technical
+  camera_width_ = 640;
+  camera_height_ = 480;
+  camera_fx_ = 576.09757860;
+  camera_fy_ = 576.09757860;  
+  camera_cx_ = 321.06398107;
+  camera_cy_ = 242.97676897;
+  
+  z_near_ = 0.7;
+  z_far_ = 20.0;
+  
 }
 
 RangeLikelihood::~RangeLikelihood()
@@ -43,23 +59,18 @@ void RangeLikelihood::setup_projection_matrix()
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
-  // Get camera projection matrix
-    // @todo This is for a Kinect - need to load this from config
-  float camera_width = 640;
-  float camera_height = 480;
-  float sx = camera_width / col_width_;
-  float sy = camera_height / row_height_;
+  // Prepare scaled simulated camera projection matrix
+  float sx = ((float) camera_width_) / col_width_;
+  float sy = ((float) camera_height_) / row_height_;
   float width = col_width_;
   float height = row_height_;
 
-  float fx = 576.09757860/sx;
-  float fy = 576.09757860/sy;
-  float cx = 321.06398107/sx;
-  float cy = 242.97676897/sy;
+  float fx = camera_fx_/sx;
+  float fy = camera_fy_/sy;
+  float cx = camera_cx_/sx;
+  float cy = camera_cy_/sy;
   float m[16];
-  float z_near = 0.7;
-  float z_far = 20.0;
-  float z_nf = (z_near-z_far);
+  float z_nf = (z_near_-z_far_);
 
   // Error found in derivation by hordur:
   // This is the original
@@ -68,7 +79,7 @@ void RangeLikelihood::setup_projection_matrix()
   // This is the fixed (yet to be verified)
   //m[0] = 2*fx/width;  m[4] = 0;            m[ 8] = 1.0-(2*cx/width);      m[12] = 0;
   //m[1] = 0;           m[5] = 2*fy/height;  m[ 9] = 1.0-(2*cy/height);     m[13] = 0;
-  m[2] = 0;           m[6] = 0;            m[10] = (z_far+z_near)/z_nf;   m[14] = 2.0*z_near*z_far/z_nf;
+  m[2] = 0;           m[6] = 0;            m[10] = (z_far_+z_near_)/z_nf;   m[14] = 2.0*z_near_*z_far_/z_nf;
   m[3] = 0;           m[7] = 0;            m[11] = -1;                    m[15] = 0;
   glMultMatrixf(m);
 }
@@ -79,7 +90,7 @@ void RangeLikelihood::compute_likelihoods(float* reference,
 {
   double start_time; 
   double stop_time;
-  if (1==0){ start_time= pcl::getTime ();}
+  if (DO_TIMING){ start_time= getTime();}
 
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClearDepth(1.0);
@@ -111,8 +122,8 @@ void RangeLikelihood::compute_likelihoods(float* reference,
   compute_scores(cols_, rows_, col_width_, row_height_, 
 		 reference, depth_buffer_, scores, depth_field,do_depth_field);
 
-  if (1==0){
-    stop_time = pcl::getTime ();
+  if (DO_TIMING){
+    stop_time = getTime();
     double dt = stop_time-start_time;
     std::cout << "Time: " << 1000*dt << " fps: " << 1.0/dt << "\n\n\n" ;  
   }
@@ -167,7 +178,7 @@ void RangeLikelihood::compute_scores(int cols, int rows,
   float* depth = depth_buffer;
   
   
-  // 0 original
+  // 0 original scoring method
   // 1 1st working cost function
   // 2 1st working likelihood function
   int which_cost_function =2;
