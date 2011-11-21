@@ -123,7 +123,7 @@ namespace pcl
         }
 
         /** \brief Getter for the first scan of a loop. */
-        inline int
+        inline typename boost::graph_traits<LoopGraph>::vertex_descriptor
         getLoopStart ()
         {
           return (loop_start_);
@@ -133,13 +133,13 @@ namespace pcl
          * \param[in] loop_start the scan that starts the loop
          */
         inline void
-        setLoopStart (int loop_start)
+        setLoopStart (typename boost::graph_traits<LoopGraph>::vertex_descriptor loop_start)
         {
           loop_start_ = loop_start;
         }
 
         /** \brief Getter for the last scan of a loop. */
-        inline int
+        inline typename boost::graph_traits<LoopGraph>::vertex_descriptor
         getLoopEnd ()
         {
           return (loop_end_);
@@ -149,7 +149,7 @@ namespace pcl
          * \param[in] loop_end the scan that ends the loop
          */
         inline void
-        setLoopEnd (int loop_end)
+        setLoopEnd (typename boost::graph_traits<LoopGraph>::vertex_descriptor loop_end)
         {
           loop_end_ = loop_end;
         }
@@ -223,12 +223,10 @@ namespace pcl
         LoopGraphPtr loop_graph_;
 
         /** \brief The first scan of the loop. */
-        //PointCloudConstPtr loop_start_; //TODO
-        int loop_start_;
+        typename boost::graph_traits<LoopGraph>::vertex_descriptor loop_start_;
 
         /** \brief The last scan of the loop. */
-        //PointCloudConstPtr loop_end_; //TODO
-        int loop_end_;
+        typename boost::graph_traits<LoopGraph>::vertex_descriptor loop_end_;
 
         /** \brief The registration object used to close the loop. */
         RegistrationPtr reg_;

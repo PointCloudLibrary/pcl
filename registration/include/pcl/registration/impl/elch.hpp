@@ -180,8 +180,6 @@ pcl::registration::ELCH<PointT>::initCompute ()
   //compute transformation if it's not given
   if (compute_loop_)
   {
-    //std::cout << "loop start " << loop_start_ << " " << (*loop_graph_)[loop_start_].name << std::endl;
-    //std::cout << "loop end " << loop_end_ << " " << (*loop_graph_)[loop_end_].name << std::endl;
     //TODO use real pose instead of centroid
     Eigen::Vector4f pose_start;
     pcl::compute3DCentroid (*(*loop_graph_)[loop_start_].cloud, pose_start);
@@ -193,7 +191,6 @@ pcl::registration::ELCH<PointT>::initCompute ()
     Eigen::Vector4f diff = pose_start - pose_end;
     Eigen::Translation3f translation (diff.head (3));
     Eigen::Affine3f trans = translation * Eigen::Quaternionf::Identity ();
-    //TODO use features
     pcl::transformPointCloud (*(*loop_graph_)[loop_end_].cloud, *tmp, trans);
 
     reg_->setInputTarget ((*loop_graph_)[loop_start_].cloud);
@@ -249,21 +246,20 @@ pcl::registration::ELCH<PointT>::compute ()
   for (size_t i = 0; i < num_vertices (*loop_graph_); i++)
   {
     Eigen::Vector3f t2;
-    t2[0] = loop_transform_ (3, 0) * weights[0][i]; //TODO
+    t2[0] = loop_transform_ (3, 0) * weights[0][i];
     t2[1] = loop_transform_ (3, 1) * weights[1][i];
     t2[2] = loop_transform_ (3, 2) * weights[2][i];
 
-    Eigen::Affine3f bl (loop_transform_); //TODO
+    Eigen::Affine3f bl (loop_transform_);
     Eigen::Quaternionf q (bl.rotation ());
     Eigen::Quaternionf q2;
-    q2 = Eigen::Quaternionf::Identity ().slerp (weights[3][i], q); //TODO
+    q2 = Eigen::Quaternionf::Identity ().slerp (weights[3][i], q);
 
     //TODO use rotation from branch start
     Eigen::Translation3f t3 (t2);
     Eigen::Affine3f a (t3 * q2);
     a = aend * a * aendI;
 
-    //std::cout << "transform cloud " << i << " to:" << std::endl << a.matrix () << std::endl;
     pcl::transformPointCloud (*(*loop_graph_)[i].cloud, *(*loop_graph_)[i].cloud, a);
   }
 
