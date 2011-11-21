@@ -40,6 +40,7 @@
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_H_
 
 #include <pcl/registration/transformation_estimation.h>
+#include <pcl/registration/transformation_estimation_lm.h>
 #include <pcl/registration/warp_point_rigid.h>
 
 namespace pcl
