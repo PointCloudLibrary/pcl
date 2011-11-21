@@ -68,6 +68,8 @@
 
 using namespace pcl::cuda;
 
+#undef interface
+
 class MultiRansac
 {
   public:
