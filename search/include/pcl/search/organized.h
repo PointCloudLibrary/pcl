@@ -222,7 +222,7 @@ namespace pcl
                         double radius, 
                         std::vector<int>& k_indices,
                         std::vector<float>& k_distances, 
-                        int max_nn = INT_MAX)
+                        int max_nn = std::numeric_limits<int>::max())
         {
           PCL_ERROR("[pcl::search::OrganizedNeighbor::radiusSearch] This function is not supported by OrganizedNeighbor\n");
           return (0);
@@ -243,7 +243,7 @@ namespace pcl
                         double radius,
                         std::vector<int> &k_indices, 
                         std::vector<float> &k_sqr_distances,
-                        int max_nn = INT_MAX);
+                        int max_nn = std::numeric_limits<int>::max());
 
         /** \brief search for all neighbors of query point that are within a given radius.
          * \param index index representing the query point in the dataset given by \a setInputCloud.
@@ -259,7 +259,7 @@ namespace pcl
                         const double radius, 
                         std::vector<int> &k_indices,
                         std::vector<float> &k_sqr_distances, 
-                        int max_nn = INT_MAX) const;
+                        int max_nn = std::numeric_limits<int>::max()) const;
 
         /** \brief search for all neighbors of query point that are within a given radius.
          * \param p_q the given query point
@@ -274,7 +274,7 @@ namespace pcl
                         const double radius, 
                         std::vector<int> &k_indices,
                         std::vector<float> &k_sqr_distances, 
-                        int max_nn = INT_MAX) const;
+                        int max_nn = std::numeric_limits<int>::max()) const;
 
         /** \brief Estimate the focal length parameter that was used during point cloud generation 
           * \param cloud the input point cloud dataset 

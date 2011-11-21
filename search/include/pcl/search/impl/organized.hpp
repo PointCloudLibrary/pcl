@@ -57,11 +57,11 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (  const PointCloudConstPtr
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::radiusSearch (  int index, 
-                                                        const double radius,
-                                                        std::vector<int> &k_indices,
-                                                        std::vector<float> &k_sqr_distances, 
-                                                        int max_nn) const
+pcl::search::OrganizedNeighbor<PointT>::radiusSearch (  int                 index, 
+                                                        const double        radius,
+                                                        std::vector<int>    &k_indices,
+                                                        std::vector<float>  &k_sqr_distances, 
+                                                        int                 max_nn) const
 {
   const PointT searchPoint = getPointByIndex (index);
   return (radiusSearch (searchPoint, radius, k_indices, k_sqr_distances, max_nn));
@@ -69,11 +69,11 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (  int index,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::radiusSearch (  const PointT &p_q, 
-                                                        const double radius,
-                                                        std::vector<int> &k_indices,
-                                                        std::vector<float> &k_sqr_distances, 
-                                                        int max_nn) const
+pcl::search::OrganizedNeighbor<PointT>::radiusSearch (  const               PointT &p_q, 
+                                                        const double        radius,
+                                                        std::vector<int>    &k_indices,
+                                                        std::vector<float>  &k_sqr_distances, 
+                                                        int                 max_nn) const
 {
   if (input_->height == 1 || input_->width == 1)
   {
