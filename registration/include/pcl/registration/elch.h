@@ -133,7 +133,7 @@ namespace pcl
          * \param[in] loop_start the scan that starts the loop
          */
         inline void
-        setLoopStart (typename boost::graph_traits<LoopGraph>::vertex_descriptor loop_start)
+        setLoopStart (const typename boost::graph_traits<LoopGraph>::vertex_descriptor &loop_start)
         {
           loop_start_ = loop_start;
         }
@@ -149,7 +149,7 @@ namespace pcl
          * \param[in] loop_end the scan that ends the loop
          */
         inline void
-        setLoopEnd (typename boost::graph_traits<LoopGraph>::vertex_descriptor loop_end)
+        setLoopEnd (const typename boost::graph_traits<LoopGraph>::vertex_descriptor &loop_end)
         {
           loop_end_ = loop_end;
         }
@@ -181,7 +181,7 @@ namespace pcl
          * \param[in] loop_transform the transformation between the first and the last scan
          */
         inline void
-        setLoopTransform (Eigen::Matrix4f loop_transform)
+        setLoopTransform (const Eigen::Matrix4f &loop_transform)
         {
           loop_transform_ = loop_transform;
           compute_loop_ = false;
