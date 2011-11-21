@@ -64,36 +64,41 @@ namespace pcl
       * You can switch between the two methods using \ref setPrecision (true/false). By default the class uses
       * the faster approximate method.
       *
-      * \author Radu B. Rusu, Julius Kammerl, Suat Gedikli
+      * \author Radu B. Rusu, Julius Kammerl, Suat Gedikli, Koen Buys
       */
     template<typename PointT>
     class OrganizedNeighbor : public pcl::search::Search<PointT>
     {
-      // public typedefs
-      typedef pcl::PointCloud<PointT> PointCloud;
-      typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-      typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
-      typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
 
       public:
+        // public typedefs
+        typedef pcl::PointCloud<PointT> PointCloud;
+        typedef boost::shared_ptr<PointCloud> PointCloudPtr;
+
+        typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+        typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
+
+        typedef boost::shared_ptr<pcl::search::OrganizedNeighbor<PointT> > Ptr;
+        typedef boost::shared_ptr<const pcl::search::OrganizedNeighbor<PointT> > ConstPtr;
 
         /** \brief OrganizedNeighbor constructor. */
         OrganizedNeighbor ()
-          //radiusLookupTableWidth_ (-1), radiusLookupTableHeight_ (-1), precision_ (0)
         {
           max_distance_ = std::numeric_limits<double>::max ();
-//          oneOverFocalLength_ = 1.0f;
+          oneOverFocalLength_ = 0.0f; //Indicate if it's not initialised
           horizontal_window_ = 0;
           vertical_window_ = 0;
+          radiusLookupTableWidth_ =-1; 
+          radiusLookupTableHeight_ =-1; 
+          exactFocalLength_ = 0;      // we haven't estimated it yet or we haven't set it 
+          precision_ = 0;
         }
 
         /** \brief Empty deconstructor. */
-        ~OrganizedNeighbor ()
-        {
-        }
+        ~OrganizedNeighbor () {}
 
-        /** \brief Provide a pointer to the input data set.
-         *  \param cloud the const boost shared pointer to a PointCloud message
+        /** \brief Provide a pointer to the input data set, if user has focal length he must set it before calling this
+         *  \param[in] cloud the const boost shared pointer to a PointCloud message
          */
         inline void
         setInputCloud (const PointCloudConstPtr &cloud)
@@ -101,106 +106,84 @@ namespace pcl
           if (input_ != cloud)
             input_ = cloud;
 
-//          if (precision_ == 1)
-//          {
-//            estimateFocalLengthFromInputCloud (*cloud);
-//            generateRadiusLookupTable (*cloud.width, *cloud.height);
-//          }
+          if (precision_ == 1)
+          {
+            if(!exactFocalLength_)
+            {
+              estimateFocalLengthFromInputCloud (*cloud);
+              generateRadiusLookupTable (cloud->width, cloud->height);
+              exactFocalLength_ = 1;
+            }
+          }
+          else
+          {
+            oneOverFocalLength_ = 1.0f;
+          }
         }
 
-        /** \brief Get a pointer to the input dataset as passed by the user. */
-        PointCloudConstPtr
-        getInputCloud ()
+        /** \brief Provide a pointer to the input data set, if user has focal length he must set it before calling this
+         *  \param[in] cloud the const boost shared pointer to a PointCloud message
+         *  \param[in] indices the const boost shared pointer to PointIndices
+         */
+        inline void
+        setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr &indices)
         {
-          return input_;
+          if (input_ != cloud)
+            input_ = cloud;
+
+          indices_ = indices;
+
+          if (precision_ == 1)
+          {
+            if(!exactFocalLength_)
+            {
+              estimateFocalLengthFromInputCloud (*cloud);
+              generateRadiusLookupTable (cloud->width, cloud->height);
+              exactFocalLength_ = 1;
+            }
+          }
+          else
+          {
+            oneOverFocalLength_ = 1.0f;
+          }
         }
-//
-//        /** \brief Set which of the two available nearest neighbor estimation methods should be used 
-//          * (approximate = 0 or exact = 1).
-//          * \param[in] precision set to 0 for the faster, approximate nearest neighbor search method, 1 otherwise
-//          */
-//        inline void
-//        setPrecision (int precision)
-//        {
-//          precision_ = precision;
-//        }
-//
-//        /** \brief Obtain which of the nearest neighbor method is being used. */
-//        inline int
-//        getPrecision ()
-//        {
-//          return (precision_);
-//        }
-//
-//        /** \brief search for all the nearest neighbors of the query point in a given radius.
-//         * \param cloud the point cloud data
-//         * \param index the index in \a cloud representing the query point
-//         * \param radius the radius of the sphere bounding all of p_q's neighbors
-//         * \param k_indices the resultant indices of the neighboring points
-//         * \param k_distances the resultant squared distances to the neighboring points
-//         * \param max_nn if given, bounds the maximum returned neighbors to this value
-//         * \return number of neighbors found in radius
-//         */
-//        inline int
-//        radiusSearch (const PointCloud& cloud, int index, double radius, std::vector<int>& k_indices,
-//                      std::vector<float>& k_distances, int max_nn = INT_MAX)
-//        {
-//          PCL_ERROR("[pcl::search::OrganizedNeighbor::radiusSearch] This function is not supported by OrganizedNeighbor\n");
-//          return (0);
-//        }
-//
-//        /** \brief search for all neighbors of query point that are within a given radius.
-//         * \param cloud the point cloud data
-//         * \param index the index in \a cloud representing the query point
-//         * \param radius the radius of the sphere bounding all of p_q's neighbors
-//         * \param k_indices the resultant indices of the neighboring points
-//         * \param k_sqr_distances the resultant squared distances to the neighboring points
-//         * \param max_nn if given, bounds the maximum returned neighbors to this value
-//         * \return number of neighbors found in radius
-//         */
-//        int
-//        radiusSearch (const PointCloudConstPtr &cloud, int index, double radius,
-//                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
-//                      int max_nn = INT_MAX);
-//
-//        /** \brief search for all neighbors of query point that are within a given radius.
-//         * \param index index representing the query point in the dataset given by \a setInputCloud.
-//         *        If indices were given in setInputCloud, index will be the position in the indices vector
-//         * \param radius radius of the sphere bounding all of p_q's neighbors
-//         * \param k_indices the resultant indices of the neighboring points
-//         * \param k_sqr_distances the resultant squared distances to the neighboring points
-//         * \param max_nn if given, bounds the maximum returned neighbors to this value
-//         * \return number of neighbors found in radius
-//         */
-//        int
-//        radiusSearch (int index, const double radius, std::vector<int> &k_indices,
-//                      std::vector<float> &k_sqr_distances, int max_nn = INT_MAX) const;
-//
-//        /** \brief search for all neighbors of query point that are within a given radius.
-//         * \param p_q the given query point
-//         * \param radius the radius of the sphere bounding all of p_q's neighbors
-//         * \param k_indices the resultant indices of the neighboring points
-//         * \param k_sqr_distances the resultant squared distances to the neighboring points
-//         * \param max_nn if given, bounds the maximum returned neighbors to this value
-//         * \return number of neighbors found in radius
-//         */
-//        int
-//        radiusSearch (const PointT &p_q, const double radius, std::vector<int> &k_indices,
-//                      std::vector<float> &k_sqr_distances, int max_nn = INT_MAX) const;
-//
+
+        /** \brief Get a pointer to the input dataset as passed by the user. 
+        * \return the const boost shared pointer to a pointcloud
+        */
+        PointCloudConstPtr getInputCloud () { return input_; }
+
+        /** \brief Get a pointer to the Indices
+        * \return the boost shared pointer to the indices list
+        */
+        inline IndicesConstPtr const getIndices () { return (indices_); }
+
+        /** \brief Set which of the two available nearest neighbor estimation methods should be used 
+          * (approximate = 0 or exact = 1).
+          * \param[in] precision set to 0 for the faster, approximate nearest neighbor search method, 1 otherwise
+          */
+        inline void setPrecision (int precision) { precision_ = precision; }
+
+        /** \brief Obtain which of the nearest neighbor method is being used. */
+        inline int getPrecision () { return (precision_); }
+
+        /** \brief set the focal length, this should be done before calling set InputCloud */
+        inline void setOneOverFocalLength (double oneOverFocalLength) 
+        {
+          oneOverFocalLength_ = oneOverFocalLength;
+          exactFocalLength_ = 1;
+        }
+
+        /** \brief Get the 1/focallength, can be the set or calculated one */
+        inline double getOneOverFocalLength () { return oneOverFocalLength_;}
+
+
         /** \brief Get the maximum allowed distance between the query point and its nearest neighbors. */
-        inline double
-        getMaxDistance () const
-        {
-          return (max_distance_);
-        }
+        inline double getMaxDistance () const { return (max_distance_); }
 
         /** \brief Set the maximum allowed distance between the query point and its nearest neighbors. */
-        inline void
-        setMaxDistance (double max_dist)
-        {
-          max_distance_ = max_dist;
-        }
+        inline void setMaxDistance (double max_dist) { max_distance_ = max_dist; }
+
         /** \brief set the search window (horizontal, vertical) in pixels.
          * \param horizontal the horizontal window in pixel
          * \param vertical the vertical window in pixel
@@ -219,53 +202,129 @@ namespace pcl
         setSearchWindowAsK (int k);
 
         /** \brief Get the horizontal search window in pixels. */
-        int
-        getHorizontalSearchWindow () const
-        {
-          return (horizontal_window_);
-        }
+        int getHorizontalSearchWindow () const { return (horizontal_window_); }
 
         /** \brief Get the vertical search window in pixels. */
-        int
-        getVerticalSearchWindow () const
+        int getVerticalSearchWindow () const { return (vertical_window_); }
+
+        /** \brief search for all the nearest neighbors of the query point in a given radius.
+         * \param cloud the point cloud data
+         * \param index the index in \a cloud representing the query point
+         * \param radius the radius of the sphere bounding all of p_q's neighbors
+         * \param k_indices the resultant indices of the neighboring points
+         * \param k_distances the resultant squared distances to the neighboring points
+         * \param max_nn if given, bounds the maximum returned neighbors to this value
+         * \return number of neighbors found in radius
+         */
+        inline int
+        radiusSearch (  const PointCloud& cloud, 
+                        int index, 
+                        double radius, 
+                        std::vector<int>& k_indices,
+                        std::vector<float>& k_distances, 
+                        int max_nn = INT_MAX)
         {
-          return (vertical_window_);
+          PCL_ERROR("[pcl::search::OrganizedNeighbor::radiusSearch] This function is not supported by OrganizedNeighbor\n");
+          return (0);
         }
 
-//        /** \brief Search for the k-nearest neighbors for a given query point.
-//          * \param[in] p_q the given query point
-//          * \param[in] k the number of neighbors to search for (used only if \ref horizontal and vertical window not given already!)
-//          * \param[out] k_indices the resultant point indices (must be resized to \a k beforehand!)
-//          * \param[out] k_distances \note this function does not return distances
-//          * \return number of neighbors found
-//          */
-//        int
-//        exactNearestKSearch (const PointT &p_q, int k, std::vector<int> &k_indices,
-//                             std::vector<float> &k_sqr_distances);
-//
-//        /** \brief Search for the k-nearest neighbors for the given query point (zero-copy).
-//          *
-//          * \param[in] index the index representing the query point in the dataset given by \a setInputCloud 
-//          * \param[in] k the number of neighbors to search for
-//          * \param[out] k_indices the resultant point indices 
-//          * \param[out] k_distances the resultant point neighbor distances
-//          * \return number of neighbors found
-//          */
-//        inline int
-//        exactNearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances);
-//
-//        /** \brief Search for the k-nearest neighbors for a given query point.
-//          * \param[in] cloud the point cloud data
-//          * \param[in] index the index in \a cloud representing the query point
-//          * \param[in] k the number of neighbors to search for (used only if \ref horizontal and vertical window not given already!)
-//          * \param[out] k_indices the resultant point indices (must be resized to \a k beforehand!)
-//          * \param[out] k_distances \note this function does not return distances
-//          * \return number of neighbors found
-//          */
-//        inline int
-//        exactNearestKSearch (const pcl::PointCloud<PointT> &cloud, int index, int k, 
-//                             std::vector<int> &k_indices, std::vector<float> &k_distances);
-//
+        /** \brief search for all neighbors of query point that are within a given radius.
+         * \param cloud the point cloud data
+         * \param index the index in \a cloud representing the query point
+         * \param radius the radius of the sphere bounding all of p_q's neighbors
+         * \param k_indices the resultant indices of the neighboring points
+         * \param k_sqr_distances the resultant squared distances to the neighboring points
+         * \param max_nn if given, bounds the maximum returned neighbors to this value
+         * \return number of neighbors found in radius
+         */
+        int
+        radiusSearch (  const PointCloudConstPtr &cloud, 
+                        int index, 
+                        double radius,
+                        std::vector<int> &k_indices, 
+                        std::vector<float> &k_sqr_distances,
+                        int max_nn = INT_MAX);
+
+        /** \brief search for all neighbors of query point that are within a given radius.
+         * \param index index representing the query point in the dataset given by \a setInputCloud.
+         *        If indices were given in setInputCloud, index will be the position in the indices vector
+         * \param radius radius of the sphere bounding all of p_q's neighbors
+         * \param k_indices the resultant indices of the neighboring points
+         * \param k_sqr_distances the resultant squared distances to the neighboring points
+         * \param max_nn if given, bounds the maximum returned neighbors to this value
+         * \return number of neighbors found in radius
+         */
+        int
+        radiusSearch (  int index, 
+                        const double radius, 
+                        std::vector<int> &k_indices,
+                        std::vector<float> &k_sqr_distances, 
+                        int max_nn = INT_MAX) const;
+
+        /** \brief search for all neighbors of query point that are within a given radius.
+         * \param p_q the given query point
+         * \param radius the radius of the sphere bounding all of p_q's neighbors
+         * \param k_indices the resultant indices of the neighboring points
+         * \param k_sqr_distances the resultant squared distances to the neighboring points
+         * \param max_nn if given, bounds the maximum returned neighbors to this value
+         * \return number of neighbors found in radius
+         */
+        int
+        radiusSearch (  const PointT &p_q, 
+                        const double radius, 
+                        std::vector<int> &k_indices,
+                        std::vector<float> &k_sqr_distances, 
+                        int max_nn = INT_MAX) const;
+
+        /** \brief Estimate the focal length parameter that was used during point cloud generation 
+          * \param cloud the input point cloud dataset 
+          * \return oneOverFocalLength
+          */
+        double
+        estimateFocalLengthFromInputCloud (const pcl::PointCloud<PointT> &cloud);
+
+        /** \brief Search for the k-nearest neighbors for a given query point.
+          * \param[in] p_q the given query point
+          * \param[in] k the number of neighbors to search for (used only if \ref horizontal and vertical window not given already!)
+          * \param[out] k_indices the resultant point indices (must be resized to \a k beforehand!)
+          * \param[out] k_distances \note this function does not return distances
+          * \return number of neighbors found
+          */
+        int
+        exactNearestKSearch ( const PointT &p_q,
+                              int k, 
+                              std::vector<int> &k_indices,
+                              std::vector<float> &k_sqr_distances);
+
+        /** \brief Search for the k-nearest neighbors for the given query point (zero-copy).
+          *
+          * \param[in] index the index representing the query point in the dataset given by \a setInputCloud 
+          * \param[in] k the number of neighbors to search for
+          * \param[out] k_indices the resultant point indices 
+          * \param[out] k_distances the resultant point neighbor distances
+          * \return number of neighbors found
+          */
+        inline int
+        exactNearestKSearch ( int index, 
+                              int k, 
+                              std::vector<int> &k_indices, 
+                              std::vector<float> &k_distances);
+
+        /** \brief Search for the k-nearest neighbors for a given query point.
+          * \param[in] cloud the point cloud data
+          * \param[in] index the index in \a cloud representing the query point
+          * \param[in] k the number of neighbors to search for (used only if \ref horizontal and vertical window not given already!)
+          * \param[out] k_indices the resultant point indices (must be resized to \a k beforehand!)
+          * \param[out] k_distances \note this function does not return distances
+          * \return number of neighbors found
+          */
+        inline int
+        exactNearestKSearch ( const pcl::PointCloud<PointT> &cloud, 
+                              int index, 
+                              int k, 
+                              std::vector<int> &k_indices, 
+                              std::vector<float> &k_distances);
+
          /** \brief Search for the k-nearest neighbors for a given query point.
           * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
           * \param[in] p_q the given query point (\ref setInputCloud must be given a-priori!)
@@ -273,10 +332,13 @@ namespace pcl
           * \param[out] k_indices the resultant point indices (must be resized to \a k beforehand!)
           * \param[out] k_distances \note this function does not return distances
           * \return number of neighbors found
+          * @todo still need to implements this functionality
           */
         int
-        nearestKSearch (const PointT &p_q, int k, std::vector<int> &k_indices,
-                              std::vector<float> &k_sqr_distances)
+        nearestKSearch (  const PointT &p_q,
+                          int k, 
+                          std::vector<int> &k_indices,
+                          std::vector<float> &k_sqr_distances)
         {
           PCL_ERROR ("[pcl::search::OrganizedNeighbor::approxNearestKSearch] Method not implemented!\n");
           return (0);
@@ -307,184 +369,140 @@ namespace pcl
         nearestKSearch (const pcl::PointCloud<PointT> &cloud, int index, int k, 
                               std::vector<int> &k_indices, std::vector<float> &k_distances);
 
-        /** \brief Approximate search for neighbors around the given query point within radius.
-          * \param[in] cloud the point cloud data.
-          * \param[in] index the index in \a cloud representing the query point.
-          * \param[in] radius the maximum distance to search for neighbors in.
-          * \param[out] k_indices the resultant point indices
-          * \param[out] k_distances the resultant !squared! point distances
-          * \param[in] max_nn maximum number of points to return
-          */
-        int
-        radiusSearch (const pcl::PointCloud<PointT> &cloud, int index, double radius, 
-                            std::vector<int> &k_indices, std::vector<float> &k_distances, 
-                            int max_nn = INT_MAX);
-
-        /** \brief Approximate search for neighbors around the given query point within radius.
-          * \param[in] index the index representing the query point in the dataset (\ref setInputCloud must be given a-priori!)
-          * \param[in] radius the maximum distance to search for neighbors in.
-          * \param[out] k_indices the resultant point indices
-          * \param[out] k_distances the resultant !squared! point distances
-          * \param[in] max_nn maximum number of points to return
-          */
-        int
-        radiusSearch (int index, double radius, 
-                            std::vector<int> &k_indices, std::vector<float> &k_distances, 
-                            int max_nn = INT_MAX) const;
-
-        /** \brief Approximate search for neighbors around the given query point within radius.
-          * \param[in] point the given query point
-          * \param[in] radius the maximum distance to search for neighbors in.
-          * \param[out] k_indices the resultant point indices
-          * \param[out] k_distances the resultant !squared! point distances
-          * \param[in] max_nn maximum number of points to return
-          */
-        int
-        radiusSearch (const PointT &p_q, double radius, 
-                            std::vector<int> &k_indices, std::vector<float> &k_distances, 
-                            int max_nn = INT_MAX) const
-        {
-          PCL_ERROR ("[pcl::search::OrganizedNeighbor::radiusSearch] Method not implemented!\n");
-          return (0);
-        }
 
       protected:
-//
-//        /** \brief @b RadiusSearchLoopkupEntry entry for radius search lookup vector
-//          * \note This class defines entries for the radius search lookup vector
-//          * \author Julius Kammerl (julius@kammerl.de)
-//          */
-//        class RadiusSearchLoopkupEntry
-//        {
-//          public:
-//            /** \brief Empty constructor  */
-//            RadiusSearchLoopkupEntry () {}
-//
-//            /** \brief Empty deconstructor  */
-//            virtual ~RadiusSearchLoopkupEntry () {}
-//
-//            /** \brief Define search point and calculate squared distance
-//              * \param x_shift shift in x dimension
-//              * \param y_shift shift in y dimension
-//              */
-//            void
-//            defineShiftedSearchPoint (int x_shift, int y_shift)
-//            {
-//              x_diff_ = x_shift;
-//              y_diff_ = y_shift;
-//
-//              squared_distance_ = x_diff_ * x_diff_ + y_diff_ * y_diff_;
-//            }
-//
-//            /** \brief Operator< for comparing radiusSearchLoopkupEntry instances with each other.  */
-//            bool
-//            operator< (const RadiusSearchLoopkupEntry& rhs) const
-//            {
-//              return (this->squared_distance_ < rhs.squared_distance_);
-//            }
-//
-//            // Public globals
-//            int x_diff_;int y_diff_;int squared_distance_;
-//        };
-//
-//        /** \brief @b NearestNeighborCandidate entry for the nearest neighbor candidate queue
-//          * \note This class defines entries for the nearest neighbor candidate queue
-//          * \author Julius Kammerl (julius@kammerl.de)
-//         */
-//        class NearestNeighborCandidate
-//        {
-//          public:
-//
-//          /** \brief Empty constructor  */
-//          NearestNeighborCandidate () {}
-//
-//          /** \brief Empty deconstructor  */
-//          virtual ~NearestNeighborCandidate () {}
-//
-//          /** \brief Operator< for comparing nearestNeighborCandidate instances with each other.  */
-//          bool
-//          operator< (const NearestNeighborCandidate& rhs) const
-//          {
-//            return (this->squared_distance_ < rhs.squared_distance_);
-//          }
-//
-//          // Public globals
-//          int index_;
-//          double squared_distance_;
-//        };
-//
-//        /** \brief Get point at index from input pointcloud dataset
-//          * \param index index representing the point in the dataset given by \a setInputCloud
-//          * \return PointT from input pointcloud dataset
-//          */
-//        const PointT&
-//        getPointByIndex (const unsigned int index) const;
-//
-//        /** \brief Generate radius lookup table. It is used to subsequentially iterate over points
-//          *         which are close to the search point
-//          * \param width of organized point cloud
-//          * \param height of organized point cloud
-//          */
-//        void
-//        generateRadiusLookupTable (unsigned int width, unsigned int height);
-//
-//        /** \brief Project a point to a plane and return it's X and Y coordinates.
-//          * \param[in] point the point to project 
-//          * \param[out] xpos the X position
-//          * \param[out] ypos the Y position
-//          */
-//        inline void
-//        pointPlaneProjection (const PointT& point, int& xpos, int& ypos) const
-//        {
-//          xpos = (int)pcl_round (point.x / (point.z * oneOverFocalLength_));
-//          ypos = (int)pcl_round (point.y / (point.z * oneOverFocalLength_));
-//        }
-//
-//        /** \brief Obtain a search box in 2D from a sphere with a radius in 3D
-//          * \param[in] point the query point (sphere center)
-//          * \param[in] squared_radius the squared sphere radius 
-//          * \param[out] minX the min X box coordinate
-//          * \param[out] minY the min Y box coordinate
-//          * \param[out] maxX the max X box coordinate
-//          * \param[out] maxY the max Y box coordinate
-//          */
-//        void
-//        getProjectedRadiusSearchBox (const PointT& point, double squared_radius, int& minX, int& minY,
-//                                     int& maxX, int& maxY) const;
-//
-//        /** \brief Estimate the focal length parameter that was used during point cloud generation 
-//          * \param cloud the input point cloud dataset 
-//          */
-//        void
-//        estimateFocalLengthFromInputCloud (const pcl::PointCloud<PointT> &cloud);
-//
-        /** \brief Class getName method. */
-        virtual std::string
-        getName () const
+
+        /** \brief @b RadiusSearchLoopkupEntry entry for radius search lookup vector
+          * \note This class defines entries for the radius search lookup vector
+          * \author Julius Kammerl (julius@kammerl.de)
+          */
+        class RadiusSearchLoopkupEntry
         {
-          return ("Organized_Neighbor_Search");
+          public:
+            /** \brief Empty constructor  */
+            RadiusSearchLoopkupEntry () {}
+
+            /** \brief Empty deconstructor  */
+            virtual ~RadiusSearchLoopkupEntry () {}
+
+            /** \brief Define search point and calculate squared distance
+              * \param x_shift shift in x dimension
+              * \param y_shift shift in y dimension
+              */
+            void
+            defineShiftedSearchPoint (int x_shift, int y_shift)
+            {
+              x_diff_ = x_shift;
+              y_diff_ = y_shift;
+
+              squared_distance_ = x_diff_ * x_diff_ + y_diff_ * y_diff_;
+            }
+
+            /** \brief Operator< for comparing radiusSearchLoopkupEntry instances with each other.  */
+            bool
+            operator< (const RadiusSearchLoopkupEntry& rhs) const
+            {
+              return (this->squared_distance_ < rhs.squared_distance_);
+            }
+
+            // Public globals
+            int x_diff_;int y_diff_;int squared_distance_;
+        };
+
+        /** \brief @b NearestNeighborCandidate entry for the nearest neighbor candidate queue
+          * \note This class defines entries for the nearest neighbor candidate queue
+          * \author Julius Kammerl (julius@kammerl.de)
+         */
+        class NearestNeighborCandidate
+        {
+          public:
+
+          /** \brief Empty constructor  */
+          NearestNeighborCandidate () {}
+
+          /** \brief Empty deconstructor  */
+          virtual ~NearestNeighborCandidate () {}
+
+          /** \brief Operator< for comparing nearestNeighborCandidate instances with each other.  */
+          bool
+          operator< (const NearestNeighborCandidate& rhs) const
+          {
+            return (this->squared_distance_ < rhs.squared_distance_);
+          }
+
+          // Public globals
+          int index_;
+          double squared_distance_;
+        };
+
+        /** \brief Get point at index from input pointcloud dataset
+          * \param index index representing the point in the dataset given by \a setInputCloud
+          * \return PointT from input pointcloud dataset
+          */
+        const PointT&
+        getPointByIndex (const unsigned int index) const;
+
+        /** \brief Generate radius lookup table. It is used to subsequentially iterate over points
+          *         which are close to the search point
+          * \param width of organized point cloud
+          * \param height of organized point cloud
+          */
+        void
+        generateRadiusLookupTable (unsigned int width, unsigned int height);
+
+        /** \brief Project a point to a plane and return it's X and Y coordinates.
+          * \param[in] point the point to project 
+          * \param[out] xpos the X position
+          * \param[out] ypos the Y position
+          */
+        inline void
+        pointPlaneProjection (const PointT& point, int& xpos, int& ypos) const
+        {
+          xpos = (int)pcl_round (point.x / (point.z * oneOverFocalLength_));
+          ypos = (int)pcl_round (point.y / (point.z * oneOverFocalLength_));
         }
+
+        /** \brief Obtain a search box in 2D from a sphere with a radius in 3D
+          * \param[in] point the query point (sphere center)
+          * \param[in] squared_radius the squared sphere radius 
+          * \param[out] minX the min X box coordinate
+          * \param[out] minY the min Y box coordinate
+          * \param[out] maxX the max X box coordinate
+          * \param[out] maxY the max Y box coordinate
+          */
+        void
+        getProjectedRadiusSearchBox (const PointT& point, double squared_radius, int& minX, int& minY,
+                                     int& maxX, int& maxY) const;
+
+
+        /** \brief Class getName method. */
+        virtual std::string getName () const { return ("Organized_Neighbor_Search"); }
 
         /** \brief The horizontal search window. */
         int horizontal_window_;int vertical_window_;int min_pts_;
 
         /** \brief Pointer to input point cloud dataset. */
         PointCloudConstPtr input_;
+        /** \brief Pointer to input indices. */
+        IndicesConstPtr indices_;
 
         /** \brief Maximum allowed distance between the query point and its k-neighbors. */
         double max_distance_;
 
         /** \brief Global focal length parameter */
-//        double oneOverFocalLength_;
+        double oneOverFocalLength_;
 
         /** \brief Precalculated radius search lookup vector */
-//        std::vector<RadiusSearchLoopkupEntry> radiusSearchLookup_;
-        
-//        int radiusLookupTableWidth_;
-//        int radiusLookupTableHeight_;
+        std::vector<RadiusSearchLoopkupEntry> radiusSearchLookup_;
+
+        int radiusLookupTableWidth_;
+        int radiusLookupTableHeight_;
 
         /** \brief Set to 0 if the faster approximate method is to be used. 1 otherwise. */
-//        int precision_;
+        int precision_;
+
+        /** \brief Indicates if the focallenght was already set or calculated */
+        bool exactFocalLength_;
     };
   }
 }

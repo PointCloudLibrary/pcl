@@ -306,7 +306,9 @@ namespace pcl
         */
       inline void setSearchMethod (const KdTreePtr &tree) { tree_ = tree; }
 
-      /** \brief Get a pointer to the search method used. */
+      /** \brief Get a pointer to the search method used. 
+       *  @todo fix this for a generic search tree
+       */
       inline KdTreePtr getSearchMethod () { return (tree_); }
 
       /** \brief Set the spatial cluster tolerance as a measure in the L2 Euclidean space
