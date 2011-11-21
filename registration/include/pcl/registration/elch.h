@@ -74,7 +74,6 @@ namespace pcl
         struct Vertex
         {
           PointCloudPtr cloud;
-          std::string name;
         };
 
         /** \brief graph structure to hold the SLAM graph */
@@ -91,17 +90,20 @@ namespace pcl
         typedef typename Registration::ConstPtr RegistrationConstPtr;
 
         /** \brief Empty constructor. */
-        ELCH () : loop_graph_ (new LoopGraph), loop_start_ (0), loop_end_ (0), reg_(new pcl::IterativeClosestPoint<PointT, PointT>), compute_loop_(true)
+        ELCH () : loop_graph_ (new LoopGraph), loop_start_ (0), loop_end_ (0), reg_ (new pcl::IterativeClosestPoint<PointT, PointT>), compute_loop_ (true)
         {};
 
         /** \brief Add a new point cloud to the internal graph.
          * \param[in] cloud the new point cloud
          */
         inline void
-        addPointCloud (PointCloudConstPtr cloud)
+        addPointCloud (PointCloudPtr cloud)
         {
-          add_vertex (loop_graph_, cloud);
-          //TODO add edge as well
+          typename boost::graph_traits<LoopGraph>::vertex_descriptor vd = add_vertex (*loop_graph_);
+          (*loop_graph_)[vd].cloud = cloud;
+          if (num_vertices (*loop_graph_) > 1)
+            add_edge (vd_, vd, *loop_graph_);
+          vd_ = vd;
         }
 
         /** \brief Getter for the internal graph. */
@@ -153,7 +155,7 @@ namespace pcl
         }
 
         /** \brief Getter for the registration algorithm. */
-        inline RegistrationConstPtr
+        inline RegistrationPtr
         getReg ()
         {
           return (reg_);
@@ -163,7 +165,7 @@ namespace pcl
          * \param[in] reg the registration algorithm used to compute the transformation between the start and the end of the loop
          */
         inline void
-        setReg (RegistrationConstPtr reg)
+        setReg (RegistrationPtr reg)
         {
           reg_ = reg;
         }
@@ -234,6 +236,9 @@ namespace pcl
         /** \brief The transformation between that start and end of the loop. */
         Eigen::Matrix4f loop_transform_;
         bool compute_loop_;
+
+        /** \brief previously added node in the loop_graph_. */
+        typename boost::graph_traits<LoopGraph>::vertex_descriptor vd_;
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW

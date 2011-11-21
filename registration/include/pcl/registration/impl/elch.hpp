@@ -143,7 +143,7 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, double *we
     s = branches.front ();
     branches.pop_front ();
 
-    for (tie (adjacent_it, adjacent_it_end) = adjacent_vertices (s, g); adjacent_it != adjacent_it_end; ++adjacent_it)
+    for (boost::tuples::tie (adjacent_it, adjacent_it_end) = adjacent_vertices (s, g); adjacent_it != adjacent_it_end; ++adjacent_it)
     {
       weights[*adjacent_it] = weights[s];
       if (degree (*adjacent_it, g) > 1)
@@ -180,6 +180,8 @@ pcl::registration::ELCH<PointT>::initCompute ()
   //compute transformation if it's not given
   if (compute_loop_)
   {
+    //std::cout << "loop start " << loop_start_ << " " << (*loop_graph_)[loop_start_].name << std::endl;
+    //std::cout << "loop end " << loop_end_ << " " << (*loop_graph_)[loop_end_].name << std::endl;
     //TODO use real pose instead of centroid
     Eigen::Vector4f pose_start;
     pcl::compute3DCentroid (*(*loop_graph_)[loop_start_].cloud, pose_start);
@@ -188,15 +190,11 @@ pcl::registration::ELCH<PointT>::initCompute ()
     pcl::compute3DCentroid (*(*loop_graph_)[loop_end_].cloud, pose_end);
 
     PointCloudPtr tmp (new PointCloud);
-    Eigen::Vector4f diff = pose_end - pose_start;
+    Eigen::Vector4f diff = pose_start - pose_end;
     Eigen::Translation3f translation (diff.head (3));
     Eigen::Affine3f trans = translation * Eigen::Quaternionf::Identity ();
+    //TODO use features
     pcl::transformPointCloud (*(*loop_graph_)[loop_end_].cloud, *tmp, trans);
-
-    //reg_->setMaximumIterations (50);
-    //setMaxCorrespondenceDistance (1.5);
-    //setRANSACOutlierRejectionThreshold (1.5);
-    //reg_->setRANSACOutlierRejectionThreshold (DBL_MAX);
 
     reg_->setInputTarget ((*loop_graph_)[loop_start_].cloud);
 
@@ -225,7 +223,7 @@ pcl::registration::ELCH<PointT>::compute ()
   LOAGraph grb[4];
 
   typename boost::graph_traits<LoopGraph>::edge_iterator edge_it, edge_it_end;
-  for (tie (edge_it, edge_it_end) = edges (*loop_graph_); edge_it != edge_it_end; edge_it++)
+  for (boost::tuples::tie (edge_it, edge_it_end) = edges (*loop_graph_); edge_it != edge_it_end; edge_it++)
   {
     for (int j = 0; j < 4; j++)
       add_edge (source (*edge_it, *loop_graph_), target (*edge_it, *loop_graph_), 1, grb[j]);  //TODO add variance
@@ -247,7 +245,7 @@ pcl::registration::ELCH<PointT>::compute ()
 
   //TODO iterate ovr loop_graph_
   //typename boost::graph_traits<LoopGraph>::vertex_iterator vertex_it, vertex_it_end;
-  //for (tie (vertex_it, vertex_it_end) = vertices (*loop_graph_); vertex_it != vertex_it_end; vertex_it++)
+  //for (boost::tuples::tie (vertex_it, vertex_it_end) = vertices (*loop_graph_); vertex_it != vertex_it_end; vertex_it++)
   for (size_t i = 0; i < num_vertices (*loop_graph_); i++)
   {
     Eigen::Vector3f t2;
@@ -255,8 +253,8 @@ pcl::registration::ELCH<PointT>::compute ()
     t2[1] = loop_transform_ (3, 1) * weights[1][i];
     t2[2] = loop_transform_ (3, 2) * weights[2][i];
 
-    Eigen::Affine3f bl(loop_transform_); //TODO
-    Eigen::Quaternionf q (bl.rotation());
+    Eigen::Affine3f bl (loop_transform_); //TODO
+    Eigen::Quaternionf q (bl.rotation ());
     Eigen::Quaternionf q2;
     q2 = Eigen::Quaternionf::Identity ().slerp (weights[3][i], q); //TODO
 
@@ -268,6 +266,8 @@ pcl::registration::ELCH<PointT>::compute ()
     //std::cout << "transform cloud " << i << " to:" << std::endl << a.matrix () << std::endl;
     pcl::transformPointCloud (*(*loop_graph_)[i].cloud, *(*loop_graph_)[i].cloud, a);
   }
+
+  add_edge (loop_start_, loop_end_, *loop_graph_);
 
   deinitCompute ();
 }
