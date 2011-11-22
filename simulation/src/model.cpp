@@ -31,6 +31,7 @@ PolygonMeshModel::PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg ) : mo
       apoly.vertices_[3*j + 2] = (float) tmp(2);  
       
       // Color: currently using red in place of true color
+      // TODO: figure out how to read in color obj/vtk/ply files
       apoly.colors_[4*j + 3] =(float) 0.0/255.0; // transparancy? 
       apoly.colors_[4*j + 2] =(float) 0.0/255.0; // Blue
       apoly.colors_[4*j + 1] =(float) 0.0/255.0; // Green

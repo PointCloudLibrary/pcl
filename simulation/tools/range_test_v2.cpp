@@ -45,6 +45,12 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 
+//#include <pcl/range_image/range_image.h>
+#include <pcl/range_image/range_image_planar.h>
+
+// RangeImage:
+
+
 using namespace Eigen;
 using namespace pcl;
 using namespace pcl::console;
@@ -60,6 +66,7 @@ RangeLikelihood::Ptr range_likelihood_;
 int window_width_;
 int window_height_;
 bool paused_;
+bool write_file_;
 
 void
 printHelp (int argc, char **argv)
@@ -214,10 +221,9 @@ void display_depth_image(const float* depth_buffer)
 
 void display() {
   glViewport(range_likelihood_->width(), 0, range_likelihood_->width(), range_likelihood_->height());
-
-
+  
+  
   float* reference = new float[range_likelihood_->row_height() * range_likelihood_->col_width()];
-
   const float* depth_buffer = range_likelihood_->depth_buffer();
   // Copy one image from our last as a reference.
   for (int i=0, n=0; i<range_likelihood_->row_height(); ++i) {
@@ -240,7 +246,6 @@ void display() {
 //  range_likelihood_->compute_likelihoods(reference, poses, scores);
   delete [] reference;
   delete [] depth_field;
-
 
   std::cout << "score: ";
   for (size_t i=0; i<scores.size(); ++i) {
@@ -265,8 +270,44 @@ void display() {
   //glRasterPos2i(-1,-1);
   //glDrawPixels(range_likelihood_->width(), range_likelihood_->height(), GL_LUMINANCE, GL_FLOAT, range_likelihood_->depth_buffer());
   display_depth_image(range_likelihood_->depth_buffer());
-
+  
   glutSwapBuffers();
+  
+
+//  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA> () );
+  pcl::PointCloud<pcl::PointXYZRGBA> pcout;
+  pcout.width    = 640*480;
+  pcout.height   = 1;
+  pcout.is_dense = false;
+ 
+  
+  
+  
+  
+  
+  if (write_file_){
+    //     camera_width_in 640;
+    //  camera_height_in 480
+    //float  camera_fx_in= 576.09757860;
+    //float camera_fy_in=	    576.09757860;
+    //float camera_cx_in= 321.06398107; 
+    //float camera_cy_in= 242.97676897;
+
+    pcl::RangeImagePlanar rangeImage;
+    range_likelihood_->getRangeImagePlanar(rangeImage);
+    std::cout << rangeImage << " ---  range image info\n";
+
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pc_out (new pcl::PointCloud<pcl::PointXYZRGBA>);
+    range_likelihood_->getPointCloud(pc_out);
+    pcl::PCDWriter writer;
+    writer.write ("simulated_range_image.pcd", *pc_out, false);  
+    
+    int pause;
+    cout << "finished writing file\n";
+    cin >> pause;
+    write_file_ =0;
+  }
+  
 }
 
 // Handle normal keys
@@ -290,6 +331,8 @@ void on_keyboard(unsigned char key, int x, int y)
     camera_->move(0,0,-speed);
   else if (key == 'p' || key == 'P')
     paused_ = !paused_;
+  else if (key == 'f' || key == 'F')
+    write_file_ = 1;
 
   // Use glutGetModifiers for modifiers
   // GLUT_ACTIVE_SHIFT, GLUT_ACTIVE_CTRL, GLUT_ACTIVE_ALT

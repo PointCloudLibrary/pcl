@@ -176,6 +176,16 @@ void RangeLikelihood::compute_scores(int cols, int rows,
     std::vector<float> & scores, float* depth_field, bool do_depth_field)
 {
   float* depth = depth_buffer;
+  // Mapping between disparity and range:
+  // range or depth = 1/disparity
+  //
+  // the freenect produces a disparity <here we call this depth_buffer>
+  // that is mapped between 0->1 to minimize quantization
+  // near_range = n = 0.7m   | far_range = f = 20m
+  // disparity can be found as a linear function of the depth_buffer (d)
+  // disparity =  1/n   - (f-n)*d / (n*f)
+  //
+  // Below we compare range-versus-range using this mapping
   
   
   // 0 original scoring method
@@ -302,7 +312,56 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 	*depth++;
       }
     }
-   // cout << " \n";
   }
- // cout << "end of depth\n\n";
+ 
+  void RangeLikelihood::getPointCloud(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pc)
+  { 
+    pc->width    = camera_width_; // TODO: check if this is correct for rows/cols >1
+    pc->height   = camera_height_;
+    pc->is_dense = false;
+    pc->points.resize(pc->width*pc->height);
+    
+    float camera_fx_reciprocal_ = 1.0f / camera_fx_;
+    float camera_fy_reciprocal_ = 1.0f / camera_fy_;
+    float zn = z_near_;
+    float zf = z_far_;
+    
+    // TODO: support decimation
+    // Copied the format of RangeImagePlanar::setDepthImage()
+    // Use this as a template for decimation
+    for (int y=0; y<(int)camera_height_; ++y)
+    {
+      for (int x=0; x<(int)camera_width_; ++x)
+      {
+	// Find XYZ from normalized 0->1 mapped disparity
+	int idx = y*camera_width_ + x;
+        float d = depth_buffer_[idx] ;
+        float  z = -zf*zn/((zf-zn)*(d - zf/(zf-zn)));
+	
+	// TODO: add mode to ignore points with no return i.e. depth_buffer_ ==1
+        pc->points[idx].z = z;
+        pc->points[idx].x = (x-camera_cx_)*pc->points[idx].z * camera_fx_reciprocal_;
+        pc->points[idx].y = (y-camera_cy_)*pc->points[idx].z * camera_fy_reciprocal_;
+	
+	// Colour:
+	int r =color_buffer_[idx*3];
+	int g =color_buffer_[idx*3+1];
+	int b =color_buffer_[idx*3+2];
+ 	unsigned char* rgba_ptr = (unsigned char*)&pc->points[idx].rgba;
+ 	(*rgba_ptr) =  (int)    (r*255.0);
+ 	(*(rgba_ptr+1)) = (int) (g*255.0);
+ 	(*(rgba_ptr+2)) = (int) (b*255.0);
+ 	(*(rgba_ptr+3)) = 0;    	
+      }
+    }  
+  }
+  
+  void RangeLikelihood::getRangeImagePlanar(pcl::RangeImagePlanar &rip)
+  { 
+    rip.setDepthImage(depth_buffer_,
+      camera_width_,camera_height_, camera_fx_,camera_fy_,
+     camera_fx_, camera_fy_);	
+  }
+  
+ 
 }

@@ -8,6 +8,8 @@
 #include <Eigen/StdVector>
 
 #include <pcl/win32_macros.h>
+#include <pcl/range_image/range_image_planar.h>
+
 
 namespace pcl
 {
@@ -72,6 +74,13 @@ public:
   const float* depth_buffer() const {return depth_buffer_;}
   const uint8_t* color_buffer() const {return color_buffer_;}
   
+
+  // Convenience function to return PointCloud containing 
+  // simulated RGB-D:
+  void getPointCloud(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pc);
+  // Convenience function to return RangeImagePlanar containing 
+  // simulated RGB-D:
+  void getRangeImagePlanar(pcl::RangeImagePlanar &rip);
 
   typedef boost::shared_ptr<RangeLikelihood> Ptr;
   typedef boost::shared_ptr<const RangeLikelihood> ConstPtr;
