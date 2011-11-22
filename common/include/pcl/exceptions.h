@@ -33,12 +33,14 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Eitan Marder-Eppstein, Suat Gedikli (gedikli@willowgarage.com)
+ * Author: Eitan Marder-Eppstein, Suat Gedikli (gedikli@willowgarage.com),
+ *         Nizar Sallem
  */
 #ifndef PCL_EXCEPTIONS_H_
 #define PCL_EXCEPTIONS_H_
 
 #include <stdexcept>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -108,7 +110,7 @@ namespace pcl
   /** \class InvalidConversionException
     * \brief An exception that is thrown when a PointCloud2 message cannot be converted into a PCL type
     */
-  class InvalidConversionException : public PCLException
+  class PCL_EXPORTS InvalidConversionException : public PCLException
   {
     public:
 
@@ -119,11 +121,10 @@ namespace pcl
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
-  /**
-   * @class IsNotDenseException
-   * @brief An exception that is thrown when a PointCloud is not dense but is attemped to be used as dense
-   */
-  class IsNotDenseException : public PCLException
+  /** \class IsNotDenseException
+    * \brief An exception that is thrown when a PointCloud is not dense but is attemped to be used as dense
+    */
+  class PCL_EXPORTS IsNotDenseException : public PCLException
   {
     public:
 
@@ -138,7 +139,7 @@ namespace pcl
     * \brief An exception that is thrown when a sample consensus model doesn't
     * have the correct number of samples defined in model_types.h
     */
-  class InvalidSACModelTypeException : public PCLException
+  class PCL_EXPORTS InvalidSACModelTypeException : public PCLException
   {
     public:
 
@@ -152,7 +153,7 @@ namespace pcl
   /** \class IOException
     * \brief An exception that is thrown during an IO error (typical read/write errors)
     */
-  class IOException : public PCLException
+  class PCL_EXPORTS IOException : public PCLException
   {
     public:
 
@@ -162,5 +163,47 @@ namespace pcl
                    unsigned line_number = 0) throw ()
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
+
+  /** \class InitFailedException
+    * \brief An exception thrown when init can not be performed should be used in all the
+    * PCLBase class inheritants.
+    */
+  class PCL_EXPORTS InitFailedException : public PCLException
+  {
+    public:
+      InitFailedException (const std::string& error_description = "",
+                           const std::string& file_name = "",
+                           const std::string& function_name = "" ,
+                           unsigned line_number = 0) throw ()
+        : pcl::PCLException (error_description, file_name, function_name, line_number) { }
+  } ;
+
+  /** \class UnorganizedPointCloudException
+    * \brief An exception that is thrown when an organized point cloud is needed
+    * but not provided.
+    */
+  class PCL_EXPORTS UnorganizedPointCloudException : public PCLException
+  {
+    public:
+    
+      UnorganizedPointCloudException (const std::string& error_description,
+                                      const std::string& file_name = "",
+                                      const std::string& function_name = "" ,
+                                      unsigned line_number = 0) throw ()
+        : pcl::PCLException (error_description, file_name, function_name, line_number) { }
+  } ;
 }
+
+/** \macro PCL_THROW_EXCEPTION a helper macro to be used for throwing exceptions.
+  * This is an example on how to use:
+  * PCL_THROW_EXCEPTION(IOException,
+  *                     "encountred an error while opening " << filename << " PCD file");
+  */
+#define PCL_THROW_EXCEPTION(ExceptionName, message)         \
+{                                                           \
+  std::ostringstream s;                                     \
+  s << message;                                             \
+  throw ExceptionName(s.str(), __FILE__, "", __LINE__);     \
+}
+
 #endif
