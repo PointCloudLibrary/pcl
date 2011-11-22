@@ -88,6 +88,10 @@ development that everyone should follow:
 
   Please follow the following naming and indentation rules when developing code for PCL.
 
+* :ref:`exceptions_guide`
+
+  Short documentation on how to add new, throw and handle exceptions in PCL.
+
 * :ref:`branches_repository`
 
   If you're not sure how to best make concurrent commits to the repository to both **trunk**, and any of the existing **branches**, see this example.
