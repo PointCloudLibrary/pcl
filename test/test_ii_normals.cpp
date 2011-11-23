@@ -118,7 +118,7 @@ TEST(PCL, IntegralImage)
 
   //now test with odd element-stride 3 and modulo-uneven row_stride
   element_stride = 3;
-  row_stride = width * element_stride + 1;
+  row_stride = width * element_stride;
   data = new float[row_stride * height];
   for(unsigned yIdx = 0; yIdx < height; ++yIdx)
   {
@@ -150,7 +150,7 @@ TEST(PCL, IntegralImage)
   // now test multidimensional case with 3D but element_stride = 4 and row_stride non-dividable by element_stride
   IntegralImage2Dim<float, 3> integral_image3(true);
   element_stride = 4;
-  row_stride = width * element_stride + 1;
+  row_stride = width * element_stride;
   data = new float[row_stride * height];
   for(unsigned yIdx = 0; yIdx < height; ++yIdx)
   {
