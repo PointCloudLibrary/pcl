@@ -14,9 +14,11 @@ using namespace std;
 
 std::string device_id = "#1";
 
-float angular_resolution = 0.4;
+float angular_resolution = 0.5;
 float support_size = 0.2f;
 bool set_unseen_to_max_range = true;
+int max_no_of_threads = 1;
+float min_interest_value = 0.5;
 
 boost::mutex depth_image_mutex,
              ir_image_mutex,
@@ -54,6 +56,8 @@ printUsage (const char* progName)
        << "-r <float>      angular resolution in degrees (default "<<angular_resolution<<")\n"
        << "-s <float>      support size for the interest points (diameter of the used sphere in meters)"
        <<                 " (default "<<support_size<<")\n"
+       << "-i <float>      minimum interest value (0-1) (default "<<min_interest_value<<")"
+       << "-t <int>        maximum number of threads to use (default "<< max_no_of_threads<<")\n"
        << "-h              this help\n"
        << "\n\n";
 }
@@ -72,9 +76,13 @@ int main (int argc, char** argv)
     cout << "Using device id \""<<device_id<<"\".\n";
   if (pcl::console::parse (argc, argv, "-r", angular_resolution) >= 0)
     cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
-  if (pcl::console::parse (argc, argv, "-s", support_size) >= 0)
-    cout << "Setting support size to "<<angular_resolution<<"m.\n";
   angular_resolution = pcl::deg2rad (angular_resolution);
+  if (pcl::console::parse (argc, argv, "-s", support_size) >= 0)
+    cout << "Setting support size to "<<support_size<<"m.\n";
+  if (pcl::console::parse (argc, argv, "-i", min_interest_value) >= 0)
+    cout << "Setting minimum interest value to "<<min_interest_value<<".\n";
+  if (pcl::console::parse (argc, argv, "-t", max_no_of_threads) >= 0)
+    cout << "Setting maximum number of threads to "<<max_no_of_threads<<".\n";
   
   pcl::visualization::RangeImageVisualizer range_image_widget ("Range Image");
   
@@ -129,8 +137,9 @@ int main (int argc, char** argv)
   pcl::NarfKeypoint narf_keypoint_detector;
   narf_keypoint_detector.setRangeImageBorderExtractor (&range_image_border_extractor);
   narf_keypoint_detector.getParameters ().support_size = support_size;
+  narf_keypoint_detector.getParameters ().max_no_of_threads = max_no_of_threads;
+  narf_keypoint_detector.getParameters ().min_interest_value = min_interest_value;
   //narf_keypoint_detector.getParameloadters ().add_points_on_straight_edges = true;
-  //narf_keypoint_detector.getParameters ().distance_for_additional_points = 0.5;
   
   pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_cloud_ptr (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>& keypoints_cloud = *keypoints_cloud_ptr;
