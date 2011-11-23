@@ -53,6 +53,8 @@ namespace pcl
         public:				
             typedef KinfuTracker::RGB RGB;
 
+            enum { PROP_OPENNI_REGISTRATION_ON  = 104 };
+
 
             CaptureOpenNI(int device);
             CaptureOpenNI(const std::string& oni_filename);
@@ -68,10 +70,13 @@ namespace pcl
             double pixelSize; //mm
 
             unsigned short max_depth; //mm
+
+            bool setRegistration(bool value = false);
         private:
             struct Impl;
             boost::shared_ptr<Impl> impl_;
             void getParams();
+
         };	
     }
 };

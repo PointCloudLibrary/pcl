@@ -250,7 +250,7 @@ namespace pcl
                     //last block
                     if (value == total_blocks - 1)
                     {                        
-                        output_count = min(output.size, global_count);
+                        output_count = min((int)output.size, global_count);
                         blocks_done = 0;
                         global_count = 0;  
                     }                                        

@@ -39,12 +39,16 @@
 
 #include "pcl/pcl_macros.h"
 
+#include <string>
+
 namespace pcl
 {
     namespace gpu
     {
         PCL_EXPORTS int getCudaEnabledDeviceCount();
         PCL_EXPORTS void setDevice(int device);
+
+        PCL_EXPORTS std::string getDeviceName(int device);
 
         void PCL_EXPORTS error(const char *error_string, const char *file, const int line, const char *func = "");
     }

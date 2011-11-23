@@ -38,6 +38,7 @@
 
 #include <iostream>
 #include "pcl/gpu/kinfu/kinfu.hpp"
+#include "pcl/gpu/containers/initialization.hpp"
 
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
@@ -168,7 +169,7 @@ struct KinFuApp
         PtrStepSz<const KinfuTracker::RGB> rgb24;
         
         for(int i = 0; !exit_ ;++i)
-        {                        
+        {
             //cout << i << endl;
             //if (i == 3) break;
 
@@ -186,7 +187,7 @@ struct KinFuApp
                 if(hasImage_)
                     kinfu_.getImage(view_device_);                
             }   
-                        
+
             if (scan_)
             {
                 scan_ = false;                
@@ -227,14 +228,14 @@ struct KinFuApp
                     frame_cloud_viewer_->updatePointCloud(frame_cloud_ptr_);
                     frame_cloud_viewer_->spinOnce(1, true);
                 }
-            }
-            
-            setViewerPose(cloud_viewer_, kinfu_.getCameraPose());
-            cloud_viewer_.spinOnce();            
-            viewer3d_.spinOnce();
+            }            
+            setViewerPose(cloud_viewer_, kinfu_.getCameraPose());            
+            cloud_viewer_.spinOnce();                        
+            if (hasImage_)
+                viewer3d_.spinOnce(3); // don't know why crash under ubuntu is here.
 
             //viewer2d_.showRGBImage ((unsigned char*)rgb24.data, rgb24.cols, rgb24.rows);
-            //viewer2d_.spinOnce(3);  
+            //viewer2d_.spinOnce(3);              
         }      
     }
 
@@ -323,6 +324,9 @@ struct KinFuApp
 
 int main()
 {   
+    pcl::gpu::setDevice(0);
+    cout << "Device: " << pcl::gpu::getDeviceName(0) << endl;
+
     CaptureOpenNI cap(0); //First OpenNI device.
     //CaptureOpenNI cap("d:/onis/20111013-224932.oni");
     //CaptureOpenNI cap("d:/onis/white1.oni");

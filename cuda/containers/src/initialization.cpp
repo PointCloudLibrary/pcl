@@ -72,5 +72,13 @@ void pcl::gpu::setDevice(int device)
     cudaSafeCall( cudaSetDevice( device ) );
 }
 
+std::string pcl::gpu::getDeviceName(int device)
+{
+    cudaDeviceProp prop;
+    cudaSafeCall( cudaGetDeviceProperties(&prop, device) );
+
+    return prop.name;
+}
+
 
 #endif
