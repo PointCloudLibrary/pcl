@@ -312,8 +312,8 @@ void load_model(const std::vector<std::string> & files)
   {
     std::cout << "Load model: " << *file << std::endl;
 
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA> (*file, *cloud) == -1) //* load the file
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (*file, *cloud) == -1) //* load the file
     {
       PCL_ERROR ("Couldn't read file %s \n", file->c_str()) ;
       exit (-1);
@@ -361,7 +361,7 @@ int main(int argc, char** argv)
   window_height_ = range_likelihood_->height();
 
   glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+  glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);
   glutInitWindowPosition(10,10);
   glutInitWindowSize(window_width_, window_height_);
   glutCreateWindow("OpenGL range likelihood");

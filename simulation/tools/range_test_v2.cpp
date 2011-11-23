@@ -20,6 +20,7 @@
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 #include <GL/gl.h>
+
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <pcl/io/pcd_io.h>
@@ -45,10 +46,12 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 
-//#include <pcl/range_image/range_image.h>
+// RangeImage:
 #include <pcl/range_image/range_image_planar.h>
 
-// RangeImage:
+// Pop-up viewer
+#include <pcl/visualization/cloud_viewer.h>
+
 
 
 using namespace Eigen;
@@ -67,6 +70,7 @@ int window_width_;
 int window_height_;
 bool paused_;
 bool write_file_;
+
 
 void
 printHelp (int argc, char **argv)
@@ -274,16 +278,12 @@ void display() {
   glutSwapBuffers();
   
 
-//  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA> () );
-  pcl::PointCloud<pcl::PointXYZRGBA> pcout;
+//  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB> () );
+  pcl::PointCloud<pcl::PointXYZRGB> pcout;
   pcout.width    = 640*480;
   pcout.height   = 1;
-  pcout.is_dense = false;
+  pcout.is_dense = false;		
  
-  
-  
-  
-  
   
   if (write_file_){
     //     camera_width_in 640;
@@ -292,22 +292,54 @@ void display() {
     //float camera_fy_in=	    576.09757860;
     //float camera_cx_in= 321.06398107; 
     //float camera_cy_in= 242.97676897;
+    
+    range_likelihood_->addNoise();
 
     pcl::RangeImagePlanar rangeImage;
     range_likelihood_->getRangeImagePlanar(rangeImage);
     std::cout << rangeImage << " ---  range image info\n";
 
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pc_out (new pcl::PointCloud<pcl::PointXYZRGBA>);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out (new pcl::PointCloud<pcl::PointXYZRGB>);
+    
     range_likelihood_->getPointCloud(pc_out);
+    
+    
+
     pcl::PCDWriter writer;
     writer.write ("simulated_range_image.pcd", *pc_out, false);  
-    
-    int pause;
     cout << "finished writing file\n";
-    cin >> pause;
+    
+    
+    pcl::visualization::CloudViewer viewer ("Simple Cloud Viewer");
+
+    viewer.showCloud (pc_out);
+
+    
+    // Problem: vtk and opengl dont seem to play very well together
+    // vtk seems to misbehavew after a little while and wont keep the window on the screen
+
+    // method1: kill with [x] - but eventually it crashes:
+    //while (!viewer.wasStopped ()){
+    //}    
+    
+        
+    // method2: eventually starts ignoring cin and pops up on screen and closes almost 
+    // immediately
+    //  cout << "enter 1 to cont\n";
+    //  cin >> pause;
+    //  viewer.wasStopped ();
+    
+    // method 3: if oyou interact with the window with keys, the window is not closed properly
+    // TODO: use pcl methods as this is probably not cross playform
+    struct timespec t;
+    t.tv_sec = 10;
+    //t.tv_nsec = (time_t)(20000000); // short sleep
+    t.tv_nsec = (time_t)(0);  // long sleep - normal speed
+    nanosleep(&t, NULL);
+    
+    
     write_file_ =0;
   }
-  
 }
 
 // Handle normal keys
@@ -333,6 +365,7 @@ void on_keyboard(unsigned char key, int x, int y)
     paused_ = !paused_;
   else if (key == 'f' || key == 'F')
     write_file_ = 1;
+  
 
   // Use glutGetModifiers for modifiers
   // GLUT_ACTIVE_SHIFT, GLUT_ACTIVE_CTRL, GLUT_ACTIVE_ALT
@@ -397,8 +430,8 @@ void load_PCDstack_model(const std::vector<std::string> & files)
   {
     std::cout << "Load model: " << *file << std::endl;
 
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA> (*file, *cloud) == -1) //* load the file
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (*file, *cloud) == -1) //* load the file
     {
       PCL_ERROR ("Couldn't read file %s \n", file->c_str()) ;
       exit (-1);
@@ -476,7 +509,7 @@ void initialize(int argc, char** argv)
   
   //string polygon_file = "/home/mfallon/data/pcd_data/example_data/example_output/mesh.vtk";
   
-  wait();
+  //wait();
 
   int i;
   for (i=0; i<2048; i++) {
