@@ -96,7 +96,7 @@ void RWXModel::draw()
 }
 */
 
-PointCloudModel::PointCloudModel(GLenum mode, pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pc) : mode_(mode)
+PointCloudModel::PointCloudModel(GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc) : mode_(mode)
 {
   nvertices_ = pc->points.size();
   vertices_ = new float[3*nvertices_];
