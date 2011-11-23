@@ -37,6 +37,7 @@
  */
 
 #include <pcl/common/gaussian.h>
+#include <pcl/exceptions.h>
 
 void 
 pcl::GaussianKernel::compute(double sigma, 
@@ -56,7 +57,7 @@ pcl::GaussianKernel::compute(double sigma,
   for(unsigned i = 0; fabs (kernel[i]/max_gauss) < factor; i++, g_width-= 2);
   if(g_width == kernel_width)
   { 
-    PCL_THROW_EXCEPTION(KernelWidthTooSmallException,
+    PCL_THROW_EXCEPTION(pcl::KernelWidthTooSmallException,
                         "kernel width " << kernel_width 
                         << "is too small for the given sigma " << sigma);
     return;

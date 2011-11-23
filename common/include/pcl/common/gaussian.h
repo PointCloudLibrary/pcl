@@ -40,7 +40,6 @@
 #define PCL_GAUSSIAN_KERNEL
 
 #include <sstream>
-#include <pcl/exceptions.h>
 #include <Eigen/Core>
 
 namespace pcl
@@ -59,7 +58,7 @@ namespace pcl
         * \param[IN] sigma
         * \param[OUT] kernel the computed gaussian kernel
         * \param[IN] kernel_width the desired kernel width upper bond
-        * \throws pcl::imaging::KernelWidthTooSmallException
+        * \throws pcl::KernelWidthTooSmallException
         */
       void
       compute(double sigma, 
@@ -72,7 +71,7 @@ namespace pcl
         * \param[OUT] kernel the computed gaussian kernel
         * \param[OUT] derivative the computed kernel derivative
         * \param[IN] kernel_width the desired kernel width upper bond
-        * \throws pcl::imaging::KernelWidthTooSmallException
+        * \throws pcl::KernelWidthTooSmallException
         */
       void
       compute(double sigma, 
