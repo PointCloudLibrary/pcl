@@ -18,6 +18,7 @@ if(build)
         src/poses_from_matches.cpp
         src/print.cpp
         src/time_trigger.cpp
+        src/gaussian.cpp
         )
 
     set(incs 
@@ -40,7 +41,7 @@ if(build)
           include/pcl/Vertices.h
           include/pcl/PointIndices.h
           include/pcl/TextureMesh.h
-        )
+          )
 
         set(sensor_msg_incs 
           include/sensor_msgs/PointField.h
@@ -76,6 +77,7 @@ if(build)
         include/pcl/common/synchronizer.h
         include/pcl/common/utils.h
         include/pcl/common/geometry.h
+        include/pcl/common/gaussian.h
         )
 
     set(common_incs_impl
