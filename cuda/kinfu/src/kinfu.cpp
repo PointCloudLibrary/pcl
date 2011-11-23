@@ -35,7 +35,7 @@
 */
 
 #include<iostream>
-#include<fstream>
+#include<algorithm>
 
 #include "pcl/common/time.h"
 #include "pcl/gpu/kinfu/kinfu.hpp"
@@ -75,15 +75,21 @@ pcl::gpu::KinfuTracker::KinfuTracker(int rows, int cols) : rows_(rows), cols_(co
     setVolumeSize(Vector3f::Constant(3000));
 
     init_Rcam_   = Eigen::Matrix3f::Identity();// * AngleAxisf(-30.f/180*3.1415926, Vector3f::UnitX());
-    init_tcam_   = volume_size_ * 0.5f;    
-    init_tcam_(2) -= volume_size_(2)/2 * 1.2f;
-    
+    init_tcam_   = volume_size_ * 0.5f - Vector3f(0, 0, volume_size_(2)/2 * 1.2f);
+        
     const int iters[] = {10, 5, 4};
     std::copy(iters, iters + LEVELS, icp_iterations_);
 
-    distThres_ = 100; //mm
-    angleThres_ = sin(20.f * 3.14159254f/180.f);
-    tranc_dist_ = 30; //mm
+    float cx = volume_size_(0)/VOLUME_X;
+    float cy = volume_size_(1)/VOLUME_Y;
+    float cz = volume_size_(2)/VOLUME_Z;
+
+    const float default_distThres = 100; //mm
+    const float default_angleThres = sin(20.f * 3.14159254f/180.f);    
+    const float default_tranc_dist = 30; //mm
+
+    setIcpCorespFilteringParams(default_distThres, default_angleThres);
+    setTrancationDistance(default_tranc_dist);
 
     allocateBufffers(rows, cols);
     reset();
@@ -108,11 +114,30 @@ void pcl::gpu::KinfuTracker::setInitalCameraPose(const Eigen::Affine3f& pose)
     init_tcam_ = pose.translation();
 }
 
+void pcl::gpu::KinfuTracker::setTrancationDistance(float distance)
+{
+    float cx = volume_size_(0)/VOLUME_X;
+    float cy = volume_size_(1)/VOLUME_Y;
+    float cz = volume_size_(2)/VOLUME_Z;
+
+    tranc_dist_ = max(distance, 2.1f * max(cx, max(cy, cz)));    
+}
+
+void pcl::gpu::KinfuTracker::setIcpCorespFilteringParams(float distThreshold, float sineOfAngle)
+{
+    distThres_  = distThreshold; //mm
+    angleThres_ = sineOfAngle;
+}
+
+Eigen::Vector3f pcl::gpu::KinfuTracker::getVolumeSize() const { return volume_size_; }
 int pcl::gpu::KinfuTracker::cols() { return cols_; }
 int pcl::gpu::KinfuTracker::rows() { return rows_; }                              
 
 void pcl::gpu::KinfuTracker::reset()
 {
+    if (global_time_)
+        cout << "Reset" << endl;
+
     global_time_ = 0;
     rmats_.clear();
     tvecs_.clear();
@@ -120,8 +145,7 @@ void pcl::gpu::KinfuTracker::reset()
     rmats_.push_back(init_Rcam_);
     tvecs_.push_back(init_tcam_);
 
-    device::initVolume<volume_elem_type>(volume_);
-    cout << "Reset" << endl;
+    device::initVolume<volume_elem_type>(volume_);    
 }
 
 void pcl::gpu::KinfuTracker::allocateBufffers(int rows, int cols)
@@ -166,7 +190,8 @@ void pcl::gpu::KinfuTracker::allocateBufffers(int rows, int cols)
 }
 
 bool pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw)
-{				        	
+{				    
+    setTrancationDistance(tranc_dist_);
     device::Intr intr(fx_, fy_, cx_, cy_);
     {
         //ScopeTime time(">>> Bilateral, pyr-down-all, create-maps-all");          
@@ -262,7 +287,7 @@ bool pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw)
                 //checking nullspace
                 float det = A.determinant();
 
-                if (det < 1e-15 || !pcl::device::valid_host(det))
+                if (fabs(det) < 1e-15 || !pcl::device::valid_host(det))
                 {                    
                     if (!valid_host(det)) cout << "qnan" << endl;
 
@@ -490,14 +515,12 @@ void pcl::gpu::KinfuTracker::getCloudFromVolumeHost(PointCloud<PointType>& cloud
     cloud.height = 1;
 }
 
-pcl::gpu::DeviceArray<pcl::gpu::KinfuTracker::PointType> pcl::gpu::KinfuTracker::getCloudFromVolume(DeviceArray<PointType>& cloud_buffer, bool connected26)
+pcl::gpu::DeviceArray<pcl::gpu::KinfuTracker::PointType> pcl::gpu::KinfuTracker::getCloudFromVolume(DeviceArray<PointType>& cloud_buffer)
 {
-    pcl::gpu::error("GPU cloud extraction is not implemented", __FILE__, __LINE__);
-
     if (cloud_buffer.empty())
         cloud_buffer.create(DEFAULT_VOLUME_CLOUD_BUFFER_SIZE);
         
     float3 device_volume_size = device_cast<float3>(volume_size_);
-    size_t size = device::extractCloud(volume_, device_volume_size, cloud_buffer, connected26);
+    size_t size = device::extractCloud(volume_, device_volume_size, cloud_buffer);
     return DeviceArray<PointType>(cloud_buffer.ptr(), size);
 }

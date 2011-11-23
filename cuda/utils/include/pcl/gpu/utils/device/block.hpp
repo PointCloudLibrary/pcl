@@ -57,8 +57,8 @@ namespace pcl
 			{
 				__syncthreads();                
 			}
-
-			static __device__ __forceinline__ int straightenedThreadId()
+			
+            static __device__ __forceinline__ int flattenedThreadId()
 			{
 				return threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
 			}
@@ -67,7 +67,7 @@ namespace pcl
 			static __device__ __forceinline__ void fill(It beg, It end, const T& value)
 			{
 				int STRIDE = stride();
-				It t = beg + straightenedThreadId(); 
+				It t = beg + flattenedThreadId(); 
 
 				for(; t < end; t += STRIDE)
 					*t = value;
@@ -77,7 +77,7 @@ namespace pcl
             static __device__ __forceinline__ void yota(OutIt beg, OutIt end, T value)
             {
                 int STRIDE = stride();
-                int tid = straightenedThreadId();                                
+                int tid = flattenedThreadId();                                
                 value += tid;
 
                 for(OutIt t = beg + tid; t < end; t += STRIDE, value += STRIDE)
@@ -88,7 +88,7 @@ namespace pcl
 			static __device__ __forceinline__ void copy(InIt beg, InIt end, OutIt out)
 			{
 				int STRIDE = stride();
-				InIt  t = beg + straightenedThreadId();
+				InIt  t = beg + flattenedThreadId();
 				OutIt o = out + (t - beg);
 
 				for(; t < end; t += STRIDE, o += STRIDE)
@@ -97,7 +97,7 @@ namespace pcl
 			template<int CTA_SIZE, typename T, class BinOp>
 			static __device__ __forceinline__ void reduce(volatile T* buffer, BinOp op)
 			{
-				int tid = straightenedThreadId();
+				int tid = flattenedThreadId();
 				T val =  buffer[tid];
 				
 				if (CTA_SIZE >= 1024) { if (tid < 512) buffer[tid] = val = op(val, buffer[tid + 512]); __syncthreads(); }
@@ -119,7 +119,7 @@ namespace pcl
 			template<int CTA_SIZE, typename T, class BinOp>
 			static __device__ __forceinline__ T reduce(volatile T* buffer, T init, BinOp op)
 			{
-				int tid = straightenedThreadId();
+				int tid = flattenedThreadId();
 				T val =  buffer[tid] = init;
 				__syncthreads();
 

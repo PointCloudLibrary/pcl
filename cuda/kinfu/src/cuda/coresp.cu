@@ -138,7 +138,7 @@ namespace pcl
             {                
                 __shared__ volatile int smem[CTA_SIZE];                
 
-                int tid = Block::straightenedThreadId();
+                int tid = Block::flattenedThreadId();
 
                 smem[tid] = i;
                 __syncthreads();

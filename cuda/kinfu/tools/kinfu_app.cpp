@@ -45,6 +45,7 @@
 #include <pcl/visualization/image_viewer.h>
 #include "pcl/visualization/pcl_visualizer.h"
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/ply_io.h>
 
 #include "openni_capture.hpp"
     
@@ -92,11 +93,28 @@ void donwloadOrganized(const DeviceArray2D<PointT>& device, pcl::PointCloud<Poin
 
 struct KinFuApp
 {
-    KinFuApp(CaptureOpenNI& source, bool show_current_frame = false) : exit_(false), scan_(false), connected26_(false), hasImage_(false), 
+    KinFuApp(CaptureOpenNI& source, bool show_current_frame = false) : exit_(false), scan_(false), connected26_(false), use_cpu_for_cloud_extraction_(false), hasImage_(false), 
         capture_(source), cloud_viewer_("Volume Cloud Viewer")
     {        
+        /////////////////////////////////////////
+        //Init Kinfu Tracker
+        Eigen::Vector3f volume_size = Vector3f::Constant(3000);
+
         float f = capture_.depth_focal_length_VGA;
         kinfu_.setDepthIntrinsics(f, f);
+        kinfu_.setVolumeSize(volume_size);        
+        
+        Eigen::Matrix3f R = Eigen::Matrix3f::Identity();// * AngleAxisf(-30.f/180*3.1415926, Vector3f::UnitX());
+        Eigen::Vector3f t = volume_size * 0.5f - Vector3f(0, 0,  volume_size(2)/2 * 1.2f);                                
+        
+        Eigen::Affine3f pose = Eigen::Translation3f(t) * Eigen::AngleAxisf(R);            
+    
+        kinfu_.setInitalCameraPose(pose);
+        kinfu_.setTrancationDistance(30); // in mm;
+        kinfu_.setIcpCorespFilteringParams(100/*mm*/, sin(20.f * 3.14159254f/180.f));
+                
+        /////////////////////////////////////////
+        //Init KinfuApp
 
         viewer3d_.setName("View3D from ray tracing");
         //viewer2d_.setName("Kinect RGB stream");
@@ -112,6 +130,7 @@ struct KinFuApp
         cloud_viewer_.initCameraParameters ();
         cloud_viewer_.camera_.clip[0] = 0.01; 
         cloud_viewer_.camera_.clip[1] = 10000.01;
+        cloud_viewer_.addText ("HotKeys: T, M, S, B, P, C", 2, 15, 20, 34, 135, 246);
 
         float diag = sqrt((float)kinfu_.cols() * kinfu_.cols() + kinfu_.rows() * kinfu_.rows());
         cloud_viewer_.camera_.fovy = 2*atan(diag/(2*f));
@@ -121,8 +140,7 @@ struct KinFuApp
         //viewer2d_.registerKeyboardCallback(keyboard_callback, (void*)this);        
 
         if (show_current_frame)
-        {
-            
+        {            
             frame_cloud_ptr_   = PointCloud<PointXYZ>::Ptr(new PointCloud<pcl::PointXYZ>);
             frame_cloud_ptr_->points.push_back(pcl::PointXYZ(0, 0, 0));
             frame_cloud_ptr_->width = frame_cloud_ptr_->height = 1;
@@ -141,7 +159,7 @@ struct KinFuApp
             frame_cloud_viewer_->camera_.clip[1] = 10000.01;   
             frame_cloud_viewer_->registerKeyboardCallback(keyboard_callback, (void*)this);
             setViewerPose(*frame_cloud_viewer_, kinfu_.getCameraPose());
-        }        
+        }     
     }
  
     void execute()
@@ -152,7 +170,7 @@ struct KinFuApp
         for(int i = 0; !exit_ ;++i)
         {                        
             //cout << i << endl;
-            //if (i == 7) break;
+            //if (i == 3) break;
 
             if (!capture_.grab(depth, rgb24))
             {
@@ -175,18 +193,20 @@ struct KinFuApp
                 {
                     ScopeTimeT time("point cloud extraction");
                     cout << "\nGetting cloud..." << endl;
-#if 1
-                    kinfu_.getCloudFromVolumeHost(*cloud_ptr_, connected26_); 
-#else
-                    cloud_buffer_device_.create(10 * 1000 * 1000);
-                    DeviceArray<KinfuTracker::PointType> extracted = kinfu_.getCloudFromVolume(cloud_buffer_device_);
-                    extracted.download(cloud_ptr_->points);
-                    cloud_ptr_->width  = (int)cloud_ptr_->points.size();
-                    cloud_ptr_->height = 1;                    
-#endif                    
-                }                
+
+                    if(use_cpu_for_cloud_extraction_)
+                        kinfu_.getCloudFromVolumeHost(*cloud_ptr_, connected26_); 
+                    else
+                    {
+                        DeviceArray<KinfuTracker::PointType> extracted = kinfu_.getCloudFromVolume(cloud_buffer_device_);
+                        extracted.download(cloud_ptr_->points);                    
+                        cloud_ptr_->width  = (int)cloud_ptr_->points.size();
+                        cloud_ptr_->height = 1; 
+                    }
+                }
                 cout << "  Cloud size: " << cloud_ptr_->points.size()/1000 << "K"<< endl << endl;                
                 cloud_viewer_.updatePointCloud(cloud_ptr_);
+                //printf("exact_size = %d\n", cloud_ptr_->points.size());
             }
 
             if (hasImage_)
@@ -195,8 +215,8 @@ struct KinFuApp
                 view_device_.download(view_host_, cols);
                 viewer3d_.showRGBImage((unsigned char*)&view_host_[0], view_device_.cols(), view_device_.rows());                
 
-                //views.push_back(cv::Mat());
-                //cv::cvtColor(cv::Mat(480, 640, CV_8UC3, (void*)&view_host_[0]), views.back(), CV_RGB2GRAY);
+                //views_.push_back(cv::Mat());
+                //cv::cvtColor(cv::Mat(480, 640, CV_8UC3, (void*)&view_host_[0]), views_.back(), CV_RGB2GRAY);
 
                 if(frame_cloud_viewer_)
                 {
@@ -215,7 +235,7 @@ struct KinFuApp
 
             //viewer2d_.showRGBImage ((unsigned char*)rgb24.data, rgb24.cols, rgb24.rows);
             //viewer2d_.spinOnce(3);  
-        }        
+        }      
     }
 
     void resetCloud()
@@ -229,6 +249,7 @@ struct KinFuApp
     bool exit_;
     bool scan_;
     bool connected26_;
+    bool use_cpu_for_cloud_extraction_;
 
     bool hasImage_;
 
@@ -272,20 +293,27 @@ struct KinFuApp
                 app->scan_ = true; 
                 break;        
             case (int)'m': case (int)'M': 
-                app->connected26_ = !app->connected26_; 
-                cout << "Cloud extraction mode: " << (app->connected26_ ? 26 : 6) << endl;
+                app->connected26_ = !app->connected26_;                 
+                cout << endl << "Cloud extraction mode: " << (app->connected26_ ? "connected26 (CPU only)" : "connected6") << endl << endl;
                 break;        
             case (int)'c': case (int)'C': 
                 app->resetCloud();
-                cout << "Cloud viewer was reset" << endl;
+                cout << "Cloud viewer is reset" << endl;
                 break;        
             case (int)'s': case (int)'S': 
+                cout << "Saving to cloud.pcd...";
                 pcl::io::savePCDFile("cloud.pcd", *app->cloud_ptr_, false);
-                cout << "Saved to cloud.pcd" << endl;
+                cout << "Done" << endl;
                 break;            
             case (int)'b': case (int)'B': 
+                cout << "Saving to cloud.pcd...";
                 pcl::io::savePCDFile("cloud.pcd", *app->cloud_ptr_, true);
-                cout << "Saved to cloud.pcd" << endl;
+                cout << "Done" << endl;
+                break;
+            case (int)'p': case (int)'P': 
+                cout << "Saving to cloud.ply...";
+                pcl::io::savePLYFileASCII("cloud.ply", *app->cloud_ptr_);
+                cout << "Done" << endl;               
                 break;
             default:
                 break;
@@ -295,15 +323,17 @@ struct KinFuApp
 
 int main()
 {   
-    //CaptureOpenNI cap(0); //First OpenNI device.
+    CaptureOpenNI cap(0); //First OpenNI device.
     //CaptureOpenNI cap("d:/onis/20111013-224932.oni");
+    //CaptureOpenNI cap("d:/onis/white1.oni");
     //CaptureOpenNI cap("/media/Main/onis/20111013-224932.oni");
-    CaptureOpenNI cap("20111013-225218.oni");
+    //CaptureOpenNI cap("20111013-225218.oni");
     //CaptureOpenNI cap("d:/onis/20111013-224551.oni");
     //CaptureOpenNI cap("d:/onis/20111013-224719.oni");
-
-    //KinFuApp app(cap, true);
+    
+    //KinFuApp app(cap, true); // show current frame cloud
     KinFuApp app(cap);
+    //app.use_cpu_for_cloud_extraction_ = true;
 
     // executing
     try { app.execute(); }    

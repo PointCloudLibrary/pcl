@@ -70,26 +70,31 @@ namespace pcl
         enum 
         {
             CTA_SIZE_X = 32,
-            CTA_SIZE_Y = 6,
-            CTA_SIZE = CTA_SIZE_X * CTA_SIZE_Y, 
-
-            MAX_LOCAL_POINTS = 3
+            CTA_SIZE_Y = 8,
+            CTA_SIZE = CTA_SIZE_X * CTA_SIZE_Y
         };
 
+        __shared__ int shared_count;
         __device__ int global_count = 0;
+        __device__ int global_count_dd = 0;
         __device__ int output_count;
         __device__ unsigned int blocks_done = 0;
-        
-        __shared__ float storage_X[CTA_SIZE*MAX_LOCAL_POINTS];
-        __shared__ float storage_Y[CTA_SIZE*MAX_LOCAL_POINTS];
-        __shared__ float storage_Z[CTA_SIZE*MAX_LOCAL_POINTS];
-        
+
+
+        const static int MAX_SHARED_COUNT = CTA_SIZE*3;
+        __shared__ float storage[3][MAX_SHARED_COUNT];
+
+        __shared__ int cta_buffer[CTA_SIZE];
+
         struct FullScan6
         {
+
             PtrStep<volume_elem_type> volume;
             float3 cell_size;
 
+
             mutable PtrSz<PointType> output;
+
 
             __device__ __forceinline__ float fetch(int x, int y, int z, int& weight) const
             {
@@ -103,6 +108,9 @@ namespace pcl
                 int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
                 int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
 
+                if (threadIdx.x == 0 && threadIdx.y == 0 && threadIdx.z == 0)
+                    shared_count = 0;
+
                 if (__all(x >= VOLUME_X) || __all(y >= VOLUME_Y))
                     return;
 
@@ -111,10 +119,10 @@ namespace pcl
                 V.y = (y + 0.5f) * cell_size.y;
 
                 int ftid = Block::flattenedThreadId();
-                
+
                 for(int z = 0; z < VOLUME_Z - 1; ++z)
-                {                   
-                    float3 points[MAX_LOCAL_POINTS];
+                {
+                    float3 points[3];
                     int local_count = 0;
 
                     if (x < VOLUME_X && y < VOLUME_Y)
@@ -164,7 +172,7 @@ namespace pcl
                                         float Vny = V.y + cell_size.y;
 
                                         float d_inv = 1.f/(fabs(F) + fabs(Fn));
-                                        p.y = (V.y * fabs(Fn) + Vny * fabs(F)) * d_inv;
+                                        p.y = (V.x * fabs(Fn) + Vny * fabs(F)) * d_inv;
 
                                         points[local_count++] = p;
                                     }
@@ -186,7 +194,7 @@ namespace pcl
                                         float Vnz = V.z + cell_size.z;
 
                                         float d_inv = 1.f/(fabs(F) + fabs(Fn));
-                                        p.z = (V.z * fabs(Fn) + Vnz * fabs(F)) * d_inv;
+                                        p.z = (V.x * fabs(Fn) + Vnz * fabs(F)) * d_inv;
 
                                         points[local_count++] = p;
                                     }
@@ -195,48 +203,84 @@ namespace pcl
                     }  /* if (x < VOLUME_X && y < VOLUME_Y) */
 
                     
-                    ///not we fulfilled points array at current iteration
                     int total_warp = __popc(__ballot(local_count > 0)) + __popc(__ballot(local_count > 1)) + __popc(__ballot(local_count > 2));                    
-                    
+                    int offset;
+
+                    int block_old_shared_count = shared_count;
+                    __syncthreads();                    
+
                     if (total_warp > 0)
                     {
-                        int lane = Warp::laneId(); 
-                        int storage_index = (ftid >> Warp::LOG_WARP_SIZE) * Warp::WARP_SIZE * MAX_LOCAL_POINTS;
+                        cta_buffer[ftid] = local_count;                        
+                        offset = scan_warp<exclusive>(cta_buffer, ftid); 
 
-                        volatile int* cta_buffer = (int*)(storage_X + storage_index);
-                        
-                        cta_buffer[lane] = local_count;                        
-                        int offset = scan_warp<exclusive>(cta_buffer, lane); 
-                                                
+                        int lane = Warp::laneId();
                         if (lane == 0)
                         {
-                            int old_global_count = atomicAdd(&global_count, total_warp);
-                            cta_buffer[0] = old_global_count;
+                            int old_shared_count = atomicAdd(&shared_count, total_warp);
+                            cta_buffer[ftid - lane] = old_shared_count;
                         }
-                        int old_global_count = cta_buffer[0];
-
-                        for(int l = 0; l < local_count; ++l)
-                        { 
-                            storage_X[storage_index + offset + l] = points[l].x;
-                            storage_Y[storage_index + offset + l] = points[l].y;
-                            storage_Z[storage_index + offset + l] = points[l].z;
-                        }
+                        int old_shared_count = cta_buffer[ftid - lane];
                         
-                        PointType *pos = output.data + old_global_count + lane;
-                        for(int idx = lane; idx < total_warp; idx+=Warp::STRIDE, pos += Warp::STRIDE)
+                        //can write
+                        if (old_shared_count + total_warp < MAX_SHARED_COUNT)
                         {
-                            float x = storage_X[storage_index + idx];
-                            float y = storage_Y[storage_index + idx];
-                            float z = storage_Z[storage_index + idx];
-                            store_point_type(x, y, z, pos);    
+                            flush2shared(points, local_count, old_shared_count + offset);
+                            total_warp = 0;
                         }
+                    }               
+                    __syncthreads();
 
-                        bool full = (old_global_count + total_warp) >= output.size;
+                     if (ftid == 0)
+                        printf("b....shared_count %d %d\n", shared_count, block_old_shared_count);
 
-                        if (full)
-                            break;                        
-                    }  
-                    
+                     __syncthreads();
+
+
+                    if (shared_count > MAX_SHARED_COUNT)
+                    {
+                        if (ftid == 0)
+                            printf("flushing %d\n", shared_count);
+                        
+                        if (flush2global(block_old_shared_count))
+                            break;
+
+                        __syncthreads();
+
+                        if (ftid == 0)
+                            printf("after flushing %d %d\n", shared_count, global_count);
+                    }
+
+                    __syncthreads();
+
+                    //repeat unsucessiful write 
+                    if (total_warp > 0)
+                    {   
+                        int lane = Warp::laneId();
+                        if (lane == 0)
+                        {
+                            int old_shared_count = atomicAdd(&shared_count, total_warp);
+                            cta_buffer[ftid - lane] = old_shared_count;
+
+                            printf("@%d - %d\n", old_shared_count, total_warp);
+                        }
+                        int old_shared_count = cta_buffer[ftid - lane];
+
+                        //sure that shared memory is enought after flushing to global
+                        flush2shared(points, local_count, old_shared_count + offset);
+                    }            
+
+                    __syncthreads();
+
+                    if (ftid == 0)
+                    {
+                        //printf("....shared_count %d\n", shared_count);
+
+                    }
+
+                    //need in order to be sure that all unsucessiful writes before are completed
+                    __syncthreads();
+
                 } /* for(int z = 0; z < VOLUME_Z - 1; ++z) */
 
 
@@ -249,18 +293,74 @@ namespace pcl
 
                     //last block
                     if (value == total_blocks - 1)
-                    {                        
+                    {
+                        printf("global_count => %d\n", global_count);
                         output_count = min(output.size, global_count);
                         blocks_done = 0;
                         global_count = 0;  
+
+                        printf("global_count_dd %d\n", global_count_dd);
                     }                                        
                 }
+
             } /* operator() */
-           
+
+            __device__ __forceinline__ void flush2shared(float3 points[], int local_count, int offset) const
+            {
+                for(int l = 0; l < local_count; ++l)
+                {
+                    storage[0][offset+l] = points[l].x;
+                    storage[1][offset+l] = points[l].y;
+                    storage[2][offset+l] = points[l].z;
+                }
+            }
+
+            __device__ __forceinline__ bool flush2global(int old_shared_count) const
+            {   
+                int ftid = Block::flattenedThreadId();
+                int STRIDE = Block::stride();
+
+                if (ftid == 0)
+                {
+                    int old_global = atomicAdd(&global_count, old_shared_count);
+                    cta_buffer[0] = old_global;
+                }
+                __syncthreads();
+
+                int old_global = cta_buffer[0];
+
+                int new_length = min(output.size, old_global + old_shared_count);
+
+                PointType *beg = output.data + old_global;
+                PointType *end = output.data + new_length;
+                               
+
+                int index = ftid;
+                for(PointType* pos = beg + ftid; pos < end; pos += STRIDE, index += STRIDE)
+                {
+                    float x = storage[0][index];
+                    float y = storage[1][index];
+                    float z = storage[2][index];
+                    store_point_type(x, y, z, pos);                    
+                }
+
+                bool full = (old_global + old_shared_count) >= output.size;
+
+                __syncthreads();
+
+                if (ftid == 0)
+                    shared_count = 0;
+
+                __syncthreads();
+
+                return full;
+            }
+
             __device__ __forceinline__ void store_point_type(float x, float y, float z, float4* ptr) const { *ptr = make_float4(x, y, z, 0); }
             __device__ __forceinline__ void store_point_type(float x, float y, float z, float3* ptr) const { *ptr = make_float3(x, y, z); }
         };
 
+        //__global__ void extractKernel(const FullScan26 fs) { fs(); }
         __global__ void extractKernel(const FullScan6 fs) { fs(); }
     }
 }
@@ -277,14 +377,142 @@ size_t pcl::device::extractCloud(const PtrStep<volume_elem_type>& volume, const 
     dim3 block(CTA_SIZE_X, CTA_SIZE_Y);
     dim3 grid(divUp(VOLUME_X, block.x), divUp(VOLUME_Y, block.y));
 
-    //cudaFuncSetCacheConfig(extractKernel, cudaFuncCachePreferL1);
-    //printFuncAttrib(extractKernel);
+    cudaFuncSetCacheConfig(extractKernel, cudaFuncCachePreferL1);
+    printFuncAttrib(extractKernel);
 
     extractKernel<<<grid, block>>>(fs);
     cudaSafeCall( cudaGetLastError() );    	  
     cudaSafeCall(cudaDeviceSynchronize());
 
-    int size;    
+    printf(">>> osz %d\n", output.size);
+
+    int size;
     cudaSafeCall( cudaMemcpyFromSymbol(&size, output_count, sizeof(size)) );
     return (size_t)size;    
 }
+
+
+
+#if 0
+struct FullScan26
+{
+    enum 
+    {
+        CTA_SIZE_X = 32,
+        CTA_SIZE_Y = 8
+    };
+    PtrStep<volume_elem_type> volume;
+    float3 cell_size;
+
+    __device__ __forceinline__ float fetch(int x, int y, int z, int& weight) const
+    {
+        float tsdf;
+        unpack_tsdf(volume.ptr(VOLUME_Y * z + y)[x], tsdf, weight);
+        return tsdf;                
+    }
+
+    __device__ __forceinline__ void operator()()const
+    {
+        int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
+        int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
+
+        if (x >= VOLUME_X || y >= VOLUME_Y)
+            return;
+
+        if (threadIdx.x == 0 && threadIdx.y == 0)
+            shared_count = 0;
+
+        float3 V;
+        V.x = (x + 0.5f) * cell_size.x;
+        V.y = (y + 0.5f) * cell_size.y;
+
+        for(int z = 0; z < VOLUME_Z - 1; ++z)
+        {
+            int W;
+            float F = fetch(x, y, z, W);
+
+            if (W == 0 || F == 1.f)
+                continue;
+
+            V.z = (z + 0.5f) * cell_size.z;
+
+            //front 3x3
+            int dz = 1;                
+            for(int dy = -1; dy < 2; ++dy)
+            {
+                if (y + dy >= VOLUME_X || y + dy < 0)
+                    continue;
+
+                for(int dx = -1; dx < 2; ++dx)
+                {
+                    if (x + dx >= VOLUME_X || x + dx < 0)
+                        continue;
+
+                    int Wn;
+                    float Fn = fetch(x+dx, y+dy, z+dz, Wn);
+
+                    if (Wn == 0 || Fn == 1.f)
+                        continue;
+
+                    if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
+                    {
+                        float3 Vn = V;
+                        Vn.x += dx * cell_size.x;
+                        Vn.y += dy * cell_size.y;
+                        Vn.z += dz * cell_size.z;
+
+                        float d_inv = 1.f/(fabs(F) + fabs(Fn));
+                        float3 p = (V * fabs(Fn) + Vn * fabs(F)) * d_inv;
+
+                        if(!store(p))
+                            return;
+                    }
+                }
+            }
+
+            //middle 3x1 + 1
+            dz = 0;
+            for(int dy = 0; dy < 2; ++dy)
+            {
+                if (y + dy >= VOLUME_Y)
+                    continue;
+
+                for(int dx = -1; dx < dy * 2; ++dx)
+                {
+                    if (x + dx >= VOLUME_X || x + dx < 0)
+                        continue;
+
+                    int Wn;
+                    float Fn = fetch(x+dx, y+dy, z+dz, Wn);
+
+                    if (Wn == 0 || Fn == 1.f)
+                        continue;
+
+                    if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
+                    {
+                        float3 Vn = V;
+                        Vn.x += dx * cell_size.x;
+                        Vn.y += dy * cell_size.y;
+                        Vn.z += dz * cell_size.z;
+
+                        float d_inv = 1.f/(fabs(F) + fabs(Fn));
+                        float3 p = (V * fabs(Fn) + Vn * fabs(F)) * d_inv;
+
+                        if(!store(p))
+                            return;
+                    }                 
+                }
+            }
+
+        } /* for(int z = 0; z < VOLUME_Z - 1; ++z) */
+    } /* operator() */
+
+    __device__ __forceinline__ bool store(const float3& p) const
+    {                
+        //__ffs __ballot(1);
+
+        return true;
+    }
+};
+
+#endif  

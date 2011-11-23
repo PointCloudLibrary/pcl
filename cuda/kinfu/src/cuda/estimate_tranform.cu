@@ -104,7 +104,7 @@ namespace pcl
                 }
 
                 __shared__ T smem[CTA_SIZE];
-                int tid = Block::straightenedThreadId();
+                int tid = Block::flattenedThreadId();
 
                 int shift = 0;
                 for(int i = 0; i < 6; ++i) //rows

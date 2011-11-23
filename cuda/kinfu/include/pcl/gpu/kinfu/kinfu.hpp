@@ -64,12 +64,24 @@ namespace pcl
 
             /** \brief Sets Tsdf volume size for each dimention in mm */
             void setDepthIntrinsics(float fx, float fy, float cx = -1, float cy = -1);
-                        
+            
+            /** \brief Sets initial camera pose relative to volume coordiante space */
+            void setInitalCameraPose(const Eigen::Affine3f& pose);
+
             /** \brief Sets Tsdf volume size for each dimention in mm */
             void setVolumeSize(const Eigen::Vector3f& volume_size);
 
-            /** \brief Sets initial camera pose relative to volume coordiante space */
-            void setInitalCameraPose(const Eigen::Affine3f& pose);
+            /** \brief Sets Tsdf trancation distance in mm. Must be greater than 2 * volume cell size */
+            void setTrancationDistance(float distance);
+
+            /** \brief Sets ICP filtering parameters. 
+              * \param[in] distThreshold distance in mm.        
+              * \param[in] sineOfAngle sine of angle between normals.        
+              */
+            void setIcpCorespFilteringParams(float distThreshold, float sineOfAngle);
+            
+            /** \brief Returns volume size in mm */
+            Eigen::Vector3f getVolumeSize() const;
 
             /** \brief Returns cols passed to ctor */
             int cols();
@@ -78,7 +90,7 @@ namespace pcl
             int rows();
                                     
             /** \brief Processes next frame.        
-              * \param[in] Depth next frame        
+              * \param[in] Depth next frame with values in mm     
               * \return true if can generate image for human. 
               */
             bool operator()(const DepthMap& depth);
@@ -101,8 +113,8 @@ namespace pcl
             /** \brief Generates cloud on CPU */
             void getCloudFromVolumeHost(PointCloud<PointType>& cloud, bool connected26 = false);
 
-            /** \brief Generates cloud on GPU */           
-            DeviceArray<PointType> getCloudFromVolume(DeviceArray<PointType>& cloud_buffer, bool connected26 = false);            
+            /** \brief Generates cloud on GPU in connected6 mode only*/           
+            DeviceArray<PointType> getCloudFromVolume(DeviceArray<PointType>& cloud_buffer);            
             
         private:  
             enum 

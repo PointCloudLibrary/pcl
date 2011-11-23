@@ -160,7 +160,7 @@ namespace pcl
                     row[0] = row[1] = row[2] = row[3] = row[4] = row[5] = row[6] = 0.f;
                 
                 __shared__ float smem[CTA_SIZE];
-                int tid = Block::straightenedThreadId();
+                int tid = Block::flattenedThreadId();
 
                 int shift = 0;
                 for(int i = 0; i < 6; ++i) //rows

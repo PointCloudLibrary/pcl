@@ -94,7 +94,7 @@ void pcl::device::bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, co
     counting_iterator<int> first(0);
     counting_iterator<int> last = first + cloud.size();
     
-    //main bottle neck is a kernel call overhead
+    //main bottle neck is a kernel call overhead/allocs
     //work time for 871k points ~0.8ms
     int count = thrust::copy_if(first, last, cloud_ptr, res_ptr, cond) - res_ptr;
     result = DeviceArray<int>(buffer.ptr(), count);
