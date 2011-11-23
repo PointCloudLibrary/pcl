@@ -317,7 +317,7 @@ namespace pcl
     unsigned char* rgba_ptr = (unsigned char*)&p.rgba;
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << (int)(*rgba_ptr) << "," << (int)(*(rgba_ptr+1)) << "," << (int)(*(rgba_ptr+2)) << "," <<(int)(*(rgba_ptr+3)) << ")";
     return (os);
-  }
+  } 
 
   struct EIGEN_ALIGN16 _PointXYZRGB
   {
@@ -946,6 +946,21 @@ namespace pcl
   {
     for (int i = 0; i < 308; ++i)
     os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 307 ? ", " : ")");
+    return (os);
+  }
+
+  /** \brief A point structure representing the GFPFH descriptor with 16 bins.
+   * \ingroup common
+   */
+  struct GFPFHSignature16
+  {
+      float histogram[16];
+      static int descriptorSize() { return 16; }
+  };
+  inline std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p)
+  {
+    for (int i = 0; i < p.descriptorSize (); ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < (p.descriptorSize () - 1) ? ", " : ")");
     return (os);
   }
 

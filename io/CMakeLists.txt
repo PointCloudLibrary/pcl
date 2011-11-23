@@ -16,10 +16,8 @@ if(build)
     endif()
     if(OPENNI_FOUND)
         set(OPENNI_GRABBER_INCLUDES
-            include/pcl/io/grabber.h
             include/pcl/io/openni_grabber.h
             include/pcl/io/oni_grabber.h
-            include/pcl/io/pcd_grabber.h
             )
         set(OPENNI_INCLUDES
             include/pcl/io/openni_camera/openni_depth_image.h
@@ -50,7 +48,6 @@ if(build)
             src/openni_camera/openni_image_rgb24.cpp
             src/openni_grabber.cpp
             src/oni_grabber.cpp
-            src/pcd_grabber.cpp
             )
     endif(OPENNI_FOUND)
 
@@ -63,6 +60,7 @@ if(build)
     endif ()
 
     set(srcs 
+        src/pcd_grabber.cpp
         src/pcd_io.cpp
         src/vtk_io.cpp
         src/ply_io.cpp
@@ -77,6 +75,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/file_io.h
         include/pcl/${SUBSYS_NAME}/lzf.h
         include/pcl/${SUBSYS_NAME}/io.h
+        include/pcl/${SUBSYS_NAME}/grabber.h
+        include/pcl/${SUBSYS_NAME}/pcd_grabber.h
         include/pcl/${SUBSYS_NAME}/pcd_io.h
         include/pcl/${SUBSYS_NAME}/pcl_io_exception.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h

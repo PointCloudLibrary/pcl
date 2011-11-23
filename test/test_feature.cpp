@@ -56,6 +56,7 @@
 #include <pcl/features/fpfh_omp.h>
 #include <pcl/features/ppf.h>
 #include <pcl/features/vfh.h>
+#include <pcl/features/gfpfh.h>
 #include <pcl/features/rsd.h>
 #include <pcl/features/intensity_gradient.h>
 #include <pcl/features/intensity_spin.h>
@@ -1386,6 +1387,48 @@ TEST (PCL, VFHEstimation)
 
   //for (size_t d = 0; d < 308; ++d)
   //  std::cerr << vfhs.points[0].histogram[d] << std::endl;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, GFPFH)
+{
+  PointCloud<PointXYZL>::Ptr cloud (new PointCloud<PointXYZL>());
+
+  const unsigned num_classes = 3;
+
+  // Build a cubic shape with a hole and changing labels.
+  for (int z = -10; z < 10; ++z)
+  for (int y = -10; y < 10; ++y)
+  for (int x = -10; x < 10; ++x)
+  {
+    if (x >= -9 && x < 9 && y >= -9 && y < 9 && z >= -9 && z < 9)
+      continue;
+    unsigned label = 1 + (std::abs (x+y+z) % num_classes);
+    PointXYZL p;
+    p.label = label;
+    p.x = x;
+    p.y = y;
+    p.z = z;
+    cloud->points.push_back (p);
+  }
+  cloud->width = cloud->points.size ();
+  cloud->height = 1;
+
+  GFPFHEstimation<PointXYZL, PointXYZL, GFPFHSignature16> gfpfh;
+  gfpfh.setNumberOfClasses (num_classes);
+  gfpfh.setOctreeLeafSize (2);
+  gfpfh.setInputCloud (cloud);
+  gfpfh.setInputLabels (cloud);
+  PointCloud<GFPFHSignature16> descriptor;
+  gfpfh.compute (descriptor);
+
+  const float ref_values[] = { 3216, 7760, 8740, 26584, 4645, 2995, 3029, 4349, 6192, 5440, 9514, 47563, 21814, 22073, 5734, 1253 };
+
+  EXPECT_EQ (descriptor.points.size (), 1);
+  for (size_t i = 0; i < (size_t) descriptor.points[0].descriptorSize (); ++i)
+  {
+    EXPECT_EQ (descriptor.points[0].histogram[i], ref_values[i]);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -313,5 +313,36 @@ pcl::FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
   return (true);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointLT, typename PointOutT> bool
+pcl::FeatureFromLabels<PointInT, PointLT, PointOutT>::initCompute ()
+{
+  if (!Feature<PointInT, PointOutT>::initCompute ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] Init failed.\n", getClassName ().c_str ());
+    return (false);
+  }
+
+  // Check if input normals are set
+  if (!labels_)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] No input dataset containing labels was given!\n", getClassName ().c_str ());
+    Feature<PointInT, PointOutT>::deinitCompute();
+    return (false);
+  }
+
+  // Check if the size of normals is the same as the size of the surface
+  if (labels_->points.size () != surface_->points.size ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] The number of points in the input dataset differs from the number of points in the dataset containing the labels!\n", getClassName ().c_str ());
+    Feature<PointInT, PointOutT>::deinitCompute();
+    return (false);
+  }
+
+  return (true);
+}
+
 #endif  //#ifndef PCL_FEATURES_IMPL_FEATURE_H_
 

@@ -120,7 +120,7 @@ namespace pcl
     public:
       /** \brief Empty constructor. */
       Feature () : surface_(), tree_(), search_parameter_(0), search_radius_(0), k_(0), fake_surface_(false)
-      {};
+      {}
 
       /** \brief Provide a pointer to a dataset to add additional information
        * to estimate the features for every point in the input dataset.  This
@@ -295,7 +295,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::getClassName;
 
       /** \brief Empty constructor. */
-      FeatureFromNormals () {};
+      FeatureFromNormals () {}
 
       /** \brief Provide a pointer to the input dataset that contains the point normals of 
         * the XYZ dataset.
@@ -316,6 +316,66 @@ namespace pcl
         * dataset. 
         */
       PointCloudNConstPtr normals_;
+
+      /** \brief This method should get called before starting the actual computation. */
+      virtual bool
+      initCompute ();
+
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename PointInT, typename PointLT, typename PointOutT>
+  class FeatureFromLabels : public Feature<PointInT, PointOutT>
+  {
+    typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+    typedef typename PointCloudIn::Ptr PointCloudInPtr;
+    typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+
+    typedef typename pcl::PointCloud<PointLT> PointCloudL;
+    typedef typename PointCloudL::Ptr PointCloudNPtr;
+    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+
+    typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+
+    public:
+      typedef boost::shared_ptr< FeatureFromLabels<PointInT, PointLT, PointOutT> > Ptr;
+      typedef boost::shared_ptr< const FeatureFromLabels<PointInT, PointLT, PointOutT> > ConstPtr;
+
+      // Members derived from the base class
+      using Feature<PointInT, PointOutT>::input_;
+      using Feature<PointInT, PointOutT>::surface_;
+      using Feature<PointInT, PointOutT>::getClassName;
+      using Feature<PointInT, PointOutT>::k_;
+
+      /** \brief Empty constructor. */
+      FeatureFromLabels ()
+      {
+        k_ = 1; // Search tree is not always used here.
+      }
+
+      /** \brief Provide a pointer to the input dataset that contains the point normals of
+        * the XYZ dataset.
+        * In case of search surface is set to be different from the input cloud,
+        * labels should correspond to the search surface, not the input cloud!
+        * \param normals the const boost shared pointer to a PointCloud of normals.
+        * By convention, L2 norm of each normal should be 1.
+        */
+      inline void
+      setInputLabels (const PointCloudLConstPtr &labels) { labels_ = labels; }
+
+      /** \brief Get a pointer to the labels of the input XYZ point cloud dataset. */
+      inline PointCloudLConstPtr
+      getInputLabels () { return (labels_); }
+
+    protected:
+      /** \brief A pointer to the input dataset that contains the point labels of the XYZ
+        * dataset.
+        */
+      PointCloudLConstPtr labels_;
 
       /** \brief This method should get called before starting the actual computation. */
       virtual bool

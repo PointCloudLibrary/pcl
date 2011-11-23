@@ -245,6 +245,23 @@ namespace pcl
         int
         getOccupiedVoxelCenters (AlignedPointTVector &voxelCenterList_arg) const;
 
+
+        /** \brief Get a PointT vector of centers of voxels intersected by a line segment.
+         * This returns a approximation of the actual intersected voxels by walking
+         * along the line with small steps. Voxels are ordered, from closest to
+         * furthest w.r.t. the origin.
+         * \param origin origin of the line segment
+         * \param origin end of the line segment
+         * \param voxel_center_list results are written to this vector of PointT elements
+         * \param precision determines the size of the steps: step_size = octree_resolution x precision
+         * \return number of intersected voxels
+        */
+        int
+        getApproxIntersectedVoxelCentersBySegment (const Eigen::Vector3f& origin,
+                                                   const Eigen::Vector3f& end,
+                                                   AlignedPointTVector &voxel_center_list,
+                                                   float precision = 0.2);
+
         /** \brief Delete leaf node / voxel at given point
          *  \param point_arg point addressing the voxel to be deleted.
          * */

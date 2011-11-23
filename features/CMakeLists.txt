@@ -14,6 +14,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/feature.h
         include/pcl/${SUBSYS_NAME}/fpfh.h
         include/pcl/${SUBSYS_NAME}/fpfh_omp.h
+        include/pcl/${SUBSYS_NAME}/gfpfh.h
         include/pcl/${SUBSYS_NAME}/gss3d.h
         include/pcl/${SUBSYS_NAME}/integral_image_2d.h
         include/pcl/${SUBSYS_NAME}/integral_image2D.h
@@ -56,6 +57,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/feature.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh_omp.hpp
+        include/pcl/${SUBSYS_NAME}/impl/gfpfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/gss3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/integral_image_2d.hpp
         include/pcl/${SUBSYS_NAME}/impl/integral_image2D.hpp
@@ -93,6 +95,7 @@ if(build)
         src/cvfh.cpp
         src/fpfh.cpp
         src/fpfh_omp.cpp
+        src/gfpfh.cpp
         src/gss3d.cpp
         src/integral_image_normal.cpp
         src/intensity_gradient.cpp
