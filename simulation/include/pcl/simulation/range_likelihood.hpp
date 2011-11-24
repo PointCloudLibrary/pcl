@@ -10,6 +10,12 @@
 #include <pcl/win32_macros.h>
 #include <pcl/range_image/range_image_planar.h>
 
+// For adding noise:
+#include <boost/random/linear_congruential.hpp>
+#include <boost/random/normal_distribution.hpp>
+#include <boost/random/variate_generator.hpp>
+static boost::minstd_rand generator(27u); // seed
+
 
 namespace pcl
 {
@@ -73,15 +79,27 @@ public:
   int height() {return height_;}
   const float* depth_buffer() const {return depth_buffer_;}
   const uint8_t* color_buffer() const {return color_buffer_;}
-  
+
+    
+    
 
   // Convenience function to return PointCloud containing 
   // simulated RGB-D:
-  void getPointCloud(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pc);
+  void getPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc);
   // Convenience function to return RangeImagePlanar containing 
   // simulated RGB-D:
   void getRangeImagePlanar(pcl::RangeImagePlanar &rip);
+  
+  // Add various types of noise to simulated RGB-D data
+  void addNoise();
 
+  double sample_normal(double sigma = 1.0) {
+    typedef boost::normal_distribution<double> Normal;
+    Normal dist(0.0, sigma);
+    boost::variate_generator<boost::minstd_rand&, Normal> norm(generator, dist);
+    return(norm());
+  }
+  
   typedef boost::shared_ptr<RangeLikelihood> Ptr;
   typedef boost::shared_ptr<const RangeLikelihood> ConstPtr;
   

@@ -89,7 +89,7 @@ private:
 class PCL_EXPORTS PointCloudModel : public Model
 {
 public:
-  PointCloudModel(GLenum mode, pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pc);
+  PointCloudModel(GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc);
   virtual ~PointCloudModel();
   virtual void draw();
 
