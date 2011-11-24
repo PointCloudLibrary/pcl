@@ -370,9 +370,17 @@ void RangeLikelihood::compute_scores(int cols, int rows,
   void RangeLikelihood::addNoise(){
     
 
+    // Other noises:
+    // edge noise: look for edges in the range image and add a few pixels here and there
+    // texture noise: look at the normals and 
+    
+    // Add Gaussian Noise
+    // TODO: make the variance a parameter
+    // TODO: might want to add a range-based variance
+    float variance = 0.0015;
     for (int i=0;i<camera_width_*camera_height_ ;i++){
       if (depth_buffer_[i]  < 1){
-	depth_buffer_[i] =  depth_buffer_[i] +  0.0015*sample_normal();
+	depth_buffer_[i] =  depth_buffer_[i] +  variance*sample_normal();
 	if (depth_buffer_[i]  > 1){
 	  depth_buffer_[i] =1.0;
 	}else if(depth_buffer_[i]  < 0){
@@ -389,6 +397,7 @@ void RangeLikelihood::compute_scores(int cols, int rows,
     // 20m   = ~1070 kinect return - not not well calibrated
     // The fitted model here cannot work for long ranges:
     // http://www.ros.org/wiki/kinect_calibration/technical
+    // TODO: make a parameter
     int bins =470;
     for (int i=0;i<camera_width_*camera_height_ ;i++){
       depth_buffer_[i] =  float(int(depth_buffer_[i]*bins + 0.5))/bins;
