@@ -226,7 +226,6 @@ void display_depth_image(const float* depth_buffer)
 void display() {
   glViewport(range_likelihood_->width(), 0, range_likelihood_->width(), range_likelihood_->height());
   
-  
   float* reference = new float[range_likelihood_->row_height() * range_likelihood_->col_width()];
   const float* depth_buffer = range_likelihood_->depth_buffer();
   // Copy one image from our last as a reference.
@@ -257,11 +256,9 @@ void display() {
   }
   std::cout << std::endl;
 
-
-
   // Draw the depth image
-//  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//  glColorMask(true, true, true, true);
+  //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  //  glColorMask(true, true, true, true);
   glDisable(GL_DEPTH_TEST);
   glViewport(0, 0, range_likelihood_->width(), range_likelihood_->height());
   //glViewport(0, 0, range_likelihood_->width(), range_likelihood_->height());
@@ -274,47 +271,31 @@ void display() {
   //glRasterPos2i(-1,-1);
   //glDrawPixels(range_likelihood_->width(), range_likelihood_->height(), GL_LUMINANCE, GL_FLOAT, range_likelihood_->depth_buffer());
   display_depth_image(range_likelihood_->depth_buffer());
-  
   glutSwapBuffers();
   
-
-//  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB> () );
-  pcl::PointCloud<pcl::PointXYZRGB> pcout;
-  pcout.width    = 640*480;
-  pcout.height   = 1;
-  pcout.is_dense = false;		
- 
-  
   if (write_file_){
-    //     camera_width_in 640;
-    //  camera_height_in 480
+    //camera_width_in 640;
+    //camera_height_in 480
     //float  camera_fx_in= 576.09757860;
     //float camera_fy_in=	    576.09757860;
     //float camera_cx_in= 321.06398107; 
     //float camera_cy_in= 242.97676897;
     
     range_likelihood_->addNoise();
-
     pcl::RangeImagePlanar rangeImage;
     range_likelihood_->getRangeImagePlanar(rangeImage);
     std::cout << rangeImage << " ---  range image info\n";
 
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out (new pcl::PointCloud<pcl::PointXYZRGB>);
-    
     range_likelihood_->getPointCloud(pc_out);
     
-    
-
     pcl::PCDWriter writer;
     writer.write ("simulated_range_image.pcd", *pc_out, false);  
     cout << "finished writing file\n";
     
-    
     pcl::visualization::CloudViewer viewer ("Simple Cloud Viewer");
-
     viewer.showCloud (pc_out);
 
-    
     // Problem: vtk and opengl dont seem to play very well together
     // vtk seems to misbehavew after a little while and wont keep the window on the screen
 
@@ -322,22 +303,19 @@ void display() {
     //while (!viewer.wasStopped ()){
     //}    
     
-        
     // method2: eventually starts ignoring cin and pops up on screen and closes almost 
     // immediately
     //  cout << "enter 1 to cont\n";
     //  cin >> pause;
     //  viewer.wasStopped ();
     
-    // method 3: if oyou interact with the window with keys, the window is not closed properly
-    // TODO: use pcl methods as this is probably not cross playform
+    // method 3: if you interact with the window with keys, the window is not closed properly
+    // TODO: use pcl methods as this time stuff is probably not cross playform
     struct timespec t;
     t.tv_sec = 10;
     //t.tv_nsec = (time_t)(20000000); // short sleep
     t.tv_nsec = (time_t)(0);  // long sleep - normal speed
     nanosleep(&t, NULL);
-    
-    
     write_file_ =0;
   }
 }
@@ -366,7 +344,6 @@ void on_keyboard(unsigned char key, int x, int y)
   else if (key == 'f' || key == 'F')
     write_file_ = 1;
   
-
   // Use glutGetModifiers for modifiers
   // GLUT_ACTIVE_SHIFT, GLUT_ACTIVE_CTRL, GLUT_ACTIVE_ALT
 }
@@ -533,9 +510,6 @@ int main(int argc, char** argv)
     return (-1);
   }  
 
-
-  
-  
   camera_ = Camera::Ptr(new Camera());
   scene_ = Scene::Ptr(new Scene());
 
@@ -551,7 +525,7 @@ int main(int argc, char** argv)
   window_height_ = range_likelihood_->height();
 
   glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+  glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);// was GLUT_RGBA
   glutInitWindowPosition(10,10);
   glutInitWindowSize(window_width_, window_height_);
   glutCreateWindow("OpenGL range likelihood");
