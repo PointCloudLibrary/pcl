@@ -255,7 +255,7 @@ namespace pcl
             int rows() const;
 
             /** \brief Returns step in elements. */
-            int elem_step() const;
+            size_t elem_step() const;
         };        
     }
 

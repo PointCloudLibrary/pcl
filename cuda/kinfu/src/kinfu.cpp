@@ -80,10 +80,6 @@ pcl::gpu::KinfuTracker::KinfuTracker(int rows, int cols) : rows_(rows), cols_(co
     const int iters[] = {10, 5, 4};
     std::copy(iters, iters + LEVELS, icp_iterations_);
 
-    float cx = volume_size_(0)/VOLUME_X;
-    float cy = volume_size_(1)/VOLUME_Y;
-    float cz = volume_size_(2)/VOLUME_Z;
-
     const float default_distThres = 100; //mm
     const float default_angleThres = sin(20.f * 3.14159254f/180.f);    
     const float default_tranc_dist = 30; //mm

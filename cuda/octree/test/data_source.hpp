@@ -112,7 +112,10 @@ struct DataGenerator
         for(size_t i = 0; i < tests_num; ++i)
         {            
             if (log && i % step == 0)
+            {
                 std::cout << ".";
+                std::cout.flush();
+            }
 
             std::vector<int>& curr_res = bfresutls[i];
             curr_res.clear();

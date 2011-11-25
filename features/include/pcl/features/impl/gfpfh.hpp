@@ -219,7 +219,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeHIKDistance (const st
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT, typename PointOutT> uint32_t
+template <typename PointInT, typename PointNT, typename PointOutT> boost::uint32_t
 pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std::vector<int>& indices)
 {
   std::vector<uint32_t> counts (getNumberOfClasses () + 1, 0);

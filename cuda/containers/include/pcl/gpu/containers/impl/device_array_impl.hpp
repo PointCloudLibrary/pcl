@@ -109,7 +109,7 @@ template<class T> inline pcl::gpu::DeviceArray2D<T>::operator const T*() const {
 template<class T> inline int pcl::gpu::DeviceArray2D<T>::cols() const { return DeviceMemory2D::colsBytes()/elem_size; }
 template<class T> inline int pcl::gpu::DeviceArray2D<T>::rows() const { return DeviceMemory2D::rows(); }
 
-template<class T> inline int pcl::gpu::DeviceArray2D<T>::elem_step() const { return DeviceMemory2D::step()/elem_size; }
+template<class T> inline size_t pcl::gpu::DeviceArray2D<T>::elem_step() const { return DeviceMemory2D::step()/elem_size; }
 
 
 #endif /* PCL_GPU_CONTAINER_DEVICE_ARRAY_IMPL_HPP_ */ 
