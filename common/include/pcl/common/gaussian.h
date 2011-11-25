@@ -42,6 +42,8 @@
 #include <sstream>
 #include <Eigen/Core>
 
+#include <pcl/pcl_macros.h>
+
 namespace pcl
 {
     /** Class GaussianKernel assembles all the method for computing, 
@@ -49,7 +51,7 @@ namespace pcl
       * a gaussian kernel.
       * \ingroup common
       */
-    class GaussianKernel
+    class PCL_EXPORTS GaussianKernel
     {
       public:
       static const unsigned MAX_KERNEL_WIDTH = 71;
