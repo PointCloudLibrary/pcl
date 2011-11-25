@@ -180,28 +180,40 @@ pcl::registration::ELCH<PointT>::initCompute ()
   //compute transformation if it's not given
   if (compute_loop_)
   {
-    //TODO use real pose instead of centroid
-    Eigen::Vector4f pose_start;
-    pcl::compute3DCentroid (*(*loop_graph_)[loop_start_].cloud, pose_start);
+    PointCloudPtr meta_start (new PointCloud);
+    PointCloudPtr meta_end (new PointCloud);
+    *meta_start = *(*loop_graph_)[loop_start_].cloud;
+    *meta_end = *(*loop_graph_)[loop_end_].cloud;
 
-    Eigen::Vector4f pose_end;
-    pcl::compute3DCentroid (*(*loop_graph_)[loop_end_].cloud, pose_end);
+    typename boost::graph_traits<LoopGraph>::adjacency_iterator si, si_end;
+    for (boost::tuples::tie (si, si_end) = adjacent_vertices (loop_start_, *loop_graph_); si != si_end; si++)
+      *meta_start += *(*loop_graph_)[*si].cloud;
+
+    for (boost::tuples::tie (si, si_end) = adjacent_vertices (loop_end_, *loop_graph_); si != si_end; si++)
+      *meta_end += *(*loop_graph_)[*si].cloud;
+
+    //TODO use real pose instead of centroid
+    //Eigen::Vector4f pose_start;
+    //pcl::compute3DCentroid (*(*loop_graph_)[loop_start_].cloud, pose_start);
+
+    //Eigen::Vector4f pose_end;
+    //pcl::compute3DCentroid (*(*loop_graph_)[loop_end_].cloud, pose_end);
 
     PointCloudPtr tmp (new PointCloud);
-    Eigen::Vector4f diff = pose_start - pose_end;
-    Eigen::Translation3f translation (diff.head (3));
-    Eigen::Affine3f trans = translation * Eigen::Quaternionf::Identity ();
-    pcl::transformPointCloud (*(*loop_graph_)[loop_end_].cloud, *tmp, trans);
+    //Eigen::Vector4f diff = pose_start - pose_end;
+    //Eigen::Translation3f translation (diff.head (3));
+    //Eigen::Affine3f trans = translation * Eigen::Quaternionf::Identity ();
+    //pcl::transformPointCloud (*(*loop_graph_)[loop_end_].cloud, *tmp, trans);
 
-    reg_->setInputTarget ((*loop_graph_)[loop_start_].cloud);
+    reg_->setInputTarget (meta_start);
 
-    reg_->setInputCloud (tmp);
+    reg_->setInputCloud (meta_end);
 
     reg_->align (*tmp);
 
     loop_transform_ = reg_->getFinalTransformation ();
     //TODO hack
-    loop_transform_ *= trans.matrix ();
+    //loop_transform_ *= trans.matrix ();
 
   }
 
@@ -234,11 +246,11 @@ pcl::registration::ELCH<PointT>::compute ()
   }
 
   //TODO use pose
-  Eigen::Vector4f cend;
-  pcl::compute3DCentroid (*((*loop_graph_)[loop_end_].cloud), cend);
-  Eigen::Translation3f tend (cend.head (3));
-  Eigen::Affine3f aend (tend);
-  Eigen::Affine3f aendI = aend.inverse ();
+  //Eigen::Vector4f cend;
+  //pcl::compute3DCentroid (*((*loop_graph_)[loop_end_].cloud), cend);
+  //Eigen::Translation3f tend (cend.head (3));
+  //Eigen::Affine3f aend (tend);
+  //Eigen::Affine3f aendI = aend.inverse ();
 
   //TODO iterate ovr loop_graph_
   //typename boost::graph_traits<LoopGraph>::vertex_iterator vertex_it, vertex_it_end;
@@ -246,9 +258,9 @@ pcl::registration::ELCH<PointT>::compute ()
   for (size_t i = 0; i < num_vertices (*loop_graph_); i++)
   {
     Eigen::Vector3f t2;
-    t2[0] = loop_transform_ (3, 0) * weights[0][i];
-    t2[1] = loop_transform_ (3, 1) * weights[1][i];
-    t2[2] = loop_transform_ (3, 2) * weights[2][i];
+    t2[0] = loop_transform_ (0, 3) * weights[0][i];
+    t2[1] = loop_transform_ (1, 3) * weights[1][i];
+    t2[2] = loop_transform_ (2, 3) * weights[2][i];
 
     Eigen::Affine3f bl (loop_transform_);
     Eigen::Quaternionf q (bl.rotation ());
@@ -258,7 +270,7 @@ pcl::registration::ELCH<PointT>::compute ()
     //TODO use rotation from branch start
     Eigen::Translation3f t3 (t2);
     Eigen::Affine3f a (t3 * q2);
-    a = aend * a * aendI;
+    //a = aend * a * aendI;
 
     pcl::transformPointCloud (*(*loop_graph_)[i].cloud, *(*loop_graph_)[i].cloud, a);
   }

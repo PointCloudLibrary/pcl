@@ -81,7 +81,7 @@ loopDetection (int end, const CloudVector &clouds, double dist, int &first, int 
     if (state > 0 && norm < dist)
     {
       state = 2;
-      std::cout << "loop detected between scan " << i << " (" << clouds[i].first << ") and scan " << end << " (" << clouds[end].first << ")" << std::endl;
+      //std::cout << "loop detected between scan " << i << " (" << clouds[i].first << ") and scan " << end << " (" << clouds[end].first << ")" << std::endl;
       if (min_dist < 0 || norm < min_dist)
       {
         min_dist = norm;
@@ -90,7 +90,7 @@ loopDetection (int end, const CloudVector &clouds, double dist, int &first, int 
       }
     }
   }
-  std::cout << "min_dist: " << min_dist << " state: " << state << " first: " << first << " end: " << end << std::endl;
+  //std::cout << "min_dist: " << min_dist << " state: " << state << " first: " << first << " end: " << end << std::endl;
   if (min_dist > 0 && (state < 2 || end == (int)clouds.size () - 1)) //TODO
   {
     min_dist = -1;
@@ -102,6 +102,13 @@ loopDetection (int end, const CloudVector &clouds, double dist, int &first, int 
 int
 main (int argc, char **argv)
 {
+  pcl::registration::ELCH<PointType> elch;
+  pcl::IterativeClosestPoint<PointType, PointType>::Ptr icp (new pcl::IterativeClosestPoint<PointType, PointType>);
+  icp->setMaximumIterations (100);
+  icp->setMaxCorrespondenceDistance (0.1);
+  icp->setRANSACOutlierRejectionThreshold (0.1);
+  elch.setReg (icp);
+
   CloudVector clouds;
   for (int i = 1; i < argc; i++)
   {
@@ -109,23 +116,17 @@ main (int argc, char **argv)
     pcl::io::loadPCDFile (argv[i], *pc);
     clouds.push_back (CloudPair (argv[i], pc));
     std::cout << "loading file: " << argv[i] << " size: " << pc->size () << std::endl;
+    elch.addPointCloud (clouds[i-1].second);
   }
-
-  pcl::registration::ELCH<PointType> elch;
-  pcl::IterativeClosestPoint<PointType, PointType>::Ptr icp (new pcl::IterativeClosestPoint<PointType, PointType>);
-  icp->setMaximumIterations (50);
-  icp->setMaxCorrespondenceDistance (1.5);
-  icp->setRANSACOutlierRejectionThreshold (1.5);
-  elch.setReg (icp);
 
   int first = 0, last = 0;
 
   for (size_t i = 0; i < clouds.size (); i++)
   {
-    elch.addPointCloud (clouds[i].second);
 
-    if (loopDetection (i, clouds, 15.0, first, last))
+    if (loopDetection (i, clouds, 3.0, first, last))
     {
+      std::cout << "Loop between " << first << " (" << clouds[first].first << ") and " << last << " (" << clouds[last].first << ")" << std::endl;
       elch.setLoopStart (first);
       elch.setLoopEnd (last);
       elch.compute ();
