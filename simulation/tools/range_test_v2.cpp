@@ -407,8 +407,8 @@ void load_PCDstack_model(const std::vector<std::string> & files)
   {
     std::cout << "Load model: " << *file << std::endl;
 
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (*file, *cloud) == -1) //* load the file
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA> (*file, *cloud) == -1) //* load the file
     {
       PCL_ERROR ("Couldn't read file %s \n", file->c_str()) ;
       exit (-1);
@@ -457,15 +457,22 @@ void initialize(int argc, char** argv)
   if (method==0){
     cout << method << " pcd file stack\n";
     
+    cout << map_file << endl;
+
     cout << "TODO: parse the file path from something like:\n";
     cout << "    /data/rgbd/freenect/2011_06_10_trolley/submaps_new/submap_0*\n";
-    printHelp (argc, argv);
-    exit(-1);
+//    printHelp (argc, argv);
+//    exit(-1);
     
     // this used to work:
     std::vector<std::string> files;
-    for (int i=1; i<argc; ++i) files.push_back(argv[i]);
-  }else if (method==1){
+    int map_arg_index = find_argument(argc, argv, "-map");
+    if (map_arg_index != -1) {
+      for (int i=map_arg_index+1; i<argc; ++i) files.push_back(argv[i]);
+    }
+    load_PCDstack_model(files);
+
+  } else if (method==1) {
     //map_file = "/home/mfallon/data/models/obj_samples/teapot.obj";
     cout << "About to read: " << map_file.c_str() << endl;
     load_PolygonMesh_model(map_file);
@@ -540,5 +547,5 @@ int main(int argc, char** argv)
   glutMotionFunc(on_motion);
   glutPassiveMotionFunc(on_passive_motion);
   glutEntryFunc(on_entry);
-  glutMainLoop();
+  glutMainLoop(); 
 }
