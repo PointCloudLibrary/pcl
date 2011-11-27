@@ -111,7 +111,7 @@ public:
   typedef typename FunctorType::VectorType FVectorType;
 
   BFGS(FunctorType &_functor) 
-    : functor(_functor), iter(-1), pnorm(0), g0norm(0) {  }
+      : pnorm(0), g0norm(0), iter(-1), functor(_functor) {  }
 
   typedef Eigen::DenseIndex Index;
 
