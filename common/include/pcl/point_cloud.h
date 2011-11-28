@@ -184,7 +184,7 @@ namespace pcl
         * \note for getting only XYZ coordinates out of PointXYZ use dim=3, stride=4 and offset=0 due to the alignment.
         */
       inline Eigen::MatrixXf
-      getMatrixXfMap (int dim, int stride, int offset)
+      getMatrixXfMap (int dim, int stride, int offset) const
       {
         return Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, dim, points.size(), Eigen::OuterStride<>(stride));
       }
@@ -193,7 +193,7 @@ namespace pcl
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
         */
       inline Eigen::MatrixXf
-      getMatrixXfMap ()
+      getMatrixXfMap () const
       {
         return getMatrixXfMap (sizeof (PointT) / sizeof (float),  sizeof (PointT) / sizeof (float), 0);
       }
@@ -297,7 +297,6 @@ namespace pcl
         width = 0;
         height = 0;
       }
-
       /** \brief Copy the cloud to the heap and return a smart pointer
         * Note that deep copy is performed, so avoid using this function on non-empty clouds.
         * The changes of the returned cloud are not mirrored back to this one.
