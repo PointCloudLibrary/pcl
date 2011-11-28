@@ -14,13 +14,13 @@ if(build)
 	FILE(GLOB srcs src/*.cpp src/*.hpp src/*.cu)
 	source_group("Source Files" FILES ${srcs})
 
-	FILE(GLOB srcs_utils src/utils/*.hpp)
-	source_group("Source Files\\utils" FILES ${srcs_utils})
+	FILE(GLOB utils src/utils/*.hpp)
+	source_group("Source Files\\utils" FILES ${utils})
 
-	FILE(GLOB cuda src/builder/*.hpp src/builder/*.cu src/cuda/*.hpp src/cuda/*.cu)
+	FILE(GLOB cuda src/cuda/*.hpp src/cuda/*.cu)
 	source_group("Source Files\\cuda" FILES ${cuda})
 
-	LIST(APPEND srcs ${srcs_utils} ${cuda})
+	LIST(APPEND srcs ${utils} ${cuda})
 
 	set(LIB_NAME pcl_${SUBSYS_NAME})
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/utils)

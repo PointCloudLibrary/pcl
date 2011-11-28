@@ -49,8 +49,8 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
-TEST(PCL_FeaturesGPU, DISABLED_fpfh_low_level)
-//TEST(PCL_FeaturesGPU, fpfh_low_level)
+//TEST(PCL_FeaturesGPU, DISABLED_fpfh_low_level)
+TEST(PCL_FeaturesGPU, fpfh_low_level)
 {   
     DataSource source;
 
@@ -111,8 +111,8 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_low_level)
     }
 }
 
-TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level1)
-//TEST(PCL_FeaturesGPU, fpfh_high_level1)
+//TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level1)
+TEST(PCL_FeaturesGPU, fpfh_high_level1)
 {       
     DataSource source;
     source.estimateNormals();    
@@ -189,8 +189,8 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level1)
 }
 
 
-TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level2)
-//TEST(PCL_FeaturesGPU, fpfh_high_level2)
+//TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level2)
+TEST(PCL_FeaturesGPU, fpfh_high_level2)
 {       
     DataSource source;
     source.estimateNormals();          
@@ -266,8 +266,8 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level2)
     }
 }
 
-TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level3)
-//TEST(PCL_FeaturesGPU, fpfh_high_level3)
+//TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level3)
+TEST(PCL_FeaturesGPU, fpfh_high_level3)
 {       
     DataSource source;
     source.estimateNormals();    
@@ -344,8 +344,8 @@ TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level3)
 }
 
 
-TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level4)
-//TEST(PCL_FeaturesGPU, fpfh_high_level4)
+//TEST(PCL_FeaturesGPU, DISABLED_fpfh_high_level4)
+TEST(PCL_FeaturesGPU, fpfh_high_level4)
 {       
     DataSource source;
     source.estimateNormals();    

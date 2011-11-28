@@ -56,8 +56,8 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
-TEST(PCL_OctreeGPU, DISABLED_hostRadiusSearch)
-//TEST(PCL_OctreeGPU, hostRadiusSearch)
+//TEST(PCL_OctreeGPU, DISABLED_hostRadiusSearch)
+TEST(PCL_OctreeGPU, hostRadiusSearch)
 {
     DataGenerator data;
     data.data_size = 871000;

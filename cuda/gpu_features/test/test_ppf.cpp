@@ -47,8 +47,8 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
-TEST(PCL_FeaturesGPU, DISABLED_ppf)
-//TEST(PCL_FeaturesGPU, ppf)
+//TEST(PCL_FeaturesGPU, DISABLED_ppf)
+TEST(PCL_FeaturesGPU, ppf)
 {   
     DataSource source;
 
@@ -105,8 +105,8 @@ TEST(PCL_FeaturesGPU, DISABLED_ppf)
 }
 
 
-TEST(PCL_FeaturesGPU, DISABLED_ppfrgb)
-//TEST(PCL_FeaturesGPU, ppfrgb)
+//TEST(PCL_FeaturesGPU, DISABLED_ppfrgb)
+TEST(PCL_FeaturesGPU, ppfrgb)
 {   
     DataSource source;
     source.generateColor();
@@ -190,8 +190,8 @@ TEST(PCL_FeaturesGPU, DISABLED_ppfrgb)
 }
 
 
-TEST(PCL_FeaturesGPU, DISABLED_ppfrgb_region)
-//TEST(PCL_FeaturesGPU, ppfrgb_region)
+//TEST(PCL_FeaturesGPU, DISABLED_ppfrgb_region)
+TEST(PCL_FeaturesGPU, ppfrgb_region)
 {   
     DataSource source;
 

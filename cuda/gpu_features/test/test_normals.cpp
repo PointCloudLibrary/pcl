@@ -39,14 +39,15 @@
 #include <iostream>
 
 #include "pcl/gpu/features/features.hpp"
+#include "pcl/gpu/containers/initialization.hpp"
 #include <pcl/search/search.h>
 
 using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
-TEST(PCL_FeaturesGPU, DISABLED_normals_lowlevel)
-//TEST(PCL_FeaturesGPU, normals_lowlevel)
+//TEST(PCL_FeaturesGPU, DISABLED_normals_lowlevel)
+TEST(PCL_FeaturesGPU, normals_lowlevel)
 {       
     DataSource source;
     cout << "Cloud size: " << source.cloud->points.size() << endl;
@@ -94,8 +95,8 @@ TEST(PCL_FeaturesGPU, DISABLED_normals_lowlevel)
     }
 }
 
-TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_1)
-//TEST(PCL_FeaturesGPU, normals_highlevel_1)
+//TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_1)
+TEST(PCL_FeaturesGPU, normals_highlevel_1)
 {       
     DataSource source;
     cout << "Cloud size: " << source.cloud->points.size() << endl;
@@ -158,8 +159,8 @@ TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_1)
     }
 }
 
-TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_2)
-//TEST(PCL_FeaturesGPU, normals_highlevel_2)
+//TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_2)
+TEST(PCL_FeaturesGPU, normals_highlevel_2)
 {       
     DataSource source;
     cout << "Cloud size: " << source.cloud->points.size() << endl;
@@ -223,8 +224,8 @@ TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_2)
     }
 }
 
-TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_3)
-//TEST(PCL_FeaturesGPU, normals_highlevel_3)
+//TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_3)
+TEST(PCL_FeaturesGPU, normals_highlevel_3)
 {       
     DataSource source;
     cout << "Cloud size: " << source.cloud->points.size() << endl;
@@ -297,8 +298,8 @@ TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_3)
 }
 
 
-TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_4)
-//TEST(PCL_FeaturesGPU, normals_highlevel_4)
+//TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_4)
+TEST(PCL_FeaturesGPU, normals_highlevel_4)
 {       
     DataSource source;
     cout << "Cloud size: " << source.cloud->points.size() << endl;
@@ -373,6 +374,8 @@ TEST(PCL_FeaturesGPU, DISABLED_normals_highlevel_4)
 
 int main (int argc, char** argv)
 {
+    pcl::gpu::setDevice(0);
+    pcl::gpu::printShortCudaDeviceInfo(0);
     testing::InitGoogleTest (&argc, argv);
     return (RUN_ALL_TESTS ());
 }

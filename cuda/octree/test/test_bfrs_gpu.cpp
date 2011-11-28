@@ -53,8 +53,8 @@ using namespace std;
 using namespace pcl::gpu;
 
 
-TEST (PCL_GPU, DISABLED_bruteForceRadiusSeachGPU)
-//TEST (PCL_GPU, bruteForceRadiusSeachGPU)
+//TEST (PCL_GPU, DISABLED_bruteForceRadiusSeachGPU)
+TEST (PCL_GPU, bruteForceRadiusSeachGPU)
 {   
     DataGenerator data;
     data.data_size = 871000;

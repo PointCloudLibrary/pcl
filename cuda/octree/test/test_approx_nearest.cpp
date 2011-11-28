@@ -56,8 +56,8 @@
 using namespace pcl::gpu;
 using namespace std;
 
-TEST(PCL_OctreeGPU, DISABLED_approxNearesSearch)
-//TEST(PCL_OctreeGPU, approxNearesSearch)
+//TEST(PCL_OctreeGPU, DISABLED_approxNearesSearch)
+TEST(PCL_OctreeGPU, approxNearesSearch)
 {   
     DataGenerator data;
     data.data_size = 871000;

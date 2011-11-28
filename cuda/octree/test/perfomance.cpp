@@ -48,7 +48,6 @@
 
 #include "pcl/gpu/octree/octree.hpp"
 #include "pcl/gpu/containers/device_array.hpp"
-#include "pcl/gpu/utils/safe_call.hpp"
 #include "pcl/common/time.h"
 #include "data_source.hpp"
 
@@ -64,12 +63,6 @@ using pcl::ScopeTime;
 //TEST(PCL_OctreeGPU, DISABLED_perfomance)
 TEST(PCL_OctreeGPU, perfomance)
 {
-    int device;
-    cudaSafeCall( cudaGetDevice( &device ) );    
-    cudaDeviceProp prop;
-    cudaSafeCall( cudaGetDeviceProperties( &prop, device) );
-    cout << "Device: " << prop.name << endl;
-
     DataGenerator data;
     data.data_size = 871000;
     data.tests_num = 10000;
