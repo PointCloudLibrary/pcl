@@ -89,9 +89,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovarian
       
       cov(2,0) += pt.z*pt.x;
       cov(2,1) += pt.z*pt.y;
-      cov(2,2) += pt.z*pt.z;	  
+      cov(2,2) += pt.z*pt.z;    
     }
-	
+  
     mean/= (double)k_correspondences_;
     // Get the actual covariance
     for(int k = 0; k < 3; k++)
