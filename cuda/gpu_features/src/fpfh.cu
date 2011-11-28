@@ -131,7 +131,7 @@ namespace pcl
 
 void pcl::device::computeSPFH(const PointCloud& surface, const Normals& normals, const Indices& indices, const NeighborIndices& neighbours, DeviceArray2D<FPFHSignature33>& spfh33)
 {
-    spfh33.create(indices.empty() ? surface.size() : indices.size(), 1);
+    spfh33.create(indices.empty() ? (int)surface.size() : (int)indices.size(), 1);
 
     std::vector<int> inds;
     indices.download(inds);
@@ -147,7 +147,7 @@ void pcl::device::computeSPFH(const PointCloud& surface, const Normals& normals,
     spfh.output = spfh33;
 
     int block = KernelBase::CTA_SIZE;
-    int grid  = divUp(spfh.work_size, KernelBase::WAPRS);
+    int grid  = divUp((int)spfh.work_size, KernelBase::WAPRS);
 
     SpfhKernel<<<grid, block>>>(spfh);
 
@@ -291,7 +291,7 @@ void pcl::device::computeFPFH(const PointCloud& cloud, const NeighborIndices& ne
     fpfh.fpfh = features;    
 
     int block = KernelBase::CTA_SIZE;
-    int grid  = divUp(fpfh.work_size, KernelBase::WAPRS);
+    int grid  = divUp((int)fpfh.work_size, KernelBase::WAPRS);
 
     FpfhKernel<<<grid, block>>>(fpfh);
 
@@ -314,7 +314,7 @@ void pcl::device::computeFPFH(const PointCloud& cloud, const Indices& indices, c
     fpfh.fpfh = features;    
 
     int block = KernelBase::CTA_SIZE;
-    int grid  = divUp(fpfh.work_size, KernelBase::WAPRS);
+    int grid  = divUp((int)fpfh.work_size, KernelBase::WAPRS);
 
     FpfhKernel<<<grid, block>>>(fpfh);
 

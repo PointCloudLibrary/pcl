@@ -223,7 +223,7 @@ namespace pcl
 void pcl::device::repackToAosForPfh(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighbours, DeviceArray2D<float>& data_rpk, int& max_elems_rpk)
 {   
     max_elems_rpk = (neighbours.max_elems/32 + 1) * 32;
-    data_rpk.create(6, neighbours.sizes.size() * max_elems_rpk);
+    data_rpk.create(6, (int)neighbours.sizes.size() * max_elems_rpk);
 
     Repack<false> rpk;
     rpk.sizes = neighbours.sizes;
@@ -231,7 +231,7 @@ void pcl::device::repackToAosForPfh(const PointCloud& cloud, const Normals& norm
 
     rpk.cloud = cloud;
     rpk.normals = normals;
-    rpk.work_size = neighbours.sizes.size();
+    rpk.work_size = (int)neighbours.sizes.size();
     
     rpk.output = data_rpk;    
     rpk.max_elems = max_elems_rpk;
@@ -256,7 +256,7 @@ void pcl::device::computePfh125(const DeviceArray2D<float>& data_rpk, int max_el
     fph.output = features;
 
     int block = Pfh125<false>::CTA_SIZE;        
-    int grid = fph.work_size;    
+    int grid = (int)fph.work_size;    
 
     device::pfhKernel<<<grid, block>>>(fph);
     cudaSafeCall( cudaGetLastError() );
@@ -280,7 +280,7 @@ namespace pcl
 void pcl::device::repackToAosForPfhRgb(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighbours, DeviceArray2D<float>& data_rpk, int& max_elems_rpk)
 {   
     max_elems_rpk = (neighbours.max_elems/32 + 1) * 32;
-    data_rpk.create(7, neighbours.sizes.size() * max_elems_rpk);
+    data_rpk.create(7, (int)neighbours.sizes.size() * max_elems_rpk);
 
     Repack<true> rpk;
     rpk.sizes = neighbours.sizes;
@@ -288,7 +288,7 @@ void pcl::device::repackToAosForPfhRgb(const PointCloud& cloud, const Normals& n
 
     rpk.cloud = cloud;
     rpk.normals = normals;
-    rpk.work_size = neighbours.sizes.size();
+    rpk.work_size = (int)neighbours.sizes.size();
     
     rpk.output = data_rpk;    
     rpk.max_elems = max_elems_rpk;
@@ -314,7 +314,7 @@ void pcl::device::computePfhRgb250(const DeviceArray2D<float>& data_rpk, int max
     pfhrgb.output = features;
 
     int block = Pfh125<true>::CTA_SIZE;        
-    int grid = pfhrgb.work_size;    
+    int grid = (int)pfhrgb.work_size;    
 
     device::pfhRgbKernel<<<grid, block>>>(pfhrgb);
     cudaSafeCall( cudaGetLastError() );

@@ -227,7 +227,7 @@ namespace pcl
 
 void pcl::device::computePointPrincipalCurvatures(const Normals& normals, const Indices& indices, const NeighborIndices& neighbours, DeviceArray<PrincipalCurvatures>& output, DeviceArray2D<float>& proj_normals)
 {             
-    proj_normals.create(3, neighbours.data.size());
+    proj_normals.create(3, (int)neighbours.data.size());
 
     PrincipalCurvaturesImpl impl;
     impl.normals = normals;    
@@ -241,7 +241,7 @@ void pcl::device::computePointPrincipalCurvatures(const Normals& normals, const 
 
     impl.output = output;
 
-    impl.work_size = indices.empty() ? normals.size() : indices.size();
+    impl.work_size = indices.empty() ? (int)normals.size() : (int)indices.size();
 
     int block = PrincipalCurvaturesImpl::CTA_SIZE;
     int grid = divUp(impl.work_size, PrincipalCurvaturesImpl::WARPS);

@@ -171,7 +171,7 @@ TEST(PCL_OctreeGPU, perfomance)
 
     {
         ScopeTime up("gpu--radius-search-batch-all");	        
-        octree_device.radiusSearch(queries_device, radiuses_device, max_answers, result_device);                        
+        octree_device.radiusSearch(queries_device, radiuses_device, max_answers, result_device);
     }
 
     {

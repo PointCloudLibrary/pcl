@@ -53,8 +53,8 @@
 using namespace std;
 using namespace pcl::gpu;
 
-//TEST(PCL_OctreeGPU, DISABLED_batchRadiusSearch)
-TEST(PCL_OctreeGPU, batchRadiusSearch)
+TEST(PCL_OctreeGPU, DISABLED_batchRadiusSearch)
+//TEST(PCL_OctreeGPU, batchRadiusSearch)
 {   
     DataGenerator data;
     data.data_size = 871000;
@@ -78,7 +78,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     pcl::gpu::Octree octree_device;                
     octree_device.setCloud(cloud_device);	    
     octree_device.build();
-       
+
     //upload queries
     pcl::gpu::Octree::Queries queries_device;
     pcl::gpu::Octree::Radiuses radiuses_device;

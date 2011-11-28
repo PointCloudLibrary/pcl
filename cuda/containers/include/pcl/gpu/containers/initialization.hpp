@@ -57,12 +57,12 @@ namespace pcl
         /** \brief Prints infromatoin about given cuda deivce or about all deivces
          *  \param deivce: if < 0 prints info for all devices, otherwise the function interpets is as device id.
          */
-        void PCL_EXPORTS printCudaDeviceInfo(int device);
+        void PCL_EXPORTS printCudaDeviceInfo(int device = -1);
 
         /** \brief Prints infromatoin about given cuda deivce or about all deivces
          *  \param deivce: if < 0 prints info for all devices, otherwise the function interpets is as device id.
          */
-        void PCL_EXPORTS printShortCudaDeviceInfo(int device);
+        void PCL_EXPORTS printShortCudaDeviceInfo(int device = -1);
 
         /** \brief Error handler. All GPU functions call this to report an error. For internal use only */
         void PCL_EXPORTS error(const char *error_string, const char *file, const int line, const char *func = "");        

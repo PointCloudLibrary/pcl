@@ -34,19 +34,15 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-
-#include "pcl/gpu/utils/device/limits.hpp"
-
 #include "internal.hpp"
-#include "octree_global.hpp"
-
+#include "pcl/gpu/utils/device/limits.hpp"
 #include "pcl/gpu/utils/device/warp.hpp"
 
 #include "utils/copygen.hpp"
 #include "utils/boxutils.hpp"
 #include "utils/scan_block.hpp"
 
-#include "search/octree_iterator.hpp"
+#include "octree_iterator.hpp"
 
 
 namespace pcl { namespace device { namespace appnearest_search
@@ -318,7 +314,7 @@ void pcl::device::OctreeImpl::approxNearestSearch(const Queries& queries, Neighb
     batch.output = results.data;     
 
     batch.points = points_sorted;
-    batch.points_step = points_sorted.elem_step();
+    batch.points_step = (int)points_sorted.elem_step();
     batch.queries = queries;
 
     int block = pcl::device::appnearest_search::KernelPolicy::CTA_SIZE;

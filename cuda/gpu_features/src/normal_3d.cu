@@ -208,7 +208,7 @@ void pcl::device::computeNormals(const PointCloud& cloud, const NeighborIndices&
     //printFuncAttrib(EstimateNormaslKernel);
 
     int block = NormalsEstimator::CTA_SIZE;
-    int grid = divUp(normals.size(), NormalsEstimator::WAPRS);
+    int grid = divUp((int)normals.size(), NormalsEstimator::WAPRS);
     EstimateNormaslKernel<<<grid, block>>>(est);
 
     cudaSafeCall( cudaGetLastError() );        
@@ -218,7 +218,7 @@ void pcl::device::computeNormals(const PointCloud& cloud, const NeighborIndices&
 void pcl::device::flipNormalTowardsViewpoint(const PointCloud& cloud, const float3& vp, Normals& normals)
 {
     int block = 256;
-    int grid = divUp(normals.size(), block);
+    int grid = divUp((int)normals.size(), block);
 
     FlipNormal flip;
     flip.cloud = cloud;
@@ -233,7 +233,7 @@ void pcl::device::flipNormalTowardsViewpoint(const PointCloud& cloud, const floa
 void pcl::device::flipNormalTowardsViewpoint(const PointCloud& cloud, const Indices& indices, const float3& vp, Normals& normals)
 {
     int block = 256;
-    int grid = divUp(normals.size(), block);
+    int grid = divUp((int)normals.size(), block);
 
     FlipNormal flip;
     flip.cloud = cloud;

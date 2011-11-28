@@ -39,14 +39,32 @@
 
 #include "pcl/gpu/containers/device_array.hpp"
 #include "pcl/gpu/octree/device_format.hpp"
-
-#include "octree_global.hpp"
-#include "builder/tasks_global.hpp"
+#include "pcl/gpu/utils/safe_call.hpp"
 
 namespace pcl
 {
     namespace device
-    {          
+    {   
+        struct OctreeGlobal
+        {             
+            int *nodes;
+            int *codes;
+            int *begs;
+            int *ends;
+
+            int *nodes_num;
+
+            int *parent;
+
+            OctreeGlobal() : nodes(0), codes(0), begs(0), ends(0), nodes_num(0), parent(0) {}
+        };
+
+        struct OctreeGlobalWithBox : public OctreeGlobal
+        {    
+            float3 minp, maxp;    
+        };
+
+
         class OctreeImpl
         {
         public:
@@ -91,7 +109,6 @@ namespace pcl
             DeviceArray<int> codes;
             DeviceArray<int> indices;
                         
-            TasksGlobal tasksGlobal;
             OctreeGlobalWithBox octreeGlobal;    
 
             //storage

@@ -53,8 +53,8 @@ using namespace std;
 using namespace pcl::gpu;
 
 
-//TEST (PCL_GPU, DISABLED_bruteForceRadiusSeachGPU)
-TEST (PCL_GPU, bruteForceRadiusSeachGPU)
+TEST (PCL_GPU, DISABLED_bruteForceRadiusSeachGPU)
+//TEST (PCL_GPU, bruteForceRadiusSeachGPU)
 {   
     DataGenerator data;
     data.data_size = 871000;
@@ -89,7 +89,7 @@ TEST (PCL_GPU, bruteForceRadiusSeachGPU)
         sizes.push_back(results_device.size());      
     }
         
-    float avg_size = std::accumulate(sizes.begin(), sizes.end(), 0) * (1.f/sizes.size());;
+    float avg_size = std::accumulate(sizes.begin(), sizes.end(), (size_t)0) * (1.f/sizes.size());;
 
     cout << "avg_result_size = " << avg_size << endl;
     ASSERT_GT(avg_size, 5);    

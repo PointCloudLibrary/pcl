@@ -48,6 +48,7 @@
 
 #include "pcl/gpu/octree/octree.hpp"
 #include "pcl/gpu/containers/device_array.hpp"
+#include "pcl/gpu/containers/initialization.hpp"
 
 #include "data_source.hpp"
 
@@ -55,8 +56,8 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
-//TEST(PCL_OctreeGPU, DISABLED_hostRadiusSearch)
-TEST(PCL_OctreeGPU, hostRadiusSearch)
+TEST(PCL_OctreeGPU, DISABLED_hostRadiusSearch)
+//TEST(PCL_OctreeGPU, hostRadiusSearch)
 {
     DataGenerator data;
     data.data_size = 871000;
@@ -84,6 +85,8 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
     pcl::gpu::Octree octree_device;                
     octree_device.setCloud(cloud_device);	    
     octree_device.build();
+
+
 
     // build host octree
     float resolution = 25.f;
@@ -127,6 +130,9 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
 
 int main (int argc, char** argv)
 {
+    const int device = 0;
+    pcl::gpu::setDevice(device);
+    pcl::gpu::printShortCudaDeviceInfo(device);        
     testing::InitGoogleTest (&argc, argv);
     return (RUN_ALL_TESTS ());
 }

@@ -70,58 +70,78 @@ void pcl::device::OctreeImpl::setCloud(const PointCloud& input_points)
     points = input_points;
 }
 
-int getBitsNum(int interger)
+void pcl::device::OctreeImpl::internalDownload()
 {
-    int count = 0;
-    while(interger > 0)
+    int number;
+    DeviceArray<int>(octreeGlobal.nodes_num, 1).download(&number); 
+
+    DeviceArray<int>(octreeGlobal.begs,  number).download(host_octree.begs);    
+    DeviceArray<int>(octreeGlobal.ends,  number).download(host_octree.ends);    
+    DeviceArray<int>(octreeGlobal.nodes, number).download(host_octree.nodes);    
+    DeviceArray<int>(octreeGlobal.codes, number).download(host_octree.codes); 
+
+    points_sorted.download(host_octree.points_sorted, host_octree.points_sorted_step);    
+    indices.download(host_octree.indices);    
+
+    host_octree.downloaded = true;
+}
+
+namespace 
+{
+    int getBitsNum(int interger)
     {
-        if (interger & 1)
-            ++count;
-        interger>>=1;
-    }
-    return count;
-} 
-
-struct OctreeIteratorHost
-{        
-    const static int MAX_LEVELS_PLUS_ROOT = 11;
-    int paths[MAX_LEVELS_PLUS_ROOT];          
-    int level;
-
-    OctreeIteratorHost()
-    {
-        level = 0; // root level
-        paths[level] = (0 << 8) + 1;                    
-    }
-
-    void gotoNextLevel(int first, int len) 
-    {   
-        ++level;
-        paths[level] = (first << 8) + len;        
-    }       
-
-    int operator*() const 
-    { 
-        return paths[level] >> 8; 
-    }        
-
-    void operator++()
-    {
-        while(level >= 0)
+        int count = 0;
+        while(interger > 0)
         {
-            int data = paths[level];
+            if (interger & 1)
+                ++count;
+            interger>>=1;
+        }
+        return count;
+    } 
 
-            if ((data & 0xFF) > 1) // there are another siblings, can goto there
-            {                           
-                data += (1 << 8) - 1;  // +1 to first and -1 from len
-                paths[level] = data;
-                break;
-            }
-            else
-                --level; //goto parent;            
+    struct OctreeIteratorHost
+    {        
+        const static int MAX_LEVELS_PLUS_ROOT = 11;
+        int paths[MAX_LEVELS_PLUS_ROOT];          
+        int level;
+
+        OctreeIteratorHost()
+        {
+            level = 0; // root level
+            paths[level] = (0 << 8) + 1;                    
+        }
+
+        void gotoNextLevel(int first, int len) 
+        {   
+            ++level;
+            paths[level] = (first << 8) + len;        
+        }       
+
+        int operator*() const 
+        { 
+            return paths[level] >> 8; 
         }        
-    }        
-};
+
+        void operator++()
+        {
+            while(level >= 0)
+            {
+                int data = paths[level];
+
+                if ((data & 0xFF) > 1) // there are another siblings, can goto there
+                {                           
+                    data += (1 << 8) - 1;  // +1 to first and -1 from len
+                    paths[level] = data;
+                    break;
+                }
+                else
+                    --level; //goto parent;            
+            }        
+        }        
+    };
+
+}
 
 void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float radius, vector<int>& out, int max_nn) const
 {            
@@ -153,7 +173,7 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
             int beg = host_octree.begs[node_idx];
             int end = host_octree.ends[node_idx];
 
-            end = beg + min<int>(out.size() + end - beg, max_nn) - out.size();
+            end = beg + min<int>((int)out.size() + end - beg, max_nn) - (int)out.size();
 
             out.insert(out.end(), host_octree.indices.begin() + beg, host_octree.indices.begin() + end);
             if (out.size() == max_nn)
@@ -196,7 +216,7 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
             continue;
         }
 
-        int first  = host_octree.nodes[node_idx] >> 8;
+        int first  = host_octree.nodes[node_idx] >> 8;        
         iterator.gotoNextLevel(first, getBitsNum(children_mask));                
     }
 }
@@ -258,20 +278,4 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
     }  
 
     out_index = host_octree.indices[out_index];
-}
-
-void pcl::device::OctreeImpl::internalDownload()
-{
-    int number;
-    DeviceArray<int>(octreeGlobal.nodes_num, 1).download(&number); 
-
-    DeviceArray<int>(octreeGlobal.begs,  number).download(host_octree.begs);    
-    DeviceArray<int>(octreeGlobal.ends,  number).download(host_octree.ends);    
-    DeviceArray<int>(octreeGlobal.nodes, number).download(host_octree.nodes);    
-    DeviceArray<int>(octreeGlobal.codes, number).download(host_octree.codes); 
-
-    points_sorted.download(host_octree.points_sorted, host_octree.points_sorted_step);    
-    indices.download(host_octree.indices);    
-
-    host_octree.downloaded = true;
 }

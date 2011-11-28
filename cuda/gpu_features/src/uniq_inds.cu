@@ -113,10 +113,10 @@ int pcl::device::computeUniqueIndices(size_t surface_size, const NeighborIndices
     irpk.sizes = neighbours.sizes;
     irpk.nindices = neighbours;    
     irpk.output = unique_indices;
-    irpk.work_size = neighbours.sizes.size();
+    irpk.work_size = (int)neighbours.sizes.size();
 
     int block = IndsRepack::CTA_SIZE;
-    int grid = divUp(neighbours.sizes.size(), IndsRepack::WARPS);
+    int grid = divUp((int)neighbours.sizes.size(), IndsRepack::WARPS);
 
     IndsRepackKernel<<<grid, block>>>(irpk);
     cudaSafeCall( cudaGetLastError() );        
@@ -130,13 +130,13 @@ int pcl::device::computeUniqueIndices(size_t surface_size, const NeighborIndices
     thrust::device_ptr<int> endu = begu + total;    
 
     thrust::sort(begu, endu);
-    total = thrust::unique(begu, endu) - begu;   
+    total = (int)(thrust::unique(begu, endu) - begu);   
 
     thrust::device_ptr<int> begl(lookup.ptr());
     thrust::device_ptr<int> endl = begl + lookup.size();
     thrust::fill(begl, endl, 0);
     
-    createLookupKernel<<<divUp(unique_indices.size(), 256), 256>>>(unique_indices, total, lookup);
+    createLookupKernel<<<divUp((int)unique_indices.size(), 256), 256>>>(unique_indices, total, lookup);
     cudaSafeCall( cudaGetLastError() );        
     cudaSafeCall(cudaDeviceSynchronize());
 

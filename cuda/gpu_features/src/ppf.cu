@@ -184,7 +184,7 @@ namespace pcl
 
 void pcl::device::computePPF(const PointCloud& input, const Normals& normals, const Indices& indices, DeviceArray<PPFSignature>& output)
 {
-    int total = input.size() * indices.size();
+    int total = (int)input.size() * (int)indices.size();
     output.create(total);
 
     PpfImpl ppf;
@@ -205,7 +205,7 @@ void pcl::device::computePPF(const PointCloud& input, const Normals& normals, co
 
 void pcl::device::computePPFRGB(const PointXYZRGBCloud& input, const Normals& normals, const Indices& indices, DeviceArray<PPFRGBSignature>& output)
 {
-    int total = input.size() * indices.size();
+    int total = (int)input.size() * (int)indices.size();
     output.create(total);
 
     PpfRgbImpl ppfrgb;
@@ -354,7 +354,7 @@ void pcl::device::computePPFRGBRegion(const PointXYZRGBCloud& cloud, const Norma
     impl.output = output;
 
     int block = PpfRgbRegionImpl::CTA_SIZE;
-    int grid  = divUp(impl.indices.size, PpfRgbRegionImpl::WARPS);
+    int grid  = divUp((int)impl.indices.size, PpfRgbRegionImpl::WARPS);
 
     estiamtePpfRgbRegionKernel<<<grid, block>>>(impl);
 

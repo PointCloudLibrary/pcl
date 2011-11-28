@@ -36,15 +36,12 @@
 
 #include "internal.hpp"
 
-#include "octree_global.hpp"
-
 #include "pcl/gpu/utils/device/warp.hpp"
-
 #include "utils/copygen.hpp"
 #include "utils/boxutils.hpp"
 #include "utils/scan_block.hpp"
 
-#include "search/octree_iterator.hpp"
+#include "octree_iterator.hpp"
 
 namespace pcl 
 {
@@ -67,7 +64,7 @@ namespace pcl
         struct DirectQuery
         {
             PtrSz<PointType> queries;
-            __device__ __forceinline__ float3 fetch(int query_index) const
+            __device__  float3 fetch(int query_index) const
             {
                 PointType q = queries.data[query_index];
                 return make_float3(q.x, q.y, q.z);
@@ -78,7 +75,7 @@ namespace pcl
         struct IndicesQuery : public DirectQuery
         {
             const int* queries_indices;
-            __device__ __forceinline__ float3 fetch(int query_index) const
+            __device__  float3 fetch(int query_index) const
             {
                 PointType q = queries[queries_indices[query_index]];
                 return make_float3(q.x, q.y, q.z);
@@ -88,8 +85,8 @@ namespace pcl
         struct SharedRadius
         {
             float radius;
-            __device__ __forceinline__ float getRadius(int /*index*/) const { return radius; }                
-            __device__ __forceinline__ float bradcastRadius2(float* /*ptr*/, bool /*active*/, float& /*radius_reg*/) const
+            __device__  float getRadius(int /*index*/) const { return radius; }
+            __device__  float bradcastRadius2(float* /*ptr*/, bool /*active*/, float& /*radius_reg*/) const
             {
                 return radius * radius;
             }
@@ -98,8 +95,8 @@ namespace pcl
         struct IndividualRadius
         {
             const float* radiuses;
-            __device__ __forceinline__ float getRadius(int index) const { return radiuses[index]; }
-            __device__ __forceinline__ float bradcastRadius2(float* ptr, bool active, float& radius_reg) const
+            __device__  float getRadius(int index) const { return radiuses[index]; }
+            __device__  float bradcastRadius2(float* ptr, bool active, float& radius_reg) const
             {
                 if (active)
                     *ptr = radius_reg * radius_reg;
@@ -145,10 +142,10 @@ namespace pcl
             float3 query;
             float radius;
 
-            __device__ __forceinline__ Warp_radiusSearch(const BatchType& batch_arg, int query_index_arg) 
+            __device__  Warp_radiusSearch(const BatchType& batch_arg, int query_index_arg)
                 : batch(batch_arg), iterator(/**/batch.octree/*storage.paths*/), found_count(0), query_index(query_index_arg){}
 
-            __device__ __forceinline__ void launch(bool active)
+            __device__  void launch(bool active)
             {                                 
                 if (active)
                 {
@@ -176,7 +173,7 @@ namespace pcl
 
         private:
 
-            __device__ __forceinline__ int examineNode(OctreeIterator& iterator)
+            __device__  int examineNode(OctreeIterator& iterator)
             {                        
                 using namespace pcl::gpu;
 
@@ -218,7 +215,7 @@ namespace pcl
                 return -1;
             };
 
-            __device__ __forceinline__ void processLeaf(int leaf)
+            __device__  void processLeaf(int leaf)
             {   
                 int mask = __ballot(leaf != -1);            
 
@@ -292,7 +289,7 @@ namespace pcl
                 }            
             }    
 
-            __device__ __forceinline__ int TestWarpKernel(int beg, const float3& active_query, float radius2, int length, int* out, int length_left)
+            __device__  int TestWarpKernel(int beg, const float3& active_query, float radius2, int length, int* out, int length_left)
             {                        
                 unsigned int idx = Warp::laneId();
                 int last_threadIdx = threadIdx.x - idx + 31;            
@@ -371,7 +368,7 @@ void pcl::device::OctreeImpl::radiusSearchEx(BatchType& batch, const Queries& qu
     cudaSafeCall( cudaFuncSetCacheConfig(KernelRS<BatchType>, cudaFuncCachePreferL1) );
 
     int block = KernelPolicy::CTA_SIZE;
-    int grid = divUp(batch.queries.size, block);
+    int grid = divUp((int)batch.queries.size, block);
 
     KernelRS<<<grid, block>>>(batch);
     cudaSafeCall( cudaGetLastError() );
@@ -410,5 +407,5 @@ void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Indices
     batch.queries_indices = indices;
     batch.queries.size = indices.size();
 
-    radiusSearchEx(batch, queries, results);    
+    radiusSearchEx(batch, queries, results);        
 }

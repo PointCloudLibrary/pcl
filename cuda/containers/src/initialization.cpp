@@ -230,9 +230,9 @@ void pcl::gpu::printShortCudaDeviceInfo(int device)
         cudaDeviceProp prop;
         cudaSafeCall( cudaGetDeviceProperties(&prop, dev) );
 
-        printf("Device %d:  \"%s\" %.0fMb", dev, prop.name, (float)prop.totalGlobalMem/1048576.0f);        
-        printf("   sm_%d%d / %d cores", prop.major, prop.minor, convertSMVer2Cores(prop.major, prop.minor) * prop.multiProcessorCount);                
-        printf("   Driver/Runtime ver. %d.%d / %d.%d\n", driverVersion/1000, driverVersion%100, runtimeVersion/1000, runtimeVersion%100);
+        printf("Device %d:  \"%s\"   %.0fMb", dev, prop.name, (float)prop.totalGlobalMem/1048576.0f);        
+        printf(", sm_%d%d, %d cores", prop.major, prop.minor, convertSMVer2Cores(prop.major, prop.minor) * prop.multiProcessorCount);                
+        printf(", Driver/Runtime ver. %d.%d / %d.%d\n", driverVersion/1000, driverVersion%100, runtimeVersion/1000, runtimeVersion%100);
     }
     fflush(stdout);
 }
