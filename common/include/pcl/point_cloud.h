@@ -144,8 +144,17 @@ namespace pcl
       }
       
       ////////////////////////////////////////////////////////////////////////////////////////
-      inline PointT
+      inline const PointT&
       at (int u, int v) const
+      {
+        if (this->height > 1)
+          return (points.at (v * this->width + u));
+        else
+          throw IsNotDenseException ("Can't use 2D indexing with a sparse point cloud");
+      }
+
+      inline PointT&
+      at (int u, int v)
       {
         if (this->height > 1)
           return (points.at (v * this->width + u));
