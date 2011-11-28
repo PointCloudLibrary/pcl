@@ -87,7 +87,7 @@ namespace
 {
     template <class T> inline void getCudaAttribute(T *attribute, CUdevice_attribute device_attribute, int device)
     {
-        CUresult error = cuDeviceGetAttribute( attribute, device_attribute, device );
+        CUresult error = CUDA_SUCCESS;// = cuDeviceGetAttribute( attribute, device_attribute, device );
         if( CUDA_SUCCESS == error ) 
             return;
 
@@ -174,15 +174,15 @@ void pcl::gpu::printCudaDeviceInfo(int device)
             prop.maxTexture1DLayered[0], prop.maxTexture1DLayered[1],
             prop.maxTexture2DLayered[0], prop.maxTexture2DLayered[1], prop.maxTexture2DLayered[2]);
 #endif
-        printf("  Total amount of constant memory:               %u bytes\n", prop.totalConstMem); 
-        printf("  Total amount of shared memory per block:       %u bytes\n", prop.sharedMemPerBlock);
+        printf("  Total amount of constant memory:               %u bytes\n", (int)prop.totalConstMem);
+        printf("  Total amount of shared memory per block:       %u bytes\n", (int)prop.sharedMemPerBlock);
         printf("  Total number of registers available per block: %d\n", prop.regsPerBlock);
         printf("  Warp size:                                     %d\n", prop.warpSize);
         printf("  Maximum number of threads per block:           %d\n", prop.maxThreadsPerBlock);
         printf("  Maximum sizes of each dimension of a block:    %d x %d x %d\n", prop.maxThreadsDim[0], prop.maxThreadsDim[1], prop.maxThreadsDim[2]);
         printf("  Maximum sizes of each dimension of a grid:     %d x %d x %d\n", prop.maxGridSize[0], prop.maxGridSize[1],  prop.maxGridSize[2]);
-        printf("  Maximum memory pitch:                          %u bytes\n", prop.memPitch);
-        printf("  Texture alignment:                             %u bytes\n", prop.textureAlignment);
+        printf("  Maximum memory pitch:                          %u bytes\n", (int)prop.memPitch);
+        printf("  Texture alignment:                             %u bytes\n", (int)prop.textureAlignment);
 
 #if CUDART_VERSION >= 4000
         printf("  Concurrent copy and execution:                 %s with %d copy engine(s)\n", (prop.deviceOverlap ? "Yes" : "No"), prop.asyncEngineCount);
@@ -232,7 +232,7 @@ void pcl::gpu::printShortCudaDeviceInfo(int device)
 
         printf("Device %d:  \"%s\"   %.0fMb", dev, prop.name, (float)prop.totalGlobalMem/1048576.0f);        
         printf(", sm_%d%d, %d cores", prop.major, prop.minor, convertSMVer2Cores(prop.major, prop.minor) * prop.multiProcessorCount);                
-        printf(", Driver/Runtime ver. %d.%d / %d.%d\n", driverVersion/1000, driverVersion%100, runtimeVersion/1000, runtimeVersion%100);
+        printf(", Driver/Runtime ver.%d.%d/%d.%d\n", driverVersion/1000, driverVersion%100, runtimeVersion/1000, runtimeVersion%100);
     }
     fflush(stdout);
 }
