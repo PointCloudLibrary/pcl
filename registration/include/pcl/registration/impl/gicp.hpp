@@ -36,6 +36,7 @@
  */
 
 #include <boost/unordered_map.hpp>
+#include <pcl/registration/exceptions.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> 
@@ -166,11 +167,8 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeRDerivat
   dR_dPsi(1,2) = sphi*spsi + cphi*cpsi*stheta;
   dR_dPsi(2,2) = 0.;
       
-  // set d/d_rx = tr(dR_dPhi'*gsl_temp_mat_r) [= <dR_dPhi, gsl_temp_mat_r>]
   g[3] = matricesInnerProd(dR_dPhi, R);
-  // set d/d_ry = tr(dR_dTheta'*gsl_temp_mat_r) = [<dR_dTheta, gsl_temp_mat_r>]
   g[4] = matricesInnerProd(dR_dTheta, R);
-  // set d/d_rz = tr(dR_dPsi'*gsl_temp_mat_r) = [<dR_dPsi, gsl_temp_mat_r>]
   g[5] = matricesInnerProd(dR_dPsi, R);
 }
 
@@ -181,14 +179,10 @@ template <typename PointSource, typename PointTarget> void
 {
   boost::mutex::scoped_lock lock (tmp_mutex_);
 
-  if (indices_src.size () != indices_tgt.size ())
-  {
-    PCL_ERROR ("[pcl::GeneralizedIterativeClosestPoint::estimateRigidTransformationLM] Number or points in source (%lu) differs than target (%lu)!\n", (unsigned long)indices_src.size (), (unsigned long)indices_tgt.size ());
-    return;
-  }
   if (indices_src.size () < 4)     // need at least 4 samples
   {
-    PCL_ERROR ("[pcl::GeneralizedIterativeClosestPoint::estimateRigidTransformationLM] Need at least 4 points to estimate a transform! Source and target have %lu points!", (unsigned long)indices_src.size ());
+    PCL_THROW_EXCEPTION (NotEnoughPointsException, 
+                         "[pcl::GeneralizedIterativeClosestPoint::estimateRigidTransformationBFGS] Need at least 4 points to estimate a transform! Source and target have " << indices_src.size () << " points!");
     return;
   }
   // Set the initial solution
@@ -229,18 +223,16 @@ template <typename PointSource, typename PointTarget> void
     }
     result = bfgs.testGradient(gradient_tol);
   } while(result == BFGSSpace::Running && inner_iterations_ < max_inner_iterations_);
-  PCL_DEBUG ("[pcl::registration::TransformationEstimationBFGS::estimateRigidTransformation]");
-  PCL_DEBUG ("BFGS solver finished with exit code %i \n", result);
   if(result == BFGSSpace::Success || inner_iterations_ == max_inner_iterations_)
   {
+    PCL_DEBUG ("[pcl::registration::TransformationEstimationBFGS::estimateRigidTransformation]");
+    PCL_DEBUG ("BFGS solver finished with exit code %i \n", result);
     transformation_matrix.setIdentity();
     apply_state(transformation_matrix, x);
   }
   else
-  {
-    PCL_ERROR ("[pcl::registration::TransformationEstimationBFGS::estimateRigidTransformation]");
-    PCL_ERROR ("BFGS solver didn't converge! \n");
-  }
+    PCL_THROW_EXCEPTION(SolverDidntConvergeException, 
+                        "[pcl::" << getClassName () << "::TransformationEstimationBFGS::estimateRigidTransformation] BFGS solver didn't converge!");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -409,37 +401,39 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
     /* optimize transformation using the current assignment and Mahalanobis metrics*/
     previous_transformation_ = transformation_;
     //optimization right here
-    rigid_transformation_estimation_(output, source_indices, *target_, target_indices, transformation_);
-    /* compute the delta from this iteration */
-    delta = 0.;
-    for(int k = 0; k < 4; k++) {
-      for(int l = 0; l < 4; l++) {
-        double ratio = 1;
-        if(k < 3 && l < 3) // rotation part of the transform
-          ratio = 1./rotation_epsilon_;
-        else
-          ratio = 1./transformation_epsilon_;
-        double c_delta = ratio*fabs(previous_transformation_(k,l) - transformation_(k,l));
-        if(c_delta > delta)
-          delta = c_delta;
+    try
+    {
+      rigid_transformation_estimation_(output, source_indices, *target_, target_indices, transformation_);
+      /* compute the delta from this iteration */
+      delta = 0.;
+      for(int k = 0; k < 4; k++) {
+        for(int l = 0; l < 4; l++) {
+          double ratio = 1;
+          if(k < 3 && l < 3) // rotation part of the transform
+            ratio = 1./rotation_epsilon_;
+          else
+            ratio = 1./transformation_epsilon_;
+          double c_delta = ratio*fabs(previous_transformation_(k,l) - transformation_(k,l));
+          if(c_delta > delta)
+            delta = c_delta;
+        }
       }
+    } 
+    catch (PCLException &e)
+    {
+      PCL_DEBUG ("[pcl::%s::computeTransformation] Optimization issue %s\n", getClassName ().c_str (), e.what ());
+      break;
     }
-
     nr_iterations_++;
     // Check for convergence
     if (nr_iterations_ >= max_iterations_ || delta < 1)
     {
-      if(delta <  1)
-        std::cout << "delta is < 1" << std::endl;
-      if(nr_iterations_ >= max_iterations_)
-        std::cout << "nr_iterations_ >= max_iterations_" << std::endl;
-
       converged_ = true;
       PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f\n",
                  getClassName ().c_str (), nr_iterations_, max_iterations_, fabs ((transformation_ - previous_transformation_).sum ()));
     } 
     else {
-      PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence failed");      
+      PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence failed\n", getClassName ().c_str ());
     }
   }
   final_transformation_ = transformation_;
