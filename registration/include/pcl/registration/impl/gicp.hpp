@@ -36,7 +36,7 @@
  */
 
 #include <boost/unordered_map.hpp>
-#include <pcl/registration/exceptions.h>
+#include "pcl/registration/exceptions.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> 
@@ -192,7 +192,7 @@ template <typename PointSource, typename PointTarget> void
   x[2] = transformation_matrix (2,3);
   x[3] = atan2 (transformation_matrix (2,1), transformation_matrix (2,2));
   x[4] = asin (-transformation_matrix (2,0));
-  x[5] = atan2 (transformation_matrix (1,0), transformation_matrix (0,0));                 
+  x[5] = atan2 (transformation_matrix (1,0), transformation_matrix (0,0));
 
   // Set temporary pointers
   tmp_src_ = &cloud_src;
@@ -228,7 +228,7 @@ template <typename PointSource, typename PointTarget> void
     PCL_DEBUG ("[pcl::registration::TransformationEstimationBFGS::estimateRigidTransformation]");
     PCL_DEBUG ("BFGS solver finished with exit code %i \n", result);
     transformation_matrix.setIdentity();
-    apply_state(transformation_matrix, x);
+    applyState(transformation_matrix, x);
   }
   else
     PCL_THROW_EXCEPTION(SolverDidntConvergeException, 
@@ -240,7 +240,7 @@ template <typename PointSource, typename PointTarget> inline double
 pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorWithIndices::operator() (const Vector6d& x)
 {
   Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
-  gicp_->apply_state(transformation_matrix, x);
+  gicp_->applyState(transformation_matrix, x);
   double f = 0;
   int m = gicp_->tmp_idx_src_->size ();
   for (int i = 0; i < m; ++i)
@@ -265,7 +265,7 @@ template <typename PointSource, typename PointTarget> inline void
 pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorWithIndices::df (const Vector6d& x, Vector6d& g)
 {
   Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
-  gicp_->apply_state(transformation_matrix, x);
+  gicp_->applyState(transformation_matrix, x);
   //Zero out g
   g.setZero ();
   Eigen::Vector3d g_t = g.head<3> ();
@@ -301,7 +301,7 @@ template <typename PointSource, typename PointTarget> inline void
 pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorWithIndices::fdf (const Vector6d& x, double& f, Vector6d& g)
 {
   Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
-  gicp_->apply_state(transformation_matrix, x);
+  gicp_->applyState(transformation_matrix, x);
   f = 0;
   g.setZero ();
   Eigen::Matrix3d R = Eigen::Matrix3d::Zero ();
@@ -363,8 +363,12 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
     std::vector<int> target_indices (indices_->size ());
 
     // guess corresponds to base_t and transformation_ to t
-    Eigen::Matrix4d transform_R;
-    heteregenious_product(transformation_, guess, transform_R);
+    Eigen::Matrix4d transform_R = Eigen::Matrix4d::Zero ();
+    for(size_t i = 0; i < 4; i++)
+      for(size_t j = 0; j < 4; j++)
+        for(size_t k = 0; k < 4; k++)
+          transform_R(i,j)+= double(transformation_(i,k)) * double(guess(k,j));
+
     Eigen::Matrix3d R = transform_R.topLeftCorner<3,3> ();
     for(size_t i = 0; i < N; i++)
     {
@@ -440,7 +444,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
 }
 
 template <typename PointSource, typename PointTarget> void
-pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::apply_state(Eigen::Matrix4f &t, const Vector6d& x) const
+pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::applyState(Eigen::Matrix4f &t, const Vector6d& x) const
 {
   // !!! CAUTION Stanford GICP uses the Z Y X euler angles convention
   Eigen::Matrix3f R;

@@ -1,4 +1,3 @@
-
 /*
  * Software License Agreement (BSD License)
  *
@@ -39,7 +38,6 @@
 #ifndef PCL_GICP_H_
 #define PCL_GICP_H_
 
-// PCL includes
 #include "pcl/registration/icp.h"
 #include "pcl/registration/bfgs.h"
 
@@ -74,7 +72,6 @@ namespace pcl
     using IterativeClosestPoint<PointSource, PointTarget>::corr_dist_threshold_;
     using IterativeClosestPoint<PointSource, PointTarget>::inlier_threshold_;
     using IterativeClosestPoint<PointSource, PointTarget>::min_number_correspondences_;
-//    using IterativeClosestPoint<PointSource, PointTarget>::rigid_transformation_estimation_;
     using IterativeClosestPoint<PointSource, PointTarget>::update_visualizer_;
 
     typedef pcl::PointCloud<PointSource> PointCloudSource;
@@ -143,17 +140,6 @@ namespace pcl
         target_covariances_.reserve (target_->size ());
       }
 
-      /* /\** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative */
-      /*   * non-linear Levenberg-Marquardt approach. */
-      /*   * \param cloud_src the source point cloud dataset */
-      /*   * \param cloud_tgt the target point cloud dataset */
-      /*   * \param transformation_matrix the resultant transformation matrix */
-      /*   *\/ */
-      /* void */
-      /* estimateRigidTransformationBFGS (const PointCloudSource &cloud_src, */
-      /*                                  const PointCloudTarget &cloud_tgt, */
-      /*                                  Eigen::Matrix4f &transformation_matrix); */
-      
       /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative
         * non-linear Levenberg-Marquardt approach.
         * \param cloud_src the source point cloud dataset
@@ -221,16 +207,19 @@ namespace pcl
         * \default 20
         */
       int k_correspondences_;
+
       /** \brief The epsilon constant for gicp paper; this is NOT the convergence 
         * tolerence 
-        * \default 0.0004
+        * \default 0.001
         */
       double gicp_epsilon_;
+
       /** The epsilon constant for rotation error. (In GICP the transformation epsilon 
         * is split in rotation part and translation part).
         * \default 2e-3
         */
       double rotation_epsilon_;
+
       /** \brief base transformation */
       Eigen::Matrix4f base_transformation_;
 
@@ -321,21 +310,10 @@ namespace pcl
         return (true);
       }
 
-      /** \brief Compute heteregenious product result = mat1 * mat2
-        * This function is here cause eigen doesnt allow double = float * float
-        */
-      inline void 
-      heteregenious_product(const Eigen::Matrix4f& mat1, const Eigen::Matrix4f& mat2, Eigen::Matrix4d& result)
-      {
-        result.setZero();
-        for(size_t i = 0; i < 4; i++)
-          for(size_t j = 0; j < 4; j++)
-            for(size_t k = 0; k < 4; k++)
-              result(i,j)+= double(mat1(i,k)) * double(mat2(k,j));
-      }
-
-      void apply_state(Eigen::Matrix4f &t, const Vector6d& x) const;
+      /// \brief compute transformation matrix from transformation matrix
+      void applyState(Eigen::Matrix4f &t, const Vector6d& x) const;
       
+      /// \brief optimization functor structure
       struct OptimizationFunctorWithIndices : public BFGSDummyFunctor<double,6>
       {
         OptimizationFunctorWithIndices (const GeneralizedIterativeClosestPoint* gicp)
