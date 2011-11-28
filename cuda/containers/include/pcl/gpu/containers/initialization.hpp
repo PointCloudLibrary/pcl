@@ -45,12 +45,27 @@ namespace pcl
 {
     namespace gpu
     {
+        /** \brief Returns number of Cuda device. */
         PCL_EXPORTS int getCudaEnabledDeviceCount();
+
+        /** \brief Sets active device to work with. */
         PCL_EXPORTS void setDevice(int device);
 
+        /** \brief Return devuce name for gived device. */
         PCL_EXPORTS std::string getDeviceName(int device);
 
-        void PCL_EXPORTS error(const char *error_string, const char *file, const int line, const char *func = "");
+        /** \brief Prints infromatoin about given cuda deivce or about all deivces
+         *  \param deivce: if <0 prints infor for all devices, otherwise the function interpets is as concrete device id.
+         */
+        void PCL_EXPORTS printCudaDeviceInfo(int device);
+
+        /** \brief Prints infromatoin about given cuda deivce or about all deivces
+         *  \param deivce: if <0 prints infor for all devices, otherwise the function interpets is as concrete device id.
+         */
+        void PCL_EXPORTS printShortCudaDeviceInfo(int device);
+
+        /** \brief Error handler. All GPU functions call this to report an error. For internal use only */
+        void PCL_EXPORTS error(const char *error_string, const char *file, const int line, const char *func = "");        
     }
 }
 

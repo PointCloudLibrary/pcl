@@ -325,7 +325,7 @@ struct KinFuApp
 int main()
 {   
     pcl::gpu::setDevice(0);
-    cout << "Device: " << pcl::gpu::getDeviceName(0) << endl;
+    pcl::gpu::printShortCudaDeviceInfo(0);
 
     CaptureOpenNI cap(0); //First OpenNI device.
     //CaptureOpenNI cap("d:/onis/20111013-224932.oni");
@@ -343,7 +343,7 @@ int main()
     try { app.execute(); }    
     catch(const std::bad_alloc& /*e*/) 
     { cout << "Bad alloc" << endl; }
-    catch(const std::exception& e) 
+    catch(const std::exception& /*e*/) 
     { cout << "Exception" << endl; }	
 
     // saving sequence of 3D views
