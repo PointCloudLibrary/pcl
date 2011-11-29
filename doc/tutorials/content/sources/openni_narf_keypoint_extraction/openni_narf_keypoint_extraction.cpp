@@ -139,6 +139,7 @@ int main (int argc, char** argv)
   narf_keypoint_detector.getParameters ().support_size = support_size;
   narf_keypoint_detector.getParameters ().max_no_of_threads = max_no_of_threads;
   narf_keypoint_detector.getParameters ().min_interest_value = min_interest_value;
+  //narf_keypoint_detector.getParameters ().calculate_sparse_interest_image = false;
   //narf_keypoint_detector.getParameloadters ().add_points_on_straight_edges = true;
   
   pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_cloud_ptr (new pcl::PointCloud<pcl::PointXYZ>);
@@ -179,8 +180,11 @@ int main (int argc, char** argv)
       range_image_planar.setUnseenToMaxRange ();
     narf_keypoint_detector.setRangeImage (&range_image_planar);
     pcl::PointCloud<int> keypoint_indices;
+    double keypoint_extraction_start_time = pcl::getTime();
     narf_keypoint_detector.compute (keypoint_indices);
-    std::cout << "Found "<<keypoint_indices.points.size ()<<" key points.\n";
+    double keypoint_extraction_time = pcl::getTime()-keypoint_extraction_start_time;
+    std::cout << "Found "<<keypoint_indices.points.size ()<<" key points. "
+              << "This took "<<1000.0*keypoint_extraction_time<<"ms.\n";
     
     // ----------------------------------------------
     // -----Show keypoints in range image widget-----
