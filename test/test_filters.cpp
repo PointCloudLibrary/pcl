@@ -977,6 +977,8 @@ TEST (CropBox, Filters)
   // Should contain all
   EXPECT_EQ ((int)indices.size (), 9);
   EXPECT_EQ ((int)cloud_out.size (), 9);
+  EXPECT_EQ ((int)cloud_out.width, 9);
+  EXPECT_EQ ((int)cloud_out.height, 1);
 
   // Translate crop box up by 1
   cropBoxFilter.setTranslation(Eigen::Vector3f(0, 1, 0));
@@ -993,6 +995,8 @@ TEST (CropBox, Filters)
 
   EXPECT_EQ ((int)indices.size (), 1);
   EXPECT_EQ ((int)cloud_out.size (), 1);
+  EXPECT_EQ ((int)cloud_out.width, 1);
+  EXPECT_EQ ((int)cloud_out.height, 1);
 
   // Rotate point cloud by -45
   cropBoxFilter.setTransform(getTransformation(0, 0, 0, 0, 0, -45*PI/180));
@@ -1001,6 +1005,8 @@ TEST (CropBox, Filters)
 
   EXPECT_EQ ((int)indices.size (), 3);
   EXPECT_EQ ((int)cloud_out.size (), 3);
+  EXPECT_EQ ((int)cloud_out.width, 3);
+  EXPECT_EQ ((int)cloud_out.height, 1);
 
   // Translate point cloud down by -1
   cropBoxFilter.setTransform (getTransformation(0, -1, 0, 0, 0, -45*PI/180));
@@ -1009,6 +1015,8 @@ TEST (CropBox, Filters)
 
   EXPECT_EQ ((int)indices.size (), 2);
   EXPECT_EQ ((int)cloud_out.size (), 2);
+  EXPECT_EQ ((int)cloud_out.width, 2);
+  EXPECT_EQ ((int)cloud_out.height, 1);
 
   // Remove point cloud rotation
   cropBoxFilter.setTransform (getTransformation(0, -1, 0, 0, 0, 0));
@@ -1017,6 +1025,8 @@ TEST (CropBox, Filters)
 
   EXPECT_EQ ((int)indices.size (), 0);
   EXPECT_EQ ((int)cloud_out.size (), 0);
+  EXPECT_EQ ((int)cloud_out.width, 0);
+  EXPECT_EQ ((int)cloud_out.height, 1);
 
   // PointCloud2
   // -------------------------------------------------------------------------
