@@ -140,7 +140,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
       }
     }
   }
-  delete start_index;
+  delete[] start_index;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -313,7 +313,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
       }
     }
   }
-  delete start_index;
+  delete[] start_index;
 }
 
 #define PCL_INSTANTIATE_NormalSpaceSampling(T,NT) template class PCL_EXPORTS pcl::NormalSpaceSampling<T,NT>;
