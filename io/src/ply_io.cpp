@@ -573,9 +573,21 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
           }
           case sensor_msgs::PointField::FLOAT32:
           {
-            float value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
-            fs << value;
+            if("rgb" != cloud.fields[d].name)
+            {
+              float value;
+              memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+              fs << value;
+            }
+            else 
+            {
+              pcl::RGB color;
+              memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (pcl::RGB));
+              int r = color.r;
+              int g = color.g;
+              int b = color.b;
+              fs << r << " " << g << " " << b;
+            }
             break;
           }
           case sensor_msgs::PointField::FLOAT64:
@@ -716,9 +728,23 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
           }
           case sensor_msgs::PointField::FLOAT32:
           {
-            float value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
-            fpout.write((const char *) &value,sizeof(float));
+            if("rgb" != cloud.fields[d].name)
+            {
+              float value;
+              memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+              fpout.write((const char *) &value,sizeof(float));
+            }
+            else
+            {
+              pcl::RGB color;
+              memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (pcl::RGB));
+              unsigned char r = color.r;
+              unsigned char g = color.g;
+              unsigned char b = color.b;
+              fpout.write((const char *) &r,sizeof(unsigned char));
+              fpout.write((const char *) &g,sizeof(unsigned char));
+              fpout.write((const char *) &b,sizeof(unsigned char));
+            }
             break;
           }
           case sensor_msgs::PointField::FLOAT64:
@@ -800,7 +826,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
     PCL_ERROR ("[pcl::io::savePLYFile] Error during opening (%s)!\n", file_name.c_str());
     return (-1);
   }
-  
+
   // number of points
   size_t nr_points  = mesh.cloud.width * mesh.cloud.height;
   size_t point_size = mesh.cloud.data.size () / nr_points;
@@ -825,6 +851,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
       "\nproperty uchar green"
       "\nproperty uchar blue";    
   }
+
   // Faces
   fs << "\nelement face "<< nr_faces;
   fs << "\nproperty list uchar int vertex_index";
@@ -850,11 +877,11 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
         float value;
         memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
         fs << value;
-        if (++xyz == 3)
-          break;
-      }
-      fs << " ";
-      if (mesh.cloud.fields[rgb_index].datatype == sensor_msgs::PointField::FLOAT32)
+        // if (++xyz == 3)
+        //   break;
+        ++xyz;
+      } 
+      else if(mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32 && mesh.cloud.fields[d].name == "rgb")
       {
         pcl::RGB color;
         memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
@@ -863,6 +890,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
         int b = color.b;
         fs << r << " " << g << " " << b;
       }
+      fs << " ";
     }
     if (xyz != 3)
     {
