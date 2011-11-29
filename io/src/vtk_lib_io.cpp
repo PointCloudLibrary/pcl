@@ -257,8 +257,11 @@ pcl::io::vtk2mesh(const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMes
     poly_colors = vtkUnsignedCharArray::SafeDownCast(poly_data->GetPointData()->GetScalars("Colors"));
 
   // some applications do not save the name of scalars (including PCL's native vtk_io)
-  if (!poly_colors)
+  if (!poly_colors && poly_data->GetPointData() != NULL )
     poly_colors = vtkUnsignedCharArray::SafeDownCast(poly_data->GetPointData()->GetScalars("scalars"));
+
+  if (!poly_colors && poly_data->GetPointData() != NULL )
+    poly_colors = vtkUnsignedCharArray::SafeDownCast(poly_data->GetPointData()->GetScalars("RGB"));
 
   // TODO: currently only handles rgb values with 3 components
   if (poly_colors && (poly_colors->GetNumberOfComponents() == 3))
