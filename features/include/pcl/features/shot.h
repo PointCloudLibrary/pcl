@@ -188,6 +188,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::search_parameter_;
       using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::surface_;
+      using Feature<PointInT, PointOutT>::input_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::descLength_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::nr_grid_sector_;
@@ -256,6 +257,7 @@ namespace pcl
       using Feature<pcl::PointXYZRGBA, PointOutT>::search_parameter_;
       using Feature<pcl::PointXYZRGBA, PointOutT>::search_radius_;
       using Feature<pcl::PointXYZRGBA, PointOutT>::surface_;
+      using Feature<pcl::PointXYZRGBA, PointOutT>::input_;
       using FeatureFromNormals<pcl::PointXYZRGBA, PointNT, PointOutT>::normals_;
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::descLength_;
       using SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_grid_sector_;
