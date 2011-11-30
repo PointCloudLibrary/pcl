@@ -60,12 +60,15 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
   std::set<int> indices_subset;
 
   int n_inliers_count = 0;
+  unsigned skipped_count = 0;
+  // supress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
+  const unsigned max_skip = max_iterations_ * 10;
 
   // Number of samples to try randomly
   size_t fraction_nr_points = pcl_lrint (sac_model_->getIndices ()->size () * fraction_nr_pretest_ / 100.0);
 
   // Iterate
-  while (iterations_ < k)
+  while (iterations_ < k && skipped_count < max_skip)
   {
     // Get X samples which satisfy the model criteria
     sac_model_->getSamples (iterations_, selection);
@@ -76,6 +79,7 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
     if (!sac_model_->computeModelCoefficients (selection, model_coefficients))
     {
       //iterations_++;
+      ++ skipped_count;
       continue;
     }
 

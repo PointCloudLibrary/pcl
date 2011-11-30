@@ -54,6 +54,7 @@
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
 #include <pcl/sample_consensus/sac_model_parallel_plane.h>
 #include <pcl/features/normal_3d.h>
+#include <boost/thread.hpp>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -529,6 +530,61 @@ TEST (RANSAC, SampleConsensusModelNormalPlane)
   RandomSampleConsensus<PointXYZ> sac (model, 0.03);
 
   verifyPlaneSac(model, sac);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Test if RANSAC finishes within a second.
+TEST (SAC, InfiniteLoop)
+{
+  const unsigned point_count = 100;
+  PointCloud<PointXYZ> cloud;
+  cloud.points.resize (point_count);
+  for (unsigned pIdx = 0; pIdx < point_count; ++pIdx)
+  {
+    cloud.points[pIdx].x = pIdx;
+    cloud.points[pIdx].y = 0.0;
+    cloud.points[pIdx].z = 0.0;
+  }
+  
+  boost::posix_time::time_duration delay(0,0,1,0); 
+  boost::function<bool ()> sac_function;
+  SampleConsensusModelSpherePtr model (new SampleConsensusModelSphere<PointXYZ> (cloud.makeShared ()));
+
+  // Create the RANSAC object
+  RandomSampleConsensus<PointXYZ> ransac (model, 0.03);
+  sac_function = boost::bind (&RandomSampleConsensus<PointXYZ>::computeModel, &ransac, 0);
+  boost::thread thread1 (sac_function);
+  ASSERT_TRUE(thread1.timed_join(delay));
+
+  // Create the LMSAC object
+  LeastMedianSquares<PointXYZ> lmsac (model, 0.03);
+  sac_function = boost::bind (&LeastMedianSquares<PointXYZ>::computeModel, &lmsac, 0);
+  boost::thread thread2 (sac_function);
+  ASSERT_TRUE(thread2.timed_join(delay));
+
+  // Create the MSAC object
+  MEstimatorSampleConsensus<PointXYZ> mesac (model, 0.03);
+  sac_function = boost::bind (&MEstimatorSampleConsensus<PointXYZ>::computeModel, &mesac, 0);
+  boost::thread thread3 (sac_function);
+  ASSERT_TRUE(thread3.timed_join(delay));
+
+  // Create the RRSAC object
+  RandomizedRandomSampleConsensus<PointXYZ> rrsac (model, 0.03);
+  sac_function = boost::bind (&RandomizedRandomSampleConsensus<PointXYZ>::computeModel, &rrsac, 0);
+  boost::thread thread4 (sac_function);
+  ASSERT_TRUE(thread4.timed_join(delay));
+          
+  // Create the RMSAC object
+  RandomizedMEstimatorSampleConsensus<PointXYZ> rmsac (model, 0.03);
+  sac_function = boost::bind (&RandomizedMEstimatorSampleConsensus<PointXYZ>::computeModel, &rmsac, 0);
+  boost::thread thread5 (sac_function);
+  ASSERT_TRUE(thread5.timed_join(delay));
+
+  // Create the MLESAC object 
+  MaximumLikelihoodSampleConsensus<PointXYZ> mlesac (model, 0.03);
+  sac_function = boost::bind (&MaximumLikelihoodSampleConsensus<PointXYZ>::computeModel, &mlesac, 0);
+  boost::thread thread6 (sac_function);
+  ASSERT_TRUE(thread6.timed_join(delay));
 }
 
 /* ---[ */
