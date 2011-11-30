@@ -403,12 +403,13 @@ void on_entry(int state)
 // Read in a 3D map, assuming a set of PCD files, each point is a polygon vertex
 void load_PCDstack_model(const std::vector<std::string> & files)
 {
+/*
   for (std::vector<std::string>::const_iterator file = files.begin(); file != files.end(); ++file)
   {
     std::cout << "Load model: " << *file << std::endl;
 
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA> (*file, *cloud) == -1) //* load the file
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGBA> (*file, *cloud) == -1) // load the file
     {
       PCL_ERROR ("Couldn't read file %s \n", file->c_str()) ;
       exit (-1);
@@ -417,6 +418,7 @@ void load_PCDstack_model(const std::vector<std::string> & files)
     PointCloudModel::Ptr model = PointCloudModel::Ptr(new PointCloudModel(GL_POLYGON, cloud));
     scene_->add(model);
   }
+*/
 }
 
 // Read in a 3D map from any 
@@ -424,7 +426,7 @@ void load_PolygonMesh_model(string &polygon_file)
 {
   pcl::PolygonMesh mesh;	// (new pcl::PolygonMesh);
   //pcl::io::loadPolygonFile("/home/mfallon/data/models/dalet/Darlek_modified_works.obj",mesh);
-  pcl::io::loadPolygonFile(polygon_file.c_str(),mesh);
+  pcl::io::loadPolygonFile(polygon_file.c_str(), mesh);
   pcl::PolygonMesh::Ptr cloud (new pcl::PolygonMesh(mesh));
   
   // Not sure if PolygonMesh assumes triangles if to
