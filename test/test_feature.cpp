@@ -159,6 +159,145 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
   }
 }
 
+void
+shotCopyPointCloud (const pcl::PointCloud<SHOT> &cloud_in, const std::vector<int> &indices,
+                     pcl::PointCloud<SHOT> &cloud_out)
+{
+  // Allocate enough space and copy the basics
+  cloud_out.points.resize (indices.size ());
+  cloud_out.header   = cloud_in.header;
+  cloud_out.width    = indices.size ();
+  cloud_out.height   = 1;
+  if (cloud_in.is_dense)
+    cloud_out.is_dense = true;
+  else
+    // It's not necessarily true that is_dense is false if cloud_in.is_dense is false
+    // To verify this, we would need to iterate over all points and check for NaNs
+    cloud_out.is_dense = false;
+
+  
+  // Iterate over each point
+  for (size_t i = 0; i < indices.size (); ++i)
+  { 
+	 
+	std::copy(cloud_in.points[indices[i]].descriptor.begin(), cloud_in.points[indices[i]].descriptor.end(), std::back_inserter(cloud_out.points[i].descriptor));
+	memcpy(cloud_out.points[i].rf, cloud_in.points[indices[i]].rf, sizeof(float)*9);
+  }
+
+}
+
+template <typename FeatureEstimation, typename PointT, typename NormalT, typename OutputT> FeatureEstimation
+createSHOTDesc(const int nr_shape_bins = 10,
+							 const int nr_color_bins = 30,
+							 const bool describe_shape = true,
+							 const bool describe_color = false )
+{
+	return FeatureEstimation(nr_shape_bins);
+}
+
+template <typename FeatureEstimation, typename NormalT, typename OutputT> FeatureEstimation
+createSHOTDesc(const int nr_shape_bins = 10,
+							 const int nr_color_bins = 30,
+							 const bool describe_shape = true,
+							 const bool describe_color = false )
+{
+	return FeatureEstimation(describe_shape, describe_color, nr_shape_bins,nr_color_bins);
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+template <typename FeatureEstimation, typename PointT, typename NormalT, typename OutputT>
+void
+testSHOTIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points, 
+                             const typename PointCloud<NormalT>::Ptr & normals,
+                             const boost::shared_ptr<vector<int> > & indices,
+							 const int nr_shape_bins = 10,
+							 const int nr_color_bins = 30,
+							 const bool describe_shape = true,
+							 const bool describe_color = false )
+{
+  //
+  // Test setIndices and setSearchSurface
+  //
+  PointCloud<OutputT> full_output, output0, output1, output2;
+
+  // Compute for all points and then subsample the results
+  FeatureEstimation est0 = createSHOTDesc<FeatureEstimation, PointT, NormalT, OutputT>(nr_shape_bins,nr_color_bins,describe_shape,describe_color);
+  est0.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
+  est0.setRadiusSearch (0.04);
+  est0.setInputCloud (points);
+  est0.setInputNormals (normals);
+  est0.compute (full_output);
+
+
+  shotCopyPointCloud (full_output, *indices, output0);
+
+
+  // Compute with all points as "search surface" and the specified sub-cloud as "input"
+  typename PointCloud<PointT>::Ptr subpoints (new PointCloud<PointT>);
+  copyPointCloud (*points, *indices, *subpoints);
+  FeatureEstimation est1 = createSHOTDesc<FeatureEstimation, PointT, NormalT, OutputT>(nr_shape_bins,nr_color_bins,describe_shape,describe_color);
+  est1.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
+  est1.setRadiusSearch (0.04);
+  est1.setInputCloud (subpoints);
+  est1.setSearchSurface (points);
+  est1.setInputNormals (normals);
+  est1.compute (output1);
+
+  //// Compute with all points as "input" and the specified indices
+  FeatureEstimation est2 = createSHOTDesc<FeatureEstimation, PointT, NormalT, OutputT>(nr_shape_bins,nr_color_bins,describe_shape,describe_color);
+  est2.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
+  est2.setRadiusSearch (0.04);
+  est2.setInputCloud (points);
+  est2.setInputNormals (normals);
+  est2.setIndices (indices);
+  est2.compute (output2);
+
+  // All three of the above cases should produce equivalent results
+  ASSERT_EQ (output0.size (), output1.size ());
+  ASSERT_EQ (output1.size (), output2.size ());
+  for (size_t i = 0; i < output1.size (); ++i)
+  {
+    for (int j = 0; j < output0.points[i].descriptor.size(); ++j)
+    {
+      ASSERT_EQ (output0.points[i].descriptor[j], output1.points[i].descriptor[j]);
+      ASSERT_EQ (output1.points[i].descriptor[j], output2.points[i].descriptor[j]);
+    }
+  }
+
+  //
+  // Test the combination of setIndices and setSearchSurface
+  //
+  PointCloud<OutputT> output3, output4;
+
+  boost::shared_ptr<vector<int> > indices2 (new vector<int> (0));
+  for (size_t i = 0; i < (indices->size ()/2); ++i)
+    indices2->push_back (i);
+
+  // Compute with all points as search surface + the specified sub-cloud as "input" but for only a subset of indices
+  FeatureEstimation est3 = createSHOTDesc<FeatureEstimation, PointT, NormalT, OutputT>(nr_shape_bins,nr_color_bins,describe_shape,describe_color);
+  est3.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
+  est3.setRadiusSearch (0.04);
+  est3.setSearchSurface (points);
+  est3.setInputNormals (normals);
+  est3.setInputCloud (subpoints);
+  est3.setIndices (indices2);
+  est3.compute (output3); 
+
+  // Start with features for each point in "subpoints" and then subsample the results
+  shotCopyPointCloud (output0, *indices2, output4); // (Re-using "output0" from above)
+
+  // The two cases above should produce equivalent results
+  ASSERT_EQ (output3.size (), output4.size ());
+  for (size_t i = 0; i < output3.size (); ++i)
+  {
+    for (int j = 0; j < output3.points[i].descriptor.size(); ++j)
+    {
+      ASSERT_EQ (output3.points[i].descriptor[j], output4.points[i].descriptor[j]);   
+    }
+  }
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, BaseFeature)
 {
@@ -658,7 +797,7 @@ TEST (PCL, SHOTShapeEstimation)
   shot.setInputCloud (cloud.makeShared ());
   shot.setIndices (indicesptr);
   shot.setSearchMethod (tree);
-
+ 
   // estimate
   shot.compute (*shots);
   EXPECT_EQ (shots->points.size (), indices.size ());
@@ -673,6 +812,16 @@ TEST (PCL, SHOTShapeEstimation)
   EXPECT_NEAR (shots->points[103].descriptor[53], 0.0073520984, 1e-4);
   EXPECT_NEAR (shots->points[103].descriptor[54], 0.013584172, 1e-4);
   EXPECT_NEAR (shots->points[103].descriptor[55], 0.0050609680, 1e-4);
+
+
+ // Test results when setIndices and/or setSearchSurface are used
+
+  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
+  for (size_t i = 0; i < cloud.size (); i+=3)
+    test_indices->push_back (i);
+
+  testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> 
+    (cloud.makeShared (), normals, test_indices);
 
 }
 
@@ -722,6 +871,14 @@ TEST (PCL, GenericSHOTShapeEstimation)
   EXPECT_NEAR (shots->points[103].descriptor[103], 0.022390056, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[105], 0.0058866320, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[123], 0.019105887, 1e-5);
+
+  // Test results when setIndices and/or setSearchSurface are used
+  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
+  for (size_t i = 0; i < cloud.size (); i+=3)
+    test_indices->push_back (i);
+
+  testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> 
+    (cloud.makeShared (), normals, test_indices, shapeStep_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -794,6 +951,14 @@ TEST (PCL, SHOTShapeAndColorEstimation)
   EXPECT_NEAR (shots->points[103].descriptor[482], 0.012025614, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[511], 0.0057367259, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[512], 0.048357654, 1e-5);
+
+  // Test results when setIndices and/or setSearchSurface are used
+  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
+  for (size_t i = 0; i < cloud.size (); i+=3)
+    test_indices->push_back (i);
+
+  testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> 
+    (cloudWithColors.makeShared (), normals, test_indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -839,6 +1004,14 @@ TEST (PCL, SHOTShapeEstimationOpenMP)
   EXPECT_NEAR (shots->points[103].descriptor[53], 0.0073520984, 1e-4);
   EXPECT_NEAR (shots->points[103].descriptor[54], 0.013584172, 1e-4);
   EXPECT_NEAR (shots->points[103].descriptor[55], 0.0050609680, 1e-4);
+
+   // Test results when setIndices and/or setSearchSurface are used
+  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
+  for (size_t i = 0; i < cloud.size (); i+=3)
+    test_indices->push_back (i);
+
+  testSHOTIndicesAndSearchSurface<SHOTEstimationOMP<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> 
+    (cloud.makeShared (), normals, test_indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -914,6 +1087,14 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
   EXPECT_NEAR (shots->points[103].descriptor[482], 0.012025614, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[511], 0.0057367259, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[512], 0.048357654, 1e-5);
+
+  // Test results when setIndices and/or setSearchSurface are used
+  boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
+  for (size_t i = 0; i < cloud.size (); i+=3)
+    test_indices->push_back (i);
+
+  testSHOTIndicesAndSearchSurface<SHOTEstimationOMP<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> 
+    (cloudWithColors.makeShared (), normals, test_indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
