@@ -121,7 +121,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::initCompute()
 }
 
 template <typename PointInT, typename PointOutT> void
-pcl::UniqueShapeContext<PointInT, PointOutT>::computePointRF(size_t index, const pcl::PointCloud<PointInT> &input, float rf[9])
+pcl::UniqueShapeContext<PointInT, PointOutT>::computePointRF(size_t index, float rf[9])
 {
   std::vector<int> nn_indices;
   std::vector<float> nn_dists;
@@ -134,15 +134,17 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computePointRF(size_t index, const
     return;
   }
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > rf_(3);
-  pcl::getLocalRF(*input_, local_radius_, (*indices_)[index], nn_indices, nn_dists, rf_);
+  Eigen::Vector4f central_point = input_->points[(*indices_)[index]].getVector4fMap ();
+  central_point[3] = 0;
+  pcl::getLocalRF(*surface_, local_radius_, central_point /*(*indices_)[index]*/, nn_indices, nn_dists, rf_);
   for (int d = 0; d < 9; ++d)
     rf[d] = rf_[d/3][d%3];
 }
 
 template <typename PointInT, typename PointOutT> void
-pcl::UniqueShapeContext<PointInT, PointOutT>::computePointDescriptor(size_t index, const pcl::PointCloud<PointInT> &input, float rf[9], std::vector<float> &desc)
+pcl::UniqueShapeContext<PointInT, PointOutT>::computePointDescriptor(size_t index, float rf[9], std::vector<float> &desc)
 {
-  pcl::Vector3fMapConst origin = input[(*indices_)[index]].getVector3fMap ();
+  pcl::Vector3fMapConst origin = input_->points[(*indices_)[index]].getVector3fMap ();
   const Eigen::Map<Eigen::Vector3f> x_axis (rf);
   const Eigen::Map<Eigen::Vector3f> y_axis (rf + 3);
   const Eigen::Map<Eigen::Vector3f> normal (rf + 6);
@@ -156,7 +158,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computePointDescriptor(size_t inde
     if(nn_indices[ne] == (*indices_)[index])
       continue;
     /// Get neighbours coordinates
-    Eigen::Vector3f neighbour = input[nn_indices[ne]].getVector3fMap ();
+    Eigen::Vector3f neighbour = surface_->points[nn_indices[ne]].getVector3fMap ();
 
     /// ----- Compute current neighbour polar coordinates -----
     
@@ -235,8 +237,8 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computeFeature (PointCloudOut &out
   for(size_t point_index = 0; point_index < indices_->size (); point_index++)
   {
     output[point_index].descriptor.resize (descriptor_length_);
-    computePointRF(point_index, *input_, output[point_index].rf);
-    computePointDescriptor(point_index, *input_, output[point_index].rf, output[point_index].descriptor);
+    computePointRF(point_index, output[point_index].rf);
+    computePointDescriptor(point_index, output[point_index].rf, output[point_index].descriptor);
   }
 }
 

@@ -92,19 +92,14 @@ namespace pcl
       };
 
     public:
-      /** \brief @b SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
-        * a given point cloud dataset containing points and normals.
-        * \param cloud the dataset containing the XYZ Cartesian coordinates of the points
-        * \param normals the dataset containing the surface normals at each point in \a cloud
-        * \param index the index of the point
-        * \param indices the k-neighborhood point indices in the dataset
+       /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
+        * \param index the index of the point in input_
+        * \param indices the k-neighborhood point indices in surface_
         * \param nr_bins the number of bins in each histogram
         * \param shot the resultant SHOT descriptor representing the feature at the query point
         */
       virtual void 
-      computePointSHOT (const pcl::PointCloud<PointInT> &cloud, 
-                        const pcl::PointCloud<PointNT> &normals,
-                        const int index, 
+      computePointSHOT (const int index, 
                         const std::vector<int> &indices, 
                         const std::vector<float> &dists, 
                         Eigen::VectorXf &shot,
@@ -121,8 +116,7 @@ namespace pcl
       computeFeature (PointCloudOut &output);
 
       void 
-      interpolateSingleChannel (const pcl::PointCloud<PointInT> &cloud, 
-                                const std::vector<int> &indices,
+      interpolateSingleChannel (const std::vector<int> &indices,
                                 const std::vector<float> &dists, 
                                 const Eigen::Vector4f &centralPoint, 
                                 const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf
@@ -217,17 +211,13 @@ namespace pcl
       };
 
       /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
-        * \param cloud the dataset containing the XYZ Cartesian coordinates of the points
-        * \param normals the dataset containing the surface normals at each point in \a cloud
-        * \param index the index of the point
-        * \param indices the k-neighborhood point indices in the dataset
+        * \param index the index of the point in input_
+        * \param indices the k-neighborhood point indices in surface_
         * \param nr_bins the number of bins in each histogram
         * \param shot the resultant SHOT descriptor representing the feature at the query point
         */
       void 
-      computePointSHOT (const pcl::PointCloud<PointInT> &cloud, 
-                        const pcl::PointCloud<PointNT> &normals,
-                        const int index, 
+      computePointSHOT (const int index, 
                         const std::vector<int> &indices, 
                         const std::vector<float> &dists, 
                         Eigen::VectorXf &shot,
@@ -296,17 +286,13 @@ namespace pcl
       };
 
       /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
-        * \param cloud the dataset containing the XYZ Cartesian coordinates of the points
-        * \param normals the dataset containing the surface normals at each point in \a cloud
-        * \param index the index of the point
-        * \param indices the k-neighborhood point indices in the dataset
+        * \param index the index of the point in input_
+        * \param indices the k-neighborhood point indices in surface_
         * \param nr_bins the number of bins in each histogram
         * \param shot the resultant SHOT descriptor representing the feature at the query point
         */
       void 
-      computePointSHOT (const pcl::PointCloud<pcl::PointXYZRGBA> &cloud, 
-                        const pcl::PointCloud<PointNT> &normals, 
-                        const int index, 
+      computePointSHOT (const int index, 
                         const std::vector<int> &indices, 
                         const std::vector<float> &dists, 
                         Eigen::VectorXf &shot,
@@ -325,8 +311,7 @@ namespace pcl
       /** \brief
        */
       void 
-      interpolateDoubleChannel (const pcl::PointCloud<pcl::PointXYZRGBA> &cloud, 
-                                const std::vector<int> &indices,
+      interpolateDoubleChannel (const std::vector<int> &indices,
                                 const std::vector<float> &dists, 
                                 const Eigen::Vector4f &centralPoint, 
                                 const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf,

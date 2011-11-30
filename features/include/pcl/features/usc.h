@@ -137,14 +137,12 @@ namespace pcl
         
       protected:
         /** Compute 3D shape context feature descriptor
-          * \param index point index
-          * \param input input point cloud
-          * \param normals point cloud normals
+          * \param index point index in input_
           * \param rf reference frame
           * \param desc descriptor to compute
           */
         void
-        computePointDescriptor(size_t index, const pcl::PointCloud<PointInT> &input, float rf[9], std::vector<float> &desc);
+        computePointDescriptor(size_t index, float rf[9], std::vector<float> &desc);
         
         /** initilize computation by allocating all the intervals and the volume look 
           * up table
@@ -179,13 +177,11 @@ namespace pcl
 
       private:
         /** Compute 3D shape context feature local Reference Frame
-          * \param index point index
-          * \param input input point cloud
-          * \param normals point cloud normals
+          * \param index point index in input_
           * \param rf reference frame to compute
           */
         void
-        computePointRF(size_t index, const pcl::PointCloud<PointInT> &input, float rf[9]);
+        computePointRF(size_t index, float rf[9]);
     };
   /* }; */
 }
