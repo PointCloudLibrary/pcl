@@ -4,14 +4,9 @@ namespace pcl
 {
 
 // Create a PolygonMeshModel by converting the PolygonMesh to our format
-// TODO: support color. I had a look but it seems that PointClouds that
-//       get as far as here only have x,y,z fields but no rgb[a] fields
-//       this might be because the vtk file reader doesnt read any color
-//       info from what im providing as input - but i dont know much about
-//       these file types to be sure. mfallon
 PolygonMeshModel::PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg ) : mode_(mode)
 {
-  pcl::PointCloud<pcl::PointXYZ> newcloud;  
+  pcl::PointCloud<pcl::PointXYZRGB> newcloud;  
   pcl::fromROSMsg(plg->cloud, newcloud);
   Eigen::Vector4f tmp;
   for(size_t i=0; i< plg->polygons.size (); i++){ // each triangle/polygon
@@ -29,13 +24,12 @@ PolygonMeshModel::PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg ) : mo
       apoly.vertices_[3*j + 0] = (float) tmp(0);
       apoly.vertices_[3*j + 1] = (float) tmp(1);
       apoly.vertices_[3*j + 2] = (float) tmp(2);  
-      
-      // Color: currently using red in place of true color
-      // TODO: figure out how to read in color obj/vtk/ply files
-      apoly.colors_[4*j + 3] =(float) 0.0/255.0; // transparancy? 
-      apoly.colors_[4*j + 2] =(float) 0.0/255.0; // Blue
-      apoly.colors_[4*j + 1] =(float) 0.0/255.0; // Green
-      apoly.colors_[4*j + 0] =(float) 255.0/255.0;  // Red  
+
+      // r,g,b      
+      apoly.colors_[4*j + 0] =(float) newcloud.points[pt].r; // Red  
+      apoly.colors_[4*j + 1] =(float) newcloud.points[pt].g; // Green
+      apoly.colors_[4*j + 2] =(float) newcloud.points[pt].b; // Blue
+      apoly.colors_[4*j + 3] =(float) 1.0; // transparancy? 
     }
     polygons.push_back(apoly);
   }
@@ -62,39 +56,6 @@ void PolygonMeshModel::draw()
   glDisableClientState(GL_COLOR_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);
 }
-
-  
-/* RWX support disabled due to libbot depencency
-RWXModel::RWXModel(const std::string & filename) :
-    filename_(filename),
-    rwx_model_(NULL),
-    display_list_ready_(false)
-{
-  
-  rwx_model_ = bot_rwx_model_create(filename_.c_str());
-
-}
-
-RWXModel::~RWXModel()
-{
-  if (rwx_model_)
-      bot_rwx_model_destroy(rwx_model_);
-}
-
-void RWXModel::draw()
-{
-  glEnable(GL_DEPTH_TEST);
-  if (!display_list_ready_) {
-    rwx_dl_ = glGenLists (1);
-    glNewList (rwx_dl_, GL_COMPILE);
-    bot_rwx_model_gl_draw(rwx_model_);
-    glEndList ();
-    display_list_ready_ = true;
-  } else {
-    glCallList (rwx_dl_);
-  } 
-}
-*/
 
 PointCloudModel::PointCloudModel(GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc) : mode_(mode)
 {
