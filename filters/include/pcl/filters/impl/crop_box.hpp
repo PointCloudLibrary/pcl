@@ -87,7 +87,9 @@ pcl::CropBox<PointT>::applyFilter (PointCloud &output)
 
     output.points[indice_count++] = input_->points[(*indices_)[index]];
   }
-  output.resize (indice_count);
+  output.width = indice_count;
+  output.height = 1;
+  output.resize (output.width * output.height);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
