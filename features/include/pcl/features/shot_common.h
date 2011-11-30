@@ -44,7 +44,7 @@ namespace pcl
   /** \brief Computes disambiguated local RF for a point index
     * \param cloud input point cloud
     * \param search_radius the neighborhood radius
-    * \param index point index
+    * \param central_point the point from the input_ cloud at which the local RF is computed
     * \param indices the neighbours indices
     * \param dists the distances to the neighbours
     * \param rf reference frame to compute
@@ -52,7 +52,7 @@ namespace pcl
   template<typename PointInT> float 
   getLocalRF (const pcl::PointCloud<PointInT> &cloud,
               const double search_radius, 
-              const int index, 
+              const Eigen::Vector4f & central_point, 
               const std::vector<int> &indices, 
               const std::vector<float> &dists, 
               std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf);

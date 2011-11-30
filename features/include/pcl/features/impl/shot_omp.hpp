@@ -86,7 +86,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 #else
     int tid = 0;
 #endif
-	computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], rfs[tid]);
+	computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot[tid], rfs[tid]);
 
 	// Copy into the resultant cloud
     for (int d = 0; d < shot[tid].size (); ++d)
@@ -143,7 +143,7 @@ pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (P
 #else
     int tid = 0;
 #endif
-    computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot[tid], rfs[tid]);
+    computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot[tid], rfs[tid]);
 
     // Copy into the resultant cloud
     for (int d = 0; d < shot[tid].size (); ++d)
