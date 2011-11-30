@@ -25,10 +25,10 @@ PolygonMeshModel::PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg ) : mo
       apoly.vertices_[3*j + 1] = (float) tmp(1);
       apoly.vertices_[3*j + 2] = (float) tmp(2);  
 
-      // r,g,b      
-      apoly.colors_[4*j + 0] =(float) newcloud.points[pt].r; // Red  
-      apoly.colors_[4*j + 1] =(float) newcloud.points[pt].g; // Green
-      apoly.colors_[4*j + 2] =(float) newcloud.points[pt].b; // Blue
+      // r,g,b: input is ints 0->255, opengl wants floats 0->1
+      apoly.colors_[4*j + 0] =(float) newcloud.points[pt].r/255.0; // Red  
+      apoly.colors_[4*j + 1] =(float) newcloud.points[pt].g/255.0; // Green
+      apoly.colors_[4*j + 2] =(float) newcloud.points[pt].b/255.0; // Blue
       apoly.colors_[4*j + 3] =(float) 1.0; // transparancy? 
     }
     polygons.push_back(apoly);
@@ -69,8 +69,10 @@ PointCloudModel::PointCloudModel(GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>:
     vertices_[3*i + 1] = pc->points[i].y;
     vertices_[3*i + 2] = pc->points[i].z;
 
+    // TODO: is this necessary or correct if we are using rgb and not rgba?
     int rgba_one = *reinterpret_cast<int*>(&pc->points[i].rgba);
     colors_[4*i + 3] =((float) ((rgba_one >> 24) & 0xff))/255.0;
+    //
     colors_[4*i + 2] =((float) ((rgba_one >> 16) & 0xff))/255.0;
     colors_[4*i + 1] =((float) ((rgba_one >> 8) & 0xff))/255.0;
     colors_[4*i + 0] =((float) (rgba_one & 0xff) )/255.0;    
