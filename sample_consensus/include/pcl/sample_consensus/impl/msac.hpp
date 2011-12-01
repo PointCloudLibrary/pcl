@@ -61,8 +61,12 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
   std::vector<double> distances;
 
   int n_inliers_count = 0;
+  unsigned skipped_count = 0;
+  // supress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
+  const unsigned max_skip = max_iterations_ * 10;
+  
   // Iterate
-  while (iterations_ < k)
+  while (iterations_ < k && skipped_count < max_skip)
   {
     // Get X samples which satisfy the model criteria
     sac_model_->getSamples (iterations_, selection);
@@ -73,6 +77,7 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
     if (!sac_model_->computeModelCoefficients (selection, model_coefficients))
     {
       //iterations_++;
+      ++ skipped_count;
       continue;
      }
 

@@ -153,7 +153,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
 
       memcpy (&x_data, &cloud_->data[x_point_offset], sizeof (float));
       memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
-      memcpy (&z_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
+      memcpy (&z_data, &cloud_->data[x_point_offset + 2 * sizeof (float)], sizeof (float));
 
       if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
         continue;
@@ -241,7 +241,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>
 
       memcpy (&x_data, &cloud_->data[x_point_offset], sizeof (float));
       memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
-      memcpy (&z_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
+      memcpy (&z_data, &cloud_->data[x_point_offset + 2 * sizeof (float)], sizeof (float));
       if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
         continue;
 

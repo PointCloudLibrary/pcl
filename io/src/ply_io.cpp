@@ -459,7 +459,7 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
     }
   }
 
-  oss << "\nelement camera"
+  oss << "\nelement camera 1"
     "\nproperty float view_px"
     "\nproperty float view_py"
     "\nproperty float view_pz"

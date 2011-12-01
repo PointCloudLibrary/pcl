@@ -52,57 +52,59 @@ bool set_file_name = false;
 class OpenNIGrabFrame
 {
   public:
-    OpenNIGrabFrame () : no_frame(true) {}
+    OpenNIGrabFrame () : no_frame (true)
+    {
+    }
 
     void 
     cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
-      if (no_frame)
+      if (!no_frame)
+        return;
+
+      std::string output_dir;
+      if (output_dir.empty ())
+        output_dir = ".";
+
+      std::stringstream ss;
+      if (noend || !set_file_name)
       {
-        std::string output_dir;
-        if (output_dir.empty ())
-          output_dir = ".";
-
-	std::stringstream ss;
-	if (noend || !set_file_name)
-	{
-          ss << output_dir << "/frame_" << boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::local_time());
-          file = ss.str ();
-	}
-
-	if (strcmp (format.c_str(), "ascii") == 0)
-	{
-          w.writeASCII<pcl::PointXYZRGB> (file + ".pcd", *cloud);
-	  std::cerr << "Data saved in ASCII format to " << file << ".pcd" << std::endl;
-	}        
-	else if (strcmp (format.c_str(), "b") == 0)
-	{
-	  w.writeBinary<pcl::PointXYZRGB> (file + ".pcd", *cloud);
-	  std::cerr << "Data saved in BINARY format to " << file << ".pcd" << std::endl;
-	}
-	else if (strcmp (format.c_str(), "bc") == 0)
-	{
-	  w.writeBinaryCompressed<pcl::PointXYZRGB> (file + ".pcd", *cloud);
-	  std::cerr << "Data saved in BINARY COMPRESSED format to " << file << ".pcd" << std::endl;
-	}
-	  else if (strcmp (format.c_str(), "all") == 0)
-	{
-	  w.writeASCII<pcl::PointXYZRGB> (file + "_ascii.pcd", *cloud);
-	  w.writeBinary<pcl::PointXYZRGB> (file + "_binary.pcd", *cloud);
-	  w.writeBinaryCompressed<pcl::PointXYZRGB> (file + "_binary_compressed.pcd", *cloud);
-	  std::cerr << "Data saved as ASCII, BINARY and BINARY COMPRESSED to " << file << "_{ascii,binary,binary_compresed}.pcd" << std::endl;
-	}
-          
-	if (!noend)
-	  no_frame = false;
+        ss << output_dir << "/frame_" << boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
+        file = ss.str ();
       }
+
+      if (strcmp (format.c_str (), "ascii") == 0)
+      {
+        w.writeASCII<pcl::PointXYZRGB> (file + ".pcd", *cloud);
+        std::cerr << "Data saved in ASCII format to " << file << ".pcd" << std::endl;
+      }        
+      else if (strcmp (format.c_str (), "b") == 0)
+      {
+        w.writeBinary<pcl::PointXYZRGB> (file + ".pcd", *cloud);
+        std::cerr << "Data saved in BINARY format to " << file << ".pcd" << std::endl;
+      }
+      else if (strcmp (format.c_str (), "bc") == 0)
+      {
+        w.writeBinaryCompressed<pcl::PointXYZRGB> (file + ".pcd", *cloud);
+        std::cerr << "Data saved in BINARY COMPRESSED format to " << file << ".pcd" << std::endl;
+      }
+        else if (strcmp (format.c_str (), "all") == 0)
+      {
+        w.writeASCII<pcl::PointXYZRGB> (file + "_ascii.pcd", *cloud);
+        w.writeBinary<pcl::PointXYZRGB> (file + "_binary.pcd", *cloud);
+        w.writeBinaryCompressed<pcl::PointXYZRGB> (file + "_binary_compressed.pcd", *cloud);
+        std::cerr << "Data saved as ASCII, BINARY and BINARY COMPRESSED to " << file << "_{ascii,binary,binary_compresed}.pcd" << std::endl;
+      }
+              
+      if (!noend)
+        no_frame = false;
     }
     
     void 
     run ()
     {
       // create a new grabber for OpenNI devices
-      pcl::Grabber* interface = new pcl::OpenNIGrabber();
+      pcl::Grabber* interface = new pcl::OpenNIGrabber ();
 
       // make callback function from member function
       boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
@@ -125,12 +127,12 @@ class OpenNIGrabFrame
     void
     setOptions (std::string filename, std::string pcd_format, bool loop)
     {
-      if (strcmp (filename.c_str(), "") != 0)
+      if (strcmp (filename.c_str (), "") != 0)
       {  
-	set_file_name = true;
+        set_file_name = true;
 
-	size_t index = filename.find(".");
-	file = filename.substr(0, index);
+        size_t index = filename.find (".");
+        file = filename.substr (0, index);
       }
       noend = loop;
       format = pcd_format;
@@ -184,12 +186,12 @@ main (int argc, char** argv)
     
     // Command line parsing
     parse_argument (argc, argv, "-format", format);
-    if (find_argument(argc, argv, "-noend") != -1)
+    if (find_argument (argc, argv, "-noend") != -1)
       noend = true; 
   }
 
   v.setOptions (filename, format, noend);
   v.run ();
-  return 0;
+  return (0);
 }
 

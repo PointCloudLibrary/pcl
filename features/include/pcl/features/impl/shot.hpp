@@ -152,7 +152,6 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::RGB2CIELAB (unsigned
 // Quadrilinear interpolation; used when color and shape descriptions are NOT activated simultaneously
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel (
-    const pcl::PointCloud<PointInT> &cloud,
     const std::vector<int> &indices,
     const std::vector<float> &dists,
     const Eigen::Vector4f &central_point,
@@ -169,7 +168,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
 
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
-    Eigen::Vector4f delta = cloud.points[indices[i_idx]].getVector4fMap () - central_point;
+    Eigen::Vector4f delta = surface_->points[indices[i_idx]].getVector4fMap () - central_point;
 	delta[3] = 0;
 
     // Compute the Euclidean norm
@@ -327,7 +326,6 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
 // Quadrilinear interpolation; used when color and shape descriptions are both activated
 template <typename PointNT, typename PointOutT> void
 pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleChannel (
-  const pcl::PointCloud<pcl::PointXYZRGBA> &cloud, 
   const std::vector<int> &indices, 
   const std::vector<float> &dists,
   const Eigen::Vector4f &central_point, 
@@ -348,7 +346,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
 
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
-    Eigen::Vector4f delta = cloud.points[indices[i_idx]].getVector4fMap () - central_point;
+    Eigen::Vector4f delta = surface_->points[indices[i_idx]].getVector4fMap () - central_point;
 	delta[3] = 0;
 
     // Compute the Euclidean norm
@@ -542,7 +540,6 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT, typename PointOutT> void
 pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
-  const pcl::PointCloud<pcl::PointXYZRGBA> &cloud, const pcl::PointCloud<PointNT> &normals,
   const int index, const std::vector<int> &indices, const std::vector<float> &dists, Eigen::VectorXf &shot,
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf)
 {
@@ -565,7 +562,9 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
   }
 
   //Compute the local Reference Frame for the current 3D point
-  if (pcl::getLocalRF (cloud, search_radius_, index, indices, dists, rf))
+  Eigen::Vector4f central_point = input_->points[index].getVector4fMap ();
+  central_point[3] = 0;
+  if (pcl::getLocalRF (*surface_, search_radius_, central_point, indices, dists, rf))
 	  return;
 
   //If shape description is enabled, compute the bins activated by each neighbor of the current feature in the shape histogram
@@ -575,7 +574,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
 
     for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
     {
-      double cosineDesc = normals.points[indices[i_idx]].getNormalVector4fMap ().dot (rf[2]); //feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
+      double cosineDesc = normals_->points[indices[i_idx]].getNormalVector4fMap ().dot (rf[2]); //feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
 
       if (cosineDesc > 1.0)
         cosineDesc = 1.0;
@@ -591,9 +590,9 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
   {
     binDistanceColor.resize (nNeighbors);
 
-    unsigned char redRef = cloud.points[index].rgba >> 16 & 0xFF;
-    unsigned char greenRef = cloud.points[index].rgba >> 8& 0xFF;
-    unsigned char blueRef = cloud.points[index].rgba & 0xFF;
+    unsigned char redRef = input_->points[index].rgba >> 16 & 0xFF;
+    unsigned char greenRef = input_->points[index].rgba >> 8& 0xFF;
+    unsigned char blueRef = input_->points[index].rgba & 0xFF;
 
     float LRef, aRef, bRef;
 
@@ -604,9 +603,9 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
 
     for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
     {
-      unsigned char red = cloud.points[indices[i_idx]].rgba >> 16 & 0xFF;
-      unsigned char green = cloud.points[indices[i_idx]].rgba >> 8 & 0xFF;
-      unsigned char blue = cloud.points[indices[i_idx]].rgba & 0xFF;
+      unsigned char red = surface_->points[indices[i_idx]].rgba >> 16 & 0xFF;
+      unsigned char green = surface_->points[indices[i_idx]].rgba >> 8 & 0xFF;
+      unsigned char blue = surface_->points[indices[i_idx]].rgba & 0xFF;
 
       float L, a, b;
 
@@ -629,13 +628,13 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
   //Apply quadrilinear interpolation on the activated bins in the shape and/or color histogram(s)
 
   if (b_describe_shape_ && b_describe_color_)
-    interpolateDoubleChannel (cloud, indices, dists, cloud.points[index].getVector4fMap (), rf, binDistanceShape, binDistanceColor,
+    interpolateDoubleChannel (indices, dists, input_->points[index].getVector4fMap (), rf, binDistanceShape, binDistanceColor,
                               nr_shape_bins_, nr_color_bins_,
                               shot);
   else if (b_describe_color_)
-    interpolateSingleChannel (cloud, indices, dists, cloud.points[index].getVector4fMap (), rf, binDistanceColor, nr_color_bins_, shot);
+    interpolateSingleChannel (indices, dists, input_->points[index].getVector4fMap (), rf, binDistanceColor, nr_color_bins_, shot);
   else
-    interpolateSingleChannel (cloud, indices, dists, cloud.points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
+    interpolateSingleChannel (indices, dists, input_->points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
 
   //Normalize the final histogram
   double accNorm = 0;
@@ -652,7 +651,6 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
-  const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
   const int index, const std::vector<int> &indices, const std::vector<float> &dists, Eigen::VectorXf &shot,
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf)
 {
@@ -672,7 +670,9 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
     return;
   }
 
-  if (pcl::getLocalRF (cloud, search_radius_, index, indices, dists, rf))
+  Eigen::Vector4f central_point = input_->points[index].getVector4fMap ();
+  central_point[3] = 0;
+  if (pcl::getLocalRF (*surface_, search_radius_, central_point, indices, dists, rf))
 	  return;
 
 
@@ -680,7 +680,7 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
 
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
-    double cosineDesc = normals.points[indices[i_idx]].getNormalVector4fMap ().dot (rf[2]); //feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
+    double cosineDesc = normals_->points[indices[i_idx]].getNormalVector4fMap ().dot (rf[2]); //feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
 
     if (cosineDesc > 1.0)
       cosineDesc = 1.0;
@@ -691,7 +691,7 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
 
   }
 
-  interpolateSingleChannel (cloud, indices, dists, cloud.points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
+  interpolateSingleChannel (indices, dists, input_->points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
 
   double accNorm = 0;
   for (int j=0; j< descLength_; j++)
@@ -747,7 +747,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (Poin
     this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
     // Compute the SHOT descriptor for the current 3D feature
-    computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot_, rf_);
+    computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot_, rf_);
 
     // Copy into the resultant cloud
     for (int d = 0; d < shot_.size (); ++d)
@@ -797,7 +797,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (PointClou
     this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
     // Estimate the SHOT at each patch
-    computePointSHOT (*surface_, *normals_, idx, nn_indices, nn_dists, shot_, rf_);
+    computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot_, rf_);
 
     // Copy into the resultant cloud
     for (int d = 0; d < shot_.size (); ++d)

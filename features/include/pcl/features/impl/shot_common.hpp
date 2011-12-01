@@ -56,7 +56,7 @@ const float zeroFloatEps8 = 1E-8f;
 template <typename PointInT> float
 pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud, 
                  const double search_radius, 
-                 const int index, 
+                 const Eigen::Vector4f & central_point, 
                  const std::vector<int> &indices, 
                  const std::vector<float> &dists, 
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf)
@@ -64,8 +64,6 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
   if (rf.size () != 3)
     rf.resize (3);
 
-  Eigen::Vector4f central_point = cloud.points[index].getVector4fMap ();
-  central_point[3] = 0;
   // Allocate enough space
   Eigen::Vector4d *vij = new Eigen::Vector4d[indices.size ()];
 
@@ -78,11 +76,15 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
 
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
-    if (indices[i_idx] == index)
-      continue;
+    /*if (indices[i_idx] == index)
+      continue;*/
 
     Eigen::Vector4f pt = cloud.points[indices[i_idx]].getVector4fMap (); 
     pt[3] = 0;
+
+	if (pt == central_point)
+		continue;
+
     // Difference between current point and origin
     vij[valid_nn_points] = (pt - central_point).cast<double> ();
     vij[valid_nn_points][3] = 0;
@@ -98,7 +100,7 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
 
   if (valid_nn_points < 5)
   {
-    PCL_ERROR ("[pcl::%s::getSHOTLocalRF] Warning! Neighborhood has less than 5 vertexes. Aborting Local RF computation of feature point with index %d\n", "SHOT", index);
+    PCL_ERROR ("[pcl::%s::getSHOTLocalRF] Warning! Neighborhood has less than 5 vertexes. Aborting Local RF computation of feature point (%lf, %lf, %lf)\n", "SHOT", central_point[0], central_point[1], central_point[2]);
     rf[0].setZero ();
     rf[1].setZero ();
     rf[2].setZero ();
@@ -186,10 +188,10 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
   {
     plusTangentDirection1=0;
 		int points = 5; ///std::min(valid_nn_points*2/2+1, 11);
-		int index = valid_nn_points/2;
+		int medianIndex = valid_nn_points/2;
 
 		for (int i = -points/2; i <= points/2; i++)
-			if ( vij[index- i ].dot (v1) > 0)
+			if ( vij[medianIndex- i ].dot (v1) > 0)
 				plusTangentDirection1 ++;	
 		
 		if (plusTangentDirection1 < points/2+1)
@@ -207,10 +209,10 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
 		plusNormal = 0;
 		int points = 5; //std::min(valid_nn_points*2/2+1, 11);
 		//std::cout << points << std::endl;
-		int index = valid_nn_points/2;
+		int medianIndex = valid_nn_points/2;
 
 		for (int i = -points/2; i <= points/2; i++)
-			if ( vij[index- i ].dot (v3) > 0)
+			if ( vij[medianIndex- i ].dot (v3) > 0)
 				plusNormal ++;	
 	
 		if (plusNormal < points/2+1)
