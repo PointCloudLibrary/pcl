@@ -312,7 +312,7 @@ void display() {
     // method 3: if you interact with the window with keys, the window is not closed properly
     // TODO: use pcl methods as this time stuff is probably not cross playform
     struct timespec t;
-    t.tv_sec = 10;
+    t.tv_sec = 100;
     //t.tv_nsec = (time_t)(20000000); // short sleep
     t.tv_nsec = (time_t)(0);  // long sleep - normal speed
     nanosleep(&t, NULL);

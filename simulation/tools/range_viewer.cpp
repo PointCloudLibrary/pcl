@@ -11,6 +11,10 @@
 #include <pcl/console/time.h>
 #include <vtkPolyDataReader.h>
 #include <vtkProp.h>
+#include <boost/algorithm/string.hpp>
+#include <string>
+
+using namespace std;
 
 namespace pcl
 {
@@ -107,6 +111,16 @@ RangeVisualization::RangeVisualization ()
 void
 RangeVisualization::on_keyboard (const pcl::visualization::KeyboardEvent& event)
 {
+
+      if (event.getKeyCode())
+        cout << "the key \'" << event.getKeyCode() << "\' (" << (int)event.getKeyCode() << ") was";
+      else
+        cout << "the special key \'" << event.getKeySym() << "\' was";
+      if (event.keyDown())
+        cout << " pressed" << endl;
+      else
+        cout << " released" << endl;  
+  
 }
 
 void

@@ -3,7 +3,8 @@ target_link_libraries(range-test pcl_common pcl_simulation pcl_io glut)
 
 include_directories(${VTK_INCLUDE_DIRS})
 PCL_ADD_EXECUTABLE(range-test-v2 ${SUBSYS_NAME} range_test_v2.cpp)
-target_link_libraries (range-test-v2  ${VTK_IO_TARGET_LINK_LIBRARIES}  glut
+target_link_libraries (range-test-v2 
+ ${VTK_IO_TARGET_LINK_LIBRARIES}  glut
   pcl_simulation   pcl_common  pcl_io pcl_range_image pcl_visualization)
 #pcl_surface pcl_features
 
@@ -15,4 +16,7 @@ target_link_libraries (range-test-v2  ${VTK_IO_TARGET_LINK_LIBRARIES}  glut
                  
 PCL_ADD_EXECUTABLE(range_viewer ${SUBSYS_NAME} range_viewer.cpp)
 target_link_libraries(range_viewer pcl_common pcl_io pcl_visualization)
+
+PCL_ADD_EXECUTABLE(range_viewer_v2 ${SUBSYS_NAME} range_viewer_v2.cpp)
+target_link_libraries(range_viewer_v2 pcl_common pcl_io pcl_visualization pcl_simulation )
 

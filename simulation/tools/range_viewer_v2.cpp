@@ -9,8 +9,8 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-#include <vtkPolyDataReader.h>
-#include <vtkProp.h>
+//#include <vtkPolyDataReader.h>
+//#include <vtkProp.h>
 #include <boost/algorithm/string.hpp>
 #include <string>
 
@@ -19,6 +19,9 @@
 #include "pcl/simulation/model.hpp"
 #include "pcl/simulation/scene.hpp"
 #include "pcl/simulation/range_likelihood.hpp"
+
+#include <pcl/io/vtk_lib_io.h>
+
 
 using namespace std;
 using namespace pcl;

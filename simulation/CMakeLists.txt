@@ -1,8 +1,7 @@
 set(SUBSYS_NAME simulation)
 set(SUBSYS_DESC "Point Cloud Library Simulation")
-set(SUBSYS_DEPS common io surface kdtree features search octree range_image)
+set(SUBSYS_DEPS common io surface kdtree features search octree range_image visualization)
 #set(SUBSYS_DEPS common io)
-
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -50,6 +49,6 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
-    #add_subdirectory(tools)
+    add_subdirectory(tools)
     #add_subdirectory(test)
 endif(build)

@@ -154,6 +154,7 @@ void RangeLikelihood::apply_camera_transform(const Camera & camera)
 
 void RangeLikelihood::draw_particles(std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses)
 {
+  
   int n = 0;
   for (int i=0; i<rows_; ++i) {
     for (int j=0; j<cols_; ++j) {
