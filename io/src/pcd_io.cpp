@@ -642,9 +642,9 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   float xval, yval, zval;
   for (size_t i = 0; i < cloud.width * cloud.height; ++i)
   {
-    memcpy (&xval, &cloud.data[cloud.fields[x_idx].offset], sizeof (float));
-    memcpy (&yval, &cloud.data[cloud.fields[y_idx].offset], sizeof (float));
-    memcpy (&zval, &cloud.data[cloud.fields[z_idx].offset], sizeof (float));
+    memcpy (&xval, &cloud.data[i * cloud.point_step + cloud.fields[x_idx].offset], sizeof (float));
+    memcpy (&yval, &cloud.data[i * cloud.point_step + cloud.fields[y_idx].offset], sizeof (float));
+    memcpy (&zval, &cloud.data[i * cloud.point_step + cloud.fields[z_idx].offset], sizeof (float));
     if (!pcl_isfinite (xval) || !pcl_isfinite (yval) || !pcl_isfinite (zval))
     {
       cloud.is_dense = false;
