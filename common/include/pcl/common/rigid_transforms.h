@@ -63,7 +63,7 @@ namespace pcl
                                   Eigen::Matrix4f &transformation_matrix);
 
   /** \brief Estimate a rigid rotation transformation between a source and a target point 
-    * cloud using SVDlosed-form solution of absolute orientation using unit quaternions
+    * cloud using SVD.
     * \param cloud_src the source point cloud dataset
     * \param indices_src the vector of indices describing the points of interest in cloud_src
     * \param cloud_tgt the target point cloud dataset
