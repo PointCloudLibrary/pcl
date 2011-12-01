@@ -104,9 +104,18 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::PointCloudColorHandl
   // Handle the 24-bit packed RGB values
   field_idx_ = pcl::getFieldIndex (*cloud, "rgb", fields_);
   if (field_idx_ != -1)
+  {
     capable_ = true;
+    return;
+  }
   else
-    capable_ = false;
+  {
+    field_idx_ = pcl::getFieldIndex (*cloud, "rgba", fields_);
+    if (field_idx_ != -1)
+      capable_ = true;
+    else
+      capable_ = false;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
