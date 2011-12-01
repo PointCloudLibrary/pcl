@@ -69,7 +69,7 @@ namespace pcl
 #  error
 #endif
       ///@return endianess of the host machine
-      Format getEndianess()
+      inline Format getEndianess()
       {
 #ifdef PCL_LITTLE_ENDIAN
         return LITTLE_ENDIAN_FORMAT;
@@ -106,7 +106,7 @@ namespace pcl
         ALL               = 0xFFFFFFF
       };
       ///@return a property type from its type name
-      int getTypeFromTypeName(const std::string& type_name) 
+      inline int getTypeFromTypeName(const std::string& type_name) 
       {
         if(!strcmp(type_name.c_str(), "char"))
           return sensor_msgs::PointField::INT8;
@@ -129,7 +129,7 @@ namespace pcl
         return -2;
       };
       
-      size_t getMaximumCapacity(int size_type)
+      inline size_t getMaximumCapacity(int size_type)
       {
         switch(size_type)
         {
@@ -540,7 +540,7 @@ namespace pcl
       };
       
       /** write out a pcl::io::ply::camera structure to an ostream */
-      void write(const pcl::io::ply::camera& c, std::ostream& out, bool binary)
+      inline void write(const pcl::io::ply::camera& c, std::ostream& out, bool binary)
       {
         if(!binary)
         {
