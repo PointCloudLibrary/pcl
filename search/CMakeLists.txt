@@ -21,6 +21,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/organized.h
         include/pcl/${SUBSYS_NAME}/octree.h
         include/pcl/${SUBSYS_NAME}/pcl_search.h
+        include/pcl/${SUBSYS_NAME}/flann_search.h
         )
 
     set(impl_incs 
