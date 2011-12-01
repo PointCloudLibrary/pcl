@@ -87,9 +87,10 @@ namespace
 {
     template <class T> inline void getCudaAttribute(T *attribute, CUdevice_attribute device_attribute, int device)
     {
+        *attribute = T();
         CUresult error = CUDA_SUCCESS;// = cuDeviceGetAttribute( attribute, device_attribute, device );
         if( CUDA_SUCCESS == error ) 
-            return;
+            return;        
 
         printf("Driver API error = %04d\n", error);
         pcl::gpu::error("driver API error", __FILE__, __LINE__);    
@@ -103,7 +104,7 @@ namespace
             int Cores;
         } SMtoCores;
 
-        SMtoCores gpuArchCoresPerSM[] =  { { 0x10,  8 }, { 0x11,  8 }, { 0x12,  8 }, { 0x13,  8 }, { 0x20, 32 }, { 0x21, 48 }, {   -1, -1 } };
+        SMtoCores gpuArchCoresPerSM[] =  { { 0x10,  8 }, { 0x11,  8 }, { 0x12,  8 }, { 0x13,  8 }, { 0x20, 32 }, { 0x21, 48 }, { -1, -1 } };
 
         int index = 0;
         while (gpuArchCoresPerSM[index].SM != -1) 

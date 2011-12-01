@@ -349,7 +349,7 @@ bool pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw)
 
 Eigen::Affine3f pcl::gpu::KinfuTracker::getCameraPose(int time)
 {    
-    if (time > rmats_.size() || time < 0)
+    if (time > (int)rmats_.size() || time < 0)
         time = rmats_.size() - 1;
 
     Eigen::Affine3f aff;
