@@ -103,6 +103,14 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
     {
       for (size_t cp = 0; cp < input_->points.size (); ++cp)
       {
+        if (pcl_isnan (input_->points[cp].x) ||
+            pcl_isnan (input_->points[cp].y) ||
+            pcl_isnan (input_->points[cp].z))
+        {
+          output.points[cp].x = output.points[cp].y = output.points[cp].z = user_filter_value_;
+          continue;
+        }
+
         // Copy the point
         pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[cp]));
 

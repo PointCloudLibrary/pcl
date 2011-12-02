@@ -40,7 +40,6 @@
 
 #include <vector>
 #include <Eigen/Geometry>
-#include <Eigen/StdVector>
 
 namespace pcl 
 {
