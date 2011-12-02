@@ -2,8 +2,10 @@
 
 Exceptions in PCL
 -----------------
-We had a discussion on exceptions writing and handling in PCL. The
-grand lines are highlighted here.
+We had several discussions in the past on exceptions writing and handling in
+PCL (see http://www.pcl-developers.org/to-throw-or-not-to-throw-td4828759.html
+for an example). The major bullet points that were discussed are highlighted
+here.
 
 Exceptions writing
 ==================
@@ -14,7 +16,7 @@ Any new exception should inherit from PCLException class in
 
   /** \class MyException
     * \brief An exception that is thrown when I want it.
-		*/
+    */
 		
   class PCL_EXPORTS MyException : public PCLException
   {
@@ -43,18 +45,15 @@ Then in your code you can put
 
 .. code-block:: cpp
 
-  if(my_requirements != the_parameters_used_)
-	  PCL_THROW_EXCEPTION(MyException, "my requirements are not met " << the_parameters_used);
+  if (my_requirements != the_parameters_used_)
+	  PCL_THROW_EXCEPTION (MyException, "my requirements are not met " << the_parameters_used);
 
-This will set the file name and the line number thanks to the macro
-definition.
-Take care of the message it is the most important part of the
-exception. You can make profit of the std::ostringstream used in the
-macro so you can append variable names to variable values and so on to
-make it really explicit.
-Also something really important is when the method you are writing
-``can`` throw an exception then please in the function documentation
-add it this way:
+This will set the file name and the line number thanks to the macro definition.
+Take care of the message it is the most important part of the exception. You
+can make profit of the std::ostringstream used in the macro so you can append
+variable names to variable values and so on to make it really explicit.  Also
+something really important is when the method you are writing ``can`` throw an
+exception then please in the function documentation add it this way:
 
 .. code-block:: cpp
 
@@ -62,7 +61,8 @@ add it this way:
     * \param nb number of points
 		* \throws MyException
     */
-  void myFunction(int nb);
+  void 
+  myFunction (int nb);
 
 This will make it available in the generated API documentation so the
 person that would use your function knows that she has to deal with
@@ -77,20 +77,20 @@ To properly handle exceptions you need the ``try``... ``catch`` block.
   // Here we call myFunction which can throw MyException
   try
   {
-	  myObject.myFunction(some_number);
-	  // You can put more exceptions throwing instruction within same try block
+    myObject.myFunction (some_number);
+    // You can put more exceptions throwing instruction within same try block
   }
   // We catch only MyException to be very specific
   catch (pcl::MyException& e)
   {
-	  // Code to deal with the exception maybe changing myObject.the_parameters_used_
+    // Code to deal with the exception maybe changing myObject.the_parameters_used_
   }
 
   // Here we catch any exception
   #if 0
   catch (exception& e)
   {
-	  // Code to deal with the exception maybe changing myObject.the_parameters_used_
+    // Code to deal with the exception maybe changing myObject.the_parameters_used_
   }
   #endif
 
