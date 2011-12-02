@@ -90,7 +90,7 @@ namespace pcl
         }
       };
 
-      FlannSearch ( FlannIndexCreator* creator ) : index_(0), creator_(creator), eps_(0)
+      FlannSearch ( FlannIndexCreator* creator ) : index_(0), creator_(creator), eps_(0), input_copied_for_flann_(false)
       {
         point_representation_.reset (new DefaultPointRepresentation<PointT>);
         dim_=point_representation_->getNumberOfDimensions();
@@ -173,8 +173,18 @@ namespace pcl
       int
       nearestKSearch (const PointT &point, int k, std::vector<int> &indices, std::vector<float> &dists)
       {
-        flann::Matrix<float> m( new float[point_representation_->getNumberOfDimensions()],1, point_representation_->getNumberOfDimensions());
-        point_representation_->copyToFloatArray(point, m.data);
+        bool can_cast = point_representation_->isTrivial();
+
+        float* data=0;
+        if( !can_cast )
+        {
+          data = new float[point_representation_->getNumberOfDimensions()];
+          point_representation_->copyToFloatArray(point,data);
+        }
+
+        float* cdata = can_cast ? const_cast<float*>( reinterpret_cast<const float*>(&point) ): data;
+        const flann::Matrix<float> m( cdata ,1, point_representation_->getNumberOfDimensions());
+
         flann::SearchParams p;
         p["eps"]=eps_;
         indices.resize(k,-1);
@@ -182,8 +192,83 @@ namespace pcl
         flann::Matrix<int> i(&indices[0],1,k);
         flann::Matrix<float> d(&dists[0],1,k);
         int result = index_->knnSearch(m,i,d,k, p);
-        //delete [] m.data;
+
+        delete [] data;
+
+        if (!identity_mapping_)
+        {
+          for (size_t i = 0; i < (size_t)k; ++i)
+          {
+            int& neighbor_index = indices[i];
+            neighbor_index = index_mapping_[neighbor_index];
+          }
+        }
         return result;
+      }
+
+
+      /** \brief Search for the k-nearest neighbors for the given query point.
+        * \param[in] cloud the point cloud data
+        * \param[in] index the index in \a cloud representing the query point
+        * \param[in] k the number of neighbors to search for
+        * \param[out] k_indices the resultant indices of the neighboring points, k_indices[i] corresponds to the neighbors of the query point i
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, k_sqr_distances[i] corresponds to the neighbors of the query point i
+        */
+      virtual void
+      nearestKSearch (const PointCloud& cloud, const std::vector<int>& indices, int k, std::vector< std::vector<int> >& k_indices,
+              std::vector< std::vector<float> >& k_sqr_distances)
+      {
+        if( indices.empty() ) // full point cloud + trivial copy operation = no need to do any conversion/copying to the flann matrix!
+        {
+          k_indices.resize( cloud.size() );
+          k_sqr_distances.resize( cloud.size() );
+
+          bool can_cast = point_representation_->isTrivial();
+
+          float* data=0;
+          if( !can_cast )
+          {
+            data = new float[dim_*cloud.size()];
+            for( size_t i=0; i<cloud.size(); ++i )
+              point_representation_->copyToFloatArray(cloud[i],data+i*dim_);
+          }
+
+          float* cdata = can_cast ? const_cast<float*>( reinterpret_cast<const float*>(&cloud[0]) ): data;
+          const flann::Matrix<float> m( cdata ,cloud.size(), dim_, sizeof(PointT)/sizeof(float) );
+
+          flann::SearchParams p;
+          p["eps"]=eps_;
+          index_->knnSearch(m,k_indices,k_sqr_distances,k, p);
+
+          delete [] data;
+        }
+        else // if indices are present, the cloud has to be copied anyway. Only copy the relevant parts of the points here.
+        {
+          k_indices.resize( indices.size() );
+          k_sqr_distances.resize( indices.size() );
+
+          float* data=new float[dim_*indices.size()];
+          for( size_t i=0; i<indices.size(); ++i )
+            point_representation_->copyToFloatArray(cloud[indices[i]],data+i*dim_);
+          const flann::Matrix<float> m( data ,cloud.size(), point_representation_->getNumberOfDimensions());
+
+          flann::SearchParams p;
+          p["eps"]=eps_;
+          index_->knnSearch(m,k_indices,k_sqr_distances,k, p);
+
+          delete[] data;
+        }
+        if (!identity_mapping_)
+        {
+          for( size_t j=0; j<k_indices.size(); ++j )
+          {
+            for (size_t i = 0; i < (size_t)k; ++i)
+            {
+              int& neighbor_index = k_indices[j][i];
+              neighbor_index = index_mapping_[neighbor_index];
+            }
+          }
+        }
       }
 
       /** \brief Search for the k-nearest neighbors for the given query point.
@@ -232,17 +317,37 @@ namespace pcl
           std::vector<int> &indices, std::vector<float> &distances,
           int max_nn = -1) const
       {
-        flann::Matrix<float> m(new float[point_representation_->getNumberOfDimensions()], 1, point_representation_->getNumberOfDimensions());
-        point_representation_->copyToFloatArray(point, m.data);
+        bool can_cast = point_representation_->isTrivial();
+
+        float* data=0;
+        if( !can_cast )
+        {
+          data = new float[point_representation_->getNumberOfDimensions()];
+          point_representation_->copyToFloatArray(point,data);
+        }
+
+        float* cdata = can_cast ? const_cast<float*>( reinterpret_cast<const float*>(&point) ): data;
+        const flann::Matrix<float> m( cdata ,1, point_representation_->getNumberOfDimensions());
+
         flann::SearchParams p;
         p["eps"]=eps_;
         p["max_neighbors"]=max_nn;
         std::vector<std::vector<int> > i(1);
         std::vector<std::vector<float> > d(1);
         int result = index_->radiusSearch(m,i,d,radius*radius, p);
-        delete [] m.data;
+
+        delete [] data;
         indices=i[0];
         distances=d[0];
+
+        if (!identity_mapping_)
+        {
+          for (size_t i = 0; i < indices.size(); ++i)
+          {
+            int& neighbor_index = indices[i];
+            neighbor_index = index_mapping_[neighbor_index];
+          }
+        }
         return result;
       }
 
@@ -278,6 +383,73 @@ namespace pcl
           return radiusSearch( (*input_)[index],radius,k_indices,k_distances,max_nn );
       }
 
+
+      /** \brief Search for the k-nearest neighbors for the given query point.
+        * \param[in] cloud the point cloud data
+        * \param[in] index the index in \a cloud representing the query point
+        * \param[in] k the number of neighbors to search for
+        * \param[out] k_indices the resultant indices of the neighboring points, k_indices[i] corresponds to the neighbors of the query point i
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, k_sqr_distances[i] corresponds to the neighbors of the query point i
+        */
+      virtual void
+      radiusSearch (const PointCloud& cloud, const std::vector<int>& indices, double radius, std::vector< std::vector<int> >& k_indices,
+              std::vector< std::vector<float> >& k_sqr_distances, int max_nn=-1)
+      {
+        if( indices.empty() ) // full point cloud + trivial copy operation = no need to do any conversion/copying to the flann matrix!
+        {
+          k_indices.resize( cloud.size() );
+          k_sqr_distances.resize( cloud.size() );
+
+          bool can_cast = point_representation_->isTrivial();
+
+          float* data=0;
+          if( !can_cast )
+          {
+            data = new float[dim_*cloud.size()];
+            for( size_t i=0; i<cloud.size(); ++i )
+              point_representation_->copyToFloatArray(cloud[i],data+i*dim_);
+          }
+
+          float* cdata = can_cast ? const_cast<float*>( reinterpret_cast<const float*>(&cloud[0]) ): data;
+          const flann::Matrix<float> m( cdata ,cloud.size(), dim_, sizeof(PointT)/sizeof(float) );
+
+          flann::SearchParams p;
+          p["eps"]=eps_;
+          p["max_neighbors"]=max_nn;
+          index_->radiusSearch(m,k_indices,k_sqr_distances,radius*radius, p);
+
+          delete [] data;
+        }
+        else // if indices are present, the cloud has to be copied anyway. Only copy the relevant parts of the points here.
+        {
+          k_indices.resize( indices.size() );
+          k_sqr_distances.resize( indices.size() );
+
+          float* data=new float[dim_*indices.size()];
+          for( size_t i=0; i<indices.size(); ++i )
+            point_representation_->copyToFloatArray(cloud[indices[i]],data+i*dim_);
+          const flann::Matrix<float> m( data ,cloud.size(), point_representation_->getNumberOfDimensions());
+
+          flann::SearchParams p;
+          p["eps"]=eps_;
+          p["max_neighbors"]=max_nn;
+          index_->radiusSearch(m,k_indices,k_sqr_distances,radius*radius, p);
+
+          delete[] data;
+        }
+        if (!identity_mapping_)
+        {
+          for( size_t j=0; j<k_indices.size(); ++j )
+          {
+            for (size_t i = 0; i < k_indices[j].size(); ++i)
+            {
+              int& neighbor_index = k_indices[j][i];
+              neighbor_index = index_mapping_[neighbor_index];
+            }
+          }
+        }
+      }
+
       /** \brief Provide a pointer to the point representation to use to convert points into k-D vectors.
         * \param[in] point_representation the const boost shared pointer to a PointRepresentation
         */
@@ -299,14 +471,14 @@ namespace pcl
 
       void convertInputToFlannMatrix()
       {
-        //flann::Matrix<float> m(1, point_representation_->getNrOfDimensions(),  new float[point_representation_->getNrOfDimensions()]);
-        //point_representation_->copyToFloatArray(point, m.data);
-
         int original_no_of_points = indices_&&!indices_->empty() ? indices_->size():input_->size();
+
+
 
         if( input_copied_for_flann_ )
           delete input_flann_.data;
         input_copied_for_flann_=true;
+        identity_mapping_=true;
 
         input_flann_=flann::Matrix<float>(new float[original_no_of_points*point_representation_->getNumberOfDimensions()], original_no_of_points, point_representation_->getNumberOfDimensions() );
 
@@ -317,17 +489,17 @@ namespace pcl
 
         if( !indices_ || indices_->empty()  )
         {
+          /// TODO: implement "no NaN check" option that just re-uses the cloud data in the flann matrix
           for (int i = 0; i < original_no_of_points; ++i)
           {
             const PointT& point = (*input_)[i];
             // Check if the point is invalid
-            /*if (!point_representation_->isValid(point)) {
+            if (!point_representation_->isValid(point)) {
               identity_mapping_ = false;
               continue;
-            }*/
+            }
 
-            //index_mapping_.push_back(indices_index);  // If the returned index should be for the indices vector
-            //index_mapping_.push_back(cloud_index);  // If the returned index should be for the ros cloud
+            index_mapping_.push_back(i);  // If the returned index should be for the indices vector
 
             point_representation_->vectorize(point, cloud_ptr);
             cloud_ptr += dim_;
@@ -341,13 +513,12 @@ namespace pcl
             int cloud_index = (*indices_)[indices_index];
             const PointT&  point = (*input_)[cloud_index];
             // Check if the point is invalid
-            /*if (!point_representation_->isValid(point)) {
+            if (!point_representation_->isValid(point)) {
               identity_mapping_ = false;
               continue;
-            }*/
+            }
 
-            //index_mapping_.push_back(indices_index);  // If the returned index should be for the indices vector
-            //index_mapping_.push_back(cloud_index);  // If the returned index should be for the ros cloud
+            index_mapping_.push_back(indices_index);  // If the returned index should be for the indices vector
 
             point_representation_->vectorize(point, cloud_ptr);
             cloud_ptr += dim_;
@@ -360,14 +531,17 @@ namespace pcl
       Index *index_;
       FlannIndexCreator *creator_;
       flann::Matrix<float> input_flann_;
-      bool input_copied_for_flann_;
       float eps_;
+      bool input_copied_for_flann_;
+
       PointRepresentationConstPtr point_representation_;
 
       int dim_;
 
       PointCloudConstPtr input_;
       IndicesConstPtr indices_;
+      std::vector<int> index_mapping_;
+      bool identity_mapping_;
 
     };
   }
