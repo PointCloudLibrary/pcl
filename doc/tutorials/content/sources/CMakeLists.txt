@@ -19,7 +19,7 @@ foreach(subdir
           octree_search
           openni_grabber
           openni_narf_keypoint_extraction
-          openni_range_image_visualization
+          #openni_range_image_visualization
           passthrough
           pcd_read 
           pcd_write
