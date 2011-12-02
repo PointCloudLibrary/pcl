@@ -4,15 +4,10 @@ project(range_image_visualization)
 
 find_package(PCL 1.3 REQUIRED)
 
-if(WXWIDGETS_FOUND)
-  include_directories(${PCL_INCLUDE_DIRS})
-  link_directories(${PCL_LIBRARY_DIRS})
-  add_definitions(${PCL_DEFINITIONS})
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
-  add_executable (range_image_visualization range_image_visualization.cpp)
-  target_link_libraries (range_image_visualization ${PCL_RANGE_IMAGE_LIBRARIES})
-  target_link_libraries (range_image_visualization ${PCL_VISUALIZATION_LIBRARIES})
-else(WXWIDGETS_FOUND)
-  message("WxWidgets is required to build ${PROJECT_NAME}.")
-endif(WXWIDGETS_FOUND)
+add_executable (range_image_visualization range_image_visualization.cpp)
+target_link_libraries (range_image_visualization ${PCL_LIBRARIES})
 
