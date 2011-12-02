@@ -48,14 +48,14 @@
 namespace pcl
 {
   namespace gpu
-  {
-    /** \brief
+  {        
+    /** \brief KinfuTracker incapculates implementaion of Microsoft Kinect Fusion algorthm
       * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
       */
     class PCL_EXPORTS KinfuTracker
     {
       public:
-        /** \brief . */
+        /** \brief Pixel type for rendered image. */
         struct RGB
         {
           unsigned char r, g, b;
@@ -67,34 +67,34 @@ namespace pcl
         typedef pcl::Normal NormalType;
 
         /** \brief Constructor
-          * \param[in] rows
-          * \param[in] cols
+          * \param[in] rows height of depth image
+          * \param[in] cols width of depth image
           */
         KinfuTracker (int rows = 480, int cols = 640);
 
-        /** \brief Sets Tsdf volume size for each dimention in mm
-          * \param[in] fx
-          * \param[in] fy
-          * \param[in] cx
-          * \param[in] cy
+        /** \brief Sets Depth camera intrinsics
+          * \param[in] fx focal length x 
+          * \param[in] fy focal length y
+          * \param[in] cx principal point x
+          * \param[in] cy principal point y
           */
         void
         setDepthIntrinsics (float fx, float fy, float cx = -1, float cy = -1);
 
         /** \brief Sets initial camera pose relative to volume coordiante space
-          * \param[in] pose
+          * \param[in] pose Initial camera pose
           */
         void
         setInitalCameraPose (const Eigen::Affine3f& pose);
 
         /** \brief Sets Tsdf volume size for each dimention in mm
-          * \param[in] volume_size
+          * \param[in] volume_size size of tsdf volume
           */
         void
         setVolumeSize (const Eigen::Vector3f& volume_size);
 
         /** \brief Sets Tsdf trancation distance in mm. Must be greater than 2 * volume cell size
-          * \param[in] distance
+          * \param[in] distance TSDF trancation distance 
           */
         void
         setTrancationDistance (float distance);
@@ -125,84 +125,91 @@ namespace pcl
         bool operator() (const DepthMap& depth);
 
         /** \brief Returns camera pose at given time, default the last pose
-          * \param[in] time
+          * \param[in] time Index of frame for which camera pose is returned.
+          * \return camera pose
           */
         Eigen::Affine3f
         getCameraPose (int time = -1);
 
-        /** \brief Generates image for human (?)
-          * \param[out] view
+        /** \brief Renders 3D scene to display to human
+          * \param[out] view output array with image
           */
         void
         getImage (View& view) const;
 
-        /** \brief Generates image for human (?)
-          * \param[out] view
-          * \param[in] light_source_pose
+        /** \brief Renders 3D scene to display to human
+          * \param[out] view output array with image
+          * \param[in] light_source_pose Pose of light source for computing illumination
           */
         void
         getImage (View& view, const Eigen::Vector3f& light_source_pose) const;
 
         /** \brief Returns point cloud abserved from last camera pose
-          * \param[out] cloud
+          * \param[out] cloud output array for points
           */
         void
         getLastFrameCloud (DeviceArray2D<PointType>& cloud) const;
 
         /** \brief Returns point cloud abserved from last camera pose
-          * \param[out] normals
+          * \param[out] normals output array for normals
           */
         void
         getLastFrameNormals (DeviceArray2D<NormalType>& normals) const;
 
         /** \brief Generates cloud on CPU
-          * \param[out] cloud
-          * \param[in] connected26
+          * \param[out] cloud output array for cloud
+          * \param[in] connected26 If false point cloud is extracted using 6 neighbor, otherwise 26.
           */
         void
         getCloudFromVolumeHost (PointCloud<PointType>& cloud, bool connected26 = false);
 
         /** \brief Generates cloud on GPU in connected6 mode only
-          * \param[out] cloud_buffer
+          * \param[out] cloud_buffer buffer to store point cloud
+          * \return DeviceArray with disabled reference counting that points to filled part of cloud_buffer.
           */
         DeviceArray<PointType>
         getCloudFromVolume (DeviceArray<PointType>& cloud_buffer);
 
         /** \brief Computes normals as gradient of tsdf for given points
-          * \param[in] cloud
-          * \param[out] normals
+          * \param[in] cloud Points for which normals are to be computed.
+          * \param[out] normals Buffer for normals
           */
         void
         getNormalsFromVolume (const DeviceArray<PointType>& cloud, DeviceArray<PointType>& normals) const;
 
         /** \brief Computes normals as gradient of tsdf for given points
-          * \param[in] cloud
-          * \param[out] normals
+          * \param[in] cloud Points for which normals are to be computed.
+          * \param[out] normals Buffer for normals
           */
         void
         getNormalsFromVolume (const DeviceArray<PointType>& cloud, DeviceArray<NormalType>& normals) const;
 
       private:
+        
         enum
         {
-            LEVELS = 3,
+            /** \brief Number of pyramid levels */
+            LEVELS = 3,            
             DEFAULT_VOLUME_CLOUD_BUFFER_SIZE = 10 * 1000 * 1000,
         };
 
+        /** \brief ICP Corespondcnes map type */
         typedef DeviceArray2D<int> CorespMap;
-        typedef DeviceArray2D<float> MapArr;
 
+        /** \brief Vertex or Normal Map type */
+        typedef DeviceArray2D<float> MapArr;
+        
         typedef Eigen::Matrix<float, 3, 3, Eigen::RowMajor> Matrix3frm;
         typedef Eigen::Vector3f Vector3f;
 
-        /** \brief . */
+        /** \brief Height of input depth image. */
         int rows_;
-        /** \brief . */
+        /** \brief Width of input depth image. */
         int cols_;
-        /** \brief . */
+        /** \brief Frame counter */
         int global_time_;
 
-        /** \brief . */
+        /** \brief Intrinsic parameters of depth camera. */
         float fx_, fy_, cx_, cy_;
 
         /** \brief Size of volume in mm. */
@@ -214,58 +221,58 @@ namespace pcl
         /** \brief Initial camera position in volume coo space. */
         Vector3f   init_tcam_;
 
-        /** \brief . */
+        /** \brief array with IPC iteration numbers for each pyramid level */
         int icp_iterations_[LEVELS];
-        /** \brief . */
+        /** \brief distance threshold in corespondance filtering */
         float  distThres_;
-        /** \brief . */
+        /** \brief angle threshold in corespondance filtering. Represents maxima sine of angle between normals. */
         float angleThres_;
-        /** \brief . */
+        /** \brief TSDF trancation distance in mm. Must be greater than tsdf volume cell size */
         float tranc_dist_;
 
-        /** \brief . */
+        /** \brief Array of dpeth pyramids. */
         std::vector<DepthMap> depths_curr_;
-        /** \brief . */
+        /** \brief Array of pyramids of vertex maps for current frame in global coordinate space. */
         std::vector<MapArr> vmaps_g_curr_;
-        /** \brief . */
+        /** \brief Array of pyramids of normal maps for current frame in global coordinate space. */
         std::vector<MapArr> nmaps_g_curr_;
 
-        /** \brief . */
+        /** \brief Array of pyramids of vertex maps for previous frame in global coordinate space. */
         std::vector<MapArr> vmaps_g_prev_;
-        /** \brief . */
+        /** \brief Array of pyramids of normal maps for previous frame in global coordinate space. */
         std::vector<MapArr> nmaps_g_prev_;
 
-        /** \brief . */
+        /** \brief Array of pyramids of vertex maps for current frame in current coordinate space. */
         std::vector<MapArr> vmaps_curr_;
-        /** \brief . */
+        /** \brief Array of pyramids of vertex maps for current frame in current coordinate space. */
         std::vector<MapArr> nmaps_curr_;
 
-        /** \brief . */
+        /** \brief Array of buffers with ICP corespondances for each pyramid level. */
         std::vector<CorespMap> coresps_;
 
-        /** \brief . */
+        /** \brief TSDF volume storage */
         DeviceArray2D<int> volume_;
-        /** \brief . */
+        /** \brief Buffer for storing scaled depth image */
         DeviceArray2D<float> depthRawScaled_;
 
-        /** \brief . */
+        /** \brief Temporary buffer for ICP */
         DeviceArray2D<float> gbuf_;
-        /** \brief . */
+        /** \brief Buffer to store MLS matrix. */
         DeviceArray<float> sumbuf_;
 
-        /** \brief . */
+        /** \brief Array of camera rotation matrixes for each moment of time. */
         std::vector<Matrix3frm> rmats_;
-        /** \brief . */
+        /** \brief Array of camera traslations for each moment of time. */
         std::vector<Vector3f>   tvecs_;
 
-        /** \brief
+        /** \brief Allocates all GPU internal buffers.
           * \param[in] rows_arg
           * \param[in] cols_arg
           */
         void
         allocateBufffers (int rows_arg, int cols_arg);
 
-        /** \brief
+        /** \brief Performs the tracker reset to inital state. It's used if case of camera tracking fail.
           */
         void
         reset ();
