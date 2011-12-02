@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,11 +39,9 @@
 #define PCL_KINFU_KINFUTRACKER_HPP_
 
 #include <pcl/pcl_macros.h>
-
 #include <pcl/gpu/containers/device_array.hpp>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-
 #include <Eigen/Core>
 #include <vector>
 
@@ -55,6 +55,7 @@ namespace pcl
     class PCL_EXPORTS KinfuTracker
     {
       public:
+        /** \brief . */
         struct RGB
         {
           unsigned char r, g, b;
@@ -194,40 +195,67 @@ namespace pcl
         typedef Eigen::Matrix<float, 3, 3, Eigen::RowMajor> Matrix3frm;
         typedef Eigen::Vector3f Vector3f;
 
+        /** \brief . */
         int rows_;
+        /** \brief . */
         int cols_;
+        /** \brief . */
         int global_time_;
 
+        /** \brief . */
         float fx_, fy_, cx_, cy_;
 
-        Vector3f volume_size_; // sizeof volume in mm
-        Matrix3frm init_Rcam_;   // init camera rotaion in volume coo space
-        Vector3f   init_tcam_;   // init camera pos in volume coo space
+        /** \brief Size of volume in mm. */
+        Vector3f volume_size_;
 
+        /** \brief Initial camera rotation in volume coo space. */
+        Matrix3frm init_Rcam_;
+
+        /** \brief Initial camera position in volume coo space. */
+        Vector3f   init_tcam_;
+
+        /** \brief . */
         int icp_iterations_[LEVELS];
+        /** \brief . */
         float  distThres_;
+        /** \brief . */
         float angleThres_;
+        /** \brief . */
         float tranc_dist_;
 
+        /** \brief . */
         std::vector<DepthMap> depths_curr_;
+        /** \brief . */
         std::vector<MapArr> vmaps_g_curr_;
+        /** \brief . */
         std::vector<MapArr> nmaps_g_curr_;
 
+        /** \brief . */
         std::vector<MapArr> vmaps_g_prev_;
+        /** \brief . */
         std::vector<MapArr> nmaps_g_prev_;
 
+        /** \brief . */
         std::vector<MapArr> vmaps_curr_;
+        /** \brief . */
         std::vector<MapArr> nmaps_curr_;
 
+        /** \brief . */
         std::vector<CorespMap> coresps_;
 
+        /** \brief . */
         DeviceArray2D<int> volume_;
+        /** \brief . */
         DeviceArray2D<float> depthRawScaled_;
 
+        /** \brief . */
         DeviceArray2D<float> gbuf_;
+        /** \brief . */
         DeviceArray<float> sumbuf_;
 
+        /** \brief . */
         std::vector<Matrix3frm> rmats_;
+        /** \brief . */
         std::vector<Vector3f>   tvecs_;
 
         /** \brief
