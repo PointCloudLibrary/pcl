@@ -49,7 +49,7 @@ namespace pcl
 {
   namespace gpu
   {        
-    /** \brief KinfuTracker incapculates implementaion of Microsoft Kinect Fusion algorthm
+    /** \brief KinfuTracker class encapsulates implementation of Microsoft Kinect Fusion algorithm
       * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
       */
     class PCL_EXPORTS KinfuTracker
@@ -193,7 +193,7 @@ namespace pcl
             DEFAULT_VOLUME_CLOUD_BUFFER_SIZE = 10 * 1000 * 1000,
         };
 
-        /** \brief ICP Corespondcnes map type */
+        /** \brief ICP Correspondences  map type */
         typedef DeviceArray2D<int> CorespMap;
 
         /** \brief Vertex or Normal Map type */
@@ -223,11 +223,11 @@ namespace pcl
 
         /** \brief array with IPC iteration numbers for each pyramid level */
         int icp_iterations_[LEVELS];
-        /** \brief distance threshold in corespondance filtering */
+        /** \brief distance threshold in correspondences filtering */
         float  distThres_;
-        /** \brief angle threshold in corespondance filtering. Represents maxima sine of angle between normals. */
+        /** \brief angle threshold in correspondences filtering. Represents max sine of angle between normals. */
         float angleThres_;
-        /** \brief TSDF trancation distance in mm. Must be greater than tsdf volume cell size */
+        /** \brief TSDF truncation  distance in mm. Must be greater than tsdf volume cell size */
         float tranc_dist_;
 
         /** \brief Array of dpeth pyramids. */
@@ -247,7 +247,7 @@ namespace pcl
         /** \brief Array of pyramids of vertex maps for current frame in current coordinate space. */
         std::vector<MapArr> nmaps_curr_;
 
-        /** \brief Array of buffers with ICP corespondances for each pyramid level. */
+        /** \brief Array of buffers with ICP correspondences for each pyramid level. */
         std::vector<CorespMap> coresps_;
 
         /** \brief TSDF volume storage */
@@ -260,9 +260,9 @@ namespace pcl
         /** \brief Buffer to store MLS matrix. */
         DeviceArray<float> sumbuf_;
 
-        /** \brief Array of camera rotation matrixes for each moment of time. */
+        /** \brief Array of camera rotation matrices for each moment of time. */
         std::vector<Matrix3frm> rmats_;
-        /** \brief Array of camera traslations for each moment of time. */
+        /** \brief Array of camera translations for each moment of time. */
         std::vector<Vector3f>   tvecs_;
 
         /** \brief Allocates all GPU internal buffers.
@@ -272,7 +272,7 @@ namespace pcl
         void
         allocateBufffers (int rows_arg, int cols_arg);
 
-        /** \brief Performs the tracker reset to inital state. It's used if case of camera tracking fail.
+        /** \brief Performs the tracker reset to initial  state. It's used if case of camera tracking fail.
           */
         void
         reset ();
