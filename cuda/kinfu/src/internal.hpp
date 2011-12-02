@@ -147,6 +147,9 @@ namespace pcl
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /////////////   Cloud extraction 
         size_t extractCloud(const PtrStep<volume_elem_type>& volume, const float3& volume_size, PtrSz<PointType> output);
+
+        template<typename NormalType>
+        void extractNormals(const PtrStep<volume_elem_type>& volume, const float3& volume_size, const PtrSz<PointType>& input, NormalType* output);
         
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /////////////   Utuility

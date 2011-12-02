@@ -123,9 +123,9 @@ namespace pcl
             int points_number;
             mutable OctreeGlobal octree;
 
-            static __device__  int divUp(int total, int grain) { return (total + grain - 1) / grain; };
+            static __device__ __forceinline__ int divUp(int total, int grain) { return (total + grain - 1) / grain; };
 
-            __device__  int FindCells(int task, int level, int cell_begs[], char cell_code[]) const
+            __device__ __forceinline__ int FindCells(int task, int level, int cell_begs[], char cell_code[]) const
             {               
                 int cell_count = 0;
 
@@ -181,7 +181,7 @@ namespace pcl
             }
 
 
-            __device__  void operator()() const
+            __device__  __forceinline__ void operator()() const
             {             
                 //32 is a perfomance penalty step for search
                 Static<(max_points_per_leaf % 32) == 0>::check();                 

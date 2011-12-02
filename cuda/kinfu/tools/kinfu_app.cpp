@@ -94,7 +94,7 @@ void donwloadOrganized(const DeviceArray2D<PointT>& device, pcl::PointCloud<Poin
 
 struct KinFuApp
 {
-    KinFuApp(CaptureOpenNI& source, bool show_current_frame = false) : exit_(false), scan_(false), connected26_(false), use_cpu_for_cloud_extraction_(false), hasImage_(false), 
+    KinFuApp(CaptureOpenNI& source, bool show_current_frame = false) : exit_(false), scan_(false), showNormals_(false), connected26_(false), use_cpu_for_cloud_extraction_(false), hasImage_(false), 
         capture_(source), cloud_viewer_("Volume Cloud Viewer")
     {        
         /////////////////////////////////////////
@@ -120,18 +120,19 @@ struct KinFuApp
         viewer3d_.setName("View3D from ray tracing");
         //viewer2d_.setName("Kinect RGB stream");
                         
-        cloud_ptr_ = PointCloud<PointXYZ>::Ptr(new PointCloud<pcl::PointXYZ>);
+        cloud_ptr_ = PointCloud<PointXYZ>::Ptr(new PointCloud<pcl::PointXYZ>);        
+        cloud_normals_ptr_ = PointCloud<Normal>::Ptr(new PointCloud<pcl::Normal>);
         cloud_ptr_->points.push_back(pcl::PointXYZ(0, 0, 0));
         cloud_ptr_->width = cloud_ptr_->height = 1;
                     
-        cloud_viewer_.setBackgroundColor (0, 0, 0);
+        cloud_viewer_.setBackgroundColor (0, 0, 0);    
         cloud_viewer_.addPointCloud<pcl::PointXYZ> (cloud_ptr_);
         cloud_viewer_.setPointCloudRenderingProperties (visualization::PCL_VISUALIZER_POINT_SIZE, 1);
         cloud_viewer_.addCoordinateSystem (1000.0);
         cloud_viewer_.initCameraParameters ();
         cloud_viewer_.camera_.clip[0] = 0.01; 
         cloud_viewer_.camera_.clip[1] = 10000.01;
-        cloud_viewer_.addText ("HotKeys: T, M, S, B, P, C", 2, 15, 20, 34, 135, 246);
+        cloud_viewer_.addText ("HotKeys: T, M, S, B, P, C, N", 2, 15, 20, 34, 135, 246);
 
         float diag = sqrt((float)kinfu_.cols() * kinfu_.cols() + kinfu_.rows() * kinfu_.rows());
         cloud_viewer_.camera_.fovy = 2*atan(diag/(2*f));
@@ -203,10 +204,26 @@ struct KinFuApp
                         extracted.download(cloud_ptr_->points);                    
                         cloud_ptr_->width  = (int)cloud_ptr_->points.size();
                         cloud_ptr_->height = 1; 
+
+                        if (showNormals_)
+                        {
+                            kinfu_.getNormalsFromVolume(extracted, cloud_normals_device_);
+                            cloud_normals_device_.download(cloud_normals_ptr_->points);
+                            cloud_normals_ptr_->width = (int)cloud_normals_ptr_->points.size();
+                            cloud_normals_ptr_->height = 1;
+                        }
                     }
                 }
-                cout << "  Cloud size: " << cloud_ptr_->points.size()/1000 << "K"<< endl << endl;                
-                cloud_viewer_.updatePointCloud(cloud_ptr_);
+                cout << "  Cloud size: " << cloud_ptr_->points.size()/1000 << "K"<< endl << endl;
+                cloud_viewer_.removeAllPointClouds(); 
+                
+                if(showNormals_ && !use_cpu_for_cloud_extraction_)
+                {
+                    cloud_viewer_.addPointCloud<pcl::PointXYZ> (cloud_ptr_, "Cloud");        
+                    cloud_viewer_.addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(cloud_ptr_, cloud_normals_ptr_, 50, 20);
+                }
+                else
+                    cloud_viewer_.addPointCloud<pcl::PointXYZ> (cloud_ptr_);        
                 //printf("exact_size = %d\n", cloud_ptr_->points.size());
             }
 
@@ -249,9 +266,10 @@ struct KinFuApp
 
     bool exit_;
     bool scan_;
+    bool showNormals_;
     bool connected26_;
     bool use_cpu_for_cloud_extraction_;
-
+   
     bool hasImage_;
 
     CaptureOpenNI& capture_;
@@ -264,6 +282,9 @@ struct KinFuApp
 
     PointCloud<PointXYZ>::Ptr cloud_ptr_;
     DeviceArray<KinfuTracker::PointType> cloud_buffer_device_;
+    
+    PointCloud<Normal>::Ptr cloud_normals_ptr_;
+    DeviceArray<KinfuTracker::NormalType> cloud_normals_device_;
 
     KinfuTracker::DepthMap depth_device_;
     KinfuTracker::View      view_device_;       
@@ -297,6 +318,10 @@ struct KinFuApp
                 app->connected26_ = !app->connected26_;                 
                 cout << endl << "Cloud extraction mode: " << (app->connected26_ ? "connected26 (CPU only)" : "connected6") << endl << endl;
                 break;        
+            case (int)'n': case (int)'N': 
+                app->showNormals_ = !app->showNormals_;                 
+                cout << endl << "Show normals: " << (app->showNormals_ ? "true (GPU only)" : "false") << endl << endl;
+                break;        
             case (int)'c': case (int)'C': 
                 app->resetCloud();
                 cout << "Cloud viewer is reset" << endl;
@@ -322,8 +347,12 @@ struct KinFuApp
     }
 };
 
+int main2();
+
 int main()
 {   
+    //return main2();
+
     pcl::gpu::setDevice(0);
     pcl::gpu::printShortCudaDeviceInfo(0);
 

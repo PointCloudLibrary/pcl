@@ -114,7 +114,13 @@ namespace pcl
             void getCloudFromVolumeHost(PointCloud<PointType>& cloud, bool connected26 = false);
 
             /** \brief Generates cloud on GPU in connected6 mode only*/           
-            DeviceArray<PointType> getCloudFromVolume(DeviceArray<PointType>& cloud_buffer);            
+            DeviceArray<PointType> getCloudFromVolume(DeviceArray<PointType>& cloud_buffer);
+
+            /** \brief Computes normals as gradient of tsdf for given points */           
+            void getNormalsFromVolume(const DeviceArray<PointType>& cloud, DeviceArray<PointType>& normals) const;
+
+            /** \brief Computes normals as gradient of tsdf for given points */           
+            void getNormalsFromVolume(const DeviceArray<PointType>& cloud, DeviceArray<NormalType>& normals) const;
             
         private:  
             enum 

@@ -520,3 +520,17 @@ pcl::gpu::DeviceArray<pcl::gpu::KinfuTracker::PointType> pcl::gpu::KinfuTracker:
     size_t size = device::extractCloud(volume_, device_volume_size, cloud_buffer);
     return DeviceArray<PointType>(cloud_buffer.ptr(), size);
 }
+
+void pcl::gpu::KinfuTracker::getNormalsFromVolume(const DeviceArray<PointType>& cloud, DeviceArray<PointType>& normals) const
+{
+    normals.create(cloud.size());
+    const float3 device_volume_size = device_cast<const float3>(volume_size_);            
+    device::extractNormals(volume_, device_volume_size, cloud, (device::PointType*)normals.ptr());
+}
+
+void pcl::gpu::KinfuTracker::getNormalsFromVolume(const DeviceArray<PointType>& cloud, DeviceArray<NormalType>& normals) const
+{
+    normals.create(cloud.size());
+    const float3 device_volume_size = device_cast<const float3>(volume_size_);            
+    device::extractNormals(volume_, device_volume_size, cloud, (device::float8*)normals.ptr());
+}

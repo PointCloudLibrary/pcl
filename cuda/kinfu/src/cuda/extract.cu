@@ -1,38 +1,39 @@
 /*
-* Software License Agreement (BSD License)
-*
-*  Copyright (c) 2011, Willow Garage, Inc.
-*  All rights reserved.
-*
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions
-*  are met:
-*
-*   * Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
-*   * Redistributions in binary form must reproduce the above
-*     copyright notice, this list of conditions and the following
-*     disclaimer in the documentation and/or other materials provided
-*     with the distribution.
-*   * Neither the name of Willow Garage, Inc. nor the names of its
-*     contributors may be used to endorse or promote products derived
-*     from this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
-*/
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2011, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
+ */
+
 #include "device.hpp"
 #include "pcl/gpu/utils/device/funcattrib.hpp"
 #include "pcl/gpu/utils/device/block.hpp"
@@ -288,3 +289,151 @@ size_t pcl::device::extractCloud(const PtrStep<volume_elem_type>& volume, const 
     cudaSafeCall( cudaMemcpyFromSymbol(&size, output_count, sizeof(size)) );
     return (size_t)size;    
 }
+
+
+namespace pcl
+{
+    namespace device
+    {
+        template<typename NormalType>
+        struct ExtractNormals
+        {            
+            float3 cell_size;
+            PtrStep<volume_elem_type> volume;            
+            PtrSz<PointType> points;
+            
+            mutable NormalType* output;
+
+            __device__ __forceinline__ float readTsdf(int x, int y, int z) const
+            {                
+                return unpack_tsdf(volume.ptr(VOLUME_Y * z + y)[x]);                
+            }
+            
+            __device__ __forceinline__ float3 fetchPoint(int idx) const
+            {
+                PointType p = points.data[idx];
+                return make_float3(p.x, p.y, p.z);                
+            }
+            __device__ __forceinline__ void storeNormal(int idx, float3 normal) const
+            {
+                NormalType n;
+                n.x = normal.x; n.y = normal.y; n.z = normal.z;
+                output[idx] = n;
+            }
+
+            __device__ __forceinline__ int3 getVoxel(const float3& point) const 
+            {
+                int vx = __float2int_rd(point.x / cell_size.x); // round to negative infinity
+                int vy = __float2int_rd(point.y / cell_size.y);
+                int vz = __float2int_rd(point.z / cell_size.z);
+
+                return make_int3(vx, vy, vz);				
+            }
+
+            __device__ __forceinline__ void operator()() const
+            {
+                int idx = threadIdx.x + blockIdx.x * blockDim.x;
+
+                if (idx >= points.size)
+                    return;
+                const float qnan = numeric_limits<float>::quiet_NaN();
+                float3 n = make_float3(qnan, qnan, qnan);
+                                                                      
+                float3 point = fetchPoint(idx);
+                int3 g = getVoxel(point);
+                
+                if (g.x > 2 && g.y > 2 && g.z > 2 && g.x < VOLUME_X - 3 && g.y < VOLUME_Y - 3 && g.z < VOLUME_Z - 3)
+                {
+                    float3 t;
+
+                    t = point;
+                    t.x += cell_size.x/4;
+                    float Fx1 = interpolateTrilineary(t);
+
+                    t = point;
+                    t.x -= cell_size.x/4;
+                    float Fx2 = interpolateTrilineary(t);
+
+                    n.x = (Fx1 - Fx2);
+
+                    t = point;
+                    t.y += cell_size.y/4;
+                    float Fy1 = interpolateTrilineary(t);
+
+                    t = point;
+                    t.y -= cell_size.y/4;
+                    float Fy2 = interpolateTrilineary(t);
+
+                    n.y = (Fy1 - Fy2);
+
+                    t = point;
+                    t.z += cell_size.z/4;
+                    float Fz1 = interpolateTrilineary(t);
+
+                    t = point;
+                    t.z -= cell_size.z/4;
+                    float Fz2 = interpolateTrilineary(t);
+
+                    n.z = (Fz1 - Fz2);
+
+                    n = normalized(n);
+                }
+                storeNormal(idx, n);                  
+            }            
+
+            __device__ __forceinline__ float interpolateTrilineary(const float3& point) const
+            {
+                int3 g = getVoxel(point);
+
+                float vx = (g.x + 0.5f) * cell_size.x;
+                float vy = (g.y + 0.5f) * cell_size.y;
+                float vz = (g.z + 0.5f) * cell_size.z;
+
+                g.x = (point.x < vx) ? (g.x - 1) : g.x;
+                g.y = (point.y < vy) ? (g.y - 1) : g.y;
+                g.z = (point.z < vz) ? (g.z - 1) : g.z;
+
+                float a = (point.x - (g.x + 0.5f) * cell_size.x)/cell_size.x;
+                float b = (point.y - (g.y + 0.5f) * cell_size.y)/cell_size.y;
+                float c = (point.z - (g.z + 0.5f) * cell_size.z)/cell_size.z;
+
+                float res = readTsdf(g.x+0, g.y+0, g.z+0) * (1-a)*(1-b)*(1-c) +
+                    readTsdf(g.x+0, g.y+0, g.z+1) * (1-a)*(1-b)*   c  +
+                    readTsdf(g.x+0, g.y+1, g.z+0) * (1-a)*   b *(1-c) +
+                    readTsdf(g.x+0, g.y+1, g.z+1) * (1-a)*   b *   c  +
+                    readTsdf(g.x+1, g.y+0, g.z+0) *    a *(1-b)*(1-c) +
+                    readTsdf(g.x+1, g.y+0, g.z+1) *    a *(1-b)*   c  +
+                    readTsdf(g.x+1, g.y+1, g.z+0) *    a *   b *(1-c) +
+                    readTsdf(g.x+1, g.y+1, g.z+1) *    a *   b *   c  ;
+                return res;
+            }
+        };
+
+        template<typename NormalType>
+        __global__ void extractNormalsKernel(const ExtractNormals<NormalType> en) { en(); }        
+    }
+}
+
+template<typename NormalType>
+void pcl::device::extractNormals(const PtrStep<volume_elem_type>& volume, const float3& volume_size, const PtrSz<PointType>& points, NormalType* output)
+{
+    ExtractNormals<NormalType> en;
+    en.volume = volume;
+    en.cell_size.x = volume_size.x / VOLUME_X;
+    en.cell_size.y = volume_size.y / VOLUME_Y;
+    en.cell_size.z = volume_size.z / VOLUME_Z;
+    en.points = points;
+    en.output = output;
+
+    dim3 block(256);
+    dim3 grid(divUp(points.size, block.x));
+    
+    extractNormalsKernel<<<grid, block>>>(en);
+    cudaSafeCall( cudaGetLastError() );    	  
+    cudaSafeCall(cudaDeviceSynchronize());
+}
+
+using namespace pcl::device;
+
+template void pcl::device::extractNormals<PointType>(const PtrStep<volume_elem_type>& volume, const float3& volume_size, const PtrSz<PointType>& input, PointType* output);
+template void pcl::device::extractNormals<float8>(const PtrStep<volume_elem_type>& volume, const float3& volume_size, const PtrSz<PointType>& input, float8* output);
