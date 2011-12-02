@@ -69,14 +69,14 @@ namespace pcl
       }
     };
 
-    /** \brief
+    /** \brief 3x3 Matrix for device code
       */ 
     struct Mat33
     {
       float3 data[3];
     };
 
-    /** \brief
+    /** \brief Light source collection
       */ 
     struct LightSource
     {
@@ -87,40 +87,40 @@ namespace pcl
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Maps
   
-    /** \brief
-      * \param[in] src
-      * \param[out] dst
+    /** \brief Perfoms bilateral filtering of disparity map
+      * \param[in] src soruce map
+      * \param[out] dst output map
       */
     void 
     bilateralFilter (const DepthMap& src, DepthMap& dst);
-    /** \brief
-      * \param[in] src
-      * \param[out] dst
+    /** \brief Computes depth pyramid
+      * \param[in] src source
+      * \param[out] dst destination
       */
     void 
     pyrDown (const DepthMap& src, DepthMap& dst);
 
-    /** \brief
-      * \param[in] intr
-      * \param[in] depth
-      * \param[out] vmap
+    /** \brief Computes vertex map
+      * \param[in] intr depth camera intrinsics
+      * \param[in] depth depth
+      * \param[out] vmap vertex map
       */
     void 
     createVMap (const Intr& intr, const DepthMap& depth, MapArr& vmap);
-    /** \brief
-      * \param[in] vmap
-      * \param[out] nmap
+    /** \brief Computes normal map using cross product
+      * \param[in] vmap vertex map
+      * \param[out] nmap normal map
       */
     void 
     createNMap (const MapArr& vmap, MapArr& nmap);
-    /** \brief
-      * \param[in] vmap
-      * \param[out] nmap
+    /** \brief Computes normal map using Eigen/PCA approach
+      * \param[in] vmap vertex map
+      * \param[out] nmap normal map
       */
     void 
     computeNormalsEigen (const MapArr& vmap, MapArr& nmap);
 
-    /** \brief
+    /** \brief Perform affine tranform of vertex and normal maps
       * \param[in] vmap_src
       * \param[in] nmap_src
       * \param[in] Rmat
@@ -134,7 +134,7 @@ namespace pcl
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //   ICP 
             
-    /** \brief
+    /** \brief Computes corespondances map
       * \param[in] vmap_g_curr
       * \param[in] nmap_g_curr
       * \param[in] Rprev_inv

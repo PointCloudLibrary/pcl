@@ -38,8 +38,8 @@
 #include<algorithm>
 
 #include "pcl/common/time.h"
-#include "pcl/gpu/kinfu/kinfu.hpp"
-#include "internal.hpp"
+#include "pcl/gpu/kinfu/kinfu.h"
+#include "internal.h"
 
 //#include "vector_functions.h"
 
@@ -201,7 +201,7 @@ bool pcl::gpu::KinfuTracker::operator()(const DepthMap& depth_raw)
         {
             device::createVMap(intr(i), depths_curr_[i], vmaps_curr_[i]);
             //device::createNMap(vmaps_curr_[i], nmaps_curr_[i]);
-            compteNormalsEigen(vmaps_curr_[i], nmaps_curr_[i]);
+            computeNormalsEigen(vmaps_curr_[i], nmaps_curr_[i]);
         }
         pcl::device::sync();        
     }

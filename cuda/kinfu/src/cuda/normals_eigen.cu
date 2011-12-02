@@ -129,7 +129,7 @@ namespace pcl
     }
 }
 
-void pcl::device::compteNormalsEigen(const MapArr& vmap, MapArr& nmap)
+void pcl::device::computeNormalsEigen(const MapArr& vmap, MapArr& nmap)
 {
     int cols = vmap.cols();
     int rows = vmap.rows()/3;

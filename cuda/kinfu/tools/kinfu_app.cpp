@@ -37,7 +37,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <iostream>
-#include "pcl/gpu/kinfu/kinfu.hpp"
+#include "pcl/gpu/kinfu/kinfu.h"
 #include "pcl/gpu/containers/initialization.hpp"
 
 #include <pcl/common/time.h>
