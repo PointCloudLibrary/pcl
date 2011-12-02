@@ -280,15 +280,6 @@ namespace pcl
         return r;
       }
 
-      /** \brief Rigid transformation computation method.
-        * \param output the transformed input point cloud dataset using the rigid transformation found
-        */
-      void 
-      computeTransformation (PointCloudSource &output)
-      {
-        computeTransformation (output, Eigen::Matrix4f::Identity());
-      }
-
       /** \brief Rigid transformation computation method  with initial guess.
         * \param output the transformed input point cloud dataset using the rigid transformation found
         * \param guess the initial guess of the transformation to compute

@@ -90,7 +90,7 @@ findSimilarFeaturesSubset (const std::vector<int> &sample_indices_features,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void SubsetSAC_IA<PointSource, PointTarget, FeatureT>::
-computeTransformation (PointCloudSource &output)
+computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess)
 {
   if (!input_features_)
   {
@@ -103,6 +103,11 @@ computeTransformation (PointCloudSource &output)
     PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName ().c_str ());
     PCL_ERROR ("No target features were given! Call setTargetFeatures before aligning.\n");
     return;
+  }
+
+  if (guess != Eigen::Matrix4f::Identity ())
+  {
+    PCL_ERROR("[pcl::PPFRegistration::computeTransformation] setting initial transform (guess) not implemented!\n");
   }
 
   if (!error_functor_)

@@ -240,7 +240,7 @@ namespace pcl
     private:
       /** \brief Method that calculates the transformation between the input_ and target_ point clouds, based on the PPF features */
       void
-      computeTransformation (PointCloudSource &output);
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);
 
 
       /** \brief the search method that is going to be used to find matching feature pairs */

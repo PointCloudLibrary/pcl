@@ -112,52 +112,7 @@ pcl::Registration<PointSource, PointTarget>::getFitnessScore (double max_range)
 template <typename PointSource, typename PointTarget> inline void
 pcl::Registration<PointSource, PointTarget>::align (PointCloudSource &output)
 {
-  if (!initCompute ()) return;
-
-  if (!target_)
-  {
-    PCL_WARN ("[pcl::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());
-    return;
-  }
-
-  // Resize the output dataset
-  if (output.points.size () != indices_->size ())
-    output.points.resize (indices_->size ());
-  // Copy the header
-  output.header   = input_->header;
-  // Check if the output will be computed for all points or only a subset
-  if (indices_->size () != input_->points.size ())
-  {
-    output.width    = (int) indices_->size ();
-    output.height   = 1;
-  }
-  else
-  {
-    output.width    = input_->width;
-    output.height   = input_->height;
-  }
-  output.is_dense = input_->is_dense;
-
-  // Copy the point data to output
-  for (size_t i = 0; i < indices_->size (); ++i)
-    output.points[i] = input_->points[(*indices_)[i]];
-
-  // Set the internal point representation of choice
-  if (point_representation_)
-    tree_->setPointRepresentation (point_representation_);
-
-  // Perform the actual transformation computation
-  converged_ = false;
-  final_transformation_ = transformation_ = previous_transformation_ = Eigen::Matrix4f::Identity ();
-
-  // Right before we estimate the transformation, we set all the point.data[3] values to 1 to aid the rigid 
-  // transformation
-  for (size_t i = 0; i < indices_->size (); ++i)
-    output.points[i].data[3] = 1.0;
-
-  computeTransformation (output);
-
-  deinitCompute ();
+  align (output, Eigen::Matrix4f::Identity());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,7 +135,7 @@ pcl::Registration<PointSource, PointTarget>::align (PointCloudSource &output, co
   // Check if the output will be computed for all points or only a subset
   if (indices_->size () != input_->points.size ())
   {
-    output.width    = indices_->size ();
+    output.width    = (int) indices_->size ();
     output.height   = 1;
   }
   else

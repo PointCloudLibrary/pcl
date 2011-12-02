@@ -234,7 +234,7 @@ namespace pcl
         * \param output the transformed input point cloud dataset using the rigid transformation found
         */
       virtual void 
-      computeTransformation (PointCloudSource &output);
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);
 
       /** \brief The source point cloud's feature descriptors. */
       FeatureCloudConstPtr input_features_;

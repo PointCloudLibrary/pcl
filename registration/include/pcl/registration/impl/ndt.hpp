@@ -301,14 +301,6 @@ namespace pcl
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
-pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation (PointCloudSource &output)
-{
-  pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation (output, Eigen::Matrix4f::Identity ());
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> void
 pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess)
 {
   PointCloudSource intm_cloud = output;

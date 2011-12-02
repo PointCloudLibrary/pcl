@@ -351,13 +351,9 @@ namespace pcl
 
     private:
  
-      /** \brief Abstract transformation computation method. */
-      virtual void 
-      computeTransformation (PointCloudSource &output) = 0;
-
       /** \brief Abstract transformation computation method with initial guess */
       virtual void 
-      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess) {}
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess) = 0;
 
       /** \brief The point representation used (internal). */
       PointRepresentationConstPtr point_representation_;

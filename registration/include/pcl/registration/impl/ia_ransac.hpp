@@ -167,7 +167,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename FeatureT> void 
-pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeTransformation (PointCloudSource &output)
+pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess)
 {
   if (!input_features_)
   {
@@ -180,6 +180,11 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
     PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName ().c_str ());
     PCL_ERROR ("No target features were given! Call setTargetFeatures before aligning.\n");
     return;
+  }
+
+  if (guess != Eigen::Matrix4f::Identity ())
+  {
+    PCL_ERROR("[pcl::PPFRegistration::computeTransformation] setting initial transform (guess) not implemented!\n");
   }
 
   if (!error_functor_)

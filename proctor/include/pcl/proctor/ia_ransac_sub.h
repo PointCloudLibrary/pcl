@@ -93,7 +93,7 @@ protected:
     * \param output the transformed input point cloud dataset using the rigid transformation found
     */
   void
-  computeTransformation (PointCloudSource &output);
+  computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);
 
   /** \brief The mapping of features indices to cloud indicies in the source. */
   IndicesConstPtr source_indices_;
