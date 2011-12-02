@@ -42,267 +42,283 @@
 
 namespace pcl
 {
-    namespace device
+  namespace device
+  {
+    struct Combined
     {
-        struct Combined
+      enum
+      {
+        CTA_SIZE_X = 32,
+        CTA_SIZE_Y = 8,
+        CTA_SIZE = CTA_SIZE_X * CTA_SIZE_Y
+      };
+
+      struct plus
+      {
+        __forceinline__ __device__ float
+        operator () (const float &lhs, const volatile float& rhs) const {
+          return lhs + rhs;
+        }
+      };
+
+      Mat33 Rcurr;
+      float3 tcurr;
+
+      PtrStep<float> vmap_curr;
+      PtrStep<float> nmap_curr;
+
+      Mat33 Rprev_inv;
+      float3 tprev;
+
+      Intr intr;
+
+      PtrStep<float> vmap_g_prev;
+      PtrStep<float> nmap_g_prev;
+
+      float distThres;
+      float angleThres;
+
+      int cols;
+      int rows;
+
+      mutable PtrStep<float> gbuf;
+
+      __device__ __forceinline__ bool
+      search (int x, int y, float3& n, float3& d, float3& s) const
+      {
+        float3 ncurr;
+        ncurr.x = nmap_curr.ptr (y)[x];
+
+        if (isnan (ncurr.x))
+          return false;
+
+        float3 vcurr;
+        vcurr.x = vmap_curr.ptr (y       )[x];
+        vcurr.y = vmap_curr.ptr (y + rows)[x];
+        vcurr.z = vmap_curr.ptr (y + 2 * rows)[x];
+
+        float3 vcurr_g = Rcurr * vcurr + tcurr;
+
+        float3 vcurr_cp = Rprev_inv * (vcurr_g - tprev);         // prev camera coo space
+
+        int2 ukr;         //projection
+        ukr.x = __float2int_rn (vcurr_cp.x * intr.fx / vcurr_cp.z + intr.cx);      //4
+        ukr.y = __float2int_rn (vcurr_cp.y * intr.fy / vcurr_cp.z + intr.cy);                      //4
+
+        if (ukr.x < 0 || ukr.y < 0 || ukr.x >= cols || ukr.y >= rows)
+          return false;
+
+        float3 nprev_g;
+        nprev_g.x = nmap_g_prev.ptr (ukr.y)[ukr.x];
+
+        if (isnan (nprev_g.x))
+          return false;
+
+        float3 vprev_g;
+        vprev_g.x = vmap_g_prev.ptr (ukr.y       )[ukr.x];
+        vprev_g.y = vmap_g_prev.ptr (ukr.y + rows)[ukr.x];
+        vprev_g.z = vmap_g_prev.ptr (ukr.y + 2 * rows)[ukr.x];
+
+        float dist = norm (vprev_g - vcurr_g);
+        if (dist > distThres)
+          return false;
+
+        ncurr.y = nmap_curr.ptr (y + rows)[x];
+        ncurr.z = nmap_curr.ptr (y + 2 * rows)[x];
+
+        float3 ncurr_g = Rcurr * ncurr;
+
+        nprev_g.y = nmap_g_prev.ptr (ukr.y + rows)[ukr.x];
+        nprev_g.z = nmap_g_prev.ptr (ukr.y + 2 * rows)[ukr.x];
+
+        float sine = norm (cross (ncurr_g, nprev_g));
+
+        if (sine >= angleThres)
+          return false;
+        n = nprev_g;
+        d = vprev_g;
+        s = vcurr_g;
+        return true;
+      }
+
+      __device__ __forceinline__ void
+      operator () () const
+      {
+        int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
+        int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
+
+        float3 n, d, s;
+        bool found_coresp = false;
+
+        if (x < cols || y < rows)
+          found_coresp = search (x, y, n, d, s);
+
+        float row[7];
+
+        if (found_coresp)
         {
-            enum 
-            { 
-                CTA_SIZE_X = 32, 
-                CTA_SIZE_Y = 8, 
-                CTA_SIZE = CTA_SIZE_X * CTA_SIZE_Y 
-            };
+          *(float3*)&row[0] = cross (s, n);
+          *(float3*)&row[3] = n;
+          row[6] = dot (n, d - s);
+        }
+        else
+          row[0] = row[1] = row[2] = row[3] = row[4] = row[5] = row[6] = 0.f;
 
-            struct plus 
-            {              
-                __forceinline__ __device__ float operator()(const float &lhs, const volatile float& rhs) const { return lhs + rhs; }
-            };  
+        __shared__ float smem[CTA_SIZE];
+        int tid = Block::flattenedThreadId ();
 
-            Mat33 Rcurr;
-            float3 tcurr;
-
-            PtrStep<float> vmap_curr;
-            PtrStep<float> nmap_curr;
-
-            Mat33 Rprev_inv;
-            float3 tprev;
-
-            Intr intr;
-
-            PtrStep<float> vmap_g_prev;
-            PtrStep<float> nmap_g_prev;
-
-            float  distThres;
-            float angleThres;
-
-            int cols;
-            int rows;
-
-            mutable PtrStep<float> gbuf;
-
-            __device__ __forceinline__ bool search(int x, int y, float3& n, float3& d, float3& s) const
-            {                
-                float3 ncurr;                
-                ncurr.x = nmap_curr.ptr(y)[x];
-
-                if (isnan(ncurr.x))
-                    return false;
-                
-                float3 vcurr;
-                vcurr.x = vmap_curr.ptr(y       )[x];
-                vcurr.y = vmap_curr.ptr(y+  rows)[x];
-                vcurr.z = vmap_curr.ptr(y+2*rows)[x];
-
-                float3 vcurr_g = Rcurr * vcurr + tcurr;
-
-                float3 vcurr_cp = Rprev_inv * (vcurr_g - tprev); // prev camera coo space
-                
-                int2 ukr; //projection
-                ukr.x = __float2int_rn(vcurr_cp.x * intr.fx/vcurr_cp.z + intr.cx); //4
-				ukr.y = __float2int_rn(vcurr_cp.y * intr.fy/vcurr_cp.z + intr.cy); //4
-
-                if (ukr.x < 0 || ukr.y < 0 || ukr.x >= cols || ukr.y >= rows)
-                    return false;
-
-                float3 nprev_g;
-                nprev_g.x = nmap_g_prev.ptr(ukr.y)[ukr.x];
-
-                if (isnan(nprev_g.x))
-                    return false;                
-
-                float3 vprev_g;
-                vprev_g.x = vmap_g_prev.ptr(ukr.y       )[ukr.x];
-                vprev_g.y = vmap_g_prev.ptr(ukr.y+  rows)[ukr.x];
-                vprev_g.z = vmap_g_prev.ptr(ukr.y+2*rows)[ukr.x];
-
-                float dist = norm(vprev_g - vcurr_g);
-                if (dist > distThres)
-                    return false;
-                
-                ncurr.y = nmap_curr.ptr(y+  rows)[x];
-                ncurr.z = nmap_curr.ptr(y+2*rows)[x];
-
-                float3 ncurr_g = Rcurr * ncurr;
-                
-                nprev_g.y = nmap_g_prev.ptr(ukr.y+  rows)[ukr.x];
-                nprev_g.z = nmap_g_prev.ptr(ukr.y+2*rows)[ukr.x];
-
-                float sine = norm(cross(ncurr_g, nprev_g));
-
-                if (sine >= angleThres)
-                    return false;
-                n = nprev_g;
-                d = vprev_g; 
-                s = vcurr_g;                
-                return true;
-            }                      
-            
-            __device__ __forceinline__ void operator()() const
-            {
-                int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
-                int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
-                                                 
-                float3 n, d, s;
-                bool found_coresp = false;
-
-                if (x < cols || y < rows)
-                    found_coresp = search(x, y, n, d, s);
-                
-                float row[7];               
-
-                if (found_coresp)
-                {                     
-                    *(float3*)&row[0] = cross(s, n);
-                    *(float3*)&row[3] = n;
-                    row[6] =  dot(n, d - s);
-                }
-                else
-                    row[0] = row[1] = row[2] = row[3] = row[4] = row[5] = row[6] = 0.f;
-                
-                __shared__ float smem[CTA_SIZE];
-                int tid = Block::flattenedThreadId();
-
-                int shift = 0;
-                for(int i = 0; i < 6; ++i) //rows
-                {
+        int shift = 0;
+        for (int i = 0; i < 6; ++i)        //rows
+        {
                     #pragma unroll
-                    for(int j = i; j < 7; ++j) // cols + b
-                    {
-                        __syncthreads();
-                        smem[tid] = row[i] * row[j];
-                        __syncthreads();
-                        
-                        Block::reduce<CTA_SIZE>(smem, plus());
+          for (int j = i; j < 7; ++j)          // cols + b
+          {
+            __syncthreads ();
+            smem[tid] = row[i] * row[j];
+            __syncthreads ();
 
-                        if (tid == 0)
-                            gbuf.ptr(shift++)[blockIdx.x + gridDim.x * blockIdx.y] = smem[0];
-                    }
-                }
-            }
-        };
+            Block::reduce<CTA_SIZE>(smem, plus ());
 
-        __global__ void combinedKernel(const Combined cs) { cs(); }
-          
-        struct TranformReduction
-        {
-            enum
-            {
-                CTA_SIZE = 512,
-                STRIDE = CTA_SIZE,
+            if (tid == 0)
+              gbuf.ptr (shift++)[blockIdx.x + gridDim.x * blockIdx.y] = smem[0];
+          }
+        }
+      }
+    };
 
-                B = 6, COLS = 6, ROWS = 6, DIAG = 6,
-                UPPER_DIAG_MAT = (COLS * ROWS - DIAG)/2 + DIAG,
-                TOTAL = UPPER_DIAG_MAT + B, 
-
-                GRID_X = TOTAL
-            };
-
-            struct plus 
-            {              
-                __forceinline__ __device__ float operator()(const float &lhs, const volatile float& rhs) const { return lhs + rhs; }
-            }; 
-
-            PtrStep<float> gbuf;
-            int length;
-            mutable float* output;
-
-            __device__ __forceinline__ void operator()()const
-            {				
-                const float *beg = gbuf.ptr(blockIdx.x);
-                const float *end = beg + length;								
-
-                int tid = threadIdx.x;
-
-                float sum = 0.f;
-                for(const float *t = beg + tid; t < end; t += STRIDE)
-                    sum+=*t;
-
-                __shared__ float smem[CTA_SIZE];
-
-                smem[tid] = sum;
-                __syncthreads();
-
-                Block::reduce<CTA_SIZE>(smem, plus());
-
-                if (tid == 0)
-                    output[blockIdx.x] = smem[0];					
-            }
-        };
-
-        __global__ void TransformEstimatorKernel2(const TranformReduction tr) { tr(); }
+    __global__ void
+    combinedKernel (const Combined cs) {
+      cs ();
     }
+
+    struct TranformReduction
+    {
+      enum
+      {
+        CTA_SIZE = 512,
+        STRIDE = CTA_SIZE,
+
+        B = 6, COLS = 6, ROWS = 6, DIAG = 6,
+        UPPER_DIAG_MAT = (COLS * ROWS - DIAG) / 2 + DIAG,
+        TOTAL = UPPER_DIAG_MAT + B,
+
+        GRID_X = TOTAL
+      };
+
+      struct plus
+      {
+        __forceinline__ __device__ float
+        operator () (const float &lhs, const volatile float& rhs) const {
+          return lhs + rhs;
+        }
+      };
+
+      PtrStep<float> gbuf;
+      int length;
+      mutable float* output;
+
+      __device__ __forceinline__ void
+      operator () () const
+      {
+        const float *beg = gbuf.ptr (blockIdx.x);
+        const float *end = beg + length;
+
+        int tid = threadIdx.x;
+
+        float sum = 0.f;
+        for (const float *t = beg + tid; t < end; t += STRIDE)
+          sum += *t;
+
+        __shared__ float smem[CTA_SIZE];
+
+        smem[tid] = sum;
+        __syncthreads ();
+
+        Block::reduce<CTA_SIZE>(smem, plus ());
+
+        if (tid == 0)
+          output[blockIdx.x] = smem[0];
+      }
+    };
+
+    __global__ void
+    TransformEstimatorKernel2 (const TranformReduction tr) {
+      tr ();
+    }
+  }
 }
 
 
 
-void pcl::device::estimateCombined(const Mat33& Rcurr, const float3& tcurr, const MapArr& vmap_curr, const MapArr& nmap_curr, const Mat33& Rprev_inv, const float3& tprev, const Intr& intr, 
-                             const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, float distThres, float angleThres, 
-                             DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, float* matrixA_host, float* vectorB_host)                             
+void
+pcl::device::estimateCombined (const Mat33& Rcurr, const float3& tcurr, const MapArr& vmap_curr, const MapArr& nmap_curr, const Mat33& Rprev_inv, const float3& tprev, const Intr& intr,
+                               const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, float distThres, float angleThres,
+                               DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, float* matrixA_host, float* vectorB_host)
 {
-    int cols = vmap_curr.cols();
-    int rows = vmap_curr.rows()/3;
+  int cols = vmap_curr.cols ();
+  int rows = vmap_curr.rows () / 3;
 
-    Combined cs;
+  Combined cs;
 
-    cs.Rcurr = Rcurr;
-    cs.tcurr = tcurr;
+  cs.Rcurr = Rcurr;
+  cs.tcurr = tcurr;
 
-    cs.vmap_curr = vmap_curr;
-    cs.nmap_curr = nmap_curr;
+  cs.vmap_curr = vmap_curr;
+  cs.nmap_curr = nmap_curr;
 
-    cs.Rprev_inv = Rprev_inv;
-    cs.tprev = tprev;
+  cs.Rprev_inv = Rprev_inv;
+  cs.tprev = tprev;
 
-    cs.intr = intr;
+  cs.intr = intr;
 
-    cs.vmap_g_prev = vmap_g_prev;
-    cs.nmap_g_prev = nmap_g_prev;
+  cs.vmap_g_prev = vmap_g_prev;
+  cs.nmap_g_prev = nmap_g_prev;
 
-    cs.distThres  = distThres;
-    cs.angleThres = angleThres;
+  cs.distThres = distThres;
+  cs.angleThres = angleThres;
 
-    cs.cols = cols;
-    cs.rows = rows;
+  cs.cols = cols;
+  cs.rows = rows;
 
 //////////////////////////////
-                       
-    dim3 block(Combined::CTA_SIZE_X, Combined::CTA_SIZE_Y);
-    dim3 grid(1,1,1);
-    grid.x = divUp(cols, block.x);
-    grid.y = divUp(rows, block.y);
 
-    mbuf.create(TranformReduction::TOTAL);
-    if (gbuf.rows() != TranformReduction::TOTAL || gbuf.cols() < (int)(grid.x * grid.y))
-        gbuf.create(TranformReduction::TOTAL, grid.x * grid.y);
+  dim3 block (Combined::CTA_SIZE_X, Combined::CTA_SIZE_Y);
+  dim3 grid (1, 1, 1);
+  grid.x = divUp (cols, block.x);
+  grid.y = divUp (rows, block.y);
 
-    cs.gbuf = gbuf;
-    
-    combinedKernel<<<grid, block>>>(cs);    
-    cudaSafeCall( cudaGetLastError() );	
-    //cudaSafeCall(cudaDeviceSynchronize());    
+  mbuf.create (TranformReduction::TOTAL);
+  if (gbuf.rows () != TranformReduction::TOTAL || gbuf.cols () < (int)(grid.x * grid.y))
+    gbuf.create (TranformReduction::TOTAL, grid.x * grid.y);
 
-    //printFuncAttrib(combinedKernel);
+  cs.gbuf = gbuf;
 
-    TranformReduction tr;
-    tr.gbuf = gbuf;			
-    tr.length = grid.x * grid.y;
-    tr.output = mbuf;	
+  combinedKernel << < grid, block >> > (cs);
+  cudaSafeCall ( cudaGetLastError () );
+  //cudaSafeCall(cudaDeviceSynchronize());
 
-    TransformEstimatorKernel2<<<TranformReduction::TOTAL, TranformReduction::CTA_SIZE>>>(tr);
-    cudaSafeCall( cudaGetLastError() );	
-    cudaSafeCall(cudaDeviceSynchronize());
+  //printFuncAttrib(combinedKernel);
 
-    float host_data[TranformReduction::TOTAL];
-    mbuf.download(host_data);
+  TranformReduction tr;
+  tr.gbuf = gbuf;
+  tr.length = grid.x * grid.y;
+  tr.output = mbuf;
 
-    int shift = 0;
-    for(int i = 0; i < 6; ++i) //rows
-        for(int j = i; j < 7; ++j) // cols + b
-        {
-            float value = host_data[shift++];
-            if (j == 6) // vector b
-                vectorB_host[i] = value;
-            else
-                matrixA_host[j*6 + i] = matrixA_host[i*6 + j] = value;
-        }    
+  TransformEstimatorKernel2 << < TranformReduction::TOTAL, TranformReduction::CTA_SIZE >> > (tr);
+  cudaSafeCall ( cudaGetLastError () );
+  cudaSafeCall (cudaDeviceSynchronize ());
+
+  float host_data[TranformReduction::TOTAL];
+  mbuf.download (host_data);
+
+  int shift = 0;
+  for (int i = 0; i < 6; ++i)  //rows
+    for (int j = i; j < 7; ++j)    // cols + b
+    {
+      float value = host_data[shift++];
+      if (j == 6)       // vector b
+        vectorB_host[i] = value;
+      else
+        matrixA_host[j * 6 + i] = matrixA_host[i * 6 + j] = value;
+    }
 }

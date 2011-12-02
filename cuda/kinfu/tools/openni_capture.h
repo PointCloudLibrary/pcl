@@ -36,47 +36,47 @@
 
 #pragma once
 
-#include<pcl/gpu/containers/device_array.hpp>
-#include<pcl/gpu/containers/kernel_containers.hpp>
+#include <pcl/gpu/containers/device_array.hpp>
+#include <pcl/gpu/containers/kernel_containers.hpp>
 
-#include<boost/shared_ptr.hpp>
-#include<string>
+#include <boost/shared_ptr.hpp>
+#include <string>
 
 #include "pcl/gpu/kinfu/kinfu.h"
 
 namespace pcl
-{	
-    namespace gpu
+{
+  namespace gpu
+  {
+    class CaptureOpenNI
     {
-        class CaptureOpenNI
-        {
-        public:				
-            typedef KinfuTracker::RGB RGB;
+public:
+    typedef KinfuTracker::RGB RGB;
 
-            enum { PROP_OPENNI_REGISTRATION_ON  = 104 };
+    enum { PROP_OPENNI_REGISTRATION_ON  = 104 };
 
 
-            CaptureOpenNI(int device);
-            CaptureOpenNI(const std::string& oni_filename);
-            ~CaptureOpenNI();
-                                    
-            bool grab(PtrStepSz<const unsigned short>& depth, PtrStepSz<const RGB>& rgb24);		
+    CaptureOpenNI(int device);
+    CaptureOpenNI(const std::string& oni_filename);
+    ~CaptureOpenNI();
 
-            //parameters taken from camera/oni
-            float depth_focal_length_VGA;		
-            float baseline; // mm
-            int shadow_value;
-            int no_sample_value;
-            double pixelSize; //mm
+    bool grab (PtrStepSz<const unsigned short>& depth, PtrStepSz<const RGB>& rgb24);
 
-            unsigned short max_depth; //mm
+    //parameters taken from camera/oni
+    float depth_focal_length_VGA;
+    float baseline;         // mm
+    int shadow_value;
+    int no_sample_value;
+    double pixelSize;         //mm
 
-            bool setRegistration(bool value = false);
-        private:
-            struct Impl;
-            boost::shared_ptr<Impl> impl_;
-            void getParams();
+    unsigned short max_depth;         //mm
 
-        };	
-    }
+    bool setRegistration (bool value = false);
+private:
+    struct Impl;
+    boost::shared_ptr<Impl> impl_;
+    void getParams ();
+
+    };
+  }
 };

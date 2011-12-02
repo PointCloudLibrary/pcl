@@ -41,399 +41,427 @@
 
 namespace pcl
 {
-    namespace device
-    {        
-        ////////////////////////////////////////////////////////////////////////////////////////
-        ///// Prefix Scan utility
+  namespace device
+  {
+    ////////////////////////////////////////////////////////////////////////////////////////
+    ///// Prefix Scan utility
 
-        enum ScanKind { exclusive,  inclusive } ;
+    enum ScanKind { exclusive, inclusive };
 
-        template <ScanKind Kind , class T> 
-        __device__ __forceinline__ T scan_warp ( volatile T *ptr , const unsigned int idx = threadIdx.x )
+    template<ScanKind Kind, class T>
+    __device__ __forceinline__ T
+    scan_warp ( volatile T *ptr, const unsigned int idx = threadIdx.x )
+    {
+      const unsigned int lane = idx & 31;       // index of thread in warp (0..31)
+
+      if (lane >= 1)
+        ptr[idx] = ptr[idx - 1] + ptr[idx];
+      if (lane >= 2)
+        ptr[idx] = ptr[idx - 2] + ptr[idx];
+      if (lane >= 4)
+        ptr[idx] = ptr[idx - 4] + ptr[idx];
+      if (lane >= 8)
+        ptr[idx] = ptr[idx - 8] + ptr[idx];
+      if (lane >= 16)
+        ptr[idx] = ptr[idx - 16] + ptr[idx];
+
+      if (Kind == inclusive)
+        return ptr[idx];
+      else
+        return (lane > 0) ? ptr[idx - 1] : 0;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    ///// Full Volume Scan6
+
+    enum
+    {
+      CTA_SIZE_X = 32,
+      CTA_SIZE_Y = 6,
+      CTA_SIZE = CTA_SIZE_X * CTA_SIZE_Y,
+
+      MAX_LOCAL_POINTS = 3
+    };
+
+    __device__ int global_count = 0;
+    __device__ int output_count;
+    __device__ unsigned int blocks_done = 0;
+
+    __shared__ float storage_X[CTA_SIZE * MAX_LOCAL_POINTS];
+    __shared__ float storage_Y[CTA_SIZE * MAX_LOCAL_POINTS];
+    __shared__ float storage_Z[CTA_SIZE * MAX_LOCAL_POINTS];
+
+    struct FullScan6
+    {
+      PtrStep<volume_elem_type> volume;
+      float3 cell_size;
+
+      mutable PtrSz<PointType> output;
+
+      __device__ __forceinline__ float
+      fetch (int x, int y, int z, int& weight) const
+      {
+        float tsdf;
+        unpack_tsdf (volume.ptr (VOLUME_Y * z + y)[x], tsdf, weight);
+        return tsdf;
+      }
+
+      __device__ __forceinline__ void
+      operator () () const
+      {
+        int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
+        int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
+
+        if (__all (x >= VOLUME_X) || __all (y >= VOLUME_Y))
+          return;
+
+        float3 V;
+        V.x = (x + 0.5f) * cell_size.x;
+        V.y = (y + 0.5f) * cell_size.y;
+
+        int ftid = Block::flattenedThreadId ();
+
+        for (int z = 0; z < VOLUME_Z - 1; ++z)
         {
-            const unsigned int lane = idx & 31; // index of thread in warp (0..31)
+          float3 points[MAX_LOCAL_POINTS];
+          int local_count = 0;
 
-            if ( lane >=  1) ptr [idx ] = ptr [idx -  1] + ptr [idx];
-            if ( lane >=  2) ptr [idx ] = ptr [idx -  2] + ptr [idx];
-            if ( lane >=  4) ptr [idx ] = ptr [idx -  4] + ptr [idx];
-            if ( lane >=  8) ptr [idx ] = ptr [idx -  8] + ptr [idx];
-            if ( lane >= 16) ptr [idx ] = ptr [idx - 16] + ptr [idx];
+          if (x < VOLUME_X && y < VOLUME_Y)
+          {
+            int W;
+            float F = fetch (x, y, z, W);
 
-            if( Kind == inclusive ) 
-                return ptr [idx ];
-            else 
-                return (lane > 0) ? ptr [idx - 1] : 0;
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////
-        ///// Full Volume Scan6
-
-        enum 
-        {
-            CTA_SIZE_X = 32,
-            CTA_SIZE_Y = 6,
-            CTA_SIZE = CTA_SIZE_X * CTA_SIZE_Y, 
-
-            MAX_LOCAL_POINTS = 3
-        };
-
-        __device__ int global_count = 0;
-        __device__ int output_count;
-        __device__ unsigned int blocks_done = 0;
-        
-        __shared__ float storage_X[CTA_SIZE*MAX_LOCAL_POINTS];
-        __shared__ float storage_Y[CTA_SIZE*MAX_LOCAL_POINTS];
-        __shared__ float storage_Z[CTA_SIZE*MAX_LOCAL_POINTS];
-        
-        struct FullScan6
-        {
-            PtrStep<volume_elem_type> volume;
-            float3 cell_size;
-
-            mutable PtrSz<PointType> output;
-
-            __device__ __forceinline__ float fetch(int x, int y, int z, int& weight) const
+            if (W != 0 && F != 1.f)
             {
-                float tsdf;
-                unpack_tsdf(volume.ptr(VOLUME_Y * z + y)[x], tsdf, weight);
-                return tsdf;                
+              V.z = (z + 0.5f) * cell_size.z;
+
+              //process dx
+              if (x + 1 < VOLUME_X)
+              {
+                int Wn;
+                float Fn = fetch (x + 1, y, z, Wn);
+
+                if (Wn != 0 && Fn != 1.f)
+                  if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
+                  {
+                    float3 p;
+                    p.y = V.y;
+                    p.z = V.z;
+
+                    float Vnx = V.x + cell_size.x;
+
+                    float d_inv = 1.f / (fabs (F) + fabs (Fn));
+                    p.x = (V.x * fabs (Fn) + Vnx * fabs (F)) * d_inv;
+
+                    points[local_count++] = p;
+                  }
+              }               /* if (x + 1 < VOLUME_X) */
+
+              //process dy
+              if (y + 1 < VOLUME_Y)
+              {
+                int Wn;
+                float Fn = fetch (x, y + 1, z, Wn);
+
+                if (Wn != 0 && Fn != 1.f)
+                  if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
+                  {
+                    float3 p;
+                    p.x = V.x;
+                    p.z = V.z;
+
+                    float Vny = V.y + cell_size.y;
+
+                    float d_inv = 1.f / (fabs (F) + fabs (Fn));
+                    p.y = (V.y * fabs (Fn) + Vny * fabs (F)) * d_inv;
+
+                    points[local_count++] = p;
+                  }
+              }                /*  if (y + 1 < VOLUME_Y) */
+
+              //process dz
+              //if (z + 1 < VOLUME_Z) // guaranteed by loop
+              {
+                int Wn;
+                float Fn = fetch (x, y, z + 1, Wn);
+
+                if (Wn != 0 && Fn != 1.f)
+                  if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
+                  {
+                    float3 p;
+                    p.x = V.x;
+                    p.y = V.y;
+
+                    float Vnz = V.z + cell_size.z;
+
+                    float d_inv = 1.f / (fabs (F) + fabs (Fn));
+                    p.z = (V.z * fabs (Fn) + Vnz * fabs (F)) * d_inv;
+
+                    points[local_count++] = p;
+                  }
+              }               /* if (z + 1 < VOLUME_Z) */
+            }              /* if (W != 0 && F != 1.f) */
+          }            /* if (x < VOLUME_X && y < VOLUME_Y) */
+
+
+          ///not we fulfilled points array at current iteration
+          int total_warp = __popc (__ballot (local_count > 0)) + __popc (__ballot (local_count > 1)) + __popc (__ballot (local_count > 2));
+
+          if (total_warp > 0)
+          {
+            int lane = Warp::laneId ();
+            int storage_index = (ftid >> Warp::LOG_WARP_SIZE) * Warp::WARP_SIZE * MAX_LOCAL_POINTS;
+
+            volatile int* cta_buffer = (int*)(storage_X + storage_index);
+
+            cta_buffer[lane] = local_count;
+            int offset = scan_warp<exclusive>(cta_buffer, lane);
+
+            if (lane == 0)
+            {
+              int old_global_count = atomicAdd (&global_count, total_warp);
+              cta_buffer[0] = old_global_count;
+            }
+            int old_global_count = cta_buffer[0];
+
+            for (int l = 0; l < local_count; ++l)
+            {
+              storage_X[storage_index + offset + l] = points[l].x;
+              storage_Y[storage_index + offset + l] = points[l].y;
+              storage_Z[storage_index + offset + l] = points[l].z;
             }
 
-            __device__ __forceinline__ void operator()()const
+            PointType *pos = output.data + old_global_count + lane;
+            for (int idx = lane; idx < total_warp; idx += Warp::STRIDE, pos += Warp::STRIDE)
             {
-                int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
-                int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
+              float x = storage_X[storage_index + idx];
+              float y = storage_Y[storage_index + idx];
+              float z = storage_Z[storage_index + idx];
+              store_point_type (x, y, z, pos);
+            }
 
-                if (__all(x >= VOLUME_X) || __all(y >= VOLUME_Y))
-                    return;
+            bool full = (old_global_count + total_warp) >= output.size;
 
-                float3 V;
-                V.x = (x + 0.5f) * cell_size.x;
-                V.y = (y + 0.5f) * cell_size.y;
+            if (full)
+              break;
+          }
 
-                int ftid = Block::flattenedThreadId();
-                
-                for(int z = 0; z < VOLUME_Z - 1; ++z)
-                {                   
-                    float3 points[MAX_LOCAL_POINTS];
-                    int local_count = 0;
-
-                    if (x < VOLUME_X && y < VOLUME_Y)
-                    {
-                        int W;
-                        float F = fetch(x, y, z, W);
-
-                        if (W != 0 && F != 1.f)
-                        {                            
-                            V.z = (z + 0.5f) * cell_size.z;
-
-                            //process dx
-                            if (x + 1 < VOLUME_X)
-                            {
-                                int Wn;
-                                float Fn = fetch(x+1, y, z, Wn);
-
-                                if (Wn != 0 && Fn != 1.f)                                
-                                    if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
-                                    {
-                                        float3 p;
-                                        p.y = V.y;
-                                        p.z = V.z;
-
-                                        float Vnx = V.x + cell_size.x;
-
-                                        float d_inv = 1.f/(fabs(F) + fabs(Fn));
-                                        p.x = (V.x * fabs(Fn) + Vnx * fabs(F)) * d_inv;
-
-                                        points[local_count++] = p;                                
-                                    }
-                            } /* if (x + 1 < VOLUME_X) */
-
-                            //process dy
-                            if (y + 1 < VOLUME_Y)
-                            {
-                                int Wn;
-                                float Fn = fetch(x, y+1, z, Wn);
-
-                                if (Wn != 0 && Fn != 1.f)
-                                    if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
-                                    {
-                                        float3 p;
-                                        p.x = V.x;
-                                        p.z = V.z;
-
-                                        float Vny = V.y + cell_size.y;
-
-                                        float d_inv = 1.f/(fabs(F) + fabs(Fn));
-                                        p.y = (V.y * fabs(Fn) + Vny * fabs(F)) * d_inv;
-
-                                        points[local_count++] = p;
-                                    }
-                            }  /*  if (y + 1 < VOLUME_Y) */
-
-                            //process dz
-                            //if (z + 1 < VOLUME_Z) // guaranteed by loop
-                            {
-                                int Wn;
-                                float Fn = fetch(x, y, z+1, Wn);
-
-                                if (Wn != 0 && Fn != 1.f)
-                                    if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
-                                    {
-                                        float3 p;
-                                        p.x = V.x;
-                                        p.y = V.y;
-
-                                        float Vnz = V.z + cell_size.z;
-
-                                        float d_inv = 1.f/(fabs(F) + fabs(Fn));
-                                        p.z = (V.z * fabs(Fn) + Vnz * fabs(F)) * d_inv;
-
-                                        points[local_count++] = p;
-                                    }
-                            } /* if (z + 1 < VOLUME_Z) */
-                        }  /* if (W != 0 && F != 1.f) */
-                    }  /* if (x < VOLUME_X && y < VOLUME_Y) */
-
-                    
-                    ///not we fulfilled points array at current iteration
-                    int total_warp = __popc(__ballot(local_count > 0)) + __popc(__ballot(local_count > 1)) + __popc(__ballot(local_count > 2));                    
-                    
-                    if (total_warp > 0)
-                    {
-                        int lane = Warp::laneId(); 
-                        int storage_index = (ftid >> Warp::LOG_WARP_SIZE) * Warp::WARP_SIZE * MAX_LOCAL_POINTS;
-
-                        volatile int* cta_buffer = (int*)(storage_X + storage_index);
-                        
-                        cta_buffer[lane] = local_count;                        
-                        int offset = scan_warp<exclusive>(cta_buffer, lane); 
-                                                
-                        if (lane == 0)
-                        {
-                            int old_global_count = atomicAdd(&global_count, total_warp);
-                            cta_buffer[0] = old_global_count;
-                        }
-                        int old_global_count = cta_buffer[0];
-
-                        for(int l = 0; l < local_count; ++l)
-                        { 
-                            storage_X[storage_index + offset + l] = points[l].x;
-                            storage_Y[storage_index + offset + l] = points[l].y;
-                            storage_Z[storage_index + offset + l] = points[l].z;
-                        }
-                        
-                        PointType *pos = output.data + old_global_count + lane;
-                        for(int idx = lane; idx < total_warp; idx+=Warp::STRIDE, pos += Warp::STRIDE)
-                        {
-                            float x = storage_X[storage_index + idx];
-                            float y = storage_Y[storage_index + idx];
-                            float z = storage_Z[storage_index + idx];
-                            store_point_type(x, y, z, pos);    
-                        }
-
-                        bool full = (old_global_count + total_warp) >= output.size;
-
-                        if (full)
-                            break;                        
-                    }  
-                    
-                } /* for(int z = 0; z < VOLUME_Z - 1; ++z) */
+        }         /* for(int z = 0; z < VOLUME_Z - 1; ++z) */
 
 
-                ///////////////////////////
-                // prepare for future scans
-                if (ftid == 0)
-                {                    
-                    unsigned int total_blocks = gridDim.x * gridDim.y * gridDim.z;
-                    unsigned int value = atomicInc(&blocks_done, total_blocks);
+        ///////////////////////////
+        // prepare for future scans
+        if (ftid == 0)
+        {
+          unsigned int total_blocks = gridDim.x * gridDim.y * gridDim.z;
+          unsigned int value = atomicInc (&blocks_done, total_blocks);
 
-                    //last block
-                    if (value == total_blocks - 1)
-                    {                        
-                        output_count = min((int)output.size, global_count);
-                        blocks_done = 0;
-                        global_count = 0;  
-                    }                                        
-                }
-            } /* operator() */
-           
-            __device__ __forceinline__ void store_point_type(float x, float y, float z, float4* ptr) const { *ptr = make_float4(x, y, z, 0); }
-            __device__ __forceinline__ void store_point_type(float x, float y, float z, float3* ptr) const { *ptr = make_float3(x, y, z); }
-        };
+          //last block
+          if (value == total_blocks - 1)
+          {
+            output_count = min ((int)output.size, global_count);
+            blocks_done = 0;
+            global_count = 0;
+          }
+        }
+      }       /* operator() */
 
-        __global__ void extractKernel(const FullScan6 fs) { fs(); }
+      __device__ __forceinline__ void
+      store_point_type (float x, float y, float z, float4* ptr) const {
+        *ptr = make_float4 (x, y, z, 0);
+      }
+      __device__ __forceinline__ void
+      store_point_type (float x, float y, float z, float3* ptr) const {
+        *ptr = make_float3 (x, y, z);
+      }
+    };
+
+    __global__ void
+    extractKernel (const FullScan6 fs) {
+      fs ();
     }
+  }
 }
 
-size_t pcl::device::extractCloud(const PtrStep<volume_elem_type>& volume, const float3& volume_size, PtrSz<PointType> output)
+size_t
+pcl::device::extractCloud (const PtrStep<volume_elem_type>& volume, const float3& volume_size, PtrSz<PointType> output)
 {
-    FullScan6 fs;
-    fs.volume = volume;
-    fs.cell_size.x = volume_size.x / VOLUME_X;
-    fs.cell_size.y = volume_size.y / VOLUME_Y;
-    fs.cell_size.z = volume_size.z / VOLUME_Z;
-    fs.output = output;
+  FullScan6 fs;
+  fs.volume = volume;
+  fs.cell_size.x = volume_size.x / VOLUME_X;
+  fs.cell_size.y = volume_size.y / VOLUME_Y;
+  fs.cell_size.z = volume_size.z / VOLUME_Z;
+  fs.output = output;
 
-    dim3 block(CTA_SIZE_X, CTA_SIZE_Y);
-    dim3 grid(divUp(VOLUME_X, block.x), divUp(VOLUME_Y, block.y));
+  dim3 block (CTA_SIZE_X, CTA_SIZE_Y);
+  dim3 grid (divUp (VOLUME_X, block.x), divUp (VOLUME_Y, block.y));
 
-    //cudaFuncSetCacheConfig(extractKernel, cudaFuncCachePreferL1);
-    //printFuncAttrib(extractKernel);
+  //cudaFuncSetCacheConfig(extractKernel, cudaFuncCachePreferL1);
+  //printFuncAttrib(extractKernel);
 
-    extractKernel<<<grid, block>>>(fs);
-    cudaSafeCall( cudaGetLastError() );    	  
-    cudaSafeCall(cudaDeviceSynchronize());
+  extractKernel << < grid, block >> > (fs);
+  cudaSafeCall ( cudaGetLastError () );
+  cudaSafeCall (cudaDeviceSynchronize ());
 
-    int size;    
-    cudaSafeCall( cudaMemcpyFromSymbol(&size, output_count, sizeof(size)) );
-    return (size_t)size;    
+  int size;
+  cudaSafeCall ( cudaMemcpyFromSymbol (&size, output_count, sizeof(size)) );
+  return (size_t)size;
 }
 
 
 namespace pcl
 {
-    namespace device
+  namespace device
+  {
+    template<typename NormalType>
+    struct ExtractNormals
     {
-        template<typename NormalType>
-        struct ExtractNormals
-        {            
-            float3 cell_size;
-            PtrStep<volume_elem_type> volume;            
-            PtrSz<PointType> points;
-            
-            mutable NormalType* output;
+      float3 cell_size;
+      PtrStep<volume_elem_type> volume;
+      PtrSz<PointType> points;
 
-            __device__ __forceinline__ float readTsdf(int x, int y, int z) const
-            {                
-                return unpack_tsdf(volume.ptr(VOLUME_Y * z + y)[x]);                
-            }
-            
-            __device__ __forceinline__ float3 fetchPoint(int idx) const
-            {
-                PointType p = points.data[idx];
-                return make_float3(p.x, p.y, p.z);                
-            }
-            __device__ __forceinline__ void storeNormal(int idx, float3 normal) const
-            {
-                NormalType n;
-                n.x = normal.x; n.y = normal.y; n.z = normal.z;
-                output[idx] = n;
-            }
+      mutable NormalType* output;
 
-            __device__ __forceinline__ int3 getVoxel(const float3& point) const 
-            {
-                int vx = __float2int_rd(point.x / cell_size.x); // round to negative infinity
-                int vy = __float2int_rd(point.y / cell_size.y);
-                int vz = __float2int_rd(point.z / cell_size.z);
+      __device__ __forceinline__ float
+      readTsdf (int x, int y, int z) const
+      {
+        return unpack_tsdf (volume.ptr (VOLUME_Y * z + y)[x]);
+      }
 
-                return make_int3(vx, vy, vz);				
-            }
+      __device__ __forceinline__ float3
+      fetchPoint (int idx) const
+      {
+        PointType p = points.data[idx];
+        return make_float3 (p.x, p.y, p.z);
+      }
+      __device__ __forceinline__ void
+      storeNormal (int idx, float3 normal) const
+      {
+        NormalType n;
+        n.x = normal.x; n.y = normal.y; n.z = normal.z;
+        output[idx] = n;
+      }
 
-            __device__ __forceinline__ void operator()() const
-            {
-                int idx = threadIdx.x + blockIdx.x * blockDim.x;
+      __device__ __forceinline__ int3
+      getVoxel (const float3& point) const
+      {
+        int vx = __float2int_rd (point.x / cell_size.x);        // round to negative infinity
+        int vy = __float2int_rd (point.y / cell_size.y);
+        int vz = __float2int_rd (point.z / cell_size.z);
 
-                if (idx >= points.size)
-                    return;
-                const float qnan = numeric_limits<float>::quiet_NaN();
-                float3 n = make_float3(qnan, qnan, qnan);
-                                                                      
-                float3 point = fetchPoint(idx);
-                int3 g = getVoxel(point);
-                
-                if (g.x > 2 && g.y > 2 && g.z > 2 && g.x < VOLUME_X - 3 && g.y < VOLUME_Y - 3 && g.z < VOLUME_Z - 3)
-                {
-                    float3 t;
+        return make_int3 (vx, vy, vz);
+      }
 
-                    t = point;
-                    t.x += cell_size.x/4;
-                    float Fx1 = interpolateTrilineary(t);
+      __device__ __forceinline__ void
+      operator () () const
+      {
+        int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
-                    t = point;
-                    t.x -= cell_size.x/4;
-                    float Fx2 = interpolateTrilineary(t);
+        if (idx >= points.size)
+          return;
+        const float qnan = numeric_limits<float>::quiet_NaN ();
+        float3 n = make_float3 (qnan, qnan, qnan);
 
-                    n.x = (Fx1 - Fx2);
+        float3 point = fetchPoint (idx);
+        int3 g = getVoxel (point);
 
-                    t = point;
-                    t.y += cell_size.y/4;
-                    float Fy1 = interpolateTrilineary(t);
+        if (g.x > 2 && g.y > 2 && g.z > 2 && g.x < VOLUME_X - 3 && g.y < VOLUME_Y - 3 && g.z < VOLUME_Z - 3)
+        {
+          float3 t;
 
-                    t = point;
-                    t.y -= cell_size.y/4;
-                    float Fy2 = interpolateTrilineary(t);
+          t = point;
+          t.x += cell_size.x / 4;
+          float Fx1 = interpolateTrilineary (t);
 
-                    n.y = (Fy1 - Fy2);
+          t = point;
+          t.x -= cell_size.x / 4;
+          float Fx2 = interpolateTrilineary (t);
 
-                    t = point;
-                    t.z += cell_size.z/4;
-                    float Fz1 = interpolateTrilineary(t);
+          n.x = (Fx1 - Fx2);
 
-                    t = point;
-                    t.z -= cell_size.z/4;
-                    float Fz2 = interpolateTrilineary(t);
+          t = point;
+          t.y += cell_size.y / 4;
+          float Fy1 = interpolateTrilineary (t);
 
-                    n.z = (Fz1 - Fz2);
+          t = point;
+          t.y -= cell_size.y / 4;
+          float Fy2 = interpolateTrilineary (t);
 
-                    n = normalized(n);
-                }
-                storeNormal(idx, n);                  
-            }            
+          n.y = (Fy1 - Fy2);
 
-            __device__ __forceinline__ float interpolateTrilineary(const float3& point) const
-            {
-                int3 g = getVoxel(point);
+          t = point;
+          t.z += cell_size.z / 4;
+          float Fz1 = interpolateTrilineary (t);
 
-                float vx = (g.x + 0.5f) * cell_size.x;
-                float vy = (g.y + 0.5f) * cell_size.y;
-                float vz = (g.z + 0.5f) * cell_size.z;
+          t = point;
+          t.z -= cell_size.z / 4;
+          float Fz2 = interpolateTrilineary (t);
 
-                g.x = (point.x < vx) ? (g.x - 1) : g.x;
-                g.y = (point.y < vy) ? (g.y - 1) : g.y;
-                g.z = (point.z < vz) ? (g.z - 1) : g.z;
+          n.z = (Fz1 - Fz2);
 
-                float a = (point.x - (g.x + 0.5f) * cell_size.x)/cell_size.x;
-                float b = (point.y - (g.y + 0.5f) * cell_size.y)/cell_size.y;
-                float c = (point.z - (g.z + 0.5f) * cell_size.z)/cell_size.z;
+          n = normalized (n);
+        }
+        storeNormal (idx, n);
+      }
 
-                float res = readTsdf(g.x+0, g.y+0, g.z+0) * (1-a)*(1-b)*(1-c) +
-                    readTsdf(g.x+0, g.y+0, g.z+1) * (1-a)*(1-b)*   c  +
-                    readTsdf(g.x+0, g.y+1, g.z+0) * (1-a)*   b *(1-c) +
-                    readTsdf(g.x+0, g.y+1, g.z+1) * (1-a)*   b *   c  +
-                    readTsdf(g.x+1, g.y+0, g.z+0) *    a *(1-b)*(1-c) +
-                    readTsdf(g.x+1, g.y+0, g.z+1) *    a *(1-b)*   c  +
-                    readTsdf(g.x+1, g.y+1, g.z+0) *    a *   b *(1-c) +
-                    readTsdf(g.x+1, g.y+1, g.z+1) *    a *   b *   c  ;
-                return res;
-            }
-        };
+      __device__ __forceinline__ float
+      interpolateTrilineary (const float3& point) const
+      {
+        int3 g = getVoxel (point);
 
-        template<typename NormalType>
-        __global__ void extractNormalsKernel(const ExtractNormals<NormalType> en) { en(); }        
+        float vx = (g.x + 0.5f) * cell_size.x;
+        float vy = (g.y + 0.5f) * cell_size.y;
+        float vz = (g.z + 0.5f) * cell_size.z;
+
+        g.x = (point.x < vx) ? (g.x - 1) : g.x;
+        g.y = (point.y < vy) ? (g.y - 1) : g.y;
+        g.z = (point.z < vz) ? (g.z - 1) : g.z;
+
+        float a = (point.x - (g.x + 0.5f) * cell_size.x) / cell_size.x;
+        float b = (point.y - (g.y + 0.5f) * cell_size.y) / cell_size.y;
+        float c = (point.z - (g.z + 0.5f) * cell_size.z) / cell_size.z;
+
+        float res = readTsdf (g.x + 0, g.y + 0, g.z + 0) * (1 - a) * (1 - b) * (1 - c) +
+                    readTsdf (g.x + 0, g.y + 0, g.z + 1) * (1 - a) * (1 - b) * c +
+                    readTsdf (g.x + 0, g.y + 1, g.z + 0) * (1 - a) * b * (1 - c) +
+                    readTsdf (g.x + 0, g.y + 1, g.z + 1) * (1 - a) * b * c +
+                    readTsdf (g.x + 1, g.y + 0, g.z + 0) * a * (1 - b) * (1 - c) +
+                    readTsdf (g.x + 1, g.y + 0, g.z + 1) * a * (1 - b) * c +
+                    readTsdf (g.x + 1, g.y + 1, g.z + 0) * a * b * (1 - c) +
+                    readTsdf (g.x + 1, g.y + 1, g.z + 1) * a * b * c;
+        return res;
+      }
+    };
+
+    template<typename NormalType>
+    __global__ void
+    extractNormalsKernel (const ExtractNormals<NormalType> en) {
+      en ();
     }
+  }
 }
 
 template<typename NormalType>
-void pcl::device::extractNormals(const PtrStep<volume_elem_type>& volume, const float3& volume_size, const PtrSz<PointType>& points, NormalType* output)
+void
+pcl::device::extractNormals (const PtrStep<volume_elem_type>& volume, const float3& volume_size, const PtrSz<PointType>& points, NormalType* output)
 {
-    ExtractNormals<NormalType> en;
-    en.volume = volume;
-    en.cell_size.x = volume_size.x / VOLUME_X;
-    en.cell_size.y = volume_size.y / VOLUME_Y;
-    en.cell_size.z = volume_size.z / VOLUME_Z;
-    en.points = points;
-    en.output = output;
+  ExtractNormals<NormalType> en;
+  en.volume = volume;
+  en.cell_size.x = volume_size.x / VOLUME_X;
+  en.cell_size.y = volume_size.y / VOLUME_Y;
+  en.cell_size.z = volume_size.z / VOLUME_Z;
+  en.points = points;
+  en.output = output;
 
-    dim3 block(256);
-    dim3 grid(divUp(points.size, block.x));
-    
-    extractNormalsKernel<<<grid, block>>>(en);
-    cudaSafeCall( cudaGetLastError() );    	  
-    cudaSafeCall(cudaDeviceSynchronize());
+  dim3 block (256);
+  dim3 grid (divUp (points.size, block.x));
+
+  extractNormalsKernel << < grid, block >> > (en);
+  cudaSafeCall ( cudaGetLastError () );
+  cudaSafeCall (cudaDeviceSynchronize ());
 }
 
 using namespace pcl::device;
 
-template void pcl::device::extractNormals<PointType>(const PtrStep<volume_elem_type>& volume, const float3& volume_size, const PtrSz<PointType>& input, PointType* output);
-template void pcl::device::extractNormals<float8>(const PtrStep<volume_elem_type>& volume, const float3& volume_size, const PtrSz<PointType>& input, float8* output);
+template void pcl::device::extractNormals<PointType>(const PtrStep<volume_elem_type>&volume, const float3 &volume_size, const PtrSz<PointType>&input, PointType * output);
+template void pcl::device::extractNormals<float8>(const PtrStep<volume_elem_type>&volume, const float3 &volume_size, const PtrSz<PointType>&input, float8 * output);

@@ -40,59 +40,66 @@
 #include "pcl/gpu/utils/device/limits.hpp"
 #include "pcl/gpu/utils/device/vector_math.hpp"
 
-#include "internal.hpp"
+#include "internal.h"
 
 namespace pcl
 {
-    namespace device
-    {       
-        //////////////////////////////////////////////////////////////////////////////////////        
-        /// for old format
+  namespace device
+  {
+    //////////////////////////////////////////////////////////////////////////////////////
+    /// for old format
 
-        const int DIVISOR = 32767; // SHRT_MAX;
-        #define INV_DIV 3.051850947599719e-5f
-                
-        __device__ __forceinline__ void pack_tsdf(float tsdf, int weight, short2& value)
-		{
-            int fixedp = max(-DIVISOR, min(DIVISOR, __float2int_rz(tsdf * DIVISOR)));
-            //int fixedp = __float2int_rz(tsdf * DIVISOR);
-            value = make_short2(fixedp, weight);			
-		}
+    const int DIVISOR = 32767;     // SHRT_MAX;
+    #define INV_DIV 3.051850947599719e-5f
 
-		__device__ __forceinline__ void unpack_tsdf(short2 value, float& tsdf, int& weight)		
-        {	            
-            weight = value.y;
-            tsdf = __int2float_rn(value.x)/DIVISOR;//*/ * INV_DIV;  
-		}
-
-        __device__ __forceinline__ float unpack_tsdf(short2 value)
-        {
-            return static_cast<float>(value.x)/DIVISOR;//*/ * INV_DIV;            
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////////
-        /// for half float
-         __device__ __forceinline__ void pack_tsdf(float tsdf, int weight, ushort2& value)
-		{
-            value = make_ushort2(__float2half_rn(tsdf), weight);			
-		}
-
-		__device__ __forceinline__ void unpack_tsdf(ushort2 value, float& tsdf, int& weight)		
-        {	            
-            tsdf = __half2float(value.x);
-            weight = value.y;
-		}
-
-        __device__ __forceinline__ float unpack_tsdf(ushort2 value)
-        {
-            return __half2float(value.x);
-        }
-
-         __device__ __forceinline__ float3 operator*(const Mat33& m, const float3& vec)
-        {
-            return make_float3(dot(m.data[0], vec), dot(m.data[1], vec), dot(m.data[2], vec));
-        }
+    __device__ __forceinline__ void
+    pack_tsdf (float tsdf, int weight, short2& value)
+    {
+      int fixedp = max (-DIVISOR, min (DIVISOR, __float2int_rz (tsdf * DIVISOR)));
+      //int fixedp = __float2int_rz(tsdf * DIVISOR);
+      value = make_short2 (fixedp, weight);
     }
+
+    __device__ __forceinline__ void
+    unpack_tsdf (short2 value, float& tsdf, int& weight)
+    {
+      weight = value.y;
+      tsdf = __int2float_rn (value.x) / DIVISOR;   //*/ * INV_DIV;
+    }
+
+    __device__ __forceinline__ float
+    unpack_tsdf (short2 value)
+    {
+      return static_cast<float>(value.x) / DIVISOR;    //*/ * INV_DIV;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    /// for half float
+    __device__ __forceinline__ void
+    pack_tsdf (float tsdf, int weight, ushort2& value)
+    {
+      value = make_ushort2 (__float2half_rn (tsdf), weight);
+    }
+
+    __device__ __forceinline__ void
+    unpack_tsdf (ushort2 value, float& tsdf, int& weight)
+    {
+      tsdf = __half2float (value.x);
+      weight = value.y;
+    }
+
+    __device__ __forceinline__ float
+    unpack_tsdf (ushort2 value)
+    {
+      return __half2float (value.x);
+    }
+
+    __device__ __forceinline__ float3
+    operator* (const Mat33& m, const float3& vec)
+    {
+      return make_float3 (dot (m.data[0], vec), dot (m.data[1], vec), dot (m.data[2], vec));
+    }
+  }
 }
 
 #endif /* PCL_GPU_KINFU_DEVICE_HPP_ */

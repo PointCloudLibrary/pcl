@@ -120,7 +120,7 @@ namespace pcl
 
         /** \brief Processes next frame.
           * \param[in] Depth next frame with values in mm
-          * \return true if can generate image for human.
+          * \return true if can render 3D view.
           */
         bool operator() (const DepthMap& depth);
 
