@@ -3,7 +3,6 @@
 
 #include <pcl/pcl_base.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/registration/stanford_gicp.h>
 
 #include <pcl/registration/correspondence_estimation.h>
 
