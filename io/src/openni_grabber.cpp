@@ -33,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Nico Blodow (blodow@cs.tum.edu), Suat Gedikli (gedikli@willowgarage.com)
  */
 
 #include <pcl/pcl_config.h>
@@ -824,13 +823,6 @@ pcl::OpenNIGrabber::getAvailableImageModes () const
   }
 
   return (result);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float 
-pcl::OpenNIGrabber::getFramesPerSecond () const
-{
-  return ((float)(device_->getDepthOutputMode ().nFPS));
 }
 
 #endif
