@@ -31,8 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
- *///M*/
+ */
 
 #ifndef PCL_KINFU_KINFUTRACKER_HPP_
 #define PCL_KINFU_KINFUTRACKER_HPP_
@@ -48,133 +47,202 @@
 
 namespace pcl
 {
-    namespace gpu
+  namespace gpu
+  {
+    /** \brief
+      * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
+      */
+    class PCL_EXPORTS KinfuTracker
     {
-        class PCL_EXPORTS KinfuTracker
+      public:
+        struct RGB
         {
-        public:                                    
-            struct RGB { unsigned char r, g, b; };
-            typedef DeviceArray2D<RGB> View;
-            typedef DeviceArray2D<unsigned short> DepthMap;
+          unsigned char r, g, b;
+        };
+        typedef DeviceArray2D<RGB> View;
+        typedef DeviceArray2D<unsigned short> DepthMap;
 
-            typedef pcl::PointXYZ PointType;
-            typedef pcl::Normal NormalType;
+        typedef pcl::PointXYZ PointType;
+        typedef pcl::Normal NormalType;
 
-            KinfuTracker(int rows = 480, int cols = 640);
+        /** \brief Constructor
+          * \param[in] rows
+          * \param[in] cols
+          */
+        KinfuTracker (int rows = 480, int cols = 640);
 
-            /** \brief Sets Tsdf volume size for each dimention in mm */
-            void setDepthIntrinsics(float fx, float fy, float cx = -1, float cy = -1);
-            
-            /** \brief Sets initial camera pose relative to volume coordiante space */
-            void setInitalCameraPose(const Eigen::Affine3f& pose);
+        /** \brief Sets Tsdf volume size for each dimention in mm
+          * \param[in] fx
+          * \param[in] fy
+          * \param[in] cx
+          * \param[in] cy
+          */
+        void
+        setDepthIntrinsics (float fx, float fy, float cx = -1, float cy = -1);
 
-            /** \brief Sets Tsdf volume size for each dimention in mm */
-            void setVolumeSize(const Eigen::Vector3f& volume_size);
+        /** \brief Sets initial camera pose relative to volume coordiante space
+          * \param[in] pose
+          */
+        void
+        setInitalCameraPose (const Eigen::Affine3f& pose);
 
-            /** \brief Sets Tsdf trancation distance in mm. Must be greater than 2 * volume cell size */
-            void setTrancationDistance(float distance);
+        /** \brief Sets Tsdf volume size for each dimention in mm
+          * \param[in] volume_size
+          */
+        void
+        setVolumeSize (const Eigen::Vector3f& volume_size);
 
-            /** \brief Sets ICP filtering parameters. 
-              * \param[in] distThreshold distance in mm.        
-              * \param[in] sineOfAngle sine of angle between normals.        
-              */
-            void setIcpCorespFilteringParams(float distThreshold, float sineOfAngle);
-            
-            /** \brief Returns volume size in mm */
-            Eigen::Vector3f getVolumeSize() const;
+        /** \brief Sets Tsdf trancation distance in mm. Must be greater than 2 * volume cell size
+          * \param[in] distance
+          */
+        void
+        setTrancationDistance (float distance);
 
-            /** \brief Returns cols passed to ctor */
-            int cols();
+        /** \brief Sets ICP filtering parameters.
+          * \param[in] distThreshold distance in mm.
+          * \param[in] sineOfAngle sine of angle between normals.
+          */
+        void
+        setIcpCorespFilteringParams (float distThreshold, float sineOfAngle);
 
-            /** \brief Returns rows passed to ctor */
-            int rows();
-                                    
-            /** \brief Processes next frame.        
-              * \param[in] Depth next frame with values in mm     
-              * \return true if can generate image for human. 
-              */
-            bool operator()(const DepthMap& depth);
+        /** \brief Returns volume size in mm */
+        Eigen::Vector3f
+        getVolumeSize () const;
 
-            /** \brief Returns camera pose at given time, default the last pose */
-            Eigen::Affine3f getCameraPose(int time = -1);
+        /** \brief Returns cols passed to ctor */
+        int
+        cols ();
 
-            /** \brief Generates image for human */
-            void getImage(View& view) const;
+        /** \brief Returns rows passed to ctor */
+        int
+        rows ();
 
-            /** \brief Generates image for human */
-            void getImage(View& view, const Eigen::Vector3f& light_source_pose) const;
+        /** \brief Processes next frame.
+          * \param[in] Depth next frame with values in mm
+          * \return true if can generate image for human.
+          */
+        bool operator() (const DepthMap& depth);
 
-            /** \brief Returns point cloud abserved from last camera pose */
-            void getLastFrameCloud(DeviceArray2D<PointType>& cloud) const;
+        /** \brief Returns camera pose at given time, default the last pose
+          * \param[in] time
+          */
+        Eigen::Affine3f
+        getCameraPose (int time = -1);
 
-            /** \brief Returns point cloud abserved from last camera pose */
-            void getLastFrameNormals(DeviceArray2D<NormalType>& normals) const;
+        /** \brief Generates image for human (?)
+          * \param[out] view
+          */
+        void
+        getImage (View& view) const;
 
-            /** \brief Generates cloud on CPU */
-            void getCloudFromVolumeHost(PointCloud<PointType>& cloud, bool connected26 = false);
+        /** \brief Generates image for human (?)
+          * \param[out] view
+          * \param[in] light_source_pose
+          */
+        void
+        getImage (View& view, const Eigen::Vector3f& light_source_pose) const;
 
-            /** \brief Generates cloud on GPU in connected6 mode only*/           
-            DeviceArray<PointType> getCloudFromVolume(DeviceArray<PointType>& cloud_buffer);
+        /** \brief Returns point cloud abserved from last camera pose
+          * \param[out] cloud
+          */
+        void
+        getLastFrameCloud (DeviceArray2D<PointType>& cloud) const;
 
-            /** \brief Computes normals as gradient of tsdf for given points */           
-            void getNormalsFromVolume(const DeviceArray<PointType>& cloud, DeviceArray<PointType>& normals) const;
+        /** \brief Returns point cloud abserved from last camera pose
+          * \param[out] normals
+          */
+        void
+        getLastFrameNormals (DeviceArray2D<NormalType>& normals) const;
 
-            /** \brief Computes normals as gradient of tsdf for given points */           
-            void getNormalsFromVolume(const DeviceArray<PointType>& cloud, DeviceArray<NormalType>& normals) const;
-            
-        private:  
-            enum 
-            { 
-                LEVELS = 3, 
-                DEFAULT_VOLUME_CLOUD_BUFFER_SIZE = 10 * 1000 * 1000,                
-            };
+        /** \brief Generates cloud on CPU
+          * \param[out] cloud
+          * \param[in] connected26
+          */
+        void
+        getCloudFromVolumeHost (PointCloud<PointType>& cloud, bool connected26 = false);
 
-            typedef DeviceArray2D<int> CorespMap;
-            typedef DeviceArray2D<float> MapArr;
+        /** \brief Generates cloud on GPU in connected6 mode only
+          * \param[out] cloud_buffer
+          */
+        DeviceArray<PointType>
+        getCloudFromVolume (DeviceArray<PointType>& cloud_buffer);
 
-            typedef Eigen::Matrix<float, 3, 3, Eigen::RowMajor> Matrix3frm;
-            typedef Eigen::Vector3f Vector3f; 
+        /** \brief Computes normals as gradient of tsdf for given points
+          * \param[in] cloud
+          * \param[out] normals
+          */
+        void
+        getNormalsFromVolume (const DeviceArray<PointType>& cloud, DeviceArray<PointType>& normals) const;
 
-            int rows_; 
-            int cols_;
-            int global_time_;
+        /** \brief Computes normals as gradient of tsdf for given points
+          * \param[in] cloud
+          * \param[out] normals
+          */
+        void
+        getNormalsFromVolume (const DeviceArray<PointType>& cloud, DeviceArray<NormalType>& normals) const;
 
-            float fx_, fy_, cx_, cy_;
+      private:
+        enum
+        {
+            LEVELS = 3,
+            DEFAULT_VOLUME_CLOUD_BUFFER_SIZE = 10 * 1000 * 1000,
+        };
 
-            Vector3f volume_size_; // sizeof volume in mm
-            Matrix3frm init_Rcam_;   // init camera rotaion in volume coo space
-            Vector3f   init_tcam_;   // init camera pos in volume coo space
+        typedef DeviceArray2D<int> CorespMap;
+        typedef DeviceArray2D<float> MapArr;
 
-            int icp_iterations_[LEVELS];           
-            float  distThres_;
-            float angleThres_;
-            float tranc_dist_;
-                        
-            std::vector<DepthMap> depths_curr_;
-            std::vector<MapArr> vmaps_g_curr_;
-            std::vector<MapArr> nmaps_g_curr_;
+        typedef Eigen::Matrix<float, 3, 3, Eigen::RowMajor> Matrix3frm;
+        typedef Eigen::Vector3f Vector3f;
 
-            std::vector<MapArr> vmaps_g_prev_;
-            std::vector<MapArr> nmaps_g_prev_;
+        int rows_;
+        int cols_;
+        int global_time_;
 
-            std::vector<MapArr> vmaps_curr_;
-            std::vector<MapArr> nmaps_curr_;
+        float fx_, fy_, cx_, cy_;
 
-            std::vector<CorespMap> coresps_;
+        Vector3f volume_size_; // sizeof volume in mm
+        Matrix3frm init_Rcam_;   // init camera rotaion in volume coo space
+        Vector3f   init_tcam_;   // init camera pos in volume coo space
 
-            DeviceArray2D<int> volume_;
-            DeviceArray2D<float> depthRawScaled_;
-            
-            DeviceArray2D<float> gbuf_;
-            DeviceArray<float> sumbuf_; 
+        int icp_iterations_[LEVELS];
+        float  distThres_;
+        float angleThres_;
+        float tranc_dist_;
 
-            std::vector<Matrix3frm> rmats_;
-            std::vector<Vector3f>   tvecs_;
-           
-            void allocateBufffers(int rows_arg, int cols_arg);
-            void reset();
-        };	
-    }
+        std::vector<DepthMap> depths_curr_;
+        std::vector<MapArr> vmaps_g_curr_;
+        std::vector<MapArr> nmaps_g_curr_;
+
+        std::vector<MapArr> vmaps_g_prev_;
+        std::vector<MapArr> nmaps_g_prev_;
+
+        std::vector<MapArr> vmaps_curr_;
+        std::vector<MapArr> nmaps_curr_;
+
+        std::vector<CorespMap> coresps_;
+
+        DeviceArray2D<int> volume_;
+        DeviceArray2D<float> depthRawScaled_;
+
+        DeviceArray2D<float> gbuf_;
+        DeviceArray<float> sumbuf_;
+
+        std::vector<Matrix3frm> rmats_;
+        std::vector<Vector3f>   tvecs_;
+
+        /** \brief
+          * \param[in] rows_arg
+          * \param[in] cols_arg
+          */
+        void
+        allocateBufffers (int rows_arg, int cols_arg);
+
+        /** \brief
+          */
+        void
+        reset ();
+    };
+  }
 };
 
 #endif /* PCL_KINFU_KINFUTRACKER_HPP_ */
