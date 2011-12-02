@@ -37,7 +37,7 @@
 #include <XnOS.h>
 #include <XnCppWrapper.h>
 
-#include "openni_capture.hpp"
+#include "openni_capture.h"
 #include "pcl/gpu/containers/initialization.hpp"
 
 using namespace std;
