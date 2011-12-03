@@ -59,8 +59,15 @@ namespace pcl
       int nr_dimensions_;
       /** \brief A vector containing the rescale factor to apply to each dimension. */
       std::vector<float> alpha_;
-      /** \brief A PointRepresentation is considered trivial if the result of the copyToFloatArray operation
-        * is equivalent to casting the PointT to a float* and copying the first nr_dimensions_ results */
+      /** \brief Indicates whether this point representation is trivial. It is trivial if and only if the following
+       *  conditions hold:
+       *  - the relevant data consists only of float values
+       *  - the vectorize operation directly copies the first nr_dimensions_ elements of PointT to the out array
+       *  - sizeof(PointT) is a multiple of sizeof(float)
+       *  In short, a trivial point representation converts the input point to a float array that is the same as if
+       *  the point was reinterpret_casted to a float array of length nr_dimensions_ . This value says that this
+       *  representation can be trivial; it is only trivial if setRescaleValues() has not been set.
+       */
       bool trivial_;
       
     public:
@@ -68,7 +75,7 @@ namespace pcl
       typedef boost::shared_ptr<const PointRepresentation<PointT> > ConstPtr;
 
       /** \brief Empty constructor */
-      PointRepresentation () : nr_dimensions_ (0), alpha_ (0), trivial_(0) {}
+      PointRepresentation () : nr_dimensions_ (0), alpha_ (0), trivial_ (false) {}
       
       /** \brief Copy point data from input point to a float array. This method must be overriden in all subclasses. 
        *  \param[in] p The input point
@@ -79,11 +86,11 @@ namespace pcl
       /** \brief Returns whether this point representation is trivial. It is trivial if and only if the following
        *  conditions hold:
        *  - the relevant data consists only of float values
-       *  - the copyToFloatArray operation directly copies the first nr_dimensions_ elements of PointT to the out array
+       *  - the vectorize operation directly copies the first nr_dimensions_ elements of PointT to the out array
        *  - sizeof(PointT) is a multiple of sizeof(float)
        *  In short, a trivial point representation converts the input point to a float array that is the same as if
        *  the point was reinterpret_casted to a float array of length nr_dimensions_ . */
-      inline bool isTrivial() const { return trivial_; }
+      inline bool isTrivial() const { return trivial_ && alpha_.empty (); }
       
       /** \brief Verify that the input point is valid.
        *  \param p The point to validate
@@ -91,18 +98,36 @@ namespace pcl
       virtual bool 
       isValid (const PointT &p) const
       {
-        float *temp = new float[nr_dimensions_];
-        copyToFloatArray (p, temp);
         bool is_valid = true;
-        for (int i = 0; i < nr_dimensions_; ++i)
+
+        if (trivial_)
         {
-          if (!pcl_isfinite (temp[i]))
+          const float* temp = reinterpret_cast<const float*>(&p);
+
+          for (int i = 0; i < nr_dimensions_; ++i)
           {
-            is_valid = false;
-            break;
+            if (!pcl_isfinite (temp[i]))
+            {
+              is_valid = false;
+              break;
+            }
           }
         }
-        delete [] temp;
+        else
+        {
+          float *temp = new float[nr_dimensions_];
+          copyToFloatArray (p, temp);
+
+          for (int i = 0; i < nr_dimensions_; ++i)
+          {
+            if (!pcl_isfinite (temp[i]))
+            {
+              is_valid = false;
+              break;
+            }
+          }
+          delete [] temp;
+        }
         return (is_valid);
       }
       
@@ -164,7 +189,7 @@ namespace pcl
         // Limit the default representation to the first 3 elements
         if (nr_dimensions_ > 3) nr_dimensions_ = 3;
 
-        trivial_=true;
+        trivial_ = true;
       }
 
       inline Ptr 
@@ -291,7 +316,7 @@ namespace pcl
       DefaultPointRepresentation ()
       {
         nr_dimensions_ = 3;
-        trivial_=true;
+        trivial_ = true;
       }
 
       virtual void 
@@ -311,7 +336,7 @@ namespace pcl
       DefaultPointRepresentation ()
       {
         nr_dimensions_ = 3;
-        trivial_=true;
+        trivial_ = true;
       }
 
       virtual void 
@@ -332,7 +357,7 @@ namespace pcl
       DefaultPointRepresentation ()
       {
         nr_dimensions_ = 3;
-        trivial_=true;
+        trivial_ = true;
       }
 
       virtual void 
@@ -362,7 +387,7 @@ namespace pcl
       DefaultPointRepresentation ()
       {
         nr_dimensions_ = 4;
-        trivial_=true;
+        trivial_ = true;
       }
 
       virtual void
