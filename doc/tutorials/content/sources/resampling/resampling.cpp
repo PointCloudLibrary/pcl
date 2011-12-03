@@ -4,18 +4,15 @@
 #include <pcl/surface/mls.h>
 
 int
- main (int argc, char** argv)
+main (int argc, char** argv)
 {
   // Load input file into a PointCloud<T> with an appropriate type
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-  sensor_msgs::PointCloud2 cloud_blob;
   // Load bun0.pcd -- should be available with the PCL archive in test 
-  pcl::io::loadPCDFile ("bun0.pcd", cloud_blob);
-  pcl::fromROSMsg (cloud_blob, *cloud);
+  pcl::io::loadPCDFile ("bun0.pcd", *cloud);
 
   // Create a KD-Tree
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-
 
   // Output has the same type as the input one, it will be only smoothed
   pcl::PointCloud<pcl::PointXYZ> mls_points;

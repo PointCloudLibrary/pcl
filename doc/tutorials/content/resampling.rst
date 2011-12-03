@@ -62,7 +62,7 @@ Now, let's break down the code piece by piece.
 
 .. literalinclude:: sources/resampling/resampling.cpp
    :language: cpp
-   :lines: 17-18
+   :lines: 10-12
 
    
 as the example PCD has only XYZ coordinates, we load it into a
@@ -71,32 +71,29 @@ allowed and will be preserved.
 
 .. literalinclude:: sources/resampling/resampling.cpp
    :language: cpp
-   :lines: 23-24
+   :lines: 25
 
-   
 if normal estimation is not required, this step can be skipped.
-
 
 .. literalinclude:: sources/resampling/resampling.cpp
    :language: cpp
-   :lines: 31-32
+   :lines: 28
 
 the first template type is used for the input and output cloud. Only the XYZ
 dimensions of the input are smoothed in the output.
 
-
 .. literalinclude:: sources/resampling/resampling.cpp
    :language: cpp
-   :lines: 34-39
+   :lines: 29
 
    
 polynomial fitting could be disabled for speeding up smoothing. Please consult
-the code API (constructor and setter) for default values and additional
+the code API (:pcl:`MovingLeastSquares<pcl::MovingLeastSquares>`) for default values and additional
 parameters to control the smoothing process.
 
 .. literalinclude:: sources/resampling/resampling.cpp
    :language: cpp
-   :lines: 43-44
+   :lines: 36-38
 
    
 if the normals and the original dimensions need to be in the same cloud, the
