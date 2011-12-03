@@ -164,18 +164,18 @@ namespace pcl
         nearestKSearch (const PointCloud& cloud, const std::vector<int>& indices, int k, std::vector< std::vector<int> >& k_indices,
                 std::vector< std::vector<float> >& k_sqr_distances)
         {
-          if (indices.empty())
+          if (indices.empty ())
           {
-            k_indices.resize (cloud.size());
-            k_sqr_distances.resize (cloud.size());
-            for (size_t i = 0; i < cloud.size(); i++)
+            k_indices.resize (cloud.size ());
+            k_sqr_distances.resize (cloud.size ());
+            for (size_t i = 0; i < cloud.size (); i++)
               nearestKSearch (cloud,i,k,k_indices[i],k_sqr_distances[i]);
           }
           else
           {
-            k_indices.resize (indices.size());
-            k_sqr_distances.resize (indices.size());
-            for (size_t i = 0; i < indices.size(); i++)
+            k_indices.resize (indices.size ());
+            k_sqr_distances.resize (indices.size ());
+            for (size_t i = 0; i < indices.size (); i++)
               nearestKSearch (cloud,indices[i],k,k_indices[i],k_sqr_distances[i]);
           }
         }
@@ -198,7 +198,7 @@ namespace pcl
           typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
 
           pcl::PointCloud<PointT> pc;
-          if (indices.empty())
+          if (indices.empty ())
           {
             pc.resize (cloud.size());
             for (size_t i = 0; i < cloud.size(); i++)
@@ -292,18 +292,18 @@ namespace pcl
         radiusSearch (const PointCloud& cloud, const std::vector<int>& indices, double radius, std::vector< std::vector<int> >& k_indices,
                 std::vector< std::vector<float> > & k_distances, int max_nn = -1)
         {
-          if (indices.empty())
+          if (indices.empty ())
           {
-            k_indices.resize (cloud.size());
-            k_distances.resize (cloud.size());
-            for (size_t i = 0; i < cloud.size(); i++)
+            k_indices.resize (cloud.size ());
+            k_distances.resize (cloud.size ());
+            for (size_t i = 0; i < cloud.size (); i++)
               radiusSearch (cloud,i,radius,k_indices[i],k_distances[i], max_nn);
           }
           else
           {
-            k_indices.resize (indices.size());
-            k_distances.resize (indices.size());
-            for (size_t i = 0; i < indices.size(); i++)
+            k_indices.resize (indices.size ());
+            k_distances.resize (indices.size ());
+            for (size_t i = 0; i < indices.size (); i++)
               radiusSearch (cloud,indices[i],radius,k_indices[i],k_distances[i], max_nn);
           }
         }
@@ -328,10 +328,10 @@ namespace pcl
           typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
 
           pcl::PointCloud<PointT> pc;
-          if (indices.empty())
+          if (indices.empty ())
           {
-            pc.resize (cloud.size());
-            for (size_t i = 0; i < cloud.size(); i++ )
+            pc.resize (cloud.size ());
+            for (size_t i = 0; i < cloud.size (); i++ )
             {
               pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (
                                               cloud[i], pc[i]));
@@ -340,8 +340,8 @@ namespace pcl
           }
           else
           {
-            pc.resize (indices.size());
-            for (size_t i = 0; i < indices.size(); i++ )
+            pc.resize (indices.size ());
+            for (size_t i = 0; i < indices.size (); i++ )
             {
               pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (
                                               cloud[indices[i]], pc[i]));
