@@ -167,7 +167,7 @@ namespace pcl
         typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
         typedef typename pcl::traits::fieldList<PointTDiff>::type FieldListOutT;
         typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
-        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointTDiff> (
+        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (
               point, p));
         return (nearestKSearch (p, k, k_indices, k_distances));
       }
@@ -226,7 +226,7 @@ namespace pcl
         typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
         typedef typename pcl::traits::fieldList<PointTDiff>::type FieldListOutT;
         typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
-        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointTDiff> (
+        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (
               point, p));
         return (radiusSearch (p, radius, k_indices, k_distances, max_nn));
       }
