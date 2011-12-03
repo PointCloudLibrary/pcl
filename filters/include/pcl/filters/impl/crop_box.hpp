@@ -49,6 +49,9 @@ pcl::CropBox<PointT>::applyFilter (PointCloud &output)
   output.resize (input_->points.size ());
   int indice_count = 0;
 
+  // We filter out invalid points
+  output.is_dense = true;
+
   Eigen::Affine3f transform = Eigen::Affine3f::Identity();
   Eigen::Affine3f inverse_transform = Eigen::Affine3f::Identity();
 
@@ -62,6 +65,13 @@ pcl::CropBox<PointT>::applyFilter (PointCloud &output)
 
   for (size_t index = 0; index < indices_->size (); ++index)
   {
+    if (!input_->is_dense)
+      // Check if the point is invalid
+      if (!pcl_isfinite (input_->points[index].x) ||
+          !pcl_isfinite (input_->points[index].y) ||
+          !pcl_isfinite (input_->points[index].z))
+        continue;
+
     // Get local point
     PointT local_pt = input_->points[(*indices_)[index]];
 
