@@ -15,7 +15,7 @@ int
 
   // Create a KD-Tree
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-  tree->setInputCloud (cloud);
+
 
   // Output has the same type as the input one, it will be only smoothed
   pcl::PointCloud<pcl::PointXYZ> mls_points;
