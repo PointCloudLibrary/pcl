@@ -78,7 +78,8 @@ namespace pcl
          * \param[in] indices the point indices subset that is to be used from the cloud
          */
         virtual void
-        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices) {
+        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices)
+        {
         }
 
         /** \brief Pass the input dataset that the search will be performed on.
@@ -93,7 +94,8 @@ namespace pcl
 
         /** \brief Get a pointer to the vector of indices used. */
         virtual IndicesConstPtr const
-        getIndices () {
+        getIndices ()
+        {
           return (IndicesConstPtr ());
         }
 
