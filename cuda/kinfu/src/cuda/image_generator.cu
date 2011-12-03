@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ * 
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
 #include "device.hpp"
@@ -103,9 +104,10 @@ namespace pcl
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::device::generateImage (const MapArr& vmap, const MapArr& nmap, const LightSource& light, PtrStepSz<uchar3> dst)
+pcl::device::generateImage (const MapArr& vmap, const MapArr& nmap, const LightSource& light, 
+                            PtrStepSz<uchar3> dst)
 {
   ImageGenerator ig;
   ig.vmap = vmap;
@@ -117,6 +119,7 @@ pcl::device::generateImage (const MapArr& vmap, const MapArr& nmap, const LightS
   dim3 grid (divUp (dst.cols, block.x), divUp (dst.rows, block.y));
 
   generateImageKernel << < grid, block >> > (ig);
-  cudaSafeCall ( cudaGetLastError () );
+  cudaSafeCall (cudaGetLastError ());
   cudaSafeCall (cudaDeviceSynchronize ());
 }
+

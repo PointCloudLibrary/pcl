@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ * 
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
 #include "device.hpp"
@@ -111,7 +112,7 @@ namespace pcl
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::device::createVMap (const Intr& intr, const DepthMap& depth, MapArr& vmap)
 {
@@ -126,9 +127,10 @@ pcl::device::createVMap (const Intr& intr, const DepthMap& depth, MapArr& vmap)
   float fy = intr.fy, cy = intr.cy;
 
   computeVmapKernel << < grid, block >> > (depth, vmap, 1.f / fx, 1.f / fy, cx, cy);
-  cudaSafeCall ( cudaGetLastError () );
+  cudaSafeCall (cudaGetLastError ());
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::device::createNMap (const MapArr& vmap, MapArr& nmap)
 {
@@ -143,7 +145,7 @@ pcl::device::createNMap (const MapArr& vmap, MapArr& nmap)
   grid.y = divUp (rows, block.y);
 
   computeNmapKernel << < grid, block >> > (rows, cols, vmap, nmap);
-  cudaSafeCall ( cudaGetLastError () );
+  cudaSafeCall (cudaGetLastError ());
 }
 
 namespace pcl
@@ -199,8 +201,11 @@ namespace pcl
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::device::tranformMaps (const MapArr& vmap_src, const MapArr& nmap_src, const Mat33& Rmat, const float3& tvec, MapArr& vmap_dst, MapArr& nmap_dst)
+pcl::device::tranformMaps (const MapArr& vmap_src, const MapArr& nmap_src, 
+                           const Mat33& Rmat, const float3& tvec, 
+                           MapArr& vmap_dst, MapArr& nmap_dst)
 {
   int cols = vmap_src.cols ();
   int rows = vmap_src.rows () / 3;
@@ -214,7 +219,7 @@ pcl::device::tranformMaps (const MapArr& vmap_src, const MapArr& nmap_src, const
   grid.y = divUp (rows, block.y);
 
   tranformMapsKernel << < grid, block >> > (rows, cols, vmap_src, nmap_src, Rmat, tvec, vmap_dst, nmap_dst);
-  cudaSafeCall ( cudaGetLastError () );
+  cudaSafeCall (cudaGetLastError ());
 
   cudaSafeCall (cudaDeviceSynchronize ());
 }
@@ -298,12 +303,14 @@ namespace pcl
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::device::resizeVMap (const MapArr& input, MapArr& output)
 {
   resizeMap<false>(input, output);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::device::resizeNMap (const MapArr& input, MapArr& output)
 {
@@ -342,7 +349,7 @@ namespace pcl
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename T> void
 pcl::device::convert (const MapArr& vmap, DeviceArray2D<T>& output)
 {
@@ -361,3 +368,4 @@ pcl::device::convert (const MapArr& vmap, DeviceArray2D<T>& output)
 
 template void pcl::device::convert (const MapArr& vmap, DeviceArray2D<float4>& output);
 template void pcl::device::convert (const MapArr& vmap, DeviceArray2D<float8>& output);
+

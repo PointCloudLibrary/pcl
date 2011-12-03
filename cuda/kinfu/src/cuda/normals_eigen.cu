@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,12 +33,10 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
 #include "device.hpp"
-
-#include "pcl/gpu/features/device/eigen.hpp"
+#include <pcl/gpu/features/device/eigen.hpp>
 
 namespace pcl
 {
@@ -130,6 +130,7 @@ namespace pcl
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::device::computeNormalsEigen (const MapArr& vmap, MapArr& nmap)
 {
@@ -144,6 +145,7 @@ pcl::device::computeNormalsEigen (const MapArr& vmap, MapArr& nmap)
   grid.y = divUp (rows, block.y);
 
   computeNmapKernelEigen << < grid, block >> > (rows, cols, vmap, nmap);
-  cudaSafeCall ( cudaGetLastError () );
+  cudaSafeCall (cudaGetLastError ());
   cudaSafeCall (cudaDeviceSynchronize ());
 }
+

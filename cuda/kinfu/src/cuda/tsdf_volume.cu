@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
 #include "device.hpp"
@@ -252,9 +253,11 @@ namespace pcl
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::device::integrateTsdfVolume (const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size,
-                                  const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<short2> volume)
+                                  const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, 
+                                  PtrStep<short2> volume)
 {
   Tsdf tsdf;
 
@@ -381,16 +384,14 @@ namespace pcl
         }
       }       // for(int z = 0; z < VOLUME_Z; ++z)
     }      // __global__
-
-
-
-
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::device::integrateTsdfVolume (const PtrStepSz<ushort>& depth, const Intr& intr,
-                                  const float3& volume_size, const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist,
+                                  const float3& volume_size, const Mat33& Rcurr_inv, const float3& tcurr, 
+                                  float tranc_dist,
                                   PtrStep<short2> volume, DeviceArray2D<float>& depthScaled)
 {
   depthScaled.create (depth.rows, depth.cols);
@@ -503,9 +504,11 @@ namespace pcl
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::device::integrateTsdfVolume (const PtrStepSz<ushort>& depth, const Intr& intr,
-                                  const float3& volume_size, const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist,
+                                  const float3& volume_size, const Mat33& Rcurr_inv, const float3& tcurr, 
+                                  float tranc_dist,
                                   PtrStep<ushort2> volume, DeviceArray2D<float>& depthRawScaled)
 {
   depthRawScaled.create (depth.rows, depth.cols);
@@ -529,8 +532,9 @@ pcl::device::integrateTsdfVolume (const PtrStepSz<ushort>& depth, const Intr& in
     cudaFuncSetCacheConfig (tsdf24, cudaFuncCachePreferL1);
 
     tsdf24 << < grid, block >> > (depthRawScaled, volume, tranc_dist, Rcurr_inv, tcurr, intr, cell_size);
-    cudaSafeCall ( cudaGetLastError () );
+    cudaSafeCall (cudaGetLastError ());
   }
 
   cudaSafeCall (cudaDeviceSynchronize ());
 }
+

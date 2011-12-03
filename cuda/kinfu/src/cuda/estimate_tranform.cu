@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ * 
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,14 +33,12 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
 #include "device.hpp"
-
-#include "pcl/gpu/utils/device/block.hpp"
-#include "pcl/gpu/utils/device/funcattrib.hpp"
-#include "pcl/gpu/utils/timers_cuda.hpp"
+#include <pcl/gpu/utils/device/block.hpp>
+#include <pcl/gpu/utils/device/funcattrib.hpp>
+#include <pcl/gpu/utils/timers_cuda.hpp>
 
 namespace pcl
 {
@@ -183,9 +183,12 @@ namespace pcl
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::device::estimateTransform (const MapArr& v_dst, const MapArr& n_dst, const MapArr& v_src, const PtrStepSz<short2>& coresp,
-                                DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, float* matrixA_host, float* vectorB_host)
+pcl::device::estimateTransform (const MapArr& v_dst, const MapArr& n_dst, 
+                                const MapArr& v_src, const PtrStepSz<short2>& coresp,
+                                DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, 
+                                float* matrixA_host, float* vectorB_host)
 {
   typedef TransformEstimator<float> TEst;
   typedef TranformReduction<float> TRed;

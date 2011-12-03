@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 #include "device.hpp"
 
@@ -388,9 +389,10 @@ namespace pcl
 }
 
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::device::raycast (const Intr& intr, const Mat33& Rcurr, const float3& tcurr, float tranc_dist, const float3& volume_size,
+pcl::device::raycast (const Intr& intr, const Mat33& Rcurr, const float3& tcurr, 
+                      float tranc_dist, const float3& volume_size,
                       const PtrStep<volume_elem_type>& volume, MapArr& vmap, MapArr& nmap)
 {
   RayCaster rc;
@@ -419,7 +421,7 @@ pcl::device::raycast (const Intr& intr, const Mat33& Rcurr, const float3& tcurr,
   dim3 grid (divUp (rc.cols, block.x), divUp (rc.rows, block.y));
 
   rayCastKernel << < grid, block >> > (rc);
-  cudaSafeCall ( cudaGetLastError () );
+  cudaSafeCall (cudaGetLastError ());
   //cudaSafeCall(cudaDeviceSynchronize());
 }
 

@@ -271,7 +271,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
   Vector3f   tprev = tvecs_[global_time_ - 1]; //  tranfrom from camera to global coo space for (i-1)th camera pose
   Matrix3frm Rprev_inv = Rprev.inverse (); //Rprev.t();
 
-  Mat33&  device_Rprev     = device_cast<Mat33> (Rprev);
+  //Mat33&  device_Rprev     = device_cast<Mat33> (Rprev);
   Mat33&  device_Rprev_inv = device_cast<Mat33> (Rprev_inv);
   float3& device_tprev     = device_cast<float3> (tprev);
 
@@ -286,13 +286,13 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
       MapArr& vmap_curr = vmaps_curr_[level_index];
       MapArr& nmap_curr = nmaps_curr_[level_index];
 
-      MapArr& vmap_g_curr = vmaps_g_curr_[level_index];
-      MapArr& nmap_g_curr = nmaps_g_curr_[level_index];
+      //MapArr& vmap_g_curr = vmaps_g_curr_[level_index];
+      //MapArr& nmap_g_curr = nmaps_g_curr_[level_index];
 
       MapArr& vmap_g_prev = vmaps_g_prev_[level_index];
       MapArr& nmap_g_prev = nmaps_g_prev_[level_index];
 
-      CorespMap& coresp = coresps_[level_index];
+      //CorespMap& coresp = coresps_[level_index];
 
       for (int iter = 0; iter < iter_num; ++iter)
       {

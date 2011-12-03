@@ -188,9 +188,9 @@ namespace pcl
         
         enum
         {
-            /** \brief Number of pyramid levels */
-            LEVELS = 3,            
-            DEFAULT_VOLUME_CLOUD_BUFFER_SIZE = 10 * 1000 * 1000,
+          /** \brief Number of pyramid levels */
+          LEVELS = 3,            
+          DEFAULT_VOLUME_CLOUD_BUFFER_SIZE = 10 * 1000 * 1000,
         };
 
         /** \brief ICP Correspondences  map type */

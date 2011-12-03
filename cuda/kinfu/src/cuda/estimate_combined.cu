@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ * 
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,13 +33,10 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-
-#include "pcl/gpu/utils/device/block.hpp"
-#include "pcl/gpu/utils/device/funcattrib.hpp"
-
+#include <pcl/gpu/utils/device/block.hpp>
+#include <pcl/gpu/utils/device/funcattrib.hpp>
 #include "device.hpp"
 
 namespace pcl
@@ -56,8 +55,9 @@ namespace pcl
       struct plus
       {
         __forceinline__ __device__ float
-        operator () (const float &lhs, const volatile float& rhs) const {
-          return lhs + rhs;
+        operator () (const float &lhs, const volatile float& rhs) const 
+        {
+          return (lhs + rhs);
         }
       };
 
@@ -90,7 +90,7 @@ namespace pcl
         ncurr.x = nmap_curr.ptr (y)[x];
 
         if (isnan (ncurr.x))
-          return false;
+          return (false);
 
         float3 vcurr;
         vcurr.x = vmap_curr.ptr (y       )[x];
@@ -106,13 +106,13 @@ namespace pcl
         ukr.y = __float2int_rn (vcurr_cp.y * intr.fy / vcurr_cp.z + intr.cy);                      //4
 
         if (ukr.x < 0 || ukr.y < 0 || ukr.x >= cols || ukr.y >= rows)
-          return false;
+          return (false);
 
         float3 nprev_g;
         nprev_g.x = nmap_g_prev.ptr (ukr.y)[ukr.x];
 
         if (isnan (nprev_g.x))
-          return false;
+          return (false);
 
         float3 vprev_g;
         vprev_g.x = vmap_g_prev.ptr (ukr.y       )[ukr.x];
@@ -121,7 +121,7 @@ namespace pcl
 
         float dist = norm (vprev_g - vcurr_g);
         if (dist > distThres)
-          return false;
+          return (false);
 
         ncurr.y = nmap_curr.ptr (y + rows)[x];
         ncurr.z = nmap_curr.ptr (y + 2 * rows)[x];
@@ -134,11 +134,11 @@ namespace pcl
         float sine = norm (cross (ncurr_g, nprev_g));
 
         if (sine >= angleThres)
-          return false;
+          return (false);
         n = nprev_g;
         d = vprev_g;
         s = vcurr_g;
-        return true;
+        return (true);
       }
 
       __device__ __forceinline__ void
@@ -187,7 +187,8 @@ namespace pcl
     };
 
     __global__ void
-    combinedKernel (const Combined cs) {
+    combinedKernel (const Combined cs) 
+    {
       cs ();
     }
 
@@ -208,7 +209,8 @@ namespace pcl
       struct plus
       {
         __forceinline__ __device__ float
-        operator () (const float &lhs, const volatile float& rhs) const {
+        operator () (const float &lhs, const volatile float& rhs) const 
+        {
           return lhs + rhs;
         }
       };
@@ -242,18 +244,23 @@ namespace pcl
     };
 
     __global__ void
-    TransformEstimatorKernel2 (const TranformReduction tr) {
+    TransformEstimatorKernel2 (const TranformReduction tr) 
+    {
       tr ();
     }
   }
 }
 
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::device::estimateCombined (const Mat33& Rcurr, const float3& tcurr, const MapArr& vmap_curr, const MapArr& nmap_curr, const Mat33& Rprev_inv, const float3& tprev, const Intr& intr,
-                               const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, float distThres, float angleThres,
-                               DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, float* matrixA_host, float* vectorB_host)
+pcl::device::estimateCombined (const Mat33& Rcurr, const float3& tcurr, 
+                               const MapArr& vmap_curr, const MapArr& nmap_curr, 
+                               const Mat33& Rprev_inv, const float3& tprev, const Intr& intr,
+                               const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, 
+                               float distThres, float angleThres,
+                               DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, 
+                               float* matrixA_host, float* vectorB_host)
 {
   int cols = vmap_curr.cols ();
   int rows = vmap_curr.rows () / 3;
@@ -305,7 +312,7 @@ pcl::device::estimateCombined (const Mat33& Rcurr, const float3& tcurr, const Ma
   tr.output = mbuf;
 
   TransformEstimatorKernel2 << < TranformReduction::TOTAL, TranformReduction::CTA_SIZE >> > (tr);
-  cudaSafeCall ( cudaGetLastError () );
+  cudaSafeCall (cudaGetLastError ());
   cudaSafeCall (cudaDeviceSynchronize ());
 
   float host_data[TranformReduction::TOTAL];

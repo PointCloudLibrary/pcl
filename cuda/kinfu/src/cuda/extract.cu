@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ * 
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,13 +33,12 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
 #include "device.hpp"
-#include "pcl/gpu/utils/device/funcattrib.hpp"
-#include "pcl/gpu/utils/device/block.hpp"
-#include "pcl/gpu/utils/device/warp.hpp"
+#include <pcl/gpu/utils/device/funcattrib.hpp>
+#include <pcl/gpu/utils/device/block.hpp>
+#include <pcl/gpu/utils/device/warp.hpp>
 
 namespace pcl
 {
@@ -283,8 +284,10 @@ namespace pcl
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 size_t
-pcl::device::extractCloud (const PtrStep<volume_elem_type>& volume, const float3& volume_size, PtrSz<PointType> output)
+pcl::device::extractCloud (const PtrStep<volume_elem_type>& volume, const float3& volume_size, 
+                           PtrSz<PointType> output)
 {
   FullScan6 fs;
   fs.volume = volume;
@@ -441,9 +444,10 @@ namespace pcl
   }
 }
 
-template<typename NormalType>
-void
-pcl::device::extractNormals (const PtrStep<volume_elem_type>& volume, const float3& volume_size, const PtrSz<PointType>& points, NormalType* output)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename NormalType> void
+pcl::device::extractNormals (const PtrStep<volume_elem_type>& volume, const float3& volume_size, 
+                             const PtrSz<PointType>& points, NormalType* output)
 {
   ExtractNormals<NormalType> en;
   en.volume = volume;
@@ -465,3 +469,4 @@ using namespace pcl::device;
 
 template void pcl::device::extractNormals<PointType>(const PtrStep<volume_elem_type>&volume, const float3 &volume_size, const PtrSz<PointType>&input, PointType * output);
 template void pcl::device::extractNormals<float8>(const PtrStep<volume_elem_type>&volume, const float3 &volume_size, const PtrSz<PointType>&input, float8 * output);
+

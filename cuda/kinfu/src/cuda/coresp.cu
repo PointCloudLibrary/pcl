@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,12 +33,10 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
 #include "device.hpp"
-
-#include "pcl/gpu/utils/device/block.hpp"
+#include <pcl/gpu/utils/device/block.hpp>
 
 namespace pcl
 {
@@ -197,10 +197,12 @@ namespace pcl
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::device::findCoresp (const MapArr& vmap_g_curr, const MapArr& nmap_g_curr, const Mat33& Rprev_inv, const float3& tprev, const Intr& intr,
-                         const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, float distThres, float angleThres, PtrStepSz<short2> coresp)
+pcl::device::findCoresp (const MapArr& vmap_g_curr, const MapArr& nmap_g_curr, 
+                         const Mat33& Rprev_inv, const float3& tprev, const Intr& intr,
+                         const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, 
+                         float distThres, float angleThres, PtrStepSz<short2> coresp)
 {
   CorespSearch cs;
 

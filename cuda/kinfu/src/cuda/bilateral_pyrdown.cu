@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
 #include "device.hpp"
@@ -43,8 +44,11 @@ namespace pcl
     const float sigma_color = 30;     //in mm
     const float sigma_space = 4.5;     // in pixels
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     __global__ void
-    bilateralKernel (const PtrStepSz<ushort> src, PtrStep<ushort> dst, float sigma_space2_inv_half, float sigma_color2_inv_half)
+    bilateralKernel (const PtrStepSz<ushort> src, 
+                     PtrStep<ushort> dst, 
+                     float sigma_space2_inv_half, float sigma_color2_inv_half)
     {
       int x = threadIdx.x + blockIdx.x * blockDim.x;
       int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -83,6 +87,7 @@ namespace pcl
       dst.ptr (y)[x] = max (0, min (res, numeric_limits<short>::max ()));
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     __global__ void
     pyrDownKernel (const PtrStepSz<ushort> src, PtrStepSz<ushort> dst, float sigma_color)
     {
@@ -118,6 +123,7 @@ namespace pcl
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::device::bilateralFilter (const DepthMap& src, DepthMap& dst)
 {
@@ -130,6 +136,7 @@ pcl::device::bilateralFilter (const DepthMap& src, DepthMap& dst)
   cudaSafeCall ( cudaGetLastError () );
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::device::pyrDown (const DepthMap& src, DepthMap& dst)
 {
