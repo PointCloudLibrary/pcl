@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,7 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
+#ifndef PCL_NDT_IMPL_H_
+#define PCL_NDT_IMPL_H_
 #include <cmath>
 
 #include <boost/noncopyable.hpp>
@@ -44,7 +47,6 @@ namespace pcl
 {
   namespace ndt
   {
-
     template<unsigned N=3, typename T=double>
     struct ValueAndDerivatives
     {
@@ -75,7 +77,8 @@ namespace pcl
     template <typename PointT>
     class NormalDist
     {
-        typedef pcl::PointCloud<PointT> PointCloud;
+      typedef pcl::PointCloud<PointT> PointCloud;
+
       public:
         NormalDist ()
           : min_n_ (3), n_ (0), pt_indices_ (), mean_ (), covar_inv_ ()
@@ -83,7 +86,7 @@ namespace pcl
         }
         
         /** \brief Store a point index to use later for estimating distribution parameters.
-          * \param i Point index to store
+          * \param[in] i Point index to store
           */
         void
         addIdx (size_t i)
@@ -92,11 +95,11 @@ namespace pcl
         }
         
         /** \brief Estimate the normal distribution parameters given the point indices provided. Memory of point indices is cleared.
-          * \param cloud Point cloud corresponding to indices passed to addIdx
-          * \param min_covar_eigvalue_mult set the smallest eigenvalue to this times the largest
+          * \param[in] cloud Point cloud corresponding to indices passed to addIdx
+          * \param[in] min_covar_eigvalue_mult set the smallest eigenvalue to this times the largest
           */
         void
-        estimateParams (const PointCloud& cloud, double min_covar_eigvalue_mult=0.001)
+        estimateParams (const PointCloud& cloud, double min_covar_eigvalue_mult = 0.001)
         {
           Eigen::Vector2d sx  = Eigen::Vector2d::Zero ();
           Eigen::Matrix2d sxx = Eigen::Matrix2d::Zero ();
@@ -134,7 +137,9 @@ namespace pcl
         }
 
         /** \brief Return the 'score' (denormalised likelihood) and derivatives of score of the point p given this distribution.
-          *
+          * \param[in] transformed_pt
+          * \param[in] cos_theta
+          * \param[in] sin_theta
           * estimateParams must have been called after at least three points were provided, or this will return zero.
           *
           */
@@ -190,9 +195,10 @@ namespace pcl
     template <typename PointT> 
     class NDTSingleGrid: public boost::noncopyable
     {
-        typedef typename pcl::PointCloud<PointT> PointCloud;
-        typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
-        typedef typename pcl::ndt::NormalDist<PointT> NormalDist;
+      typedef typename pcl::PointCloud<PointT> PointCloud;
+      typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
+      typedef typename pcl::ndt::NormalDist<PointT> NormalDist;
+
       public:
         NDTSingleGrid (PointCloudConstPtr cloud,
                        const Eigen::Vector2f& about,
@@ -203,27 +209,29 @@ namespace pcl
                       (max_[1]-min_[1]) / step_[1]),
               normal_distributions_ (cells_[0], cells_[1])
         {
-            // sort through all points, assigning them to distributions:
-            NormalDist* n;
-            size_t used_points = 0;
-            for (size_t i = 0; i < cloud->size (); i++)
-              if ((n = normalDistForPoint (cloud->at (i))))
-              {
-                n->addIdx (i);
-                used_points++;
-              }
-            PCL_DEBUG ("NDT single grid %dx%d using %d/%d points\n",
-              cells_[0], cells_[1], used_points, cloud->size ());
+          // sort through all points, assigning them to distributions:
+          NormalDist* n;
+          size_t used_points = 0;
+          for (size_t i = 0; i < cloud->size (); i++)
+            if ((n = normalDistForPoint (cloud->at (i))))
+            {
+              n->addIdx (i);
+              used_points++;
+            }
 
-            // then bake the distributions such that they approximate the
-            // points (and throw away memory of the points)
-            for (int x = 0; x < cells_[0]; x++)
-              for (int y = 0; y < cells_[1]; y++)
-                normal_distributions_.coeffRef (x,y).estimateParams (*cloud);
+          PCL_DEBUG ("NDT single grid %dx%d using %d/%d points\n", cells_[0], cells_[1], used_points, cloud->size ());
+
+          // then bake the distributions such that they approximate the
+          // points (and throw away memory of the points)
+          for (int x = 0; x < cells_[0]; x++)
+            for (int y = 0; y < cells_[1]; y++)
+              normal_distributions_.coeffRef (x,y).estimateParams (*cloud);
         }
         
         /** \brief Return the 'score' (denormalised likelihood) and derivatives of score of the point p given this distribution.
-          *
+          * \param[in] transformed_pt
+          * \param[in] cos_theta
+          * \param[in] sin_theta
           */
         ValueAndDerivatives<3,double>
         test (const PointT& transformed_pt, const double& cos_theta, const double& sin_theta) const
@@ -237,8 +245,12 @@ namespace pcl
             return ValueAndDerivatives<3,double>::Zero ();
         }
 
-    protected:
-        NormalDist* normalDistForPoint (PointT const& p) const
+      protected:
+        /** \brief
+          * \param[in] p
+          */
+        NormalDist* 
+        normalDistForPoint (PointT const& p) const
         {
           // this would be neater in 3d...
           Eigen::Vector2f idxf;
@@ -264,10 +276,16 @@ namespace pcl
     template <typename PointT> 
     class NDT: public boost::noncopyable
     {
-        typedef typename pcl::PointCloud<PointT> PointCloud;
-        typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
-        typedef NDTSingleGrid<PointT> SingleGrid;
+      typedef typename pcl::PointCloud<PointT> PointCloud;
+      typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
+      typedef NDTSingleGrid<PointT> SingleGrid;
+
       public:
+        /** \brief
+          * \param[in] about
+          * \param[in] extent
+          * \param[in] step
+          */
         NDT (PointCloudConstPtr cloud,
              const Eigen::Vector2f& about,
              const Eigen::Vector2f& extent,
@@ -282,6 +300,9 @@ namespace pcl
         }
         
         /** \brief Return the 'score' (denormalised likelihood) and derivatives of score of the point p given this distribution.
+          * \param[in] transformed_pt
+          * \param[in] cos_theta
+          * \param[in] sin_theta
           */
         ValueAndDerivatives<3,double>
         test (const PointT& transformed_pt, const double& cos_theta, const double& sin_theta) const
@@ -321,7 +342,6 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
 
   // work with x translation, y translation and z rotation: extending to 3D
   // would be some tricky maths, but not impossible.
-
   const Eigen::Matrix3f initial_rot (transformation.block<3,3> (0,0));
   const Eigen::Vector3f rot_x (initial_rot*Eigen::Vector3f::UnitX ());
   const double z_rotation = std::atan2 (rot_x[1], rot_x[0]);
@@ -413,3 +433,5 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
   output = intm_cloud;
 }
 
+#endif    // PCL_NDT_IMPL_H_
+ 
