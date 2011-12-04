@@ -250,10 +250,10 @@ namespace pcl
         StaticRangeCoder entropyCoder_;
 
         bool doVoxelGridEnDecoding_;
-        unsigned int iFrameRate_;
-        unsigned int iFrameCounter_;
-        unsigned int frameID_;
-        unsigned long pointCount_;
+        uint32_t iFrameRate_;
+        uint32_t iFrameCounter_;
+        uint32_t frameID_;
+        uint64_t pointCount_;
         bool iFrame_;
 
         bool doColorEncoding_;
@@ -263,8 +263,8 @@ namespace pcl
 
         //bool activating statistics
         bool bShowStatistics;
-        unsigned long compressedPointDataLen_;
-        unsigned long compressedColorDataLen_;
+        uint64_t compressedPointDataLen_;
+        uint64_t compressedColorDataLen_;
 
         // frame header identifier
         static const char* frameHeaderIdentifier_;
