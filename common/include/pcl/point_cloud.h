@@ -251,11 +251,14 @@ namespace pcl
       
       ////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
-        * \param dim the number of dimensions to consider for each point (will become the number of rows)
-        * \param stride the number of values in each point (will be the number of values that separate two of the columns)
-        * \param offset the number of dimensions to skip from the beginning of each point
-            (note stride = offset + dim + x, where x is the number of dimensions to skip from the end of each point)
+        * \anchor getMatrixXfMap
+        * \note This method is for advanced users only! Use with care!
+        * \param[in] dim the number of dimensions to consider for each point (will become the number of rows)
+        * \param[in] stride the number of values in each point (will be the number of values that separate two of the columns)
+        * \param[in] offset the number of dimensions to skip from the beginning of each point
+        *            (stride = offset + dim + x, where x is the number of dimensions to skip from the end of each point)
         * \note for getting only XYZ coordinates out of PointXYZ use dim=3, stride=4 and offset=0 due to the alignment.
+        * \attention PointT types are most of the time aligned, so the offsets are not continuous! 
         */
       inline Eigen::MatrixXf
       getMatrixXfMap (int dim, int stride, int offset) const
@@ -264,7 +267,11 @@ namespace pcl
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
-      /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud. */
+      /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
+        * \note This method is for advanced users only! Use with care!
+        * \attention PointT types are most of the time aligned, so the offsets are not continuous! 
+        * See \ref getMatrixXfMap for more information.
+        */
       inline Eigen::MatrixXf
       getMatrixXfMap () const
       {
