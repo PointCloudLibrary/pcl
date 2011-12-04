@@ -100,7 +100,7 @@ namespace pcl
     *   </ul>
     *   <i>Mandatory</i>.
     * </li>
-    * <li><b>points</b> - the data array where all points of type <b>T</b> are stored. <i>Mandatory</i>.</li>
+    * <li><b>points</b> - the data array where all points of type <b>PointT</b> are stored. <i>Mandatory</i>.</li>
     *
     * <li><b>is_dense</b> - specifies if all the data in <b>points</b> is finite (true), or whether it might contain Inf/NaN values
     * (false). <i>Mandatory</i>.</li>
