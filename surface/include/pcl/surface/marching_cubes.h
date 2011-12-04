@@ -373,7 +373,7 @@ namespace pcl
         float vertex[8];
       };
 
-      typedef boost::unordered_map<int, Leaf, boost::hash<int>, std::equal_to<int>, Eigen::aligned_allocator<int> > HashMap;
+      typedef boost::unordered_map<uint64_t, Leaf, boost::hash<uint64_t>, std::equal_to<uint64_t>, Eigen::aligned_allocator<uint64_t> > HashMap;
 
 
       /** \brief Constructor. */ 
@@ -416,7 +416,7 @@ namespace pcl
         * in 1d
         * \param index the index of the cell in (x,y,z) 3d format
         */
-      inline int
+      inline uint64_t
       getIndexIn1D (const Eigen::Vector3i &index) const
       {
         //assert(data_size_ > 0);
@@ -430,7 +430,7 @@ namespace pcl
         * \param index_3d the output 3d index
         */
       inline void
-      getIndexIn3D (int index_1d, Eigen::Vector3i& index_3d) const
+      getIndexIn3D (uint64_t index_1d, Eigen::Vector3i& index_3d) const
       {
         //assert(data_size_ > 0);
         index_3d[0] = index_1d / (data_size_ * data_size_);
@@ -487,7 +487,7 @@ namespace pcl
       double gaussian_scale_;
 
       /** \brief Data size. */
-      int data_size_;
+      uint64_t data_size_;
 
       /** \brief Padding size. */
       int padding_size_;
