@@ -64,7 +64,7 @@ namespace pcl
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
       /** \brief Empty constructor. */
-      ConcaveHull () : alpha_ (0), keep_information_ (false), voronoi_centers_ ()
+      ConcaveHull () : alpha_ (0), keep_information_ (false), voronoi_centers_ (), dim_(0)
       {
       };
 
@@ -122,6 +122,13 @@ namespace pcl
         keep_information_ = value;
       }
 
+      /** \brief Returns the dimensionality (2 or 3) of the calculated hull. */
+      inline int
+      getDim () const
+      {
+        return dim_;
+      }
+
     protected:
       /** \brief Class get name method. */
       std::string
@@ -139,6 +146,9 @@ namespace pcl
 
       /** \brief describe voronoi_centers here.. */
       PointCloudPtr voronoi_centers_;
+      
+      /** \brief the dimensionality of the concave hull */
+      int dim_;
 
       /** \brief The actual reconstruction method.
         * 

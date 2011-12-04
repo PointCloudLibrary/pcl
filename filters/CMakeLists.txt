@@ -23,6 +23,7 @@ if(build)
         src/voxel_grid.cpp
         src/approximate_voxel_grid.cpp
         src/bilateral.cpp
+        src/crop_hull.cpp
         )
 
     set(incs

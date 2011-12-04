@@ -117,6 +117,8 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
   else
     transform1.setIdentity ();
 
+  dim_ = dim;
+
   PointCloud cloud_transformed;
   pcl::demeanPointCloud (*input_, *indices_, xyz_centroid, cloud_transformed);
   pcl::transformPointCloud (cloud_transformed, cloud_transformed, transform1);

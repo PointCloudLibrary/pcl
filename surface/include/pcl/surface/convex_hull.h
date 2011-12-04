@@ -82,7 +82,7 @@ namespace pcl
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
       /** \brief Empty constructor. */
-      ConvexHull () : total_area_(0), total_volume_(0)
+      ConvexHull () : total_area_(0), total_volume_(0), dim_(0)
       {
         keep_information_ = false;
         compute_area_ = false;
@@ -141,6 +141,13 @@ namespace pcl
         return total_volume_;
       }
 
+      /** \brief Returns the dimensionality (2 or 3) of the calculated hull. */
+      inline int
+      getDim () const
+      {
+        return dim_;
+      }
+
     private:
       /** \brief The actual reconstruction method. 
         * 
@@ -158,6 +165,9 @@ namespace pcl
       bool compute_area_;
       double total_area_;
       double total_volume_;
+      
+      /** \brief the dimensionality of the concave hull */
+      int dim_;
 
     protected:
       /** \brief Class get name method. */
