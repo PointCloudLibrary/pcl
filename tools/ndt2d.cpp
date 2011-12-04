@@ -78,7 +78,7 @@ selfTest ()
   ndt.setGridCentre (Eigen::Vector2f (0,0));
   ndt.setGridExtent (Eigen::Vector2f (20,20));
   ndt.setGridStep (Eigen::Vector2f (20,20));
-  ndt.setOptimisationStepSize (Eigen::Vector3d (0.4,0.4,0.1));
+  ndt.setOptimizationStepSize (Eigen::Vector3d (0.4,0.4,0.1));
   ndt.setTransformationEpsilon (1e-9);
 
   ndt.setInputTarget (model);
@@ -146,7 +146,7 @@ main (int argc, char **argv)
     ndt.setGridCentre (Eigen::Vector2f (15,0));
     ndt.setGridExtent (Eigen::Vector2f (grid_extent,grid_extent));
     ndt.setGridStep (Eigen::Vector2f (grid_step,grid_step));
-    ndt.setOptimisationStepSize (optim_step);
+    ndt.setOptimizationStepSize (optim_step);
     ndt.setTransformationEpsilon (1e-5);
 
     ndt.setInputTarget (model);
