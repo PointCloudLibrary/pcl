@@ -55,6 +55,9 @@ pcl::io::saveOBJFile (const std::string &file_name,
 
   // Define material file
   std::string mtl_file_name = file_name.substr(0, file_name.find_last_of("."))+".mtl";
+  // Strip path for "mtllib" command
+  std::string mtl_file_name_nopath = mtl_file_name;
+  mtl_file_name_nopath.erase (0, mtl_file_name.find_last_of ('/') + 1);
 
   /* Write 3D information */
   // number of points
@@ -75,7 +78,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
   fs << "# Vertices: " << nr_points << std::endl;
   fs << "# Faces: " <<nr_faces << std::endl;
   fs << "# Material information:" << std::endl;
-  fs <<"mtllib " <<mtl_file_name << std::endl;
+  fs << "mtllib " << mtl_file_name_nopath << std::endl;
   fs << "####" << std::endl;
 
   // Write vertex coordinates
