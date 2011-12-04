@@ -2,14 +2,15 @@
 
 Exceptions in PCL
 -----------------
-We had several discussions in the past on exceptions writing and handling in
+There have been a multitude of discussions in the past regarding exceptions in
 PCL (see http://www.pcl-developers.org/to-throw-or-not-to-throw-td4828759.html
-for an example). The major bullet points that were discussed are highlighted
-here.
+for an example). Herein, we discuss the major points with respect to writing
+and using exceptions.
 
-Exceptions writing
-==================
-Any new exception should inherit from PCLException class in
+Adding a new Exception 
+======================
+
+Any new exception should inherit from the :pcl:`PCLException <pcl::PCLException>` class in
 ``pcl/exceptions.h``
 
 .. code-block:: cpp
@@ -28,49 +29,51 @@ Any new exception should inherit from PCLException class in
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }  
   };
 
-Exceptions using
+Using Exceptions
 ================
+
 For ease of use we provide this macro
 
 .. code-block:: cpp
 
-  #define PCL_THROW_EXCEPTION(ExceptionName, message)
+  #define PCL_THROW_EXCEPTION (ExceptionName, message)
   {
     std::ostringstream s;
     s << message;
-    throw ExceptionName(s.str(), __FILE__, "", __LINE__);
+    throw ExceptionName (s.str (), __FILE__, "", __LINE__);
   }
 
-Then in your code you can put
+Then in your code, add:
 
 .. code-block:: cpp
 
   if (my_requirements != the_parameters_used_)
-	  PCL_THROW_EXCEPTION (MyException, "my requirements are not met " << the_parameters_used);
+    PCL_THROW_EXCEPTION (MyException, "my requirements are not met " << the_parameters_used);
 
 This will set the file name and the line number thanks to the macro definition.
-Take care of the message it is the most important part of the exception. You
-can make profit of the std::ostringstream used in the macro so you can append
+Take care of the message: it is the most important part of the exception. You
+can profit of the std::ostringstream used in the macro, so you can append
 variable names to variable values and so on to make it really explicit.  Also
 something really important is when the method you are writing ``can`` throw an
-exception then please in the function documentation add it this way:
+exception, please add this to the the function documentation:
 
 .. code-block:: cpp
 
   /** Function that does cool stuff
     * \param nb number of points
-		* \throws MyException
+    * \throws MyException
     */
   void 
   myFunction (int nb);
 
-This will make it available in the generated API documentation so the
-person that would use your function knows that she has to deal with
-MyException.
+This will be parsed by Doxygen and made available in the generated API
+documentation so the person that would use your function knows that they have
+to deal with an exception called ``MyException``.
 
 Exceptions handling
 ===================
-To properly handle exceptions you need the ``try``... ``catch`` block.
+
+To properly handle exceptions you need to use the ``try``... ``catch`` block.
 
 .. code-block:: cpp
 
@@ -95,11 +98,10 @@ To properly handle exceptions you need the ``try``... ``catch`` block.
   #endif
 
 Exceptions handling is really context dependent so there is no general
-rule that can apply but here are some of the most used:
+rule that can be applied but here are some of the most used guidelines:
 
-* exit with some error if the exception is critical
-* modify the parameters for the function that threw the exception and
-  recall it again
-* throw an exception in your turn with meaningful message saying that
-  you encountred an exception
-* continue (really bad)
+  * exit with some error if the exception is critical
+  * modify the parameters for the function that threw the exception and recall it again
+  * throw an exception with a meaningful message saying that you encountred an exception
+  * continue (really bad)
+
