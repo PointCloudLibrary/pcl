@@ -36,7 +36,7 @@ class ConditionThresholdHSV : public pcl::ConditionBase<PointT>
     {
       float h, s, v;
       rgb2hsv (p.r, p.g, p.b, h, s, v);
-      return (!std::isnan(h) && !std::isnan(s) && !std::isnan(v) && 
+      return (!pcl_isnan(h) && !pcl_isnan(s) && !pcl_isnan(v) && 
               ((min_h_ < max_h_) ? ((min_h_ <= h) && (h <= max_h_)) : ((min_h_ <= h) || (h <= max_h_))) &&
               (min_s_ <= s) && (s <= max_s_) &&
               (min_v_ <= v) && (v <= max_v_));
