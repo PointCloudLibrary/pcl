@@ -322,7 +322,7 @@ void NarfKeypoint::calculateCompleteInterestImage ()
       //interest_image[i] = -1.0f;
     
     int angle_histogram_size = 18;
-    float angle_histogram[angle_histogram_size];
+    float* angle_histogram = new float[angle_histogram_size];
     
     std::vector<bool> was_touched;
     was_touched.resize (array_size, false);
@@ -460,7 +460,8 @@ void NarfKeypoint::calculateCompleteInterestImage ()
         interest_value = (std::min) (interest_value+max_histogram_cell_value, 1.0f);
       }
     }
-        
+    
+    delete[] angle_histogram;
     border_extractor.getParameters ().max_no_of_threads = original_max_no_of_threads;
   }
   //double interest_value_calculation_time = getTime ()-interest_value_calculation_start_time;
@@ -521,8 +522,8 @@ void NarfKeypoint::calculateSparseInterestImage ()
   }
   
   int angle_histogram_size = 18;
-  float angle_histogram[angle_histogram_size];
-  std::vector<std::pair<int, float> > angle_elements[angle_histogram_size];
+  float* angle_histogram = new float[angle_histogram_size];
+  std::vector<std::vector<std::pair<int, float> > > angle_elements (angle_histogram_size);
   std::vector<bool> relevant_point_still_valid;
   
   std::vector<bool> was_touched;
@@ -748,6 +749,7 @@ void NarfKeypoint::calculateSparseInterestImage ()
       }
     }
   }
+  delete[] angle_histogram;
   //double interest_value_calculation_time = getTime ()-interest_value_calculation_start_time;
   //cout << "Calculating interest values took "<<interest_value_calculation_time*1000.0<<"ms.\n";
   
