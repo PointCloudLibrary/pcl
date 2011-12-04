@@ -144,7 +144,7 @@ TEST (PCL, Octree_Test)
   octreeB.deleteTree();
 
   // octreeB.getLeafCount() should be zero now;
-  ASSERT_EQ (0,octreeB.getLeafCount());
+  ASSERT_EQ ((unsigned int)0,octreeB.getLeafCount());
 
   // .. and previous leafs deleted..
   for (i=0; i<128; i++)
@@ -201,7 +201,7 @@ TEST (PCL, Octree_Test)
 
   // test size and leaf count of reconstructed octree
   ASSERT_EQ (octreeA.getLeafCount(),octreeB.getLeafCount());
-  ASSERT_EQ (128,octreeB.getLeafCount());
+  ASSERT_EQ ((unsigned int)128,octreeB.getLeafCount());
 
   octreeB.serializeTree(treeBinaryB, leafVectorB);
 
@@ -252,7 +252,7 @@ TEST (PCL, Octree2Buf_Test)
 
   }
 
-  ASSERT_EQ (256, octreeA.getLeafCount());
+  ASSERT_EQ ((unsigned int)256, octreeA.getLeafCount());
 
   int TreeData;
 
@@ -311,7 +311,7 @@ TEST (PCL, Octree2Buf_Test)
   octreeB.setTreeDepth (8);
 
   // octreeB.getLeafCount() should be zero now;
-  ASSERT_EQ (0,octreeB.getLeafCount());
+  ASSERT_EQ ((unsigned int)0,octreeB.getLeafCount());
 
   for (i=0; i<128; i++)
   {
@@ -367,7 +367,7 @@ TEST (PCL, Octree2Buf_Test)
   octreeB.deserializeTree(treeBinaryA, leafVectorA);
 
   ASSERT_EQ (octreeA.getLeafCount(),octreeB.getLeafCount());
-  ASSERT_EQ (128,octreeB.getLeafCount());
+  ASSERT_EQ ((unsigned int)128,octreeB.getLeafCount());
 
   octreeB.serializeTree(treeBinaryB, leafVectorB);
 
@@ -470,7 +470,7 @@ TEST (PCL, Octree_LowMem_Test)
   octreeB.deleteTree();
 
   // octreeB.getLeafCount() should be zero now;
-  ASSERT_EQ (0,octreeB.getLeafCount());
+  ASSERT_EQ ((unsigned int)0,octreeB.getLeafCount());
 
   // .. and previous leafs deleted..
   for (i=0; i<128; i++)
@@ -527,7 +527,7 @@ TEST (PCL, Octree_LowMem_Test)
 
   // test size and leaf count of reconstructed octree
   ASSERT_EQ (octreeA.getLeafCount(),octreeB.getLeafCount());
-  ASSERT_EQ (128,octreeB.getLeafCount());
+  ASSERT_EQ ((unsigned int)128,octreeB.getLeafCount());
 
   octreeB.serializeTree(treeBinaryB, leafVectorB);
 
@@ -762,7 +762,7 @@ TEST (PCL, Octree_Pointcloud_Test)
       ASSERT_EQ (octreeA.isVoxelOccupiedAtPoint(cloudA->points[i]), false);
     }
 
-    ASSERT_EQ (octreeA.getLeafCount(), 0);
+    ASSERT_EQ (octreeA.getLeafCount(), (unsigned int)0);
 
     // check if all points from leaf data can be found in input pointcloud data sets
     octreeB.defineBoundingBox();
@@ -869,13 +869,13 @@ TEST (PCL, Octree_Pointcloud_Density_Test)
   for (float z = 1.5f; z < 3.5f; z += 1.0f)
     for (float y = 1.5f; y < 3.5f; y += 1.0f)
       for (float x = 1.5f; x < 3.5f; x += 1.0f)
-        ASSERT_EQ (octreeA.getVoxelDensityAtPoint (PointXYZ(x, y, z)), 1000);
+        ASSERT_EQ (octreeA.getVoxelDensityAtPoint (PointXYZ(x, y, z)), (unsigned int)1000);
 
 
   for (float z = 0.05f; z < 5.0f; z += 0.1f)
     for (float y = 0.05f; y < 5.0f; y += 0.1f)
         for (float x = 0.05f; x < 5.0f; x += 0.1f)
-        ASSERT_EQ (octreeB.getVoxelDensityAtPoint (PointXYZ(x, y, z)), 1);
+        ASSERT_EQ (octreeB.getVoxelDensityAtPoint (PointXYZ(x, y, z)), (unsigned int)1);
       }
 
 
@@ -1035,7 +1035,7 @@ TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
   octree.getPointIndicesFromNewVoxels (newPointIdxVector);
 
   // should be 1000
-  ASSERT_EQ ( newPointIdxVector.size() , 1000 );
+  ASSERT_EQ ( newPointIdxVector.size() , (std::size_t)1000);
 
   // all point indices found should have an index of >= 1000
   for (i = 0; i < 1000; i++)
@@ -1082,7 +1082,7 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
   octree.getVoxelCentroids (voxelCentroids);
 
   // we expect 10 voxel centroids
-  ASSERT_EQ ( voxelCentroids.size() , 10 );
+  ASSERT_EQ ( voxelCentroids.size() , (std::size_t)10 );
 
   // check centroid calculation
   for (i = 0; i < 10; i++)
