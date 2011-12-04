@@ -62,7 +62,7 @@ pcl::MarchingCubesGreedy<PointNT>::voxelizeData()
 
     Eigen::Vector3i index_3d;
     MarchingCubes<PointNT>::getCellIndex (input_->points[cp].getVector4fMap (), index_3d);
-    int index_1d = MarchingCubes<PointNT>::getIndexIn1D (index_3d);
+    uint64_t index_1d = MarchingCubes<PointNT>::getIndexIn1D (index_3d);
     Leaf cell_data;
     for (int i = 0; i < 8; ++i)
     {

@@ -58,7 +58,7 @@ namespace pcl
 
       typedef typename pcl::KdTree<PointNT> KdTree;
       typedef typename pcl::KdTree<PointNT>::Ptr KdTreePtr;
-      typedef boost::unordered_map<int, Leaf, boost::hash<int>, std::equal_to<int>, Eigen::aligned_allocator<int> > HashMap;
+      typedef boost::unordered_map<uint64_t, Leaf, boost::hash<uint64_t>, std::equal_to<uint64_t>, Eigen::aligned_allocator<uint64_t> > HashMap;
 
       /** \brief Constructor. */ 
       MarchingCubesGreedy ();
