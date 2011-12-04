@@ -85,6 +85,7 @@ with a large variety of different point types, most explained in the
 Compiling your first code example
 ---------------------------------
 
-<insert code>
+Until we find the right minimal code example, please take a look at the
+:ref:`using_pcl_pcl_config` and :ref:`writing_new_classes` tutorials to see how
+to compile and write code for or using PCL.
 
-indices, normals
