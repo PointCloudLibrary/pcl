@@ -29,6 +29,7 @@ if(build)
     set(incs
         include/pcl/${SUBSYS_NAME}/conditional_removal.h
         include/pcl/${SUBSYS_NAME}/crop_box.h
+        include/pcl/${SUBSYS_NAME}/crop_hull.h
         include/pcl/${SUBSYS_NAME}/extract_indices.h
         include/pcl/${SUBSYS_NAME}/filter.h
         include/pcl/${SUBSYS_NAME}/filter_indices.h
@@ -47,6 +48,7 @@ if(build)
     set(impl_incs
         include/pcl/${SUBSYS_NAME}/impl/conditional_removal.hpp
         include/pcl/${SUBSYS_NAME}/impl/crop_box.hpp
+        include/pcl/${SUBSYS_NAME}/impl/crop_hull.hpp
         include/pcl/${SUBSYS_NAME}/impl/extract_indices.hpp
         include/pcl/${SUBSYS_NAME}/impl/filter.hpp
         include/pcl/${SUBSYS_NAME}/impl/filter_indices.hpp
