@@ -252,7 +252,12 @@ Download the patched versions of OpenNI and Sensor from the `PCL
 downloads page`_.
 
 .. _`PCL downloads page`:
-   http://pointclouds.org/downloads/macosx.html
+   http://dev.pointclouds.org/projects/pcl/versions/1
+
+We're looking for two files here: `openni_osx.zip
+<http://dev.pointclouds.org/attachments/download/191/openni_osx.zip>`_ and
+`ps_engine_osx.zip
+<http://dev.pointclouds.org/attachments/download/192/ps_engine_osx.zip>`_.
 
 Extract, build, fix permissions and install OpenNI::
 
