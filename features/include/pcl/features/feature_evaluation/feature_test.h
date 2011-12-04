@@ -78,7 +78,7 @@ namespace pcl
       */
      FeatureCorrespondenceTest () : source_input_(), target_input_(), source_transform_(new pcl::PointCloud<PointIn>),
                                     ground_truth_(GroundTruth ()), correspondences_(), done_downsampling_(false),
-                                    lower_threshold_(0.01), upper_threshold_(0.01), delta_threshold_(0.01) {}
+                                    lower_threshold_(0.01f), upper_threshold_(0.01f), delta_threshold_(0.01f) {}
 
     inline void
     setInputClouds (const PointCloudInPtr &source, const PointCloudInPtr &target)
@@ -228,7 +228,7 @@ namespace pcl
 
   public:
     FPFHTest () : source_normals_(), target_normals_(), source_features_(),
-                  target_features_(), search_radius_(0.05)
+                  target_features_(), search_radius_(0.05f)
     {
       FeatureCorrespondenceTest<PointIn> ();
     }
@@ -317,7 +317,7 @@ namespace pcl
 
   public:
     NormalBasedSignatureTest () : source_normals_(), target_normals_(), source_features_(),
-                                  target_features_(), search_radius_(0.05), scale_(0.05)
+                                  target_features_(), search_radius_(0.05f), scale_(0.05f)
     {
       FeatureCorrespondenceTest<PointIn> ();
     }
@@ -408,7 +408,7 @@ namespace pcl
 
   public:
     PFHTest () : source_normals_(), target_normals_(), source_features_(),
-    target_features_(), search_radius_(0.05)
+    target_features_(), search_radius_(0.05f)
     {
       FeatureCorrespondenceTest<PointIn> ();
     }
@@ -498,7 +498,7 @@ namespace pcl
 
   public:
     PFHRGBTest () : source_normals_(), target_normals_(), source_features_(),
-    target_features_(), search_radius_(0.05)
+    target_features_(), search_radius_(0.05f)
     {
       FeatureCorrespondenceTest<PointIn> ();
     }
@@ -677,7 +677,7 @@ template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
 pcl::FPFHTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& time_source, double& time_target)
 {
   std::cout << "FPFHTest: computing normals" << std::endl;
-  computeNormals(0.5*search_radius_);
+  computeNormals(0.5f*search_radius_);
 
   FPFHEstimation<PointIn, NormalT, FeatureDescriptor> fpfh_source;
   fpfh_source.setInputCloud (preprocessed_source_);
@@ -928,7 +928,7 @@ template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
 pcl::PFHTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& time_source, double& time_target)
 {
   std::cout << "FHTest: computing normals" << std::endl;
-  computeNormals(0.5*search_radius_);
+  computeNormals(0.5f*search_radius_);
 
   PFHEstimation<PointIn, NormalT, FeatureDescriptor> pfh_source;
   pfh_source.setInputCloud (preprocessed_source_);
@@ -1047,7 +1047,7 @@ template <typename PointIn, typename NormalT, typename FeatureDescriptor> void
 pcl::PFHRGBTest<PointIn, NormalT, FeatureDescriptor>::computeFeatures (double& time_source, double& time_target)
 {
   std::cout << "PFHRGBTest: computing normals" << std::endl;
-  computeNormals(0.5*search_radius_);
+  computeNormals(0.5f*search_radius_);
 
   PFHRGBEstimation<PointIn, NormalT, FeatureDescriptor> pfhrgb_source;
   pfhrgb_source.setInputCloud (preprocessed_source_);

@@ -16,9 +16,9 @@ int
   cloud_in->points.resize (cloud_in->width * cloud_in->height);
   for (size_t i = 0; i < cloud_in->points.size (); ++i)
   {
-    cloud_in->points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-    cloud_in->points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-    cloud_in->points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
+    cloud_in->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
+    cloud_in->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
+    cloud_in->points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
   }
   std::cout << "Saved " << cloud_in->points.size () << " data points to input:"
       << std::endl;
@@ -28,7 +28,7 @@ int
   *cloud_out = *cloud_in;
   std::cout << "size:" << cloud_out->points.size() << std::endl;
   for (size_t i = 0; i < cloud_in->points.size (); ++i)
-    cloud_out->points[i].x = cloud_in->points[i].x + .7;
+    cloud_out->points[i].x = cloud_in->points[i].x + 0.7f;
   std::cout << "Transformed " << cloud_in->points.size () << " data points:"
       << std::endl;
   for (size_t i = 0; i < cloud_out->points.size (); ++i)

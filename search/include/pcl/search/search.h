@@ -169,7 +169,7 @@ namespace pcl
             k_indices.resize (cloud.size ());
             k_sqr_distances.resize (cloud.size ());
             for (size_t i = 0; i < cloud.size (); i++)
-              nearestKSearch (cloud,i,k,k_indices[i],k_sqr_distances[i]);
+              nearestKSearch (cloud,(int) i,k,k_indices[i],k_sqr_distances[i]);
           }
           else
           {
@@ -297,7 +297,7 @@ namespace pcl
             k_indices.resize (cloud.size ());
             k_distances.resize (cloud.size ());
             for (size_t i = 0; i < cloud.size (); i++)
-              radiusSearch (cloud,i,radius,k_indices[i],k_distances[i], max_nn);
+              radiusSearch (cloud,(int) i,radius,k_indices[i],k_distances[i], max_nn);
           }
           else
           {

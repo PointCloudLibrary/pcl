@@ -19,9 +19,9 @@ main (int argc, char** argv)
 
   for (size_t i = 0; i < cloud->points.size (); ++i)
   {
-    cloud->points[i].x = 1024.0f * rand () / (RAND_MAX + 1.0);
-    cloud->points[i].y = 1024.0f * rand () / (RAND_MAX + 1.0);
-    cloud->points[i].z = 1024.0f * rand () / (RAND_MAX + 1.0);
+    cloud->points[i].x = 1024.0f * rand () / (RAND_MAX + 1.0f);
+    cloud->points[i].y = 1024.0f * rand () / (RAND_MAX + 1.0f);
+    cloud->points[i].z = 1024.0f * rand () / (RAND_MAX + 1.0f);
   }
 
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
@@ -30,9 +30,9 @@ main (int argc, char** argv)
 
   pcl::PointXYZ searchPoint;
 
-  searchPoint.x = 1024.0f * rand () / (RAND_MAX + 1.0);
-  searchPoint.y = 1024.0f * rand () / (RAND_MAX + 1.0);
-  searchPoint.z = 1024.0f * rand () / (RAND_MAX + 1.0);
+  searchPoint.x = 1024.0f * rand () / (RAND_MAX + 1.0f);
+  searchPoint.y = 1024.0f * rand () / (RAND_MAX + 1.0f);
+  searchPoint.z = 1024.0f * rand () / (RAND_MAX + 1.0f);
 
   // K nearest neighbor search
 
@@ -60,7 +60,7 @@ main (int argc, char** argv)
   std::vector<int> pointIdxRadiusSearch;
   std::vector<float> pointRadiusSquaredDistance;
 
-  float radius = 256.0f * rand () / (RAND_MAX + 1.0);
+  float radius = 256.0f * rand () / (RAND_MAX + 1.0f);
 
   std::cout << "Neighbors within radius search at (" << searchPoint.x 
             << " " << searchPoint.y 

@@ -63,10 +63,10 @@ namespace pcl
       dataset_label_ = "Dataset";
       params_label_ = "Parameters";
 
-      lower_threshold_ = upper_threshold_ = 0.1;
+      lower_threshold_ = upper_threshold_ = 0.1f;
       delta_threshold_ = 1;
 
-      leaf_x_ = leaf_y_ = leaf_z_ = 0.1;
+      leaf_x_ = leaf_y_ = leaf_z_ = 0.1f;
 
       do_downsampling_ = false;
       verbose_ = true;

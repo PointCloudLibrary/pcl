@@ -16,14 +16,14 @@ int main (int argc, char** argv)
 
   //If "" is passed for the target-cloud file, source-cloud will be transformed by ground_truth to get the target cloud
   test_features.setInputClouds (argv[1], "", argv[1]);
-  test_features.setThreshold (0.1,1.0,0.1);
+  test_features.setThreshold (0.1f,1.0f,0.1f);
 
   //The independent variable need not be set separately, its values will be read from the file
   //std::string parameters = "searchradius=0.05";
   //test_features.setParameters (parameters);
 
   test_features.setDownsampling (true);
-  test_features.setLeafSize (0.01);
+  test_features.setLeafSize (0.01f);
   test_features.setVerbose (true);
   test_features.setLogFile ("fpfh-radius-variation.txt");
 

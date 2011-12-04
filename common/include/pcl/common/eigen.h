@@ -101,7 +101,7 @@ namespace pcl
 	template<typename Scalar, typename Roots> inline void computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
 	{
 		roots(0) = Scalar(0);
-		Scalar d = b * b - 4.0 * c;
+		Scalar d = Scalar(b * b - 4.0 * c);
 		if (d < 0.0) // no real roots!!!! THIS SHOULD NOT HAPPEN!
 			d = 0.0;
 
@@ -137,7 +137,7 @@ namespace pcl
 			computeRoots2 (c2, c1, roots);
 		else
 		{
-		  const Scalar s_inv3 = 1.0/3.0;
+		  const Scalar s_inv3 = Scalar(1.0/3.0);
 		  const Scalar s_sqrt3 = Eigen::internal::sqrt (Scalar (3.0));
 		  // Construct the parameters used in classifying the roots of the equation
 		  // and in solving the equation for the roots in closed form.
