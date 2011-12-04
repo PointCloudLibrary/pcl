@@ -45,6 +45,9 @@ macro(find_boost)
   set(BOOST_INCLUDE_DIRS "${Boost_INCLUDE_DIR}")
   set(BOOST_LIBRARY_DIRS "${Boost_LIBRARY_DIRS}")
   set(BOOST_LIBRARIES ${Boost_LIBRARIES})
+  if(WIN32)
+    set(BOOST_DEFINITIONS ${BOOST_DEFINITIONS} -DBOOST_ALL_NO_LIB)
+  endif(WIN32)
 endmacro(find_boost)
 
 #remove this as soon as eigen is shipped with FindEigen.cmake
@@ -64,6 +67,7 @@ macro(find_eigen)
           "$ENV{PROGRAMFILES}/Eigen" "$ENV{PROGRAMW6432}/Eigen"	  
     PATH_SUFFIXES eigen3 include/eigen3 include)
   find_package_handle_standard_args(eigen DEFAULT_MSG EIGEN_INCLUDE_DIRS)
+  set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS} -DEIGEN_USE_NEW_STDVECTOR -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
 endmacro(find_eigen)
 
 #remove this as soon as qhull is shipped with FindQhull.cmake
@@ -181,14 +185,13 @@ macro(find_flann)
 
   find_package_handle_standard_args(Flann DEFAULT_MSG FLANN_LIBRARY FLANN_INCLUDE_DIRS)
   if(FLANN_FOUND)
-    get_filename_component(flann_lib ${FLANN_LIBRARY} NAME_WE)
-    if("${flann_lib}" STREQUAL "flann_cpp_s") # this a patch
-      set(IS_FLANN_STATIC ON)
-    endif("${flann_lib}" STREQUAL "flann_cpp_s")
     get_filename_component(FLANN_LIBRARY_PATH ${FLANN_LIBRARY} PATH)
     get_filename_component(FLANN_LIBRARY_DEBUG_PATH ${FLANN_LIBRARY_DEBUG} PATH)
     set(FLANN_LIBRARY_DIRS ${FLANN_LIBRARY_PATH} ${FLANN_LIBRARY_DEBUG_PATH}) 
     set(FLANN_LIBRARIES optimized ${FLANN_LIBRARY} debug ${FLANN_LIBRARY_DEBUG})
+    if("${FLANN_LIBRARY}" MATCHES "flann_cpp_s")
+      set(FLANN_DEFINITIONS ${FLANN_DEFINITIONS} -DFLANN_STATIC)
+    endif("${FLANN_LIBRARY}" MATCHES "flann_cpp_s")
   endif(FLANN_FOUND)
 endmacro(find_flann)
 
@@ -244,6 +247,9 @@ macro(find_external_library _component _lib _is_optional)
     if(${LIB}_LIBRARIES)
       list(APPEND PCL_${COMPONENT}_LIBRARIES "${${LIB}_LIBRARIES}")
     endif(${LIB}_LIBRARIES)
+    if(${LIB}_DEFINITIONS)
+      list(APPEND PCL_${COMPONENT}_DEFINITIONS ${${LIB}_DEFINITIONS})
+    endif(${LIB}_DEFINITIONS)
   else(${LIB}_FOUND)
     if("${_is_optional}" STREQUAL "OPTIONAL")
       add_definitions("-DDISABLE_${LIB}")
@@ -378,14 +384,8 @@ endforeach(component)
 foreach(component ${PCL_TO_FIND_COMPONENTS})
   set(pcl_component pcl_${component})
   string(TOUPPER "${component}" COMPONENT)
-  string(TOUPPER "pcl_${component}" PCL_COMPONENT)
-  string(TOUPPER "${pcl_component}_DEFINITIONS" PCL_COMPONENT_DEFINITIONS)
-  string(TOUPPER "${pcl_component}_LIBRARY_DIRS" PCL_COMPONENT_LIBRARY_DIRS)
-  string(TOUPPER "${pcl_component}_LIBRARY" PCL_COMPONENT_LIBRARY)
-  string(TOUPPER "${pcl_component}_LIBRARY_DEBUG" PCL_COMPONENT_LIBRARY_DEBUG)
-  string(TOUPPER "${pcl_component}_LIBRARIES" PCL_COMPONENT_LIBRARIES)
 
-  pcl_message(STATUS "looking for ${PCL_COMPONENT}")
+  pcl_message(STATUS "looking for PCL_${COMPONENT}")
 
   string(REGEX REPLACE "^cuda_(.*)$" "\\1" cuda_component "${component}")
   string(REGEX REPLACE "^gpu_(.*)$" "\\1" gpu_component "${component}")	
@@ -411,49 +411,50 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
   # Skip find_library for header only modules
   list(FIND pcl_header_only_components ${component} _is_header_only)
   if(_is_header_only EQUAL -1)
-    find_library(${PCL_COMPONENT_LIBRARY} ${pcl_component}
+    find_library(PCL_${COMPONENT}_LIBRARY ${pcl_component}
       HINTS ${PCL_LIBRARY_DIRS}
       DOC "path to ${pcl_component} library"
       NO_DEFAULT_PATH)
     get_filename_component(${component}_library_path 
-      ${${PCL_COMPONENT_LIBRARY}}
+      ${PCL_${COMPONENT}_LIBRARY}
       PATH)
 
-    find_library(${PCL_COMPONENT_LIBRARY_DEBUG} ${pcl_component}${PCL_DEBUG_SUFFIX}
+    find_library(PCL_${COMPONENT}_LIBRARY_DEBUG ${pcl_component}${PCL_DEBUG_SUFFIX}
       HINTS ${PCL_LIBRARY_DIRS}
       DOC "path to ${pcl_component} library debug"
       NO_DEFAULT_PATH)
     # if only release found let release be debug too
     # NOTE: this is only for non Makefile sake
-    if(NOT ${PCL_COMPONENT_LIBRARY_DEBUG} AND ${PCL_COMPONENT_LIBRARY})
-      set(${PCL_COMPONENT_LIBRARY_DEBUG} ${${PCL_COMPONENT_LIBRARY}})
-    endif(NOT ${PCL_COMPONENT_LIBRARY_DEBUG} AND ${PCL_COMPONENT_LIBRARY})
+    if(NOT PCL_${COMPONENT}_LIBRARY_DEBUG AND PCL_${COMPONENT}_LIBRARY)
+      set(PCL_${COMPONENT}_LIBRARY_DEBUG ${PCL_${COMPONENT}_LIBRARY})
+    endif(NOT PCL_${COMPONENT}_LIBRARY_DEBUG AND PCL_${COMPONENT}_LIBRARY)
 
     get_filename_component(${component}_library_path_debug 
-      ${${PCL_COMPONENT_LIBRARY}_DEBUG}
+      ${PCL_${COMPONENT}_LIBRARY_DEBUG}
       PATH)
   
-    find_package_handle_standard_args(${PCL_COMPONENT} DEFAULT_MSG
-      ${PCL_COMPONENT_LIBRARY} PCL_${COMPONENT}_INCLUDE_DIR)
+    find_package_handle_standard_args(PCL_${COMPONENT} DEFAULT_MSG
+      PCL_${COMPONENT}_LIBRARY PCL_${COMPONENT}_INCLUDE_DIR)
   else(_is_header_only EQUAL -1)
-    find_package_handle_standard_args(${PCL_COMPONENT} DEFAULT_MSG
+    find_package_handle_standard_args(PCL_${COMPONENT} DEFAULT_MSG
       PCL_${COMPONENT}_INCLUDE_DIR)  
   endif(_is_header_only EQUAL -1)
   
-  if(${PCL_COMPONENT}_FOUND)
+  if(PCL_${COMPONENT}_FOUND)
     if(NOT "${PCL_${COMPONENT}_INCLUDE_DIRS}" STREQUAL "")
       list(REMOVE_DUPLICATES PCL_${COMPONENT}_INCLUDE_DIRS)
     endif(NOT "${PCL_${COMPONENT}_INCLUDE_DIRS}" STREQUAL "")
     list(APPEND PCL_INCLUDE_DIRS ${PCL_${COMPONENT}_INCLUDE_DIRS})
     mark_as_advanced(PCL_${COMPONENT}_INCLUDE_DIRS)
     if(_is_header_only EQUAL -1)
-      list(APPEND ${PCL_COMPONENT_LIBRARIES} optimized ${${PCL_COMPONENT_LIBRARY}} debug ${${PCL_COMPONENT_LIBRARY_DEBUG}})
-      list(APPEND PCL_LIBRARIES ${${PCL_COMPONENT}_LIBRARIES})
+      list(APPEND PCL_${COMPONENT}_LIBRARIES optimized ${PCL_${COMPONENT}_LIBRARY} debug ${PCL_${COMPONENT}_LIBRARY_DEBUG})
+      list(APPEND PCL_LIBRARIES ${PCL_${COMPONENT}_LIBRARIES})
+      list(APPEND PCL_DEFINITIONS ${PCL_${COMPONENT}_DEFINITIONS})
       list(APPEND PCL_LIBRARY_DIRS ${component_library_path})
       list(APPEND PCL_LIBRARY_DIRS ${component_library_path_debug})
-      mark_as_advanced(${PCL_COMPONENT_LIBRARY} ${PCL_COMPONENT_LIBRARY_DEBUG})
+      mark_as_advanced(PCL_${COMPONENT}_LIBRARY PCL_${COMPONENT}_LIBRARY_DEBUG)
     endif(_is_header_only EQUAL -1)    
-  endif(${PCL_COMPONENT}_FOUND)
+  endif(PCL_${COMPONENT}_FOUND)
 endforeach(component)
 
 if(NOT "${PCL_INCLUDE_DIRS}" STREQUAL "")
@@ -464,17 +465,13 @@ if(NOT "${PCL_LIBRARY_DIRS}" STREQUAL "")
   list(REMOVE_DUPLICATES PCL_LIBRARY_DIRS)
 endif(NOT "${PCL_LIBRARY_DIRS}" STREQUAL "")
 
+if(NOT "${PCL_DEFINITIONS}" STREQUAL "")
+  list(REMOVE_DUPLICATES PCL_DEFINITIONS)
+endif(NOT "${PCL_DEFINITIONS}" STREQUAL "")
+
 find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
 mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS PCL_LIBRARY_DIRS)
 
 if(PCL_FOUND)
   set(PCL_VERSION ${PCL_FOUND_VERSION} CACHE STRING "PCL version")
-  list(APPEND PCL_DEFINITIONS -DEIGEN_USE_NEW_STDVECTOR) 
-  list(APPEND PCL_DEFINITIONS -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
-  if(WIN32)
-    list(APPEND PCL_DEFINITIONS -DBOOST_ALL_NO_LIB)
-    if(IS_FLANN_STATIC)
-      list(APPEND PCL_DEFINITIONS -DFLANN_STATIC)
-    endif(IS_FLANN_STATIC)
-  endif(WIN32)
 endif(PCL_FOUND)
