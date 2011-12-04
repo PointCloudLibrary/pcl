@@ -37,6 +37,21 @@ Table of contents
 Basic Usage
 -----------
 
+  * :ref:`basic_structures`
+
+     ======  ======
+     |mi_0|  Title: **Getting Started / Basic Structures**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 1.0
+             
+             Presents the basic data structures in PCL and discusses their usage with a simple code example.
+     ======  ======
+
+     .. |mi_0| image:: images/pcl_logo.png
+               :height: 75px
+
   * :ref:`using_pcl_pcl_config`
 
      ======  ======
