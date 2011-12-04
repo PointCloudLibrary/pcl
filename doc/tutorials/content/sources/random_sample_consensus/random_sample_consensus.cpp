@@ -38,7 +38,7 @@ main(int argc, char** argv)
   cloud->points.resize (cloud->width * cloud->height);
   for (size_t i = 0; i < cloud->points.size (); ++i)
   {
-    if (pcl::console::find_argument (argc, argv, "-s") >= 0 or pcl::console::find_argument (argc, argv, "-sf") >= 0)
+    if (pcl::console::find_argument (argc, argv, "-s") >= 0 || pcl::console::find_argument (argc, argv, "-sf") >= 0)
     {
       cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
       cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
@@ -90,7 +90,7 @@ main(int argc, char** argv)
   // creates the visualization object and adds either our orignial cloud or all of the inliers
   // depending on the command line arguments specified.
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
-  if (pcl::console::find_argument (argc, argv, "-f") >= 0 or pcl::console::find_argument (argc, argv, "-sf") >= 0)
+  if (pcl::console::find_argument (argc, argv, "-f") >= 0 || pcl::console::find_argument (argc, argv, "-sf") >= 0)
     viewer = simpleVis(final);
   else
     viewer = simpleVis(cloud);

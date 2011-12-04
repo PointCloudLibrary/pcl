@@ -24,7 +24,7 @@ class ConditionThresholdHSV : public pcl::ConditionBase<PointT>
       min_h_(min_h), max_h_(max_h), min_s_(min_s), max_s_(max_s), min_v_(min_v), max_v_(max_v)
     {
       // Make min_h_ and max_h_ fall within [0, 360)
-      assert (!std::isnan(min_h) && !std::isnan(max_h));
+      assert (!pcl_isnan(min_h) && !pcl_isnan(max_h));
       while (min_h_ < 0) min_h_ += 360;
       while (min_h_ >= 360) min_h_ -= 360;
       while (max_h_ < 0) max_h_ += 360;
