@@ -232,7 +232,6 @@ namespace pcl
         key.x = key.y = key.z = 0;
 
         voxelCenterList_arg.clear ();
-        voxelCenterList_arg.reserve (this->leafCount_);
 
         return getOccupiedVoxelCentersRecursive (this->rootNode_, key, voxelCenterList_arg);
 

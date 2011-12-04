@@ -44,6 +44,9 @@
 
 #include "octree_nodes.h"
 
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+
 #include <iterator>
 
 namespace pcl
@@ -110,6 +113,16 @@ namespace pcl
         getCurrentOctreeNode () const
         {
           return currentNode_;
+        }
+
+        /** \brief Generate bounds of the current octree voxel
+         * \param min_pt lower bound of voxel
+         * \param max_pt upper bound of voxel
+         */
+        inline void
+        getVoxelBounds (Eigen::Vector3f &min_pt, Eigen::Vector3f &max_pt) const
+        {
+          octree_->genVoxelBoundsFromOctreeKey (currentOctreeKey_, currentOctreeDepth_, min_pt, max_pt);
         }
 
         /** \brief *operator.
@@ -183,7 +196,6 @@ namespace pcl
         // stack structure
         std::vector<std::pair<OctreeNode const*, unsigned char> > stack_;
       };
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b Octree leaf node iterator class

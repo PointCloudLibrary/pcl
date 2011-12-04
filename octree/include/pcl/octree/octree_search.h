@@ -39,6 +39,9 @@
 #ifndef PCL_OCTREE_SEARCH_H_
 #define PCL_OCTREE_SEARCH_H_
 
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+
 #include "octree_pointcloud.h"
 
 #include "octree_base.h"

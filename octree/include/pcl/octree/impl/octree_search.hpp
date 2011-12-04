@@ -490,7 +490,6 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
   key.x = key.y = key.z = 0;
 
   voxelCenterList.clear ();
-  voxelCenterList.reserve (this->leafCount_);
 
   // Voxel childIdx remapping
   unsigned char a = 0;
@@ -515,7 +514,6 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
   key.x = key.y = key.z = 0;
 
   k_indices.clear ();
-  k_indices.reserve (this->leafCount_);
 
   // Voxel childIdx remapping
   unsigned char a = 0;
