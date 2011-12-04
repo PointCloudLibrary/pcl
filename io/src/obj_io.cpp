@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -41,7 +43,7 @@
 
 int
 pcl::io::saveOBJFile (const std::string &file_name,
-	    const pcl::TextureMesh &tex_mesh, unsigned precision)
+                      const pcl::TextureMesh &tex_mesh, unsigned precision)
 {
   if (tex_mesh.cloud.data.empty ())
   {
@@ -54,7 +56,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
   fs.open (file_name.c_str ());
 
   // Define material file
-  std::string mtl_file_name = file_name.substr(0, file_name.find_last_of("."))+".mtl";
+  std::string mtl_file_name = file_name.substr (0, file_name.find_last_of (".")) + ".mtl";
   // Strip path for "mtllib" command
   std::string mtl_file_name_nopath = mtl_file_name;
   mtl_file_name_nopath.erase (0, mtl_file_name.find_last_of ('/') + 1);
@@ -65,12 +67,11 @@ pcl::io::saveOBJFile (const std::string &file_name,
   int point_size = tex_mesh.cloud.data.size () / nr_points;
 
   // mesh size
-  int nr_meshes = tex_mesh.tex_polygons.size();
-  // number of facets for each sub mesh
-  int *nr_faces = new int[nr_meshes];
-  for(int m=0; m < nr_meshes; ++m){
-	  nr_faces[m] =  tex_mesh.tex_polygons[m].size();
-  }
+  int nr_meshes = tex_mesh.tex_polygons.size ();
+  // number of faces for header
+  int nr_faces = 0;
+  for (int m = 0; m < nr_meshes; ++m)
+    nr_faces += tex_mesh.tex_polygons[m].size ();
 
   // Write the header information
   fs << "####" << std::endl;
@@ -100,19 +101,19 @@ pcl::io::saveOBJFile (const std::string &file_name,
           tex_mesh.cloud.fields[d].name == "y" ||
           tex_mesh.cloud.fields[d].name == "z"))
       {
-    	if(!v_written)
-    	{
+        if (!v_written)
+        {
            // write vertices beginning with v
           fs << "v ";
           v_written = true;
-    	}
+        }
         float value;
         memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
+        fs << " ";
       }
-      fs << " ";
     }
     if (xyz != 3)
     {
@@ -123,12 +124,52 @@ pcl::io::saveOBJFile (const std::string &file_name,
   }
   fs << "# "<< nr_points <<" vertices" << std::endl;
 
-    // Write vertex texture with "vt" (adding latter)
+  // Write vertex normals
+  for (int i = 0; i < nr_points; ++i)
+  {
+    int xyz = 0;
+    // "vn" just be written one
+    bool v_written = false;
+    for (size_t d = 0; d < tex_mesh.cloud.fields.size (); ++d)
+    {
+      int count = tex_mesh.cloud.fields[d].count;
+      if (count == 0)
+        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
+      int c = 0;
+      // adding vertex
+      if ((tex_mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && (
+          tex_mesh.cloud.fields[d].name == "normal_x" ||
+          tex_mesh.cloud.fields[d].name == "normal_y" ||
+          tex_mesh.cloud.fields[d].name == "normal_z"))
+      {
+    	  if (!v_written)
+    	  {
+          // write vertices beginning with vn
+          fs << "vn ";
+          v_written = true;
+    	  }
+        float value;
+        memcpy (&value, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        fs << value;
+        if (++xyz == 3)
+          break;
+        fs << " ";
+      }
+    }
+    if (xyz != 3)
+    {
+      PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no normals!\n");
+      return (-2);
+    }
+    fs << std::endl;
+  }
+  // Write vertex texture with "vt" (adding latter)
 
-
-  for(int m = 0; m < nr_meshes; ++m){
-    fs << "# "<< tex_mesh.tex_coordinates[m].size() <<" vertex textures in submesh " << m <<  std::endl;
-    for (size_t i = 0; i < tex_mesh.tex_coordinates[m].size(); ++i){
+  for (int m = 0; m < nr_meshes; ++m)
+  {
+    fs << "# " << tex_mesh.tex_coordinates[m].size() << " vertex textures in submesh " << m <<  std::endl;
+    for (size_t i = 0; i < tex_mesh.tex_coordinates[m].size (); ++i)
+    {
       fs << "vt ";
       fs <<  tex_mesh.tex_coordinates[m][i][0] << " " << tex_mesh.tex_coordinates[m][i][1] << std::endl;
     }
@@ -137,9 +178,9 @@ pcl::io::saveOBJFile (const std::string &file_name,
   int f_idx = 0;
 
   // int idx_vt =0;
-  for(int m = 0; m < nr_meshes; ++m){
-
-    if( m > 0) f_idx += nr_faces[m-1];
+  for (int m = 0; m < nr_meshes; ++m)
+  {
+    if (m > 0) f_idx += tex_mesh.tex_polygons[m-1].size ();
 
     fs << "# The material will be used for mesh " << m << std::endl;
     fs << "usemtl " <<  tex_mesh.tex_materials[m].tex_name << std::endl;
@@ -148,13 +189,20 @@ pcl::io::saveOBJFile (const std::string &file_name,
     for (size_t i = 0; i < tex_mesh.tex_polygons[m].size(); ++i)
     {
       // Write faces with "f"
-      fs << "f ";
+      fs << "f";
       size_t j = 0;
-      for (j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size () - 1; ++j)
-        fs << tex_mesh.tex_polygons[m][i].vertices[j] +1  <<"/" << 3*(i+f_idx) +j+1 << " "; // vertex index in obj file format starting with 1
-      fs << tex_mesh.tex_polygons[m][i].vertices[j]+1 <<"/" << 3*(i+f_idx)+2+1 << std::endl;
+      // There's one UV per vertex per face, i.e., the same vertex can have
+      // different UV depending on the face.
+      for (j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j) 
+      {
+        uint32_t idx = tex_mesh.tex_polygons[m][i].vertices[j] + 1;
+        fs << " " << idx
+           << "/" << 3*(i+f_idx) +j+1
+           << "/" << idx; // vertex index in obj file format starting with 1
+      }
+      fs << std::endl;
     }
-    fs << "# "<< nr_faces[m] <<" faces in mesh " << m << std::endl;
+    fs << "# "<< tex_mesh.tex_polygons[m].size() << " faces in mesh " << m << std::endl;
   }
   fs << "# End of File";
 
@@ -172,7 +220,8 @@ pcl::io::saveOBJFile (const std::string &file_name,
   m_fs << "#" << std::endl;
   m_fs << "# Wavefront material file" << std::endl;
   m_fs << "#" << std::endl;
-  for(int m = 0; m < nr_meshes; ++m){
+  for(int m = 0; m < nr_meshes; ++m)
+  {
     m_fs << "newmtl " << tex_mesh.tex_materials[m].tex_name << std::endl;
     m_fs << "Ka "<< tex_mesh.tex_materials[m].tex_Ka.r << " " << tex_mesh.tex_materials[m].tex_Ka.g << " " << tex_mesh.tex_materials[m].tex_Ka.b << std::endl; // defines the ambient color of the material to be (r,g,b).
     m_fs << "Kd "<< tex_mesh.tex_materials[m].tex_Kd.r << " " << tex_mesh.tex_materials[m].tex_Kd.g << " " << tex_mesh.tex_materials[m].tex_Kd.b << std::endl; // defines the diffuse color of the material to be (r,g,b).
@@ -185,6 +234,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
     m_fs << "map_Kd " << tex_mesh.tex_materials[m].tex_file << std::endl;
     m_fs << "###" << std::endl;
   }
-  m_fs.close();
+  m_fs.close ();
   return (0);
 }
+
