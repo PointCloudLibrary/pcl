@@ -50,7 +50,7 @@ namespace pcl
     * \ingroup filters
     */
   template<typename PointT>
-  class CropHull : public FilterIndices<PointT>
+  class CropHull: public FilterIndices<PointT>
   {
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::indices_;
@@ -72,23 +72,25 @@ namespace pcl
       }
 
       /** \brief Set the vertices of the hull used to filter points.
-        * \param polygons[in] Vector of polygons (Vertices structures) forming
-        *                     the hull used for filtering points.
+        * \param[in] polygons Vector of polygons (Vertices structures) forming
+        * the hull used for filtering points.
         */
       inline void
-      setHullIndices (std::vector<Vertices> const& polygons)
+      setHullIndices (const std::vector<Vertices>& polygons)
       {
         hull_polygons_ = polygons;
       }
 
+      /** \brief Get the verstices of the hull used to filter points.
+        */
       std::vector<Vertices>
       getHullIndices () const
       {
-        return hull_polygons_;
+        return (hull_polygons_);
       }
       
       /** \brief Set the point cloud that the hull indices refer to
-        * \param points[in] Point cloud
+        * \param[in] points the point cloud that the hull indices refer to
         */
       inline void
       setHullCloud (PointCloudPtr points)
@@ -96,17 +98,18 @@ namespace pcl
         hull_cloud_ = points;
       }
 
+      /** \brief Get the point cloud that the hull indices refer to. */
       PointCloudPtr
       getHullCloud () const
       {
-        return hull_cloud_;
+        return (hull_cloud_);
       }
     
       /** \brief Set the dimensionality of the hull to be used.
         * This should be set to correspond to the dimensionality of the
         * convex/concave hull produced by the pcl::ConvexHull and
         * pcl::ConcaveHull classes.
-        * \param dim[in] Dimensionailty of the hull used to filter points.
+        * \param[in] dim Dimensionailty of the hull used to filter points.
         */
       inline void
       setDim (int dim)
@@ -114,11 +117,9 @@ namespace pcl
         dim_ = dim;
       }
       
-      /** \brief Remove points outside the hull (default), or those inside the
-        *        hull.
-        * \param crop_outside[in] If true, the filter will remove points
-        *                         outside the hull. If false, those inside will
-        *                         be removed.
+      /** \brief Remove points outside the hull (default), or those inside the hull.
+        * \param[in] crop_outside If true, the filter will remove points
+        * outside the hull. If false, those inside will be removed.
         */
       inline void
       setCropOutside(bool crop_outside)
@@ -140,45 +141,44 @@ namespace pcl
       applyFilter (std::vector<int> &indices);
 
     private:  
-      /** \brief return size of the hull point cloud in line with coordinate axes.
+      /** \brief Return the size of the hull point cloud in line with coordinate axes.
         * This is used to choose the 2D projection to use when cropping to a 2d
         * polygon.
         */
       Eigen::Vector3f
       getHullCloudRange ();
       
-      /** \brief Apply two-dimensional hull filter.
+      /** \brief Apply the two-dimensional hull filter.
         * All points are assumed to lie in the same plane as the 2D hull, an
         * axis-aligned 2D coordinate system using the two dimensions specified
         * (PlaneDim1, PlaneDim2) is used for calculations.
         * \param[out] output The set of points that pass the 2D polygon filter.
         */
-      template<unsigned PlaneDim1, unsigned PlaneDim2>
-      void
+      template<unsigned PlaneDim1, unsigned PlaneDim2> void
       applyFilter2D (PointCloud &output); 
 
-      /** \brief Apply two-dimensional hull filter.
+      /** \brief Apply the two-dimensional hull filter.
         * All points are assumed to lie in the same plane as the 2D hull, an
         * axis-aligned 2D coordinate system using the two dimensions specified
         * (PlaneDim1, PlaneDim2) is used for calculations.
         * \param[out] indices The indices of the set of points that pass the
         *                     2D polygon filter.
         */
-      template<unsigned PlaneDim1, unsigned PlaneDim2>
-      void
+      template<unsigned PlaneDim1, unsigned PlaneDim2> void
       applyFilter2D (std::vector<int> &indices);
 
-       /** \brief Apply three-dimensional hull filter.
-        *  Polygon-ray crossings are used for three rays cast from each point
-        *  being tested, and a  majority vote of the resulting
-        *  polygon-crossings is used to decide  whether the point lies inside
-        *  or outside the hull.
-        * \param[out] output The set of points that pass the 3D polygon hull
-        *                    filter.
-        */
+       /** \brief Apply the three-dimensional hull filter.
+         * Polygon-ray crossings are used for three rays cast from each point
+         * being tested, and a  majority vote of the resulting
+         * polygon-crossings is used to decide  whether the point lies inside
+         * or outside the hull.
+         * \param[out] output The set of points that pass the 3D polygon hull
+         *                    filter.
+         */
       void
       applyFilter3D (PointCloud &output);
-      /** \brief Apply three-dimensional hull filter.
+
+      /** \brief Apply the three-dimensional hull filter.
         *  Polygon-ray crossings are used for three rays cast from each point
         *  being tested, and a  majority vote of the resulting
         *  polygon-crossings is used to decide  whether the point lies inside
@@ -191,27 +191,36 @@ namespace pcl
 
       /** \brief Test an individual point against a 2D polygon.
         * PlaneDim1 and PlaneDim2 specify the x/y/z coordinate axes to use.
+        * \param[in] point
+        * \param[in] verts
+        * \param[in] cloud
         */
-      template<unsigned PlaneDim1, unsigned PlaneDim2>
-      inline static bool
-      isPointIn2DPolyWithVertIndices (PointT const& point,
-                                      Vertices const& verts,
-                                      PointCloud const& cloud);
+      template<unsigned PlaneDim1, unsigned PlaneDim2> inline static bool
+      isPointIn2DPolyWithVertIndices (const PointT& point,
+                                      const Vertices& verts,
+                                      const PointCloud& cloud);
 
       /** \brief Does a ray cast from a point intersect with an arbitrary triangle in 3D. 
-        *  See:
-        *   http://softsurfer.com/Archive/algorithm_0105/algorithm_0105.htm#intersect_RayTriangle()
+        * See: http://softsurfer.com/Archive/algorithm_0105/algorithm_0105.htm#intersect_RayTriangle()
+        * \param[in] point
+        * \param[in] ray
+        * \param[in] verts
+        * \param[in] cloud
         */
       inline static bool
-      rayTriangleIntersect (PointT const& point,
-                            Eigen::Vector3f const& ray,
-                            Vertices const& verts,
-                            PointCloud const& cloud);
+      rayTriangleIntersect (const PointT& point,
+                            const Eigen::Vector3f& ray,
+                            const Vertices& verts,
+                            const PointCloud& cloud);
 
 
+      /** \brief . */
       std::vector<pcl::Vertices> hull_polygons_;
+      /** \brief . */
       PointCloudPtr hull_cloud_;
+      /** \brief . */
       int dim_;
+      /** \brief . */
       bool crop_outside_;
   };
 
