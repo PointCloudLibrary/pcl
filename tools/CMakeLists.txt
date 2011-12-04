@@ -63,6 +63,9 @@ if (build)
   PCL_ADD_EXECUTABLE(ndt2d ${SUBSYS_NAME} ndt2d.cpp)
   target_link_libraries(ndt2d pcl_common pcl_io pcl_registration)
 
+  PCL_ADD_EXECUTABLE(concatenate_points_pcd ${SUBSYS_NAME} concatenate_points_pcd.cpp)
+  target_link_libraries(concatenate_points_pcd pcl_common pcl_io)
+
   if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")
