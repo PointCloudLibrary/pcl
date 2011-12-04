@@ -248,13 +248,7 @@ Install Sphinx (optional)
 Install patched OpenNI and Sensor
 '''''''''''''''''''''''''''''''''
 
-Download the patched versions of OpenNI and Sensor from the `PCL
-downloads page`_.
-
-.. _`PCL downloads page`:
-   http://dev.pointclouds.org/projects/pcl/versions/1
-
-We're looking for two files here: `openni_osx.zip
+Download the patched versions of OpenNI and Sensor: `openni_osx.zip
 <http://dev.pointclouds.org/attachments/download/191/openni_osx.zip>`_ and
 `ps_engine_osx.zip
 <http://dev.pointclouds.org/attachments/download/192/ps_engine_osx.zip>`_.
