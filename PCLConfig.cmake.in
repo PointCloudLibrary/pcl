@@ -417,7 +417,8 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
   list(FIND pcl_header_only_components ${component} _is_header_only)
   if(_is_header_only EQUAL -1)
     find_library(PCL_${COMPONENT}_LIBRARY ${pcl_component}
-      HINTS ${PCL_LIBRARY_DIRS}
+      HINTS ${PCL_LIBRARY_DIRS} "${PCL_DIR}/${component}"
+            "${PCL_DIR}/cuda/${cuda_component}" "${PCL_DIR}/cuda/${gpu_component}" "${PCL_DIR}cuda/${component}"
       DOC "path to ${pcl_component} library"
       NO_DEFAULT_PATH)
     get_filename_component(${component}_library_path 
@@ -425,7 +426,8 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
       PATH)
 
     find_library(PCL_${COMPONENT}_LIBRARY_DEBUG ${pcl_component}${PCL_DEBUG_SUFFIX}
-      HINTS ${PCL_LIBRARY_DIRS}
+      HINTS ${PCL_LIBRARY_DIRS} "${PCL_DIR}/${component}"
+            "${PCL_DIR}/cuda/${cuda_component}" "${PCL_DIR}/cuda/${gpu_component}" "${PCL_DIR}cuda/${component}"
       DOC "path to ${pcl_component} library debug"
       NO_DEFAULT_PATH)
     # if only release found let release be debug too
