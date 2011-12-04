@@ -72,19 +72,59 @@ namespace pcl
     getMapping (pcl::PointCloud<PointT>& p);
   } // namespace detail
 
-  /** @b PointCloud represents a templated PointCloud implementation.
-    * \author Patrick Mihelich, Radu Bogdan Rusu
+  /** \brief PointCloud represents the base class in PCL for storing collections of 3D points.
+    *
+    * The class is templated, which means you need to specify the type of data
+    * that it should contain. For example, to create a point cloud that holds 4
+    * random XYZ data points, use:
+    *
+    * \code
+    * pcl::PointCloud<pcl::PointXYZ> cloud;
+    * cloud.push_back (pcl::PointXYZ (rand (), rand (), rand ())); 
+    * cloud.push_back (pcl::PointXYZ (rand (), rand (), rand ())); 
+    * cloud.push_back (pcl::PointXYZ (rand (), rand (), rand ())); 
+    * cloud.push_back (pcl::PointXYZ (rand (), rand (), rand ())); 
+    * \endcode
+    *
+    * The PointCloud class contains the following elements:
+    * <ul>
+    * <li><b>width</b> - specifies the width of the point cloud dataset in the number of points. WIDTH has two meanings:
+    *   <ul><li>it can specify the total number of points in the cloud (equal with POINTS see below) for unorganized datasets;</li>
+    *       <li>it can specify the width (total number of points in a row) of an organized point cloud dataset.</li>
+    *   </ul>
+    *   <i>Mandatory</i>.
+    * </li>
+    * <li><b>height</b> - specifies the height of the point cloud dataset in the number of points. HEIGHT has two meanings:
+    *   <ul><li>it can specify the height (total number of rows) of an organized point cloud dataset;</li>
+    *       <li>it is set to 1 for unorganized datasets (thus used to check whether a dataset is organized or not).</li>
+    *   </ul>
+    *   <i>Mandatory</i>.
+    * </li>
+    * <li><b>points</b> - the data array where all points of type <b>T</b> are stored. <i>Mandatory</i>.</li>
+    *
+    * <li><b>is_dense</b> - specifies if all the data in <b>points</b> is finite (true), or whether it might contain Inf/NaN values
+    * (false). <i>Mandatory</i>.</li>
+    *
+    * <li><b>sensor_origin_</b> - specifies the sensor acquisition pose (origin/translation). <i>Optional</i>.</li>
+    * <li><b>sensor_orientation_</b> - specifies the sensor acquisition pose (rotation). <i>Optional</i>.</li>
+    * </ul>
+    *
+    * \author Patrick Mihelich, Radu B. Rusu
     */
   template <typename PointT>
   class PointCloud
   {
     public:
+      /** \brief Default constructor. Sets \ref is_dense to true, \ref width
+        * and \ref height to 0, and the \ref sensor_origin_ and \ref
+        * sensor_orientation_ to identity.
+        */
       PointCloud () : width (0), height (0), is_dense (true),
                       sensor_origin_ (Eigen::Vector4f::Zero ()), sensor_orientation_ (Eigen::Quaternionf::Identity ())
       {}
 
       /** \brief Copy constructor (needed by compilers such as Intel C++)
-        * \param pc the cloud to copy into this
+        * \param[in] pc the cloud to copy into this
         */
       inline PointCloud (PointCloud<PointT> &pc)
       {
@@ -92,7 +132,7 @@ namespace pcl
       }
 
       /** \brief Copy constructor (needed by compilers such as Intel C++)
-        * \param pc the cloud to copy into this
+        * \param[in] pc the cloud to copy into this
         */
       inline PointCloud (const PointCloud<PointT> &pc)
       {
@@ -100,8 +140,8 @@ namespace pcl
       }
 
       /** \brief Copy constructor from point cloud subset
-        * \param pc the cloud to copy into this
-        * \param indices the subset to copy
+        * \param[in] pc the cloud to copy into this
+        * \param[in] indices the subset to copy
         */
       inline PointCloud (const PointCloud<PointT> &pc, 
                          const std::vector<size_t> &indices)
@@ -115,6 +155,10 @@ namespace pcl
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Add a point cloud to the current cloud.
+        * \param[in] rhs the cloud to add to the current cloud
+        * \return the new cloud as a concatenation of the current cloud and the new given cloud
+        */ 
       inline PointCloud&
       operator += (const PointCloud& rhs)
       {
@@ -144,6 +188,11 @@ namespace pcl
       }
       
       ////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
+        * datasets (those that have height != 1).
+        * \param[in] u the u coordinate
+        * \param[in] v the v coordinate
+        */
       inline const PointT&
       at (int u, int v) const
       {
@@ -153,6 +202,11 @@ namespace pcl
           throw IsNotDenseException ("Can't use 2D indexing with a sparse point cloud");
       }
 
+      /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
+        * datasets (those that have height != 1).
+        * \param[in] u the u coordinate
+        * \param[in] v the v coordinate
+        */
       inline PointT&
       at (int u, int v)
       {
@@ -163,12 +217,22 @@ namespace pcl
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
+        * datasets (those that have height != 1).
+        * \param[in] u the u coordinate
+        * \param[in] v the v coordinate
+        */
       inline const PointT&
       operator () (int u, int v) const
       {
         return (points[v * this->width + u]);
       }
 
+      /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
+        * datasets (those that have height != 1).
+        * \param[in] u the u coordinate
+        * \param[in] v the v coordinate
+        */
       inline PointT&
       operator () (int u, int v)
       {
@@ -177,6 +241,7 @@ namespace pcl
 
       ////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Return whether a dataset is organized (e.g., arranged in a structured grid).
+        * \note The height value must be different than 1 for a dataset to be organized.
         */
       inline bool
       isOrganized () const
@@ -199,16 +264,14 @@ namespace pcl
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
-      /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
-        */
+      /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud. */
       inline Eigen::MatrixXf
       getMatrixXfMap () const
       {
         return getMatrixXfMap (sizeof (PointT) / sizeof (float),  sizeof (PointT) / sizeof (float), 0);
       }
 
-      /** \brief The point cloud header. It contains information about the acquisition time, as well as a transform
-        * frame (see \a tf). */
+      /** \brief The point cloud header. It contains information about the acquisition time. */
       std_msgs::Header header;
 
       /** \brief The point data. */
@@ -242,9 +305,9 @@ namespace pcl
 
       //capacity
       inline size_t size () const { return (points.size ()); }
-      inline void reserve(size_t n) { points.reserve (n); }
-      inline void resize(size_t n) { points.resize (n); }
-      inline bool empty() const { return points.empty (); }
+      inline void reserve (size_t n) { points.reserve (n); }
+      inline void resize (size_t n) { points.resize (n); }
+      inline bool empty () const { return points.empty (); }
 
       //element access
       inline const PointT& operator[] (size_t n) const { return points[n]; }
@@ -256,56 +319,111 @@ namespace pcl
       inline const PointT& back () const { return points.back (); }
       inline PointT& back () { return points.back (); }
 
-      //modifiers
-      inline void push_back (const PointT& p) {
-        points.push_back (p);
+      /** \brief Insert a new point in the cloud, at the end of the container.
+        * \note This breaks the organized structure of the cloud by setting the height to 1!
+        * \param[in] pt the point to insert
+        */
+      inline void 
+      push_back (const PointT& pt)
+      {
+        points.push_back (pt);
         width = points.size ();
         height = 1;
       }
-      inline iterator insert ( iterator position, const PointT& x )
+
+      /** \brief Insert a new point in the cloud, given an iterator.
+        * \note This breaks the organized structure of the cloud by setting the height to 1!
+        * \param[in] position where to insert the point
+        * \param[in] pt the point to insert
+        * \return returns the new position iterator
+        */
+      inline iterator 
+      insert (iterator position, const PointT& pt)
       {
-        iterator it = points.insert (position, x);
+        iterator it = points.insert (position, pt);
         width = points.size ();
         height = 1;
-        return it;
+        return (it);
       }
-      inline void insert ( iterator position, size_t n, const PointT& x )
+
+      /** \brief Insert a new point in the cloud N times, given an iterator.
+        * \note This breaks the organized structure of the cloud by setting the height to 1!
+        * \param[in] position where to insert the point
+        * \param[in] n the number of times to insert the point
+        * \param[in] pt the point to insert
+        */
+      inline void 
+      insert (iterator position, size_t n, const PointT& pt)
       {
-        points.insert (position, n, x);
+        points.insert (position, n, pt);
         width = points.size ();
         height = 1;
       }
-      template <class InputIterator>
-      inline void insert ( iterator position, InputIterator first, InputIterator last )
+
+      /** \brief Insert a new range of points in the cloud, at a certain position.
+        * \note This breaks the organized structure of the cloud by setting the height to 1!
+        * \param[in] position where to insert the data
+        * \param[in] first where to start inserting the points from
+        * \param[in] last where to stop inserting the points from
+        */
+      template <class InputIterator> inline void 
+      insert (iterator position, InputIterator first, InputIterator last)
       {
-        points.insert(position, first, last);
+        points.insert (position, first, last);
       }
-      inline iterator erase ( iterator position )
+
+      /** \brief Erase a point in the cloud. 
+        * \note This breaks the organized structure of the cloud by setting the height to 1!
+        * \param[in] position what data point to erase
+        * \return returns the new position iterator
+        */
+      inline iterator 
+      erase (iterator position)
       {
         iterator it = points.erase (position); 
         width = points.size ();
         height = 1;
-        return it;
+        return (it);
       }
-      inline iterator erase ( iterator first, iterator last )
+
+      /** \brief Erase a set of points given by a (first, last) iterator pair
+        * \note This breaks the organized structure of the cloud by setting the height to 1!
+        * \param[in] first where to start erasing points from
+        * \param[in] last where to stop erasing points from
+        * \return returns the new position iterator
+        */
+      inline iterator 
+      erase (iterator first, iterator last)
       {
         iterator it = points.erase (first, last);
         width = points.size ();
         height = 1;
-        return it;
+        return (it);
       }
-      inline void swap (PointCloud<PointT> &rhs)
+
+      /** \brief Swap a point cloud with another cloud.
+        * \param rhs point cloud to swap this with
+        */ 
+      inline void 
+      swap (PointCloud<PointT> &rhs)
       {
         this->points.swap (rhs.points);
         std::swap (width, rhs.width);
         std::swap (height, rhs.height);
+        std::swap (is_dense, rhs.is_dense);
+        std::swap (sensor_origin_, rhs.sensor_origin_);
+        std::swap (sensor_orientation_, rhs.sensor_orientation_);
       }
-      inline void clear ()
+
+      /** \brief Removes all points in a cloud and sets the width and height to 0. */
+      inline void 
+      clear ()
       {
         points.clear ();
         width = 0;
         height = 0;
       }
+
       /** \brief Copy the cloud to the heap and return a smart pointer
         * Note that deep copy is performed, so avoid using this function on non-empty clouds.
         * The changes of the returned cloud are not mirrored back to this one.
