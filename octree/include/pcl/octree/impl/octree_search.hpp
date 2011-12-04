@@ -276,9 +276,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getKNearestNeighbor
         pointCandidates.resize (K);
 
       if (pointCandidates.size () == K)
-      {
         smallestSquaredDist = pointCandidates.back ().pointDistance_;
-      }
     }
     // pop element from priority queue
     searchEntryHeap.pop_back ();
@@ -449,7 +447,6 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::approxNearestSearch
     // Linearly iterate over all decoded (unsorted) points
     for (i = 0; i < decodedPointVector.size (); i++)
     {
-
       const PointT& candidatePoint = this->getPointByIndex (decodedPointVector[i]);
 
       // calculate point distance to search point
@@ -524,7 +521,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
   if (max (max (minX, minY), minZ) < min (min (maxX, maxY), maxZ))
     return getIntersectedVoxelIndicesRecursive (minX, minY, minZ, maxX, maxY, maxZ, a, this->rootNode_, key,
                                                 k_indices);
-  return 0;
+  return (0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -657,7 +654,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
     std::vector<int> &k_indices) const
 {
   if (maxX < 0.0 || maxY < 0.0 || maxZ < 0.0)
-    return 0;
+    return (0);
 
   // If leaf node, get voxel center and increment intersection count
   if (node->getNodeType () == LEAF_NODE)
@@ -672,7 +669,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
       k_indices.push_back (indices[i]);
     }
 
-    return 1;
+    return (1);
   }
 
   // Voxel intersection count for branches children
@@ -767,7 +764,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
     }
   } while (currNode < 8);
 
-  return voxelCount;
+  return (voxelCount);
 }
 
 #endif    // PCL_OCTREE_SEARCH_IMPL_H_
