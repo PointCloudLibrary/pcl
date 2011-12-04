@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -40,11 +42,10 @@
 
 namespace pcl
 {
-
-  /** \brief @b NormalDistributionsTransform provides an implementation of the Normal Distributions Transform algorithm for scan matching.
-    * 
+  /** \brief @b NormalDistributionsTransform provides an implementation of the
+    * Normal Distributions Transform algorithm for scan matching.
+    * \author James Crosby
     */
- 
   template <typename PointSource, typename PointTarget>
   class NormalDistributionsTransform : public Registration<PointSource, PointTarget>
   {
@@ -56,55 +57,57 @@ namespace pcl
 
     typedef PointIndices::Ptr PointIndicesPtr;
     typedef PointIndices::ConstPtr PointIndicesConstPtr;
-    
+
     public:
       /** \brief Empty constructor. */
-      NormalDistributionsTransform () 
+      NormalDistributionsTransform ()
         : Registration<PointSource,PointTarget> (),
           grid_centre_ (0,0), grid_step_ (1,1), grid_extent_ (20,20), newton_lambda_ (1,1,1)
       {
         reg_name_ = "NormalDistributionsTransform";
       }
-     
+ 
       /** \brief centre of the ndt grid (target coordinate system)
         * \param centre value to set
         */
       virtual void
-      setGridCentre (const Eigen::Vector2f& centre){ grid_centre_ = centre; }
+      setGridCentre (const Eigen::Vector2f& centre) { grid_centre_ = centre; }
 
       /** \brief Grid spacing (step) of the NDT grid
-        * \param step value to set
+        * \param[in] step value to set
         */
       virtual void
-      setGridStep (const Eigen::Vector2f& step){ grid_step_ = step; }
+      setGridStep (const Eigen::Vector2f& step) { grid_step_ = step; }
 
       /** \brief NDT Grid extent (in either direction from the grid centre)
-        * \param extent value to set
+        * \param[in] extent value to set
         */
       virtual void
-      setGridExtent (const Eigen::Vector2f& extent){ grid_extent_ = extent; }
+      setGridExtent (const Eigen::Vector2f& extent) { grid_extent_ = extent; }
 
       /** \brief NDT Newton optimisation step size parameter
-       *  \param lambda step size: 1 is simple newton optimisation, smaller values may improve convergence
-       */
+        * \param[in] lambda step size: 1 is simple newton optimisation, smaller values may improve convergence
+        */
        virtual void
-       setOptimisationStepSize (const double& lambda){ newton_lambda_ = Eigen::Vector3d(lambda, lambda, lambda); }
+       setOptimizationStepSize (const double& lambda) { newton_lambda_ = Eigen::Vector3d (lambda, lambda, lambda); }
 
       /** \brief NDT Newton optimisation step size parameter
-       *  \param lambda step size: (1,1,1) is simple newton optimisation, smaller values may improve convergence, or elements may be set to zero to prevent optimisation over some parameters
-       *
-       * This overload allows control of updates to the individual (x, y,
-       * theta) free parameters in the optimisation. If, for example, theta is
-       * believed to be close to the correct value a small value of lambda[2]
-       * should be used.
-       */
+        * \param[in] lambda step size: (1,1,1) is simple newton optimisation,
+        * smaller values may improve convergence, or elements may be set to
+        * zero to prevent optimisation over some parameters
+        *
+        * This overload allows control of updates to the individual (x, y,
+        * theta) free parameters in the optimisation. If, for example, theta is
+        * believed to be close to the correct value a small value of lambda[2]
+        * should be used.
+        */
        virtual void
-       setOptimisationStepSize (const Eigen::Vector3d& lambda){ newton_lambda_ = lambda; }
-    
+       setOptimizationStepSize (const Eigen::Vector3d& lambda) { newton_lambda_ = lambda; }
+
     protected:
       /** \brief Rigid transformation computation method with initial guess.
-        * \param output the transformed input point cloud dataset using the rigid transformation found
-        * \param guess the initial guess of the transformation to compute
+        * \param[out] output the transformed input point cloud dataset using the rigid transformation found
+        * \param[in] guess the initial guess of the transformation to compute
         */
       virtual void 
       computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess);
@@ -120,8 +123,6 @@ namespace pcl
       using Registration<PointSource, PointTarget>::final_transformation_;
       using Registration<PointSource, PointTarget>::update_visualizer_;
       using Registration<PointSource, PointTarget>::indices_;
-
-
 
       Eigen::Vector2f grid_centre_;
       Eigen::Vector2f grid_step_;
