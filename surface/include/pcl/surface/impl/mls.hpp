@@ -166,23 +166,16 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
     pcl::computeCovarianceMatrix (*input_, nn_indices, xyz_centroid, covariance_matrix);
 
     // Get the plane normal
-    EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
-    EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
-    pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
-
-    // The normalization is not necessary, since the eigenvectors from libeigen are already normalized
-    model_coefficients[0] = eigen_vectors (0, 0);
-    model_coefficients[1] = eigen_vectors (1, 0);
-    model_coefficients[2] = eigen_vectors (2, 0);
-    model_coefficients[3] = 0;
-    // Hessian form (D = nc . p_plane (centroid here) + p)
+    EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
+    EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
+    pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
+    model_coefficients.head<3> () = eigen_vector;
     model_coefficients[3] = -1 * model_coefficients.dot (xyz_centroid);
 
-    float curvature = 0;
+    float curvature = covariance_matrix.trace ();
     // Compute the curvature surface change
-    float eig_sum = eigen_values.sum ();
-    if (eig_sum != 0)
-      curvature = fabs (eigen_values[0] / eig_sum);
+    if (curvature != 0)
+      curvature = fabs (eigen_value / curvature);
 
     // Projected point
     Eigen::Vector3f point = output.points[cp].getVector3fMap ();
@@ -266,9 +259,8 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
         // Compute tangent vectors using the partial derivates evaluated at (0,0) which is c_vec_[order_+1] and c_vec_[1]
         if (normals_)
         {
-          Evector3 n_a = u + plane_normal * c_vec_[order_ + 1];
-          Evector3 n_b = v + plane_normal * c_vec_[1];
-          model_coefficients.head<3> () = n_a.cross (n_b).cast<float> ();
+          Evector3 normal = c_vec_[order_ + 1] * u + c_vec_[1] * v - plane_normal;
+          model_coefficients.head<3> () = normal.cast<float> ();
           model_coefficients.head<3> ().normalize ();
         }
       }
