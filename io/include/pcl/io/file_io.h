@@ -67,13 +67,13 @@ namespace pcl
         * Returns:
         *  * < 0 (-1) on error
         *  * > 0 on success
-        * \param file_name the name of the file to load
-        * \param cloud the resultant point cloud dataset (only the header will be filled)
-        * \param origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
-        * \param orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
-        * \param file_version the FILE version of the file (either FILE_V6 or FILE_V7)
-        * \param data_type the type of data (binary data=1, ascii=0, etc)
-        * \param data_idx the offset of cloud data within the file
+        * \param[in] file_name the name of the file to load
+        * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
+        * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
+        * \param[out] orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
+        * \param[out] file_version the FILE version of the file (either FILE_V6 or FILE_V7)
+        * \param[out] data_type the type of data (binary data=1, ascii=0, etc)
+        * \param[out] data_idx the offset of cloud data within the file
         */
       virtual int 
       readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
@@ -81,11 +81,11 @@ namespace pcl
                   int &data_type, int &data_idx) = 0;
 
       /** \brief Read a point cloud data from a FILE file and store it into a sensor_msgs/PointCloud2.
-        * \param file_name the name of the file containing the actual PointCloud data
-        * \param cloud the resultant PointCloud message read from disk
-        * \param origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
-        * \param orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
-        * \param file_version the FILE version of the file (either FILE_V6 or FILE_V7)
+        * \param[in] file_name the name of the file containing the actual PointCloud data
+        * \param[out] cloud the resultant PointCloud message read from disk
+        * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
+        * \param[out] orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
+        * \param[out] file_version the FILE version of the file (either FILE_V6 or FILE_V7)
         */
       virtual int 
       read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
@@ -98,8 +98,8 @@ namespace pcl
         * does not contain a sensor origin/orientation. Reading any file 
         * > FILE_V6 will generate a warning. 
         *
-        * \param file_name the name of the file containing the actual PointCloud data
-        * \param cloud the resultant PointCloud message read from disk
+        * \param[in] file_name the name of the file containing the actual PointCloud data
+        * \param[out] cloud the resultant PointCloud message read from disk
         */
       int 
       read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud)
@@ -111,8 +111,8 @@ namespace pcl
       }
 
       /** \brief Read a point cloud data from any FILE file, and convert it to the given template format.
-        * \param file_name the name of the file containing the actual PointCloud data
-        * \param cloud the resultant PointCloud message read from disk
+        * \param[in] file_name the name of the file containing the actual PointCloud data
+        * \param[out] cloud the resultant PointCloud message read from disk
         */
       template<typename PointT> inline int
       read (const std::string &file_name, pcl::PointCloud<PointT> &cloud)
@@ -134,11 +134,11 @@ namespace pcl
         * Uses aoti/atof to do the conversion.
         * Checks if the st is "nan" and converts it accordingly.
         *
-        * \param st the string containing the value to convert and copy
-        * \param cloud the cloud to copy it to
-        * \param point_index the index of the point
-        * \param field_idx the index of the dimension/field
-        * \param fields_count the current fields count
+        * \param[in] st the string containing the value to convert and copy
+        * \param[out] cloud the cloud to copy it to
+        * \param[in] point_index the index of the point
+        * \param[in] field_idx the index of the dimension/field
+        * \param[in] fields_count the current fields count
         */
       template <typename Type> inline void
       copyStringValue (const std::string &st, sensor_msgs::PointCloud2 &cloud,
@@ -172,16 +172,18 @@ namespace pcl
   class PCL_EXPORTS FileWriter
   {
     public:
-      /** \brief empty constructor */ 
-      FileWriter() {}
-      /** \brief empty destructor */ 
-      virtual ~FileWriter() {}
+      /** \brief Empty constructor */ 
+      FileWriter () {}
+
+      /** \brief Empty destructor */ 
+      virtual ~FileWriter () {}
+
       /** \brief Save point cloud data to a FILE file containing n-D points
-        * \param file_name the output file name
-        * \param cloud the point cloud data message
-        * \param origin the sensor acquisition origin
-        * \param orientation the sensor acquisition orientation
-        * \param binary set to true if the file is to be written in a binary
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor acquisition origin
+        * \param[in] orientation the sensor acquisition orientation
+        * \param[in] binary set to true if the file is to be written in a binary
         * FILE format, false (default) for ASCII
         */
       virtual int
@@ -191,12 +193,12 @@ namespace pcl
              const bool binary = false) = 0;
 
       /** \brief Save point cloud data to a FILE file containing n-D points
-        * \param file_name the output file name
-        * \param cloud the point cloud data message (boost shared pointer)
-        * \param binary set to true if the file is to be written in a binary
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message (boost shared pointer)
+        * \param[in] binary set to true if the file is to be written in a binary
         * FILE format, false (default) for ASCII
-        * \param origin the sensor acquisition origin
-        * \param orientation the sensor acquisition orientation
+        * \param[in] origin the sensor acquisition origin
+        * \param[in] orientation the sensor acquisition orientation
         */
       inline int
       write (const std::string &file_name, const sensor_msgs::PointCloud2::ConstPtr &cloud, 
@@ -208,9 +210,9 @@ namespace pcl
       }
 
       /** \brief Save point cloud data to a FILE file containing n-D points
-        * \param file_name the output file name
-        * \param cloud the pcl::PointCloud data
-        * \param binary set to true if the file is to be written in a binary
+        * \param[in] file_name the output file name
+        * \param[in] cloud the pcl::PointCloud data
+        * \param[in] binary set to true if the file is to be written in a binary
         * FILE format, false (default) for ASCII
         */
       template<typename PointT> inline int

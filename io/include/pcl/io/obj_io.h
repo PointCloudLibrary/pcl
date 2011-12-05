@@ -55,9 +55,9 @@ namespace pcl
                  unsigned precision = 5);
 
     /** \brief Saves a PolygonMesh in ascii PLY format.
-      * \param file_name the name of the file to write to disk
-      * \param triangles the polygonal mesh to save
-      * \param precision the output ASCII precision default 5
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] mesh the polygonal mesh to save
+      * \param[in] precision the output ASCII precision default 5
       * \ingroup io
       */
     PCL_EXPORTS int
