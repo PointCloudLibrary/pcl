@@ -184,7 +184,7 @@ namespace pcl
         void
         getNormalsFromVolume (const DeviceArray<PointType>& cloud, DeviceArray<NormalType>& normals) const;
 
-        /** \brief Computes TSDF volume from GPU memory.           
+        /** \brief Downloads TSDF volume from GPU memory.           
           * \param[out] volume Array with tsdf values. Volume size is 512x512x512, so for voxel (x,y,z) tsdf value can be retrieved as volume[512*512*z + 512*y + x];
           */
         void
