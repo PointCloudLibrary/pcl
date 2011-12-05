@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -46,9 +48,9 @@ namespace pcl
   namespace io
   {
     /** \brief Saves a PolygonMesh in ascii VTK format. 
-      * \param file_name the name of the file to write to disk
-      * \param triangles the polygonal mesh to save
-      * \param precision the output ASCII precision
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] triangles the polygonal mesh to save
+      * \param[in] precision the output ASCII precision
       * \ingroup io
       */
     PCL_EXPORTS int 

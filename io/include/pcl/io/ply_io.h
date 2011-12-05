@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -57,6 +59,7 @@ namespace pcl
         PLY_V0 = 0,
         PLY_V1 = 1
       };
+
       /** \brief Various PLY file versions.
         *
         * PLY represents PLY files with. The are organised this way:
@@ -77,16 +80,24 @@ namespace pcl
         * Returns:
         *  * < 0 (-1) on error
         *  * > 0 on success
-        * \param file_name the name of the file to load
-        * \param cloud the resultant point cloud dataset (only the header will be filled)
+        * \param[in] file_name the name of the file to load
+        * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
+        * \param[in] origin the sensor data acquisition origin (translation)
+        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[out] ply_version the PLY version read from the file
+        * \param[out] data_type the type of PLY data stored in the file
+        * \param[out] data_idx the data index
         */
       int readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
                       Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
                       int &ply_version, int &data_type, int &data_idx);
 
       /** \brief Read a point cloud data from a PLY file and store it into a sensor_msgs/PointCloud2.
-        * \param file_name the name of the file containing the actual PointCloud data
-        * \param cloud the resultant PointCloud message read from disk
+        * \param[in] file_name the name of the file containing the actual PointCloud data
+        * \param[out] cloud the resultant PointCloud message read from disk
+        * \param[in] origin the sensor data acquisition origin (translation)
+        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[out] ply_version the PLY version read from the file
         */
       int read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
                 Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int& ply_version);
@@ -98,10 +109,11 @@ namespace pcl
         * does not contain a sensor origin/orientation. Reading any file
         * > PLY_V6 will generate a warning.
         *
-        * \param file_name the name of the file containing the actual PointCloud data
-        * \param cloud the resultant PointCloud message read from disk
+        * \param[in] file_name the name of the file containing the actual PointCloud data
+        * \param[out] cloud the resultant PointCloud message read from disk
         */
-      inline int read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud)
+      inline int 
+      read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud)
       {
         Eigen::Vector4f origin;
         Eigen::Quaternionf orientation;
@@ -110,11 +122,11 @@ namespace pcl
       }
 
       /** \brief Read a point cloud data from any PLY file, and convert it to the given template format.
-        * \param file_name the name of the file containing the actual PointCloud data
-        * \param cloud the resultant PointCloud message read from disk
+        * \param[in] file_name the name of the file containing the actual PointCloud data
+        * \param[out] cloud the resultant PointCloud message read from disk
         */
       template<typename PointT> inline int
-        read (const std::string &file_name, pcl::PointCloud<PointT> &cloud)
+      read (const std::string &file_name, pcl::PointCloud<PointT> &cloud)
       {
         sensor_msgs::PointCloud2 blob;
         int ply_version;
@@ -123,24 +135,23 @@ namespace pcl
 
         // Exit in case of error
         if (res < 0)
-          return res;
+          return (res);
         pcl::fromROSMsg (blob, cloud);
-        return 0;
+        return (0);
       }
       
     private:
       pcl::io::ply::parser parser_;
       bool swap_bytes_;
+
       /** \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
         *
         * Uses atoi/atof to do the conversion.
         * Checks if the st is "nan" and converts it accordingly.
         *
-        * \param st the string containing the value to convert and copy
-        * \param cloud the cloud to copy it to
-        * \param point_index the index of the point
-        * \param property_name the index of the dimension/field
-        * \param list_count the current fields count
+        * \param[in] string_value the string containing the value to convert and copy
+        * \param[out] data the output data
+        * \param[in] offset the data offset (e.g., where to copy)
         */
       template <typename Type> inline void
       copyStringValue (const std::string &string_value, void* data, size_t offset = 0)
@@ -162,49 +173,58 @@ namespace pcl
   class PCL_EXPORTS PLYWriter : public FileWriter
   {
     public:
-      PLYWriter() : mask_(0) {};
-      ~PLYWriter() {};
+      PLYWriter () : mask_ (0) {};
+      ~PLYWriter () {};
+
       /** \brief Generate the header of a PLY v.7 file format
-        * \param cloud the point cloud data message
+        * \param[in] cloud the point cloud data message
         */
       inline std::string
       generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud)
       {
-        return generateHeader (cloud, true);
+        return (generateHeader (cloud, true));
       }
+      
       /** \brief Generate the header of a PLY v.7 file format
-        * \param cloud the point cloud data message
+        * \param[in] cloud the point cloud data message
         */
       inline std::string
       generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud)
 
       {
-        return generateHeader (cloud, false);
+        return (generateHeader (cloud, false));
       }
+
       /** \brief Save point cloud data to a PLY file containing n-D points, in ASCII format
-        * \param file_name the output file name
-        * \param cloud the point cloud data message
-        * \param precision the specified output numeric stream precision (default: 8)
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor data acquisition origin (translation)
+        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[in] precision the specified output numeric stream precision (default: 8)
         */
-      int writeASCII (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
-                      const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
-                      const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
-                      int precision = 8);
+      int 
+      writeASCII (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
+                  const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
+                  const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
+                  int precision = 8);
 
       /** \brief Save point cloud data to a PLY file containing n-D points, in BINARY format
-        * \param file_name the output file name
-        * \param cloud the point cloud data message
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor data acquisition origin (translation)
+        * \param[in] orientation the sensor data acquisition origin (rotation)
         */
-      int writeBinary (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud,
-                       const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
-                       const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
+      int 
+      writeBinary (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud,
+                   const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
+                   const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
 
       /** \brief Save point cloud data to a PLY file containing n-D points
-        * \param file_name the output file name
-        * \param cloud the point cloud data message
-        * \param origin the sensor acquisition origin
-        * \param orientation the sensor acquisition orientation
-        * \param binary set to true if the file is to be written in a binary
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor acquisition origin
+        * \param[in] orientation the sensor acquisition orientation
+        * \param[in] binary set to true if the file is to be written in a binary
         * PLY format, false (default) for ASCII
         */
       inline int
@@ -220,9 +240,11 @@ namespace pcl
       }
 
       /** \brief Save point cloud data to a PLY file containing n-D points
-        * \param file_name the output file name
-        * \param cloud the point cloud data message (boost shared pointer)
-        * \param binary set to true if the file is to be written in a binary
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message (boost shared pointer)
+        * \param[in] origin the sensor acquisition origin
+        * \param[in] orientation the sensor acquisition orientation
+        * \param[in] binary set to true if the file is to be written in a binary
         * PLY format, false (default) for ASCII
         */
       inline int
@@ -235,9 +257,9 @@ namespace pcl
       }
 
       /** \brief Save point cloud data to a PLY file containing n-D points
-        * \param file_name the output file name
-        * \param cloud the pcl::PointCloud data
-        * \param binary set to true if the file is to be written in a binary
+        * \param[in] file_name the output file name
+        * \param[in] cloud the pcl::PointCloud data
+        * \param[in] binary set to true if the file is to be written in a binary
         * PLY format, false (default) for ASCII
         */
       template<typename PointT> inline int
@@ -256,10 +278,20 @@ namespace pcl
       }
       
     private:
+      /** \brief Generate a PLY header.
+        * \param[in] cloud the input point cloud
+        * \param[in] binary whether the PLY file should be saved as binary data (true) or ascii (false)
+        */
       std::string
       generateHeader (const sensor_msgs::PointCloud2 &cloud, bool binary);
+
+      /** \brief Construct a mask from a list of fields.
+        * \param[in] fields_list the list of fields to construct a mask from
+        */
       void 
-      setMaskFromFieldsList(const std::string& fields_list);
+      setMaskFromFieldsList (const std::string& fields_list);
+
+      /** \brief Internally used mask. */
       int mask_;
   };
 
@@ -270,8 +302,8 @@ namespace pcl
       * Any PLY files containg sensor data will generate a warning as a
       * sensor_msgs/PointCloud2 message cannot hold the sensor origin.
       *
-      * \param file_name the name of the file to load
-      * \param cloud the resultant templated point cloud
+      * \param[in] file_name the name of the file to load
+      * \param[in] cloud the resultant templated point cloud
       * \ingroup io
       */
     inline int
@@ -282,10 +314,10 @@ namespace pcl
     }
 
     /** \brief Load any PLY file into a templated PointCloud type.
-      * \param file_name the name of the file to load
-      * \param cloud the resultant templated point cloud
-      * \param origin the sensor acquisition origin (only for > PLY_V7 - null if not present)
-      * \param orientation the sensor acquisition orientation if availble, 
+      * \param[in] file_name the name of the file to load
+      * \param[in] cloud the resultant templated point cloud
+      * \param[in] origin the sensor acquisition origin (only for > PLY_V7 - null if not present)
+      * \param[in] orientation the sensor acquisition orientation if availble, 
       * identity if not present
       * \ingroup io
       */
@@ -299,8 +331,8 @@ namespace pcl
     }
 
     /** \brief Load any PLY file into a templated PointCloud type
-      * \param file_name the name of the file to load
-      * \param cloud the resultant templated point cloud
+      * \param[in] file_name the name of the file to load
+      * \param[in] cloud the resultant templated point cloud
       * \ingroup io
       */
     template<typename PointT> inline int
@@ -311,9 +343,11 @@ namespace pcl
     }
 
     /** \brief Save point cloud data to a PLY file containing n-D points
-      * \param file_name the output file name
-      * \param cloud the point cloud data message
-      * \param binary_mode true for binary mode, false (default) for ASCII
+      * \param[in] file_name the output file name
+      * \param[in] cloud the point cloud data message
+      * \param[in] origin the sensor data acquisition origin (translation)
+      * \param[in] orientation the sensor data acquisition origin (rotation)
+      * \param[in] binary_mode true for binary mode, false (default) for ASCII
       * \ingroup io
       */
     inline int 
@@ -328,9 +362,9 @@ namespace pcl
 
     /** \brief Templated version for saving point cloud data to a PLY file
       * containing a specific given cloud format
-      * \param file_name the output file name
-      * \param cloud the point cloud data message
-      * \param binary_mode true for binary mode, false (default) for ASCII
+      * \param[in] file_name the output file name
+      * \param[in] cloud the point cloud data message
+      * \param[in] binary_mode true for binary mode, false (default) for ASCII
       * \ingroup io
       */
     template<typename PointT> inline int
@@ -340,11 +374,10 @@ namespace pcl
       return (w.write<PointT> (file_name, cloud, binary_mode));
     }
 
-    /** 
-      * \brief Templated version for saving point cloud data to a PLY file
+    /** \brief Templated version for saving point cloud data to a PLY file
       * containing a specific given cloud format.
-      * \param file_name the output file name
-      * \param cloud the point cloud data message
+      * \param[in] file_name the output file name
+      * \param[in] cloud the point cloud data message
       * \ingroup io
       */
     template<typename PointT> inline int
@@ -354,9 +387,9 @@ namespace pcl
       return (w.write<PointT> (file_name, cloud, false));
     }
 
-    /** 
-      * \brief Templated version for saving point cloud data to a PLY file
-      * containing a specific given cloud format.
+    /** \brief Templated version for saving point cloud data to a PLY file containing a specific given cloud format.
+      * \param[in] file_name the output file name
+      * \param[in] cloud the point cloud data message
       * \ingroup io
       */
     template<typename PointT> inline int
@@ -366,15 +399,11 @@ namespace pcl
       return (w.write<PointT> (file_name, cloud, true));
     }
 
-
-    /** 
-      * \brief Templated version for saving point cloud data to a PLY file
-      * containing a specific given cloud format
-      *
-      * \param file_name the output file name
-      * \param cloud the point cloud data message
-      * \param indices the set of indices to save
-      * \param binary_mode true for binary mode, false (default) for ASCII
+    /** \brief Templated version for saving point cloud data to a PLY file containing a specific given cloud format
+      * \param[in] file_name the output file name
+      * \param[in] cloud the point cloud data message
+      * \param[in] indices the set of indices to save
+      * \param[in] binary_mode true for binary mode, false (default) for ASCII
       * \ingroup io
       */
     template<typename PointT> int
@@ -390,9 +419,9 @@ namespace pcl
     }
 
     /** \brief Saves a PolygonMesh in ascii PLY format.
-      * \param file_name the name of the file to write to disk
-      * \param triangles the polygonal mesh to save
-      * \param precision the output ASCII precision default 5
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] triangles the polygonal mesh to save
+      * \param[in] precision the output ASCII precision default 5
       * \ingroup io
       */
     PCL_EXPORTS int
