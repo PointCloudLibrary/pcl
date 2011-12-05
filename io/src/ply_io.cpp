@@ -831,7 +831,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   size_t nr_points  = mesh.cloud.width * mesh.cloud.height;
   size_t point_size = mesh.cloud.data.size () / nr_points;
 
-  // mesh size
+  // number of faces
   size_t nr_faces = mesh.polygons.size ();
 
   // Write header
