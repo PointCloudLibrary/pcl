@@ -81,7 +81,7 @@ namespace pcl
         hull_polygons_ = polygons;
       }
 
-      /** \brief Get the verstices of the hull used to filter points.
+      /** \brief Get the vertices of the hull used to filter points.
         */
       std::vector<Vertices>
       getHullIndices () const
@@ -191,21 +191,22 @@ namespace pcl
 
       /** \brief Test an individual point against a 2D polygon.
         * PlaneDim1 and PlaneDim2 specify the x/y/z coordinate axes to use.
-        * \param[in] point
-        * \param[in] verts
-        * \param[in] cloud
+        * \param[in] point Point to test against the polygon.
+        * \param[in] verts Vertex indices of polygon.
+        * \param[in] cloud Cloud from which the vertex indices are drawn.
         */
       template<unsigned PlaneDim1, unsigned PlaneDim2> inline static bool
       isPointIn2DPolyWithVertIndices (const PointT& point,
                                       const Vertices& verts,
                                       const PointCloud& cloud);
 
-      /** \brief Does a ray cast from a point intersect with an arbitrary triangle in 3D. 
+      /** \brief Does a ray cast from a point intersect with an arbitrary
+        * triangle in 3D?
         * See: http://softsurfer.com/Archive/algorithm_0105/algorithm_0105.htm#intersect_RayTriangle()
-        * \param[in] point
-        * \param[in] ray
-        * \param[in] verts
-        * \param[in] cloud
+        * \param[in] point Point from which the ray is cast.
+        * \param[in] ray   Vector in direction of ray.
+        * \param[in] verts Indices of vertices making the polygon.
+        * \param[in] cloud Cloud from which the vertex indices are drawn.
         */
       inline static bool
       rayTriangleIntersect (const PointT& point,
@@ -214,13 +215,18 @@ namespace pcl
                             const PointCloud& cloud);
 
 
-      /** \brief . */
+      /** \brief The vertices of the hull used to filter points. */
       std::vector<pcl::Vertices> hull_polygons_;
-      /** \brief . */
+
+      /** \brief The point cloud that the hull indices refer to. */
       PointCloudPtr hull_cloud_;
-      /** \brief . */
+
+      /** \brief The dimensionality of the hull to be used. */
       int dim_;
-      /** \brief . */
+
+      /** \brief If true, the filter will remove points outside the hull. If
+       * false, those inside will be removed.
+       */
       bool crop_outside_;
   };
 
