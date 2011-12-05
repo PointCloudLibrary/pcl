@@ -200,7 +200,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
 	  i_iter = 1;
   }
 
-  for (i_iter; i_iter < max_iterations_; ++i_iter)
+  for (; i_iter < max_iterations_; ++i_iter)
   {
     // Draw nr_samples_ random samples
     selectSamples (*input_, nr_samples_, min_sample_distance_, sample_indices);

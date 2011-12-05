@@ -545,7 +545,6 @@ void vtkLidarScanner::WritePTX(std::string filename)
     // If the point is valid, write it to the file
     if(validArray->GetValue(i))
       {
-      double p[3];
       this->Output->GetPoint(i,coordinate);
       fout << coordinate[0] << " " << coordinate[1] << " " << coordinate[2] << " .5 0 0 0" << endl;
       }

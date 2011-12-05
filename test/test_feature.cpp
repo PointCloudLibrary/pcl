@@ -257,7 +257,7 @@ testSHOTIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points
   ASSERT_EQ (output1.size (), output2.size ());
   for (size_t i = 0; i < output1.size (); ++i)
   {
-    for (int j = 0; j < output0.points[i].descriptor.size(); ++j)
+    for (size_t j = 0; j < output0.points[i].descriptor.size(); ++j)
     {
       ASSERT_EQ (output0.points[i].descriptor[j], output1.points[i].descriptor[j]);
       ASSERT_EQ (output1.points[i].descriptor[j], output2.points[i].descriptor[j]);
@@ -290,7 +290,7 @@ testSHOTIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points
   ASSERT_EQ (output3.size (), output4.size ());
   for (size_t i = 0; i < output3.size (); ++i)
   {
-    for (int j = 0; j < output3.points[i].descriptor.size(); ++j)
+    for (size_t j = 0; j < output3.points[i].descriptor.size(); ++j)
     {
       ASSERT_EQ (output3.points[i].descriptor[j], output4.points[i].descriptor[j]);   
     }

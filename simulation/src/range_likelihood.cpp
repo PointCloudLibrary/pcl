@@ -30,7 +30,7 @@ namespace pcl
 {
 
 RangeLikelihood::RangeLikelihood(int rows, int cols, int row_height, int col_width, Scene::Ptr scene, int x_offset) :
-    rows_(rows), cols_(cols), row_height_(row_height), col_width_(col_width), scene_(scene), x_offset_(x_offset)
+    scene_(scene), rows_(rows), cols_(cols), row_height_(row_height), col_width_(col_width), x_offset_(x_offset)
 {
   height_ = rows_ * row_height;
   width_ = cols_ * col_width;
