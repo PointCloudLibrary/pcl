@@ -19,6 +19,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/search.h
         include/pcl/${SUBSYS_NAME}/kdtree.h
         include/pcl/${SUBSYS_NAME}/organized.h
+        include/pcl/${SUBSYS_NAME}/organized_omp.h
         include/pcl/${SUBSYS_NAME}/octree.h
         include/pcl/${SUBSYS_NAME}/pcl_search.h
         include/pcl/${SUBSYS_NAME}/flann_search.h
@@ -27,12 +28,15 @@ if(build)
     set(impl_incs 
         #include/pcl/${SUBSYS_NAME}/impl/auto.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized.hpp
+        include/pcl/${SUBSYS_NAME}/impl/organized_omp.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
+    PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
+    PCL_LINK_OPENMP(${LIB_NAME})
     target_link_libraries(${LIB_NAME} pcl_common ${FLANN_LIBRARIES} pcl_octree pcl_kdtree)
     list(APPEND EXT_DEPS flann)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
