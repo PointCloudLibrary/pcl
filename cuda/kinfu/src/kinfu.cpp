@@ -579,3 +579,16 @@ pcl::gpu::KinfuTracker::getNormalsFromVolume (const DeviceArray<PointType>& clou
   const float3 device_volume_size = device_cast<const float3> (volume_size_);
   device::extractNormals (volume_, device_volume_size, cloud, (device::float8*)normals.ptr ());
 }
+
+void
+pcl::gpu::KinfuTracker::getTsdfVolume( std::vector<float>& volume) const
+{
+  volume.resize(volume_.cols() * volume_.rows());
+  volume_.download(&volume[0], volume_.cols() * sizeof(int));
+
+  for(size_t i = 0; i < volume.size(); ++i)
+  {
+    float tmp = ((short2*)&volume[i])->x;
+    volume[i] = tmp/DIVISOR;
+  }
+}

@@ -251,9 +251,11 @@ struct KinFuApp
       }
       setViewerPose (cloud_viewer_, kinfu_.getCameraPose ());
       cloud_viewer_.spinOnce ();
+
+#if ((VTK_MAJOR_VERSION >= 5) && (VTK_MINOR_VERSION > 6))
       if (hasImage_)
         viewer3d_.spinOnce (3);        // don't know why crash under ubuntu is here.
-
+#endif
       //viewer2d_.showRGBImage ((unsigned char*)rgb24.data, rgb24.cols, rgb24.rows);
       //viewer2d_.spinOnce(3);
     }

@@ -50,7 +50,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////
     /// for old format
 
-    const int DIVISOR = 32767;     // SHRT_MAX;
+ 
     #define INV_DIV 3.051850947599719e-5f
 
     __device__ __forceinline__ void
