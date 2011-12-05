@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,30 +37,29 @@
  */
 
 
-#ifndef PCL_GSS3D_H_
-#define PCL_GSS3D_H_
+#ifndef PCL_FEATURES_GSS3D_H_
+#define PCL_FEATUReS_GSS3D_H_
 
 #include <pcl/features/feature.h>
 #include <boost/multi_array.hpp>
 
-
 namespace pcl
 {
   /** \brief Class for computing scale-dependent 3D shape descriptors, as proposed in:
-   * John Novatnack and Ko Nishino
-   * Scale-Dependent/Invariant Local 3D Shape Descriptors for Fully Automatic Registration of Multiple Sets of Range Images
-   * Proceedings of Tenth European Conference on Computer Vision ECCV'08
-   * October 2008
-   *
-   * and
-   *
-   * John Novatnack and Ko Nishino
-   * Scale-Dependent 3D Geometric Features
-   * Proceedings of IEEE Eleventh International Conference on Computer Vision ICCV'07
-   * October 2007
-   *
-   * \author Alexandru-Eugen Ichim
-   */
+    * John Novatnack and Ko Nishino
+    * Scale-Dependent/Invariant Local 3D Shape Descriptors for Fully Automatic Registration of Multiple Sets of Range Images
+    * Proceedings of Tenth European Conference on Computer Vision ECCV'08
+    * October 2008
+    *
+    * and
+    *
+    * John Novatnack and Ko Nishino
+    * Scale-Dependent 3D Geometric Features
+    * Proceedings of IEEE Eleventh International Conference on Computer Vision ICCV'07
+    * October 2007
+    *
+    * \author Alexandru-Eugen Ichim
+    */
 
   /// NOT FUNCTIONAL -> CURRENTLY WORK IN PROGRESS
   template <typename PointInT, typename PointNT, typename PointOutT>
@@ -79,9 +80,11 @@ namespace pcl
       typedef typename FeatureFromNormals<PointInT, PointNT, PointOutT>::PointCloudN PointCloudN;
       typedef typename FeatureFromNormals<PointInT, PointNT, PointOutT>::PointCloudNPtr PointCloudNPtr;
 
-
-      /** \brief Empty constructor. */
-      GSS3DEstimation (std::vector<int> &scales, int window_size)
+      /** \brief Empty constructor. 
+        * \param[in] scales
+        * \param[in] window_size
+        */
+      GSS3DEstimation (const std::vector<int> &scales, int window_size)
       {
         scales_ = scales;
         window_size_ = window_size;
@@ -92,35 +95,45 @@ namespace pcl
         Feature<PointInT, PointOutT>::search_radius_ = 1.0f;
       }
 
+      /** \brief . */
       std::vector<PointCloudNPtr> normal_maps_;
 
       typedef boost::multi_array<float, 3> Array3D;
+      /** \brief . */
       boost::shared_ptr<Array3D> d_horiz_normal_maps_, d_vert_normal_maps_,
                                  dd_horiz_normal_maps_, dd_vert_normal_maps_,
                                  laplacians_, grams_;
+      /** \brief . */
       std::vector<PointCloudInPtr> edges_, corners_;
 
 
     protected:
+      /** \brief . */
       void
       computeFeature (PointCloudOut &output);
 
+      /** \brief . */
       void
       calculateGeometricScaleSpace ();
 
+      /** \brief . */
       void
       computeHorizontalDerivatives ();
 
+      /** \brief . */
       void
       computeDerivatives ();
 
 
+      /** \brief . */
       void
       extractCorners ();
 
+      /** \brief . */
       void
       extractEdges ();
 
+      /** \brief . */
       // uses the Bresenham algorithm for rasterizing lines
       float
       computeGeodesicDistance (size_t x0, size_t y0,
@@ -129,7 +142,9 @@ namespace pcl
       /// TODO add a hash map to avoid repeating computations
 
       // paramters
+      /** \brief . */
       std::vector<int> scales_;
+      /** \brief . */
       int window_size_;
   };
 }

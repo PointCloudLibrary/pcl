@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -39,7 +41,6 @@
 
 #include "pcl/features/gss3d.h"
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::GSS3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
@@ -48,7 +49,6 @@ pcl::GSS3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
   computeDerivatives ();
   extractEdges ();
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
@@ -61,7 +61,6 @@ pcl::GSS3DEstimation<PointInT, PointNT, PointOutT>::calculateGeometricScaleSpace
 
 
   // Compute the following scale spaces by convolving with a geodesic Gaussian kernel
-
   float sigma, sigma_squared, dist, gauss_coeff, normalization_factor;
   PointNT result, aux;
   for (size_t scale_i = 0; scale_i < scales_.size (); ++scale_i)
@@ -104,7 +103,6 @@ pcl::GSS3DEstimation<PointInT, PointNT, PointOutT>::calculateGeometricScaleSpace
     normal_maps_[scale_i] = normal_map;
   }
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
@@ -360,12 +358,9 @@ pcl::GSS3DEstimation<PointInT, PointNT, PointOutT>::computeGeodesicDistance (siz
     }
   }
 
-  return total_distance;
+  return (total_distance);
 }
 
-
-
 #define PCL_INSTANTIATE_GSS3DEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::GSS3DEstimation<T,NT,OutT>;
-
 
 #endif /* PCL_FEATURES_IMPL_GSS3D_H_ */
