@@ -85,6 +85,9 @@ if (build)
       PCL_ADD_EXECUTABLE(octree_viewer ${SUBSYS_NAME} octree_viewer.cpp)
       target_link_libraries(octree_viewer pcl_common pcl_io pcl_octree pcl_visualization pcl_kdtree)   
 
+      PCL_ADD_EXECUTABLE(openni_save_image ${SUBSYS_NAME} openni_save_image.cpp)
+      target_link_libraries(openni_save_image pcl_common pcl_io pcl_visualization)   
+
       PCL_ADD_EXECUTABLE(mesh2pcd ${SUBSYS_NAME} mesh2pcd.cpp)
       target_link_libraries(mesh2pcd pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
       
