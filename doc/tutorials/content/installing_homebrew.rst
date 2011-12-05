@@ -260,7 +260,7 @@ Extract, build, fix permissions and install OpenNI::
    $ chmod -R a+r Bin Include Lib
    $ chmod -R a+x Bin Lib
    $ chmod a+x Include/MacOSX Include/Linux-*
-   $ sudo ./install
+   $ sudo ./install.sh
 
 In addition the PrimeSense XML configuration file found within the
 patched OpenNI download needs its permissions fixed and to be copied to
@@ -275,7 +275,7 @@ Extract, build, fix permissions and install Sensor::
    $ cd ps_engine_osx/Redist
    $ chmod -R a+r Bin Lib Config Install
    $ chmod -R a+x Bin Lib
-   $ sudo ./install
+   $ sudo ./install.sh
 
 Compiling PCL
 -------------
