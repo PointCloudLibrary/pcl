@@ -82,7 +82,7 @@ pcl::search::OrganizedNeighborOMP<PointT>::radiusSearch (const               Poi
   }
 
   // NAN test
-  if(!pcl_isfinite(p_q.x) || !pcl_isfinite(p_q.y) || !pcl_isfinite(p_q.z))
+  if(!pcl_isfinite (p_q.x) || !pcl_isfinite (p_q.y) || !pcl_isfinite (p_q.z) )
     return 0;
 
   // search window
@@ -99,11 +99,11 @@ pcl::search::OrganizedNeighborOMP<PointT>::radiusSearch (const               Poi
   this->getProjectedRadiusSearchBox (p_q, squared_radius, leftX, rightX, leftY, rightY);
 
   // iterate over search box
-  #pragma omp parallel for
+  #pragma omp parallel for schedule (dynamic, threads_)
   for (int x = leftX; x <= rightX; x++)
   {
     #pragma omp flush (abort)
-    if(!abort)
+    if (!abort)
     {
       for (int y = leftY; y <= rightY; y++)
       {

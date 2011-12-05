@@ -82,7 +82,7 @@ namespace pcl
         typedef boost::shared_ptr<const pcl::search::OrganizedNeighborOMP<PointT> > ConstPtr;
 
         /** \brief OrganizedNeighbor constructor. */
-        OrganizedNeighborOMP ()
+        OrganizedNeighborOMP () : threads_ (1)
         {
           max_distance_ = std::numeric_limits<double>::max ();
           oneOverFocalLength_ = 0.0f; //Indicate if it's not initialised
@@ -92,6 +92,32 @@ namespace pcl
           radiusLookupTableHeight_ =-1; 
           exactFocalLength_ = 0;      // we haven't estimated it yet or we haven't set it 
           precision_ = 0;
+        }
+        /** \brief OrganizedNeighbor constructor. 
+          * \param[in] nr_threads the number of of hardware threads to use
+          */
+        OrganizedNeighborOMP (unsigned int nr_threads)
+        {
+          max_distance_ = std::numeric_limits<double>::max ();
+          oneOverFocalLength_ = 0.0f; //Indicate if it's not initialised
+          horizontal_window_ = 0;
+          vertical_window_ = 0;
+          radiusLookupTableWidth_ =-1; 
+          radiusLookupTableHeight_ =-1; 
+          exactFocalLength_ = 0;      // we haven't estimated it yet or we haven't set it 
+          precision_ = 0;
+          setNumberOfThreads (nr_threads);
+        }
+
+        /** \brief Initialize the scheduler and set the number of threads to use.
+          * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+          */
+        inline void 
+        setNumberOfThreads (unsigned int nr_threads)
+        { 
+          if (nr_threads == 0)
+            nr_threads = 1;
+          threads_ = nr_threads; 
         }
 
         /** \brief Empty deconstructor. */
@@ -503,6 +529,9 @@ namespace pcl
 
         /** \brief Indicates if the focallenght was already set or calculated */
         bool exactFocalLength_;
+
+        /** \brief The number of threads the scheduler should use. */
+        unsigned int threads_;
     };
   }
 }
