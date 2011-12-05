@@ -95,7 +95,7 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P
 # in order to always make a full statement RPATH
 ###
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" is_system_dir)
@@ -125,7 +125,7 @@ find_package(OpenNI)
 find_package(Qhull)
 # Find ROS
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
-# Find VTK 
+# Find VTK
 find_package(VTK)
 if(VTK_FOUND)
   set(VTK_FOUND TRUE)
