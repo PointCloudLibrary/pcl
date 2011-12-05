@@ -68,21 +68,24 @@ DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()
 
-set(PCL_RESOURCES_DIR ${PCL_SOURCE_DIR}/resources)
-set(PCL_POINTCLOUDS_DIR ${PCL_RESOURCES_DIR}/pointclouds)
+if(WIN32)
+  set(PCL_RESOURCES_DIR ${PCL_SOURCE_DIR}/resources)
+  set(PCL_POINTCLOUDS_DIR ${PCL_RESOURCES_DIR}/pointclouds)
+endif(WIN32)
+
+set(PCL_OUTPUT_LIB_DIR ${PCL_BINARY_DIR}/${LIB_INSTALL_DIR})
+set(PCL_OUTPUT_BIN_DIR ${PCL_BINARY_DIR}/${BIN_INSTALL_DIR})
+make_directory(${PCL_OUTPUT_LIB_DIR})
+make_directory(${PCL_OUTPUT_BIN_DIR})
+set("CMAKE_ARCHIVE_OUTPUT_DIRECTORY" "${PCL_OUTPUT_LIB_DIR}")
+set("CMAKE_RUNTIME_OUTPUT_DIRECTORY" "${PCL_OUTPUT_BIN_DIR}")
 # ---[ Windows requires DLLs (shared libraries) to be installed in the same directory as executables
 if(WIN32)
-  set(PCL_OUTPUT_LIB_DIR ${PCL_BINARY_DIR}/${LIB_INSTALL_DIR})
-  set(PCL_OUTPUT_BIN_DIR ${PCL_BINARY_DIR}/${BIN_INSTALL_DIR})
-  make_directory(${PCL_OUTPUT_LIB_DIR})
-  make_directory(${PCL_OUTPUT_BIN_DIR})
-  foreach(CONF ${CMAKE_CONFIGURATION_TYPES})        # For each configuration (Debug, Release, MinSizeRel... and/or anything the user chooses)
-    string(TOUPPER "${CONF}" CONF)                # Go uppercase (DEBUG, RELEASE...)
-    set("CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONF}" "${PCL_OUTPUT_LIB_DIR}")
-    set("CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONF}" "${PCL_OUTPUT_BIN_DIR}")
-    set("CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONF}" "${PCL_OUTPUT_BIN_DIR}")
-  endforeach()
-endif()
+  set("CMAKE_LIBRARY_OUTPUT_DIRECTORY" "${PCL_OUTPUT_BIN_DIR}")
+else(WIN32)
+  set("CMAKE_LIBRARY_OUTPUT_DIRECTORY" "${PCL_OUTPUT_LIB_DIR}")
+endif(WIN32)
+
 
 # Add an "uninstall" target
 configure_file("${PCL_SOURCE_DIR}/cmake/uninstall_target.cmake.in"

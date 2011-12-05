@@ -69,7 +69,7 @@ macro(find_eigen)
     HINTS ${PC_EIGEN_INCLUDEDIR} ${PC_EIGEN_INCLUDE_DIRS} 
           "${EIGEN_ROOT}" "$ENV{EIGEN_ROOT}"
     PATHS "$ENV{PROGRAMFILES}/Eigen 3.0.0" "$ENV{PROGRAMW6432}/Eigen 3.0.0"
-          "$ENV{PROGRAMFILES}/Eigen" "$ENV{PROGRAMW6432}/Eigen"	  
+          "$ENV{PROGRAMFILES}/Eigen" "$ENV{PROGRAMW6432}/Eigen"   
     PATH_SUFFIXES eigen3 include/eigen3 include)
   find_package_handle_standard_args(eigen DEFAULT_MSG EIGEN_INCLUDE_DIRS)
   set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS} -DEIGEN_USE_NEW_STDVECTOR -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
@@ -311,6 +311,7 @@ else(PCL_FIND_QUIETLY)
   set(QUIET_)
 endif(PCL_FIND_QUIETLY)
 
+file(TO_CMAKE_PATH "${PCL_DIR}" PCL_DIR)
 if(WIN32)
 # PCLConfig.cmake is installed to PCL_ROOT/cmake
   get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
@@ -393,7 +394,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
   pcl_message(STATUS "looking for PCL_${COMPONENT}")
 
   string(REGEX REPLACE "^cuda_(.*)$" "\\1" cuda_component "${component}")
-  string(REGEX REPLACE "^gpu_(.*)$" "\\1" gpu_component "${component}")	
+  string(REGEX REPLACE "^gpu_(.*)$" "\\1" gpu_component "${component}") 
   
   find_path(PCL_${COMPONENT}_INCLUDE_DIR
     NAMES pcl/${component}
@@ -417,8 +418,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
   list(FIND pcl_header_only_components ${component} _is_header_only)
   if(_is_header_only EQUAL -1)
     find_library(PCL_${COMPONENT}_LIBRARY ${pcl_component}
-      HINTS ${PCL_LIBRARY_DIRS} "${PCL_DIR}/${component}"
-            "${PCL_DIR}/cuda/${cuda_component}" "${PCL_DIR}/cuda/${gpu_component}" "${PCL_DIR}cuda/${component}"
+      HINTS ${PCL_LIBRARY_DIRS}
       DOC "path to ${pcl_component} library"
       NO_DEFAULT_PATH)
     get_filename_component(${component}_library_path 
@@ -426,8 +426,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
       PATH)
 
     find_library(PCL_${COMPONENT}_LIBRARY_DEBUG ${pcl_component}${PCL_DEBUG_SUFFIX}
-      HINTS ${PCL_LIBRARY_DIRS} "${PCL_DIR}/${component}"
-            "${PCL_DIR}/cuda/${cuda_component}" "${PCL_DIR}/cuda/${gpu_component}" "${PCL_DIR}cuda/${component}"
+      HINTS ${PCL_LIBRARY_DIRS}
       DOC "path to ${pcl_component} library debug"
       NO_DEFAULT_PATH)
     # if only release found let release be debug too
