@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Dirk Holz, University of Bonn.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,8 +37,8 @@
  *
  */
 
-#ifndef PLC_IO_VTK_LIB_IO_H_
-#define PLC_IO_VTK_LIB_IO_H_
+#ifndef PCL_IO_VTK_LIB_IO_H_
+#define PCL_IO_VTK_LIB_IO_H_
 
 #include <vtkSmartPointer.h>
 #include <vtkPoints.h>
@@ -49,10 +51,8 @@
 #include <vtkPLYReader.h>
 #include <vtkPLYWriter.h>
 #include <vtkOBJReader.h>
-//#include <vtkOBJExporter.h>
 #include <vtkSTLReader.h>
 #include <vtkSTLWriter.h>
-//#include <vtkVRMLExporter.h>
 #include <boost/filesystem.hpp>
 
 #include "pcl/point_types.h"
@@ -60,101 +60,97 @@
 #include "pcl/PolygonMesh.h"
 #include "pcl/pcl_macros.h"
 #include "pcl/ros/conversions.h"
-
 #include "pcl/io/pcd_io.h"
 
 namespace pcl
 {
   namespace io
   {
-
-//    /** \brief Saves a PolygonMesh in ascii VTK format.
-//      *        (For compability with (old/pcl_native) vtk_io.h!)
-//      * \param file_name the name of the file to write to disk
-//      * \param triangles the polygonal mesh to save
-//      * \param precision the output ASCII precision
-//      * \ingroup io
-//      */
-//    PCL_EXPORTS int
-//    saveVTKFile (const std::string &file_name, const pcl::PolygonMesh &triangles, unsigned precision = 5)
-//    {
-//
-//    }
-
-
-    /// CONVERSION FUNCTIONS //////////////////////////////////////////////////
-
-    /**
-     * \brief Convert vtkPolyData object to a PCL PolygonMesh
-     * \param poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
-     * \param mesh PCL Polygon Mesh to fill
-     * \return Number of points in the point cloud of mesh.
-     */
+    /** \brief Convert vtkPolyData object to a PCL PolygonMesh
+      * \param[in] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
+      * \param[out] mesh PCL Polygon Mesh to fill
+      * \return Number of points in the point cloud of mesh.
+      */
     PCL_EXPORTS int
     vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMesh& mesh);
 
-    /**
-     * \brief Convert a PCL PolygonMesh to a vtkPolyData object
-     * \param mesh Reference to PCL Polygon Mesh
-     * \param poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
-     * \return Number of points in the point cloud of mesh.
-     */
+    /** \brief Convert a PCL PolygonMesh to a vtkPolyData object
+      * \param[in] mesh Reference to PCL Polygon Mesh
+      * \param[out] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
+      * \return Number of points in the point cloud of mesh.
+      */
     PCL_EXPORTS int
     mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& poly_data);
 
-
+    /** \brief Load a \ref PolygonMesh object given an input file name, based on the file extension
+      * \param[in] file_name the name of the file containing the polygon data
+      * \param[out] mesh the object that we want to load the data in 
+      */ 
     PCL_EXPORTS int
     loadPolygonFile (const std::string &file_name, pcl::PolygonMesh& mesh);
 
+    /** \brief Save a \ref PolygonMesh object given an input file name, based on the file extension
+      * \param[in] file_name the name of the file to save the data to
+      * \param[in] mesh the object that contains the data
+      */
     PCL_EXPORTS int
     savePolygonFile (const std::string &file_name, const pcl::PolygonMesh& mesh);
 
-
-
+    /** \brief Load a VTK file into a \ref PolygonMesh object
+      * \param[in] file_name the name of the file that contains the data
+      * \param[out] mesh the object that we want to load the data in 
+      */
     PCL_EXPORTS int
     loadPolygonFileVTK (const std::string &file_name, pcl::PolygonMesh& mesh);
 
+    /** \brief Load a PLY file into a \ref PolygonMesh object
+      * \param[in] file_name the name of the file that contains the data
+      * \param[out] mesh the object that we want to load the data in 
+      */
     PCL_EXPORTS int
     loadPolygonFilePLY (const std::string &file_name, pcl::PolygonMesh& mesh);
 
+    /** \brief Load an OBJ file into a \ref PolygonMesh object
+      * \param[in] file_name the name of the file that contains the data
+      * \param[out] mesh the object that we want to load the data in 
+      */
     PCL_EXPORTS int
     loadPolygonFileOBJ (const std::string &file_name, pcl::PolygonMesh& mesh);
 
+    /** \brief Load an STL file into a \ref PolygonMesh object
+      * \param[in] file_name the name of the file that contains the data
+      * \param[out] mesh the object that we want to load the data in 
+      */
     PCL_EXPORTS int
     loadPolygonFileSTL (const std::string &file_name, pcl::PolygonMesh& mesh);
 
-
-
+    /** \brief Save a \ref PolygonMesh object into a VTK file
+      * \param[in] file_name the name of the file to save the data to
+      * \param[in] mesh the object that contains the data
+      */
     PCL_EXPORTS int
     savePolygonFileVTK (const std::string &file_name, const pcl::PolygonMesh& mesh);
 
+    /** \brief Save a \ref PolygonMesh object into a PLY file
+      * \param[in] file_name the name of the file to save the data to
+      * \param[in] mesh the object that contains the data
+      */
     PCL_EXPORTS int
     savePolygonFilePLY (const std::string &file_name, const pcl::PolygonMesh& mesh);
 
-    PCL_EXPORTS int
-    savePolygonFileOBJ (const std::string &file_name, const pcl::PolygonMesh& mesh);
-
+    /** \brief Save a \ref PolygonMesh object into an STL file
+      * \param[in] file_name the name of the file to save the data to
+      * \param[in] mesh the object that contains the data
+      */
     PCL_EXPORTS int
     savePolygonFileSTL (const std::string &file_name, const pcl::PolygonMesh& mesh);
 
-    PCL_EXPORTS int
-    savePolygonFileWRL (const std::string &file_name, const pcl::PolygonMesh& mesh);
-
-    inline int
-    savePolygonFileVRML (const std::string &file_name, const pcl::PolygonMesh& mesh)
-    {
-      return savePolygonFileWRL (file_name, mesh);
-    }
-
-
-
     /**
-     * TODO documentation
-     * TODO proper building the library (depending on whether or not vtk was found)
-     * TODO writing files
-     * TODO more importers/exporters
-     * TODO IMPORTANT colors and other scalars
-     * TODO DXF files
+     * TO DO proper building the library (depending on whether or not vtk was found)
+     * TO DO writing files
+     * TO DO more importers/exporters
+     * TO DO IMPORTANT colors and other scalars
+     * TO DO DXF files
      *
      */
   }

@@ -87,7 +87,7 @@ namespace pcl
     va_start (args, format);
     vsprintf (msg, format, args);
 
-    throw PCLIOException (msg, file, function, line);
+    throw PCLIOException (msg, file_name, function_name, line_number);
   }
 }
 
