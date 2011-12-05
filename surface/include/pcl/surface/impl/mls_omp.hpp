@@ -51,7 +51,7 @@ pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCl
 
 #pragma omp parallel for schedule (dynamic, threads_)
   // For all points
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  for (int cp = 0; cp < (int) indices_->size (); ++cp)
   {
     // Allocate enough space to hold the results of nearest neighbor searches
     // \note resize is irrelevant for a radiusSearch ().
