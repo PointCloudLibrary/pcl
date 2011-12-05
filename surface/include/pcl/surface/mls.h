@@ -58,13 +58,13 @@ namespace pcl
   template <typename PointInT, typename NormalOutT>
   class MovingLeastSquares: public PCLBase<PointInT>
   {
-    using PCLBase<PointInT>::input_;
-    using PCLBase<PointInT>::indices_;
-    using PCLBase<PointInT>::fake_indices_;
-    using PCLBase<PointInT>::initCompute;
-    using PCLBase<PointInT>::deinitCompute;
-
     public:
+      using PCLBase<PointInT>::input_;
+      using PCLBase<PointInT>::indices_;
+      using PCLBase<PointInT>::fake_indices_;
+      using PCLBase<PointInT>::initCompute;
+      using PCLBase<PointInT>::deinitCompute;
+
       typedef typename pcl::search::Search<PointInT> KdTree;
       typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
 
@@ -178,6 +178,9 @@ namespace pcl
       /** \brief Parameter for distance based weighting of neighbors (search_radius_ * search_radius_ works fine) */
       double sqr_gauss_param_;
 
+      /** \brief Number of coefficients, to be computed from the requested order.*/
+      int nr_coeff_;
+
       /** \brief Search for the closest nearest neighbors of a given point using a radius search
         * \param[in] index the index of the query point
         * \param[out] indices the resultant vector of indices representing the k-nearest neighbors
@@ -202,13 +205,10 @@ namespace pcl
                              Eigen::Vector4f &normal);
 
     private:
-      /** \brief Number of coefficients, to be computed from the requested order.*/
-      int nr_coeff_;
-
       /** \brief Abstract surface reconstruction method. 
         * \param[out] output the result of the reconstruction 
         */
-      void performReconstruction (PointCloudIn &output);
+      virtual void performReconstruction (PointCloudIn &output);
 
       /** \brief Abstract class get name method. */
       std::string getClassName () const { return ("MovingLeastSquares"); }

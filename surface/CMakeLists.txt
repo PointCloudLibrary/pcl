@@ -100,6 +100,7 @@ if(build)
         src/marching_cubes_greedy.cpp
         src/marching_cubes_greedy_dot.cpp
         src/mls.cpp
+        src/mls_omp.cpp
         src/organized_fast_mesh.cpp
         src/simplification_remove_unused_vertices.cpp
         src/surfel_smoothing.cpp
@@ -118,6 +119,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/marching_cubes_greedy.h
         include/pcl/${SUBSYS_NAME}/marching_cubes_greedy_dot.h
         include/pcl/${SUBSYS_NAME}/mls.h
+        include/pcl/${SUBSYS_NAME}/mls_omp.h
         include/pcl/${SUBSYS_NAME}/organized_fast_mesh.h
         include/pcl/${SUBSYS_NAME}/reconstruction.h
         include/pcl/${SUBSYS_NAME}/simplification_remove_unused_vertices.h
@@ -136,6 +138,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy_dot.hpp
         include/pcl/${SUBSYS_NAME}/impl/mls.hpp
+        include/pcl/${SUBSYS_NAME}/impl/mls_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_fast_mesh.hpp
         include/pcl/${SUBSYS_NAME}/impl/reconstruction.hpp
         include/pcl/${SUBSYS_NAME}/impl/surfel_smoothing.hpp
@@ -150,6 +153,8 @@ if(build)
     link_directories(${VTK_LIBRARY_DIRS})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
+    PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
+    PCL_LINK_OPENMP(${LIB_NAME})
     target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_search pcl_kdtree pcl_octree ${OpenCV_LIBS} ${VTK_SURFACE_TARGET_LINK_LIBRARIES})
     if(QHULL_FOUND)
       target_link_libraries(${LIB_NAME} ${QHULL_LIBRARIES})

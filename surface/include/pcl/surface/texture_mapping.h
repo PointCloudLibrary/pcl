@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: texture_mapping.h 1005 2011-07-13 13:07:00 ktran $
+ * $Id$
  *
  */
 /** \author Khai Tran */
