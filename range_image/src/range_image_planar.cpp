@@ -62,7 +62,7 @@ namespace pcl
     //MEASURE_FUNCTION_TIME;
     reset ();
     
-    float original_angular_resolution = asinf (0.5f*float(di_width)/float(focal_length)) / (0.5f*float(di_width));
+    float original_angular_resolution = atanf (0.5f*float(di_width)/float(focal_length)) / (0.5f*float(di_width));
     int skip = 1;
     if (desired_angular_resolution >= 2.0f*original_angular_resolution)
     {
