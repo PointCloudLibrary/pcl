@@ -50,14 +50,13 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief MovingLeastSquares represent an implementation of the MLS (Moving Least Squares) algorithm for data
     * smoothing and improved normal estimation.
-    * \author Zoltan Csaba Marton and Radu Bogdan Rusu
+    * \author Zoltan Csaba Marton, Radu B. Rusu, Suat Gedikli
     * \ingroup surface
     */
   template <typename PointInT, typename NormalOutT>
-  class MovingLeastSquares : public PCLBase<PointInT>
+  class MovingLeastSquares: public PCLBase<PointInT>
   {
     using PCLBase<PointInT>::input_;
     using PCLBase<PointInT>::indices_;
@@ -84,7 +83,7 @@ namespace pcl
 
       /** \brief Provide a pointer to an point cloud where normal information should be saved
         * \note This is optional, it can be the same as the parameter to the reconstruction method, but no normals are estimated if it is not set.
-        * \param cloud the const boost shared pointer to a point cloud with normal
+        * \param[in] cloud the const boost shared pointer to a point cloud with normal
         */
       inline void 
       setOutputNormals (NormalCloudOutPtr cloud) { normals_ = cloud; }
@@ -94,7 +93,7 @@ namespace pcl
       getOutputNormals () { return normals_; }
 
       /** \brief Provide a pointer to the search object.
-        * \param tree a pointer to the spatial search object.
+        * \param[in] tree a pointer to the spatial search object.
         */
       inline void
       setSearchMethod (const KdTreePtr &tree)
@@ -110,7 +109,7 @@ namespace pcl
       getSearchMethod () { return (tree_); }
 
       /** \brief Set the order of the polynomial to be fit.
-        * \param order the order of the polynomial
+        * \param[in] order the order of the polynomial
         */
       inline void 
       setPolynomialOrder (int order) { order_ = order; }
@@ -120,7 +119,7 @@ namespace pcl
       getPolynomialOrder () { return (order_); }
 
       /** \brief Sets whether the surface and normal are approximated using a polynomial, or only via tangent estimation.
-        * \param polynomial_fit set to true for polynomial fit
+        * \param[in] polynomial_fit set to true for polynomial fit
         */
       inline void 
       setPolynomialFit (bool polynomial_fit) { polynomial_fit_ = polynomial_fit; }
@@ -130,7 +129,7 @@ namespace pcl
       getPolynomialFit () { return (polynomial_fit_); }
 
       /** \brief Set the sphere radius that is to be used for determining the k-nearest neighbors used for fitting.
-        * \param radius the sphere radius that is to contain all k-nearest neighbors
+        * \param[in] radius the sphere radius that is to contain all k-nearest neighbors
         * \note Calling this method resets the squared Gaussian parameter to radius * radius !
         */
       inline void 
@@ -142,7 +141,7 @@ namespace pcl
 
       /** \brief Set the parameter used for distance based weighting of neighbors (the square of the search radius works
         * best in general).
-        * \note sqr_gauss_param the squared Gaussian parameter
+        * \param[in] sqr_gauss_param the squared Gaussian parameter
         */
       inline void 
       setSqrGaussParam (double sqr_gauss_param) { sqr_gauss_param_ = sqr_gauss_param; }
@@ -152,7 +151,7 @@ namespace pcl
       getSqrGaussParam () { return (sqr_gauss_param_); }
 
       /** \brief Base method for surface reconstruction for all points given in <setInputCloud (), setIndices ()>
-        * \param output the resultant reconstructed surface model
+        * \param[out] output the resultant reconstructed surface model
         */
       void 
       reconstruct (PointCloudIn &output);
@@ -180,9 +179,9 @@ namespace pcl
       double sqr_gauss_param_;
 
       /** \brief Search for the closest nearest neighbors of a given point using a radius search
-        * \param index the index of the query point
-        * \param indices the resultant vector of indices representing the k-nearest neighbors
-        * \param sqr_distances the resultant squared distances from the query point to the k-nearest neighbors
+        * \param[in] index the index of the query point
+        * \param[out] indices the resultant vector of indices representing the k-nearest neighbors
+        * \param[out] sqr_distances the resultant squared distances from the query point to the k-nearest neighbors
         */
       inline int
       searchForNeighbors (int index, std::vector<int> &indices, std::vector<float> &sqr_distances)
@@ -190,11 +189,25 @@ namespace pcl
         return (search_method_ (index, search_radius_, indices, sqr_distances));
       }
 
+      /** \brief Smooth a given point and its neighborghood using Moving Least Squares.
+        * \param pt the point to be smoothed (in place operation, needs to contain data when passed in)
+        * \param[in] input the input point cloud that \ref nn_indices refer to
+        * \param[in] nn_indices the set of nearest neighbors indices for \ref pt
+        * \param nn_sqr_dists the set of nearest neighbors squared distances for \ref pt
+        * \param[out] normal the output smoothed normal and curvature as a 4D vector (nx, ny, nz, curvature)
+        */
+      void
+      computeMLSPointNormal (PointInT &pt, const PointCloudIn &input, 
+                             const std::vector<int> &nn_indices, std::vector<float> &nn_sqr_dists,
+                             Eigen::Vector4f &normal);
+
     private:
       /** \brief Number of coefficients, to be computed from the requested order.*/
       int nr_coeff_;
 
-      /** \brief Abstract surface reconstruction method. */
+      /** \brief Abstract surface reconstruction method. 
+        * \param[out] output the result of the reconstruction 
+        */
       void performReconstruction (PointCloudIn &output);
 
       /** \brief Abstract class get name method. */
