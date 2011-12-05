@@ -594,6 +594,53 @@ namespace pcl
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief HSV handler class for colors. Uses the data present in the "h", "s", "v"
+      * fields as the color at each point.
+      * \ingroup visualization
+      */
+    template <typename PointT>
+    class PointCloudColorHandlerHSVField : public PointCloudColorHandler<PointT>
+    {
+      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      public:
+        typedef boost::shared_ptr<PointCloudColorHandlerHSVField<PointT> > Ptr;
+        typedef boost::shared_ptr<const PointCloudColorHandlerHSVField<PointT> > ConstPtr;
+
+        /** \brief Constructor. */
+        PointCloudColorHandlerHSVField (const PointCloudConstPtr &cloud);
+
+        /** \brief Get the name of the field used. */
+        virtual std::string 
+        getFieldName () const { return ("hsv"); }
+
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param[out] scalars the output scalars containing the color for the dataset
+          */
+        virtual void 
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+      protected:
+        /** \brief Class getName method. */
+        virtual inline std::string 
+        getName () const { return ("PointCloudColorHandlerHSVField"); }
+        
+        /** \brief The field index for "S". */
+        int s_field_idx_;
+
+        /** \brief The field index for "V". */
+        int v_field_idx_;
+      private:
+        // Members derived from the base class
+        using PointCloudColorHandler<PointT>::cloud_;
+        using PointCloudColorHandler<PointT>::capable_;
+        using PointCloudColorHandler<PointT>::field_idx_;
+        using PointCloudColorHandler<PointT>::fields_;
+    };
+
+    //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Generic field handler class for colors. Uses an user given field to extract
       * 1D data and display the color at each point using a min-max lookup table.
       * \ingroup visualization
@@ -802,6 +849,47 @@ namespace pcl
         virtual std::string 
         getFieldName () const { return ("rgb"); }
     };
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief HSV handler class for colors. Uses the data present in the "h", "s", "v"
+      * fields as the color at each point.
+      * \ingroup visualization
+      */
+    template <>
+    class PCL_EXPORTS PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    {
+      typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+      typedef PointCloud::Ptr PointCloudPtr;
+      typedef PointCloud::ConstPtr PointCloudConstPtr;
+
+      public:
+        typedef boost::shared_ptr<PointCloudColorHandlerHSVField<PointCloud> > Ptr;
+        typedef boost::shared_ptr<const PointCloudColorHandlerHSVField<PointCloud> > ConstPtr;
+
+        /** \brief Constructor. */
+        PointCloudColorHandlerHSVField (const PointCloudConstPtr &cloud);
+
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param[out] scalars the output scalars containing the color for the dataset
+          */
+        virtual void 
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+      protected:
+        /** \brief Get the name of the class. */
+        virtual inline std::string 
+        getName () const { return ("PointCloudColorHandlerHSVField"); }
+
+        /** \brief Get the name of the field used. */
+        virtual std::string 
+        getFieldName () const { return ("hsv"); }
+
+        /** \brief The field index for "S". */
+        int s_field_idx_;
+
+        /** \brief The field index for "V". */
+        int v_field_idx_;
+     };
 
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Generic field handler class for colors. Uses an user given field to extract
