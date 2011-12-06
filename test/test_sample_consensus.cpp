@@ -53,6 +53,7 @@
 #include <pcl/sample_consensus/sac_model_line.h>
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
 #include <pcl/sample_consensus/sac_model_parallel_plane.h>
+#include "pcl/sample_consensus/sac_model_normal_parallel_plane.h"
 #include <pcl/features/normal_3d.h>
 #include <boost/thread.hpp>
 
@@ -68,6 +69,7 @@ typedef SampleConsensusModelCircle2D<PointXYZ>::Ptr SampleConsensusModelCircle2D
 typedef SampleConsensusModelLine<PointXYZ>::Ptr SampleConsensusModelLinePtr;
 typedef SampleConsensusModelNormalPlane<PointXYZ, Normal>::Ptr SampleConsensusModelNormalPlanePtr;
 typedef SampleConsensusModelParallelPlane<PointXYZ>::Ptr SampleConsensusModelParallelPlanePtr;
+typedef SampleConsensusModelNormalParallelPlane<PointXYZ, Normal>::Ptr SampleConsensusModelNormalParallelPlanePtr;
 
 PointCloud<PointXYZ>::Ptr cloud_ (new PointCloud<PointXYZ> ());
 PointCloud<Normal>::Ptr normals_ (new PointCloud<Normal> ());
@@ -240,6 +242,71 @@ TEST (RMSAC, SampleConsensusModelPlane)
 
   verifyPlaneSac(model, sac, 600, 1.0, 1.0, 0.01);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (RANSAC, SampleConsensusModelNormalParallelPlane)
+{
+  srand (0);
+  // Use a custom point cloud for these tests until we need something better
+  PointCloud<PointXYZ> cloud;
+  PointCloud<Normal> normals;
+  cloud.points.resize (10);
+  normals.resize (10);
+
+  for (unsigned idx = 0; idx < cloud.size (); ++idx)
+  {
+    cloud.points[idx].x = (rand () % 200) - 100;
+    cloud.points[idx].y = (rand () % 200) - 100;
+    cloud.points[idx].z = 0.0;
+
+    normals.points[idx].normal_x = 0.0;
+    normals.points[idx].normal_y = 0.0;
+    normals.points[idx].normal_z = 1.0;
+  }
+
+  // Create a shared plane model pointer directly
+  SampleConsensusModelNormalParallelPlanePtr model (new SampleConsensusModelNormalParallelPlane<PointXYZ, Normal> (cloud.makeShared ()));
+  model->setInputNormals (normals.makeShared ());
+
+  const float max_angle_rad = 0.01;
+  const float angle_eps = 0.0001;
+  model->setEpsAngle (max_angle_rad);
+
+  // Test true axis
+  {
+    model->setAxis (Eigen::Vector3f (0, 0, 1));
+
+    RandomSampleConsensus<PointXYZ> sac (model, 0.03);
+    sac.computeModel();
+
+    std::vector<int> inliers;
+    sac.getInliers (inliers);
+    ASSERT_EQ (inliers.size (), cloud.size ());
+  }
+
+  // test axis slightly in valid range
+  {
+    model->setAxis (Eigen::Vector3f(0, sin(max_angle_rad * (1 - angle_eps)), cos(max_angle_rad * (1 - angle_eps))));
+    RandomSampleConsensus<PointXYZ> sac (model, 0.03);
+    sac.computeModel();
+
+    std::vector<int> inliers;
+    sac.getInliers (inliers);
+    ASSERT_EQ (inliers.size (), cloud.size ());
+  }
+
+  // test axis slightly out of valid range
+  {
+    model->setAxis (Eigen::Vector3f(0, sin(max_angle_rad * (1 + angle_eps)), cos(max_angle_rad * (1 + angle_eps))));
+    RandomSampleConsensus<PointXYZ> sac (model, 0.03);
+    sac.computeModel();
+
+    std::vector<int> inliers;
+    sac.getInliers (inliers);
+    ASSERT_EQ (inliers.size (), 0);
+  }
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (MLESAC, SampleConsensusModelPlane)
@@ -545,8 +612,8 @@ TEST (SAC, InfiniteLoop)
     cloud.points[pIdx].y = 0.0;
     cloud.points[pIdx].z = 0.0;
   }
-  
-  boost::posix_time::time_duration delay(0,0,1,0); 
+
+  boost::posix_time::time_duration delay(0,0,1,0);
   boost::function<bool ()> sac_function;
   SampleConsensusModelSpherePtr model (new SampleConsensusModelSphere<PointXYZ> (cloud.makeShared ()));
 
@@ -573,14 +640,14 @@ TEST (SAC, InfiniteLoop)
   sac_function = boost::bind (&RandomizedRandomSampleConsensus<PointXYZ>::computeModel, &rrsac, 0);
   boost::thread thread4 (sac_function);
   ASSERT_TRUE(thread4.timed_join(delay));
-          
+
   // Create the RMSAC object
   RandomizedMEstimatorSampleConsensus<PointXYZ> rmsac (model, 0.03);
   sac_function = boost::bind (&RandomizedMEstimatorSampleConsensus<PointXYZ>::computeModel, &rmsac, 0);
   boost::thread thread5 (sac_function);
   ASSERT_TRUE(thread5.timed_join(delay));
 
-  // Create the MLESAC object 
+  // Create the MLESAC object
   MaximumLikelihoodSampleConsensus<PointXYZ> mlesac (model, 0.03);
   sac_function = boost::bind (&MaximumLikelihoodSampleConsensus<PointXYZ>::computeModel, &mlesac, 0);
   boost::thread thread6 (sac_function);
