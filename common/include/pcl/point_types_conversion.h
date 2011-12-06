@@ -109,13 +109,13 @@ namespace pcl
       return;
     } 
     float a = in.h / 60;
-    int i = floor (a);
+    int   i = floor (a);
     float f = a - i;
     float p = in.v * (1 - in.s);
     float q = in.v * (1 - in.s * f);
     float t = in.v * (1 - in.s * (1 - f));
-    
-    switch (i) 
+
+    switch (i)
     {
       case 0:
         out.r = in.v; out.g = t; out.b = p; break;
