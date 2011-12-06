@@ -52,7 +52,7 @@ namespace pcl
     * this means that checking for inliers will not only involve a "distance to
     * model" criterion, but also an additional "maximum angular deviation"
     * between the plane's normal and the inlier points normals. In addition,
-    * the plane must lie parallel to an user-specified axis.
+    * the plane normal must lie parallel to an user-specified axis.
     *
     * The model coefficients are defined as:
     * <ul>
@@ -107,7 +107,7 @@ namespace pcl
         * \param[in] cloud the input point cloud dataset
         */
       SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud) : SampleConsensusModelPlane<PointT> (cloud),
-                                                                          eps_angle_ (0.0), eps_dist_ (0.0)
+                                                                          eps_angle_ (-1.0), cos_angle_ (-1.0), eps_dist_ (0.0)
       {
         axis_.setZero ();
       }
@@ -117,7 +117,7 @@ namespace pcl
         * \param[in] indices a vector of point indices to be used from \a cloud
         */
       SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModelPlane<PointT> (cloud, indices),
-                                                                                                           eps_angle_ (0.0), eps_dist_ (0.0)
+                                                                                                           eps_angle_ (-1.0), cos_angle_ (-1.0), eps_dist_ (0.0)
       {
         axis_.setZero ();
       }
@@ -125,42 +125,42 @@ namespace pcl
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
         * \param[in] ax the axis along which we need to search for a plane perpendicular to
         */
-      inline void 
-      setAxis (const Eigen::Vector3f &ax) { axis_ = ax; }
+      inline void
+      setAxis (const Eigen::Vector3f &ax) { axis_.head<3> () = ax; axis_.normalize ();}
 
       /** \brief Get the axis along which we need to search for a plane perpendicular to. */
-      inline Eigen::Vector3f 
-      getAxis () { return (axis_); }
+      inline Eigen::Vector3f
+      getAxis () { return (axis_.head<3> ()); }
 
       /** \brief Set the angle epsilon (delta) threshold.
         * \param[in] ea the maximum allowed deviation from 90 degrees between the plane normal and the given axis.
         * \note You need to specify an angle > 0 in order to activate the axis-angle constraint!
         */
-      inline void 
-      setEpsAngle (const double ea) { eps_angle_ = ea; }
+      inline void
+      setEpsAngle (const double ea) { eps_angle_ = ea; cos_angle_ = fabs (cos (ea));}
 
       /** \brief Get the angle epsilon (delta) threshold. */
-      inline double 
+      inline double
       getEpsAngle () { return (eps_angle_); }
 
       /** \brief Set the distance we expect the plane to be from the origin
         * \param[in] d distance from the template plane to the origin
         */
-      inline void 
+      inline void
       setDistanceFromOrigin (const double d) { distance_from_origin_ = d; }
 
       /** \brief Get the distance of the plane from the origin. */
-      inline double 
+      inline double
       getDistanceFromOrigin () { return (distance_from_origin_); }
 
       /** \brief Set the distance epsilon (delta) threshold.
         * \param[in] delta the maximum allowed deviation from the template distance from the origin
         */
-      inline void 
+      inline void
       setEpsDist (const double delta) { eps_dist_ = delta; }
 
       /** \brief Get the distance epsilon (delta) threshold. */
-      inline double 
+      inline double
       getEpsDist () { return (eps_dist_); }
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
@@ -168,31 +168,31 @@ namespace pcl
         * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         * \param[out] inliers the resultant model inliers
         */
-      void 
-      selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
-                            const double threshold, 
+      void
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients,
+                            const double threshold,
                             std::vector<int> &inliers);
 
-      /** \brief Count all the points which respect the given model coefficients as inliers. 
-        * 
+      /** \brief Count all the points which respect the given model coefficients as inliers.
+        *
         * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
       virtual int
-      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
+      countWithinDistance (const Eigen::VectorXf &model_coefficients,
                            const double threshold);
 
       /** \brief Compute all distances from the cloud data to a given plane model.
         * \param[in] model_coefficients the coefficients of a plane model that we need to compute distances to
         * \param[out] distances the resultant estimated distances
         */
-      void 
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
+      void
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients,
                            std::vector<double> &distances);
 
       /** \brief Return an unique id for this model (SACMODEL_NORMAL_PARALLEL_PLANE). */
-      inline pcl::SacModel 
+      inline pcl::SacModel
       getModelType () const { return (SACMODEL_NORMAL_PARALLEL_PLANE); }
 
     	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -201,19 +201,21 @@ namespace pcl
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      bool 
+      bool
       isModelValid (const Eigen::VectorXf &model_coefficients);
 
    private:
       /** \brief The axis along which we need to search for a plane perpendicular to. */
-      Eigen::Vector3f axis_;
+      Eigen::Vector4f axis_;
 
       /** \brief The distance from the template plane to the origin. */
       double distance_from_origin_;
 
-      /** \brief The maximum allowed difference between the plane normal and the given axis. */
+      /** \brief The maximum allowed difference between the plane normal and the given axis.  */
       double eps_angle_;
 
+      /** \brief The cosine of the angle*/
+      double cos_angle_;
       /** \brief The maximum allowed deviation from the template distance from the origin. */
       double eps_dist_;
   };
