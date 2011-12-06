@@ -38,7 +38,7 @@
 
 
 #ifndef PCL_FEATURES_GSS3D_H_
-#define PCL_FEATUReS_GSS3D_H_
+#define PCL_FEATURES_GSS3D_H_
 
 #include <pcl/features/feature.h>
 #include <boost/multi_array.hpp>
