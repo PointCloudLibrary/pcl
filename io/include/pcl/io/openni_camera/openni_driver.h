@@ -108,7 +108,6 @@ namespace openni_wrapper
      */
     boost::shared_ptr<OpenNIDevice> getDeviceByIndex (unsigned index) const;
 
-#ifndef _WIN32
     /**
      * @author Suat Gedikli
      * @brief returns the device with the given serial number.
@@ -116,7 +115,8 @@ namespace openni_wrapper
      * @return shared_ptr to the device, null if no matching device found.
      */
     boost::shared_ptr<OpenNIDevice> getDeviceBySerialNumber (const std::string& serial_number) const;
-
+    
+#ifndef _WIN32
     /**
      * @author Suat Gedikli
      * @brief returns the device that is given by the USB bus/address combination.

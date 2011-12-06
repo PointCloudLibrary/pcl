@@ -326,12 +326,12 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
       //printf("[%s] searching for device with bus@address = %d@%d\n", getName().c_str(), bus, address);
       device_ = driver.getDeviceByAddress (bus, address);
     }
+#endif
     else if (!device_id.empty ())
     {
       //printf("[%s] searching for device with serial number = %s\n", getName().c_str(), device_id.c_str());
       device_ = driver.getDeviceBySerialNumber (device_id);
     }
-#endif
     else
     {
       device_ = driver.getDeviceByIndex (0);

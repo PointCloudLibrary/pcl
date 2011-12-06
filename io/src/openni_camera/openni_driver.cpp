@@ -53,6 +53,7 @@
 #ifndef _WIN32
 #include <libusb-1.0/libusb.h>
 #else
+#include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
 #endif
 
@@ -172,6 +173,7 @@ unsigned OpenNIDriver::updateDeviceList ()
 
   // get additional info about connected devices like serial number, vendor name and prduct name
   getDeviceInfos ();
+#endif
   // build serial number -> device index map
   for (unsigned deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)
   {
@@ -180,7 +182,6 @@ unsigned OpenNIDriver::updateDeviceList ()
       serial_map_[serial_number] = deviceIdx;
   }
 
-#endif
 
   // redundant, but needed for Windows right now and also for Xtion
   for (unsigned deviceIdx = 0; deviceIdx < device_context_.size (); ++deviceIdx)
@@ -277,7 +278,6 @@ boost::shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) 
   return (device);
 }
 
-#ifndef _WIN32
 boost::shared_ptr<OpenNIDevice>
 OpenNIDriver::getDeviceBySerialNumber (const std::string& serial_number) const
 {
@@ -293,7 +293,7 @@ OpenNIDriver::getDeviceBySerialNumber (const std::string& serial_number) const
   // because of warnings!!!
   return (boost::shared_ptr<OpenNIDevice > ((OpenNIDevice*)NULL));
 }
-
+#ifndef _WIN32
 boost::shared_ptr<OpenNIDevice>
 OpenNIDriver::getDeviceByAddress (unsigned char bus, unsigned char address) const
 {
@@ -393,7 +393,15 @@ const char* OpenNIDriver::getSerialNumber (unsigned index) const throw ()
 #ifndef _WIN32
   return device_context_[index].device_node.GetInstanceName ();
 #else
-  return "";
+  std::string info = device_context_[index].device_node.GetCreationInfo();
+  char_separator<char> sep("#");
+  tokenizer< char_separator<char> > tokens(info, sep);
+  tokenizer<char_separator<char>>::iterator itr = tokens.begin();
+  itr++;
+  itr++;
+  std::string sn = *itr;
+  device_context_[index].device_node.SetInstanceName(sn.c_str());
+  return device_context_[index].device_node.GetInstanceName ();
 #endif
 }
 
