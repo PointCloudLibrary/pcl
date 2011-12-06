@@ -27,6 +27,7 @@ if(build)
 
     set(impl_incs 
         #include/pcl/${SUBSYS_NAME}/impl/auto.hpp
+        include/pcl/${SUBSYS_NAME}/impl/flann_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_omp.hpp
         )
