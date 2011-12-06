@@ -1,5 +1,6 @@
 #include "proctor/detector.h"
 #include "proctor/proctor.h"
+#include <omp.h>
 
 Detector detector;
 Proctor proctor;

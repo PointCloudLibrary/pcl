@@ -56,5 +56,6 @@ if(build)
                         ${FLANN_LIBRARIES} 
                         pcl_common pcl_features pcl_keypoints pcl_io pcl_search pcl_visualization
                         vtkCommon vtkFiltering vtkGraphics vtkIO)
+  PCL_ADD_OPENMP_FLAGS(proctor)
 endif(build)
 
