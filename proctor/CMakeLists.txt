@@ -55,7 +55,7 @@ if(build)
   target_link_libraries(proctor 
                         ${FLANN_LIBRARIES} 
                         pcl_common pcl_features pcl_keypoints pcl_io pcl_search pcl_visualization
-                        vtkCommon vtkFiltering vtkGraphics vtkIO)
+                        vtkCommon vtkFiltering vtkGraphics vtkIO boost_mpi)
   PCL_ADD_OPENMP_FLAGS(proctor)
 endif(build)
 

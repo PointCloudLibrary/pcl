@@ -36,11 +36,10 @@ static vtkSmartPointer<vtkTransform> compute_transform(pcl::proctor::Scanner::Sc
 }
 
 /** simulate lidar scanning to get a point cloud (without normals) */
-static pcl::PointCloud<pcl::PointXYZ>::Ptr compute_pcxyz(int model, vtkSmartPointer<vtkTransform> transform) {
+static pcl::PointCloud<pcl::PointXYZ>::Ptr compute_pcxyz(Model &model, vtkSmartPointer<vtkTransform> transform) {
   // TODO: investigate replacing vtkLidarScanner with vtkRenderWindow::GetZbufferData
   // I think this function leaks memory.
   pcl::PointCloud<pcl::PointXYZ>::Ptr pcxyz (new pcl::PointCloud<pcl::PointXYZ>());
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 8))
   vtkLidarScanner *ls = vtkLidarScanner::New();
   vtkPolyData *pd = vtkPolyData::New();
 
@@ -49,7 +48,7 @@ static pcl::PointCloud<pcl::PointXYZ>::Ptr compute_pcxyz(int model, vtkSmartPoin
   ls->SetNumberOfThetaPoints(pcl::proctor::Scanner::res_y);
   ls->SetNumberOfPhiPoints(pcl::proctor::Scanner::res_x);
   ls->SetTransform(transform);
-  ls->SetInputConnection(pcl::proctor::Proctor::models[model].mesh->GetProducerPort());
+  ls->SetInputConnection(model.mesh->GetProducerPort());
   ls->Update();
 
   ls->GetValidOutputPoints(pd);
@@ -64,7 +63,6 @@ static pcl::PointCloud<pcl::PointXYZ>::Ptr compute_pcxyz(int model, vtkSmartPoin
 
   ls->Delete();
   pd->Delete();
-#endif
   return pcxyz;
 }
 
@@ -91,7 +89,7 @@ const unsigned int pcl::proctor::Scanner::res_y = 240;
 pcl::PointCloud<pcl::PointNormal>::Ptr pcl::proctor::Scanner::getCloud(Scan scan, Model &model) {
   PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal>());
   vtkSmartPointer<vtkTransform> transform = compute_transform(scan, model);
-  PointCloud<PointXYZ>::Ptr pcxyz = compute_pcxyz(scan.mi, transform);
+  PointCloud<PointXYZ>::Ptr pcxyz = compute_pcxyz(model, transform);
   float v[3];
   transform->GetPosition(v);
   PointCloud<Normal>::Ptr pcn = compute_pcn(pcxyz, v[0], v[1], v[2]);
@@ -106,13 +104,13 @@ PointCloud<PointNormal>::Ptr pcl::proctor::Scanner::getCloudCached(int mi, int t
     pcl::proctor::Proctor::phi_start + pi * Proctor::phi_step
   };
   char name[22];
-  sprintf(name, "scan_%04d_%03.0f_%03.0f.pcd", pcl::proctor::Proctor::models[scan.mi].id, deg(scan.theta), deg(scan.phi));
+  sprintf(name, "scan_%04d_%03.0f_%03.0f.pcd", mi, deg(scan.theta), deg(scan.phi));
   if (ifstream(name)) {
     PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal>());
     io::loadPCDFile(name, *cloud);
     return cloud;
   } else {
-    PointCloud<PointNormal>::Ptr cloud = getCloud(scan, model);
+    PointCloud<PointNormal>::Ptr cloud = getCloud(scan, Proctor::models[mi]);
     io::savePCDFileBinary(name, *cloud);
     return cloud;
   }

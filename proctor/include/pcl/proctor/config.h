@@ -4,10 +4,10 @@
 namespace Config {
 
   /** how many models to use in training and testing */
-  const int num_models = 8;
+  const int num_models = 4;
 
   /** how many times to test the detector */
-  const int num_trials = 10 * num_models;
+  const int num_trials = 1 * num_models;
 
 }
 

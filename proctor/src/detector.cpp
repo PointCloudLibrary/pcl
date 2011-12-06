@@ -94,6 +94,7 @@ void Detector::train(PointCloud<PointNormal>::Ptr *models) {
   PointCloud<Signature>::Ptr features (new PointCloud<Signature>);
 #pragma omp parallel for
   for (int mi = 0; mi < Config::num_models; mi++) {
+    cout << "TEST" <<endl;
     Entry &e = database[mi];
     e.cloud = models[mi];
     timer.start();

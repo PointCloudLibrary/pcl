@@ -71,7 +71,6 @@ namespace pcl {
         /** the timer */
         Timer<NUM_BINS> timer;
 
-      private:
 
         /** get a dense sampling of points as keypoints and return their indices */
         IndicesPtr computeKeypoints(PointCloud<PointNormal>::Ptr cloud);
@@ -84,6 +83,8 @@ namespace pcl {
 
         /** run IA_RANSAC and ICP to judge similarity */
         double computeRegistration(Entry &source, int mi, int ci);
+
+      private:
 
         auto_ptr<visualization::CloudViewer> vis;
 
