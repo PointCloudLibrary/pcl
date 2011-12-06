@@ -130,9 +130,10 @@ pcl::CropHull<PointT>::applyFilter2D (PointCloud &output)
     {
       if (isPointIn2DPolyWithVertIndices<PlaneDim1,PlaneDim2> (
               input_->points[(*indices_)[index]], hull_polygons_[poly], *hull_cloud_
-         ) && crop_outside_)
+         ))
       {
-        output.push_back (input_->points[(*indices_)[index]]);
+        if (crop_outside_)
+          output.push_back (input_->points[(*indices_)[index]]);
         // once a point has tested +ve for being inside one polygon, we can
         // stop checking the others:
         break;
@@ -157,9 +158,10 @@ pcl::CropHull<PointT>::applyFilter2D (std::vector<int> &indices)
     {
       if (isPointIn2DPolyWithVertIndices<PlaneDim1,PlaneDim2> (
               input_->points[(*indices_)[index]], hull_polygons_[poly], *hull_cloud_
-         ) && crop_outside_)
+         ))
       {
-        indices.push_back ((*indices_)[index]);
+        if (crop_outside_)      
+          indices.push_back ((*indices_)[index]);
         break;
       }
     }
@@ -197,7 +199,9 @@ pcl::CropHull<PointT>::applyFilter3D (PointCloud &output)
         crossings[ray] += rayTriangleIntersect
           (input_->points[(*indices_)[index]], rays[ray], hull_polygons_[poly], *hull_cloud_);
 
-    if ((crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1)
+    if (crop_outside_ && (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1)
+      output.push_back (input_->points[(*indices_)[index]]);
+    else if (!crop_outside_)
       output.push_back (input_->points[(*indices_)[index]]);
   }
 }
@@ -222,7 +226,9 @@ pcl::CropHull<PointT>::applyFilter3D (std::vector<int> &indices)
         crossings[ray] += rayTriangleIntersect
           (input_->points[(*indices_)[index]], rays[ray], hull_polygons_[poly], *hull_cloud_);
 
-    if ((crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1)
+    if (crop_outside_ && (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1)
+      indices.push_back ((*indices_)[index]);
+    else if (!crop_outside_)
       indices.push_back ((*indices_)[index]);
   }
 }
