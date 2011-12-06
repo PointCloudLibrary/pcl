@@ -50,6 +50,7 @@ if(build)
                      src/main.cpp 
                      src/detector.cpp 
                      src/proctor.cpp 
+                     src/proctor_mpi.cpp
                      src/scanner.cpp
                     )
   target_link_libraries(proctor 

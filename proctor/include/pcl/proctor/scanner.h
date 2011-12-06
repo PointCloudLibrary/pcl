@@ -26,10 +26,10 @@ namespace pcl {
         } Scan;
 
         /** does one scan. testing should use this */
-        static PointCloud<PointNormal>::Ptr getCloud(Scan scan, pcl::proctor::Model &model);
+        static PointCloud<PointNormal>::Ptr getCloud(Scan scan, Model &model);
 
         /** try to load scan from disk, or do it from scratch. for training only */
-        static PointCloud<PointNormal>::Ptr getCloudCached(int mi, int ti, int pi, pcl::proctor::Model &model);
+        static PointCloud<PointNormal>::Ptr getCloudCached(int mi, int ti, int pi, Model &model);
     };
   }
 }

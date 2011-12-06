@@ -21,6 +21,13 @@ namespace pcl {
       float scale;
     };
 
+    struct Scene {
+      int id;
+      PointCloud<PointNormal>::Ptr cloud;
+
+      Scene(int id, PointCloud<PointNormal>::Ptr cloud) : id(id), cloud(cloud) {};
+    };
+
     class Proctor {
       public:
         /** a model from the dataset plus metadata */
@@ -42,10 +49,10 @@ namespace pcl {
         PointCloud<PointNormal>::Ptr getFullPointCloud(int mi);
 
         /** load/generate training data and pass to detector */
-        void train(Detector &detector);
+        virtual void train(Detector &detector);
 
         /** generate testing data and pass to detector; this populates scenes, confusion, and distance */
-        void test(Detector &detector, unsigned int seed);
+        virtual void test(Detector &detector, unsigned int seed);
 
         /** compute and print the precision and recall data */
         void printPrecisionRecall();
@@ -57,7 +64,7 @@ namespace pcl {
         void printTimer();
 
         /** print the results of testing */
-        void printResults(Detector &detector);
+        virtual void printResults(Detector &detector);
 
         // parameters for creating registered point cloud
         static const float theta_start;
@@ -100,4 +107,4 @@ namespace pcl {
 
 }
 
-#endif //#ifndef PROCTOR_H_
+#endif

@@ -9,9 +9,16 @@
 #include "proctor/config.h"
 #include "proctor/timer.h"
 
-using namespace std;
+using std::vector;
+using std::stringstream;
+using std::auto_ptr;
+using std::exception;
+using std::numeric_limits;
+
 namespace pcl {
   namespace proctor {
+    struct Scene;
+
     class Detector {
       public:
 
@@ -52,7 +59,10 @@ namespace pcl {
          * do any offline processing
          * models[i] is a registered point cloud of the ith model
          */
-        void train(PointCloud<PointNormal>::Ptr *models);
+        // TODO const reference?
+        void train(Scene &scene);
+
+        double get_votes(Entry &query, Entry &match);
 
         /**
          * do any online processing
@@ -80,7 +90,7 @@ namespace pcl {
         PointCloud<Signature>::Ptr computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices);
 
         /** try to load the features from disk, or do it from scratch. for training only */
-        PointCloud<Signature>::Ptr obtainFeatures(int mi, PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices);
+        PointCloud<Signature>::Ptr obtainFeatures(Scene &scene, IndicesPtr indices);
 
         /** run IA_RANSAC and ICP to judge similarity */
         double computeRegistration(Entry &source, int mi, int ci);
