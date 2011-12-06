@@ -96,7 +96,7 @@ namespace pcl
         virtual IndexPtr createIndex (const flann::Matrix<float>& data);
       };
 
-      FlannSearch (FlannIndexCreator* creator);
+      FlannSearch (FlannIndexCreator* creator = new KdTreeIndexCreator());
 
       /** \brief Destructor for KdTree. */
       virtual
@@ -189,7 +189,7 @@ namespace pcl
       nearestKSearch (const PointCloud &cloud, int index, int k, std::vector<int> &k_indices,
           std::vector<float> &k_distances)
       {
-          return nearestKSearch( cloud[index],k,k_indices,k_distances );
+          return nearestKSearch (cloud[index],k,k_indices,k_distances);
       }
 
       /** \brief Search for the k-nearest neighbors for the given query point (zero-copy).
@@ -206,7 +206,7 @@ namespace pcl
       inline int
       nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances)
       {
-          return nearestKSearch( (*input_)[index],k,k_indices,k_distances );
+          return nearestKSearch ((*input_)[index],k,k_indices,k_distances);
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
@@ -235,7 +235,7 @@ namespace pcl
       radiusSearch (const PointCloud& cloud, int index, double radius, std::vector<int> &k_indices,
           std::vector<float> &k_distances, int max_nn = -1)
       {
-        return radiusSearch( cloud[index],radius,k_indices,k_distances,max_nn );
+        return radiusSearch (cloud[index],radius,k_indices,k_distances,max_nn);
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius (zero-copy).
@@ -251,7 +251,7 @@ namespace pcl
       radiusSearch (int index, double radius, std::vector<int> &k_indices, std::vector<float> &k_distances,
           int max_nn = -1) const
       {
-          return radiusSearch( (*input_)[index],radius,k_indices,k_distances,max_nn );
+          return radiusSearch ((*input_)[index],radius,k_indices,k_distances,max_nn);
       }
 
 

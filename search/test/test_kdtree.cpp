@@ -96,7 +96,7 @@ init ()
 
   kdtree->nearestKSearch (test_point, no_of_neighbors, k_indices, k_distances);
 
-  //if (k_indices.size() != no_of_neighbors)  cerr << "Found "<<k_indices.size()<<" instead of "<<no_of_neighbors<<" neighbors.\n";
+  //if (k_indices.size () != no_of_neighbors)  cerr << "Found "<<k_indices.size ()<<" instead of "<<no_of_neighbors<<" neighbors.\n";
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
   // Check if all found neighbors have distance smaller than max_dist
@@ -125,23 +125,19 @@ init ()
 /* Test the templated NN search (for different query point types) */
 TEST (PCL, KdTree_differentPointT)
 {
-
   unsigned int no_of_neighbors = 20;
 
-
-  pcl::search::Search<PointXYZ>* kdtree = new pcl::search::KdTree<PointXYZ>();
+  pcl::search::Search<PointXYZ>* kdtree = new pcl::search::KdTree<PointXYZ> ();
   //kdtree->initSearchDS ();
   kdtree->setInputCloud (cloud_big.makeShared ());
 
   PointCloud<PointXYZRGB> cloud_rgb;
 
-  copyPointCloud( cloud_big, cloud_rgb);
-
-
+  copyPointCloud (cloud_big, cloud_rgb);
 
   std::vector< std::vector< float > > dists;
   std::vector< std::vector< int > > indices;
-  kdtree->nearestKSearchT(cloud_rgb, std::vector<int>(),no_of_neighbors,indices,dists);
+  kdtree->nearestKSearchT (cloud_rgb, std::vector<int> (),no_of_neighbors,indices,dists);
 
   vector<int> k_indices;
   k_indices.resize (no_of_neighbors);
@@ -157,32 +153,29 @@ TEST (PCL, KdTree_differentPointT)
   {
     kdtree->nearestKSearchT (cloud_rgb.points[i], no_of_neighbors, k_indices_t, k_distances_t);
     kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
-    EXPECT_EQ( k_indices.size(), indices[i].size() );
-    EXPECT_EQ( k_distances.size(), dists[i].size() );
-    for( size_t j=0; j< no_of_neighbors; j++ )
+    EXPECT_EQ (k_indices.size (), indices[i].size ());
+    EXPECT_EQ (k_distances.size (), dists[i].size ());
+    for (size_t j=0; j< no_of_neighbors; j++)
     {
-      EXPECT_TRUE( k_indices[j]==indices[i][j] || k_distances[j] == dists[i][j] );
-      EXPECT_TRUE( k_indices[j]==k_indices_t[j] );
-      EXPECT_TRUE(  k_distances[j] == k_distances_t[j] );
+      EXPECT_TRUE (k_indices[j] == indices[i][j] || k_distances[j] == dists[i][j]);
+      EXPECT_TRUE (k_indices[j] == k_indices_t[j]);
+      EXPECT_TRUE (k_distances[j] == k_distances_t[j]);
     }
-
   }
 }
 
 /* Test for KdTree nearestKSearch with multiple query points */
 TEST (PCL, KdTree_multipointKnnSearch)
 {
-
   unsigned int no_of_neighbors = 20;
 
-
-  pcl::search::Search<PointXYZ>* kdtree = new pcl::search::KdTree<PointXYZ>();
+  pcl::search::Search<PointXYZ>* kdtree = new pcl::search::KdTree<PointXYZ> ();
   //kdtree->initSearchDS ();
   kdtree->setInputCloud (cloud_big.makeShared ());
 
   std::vector< std::vector< float > > dists;
   std::vector< std::vector< int > > indices;
-  kdtree->nearestKSearch(cloud_big, std::vector<int>(),no_of_neighbors,indices,dists);
+  kdtree->nearestKSearch (cloud_big, std::vector<int> (),no_of_neighbors,indices,dists);
 
   vector<int> k_indices;
   k_indices.resize (no_of_neighbors);
@@ -192,13 +185,12 @@ TEST (PCL, KdTree_multipointKnnSearch)
   for (size_t i = 0; i < cloud_big.points.size (); ++i)
   {
     kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
-    EXPECT_EQ( k_indices.size(), indices[i].size() );
-    EXPECT_EQ( k_distances.size(), dists[i].size() );
-    for( size_t j=0; j< no_of_neighbors; j++ )
+    EXPECT_EQ (k_indices.size (), indices[i].size ());
+    EXPECT_EQ (k_distances.size (), dists[i].size ());
+    for (size_t j=0; j< no_of_neighbors; j++)
     {
-      EXPECT_TRUE( k_indices[j]==indices[i][j] || k_distances[j] == dists[i][j] );
+      EXPECT_TRUE( k_indices[j]==indices[i][j] || k_distances[j] == dists[i][j]);
     }
-
   }
 }
 

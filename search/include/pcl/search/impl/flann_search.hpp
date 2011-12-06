@@ -322,7 +322,8 @@ pcl::search::FlannSearch<PointT>::convertInputToFlannMatrix ()
     {
       const PointT& point = (*input_)[i];
       // Check if the point is invalid
-      if (!point_representation_->isValid (point)) {
+      if (!point_representation_->isValid (point))
+      {
         identity_mapping_ = false;
         continue;
       }
@@ -341,7 +342,8 @@ pcl::search::FlannSearch<PointT>::convertInputToFlannMatrix ()
       int cloud_index = (*indices_)[indices_index];
       const PointT&  point = (*input_)[cloud_index];
       // Check if the point is invalid
-      if (!point_representation_->isValid (point)) {
+      if (!point_representation_->isValid (point))
+      {
         identity_mapping_ = false;
         continue;
       }
