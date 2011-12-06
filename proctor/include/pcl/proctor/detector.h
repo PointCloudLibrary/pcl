@@ -43,6 +43,7 @@ namespace pcl {
           PointCloud<PointNormal>::Ptr cloud;
           IndicesPtr indices;
           PointCloud<Signature>::Ptr features;
+          KdTree<Signature>::Ptr tree;
         } Entry;
 
         Entry database[Config::num_models];

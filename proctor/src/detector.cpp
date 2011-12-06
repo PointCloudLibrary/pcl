@@ -2,10 +2,12 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/registration/icp.h>
+#include <pcl/common/time.h>
 
 #include "proctor/detector.h"
 #include "proctor/ia_ransac_sub.h"
 #include "proctor/proctor.h"
+
 
 using namespace pcl::proctor;
 
@@ -86,15 +88,15 @@ private:
 
 /** Detector */
 const double Detector::keypoint_separation = 0.04;
-const int Detector::max_votes = 5;
-const int Detector::num_registration = 4;
+const int Detector::max_votes = 20;
+const int Detector::num_registration = 2;
 
 void Detector::train(PointCloud<PointNormal>::Ptr *models) {
   srand(time(NULL));
   PointCloud<Signature>::Ptr features (new PointCloud<Signature>);
 #pragma omp parallel for
   for (int mi = 0; mi < Config::num_models; mi++) {
-    cout << "TEST" <<endl;
+    cout << "begin model " << mi << endl;
     Entry &e = database[mi];
     e.cloud = models[mi];
     timer.start();
@@ -102,6 +104,8 @@ void Detector::train(PointCloud<PointNormal>::Ptr *models) {
     timer.stop(KEYPOINTS_TRAINING);
     timer.start();
     e.features = obtainFeatures(mi, e.cloud, e.indices);
+    e.tree = KdTree<Signature>::Ptr(new KdTreeFLANN<Signature>());
+    e.tree->setInputCloud(e.features);
     timer.stop(OBTAIN_FEATURES_TRAINING);
     *features += *e.features;
     cout << "finished model " << mi << endl;
@@ -133,23 +137,28 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, doubl
   // let each point cast votes
   timer.start();
   memset(classifier, 0, Config::num_models * sizeof(*classifier));
+  clock_t totalTime = 0;
+  float time = 0;
   for (unsigned int pi = 0; pi < e.indices->size(); pi++) {
-    vector<int> indices;
-    vector<float> distances;
-    tree->nearestKSearch(*e.features, pi, max_votes, indices, distances);
-    for (int ri = 0; ri < max_votes; ri++) {
-      // do a linear search to determine which model
-      // this will make sense when we switch to dense
-      int index = indices[ri];
-      int mi;
-      for (mi = 0; mi < Config::num_models; mi++) {
-        if (index < (int) database[mi].indices->size()) break;
-        index -= database[mi].indices->size();
+    for (int mi = 0; mi < Config::num_models; mi++) {
+      vector<int> indices;
+      vector<float> distances;
+
+      clock_t start = clock();
+      StopWatch s;
+      database[mi].tree->nearestKSearch(*e.features, pi, max_votes, indices, distances);
+      totalTime += clock() - start;
+      time += s.getTimeSeconds();
+
+      for (int ri = 0; ri < max_votes; ri++) {
+        int index = indices[ri];
+        classifier[mi] += 1. / (distances[ri] + numeric_limits<float>::epsilon());
       }
-      // TODO: is this appropriate weighting?
-      classifier[mi] += 1. / (distances[ri] + numeric_limits<float>::epsilon());
     }
   }
+  cout << "Total K-Nearest Search Time for Query: " << double(totalTime) / CLOCKS_PER_SEC << endl;
+  cout << "Total K-Nearest Search Time for Query: " << time << endl;
+
   // get top candidates
   vector<Candidate> ballot(Config::num_models);
   for (int mi = 0; mi < Config::num_models; mi++) {
