@@ -262,8 +262,8 @@ namespace pcl
       void
       PointCloudCompression<PointT, LeafT, OctreeT>::entropyEncoding (std::ostream& compressedTreeDataOut_arg)
       {
-        unsigned long binaryTreeDataVector_size;
-        unsigned long pointAvgColorDataVector_size;
+        uint64_t binaryTreeDataVector_size;
+        uint64_t pointAvgColorDataVector_size;
 
         compressedPointDataLen_ = 0;
         compressedColorDataLen_ = 0;
@@ -288,9 +288,9 @@ namespace pcl
 
         if (!doVoxelGridEnDecoding_)
         {
-          unsigned long pointCountDataVector_size;
-          unsigned long pointDiffDataVector_size;
-          unsigned long pointDiffColorDataVector_size;
+          uint64_t pointCountDataVector_size;
+          uint64_t pointDiffDataVector_size;
+          uint64_t pointDiffColorDataVector_size;
 
           // encode amount of points per voxel
           pointCountDataVector_size = pointCountDataVector_.size ();
@@ -326,8 +326,8 @@ namespace pcl
       void
       PointCloudCompression<PointT, LeafT, OctreeT>::entropyDecoding (std::istream& compressedTreeDataIn_arg)
       {
-        unsigned long binaryTreeDataVector_size;
-        unsigned long pointAvgColorDataVector_size;
+        uint64_t binaryTreeDataVector_size;
+        uint64_t pointAvgColorDataVector_size;
 
         compressedPointDataLen_ = 0;
         compressedColorDataLen_ = 0;
@@ -350,9 +350,9 @@ namespace pcl
 
         if (!doVoxelGridEnDecoding_)
         {
-          unsigned long pointCountDataVector_size;
-          unsigned long pointDiffDataVector_size;
-          unsigned long pointDiffColorDataVector_size;
+          uint64_t pointCountDataVector_size;
+          uint64_t pointDiffDataVector_size;
+          uint64_t pointDiffColorDataVector_size;
 
           // decode amount of points per voxel
           compressedTreeDataIn_arg.read ((char*)&pointCountDataVector_size, sizeof(pointCountDataVector_size));
