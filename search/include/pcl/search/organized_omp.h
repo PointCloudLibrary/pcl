@@ -134,7 +134,7 @@ namespace pcl
 
           if (precision_ == 1)
           {
-            if(!exactFocalLength_)
+            if (!exactFocalLength_)
             {
               estimateFocalLengthFromInputCloud (*cloud);
               generateRadiusLookupTable (cloud->width, cloud->height);

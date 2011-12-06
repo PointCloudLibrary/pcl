@@ -89,7 +89,7 @@ pcl::search::OrganizedNeighborOMP<PointT>::radiusSearch (const               Poi
   int leftX, rightX, leftY, rightY;
   //int x, y, idx;
   //double squared_distance, squared_radius;
-  bool abort = false;
+  //bool abort = false;
 
   k_indices.clear ();
   k_sqr_distances.clear ();
@@ -99,37 +99,41 @@ pcl::search::OrganizedNeighborOMP<PointT>::radiusSearch (const               Poi
   this->getProjectedRadiusSearchBox (p_q, squared_radius, leftX, rightX, leftY, rightY);
 
   // iterate over search box
-  #pragma omp parallel for schedule (dynamic, threads_)
+//  #pragma omp parallel for schedule (static,500)
   for (int x = leftX; x <= rightX; x++)
   {
-    #pragma omp flush (abort)
-    if (!abort)
+//    #pragma omp flush (abort)
+    for (int y = leftY; y <= rightY; y++)
     {
-      for (int y = leftY; y <= rightY; y++)
+//      if (abort)
+//        return (k_indices.size ());
+
+      int idx = y * input_->width + x;
+
+      Eigen::Vector4f pt = input_->points[idx].getVector4fMap () - p_q.getVector4fMap ();
+      //const PointT& point = input_->points[idx];
+
+      //const double point_dist_x = point.x - p_q.x;
+      //const double point_dist_y = point.y - p_q.y;
+      //const double point_dist_z = point.z - p_q.z;
+
+      // calculate squared distance
+      //double squared_distance = (point_dist_x * point_dist_x + point_dist_y * point_dist_y + point_dist_z * point_dist_z);
+      float squared_distance = pt.dot (pt);
+
+      // check distance and add to results
+      if (squared_distance <= squared_radius)
       {
-        int idx = y * input_->width + x;
-        const PointT& point = input_->points[idx];
- 
-        const double point_dist_x = point.x - p_q.x;
-        const double point_dist_y = point.y - p_q.y;
-        const double point_dist_z = point.z - p_q.z;
- 
-        // calculate squared distance
-        double squared_distance = (point_dist_x * point_dist_x + point_dist_y * point_dist_y + point_dist_z * point_dist_z);
- 
-        // check distance and add to results
-        if (squared_distance <= squared_radius)
+        //#pragma omp critical
         {
-          #pragma omp critical
-          {
-            k_indices.push_back (idx);
-            k_sqr_distances.push_back (squared_distance);
-          }
-          // return if we are enough indices
-          if(k_indices.size() >= max_nn)
-            abort = true;                 /// Thanks to Michael Suess for this OpenMP 'hack'
-            #pragma omp flush (abort)
+          k_indices.push_back (idx);
+          k_sqr_distances.push_back (squared_distance);
         }
+        // return if we are enough indices
+        if ((int)k_indices.size () >= max_nn)
+          return (k_indices.size ());
+          //abort = true;                 /// Thanks to Michael Suess for this OpenMP 'hack'
+//            #pragma omp flush (abort)
       }
     }
   }
@@ -507,12 +511,14 @@ pcl::search::OrganizedNeighborOMP<PointT>::estimateFocalLengthFromInputCloud (co
   if (input_->height == 1 || input_->width == 1)
   {
     PCL_ERROR ("[pcl::%s::estimateFocalLenghtFromInputCloud] Input dataset is not organized!\n", getName ().c_str ());
-    return 0.0;
+    return (0.0);
   }
   size_t i, count;
   int x, y;
 
   oneOverFocalLength_ = 0;
+
+  int cw = cloud.width / 2, ch = cloud.height / 2;
 
   count = 0;
   for (y = 0; y < (int)input_->height; y++)
@@ -524,23 +530,24 @@ pcl::search::OrganizedNeighborOMP<PointT>::estimateFocalLengthFromInputCloud (co
           (cloud.points[i].z == cloud.points[i].z))
       {
         const PointT& point = cloud.points[i];
-        if ((double)(x - cloud.width / 2) * (double)(y - cloud.height / 2) * point.z != 0)
+        int xcw = x - cw, ych = y - ch;
+        if (xcw * ych  * point.z != 0)
         {
           // estimate the focal length for point.x and point.y
-          oneOverFocalLength_ += point.x / ((double)(x - (int)cloud.width / 2) * point.z);
-          oneOverFocalLength_ += point.y / ((double)(y - (int)cloud.height / 2) * point.z);
+          oneOverFocalLength_ += point.x / (xcw * point.z);
+          oneOverFocalLength_ += point.y / (ych * point.z);
           count += 2;
         }
       }
     }
   // calculate an average of the focalLength
   oneOverFocalLength_ /= (double)count;
-  if(pcl_isfinite(oneOverFocalLength_))
-    return oneOverFocalLength_;
+  if (pcl_isfinite (oneOverFocalLength_))
+    return (oneOverFocalLength_);
   else
   {
     PCL_ERROR ("[pcl::%s::estimateFocalLenghtFromInputCloud] Input dataset is not projectable!\n", getName ().c_str ());
-    return 0.0;
+    return (0.0);
   }
 }
 
