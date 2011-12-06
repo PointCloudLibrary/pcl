@@ -10,19 +10,19 @@
 # define snprintf _snprintf
 #endif
 
-Proctor::Model Proctor::models[Config::num_models];
-const float Proctor::theta_start = M_PI / 12;
-const float Proctor::theta_step = 0.0f;
-const int Proctor::theta_count = 1;
-const float Proctor::phi_start = 0.0f;
-const float Proctor::phi_step = M_PI / 6;
-const int Proctor::phi_count = 12;
-const float Proctor::theta_min = 0.0f;
-const float Proctor::theta_max = M_PI / 6;
-const float Proctor::phi_min = 0.0f;
-const float Proctor::phi_max = M_PI * 2;
+pcl::proctor::Model pcl::proctor::Proctor::models[Config::num_models];
+const float pcl::proctor::Proctor::theta_start = M_PI / 12;
+const float pcl::proctor::Proctor::theta_step = 0.0f;
+const int pcl::proctor::Proctor::theta_count = 1;
+const float pcl::proctor::Proctor::phi_start = 0.0f;
+const float pcl::proctor::Proctor::phi_step = M_PI / 6;
+const int pcl::proctor::Proctor::phi_count = 12;
+const float pcl::proctor::Proctor::theta_min = 0.0f;
+const float pcl::proctor::Proctor::theta_max = M_PI / 6;
+const float pcl::proctor::Proctor::phi_min = 0.0f;
+const float pcl::proctor::Proctor::phi_max = M_PI * 2;
 
-IndicesPtr Proctor::randomSubset(int n, int r) {
+pcl::IndicesPtr pcl::proctor::Proctor::randomSubset(int n, int r) {
   IndicesPtr subset (new vector<int>());
   vector<int> bag (n);
   for (int i = 0; i < n; i++) bag[i] = i;
@@ -36,7 +36,7 @@ IndicesPtr Proctor::randomSubset(int n, int r) {
   return subset;
 }
 
-void Proctor::readModels(const char *base, int max_models, unsigned int seed) {
+void pcl::proctor::Proctor::readModels(const char *base, int max_models, unsigned int seed) {
   srand(seed);
   IndicesPtr model_subset = randomSubset(max_models, Config::num_models);
   for (int mi = 0; mi < Config::num_models; mi++) {
@@ -98,18 +98,19 @@ void Proctor::readModels(const char *base, int max_models, unsigned int seed) {
     file = fopen(path, "r");
     while (!feof(file)) {
       char buf[256];
-      fgets(buf, sizeof(buf), file);
-      if (!strncmp("center: ", buf, 8)) {
-        if (sscanf(buf, "center: (%f,%f,%f)\n", &models[mi].cx, &models[mi].cy, &models[mi].cz) != 3) {
-          cerr << "invalid centroid in file " << path << endl;
-          cerr << buf;
-          exit(-1);
-        }
-      } else if (!strncmp("scale: ", buf, 7)) {
-        if (sscanf(buf, "scale: %f\n", &models[mi].scale) != 1) {
-          cerr << "invalid scale in file " << path << endl;
-          cerr << buf;
-          exit(-1);
+      if (fgets(buf, sizeof(buf), file) != NULL) {
+        if (!strncmp("center: ", buf, 8)) {
+          if (sscanf(buf, "center: (%f,%f,%f)\n", &models[mi].cx, &models[mi].cy, &models[mi].cz) != 3) {
+            cerr << "invalid centroid in file " << path << endl;
+            cerr << buf;
+            exit(-1);
+          }
+        } else if (!strncmp("scale: ", buf, 7)) {
+          if (sscanf(buf, "scale: %f\n", &models[mi].scale) != 1) {
+            cerr << "invalid scale in file " << path << endl;
+            cerr << buf;
+            exit(-1);
+          }
         }
       }
     } // end while over info lines
@@ -117,13 +118,13 @@ void Proctor::readModels(const char *base, int max_models, unsigned int seed) {
   } // end for over models
 }
 
-PointCloud<PointNormal>::Ptr
-Proctor::getFullPointCloud(int mi) {
+pcl::PointCloud<pcl::PointNormal>::Ptr
+pcl::proctor::Proctor::getFullPointCloud(int mi) {
     PointCloud<PointNormal>::Ptr full_cloud(new PointCloud<PointNormal>());
 
     for (int ti = 0; ti < theta_count; ti++) {
       for (int pi = 0; pi < phi_count; pi++) {
-        *full_cloud += *Scanner::getCloudCached(mi, ti, pi);
+        *full_cloud += *Scanner::getCloudCached(mi, ti, pi, models[mi]);
         flush(cout << '.');
       }
     }
@@ -131,7 +132,7 @@ Proctor::getFullPointCloud(int mi) {
     return full_cloud;
 }
 
-void Proctor::train(Detector &detector) {
+void pcl::proctor::Proctor::train(Detector &detector) {
   cout << "[models]" << endl;
   timer.start();
   PointCloud<PointNormal>::Ptr clouds[Config::num_models];
@@ -147,7 +148,7 @@ void Proctor::train(Detector &detector) {
   timer.stop(DETECTOR_TRAIN);
 }
 
-void Proctor::test(Detector &detector, unsigned int seed) {
+void pcl::proctor::Proctor::test(Detector &detector, unsigned int seed) {
   srand(seed);
   const float theta_scale = (theta_max - theta_min) / RAND_MAX;
   const float phi_scale = (phi_max - phi_min) / RAND_MAX;
@@ -165,7 +166,7 @@ void Proctor::test(Detector &detector, unsigned int seed) {
   for (int ni = 0; ni < Config::num_trials; ni++) {
     cout << "[test " << ni << "]" << endl;
     timer.start();
-    PointCloud<PointNormal>::Ptr scene = Scanner::getCloud(scenes[ni]);
+    PointCloud<PointNormal>::Ptr scene = Scanner::getCloud(scenes[ni], models[scenes[ni].mi]);
     timer.stop(OBTAIN_CLOUD_TESTING);
     cout << "scanned model " << scenes[ni].mi << endl;
 
@@ -198,7 +199,7 @@ bool operator<(const Detection &a, const Detection &b) {
   return a.distance < b.distance;
 }
 
-void Proctor::printPrecisionRecall() {
+void pcl::proctor::Proctor::printPrecisionRecall() {
   vector<Detection> detections;
   Detection d;
   for (d.ni = 0; d.ni < Config::num_trials; d.ni++) {
@@ -210,7 +211,7 @@ void Proctor::printPrecisionRecall() {
   }
   sort(detections.begin(), detections.end());
   int correct = 0;
-  for (size_t di = 0; di < detections.size(); di++) {
+  for (unsigned int di = 0; di < detections.size(); di++) {
     if (detections[di].mi == scenes[detections[di].ni].mi) {
       correct++;
       printf(
@@ -223,7 +224,7 @@ void Proctor::printPrecisionRecall() {
   }
 }
 
-void Proctor::printClassifierStats() {
+void pcl::proctor::Proctor::printClassifierStats() {
   float avg = 0; // average rank of correct id
   int area = 0; // area under curve of cumulative histogram
   for (int ni = 0; ni < Config::num_trials; ni++) {
@@ -246,7 +247,7 @@ void Proctor::printClassifierStats() {
   printf("area under cumulative histogram of correct model rank: %d\n", area);
 }
 
-void Proctor::printTimer() {
+void pcl::proctor::Proctor::printTimer() {
   printf(
     "obtain training clouds: %10.3f sec\n"
     "obtain testing clouds:  %10.3f sec\n"
@@ -259,7 +260,7 @@ void Proctor::printTimer() {
   );
 }
 
-void Proctor::printResults(Detector &detector) {
+void pcl::proctor::Proctor::printResults(Detector &detector) {
   // correct percentage
   printf("[overview]\n");
   printf("%d of %d correct (%.2f%%)\n", trace, Config::num_trials, float(trace) / Config::num_trials * 100);

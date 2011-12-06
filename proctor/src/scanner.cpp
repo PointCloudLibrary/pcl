@@ -15,6 +15,9 @@
 #include "SyntheticLidarScanner/vtkLidarScanner.cxx"
 #endif
 
+using namespace pcl;
+using namespace pcl::proctor;
+
 /** convert radians to degrees. thanks a lot, vtk */
 template <typename T>
 static inline T deg(T rad) {
@@ -22,9 +25,8 @@ static inline T deg(T rad) {
 }
 
 /** prepare the transform to use for a scan (camera, not object) */
-static vtkSmartPointer<vtkTransform> compute_transform(Scanner::Scan scan) {
+static vtkSmartPointer<vtkTransform> compute_transform(pcl::proctor::Scanner::Scan scan, Model &model) {
   vtkSmartPointer<vtkTransform> spt = vtkSmartPointer<vtkTransform>::New();
-  Proctor::Model &model = Proctor::models[scan.mi];
   spt->Translate(model.cx, model.cy, model.cz);
   spt->RotateY(-deg(scan.phi));
   spt->RotateX(-deg(scan.theta));
@@ -34,20 +36,20 @@ static vtkSmartPointer<vtkTransform> compute_transform(Scanner::Scan scan) {
 }
 
 /** simulate lidar scanning to get a point cloud (without normals) */
-static PointCloud<PointXYZ>::Ptr compute_pcxyz(int model, vtkSmartPointer<vtkTransform> transform) {
+static pcl::PointCloud<pcl::PointXYZ>::Ptr compute_pcxyz(int model, vtkSmartPointer<vtkTransform> transform) {
   // TODO: investigate replacing vtkLidarScanner with vtkRenderWindow::GetZbufferData
   // I think this function leaks memory.
-  PointCloud<PointXYZ>::Ptr pcxyz (new PointCloud<PointXYZ>());
+  pcl::PointCloud<pcl::PointXYZ>::Ptr pcxyz (new pcl::PointCloud<pcl::PointXYZ>());
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 8))
   vtkLidarScanner *ls = vtkLidarScanner::New();
   vtkPolyData *pd = vtkPolyData::New();
 
-  ls->SetThetaSpan(Scanner::fov_y);
-  ls->SetPhiSpan(Scanner::fov_x);
-  ls->SetNumberOfThetaPoints(Scanner::res_y);
-  ls->SetNumberOfPhiPoints(Scanner::res_x);
+  ls->SetThetaSpan(pcl::proctor::Scanner::fov_y);
+  ls->SetPhiSpan(pcl::proctor::Scanner::fov_x);
+  ls->SetNumberOfThetaPoints(pcl::proctor::Scanner::res_y);
+  ls->SetNumberOfPhiPoints(pcl::proctor::Scanner::res_x);
   ls->SetTransform(transform);
-  ls->SetInputConnection(Proctor::models[model].mesh->GetProducerPort());
+  ls->SetInputConnection(pcl::proctor::Proctor::models[model].mesh->GetProducerPort());
   ls->Update();
 
   ls->GetValidOutputPoints(pd);
@@ -67,10 +69,10 @@ static PointCloud<PointXYZ>::Ptr compute_pcxyz(int model, vtkSmartPointer<vtkTra
 }
 
 /** estimate the normals of a point cloud */
-static PointCloud<Normal>::Ptr compute_pcn(PointCloud<PointXYZ>::ConstPtr in, float vx, float vy, float vz) {
-  PointCloud<Normal>::Ptr pcn (new PointCloud<Normal>());
-  NormalEstimation<PointXYZ, Normal> ne;
-  search::KdTree<PointXYZ>::Ptr kdt (new search::KdTree<PointXYZ>());
+static pcl::PointCloud<pcl::Normal>::Ptr compute_pcn(pcl::PointCloud<pcl::PointXYZ>::ConstPtr in, float vx, float vy, float vz) {
+  pcl::PointCloud<pcl::Normal>::Ptr pcn (new pcl::PointCloud<pcl::Normal>());
+  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr kdt (new pcl::search::KdTree<pcl::PointXYZ>());
   ne.setInputCloud(in);
   ne.setSearchMethod(kdt);
   ne.setKSearch(20);
@@ -80,15 +82,15 @@ static PointCloud<Normal>::Ptr compute_pcn(PointCloud<PointXYZ>::ConstPtr in, fl
 }
 
 /** Scanner */
-const float Scanner::distance_multiplier = 3.0f;
-const double Scanner::fov_x = M_PI / 3;
-const double Scanner::fov_y = M_PI / 4;
-const unsigned int Scanner::res_x = 320;
-const unsigned int Scanner::res_y = 240;
+const float pcl::proctor::Scanner::distance_multiplier = 3.0f;
+const double pcl::proctor::Scanner::fov_x = M_PI / 3;
+const double pcl::proctor::Scanner::fov_y = M_PI / 4;
+const unsigned int pcl::proctor::Scanner::res_x = 320;
+const unsigned int pcl::proctor::Scanner::res_y = 240;
 
-PointCloud<PointNormal>::Ptr Scanner::getCloud(Scan scan) {
+pcl::PointCloud<pcl::PointNormal>::Ptr pcl::proctor::Scanner::getCloud(Scan scan, Model &model) {
   PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal>());
-  vtkSmartPointer<vtkTransform> transform = compute_transform(scan);
+  vtkSmartPointer<vtkTransform> transform = compute_transform(scan, model);
   PointCloud<PointXYZ>::Ptr pcxyz = compute_pcxyz(scan.mi, transform);
   float v[3];
   transform->GetPosition(v);
@@ -97,20 +99,20 @@ PointCloud<PointNormal>::Ptr Scanner::getCloud(Scan scan) {
   return cloud;
 }
 
-PointCloud<PointNormal>::Ptr Scanner::getCloudCached(int mi, int ti, int pi) {
+PointCloud<PointNormal>::Ptr pcl::proctor::Scanner::getCloudCached(int mi, int ti, int pi, pcl::proctor::Model &model) {
   Scan scan = {
     mi,
-    Proctor::theta_start + ti * Proctor::theta_step,
-    Proctor::phi_start + pi * Proctor::phi_step
+    pcl::proctor::Proctor::theta_start + ti * Proctor::theta_step,
+    pcl::proctor::Proctor::phi_start + pi * Proctor::phi_step
   };
   char name[22];
-  sprintf(name, "scan_%04d_%03.0f_%03.0f.pcd", Proctor::models[scan.mi].id, deg(scan.theta), deg(scan.phi));
+  sprintf(name, "scan_%04d_%03.0f_%03.0f.pcd", pcl::proctor::Proctor::models[scan.mi].id, deg(scan.theta), deg(scan.phi));
   if (ifstream(name)) {
     PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal>());
     io::loadPCDFile(name, *cloud);
     return cloud;
   } else {
-    PointCloud<PointNormal>::Ptr cloud = getCloud(scan);
+    PointCloud<PointNormal>::Ptr cloud = getCloud(scan, model);
     io::savePCDFileBinary(name, *cloud);
     return cloud;
   }

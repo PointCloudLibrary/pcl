@@ -2,8 +2,8 @@
 #include "proctor/proctor.h"
 #include <omp.h>
 
-Detector detector;
-Proctor proctor;
+pcl::proctor::Detector detector;
+pcl::proctor::Proctor proctor;
 
 int main(int argc, char **argv) {
   unsigned int model_seed = 2;
@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
   if (argc >= 2) model_seed = atoi(argv[1]);
   if (argc >= 3) test_seed = atoi(argv[2]);
 
-  Proctor::readModels("/home/pabbeel/wh/benchmark/db", 1814, model_seed);
+  pcl::proctor::Proctor::readModels("/home/pabbeel/wh/benchmark/db", 1814, model_seed);
   detector.enableVisualization();
   proctor.train(detector);
   proctor.test(detector, test_seed);
