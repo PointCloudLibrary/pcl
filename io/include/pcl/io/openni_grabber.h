@@ -59,8 +59,10 @@ namespace pcl
   struct PointXYZI;
   template <typename T> class PointCloud;
 
-  /** /brief
-   * /ingroup io
+  /**
+   * @author Nico Blodow <blodow@cs.tum.edu>, @author Suat Gedikli <gedikli@willowgarage.com>
+   * @brief Grabber for OpenNI devices
+   * @ingroup io
    */
   class PCL_EXPORTS OpenNIGrabber : public Grabber
   {
@@ -91,46 +93,40 @@ namespace pcl
       typedef void (sig_cb_openni_point_cloud_i) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
 
     public:
-      //enable using some openni parameters in the constructor.
-      /** \brief Constructor
-        * \param device_id
-        * \param depth_mode
-        * \param image_mode
+      /** @brief Constructor
+        * @param[in] device_id ID of the device, which might be a serial number, bus@address or the index of the device.
+        * @param[in] depth_mode the mode of the depth stream
+        * @param[in] image_mode the mode of the image stream
         */
       OpenNIGrabber (const std::string& device_id = "",
                      const Mode& depth_mode = OpenNI_Default_Mode,
                      const Mode& image_mode = OpenNI_Default_Mode);
 
-      /** \brief Destructor */
+      /**
+       * @brief virtual Destructor inherited from the Grabber interface. It never throws
+       */
       virtual ~OpenNIGrabber () throw ();
 
-      /** \brief ... */
       virtual void
       start ();
 
-      /** \brief ... */
       virtual void
       stop ();
 
-      /** \brief ... */
       virtual bool
       isRunning () const;
 
-      /** \brief ... */
       virtual std::string
       getName () const;
 
       virtual float getFramesPerSecond () const;
-      
-      /** \brief ... */
+
       inline boost::shared_ptr<openni_wrapper::OpenNIDevice>
       getDevice () const;
 
-      /** \brief ... */
       std::vector<std::pair<int, XnMapOutputMode> >
       getAvailableDepthModes () const;
 
-      /** \brief ... */
       std::vector<std::pair<int, XnMapOutputMode> >
       getAvailableImageModes () const;
 
@@ -144,7 +140,6 @@ namespace pcl
 
       float getFocalLength (unsigned image_width) const;
 
-      
     private:
       /** \brief ... */
       void

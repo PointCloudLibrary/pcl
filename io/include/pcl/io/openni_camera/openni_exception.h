@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2011 Willow Garage, Inc.
- *    Suat Gedikli <gedikli@willowgarage.com>
  *
  *  All rights reserved.
  *
@@ -52,39 +51,83 @@
 
 namespace openni_wrapper
 {
-/**
- * @brief General exception class
- * @author Suat Gedikli
- * @date 02.january 2011
- * @ingroup io
- */
-class OpenNIException : public std::exception
-{
-public:
-  OpenNIException (const std::string& function_name, const std::string& file_name, unsigned line_number, const std::string& message) throw ();
-  virtual ~OpenNIException () throw ();
-  OpenNIException & operator= (const OpenNIException& exception) throw ();
-  virtual const char* what () const throw ();
 
-  const std::string& getFunctionName () const throw ();
-  const std::string& getFileName () const throw ();
-  unsigned getLineNumber () const throw ();
-protected:
-  std::string function_name_;
-  std::string file_name_;
-  unsigned line_number_;
-  std::string message_;
-  std::string message_long_;
-};
+  /**
+   * @brief General exception class
+   * @author Suat Gedikli
+   * @date 02.january 2011
+   * @ingroup io
+   */
+  class OpenNIException : public std::exception
+  {
+  public:
+    /**
+     * @brief Constructor
+     * @note use the MACRO THROW_OPENNI_EXCEPTION, that takes care about the parameters function_name, file_name and line_number
+     * @param[in] function_name the function in which this exception was created.
+     * @param[in] file_name the file name in which this exception was created.
+     * @param[in] line_number the line number where this exception was created.
+     * @param[in] message the message of the exception
+     */
+    OpenNIException (const std::string& function_name, const std::string& file_name, unsigned line_number, const std::string& message) throw ();
 
-inline void throwOpenNIException (const char* function, const char* file, unsigned line, const char* format, ...)
-{
-  static char msg[1024];
-  va_list args;
-  va_start (args, format);
-  vsprintf (msg, format, args);
-  throw OpenNIException (function, file, line, msg);
-}
+    /**
+     * @brief virtual Destructor that never throws an exception
+     */
+    virtual ~OpenNIException () throw ();
+
+    /**
+     * @brief Assignment operator to allow copying the message of another exception variable.
+     * @param[in] exception left hand side
+     * @return
+     */
+    OpenNIException & operator= (const OpenNIException& exception) throw ();
+
+    /**
+     * @brief virtual method, derived from std::exception
+     * @return the message of the exception.
+     */
+    virtual const char* what () const throw ();
+
+    /**
+     * @return the function name in which the exception was created.
+     */
+    const std::string& getFunctionName () const throw ();
+
+    /**
+     * @return the filename in which the exception was created.
+     */
+    const std::string& getFileName () const throw ();
+
+    /**
+     * @return the line number where the exception was created.
+     */
+    unsigned getLineNumber () const throw ();
+  protected:
+    std::string function_name_;
+    std::string file_name_;
+    unsigned line_number_;
+    std::string message_;
+    std::string message_long_;
+  } ;
+
+  /**
+   * @brief inline function used by the macro THROW_OPENNI_EXCEPTION to create an instance of OpenNIException with correct values for function, file and line_number
+   * @param[in] function_name the function name. Will be filled in by the macro THROW_OPENNI_EXCEPTION
+   * @param[in] file_name the file name. Will be filled in by the macro THROW_OPENNI_EXCEPTION
+   * @param[in] line_number the line number. Will be filled in by the macro THROW_OPENNI_EXCEPTION
+   * @param[in] format the printf-style format string
+   * @param[in] ... optional arguments for the printf style format.
+   */
+  inline void
+  throwOpenNIException (const char* function_name, const char* file_name, unsigned line_number, const char* format, ...)
+  {
+    static char msg[1024];
+    va_list args;
+    va_start (args, format);
+    vsprintf (msg, format, args);
+    throw OpenNIException (function_name, file_name, line_number, msg);
+  }
 } // namespace openni_camera
 #endif
 #endif

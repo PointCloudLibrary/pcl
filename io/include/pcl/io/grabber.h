@@ -30,8 +30,6 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
- * Author: Suat Gedikli (gedikli@willowgarage.com), Nico Blodow (blodow@cs.tum.edu)
  */
 
 #include "pcl/pcl_config.h"
@@ -54,11 +52,13 @@
 namespace pcl
 {
 
-/** \brief Grabber interface for PCL 1.x device drivers
-  * \ingroup io
-  */
-class Grabber
-{
+  /**
+   * @author Suat Gedikli <gedikli@willowgarage.com>
+   * @brief Grabber interface for PCL 1.x device drivers
+   * @ingroup io
+   */
+  class Grabber
+  {
   public:
     /**
      * @brief virtual desctructor.
@@ -68,7 +68,7 @@ class Grabber
 
     /**
      * @brief registers a callback function/method to a signal with the corresponding signature
-     * @param callback: the callback function/method
+     * @param[in] callback: the callback function/method
      * @return Connection object, that can be used to disconnect the callback method from the signal again.
      * @author Suat Gedikli
      */
@@ -86,7 +86,7 @@ class Grabber
      *        Trigger-based devices, just trigger the device once for each call of start.
      * @author Suat Gedikli
      */
-    virtual void start () = 0 ;
+    virtual void start () = 0;
 
     /**
      * @brief For devices that are streaming, the streams are stopped.
@@ -107,14 +107,16 @@ class Grabber
      * @return true if grabber is running / streaming. False otherwise.
      */
     virtual bool isRunning () const = 0;
-    
+
     /**
      * @brief returns fps. 0 if trigger based.
      */
     virtual float getFramesPerSecond () const = 0;
-    
+
   protected:
-    virtual void signalsChanged () {}
+
+    virtual void
+    signalsChanged () { }
     template<typename T> boost::signals2::signal<T>* find_signal () const;
     template<typename T> int num_slots () const;
     template<typename T> void disconnect_all_slots ();
@@ -127,125 +129,135 @@ class Grabber
     std::map<std::string, boost::signals2::signal_base*> signals_;
     std::map<std::string, std::vector<boost::signals2::connection> > connections_;
     std::map<std::string, std::vector<boost::signals2::shared_connection_block> > shared_connections_;
-};
+  } ;
 
-Grabber::~Grabber () throw ()
-{
-  for (std::map<std::string, boost::signals2::signal_base*>::iterator signal_it = signals_.begin (); signal_it != signals_.end (); ++signal_it)
-    delete signal_it->second;
-}
-
-template<typename T> boost::signals2::signal<T>* Grabber::find_signal () const
-{
-  typedef boost::signals2::signal<T> Signal;
-
-  std::map<std::string, boost::signals2::signal_base*>::const_iterator signal_it = signals_.find (typeid(T).name());
-  if (signal_it != signals_.end ())
-    return (dynamic_cast<Signal*> (signal_it->second));
-
-  return (NULL);
-}
-
-template<typename T> void Grabber::disconnect_all_slots ()
-{
-  typedef boost::signals2::signal<T> Signal;
-
-  if (signals_.find (typeid(T).name()) != signals_.end ())
+  Grabber::~Grabber () throw ()
   {
-    Signal* signal = dynamic_cast<Signal*> (signals_[typeid(T).name()]);
-    signal->disconnect_all_slots ();
+    for (std::map<std::string, boost::signals2::signal_base*>::iterator signal_it = signals_.begin (); signal_it != signals_.end (); ++signal_it)
+      delete signal_it->second;
   }
-}
 
-template<typename T> void Grabber::block_signal ()
-{
-  if (connections_.find (typeid(T).name()) != connections_.end ())
-    for (std::vector<boost::signals2::shared_connection_block>::iterator cIt = shared_connections_[typeid(T).name()].begin(); cIt != shared_connections_[typeid(T).name()].end(); ++cIt)
-      cIt->block ();
-}
-
-template<typename T> void Grabber::unblock_signal ()
-{
-  if (connections_.find (typeid(T).name()) != connections_.end ())
-    for (std::vector<boost::signals2::shared_connection_block>::iterator cIt = shared_connections_[typeid(T).name()].begin(); cIt != shared_connections_[typeid(T).name()].end(); ++cIt)
-      cIt->unblock ();
-}
-
-void Grabber::block_signals ()
-{
-  for (std::map<std::string, boost::signals2::signal_base*>::iterator signal_it = signals_.begin (); signal_it != signals_.end (); ++signal_it)
-    for (std::vector<boost::signals2::shared_connection_block>::iterator cIt = shared_connections_[signal_it->first].begin(); cIt != shared_connections_[signal_it->first].end(); ++cIt)
-      cIt->block ();    
-}
-
-void Grabber::unblock_signals ()
-{
-  for (std::map<std::string, boost::signals2::signal_base*>::iterator signal_it = signals_.begin (); signal_it != signals_.end (); ++signal_it)
-    for (std::vector<boost::signals2::shared_connection_block>::iterator cIt = shared_connections_[signal_it->first].begin(); cIt != shared_connections_[signal_it->first].end(); ++cIt)
-      cIt->unblock ();    
-}
-
-template<typename T> int Grabber::num_slots () const
-{
-  typedef boost::signals2::signal<T> Signal;
-
-  // see if we have a signal for this type
-  std::map<std::string, boost::signals2::signal_base*>::const_iterator signal_it = signals_.find (typeid(T).name());
-  if (signal_it != signals_.end())
+  template<typename T> boost::signals2::signal<T>*
+  Grabber::find_signal () const
   {
-    Signal* signal = dynamic_cast<Signal*> (signal_it->second);
-    return (signal->num_slots ());
+    typedef boost::signals2::signal<T> Signal;
+
+    std::map<std::string, boost::signals2::signal_base*>::const_iterator signal_it = signals_.find (typeid (T).name ());
+    if (signal_it != signals_.end ())
+      return (dynamic_cast<Signal*> (signal_it->second));
+
+    return (NULL);
   }
-  return (0);
-}
 
-template<typename T> boost::signals2::signal<T>* Grabber::createSignal ()
-{
-  typedef boost::signals2::signal<T> Signal;
-
-  if (signals_.find (typeid(T).name()) == signals_.end ())
+  template<typename T> void
+  Grabber::disconnect_all_slots ()
   {
-    Signal* signal = new Signal ();
-    signals_[typeid(T).name ()] = signal;
-    return (signal);
-  }
-  return (0);
-}
+    typedef boost::signals2::signal<T> Signal;
 
-template<typename T> boost::signals2::connection Grabber::registerCallback (const boost::function<T> & callback)
-{
-  typedef boost::signals2::signal<T> Signal;
-  if (signals_.find (typeid(T).name()) == signals_.end ())
-  {
-    std::stringstream sstream;
-
-    sstream << "no callback for type:" << typeid(T).name();
-    /*
-    sstream << "registered Callbacks are:" << std::endl;
-    for( std::map<std::string, boost::signals2::signal_base*>::const_iterator cIt = signals_.begin ();
-         cIt != signals_.end (); ++cIt)
+    if (signals_.find (typeid (T).name ()) != signals_.end ())
     {
-      sstream << cIt->first << std::endl;
-    }*/
-
-    THROW_PCL_IO_EXCEPTION ("[%s] %s", getName ().c_str (), sstream.str ().c_str ());
-    //return (boost::signals2::connection ());
+      Signal* signal = dynamic_cast<Signal*> (signals_[typeid (T).name ()]);
+      signal->disconnect_all_slots ();
+    }
   }
-  Signal* signal = dynamic_cast<Signal*> (signals_[typeid(T).name()]);
-  boost::signals2::connection ret = signal->connect (callback);
 
-  connections_[typeid(T).name()].push_back(ret);
-  shared_connections_[typeid(T).name()].push_back(boost::signals2::shared_connection_block(connections_[typeid(T).name()].back(), false));
-  signalsChanged ();
-  return (ret);
-}
+  template<typename T> void
+  Grabber::block_signal ()
+  {
+    if (connections_.find (typeid (T).name ()) != connections_.end ())
+      for (std::vector<boost::signals2::shared_connection_block>::iterator cIt = shared_connections_[typeid (T).name ()].begin (); cIt != shared_connections_[typeid (T).name ()].end (); ++cIt)
+        cIt->block ();
+  }
 
-template<typename T> bool Grabber::providesCallback () const
-{
-  if (signals_.find (typeid(T).name()) == signals_.end ())
-    return (false);
-  return (true);
-}
+  template<typename T> void
+  Grabber::unblock_signal ()
+  {
+    if (connections_.find (typeid (T).name ()) != connections_.end ())
+      for (std::vector<boost::signals2::shared_connection_block>::iterator cIt = shared_connections_[typeid (T).name ()].begin (); cIt != shared_connections_[typeid (T).name ()].end (); ++cIt)
+        cIt->unblock ();
+  }
+
+  void
+  Grabber::block_signals ()
+  {
+    for (std::map<std::string, boost::signals2::signal_base*>::iterator signal_it = signals_.begin (); signal_it != signals_.end (); ++signal_it)
+      for (std::vector<boost::signals2::shared_connection_block>::iterator cIt = shared_connections_[signal_it->first].begin (); cIt != shared_connections_[signal_it->first].end (); ++cIt)
+        cIt->block ();
+  }
+
+  void
+  Grabber::unblock_signals ()
+  {
+    for (std::map<std::string, boost::signals2::signal_base*>::iterator signal_it = signals_.begin (); signal_it != signals_.end (); ++signal_it)
+      for (std::vector<boost::signals2::shared_connection_block>::iterator cIt = shared_connections_[signal_it->first].begin (); cIt != shared_connections_[signal_it->first].end (); ++cIt)
+        cIt->unblock ();
+  }
+
+  template<typename T> int
+  Grabber::num_slots () const
+  {
+    typedef boost::signals2::signal<T> Signal;
+
+    // see if we have a signal for this type
+    std::map<std::string, boost::signals2::signal_base*>::const_iterator signal_it = signals_.find (typeid (T).name ());
+    if (signal_it != signals_.end ())
+    {
+      Signal* signal = dynamic_cast<Signal*> (signal_it->second);
+      return (signal->num_slots ());
+    }
+    return (0);
+  }
+
+  template<typename T> boost::signals2::signal<T>*
+  Grabber::createSignal ()
+  {
+    typedef boost::signals2::signal<T> Signal;
+
+    if (signals_.find (typeid (T).name ()) == signals_.end ())
+    {
+      Signal* signal = new Signal ();
+      signals_[typeid (T).name ()] = signal;
+      return (signal);
+    }
+    return (0);
+  }
+
+  template<typename T> boost::signals2::connection
+  Grabber::registerCallback (const boost::function<T> & callback)
+  {
+    typedef boost::signals2::signal<T> Signal;
+    if (signals_.find (typeid (T).name ()) == signals_.end ())
+    {
+      std::stringstream sstream;
+
+      sstream << "no callback for type:" << typeid (T).name ();
+      /*
+      sstream << "registered Callbacks are:" << std::endl;
+      for( std::map<std::string, boost::signals2::signal_base*>::const_iterator cIt = signals_.begin ();
+           cIt != signals_.end (); ++cIt)
+      {
+        sstream << cIt->first << std::endl;
+      }*/
+
+      THROW_PCL_IO_EXCEPTION ("[%s] %s", getName ().c_str (), sstream.str ().c_str ());
+      //return (boost::signals2::connection ());
+    }
+    Signal* signal = dynamic_cast<Signal*> (signals_[typeid (T).name ()]);
+    boost::signals2::connection ret = signal->connect (callback);
+
+    connections_[typeid (T).name ()].push_back (ret);
+    shared_connections_[typeid (T).name ()].push_back (boost::signals2::shared_connection_block (connections_[typeid (T).name ()].back (), false));
+    signalsChanged ();
+    return (ret);
+  }
+
+  template<typename T> bool
+  Grabber::providesCallback () const
+  {
+    if (signals_.find (typeid (T).name ()) == signals_.end ())
+      return (false);
+    return (true);
+  }
 
 } // namespace
 
