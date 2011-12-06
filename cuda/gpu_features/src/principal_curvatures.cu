@@ -206,8 +206,9 @@ namespace pcl
                     out.principal_curvature_x = evecs[2].x;
                     out.principal_curvature_y = evecs[2].y;
                     out.principal_curvature_z = evecs[2].z;
-                    out.pc1 = evals.z;
-                    out.pc2 = evals.y;
+                    float indices_size_inv = 1.f / size;
+                    out.pc1 = evals.z * indices_size_inv;
+                    out.pc2 = evals.y * indices_size_inv;
 
                     output[f] = out;
                  }
