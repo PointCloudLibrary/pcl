@@ -213,7 +213,7 @@ createSHOTDesc(const typename PointCloud<NormalT>::Ptr & normals,
 }
 
 template <> ShapeContext3DEstimation<PointXYZ, Normal, SHOT>
-createSHOTDesc<ShapeContext3DEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT>(const typename PointCloud<Normal>::Ptr & normals ,
+createSHOTDesc<ShapeContext3DEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT>(const PointCloud<Normal>::Ptr & normals ,
 							 const int nr_shape_bins,
 							 const int nr_color_bins,
 							 const bool describe_shape,
@@ -232,8 +232,8 @@ createSHOTDesc<ShapeContext3DEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Norma
 
 template <> UniqueShapeContext<PointXYZ, SHOT>
 createSHOTDesc<UniqueShapeContext<PointXYZ, SHOT>, PointXYZ, Normal, SHOT>(
-							const typename PointCloud<Normal>::Ptr & normals,
-							const int nr_shape_bins,
+							 const PointCloud<Normal>::Ptr & normals,
+							 const int nr_shape_bins,
 							 const int nr_color_bins,
 							 const bool describe_shape,
 							 const bool describe_color
