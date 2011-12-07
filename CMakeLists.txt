@@ -136,6 +136,13 @@ if(VTK_FOUND)
   link_directories(${VTK_LIBRARY_DIRS})
   set(HAVE_VTK ON)
 endif()
+#Find MPI
+find_package(MPI)
+if(MPI_CXX_FOUND)
+  set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
+  set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS})
+  include_directories(${MPI_INCLUDE_PATH})
+endif(MPI_CXX_FOUND)
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")

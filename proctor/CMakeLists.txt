@@ -4,16 +4,16 @@ set(SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree fe
 set(DEFAULT OFF)
 set(REASON "")
 
-if(NOT VTK_FOUND)
+if(NOT VTK_FOUND OR NOT MPI_CXX_FOUND)
     set(DEFAULT FALSE)
-    set(REASON "VTK was not found.")
-else(NOT VTK_FOUND)
+    set(REASON "VTK or MPI was not found.")
+else(NOT VTK_FOUND OR NOT MPI_CXX_FOUND)
     set(DEFAULT TRUE)
     set(REASON)
     set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
     include (${VTK_USE_FILE})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-endif(NOT VTK_FOUND)
+endif(NOT VTK_FOUND OR NOT MPI_CXX_FOUND)
 
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)
@@ -56,7 +56,7 @@ if(build)
   target_link_libraries(proctor 
                         ${FLANN_LIBRARIES} 
                         pcl_common pcl_features pcl_keypoints pcl_io pcl_search pcl_visualization
-                        vtkCommon vtkFiltering vtkGraphics vtkIO boost_mpi)
+                        vtkCommon vtkFiltering vtkGraphics vtkIO ${Boost_mpi_LIBRARY} ${MPI_CXX_LIBRARIES})
   PCL_ADD_OPENMP_FLAGS(proctor)
 endif(build)
 
