@@ -1,7 +1,9 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 8))
 #include <vtkLidarScanner.h>
+#endif
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 #include <vtkTransform.h>
@@ -40,6 +42,7 @@ namespace pcl {
       // TODO: investigate replacing vtkLidarScanner with vtkRenderWindow::GetZbufferData
       // I think this function leaks memory.
       PointCloud<PointXYZ>::Ptr pcxyz (new PointCloud<PointXYZ>());
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 8))
       vtkLidarScanner *ls = vtkLidarScanner::New();
       vtkPolyData *pd = vtkPolyData::New();
 
@@ -63,6 +66,7 @@ namespace pcl {
 
       ls->Delete();
       pd->Delete();
+#endif
       return pcxyz;
     }
 
