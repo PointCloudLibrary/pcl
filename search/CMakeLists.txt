@@ -19,7 +19,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/search.h
         include/pcl/${SUBSYS_NAME}/kdtree.h
         include/pcl/${SUBSYS_NAME}/organized.h
-        include/pcl/${SUBSYS_NAME}/organized_omp.h
         include/pcl/${SUBSYS_NAME}/octree.h
         include/pcl/${SUBSYS_NAME}/pcl_search.h
         include/pcl/${SUBSYS_NAME}/flann_search.h
@@ -29,7 +28,6 @@ if(build)
         #include/pcl/${SUBSYS_NAME}/impl/auto.hpp
         include/pcl/${SUBSYS_NAME}/impl/flann_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized.hpp
-        include/pcl/${SUBSYS_NAME}/impl/organized_omp.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
