@@ -42,6 +42,7 @@
 #include <pcl/features/shot_common.h>
 #include <pcl/common/geometry.h>
 #include <pcl/common/angles.h>
+#include <pcl/common/utils.h>
 
 template <typename PointInT, typename PointOutT> bool
 pcl::UniqueShapeContext<PointInT, PointOutT>::initCompute()
@@ -126,11 +127,11 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computePointRF(size_t index, float
   std::vector<int> nn_indices;
   std::vector<float> nn_dists;
   size_t nb_neighbours = searchForNeighbors ((*indices_)[index], local_radius_, nn_indices, nn_dists);
-  std::cout << "nb of neighbors " << nb_neighbours << std::endl;
+  //std::cout << "nb of neighbors " << nb_neighbours << std::endl;
   /// The RF is formed as the SHOT local RF
   if (nb_neighbours < 5)
   {
-    PCL_WARN ("[pcl::%s::computePointRF] Neighborhood has %d vertices which is less than 5, aborting description of point index %d\n!", getClassName ().c_str (), nb_neighbours, index);
+    PCL_WARN ("[pcl::%s::computePointRF] Neighborhood has %d vertices which is less than 5, aborting description of point index %d\n!", getClassName ().c_str (), nb_neighbours, (*indices_)[index]);
     return;
   }
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > rf_(3);
@@ -151,12 +152,12 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computePointDescriptor(size_t inde
   /// Find every point within specified search_radius_
   std::vector<int> nn_indices;
   std::vector<float> nn_dists;
-  const size_t neighb_cnt = searchForNeighbors (index, search_radius_, nn_indices, nn_dists);
+  const size_t neighb_cnt = searchForNeighbors ((*indices_)[index], search_radius_, nn_indices, nn_dists);
   /// For each point within radius
   for(size_t ne = 0; ne < neighb_cnt; ne++)
   {
-    if(nn_indices[ne] == (*indices_)[index])
-      continue;
+    if (pcl::utils::equal(nn_dists[ne], 0.0f))
+		continue;
     /// Get neighbours coordinates
     Eigen::Vector3f neighbour = surface_->points[nn_indices[ne]].getVector3fMap ();
 
@@ -213,7 +214,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computePointDescriptor(size_t inde
     /// Local point density = number of points in a sphere of radius "point_density_radius_" around the current neighbour
     std::vector<int> neighbour_indices;
     std::vector<float> neighbour_didtances;
-    float point_density = (float) searchForNeighbors (nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_didtances);
+    float point_density = (float) searchForNeighbors (*surface_, nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_didtances);
     /// point_density is always bigger than 0 because FindPointsWithinRadius returns at least the point itself
     float w = (1.0 / point_density) * volume_lut_[ (l*elevation_bins_*radius_bins_) + 
                                                  (k*radius_bins_) + 

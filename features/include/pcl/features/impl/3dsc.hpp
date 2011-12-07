@@ -121,18 +121,34 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::initCompute()
 }
 
 template <typename PointInT, typename PointNT, typename PointOutT> void
-pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint(size_t index, const pcl::PointCloud<PointInT> &input, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc)
+pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint(size_t index, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc)
 {
+	if (!random_)
+        srand(12345); 
+
   /// The RF is formed as this x_axis | y_axis | normal
   Eigen::Map<Eigen::Vector3f> x_axis (rf);
   Eigen::Map<Eigen::Vector3f> y_axis (rf + 3);
   Eigen::Map<Eigen::Vector3f> normal (rf + 6);
 
+  /// Find every point within specified search_radius_
+  std::vector<int> nn_indices;
+  std::vector<float> nn_dists;
+  const size_t neighb_cnt = searchForNeighbors ((*indices_)[index], search_radius_, nn_indices, nn_dists);
+  float minDist = std::numeric_limits<float>::max();
+  int minIndex = -1;
+  for (int i = 0; i < nn_indices.size(); i++)
+	  if (nn_dists[i] < minDist)
+	  {
+		minDist = nn_dists[i];
+		minIndex = nn_indices[i];
+	  }
+  
   /// Get origin point
-  Vector3fMapConst origin = input[(*indices_)[index]].getVector3fMap ();
+  Vector3fMapConst origin = input_->points[(*indices_)[index]].getVector3fMap ();
   /// Get origin normal
   /// Use pre-computed normals
-  normal = normals[(*indices_)[index]].getNormalVector3fMap ();
+  normal = normals[minIndex].getNormalVector3fMap ();
 
   /// Compute and store the RF direction
   if(!pcl::utils::equal(normal[2], 0.0f))
@@ -161,17 +177,13 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint(size_t
 
   /// Store the 3rd frame vector
   y_axis = normal.cross (x_axis);
-  /// Find every point within specified search_radius_
-  std::vector<int> nn_indices;
-  std::vector<float> nn_dists;
-  const size_t neighb_cnt = searchForNeighbors (index, search_radius_, nn_indices, nn_dists);
   /// For each point within radius
   for(size_t ne = 0; ne < neighb_cnt; ne++)
   {
-    if(nn_indices[ne] == (*indices_)[index])
-      continue;
+    if (pcl::utils::equal(nn_dists[ne], 0.0f))
+		continue;
     /// Get neighbours coordinates
-    Eigen::Vector3f neighbour = input[nn_indices[ne]].getVector3fMap ();
+    Eigen::Vector3f neighbour = surface_->points[nn_indices[ne]].getVector3fMap ();
 
     /// ----- Compute current neighbour polar coordinates -----
     
@@ -226,7 +238,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint(size_t
     /// Local point density = number of points in a sphere of radius "point_density_radius_" around the current neighbour
     std::vector<int> neighbour_indices;
     std::vector<float> neighbour_didtances;
-    float point_density = (float) searchForNeighbors (nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_didtances);
+    float point_density = (float) searchForNeighbors (*surface_, nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_didtances);
     /// point_density is always bigger than 0 because FindPointsWithinRadius returns at least the point itself
     float w = (1.0 / point_density) * volume_lut_[ (l*elevation_bins_*radius_bins_) + 
                                                  (k*radius_bins_) + 
@@ -242,6 +254,9 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint(size_t
 
   assert(desc[ (l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j ] >= 0);
   } // end for each neighbour
+
+  // 3DSC does not define a repeatable local RF, we set it to zero to signal it to the user 
+  memset(rf, 0, sizeof(rf[0])*9);
 }
 
 template <typename PointInT, typename PointNT, typename PointOutT> void
@@ -260,24 +275,11 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::shiftAlongAzimuth(s
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
-  if(!shift_)
-  {
-    for(size_t point_index = 0; point_index < indices_->size (); point_index++)
+	for(size_t point_index = 0; point_index < indices_->size (); point_index++)
     {
       output[point_index].descriptor.resize (descriptor_length_);
-      computePoint(point_index, *input_, *normals_, output[point_index].rf, output[point_index].descriptor);
+      computePoint(point_index, *normals_, output[point_index].rf, output[point_index].descriptor);
     }
-  }
-  else
-  {
-    size_t block_size = descriptor_length_ / azimuth_bins_; // Size of each L-block
-    for(size_t point_index = 0; point_index < indices_->size (); point_index++)
-    {
-      output[point_index].descriptor.resize (descriptor_length_);
-      computePoint(point_index, *input_, *normals_, output[point_index].rf, output[point_index].descriptor);
-      shiftAlongAzimuth(block_size, output[point_index].descriptor);
-    }
-  }
 }
 
 #define PCL_INSTANTIATE_ShapeContext3DEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::ShapeContext3DEstimation<T,NT,OutT>;

@@ -37,18 +37,12 @@
 #ifndef PCL_UTILS
 #define PCL_UTILS
 
+#include <limits>
+
 namespace pcl
 {
   namespace utils
   {
-    namespace details
-    {
-      template<typename T> struct epsilon;
-    
-      template<> struct epsilon<float> { static const float value; };
-
-      template<> struct epsilon<double> { static const double value; };
-    };
     /**
       * \brief Check if val1 and val2 are equals to an epsilon extent
       *
@@ -57,15 +51,11 @@ namespace pcl
       * \return true if val1 is equal to val2, false otherwise.
       */
     template<typename T>
-    bool equal (T val1, T val2, T eps = details::epsilon<T>::value)
+    bool equal (T val1, T val2, T eps = std::numeric_limits<T>::min())
     {
       return (fabs (val1 - val2) < eps);
     }
   };
 }
-
-
-float const pcl::utils::details::epsilon<float>::value = 1E-8f;
-double const pcl::utils::details::epsilon<double>::value = 1E-15;
 
 #endif

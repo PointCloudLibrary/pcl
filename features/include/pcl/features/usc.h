@@ -61,7 +61,7 @@ namespace pcl
       * radius_bins_, elevation_bins_ and azimuth_bins_. 
       * </li>
       * </ul>
-      * \author Federico (original code)
+      * \author Alessandro Franchi, Federico Tombari, Samuele Salti (original code)
       * \author Nizar Sallem (port to PCL)
       * \ingroup features
       */
@@ -82,12 +82,8 @@ namespace pcl
          typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
          
          /** Constructor
-           * \param shift tells estimator to whether shift computed descriptors along
-           * azmith direction or not .
-           * \param random If true the random seed is set to cuurent time else it is set
-           * to 12345. The randomness is used to select X axis.
            */
-         UniqueShapeContext(bool shift = false, bool random = false) :
+         UniqueShapeContext() :
            radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
            azimuth_bins_(12), elevation_bins_(11), radius_bins_(15), 
            min_radius_(0.1), point_density_radius_(0.2)
@@ -95,10 +91,6 @@ namespace pcl
            feature_name_ = "UniqueShapeContext";
            search_radius_ = 2.5;
            local_radius_ = 2.5;
-           if(random)
-             srand(time(NULL));
-           else
-             srand(12345); 
          }
 
         virtual ~UniqueShapeContext() { }
@@ -173,8 +165,9 @@ namespace pcl
         double point_density_radius_;
         /** descriptor length */
         size_t descriptor_length_;
-        float local_radius_;
-
+        /** radisu to compute local RF */
+		float local_radius_;
+		
       private:
         /** Compute 3D shape context feature local Reference Frame
           * \param index point index in input_

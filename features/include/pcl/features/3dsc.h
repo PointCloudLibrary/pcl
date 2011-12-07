@@ -62,7 +62,7 @@ namespace pcl
       * computed descriptor will be shift along the azimuthal direction.
       * </li>
       * </ul>
-      * \author Federico (original code)
+      * \author Alessandro Franchi, Samuele Salti, Federico Tombari (original code)
       * \author Nizar Sallem (port to PCL)
       * \ingroup features
       */
@@ -86,20 +86,18 @@ namespace pcl
          /** Constructor
            * \param shift tells estimator to whether shift computed descriptors along
            * azmith direction or not .
-           * \param random If true the random seed is set to cuurent time else it is set
-           * to 12345. The randomness is used to select X axis.
+           * \param random If true the random seed is set to current time else it is set
+           * to 12345 prior to computing each descriptor. The randomness is used to select X axis.
            */
-         ShapeContext3DEstimation(bool shift = false, bool random = false) :
+         ShapeContext3DEstimation(bool random = false) :
            radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
            azimuth_bins_(12), elevation_bins_(11), radius_bins_(15), 
-           min_radius_(0.1), point_density_radius_(0.2), shift_(shift)
+           min_radius_(0.1), point_density_radius_(0.2), random_(random)
          {
            feature_name_ = "ShapeContext3DEstimation";
            search_radius_ = 2.5;
            if(random)
              srand(time(NULL));
-           else
-             srand(12345); 
          }
 
         virtual ~ShapeContext3DEstimation() {}
@@ -137,7 +135,7 @@ namespace pcl
         bool initCompute() ;
 
         void
-        computePoint(size_t index, const pcl::PointCloud<PointInT> &input, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc);
+        computePoint(size_t index, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc);
 
         void
         computeFeature(PointCloudOut &output);
@@ -163,8 +161,8 @@ namespace pcl
         double point_density_radius_;
         /** descriptor length */
         size_t descriptor_length_;
-        /** whether to shift or not the desciptors*/
-        bool shift_;
+		/** randomness enabled */
+		bool random_;
 
       private:
         /** Shift computed descriptor "L" times along the azimuthal direction
