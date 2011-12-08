@@ -248,6 +248,7 @@ macro(PCL_ADD_TEST _name _exename)
     set(multiValueArgs FILES ARGUMENTS LINK_WITH)
     cmake_parse_arguments(PCL_ADD_TEST "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
     add_executable(${_exename} ${PCL_ADD_TEST_FILES})
+    set_target_properties(${_exename} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     PCL_ADD_OPENMP_FLAGS(${_exename})
     target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
     #
