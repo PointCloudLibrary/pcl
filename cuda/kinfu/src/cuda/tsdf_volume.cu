@@ -133,7 +133,7 @@ namespace pcl
           coo.x = __float2int_rn (v.x * intr.fx / v.z + intr.cx);
           coo.y = __float2int_rn (v.y * intr.fy / v.z + intr.cy);
 
-          if (coo.x >= 0 && coo.y >= 0 && coo.x < depth_raw.cols && coo.y < depth_raw.rows)           //6
+          if (v.z > 0 && coo.x >= 0 && coo.y >= 0 && coo.x < depth_raw.cols && coo.y < depth_raw.rows)           //6
           {
             int Dp = depth_raw.ptr (coo.y)[coo.x];
 
@@ -214,7 +214,7 @@ namespace pcl
         coo.y = __float2int_rn (v.y * intr.fy / v.z + intr.cy);
 
 
-        if (coo.x >= 0 && coo.y >= 0 && coo.x < depth_raw.cols && coo.y < depth_raw.rows)         //6
+        if (v.z > 0 && coo.x >= 0 && coo.y >= 0 && coo.x < depth_raw.cols && coo.y < depth_raw.rows)         //6
         {
           int Dp = depth_raw.ptr (coo.y)[coo.x];
 
@@ -294,7 +294,7 @@ namespace pcl
   namespace device
   {
     __global__ void
-    scaleDepth (const PtrStepSz<ushort> depth, PtrStepSz<float> scaled, const Intr intr)
+    scaleDepth (const PtrStepSz<ushort> depth, PtrStep<float> scaled, const Intr intr)
     {
       int x = threadIdx.x + blockIdx.x * blockDim.x;
       int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -351,6 +351,8 @@ namespace pcl
            pos += elem_step)
       {
         float inv_z = 1.0f / (v_z + Rcurr_inv.data[2].z * z_scaled);
+        if (inv_z < 0)
+            continue;
 
         // project to current cam
         int2 coo =
@@ -425,6 +427,8 @@ namespace pcl
             pos += elem_step)
         {
             float inv_z = 1.0f / (v_z + Rcurr_inv.data[2].z * z_scaled);
+            if (inv_z < 0)
+                continue;
 
             // project to current cam
             int2 coo =
@@ -484,7 +488,6 @@ namespace pcl
                             }
                         }
                     }
-
 
                     if (integrate)
                     {
@@ -584,7 +587,7 @@ namespace pcl
           __float2int_rn (__fmaf_rn (v_y, inv_z, intr.cy))
         };
 
-        if (coo.x >= 0 && coo.y >= 0 && coo.x < depthScaled.cols && coo.y < depthScaled.rows)         //6
+        if (inv_z > 0 && coo.x >= 0 && coo.y >= 0 && coo.x < depthScaled.cols && coo.y < depthScaled.rows)         //6
         {
           float Dp_scaled = depthScaled.ptr (coo.y)[coo.x];
 
