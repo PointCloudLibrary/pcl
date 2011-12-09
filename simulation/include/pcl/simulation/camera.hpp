@@ -47,6 +47,43 @@ public:
   }
 
   void move(double vx, double vy, double vz);
+  
+  // Return the pose of the camera:
+  Eigen::Vector3d get_ypr() {
+    
+/*    // Convert Euler Angles to Quaternion
+    double sy = sin(yaw_*0.5);
+    double cy = cos(yaw_*0.5);
+    double sp = sin(pitch_*0.5);
+    double cp = cos(pitch_*0.5);
+    double sr = sin(roll_*0.5);
+    double cr = cos(roll_*0.5);
+    double quat_w = cr*cp*cy + sr*sp*sy;
+    double quat_x = sr*cp*cy - cr*sp*sy;
+    double quat_y = cr*sp*cy + sr*cp*sy;
+    double quat_z = cr*cp*sy - sr*sp*cy;
+    
+    Eigen::Isometry3f cpose;
+    cpose.setIdentity();
+    cpose.translation() << x_, y_ , z_ ;
+    Eigen::Quaternionf m;
+//    m  = 
+    cpose.rotate(m);  */  
+    
+    return Eigen::Vector3d(yaw_,pitch_,roll_);
+  }
+  
+  // Opposite Direction (for reference)
+  // static void quat_to_euler(Eigen::Quaterniond q, double& yaw, double& pitch, double& roll) {
+  //     const double q0 = q.w();
+  //     const double q1 = q.x();
+  //     const double q2 = q.y();
+  //     const double q3 = q.z();
+  //     roll = atan2(2*(q0*q1+q2*q3), 1-2*(q1*q1+q2*q2));
+  //     pitch = asin(2*(q0*q2-q3*q1));
+  //     yaw = atan2(2*(q0*q3+q1*q2), 1-2*(q2*q2+q3*q3));
+  // }
+  
 
   typedef boost::shared_ptr<Camera> Ptr;
   typedef boost::shared_ptr<const Camera> ConstPtr;

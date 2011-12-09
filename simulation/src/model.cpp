@@ -6,32 +6,63 @@ namespace pcl
 // Create a PolygonMeshModel by converting the PolygonMesh to our format
 PolygonMeshModel::PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg ) : mode_(mode)
 {
-  pcl::PointCloud<pcl::PointXYZRGB> newcloud;  
-  pcl::fromROSMsg(plg->cloud, newcloud);
-  Eigen::Vector4f tmp;
-  for(size_t i=0; i< plg->polygons.size (); i++){ // each triangle/polygon
-    pcl::Vertices apoly_in = plg->polygons[i];
-    SinglePoly apoly;
-    apoly.nvertices_ =apoly_in.vertices.size ();
-    apoly.vertices_ = new float[3*apoly_in.vertices.size ()];
-    apoly.colors_ = new float[4*apoly_in.vertices.size ()]; 
+  bool found_rgb=false;
+  for (size_t i=0; i<plg->cloud.fields.size() ;i++)
+    if (plg->cloud.fields[i].name.compare("rgb") == 0)
+      found_rgb =true;
+  
+  if (found_rgb){
+    pcl::PointCloud<pcl::PointXYZRGB> newcloud;  
+    pcl::fromROSMsg(plg->cloud, newcloud);
+    Eigen::Vector4f tmp;
+    for(size_t i=0; i< plg->polygons.size (); i++){ // each triangle/polygon
+      pcl::Vertices apoly_in = plg->polygons[i];
+      SinglePoly apoly;
+      apoly.nvertices_ =apoly_in.vertices.size ();
+      apoly.vertices_ = new float[3*apoly_in.vertices.size ()];
+      apoly.colors_ = new float[4*apoly_in.vertices.size ()]; 
 
-    for(size_t j=0; j< apoly_in.vertices.size (); j++){ // each point
-      uint32_t pt = apoly_in.vertices[j];
-      tmp = newcloud.points[pt].getVector4fMap();
-      
-      // x,y,z
-      apoly.vertices_[3*j + 0] = (float) tmp(0);
-      apoly.vertices_[3*j + 1] = (float) tmp(1);
-      apoly.vertices_[3*j + 2] = (float) tmp(2);  
-
-      // r,g,b: input is ints 0->255, opengl wants floats 0->1
-      apoly.colors_[4*j + 0] =(float) newcloud.points[pt].r/255.0; // Red  
-      apoly.colors_[4*j + 1] =(float) newcloud.points[pt].g/255.0; // Green
-      apoly.colors_[4*j + 2] =(float) newcloud.points[pt].b/255.0; // Blue
-      apoly.colors_[4*j + 3] =(float) 1.0; // transparancy? 
+      for(size_t j=0; j< apoly_in.vertices.size (); j++){ // each point
+	uint32_t pt = apoly_in.vertices[j];
+	tmp = newcloud.points[pt].getVector4fMap();
+	// x,y,z
+	apoly.vertices_[3*j + 0] = (float) tmp(0);
+	apoly.vertices_[3*j + 1] = (float) tmp(1);
+	apoly.vertices_[3*j + 2] = (float) tmp(2);  
+	// r,g,b: input is ints 0->255, opengl wants floats 0->1
+	apoly.colors_[4*j + 0] =(float) newcloud.points[pt].r/255.0; // Red  
+	apoly.colors_[4*j + 1] =(float) newcloud.points[pt].g/255.0; // Green
+	apoly.colors_[4*j + 2] =(float) newcloud.points[pt].b/255.0; // Blue
+	apoly.colors_[4*j + 3] =(float) 1.0; // transparancy? unnecessary?
+      }
+      polygons.push_back(apoly);
     }
-    polygons.push_back(apoly);
+  }else{
+    pcl::PointCloud<pcl::PointXYZ> newcloud;  
+    pcl::fromROSMsg(plg->cloud, newcloud);
+    Eigen::Vector4f tmp;
+    for(size_t i=0; i< plg->polygons.size (); i++){ // each triangle/polygon
+      pcl::Vertices apoly_in = plg->polygons[i];
+      SinglePoly apoly;
+      apoly.nvertices_ =apoly_in.vertices.size ();
+      apoly.vertices_ = new float[3*apoly_in.vertices.size ()];
+      apoly.colors_ = new float[4*apoly_in.vertices.size ()]; 
+
+      for(size_t j=0; j< apoly_in.vertices.size (); j++){ // each point
+	uint32_t pt = apoly_in.vertices[j];
+	tmp = newcloud.points[pt].getVector4fMap();
+	// x,y,z
+	apoly.vertices_[3*j + 0] = (float) tmp(0);
+	apoly.vertices_[3*j + 1] = (float) tmp(1);
+	apoly.vertices_[3*j + 2] = (float) tmp(2);  
+	// r,g,b: input is ints 0->255, opengl wants floats 0->1
+	apoly.colors_[4*j + 0] =(float) 255/255.0; // Red  
+	apoly.colors_[4*j + 1] =(float) 0.0/255.0; // Green
+	apoly.colors_[4*j + 2] =(float) 0.0/255.0; // Blue
+	apoly.colors_[4*j + 3] =(float) 1.0; // transparancy? 
+      }
+      polygons.push_back(apoly);
+    }
   }
 }
 

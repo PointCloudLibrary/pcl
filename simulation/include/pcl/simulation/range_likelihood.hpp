@@ -9,6 +9,7 @@
 
 #include <pcl/win32_macros.h>
 #include <pcl/range_image/range_image_planar.h>
+#include "pcl/common/transforms.h"
 
 // For adding noise:
 #include <boost/random/linear_congruential.hpp>
@@ -85,7 +86,8 @@ public:
 
   // Convenience function to return PointCloud containing 
   // simulated RGB-D:
-  void getPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc);
+  void getPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
+	bool make_global, const Eigen::Isometry3d & pose);
   // Convenience function to return RangeImagePlanar containing 
   // simulated RGB-D:
   void getRangeImagePlanar(pcl::RangeImagePlanar &rip);

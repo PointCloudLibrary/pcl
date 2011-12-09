@@ -14,6 +14,8 @@ void Camera::move(double vx, double vy, double vz)
   x_ = pose_.translation().x();
   y_ = pose_.translation().y();
   z_ = pose_.translation().z();
+  
+  
 }
 
 void Camera::update_pose() {
@@ -21,10 +23,13 @@ void Camera::update_pose() {
   m = AngleAxisd(yaw_, Vector3d::UnitZ())
     * AngleAxisd(pitch_, Vector3d::UnitY())
     * AngleAxisd(roll_, Vector3d::UnitX());
+
   pose_.setIdentity();
   pose_ *= m;
+  
   Vector3d v;
   v << x_, y_, z_;
   pose_.translation() = v;
 }
+
 }

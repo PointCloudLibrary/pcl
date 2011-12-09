@@ -144,14 +144,6 @@ void RangeLikelihood::apply_camera_transform(const Eigen::Isometry3d & pose)
   glMultMatrixf(T);
 }
 
-void RangeLikelihood::apply_camera_transform(const Camera & camera)
-{
-  glRotatef(rad_to_deg(-camera.roll()),1.0,0.0,0.0);
-  glRotatef(rad_to_deg(-camera.pitch()),0.0,1.0,0.0);
-  glRotatef(rad_to_deg(-camera.yaw()),0.0,0.0,1.0);
-  glTranslatef(-camera.x(), -camera.y(), -camera.z());
-}
-
 void RangeLikelihood::draw_particles(std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses)
 {
   
@@ -163,10 +155,15 @@ void RangeLikelihood::draw_particles(std::vector<Eigen::Isometry3d, Eigen::align
 
       glViewport(x_offset_ + j*col_width_, i*row_height_, col_width_, row_height_);
 
-      // Go from Z-up coordinate frame to OpenGL Z-out.
-      glRotatef(-90.0, 1.0, 0.0, 0.0);
-      glRotatef(90.0,  0.0, 0.0, 1.0);
-
+      // Go from Z-up,X-forward coordinate frame 
+      // to OpenGL Z-out,Y-up [both Right Handed]
+      float T[16];
+      T[0] =  0;   T[4] = -1.0; T[8] =  0; T[12] = 0;
+      T[1] =  0;   T[5] = 0;    T[9] =  1; T[13] = 0;
+      T[2] = -1.0; T[6] = 0;    T[10] = 0; T[14] = 0;
+      T[3] =  0;   T[7] = 0;    T[11] = 0; T[15] = 1;
+      glMultMatrixf(T);
+      
       // Apply camera transformation
       apply_camera_transform(poses[n++]);
 
@@ -321,7 +318,10 @@ void RangeLikelihood::compute_scores(int cols, int rows,
     }
   }
  
-  void RangeLikelihood::getPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc)
+  void RangeLikelihood::getPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
+    bool make_global=false, 
+    const Eigen::Isometry3d & pose = Eigen::Isometry3d::Identity () 
+  )
   { 
     // TODO: check if this works for for rows/cols >1
     // i.e. multiple tiled images
@@ -345,12 +345,18 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 	// Find XYZ from normalized 0->1 mapped disparity
 	int idx = y*camera_width_ + x;
         float d = depth_buffer_[idx] ;
-        float  z = -zf*zn/((zf-zn)*(d - zf/(zf-zn)));
+        float  z = zf*zn/((zf-zn)*(d - zf/(zf-zn)));
 	
 	// TODO: add mode to ignore points with no return i.e. depth_buffer_ ==1
+	// NB: OpenGL uses a Right Hand system with +X right, +Y up, +Z back out of the screen, 
+	// The Z-buffer is natively -1 (far) to 1 (near)
+	// But in this class we invert this to be 0 (near, 0.7m) and 1 (far, 20m) 
+	// ... so by negating y we get to a right-hand computer vision system
+	// which is also used by PCL and OpenNi
         pc->points[idx].z = z;
-        pc->points[idx].x = (x-camera_cx_)*pc->points[idx].z * camera_fx_reciprocal_;
-        pc->points[idx].y = (y-camera_cy_)*pc->points[idx].z * camera_fy_reciprocal_;
+        pc->points[idx].x = (x-camera_cx_) * z * (-camera_fx_reciprocal_);
+        pc->points[idx].y = (y-camera_cy_) * z * (-camera_fy_reciprocal_);
+//        pc->points[idx].y = -(y-camera_cy_)*z * camera_fy_reciprocal_;
 	
  	unsigned char* rgba_ptr = (unsigned char*)&pc->points[idx].rgba;
  	(*rgba_ptr) =  color_buffer_[idx*3+2]; // blue
@@ -358,7 +364,19 @@ void RangeLikelihood::compute_scores(int cols, int rows,
  	(*(rgba_ptr+2)) = color_buffer_[idx*3];// red
  	(*(rgba_ptr+3)) = 0;    	
       }
-    }  
+    }
+    
+    if (make_global){
+      // Go from OpenGL to Z-up
+      Eigen::Matrix4f T;
+      T <<  0, 0, -1, 0,
+	  -1, 0,  0, 0,
+	    0, 1,  0, 0,
+	    0, 0,  0, 1;
+      Eigen::Matrix4f m =  pose.matrix().cast<float>() * T;
+      pcl::transformPointCloud (*pc, *pc, m);      
+    }
+    
   }
   
   void RangeLikelihood::getRangeImagePlanar(pcl::RangeImagePlanar &rip)
