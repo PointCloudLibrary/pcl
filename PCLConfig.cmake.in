@@ -207,9 +207,9 @@ macro(find_VTK)
     set(VTK_DIR "/usr/local/lib/vtk-5.8/")
   endif(PCL_ALL_IN_ONE_INSTALLER)
   find_package(VTK ${QUIET_})
-  if(VTK_FOUND)
+  if (VTK_FOUND AND NOT ANDROID_NDK)
     set(VTK_LIBRARIES vtkCommon vtkRendering vtkHybrid)
-  endif(VTK_FOUND)
+  endif(VTK_FOUND AND NOT ANDROID_NDK)
 endmacro(find_VTK)
 
 # Finds each component external libraries if any
