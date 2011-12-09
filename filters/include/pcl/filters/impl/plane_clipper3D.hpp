@@ -55,11 +55,32 @@ pcl::PlaneClipper3D<PointT>::clipPoint3D (const PointT& point) const
 }
 
 /**
- * @todo Implement me
+ * @attention untested code
  */
 template<typename PointT> bool
-pcl::PlaneClipper3D<PointT>::clipLineSegment3D (PointT& from, PointT& to) const
+pcl::PlaneClipper3D<PointT>::clipLineSegment3D (PointT& point1, PointT& point2) const
 {
+  float dist1 = (plane_params_[0] * point1.x + plane_params_[1] * point1.y + plane_params_[2] * point1.z + plane_params_[3]);
+  float dist2 = (plane_params_[0] * point2.x + plane_params_[1] * point2.y + plane_params_[2] * point2.z + plane_params_[3]);
+
+  if (dist1 * dist2 > 0) // both on same side of the plane -> nothing to clip
+    return (dist1 > 0); // true if both are on positive side, thus visible
+
+  float lambda = dist2 / (dist2 - dist1);
+  float lambda_1 = 1.0 - lambda;
+
+  // get the plane intersecion
+  PointT intersection;
+  intersection.x = point1.x * lambda + point2.x * lambda_1;
+  intersection.y = point1.y * lambda + point2.y * lambda_1;
+  intersection.z = point1.z * lambda + point2.z * lambda_1;
+
+  // point1 is visible, point2 not => point2 needs to be replaced by intersection
+  if (dist1 >= 0)
+    point2 = intersection;
+  else
+    point1 = intersection;
+
   return false;
 }
 
