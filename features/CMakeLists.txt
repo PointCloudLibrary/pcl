@@ -21,6 +21,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/integral_image_normal.h
         include/pcl/${SUBSYS_NAME}/intensity_gradient.h
         include/pcl/${SUBSYS_NAME}/intensity_spin.h
+        include/pcl/${SUBSYS_NAME}/linear_least_squares_normal.h
         include/pcl/${SUBSYS_NAME}/moment_invariants.h
         include/pcl/${SUBSYS_NAME}/multiscale_feature_persistence.h
         include/pcl/${SUBSYS_NAME}/narf.h
@@ -64,6 +65,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/integral_image_normal.hpp
         include/pcl/${SUBSYS_NAME}/impl/intensity_gradient.hpp
         include/pcl/${SUBSYS_NAME}/impl/intensity_spin.hpp
+        include/pcl/${SUBSYS_NAME}/impl/linear_least_squares_normal.hpp
         include/pcl/${SUBSYS_NAME}/impl/moment_invariants.hpp
         include/pcl/${SUBSYS_NAME}/impl/multiscale_feature_persistence.hpp
         include/pcl/${SUBSYS_NAME}/impl/narf.hpp
@@ -100,6 +102,7 @@ if(build)
         src/integral_image_normal.cpp
         src/intensity_gradient.cpp
         src/intensity_spin.cpp
+        src/linear_least_squares_normal.cpp
         src/moment_invariants.cpp
         src/multiscale_feature_persistence.cpp
         src/narf.cpp
