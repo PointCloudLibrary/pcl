@@ -84,8 +84,10 @@ public:
     
     
 
-  // Convenience function to return PointCloud containing 
-  // simulated RGB-D:
+  // Convenience function to return simulated RGB-D PointCloud
+  // Two modes:
+  // global=false - PointCloud is as would be captured by an RGB-D camera [default]
+  // global=true  - PointCloud is transformed into the model/world frame using the camera pose
   void getPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
 	bool make_global, const Eigen::Isometry3d & pose);
   // Convenience function to return RangeImagePlanar containing 
