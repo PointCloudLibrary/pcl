@@ -28,6 +28,9 @@ if(build)
 
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+  PCL_ADD_EXECUTABLE(test_search_speed ${SUBSYS_NAME} src/test_search.cpp)
+  target_link_libraries(test_search_speed pcl_common pcl_io pcl_search pcl_kdtree)
+
   PCL_ADD_EXECUTABLE(nn_classification_example ${SUBSYS_NAME} src/nn_classification_example.cpp)
   target_link_libraries(nn_classification_example pcl_common pcl_io pcl_features pcl_kdtree)
 
