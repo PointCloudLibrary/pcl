@@ -67,13 +67,12 @@ pcl::PlaneClipper3D<PointT>::clipLineSegment3D (PointT& point1, PointT& point2) 
     return (dist1 > 0); // true if both are on positive side, thus visible
 
   float lambda = dist2 / (dist2 - dist1);
-  float lambda_1 = 1.0 - lambda;
 
   // get the plane intersecion
   PointT intersection;
-  intersection.x = point1.x * lambda + point2.x * lambda_1;
-  intersection.y = point1.y * lambda + point2.y * lambda_1;
-  intersection.z = point1.z * lambda + point2.z * lambda_1;
+  intersection.x = (point1.x - point2.x) * lambda + point2.x;
+  intersection.y = (point1.y - point2.y) * lambda + point2.y;
+  intersection.z = (point1.z - point2.z) * lambda + point2.z;
 
   // point1 is visible, point2 not => point2 needs to be replaced by intersection
   if (dist1 >= 0)
