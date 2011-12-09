@@ -123,11 +123,69 @@ pcl::search::BruteForce<PointT>
 
 template <typename PointT> int
 pcl::search::BruteForce<PointT>
-::radiusSearch (const PointT& point, const double radius, std::vector<int> &k_indices,
-              std::vector<float> &k_sqr_distances, int max_nn) const
+::radiusSearch (const PointT& point, double radius, std::vector<int> &k_indices,
+                std::vector<float> &k_sqr_distances, int max_nn) const
 {
-  // @todo implement me
-  return 0;
+  k_indices.clear ();
+  k_sqr_distances.clear ();
+
+  radius *= radius;
+  
+  int reserve = max_nn;
+  if (reserve < 0)
+  {
+    if (indices_ != NULL)
+      reserve = std::min (indices_->size (), cloud_->size ());
+    else
+      reserve = cloud_->size ();
+  }
+  k_indices.reserve (reserve);
+  k_sqr_distances.reserve (reserve);
+
+  std::vector<Entry> result;
+  result.reserve (reserve);
+  const PointCloud& cloud = *cloud_;
+  if (indices_ != NULL)
+  {
+    const std::vector<int>& indices = *indices_;
+    Entry entry;
+
+    // add the rest
+    for (entry.index = 0; entry.index < indices.size (); ++entry.index)
+    {
+      entry.distance = getDistSqr (cloud[indices[entry.index]], point);
+      if (entry.distance <= radius)
+      {
+        result.push_back (entry);
+        if ((int) result.size () == max_nn) // never true if max_nn = -1
+          break;
+      }
+    }
+    std::sort (result.begin (), result.end ());
+  }
+  else
+  {
+    Entry entry;
+
+    for (entry.index = 0; entry.index < cloud.size (); ++entry.index)
+    {
+      entry.distance = getDistSqr (cloud[entry.index], point);
+      if (entry.distance < radius)
+      {
+        result.push_back (entry);
+        if ((int)result.size () == max_nn) // never true if max_nn = -1
+          break;
+      }
+    }
+    std::sort (result.begin (), result.end ());
+  }
+
+  for (typename std::vector<Entry>::const_iterator rIt = result.begin (); rIt != result.end (); ++rIt)
+  {
+    k_indices.push_back (rIt->index);
+    k_sqr_distances.push_back (rIt->distance);
+  }
+  return result.size ();
 }
 
 #define PCL_INSTANTIATE_BruteForce(T) template class PCL_EXPORTS pcl::search::BruteForce<T>;

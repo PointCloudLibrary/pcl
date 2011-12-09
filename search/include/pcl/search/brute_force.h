@@ -171,7 +171,7 @@ namespace pcl
           * \return number of neighbors found in radius
           */
         int
-      radiusSearch (const PointT& point, const double radius,
+      radiusSearch (const PointT& point, double radius,
                     std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
                     int max_nn = -1) const;
 

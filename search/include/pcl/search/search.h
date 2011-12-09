@@ -229,7 +229,7 @@ namespace pcl
           * \return number of neighbors found in radius
           */
         virtual int
-        radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices,
+        radiusSearch (const PointT& point, double radius, std::vector<int>& k_indices,
                       std::vector<float>& k_distances, int max_nn = -1) const = 0;
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius. Use this method if the query points are of a different type than the points in the data set (e.g. PointXYZRGB instead of PointXYZ).
@@ -241,7 +241,7 @@ namespace pcl
           * \return number of neighbors found in radius
           */
         template <typename PointTDiff> int
-        radiusSearchT (const PointTDiff& point, double radius, std::vector<int>& k_indices, 
+        radiusSearchT (const PointTDiff& point, double radius, std::vector<int>& k_indices,
                        std::vector<float>& k_distances, int max_nn = -1)
         {
           PointT p;
