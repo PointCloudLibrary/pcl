@@ -65,6 +65,8 @@ namespace pcl
       virtual void clipPlanarPolygon3D (std::vector<PointT>& polygon) const;
 
       virtual void clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, std::vector<int>& clipped, const std::vector<int>& indices = std::vector<int> ()) const;
+    protected:
+      float getDistance (const PointT& point) const;
     private:
       Eigen::Vector4f plane_params_;
   };

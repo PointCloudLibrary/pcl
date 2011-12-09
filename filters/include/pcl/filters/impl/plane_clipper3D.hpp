@@ -48,6 +48,12 @@ pcl::PlaneClipper3D<PointT>::~PlaneClipper3D () throw ()
 {
 }
 
+template<typename PointT> float
+pcl::PlaneClipper3D<PointT>::getDistance (const PointT& point) const
+{
+  return (plane_params_[0] * point.x + plane_params_[1] * point.y + plane_params_[2] * point.z + plane_params_[3]);
+}
+
 template<typename PointT> bool
 pcl::PlaneClipper3D<PointT>::clipPoint3D (const PointT& point) const
 {
@@ -60,8 +66,8 @@ pcl::PlaneClipper3D<PointT>::clipPoint3D (const PointT& point) const
 template<typename PointT> bool
 pcl::PlaneClipper3D<PointT>::clipLineSegment3D (PointT& point1, PointT& point2) const
 {
-  float dist1 = (plane_params_[0] * point1.x + plane_params_[1] * point1.y + plane_params_[2] * point1.z + plane_params_[3]);
-  float dist2 = (plane_params_[0] * point2.x + plane_params_[1] * point2.y + plane_params_[2] * point2.z + plane_params_[3]);
+  float dist1 = getDistance (point1);
+  float dist2 = getDistance (point2);
 
   if (dist1 * dist2 > 0) // both on same side of the plane -> nothing to clip
     return (dist1 > 0); // true if both are on positive side, thus visible
@@ -84,12 +90,58 @@ pcl::PlaneClipper3D<PointT>::clipLineSegment3D (PointT& point1, PointT& point2) 
 }
 
 /**
- * @todo Implement me
+ * @attention untested code
  */
 template<typename PointT> void
 pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D (std::vector<PointT>& polygon) const
 {
-  polygon.clear ();
+  // test for degenerated polygons
+  if (polygon.size () < 3)
+  {
+    if (polygon.size () == 1)
+    {
+      // point outside clipping area ?
+      if (!clipPoint3D (polygon [0]))
+        polygon.clear ();
+    }
+    else if (polygon.size () == 2)
+    {
+      if (!clipLineSegment3D (polygon [0], polygon [1]))
+        polygon.clear ();
+    }
+    return;
+  }
+
+  std::vector<PointT> clipped;
+  clipped.reserve (polygon.size ());
+
+  float previous_distance = getDistance (polygon [0]);
+
+  if (previous_distance > 0)
+    clipped.push_back (polygon [0]);
+
+  for (typename std::vector<PointT>::iterator pIt = polygon.begin () + 1; pIt != polygon.end (); ++pIt)
+  {
+    // if we intersect plane
+    float distance = getDistance (*pIt);
+    if (distance * previous_distance < 0)
+    {
+      float lambda = distance / (distance - previous_distance);
+
+      // get the plane intersecion
+      typename std::vector<PointT>::iterator prev_it = pIt - 1;
+      PointT intersection;
+      intersection.x = (prev_it->x - pIt->x) * lambda + pIt->x;
+      intersection.y = (prev_it->y - pIt->y) * lambda + pIt->y;
+      intersection.z = (prev_it->z - pIt->z) * lambda + pIt->z;
+
+      clipped.push_back (intersection);
+    }
+    if (distance > 0)
+      clipped.push_back (*pIt);
+
+    previous_distance = distance;
+  }
 }
 
 template<typename PointT> void
