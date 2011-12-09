@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,11 +33,9 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Suat Gedikli (gedikli@willowgarage.com)
  */
 
 #include "pcl/pcl_config.h"
-#ifdef HAVE_OPENNI
 
 #ifndef __PCL_IO_PCD_GRABBER__
 #define __PCL_IO_PCD_GRABBER__
@@ -48,20 +48,19 @@
 
 namespace pcl
 {
-/**
- * @brief Base class for PCD file grabber.
- * @ingroup io
- */
+  /** \brief Base class for PCD file grabber.
+    * \ingroup io
+    */
   class PCL_EXPORTS PCDGrabberBase : public Grabber
   {
     public:
-      /**
-       * @brief Constuctor taking just one PCD file.
-       * @param pcd_file path to the PCD file
-       * @param frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.
-       * @param repeat wheter to play PCD file in an endless lopp or not.
-       */
+      /** \brief Constuctor taking just one PCD file.
+        * \param[in] pcd_file path to the PCD file
+        * \param[in] frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.
+        * \param[in] repeat wheter to play PCD file in an endless lopp or not.
+        */
       PCDGrabberBase (const std::string& pcd_file, float frames_per_second, bool repeat);
+
       /**
        * @brief Constuctor taking a list of paths to PCD files, that are played in the order the appear in the list.
        * @param pcd_files vector of paths to PCD files.
@@ -152,5 +151,4 @@ namespace pcl
     signal_->operator () (cloud);
   }
 }
-#endif
 #endif

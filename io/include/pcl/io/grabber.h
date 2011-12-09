@@ -33,7 +33,6 @@
  */
 
 #include "pcl/pcl_config.h"
-#ifdef HAVE_OPENNI
 
 #ifndef __PCL_IO_GRABBER__
 #define __PCL_IO_GRABBER__
@@ -52,83 +51,90 @@
 namespace pcl
 {
 
-  /**
-   * @author Suat Gedikli <gedikli@willowgarage.com>
-   * @brief Grabber interface for PCL 1.x device drivers
-   * @ingroup io
-   */
+  /** \brief Grabber interface for PCL 1.x device drivers
+    * \author Suat Gedikli <gedikli@willowgarage.com>
+    * \ingroup io
+    */
   class Grabber
   {
-  public:
-    /**
-     * @brief virtual desctructor.
-     * @author Suat Gedikli
-     */
-    virtual inline ~Grabber () throw ();
+    public:
 
-    /**
-     * @brief registers a callback function/method to a signal with the corresponding signature
-     * @param[in] callback: the callback function/method
-     * @return Connection object, that can be used to disconnect the callback method from the signal again.
-     * @author Suat Gedikli
-     */
-    template<typename T> boost::signals2::connection registerCallback (const boost::function<T>& callback);
+      /** \brief virtual desctructor. */
+      virtual inline ~Grabber () throw ();
 
-    /**
-     * @brief indicates whether a signal with given parameter-type exists or not
-     * @return true if signal exists, false otherwise
-     * @author Suat Gedikli
-     */
-    template<typename T> bool providesCallback () const;
+      /** \brief registers a callback function/method to a signal with the corresponding signature
+        * \param[in] callback: the callback function/method
+        * \return Connection object, that can be used to disconnect the callback method from the signal again.
+        */
+      template<typename T> boost::signals2::connection 
+      registerCallback (const boost::function<T>& callback);
 
-    /**
-     * @brief For devices that are streaming, the streams are started by calling this method.
-     *        Trigger-based devices, just trigger the device once for each call of start.
-     * @author Suat Gedikli
-     */
-    virtual void start () = 0;
+      /** \brief indicates whether a signal with given parameter-type exists or not
+        * \return true if signal exists, false otherwise
+        */
+      template<typename T> bool 
+      providesCallback () const;
 
-    /**
-     * @brief For devices that are streaming, the streams are stopped.
-     *        This method has no effect for triggered devices.
-     * @author Suat Gedikli
-     */
-    virtual void stop () = 0;
+      /** \brief For devices that are streaming, the streams are started by calling this method.
+        *        Trigger-based devices, just trigger the device once for each call of start.
+        */
+      virtual void 
+      start () = 0;
 
-    /**
-     * @brief returns the name of the concrete subclass.
-     * @return the name of the concrete driver.
-     * @author Suat Gedikli
-     */
-    virtual std::string getName () const = 0;
+      /** \brief For devices that are streaming, the streams are stopped.
+        *        This method has no effect for triggered devices.
+        */
+      virtual void 
+      stop () = 0;
 
-    /**
-     * @brief Indicates whether the grabber is streaming or not. This value is not defined for triggered devices.
-     * @return true if grabber is running / streaming. False otherwise.
-     */
-    virtual bool isRunning () const = 0;
+      /** \brief returns the name of the concrete subclass.
+        * \return the name of the concrete driver.
+        */
+      virtual std::string 
+      getName () const = 0;
 
-    /**
-     * @brief returns fps. 0 if trigger based.
-     */
-    virtual float getFramesPerSecond () const = 0;
+      /** \brief Indicates whether the grabber is streaming or not. This value is not defined for triggered devices.
+        * \return true if grabber is running / streaming. False otherwise.
+        */
+      virtual bool 
+      isRunning () const = 0;
 
-  protected:
+      /** \brief returns fps. 0 if trigger based. */
+      virtual float 
+      getFramesPerSecond () const = 0;
 
-    virtual void
-    signalsChanged () { }
-    template<typename T> boost::signals2::signal<T>* find_signal () const;
-    template<typename T> int num_slots () const;
-    template<typename T> void disconnect_all_slots ();
-    template<typename T> void block_signal ();
-    template<typename T> void unblock_signal ();
-    inline void block_signals ();
-    inline void unblock_signals ();
+    protected:
 
-    template<typename T> boost::signals2::signal<T>* createSignal ();
-    std::map<std::string, boost::signals2::signal_base*> signals_;
-    std::map<std::string, std::vector<boost::signals2::connection> > connections_;
-    std::map<std::string, std::vector<boost::signals2::shared_connection_block> > shared_connections_;
+      virtual void
+      signalsChanged () { }
+
+      template<typename T> boost::signals2::signal<T>* 
+      find_signal () const;
+
+      template<typename T> int 
+      num_slots () const;
+
+      template<typename T> void 
+      disconnect_all_slots ();
+
+      template<typename T> void 
+      block_signal ();
+      
+      template<typename T> void 
+      unblock_signal ();
+      
+      inline void 
+      block_signals ();
+      
+      inline void 
+      unblock_signals ();
+
+      template<typename T> boost::signals2::signal<T>* 
+      createSignal ();
+
+      std::map<std::string, boost::signals2::signal_base*> signals_;
+      std::map<std::string, std::vector<boost::signals2::connection> > connections_;
+      std::map<std::string, std::vector<boost::signals2::shared_connection_block> > shared_connections_;
   } ;
 
   Grabber::~Grabber () throw ()
@@ -262,4 +268,3 @@ namespace pcl
 } // namespace
 
 #endif
-#endif //HAVE_OPENNI
