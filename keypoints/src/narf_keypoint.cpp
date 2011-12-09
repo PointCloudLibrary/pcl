@@ -321,7 +321,7 @@ void NarfKeypoint::calculateCompleteInterestImage ()
     //for (int i=0; i<array_size; ++i)
       //interest_image[i] = -1.0f;
     
-    int angle_histogram_size = 18;
+    const int angle_histogram_size = 18;
     float* angle_histogram = new float[angle_histogram_size];
     
     std::vector<bool> was_touched;
@@ -521,7 +521,7 @@ void NarfKeypoint::calculateSparseInterestImage ()
     interest_image_[index] = 2.0f;
   }
   
-  int angle_histogram_size = 18;
+  const int angle_histogram_size = 18;
   float* angle_histogram = new float[angle_histogram_size];
   std::vector<std::vector<std::pair<int, float> > > angle_elements (angle_histogram_size);
   std::vector<bool> relevant_point_still_valid;
