@@ -85,9 +85,6 @@ if (build)
       PCL_ADD_EXECUTABLE(octree_viewer ${SUBSYS_NAME} octree_viewer.cpp)
       target_link_libraries(octree_viewer pcl_common pcl_io pcl_octree pcl_visualization pcl_kdtree)   
 
-      PCL_ADD_EXECUTABLE(openni_save_image ${SUBSYS_NAME} openni_save_image.cpp)
-      target_link_libraries(openni_save_image pcl_common pcl_io pcl_visualization)   
-
       PCL_ADD_EXECUTABLE(mesh2pcd ${SUBSYS_NAME} mesh2pcd.cpp)
       target_link_libraries(mesh2pcd pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
       
@@ -96,6 +93,11 @@ if (build)
       
       PCL_ADD_EXECUTABLE(virtual_scanner ${SUBSYS_NAME} virtual_scanner.cpp)
       target_link_libraries(virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon)
+
+      if(BUILD_OPENNI AND OPENNI_FOUND)
+        PCL_ADD_EXECUTABLE(openni_save_image ${SUBSYS_NAME} openni_save_image.cpp)
+        target_link_libraries(openni_save_image pcl_common pcl_io pcl_visualization)  
+      endif(BUILD_OPENNI AND OPENNI_FOUND)
   endif(NOT VTK_FOUND)
 
   PCL_ADD_EXECUTABLE (transform_point_cloud ${SUBSYS_NAME} transform_point_cloud.cpp)
