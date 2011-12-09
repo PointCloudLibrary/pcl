@@ -269,7 +269,7 @@ TEST (RANSAC, SampleConsensusModelNormalParallelPlane)
   model->setInputNormals (normals.makeShared ());
 
   const float max_angle_rad = 0.01;
-  const float angle_eps = 0.0001;
+  const float angle_eps = 0.001;
   model->setEpsAngle (max_angle_rad);
 
   // Test true axis
