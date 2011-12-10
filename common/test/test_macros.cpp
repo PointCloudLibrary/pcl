@@ -56,10 +56,10 @@ TEST(MACROS, expect_eq_vectors_macro)
     ev2[i] = val;
   }
 
-  EXPECT_EQUAL_VECTORS (v1, v2);
-  EXPECT_EQUAL_VECTORS (ev1, ev2);
-  EXPECT_EQUAL_VECTORS (v1, ev2);
-  EXPECT_EQUAL_VECTORS (ev1, v2);
+  EXPECT_EQ_VECTORS (v1, v2);
+  EXPECT_EQ_VECTORS (ev1, ev2);
+  EXPECT_EQ_VECTORS (v1, ev2);
+  EXPECT_EQ_VECTORS (ev1, v2);
 //  equal_vectors<std::vector<float>, std::vector<float> >(v1, v2);
 }
 

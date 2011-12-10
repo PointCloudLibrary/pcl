@@ -49,8 +49,9 @@ namespace pcl
   namespace test
   {
     template <typename V1, typename V2>
-    void EXPECT_EQUAL_VECTORS (const V1& v1, const V2& v2)
+    void EXPECT_EQ_VECTORS (const V1& v1, const V2& v2)
     {
+      SCOPED_TRACE("EXPECT_EQ_VECTORS failed");
       EXPECT_EQ (v1.size (), v2.size ());
       int length = v1.size ();
       for (int i = 0; i < length; ++i)
@@ -60,6 +61,7 @@ namespace pcl
     template <typename V1, typename V2, typename Scalar>
     void EXPECT_NEAR_VECTORS (const V1& v1, const V2& v2, const Scalar& epsilon)
     {
+      SCOPED_TRACE("EXPECT_NEAR_VECTORS failed");
       EXPECT_EQ (v1.size (), v2.size ());
       int length = v1.size ();
       for (int i = 0; i < length; ++i)
