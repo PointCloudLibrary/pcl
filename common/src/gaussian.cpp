@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2011, www.pointclouds.org
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,21 +37,20 @@
  */
 
 #include <pcl/common/gaussian.h>
-#include <pcl/exceptions.h>
 
 void 
-pcl::GaussianKernel::compute(double sigma, 
-                             Eigen::VectorXd &kernel, 
+pcl::GaussianKernel::compute(float sigma, 
+                             Eigen::VectorXf &kernel, 
                              unsigned kernel_width) const
 {
   assert(kernel_width %2 == 1);
   assert(sigma >= 0);
   kernel.resize (kernel_width);
-  static const double factor = 0.01f;
-  static const double max_gauss = 1.0f;
+  static const float factor = 0.01f;
+  static const float max_gauss = 1.0f;
   const int hw = kernel_width / 2;
   for(int i = -hw, j = 0, k = kernel_width - 1; i < 0 ; i++, j++, k--)
-    kernel[k] = kernel[j] = double (exp (-i*i / (2*sigma*sigma)));
+    kernel[k] = kernel[j] = float (exp (-i*i / (2*sigma*sigma)));
   kernel[hw] = 1;
   unsigned g_width = kernel_width;
   for(unsigned i = 0; fabs (kernel[i]/max_gauss) < factor; i++, g_width-= 2);
@@ -74,21 +73,21 @@ pcl::GaussianKernel::compute(double sigma,
 }
 
 void 
-pcl::GaussianKernel::compute(double sigma, 
-                             Eigen::VectorXd &kernel, 
-                             Eigen::VectorXd &derivative,
+pcl::GaussianKernel::compute(float sigma, 
+                             Eigen::VectorXf &kernel, 
+                             Eigen::VectorXf &derivative,
                              unsigned kernel_width) const
 {
   assert(kernel_width %2 == 1);
   assert(sigma >= 0);
   kernel.resize (kernel_width);
   derivative.resize (kernel_width);
-  const double factor = 0.01f;
-  double max_gauss = 1.0f, max_deriv = double(sigma * exp(-0.5));
+  const float factor = 0.01f;
+  float max_gauss = 1.0f, max_deriv = float(sigma * exp(-0.5));
   int hw = kernel_width / 2;
   for(int i = -hw, j = 0, k = kernel_width - 1; i < 0 ; i++, j++, k--)
   {
-    kernel[k] = kernel[j] = double (exp (-i*i / (2*sigma*sigma)));
+    kernel[k] = kernel[j] = float (exp (-i*i / (2*sigma*sigma)));
     derivative[j] = -i * kernel[j];
     derivative[k] = -derivative[j];
   }
@@ -123,120 +122,101 @@ pcl::GaussianKernel::compute(double sigma,
   derivative.conservativeResize (d_width);
   // Normalize derivative
   hw = d_width / 2;
-  double den = 0;
+  float den = 0;
   for (int i = -hw ; i <= hw ; i++)
     den -=  i*derivative[i+hw];
   derivative/= den;
 }
 
 void 
-pcl::GaussianKernel::convolveRows(const Eigen::MatrixXd& input,
-                                  const Eigen::VectorXd& kernel,
-                                  Eigen::MatrixXd& output) const
+pcl::GaussianKernel::convolveRows(const pcl::PointCloud<float> &input,
+                                  const Eigen::VectorXf& kernel,
+                                  pcl::PointCloud<float> &output) const
 {
   assert(kernel.size () % 2 == 1);
   int kernel_width = kernel.size () -1;
-  int radius = kernel.size () / 2.0;
-  const Eigen::MatrixXd* input_;
-  if(input.data () != output.data ())
+  size_t radius = kernel.size () / 2.0;
+  pcl::PointCloud<float>::ConstPtr input_;
+  if(&input != &output)
   {
-    if(output.rows () < input.rows () || output.cols () < input.cols ())
-      output.resize (input.rows (), input.cols ());
-    input_ = &input;
+    if(output.height < input.height || output.width < input.width)
+    {
+      output.resize (input.height * input.width);
+      output.width = input.width;
+      output.height = input.height;
+    }
+    input_ = input.makeShared ();
   }
   else
-    input_ = new Eigen::MatrixXd(input);
+    input_.reset (new pcl::PointCloud<float>(input));
   
-  int i;
-  for(int j = 0; j < input_->rows (); j++)
+  size_t i;
+  for(size_t j = 0; j < input_->height; j++)
   {
     for (i = 0 ; i < radius ; i++)
-      output(j,i) = 0;
+      output (j,i) = 0;
 
-    for ( ; i < input_->cols () - radius ; i++)  {
-      output(j,i) = 0;
+    for ( ; i < input_->width - radius ; i++)  {
+      output (j,i) = 0;
       for (int k = kernel_width, l = i - radius; k >= 0 ; k--, l++)
-        output(j,i) += (*input_)(j,l) * kernel[k];
+        output (j,i) += (*input_)(j,l) * kernel[k];
     }
 
-    for ( ; i < input_->cols () ; i++)
-      output(j,i) = 0;
+    for ( ; i < input_->width ; i++)
+      output (j,i) = 0;
   }
 }
 
 void 
-pcl::GaussianKernel::convolveCols(const Eigen::MatrixXd& input,
-                                  const Eigen::VectorXd& kernel,
-                                  Eigen::MatrixXd& output) const
+pcl::GaussianKernel::convolveCols(const pcl::PointCloud<float> &input,
+                                  const Eigen::VectorXf &kernel,
+                                  pcl::PointCloud<float> &output) const
 {
   assert(kernel.size () % 2 == 1);
   int kernel_width = kernel.size () -1;
-  int radius = kernel.size () / 2.0;
-  const Eigen::MatrixXd* input_;
-  if(input.data () != output.data ())
+  size_t radius = kernel.size () / 2.0;
+  pcl::PointCloud<float>::ConstPtr input_;
+  if(&input != &output)
   {
-    if(output.rows () < input.rows () || output.cols () < input.cols ())
-      output.resize (input.rows (), input.cols ());
-    input_ = &input;
+    if(output.height < input.height || output.width < input.width)
+    {
+      output.resize (input.height * input.width);
+      output.width = input.width;
+      output.height = input.height;
+    }
+    input_ = input.makeShared ();
   }
   else
-    input_ = new Eigen::MatrixXd(input);
+    input_.reset (new pcl::PointCloud<float>(input));
 
-  int j;
-  for(int i = 0; i < input_->cols (); i++)
+  size_t j;
+  for(size_t i = 0; i < input_->width; i++)
   {
     for (j = 0 ; j < radius ; j++)
-      output(j,i) = 0;
+      output (j,i) = 0;
 
-    for ( ; j < input_->rows () - radius ; j++)  {
-      output(j,i) = 0;
+    for ( ; j < input_->height - radius ; j++)  {
+      output (j,i) = 0;
       for (int k = kernel_width, l = j - radius ; k >= 0 ; k--, l++)
       {
-        output(j,i) += (*input_)(l,i) * kernel[k];
+        output (j,i) += (*input_)(l,i) * kernel[k];
       }
     }
 
-    for ( ; j < input_->rows () ; j++)
-      output(j,i) = 0;
+    for ( ; j < input_->height ; j++)
+      output (j,i) = 0;
   }
 }
 
 void 
-pcl::GaussianKernel::convolve(const Eigen::MatrixXd& input,
-                              const Eigen::VectorXd& horiz_kernel,
-                              const Eigen::VectorXd& vert_kernel,
-                              Eigen::MatrixXd& output) const
+pcl::GaussianKernel::convolve(const pcl::PointCloud<float> &input,
+                              const Eigen::VectorXf &horiz_kernel,
+                              const Eigen::VectorXf &vert_kernel,
+                              pcl::PointCloud<float> &output) const
 {
-  Eigen::MatrixXd *tmp = new Eigen::MatrixXd(input.rows (), input.cols ()) ;
+  pcl::PointCloud<float> *tmp = new pcl::PointCloud<float> ();
+  tmp->resize (input.size ());
   convolveRows(input, horiz_kernel, *tmp);
   convolveCols(*tmp, vert_kernel, output);
   delete tmp;
-}
-
-void 
-pcl::GaussianKernel::computeGradients(const Eigen::MatrixXd& input,
-                                      const Eigen::VectorXd& gaussian_kernel,
-                                      const Eigen::VectorXd& gaussian_kernel_derivative,
-                                      Eigen::MatrixXd& grad_x,                         
-                                      Eigen::MatrixXd& grad_y) const
-{
-  // if(grad_x.rows () < input.rows () || grad_x.cols () < input.cols ())
-  //   grad_x.resize (input.rows (), input.cols ());
-
-  // if(grad_y.rows () < input.rows () || grad_y.cols () < input.cols ())
-  //   grad_y.resize (input.rows (), input.cols ());
-
-  convolve(input, gaussian_kernel_derivative, gaussian_kernel, grad_x);
-  convolve(input, gaussian_kernel, gaussian_kernel_derivative, grad_y);
-}
-
-void 
-pcl::GaussianKernel::smooth(const Eigen::MatrixXd& input,
-                            const Eigen::VectorXd& gaussian_kernel,
-                            Eigen::MatrixXd& output) const
-{
-  // if(output.rows () < input.rows () || output.cols () < input.cols ())
-  //   output.resize (input.rows (), input.cols ());
-
-  convolve(input, gaussian_kernel, gaussian_kernel, output);
 }

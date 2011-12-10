@@ -95,6 +95,7 @@ if(build)
         include/pcl/common/impl/transforms.hpp
         include/pcl/common/impl/transformation_from_correspondences.hpp
         include/pcl/common/impl/vector_average.hpp
+        include/pcl/common/impl/gaussian.hpp
        )
 
     set(impl_incs include/pcl/impl/instantiate.hpp
