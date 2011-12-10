@@ -80,6 +80,14 @@ namespace pcl
 
       /** \brief Empty constructor. */
       PCLBase () : input_ (), indices_ (), use_indices_ (false), fake_indices_ (false) {}
+      
+      /** \brief Copy constructor. */
+      PCLBase (const PCLBase& base)
+        : input_ (base.input_)
+        , indices_ (base.indices_)
+        , use_indices_ (base.use_indices_)
+        , fake_indices_ (base.fake_indices_)
+      {}
 
       /** \brief destructor. */
       virtual ~PCLBase() 
