@@ -52,7 +52,7 @@ namespace pcl
       * \author Nizar Sallem
       * \ingroup common
       */
-  class GaussianKernel
+  class PCL_EXPORTS GaussianKernel
   {
     public:
 
