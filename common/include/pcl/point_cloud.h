@@ -154,6 +154,17 @@ namespace pcl
         }
       }
 
+      inline PointCloud (uint32_t width_, uint32_t height_)
+        : points (width_ * height_)
+        , width (width_)
+        , height (height_)
+        , is_dense (true)
+        , sensor_origin_ (Eigen::Vector4f::Zero ())
+        , sensor_orientation_ (Eigen::Quaternionf::Identity ())
+      {}
+
+      virtual ~PointCloud () {}
+
       ////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Add a point cloud to the current cloud.
         * \param[in] rhs the cloud to add to the current cloud
