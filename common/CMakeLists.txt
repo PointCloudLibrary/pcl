@@ -32,6 +32,7 @@ if(build)
         include/pcl/correspondence.h
         include/pcl/point_types.h
         include/pcl/win32_macros.h
+        include/pcl/pcl_tests.h
         )
         
     if(NOT USE_ROS)
