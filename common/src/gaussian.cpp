@@ -154,16 +154,16 @@ pcl::GaussianKernel::convolveRows(const pcl::PointCloud<float> &input,
   for(size_t j = 0; j < input_->height; j++)
   {
     for (i = 0 ; i < radius ; i++)
-      output (j,i) = 0;
+      output (i,j) = 0;
 
     for ( ; i < input_->width - radius ; i++)  {
-      output (j,i) = 0;
+      output (i,j) = 0;
       for (int k = kernel_width, l = i - radius; k >= 0 ; k--, l++)
-        output (j,i) += (*input_)(j,l) * kernel[k];
+        output (i,j) += (*input_)(l,j) * kernel[k];
     }
 
     for ( ; i < input_->width ; i++)
-      output (j,i) = 0;
+      output (i,j) = 0;
   }
 }
 
@@ -193,30 +193,17 @@ pcl::GaussianKernel::convolveCols(const pcl::PointCloud<float> &input,
   for(size_t i = 0; i < input_->width; i++)
   {
     for (j = 0 ; j < radius ; j++)
-      output (j,i) = 0;
+      output (i,j) = 0;
 
     for ( ; j < input_->height - radius ; j++)  {
-      output (j,i) = 0;
+      output (i,j) = 0;
       for (int k = kernel_width, l = j - radius ; k >= 0 ; k--, l++)
       {
-        output (j,i) += (*input_)(l,i) * kernel[k];
+        output (i,j) += (*input_)(i,l) * kernel[k];
       }
     }
 
     for ( ; j < input_->height ; j++)
-      output (j,i) = 0;
+      output (i,j) = 0;
   }
-}
-
-void 
-pcl::GaussianKernel::convolve(const pcl::PointCloud<float> &input,
-                              const Eigen::VectorXf &horiz_kernel,
-                              const Eigen::VectorXf &vert_kernel,
-                              pcl::PointCloud<float> &output) const
-{
-  pcl::PointCloud<float> *tmp = new pcl::PointCloud<float> ();
-  tmp->resize (input.size ());
-  convolveRows(input, horiz_kernel, *tmp);
-  convolveCols(*tmp, vert_kernel, output);
-  delete tmp;
 }
