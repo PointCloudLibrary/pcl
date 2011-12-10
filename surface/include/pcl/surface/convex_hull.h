@@ -46,7 +46,6 @@
 
 #include "pcl/ModelCoefficients.h"
 #include "pcl/PolygonMesh.h"
-#include <math.h>
 
 namespace pcl
 {

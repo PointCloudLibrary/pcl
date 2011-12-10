@@ -45,7 +45,6 @@
 #include <pcl/search/search.h>
 
 #include <algorithm>
-#include <math.h>
 #include <queue>
 #include <vector>
 

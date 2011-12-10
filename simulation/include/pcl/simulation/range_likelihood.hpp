@@ -4,7 +4,6 @@
 #include "camera.hpp"
 #include "scene.hpp"
 
-#include <math.h>
 #include <Eigen/StdVector>
 
 #include <pcl/win32_macros.h>

@@ -40,7 +40,6 @@
 #define OCTREE_TREE_2BUF_BASE_H
 
 #include <vector>
-#include <math.h>
 
 #include "octree_nodes.h"
 

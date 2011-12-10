@@ -43,7 +43,6 @@
 #include <vector>
 #include "pcl/ros/register_point_struct.h"
 #include "pcl/win32_macros.h"
-#include <math.h>
 
 /**
  * \file pcl/point_types.h

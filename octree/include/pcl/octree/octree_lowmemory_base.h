@@ -41,7 +41,6 @@
 
 #include <cstddef>
 #include <vector>
-#include <math.h>
 
 #include "octree_nodes.h"
 
