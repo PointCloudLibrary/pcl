@@ -259,6 +259,25 @@ spaces** to indent them, e.g.:
    }
 
 
+Class and struct members are indented by **2 spaces**. Access qualifiers (public, private and protected) are put at the
+indentation level of the class body and members affected by these qualifiers are indented by one more level, i.e. 2 spaces. E.g.:
+
+.. code-block:: cpp
+
+   namespace foo
+   {
+     class Bar
+     {
+       int i;
+       public:
+         int j;
+       protected:
+         void
+         baz ();
+     }
+   }
+
+
 2.6 Automatic code indentation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
