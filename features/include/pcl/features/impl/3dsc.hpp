@@ -131,9 +131,6 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
     size_t index, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc)
 {
-	if (!random_)
-    srand (12345);
-
   /// The RF is formed as this x_axis | y_axis | normal
   Eigen::Map<Eigen::Vector3f> x_axis (rf);
   Eigen::Map<Eigen::Vector3f> y_axis (rf + 3);
@@ -161,26 +158,18 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   normal = normals[minIndex].getNormalVector3fMap ();
 
   /// Compute and store the RF direction
+  x_axis[0] = rnd ();
+  x_axis[1] = rnd ();
+  x_axis[2] = rnd ();
   if (!pcl::utils::equal (normal[2], 0.0f))
-  {
-    x_axis[0] = (float)rand () / ((float)RAND_MAX + 1);
-    x_axis[1] = (float)rand () / ((float)RAND_MAX + 1);
     x_axis[2] = - (normal[0]*x_axis[0] + normal[1]*x_axis[1]) / normal[2];
-  }
   else if (!pcl::utils::equal (normal[1], 0.0f))
-  {
-    x_axis[0] = (float)rand () / ((float)RAND_MAX + 1);
-    x_axis[2] = (float)rand () / ((float)RAND_MAX + 1);
     x_axis[1] = - (normal[0]*x_axis[0] + normal[2]*x_axis[2]) / normal[1];
-  }
   else if (!pcl::utils::equal (normal[0], 0.0f))
-  {
-    x_axis[1] = (float)rand () / ((float)RAND_MAX + 1);
-    x_axis[2] = (float)rand () / ((float)RAND_MAX + 1);
     x_axis[0] = - (normal[1]*x_axis[1] + normal[2]*x_axis[2]) / normal[0];
-  }
 
   x_axis.normalize ();
+  std::cerr << x_axis << std::endl;
 
   /// Check if the computed x axis is orthogonal to the normal
   assert (pcl::utils::equal (x_axis[0]*normal[0] + x_axis[1]*normal[1] + x_axis[2]*normal[2], 0.0f, 1E-6f));

@@ -42,139 +42,184 @@
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
+#include <boost/random.hpp>
 
 namespace pcl
 {
-  /* namespace features */
-  /* { */
-    /** Class ShapeContext3DEstimation implements the 3D shape context descriptor as
-      * described here
-      * <ul>
-      * <li> Andrea Frome, Daniel Huber, Ravi Kolluri and Thomas Bülow, Jitendra Malik
-      *      Recognizing Objects in Range Data Using Regional Point Descriptors,
-      *      In proceedings of the 8th European Conference on Computer Vision (ECCV),
-      *      Prague, May 11-14, 2004
-      * </li>
-      * </ul>
-      * The 3DSC computed feature has the following structure
-      * <ul>
-      * <li> rf float[9] = x_axis | y_axis | normal and represents the local frame </li>
-      * <li> desc std::vector<float> which size is determined by the number of bins
-      * radius_bins_ + elevation_bins_ + azimuth_bins_. If shift is required then the 
-      * computed descriptor will be shift along the azimuthal direction.
-      * </li>
-      * </ul>
-      * \author Alessandro Franchi, Samuele Salti, Federico Tombari (original code)
-      * \author Nizar Sallem (port to PCL)
-      * \ingroup features
-      */
-    template <typename PointInT, typename PointNT, typename PointOutT> 
-    class ShapeContext3DEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
-    {
-      public:
-         using Feature<PointInT, PointOutT>::feature_name_;
-         using Feature<PointInT, PointOutT>::getClassName;
-         using Feature<PointInT, PointOutT>::indices_;
-         using Feature<PointInT, PointOutT>::search_parameter_;
-         using Feature<PointInT, PointOutT>::search_radius_;
-         using Feature<PointInT, PointOutT>::surface_;
-         using Feature<PointInT, PointOutT>::input_;
-         using Feature<PointInT, PointOutT>::searchForNeighbors;
-         using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
-         
-         typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-         typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-         
-         /** Constructor
-           * \param shift tells estimator to whether shift computed descriptors along
-           * azmith direction or not .
-           * \param random If true the random seed is set to current time else it is set
-           * to 12345 prior to computing each descriptor. The randomness is used to select X axis.
-           */
-         ShapeContext3DEstimation(bool random = false) :
-           radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
-           azimuth_bins_(12), elevation_bins_(11), radius_bins_(15), 
-           min_radius_(0.1), point_density_radius_(0.2), random_(random)
-         {
-           feature_name_ = "ShapeContext3DEstimation";
-           search_radius_ = 2.5;
-           if(random)
-             srand(time(NULL));
-         }
+  /** Class ShapeContext3DEstimation implements the 3D shape context descriptor as
+    * described here
+    * <ul>
+    * <li> Andrea Frome, Daniel Huber, Ravi Kolluri and Thomas Bülow, Jitendra Malik
+    *      Recognizing Objects in Range Data Using Regional Point Descriptors,
+    *      In proceedings of the 8th European Conference on Computer Vision (ECCV),
+    *      Prague, May 11-14, 2004
+    * </li>
+    * </ul>
+    * The 3DSC computed feature has the following structure
+    * <ul>
+    * <li> rf float[9] = x_axis | y_axis | normal and represents the local frame </li>
+    * <li> desc std::vector<float> which size is determined by the number of bins
+    * radius_bins_ + elevation_bins_ + azimuth_bins_. If shift is required then the 
+    * computed descriptor will be shift along the azimuthal direction.
+    * </li>
+    * </ul>
+    * \author Alessandro Franchi, Samuele Salti, Federico Tombari (original code)
+    * \author Nizar Sallem (port to PCL)
+    * \ingroup features
+    */
+  template <typename PointInT, typename PointNT, typename PointOutT> 
+  class ShapeContext3DEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
+  {
+    public:
+       using Feature<PointInT, PointOutT>::feature_name_;
+       using Feature<PointInT, PointOutT>::getClassName;
+       using Feature<PointInT, PointOutT>::indices_;
+       using Feature<PointInT, PointOutT>::search_parameter_;
+       using Feature<PointInT, PointOutT>::search_radius_;
+       using Feature<PointInT, PointOutT>::surface_;
+       using Feature<PointInT, PointOutT>::input_;
+       using Feature<PointInT, PointOutT>::searchForNeighbors;
+       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+       
+       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+       
+       /** Constructor. 
+         * \param[in] random If true the random seed is set to current time, else it is 
+         * set to 12345 prior to computing the descriptor (used to select X axis)
+        */
+       ShapeContext3DEstimation (bool random = false) :
+         radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
+         azimuth_bins_(12), elevation_bins_(11), radius_bins_(15), 
+         min_radius_(0.1), point_density_radius_(0.2)
+       {
+         feature_name_ = "ShapeContext3DEstimation";
+         search_radius_ = 2.5;
 
-        virtual ~ShapeContext3DEstimation() {}
+         // Create a random number generator object
+         rng_.reset (new boost::uniform_01<boost::mt19937> (rng_alg_));
+         if (random)
+           rng_->base ().seed (static_cast<unsigned> (std::time(0)));
+         else
+           rng_->base ().seed (12345u);
+       }
 
-        /** set number of bins along the azimth to \param bins */
-        inline void setAzimuthBins(size_t bins) { azimuth_bins_ = bins; }
-        /** \return the number of bins along the azimuth */
-        inline size_t getAzimuthBins(size_t bins) { return (azimuth_bins_); } 
-        /** set number of bins along the elevation to \param bins */
-        inline void setElevationBins(size_t bins) { elevation_bins_ = bins; }
-        /** \return the number of bins along the elevation */
-        inline size_t getElevationBins(size_t bins) { return (elevation_bins_); } 
-        /** set number of bins along the radii to \param bins */
-        inline void setRadiusBins(size_t bins) { radius_bins_ = bins; }
-        /** \return the number of bins along the radii direction */
-        inline size_t getRadiusBins(size_t bins) { return (radius_bins_); } 
-        /** The minimal radius value for the search sphere (rmin) in the original paper 
-          * \param radius the desired minimal radius
-          */
-        inline void setMinimalRadius(float radius) { min_radius_ = radius; }
-        /** \return the minimal sphere radius */
-        inline float getMinimalRadius() { return (min_radius_); }
-        /** This radius is used to compute local point density 
-          * density = number of points within this radius
-          * \param radius Value of the point density search radius
-          */
-        inline void setPointDensityRadius(double radius) { point_density_radius_ = radius; }
-        /** \return point density search radius */
-        inline double getPointDensityRadius() { return (point_density_radius_); }
-        
-      protected:
-        /** initilize computation by allocating all the intervals and the volume look up 
-          * table
-          */
-        bool initCompute() ;
+      virtual ~ShapeContext3DEstimation() {}
 
-        void
-        computePoint(size_t index, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc);
+      /** Set the number of bins along the azimuth to \ref bins.
+        * \param[in] bins the number of bins along the azimuth
+        */
+      inline void 
+      setAzimuthBins (size_t bins) { azimuth_bins_ = bins; }
 
-        void
-        computeFeature(PointCloudOut &output);
-        
-      private:
-        /** values of the radii interval */
-        std::vector<float> radii_interval_;
-        /** theta divisions interval */
-        std::vector<float> theta_divisions_;
-        /** phi divisions interval */
-        std::vector<float> phi_divisions_;
-        /** volumes look up table */
-        std::vector<float> volume_lut_;
-        /** bins along the azimuth dimension */
-        size_t azimuth_bins_;
-        /** bins along the elevation dimension */
-        size_t elevation_bins_;
-        /** bins along the radius dimension */
-        size_t radius_bins_;
-        /** minimal radius value */
-        double min_radius_;
-        /** point density radius */
-        double point_density_radius_;
-        /** descriptor length */
-        size_t descriptor_length_;
-		/** randomness enabled */
-		bool random_;
+      /** \Return the number of bins along the azimuth */
+      inline size_t 
+      getAzimuthBins () { return (azimuth_bins_); }
 
-      private:
-        /** Shift computed descriptor "L" times along the azimuthal direction
-         * \param block_size the size of each azimuthal block
-         * \param desc at input desc == original descriptor and on output it contains 
-         * shifted descriptor resized descriptor_length_ * azimuth_bins_
-         */
-        void shiftAlongAzimuth(size_t block_size, std::vector<float>& desc);
-    };
-  /* }; */
+      /** Set the number of bins along the elevation to \ref bins.
+        * \param[in] bins the number of bins along the elevation
+        */
+      inline void 
+      setElevationBins (size_t bins) { elevation_bins_ = bins; }
+
+      /** \return The number of bins along the elevation */
+      inline size_t 
+      getElevationBins () { return (elevation_bins_); }
+
+      /** Set the number of bins along the radii to \ref bins.
+        * \param[in] bins the number of bins along the radii
+        */
+      inline void 
+      setRadiusBins (size_t bins) { radius_bins_ = bins; }
+
+      /** \return The number of bins along the radii direction */
+      inline size_t 
+      getRadiusBins () { return (radius_bins_); } 
+
+      /** The minimal radius value for the search sphere (rmin) in the original paper 
+        * \param[in] radius the desired minimal radius
+        */
+      inline void 
+      setMinimalRadius (float radius) { min_radius_ = radius; }
+
+      /** \return The minimal sphere radius */
+      inline float 
+      getMinimalRadius () { return (min_radius_); }
+
+      /** This radius is used to compute local point density 
+        * density = number of points within this radius
+        * \param[in] radius value of the point density search radius
+        */
+      inline void 
+      setPointDensityRadius (double radius) { point_density_radius_ = radius; }
+
+      /** \return The point density search radius */
+      inline double 
+      getPointDensityRadius () { return (point_density_radius_); }
+      
+    protected:
+      /** Initialize computation by allocating all the intervals and the volume lookup table. */
+      bool 
+      initCompute ();
+
+      void
+      computePoint (size_t index, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc);
+
+      void
+      computeFeature (PointCloudOut &output);
+      
+    private:
+      /** \brief Values of the radii interval */
+      std::vector<float> radii_interval_;
+
+      /** \brief Theta divisions interval */
+      std::vector<float> theta_divisions_;
+
+      /** \brief Phi divisions interval */
+      std::vector<float> phi_divisions_;
+
+      /** \brief Volumes look up table */
+      std::vector<float> volume_lut_;
+
+      /** \brief Bins along the azimuth dimension */
+      size_t azimuth_bins_;
+
+      /** \brief Bins along the elevation dimension */
+      size_t elevation_bins_;
+
+      /** \brief Bins along the radius dimension */
+      size_t radius_bins_;
+
+      /** \brief Minimal radius value */
+      double min_radius_;
+
+      /** \brief Point density radius */
+      double point_density_radius_;
+
+      /** \brief Descriptor length */
+      size_t descriptor_length_;
+
+      /** \brief Boost-based random number generator algorithm. */
+      boost::mt19937 rng_alg_;
+
+      /** \brief Boost-based random number generator distribution. */
+      boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
+
+       /** Shift computed descriptor "L" times along the azimuthal direction
+        * \param[in] block_size the size of each azimuthal block
+        * \param[in] desc at input desc == original descriptor and on output it contains 
+        * shifted descriptor resized descriptor_length_ * azimuth_bins_
+        */
+      void 
+      shiftAlongAzimuth (size_t block_size, std::vector<float>& desc);
+
+      /** \brief Boost-based random number generator. */
+      inline double
+      rnd ()
+      {
+        return ((*rng_) ());
+      }
+  };
 }
 
 #endif  //#ifndef PCL_3DSC_H_
