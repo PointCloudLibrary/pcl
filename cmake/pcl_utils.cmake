@@ -81,7 +81,9 @@ endmacro(GET_OS_INFO)
 # subdirectory named after the library in question (e.g.
 # "registration/blorgle.h")
 macro(SET_INSTALL_DIRS)
+  if (NOT DEFINED LIB_INSTALL_DIR)
     set(LIB_INSTALL_DIR "lib")
+  endif (NOT DEFINED LIB_INSTALL_DIR)
     set(INCLUDE_INSTALL_ROOT
         "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
     set(INCLUDE_INSTALL_DIR "${INCLUDE_INSTALL_ROOT}/pcl")
