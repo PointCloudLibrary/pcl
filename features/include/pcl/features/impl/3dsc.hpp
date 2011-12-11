@@ -169,7 +169,6 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
     x_axis[0] = - (normal[1]*x_axis[1] + normal[2]*x_axis[2]) / normal[0];
 
   x_axis.normalize ();
-  std::cerr << x_axis << std::endl;
 
   /// Check if the computed x axis is orthogonal to the normal
   assert (pcl::utils::equal (x_axis[0]*normal[0] + x_axis[1]*normal[1] + x_axis[2]*normal[2], 0.0f, 1E-6f));
