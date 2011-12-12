@@ -53,7 +53,7 @@ TEST(PCA, projection)
   {
     pca.project (cloud[i], projected);
     pca.reconstruct (projected, reconstructed);
-    EXPECT_NEAR_VECTORS (reconstructed.getVector3fMap (), cloud[i].getVector3fMap (), 1e-4);
+    EXPECT_NEAR_VECTORS (reconstructed.getVector3fMap (), cloud[i].getVector3fMap (), 2.5e-4);
   }
 }
 
@@ -87,7 +87,7 @@ TEST(PCA, cloud_projection)
     for(size_t i = 0; i < cloud.size(); i++)
       EXPECT_NEAR_VECTORS (cloud[i].getVector3fMap (),
                            cloud_reconstructed[i].getVector3fMap (),
-                           1e-4);
+                           2.5e-4);
   }
   catch (pcl::InitFailedException &e)
   {
