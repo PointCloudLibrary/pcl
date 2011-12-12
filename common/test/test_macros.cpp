@@ -34,11 +34,11 @@
  * $Id$
  */
 
-/** \author Nizar Sallem */
 #include <gtest/gtest.h>
+#include <pcl/pcl_config.h>
 #include "pcl/pcl_tests.h"
-#include <vector>
 #include <Eigen/Core>
+#include <vector>
 
 using namespace pcl::test;
 
@@ -82,8 +82,14 @@ TEST(MACROS, expect_near_vectors_macro)
   EXPECT_NEAR_VECTORS (ev1, v2, 2*epsilon);
 }
 
-int main (int argc, char** argv)
+int 
+main (int argc, char** argv)
 {
+#if ((PCL_MAJOR_VERSION == 1) && (PCL_MINOR_VERSION == 4))
+  std::cerr << "1.4.0 detected" << std::endl;
+#elif ((PCL_MAJOR_VERSION == 1) && (PCL_MINOR_VERSION == 3))
+  std::cerr << "1.3.0 detected" << std::endl;
+#endif
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }
