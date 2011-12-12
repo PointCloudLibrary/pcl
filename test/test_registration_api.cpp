@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -34,8 +36,6 @@
  * $Id$
  *
  */
-
-/* \author Dirk Holz */
 
 #include <gtest/gtest.h>
 
@@ -161,27 +161,28 @@ TEST (PCL, CorrespondenceRejectorSampleConsensus)
   corr_est.setInputCloud (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
+  EXPECT_EQ ((int)correspondences->size (), nr_original_correspondences);
 
   boost::shared_ptr<pcl::Correspondences> correspondences_result_rej_sac (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorSampleConsensus<pcl::PointXYZ> corr_rej_sac;
-  corr_rej_sac.setInputCloud(source);
-  corr_rej_sac.setTargetCloud(target);
-  corr_rej_sac.setInlierThreshold(rej_sac_max_dist);
-  corr_rej_sac.setMaxIterations(rej_sac_max_iter);
-  corr_rej_sac.setInputCorrespondences(correspondences);
-  corr_rej_sac.getCorrespondences(*correspondences_result_rej_sac);
-  Eigen::Matrix4f transform_res_from_SAC = corr_rej_sac.getBestTransformation();
+  corr_rej_sac.setInputCloud (source);
+  corr_rej_sac.setTargetCloud (target);
+  corr_rej_sac.setInlierThreshold (rej_sac_max_dist);
+  corr_rej_sac.setMaxIterations (rej_sac_max_iter);
+  corr_rej_sac.setInputCorrespondences (correspondences);
+  corr_rej_sac.getCorrespondences (*correspondences_result_rej_sac);
+  Eigen::Matrix4f transform_res_from_SAC = corr_rej_sac.getBestTransformation ();
 
   // check for correct matches and number of matches
-  EXPECT_EQ((int)correspondences_result_rej_sac->size(), nr_correspondences_result_rej_sac);
-  if ((int)correspondences_result_rej_sac->size() == nr_correspondences_result_rej_sac)
+  EXPECT_EQ((int)correspondences_result_rej_sac->size (), nr_correspondences_result_rej_sac);
+  if ((int)correspondences_result_rej_sac->size () == nr_correspondences_result_rej_sac)
     for (int i = 0; i < nr_correspondences_result_rej_sac; ++i)
       EXPECT_EQ ((*correspondences_result_rej_sac)[i].index_match, correspondences_sac[i][1]);
 
   // check for correct transformation
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
-      EXPECT_NEAR (transform_res_from_SAC(i, j), transform_from_SAC[i][j], 1e-4);
+      EXPECT_NEAR (transform_res_from_SAC (i, j), transform_from_SAC[i][j], 1e-4);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
