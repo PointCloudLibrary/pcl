@@ -85,6 +85,31 @@ TEST (PointCloud, back)
   EXPECT_EQ_VECTORS (direct,wrapped);
 }
 
+TEST (PointCloud, constructor_with_allocation)
+{
+  PointCloud<PointXYZ> cloud2 (5, 80);
+  EXPECT_EQ (cloud2.width, 5);
+  EXPECT_EQ (cloud2.height, 80);
+  EXPECT_EQ (cloud2.size (), 5*80);
+}
+
+TEST (PointCloud, insert_range)
+{
+  PointCloud<PointXYZ> cloud2 (10, 1);
+  for (uint32_t i = 0; i < 10; ++i)
+    cloud2[i] = PointXYZ (5*i+0,5*i+1,5*i+2);
+
+  uint32_t old_size = cloud.size ();
+  cloud.insert (cloud.begin (), cloud2.begin (), cloud2.end ());
+  EXPECT_EQ (cloud.width, cloud.size ());
+  EXPECT_EQ (cloud.height, 1);
+  EXPECT_EQ (cloud.width, old_size + cloud2.size ());
+  PointCloud<PointXYZ>::const_iterator pit = cloud.begin ();
+  PointCloud<PointXYZ>::const_iterator pit2 = cloud2.begin ();
+  for (; pit2 < cloud2.end (); ++pit2, ++pit)
+    EXPECT_EQ_VECTORS (pit->getVector3fMap (), pit2->getVector3fMap ());
+}
+
 int
 main (int argc, char** argv)
 {
