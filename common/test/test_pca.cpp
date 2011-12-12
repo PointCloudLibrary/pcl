@@ -74,7 +74,7 @@ TEST(PCL, pca)
   {
     pca.project(cloud.points[i], projected);
     pca.reconstruct(projected, reconstructed);
-    std::cout << (reconstructed.getVector3fMap() - cloud.points[i].getVector3fMap()).norm() << std::endl;
+//    std::cout << (reconstructed.getVector3fMap() - cloud.points[i].getVector3fMap()).norm() << std::endl;
     EXPECT_NEAR ((reconstructed.getVector3fMap() - cloud.points[i].getVector3fMap()).norm(), 0.0f, 2e-4);
   }
 

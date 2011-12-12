@@ -76,8 +76,10 @@ pcl::PCA<PointT>::initCompute ()
   Eigen::EigenSolver<Eigen::Matrix3f> evd (covariance, true);
   eigenvalues_ = evd.eigenvalues ().real ();
   eigenvectors_ = evd.eigenvectors ().real ();
+
   if (!basis_only_)
-    coefficients_ = eigenvectors_.transpose() * cloud_demean.topRows<3>();
+    // 3x3 = 3x3 * 3x3
+    coefficients_ = eigenvectors_.transpose() * (cloud_demean.topRows<3>()).leftCols<3> ();
   compute_done_ = true;
   return (true);
 }
