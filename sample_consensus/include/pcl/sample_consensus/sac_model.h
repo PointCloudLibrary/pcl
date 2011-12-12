@@ -82,7 +82,7 @@ namespace pcl
         else
           rng_alg_.seed (12345u);
 
-        rng_dist_.reset (new boost::uniform_int<> (0, std::numeric_limits<unsigned int>::max ()));
+        rng_dist_.reset (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()));
         rng_gen_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_int<> > (rng_alg_, *rng_dist_)); 
        }
 
@@ -103,7 +103,7 @@ namespace pcl
         setInputCloud (cloud);
 
         // Create a random number generator object
-        rng_dist_.reset (new boost::uniform_int<> (0, std::numeric_limits<unsigned int>::max ()));
+        rng_dist_.reset (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()));
         rng_gen_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_int<> > (rng_alg_, *rng_dist_)); 
        }
 
@@ -131,7 +131,7 @@ namespace pcl
         shuffled_indices_ = *indices_;
 
         // Create a random number generator object
-        rng_dist_.reset (new boost::uniform_int<> (0, std::numeric_limits<unsigned int>::max ()));
+        rng_dist_.reset (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()));
         rng_gen_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_int<> > (rng_alg_, *rng_dist_)); 
        };
 

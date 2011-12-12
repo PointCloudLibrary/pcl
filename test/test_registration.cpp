@@ -166,7 +166,7 @@ TEST (PCL, IterativeClosestPoint)
   Eigen::Matrix4f transformation = reg.getFinalTransformation ();
 
   EXPECT_NEAR (transformation (0, 0), 0.8806,  1e-3);
-  EXPECT_NEAR (transformation (0, 1), 0.035170082002878189, 1e-3);
+  EXPECT_NEAR (transformation (0, 1), 0.036481287330389023, 1e-3);
   EXPECT_NEAR (transformation (0, 2), -0.4724, 1e-3);
   EXPECT_NEAR (transformation (0, 3), 0.03453, 1e-3);
 
