@@ -213,9 +213,12 @@ Install CMinPack
 Install VTK
 '''''''''''
 
+To install VTK with X11 support, you need a modified Homebrew formula for VTK. Please
+download it from `here <http://dev.pointclouds.org/attachments/600/vtk.rb>`_.
+
 ::
 
-  $ brew install vtk
+  $ brew install vtk --x11
 
 .. note::
 
