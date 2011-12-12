@@ -1,5 +1,6 @@
 if(BUILD_TESTS)
     # Args: name, executable_name
+    PCL_ADD_TEST(common_test_wrappers test_wrappers FILES test_wrappers.cpp LINK_WITH pcl_common)
     PCL_ADD_TEST(common_test_macros test_macros FILES test_macros.cpp LINK_WITH pcl_common)
     PCL_ADD_TEST(common_vector_average test_vector_average FILES test_vector_average.cpp)
     PCL_ADD_TEST(common_common test_common FILES test_common.cpp LINK_WITH pcl_common)
