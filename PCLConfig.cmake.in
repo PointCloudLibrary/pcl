@@ -62,9 +62,9 @@ macro(find_eigen)
   elseif(NOT EIGEN_ROOT)
     get_filename_component(EIGEN_ROOT "@EIGEN_INCLUDE_DIRS@" PATH)
   endif(PCL_ALL_IN_ONE_INSTALLER)
-  if(PkgConfig_FOUND)
+  if(PKG_CONFIG_FOUND)
     pkg_check_modules(PC_EIGEN eigen3)
-  endif(PkgConfig_FOUND)
+  endif(PKG_CONFIG_FOUND)
   find_path(EIGEN_INCLUDE_DIRS Eigen/Core
     HINTS ${PC_EIGEN_INCLUDEDIR} ${PC_EIGEN_INCLUDE_DIRS} 
           "${EIGEN_ROOT}" "$ENV{EIGEN_ROOT}"
@@ -128,9 +128,9 @@ macro(find_openni)
     set(OPENNI_INCLUDE_DIRS "@OPENNI_INCLUDE_DIRS@")
     set(OPENNI_LIBRARY "@OPENNI_LIBRARY@")
   else(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
-  if(PkgConfig_FOUND)
+  if(PKG_CONFIG_FOUND)
     pkg_check_modules(PC_OPENNI openni-dev)
-  endif(PkgConfig_FOUND)
+  endif(PKG_CONFIG_FOUND)
   find_path(OPENNI_INCLUDE_DIRS XnStatus.h
     HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} 
           "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
@@ -160,9 +160,9 @@ macro(find_flann)
   elseif(NOT FLANN_ROOT)
     get_filename_component(FLANN_ROOT "@FLANN_INCLUDE_DIRS@" PATH)
   endif(PCL_ALL_IN_ONE_INSTALLER)
-  if(PkgConfig_FOUND)
+  if(PKG_CONFIG_FOUND)
     pkg_check_modules(PC_FLANN flann)
-  endif(PkgConfig_FOUND)
+  endif(PKG_CONFIG_FOUND)
 
   find_path(FLANN_INCLUDE_DIRS flann/flann.hpp
     HINTS ${PC_FLANN_INCLUDEDIR} ${PC_FLANN_INCLUDE_DIRS} 
@@ -311,6 +311,8 @@ else(PCL_FIND_QUIETLY)
   set(QUIET_)
 endif(PCL_FIND_QUIETLY)
 
+find_package(PkgConfig)
+
 file(TO_CMAKE_PATH "${PCL_DIR}" PCL_DIR)
 if(WIN32)
 # PCLConfig.cmake is installed to PCL_ROOT/cmake
@@ -377,14 +379,12 @@ compute_dependencies(PCL_TO_FIND_COMPONENTS)
 
 # compute external dependencies per component
 foreach(component ${PCL_TO_FIND_COMPONENTS})
-  if(NOT PkgConfig_FOUND)
     foreach(opt ${pcl_${component}_opt_dep})
       find_external_library(${component} ${opt} OPTIONAL)
     endforeach(opt)
     foreach(ext ${pcl_${component}_ext_dep})
       find_external_library(${component} ${ext} REQUIRED)
     endforeach(ext) 
-  endif(NOT PkgConfig_FOUND)
 endforeach(component)
 
 foreach(component ${PCL_TO_FIND_COMPONENTS})
