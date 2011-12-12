@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -42,8 +44,7 @@ namespace pcl
 {
   namespace registration
   {
-    /**
-      * @b CorrespondenceRejectorTrimmed implements a correspondence
+    /** \brief CorrespondenceRejectorTrimmed implements a correspondence
       * rejection for ICP-like registration algorithms that uses only the best
       * 'k' correspondences where 'k' is some estimate of the overlap between
       * the two point clouds being registered.
@@ -75,7 +76,7 @@ namespace pcl
 
         /** \brief Set the expected ratio of overlap between point clouds (in
          * terms of correspondences).
-         * \param ratio ratio of overlap between 0 (no overlap, no
+         * \param[in] ratio ratio of overlap between 0 (no overlap, no
          * correspondences) and 1 (full overlap, all correspondences)
          */
         virtual inline void 
@@ -89,6 +90,7 @@ namespace pcl
           * less correspondences,  \a CorrespondenceRejectorTrimmed will try to return at least
           * \a nr_min_correspondences_ correspondences (or all correspondences in case \a nr_min_correspondences_
           * is less than the number of given correspondences). 
+          * \param[in] min_correspondences the minimum number of correspondences
           */
         inline void 
         setMinCorrespondences (unsigned int min_correspondences) { nr_min_correspondences_ = min_correspondences; };
@@ -98,10 +100,9 @@ namespace pcl
         getMinCorrespondences () { return nr_min_correspondences_; };
 
 
-
-        /** \brief DEPRECATED: Get a list of valid correspondences after rejection from the original set of correspondences.
-          * \param original_correspondences the set of initial correspondences given
-          * \param remaining_correspondences the resultant filtered set of remaining correspondences
+        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
+          * \param[in] original_correspondences the set of initial correspondences given
+          * \param[out] remaining_correspondences the resultant filtered set of remaining correspondences
           */
         inline void
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences,
@@ -110,8 +111,14 @@ namespace pcl
 
       protected:
 
-        void 
-        applyRejection (pcl::Correspondences &correspondences);
+        /** \brief Apply the rejection algorithm.
+          * \param[out] correspondences the set of resultant correspondences.
+          */
+        inline void 
+        applyRejection (pcl::Correspondences &correspondences)
+        {
+          getRemainingCorrespondences (*input_correspondences_, correspondences);
+        }
 
         /** Overlap Ratio in [0..1] */
         float overlap_ratio_;

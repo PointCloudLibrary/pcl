@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -71,16 +73,16 @@ namespace pcl
           rejection_name_ = "CorrespondenceRejectorDistance";
         }
 
-        /** \brief DEPRECATED: Get a list of valid correspondences after rejection from the original set of correspondences.
-          * \param original_correspondences the set of initial correspondences given
-          * \param remaining_correspondences the resultant filtered set of remaining correspondences
+        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
+          * \param[in] original_correspondences the set of initial correspondences given
+          * \param[out] remaining_correspondences the resultant filtered set of remaining correspondences
           */
         inline void 
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
                                      pcl::Correspondences& remaining_correspondences);
 
         /** \brief Set the maximum distance used for thresholding in correspondence rejection.
-          * \param distance Distance to be used as maximum distance between correspondences. 
+          * \param[in] distance Distance to be used as maximum distance between correspondences. 
           * Correspondences with larger distances are rejected.
           * \note Internally, the distance will be stored squared.
           */
@@ -117,8 +119,14 @@ namespace pcl
 
       protected:
 
-        void 
-        applyRejection (pcl::Correspondences &correspondences);
+        /** \brief Apply the rejection algorithm.
+          * \param[out] correspondences the set of resultant correspondences.
+          */
+        inline void 
+        applyRejection (pcl::Correspondences &correspondences)
+        {
+          getRemainingCorrespondences (*input_correspondences_, correspondences);
+        }
 
         /** \brief The maximum distance threshold between two correspondent points in source <-> target. If the
           * distance is larger than this threshold, the points will not be ignored in the alignment process.

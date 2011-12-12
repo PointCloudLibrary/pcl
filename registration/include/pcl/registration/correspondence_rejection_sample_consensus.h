@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -70,68 +72,67 @@ namespace pcl
           inlier_threshold_ = 0.05;
         }
 
-        /** \brief DEPRECATED: Get a list of valid correspondences after rejection from the original set of correspondences.
-          * \param original_correspondences the set of initial correspondences given
-          * \param remaining_correspondences the resultant filtered set of remaining correspondences
+        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
+          * \param[in] original_correspondences the set of initial correspondences given
+          * \param[out] remaining_correspondences the resultant filtered set of remaining correspondences
           */
         inline void 
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
                                      pcl::Correspondences& remaining_correspondences);
 
-        /**
-          * \brief Provide a source point cloud dataset (must contain XYZ data!)
+        /** \brief Provide a source point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
           */
         virtual inline void 
         setInputCloud (const PointCloudConstPtr &cloud) { input_ = cloud; }
 
-        /**
-          * \brief Provide a target point cloud dataset (must contain XYZ data!)
+        /** \brief Provide a target point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
           */
         virtual inline void 
         setTargetCloud (const PointCloudConstPtr &cloud) { target_ = cloud; }
 
-        /**
-          * \brief Set the maximum distance between corresponding points.
+        /** \brief Set the maximum distance between corresponding points.
           * Correspondences with distances below the threshold are considered as inliers.
           * \param[in] threshold Distance threshold in the same dimension as source and target data sets.
           */
         inline void 
         setInlierThreshold (double threshold) { inlier_threshold_ = threshold; };
 
-        /**
-          * \brief Get the maximum distance between corresponding points.
+        /** \brief Get the maximum distance between corresponding points.
           * \return Distance threshold in the same dimension as source and target data sets.
           */
         inline double 
         getInlierThreshold() { return inlier_threshold_; };
 
-        /**
-         * \brief Set the maximum number of iterations.
-         * \param[in] max_iterations Maximum number if iterations to run
-         */
+        /** \brief Set the maximum number of iterations.
+          * \param[in] max_iterations Maximum number if iterations to run
+          */
         inline void 
         setMaxIterations (int max_iterations) {max_iterations_ = std::max(max_iterations, 0); };
 
-        /**
-         * \brief Get the maximum number of iterations.
-         * \return max_iterations Maximum number if iterations to run
-         */
+        /** \brief Get the maximum number of iterations.
+          * \return max_iterations Maximum number if iterations to run
+          */
         inline int 
         getMaxIterations () { return max_iterations_; };
 
-        /**
-         * \brief Get the best transformation after RANSAC rejection.
-         * \return The homogeneous 4x4 transformation yielding the largest number of inliers.
-         */
+        /** \brief Get the best transformation after RANSAC rejection.
+          * \return The homogeneous 4x4 transformation yielding the largest number of inliers.
+          */
         inline Eigen::Matrix4f 
         getBestTransformation () { return best_transformation_; };
 
       protected:
 
+        /** \brief Apply the rejection algorithm.
+          * \param[out] correspondences the set of resultant correspondences.
+          */
         inline void 
-        applyRejection (pcl::Correspondences &correspondences);
+        applyRejection (pcl::Correspondences &correspondences)
+        {
+          getRemainingCorrespondences (*input_correspondences_, correspondences);
+        }
 
         double inlier_threshold_;
 
