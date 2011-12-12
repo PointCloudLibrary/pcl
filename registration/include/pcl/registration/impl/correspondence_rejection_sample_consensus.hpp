@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,76 +39,6 @@
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 
 #include <boost/unordered_map.hpp>
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline void 
-pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::applyRejection (
-    pcl::Correspondences &correspondences)
-{
-  int nr_correspondences = input_correspondences_->size ();
-
-  std::vector<int> source_indices (nr_correspondences);
-  std::vector<int> target_indices (nr_correspondences);
-
-  // Copy the query-match indices
-  for (size_t i = 0; i < input_correspondences_->size (); ++i)
-  {
-    source_indices[i] = (*input_correspondences_)[i].index_query;
-    target_indices[i] = (*input_correspondences_)[i].index_match;
-  }
-
-   // from pcl/registration/icp.hpp:
-   std::vector<int> source_indices_good;
-   std::vector<int> target_indices_good;
-   {
-     // From the set of correspondences found, attempt to remove outliers
-     // Create the registration model
-     typedef typename pcl::SampleConsensusModelRegistration<PointT>::Ptr SampleConsensusModelRegistrationPtr;
-     SampleConsensusModelRegistrationPtr model;
-     model.reset (new pcl::SampleConsensusModelRegistration<PointT> (input_, source_indices));
-     // Pass the target_indices
-     model->setInputTarget (target_, target_indices);
-     // Create a RANSAC model
-     pcl::RandomSampleConsensus<PointT> sac (model, inlier_threshold_);
-     sac.setMaxIterations (max_iterations_);
-
-     // Compute the set of inliers
-     if (!sac.computeModel ())
-     {
-       correspondences = *input_correspondences_;
-       best_transformation_.setIdentity ();
-       return;
-     }
-     else
-     {
-       std::vector<int> inliers;
-       sac.getInliers (inliers);
-
-       if (inliers.size () < 3)
-       {
-         correspondences = *input_correspondences_;
-         best_transformation_.setIdentity ();
-         return;
-       }
-       boost::unordered_map<int, int> index_to_correspondence;
-       for (int i = 0; i < nr_correspondences; ++i)
-         index_to_correspondence[(*input_correspondences_)[i].index_query] = i;
-
-       correspondences.resize (inliers.size ());
-       for (size_t i = 0; i < inliers.size (); ++i)
-         correspondences[i] = (*input_correspondences_)[index_to_correspondence[inliers[i]]];
-         //correspondences[i] = (*input_correspondences_)[inliers[i]];
-
-       // get best transformation
-       Eigen::VectorXf model_coefficients;
-       sac.getModelCoefficients (model_coefficients);
-       best_transformation_.row (0) = model_coefficients.segment<4>(0);
-       best_transformation_.row (1) = model_coefficients.segment<4>(4);
-       best_transformation_.row (2) = model_coefficients.segment<4>(8);
-       best_transformation_.row (3) = model_coefficients.segment<4>(12);
-     }
-   }
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 

@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,26 +37,6 @@
  */
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_TRIMMED_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_TRIMMED_HPP_
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::registration::CorrespondenceRejectorTrimmed::applyRejection (
-    pcl::Correspondences &correspondences)
-{
-  /* not really an efficient implementation */
-  correspondences = *input_correspondences_;
-  unsigned int number_valid_correspondences = (int(std::floor (overlap_ratio_ * (float)(correspondences.size ()))));
-  number_valid_correspondences = std::max (number_valid_correspondences, nr_min_correspondences_);
-
-  if (number_valid_correspondences < input_correspondences_->size ())
-  {
-    std::sort (correspondences.begin (), correspondences.end (), 
-               pcl::registration::sortCorrespondencesByDistance ());
-    correspondences.resize (number_valid_correspondences);
-  }
-  else
-    correspondences = *input_correspondences_;
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

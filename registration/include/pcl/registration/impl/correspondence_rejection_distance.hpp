@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,34 +37,6 @@
  */
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_DISTANCE_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_DISTANCE_HPP_
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::registration::CorrespondenceRejectorDistance::applyRejection (pcl::Correspondences &correspondences)
-{
-  unsigned int number_valid_correspondences = 0;
-  correspondences.resize (input_correspondences_->size ());
-  for (size_t i = 0; i < input_correspondences_->size (); ++i)
-  {
-    if (data_container_)
-    {
-      if (data_container_->getCorrespondenceScore ((*input_correspondences_)[i]) < max_distance_)
-      {
-        correspondences[number_valid_correspondences] = (*input_correspondences_)[i];
-        ++number_valid_correspondences;
-      }
-    }
-    else
-    {
-      if ((*input_correspondences_)[i].distance < max_distance_)
-      {
-        correspondences[number_valid_correspondences] = (*input_correspondences_)[i];
-        ++number_valid_correspondences;
-      }
-    }
-  }
-  correspondences.resize (number_valid_correspondences);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

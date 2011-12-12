@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,31 +37,6 @@
  */
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_FEATURES_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_FEATURES_HPP_
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::registration::CorrespondenceRejectorFeatures::applyRejection (
-    pcl::Correspondences &correspondences)
-{
-  unsigned int number_valid_correspondences = 0;
-  correspondences.resize (input_correspondences_->size ());
-  // For each set of features, go over each correspondence from input_correspondences_
-  for (size_t i = 0; i < input_correspondences_->size (); ++i)
-  {
-    // Go over the map of features
-    for (FeaturesMap::const_iterator it = features_map_.begin (); it != features_map_.end (); ++it)
-    {
-      // Check if the score in feature space is above the given threshold
-      // (assume that the number of feature correspondences is the same as the number of point correspondences)
-      if (!it->second->isCorrespondenceValid (i))
-        break;
-
-      correspondences[number_valid_correspondences] = (*input_correspondences_)[i];
-      ++number_valid_correspondences;
-    }
-  }
-  correspondences.resize (number_valid_correspondences);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,33 +37,6 @@
  */
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_ONE_TO_ONE_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_ONE_TO_ONE_HPP_
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::registration::CorrespondenceRejectorOneToOne::applyRejection (
-    pcl::Correspondences &correspondences)
-{
-  /* not really an efficient implementation */
-  pcl::Correspondences input = *input_correspondences_;
-
-  std::sort (input.begin (), input.end (), pcl::registration::sortCorrespondencesByMatchIndexAndDistance ());
-
-  correspondences.resize (input_correspondences_->size ());
-  int index_last = -1;
-  unsigned int number_valid_correspondences = 0;
-  for (size_t i = 0; i < input.size (); ++i)
-  {
-    if (input[i].index_match < 0)
-      continue;
-    else if (input[i].index_match != index_last)
-    {
-      correspondences[number_valid_correspondences] = input[i];
-      index_last = input[i].index_match;
-      ++number_valid_correspondences;
-    }
-  }
-  correspondences.resize (number_valid_correspondences);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

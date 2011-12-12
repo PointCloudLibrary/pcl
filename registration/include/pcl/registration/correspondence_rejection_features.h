@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -68,38 +70,38 @@ namespace pcl
           rejection_name_ = "CorrespondenceRejectorFeatures";
         }
 
-        /** \brief DEPRECATED: Get a list of valid correspondences after rejection from the original set of correspondences
-          * \param original_correspondences the set of initial correspondences given
-          * \param remaining_correspondences the resultant filtered set of remaining correspondences
+        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences
+          * \param[in] original_correspondences the set of initial correspondences given
+          * \param[out] remaining_correspondences the resultant filtered set of remaining correspondences
           */
         void 
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
                                      pcl::Correspondences& remaining_correspondences);
 
         /** \brief Provide a pointer to a cloud of feature descriptors associated with the source point cloud
-          * \param source_feature a cloud of feature descriptors associated with the source point cloud
-          * \param key a string that uniquely identifies the feature
+          * \param[in] source_feature a cloud of feature descriptors associated with the source point cloud
+          * \param[in] key a string that uniquely identifies the feature
           */
         template <typename FeatureT> inline void 
         setSourceFeature (const typename pcl::PointCloud<FeatureT>::ConstPtr &source_feature, 
                           const std::string &key);
 
         /** \brief Get a pointer to the source cloud's feature descriptors, specified by the given \a key
-          * \param key a string that uniquely identifies the feature (must match the key provided by setSourceFeature)
+          * \param[in] key a string that uniquely identifies the feature (must match the key provided by setSourceFeature)
           */
         template <typename FeatureT> inline typename pcl::PointCloud<FeatureT>::ConstPtr 
         getSourceFeature (const std::string &key);
 
         /** \brief Provide a pointer to a cloud of feature descriptors associated with the target point cloud
-          * \param target_feature a cloud of feature descriptors associated with the target point cloud
-          * \param key a string that uniquely identifies the feature
+          * \param[in] target_feature a cloud of feature descriptors associated with the target point cloud
+          * \param[in] key a string that uniquely identifies the feature
           */
         template <typename FeatureT> inline void 
         setTargetFeature (const typename pcl::PointCloud<FeatureT>::ConstPtr &target_feature, 
                           const std::string &key);
 
         /** \brief Get a pointer to the source cloud's feature descriptors, specified by the given \a key
-          * \param key a string that uniquely identifies the feature (must match the key provided by setTargetFeature)
+          * \param[in] key a string that uniquely identifies the feature (must match the key provided by setTargetFeature)
           */
         template <typename FeatureT> inline typename pcl::PointCloud<FeatureT>::ConstPtr 
         getTargetFeature (const std::string &key);
@@ -120,18 +122,27 @@ namespace pcl
         hasValidFeatures ();
 
         /** \brief Provide a boost shared pointer to a PointRepresentation to be used when comparing features
-          * \param key a string that uniquely identifies the feature
-          * \param fr the point feature representation to be used 
+          * \param[in] key a string that uniquely identifies the feature
+          * \param[in] fr the point feature representation to be used 
           */
         template <typename FeatureT> inline void
         setFeatureRepresentation (const typename pcl::PointRepresentation<FeatureT>::ConstPtr &fr,
                                   const std::string &key);
 
-     protected:
+      protected:
 
-        void 
-        applyRejection (pcl::Correspondences &correspondences);
+        /** \brief Apply the rejection algorithm.
+          * \param[out] correspondences the set of resultant correspondences.
+          */
+        inline void 
+        applyRejection (pcl::Correspondences &correspondences)
+        {
+          getRemainingCorrespondences (*input_correspondences_, correspondences);
+        }
 
+        /** \brief The maximum distance threshold between two correspondent points in source <-> target. If the
+          * distance is larger than this threshold, the points will not be ignored in the alignment process.
+          */
         float max_distance_;
 
         class FeatureContainerInterface

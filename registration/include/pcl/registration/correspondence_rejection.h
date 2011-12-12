@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -71,9 +73,9 @@ namespace pcl
         inline CorrespondencesConstPtr 
         getInputCorrespondences () { return input_correspondences_; };
 
-        /** Run correspondence rejection
-         * @param[out] correspondences Vector of correspondences that have not been rejected.
-         */
+        /** \brief Run correspondence rejection
+          * \param[out] correspondences Vector of correspondences that have not been rejected.
+          */
         inline void 
         getCorrespondences (pcl::Correspondences &correspondences)
         {
@@ -83,35 +85,18 @@ namespace pcl
           applyRejection (correspondences);
         }
 
-
-
-
-        /** \brief DEPRECATED: Get a list of valid correspondences after rejection from the original set of correspondences.
+        /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
           * Pure virtual. Compared to \a getCorrespondences this function is
           * stateless, i.e., input correspondences do not need to be provided beforehand,
           * but are directly provided in the function call.
-          * \param original_correspondences the set of initial correspondences given
-          * \param remaining_correspondences the resultant filtered set of remaining correspondences
+          * \param[in] original_correspondences the set of initial correspondences given
+          * \param[out] remaining_correspondences the resultant filtered set of remaining correspondences
           */
         virtual inline void 
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
                                      pcl::Correspondences& remaining_correspondences) = 0;
 
-        /** \brief DEPRECATED: Simple comparator for two correspondences. Returns true if
-          * the distance of the first correspondence is smaller than the
-          * distance of the second.
-          * \param[in] a the first correspondence
-          * \param[in] b the second correspondence
-          */
-        inline static bool 
-        compareCorrespondencesDistance (const pcl::Correspondence &a, 
-                                        const pcl::Correspondence &b) 
-        { 
-          return (a.distance < b.distance); 
-        }
-
-        /**
-          * \brief DEPRECATED: Determine the indices of query points of
+        /** \brief Determine the indices of query points of
           * correspondences that have been rejected, i.e., the difference
           * between the input correspondences (set via \a setInputCorrespondences)
           * and the given correspondence vector.
@@ -131,8 +116,6 @@ namespace pcl
 
           pcl::getRejectedQueryIndices(*input_correspondences_, correspondences, indices);
         }
-
-
 
       protected:
 
