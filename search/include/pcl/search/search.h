@@ -162,7 +162,7 @@ namespace pcl
           * \return number of neighbors found in radius
           */
         virtual int
-        radiusSearch (const PointT& point, const double radius, std::vector<int>& k_indices,
+        radiusSearch (const PointT& point, double radius, std::vector<int>& k_indices,
                       std::vector<float>& k_distances, int max_nn = -1) const = 0;
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
