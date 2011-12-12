@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, www.pointcloud.org
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -40,6 +42,7 @@
 #include <Eigen/Eigenvalues>
 #include "pcl/point_types.h"
 #include "pcl/common/centroid.h"
+#include "pcl/common/transforms.h"
 #include "pcl/exceptions.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -47,7 +50,6 @@ template<typename PointT>
 pcl::PCA<PointT>::PCA (const pcl::PointCloud<PointT>& X, bool basis_only)
 {
   Base ();
-  compute_done_ = false;
   basis_only_ = basis_only;
   setInputCloud (X.makeShared ());
   compute_done_ = initCompute ();
@@ -62,20 +64,31 @@ pcl::PCA<PointT>::initCompute ()
     PCL_THROW_EXCEPTION (InitFailedException, "[pcl::PCA::initCompute] failed");
     return (false);
   }
-  // Compute mean and covariance
-  mean_ = Eigen::Vector4f::Zero ();
-  compute3DCentroid (*input_, mean_);
-  Eigen::Matrix3f covariance;
-  pcl::computeCovarianceMatrixNormalized (*input_, *indices_, mean_, covariance);
+  if(indices_->size () < 3)
+  {
+    PCL_THROW_EXCEPTION (InitFailedException, "[pcl::PCA::initCompute] number of points < 3");
+    return (false);
+  }
   
+  // Compute mean
+  mean_ = Eigen::Vector4f::Zero ();
+  compute3DCentroid (*input_, *indices_, mean_);  
   // Compute demeanished cloud
   Eigen::MatrixXf cloud_demean;
   demeanPointCloud (*input_, *indices_, mean_, cloud_demean);
-
+  assert (cloud_demean.cols () == int (indices_->size ()));
+  // Compute the product cloud_demean * cloud_demean^T
+  Eigen::Matrix3f alpha = cloud_demean.topRows<3> () * cloud_demean.topRows<3> ().transpose ();
+  
   // Compute eigen vectors and values
-  Eigen::EigenSolver<Eigen::Matrix3f> evd (covariance, true);
-  eigenvalues_ = evd.eigenvalues ().real ();
-  eigenvectors_ = evd.eigenvectors ().real ();
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> evd (alpha);
+  // Organize eigenvectors and eigenvalues in ascendent order
+  for (int i = 0; i < 3; ++i)
+  {
+    eigenvalues_[i] = evd.eigenvalues () [2-i];
+    eigenvectors_.col (i) = evd.eigenvectors ().col (2-i);
+  }
+  // If not basis only then compute the coefficients
 
   if (!basis_only_)
     // 3x3 = 3x3 * 3x3
@@ -155,8 +168,8 @@ pcl::PCA<PointT>::update (const PointT& input_point, FLAG flag)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT>
-inline void pcl::PCA<PointT>::project (const PointT& input, PointT& projection)
+template<typename PointT> inline void
+pcl::PCA<PointT>::project (const PointT& input, PointT& projection)
 {
   if(!compute_done_)
     initCompute ();
@@ -167,15 +180,75 @@ inline void pcl::PCA<PointT>::project (const PointT& input, PointT& projection)
   projection.getVector3fMap () = eigenvectors_.transpose() * demean_input;
 }
 
-template<typename PointT>
-inline void pcl::PCA<PointT>::reconstruct(const PointT& projection, PointT& input)
+/////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT> inline void
+pcl::PCA<PointT>::project (const PointCloud& input, PointCloud& projection)
+{
+  if(!compute_done_)
+    initCompute ();
+  if (!compute_done_)
+    PCL_THROW_EXCEPTION (InitFailedException, "[pcl::PCA::project] PCA initCompute failed");
+  if (input.is_dense)
+  {
+    projection.resize (input.size ());
+    for (size_t i = 0; i < input.size (); ++i)
+      project (input[i], projection[i]);
+  }
+  else
+  {
+    PointT p;
+    for (size_t i = 0; i < input.size (); ++i)
+    {
+      if (!pcl_isfinite (input[i].x) || 
+          !pcl_isfinite (input[i].y) ||
+          !pcl_isfinite (input[i].z))
+        continue;
+      project (input[i], p);
+      projection.push_back (p);
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT> inline void
+pcl::PCA<PointT>::reconstruct (const PointT& projection, PointT& input)
 {
   if(!compute_done_)
     initCompute ();
   if (!compute_done_)
     PCL_THROW_EXCEPTION (InitFailedException, "[pcl::PCA::reconstruct] PCA initCompute failed");
 
-  input.getVector3fMap () = (eigenvectors_ * projection.getVector3fMap ()) + mean_.head<3> ();
+  input.getVector3fMap ()= eigenvectors_ * projection.getVector3fMap ();
+  input.getVector3fMap ()+= mean_.head<3> ();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT> inline void
+pcl::PCA<PointT>::reconstruct (const PointCloud& projection, PointCloud& input)
+{
+  if(!compute_done_)
+    initCompute ();
+  if (!compute_done_)
+    PCL_THROW_EXCEPTION (InitFailedException, "[pcl::PCA::reconstruct] PCA initCompute failed");
+  if (input.is_dense)
+  {
+    input.resize (projection.size ());
+    for (size_t i = 0; i < projection.size (); ++i)
+      reconstruct (projection[i], input[i]);
+  }
+  else
+  {
+    PointT p;
+    for (size_t i = 0; i < input.size (); ++i)
+    {
+      if (!pcl_isfinite (input[i].x) || 
+          !pcl_isfinite (input[i].y) ||
+          !pcl_isfinite (input[i].z))
+        continue;
+      reconstruct (projection[i], p);
+      input.push_back (p);
+    }
+  }
 }
 
 #endif

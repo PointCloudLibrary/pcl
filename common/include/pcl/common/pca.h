@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, www.pointcloud.org
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -118,6 +120,16 @@ namespace pcl
         return (*this);
       }
       
+      /** \brief Provide a pointer to the input dataset
+        * \param cloud the const boost shared pointer to a PointCloud message
+        */
+      inline void 
+      setInputCloud (const PointCloudConstPtr &cloud) 
+      { 
+        Base::setInputCloud (cloud);
+        compute_done_ = false;
+      }
+
       /** \brief Mean accessor
         * \throw InitFailedException
         */
@@ -163,7 +175,7 @@ namespace pcl
       /** Coefficients accessor
         * \throw InitFailedException
         */
-      inline Eigen::Matrix3f& 
+      inline Eigen::MatrixXf& 
       getCoefficients () 
       {
         if (!compute_done_)
@@ -189,6 +201,14 @@ namespace pcl
         */
       inline void 
       project (const PointT& input, PointT& projection);
+
+      /** Project cloud on the eigenspace.
+        * \param[in] input cloud from original dataset
+        * \param[out] projection the cloud in eigen vectors space
+        * \throw InitFailedException
+        */
+      inline void
+      project (const PointCloud& input, PointCloud& projection);
       
       /** Reconstruct point from its projection
         * \param[in] projection point from eigenvector space
@@ -198,13 +218,22 @@ namespace pcl
       inline void 
       reconstruct (const PointT& projection, PointT& input);
 
+      /** Reconstruct cloud from its projection
+        * \param[in] projection cloud from eigenvector space
+        * \param[out] input reconstructed cloud
+        * \throw InitFailedException
+        */
+      inline void
+      reconstruct (const PointCloud& projection, PointCloud& input);
+
     private:
       inline bool
       initCompute ();
 
       bool compute_done_;
       bool basis_only_;
-      Eigen::Matrix3f eigenvectors_, coefficients_;
+      Eigen::Matrix3f eigenvectors_;
+      Eigen::MatrixXf coefficients_;
       Eigen::Vector4f mean_;
       Eigen::Vector3f eigenvalues_;
   }; // class PCA

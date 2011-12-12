@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ * $Id$
  */
 
 /** \author Nizar Sallem */
@@ -39,9 +39,64 @@
 #include <gtest/gtest.h>
 #include "pcl/common/pca.h"
 #include "pcl/point_types.h"
-TEST(PCL, pca)
+#include "pcl/pcl_tests.h"
+
+using namespace pcl::test;
+
+pcl::PointCloud<pcl::PointXYZ> cloud;
+pcl::PCA<pcl::PointXYZ> pca;
+
+TEST(PCA, projection)
 {
-  pcl::PointCloud<pcl::PointXYZ> cloud;
+  pcl::PointXYZ projected, reconstructed;
+  for(size_t i = 0; i < cloud.size(); i++)
+  {
+    pca.project (cloud[i], projected);
+    pca.reconstruct (projected, reconstructed);
+    EXPECT_NEAR_VECTORS (reconstructed.getVector3fMap (), cloud[i].getVector3fMap (), 1e-4);
+  }
+}
+
+TEST(PCA, copy_constructor)
+{
+  // Test copy constructor
+  pcl::PCA<pcl::PointXYZ> pca_copy(pca);
+  try
+  {
+    Eigen::Matrix3f eigen_vectors_copy = pca_copy.getEigenVectors ();
+    Eigen::Matrix3f eigen_vectors = pca.getEigenVectors ();
+    for(size_t i = 0; i < 3; ++i)
+      for(size_t j = 0; j < 3; ++j)
+        EXPECT_EQ (eigen_vectors (i,j), eigen_vectors_copy (i,j));
+  }
+  catch (pcl::InitFailedException &e)
+  {
+    std::cerr << "something wrong" << std::endl;
+  }
+}
+
+TEST(PCA, cloud_projection)
+{
+  pcl::PointCloud<pcl::PointXYZ> cloud_projected, cloud_reconstructed;
+  try
+  {
+    pca.project (cloud, cloud_projected);
+    EXPECT_EQ (cloud.size (), cloud_projected.size ());
+    pca.reconstruct (cloud_projected, cloud_reconstructed);
+    EXPECT_EQ (cloud_reconstructed.size (), cloud_projected.size ());
+    for(size_t i = 0; i < cloud.size(); i++)
+      EXPECT_NEAR_VECTORS (cloud[i].getVector3fMap (),
+                           cloud_reconstructed[i].getVector3fMap (),
+                           1e-4);
+  }
+  catch (pcl::InitFailedException &e)
+  {
+    std::cerr << "something wrong" << std::endl;
+  }
+}
+
+int main (int argc, char** argv)
+{
   cloud.width = 5;
   cloud.height = 4 ;
   cloud.is_dense = true;
@@ -67,35 +122,8 @@ TEST(PCL, pca)
   cloud[18].x = 2282; cloud[18].y = 190; cloud[18].z = 23;
   cloud[19].x = 2999; cloud[19].y = 202; cloud[19].z = 29;  
 
-  pcl::PCA<pcl::PointXYZ> pca;
   pca.setInputCloud (cloud.makeShared ());
-  pcl::PointXYZ projected, reconstructed;
-  for(size_t i = 0; i < cloud.size(); i++)
-  {
-    pca.project(cloud.points[i], projected);
-    pca.reconstruct(projected, reconstructed);
-//    std::cout << (reconstructed.getVector3fMap() - cloud.points[i].getVector3fMap()).norm() << std::endl;
-    EXPECT_NEAR ((reconstructed.getVector3fMap() - cloud.points[i].getVector3fMap()).norm(), 0.0f, 2e-4);
-  }
 
-  // Test copy constructor
-  pcl::PCA<pcl::PointXYZ> pca_copy(pca);
-  try
-  {
-    Eigen::Matrix3f eigen_vectors_copy = pca_copy.getEigenVectors ();
-    Eigen::Matrix3f eigen_vectors = pca.getEigenVectors ();
-    for(size_t i = 0; i < 3; ++i)
-      for(size_t j = 0; j < 3; ++j)
-        EXPECT_EQ (eigen_vectors (i,j), eigen_vectors_copy (i,j));
-  }
-  catch (pcl::InitFailedException &e)
-  {
-    std::cerr << "something wrong" << std::endl;
-  }
-}
-
-int main (int argc, char** argv)
-{
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }
