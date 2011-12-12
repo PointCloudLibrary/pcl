@@ -47,6 +47,10 @@ namespace pcl
 {
   namespace ndt
   {
+    /** \brief Class to store vector value and first and second derivatives
+      * (grad vector and hessian matrix), so they can be returned easily from
+      * functions
+      */
     template<unsigned N=3, typename T=double>
     struct ValueAndDerivatives
     {
@@ -74,6 +78,17 @@ namespace pcl
       }
     };
 
+    /** \brief A normal distribution estimation class.
+      *
+      * First the indices of of the points from a point cloud that should be
+      * modelled by the distribution are added with addIdx (...).
+      *
+      * Then estimateParams (...) uses the stored point indices to estimate the
+      * parameters of a normal distribution, and discards the stored indices.
+      *
+      * Finally the distriubution, and its derivatives, may be evaluated at any
+      * point using test (...).
+      */
     template <typename PointT>
     class NormalDist
     {
@@ -95,8 +110,8 @@ namespace pcl
         }
         
         /** \brief Estimate the normal distribution parameters given the point indices provided. Memory of point indices is cleared.
-          * \param[in] cloud Point cloud corresponding to indices passed to addIdx
-          * \param[in] min_covar_eigvalue_mult set the smallest eigenvalue to this times the largest
+          * \param[in] cloud                    Point cloud corresponding to indices passed to addIdx.
+          * \param[in] min_covar_eigvalue_mult  Set the smallest eigenvalue to this times the largest.
           */
         void
         estimateParams (const PointCloud& cloud, double min_covar_eigvalue_mult = 0.001)
@@ -137,9 +152,9 @@ namespace pcl
         }
 
         /** \brief Return the 'score' (denormalised likelihood) and derivatives of score of the point p given this distribution.
-          * \param[in] transformed_pt
-          * \param[in] cos_theta
-          * \param[in] sin_theta
+          * \param[in] transformed_pt   Location to evaluate at.
+          * \param[in] cos_theta        sin(theta) of the current rotation angle of rigid transformation: to avoid repeated evaluation
+          * \param[in] sin_theta        cos(theta) of the current rotation angle of rigid transformation: to avoid repeated evaluation
           * estimateParams must have been called after at least three points were provided, or this will return zero.
           *
           */
@@ -191,7 +206,11 @@ namespace pcl
         Eigen::Vector2d mean_;
         Eigen::Matrix2d covar_inv_;
     };
-
+    
+    /** \brief Build a set of normal distributions modelling a 2D point cloud,
+      * and provide the value and derivatives of the model at any point via the
+      * test (...) function.
+      */
     template <typename PointT> 
     class NDTSingleGrid: public boost::noncopyable
     {
@@ -229,9 +248,9 @@ namespace pcl
         }
         
         /** \brief Return the 'score' (denormalised likelihood) and derivatives of score of the point p given this distribution.
-          * \param[in] transformed_pt
-          * \param[in] cos_theta
-          * \param[in] sin_theta
+          * \param[in] transformed_pt   Location to evaluate at.
+          * \param[in] cos_theta        sin(theta) of the current rotation angle of rigid transformation: to avoid repeated evaluation
+          * \param[in] sin_theta        cos(theta) of the current rotation angle of rigid transformation: to avoid repeated evaluation
           */
         ValueAndDerivatives<3,double>
         test (const PointT& transformed_pt, const double& cos_theta, const double& sin_theta) const
@@ -246,8 +265,8 @@ namespace pcl
         }
 
       protected:
-        /** \brief
-          * \param[in] p
+        /** \brief Return the normal distribution covering the location of point p
+          * \param[in] p a point
           */
         NormalDist* 
         normalDistForPoint (PointT const& p) const
@@ -273,6 +292,12 @@ namespace pcl
         Eigen::Matrix<NormalDist, Eigen::Dynamic, Eigen::Dynamic> normal_distributions_;
     };
 
+    /** \brief Build a Normal Distributions Transform of a 2D point cloud. This
+      * consists of the sum of four overlapping models of the original points
+      * with normal distributions.
+      * The value and derivatives of the model at any point can be evaluated
+      * with the test (...) function.
+      */
     template <typename PointT> 
     class NDT: public boost::noncopyable
     {
@@ -282,9 +307,9 @@ namespace pcl
 
       public:
         /** \brief
-          * \param[in] about
-          * \param[in] extent
-          * \param[in] step
+          * \param[in] about    Centre of the grid for normal distributions model
+          * \param[in] extent   Extent of grid for normal distributions model
+          * \param[in] step     Size of region that each normal distribution will model
           */
         NDT (PointCloudConstPtr cloud,
              const Eigen::Vector2f& about,
@@ -300,9 +325,9 @@ namespace pcl
         }
         
         /** \brief Return the 'score' (denormalised likelihood) and derivatives of score of the point p given this distribution.
-          * \param[in] transformed_pt
-          * \param[in] cos_theta
-          * \param[in] sin_theta
+          * \param[in] transformed_pt   Location to evaluate at.
+          * \param[in] cos_theta        sin(theta) of the current rotation angle of rigid transformation: to avoid repeated evaluation
+          * \param[in] sin_theta        cos(theta) of the current rotation angle of rigid transformation: to avoid repeated evaluation
           */
         ValueAndDerivatives<3,double>
         test (const PointT& transformed_pt, const double& cos_theta, const double& sin_theta) const
@@ -319,6 +344,28 @@ namespace pcl
 
   } // namespace ndt
 } // namespace pcl
+
+
+namespace Eigen
+{
+  /* This NumTraits specialisation is necessary because NormalDist is used as
+   * the element type of an Eigen Matrix.
+   */
+  template<typename PointT> struct NumTraits<pcl::ndt::NormalDist<PointT> >
+  {
+    typedef double Real;
+    static Real dummy_precision () { return 1.0; }
+    enum {
+      IsComplex = 0,
+      IsInteger = 0,
+      IsSigned = 0,
+      RequireInitialization = 1,
+      ReadCost = 1,
+      AddCost = 1,
+      MulCost = 1
+    };
+  };
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void

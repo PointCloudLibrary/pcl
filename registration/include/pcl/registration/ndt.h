@@ -44,6 +44,13 @@ namespace pcl
 {
   /** \brief @b NormalDistributionsTransform provides an implementation of the
     * Normal Distributions Transform algorithm for scan matching.
+    *
+    * This implementation is intended to match the definition:
+    * Peter Biber and Wolfgang Straßer. The normal distributions transform: A
+    * new approach to laser scan matching. In Proceedings of the IEEE In-
+    * ternational Conference on Intelligent Robots and Systems (IROS), pages
+    * 2743–2748, Las Vegas, USA, October 2003.
+    *
     * \author James Crosby
     */
   template <typename PointSource, typename PointTarget>
