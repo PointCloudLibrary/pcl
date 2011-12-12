@@ -388,6 +388,8 @@ namespace pcl
       insert (iterator position, InputIterator first, InputIterator last)
       {
         points.insert (position, first, last);
+        width = points.size ();
+        height = 1;
       }
 
       /** \brief Erase a point in the cloud. 
