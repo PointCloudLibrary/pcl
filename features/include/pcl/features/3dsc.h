@@ -87,7 +87,7 @@ namespace pcl
        /** Constructor. 
          * \param[in] random If true the random seed is set to current time, else it is 
          * set to 12345 prior to computing the descriptor (used to select X axis)
-        */
+         */
        ShapeContext3DEstimation (bool random = false) :
          radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
          azimuth_bins_(12), elevation_bins_(11), radius_bins_(15), 

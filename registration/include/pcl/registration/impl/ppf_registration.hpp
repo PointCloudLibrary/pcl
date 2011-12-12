@@ -114,12 +114,17 @@ pcl::PPFRegistration<PointSource, PointTarget>::setInputTarget (const PointCloud
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
-pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointCloudSource &output)
+pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess)
 {
   if (!search_method_)
   {
     PCL_ERROR("[pcl::PPFRegistration::computeTransformation] Search method not set - skipping computeTransformation!\n");
     return;
+  }
+
+  if (guess != Eigen::Matrix4f::Identity ())
+  {
+    PCL_ERROR("[pcl::PPFRegistration::computeTransformation] setting initial transform (guess) not implemented!\n");
   }
 
   PoseWithVotesList voted_poses;

@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -36,13 +38,6 @@
  */
 
 #include <boost/unordered_map.hpp>
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> void
-pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output)
-{
-  pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (output, Eigen::Matrix4f::Identity());
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void

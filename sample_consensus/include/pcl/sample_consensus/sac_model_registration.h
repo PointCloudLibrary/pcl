@@ -49,7 +49,7 @@
 
 namespace pcl
 {
-  /** \brief @b SampleConsensusModelRegistration defines a model for Point-To-Point registration outlier rejection.
+  /** \brief SampleConsensusModelRegistration defines a model for Point-To-Point registration outlier rejection.
     * \author Radu Bogdan Rusu
     * \ingroup sample_consensus
     */

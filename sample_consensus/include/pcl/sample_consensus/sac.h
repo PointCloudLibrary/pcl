@@ -1,8 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
- *  All rights reserved.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
+ *  All rights reserved. 
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -39,16 +41,16 @@
 #define PCL_SAMPLE_CONSENSUS_H_
 
 #include "pcl/sample_consensus/sac_model.h"
+#include <boost/random.hpp>
+#include <ctime>
 #include <set>
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //template <typename ... T> // variadic templates don't work yet
-  /** \brief @b SampleConsensus represents the base class. All sample consensus methods must inherit from this class.
-   * \author Radu Bogdan Rusu
+  /** \brief SampleConsensus represents the base class. All sample consensus methods must inherit from this class.
+    * \author Radu Bogdan Rusu
     * \ingroup sample_consensus
-   */
+    */
   template <typename T>
   class SampleConsensus
   {
@@ -63,57 +65,78 @@ namespace pcl
       typedef boost::shared_ptr<const SampleConsensus> ConstPtr;
 
       /** \brief Constructor for base SAC.
-        * \param model a Sample Consensus model
+        * \param[in] model a Sample Consensus model
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensus (const SampleConsensusModelPtr &model) : sac_model_(model), probability_ (0.99),
+      SampleConsensus (const SampleConsensusModelPtr &model, bool random = false) : sac_model_(model), probability_ (0.99),
                                                                iterations_ (0), threshold_ (DBL_MAX), max_iterations_ (1000)
-      { /* srand ((unsigned)time (0)); // set a random seed */ };
+      {
+         // Create a random number generator object
+         rng_.reset (new boost::uniform_01<boost::mt19937> (rng_alg_));
+         if (random)
+           rng_->base ().seed (static_cast<unsigned> (std::time(0)));
+         else
+           rng_->base ().seed (12345u);
+      };
 
       /** \brief Constructor for base SAC.
-        * \param model a Sample Consensus model
-        * \param threshold distance to model threshold
+        * \param[in] model a Sample Consensus model
+        * \param[in] threshold distance to model threshol
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensus (const SampleConsensusModelPtr &model, double threshold) : sac_model_(model), probability_ (0.99),
-                                                                                 iterations_ (0), threshold_ (threshold),
-                                                                                 max_iterations_ (1000)
-                                                                                 {};
+      SampleConsensus (const SampleConsensusModelPtr &model, double threshold, bool random = false) : 
+        sac_model_(model), probability_ (0.99), iterations_ (0), threshold_ (threshold), max_iterations_ (1000)
+      {
+         // Create a random number generator object
+         rng_.reset (new boost::uniform_01<boost::mt19937> (rng_alg_));
+         if (random)
+           rng_->base ().seed (static_cast<unsigned> (std::time(0)));
+         else
+           rng_->base ().seed (12345u);
+       };
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Destructor for base SAC. */
       virtual ~SampleConsensus () {};
 
       /** \brief Set the distance to model threshold.
-        * \param threshold distance to model threshold
+        * \param[in] threshold distance to model threshold
         */
-      inline void setDistanceThreshold (double threshold)  { threshold_ = threshold; }
+      inline void 
+      setDistanceThreshold (double threshold)  { threshold_ = threshold; }
 
       /** \brief Get the distance to model threshold, as set by the user. */
-      inline double getDistanceThreshold () { return (threshold_); }
+      inline double 
+      getDistanceThreshold () { return (threshold_); }
 
       /** \brief Set the maximum number of iterations.
-        * \param max_iterations maximum number of iterations
+        * \param[in] max_iterations maximum number of iterations
         */
-      inline void setMaxIterations (int max_iterations) { max_iterations_ = max_iterations; }
+      inline void 
+      setMaxIterations (int max_iterations) { max_iterations_ = max_iterations; }
 
       /** \brief Get the maximum number of iterations, as set by the user. */
-      inline int getMaxIterations () { return (max_iterations_); }
+      inline int 
+      getMaxIterations () { return (max_iterations_); }
 
       /** \brief Set the desired probability of choosing at least one sample free from outliers.
-        * \param probability the desired probability of choosing at least one sample free from outliers
+        * \param[in] probability the desired probability of choosing at least one sample free from outliers
         * \note internally, the probability is set to 99% (0.99) by default.
         */
-      inline void setProbability (double probability) { probability_ = probability; }
+      inline void 
+      setProbability (double probability) { probability_ = probability; }
 
       /** \brief Obtain the probability of choosing at least one sample free from outliers, as set by the user. */
-      inline double getProbability () { return (probability_); }
+      inline double 
+      getProbability () { return (probability_); }
 
       /** \brief Compute the actual model. Pure virtual. */
-      virtual bool computeModel (int debug_verbosity_level = 0) = 0;
+      virtual bool 
+      computeModel (int debug_verbosity_level = 0) = 0;
 
       /** \brief Get a set of randomly selected indices.
-        * \param indices the input indices vector
-        * \param nr_samples the desired number of point indices to randomly select
-        * \param indices_subset the resultant output set of randomly selected indices
+        * \param[in] indices the input indices vector
+        * \param[in] nr_samples the desired number of point indices to randomly select
+        * \param[out] indices_subset the resultant output set of randomly selected indices
         */
       inline void
       getRandomSamples (const boost::shared_ptr <std::vector<int> > &indices, 
@@ -122,23 +145,27 @@ namespace pcl
       {
         indices_subset.clear ();
         while (indices_subset.size () < nr_samples)
-          indices_subset.insert ((*indices)[(int) (indices->size () * (rand () / (RAND_MAX + 1.0)))]);
+          //indices_subset.insert ((*indices)[(int) (indices->size () * (rand () / (RAND_MAX + 1.0)))]);
+          indices_subset.insert ((*indices)[(int) (indices->size () * rnd ())]);
       }
 
       /** \brief Return the best model found so far. 
-        * \param model the resultant model
+        * \param[out] model the resultant model
         */
-      inline void getModel (std::vector<int> &model) { model = model_; }
+      inline void 
+      getModel (std::vector<int> &model) { model = model_; }
 
       /** \brief Return the best set of inliers found so far for this model. 
-        * \param inliers the resultant set of inliers
+        * \param[out] inliers the resultant set of inliers
         */
-      inline void getInliers (std::vector<int> &inliers) { inliers = inliers_; }
+      inline void 
+      getInliers (std::vector<int> &inliers) { inliers = inliers_; }
 
       /** \brief Return the model coefficients of the best model found so far. 
-        * \param model_coefficients the resultant model coefficients
+        * \param[out] model_coefficients the resultant model coefficients
         */
-      inline void getModelCoefficients (Eigen::VectorXf &model_coefficients) { model_coefficients = model_coefficients_; }
+      inline void 
+      getModelCoefficients (Eigen::VectorXf &model_coefficients) { model_coefficients = model_coefficients_; }
 
     protected:
       /** \brief The underlying data model used (i.e. what is it that we attempt to search for). */
@@ -164,7 +191,20 @@ namespace pcl
       
       /** \brief Maximum number of iterations before giving up. */
       int max_iterations_;
-  };
+
+      /** \brief Boost-based random number generator algorithm. */
+      boost::mt19937 rng_alg_;
+
+      /** \brief Boost-based random number generator distribution. */
+      boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
+
+      /** \brief Boost-based random number generator. */
+      inline double
+      rnd ()
+      {
+        return ((*rng_) ());
+      }
+   };
 }
 
 #endif  //#ifndef PCL_SAMPLE_CONSENSUS_H_

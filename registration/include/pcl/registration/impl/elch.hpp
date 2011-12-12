@@ -54,13 +54,13 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, int f, int l, double *weights)
+pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, double *weights)
 {
   std::list<int> crossings, branches;
-  crossings.push_back (f);
-  crossings.push_back (l);
-  weights[f] = 0;
-  weights[l] = 1;
+  crossings.push_back (loop_start_);
+  crossings.push_back (loop_end_);
+  weights[loop_start_] = 0;
+  weights[loop_end_] = 1;
 
   int *p = new int[num_vertices (g)];
   int *p_min = new int[num_vertices (g)];
@@ -143,7 +143,7 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, int f, int
     s = branches.front ();
     branches.pop_front ();
 
-    for (tie (adjacent_it, adjacent_it_end) = adjacent_vertices (s, g); adjacent_it != adjacent_it_end; ++adjacent_it)
+    for (boost::tuples::tie (adjacent_it, adjacent_it_end) = adjacent_vertices (s, g); adjacent_it != adjacent_it_end; ++adjacent_it)
     {
       weights[*adjacent_it] = weights[s];
       if (degree (*adjacent_it, g) > 1)
@@ -157,11 +157,11 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, int f, int
 template <typename PointT> bool
 pcl::registration::ELCH<PointT>::initCompute ()
 {
-  if (!PCLBase<PointT>::initCompute ())
+  /*if (!PCLBase<PointT>::initCompute ())
   {
     PCL_ERROR ("[pcl::registration:ELCH::initCompute] Init failed.\n");
     return (false);
-  }
+  }*/ //TODO
 
   if (!loop_start_)
   {
@@ -178,32 +178,42 @@ pcl::registration::ELCH<PointT>::initCompute ()
   }
 
   //compute transformation if it's not given
-  if (!loop_transform_)
+  if (compute_loop_)
   {
-    //TODO use real pose instead of centroid
-    Eigen::Vector4f pose_start;
-    pcl::compute3DCentroid (*loop_start_, pose_start);
+    PointCloudPtr meta_start (new PointCloud);
+    PointCloudPtr meta_end (new PointCloud);
+    *meta_start = *(*loop_graph_)[loop_start_].cloud;
+    *meta_end = *(*loop_graph_)[loop_end_].cloud;
 
-    Eigen::Vector4f pose_end;
-    pcl::compute3DCentroid (*loop_end_, pose_end);
+    typename boost::graph_traits<LoopGraph>::adjacency_iterator si, si_end;
+    for (boost::tuples::tie (si, si_end) = adjacent_vertices (loop_start_, *loop_graph_); si != si_end; si++)
+      *meta_start += *(*loop_graph_)[*si].cloud;
+
+    for (boost::tuples::tie (si, si_end) = adjacent_vertices (loop_end_, *loop_graph_); si != si_end; si++)
+      *meta_end += *(*loop_graph_)[*si].cloud;
+
+    //TODO use real pose instead of centroid
+    //Eigen::Vector4f pose_start;
+    //pcl::compute3DCentroid (*(*loop_graph_)[loop_start_].cloud, pose_start);
+
+    //Eigen::Vector4f pose_end;
+    //pcl::compute3DCentroid (*(*loop_graph_)[loop_end_].cloud, pose_end);
 
     PointCloudPtr tmp (new PointCloud);
-    pcl::transformPointCloud (*loop_end_, *tmp, pose_end - pose_start);
+    //Eigen::Vector4f diff = pose_start - pose_end;
+    //Eigen::Translation3f translation (diff.head (3));
+    //Eigen::Affine3f trans = translation * Eigen::Quaternionf::Identity ();
+    //pcl::transformPointCloud (*(*loop_graph_)[loop_end_].cloud, *tmp, trans);
 
-    //reg_->setMaximumIterations (50);
-    //setMaxCorrespondenceDistance (1.5);
-    //setRANSACOutlierRejectionThreshold (1.5);
-    //reg_->setRANSACOutlierRejectionThreshold (DBL_MAX);
+    reg_->setInputTarget (meta_start);
 
-    reg_->setInputTarget (loop_start_);
-
-    reg_->setInputCloud (tmp);
+    reg_->setInputCloud (meta_end);
 
     reg_->align (*tmp);
 
     loop_transform_ = reg_->getFinalTransformation ();
     //TODO hack
-    //t += ce2;
+    //loop_transform_ *= trans.matrix ();
 
   }
 
@@ -222,46 +232,50 @@ pcl::registration::ELCH<PointT>::compute ()
   LOAGraph grb[4];
 
   typename boost::graph_traits<LoopGraph>::edge_iterator edge_it, edge_it_end;
-  for (tie (edge_it, edge_it_end) = edges (loop_graph_); edge_it != edge_it_end; edge_it++)
+  for (boost::tuples::tie (edge_it, edge_it_end) = edges (*loop_graph_); edge_it != edge_it_end; edge_it++)
   {
     for (int j = 0; j < 4; j++)
-      add_edge (source (*edge_it, loop_graph_), target (*edge_it, loop_graph_), 1, grb[j]);  //TODO add variance
+      add_edge (source (*edge_it, *loop_graph_), target (*edge_it, *loop_graph_), 1, grb[j]);  //TODO add variance
   }
 
   double *weights[4];
   for (int i = 0; i < 4; i++)
   {
-    weights[i] = new double[num_vertices (loop_graph_)];
+    weights[i] = new double[num_vertices (*loop_graph_)];
     loopOptimizerAlgorithm (grb[i], weights[i]);
   }
 
   //TODO use pose
-  Eigen::Vector4f cend;
-  pcl::compute3DCentroid (*loop_end_, cend);
-  Eigen::Translation3f tend (cend[0], cend[1], cend[2]);
-  Eigen::Affine3f aend (tend);
-  Eigen::Affine3f aendI = aend.inverse ();
+  //Eigen::Vector4f cend;
+  //pcl::compute3DCentroid (*((*loop_graph_)[loop_end_].cloud), cend);
+  //Eigen::Translation3f tend (cend.head (3));
+  //Eigen::Affine3f aend (tend);
+  //Eigen::Affine3f aendI = aend.inverse ();
 
   //TODO iterate ovr loop_graph_
-  typename boost::graph_traits<LoopGraph>::vertex_iterator vertex_it, vertex_it_end;
-  for (tie (vertex_it, vertex_it_end) = vertices (loop_graph_); vertex_it != vertex_it_end; vertex_it++)
+  //typename boost::graph_traits<LoopGraph>::vertex_iterator vertex_it, vertex_it_end;
+  //for (boost::tuples::tie (vertex_it, vertex_it_end) = vertices (*loop_graph_); vertex_it != vertex_it_end; vertex_it++)
+  for (size_t i = 0; i < num_vertices (*loop_graph_); i++)
   {
     Eigen::Vector3f t2;
-    //t2[0] = loop_transform_->translation ()[0] * weights[0][i]; //TODO
-    //t2[1] = loop_transform_->translation ()[1] * weights[1][i];
-    //t2[2] = loop_transform_->translation ()[2] * weights[2][i];
+    t2[0] = loop_transform_ (0, 3) * weights[0][i];
+    t2[1] = loop_transform_ (1, 3) * weights[1][i];
+    t2[2] = loop_transform_ (2, 3) * weights[2][i];
 
+    Eigen::Affine3f bl (loop_transform_);
+    Eigen::Quaternionf q (bl.rotation ());
     Eigen::Quaternionf q2;
-    //q2 = Eigen::Quaternionf::Identity ().slerp (weights[3][i], q); //TODO
+    q2 = Eigen::Quaternionf::Identity ().slerp (weights[3][i], q);
 
     //TODO use rotation from branch start
     Eigen::Translation3f t3 (t2);
     Eigen::Affine3f a (t3 * q2);
-    a = aend * a * aendI;
+    //a = aend * a * aendI;
 
-    //std::cout << "transform cloud " << i << " to:" << std::endl << a.matrix () << std::endl;
-    pcl::transformPointCloud (*vertex_it, *vertex_it, a);
+    pcl::transformPointCloud (*(*loop_graph_)[i].cloud, *(*loop_graph_)[i].cloud, a);
   }
+
+  add_edge (loop_start_, loop_end_, *loop_graph_);
 
   deinitCompute ();
 }

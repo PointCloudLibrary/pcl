@@ -38,10 +38,8 @@
 #ifndef PCL_GICP_H_
 #define PCL_GICP_H_
 
-// PCL includes
 #include "pcl/registration/icp.h"
-
-#include <cminpack.h>
+#include "pcl/registration/bfgs.h"
 
 namespace pcl
 {
@@ -50,8 +48,8 @@ namespace pcl
     * http://www.stanford.edu/~avsegal/resources/papers/Generalized_ICP.pdf
     * The approach is based on using anistropic cost functions to optimize the alignment 
     * after closest point assignments have been made.
-    * The original code uses GSL and ANN while in ours BFGS is replaced with a LM and 
-    * ANN with FLANN.
+    * The original code uses GSL and ANN while in ours we use an eigen mapped BFGS and 
+    * FLANN.
     * \author Nizar Sallem
     * \ingroup registration
     */
@@ -74,7 +72,6 @@ namespace pcl
     using IterativeClosestPoint<PointSource, PointTarget>::corr_dist_threshold_;
     using IterativeClosestPoint<PointSource, PointTarget>::inlier_threshold_;
     using IterativeClosestPoint<PointSource, PointTarget>::min_number_correspondences_;
-    using IterativeClosestPoint<PointSource, PointTarget>::rigid_transformation_estimation_;
     using IterativeClosestPoint<PointSource, PointTarget>::update_visualizer_;
 
     typedef pcl::PointCloud<PointSource> PointCloudSource;
@@ -90,22 +87,25 @@ namespace pcl
 
     typedef typename pcl::KdTree<PointSource> InputKdTree;
     typedef typename pcl::KdTree<PointSource>::Ptr InputKdTreePtr;
+    
+    typedef Eigen::Matrix<double, 6, 1> Vector6d;
 
     public:
       /** \brief Empty constructor. */
-      GeneralizedIterativeClosestPoint () :
-      k_correspondences_(20), 
-      gicp_epsilon_(0.0004), rotation_epsilon_(2e-3),
-      input_covariances_(0), target_covariances_(0), mahalanobis_(0)
+      GeneralizedIterativeClosestPoint () 
+        : k_correspondences_(20), 
+          gicp_epsilon_(0.001), rotation_epsilon_(2e-3),
+          input_covariances_(0), target_covariances_(0), mahalanobis_(0),
+          max_inner_iterations_(20)
       {
         min_number_correspondences_ = 4;
         reg_name_ = "GeneralizedIterativeClosestPoint";
         max_iterations_ = 200;
         transformation_epsilon_ = 5e-4;
-        corr_dist_threshold_ = 5. * 5.;
+        corr_dist_threshold_ = 5.;
         rigid_transformation_estimation_ = 
-          boost::bind (&GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationLM, 
-              this, _1, _2, _3, _4, _5); 
+          boost::bind (&GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationBFGS, 
+                       this, _1, _2, _3, _4, _5); 
         input_tree_.reset (new pcl::KdTreeFLANN<PointSource>);
       }
 
@@ -143,28 +143,17 @@ namespace pcl
       /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative
         * non-linear Levenberg-Marquardt approach.
         * \param cloud_src the source point cloud dataset
-        * \param cloud_tgt the target point cloud dataset
-        * \param transformation_matrix the resultant transformation matrix
-        */
-      void 
-      estimateRigidTransformationLM (const PointCloudSource &cloud_src, 
-                                     const PointCloudTarget &cloud_tgt, 
-                                     Eigen::Matrix4f &transformation_matrix);
-
-      /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative
-        * non-linear Levenberg-Marquardt approach.
-        * \param cloud_src the source point cloud dataset
         * \param indices_src the vector of indices describing the points of interest in \a cloud_src
         * \param cloud_tgt the target point cloud dataset
         * \param indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
         * \param transformation_matrix the resultant transformation matrix
         */
-      void 
-      estimateRigidTransformationLM (const PointCloudSource &cloud_src, 
-                                     const std::vector<int> &indices_src, 
-                                     const PointCloudTarget &cloud_tgt, 
-                                     const std::vector<int> &indices_tgt, 
-                                     Eigen::Matrix4f &transformation_matrix);
+      void
+      estimateRigidTransformationBFGS (const PointCloudSource &cloud_src,
+                                       const std::vector<int> &indices_src,
+                                       const PointCloudTarget &cloud_tgt,
+                                       const std::vector<int> &indices_tgt,
+                                       Eigen::Matrix4f &transformation_matrix);
       
       /** \brief \return Mahalanobis distance matrix for the given point index */
       inline const Eigen::Matrix3d& mahalanobis(size_t index) const
@@ -181,7 +170,7 @@ namespace pcl
         * param g gradient vector
         */
       void
-      computeRDerivative(const double x[], const Eigen::Matrix3d &R, double g[]);
+      computeRDerivative(const Vector6d &x, const Eigen::Matrix3d &R, Vector6d &g) const;
 
       /** \brief Set the rotation epsilon (maximum allowable difference between two 
         * consecutive rotations) in order for an optimization to be considered as having 
@@ -218,43 +207,21 @@ namespace pcl
         * \default 20
         */
       int k_correspondences_;
+
       /** \brief The epsilon constant for gicp paper; this is NOT the convergence 
         * tolerence 
-        * \default 0.0004
+        * \default 0.001
         */
       double gicp_epsilon_;
+
       /** The epsilon constant for rotation error. (In GICP the transformation epsilon 
         * is split in rotation part and translation part).
         * \default 2e-3
         */
       double rotation_epsilon_;
+
       /** \brief base transformation */
       Eigen::Matrix4f base_transformation_;
-      /** \brief Cost function to be minimized
-        * \param p a pointer to our data structure array
-        * \param m the number of functions
-        * \param n the number of variables
-        * \param x a pointer to the variables array
-        * \param fvec a pointer to the resultant functions evaluations
-        * \param fjac a pointer to the resultant jacobians evaluations
-        * \param ldfjac the leading dimension of fjac
-        * \param iflag set to -1 inside the function to terminate execution
-        */
-      static int 
-      functionToOptimize (void *p, int m, int n, const double *x, double *fvec, double *fjac, int ldfjac, int iflag);
-
-      /** \brief Cost function to be minimized
-        * \param p a pointer to our data structure array
-        * \param m the number of functions
-        * \param n the number of variables
-        * \param x a pointer to the variables array
-        * \param fvec a pointer to the resultant functions evaluations
-        * \param fjac a pointer to the resultant jacobians evaluations
-        * \param ldfjac the leading dimension of fjac
-        * \param iflag set to -1 inside the function to terminate execution
-        */
-      static int 
-      functionToOptimizeIndices (void *p, int m, int n, const double *x, double *fvec, double *fjac, int ldfjac, int iflag);
 
       /** \brief Temporary boost mutex for \a tmp_src_ and \a tmp_tgt_*/
       boost::mutex tmp_mutex_;
@@ -283,6 +250,9 @@ namespace pcl
       /** \brief Mahalanobis matrices holder. */
       std::vector<Eigen::Matrix3d> mahalanobis_;
       
+      /** \brief maximum number of optimizations */
+      int max_inner_iterations_;
+
       /** \brief compute points covariances matrices according to the K nearest 
         * neighbors. K is set via setCorrespondenceRandomness() methode.
         * \param cloud pointer to point cloud
@@ -299,7 +269,7 @@ namespace pcl
         * \param mat2 matrix of dimension nxp
         */
       inline double 
-      matricesInnerProd(const Eigen::MatrixXd& mat1, const Eigen::MatrixXd& mat2)
+      matricesInnerProd(const Eigen::MatrixXd& mat1, const Eigen::MatrixXd& mat2) const
       {
         double r = 0.;
         size_t n = mat1.rows();
@@ -308,15 +278,6 @@ namespace pcl
           for(size_t j = 0; j < n; j++)
             r += mat1 (j, i) * mat2 (i,j);
         return r;
-      }
-
-      /** \brief Rigid transformation computation method.
-        * \param output the transformed input point cloud dataset using the rigid transformation found
-        */
-      void 
-      computeTransformation (PointCloudSource &output)
-      {
-        computeTransformation (output, Eigen::Matrix4f::Identity());
       }
 
       /** \brief Rigid transformation computation method  with initial guess.
@@ -340,22 +301,27 @@ namespace pcl
         return (true);
       }
 
-      /** \brief Compute heteregenious product result = mat1 * mat2
-        * This function is here cause eigen doesnt allow double = float * float
-        */
-      inline void 
-      heteregenious_product(const Eigen::Matrix4f& mat1, const Eigen::Matrix4f& mat2, Eigen::Matrix4d& result)
+      /// \brief compute transformation matrix from transformation matrix
+      void applyState(Eigen::Matrix4f &t, const Vector6d& x) const;
+      
+      /// \brief optimization functor structure
+      struct OptimizationFunctorWithIndices : public BFGSDummyFunctor<double,6>
       {
-        result.setZero();
-        for(size_t i = 0; i < 4; i++)
-          for(size_t j = 0; j < 4; j++)
-            for(size_t k = 0; k < 4; k++)
-              result(i,j)+= double(mat1(i,k)) * double(mat2(k,j));
-      }
+        OptimizationFunctorWithIndices (const GeneralizedIterativeClosestPoint* gicp)
+          : BFGSDummyFunctor<double,6> (), gicp_(gicp) {}
+        double operator() (const Vector6d& x);
+        void  df(const Vector6d &x, Vector6d &df);
+        void fdf(const Vector6d &x, double &f, Vector6d &df);
 
-      void apply_state(Eigen::Matrix4f &t, const double x[]);
-      void get_translation(const Eigen::Matrix4f &t, double &x, double &y, double &z);
-      void get_rotation(const Eigen::Matrix4f &t, double &rx, double &ry, double &rz);
+        const GeneralizedIterativeClosestPoint *gicp_;
+      };
+      
+    protected:
+      boost::function<void(const pcl::PointCloud<PointSource> &cloud_src,
+                           const std::vector<int> &src_indices,
+                           const pcl::PointCloud<PointTarget> &cloud_tgt,
+                           const std::vector<int> &tgt_indices,
+                           Eigen::Matrix4f &transformation_matrix)> rigid_transformation_estimation_;
   };
 }
 
