@@ -91,8 +91,7 @@ pcl::PCA<PointT>::initCompute ()
   // If not basis only then compute the coefficients
 
   if (!basis_only_)
-    // 3x3 = 3x3 * 3x3
-    coefficients_ = eigenvectors_.transpose() * (cloud_demean.topRows<3>()).leftCols<3> ();
+    coefficients_ = eigenvectors_.transpose() * cloud_demean.topRows<3> ();
   compute_done_ = true;
   return (true);
 }
