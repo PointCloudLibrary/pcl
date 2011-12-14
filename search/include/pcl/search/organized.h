@@ -55,10 +55,8 @@ namespace pcl
     /** \brief OrganizedNeighbor is a class for optimized nearest neigbhor search in organized point clouds.
       *
       * The current API implements two different methods in the same corpus:
-      * <ul>
-      *   <li>a fast, simple but approximate, window-based nearest neighbor estimation method, similar to 2D</li>
-      *   <li>a slower, but more accurate spherical projection method</li>
-      * </ul>
+      *   - a fast, simple but approximate, window-based nearest neighbor estimation method, similar to 2D
+      *   - a slower, but more accurate spherical projection method
       *
       * You can switch between the two methods using \ref setPrecision (true/false). By default the class uses
       * the faster approximate method.
