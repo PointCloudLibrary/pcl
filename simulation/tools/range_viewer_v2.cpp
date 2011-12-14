@@ -284,8 +284,8 @@ namespace pcl
       // 
       camera_->set(-5.0, 0.0, 1.0, 0.0, 0.0, 0.0);
       
-      prop_->iviewer_.setName("Color Image");
-      prop_->iviewer_color_.setName("Depth Image");
+      prop_->iviewer_.setWindowTitle ("Color Image");
+      prop_->iviewer_color_.setWindowTitle ("Depth Image");
 
 //      win_->SetSize (500, 500);
       //win_->SetSize (1000, 1000);
