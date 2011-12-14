@@ -123,7 +123,7 @@ namespace pcl
       }
 
       /** \brief Calls the filtering method and returns the filtered dataset in output.
-        * \param output the resultant filtered point cloud dataset
+        * \param indices the resultant indices
         */
       void
       filter (std::vector<int> &indices);

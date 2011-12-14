@@ -61,7 +61,7 @@ namespace pcl
 
     public:
       /** \brief Constructor. 
-        * Sets \ref sigma_s_ to 0 and \ref sigma_r_ to MAXDBL
+        * Sets #sigma_s_ to 0 and #sigma_r_ to MAXDBL
         */
       BilateralFilter () : sigma_s_ (0), 
                            sigma_r_ (std::numeric_limits<double>::max ())

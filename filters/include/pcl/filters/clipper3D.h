@@ -42,54 +42,49 @@
 
 namespace pcl
 {
-  /**
-   * @brief Base class for 3D clipper objects
-   * @author Suat Gedikli <gedikli@willowgarage.com>
-   */
+  /** \brief Base class for 3D clipper objects
+    * \author Suat Gedikli <gedikli@willowgarage.com>
+    */
   template<typename PointT>
   class Clipper3D
   {
     public:
-      /**
-       * @brief virtual destructor. Never throws an exception.
-       * @author Suat Gedikli <gedikli@willowgarage.com>
-       */
-
+      /** \brief virtual destructor. Never throws an exception. */
       virtual ~Clipper3D () throw () {}
 
-      /**
-       * @brief interface to clip a single point
-       * @param[in] point the point to check against
-       * @return true, it point still exists, false if its clipped
-       * @author Suat Gedikli <gedikli@willowgarage.com>
-       */
-      virtual bool clipPoint3D (const PointT& point) const = 0;
+      /** \brief interface to clip a single point
+        * \param[in] point the point to check against
+        * \return true, it point still exists, false if its clipped
+        */
+      virtual bool
+      clipPoint3D (const PointT& point) const = 0;
 
-      /**
-       * @brief interface to clip a line segment given by two end points. The order of the end points is unimportant and will sty the same after clipping.
-       * This means basically, that the direction of the line will not flip after clipping.
-       * @param[in,out] from start point of the line
-       * @param[in,out] to end point of the line
-       * @return true if the clipped line is not empty, thus the parameters are still valid, false if line completely outside clipping space
-       * @author Suat Gedikli <gedikli@willowgarage.com>
-       */
-      virtual bool clipLineSegment3D (PointT& from, PointT& to) const = 0;
+      /** \brief interface to clip a line segment given by two end points. The order of the end points is unimportant 
+        * and will sty the same after clipping.
+        * This means basically, that the direction of the line will not flip after clipping.
+        * \param[in,out] from start point of the line
+        * \param[in,out] to end point of the line
+        * \return true if the clipped line is not empty, thus the parameters are still valid, false if line completely 
+        * outside clipping space
+        */
+      virtual bool
+      clipLineSegment3D (PointT& from, PointT& to) const = 0;
 
-      /**
-       * @brief interface to clip a planar polygon given by an ordered list of points
-       * @param[in,out] polygon the polygon in any direction (ccw or cw) but ordered, thus two neighboring points define an edge of the polygon
-       * @author Suat Gedikli <gedikli@willowgarage.com>
-       */
-      virtual void clipPlanarPolygon3D (std::vector<PointT>& polygon) const = 0;
+      /** \brief interface to clip a planar polygon given by an ordered list of points
+        * \param[in,out] polygon the polygon in any direction (ccw or cw) but ordered, thus two neighboring points 
+        * define an edge of the polygon
+        */
+      virtual void
+      clipPlanarPolygon3D (std::vector<PointT>& polygon) const = 0;
 
-      /**
-       * @brief interface to clip a point cloud
-       * @param[in] cloud_in input point cloud
-       * @param[in] indices the indices of points in the point cloud to be clipped.
-       * @return list of indices of remaining points after clipping.
-       * @author Suat Gedikli <gedikli@willowgarage.com>
-       */
-      virtual void clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, std::vector<int>& clipped, const std::vector<int>& indices = std::vector<int> ()) const = 0;
+      /** \brief interface to clip a point cloud
+        * \param[in] cloud_in input point cloud
+        * \param[out] clipped the resultant list of indices of remaining points after clipping.
+        * \param[in] indices the indices of points in the point cloud to be clipped.
+        */
+      virtual void 
+      clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, std::vector<int>& clipped, 
+                        const std::vector<int>& indices = std::vector<int> ()) const = 0;
   };
 }
 

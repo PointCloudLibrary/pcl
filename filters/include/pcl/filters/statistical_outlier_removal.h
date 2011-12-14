@@ -127,8 +127,8 @@ namespace pcl
         negative_ = negative;
       }
 
-      /** \brief Get the value of the internal \ref negative_ parameter. If
-        * true, all points _except_ the input indices will be returned.
+      /** \brief Get the value of the internal #negative_ parameter. If
+        * true, all points \e except the input indices will be returned.
         */
       inline bool
       getNegative ()
@@ -229,8 +229,8 @@ namespace pcl
         return (std_mul_);
       }
 
-      /** \brief Set whether the indices should be returned, or all points _except_ the indices.
-        * \param negative true if all points _except_ the input indices will be returned, false otherwise
+      /** \brief Set whether the indices should be returned, or all points \e except the indices.
+        * \param negative true if all points \e except the input indices will be returned, false otherwise
         */
       inline void
       setNegative (bool negative)
@@ -238,8 +238,9 @@ namespace pcl
         negative_ = negative;
       }
 
-      /** \brief Get the value of the internal \ref negative_ parameter. If
-        * true, all points _except_ the input indices will be returned.
+      /** \brief Get the value of the internal #negative_ parameter. If
+        * true, all points \e except the input indices will be returned.
+        * \return The value of the "negative" flag
         */
       inline bool
       getNegative ()

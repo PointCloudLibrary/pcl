@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: extract_indices.h 1370 2011-06-19 01:06:01Z jspricke $
+ * $Id: crop_box.h 1370 2011-06-19 01:06:01Z jspricke $
  *
  */
 
@@ -46,7 +46,7 @@
 
 namespace pcl
 {
-  /** \brief @b
+  /** \brief @b CropBox 
     * \author Justin Rosen
     * \ingroup filters
     */
@@ -109,7 +109,7 @@ namespace pcl
       }
 
       /** \brief
-        * \param transformation
+        * \param translation
         */
       inline void
       setTranslation (const Eigen::Vector3f &translation)
@@ -126,7 +126,7 @@ namespace pcl
       }
 
       /** \brief
-        * \param transformation
+        * \param rotation
         */
       inline void
       setRotation (const Eigen::Vector3f &rotation)
@@ -143,12 +143,12 @@ namespace pcl
       }
 
       /** \brief
-        * \param pt_transformation
+        * \param transform
         */
       inline void
-      setTransform (const Eigen::Affine3f &transfrom)
+      setTransform (const Eigen::Affine3f &transform)
       {
-        transform_ = transfrom;
+        transform_ = transform;
       }
 
       /** \brief Get the value of the internal \a min_pt parameter.
@@ -182,7 +182,7 @@ namespace pcl
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief @b
+  /** \brief @b CropBox
     * \author Justin Rosen
     * \ingroup filters
     */
@@ -243,7 +243,7 @@ namespace pcl
       }
 
       /** \brief
-        * \param transformation
+        * \param translation
         */
       inline void
       setTranslation (const Eigen::Vector3f &translation)
@@ -260,7 +260,7 @@ namespace pcl
       }
 
       /** \brief
-        * \param transformation
+        * \param rotation
         */
       inline void
       setRotation (const Eigen::Vector3f &rotation)
@@ -277,7 +277,7 @@ namespace pcl
       }
 
       /** \brief
-        * \param pt_transformation
+        * \param transform
         */
       inline void
       setTransform (const Eigen::Affine3f &transform)
