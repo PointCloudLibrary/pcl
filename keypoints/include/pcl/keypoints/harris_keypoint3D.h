@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  * 
- *  @author Suat Gedikli
  */
 
 #ifndef PCL_HARRIS_KEYPOINT_3D_H_
@@ -41,6 +42,9 @@
 
 namespace pcl
 {
+  /** \brief ...
+    * \author Suat Gedikli 
+    */
   template <typename PointInT, typename PointOutT>
   class HarrisKeypoint3D : public Keypoint<PointInT, PointOutT>
   {
@@ -61,12 +65,11 @@ namespace pcl
 
       typedef enum {HARRIS = 1, NOBLE, LOWE, TOMASI, CURVATURE} ResponseMethod;
       
-      /**
-       * @brief Constructor 
-       * @param method the method to be used to determine the corner responses
-       * @param radius the radius for normal estimation as well as for non maxima suppression
-       * @param threshold the threshold to filter out weak corners
-       */
+      /** \brief Constructor 
+        * \param[in] method the method to be used to determine the corner responses
+        * \param[in] radius the radius for normal estimation as well as for non maxima suppression
+        * \param[in] threshold the threshold to filter out weak corners
+        */
       HarrisKeypoint3D (ResponseMethod method = HARRIS, float radius = 0.01, float threshold = 0.0) 
       : radius_ (radius)
       , threshold_ (threshold)
@@ -77,38 +80,38 @@ namespace pcl
         name_ = "HarrisKeypoint3D";
       }
 
-      /**
-       * @brief set the method of the response to be calculated.
-       * @param type
-       */
-      void setMethod (ResponseMethod type);
+      /** \brief Set the method of the response to be calculated.
+        * \param[in] type
+        */
+      void 
+      setMethod (ResponseMethod type);
       
-      /**
-       * @brief set the radius for normal estimation and non maxima supression.
-       * @param radius
-       */
-      void setRadius (float radius);
+      /** \brief set the radius for normal estimation and non maxima supression.
+        * \param radius
+        */
+      void 
+      setRadius (float radius);
       
-      /**
-       * @brief set the threshold value for detecting corners. This is only evaluated if non maxima suppression is turned on.
-       * @brief note non maxima supression needs to be on in order to use this feature.
-       * @param threshold
-       */
-      void setThreshold (float threshold);
+      /** \brief set the threshold value for detecting corners. This is only evaluated if non maxima suppression is turned on.
+        * \note non maxima supression needs to be on in order to use this feature.
+        * \param[in] threshold
+        */
+      void 
+      setThreshold (float threshold);
 
-      /**
-       * @brief whether non maxima suppression should be applied or the response for each point should be returned
-       * @note this value needs to be turned on in order to apply thresholding and refinement
-       * @param nonmax default is false
-       */
-      void setNonMaxSupression (bool = false);
+      /** \brief whether non maxima suppression should be applied or the response for each point should be returned
+        * \note this value needs to be turned on in order to apply thresholding and refinement
+        * \param[in] nonmax default is false
+        */
+      void 
+      setNonMaxSupression (bool nonmax = false);
       
-      /**
-       * @brief whether the detected key points should be refined or not. If turned of, the key points are a subset of the original point cloud. Otherwise the key points may be arbitrary.
-       * @brief note non maxima supression needs to be on in order to use this feature.
-       * @param do_refine
-       */
-      void setRefine (bool do_refine);
+      /** \brief whether the detected key points should be refined or not. If turned of, the key points are a subset of the original point cloud. Otherwise the key points may be arbitrary.
+        * \note non maxima supression needs to be on in order to use this feature.
+        * \param[in] do_refine
+        */
+      void 
+      setRefine (bool do_refine);
 
     protected:
       void detectKeypoints (PointCloudOut &output);
