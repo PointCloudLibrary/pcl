@@ -45,9 +45,6 @@
 
   By default, if you're not familiar with most of the above estimators and how they operate, use RANSAC to test your hypotheses.
 
-	\section secSampleConsensusHistory History
-	- 1.0 current version
-	
 	\section secSampleConsensusRequirements Requirements
 	- common
 

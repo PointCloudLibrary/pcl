@@ -18,10 +18,10 @@ datasets.
 \image html http://www.pointclouds.org/assets/images/contents/documentation/registration_outdoor.png
 \image html http://www.pointclouds.org/assets/images/contents/documentation/registration_closeup.png
 
-	\section secRegistrationHistory History
-	- 1.0 current version
-	
-	\section secRegistrationRequirements Requirements
-	- common
+  \section secRegistrationRequirements Requirements
+  - common
+  - kdtree 
+  - sample_consensus 
+  - features
 
 */

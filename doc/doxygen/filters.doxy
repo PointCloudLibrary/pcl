@@ -22,10 +22,11 @@ considered as outliers and trimmed from the dataset.
 \image html http://www.pointclouds.org/assets/images/contents/documentation/filters_statistical_noise.png
 
 	
-	\section secFiltersHistory History
-	- 1.0 current version
-	
-	\section secFiltersRequirements Requirements
-	- common
+  \section secFiltersRequirements Requirements
+  - common
+  - sample_consensus 
+  - search 
+  - kdtree 
+  - octree
 
 */

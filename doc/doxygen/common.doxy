@@ -8,9 +8,7 @@
   points, surface normals, RGB color values, feature descriptors, etc.  It also contains numerous functions for 
   computing distances/norms, means and covariances, angular conversions, geometric transformations, and more.
 	
-	\section secCommonHistory History
-	- 1.0 current version
-	
-	\section secCommonRequirements Requirements
+  \section secCommonRequirements Requirements
+  - none
 
 */

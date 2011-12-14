@@ -38,10 +38,11 @@ will be estimated from the eigenvalues as:
 
 Please visit http://www.pointclouds.org for more information.
 
-	\section secFeaturesHistory History
-	- 1.0 current version
-	
-	\section secFeaturesRequirements Requirements
-	- common
+  \section secFeaturesRequirements Requirements
+  - common
+  - search 
+  - kdtree 
+  - octree 
+  - range_image
 
 */

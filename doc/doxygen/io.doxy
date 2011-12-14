@@ -11,11 +11,10 @@
 	<li><a href="http://pointclouds.org/documentation/tutorials/openni_grabber.php#openni-grabber">The OpenNI Grabber Framework in PCL</a>
 	</ul>
 	
-	\section secIoHistory History
-	- 1.0 current version
 	
-	\section secIoRequirements Requirements
-	- common
+  \section secIoRequirements Requirements
+  - common
+  - octree
 	- OpenNi for kinect handling
 
 */

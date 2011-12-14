@@ -15,9 +15,6 @@
 
   \image html http://www.pointclouds.org/assets/images/contents/documentation/kdtree_mug.png
 	
-	\section secKDtreeHistory History
-	- 1.0 current version
-	
 	\section secKDtreeRequirements Requirements
 	- common
 

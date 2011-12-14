@@ -11,10 +11,13 @@
   keypoints and descriptors can be used to form a compact&mdash;yet descriptive&mdash;representation of the original 
   data.
 
-	\section secKeypointsHistory History
-	- 1.0 current version
-	
-	\section secKeypointsRequirements Requirements
-	- common
+  \section secKeypointsRequirements Requirements
+  - common
+  - search 
+  - kdtree 
+  - octree 
+  - range_image 
+  - features 
+  - filters
 
 */

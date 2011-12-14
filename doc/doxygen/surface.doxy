@@ -29,10 +29,10 @@ extracted.
 
 Please visit the tutorials on http://www.pointclouds.org for more information.
 	
-	\section secSurfaceHistory History
-	- 1.0 current version
-	
-	\section secSurfaceRequirements Requirements
-	- common
+  \section secSurfaceRequirements Requirements
+  - common
+  - search 
+  - kdtree 
+  - octree
 
 */

@@ -27,11 +27,11 @@
 
   For implementing your own visualizers, take a look at the tests and examples accompanying the library.
 	
-  \section secVisualizationHistory History
-  - 1.0 current version
-	
   \section secVisualizationRequirements Requirements
   - common
   - VTK
+  - io 
+  - kdtree 
+  - range_image
 
 */

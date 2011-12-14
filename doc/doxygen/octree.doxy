@@ -28,9 +28,6 @@ For examples how to use the <b>pcl_octree</b> library, please visit the <a href=
 \image html http://www.pointclouds.org/assets/images/contents/documentation/octree_bunny.png
 
 
-	\section secOctreeHistory History
-	- 1.0 current version
-	
 	\section secOctreeRequirements Requirements
 	- common
 

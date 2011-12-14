@@ -7,10 +7,11 @@
     regions.  In such cases, clustering is often used to break the cloud down into its constituent parts, which can 
     then be processed independently.
 	
-	\section secSegmentationHistory History
-	- 1.0 current version
-	
-	\section secSegmentationRequirements Requirements
-	- common
+  \section secSegmentationRequirements Requirements
+  - common
+  - search 
+  - sample_consensus 
+  - kdtree 
+  - octree
 
 */

@@ -10,9 +10,6 @@
 
     \image html http://www.pointclouds.org/documentation/overview/_images/range_image.jpg
 	
-	\section secRangeImageHistory History
-	- 1.0 current version
-	
 	\section secRangeImageRequirements Requirements
 	- common
 
