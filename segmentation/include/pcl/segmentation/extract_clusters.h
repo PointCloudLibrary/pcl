@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -55,7 +57,11 @@ namespace pcl
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
     * \ingroup segmentation
     */
-  template <typename PointT> void extractEuclideanClusters (const PointCloud<PointT> &cloud, const boost::shared_ptr<search::Search<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
+  template <typename PointT> void 
+  extractEuclideanClusters (
+      const PointCloud<PointT> &cloud, const boost::shared_ptr<search::Search<PointT> > &tree, 
+      float tolerance, std::vector<PointIndices> &clusters, 
+      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
@@ -69,7 +75,11 @@ namespace pcl
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
     * \ingroup segmentation
     */
-  template <typename PointT> void extractEuclideanClusters (const PointCloud<PointT> &cloud, const std::vector<int> &indices, const boost::shared_ptr<search::Search<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
+  template <typename PointT> void 
+  extractEuclideanClusters (
+      const PointCloud<PointT> &cloud, const std::vector<int> &indices, 
+      const boost::shared_ptr<search::Search<PointT> > &tree, float tolerance, std::vector<PointIndices> &clusters, 
+      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the euclidean distance between points, and the normal

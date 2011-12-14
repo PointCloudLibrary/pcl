@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -41,12 +43,12 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::seededHueSegmentation (  const PointCloud<PointXYZRGB>                         &cloud, 
-                              const boost::shared_ptr<search::Search<PointXYZRGB> > &tree,
-                              float                                                 tolerance, 
-                              PointIndices                                          &indices_in,
-                              PointIndices                                          &indices_out,
-                              float                                                 delta_hue)
+pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                         &cloud, 
+                            const boost::shared_ptr<search::Search<PointXYZRGB> > &tree,
+                            float                                                 tolerance, 
+                            PointIndices                                          &indices_in,
+                            PointIndices                                          &indices_out,
+                            float                                                 delta_hue)
 {
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
   {
@@ -117,12 +119,12 @@ pcl::seededHueSegmentation (  const PointCloud<PointXYZRGB>                     
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::seededHueSegmentation (  const PointCloud<PointXYZRGB>                           &cloud, 
-                              const boost::shared_ptr<search::Search<PointXYZRGBL> >  &tree,
-                              float                                                   tolerance, 
-                              PointIndices                                            &indices_in,
-                              PointIndices                                            &indices_out,
-                              float                                                   delta_hue)
+pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                           &cloud, 
+                            const boost::shared_ptr<search::Search<PointXYZRGBL> >  &tree,
+                            float                                                   tolerance, 
+                            PointIndices                                            &indices_in,
+                            PointIndices                                            &indices_out,
+                            float                                                   delta_hue)
 {
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
   {

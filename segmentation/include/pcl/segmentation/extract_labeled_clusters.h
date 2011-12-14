@@ -43,16 +43,22 @@ namespace pcl
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
-    * \param cloud the point cloud message
-    * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
+    * \param[in] cloud the point cloud message
+    * \param[in] tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
     * \note the tree has to be created as a spatial locator on \a cloud
-    * \param tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
-    * \param clusters the resultant clusters containing point indices (as a vector of PointIndices)
-    * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
-    * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
+    * \param[in] tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
+    * \param[out] labeled_clusters the resultant clusters containing point indices (as a vector of PointIndices)
+    * \param[in] min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
+    * \param[in] max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
+    * \param[in] max_label
     * \ingroup segmentation
     */
-  template <typename PointT> void extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud, const boost::shared_ptr<search::Search<PointT> > &tree, float tolerance, std::vector<std::vector<PointIndices> > &labeled_clusters, unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) (), unsigned int max_label = (std::numeric_limits<int>::max));
+  template <typename PointT> void 
+  extractLabeledEuclideanClusters (
+      const PointCloud<PointT> &cloud, const boost::shared_ptr<search::Search<PointT> > &tree, 
+      float tolerance, std::vector<std::vector<PointIndices> > &labeled_clusters, 
+      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) (), 
+      unsigned int max_label = (std::numeric_limits<int>::max));
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,49 +91,60 @@ namespace pcl
       {};
 
       /** \brief Provide a pointer to the search object.
-        * \param tree a pointer to the spatial search object.
+        * \param[in] tree a pointer to the spatial search object.
         */
-      inline void setSearchMethod (const KdTreePtr &tree) { tree_ = tree; }
+      inline void 
+      setSearchMethod (const KdTreePtr &tree) { tree_ = tree; }
 
       /** \brief Get a pointer to the search method used. */
-      inline KdTreePtr getSearchMethod () { return (tree_); }
+      inline KdTreePtr 
+      getSearchMethod () { return (tree_); }
 
       /** \brief Set the spatial cluster tolerance as a measure in the L2 Euclidean space
-        * \param tolerance the spatial cluster tolerance as a measure in the L2 Euclidean space
+        * \param[in] tolerance the spatial cluster tolerance as a measure in the L2 Euclidean space
         */
-      inline void setClusterTolerance (double tolerance) { cluster_tolerance_ = tolerance; }
+      inline void 
+      setClusterTolerance (double tolerance) { cluster_tolerance_ = tolerance; }
 
       /** \brief Get the spatial cluster tolerance as a measure in the L2 Euclidean space. */
-      inline double getClusterTolerance () { return (cluster_tolerance_); }
+      inline double 
+      getClusterTolerance () { return (cluster_tolerance_); }
 
       /** \brief Set the minimum number of points that a cluster needs to contain in order to be considered valid.
-        * \param min_cluster_size the minimum cluster size
+        * \param[in] min_cluster_size the minimum cluster size
         */
-      inline void setMinClusterSize (int min_cluster_size) { min_pts_per_cluster_ = min_cluster_size; }
+      inline void 
+      setMinClusterSize (int min_cluster_size) { min_pts_per_cluster_ = min_cluster_size; }
 
       /** \brief Get the minimum number of points that a cluster needs to contain in order to be considered valid. */
-      inline int getMinClusterSize () { return (min_pts_per_cluster_); }
+      inline int 
+      getMinClusterSize () { return (min_pts_per_cluster_); }
 
       /** \brief Set the maximum number of points that a cluster needs to contain in order to be considered valid.
-        * \param max_cluster_size the maximum cluster size
+        * \param[in] max_cluster_size the maximum cluster size
         */
-      inline void setMaxClusterSize (int max_cluster_size) { max_pts_per_cluster_ = max_cluster_size; }
+      inline void 
+      setMaxClusterSize (int max_cluster_size) { max_pts_per_cluster_ = max_cluster_size; }
 
       /** \brief Get the maximum number of points that a cluster needs to contain in order to be considered valid. */
-      inline int getMaxClusterSize () { return (max_pts_per_cluster_); }
+      inline int 
+      getMaxClusterSize () { return (max_pts_per_cluster_); }
 
       /** \brief Set the maximum number of labels in the cloud.
-        * \param max_label the maximum
+        * \param[in] max_label the maximum
         */
-      inline void setMaxLabels (unsigned int max_label) { max_label_ = max_label; }
+      inline void 
+      setMaxLabels (unsigned int max_label) { max_label_ = max_label; }
 
       /** \brief Get the maximum number of labels */
-      inline unsigned int getMaxLabels () { return (max_label_); }
+      inline unsigned int 
+      getMaxLabels () { return (max_label_); }
 
       /** \brief Cluster extraction in a PointCloud given by <setInputCloud (), setIndices ()>
-        * \param clusters the resultant point clusters
+        * \param[out] labeled_clusters the resultant point clusters
         */
-      void extract (std::vector<std::vector<PointIndices> > &labeled_clusters);
+      void 
+      extract (std::vector<std::vector<PointIndices> > &labeled_clusters);
 
     protected:
       // Members derived from the base class
