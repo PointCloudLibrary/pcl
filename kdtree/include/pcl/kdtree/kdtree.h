@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -46,9 +48,8 @@
 
 namespace pcl
 {
-  /** \brief @b KdTree represents the base spatial locator class for nearest neighbor estimation. All types of spatial
-    * locators should inherit from KdTree.
-    * \author Radu Bogdan Rusu, Bastian Steder, Michael Dixon
+  /** \brief KdTree represents the base spatial locator class for kd-tree implementations.
+    * \author Radu B Rusu, Bastian Steder, Michael Dixon
     * \ingroup kdtree
     */
   template <typename PointT>
