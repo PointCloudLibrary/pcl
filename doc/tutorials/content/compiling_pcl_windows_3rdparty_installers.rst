@@ -24,31 +24,31 @@ Requirements
 You need to download and install the prebuilt dependencies from the `downloads page <http://www.pointclouds.org/downloads/windows.html>`_. 
 Installing them to the default locations will make configuring PCL easier.
 
-- **Boost** version 1.46.1
+- **Boost** 
 
 used for shared pointers, and threading. **mandatory**
 
-- **Eigen** version 3.0.0
+- **Eigen** 
 
 used as the matrix backend for SSE optimized math. **mandatory**
 
-- **CMinpack** version 1.1.3
+- **CMinpack** 
 
 used in the `sample_consensus` and `registration` modules for non-linear (Levenberg-Marquardt) optimizations. **mandatory**
 
-- **FLANN** version 1.6.9
+- **FLANN** 
 
 used in `kdtree` for fast approximate nearest neighbors search. **mandatory**
 
-- **Visualization ToolKit (VTK)** version 5.6.1
+- **Visualization ToolKit (VTK)** 
 
 used in `visualization` for 3D point cloud rendering and visualization. **mandatory**
-	
-- **QHULL** version 2011.1
+
+- **QHULL** 
 
 used for convex/concave hull decompositions in `surface`. **optional**
 
-- **OpenNI** version 1.1.0.41 and patched **Sensor Module** version 5.0.1.32
+- **OpenNI** and patched **Sensor Module** 
 
 used to grab point clouds from OpenNI compliant devices. **optional**
 
@@ -59,9 +59,9 @@ is needed only to build PCL tests. We do not provide GTest installers. **optiona
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
-   build system (http://www.cmake.org/), at least version **2.8.3**. We recommend
-   version **2.8.4**. A Subversion client for Windows, i.e. TortoiseSVN 
-   (http://tortoisesvn.tigris.org/), is also required to download the PCL source code.
+   build system (http://www.cmake.org/), at least version **2.8.3**. A Subversion client 
+   for Windows, i.e. TortoiseSVN (http://tortoisesvn.tigris.org/), is also required 
+   to download the PCL source code.
 
 Downloading PCL source code
 ---------------------------
@@ -71,11 +71,12 @@ The download operation of the most recent source from the main development line,
 .. note::
 	
 	In this tutorial, we will build the svn trunk of PCL. If you want, you can build a PCL branch instead. 
+    You can also build an official release using the source archive from http://pointclouds.org/downloads/.	
 	You can grab PCL branches using Tortoise SVN from :
 	
 	- pcl-1.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.x
 	
-	- pcl-1.1.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.1.x
+	- pcl-1.3.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.3.x
 
 First create a folder that will holds PCL source code and binaries. In the remaining of this tutorial we will be using C:\\PCL.
 To checkout PCL source code, navigate to the C:\\PCL folder using Windows file manager. Then right click and choose
@@ -147,8 +148,8 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		:align: center	
 	
 	Let's tell CMake where boost headers are by specifiying the headers path in **Boost_INCLUDE_DIR** variable. For example, my boost 
-	headers are in C:\\Program Files\\PCL-Boost\\include . Then, let's hit `configure` again ! Hopefully, CMake is now able to find 
-	all the other items (the libraries).
+	headers are in C:\\Program Files\\PCL-Boost\\include (C:\\Program Files\\Boost\\include for newer installers). 
+	Then, let's hit `configure` again ! Hopefully, CMake is now able to find all the other items (the libraries).
 
 	.. image:: images/windows/cmake_boost_found.png
 		:alt: Boost
@@ -167,21 +168,6 @@ Let's check whether CMake did actually find the needed third party dependencies 
 	.. image:: images/windows/cmake_eigen_include_dir.png
 		:alt: Eigen include dir
 		:align: center	
-
-- **CMinpack** :
-
-	CMake was able to find my CMinpack installation. By default on windows, PCL will pick the static CMinpack libraries
-	with `_s` suffix. Thus, the **CMINPACK_IS_STATIC** checkbox is checked by default.
-	
-	.. image:: images/windows/cmake_cminpack.png
-		:alt: CMinpack
-		:align: center	
-
-	.. note::
-		
-		If you rather want to use the **shared** CMinpack libraries (those without the `_s` suffix), you need to manually edit the 
-		**CMINPACK_LIBRARY** and **CMINPACK_LIBRARY_DEBUG** variables to remove the `_s` suffix and do not forget to uncheck 
-		**CMINPACK_IS_STATIC**. Make sure the CMinpack dlls are either in your PATH or in the same folder as your executables.
 
 - **FLANN** :
 
@@ -205,7 +191,8 @@ Let's check whether CMake did actually find the needed third party dependencies 
 - **VTK** :
 
 	CMake did not find my VTK installation. There is only one VTK related CMake variable called **VTK_DIR**. We have to set it
-	to the path of the folder containing **VTKConfig.cmake**, which is in my case : C:\\Program Files\\VTK 5.6\\lib\\vtk-5.6 .
+	to the path of the folder containing **VTKConfig.cmake**, which is in my case : C:\\Program Files\\VTK 5.6\\lib\\vtk-5.6 
+	(C:\\Program Files\\VTK 5.8.0\\lib\\vtk-5.8 for VTK 5.8).
 	After you set **VTK_DIR**, hit `configure` again.
 	
 	.. image:: images/windows/cmake_vtk_configure.png

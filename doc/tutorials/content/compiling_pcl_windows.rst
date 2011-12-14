@@ -26,11 +26,6 @@ compile a series of 3rd party library dependencies:
 
     used as the matrix backend for SSE optimized math. **mandatory**
 
-	- **CMINPACK** version >= 1.1.3 (http://devernay.free.fr/hacks/cminpack/cminpack.html)
-
-    used in the `sample_consensus` and `registration` modules for non-linear
-    (Levenberg-Marquardt) optimizations. **mandatory**
-
 	- **FLANN** version >= 1.6.8 (http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN)
 
     used in `kdtree` for fast approximate nearest neighbors search. **mandatory**
@@ -51,12 +46,10 @@ compile a series of 3rd party library dependencies:
 
     used to grab point clouds from OpenNI compliant devices. **optional**
 
-
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
-   build system (http://www.cmake.org/), at least version **2.8.3**. We recommend
-   version **2.8.4**. A Subversion client for Windows, i.e. TortoiseSVN 
+   build system (http://www.cmake.org/), at least version **2.8.3**. A Subversion client for Windows, i.e. TortoiseSVN 
    (http://tortoisesvn.tigris.org/), is also required to download the PCL source code.
 
 Downloading PCL source code
@@ -81,9 +74,8 @@ like::
 
 	C:/PCL_dependencies
 	C:/PCL_dependencies/boost_1_46_1
-	C:/PCL_dependencies/cminpack-1.1.3
 	C:/PCL_dependencies/eigen
-	C:/PCL_dependencies/flann-1.6.8-src
+	C:/PCL_dependencies/flann-1.6.11-src
 	C:/PCL_dependencies/gtest-1.6.0
 	C:/PCL_dependencies/qhull
 	C:/PCL_dependencies/VTK
@@ -101,37 +93,25 @@ compilers can be found on the Boost manual (http://www.boost.org/doc/libs/1_46_0
 To make Boost build system produce 64 bit libraries instead of 32 bit ones, change
 the `address-model` option to 64. 
 
-	prompt> bjam --toolset=msvc-9.0 link=static address-model=32 --with-thread --with-system --with-filesystem --with-date_time --build-type=complete stage
+	prompt> bjam --toolset=msvc-9.0 link=static address-model=32 --with-thread --with-system --with-filesystem --with-date_time --with-iostreams --build-type=complete stage
 
 The previous command line will build 32 bit static libraries using Visual Studio 2008
 Hit enter and grab some coffee because this will take some time. 
 
-Once done, proceed to compile `cminpack`. If you are using CMinpack version 1.1.3 and you intend
-to build the static version of this library, please patch the C:/PCL_dependencies/cminpack-1.1.3/CMakeLists.txt
-as described on PCL issue tracker at http://dev.pointclouds.org/issues/85#note-8 .
+Let's move on to `FLANN`. Then open CMake-gui and fill in the fields::
 
-Then open CMake-gui and fill in the fields::
+  Where is my source code: C:/PCL_dependencies/flann-1.6.11-src
+  Where to build binaries: C:/PCL_dependencies/flann-1.6.11-src/bin32
 
-  Where is my source code: C:/PCL_dependencies/cminpack-1.1.3
-  Where to build binaries: C:/PCL_dependencies/cminpack-1.1.3/bin32
- 
-.. image:: images/cmake_cminpack_1.png
-   :alt: CMake configuration dialog
-   :align: center  
-  
-.. note::
+  .. note::
   
   If you are building 64 bit libraries, I suggest you to choose as binaries output folder bin64 
   instead of bin32. This way, in case you need to build the 32 bit version too, they can both
-  coexist under C:/PCL_dependencies/cminpack-1.1.3
-  
-Hit the "Configure" button and CMake will tell that the binaries folder doesn't exist yet 
-(e.g., *C:/PCL_dependencies/cminpack-1.1.3/bin32*) and it will ask for a confirmation.
+  coexist under C:/PCL_dependencies/flann-1.6.11-src
 
-.. image:: images/cmake_cminpack_2.png
-   :alt: CMake binaries folder creation
-   :align: center  
-   
+Hit the "Configure" button and CMake will tell that the binaries folder doesn't exist yet 
+(e.g., *C:/PCL_dependencies/flann-1.6.11-src/bin32*) and it will ask for a confirmation.
+  
 Proceed and be sure to choose the correct "Generator" on the next window. So,
 if you've built Boost using the Visual Studio 2008 toolset you would choose the
 same generator here.  
@@ -146,41 +126,27 @@ same generator here.
   compiler options and architecture specifications, i.e. you can't mix 32 bit
   libraries with 64 bit libraries.
 
-Be sure to set the following options::
-
- SHARED_LIBS                      OFF
- BUILD_EXAMPLES                   OFF
- BUILD_EXAMPLES_FORTRAN           OFF
-
-Hit "Configure" again and then go for the "Generate" button. This will generate
-the required project files/makefiles to build the library. Now you can simply
-go to `C:/PCL_dependencies/cminpack-1.1.3/bin32` and proceed with the compilation using
-your toolchain. In case you use Visual Studio, you will find the Visual Studio
-Solution file in that folder: be sure to build the whole solution by choosing the
-Build Solution command of the Build menu. 
-
-Let's move on to `FLANN`. Setup the CMake fields as usual::
-
-  Where is my source code: C:/PCL_dependencies/flann-1.6.8-src
-  Where to build binaries: C:/PCL_dependencies/flann-1.6.8-src/bin32
-
-Hit "Configure" and as for the previous steps, confirm and choose the correct
-"Generator". Now, on my machine I had to manually set the `BUILD_PYTHON_BINDINGS`
+Now, on my machine I had to manually set the `BUILD_PYTHON_BINDINGS`
 and `BUILD_MATLAB_BINDINGS` to OFF otherwise it would not continue to the next
 step as it is complaining about unable to find Python and Matlab. Click on
 "Advanced mode" and find them, or alternatively, add those entries by clicking
 on the "Add Entry" button in the top right of the CMake-gui window.  Add one
 entry named "BUILD_PYTHON_BINDINGS", set its type to "Bool" and its value to
-unchecked. Do the same with the "BUILD_MATLAB_BINDINGS" entry. Now hit the
-"Configure" button and it should work. Go for the "Generate" button and proceed
-to the compilation phase.
+unchecked. Do the same with the "BUILD_MATLAB_BINDINGS" entry. 
+
+Now hit the "Configure" button and it should work. Go for the "Generate" This will generate
+the required project files/makefiles to build the library. Now you can simply
+go to `C:/PCL_dependencies/flann-1.6.11-src/bin32` and proceed with the compilation using
+your toolchain. In case you use Visual Studio, you will find the Visual Studio
+Solution file in that folder: be sure to build the whole solution by choosing the
+Build Solution command of the Build menu, both in debug and release configurations. 
 
 .. note::
   
   If you don't have a Python interpreter installed CMake would probably not allow you
   to generate the project files. To solve this problem you can install the Python interpreter
   (http://www.python.org/download/windows/) or comment the `add_subdirectory( test )` line 
-  from C:/PCL_dependencies/flann-1.6.8-src/CMakeLists.txt .
+  from C:/PCL_dependencies/flann-1.6.11-src/CMakeLists.txt .
   
 In case you want PCL tests, you need to compile the `googletest` library (GTest). 
 Setup the CMake fields as usual::
@@ -213,9 +179,8 @@ To make it easier for CMake to find the compiled 3rd party libraries you can def
 environment variables:
 
 * **BOOST_ROOT**: `C:/PCL_dependencies/boost_1_46_1`  
-* **CMINPACK_ROOT**: `C:/PCL_dependencies/cminpack-1.1.3`  
 * **QHULL_ROOT**: `C:/PCL_dependencies/qhull`  
-* **FLANN_ROOT**: `C:/PCL_dependencies/flann-1.6.8-src`  
+* **FLANN_ROOT**: `C:/PCL_dependencies/flann-1.6.11-src`  
 * **EIGEN_ROOT**: `C:/PCL_dependencies/eigen`  
 
 .. note::
@@ -268,14 +233,10 @@ available. Hit it and a project will be generated in C:/PCL/bin32.
 During the CMake configuration for the PCL project, the following options were set::
 
   Boost_INCLUDE_DIR             "C:/PCL_dependencies/boost_1_46_1"
-  CMINPACK_IS_STATIC            (ON if you are building PCL as a static library, OFF otherwise) 
-  CMINPACK_INCLUDE_DIR          "C:/PCL_dependencies/cminpack-1.1.3/" 
-  CMINPACK_LIBRARY              "C:/PCL_dependencies/cminpack-1.1.3/bin32/Release/cminpack.lib" 
-  CMINPACK_LIBRARY_DEBUG        "C:/PCL_dependencies/cminpack-1.1.3/bin32/Debug/cminpack.lib" 
   EIGEN_INCLUDE_DIR             "C:/PCL_dependencies/eigen" 
-  FLANN_INCLUDE_DIR             "C:/PCL_dependencies/flann-1.6.8-src/src/cpp" 
-  FLANN_LIBRARY                 "C:/PCL_dependencies/flann-1.6.8-src/lib/Release/flann_cpp_s.lib" 
-  FLANN_LIBRARY_DEBUG           "C:/PCL_dependencies/flann-1.6.8-src/lib/Debug/flann_cpp_s.lib" 
+  FLANN_INCLUDE_DIR             "C:/PCL_dependencies/flann-1.6.11-src/src/cpp" 
+  FLANN_LIBRARY                 "C:/PCL_dependencies/flann-1.6.11-src/lib/Release/flann_cpp_s.lib" 
+  FLANN_LIBRARY_DEBUG           "C:/PCL_dependencies/flann-1.6.11-src/lib/Debug/flann_cpp_s.lib" 
   GTEST_INCLUDE_DIR             "C:/PCL_dependencies/gtest-1.6.0/include" 
   GTEST_LIBRARY                 "C:/PCL_dependencies/gtest-1.6.0/bin32/Release/gtest.lib" 
   GTEST_LIBRARY_DEBUG           "C:/PCL_dependencies/gtest-1.6.0/bin32/Debug/gtest.lib" 
