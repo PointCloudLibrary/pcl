@@ -151,7 +151,7 @@ TEST (PCL, KdTree_differentPointT)
 
   for (size_t i = 0; i < cloud_rgb.points.size (); ++i)
   {
-    kdtree->nearestKSearchT (cloud_rgb.points[i], no_of_neighbors, k_indices_t, k_distances_t);
+    kdtree->nearestKSearchT<pcl::PointXYZRGB> (cloud_rgb.points[i], no_of_neighbors, k_indices_t, k_distances_t);
     kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
     EXPECT_EQ (k_indices.size (), indices[i].size ());
     EXPECT_EQ (k_distances.size (), dists[i].size ());
