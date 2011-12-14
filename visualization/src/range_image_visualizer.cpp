@@ -107,7 +107,7 @@ pcl::visualization::RangeImageVisualizer::getRangeImageBordersWidget (
   RangeImageVisualizer* range_image_widget = new RangeImageVisualizer;
   range_image_widget->visualizeBorders (range_image, min_value, max_value, grayscale,
                                         border_descriptions);
-  range_image_widget->setName (name);
+  range_image_widget->setWindowTitle (name);
   return range_image_widget;
 }
 
@@ -117,7 +117,7 @@ pcl::visualization::RangeImageVisualizer::getAnglesWidget (const pcl::RangeImage
 {
   RangeImageVisualizer* widget = new RangeImageVisualizer;
   widget->showAngleImage(angles_image, range_image.width, range_image.height);
-  widget->setName (name);
+  widget->setWindowTitle (name);
   return widget;
 }
 
@@ -127,7 +127,7 @@ pcl::visualization::RangeImageVisualizer::getHalfAnglesWidget (const pcl::RangeI
 {
   RangeImageVisualizer* widget = new RangeImageVisualizer;
   widget->showHalfAngleImage(angles_image, range_image.width, range_image.height);
-  widget->setName (name);
+  widget->setWindowTitle (name);
   return widget;
 }
 
@@ -138,7 +138,7 @@ pcl::visualization::RangeImageVisualizer::getInterestPointsWidget (
 {
   RangeImageVisualizer* widget = new RangeImageVisualizer;
   widget->showFloatImage (interest_image, range_image.width, range_image.height, min_value, max_value);
-  widget->setName (name);
+  widget->setWindowTitle (name);
   for (unsigned int i=0; i<interest_points.points.size(); ++i)
   {
     const pcl::InterestPoint& interest_point = interest_points.points[i];
