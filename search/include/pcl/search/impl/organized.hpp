@@ -44,12 +44,12 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::radiusSearch (  const PointCloudConstPtr    &cloud, 
-                                                        int                         index,
-                                                        double                      radius, 
-                                                        std::vector<int>            &k_indices,
-                                                        std::vector<float>          &k_sqr_distances, 
-                                                        int                         max_nn)
+pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const PointCloudConstPtr    &cloud, 
+                                                      int                         index,
+                                                      double                      radius, 
+                                                      std::vector<int>            &k_indices,
+                                                      std::vector<float>          &k_sqr_distances, 
+                                                      int                         max_nn)
 {
   this->setInputCloud (cloud);
   return (radiusSearch (index, radius, k_indices, k_sqr_distances, max_nn));
@@ -57,11 +57,11 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (  const PointCloudConstPtr
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::radiusSearch (  int                 index, 
-                                                        const double        radius,
-                                                        std::vector<int>    &k_indices,
-                                                        std::vector<float>  &k_sqr_distances, 
-                                                        int                 max_nn) const
+pcl::search::OrganizedNeighbor<PointT>::radiusSearch (int                 index, 
+                                                      const double        radius,
+                                                      std::vector<int>    &k_indices,
+                                                      std::vector<float>  &k_sqr_distances, 
+                                                      int                 max_nn) const
 {
   const PointT searchPoint = getPointByIndex (index);
   return (radiusSearch (searchPoint, radius, k_indices, k_sqr_distances, max_nn));
@@ -69,11 +69,11 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (  int                 inde
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::radiusSearch (  const               PointT &p_q, 
-                                                        const double        radius,
-                                                        std::vector<int>    &k_indices,
-                                                        std::vector<float>  &k_sqr_distances, 
-                                                        int                 max_nn) const
+pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT &p_q, 
+                                                      const double        radius,
+                                                      std::vector<int>    &k_indices,
+                                                      std::vector<float>  &k_sqr_distances, 
+                                                      int                 max_nn) const
 {
   if (input_->height == 1 || input_->width == 1)
   {
@@ -82,8 +82,8 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (  const               Poin
   }
 
   // NAN test
-  if(!pcl_isfinite(p_q.x) || !pcl_isfinite(p_q.y) || !pcl_isfinite(p_q.z))
-    return 0;
+  if (!pcl_isfinite(p_q.x) || !pcl_isfinite(p_q.y) || !pcl_isfinite(p_q.z))
+    return (0);
 
   // search window
   int leftX, rightX, leftY, rightY;
@@ -128,10 +128,10 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (  const               Poin
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::exactNearestKSearch ( int                 index, 
-                                                              int                 k, 
-                                                              std::vector<int>    &k_indices,
-                                                              std::vector<float>  &k_sqr_distances)
+pcl::search::OrganizedNeighbor<PointT>::exactNearestKSearch (int                 index, 
+                                                             int                 k, 
+                                                             std::vector<int>    &k_indices,
+                                                             std::vector<float>  &k_sqr_distances)
 {
   const PointT searchPoint = getPointByIndex (index);
   return (exactNearestKSearch (searchPoint, k, k_indices, k_sqr_distances));
@@ -139,13 +139,13 @@ pcl::search::OrganizedNeighbor<PointT>::exactNearestKSearch ( int               
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (  const PointCloud        &cloud, 
-                                                          int                     index,
-                                                          int                     k, 
-                                                          std::vector<int>        &k_indices,
-                                                          std::vector<float>      &k_sqr_distances)
+pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointCloud        &cloud, 
+                                                        int                     index,
+                                                        int                     k, 
+                                                        std::vector<int>        &k_indices,
+                                                        std::vector<float>      &k_sqr_distances)
 {
-  if(!exactFocalLength_)
+  if (!exactFocalLength_)
   {
     estimateFocalLengthFromInputCloud (cloud);
     generateRadiusLookupTable (cloud.width, cloud.height);
@@ -156,10 +156,10 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (  const PointCloud      
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::exactNearestKSearch ( const PointT &p_q, 
-                                                              int k,
-                                                              std::vector<int> &k_indices,
-                                                              std::vector<float> &k_sqr_distances)
+pcl::search::OrganizedNeighbor<PointT>::exactNearestKSearch (const PointT &p_q, 
+                                                             int k,
+                                                             std::vector<int> &k_indices,
+                                                             std::vector<float> &k_sqr_distances)
 {
   PCL_ERROR ("[pcl::search::OrganizedNeighbor::exactNearestKSearch] Method not implemented!\n");
   return -1;
@@ -350,10 +350,10 @@ pcl::search::OrganizedNeighbor<PointT>::exactNearestKSearch ( const PointT &p_q,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (  int index, 
-                                                          int k,
-                                                          std::vector<int> &k_indices,
-                                                          std::vector<float> &k_distances)
+pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (int index, 
+                                                        int k,
+                                                        std::vector<int> &k_indices,
+                                                        std::vector<float> &k_distances)
 {
   if (!input_)
   {
@@ -419,12 +419,12 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (  int index,
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
-pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox ( const PointT& point,
-                                                                      double squared_radius, 
-                                                                      int &minX,
-                                                                      int &maxX, 
-                                                                      int &minY, 
-                                                                      int & maxY) const
+pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const PointT& point,
+                                                                     double squared_radius, 
+                                                                     int &minX,
+                                                                     int &maxX, 
+                                                                     int &minY, 
+                                                                     int & maxY) const
 {
   double r_sqr, r_quadr, z_sqr;
   double sqrt_term_y, sqrt_term_x, norm;
@@ -525,19 +525,19 @@ pcl::search::OrganizedNeighbor<PointT>::estimateFocalLengthFromInputCloud (const
     }
   // calculate an average of the focalLength
   oneOverFocalLength_ /= (double)count;
-  if(pcl_isfinite(oneOverFocalLength_))
-    return oneOverFocalLength_;
+  if (pcl_isfinite (oneOverFocalLength_))
+    return (oneOverFocalLength_);
   else
   {
     PCL_ERROR ("[pcl::%s::estimateFocalLenghtFromInputCloud] Input dataset is not projectable!\n", getName ().c_str ());
-    return 0.0;
+    return (0.0);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
-pcl::search::OrganizedNeighbor<PointT>::generateRadiusLookupTable ( unsigned int width, 
-                                                                    unsigned int height)
+pcl::search::OrganizedNeighbor<PointT>::generateRadiusLookupTable (unsigned int width, 
+                                                                   unsigned int height)
 {
   int x, y, c;
 
@@ -566,6 +566,7 @@ pcl::search::OrganizedNeighbor<PointT>::getPointByIndex (const unsigned int inde
   // retrieve point from input cloud
   return (this->input_->points[index]);
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
 pcl::search::OrganizedNeighbor<PointT>::setSearchWindowAsK (int k)
