@@ -141,7 +141,7 @@ namespace pcl
 
       /** \brief Search for k-nearest neighbors for the given query point.
         * \param[in] p_q the given query point
-        * \param[in[ k the number of neighbors to search for
+        * \param[in] k the number of neighbors to search for
         * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
         * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
         * a priori!)
