@@ -120,7 +120,14 @@ FILE_PATTERNS          = *.h \
 RECURSIVE              = YES
 EXCLUDE                = */.svn \
                          "@PCL_SOURCE_DIR@/cmake" \
-                         "@PCL_SOURCE_DIR@/3rdparty"
+                         "@PCL_SOURCE_DIR@/3rdparty" \
+                         "@PCL_SOURCE_DIR@/test" \
+                         "@PCL_SOURCE_DIR@/cuda" \
+                         "@PCL_SOURCE_DIR@/apps" \
+                         "@PCL_SOURCE_DIR@/tools" \
+                         "@PCL_SOURCE_DIR@/proctor" \
+                         "@PCL_SOURCE_DIR@/simulation" \
+                         "@PCL_SOURCE_DIR@/android"
 EXCLUDE_SYMLINKS       = YES
 EXCLUDE_PATTERNS       = 
 EXCLUDE_SYMBOLS        = 
