@@ -46,19 +46,17 @@
 
 namespace pcl
 {
-  /** \brief @b SampleConsensusModelStick defines a model for 3D stick segmentation. 
+  /** \brief SampleConsensusModelStick defines a model for 3D stick segmentation. 
     * A stick is a line with an user given minimum/maximum width.
     * The model coefficients are defined as:
-    * <ul>
-    * <li><b>point_on_line.x</b>  : the X coordinate of a point on the line
-    * <li><b>point_on_line.y</b>  : the Y coordinate of a point on the line
-    * <li><b>point_on_line.z</b>  : the Z coordinate of a point on the line
-    * <li><b>line_direction.x</b> : the X coordinate of a line's direction
-    * <li><b>line_direction.y</b> : the Y coordinate of a line's direction
-    * <li><b>line_direction.z</b> : the Z coordinate of a line's direction
-    * <li><b>line_width</b>       : the width of the line
-    * </ul>
-    * \author Radu Bogdan Rusu
+    *   - \b point_on_line.x  : the X coordinate of a point on the line
+    *   - \b point_on_line.y  : the Y coordinate of a point on the line
+    *   - \b point_on_line.z  : the Z coordinate of a point on the line
+    *   - \b line_direction.x : the X coordinate of a line's direction
+    *   - \b line_direction.y : the Y coordinate of a line's direction
+    *   - \b line_direction.z : the Z coordinate of a line's direction
+    *   - \b line_width       : the width of the line
+    * \author Radu B. Rusu
     * \ingroup sample_consensus
     */
   template <typename PointT>

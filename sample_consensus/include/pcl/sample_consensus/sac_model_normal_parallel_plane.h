@@ -47,7 +47,7 @@
 
 namespace pcl
 {
-  /** \brief @b SampleConsensusModelNormalParallelPlane defines a model for 3D
+  /** \brief SampleConsensusModelNormalParallelPlane defines a model for 3D
     * plane segmentation using additional surface normal constraints. Basically
     * this means that checking for inliers will not only involve a "distance to
     * model" criterion, but also an additional "maximum angular deviation"
@@ -55,12 +55,10 @@ namespace pcl
     * the plane normal must lie parallel to an user-specified axis.
     *
     * The model coefficients are defined as:
-    * <ul>
-    * <li><b>a</b> : the X coordinate of the plane's normal (normalized)
-    * <li><b>b</b> : the Y coordinate of the plane's normal (normalized)
-    * <li><b>c</b> : the Z coordinate of the plane's normal (normalized)
-    * <li><b>d</b> : the fourth <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian component</a> of the plane's equation
-    * </ul>
+    *   - \b a : the X coordinate of the plane's normal (normalized)
+    *   - \b b : the Y coordinate of the plane's normal (normalized)
+    *   - \b c : the Z coordinate of the plane's normal (normalized)
+    *   - \b d : the fourth <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian component</a> of the plane's equation
     *
     * To set the influence of the surface normals in the inlier estimation
     * process, set the normal weight (0.0-1.0), e.g.:
@@ -72,16 +70,15 @@ namespace pcl
     * \endcode
     *
     * In addition, the user can specify more constraints, such as:
-    * <ul>
-    * <li>an axis along which we need to search for a plane perpendicular to (\ref setAxis);
-    * <li>an angle \a tolerance threshold between the plane's normal and the above given axis (\ref setEpsAngle);
-    * <li>a distance we expect the plane to be from the origin (\ref setDistanceFromOrigin);
-    * <li>a distance \a tolerance as the maximum allowed deviation from the above given distance from the origin (\ref setEpsDist).
-    * </ul>
+    * 
+    *   - an axis along which we need to search for a plane perpendicular to (\ref setAxis);
+    *   - an angle \a tolerance threshold between the plane's normal and the above given axis (\ref setEpsAngle);
+    *   - a distance we expect the plane to be from the origin (\ref setDistanceFromOrigin);
+    *   - a distance \a tolerance as the maximum allowed deviation from the above given distance from the origin (\ref setEpsDist).
     *
     * \note Please remember that you need to specify an angle > 0 in order to activate the axis-angle constraint!
     *
-    * \author Radu Bogdan Rusu and Jared Glover and Nico Blodow
+    * \author Radu B. Rusu and Jared Glover and Nico Blodow
     * \ingroup sample_consensus
     */
   template <typename PointT, typename PointNT>

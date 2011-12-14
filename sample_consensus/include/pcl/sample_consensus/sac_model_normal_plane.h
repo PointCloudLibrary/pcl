@@ -47,19 +47,17 @@
 
 namespace pcl
 {
-  /** \brief @b SampleConsensusModelNormalPlane defines a model for 3D plane
+  /** \brief SampleConsensusModelNormalPlane defines a model for 3D plane
     * segmentation using additional surface normal constraints. Basically this
     * means that checking for inliers will not only involve a "distance to
     * model" criterion, but also an additional "maximum angular deviation"
     * between the plane's normal and the inlier points normals.
     *
     * The model coefficients are defined as:
-    * <ul>
-    * <li><b>a</b> : the X coordinate of the plane's normal (normalized)
-    * <li><b>b</b> : the Y coordinate of the plane's normal (normalized)
-    * <li><b>c</b> : the Z coordinate of the plane's normal (normalized)
-    * <li><b>d</b> : the fourth <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian component</a> of the plane's equation
-    * </ul>
+    *   - \b a : the X coordinate of the plane's normal (normalized)
+    *   - \b b : the Y coordinate of the plane's normal (normalized)
+    *   - \b c : the Z coordinate of the plane's normal (normalized)
+    *   - \b d : the fourth <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian component</a> of the plane's equation
     *
     * To set the influence of the surface normals in the inlier estimation
     * process, set the normal weight (0.0-1.0), e.g.:
@@ -70,7 +68,7 @@ namespace pcl
     * ...
     * \endcode
     *
-    * \author Radu Bogdan Rusu and Jared Glover
+    * \author Radu B. Rusu and Jared Glover
     * \ingroup sample_consensus
     */
   template <typename PointT, typename PointNT>

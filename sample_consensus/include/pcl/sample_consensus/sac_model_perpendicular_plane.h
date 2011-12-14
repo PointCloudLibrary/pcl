@@ -45,15 +45,14 @@
 
 namespace pcl
 {
-  /** \brief @b SampleConsensusModelPerpendicularPlane defines a model for 3D plane segmentation using additional
+  /** \brief SampleConsensusModelPerpendicularPlane defines a model for 3D plane segmentation using additional
     * angular constraints. The plane must be perpendicular to an user-specified axis (\ref setAxis), up to an user-specified angle threshold (\ref setEpsAngle).
     * The model coefficients are defined as:
-    * <ul>
-    * <li><b>a</b> : the X coordinate of the plane's normal (normalized)
-    * <li><b>b</b> : the Y coordinate of the plane's normal (normalized)
-    * <li><b>c</b> : the Z coordinate of the plane's normal (normalized)
-    * <li><b>d</b> : the fourth <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian component</a> of the plane's equation
-    * </ul>
+    *   - \b a : the X coordinate of the plane's normal (normalized)
+    *   - \b b : the Y coordinate of the plane's normal (normalized)
+    *   - \b c : the Z coordinate of the plane's normal (normalized)
+    *   - \b d : the fourth <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian component</a> of the plane's equation
+    * 
     * 
     * Code example for a plane model, perpendicular (within a 15 degrees tolerance) with the Z axis:
     * \code
@@ -64,7 +63,7 @@ namespace pcl
     *
     * \note Please remember that you need to specify an angle > 0 in order to activate the axis-angle constraint!
     *
-    * \author Radu Bogdan Rusu
+    * \author Radu B. Rusu
     * \ingroup sample_consensus
     */
   template <typename PointT>
