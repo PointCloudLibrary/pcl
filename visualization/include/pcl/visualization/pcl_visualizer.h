@@ -112,16 +112,16 @@ namespace pcl
         virtual ~PCLVisualizer ();
 
         /** \brief Register a callback boost::function for keyboard events
-          * \param[in] a boost function that will be registered as a callback for a keyboard event
-          * \return    connection object that allows to disconnect the callback function.
+          * \param[in] cb a boost function that will be registered as a callback for a keyboard event
+          * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
-        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)>);
+        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> cb);
 
         /** \brief Register a callback function for keyboard events
           * \param[in] callback  the function that will be registered as a callback for a keyboard event
           * \param[in] cookie    user data that is passed to the callback
-          * \return              connection object that allows to disconnect the callback function.
+          * \return a connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection 
         registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = NULL)
@@ -133,7 +133,7 @@ namespace pcl
           * \param[in] callback  the member function that will be registered as a callback for a keyboard event
           * \param[in] instance  instance to the class that implements the callback function
           * \param[in] cookie    user data that is passed to the callback
-          * \return              connection object that allows to disconnect the callback function.
+          * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection 
         registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = NULL)
@@ -142,16 +142,16 @@ namespace pcl
         }
         
         /** \brief Register a callback function for mouse events
-          * \param[in] a boost function that will be registered as a callback for a mouse event
-          * \return    connection object that allows to disconnect the callback function.
+          * \param[in] cb a boost function that will be registered as a callback for a mouse event
+          * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
-        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)>);
+        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> cb);
         
         /** \brief Register a callback function for mouse events
           * \param[in] callback  the function that will be registered as a callback for a mouse event
           * \param[in] cookie    user data that is passed to the callback
-          * \return              connection object that allows to disconnect the callback function.
+          * \return a connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection 
         registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = NULL)
@@ -163,7 +163,7 @@ namespace pcl
           * \param[in] callback  the member function that will be registered as a callback for a mouse event
           * \param[in] instance  instance to the class that implements the callback function
           * \param[in] cookie    user data that is passed to the callback
-          * \return              connection object that allows to disconnect the callback function.
+          * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection 
         registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = NULL)
@@ -172,16 +172,16 @@ namespace pcl
         }
 
         /** \brief Register a callback function for point picking events
-          * \param[in] a boost function that will be registered as a callback for a point picking event
-          * \return    connection object that allows to disconnect the callback function.
+          * \param[in] cb a boost function that will be registered as a callback for a point picking event
+          * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
-        registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)>);
+        registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> cb);
         
         /** \brief Register a callback function for point picking events
           * \param[in] callback  the function that will be registered as a callback for a point picking event
           * \param[in] cookie    user data that is passed to the callback
-          * \return              connection object that allows to disconnect the callback function.
+          * \return a connection object that allows to disconnect the callback function.
           */
         inline boost::signals2::connection 
         registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = NULL)
@@ -193,7 +193,7 @@ namespace pcl
           * \param[in] callback  the member function that will be registered as a callback for a point picking event
           * \param[in] instance  instance to the class that implements the callback function
           * \param[in] cookie    user data that is passed to the callback
-          * \return              connection object that allows to disconnect the callback function.
+          * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> inline boost::signals2::connection 
         registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = NULL)
@@ -206,36 +206,35 @@ namespace pcl
         spin ();
         
         /** \brief Spin once method. Calls the interactor and updates the screen once. 
-          *  \param time - How long (in ms) should the visualization loop be allowed to run.
-          *  \param force_redraw - if false it might return without doing anything if the 
+          *  \param[in] time - How long (in ms) should the visualization loop be allowed to run.
+          *  \param[in] force_redraw - if false it might return without doing anything if the 
           *  interactor's framerate does not require a redraw yet.
           */
         void 
         spinOnce (int time = 1, bool force_redraw = false);
 
         /** \brief Adds 3D axes describing a coordinate system to screen at 0,0,0.
-          * \param scale the scale of the axes (default: 1)
-          * \param viewport the view port where the 3D axes should be added (default: all)
+          * \param[in] scale the scale of the axes (default: 1)
+          * \param[in] viewport the view port where the 3D axes should be added (default: all)
           */
         void 
         addCoordinateSystem (double scale = 1.0, int viewport = 0);
         
         /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z
-          * \param scale the scale of the axes (default: 1)
-          * \param x the X position of the axes
-          * \param y the Y position of the axes
-          * \param z the Z position of the axes
-          * \param viewport the view port where the 3D axes should be added (default: all)
+          * \param[in] scale the scale of the axes (default: 1)
+          * \param[in] x the X position of the axes
+          * \param[in] y the Y position of the axes
+          * \param[in] z the Z position of the axes
+          * \param[in] viewport the view port where the 3D axes should be added (default: all)
           */
         void 
         addCoordinateSystem (double scale, float x, float y, float z, int viewport = 0);
 
          /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z, Roll,Pitch,Yaw
            *
-           * \param scale the scale of the axes (default: 1)
-           * \param t transformation matrix
-           * \param tube_size the size of tube(radius of each orthogonal axies ,default: 1)
-           * \param viewport the view port where the 3D axes should be added (default: all)
+           * \param[in] scale the scale of the axes (default: 1)
+           * \param[in] t transformation matrix
+           * \param[in] viewport the view port where the 3D axes should be added (default: all)
            *
            * RPY Angles
            * Rotate the reference frame by the angle roll about axis x
@@ -266,59 +265,59 @@ namespace pcl
         addCoordinateSystem (double scale, const Eigen::Matrix4f& t, int viewport = 0);
 
         /** \brief Removes a previously added 3D axes (coordinate system)
-          * \param viewport view port where the 3D axes should be removed from (default: all)
+          * \param[in] viewport view port where the 3D axes should be removed from (default: all)
           */ 
         bool 
         removeCoordinateSystem (int viewport = 0);
 
         /** \brief Removes a Point Cloud from screen, based on a given ID.
-          * \param id the point cloud object id (i.e., given on \a addPointCloud)
-          * \param viewport view port from where the Point Cloud should be removed (default: all)
+          * \param[in] id the point cloud object id (i.e., given on \a addPointCloud)
+          * \param[in] viewport view port from where the Point Cloud should be removed (default: all)
           */
         bool 
         removePointCloud (const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Removes an added shape from screen (line, polygon, etc.), based on a given ID
-          * \param id the shape object id (i.e., given on \a addLine etc.)
-          * \param viewport view port from where the Point Cloud should be removed (default: all)
+          * \param[in] id the shape object id (i.e., given on \a addLine etc.)
+          * \param[in] viewport view port from where the Point Cloud should be removed (default: all)
           */
         bool 
         removeShape (const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Removes an added 3D text from the scene, based on a given ID
-          * \param id the 3D text id (i.e., given on \a addText3D etc.)
-          * \param viewport view port from where the 3D text should be removed (default: all)
+          * \param[in] id the 3D text id (i.e., given on \a addText3D etc.)
+          * \param[in] viewport view port from where the 3D text should be removed (default: all)
           */
         bool 
         removeText3D (const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Remove all point cloud data on screen from the given viewport.
-          * \param viewport view port from where the clouds should be removed (default: all)
+          * \param[in] viewport view port from where the clouds should be removed (default: all)
           */
         bool
         removeAllPointClouds (int viewport = 0);
 
         /** \brief Remove all 3D shape data on screen from the given viewport.
-          * \param viewport view port from where the shapes should be removed (default: all)
+          * \param[in] viewport view port from where the shapes should be removed (default: all)
           */
         bool
         removeAllShapes (int viewport = 0);
 
         /** \brief Set the viewport's background color.
-          * \param r the red component of the RGB color
-          * \param g the green component of the RGB color
-          * \param b the blue component of the RGB color
-          * \param viewport the view port (default: all)
+          * \param[in] r the red component of the RGB color
+          * \param[in] g the green component of the RGB color
+          * \param[in] b the blue component of the RGB color
+          * \param[in] viewport the view port (default: all)
           */
         void 
         setBackgroundColor (const double &r, const double &g, const double &b, int viewport = 0);
 
         /** \brief Add a text to screen
-          * \param text the text to add
-          * \param xpos the X position on screen where the text should be added
-          * \param ypos the Y position on screen where the text should be added
-          * \param id the text object id (default: equal to the "text" parameter)
-          * \param viewport the view port (default: all)
+          * \param[in] text the text to add
+          * \param[in] xpos the X position on screen where the text should be added
+          * \param[in] ypos the Y position on screen where the text should be added
+          * \param[in] id the text object id (default: equal to the "text" parameter)
+          * \param[in] viewport the view port (default: all)
           */
         bool 
         addText (const std::string &text, 
@@ -326,29 +325,29 @@ namespace pcl
                  const std::string &id = "", int viewport = 0);
 
         /** \brief Add a text to screen
-          * \param text the text to add
-          * \param xpos the X position on screen where the text should be added
-          * \param ypos the Y position on screen where the text should be added
-          * \param r the red color value
-          * \param g the green color value
-          * \param b the blue color vlaue
-          * \param id the text object id (default: equal to the "text" parameter)
-          * \param viewport the view port (default: all)
+          * \param[in] text the text to add
+          * \param[in] xpos the X position on screen where the text should be added
+          * \param[in] ypos the Y position on screen where the text should be added
+          * \param[in] r the red color value
+          * \param[in] g the green color value
+          * \param[in] b the blue color vlaue
+          * \param[in] id the text object id (default: equal to the "text" parameter)
+          * \param[in] viewport the view port (default: all)
           */
         bool 
         addText (const std::string &text, int xpos, int ypos, double r, double g, double b, 
                  const std::string &id = "", int viewport = 0);
 
         /** \brief Add a text to screen
-          * \param text the text to add
-          * \param xpos the X position on screen where the text should be added
-          * \param ypos the Y position on screen where the text should be added
-          * \param fontsize the fontsize of the text
-          * \param r the red color value
-          * \param g the green color value
-          * \param b the blue color vlaue
-          * \param id the text object id (default: equal to the "text" parameter)
-          * \param viewport the view port (default: all)
+          * \param[in] text the text to add
+          * \param[in] xpos the X position on screen where the text should be added
+          * \param[in] ypos the Y position on screen where the text should be added
+          * \param[in] fontsize the fontsize of the text
+          * \param[in] r the red color value
+          * \param[in] g the green color value
+          * \param[in] b the blue color vlaue
+          * \param[in] id the text object id (default: equal to the "text" parameter)
+          * \param[in] viewport the view port (default: all)
           */
         bool 
         addText (const std::string &text, int xpos, int ypos, int fontsize, double r, double g, double b, 
@@ -356,14 +355,14 @@ namespace pcl
 
         
         /** \brief Add a 3d text to the scene
-          * \param text the text to add
-          * \param position the world position where the text should be added
-          * \param textScale the scale of the text to render
-          * \param r the red color value
-          * \param g the green color value
-          * \param b the blue color value
-          * \param id the text object id (default: equal to the "text" parameter)
-          * \param viewport the view port (default: all)
+          * \param[in] text the text to add
+          * \param[in] position the world position where the text should be added
+          * \param[in] textScale the scale of the text to render
+          * \param[in] r the red color value
+          * \param[in] g the green color value
+          * \param[in] b the blue color value
+          * \param[in] id the text object id (default: equal to the "text" parameter)
+          * \param[in] viewport the view port (default: all)
           */
         template <typename PointT> bool
         addText3D (const std::string &text, 
@@ -373,11 +372,11 @@ namespace pcl
                    const std::string &id = "", int viewport = 0);
 
         /** \brief Add the estimated surface normals of a Point Cloud to screen. 
-          * \param cloud the input point cloud dataset containing XYZ data and normals
-          * \param level display only every level'th point (default: 100)
-          * \param scale the normal arrow scale (default: 0.02m)
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param[in] cloud the input point cloud dataset containing XYZ data and normals
+          * \param[in] level display only every level'th point (default: 100)
+          * \param[in] scale the normal arrow scale (default: 0.02m)
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         template <typename PointNT> bool 
         addPointCloudNormals (const typename pcl::PointCloud<PointNT>::ConstPtr &cloud,
@@ -385,12 +384,12 @@ namespace pcl
                               const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Add the estimated surface normals of a Point Cloud to screen.
-          * \param cloud the input point cloud dataset containing the XYZ data
-          * \param normals the input point cloud dataset containing the normal data
-          * \param level display only every level'th point (default: 100)
-          * \param scale the normal arrow scale (default: 0.02m)
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param[in] cloud the input point cloud dataset containing the XYZ data
+          * \param[in] normals the input point cloud dataset containing the normal data
+          * \param[in] level display only every level'th point (default: 100)
+          * \param[in] scale the normal arrow scale (default: 0.02m)
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         template <typename PointT, typename PointNT> bool 
         addPointCloudNormals (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
@@ -399,13 +398,13 @@ namespace pcl
                               const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Add the estimated principal curvatures of a Point Cloud to screen. 
-          * \param cloud the input point cloud dataset containing the XYZ data
-          * \param normals the input point cloud dataset containing the normal data
-          * \param pcs the input point cloud dataset containing the principal curvatures data
-          * \param level display only every level'th point (default: 100)
-          * \param scale the normal arrow scale (default: 1.0))
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param[in] cloud the input point cloud dataset containing the XYZ data
+          * \param[in] normals the input point cloud dataset containing the normal data
+          * \param[in] pcs the input point cloud dataset containing the principal curvatures data
+          * \param[in] level display only every level'th point. Default: 100
+          * \param[in] scale the normal arrow scale. Default: 1.0
+          * \param[in] id the point cloud object id. Default: "cloud"
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         bool 
         addPointCloudPrincipalCurvatures (
@@ -416,8 +415,8 @@ namespace pcl
             const std::string &id = "cloud", int viewport = 0);
    
         /** \brief Add a Point Cloud (templated) to screen. 
-          * \param cloud the input point cloud dataset
-          * \param id the point cloud object id (default: cloud)
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id (default: cloud)
           * \param viewport the view port where the Point Cloud should be added (default: all)
           */
         template <typename PointT> bool 
@@ -425,8 +424,8 @@ namespace pcl
                        const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Updates the XYZ data for an existing cloud object id on screen. 
-          * \param cloud the input point cloud dataset
-          * \param id the point cloud object id to update (default: cloud)
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id to update (default: cloud)
           * \return false if no cloud with the specified ID was found
           */
         template <typename PointT> bool 
@@ -434,8 +433,9 @@ namespace pcl
                           const std::string &id = "cloud");
 
          /** \brief Updates the XYZ data for an existing cloud object id on screen. 
-           * \param geometry_handler the geometry handler to use
-           * \param id the point cloud object id to update (default: cloud)
+           * \param[in] cloud the input point cloud dataset
+           * \param[in] geometry_handler the geometry handler to use
+           * \param[in] id the point cloud object id to update (default: cloud)
            * \return false if no cloud with the specified ID was found
            */
         template <typename PointT> bool 
@@ -444,9 +444,9 @@ namespace pcl
                           const std::string &id = "cloud");
 
          /** \brief Updates the XYZ data for an existing cloud object id on screen. 
-           * \param cloud the input point cloud dataset
-           * \param color_handler the color handler to use
-           * \param id the point cloud object id to update (default: cloud)
+           * \param[in] cloud the input point cloud dataset
+           * \param[in] color_handler the color handler to use
+           * \param[in] id the point cloud object id to update (default: cloud)
            * \return false if no cloud with the specified ID was found
            */
         template <typename PointT> bool 
@@ -454,22 +454,16 @@ namespace pcl
                           const PointCloudColorHandler<PointT> &color_handler,
                           const std::string &id = "cloud");
 
-//         /** \brief Updates the XYZRGB data for an existing cloud object id on screen. 
-//           * \param cloud the input point cloud dataset
-//           * \param color_handler the RGB color handler to use 
-//           * \param id the point cloud object id to update (default: cloud)
-//           * \return false if no cloud with the specified ID was found
-//           */
 //        bool 
 //        updatePointCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud, 
 //                          const PointCloudColorHandlerRGBField<pcl::PointXYZRGB> &color_handler,
 //                          const std::string &id = "cloud");
 
         /** \brief Add a Point Cloud (templated) to screen. 
-          * \param cloud the input point cloud dataset
-          * \param geometry_handler use a geometry handler object to extract the XYZ data
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] geometry_handler use a geometry handler object to extract the XYZ data
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         template <typename PointT> bool 
         addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
@@ -483,10 +477,10 @@ namespace pcl
           * switch between different geometric handlers 'on-the-fly' at runtime, from the PCLVisualizer 
           * interactor interface (using Alt+0..9).
           *
-          * \param cloud the input point cloud dataset
-          * \param geometry_handler use a geometry handler object to extract the XYZ data
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] geometry_handler use a geometry handler object to extract the XYZ data
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         template <typename PointT> bool 
         addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
@@ -494,10 +488,10 @@ namespace pcl
                        const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Add a Point Cloud (templated) to screen. 
-          * \param cloud the input point cloud dataset
-          * \param color_handler a specific PointCloud visualizer handler for colors
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] color_handler a specific PointCloud visualizer handler for colors
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         template <typename PointT> bool 
         addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
@@ -511,10 +505,10 @@ namespace pcl
           * switch between different color handlers 'on-the-fly' at runtime, from the PCLVisualizer 
           * interactor interface (using 0..9).
           *
-           * \param cloud the input point cloud dataset
-          * \param color_handler a specific PointCloud visualizer handler for colors
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] color_handler a specific PointCloud visualizer handler for colors
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         template <typename PointT> bool 
         addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
@@ -528,11 +522,11 @@ namespace pcl
           * switch between different handlers 'on-the-fly' at runtime, from the PCLVisualizer interactor 
           * interface (using [Alt+]0..9).
           *
-          * \param cloud the input point cloud dataset
-          * \param geometry_handler a specific PointCloud visualizer handler for geometry
-          * \param color_handler a specific PointCloud visualizer handler for colors
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] geometry_handler a specific PointCloud visualizer handler for geometry
+          * \param[in] color_handler a specific PointCloud visualizer handler for colors
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         template <typename PointT> bool 
         addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
@@ -541,11 +535,11 @@ namespace pcl
                        const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Add a Point Cloud (templated) to screen. 
-          * \param cloud the input point cloud dataset
-          * \param color_handler a specific PointCloud visualizer handler for colors
-          * \param geometry_handler use a geometry handler object to extract the XYZ data
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] color_handler a specific PointCloud visualizer handler for colors
+          * \param[in] geometry_handler use a geometry handler object to extract the XYZ data
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         template <typename PointT> bool 
         addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
@@ -554,9 +548,9 @@ namespace pcl
                        const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Add a PointXYZ Point Cloud to screen. 
-          * \param cloud the input point cloud dataset
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         inline bool 
         addPointCloud (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, 
@@ -567,9 +561,9 @@ namespace pcl
 
 
         /** \brief Add a PointXYZRGB Point Cloud to screen. 
-          * \param cloud the input point cloud dataset
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud should be added (default: all)
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         inline bool 
         addPointCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud, 
@@ -580,8 +574,8 @@ namespace pcl
         }
 
         /** \brief Updates the XYZ data for an existing cloud object id on screen. 
-          * \param cloud the input point cloud dataset
-          * \param id the point cloud object id to update (default: cloud)
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id to update (default: cloud)
           * \return false if no cloud with the specified ID was found
           */
         inline bool 
@@ -592,8 +586,8 @@ namespace pcl
         }
 
         /** \brief Updates the XYZRGB data for an existing cloud object id on screen. 
-          * \param cloud the input point cloud dataset
-          * \param id the point cloud object id to update (default: cloud)
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id to update (default: cloud)
           * \return false if no cloud with the specified ID was found
           */
         inline bool 
@@ -605,9 +599,9 @@ namespace pcl
         }
 
         /** \brief Add a PolygonMesh object to screen
-          * \param polymesh the polygonal mesh
-          * \param id the polygon object id (default: "polygon")
-          * \param viewport the view port where the PolygonMesh should be added (default: all)
+          * \param[in] polymesh the polygonal mesh
+          * \param[in] id the polygon object id (default: "polygon")
+          * \param[in] viewport the view port where the PolygonMesh should be added (default: all)
           */
         bool
         addPolygonMesh (const pcl::PolygonMesh &polymesh, 
@@ -615,10 +609,10 @@ namespace pcl
                         int viewport = 0);
 
         /** \brief Add a PolygonMesh object to screen
-          * \param cloud the polygonal mesh point cloud
-          * \param vertices the polygonal mesh vertices
-          * \param id the polygon object id (default: "polygon")
-          * \param viewport the view port where the PolygonMesh should be added (default: all)
+          * \param[in] cloud the polygonal mesh point cloud
+          * \param[in] vertices the polygonal mesh vertices
+          * \param[in] id the polygon object id (default: "polygon")
+          * \param[in] viewport the view port where the PolygonMesh should be added (default: all)
           */
         template <typename PointT> bool
         addPolygonMesh (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
@@ -639,8 +633,7 @@ namespace pcl
         /** \brief Add the specified correspondences to the display. 
           * \param[in] source_points The source points
           * \param[in] target_points The target points
-          * \param[in] correspondences The mapping from source points to target points. Each element must be an index into \ref target_points 
-          * \param[in] line_ids A vector of strings into which the IDs of the newly drawn lines will be added
+          * \param[in] correspondences The mapping from source points to target points. Each element must be an index into target_points 
           * \param[in] id the polygon object id (default: "correspondences")
           * \param[in] viewport the view port where the correspondences should be added (default: all)
           */
@@ -654,8 +647,7 @@ namespace pcl
         /** \brief Add the specified correspondences to the display. 
           * \param[in] source_points The source points
           * \param[in] target_points The target points
-          * \param[in] correspondences The mapping from source points to target points. Each element must be an index into \ref target_points
-          * \param[in] line_ids A vector of strings into which the IDs of the newly drawn lines will be added
+          * \param[in] correspondences The mapping from source points to target points. Each element must be an index into target_points
           * \param[in] id the polygon object id (default: "correspondences")
           * \param[in] viewport the view port where the correspondences should be added (default: all)
           */
@@ -690,7 +682,7 @@ namespace pcl
         }
         
         /** \brief Get the geometry handler index of a rendered PointCloud based on its ID
-          * \param id the point cloud object id
+          * \param[in] id the point cloud object id
           */
         inline int 
         getGeometryHandlerIndex (const std::string &id)
@@ -703,60 +695,60 @@ namespace pcl
         }
 
         /** \brief Update/set the color index of a renderered PointCloud based on its ID
-          * \param id the point cloud object id
-          * \param index the color handler index to use
+          * \param[in] id the point cloud object id
+          * \param[in] index the color handler index to use
           */
         bool 
         updateColorHandlerIndex (const std::string &id, int index);
 
         /** \brief Set the rendering properties of a PointCloud (3x values - e.g., RGB)
-          * \param property the property type
-          * \param val1 the first value to be set
-          * \param val2 the second value to be set
-          * \param val3 the third value to be set
-          * \param id the point cloud object id (default: cloud)
-          * \param viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
+          * \param[in] property the property type
+          * \param[in] val1 the first value to be set
+          * \param[in] val2 the second value to be set
+          * \param[in] val3 the third value to be set
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
           */
         bool 
         setPointCloudRenderingProperties (int property, double val1, double val2, double val3, 
                                           const std::string &id = "cloud", int viewport = 0);
 
        /** \brief Set the rendering properties of a PointCloud
-         * \param property the property type
-         * \param value the value to be set
-         * \param id the point cloud object id (default: cloud)
-         * \param viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
+         * \param[in] property the property type
+         * \param[in] value the value to be set
+         * \param[in] id the point cloud object id (default: cloud)
+         * \param[in] viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
          */
         bool 
         setPointCloudRenderingProperties (int property, double value, 
                                           const std::string &id = "cloud", int viewport = 0);
 
        /** \brief Get the rendering properties of a PointCloud
-         * \param property the property type
-         * \param value the resultant property value
-         * \param id the point cloud object id (default: cloud)
+         * \param[in] property the property type
+         * \param[in] value the resultant property value
+         * \param[in] id the point cloud object id (default: cloud)
          */
         bool 
         getPointCloudRenderingProperties (int property, double &value, 
                                           const std::string &id = "cloud");
         
        /** \brief Set the rendering properties of a shape
-         * \param property the property type
-         * \param value the value to be set
-         * \param id the shape object id
-         * \param viewport the view port where the shape's properties should be modified (default: all)
+         * \param[in] property the property type
+         * \param[in] value the value to be set
+         * \param[in] id the shape object id
+         * \param[in] viewport the view port where the shape's properties should be modified (default: all)
          */
         bool 
         setShapeRenderingProperties (int property, double value, 
                                      const std::string &id, int viewport = 0);
 
         /** \brief Set the rendering properties of a shape (3x values - e.g., RGB)
-          * \param property the property type
-          * \param val1 the first value to be set
-          * \param val2 the second value to be set
-          * \param val3 the third value to be set
-          * \param id the shape object id
-          * \param viewport the view port where the shape's properties should be modified (default: all)
+          * \param[in] property the property type
+          * \param[in] val1 the first value to be set
+          * \param[in] val2 the second value to be set
+          * \param[in] val3 the third value to be set
+          * \param[in] id the shape object id
+          * \param[in] viewport the view port where the shape's properties should be modified (default: all)
           */
          bool
          setShapeRenderingProperties (int property, double val1, double val2, double val3,
@@ -780,23 +772,23 @@ namespace pcl
         resetStoppedFlag () { if (interactor_ != NULL) stopped_ = false; }
 #endif
         /** \brief Create a new viewport from [xmin,ymin] -> [xmax,ymax].
-          * \param xmin the minimum X coordinate for the viewport (0.0 <= 1.0)
-          * \param ymin the minimum Y coordinate for the viewport (0.0 <= 1.0)
-          * \param xmax the maximum X coordinate for the viewport (0.0 <= 1.0)
-          * \param ymax the maximum Y coordinate for the viewport (0.0 <= 1.0)
-          * \param viewport the id of the new viewport
+          * \param[in] xmin the minimum X coordinate for the viewport (0.0 <= 1.0)
+          * \param[in] ymin the minimum Y coordinate for the viewport (0.0 <= 1.0)
+          * \param[in] xmax the maximum X coordinate for the viewport (0.0 <= 1.0)
+          * \param[in] ymax the maximum Y coordinate for the viewport (0.0 <= 1.0)
+          * \param[in] viewport the id of the new viewport
           */
         void 
         createViewPort (double xmin, double ymin, double xmax, double ymax, int &viewport);
 
         /** \brief Add a polygon (polyline) that represents the input point cloud (connects all 
           * points in order)
-          * \param cloud the point cloud dataset representing the polygon
-          * \param r the red channel of the color that the polygon should be rendered with
-          * \param g the green channel of the color that the polygon should be rendered with
-          * \param b the blue channel of the color that the polygon should be rendered with
-          * \param id (optional) the polygon id/name (default: "polygon")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] cloud the point cloud dataset representing the polygon
+          * \param[in] r the red channel of the color that the polygon should be rendered with
+          * \param[in] g the green channel of the color that the polygon should be rendered with
+          * \param[in] b the blue channel of the color that the polygon should be rendered with
+          * \param[in] id (optional) the polygon id/name (default: "polygon")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         template <typename PointT> bool
         addPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
@@ -805,9 +797,9 @@ namespace pcl
 
         /** \brief Add a polygon (polyline) that represents the input point cloud (connects all 
           * points in order)
-          * \param cloud the point cloud dataset representing the polygon
-          * \param id the polygon id/name (default: "polygon")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] cloud the point cloud dataset representing the polygon
+          * \param[in] id the polygon id/name (default: "polygon")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         template <typename PointT> bool
         addPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
@@ -815,82 +807,80 @@ namespace pcl
                     int viewport = 0);
 
         /** \brief Add a line segment from two points
-          * \param pt1 the first (start) point on the line
-          * \param pt2 the second (end) point on the line
-          * \param id the line id/name (default: "line")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] pt1 the first (start) point on the line
+          * \param[in] pt2 the second (end) point on the line
+          * \param[in] id the line id/name (default: "line")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         template <typename P1, typename P2> bool 
         addLine (const P1 &pt1, const P2 &pt2, const std::string &id = "line", 
                  int viewport = 0);
 
         /** \brief Add a line segment from two points
-          * \param pt1 the first (start) point on the line
-          * \param pt2 the second (end) point on the line
-          * \param r the red channel of the color that the line should be rendered with
-          * \param g the green channel of the color that the line should be rendered with
-          * \param b the blue channel of the color that the line should be rendered with
-          * \param id the line id/name (default: "line")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] pt1 the first (start) point on the line
+          * \param[in] pt2 the second (end) point on the line
+          * \param[in] r the red channel of the color that the line should be rendered with
+          * \param[in] g the green channel of the color that the line should be rendered with
+          * \param[in] b the blue channel of the color that the line should be rendered with
+          * \param[in] id the line id/name (default: "line")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         template <typename P1, typename P2> bool 
         addLine (const P1 &pt1, const P2 &pt2, double r, double g, double b, 
                  const std::string &id = "line", int viewport = 0);
 
         /** \brief Add a line arrow segment between two points, and display the distance between them
-          * \param pt1 the first (start) point on the line
-          * \param pt2 the second (end) point on the line
-          * \param r the red channel of the color that the line should be rendered with
-          * \param g the green channel of the color that the line should be rendered with
-          * \param b the blue channel of the color that the line should be rendered with
-          * \param id the line id/name (default: "arrow")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] pt1 the first (start) point on the line
+          * \param[in] pt2 the second (end) point on the line
+          * \param[in] r the red channel of the color that the line should be rendered with
+          * \param[in] g the green channel of the color that the line should be rendered with
+          * \param[in] b the blue channel of the color that the line should be rendered with
+          * \param[in] id the line id/name (default: "arrow")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         template <typename P1, typename P2> bool 
         addArrow (const P1 &pt1, const P2 &pt2, double r, double g, double b, 
                   const std::string &id = "arrow", int viewport = 0);
 
         /** \brief Add a sphere shape from a point and a radius
-          * \param center the center of the sphere
-          * \param radius the radius of the sphere
-          * \param id the line id/name (default: "sphere")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] center the center of the sphere
+          * \param[in] radius the radius of the sphere
+          * \param[in] id the line id/name (default: "sphere")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         template <typename PointT> bool 
         addSphere (const PointT &center, double radius, const std::string &id = "sphere", 
                    int viewport = 0);
 
         /** \brief Add a sphere shape from a point and a radius
-          * \param center the center of the sphere
-          * \param radius the radius of the sphere
-          * \param r the red channel of the color that the sphere should be rendered with
-          * \param g the green channel of the color that the sphere should be rendered with
-          * \param b the blue channel of the color that the sphere should be rendered with
-          * \param id the line id/name (default: "sphere")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] center the center of the sphere
+          * \param[in] radius the radius of the sphere
+          * \param[in] r the red channel of the color that the sphere should be rendered with
+          * \param[in] g the green channel of the color that the sphere should be rendered with
+          * \param[in] b the blue channel of the color that the sphere should be rendered with
+          * \param[in] id the line id/name (default: "sphere")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         template <typename PointT> bool 
         addSphere (const PointT &center, double radius, double r, double g, double b, 
                    const std::string &id = "sphere", int viewport = 0);
 
         /** \brief Add a vtkPolydata as a mesh
-          * \param polydata vtkPolyData
-          * \param id the model id/name (default: "PolyData")
-          * \param viewport (optional) the id of the new viewport (default: 0)
-         */
-
+          * \param[in] polydata vtkPolyData
+          * \param[in] id the model id/name (default: "PolyData")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          */
         bool
         addModelFromPolyData (vtkSmartPointer<vtkPolyData> polydata, 
                               const std::string & id = "PolyData", 
                               int viewport = 0);
 
         /** \brief Add a vtkPolydata as a mesh
-         * \param polydata vtkPolyData
-         * \param transform transformation to apply
-         * \param id the model id/name (default: "PolyData")
-         * \param viewport (optional) the id of the new viewport (default: 0)
-         */
-
+          * \param[in] polydata vtkPolyData
+          * \param[in] transform transformation to apply
+          * \param[in] id the model id/name (default: "PolyData")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          */
         bool
         addModelFromPolyData (vtkSmartPointer<vtkPolyData> polydata, 
                               vtkSmartPointer<vtkTransform> transform,
@@ -898,23 +888,21 @@ namespace pcl
                               int viewport = 0);
 
         /** \brief Add a PLYmodel as a mesh
-         * \param filename of the ply file
-         * \param id the model id/name (default: "PLYModel")
-         * \param viewport (optional) the id of the new viewport (default: 0)
-         */
-
+          * \param[in] filename of the ply file
+          * \param[in] id the model id/name (default: "PLYModel")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          */
         bool
         addModelFromPLYFile (const std::string &filename, 
                              const std::string &id = "PLYModel", 
                              int viewport = 0);
 
         /** \brief Add a PLYmodel as a mesh and applies given transformation
-         * \param filename of the ply file
-         * \param transform transformation to apply
-         * \param id the model id/name (default: "PLYModel")
-         * \param viewport (optional) the id of the new viewport (default: 0)
-         */
-
+          * \param[in] filename of the ply file
+          * \param[in] transform transformation to apply
+          * \param[in] id the model id/name (default: "PLYModel")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          */
         bool
         addModelFromPLYFile (const std::string &filename, 
                              vtkSmartPointer<vtkTransform> transform,
@@ -922,9 +910,9 @@ namespace pcl
                              int viewport = 0);
 
         /** \brief Add a cylinder from a set of given model coefficients 
-          * \param coefficients the model coefficients (point_on_axis, axis_direction, radius)
-          * \param id the cylinder id/name (default: "cylinder")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] coefficients the model coefficients (point_on_axis, axis_direction, radius)
+          * \param[in] id the cylinder id/name (default: "cylinder")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           *
           * \code
           * // The following are given (or computed using sample consensus techniques)
@@ -953,9 +941,9 @@ namespace pcl
                      int viewport = 0);
 
         /** \brief Add a sphere from a set of given model coefficients 
-          * \param coefficients the model coefficients (sphere center, radius)
-          * \param id the sphere id/name (default: "sphere")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] coefficients the model coefficients (sphere center, radius)
+          * \param[in] id the sphere id/name (default: "sphere")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           *
           * \code
           * // The following are given (or computed using sample consensus techniques)
@@ -980,9 +968,9 @@ namespace pcl
                    int viewport = 0);
 
         /** \brief Add a line from a set of given model coefficients 
-          * \param coefficients the model coefficients (point_on_line, direction)
-          * \param id the line id/name (default: "line")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] coefficients the model coefficients (point_on_line, direction)
+          * \param[in] id the line id/name (default: "line")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           *
           * \code
           * // The following are given (or computed using sample consensus techniques)
@@ -1008,9 +996,9 @@ namespace pcl
                  int viewport = 0);
 
         /** \brief Add a plane from a set of given model coefficients 
-          * \param coefficients the model coefficients (a, b, c, d with ax+by+cz+d=0)
-          * \param id the plane id/name (default: "plane")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] coefficients the model coefficients (a, b, c, d with ax+by+cz+d=0)
+          * \param[in] id the plane id/name (default: "plane")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           *
           * \code
           * // The following are given (or computed using sample consensus techniques)
@@ -1033,9 +1021,9 @@ namespace pcl
                   int viewport = 0);
 
         /** \brief Add a circle from a set of given model coefficients 
-          * \param coefficients the model coefficients (x, y, radius)
-          * \param id the circle id/name (default: "circle")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] coefficients the model coefficients (x, y, radius)
+          * \param[in] id the circle id/name (default: "circle")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           *
           * \code
           * // The following are given (or computed using sample consensus techniques)
@@ -1057,9 +1045,9 @@ namespace pcl
                    int viewport = 0);
 
         /** \brief Add a cone from a set of given model coefficients 
-          * \param coefficients the model coefficients (point_on_axis, axis_direction, radiu)
-          * \param id the cone id/name (default: "cone")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] coefficients the model coefficients (point_on_axis, axis_direction, radiu)
+          * \param[in] id the cone id/name (default: "cone")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         bool 
         addCone (const pcl::ModelCoefficients &coefficients, 
@@ -1067,9 +1055,9 @@ namespace pcl
                  int viewport = 0);
 
         /** \brief Add a cube from a set of given model coefficients 
-          * \param coefficients the model coefficients (Tx, Ty, Tz, Qx, Qy, Qz, Qw, width, height, depth)
-          * \param id the cone id/name (default: "cube")
-          * \param viewport (optional) the id of the new viewport (default: 0)
+          * \param[in] coefficients the model coefficients (Tx, Ty, Tz, Qx, Qy, Qz, Qw, width, height, depth)
+          * \param[in] id the cone id/name (default: "cube")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         bool 
         addCube (const pcl::ModelCoefficients &coefficients, 
@@ -1083,8 +1071,9 @@ namespace pcl
         /** \brief Renders a virtual scene as seen from the camera viewpoint and returns the rendered point cloud.
           * ATT: This method will only render the scene if only on viewport exists. Otherwise, returns an empty
           * point cloud and exits immediately.
-          * \param xres and yres are the size of the window used to render the scene
-          * \param cloud is the rendered point cloud
+          * \param[in] xres is the size of the window (X) used to render the scene
+          * \param[in] yres is the size of the window (Y) used to render the scene
+          * \param[in] cloud is the rendered point cloud
           */
         void
         renderView (int xres, int yres, pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud);
@@ -1094,14 +1083,17 @@ namespace pcl
           * build from an icosaheadron. The tesselation paremeter controls how many times the triangles of the original
           * icosahedron are divided to approximate the sphere and thus the number of partial view generated for a model,
           * with a tesselation_level of 0, 12 views are generated if use_vertices=true and 20 views if use_vertices=false
-          * \param xres and yres are the size of the window used to render the partial view of the object
-          * \param cloud is a vector of pointcloud with XYZ information that represent the model as seen from the respective viewpoints.
-          * \param poses represent the transformation from object coordinates to camera coordinates for the respective viewpoint.
-          * \param enthropies are values between 0 and 1 representing which percentage of the model is seen from the respective viewpoint.
-          * \param tesselation_level represents the number of subdivisions applied to the triangles of original icosahedron.
-          * \param view_angle field of view of the virtual camera
-          * \param use_vertices if true, use the vertices of tesselated icosahedron (12,42,...) or if false, use the faces of tesselated
-          * icosahedron (20,80,...)
+          *
+          * \param[in] xres the size of the window (X) used to render the partial view of the object
+          * \param[in] yres the size of the window (Y) used to render the partial view of the object
+          * \param[in] cloud is a vector of pointcloud with XYZ information that represent the model as seen from the respective viewpoints.
+          * \param[out] poses represent the transformation from object coordinates to camera coordinates for the respective viewpoint.
+          * \param[out] enthropies are values between 0 and 1 representing which percentage of the model is seen from the respective viewpoint.
+          * \param[in] tesselation_level represents the number of subdivisions applied to the triangles of original icosahedron.
+          * \param[in] view_angle field of view of the virtual camera. Default: 45
+          * \param[in] radius_sphere the tesselated sphere radius. Default: 1
+          * \param[in] use_vertices if true, use the vertices of tesselated icosahedron (12,42,...) or if false, use the faces of tesselated
+          * icosahedron (20,80,...). Default: true
           */
         void
         renderViewTesselatedSphere (
@@ -1118,15 +1110,15 @@ namespace pcl
         initCameraParameters ();
 
         /** \brief Search for camera parameters at the command line and set them internally.
-          * \param argc
-          * \param argv
+          * \param[in] argc
+          * \param[in] argv
           */
         bool 
         getCameraParameters (int argc, char **argv);
 
         /** \brief Checks whether the camera parameters were manually loaded from file.*/
         bool 
-        cameraParamsSet() const;
+        cameraParamsSet () const;
 
         /** \brief Update camera parameters and render. */
         void 
@@ -1137,18 +1129,18 @@ namespace pcl
         resetCamera ();
 
         /** \brief Reset the camera direction from {0, 0, 0} to the center_{x, y, z} of a given dataset.
-          * \param id the point cloud object id (default: cloud)
+          * \param[in] id the point cloud object id (default: cloud)
           */
         void
         resetCameraViewpoint (const std::string &id = "cloud");
 
         /** \brief Set the camera location and viewup according to the given arguments
-          * \param posX the x co-ordinate of the camera location
-          * \param posY the y co-ordinate of the camera location
-          * \param posZ the z co-ordinate of the camera location
-          * \param viewX the x component of the normal direction of the camera
-          * \param viewY the y component of the normal direction of the camera
-          * \param viewZ the z component of the normal direction of the camera
+          * \param[in] posX the x co-ordinate of the camera location
+          * \param[in] posY the y co-ordinate of the camera location
+          * \param[in] posZ the z co-ordinate of the camera location
+          * \param[in] viewX the x component of the normal direction of the camera
+          * \param[in] viewY the y component of the normal direction of the camera
+          * \param[in] viewZ the z component of the normal direction of the camera
           */
         void
         setCameraPosition (double posX,double posY, double posZ,
@@ -1267,41 +1259,41 @@ namespace pcl
         bool camera_set_;
         
         /** \brief Internal method. Removes a vtk actor from the screen.
-          * \param actor a pointer to the vtk actor object
-          * \param viewport the view port where the actor should be removed from (default: all)
+          * \param[in] actor a pointer to the vtk actor object
+          * \param[in] viewport the view port where the actor should be removed from (default: all)
           */
         void 
         removeActorFromRenderer (const vtkSmartPointer<vtkLODActor> &actor, 
                                  int viewport = 0);
 
         /** \brief Internal method. Adds a vtk actor to screen.
-          * \param actor a pointer to the vtk actor object
-          * \param viewport the view port where the actor should be added to (default: all)
+          * \param[in] actor a pointer to the vtk actor object
+          * \param[in] viewport the view port where the actor should be added to (default: all)
           */
         void 
         addActorToRenderer (const vtkSmartPointer<vtkProp> &actor, 
                             int viewport = 0);
 
         /** \brief Internal method. Adds a vtk actor to screen.
-          * \param actor a pointer to the vtk actor object
-          * \param viewport the view port where the actor should be added to (default: all)
+          * \param[in] actor a pointer to the vtk actor object
+          * \param[in] viewport the view port where the actor should be added to (default: all)
           */
         void 
         removeActorFromRenderer (const vtkSmartPointer<vtkProp> &actor, 
                                  int viewport = 0);
 
         /** \brief Internal method. Creates a vtk actor from a vtk polydata object.
-          * \param data the vtk polydata object to create an actor for
-          * \param actor the resultant vtk actor object
+          * \param[in] data the vtk polydata object to create an actor for
+          * \param[out] actor the resultant vtk actor object
           */
         void 
         createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data, 
                                    vtkSmartPointer<vtkLODActor> &actor);
 
         /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
-          * \param cloud the input PCL PointCloud dataset
-          * \param polydata the resultant polydata containing the cloud
-          * \param initcells a list of cell indices used for the conversion. This can be set once and then passed
+          * \param[in] cloud the input PCL PointCloud dataset
+          * \param[out] polydata the resultant polydata containing the cloud
+          * \param[out] initcells a list of cell indices used for the conversion. This can be set once and then passed
           * around to speed up the conversion.
           */
         template <typename PointT> void 
@@ -1310,9 +1302,9 @@ namespace pcl
                                         vtkSmartPointer<vtkIdTypeArray> &initcells);
 
         /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
-          * \param geometry_handler the geometry handler object used to extract the XYZ data
-          * \param polydata the resultant polydata containing the cloud
-          * \param initcells a list of cell indices used for the conversion. This can be set once and then passed
+          * \param[in] geometry_handler the geometry handler object used to extract the XYZ data
+          * \param[out] polydata the resultant polydata containing the cloud
+          * \param[out] initcells a list of cell indices used for the conversion. This can be set once and then passed
           * around to speed up the conversion.
           */
         template <typename PointT> void 
@@ -1321,9 +1313,9 @@ namespace pcl
                                         vtkSmartPointer<vtkIdTypeArray> &initcells);
 
         /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
-          * \param geometry_handler the geometry handler object used to extract the XYZ data
-          * \param polydata the resultant polydata containing the cloud
-          * \param initcells a list of cell indices used for the conversion. This can be set once and then passed
+          * \param[in] geometry_handler the geometry handler object used to extract the XYZ data
+          * \param[out] polydata the resultant polydata containing the cloud
+          * \param[out] initcells a list of cell indices used for the conversion. This can be set once and then passed
           * around to speed up the conversion.
           */
         void 
@@ -1332,11 +1324,11 @@ namespace pcl
                                         vtkSmartPointer<vtkIdTypeArray> &initcells);
 
         /** \brief Updates a set of cells (vtkIdTypeArray) if the number of points in a cloud changes
-          * \param cells the vtkIdTypeArray object (set of cells) to update
-          * \param initcells a previously saved set of cells. If the number of points in the current cloud is
+          * \param[out] cells the vtkIdTypeArray object (set of cells) to update
+          * \param[out] initcells a previously saved set of cells. If the number of points in the current cloud is
           * higher than the number of cells in \a cells, and initcells contains enough data, then a copy from it 
           * will be made instead of regenerating the entire array.
-          * \param nr_points the number of points in the new cloud. This dictates how many cells we need to 
+          * \param[in] nr_points the number of points in the new cloud. This dictates how many cells we need to 
           * generate
           */
         void 
@@ -1347,10 +1339,10 @@ namespace pcl
         /** \brief Internal function which converts the information present in the geometric
           * and color handlers into VTK PolyData+Scalars, constructs a vtkActor object, and adds
           * all the required information to the internal cloud_actor_map_ object.
-          * \param geometry_handler the geometric handler that contains the XYZ data
-          * \param color_handler the color handler that contains the "RGB" (scalar) data
-          * \param id the point cloud object id
-          * \param viewport the view port where the Point Cloud should be added
+          * \param[in] geometry_handler the geometric handler that contains the XYZ data
+          * \param[in] color_handler the color handler that contains the "RGB" (scalar) data
+          * \param[in] id the point cloud object id
+          * \param[in] viewport the view port where the Point Cloud should be added
           */
         template <typename PointT> bool
         fromHandlersToScreen (const PointCloudGeometryHandler<PointT> &geometry_handler,
@@ -1361,10 +1353,10 @@ namespace pcl
         /** \brief Internal function which converts the information present in the geometric
           * and color handlers into VTK PolyData+Scalars, constructs a vtkActor object, and adds
           * all the required information to the internal cloud_actor_map_ object.
-          * \param geometry_handler the geometric handler that contains the XYZ data
-          * \param color_handler the color handler that contains the "RGB" (scalar) data
-          * \param id the point cloud object id
-          * \param viewport the view port where the Point Cloud should be added
+          * \param[in] geometry_handler the geometric handler that contains the XYZ data
+          * \param[in] color_handler the color handler that contains the "RGB" (scalar) data
+          * \param[in] id the point cloud object id
+          * \param[in] viewport the view port where the Point Cloud should be added
           */
         template <typename PointT> bool
         fromHandlersToScreen (const PointCloudGeometryHandler<PointT> &geometry_handler,
@@ -1375,10 +1367,10 @@ namespace pcl
         /** \brief Internal function which converts the information present in the geometric
           * and color handlers into VTK PolyData+Scalars, constructs a vtkActor object, and adds
           * all the required information to the internal cloud_actor_map_ object.
-          * \param geometry_handler the geometric handler that contains the XYZ data
-          * \param color_handler the color handler that contains the "RGB" (scalar) data
-          * \param id the point cloud object id
-          * \param viewport the view port where the Point Cloud should be added
+          * \param[in] geometry_handler the geometric handler that contains the XYZ data
+          * \param[in] color_handler the color handler that contains the "RGB" (scalar) data
+          * \param[in] id the point cloud object id
+          * \param[in] viewport the view port where the Point Cloud should be added
           */
         bool
         fromHandlersToScreen (const GeometryHandlerConstPtr &geometry_handler,
@@ -1389,10 +1381,10 @@ namespace pcl
         /** \brief Internal function which converts the information present in the geometric
           * and color handlers into VTK PolyData+Scalars, constructs a vtkActor object, and adds
           * all the required information to the internal cloud_actor_map_ object.
-          * \param geometry_handler the geometric handler that contains the XYZ data
-          * \param color_handler the color handler that contains the "RGB" (scalar) data
-          * \param id the point cloud object id
-          * \param viewport the view port where the Point Cloud should be added
+          * \param[in] geometry_handler the geometric handler that contains the XYZ data
+          * \param[in] color_handler the color handler that contains the "RGB" (scalar) data
+          * \param[in] id the point cloud object id
+          * \param[in] viewport the view port where the Point Cloud should be added
           */
         template <typename PointT> bool
         fromHandlersToScreen (const GeometryHandlerConstPtr &geometry_handler,
