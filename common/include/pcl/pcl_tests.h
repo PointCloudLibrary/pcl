@@ -40,7 +40,7 @@
 
 namespace pcl
 {
-  /** \file test_macros.h provide helper macros for testing vectors, matrices etc.
+  /** test_macros.h provide helper macros for testing vectors, matrices etc.
     * We took some liberty with upcasing names to make them look like googletest
     * macros names so that reader is not confused.
     *
