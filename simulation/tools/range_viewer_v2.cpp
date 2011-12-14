@@ -123,11 +123,11 @@ namespace pcl
       }
       std::cout << std::endl;
       
-      iviewer_.setName("Color Image");
+      iviewer_.setWindowTitle ("Color Image");
       
       iviewer_.showFloatImage 	( 	range_likelihood_->depth_buffer(),
  		640,480,0,1,true);
-      iviewer_.setName("Color Image");		
+      iviewer_.setWindowTitle ("Color Image");		
 		
       iviewer_color_.showRGBImage(range_likelihood_->color_buffer(),640,480);
       
