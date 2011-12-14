@@ -63,25 +63,39 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT>::computeFeature (
     Eigen::Vector4f centroid;
     compute3DCentroid (*surface_, nn_indices, centroid);
 
+    float mean_intensity = 0;
+    unsigned valid_neighbor_count = 0;
+    for (size_t nIdx = 0; nIdx < nn_indices.size (); ++nIdx)
+    {
+      const PointInT& p = (*surface_)[nn_indices[nIdx]];
+      if (!pcl_isfinite (p.intensity))
+        continue;
+
+      mean_intensity += p.intensity;
+      ++valid_neighbor_count;
+    }
+
+    mean_intensity /= (float)valid_neighbor_count;
+
     Eigen::Vector3f normal = Eigen::Vector3f::Map (normals_->points[idx].normal);
     Eigen::Vector3f gradient;
-    computePointIntensityGradient (*surface_, nn_indices, centroid.head<3> (), normal, gradient);
-   
+    computePointIntensityGradient (*surface_, nn_indices, centroid.head<3> (), mean_intensity, normal, gradient);
+
     p_out.gradient[0] = gradient[0];
     p_out.gradient[1] = gradient[1];
     p_out.gradient[2] = gradient[2];
-   
+
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT>::computePointIntensityGradient (
-  const pcl::PointCloud <PointInT> &cloud, const std::vector <int> &indices, 
-  const Eigen::Vector3f &point, const Eigen::Vector3f &normal, Eigen::Vector3f &gradient)
+  const pcl::PointCloud <PointInT> &cloud, const std::vector <int> &indices,
+  const Eigen::Vector3f &point, float mean_intensity, const Eigen::Vector3f &normal, Eigen::Vector3f &gradient)
 {
   if (indices.size () < 3)
-  { 
+  {
     gradient[0] = gradient[1] = gradient[2] = std::numeric_limits<float>::quiet_NaN ();
     return;
   }
@@ -92,25 +106,26 @@ pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT>::computePointInt
   for (size_t i_point = 0; i_point < indices.size (); ++i_point)
   {
     PointInT p = cloud.points[indices[i_point]];
-    if (!pcl_isfinite (p.x) || 
-        !pcl_isfinite (p.y) || 
-        !pcl_isfinite (p.z) || 
+    if (!pcl_isfinite (p.x) ||
+        !pcl_isfinite (p.y) ||
+        !pcl_isfinite (p.z) ||
         !pcl_isfinite (p.intensity))
       continue;
 
     p.x -= point[0];
     p.y -= point[1];
     p.z -= point[2];
+    p.intensity -= mean_intensity;
 
-    A (0, 0) += p.x*p.x;
-    A (0, 1) += p.x*p.y;
-    A (0, 2) += p.x*p.z;
+    A (0, 0) += p.x * p.x;
+    A (0, 1) += p.x * p.y;
+    A (0, 2) += p.x * p.z;
 
-    A (1, 1) += p.y*p.y;
-    A (1, 2) += p.y*p.z;
+    A (1, 1) += p.y * p.y;
+    A (1, 2) += p.y * p.z;
 
-    A (2, 2) += p.z*p.z;
-    
+    A (2, 2) += p.z * p.z;
+
     b[0] += p.x * p.intensity;
     b[1] += p.y * p.intensity;
     b[2] += p.z * p.intensity;
@@ -120,7 +135,7 @@ pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT>::computePointInt
   A (2, 0) = A (0, 2);
   A (2, 1) = A (1, 2);
 
-  // Fit a hyperplane to the data 
+  // Fit a hyperplane to the data
   Eigen::Vector3f x = A.colPivHouseholderQr ().solve (b);
 
   // Project the gradient vector, x, onto the tangent plane
@@ -130,4 +145,4 @@ pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT>::computePointInt
 
 #define PCL_INSTANTIATE_IntensityGradientEstimation(InT,NT,OutT) template class PCL_EXPORTS pcl::IntensityGradientEstimation<InT,NT,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_INTENSITY_GRADIENT_H_ 
+#endif    // PCL_FEATURES_IMPL_INTENSITY_GRADIENT_H_

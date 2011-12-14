@@ -69,27 +69,27 @@ namespace pcl
       };
 
     protected:
-      /** \brief Estimate the intensity gradients for a set of points given in <setInputCloud (), setIndices ()> using 
+      /** \brief Estimate the intensity gradients for a set of points given in <setInputCloud (), setIndices ()> using
         *  the surface in setSearchSurface () and the spatial locator in setSearchMethod ().
         *  \param output the resultant point cloud that contains the intensity gradient vectors
         */
-      void 
+      void
       computeFeature (PointCloudOut &output);
 
     private:
       /** \brief Estimate the intensity gradient around a given point based on its spatial neighborhood of points
         * \param cloud a point cloud dataset containing XYZI coordinates (Cartesian coordinates + intensity)
         * \param indices the indices of the neighoring points in the dataset
-        * \param point the 3D Cartesian coordinates of the point at which to estimate the gradient 
+        * \param point the 3D Cartesian coordinates of the point at which to estimate the gradient
         * \param normal the 3D surface normal of the given point
         * \param gradient the resultant 3D gradient vector
         */
-      void 
-      computePointIntensityGradient (const pcl::PointCloud<PointInT> &cloud, 
-                                     const std::vector<int> &indices, 
-                                     const Eigen::Vector3f &point, const Eigen::Vector3f &normal, 
+      void
+      computePointIntensityGradient (const pcl::PointCloud<PointInT> &cloud,
+                                     const std::vector<int> &indices,
+                                     const Eigen::Vector3f &point, float mean_intensity, const Eigen::Vector3f &normal,
                                      Eigen::Vector3f &gradient);
-                                      
+
   };
 }
 
