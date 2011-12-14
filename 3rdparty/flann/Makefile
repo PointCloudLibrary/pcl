@@ -1,9 +1,9 @@
-VERSION=1.6.8
+VERSION=1.6.11
 
 all:
 		wget http://people.cs.ubc.ca/~mariusm/uploads/FLANN/flann-${VERSION}-src.zip
 		unzip flann-${VERSION}-src.zip
-		patch -p0 < cpack.patch
+		#patch -p0 < cpack.patch
 		cd flann-${VERSION}-src && mkdir -p build && cd build && cmake -DBUILD_C_BINDINGS=false -DBUILD_PYTHON_BINDINGS=false -DBUILD_MATLAB_BINDINGS=false -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/usr .. && \
 		make package && \
 		if test -e *.exe; \
