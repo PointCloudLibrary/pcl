@@ -90,15 +90,15 @@ namespace pcl
         , basis_only_ (basis_only) 
       {}
       
-      /** Constructor with direct computation
-        * \param X input m*n matrix (ie n vectors of R(m))
-        * \param basis_only flag to compute only the PCA basis
+      /** \brief Constructor with direct computation
+        * X input m*n matrix (ie n vectors of R(m))
+        * basis_only flag to compute only the PCA basis
         */
-      PCL_DEPRECATED(PCA (const pcl::PointCloud<PointT>& X, bool basis_only = false), 
-                     "Use PCA (bool basis_only); setInputCloud (X.makeShared ()); instead");
+      PCL_DEPRECATED (PCA (const pcl::PointCloud<PointT>& X, bool basis_only = false), 
+                      "Use PCA (bool basis_only); setInputCloud (X.makeShared ()); instead");
 
       /** Copy Constructor
-        * \param pca_ PCA object
+        * \param[in] pca PCA object
         */
       PCA (PCA const & pca) 
         : Base (pca)

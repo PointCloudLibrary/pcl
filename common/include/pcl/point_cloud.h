@@ -87,27 +87,21 @@ namespace pcl
     * \endcode
     *
     * The PointCloud class contains the following elements:
-    * <ul>
-    * <li><b>width</b> - specifies the width of the point cloud dataset in the number of points. WIDTH has two meanings:
-    *   <ul><li>it can specify the total number of points in the cloud (equal with POINTS see below) for unorganized datasets;</li>
-    *       <li>it can specify the width (total number of points in a row) of an organized point cloud dataset.</li>
-    *   </ul>
-    *   <i>Mandatory</i>.
-    * </li>
-    * <li><b>height</b> - specifies the height of the point cloud dataset in the number of points. HEIGHT has two meanings:
-    *   <ul><li>it can specify the height (total number of rows) of an organized point cloud dataset;</li>
-    *       <li>it is set to 1 for unorganized datasets (thus used to check whether a dataset is organized or not).</li>
-    *   </ul>
-    *   <i>Mandatory</i>.
-    * </li>
-    * <li><b>points</b> - the data array where all points of type <b>PointT</b> are stored. <i>Mandatory</i>.</li>
+    *   - \b width - specifies the width of the point cloud dataset in the number of points. WIDTH has two meanings:
+    *     - it can specify the total number of points in the cloud (equal with POINTS see below) for unorganized datasets;
+    *     - it can specify the width (total number of points in a row) of an organized point cloud dataset.
+    *   \a Mandatory.
+    *   - \b height - specifies the height of the point cloud dataset in the number of points. HEIGHT has two meanings:
+    *     - it can specify the height (total number of rows) of an organized point cloud dataset;
+    *     - it is set to 1 for unorganized datasets (thus used to check whether a dataset is organized or not).
+    *   \a Mandatory.
+    *   - \b points - the data array where all points of type <b>PointT</b> are stored. \a Mandatory.
     *
-    * <li><b>is_dense</b> - specifies if all the data in <b>points</b> is finite (true), or whether it might contain Inf/NaN values
-    * (false). <i>Mandatory</i>.</li>
+    *   - \b is_dense - specifies if all the data in <b>points</b> is finite (true), or whether it might contain Inf/NaN values
+    * (false). \a Mandatory.
     *
-    * <li><b>sensor_origin_</b> - specifies the sensor acquisition pose (origin/translation). <i>Optional</i>.</li>
-    * <li><b>sensor_orientation_</b> - specifies the sensor acquisition pose (rotation). <i>Optional</i>.</li>
-    * </ul>
+    *   - \b sensor_origin_ - specifies the sensor acquisition pose (origin/translation). \a Optional.
+    *   - \b sensor_orientation_ - specifies the sensor acquisition pose (rotation). \a Optional.
     *
     * \author Patrick Mihelich, Radu B. Rusu
     */

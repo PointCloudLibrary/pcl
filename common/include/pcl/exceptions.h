@@ -33,8 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Eitan Marder-Eppstein, Suat Gedikli (gedikli@willowgarage.com),
- *         Nizar Sallem
  */
 #ifndef PCL_EXCEPTIONS_H_
 #define PCL_EXCEPTIONS_H_
@@ -47,6 +45,7 @@ namespace pcl
 
   /** \class PCLException
     * \brief A base class for all pcl exceptions which inherits from std::runtime_error
+    * \author Eitan Marder-Eppstein, Suat Gedikli, Nizar Sallem
     */
   class PCLException : public std::runtime_error
   {
@@ -209,7 +208,7 @@ namespace pcl
 
 }
 
-/** \macro PCL_THROW_EXCEPTION a helper macro to be used for throwing exceptions.
+/** PCL_THROW_EXCEPTION a helper macro to be used for throwing exceptions.
   * This is an example on how to use:
   * PCL_THROW_EXCEPTION(IOException,
   *                     "encountred an error while opening " << filename << " PCD file");

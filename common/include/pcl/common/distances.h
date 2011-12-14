@@ -91,8 +91,8 @@ namespace pcl
 
   /** \brief Obtain the maximum segment in a given set of points, and return the minimum and maximum points.
     * \param[in] cloud the point cloud dataset
-    * \param[out] pmin the coordinates of the "minimum" point in \ref cloud (one end of the segment)
-    * \param[out] pmin the coordinates of the "maximum" point in \ref cloud (the other end of the segment)
+    * \param[out] pmin the coordinates of the "minimum" point in \a cloud (one end of the segment)
+    * \param[out] pmax the coordinates of the "maximum" point in \a cloud (the other end of the segment)
     * \return the length of segment length
     * \ingroup common
     */
@@ -129,9 +129,9 @@ namespace pcl
  
   /** \brief Obtain the maximum segment in a given set of points, and return the minimum and maximum points.
     * \param[in] cloud the point cloud dataset
-    * \param[in] indices a set of point indices to use from \ref cloud
-    * \param[out] pmin the coordinates of the "minimum" point in \ref cloud (one end of the segment)
-    * \param[out] pmin the coordinates of the "maximum" point in \ref cloud (the other end of the segment)
+    * \param[in] indices a set of point indices to use from \a cloud
+    * \param[out] pmin the coordinates of the "minimum" point in \a cloud (one end of the segment)
+    * \param[out] pmax the coordinates of the "maximum" point in \a cloud (the other end of the segment)
     * \return the length of segment length
     * \ingroup common
     */

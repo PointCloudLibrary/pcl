@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, www.pointclouds.org
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -43,15 +45,14 @@ namespace pcl
 {
   namespace utils
   {
-    /**
-      * \brief Check if val1 and val2 are equals to an epsilon extent
-      *
-      * \param val1 first number to check.
-      * \param val2 second number to check.
+    /** \brief Check if val1 and val2 are equals to an epsilon extent
+      * \param[in] val1 first number to check
+      * \param[in] val2 second number to check
+      * \param[in] eps epsilon
       * \return true if val1 is equal to val2, false otherwise.
       */
-    template<typename T>
-    bool equal (T val1, T val2, T eps = std::numeric_limits<T>::min())
+    template<typename T> bool 
+    equal (T val1, T val2, T eps = std::numeric_limits<T>::min ())
     {
       return (fabs (val1 - val2) < eps);
     }

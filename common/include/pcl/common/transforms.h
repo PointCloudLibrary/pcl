@@ -131,8 +131,8 @@ namespace pcl
                                   const Eigen::Vector3f &offset, 
                                   const Eigen::Quaternionf &rotation);
   /** \brief Transform a point with members x,y,z
-    * \param transformation the transformation to apply
-    * \param point the point to transform
+    * \param[in] point the point to transform
+    * \param[out] transform the transformation to apply
     * \return the transformed point
     * \ingroup common
     */

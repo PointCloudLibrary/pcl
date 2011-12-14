@@ -45,15 +45,16 @@
 
 #include <pcl/point_cloud.h>
 #include <boost/function.hpp>
+
 namespace pcl
 {
-    /** Class GaussianKernel assembles all the method for computing, 
-      * convolving, smoothing, gradients computing an image using
-      * a gaussian kernel. The image is stored in point cloud elements 
-      * intensity member or rgb or...
-      * \author Nizar Sallem
-      * \ingroup common
-      */
+  /** Class GaussianKernel assembles all the method for computing, 
+    * convolving, smoothing, gradients computing an image using
+    * a gaussian kernel. The image is stored in point cloud elements 
+    * intensity member or rgb or...
+    * \author Nizar Sallem
+    * \ingroup common
+    */
   class PCL_EXPORTS GaussianKernel
   {
     public:
@@ -100,8 +101,9 @@ namespace pcl
                     pcl::PointCloud<float> &output) const;
 
       /** Convolve a float image rows by a given kernel.
-        * \param[in] kernel convolution kernel
         * \param[in] input the image to convolve
+        * \param[in] field_accessor a field accessor
+        * \param[in] kernel convolution kernel
         * \param[out] output the convolved image
         * \note if output doesn't fit in input i.e. output.rows () < input.rows () or
         * output.cols () < input.cols () then output is resized to input sizes.
@@ -111,9 +113,10 @@ namespace pcl
                    boost::function <float (const PointT& p)> field_accessor,
                    const Eigen::VectorXf &kernel,
                    pcl::PointCloud<float> &output) const;
+
       /** Convolve a float image columns by a given kernel.
-        * \param[in] kernel convolution kernel
         * \param[in] input the image to convolve
+        * \param[in] kernel convolution kernel
         * \param[out] output the convolved image
         * \note if output doesn't fit in input i.e. output.rows () < input.rows () or
         * output.cols () < input.cols () then output is resized to input sizes.
@@ -124,8 +127,9 @@ namespace pcl
                     pcl::PointCloud<float> &output) const;
 
       /** Convolve a float image columns by a given kernel.
-        * \param[in] kernel convolution kernel
         * \param[in] input the image to convolve
+        * \param[in] field_accessor a field accessor
+        * \param[in] kernel convolution kernel
         * \param[out] output the convolved image
         * \note if output doesn't fit in input i.e. output.rows () < input.rows () or
         * output.cols () < input.cols () then output is resized to input sizes.
@@ -158,9 +162,10 @@ namespace pcl
       }
 
       /** Convolve a float image in the 2 directions
+        * \param[in] input image to convolve
+        * \param[in] field_accessor a field accessor
         * \param[in] horiz_kernel kernel for convolving rows
         * \param[in] vert_kernel kernel for convolving columns
-        * \param[in] input image to convolve
         * \param[out] output the convolved image
         * \note if output doesn't fit in input i.e. output.rows () < input.rows () or
         * output.cols () < input.cols () then output is resized to input sizes.
@@ -203,6 +208,7 @@ namespace pcl
       /** Computes float image gradients using a gaussian kernel and gaussian kernel
         * derivative.
         * \param[in] input image to compute gardients for
+        * \param[in] field_accessor a field accessor
         * \param[in] gaussian_kernel the gaussian kernel to be used
         * \param[in] gaussian_kernel_derivative the associated derivative
         * \param[out] grad_x gradient along X direction
@@ -224,7 +230,7 @@ namespace pcl
       
       /** Smooth image using a gaussian kernel.
         * \param[in] input image
-        * \param[in] sigma the gaussian kernel parameter
+        * \param[in] gaussian_kernel the gaussian kernel to be used
         * \param[out] output the smoothed image
         * \note if output doesn't fit in input i.e. output.rows () < input.rows () or
         * output.cols () < input.cols () then output is resized to input sizes.
@@ -239,7 +245,8 @@ namespace pcl
 
       /** Smooth image using a gaussian kernel.
         * \param[in] input image
-        * \param[in] sigma the gaussian kernel parameter
+        * \param[in] field_accessor a field accessor
+        * \param[in] gaussian_kernel the gaussian kernel to be used
         * \param[out] output the smoothed image
         * \note if output doesn't fit in input i.e. output.rows () < input.rows () or
         * output.cols () < input.cols () then output is resized to input sizes.

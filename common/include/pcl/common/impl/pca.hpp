@@ -46,6 +46,10 @@
 #include "pcl/exceptions.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////
+/** \brief Constructor with direct computation
+  * \param[in] X input m*n matrix (ie n vectors of R(m))
+  * \param[in] basis_only flag to compute only the PCA basis
+  */
 template<typename PointT>
 pcl::PCA<PointT>::PCA (const pcl::PointCloud<PointT>& X, bool basis_only)
 {

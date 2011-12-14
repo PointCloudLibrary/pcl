@@ -66,7 +66,9 @@ namespace pcl
   typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief PCL base class. Implements methods that are used by all PCL objects. */
+  /** \brief PCL base class. Implements methods that are used by all PCL objects. 
+    * \ingroup common 
+    */
   template <typename PointT>
   class PCLBase
   {
@@ -204,14 +206,11 @@ namespace pcl
       /** \brief This method should get called before starting the actual computation. 
         *
         * Internally, initCompute() does the following:
-        * <ul>
-        *   <li>checks if an input dataset is given, and returns false otherwise
-        *   <li>checks whether a set of input indices has been given. Returns true if yes.
-        *   <li>if no input indices have been given, a fake set is created, which will be used until:
-        *   <ul><li>either a new set is given via setIndices(), or 
-        *       <li>a new cloud is given that has a different set of points. This will trigger an update on the set of fake indices
-        *   </ul>
-        * </ul>
+        *   - checks if an input dataset is given, and returns false otherwise
+        *   - checks whether a set of input indices has been given. Returns true if yes.
+        *   - if no input indices have been given, a fake set is created, which will be used until:
+        *     - either a new set is given via setIndices(), or 
+        *     - a new cloud is given that has a different set of points. This will trigger an update on the set of fake indices
         */
       inline bool
       initCompute ()

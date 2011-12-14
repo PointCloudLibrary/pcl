@@ -67,7 +67,7 @@ namespace pcl
   /** \brief Get the index of a specified field (i.e., dimension/channel)
     * \param[in] cloud the the point cloud message
     * \param[in] field_name the string defining the field name
-    * \param[out] fields a vector to the original \ref PointField vector that the raw PointCloud message contains
+    * \param[out] fields a vector to the original \a PointField vector that the raw PointCloud message contains
     * \ingroup io
     */
   template <typename PointT> inline int 
@@ -76,7 +76,7 @@ namespace pcl
 
   /** \brief Get the list of available fields (i.e., dimension/channel)
     * \param[in] cloud the point cloud message
-    * \param[out] fields a vector to the original \ref PointField vector that the raw PointCloud message contains
+    * \param[out] fields a vector to the original \a PointField vector that the raw PointCloud message contains
     * \ingroup io
     */
   template <typename PointT> inline void 
@@ -104,7 +104,7 @@ namespace pcl
   }
 
   /** \brief Obtains the size of a specific field data type in bytes
-    * \param[int] datatype the field data type (see PointField.h)
+    * \param[in] datatype the field data type (see PointField.h)
     * \ingroup io
     */
   inline int
@@ -284,7 +284,7 @@ namespace pcl
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
-    * \param[in] indices the PointIndices structure representing the points to be copied from \ref cloud_in
+    * \param[in] indices the PointIndices structure representing the points to be copied from cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
     * \ingroup io
     */
@@ -295,7 +295,7 @@ namespace pcl
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
-    * \param[in] indices the PointIndices structure representing the points to be copied from \ref cloud_in
+    * \param[in] indices the PointIndices structure representing the points to be copied from cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
     * \ingroup io
     */
@@ -317,7 +317,7 @@ namespace pcl
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
-    * \param[in] indices the vector of indices representing the points to be copied from \ref cloud_in
+    * \param[in] indices the vector of indices representing the points to be copied from cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
     * \ingroup io
     */
@@ -329,8 +329,8 @@ namespace pcl
   /** \brief Concatenate two datasets representing different fields.
     *
     * \note If the input datasets have overlapping fields (i.e., both contain
-    * the same fields), then the data in the second cloud (\ref cloud2_in) will
-    * overwrite the data in the first (\ref cloud1_in).
+    * the same fields), then the data in the second cloud (cloud2_in) will
+    * overwrite the data in the first (cloud1_in).
     *
     * \param[in] cloud1_in the first input dataset
     * \param[in] cloud2_in the second input dataset (overwrites the fields of the first dataset for those that are shared)
@@ -345,8 +345,8 @@ namespace pcl
   /** \brief Concatenate two datasets representing different fields.
     *
     * \note If the input datasets have overlapping fields (i.e., both contain
-    * the same fields), then the data in the second cloud (\ref cloud2_in) will
-    * overwrite the data in the first (\ref cloud1_in).
+    * the same fields), then the data in the second cloud (cloud2_in) will
+    * overwrite the data in the first (cloud1_in).
     *
     * \param[in] cloud1_in the first input dataset
     * \param[in] cloud2_in the second input dataset (overwrites the fields of the first dataset for those that are shared)
