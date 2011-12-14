@@ -43,8 +43,8 @@
 namespace pcl
 {
   /** \brief Compress in_len bytes stored at the memory block starting at
-    * \ref in_data and write the result to \ref out_data, up to a maximum length
-    * of \ref out_len bytes using Marc Lehmann's LZF algorithm.
+    * \a in_data and write the result to \a out_data, up to a maximum length
+    * of \a out_len bytes using Marc Lehmann's LZF algorithm.
     *
     * If the output buffer is not large enough or any error occurs return 0,
     * otherwise return the number of bytes used, which might be considerably
@@ -65,9 +65,9 @@ namespace pcl
   lzfCompress (const void *const in_data,  unsigned int in_len,
                void             *out_data, unsigned int out_len);
 
-  /** \brief Decompress data compressed with the \ref lzfCompress function and
-    * stored at location \ref in_data and length \ref in_len. The result will be
-    * stored at \ref out_data up to a maximum of \ref out_len characters.
+  /** \brief Decompress data compressed with the \a lzfCompress function and
+    * stored at location \a in_data and length \a in_len. The result will be
+    * stored at \a out_data up to a maximum of \a out_len characters.
     *
     * If the output buffer is not large enough to hold the decompressed
     * data, a 0 is returned and errno is set to E2BIG. Otherwise the number
@@ -80,7 +80,7 @@ namespace pcl
     * This function is very fast, about as fast as a copying loop.
     * \param[in] in_data the input compressed buffer 
     * \param[in] in_len the length of the input buffer
-    * \param[out] out_data the output buffer (must be resized to \ref out_len)
+    * \param[out] out_data the output buffer (must be resized to \a out_len)
     * \param[out] out_len the length of the output buffer
     */
   PCL_EXPORTS unsigned int 

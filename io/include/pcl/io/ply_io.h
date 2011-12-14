@@ -48,6 +48,14 @@
 namespace pcl
 {
   /** \brief Point Cloud Data (PLY) file format reader.
+    *
+    * The PLY data format is organized in the following way:
+    *   - lines beginning with "comment" are treated as comments
+    *   - ply
+    *   - format [ascii|binary_little_endian|binary_big_endian] 1.0
+    *   - element vertex COUNT
+    *   - [ascii/binary] point coordinates
+    *   
     * \author Nizar Sallem
     * \ingroup io
     */
@@ -60,17 +68,6 @@ namespace pcl
         PLY_V1 = 1
       };
 
-      /** \brief Various PLY file versions.
-        *
-        * PLY represents PLY files with. The are organised this way:
-        * <ul>
-        *  <li> lines beginning with "comment" are treated as comments</li>
-        *  <li> ply </li>
-        *  <li> format [ascii|binary_little_endian|binary_big_endian] 1.0 </li>
-        *  <li> element vertex COUNT </li>
-        *  <li> [ascii/binary] poinst coordinates </li>
-        * </ul>
-        */
       /** \brief Read a point cloud data header from a PLY file.
         *
         * Load only the meta information (number of points, their types, etc),
@@ -88,9 +85,10 @@ namespace pcl
         * \param[out] data_type the type of PLY data stored in the file
         * \param[out] data_idx the data index
         */
-      int readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
-                      Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
-                      int &ply_version, int &data_type, int &data_idx);
+      int 
+      readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
+                  Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+                  int &ply_version, int &data_type, int &data_idx);
 
       /** \brief Read a point cloud data from a PLY file and store it into a sensor_msgs/PointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
@@ -99,8 +97,9 @@ namespace pcl
         * \param[in] orientation the sensor data acquisition origin (rotation)
         * \param[out] ply_version the PLY version read from the file
         */
-      int read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
-                Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int& ply_version);
+      int 
+      read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
+            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int& ply_version);
 
       /** \brief Read a point cloud data from a PLY file (PLY_V6 only!) and store it into a sensor_msgs/PointCloud2.
         *
@@ -420,7 +419,7 @@ namespace pcl
 
     /** \brief Saves a PolygonMesh in ascii PLY format.
       * \param[in] file_name the name of the file to write to disk
-      * \param[in] triangles the polygonal mesh to save
+      * \param[in] mesh the polygonal mesh to save
       * \param[in] precision the output ASCII precision default 5
       * \ingroup io
       */
