@@ -166,14 +166,14 @@ namespace pcl
           * \param[in] point the given query point
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
-          * \param[out] k_distances the resultant squared distances to the neighboring points
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
           * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
           * \return number of neighbors found in radius
           */
         int
-      radiusSearch (const PointT& point, double radius,
-                    std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
-                    int max_nn = -1) const;
+        radiusSearch (const PointT& point, double radius,
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+                      int max_nn = -1) const;
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
           * \param[in] cloud the point cloud data

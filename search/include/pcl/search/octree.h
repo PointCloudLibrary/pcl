@@ -136,7 +136,7 @@ namespace pcl
           * \param[in] index the index in \a cloud representing the query point
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
           * a priori!)
           * \return number of neighbors found
           */
@@ -151,15 +151,15 @@ namespace pcl
           * \param[in] point the given query point
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
           * a priori!)
           * \return number of neighbors found
           */
         inline int
-        nearestKSearch (const PointT &p, int k, std::vector<int> &k_indices,
+        nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices,
                         std::vector<float> &k_sqr_distances)
         {
-          return (tree_->nearestKSearch (p, k, k_indices, k_sqr_distances));
+          return (tree_->nearestKSearch (point, k, k_indices, k_sqr_distances));
         }
 
         /** \brief Search for the k-nearest neighbors for the given query point (zero-copy).
@@ -169,7 +169,7 @@ namespace pcl
           * setInputCloud, index will be the position in the indices vector
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
           * a priori!)
           * \return number of neighbors found
           */

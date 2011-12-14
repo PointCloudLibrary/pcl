@@ -143,14 +143,14 @@ namespace pcl
           * \param[in] point the given query point
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
           * a priori!)
           * \return number of neighbors found
           */
         int
-        nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances)
+        nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
         {
-          return (tree_->nearestKSearch (point, k, k_indices, k_distances));
+          return (tree_->nearestKSearch (point, k, k_indices, k_sqr_distances));
         }
 
         /** \brief Search for the k-nearest neighbors for the given query point.
@@ -158,15 +158,15 @@ namespace pcl
           * \param[in] index the index in \a cloud representing the query point
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
           * a priori!)
           * \return number of neighbors found
           */
         inline int
         nearestKSearch (const PointCloud &cloud, int index, int k, std::vector<int> &k_indices,
-                        std::vector<float> &k_distances)
+                        std::vector<float> &k_sqr_distances)
         {
-          return (tree_->nearestKSearch (cloud, index, k, k_indices, k_distances));
+          return (tree_->nearestKSearch (cloud, index, k, k_indices, k_sqr_distances));
         }
 
         /** \brief Search for the k-nearest neighbors for the given query point (zero-copy).
@@ -176,21 +176,21 @@ namespace pcl
           * setInputCloud, index will be the position in the indices vector
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
           * a priori!)
           * \return number of neighbors found
           */
         inline int
-        nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances)
+        nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
         {
-          return (tree_->nearestKSearch (index, k, k_indices, k_distances));
+          return (tree_->nearestKSearch (index, k, k_indices, k_sqr_distances));
         }
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
           * \param[in] point the given query point
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
-          * \param[out] k_distances the resultant squared distances to the neighboring points
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
           * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
           * \return number of neighbors found in radius
           */
@@ -207,15 +207,15 @@ namespace pcl
           * \param[in] index the index in \a cloud representing the query point
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
-          * \param[out] k_distances the resultant squared distances to the neighboring points
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
           * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
           * \return number of neighbors found in radius
           */
         inline int
         radiusSearch (const PointCloud& cloud, int index, double radius, std::vector<int> &k_indices,
-                      std::vector<float> &k_distances, int max_nn = -1)
+                      std::vector<float> &k_sqr_distances, int max_nn = -1)
         {
-          return (tree_->radiusSearch (cloud, index, radius, k_indices, k_distances, max_nn));
+          return (tree_->radiusSearch (cloud, index, radius, k_indices, k_sqr_distances, max_nn));
         }
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius (zero-copy).
@@ -223,15 +223,15 @@ namespace pcl
           *        if indices were given in setInputCloud, index will be the position in the indices vector
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
-          * \param[out] k_distances the resultant squared distances to the neighboring points
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
           * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
           * \return number of neighbors found in radius
           */
         inline int
-        radiusSearch (int index, double radius, std::vector<int> &k_indices, std::vector<float> &k_distances,
+        radiusSearch (int index, double radius, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
                       int max_nn = -1) const
         {
-          return (tree_->radiusSearch (index, radius, k_indices, k_distances, max_nn));
+          return (tree_->radiusSearch (index, radius, k_indices, k_sqr_distances, max_nn));
         }
 
       protected:

@@ -78,11 +78,11 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   if (input_->height == 1 || input_->width == 1)
   {
     PCL_ERROR ("[pcl::%s::radiusSearch] Input dataset is not organized!\n", getName ().c_str ());
-    return (-1);
+    return (0);
   }
 
   // NAN test
-  if (!pcl_isfinite(p_q.x) || !pcl_isfinite(p_q.y) || !pcl_isfinite(p_q.z))
+  if (!pcl_isfinite (p_q.x) || !pcl_isfinite (p_q.y) || !pcl_isfinite (p_q.z))
     return (0);
 
   // search window
@@ -162,190 +162,7 @@ pcl::search::OrganizedNeighbor<PointT>::exactNearestKSearch (const PointT &p_q,
                                                              std::vector<float> &k_sqr_distances)
 {
   PCL_ERROR ("[pcl::search::OrganizedNeighbor::exactNearestKSearch] Method not implemented!\n");
-  return -1;
-/** This needs to be rewritten :(
-  int x_pos, y_pos, x, y, idx;
-  std::size_t i;
-  int leftX, rightX, leftY, rightY;
-  int radiusSearchPointCount;
-
-  double squaredMaxSearchRadius;
-
-  assert (k > 0);
-
-  if (input_->height == 1)
-  {
-    PCL_ERROR ("[pcl::%s::exactNearestKSearch] Input dataset is not organized!", getName ().c_str ());
-    return (0);
-  }
-
-  squaredMaxSearchRadius = max_distance_ * max_distance_;
-
-  // vector for nearest neighbor candidates
-  std::vector<nearestNeighborCandidate> nearestNeighbors;
-
-  // iterator for radius seach lookup table
-  typename std::vector<radiusSearchLoopkupEntry>::const_iterator radiusSearchLookup_Iterator;
-  radiusSearchLookup_Iterator = radiusSearchLookup_.begin ();
-
-  nearestNeighbors.reserve (k * 2);
-
-  // project search point to plane
-  pointPlaneProjection (p_q, x_pos, y_pos);
-  x_pos += (int)input_->width / 2;
-  y_pos += (int)input_->height / 2;
-
-  // initialize result vectors
-  k_indices.clear ();
-  k_sqr_distances.clear ();
-
-  radiusSearchPointCount = 0;
-  // search for k nearest neighbor candidates using the radius lookup table
-  while ((radiusSearchLookup_Iterator != radiusSearchLookup_.end ()) && ((int)nearestNeighbors.size () < k))
-  {
-    // select point from organized pointcloud
-    x = x_pos + (*radiusSearchLookup_Iterator).x_diff_;
-    y = y_pos + (*radiusSearchLookup_Iterator).y_diff_;
-
-    radiusSearchLookup_Iterator++;
-    radiusSearchPointCount++;
-
-    if ((x >= 0) && (y >= 0) && (x < (int)input_->width) && (y < (int)input_->height))
-    {
-      idx = y * (int)input_->width + x;
-      const PointT& point = input_->points[idx];
-
-<<<<<<< .mine
-      if ((point.x == point.x) && // check for NaNs
-          (point.y == point.y) && 
-          (point.z == point.z))
-      {
-        double squared_distance;
-=======
-  if (!pcl_isfinite (input_->points[index].x) ||
-      !pcl_isfinite (input_->points[index].y) ||
-      !pcl_isfinite (input_->points[index].z))
-    return (0);
->>>>>>> .r3214
-
-<<<<<<< .mine
-        const double point_dist_x = point.x - p_q.x;
-        const double point_dist_y = point.y - p_q.y;
-        const double point_dist_z = point.z - p_q.z;
-=======
-  // Put point itself into results. The vector capacity should be unchanged.
-  k_indices.push_back (index);
-  k_distances.push_back (0.0f);
->>>>>>> .r3214
-
-        // calculate squared distance
-        squared_distance = (point_dist_x * point_dist_x + point_dist_y * point_dist_y + point_dist_z * point_dist_z);
-
-        if (squared_distance > squaredMaxSearchRadius)
-          continue;
-
-        // we have a new candidate -> add it
-        nearestNeighborCandidate newCandidate;
-        newCandidate.index_ = idx;
-        newCandidate.squared_distance_ = squared_distance;
-
-        nearestNeighbors.push_back (newCandidate);
-      }
-    }
-  }
-
-  // sort candidate list
-  std::sort (nearestNeighbors.begin (), nearestNeighbors.end ());
-
-  // we found k candidates -> do radius search
-  if ((int)nearestNeighbors.size () == k)
-  {
-    double squared_radius;
-
-    squared_radius = std::min<double> (nearestNeighbors.back ().squared_distance_, squaredMaxSearchRadius);
-
-    std::vector<int> k_radius_indices;
-    std::vector<float> k_radius_distances;
-
-    nearestNeighbors.clear ();
-
-    this->getProjectedRadiusSearchBox (p_q, squared_radius, leftX, rightX, leftY, rightY);
-
-    // iterate over all children
-    for (x = leftX; x <= rightX; x++)
-    {
-<<<<<<< .mine
-      for (y = leftY; y <= rightY; y++)
-=======
-      if (i <= 2 * radius)
-        ++x2;
-      else if (i <= 4 * radius)
-        ++y2;
-      else if (i <= 6 * radius)
-        --x2;
-      else
-        --y2;
-      if (x2 < 0 || x2 >= width || y2 < 0 || y2 >= height)
-        continue;
-      int neighbor_index = y2 * width + x2;
-
-      if (!pcl_isfinite (input_->points[neighbor_index].x) ||
-          !pcl_isfinite (input_->points[neighbor_index].y) ||
-          !pcl_isfinite (input_->points[neighbor_index].z))
-        continue;
-
-      float distance_squared = squaredEuclideanDistance (input_->points[index], input_->points[neighbor_index]);
-      if (distance_squared > max_dist_squared)
-        continue;
-
-      still_in_range = true;
-      // The capacity should change here if the new neighborhood has more points than the previous one
-      k_indices.push_back (neighbor_index);
-      k_distances.push_back (distance_squared);
-      if ((int)k_indices.size () >= max_nn)
->>>>>>> .r3214
-      {
-        double squared_distance;
-        idx = y * input_->width + x;
-        const PointT& point = input_->points[idx];
-
-        const double point_dist_x = point.x - p_q.x;
-        const double point_dist_y = point.y - p_q.y;
-        const double point_dist_z = point.z - p_q.z;
-
-        // calculate squared distance
-        squared_distance = (point_dist_x * point_dist_x + point_dist_y * point_dist_y + point_dist_z * point_dist_z);
-
-        // check distance and add to results
-        if (squared_distance <= squared_radius)
-        {
-          nearestNeighborCandidate newCandidate;
-          newCandidate.index_ = idx;
-          newCandidate.squared_distance_ = squared_distance;
-
-          nearestNeighbors.push_back (newCandidate);
-        }
-      }
-    }
-    std::sort (nearestNeighbors.begin (), nearestNeighbors.end ());
-
-    // truncate sorted nearest neighbor vector if we found more than k candidates
-    if (nearestNeighbors.size () > (size_t)k)
-      nearestNeighbors.resize (k);
-  }
-
-  // copy results from nearestNeighbors vector to separate indices and distance vector
-  k_indices.resize (nearestNeighbors.size ());
-  k_sqr_distances.resize (nearestNeighbors.size ());
-
-  for (i = 0; i < nearestNeighbors.size (); i++)
-  {
-    k_indices[i] = nearestNeighbors[i].index_;
-    k_sqr_distances[i] = nearestNeighbors[i].squared_distance_;
-  }
-
-  return (k_indices.size ());
-*/
+  return (0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -358,18 +175,18 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (int index,
   if (!input_)
   {
     PCL_ERROR ("[pcl::%s::approxNearestKSearch] Input dataset was not set! use setInputCloud before continuing.\n", getName ().c_str ());
-    return -1;
+    return (0);
   }
 
   k_indices.resize (k);
   if (!input_->isOrganized ())
   {
     PCL_ERROR ("[pcl::%s::approxNearestKSearch] Input dataset is not organized!\n", getName ().c_str ());
-    return -1;
+    return (0);
   }
   int data_size = input_->points.size ();
   if (index >= data_size)
-    return 0;
+    return (0);
 
   // Get the cloud width
   int width = input_->width;
@@ -497,7 +314,7 @@ pcl::search::OrganizedNeighbor<PointT>::estimateFocalLengthFromInputCloud (const
   if (input_->height == 1 || input_->width == 1)
   {
     PCL_ERROR ("[pcl::%s::estimateFocalLenghtFromInputCloud] Input dataset is not organized!\n", getName ().c_str ());
-    return 0.0;
+    return (0.0);
   }
   size_t i, count;
   int x, y;

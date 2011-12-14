@@ -157,39 +157,38 @@ namespace pcl
           * \param[in] point the given query point
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
           * a priori!)
           * \return number of neighbors found
           */
         int
-        nearestKSearch (const PointT &point, int k, std::vector<int> &indices, std::vector<float> &dists);
+        nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances);
 
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] cloud the point cloud data
-          * \param[in] index the index in \a cloud representing the query point
+          * \param[in] indices a vector of point cloud indices to query for nearest neighbors
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points, k_indices[i] corresponds to the neighbors of the query point i
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, k_sqr_distances[i] corresponds to the neighbors of the query point i
           */
         virtual void
-        nearestKSearch (const PointCloud& cloud, const std::vector<int>& indices, int k, std::vector< std::vector<int> >& k_indices,
-                std::vector< std::vector<float> >& k_sqr_distances);
+        nearestKSearch (const PointCloud& cloud, const std::vector<int>& indices, int k, 
+                        std::vector< std::vector<int> >& k_indices, std::vector< std::vector<float> >& k_sqr_distances);
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] cloud the point cloud data
           * \param[in] index the index in \a cloud representing the query point
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
           * a priori!)
           * \return number of neighbors found
           */
         inline int
-        nearestKSearch (const PointCloud &cloud, int index, int k, std::vector<int> &k_indices,
-            std::vector<float> &k_distances)
+        nearestKSearch (const PointCloud &cloud, int index, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
         {
-            return nearestKSearch (cloud[index],k,k_indices,k_distances);
+          return (nearestKSearch (cloud[index],k,k_indices,k_sqr_distances));
         }
 
         /** \brief Search for the k-nearest neighbors for the given query point (zero-copy).
@@ -199,43 +198,43 @@ namespace pcl
           * setInputCloud, index will be the position in the indices vector
            * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
           * a priori!)
           * \return number of neighbors found
           */
         inline int
-        nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances)
+        nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
         {
-            return nearestKSearch ((*input_)[index],k,k_indices,k_distances);
+          return nearestKSearch ((*input_)[index],k,k_indices,k_sqr_distances);
         }
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
           * \param[in] point the given query point
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
-          * \param[out] k_distances the resultant squared distances to the neighboring points
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
           * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
           * \return number of neighbors found in radius
           */
         int
-        radiusSearch (const PointT& point, double radius,
-            std::vector<int> &indices, std::vector<float> &distances,
-            int max_nn = -1) const;
+        radiusSearch (const PointT& point, double radius, 
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+                      int max_nn = -1) const;
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
           * \param[in] cloud the point cloud data
           * \param[in] index the index in \a cloud representing the query point
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
-          * \param[out] k_distances the resultant squared distances to the neighboring points
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
           * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
           * \return number of neighbors found in radius
           */
         inline int
         radiusSearch (const PointCloud& cloud, int index, double radius, std::vector<int> &k_indices,
-            std::vector<float> &k_distances, int max_nn = -1)
+            std::vector<float> &k_sqr_distances, int max_nn = -1)
         {
-          return radiusSearch (cloud[index],radius,k_indices,k_distances,max_nn);
+          return radiusSearch (cloud[index],radius,k_indices,k_sqr_distances,max_nn);
         }
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius (zero-copy).
@@ -243,24 +242,25 @@ namespace pcl
           *        if indices were given in setInputCloud, index will be the position in the indices vector
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
-          * \param[out] k_distances the resultant squared distances to the neighboring points
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
           * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
           * \return number of neighbors found in radius
           */
         inline int
-        radiusSearch (int index, double radius, std::vector<int> &k_indices, std::vector<float> &k_distances,
+        radiusSearch (int index, double radius, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
             int max_nn = -1) const
         {
-            return radiusSearch ((*input_)[index],radius,k_indices,k_distances,max_nn);
+            return radiusSearch ((*input_)[index],radius,k_indices,k_sqr_distances,max_nn);
         }
 
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] cloud the point cloud data
-          * \param[in] index the index in \a cloud representing the query point
-          * \param[in] k the number of neighbors to search for
+          * \param[in] indices a vector of point cloud indices to query for nearest neighbors
+          * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points, k_indices[i] corresponds to the neighbors of the query point i
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, k_sqr_distances[i] corresponds to the neighbors of the query point i
+          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
           */
         virtual void
         radiusSearch (const PointCloud& cloud, const std::vector<int>& indices, double radius, std::vector< std::vector<int> >& k_indices,

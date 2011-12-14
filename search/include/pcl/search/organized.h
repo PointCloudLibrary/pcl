@@ -64,6 +64,7 @@ namespace pcl
       * the faster approximate method.
       *
       * \author Radu B. Rusu, Julius Kammerl, Suat Gedikli, Koen Buys
+      * \ingroup search
       */
     template<typename PointT>
     class OrganizedNeighbor : public pcl::search::Search<PointT>
@@ -134,7 +135,7 @@ namespace pcl
 
           if (precision_ == 1)
           {
-            if(!exactFocalLength_)
+            if (!exactFocalLength_)
             {
               estimateFocalLengthFromInputCloud (*cloud);
               generateRadiusLookupTable (cloud->width, cloud->height);
@@ -142,9 +143,7 @@ namespace pcl
             }
           }
           else
-          {
             oneOverFocalLength_ = 1.0f;
-          }
         }
 
         /** \brief Get a pointer to the input dataset as passed by the user. 
@@ -224,7 +223,7 @@ namespace pcl
           * \param[in] index the index in \a cloud representing the query point
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
-          * \param[out] k_distances the resultant squared distances to the neighboring points
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
           * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
           * \return number of neighbors found in radius
           */
@@ -233,10 +232,10 @@ namespace pcl
                       int index, 
                       double radius, 
                       std::vector<int>& k_indices,
-                      std::vector<float>& k_distances, 
+                      std::vector<float>& k_sqr_distances, 
                       int max_nn = std::numeric_limits<int>::max ())
         {
-          return (radiusSearch (cloud.points[index], radius, k_indices, k_distances, max_nn));
+          return (radiusSearch (cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
         }
 
         /** \brief Search for all neighbors of query point that are within a given radius.
@@ -296,9 +295,9 @@ namespace pcl
 
         /** \brief Search for the k-nearest neighbors for a given query point.
           * \param[in] p_q the given query point
-          * \param[in] k the number of neighbors to search for (used only if \ref horizontal and vertical window not given already!)
+          * \param[in] k the number of neighbors to search for (used only if horizontal and vertical window not given already!)
           * \param[out] k_indices the resultant point indices (must be resized to \a k beforehand!)
-          * \param[out] k_distances \note this function does not return distances
+          * \param[out] k_sqr_distances \note this function does not return distances
           * \return number of neighbors found
           */
         int
@@ -312,21 +311,21 @@ namespace pcl
           * \param[in] index the index representing the query point in the dataset given by \a setInputCloud 
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant point indices 
-          * \param[out] k_distances the resultant point neighbor distances
+          * \param[out] k_sqr_distances the resultant point neighbor distances
           * \return number of neighbors found
           */
         inline int
         exactNearestKSearch (int index, 
                              int k, 
                              std::vector<int> &k_indices, 
-                             std::vector<float> &k_distances);
+                             std::vector<float> &k_sqr_distances);
 
         /** \brief Search for the k-nearest neighbors for a given query point.
           * \param[in] cloud the point cloud data
           * \param[in] index the index in \a cloud representing the query point
-          * \param[in] k the number of neighbors to search for (used only if \ref horizontal and vertical window not given already!)
+          * \param[in] k the number of neighbors to search for (used only if horizontal and vertical window not given already!)
           * \param[out] k_indices the resultant point indices (must be resized to \a k beforehand!)
-          * \param[out] k_distances \note this function does not return distances
+          * \param[out] k_sqr_distances \note this function does not return distances
           * \return number of neighbors found
           */
         inline int
@@ -334,14 +333,14 @@ namespace pcl
                              int index, 
                              int k, 
                              std::vector<int> &k_indices, 
-                             std::vector<float> &k_distances);
+                             std::vector<float> &k_sqr_distances);
 
          /** \brief Search for the k-nearest neighbors for a given query point.
            * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
            * \param[in] p_q the given query point (\ref setInputCloud must be given a-priori!)
-           * \param[in] k the number of neighbors to search for (used only if \ref horizontal and vertical window not given already!)
+           * \param[in] k the number of neighbors to search for (used only if horizontal and vertical window not given already!)
            * \param[out] k_indices the resultant point indices (must be resized to \a k beforehand!)
-           * \param[out] k_distances \note this function does not return distances
+           * \param[out] k_sqr_distances \note this function does not return distances
            * \return number of neighbors found
            * @todo still need to implements this functionality
           */
@@ -359,26 +358,26 @@ namespace pcl
           * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
           *
           * \param[in] index the index representing the query point in the dataset (\ref setInputCloud must be given a-priori!)
-          * \param[in] k the number of neighbors to search for (used only if \ref horizontal and vertical window not given already!)
+          * \param[in] k the number of neighbors to search for (used only if horizontal and vertical window not given already!)
           * \param[out] k_indices the resultant point indices (must be resized to \a k beforehand!)
-          * \param[out] k_distances \note this function does not return distances
+          * \param[out] k_sqr_distances \note this function does not return distances
           * \return number of neighbors found
           */
         int
-        nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_distances);
+        nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances);
 
         /** \brief Search for the k-nearest neighbors for a given query point.
           * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
           * \param[in] cloud the point cloud data
           * \param[in] index the index in \a cloud representing the query point
-          * \param[in] k the number of neighbors to search for (used only if \ref horizontal and vertical window not given already!)
+          * \param[in] k the number of neighbors to search for (used only if horizontal and vertical window not given already!)
           * \param[out] k_indices the resultant point indices (must be resized to \a k beforehand!)
-          * \param[out] k_distances \note this function does not return distances
+          * \param[out] k_sqr_distances \note this function does not return distances
           * \return number of neighbors found
           */
         int
         nearestKSearch (const pcl::PointCloud<PointT> &cloud, int index, int k, 
-                        std::vector<int> &k_indices, std::vector<float> &k_distances);
+                        std::vector<int> &k_indices, std::vector<float> &k_sqr_distances);
 
       protected:
         /** \brief RadiusSearchLoopkupEntry entry for radius search lookup vector
