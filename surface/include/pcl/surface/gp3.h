@@ -297,6 +297,16 @@ namespace pcl
       void
       removeOverlapTriangles (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2);
 
+      /** \brief Remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
+        * \param[in,out] mesh1 the first polygon mesh
+        * \param[in,out] mesh2 the second polygon mesh
+        * \param[in] state2 a state vector 
+        * \param[in] sfn2
+        * \param[in] ffn2
+        */
+      void
+      merge2Meshes (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2, std::vector<int> state2, std::vector<int> sfn2, std::vector<int> ffn2);
+
     protected:
       /** \brief The maximum number of nearest neighbors accepted by searching. */
       int nnn_;
@@ -318,16 +328,6 @@ namespace pcl
 
       /** \brief Set this to true if the normals of the input are consistently oriented. */
       bool consistent_;
-
-      /** \brief Remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
-        * \param[in,out] mesh1 the first polygon mesh
-        * \param[in,out] mesh2 the second polygon mesh
-        * \param[in] state2 a state vector 
-        * \param[in] sfn2
-        * \param[in] ffn2
-        */
-      void
-      merge2Meshes (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2, std::vector<int> state2, std::vector<int> sfn2, std::vector<int> ffn2);
 
      private:
       /** \brief Struct for storing the angles to nearest neighbors **/
