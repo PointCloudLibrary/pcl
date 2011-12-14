@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -34,20 +36,19 @@
  * $Id$
  *
  */
-/** \author Khai Tran */
 
 #ifndef PCL_SURFACE_TEXTURE_MAPPING_H_
 #define PCL_SURFACE_TEXTURE_MAPPING_H_
 
 #include "pcl/surface/reconstruction.h"
-#include "pcl/TextureMesh.h"
+#include <pcl/TextureMesh.h>
 
 namespace pcl
 {
   /** \brief The texture mapping algorithm
-      * \author Khai Tran
-      * \ingroup surface
-      */
+    * \author Khai Tran
+    * \ingroup surface
+    */
   template <typename PointInT>
   class TextureMapping
   {
@@ -58,18 +59,20 @@ namespace pcl
       /** \brief Destructor. */
       ~TextureMapping (){};
 
-      /** \brief set mesh scale control
-      * \param
-      */
+      /** \brief Set mesh scale control
+        * \param[in] f 
+        */
       inline void
       setF (float f)
       {
         f_ = f;
       };
 
-      /** \brief set vector field
-      * \param data point x, y z
-      */
+      /** \brief Set vector field
+        * \param[in] x data point x
+        * \param[in] y data point y
+        * \param[in] z data point z
+        */
       inline void
       setVectorField (float x, float y, float z)
       {
@@ -78,33 +81,33 @@ namespace pcl
         vector_field_ = vector_field_/std::sqrt(vector_field_.dot(vector_field_));
       };
 
-      /** \brief set texture files
-      * \param list of texture files
-      */
+      /** \brief Set texture files
+        * \param[in] tex_files list of texture files
+        */
       inline void
       setTextureFiles (std::vector<std::string> tex_files)
       {
         tex_files_ = tex_files;
       };
 
-      /** \brief set texture materials
-       * \param texture material
-       */
+      /** \brief Set texture materials
+        * \param[in] tex_material texture material
+        */
       inline void
       setTextureMaterials (TexMaterial tex_material)
       {
         tex_material_ = tex_material;
       };
 
-      /** \brief map texture to a  mesh synthesis algorithm
-      * \param texture mesh
-      */
+      /** \brief Map texture to a mesh synthesis algorithm
+        * \param[in] tex_mesh texture mesh
+        */
       void
       mapTexture2Mesh (pcl::TextureMesh &tex_mesh);
 
       /** \brief map texture to a mesh UV mapping
-      * \param texture mesh
-      */
+        * \param[in] tex_mesh texture mesh
+        */
       void
       mapTexture2MeshUV (pcl::TextureMesh &tex_mesh);
 
@@ -124,14 +127,17 @@ namespace pcl
 
 
       /** \brief get the distance of 2 3D points.
-      * \param 2 3D points
-      */
+        * \param[in] p1 the first point
+        * \param[in] p2 the second point
+        */
       float
       getDistance (Eigen::Vector3f &p1, Eigen::Vector3f &p2);
 
-      /** \brief map texture to a face
-      * \param
-      */
+      /** \brief Map texture to a face
+        * \param[in] p1 the first point
+        * \param[in] p2 the second point
+        * \param[in] p3 the third point
+        */
       std::vector<Eigen::Vector2f>
       mapTexture2Face (Eigen::Vector3f  &p1, Eigen::Vector3f  &p2, Eigen::Vector3f &p3);
 

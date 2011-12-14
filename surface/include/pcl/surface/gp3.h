@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -273,27 +275,25 @@ namespace pcl
       inline std::vector<int>
       getFFN () { return (ffn_); }
 
-      /** \brief update mesh when new point cloud is added without recreating mesh.
-      * \param point cloud update and update mesh output
-      */
+      /** \brief Update mesh when new point cloud is added without recreating mesh.
+        * \param[in] update point cloud update 
+        * \param[out] output mesh output
+        */
       void
       updateMesh (const PointCloudInConstPtr &update, pcl::PolygonMesh &output);
 
-      /** \brief update texture mesh when new point cloud is added without recreating mesh.
-        * \param point cloud update and update texture mesh output
+      /** \brief Update texture mesh when new point cloud is added without recreating mesh.
+        * \param[in] update point cloud update 
+        * \param[out] output mesh output
+        * \param[out] tex_mesh texture mesh output
         */
       void
       updateMesh (const PointCloudInConstPtr &update, pcl::PolygonMesh &output, pcl::TextureMesh &tex_mesh);
 
-      /** \brief remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
-      * \param polygonMesh 1st and 2nd mesh.
-      */
-      void
-      merge2Meshes (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2, std::vector<int> state2, std::vector<int> sfn2, std::vector<int> ffn2);
-
-      /** \brief remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
-      * \param polygonMesh 1st and 2nd mesh.
-      */
+     /** \brief Remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
+       * \param[in,out] mesh1 the first polygon mesh
+       * \param[in,out] mesh2 the second polygon mesh
+       */
       void
       removeOverlapTriangles (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2);
 
@@ -319,7 +319,17 @@ namespace pcl
       /** \brief Set this to true if the normals of the input are consistently oriented. */
       bool consistent_;
 
-    private:
+      /** \brief Remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
+        * \param[in,out] mesh1 the first polygon mesh
+        * \param[in,out] mesh2 the second polygon mesh
+        * \param[in] state2 a state vector 
+        * \param[in] sfn2
+        * \param[in] ffn2
+        */
+      void
+      merge2Meshes (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2, std::vector<int> state2, std::vector<int> sfn2, std::vector<int> ffn2);
+
+     private:
       /** \brief Struct for storing the angles to nearest neighbors **/
       struct nnAngle
       {

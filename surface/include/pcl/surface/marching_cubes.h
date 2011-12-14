@@ -383,7 +383,7 @@ namespace pcl
       ~MarchingCubes ();
 
       /** \brief set the voxel size.
-        * \param size the size of the voxel
+        * \param[in] leaf_size the size of the voxel
         */
       inline void
       setLeafSize (double leaf_size)

@@ -49,24 +49,30 @@ namespace pcl
   {
     class PCL_EXPORTS SimplificationRemoveUnusedVertices
     {
-
       public:
+        /** \brief Constructor. */
+        SimplificationRemoveUnusedVertices () {};
+        /** \brief Destructor. */
+        ~SimplificationRemoveUnusedVertices () {};
 
-        SimplificationRemoveUnusedVertices(){};
-        ~SimplificationRemoveUnusedVertices(){};
-
+        /** \brief Simply a polygonal mesh.
+          * \param[in] input the input mesh
+          * \param[out] output the output mesh
+          */
         inline void
-        simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output)
+        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output)
         {
           std::vector<int> indices;
-          simplify(input, output, indices);
+          simplify (input, output, indices);
         }
 
         /** \brief Perform simplification (remove unused vertices).
-         * \param
-         */
+          * \param[in] input the input mesh
+          * \param[out] output the output mesh
+          * \param[out] indices the resultant vector of indices
+          */
         void
-        simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices);
+        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices);
 
     };
   }
