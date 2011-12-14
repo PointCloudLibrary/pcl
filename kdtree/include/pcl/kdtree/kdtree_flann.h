@@ -41,17 +41,9 @@
 #define PCL_KDTREE_KDTREE_FLANN_H_
 
 #include <cstdio>
+#include <flann/flann.hpp>
 #include <pcl/kdtree/kdtree.h>
 #include <boost/thread/mutex.hpp>
-
-namespace flann
-{
-  template <typename Distance>
-  class Index;
-
-  template <class T>
-  struct L2_Simple;
-}
 
 namespace pcl
 {
@@ -73,10 +65,10 @@ namespace pcl
     typedef typename KdTree<PointT>::PointCloud PointCloud;
     typedef typename KdTree<PointT>::PointCloudConstPtr PointCloudConstPtr;
 
-    typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
-    typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
+    typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
+    typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
 
-    typedef flann::Index <Dist> FLANNIndex;
+    typedef flann::Index<Dist> FLANNIndex;
 
     public:
       // Boost shared pointers
@@ -90,6 +82,8 @@ namespace pcl
         */
       KdTreeFLANN (bool sorted = true) : pcl::KdTree<PointT> (sorted), flann_index_(NULL), cloud_(NULL)
       {
+        param_k_ = flann::SearchParams (-1 ,epsilon_);
+        param_radius_ = flann::SearchParams (-1 ,epsilon_, sorted);
         cleanup ();
       }
 
@@ -106,14 +100,26 @@ namespace pcl
         shallowCopy (tree);
       }
 
+      /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
+        * \param[in] eps precision (error bound) for nearest neighbors searches
+        */
+      inline void
+      setEpsilon (double eps)
+      {
+        epsilon_ = eps;
+        param_k_ = flann::SearchParams (-1 ,epsilon_);
+        param_radius_ = flann::SearchParams (-1 ,epsilon_, sorted_);
+      }
+
       inline Ptr makeShared () { return Ptr (new KdTreeFLANN<PointT> (*this)); } 
 
+      /** \brief Asignment operator (shallow copy)
+        * \param[in] tree the tree to copy 
+        */
       KdTreeFLANN& operator= (const KdTreeFLANN& tree)
       {
         if (this != &tree) 
-        {
           shallowCopy (tree);
-        }
         return (*this);
       }
 
@@ -151,30 +157,30 @@ namespace pcl
         * \param[in] point the given query point
         * \param[in[ k the number of neighbors to search for
         * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k 
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
         * a priori!)
         * \return number of neighbors found
         */
       int 
       nearestKSearch (const PointT &point, int k, 
-                      std::vector<int> &k_indices, std::vector<float> &k_distances);
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances);
 
       /** \brief Search for k-nearest neighbors for the given query point.
         * \param[in] cloud the point cloud data
         * \param[in] index the index in \a cloud representing the query point
         * \param[in] k the number of neighbors to search for
         * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k 
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
         * a priori!)
         * \return number of neighbors found
         */
       inline int 
       nearestKSearch (const PointCloud &cloud, int index, int k, 
-                      std::vector<int> &k_indices, std::vector<float> &k_distances)
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
       {
-        if (index >= (int)cloud.points.size ())
+        if (index >= (int)cloud.points.size () || index < 0)
           return (0);
-        return (nearestKSearch (cloud.points[index], k, k_indices, k_distances));
+        return (nearestKSearch (cloud.points[index], k, k_indices, k_sqr_distances));
       }
 
       /** \brief Search for k-nearest neighbors for the given query point (zero-copy).
@@ -182,25 +188,25 @@ namespace pcl
         *        if indices were given in setInputCloud, index will be the position in the indices vector
         * \param[in] k the number of neighbors to search for
         * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k 
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
         * a priori!)
         * \return number of neighbors found
         */
       inline int 
       nearestKSearch (int index, int k, 
-                      std::vector<int> &k_indices, std::vector<float> &k_distances)
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
       {
         if (indices_ == NULL)
         {
-          if (index >= (int)input_->points.size ())
+          if (index >= (int)input_->points.size () || index < 0)
             return (0);
-          return (nearestKSearch (input_->points[index], k, k_indices, k_distances));
+          return (nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
         }
         else
         {
-          if (index >= (int)indices_->size())
+          if (index >= (int)indices_->size() || index < 0)
             return (0);
-          return (nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_distances));
+          return (nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_sqr_distances));
         }
       }
 
@@ -208,31 +214,31 @@ namespace pcl
         * \param[in] point the given query point
         * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
         * \param[out] k_indices the resultant indices of the neighboring points
-        * \param[out] k_distances the resultant squared distances to the neighboring points
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
         * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radius
         */
       int 
       radiusSearch (const PointT &point, double radius, std::vector<int> &k_indices,
-                    std::vector<float> &k_distances, int max_nn = -1) const;
+                    std::vector<float> &k_sqr_distances, int max_nn = -1) const;
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
         * \param[in] cloud the point cloud data
         * \param[in] index the index in \a cloud representing the query point
         * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
         * \param[out] k_indices the resultant indices of the neighboring points
-        * \param[out] k_distances the resultant squared distances to the neighboring points
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
         * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radius
         */
       inline int 
       radiusSearch (const PointCloud &cloud, int index, double radius, 
-                    std::vector<int> &k_indices, std::vector<float> &k_distances, 
+                    std::vector<int> &k_indices, std::vector<float> &k_sqr_distances, 
                     int max_nn = -1) const
       {
-        if (index >= (int)cloud.points.size ())
-          return 0;
-        return (radiusSearch(cloud.points[index], radius, k_indices, k_distances, max_nn));
+        if (index >= (int)cloud.points.size () || index < 0)
+          return (0);
+        return (radiusSearch(cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius (zero-copy).
@@ -240,44 +246,47 @@ namespace pcl
         *        if indices were given in setInputCloud, index will be the position in the indices vector
         * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
         * \param[out] k_indices the resultant indices of the neighboring points
-        * \param[out] k_distances the resultant squared distances to the neighboring points
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
         * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radius
         */
       inline int 
       radiusSearch (int index, double radius, std::vector<int> &k_indices,
-                    std::vector<float> &k_distances, int max_nn = -1) const
+                    std::vector<float> &k_sqr_distances, int max_nn = -1) const
       {
         if (indices_ == NULL)
         {
-          if (index >= (int)input_->points.size ())
-            return 0;
-          return (radiusSearch (input_->points[index], radius, k_indices, k_distances, max_nn));
+          if (index >= (int)input_->points.size () || index < 0)
+            return (0);
+          return (radiusSearch (input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
         }
         else
         {
-          if (index >= (int)indices_->size ())
-            return 0;
-          return (radiusSearch (input_->points[(*indices_)[index]], radius, k_indices, k_distances, max_nn));
+          if (index >= (int)indices_->size () || index < 0)
+            return (0);
+          return (radiusSearch (input_->points[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
         }
       }
 
     private:
       /** \brief Internal cleanup method. */
-      void cleanup ();
+      void 
+      cleanup ();
 
       /** \brief Simple initialization method for internal parameters. */
-      bool initParameters ();
+      bool 
+      initParameters ();
 
       /** \brief Simple initialization method for internal data buffers. */
-      void initData ();
+      void 
+      initData ();
 
-      /** \brief Converts a ROS PointCloud message to the internal FLANN point array representation. Returns the number
+      /** \brief Converts a PointCloud to the internal FLANN point array representation. Returns the number
         * of points.
-        * \param ros_cloud the ROS PointCloud message
+        * \param cloud the PointCloud 
         */
       void 
-      convertCloudToArray (const PointCloud &ros_cloud);
+      convertCloudToArray (const PointCloud &cloud);
 
       /** \brief Converts a PointCloud with a given set of indices to the internal FLANN point array
         * representation. Returns the number of points.
@@ -308,7 +317,13 @@ namespace pcl
 
       /** \brief Tree dimensionality (i.e. the number of dimensions per point). */
       int dim_;
-  };
+
+      /** \brief The KdTree search parameters for K-nearest neighbors. */
+      flann::SearchParams param_k_;
+
+      /** \brief The KdTree search parameters for radius search. */
+      flann::SearchParams param_radius_;
+   };
 }
 
 #endif
