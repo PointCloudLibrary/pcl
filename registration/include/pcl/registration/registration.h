@@ -210,7 +210,7 @@ namespace pcl
 
       /** \brief Register the user callback function which will be called from registration thread
        * in order to update point cloud obtained after each iteration
-       * \param refference of the user callback function
+       * \param[in] visualizerCallback reference of the user callback function
        */
       template<typename FunctionSignature> inline bool
       registerVisualizationCallback (boost::function<FunctionSignature> &visualizerCallback)

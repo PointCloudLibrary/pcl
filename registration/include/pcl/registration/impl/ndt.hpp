@@ -307,9 +307,10 @@ namespace pcl
 
       public:
         /** \brief
-          * \param[in] about    Centre of the grid for normal distributions model
-          * \param[in] extent   Extent of grid for normal distributions model
-          * \param[in] step     Size of region that each normal distribution will model
+          * \param[in] cloud the input point cloud
+          * \param[in] about Centre of the grid for normal distributions model
+          * \param[in] extent Extent of grid for normal distributions model
+          * \param[in] step Size of region that each normal distribution will model
           */
         NDT (PointCloudConstPtr cloud,
              const Eigen::Vector2f& about,
