@@ -5,7 +5,8 @@ set(SUBSYS_PATH cuda/gpu_kinfu)
 set(SUBSYS_DESC "Kinnect Fusiion implementation")
 set(SUBSYS_DEPS common gpu_containers gpu_utils gpu_features visualization io)
 
-find_package(OpenCV QUIET)
+#find_package(OpenCV QUIET)
+set(OpenCV_FOUND 0)
 
 if (TRUE)
 	set(build FALSE)
@@ -17,6 +18,8 @@ if (TRUE)
 	if(OpenCV_FOUND)
 		add_definitions(-DHAVE_OPENCV)	
 		include_directories(${OpenCV_INCLUDE_DIRS})
+	else()
+		remove_definitions(-DHAVE_OPENCV)	
 	endif()
 
 	if (build)
