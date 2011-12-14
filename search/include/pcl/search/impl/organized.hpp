@@ -139,11 +139,11 @@ pcl::search::OrganizedNeighbor<PointT>::exactNearestKSearch (int                
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointCloud        &cloud, 
-                                                        int                     index,
-                                                        int                     k, 
-                                                        std::vector<int>        &k_indices,
-                                                        std::vector<float>      &k_sqr_distances)
+pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const pcl::PointCloud<PointT> &cloud, 
+                                                        int                           index,
+                                                        int                           k, 
+                                                        std::vector<int>              &k_indices,
+                                                        std::vector<float>            &k_sqr_distances)
 {
   if (!exactFocalLength_)
   {
