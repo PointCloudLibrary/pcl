@@ -25,19 +25,7 @@ ALWAYS_DETAILED_SEC    = NO
 INLINE_INHERITED_MEMB  = YES
 FULL_PATH_NAMES        = YES
 STRIP_FROM_PATH        = 
-STRIP_FROM_INC_PATH    = @PCL_SOURCE_DIR@/common/include \
-                         @PCL_SOURCE_DIR@/features/include \
-                         @PCL_SOURCE_DIR@/surface/include \
-                         @PCL_SOURCE_DIR@/visualization/include \
-                         @PCL_SOURCE_DIR@/kdtree/include \
-                         @PCL_SOURCE_DIR@/registration/include \
-                         @PCL_SOURCE_DIR@/filters/include \
-                         @PCL_SOURCE_DIR@/io/include \
-                         @PCL_SOURCE_DIR@/range_image/include \
-                         @PCL_SOURCE_DIR@/segmentation/include \
-                         @PCL_SOURCE_DIR@/octree/include \
-                         @PCL_SOURCE_DIR@/sample_consensus/include \
-                         @PCL_SOURCE_DIR@/keypoints/include
+STRIP_FROM_INC_PATH    = @STRIPPED_HEADERS@
 SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = YES
 QT_AUTOBRIEF           = NO
@@ -111,7 +99,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = "@PCL_SOURCE_DIR@" \
+INPUT                  = @DOC_SOURCE_DIR@
  												 "@PCL_SOURCE_DIR@/doc/doxygen"
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \
