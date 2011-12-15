@@ -21,6 +21,8 @@ if (ANDROID_NDK)
   message("VTK was found, but cannot be compiled for Android. Please use VES instead.")
 endif ()
 
+PCL_ADD_DOC(${SUBSYS_NAME})
+
 if(build)
     set(srcs
         src/point_picking_event.cpp

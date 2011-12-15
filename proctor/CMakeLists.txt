@@ -23,6 +23,8 @@ if (ANDROID_NDK)
   set (build FALSE)
 endif ()
 
+PCL_ADD_DOC(${SUBSYS_NAME})
+
 if(build)
   include_directories(include/pcl/${SUBSYS_NAME})
   include_directories(include/pcl/)
