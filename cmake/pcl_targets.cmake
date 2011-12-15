@@ -539,26 +539,65 @@ macro(collect_subproject_directory_names dirname filename names dirs)
     endforeach(subdir)
 endmacro()
 
-macro(PCL_DISABLE_DEPENDIES subsys)
-    string(TOUPPER "pcl_${subsys}_dependies" PCL_SUBSYS_DEPENDIES)
+########################################################################################
+# Macro to disable subsystem dependies
+# _subsys IN subsystem name
+macro(PCL_DISABLE_DEPENDIES _subsys)
+    string(TOUPPER "pcl_${_subsys}_dependies" PCL_SUBSYS_DEPENDIES)
     if(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
         foreach(dep ${${PCL_SUBSYS_DEPENDIES}})
-            PCL_SET_SUBSYS_HYPERSTATUS(${subsys} ${dep} AUTO_OFF "Automatically disabled.")
+            PCL_SET_SUBSYS_HYPERSTATUS(${_subsys} ${dep} AUTO_OFF "Automatically disabled.")
             set(BUILD_${dep} OFF CACHE BOOL "Automatically disabled ${dep}" FORCE)
         endforeach(dep)
     endif(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
 endmacro(PCL_DISABLE_DEPENDIES subsys)
 
-macro(PCL_ENABLE_DEPENDIES subsys)
-    string(TOUPPER "pcl_${subsys}_dependies" PCL_SUBSYS_DEPENDIES)
+########################################################################################
+# Macro to enable subsystem dependies
+# _subsys IN subsystem name
+macro(PCL_ENABLE_DEPENDIES _subsys)
+    string(TOUPPER "pcl_${_subsys}_dependies" PCL_SUBSYS_DEPENDIES)
     if(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
         foreach(dep ${${PCL_SUBSYS_DEPENDIES}})
-            PCL_GET_SUBSYS_HYPERSTATUS(dependee_status ${subsys} ${dep})
+            PCL_GET_SUBSYS_HYPERSTATUS(dependee_status ${_subsys} ${dep})
             if("${dependee_status}" STREQUAL "AUTO_OFF")
-                PCL_SET_SUBSYS_HYPERSTATUS(${subsys} ${dep} AUTO_ON)
+                PCL_SET_SUBSYS_HYPERSTATUS(${_subsys} ${dep} AUTO_ON)
                 GET_IN_MAP(desc PCL_SUBSYS_DESC ${dep})
                 set(BUILD_${dep} ON CACHE BOOL "${desc}" FORCE)
             endif("${dependee_status}" STREQUAL "AUTO_OFF")
         endforeach(dep)
     endif(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
 endmacro(PCL_ENABLE_DEPENDIES subsys)
+
+########################################################################################
+# Macro to build subsystem centric documentation
+# _subsys IN the name of the subsystem to generate documentation for
+macro (PCL_ADD_DOC _subsys)
+  string(TOUPPER "${_subsys}" SUBSYS)
+  set(doc_subsys "doc_${_subsys}")
+  GET_IN_MAP(dependencies PCL_SUBSYS_DEPS ${_subsys})
+  if(DOXYGEN_FOUND)
+    if(HTML_HELP_COMPILER)
+      set(DOCUMENTATION_HTML_HELP YES)
+    else(HTML_HELP_COMPILER)
+      set(DOCUMENTATION_HTML_HELP NO)
+    endif(HTML_HELP_COMPILER)
+    if(NOT "${dependencies}" STREQUAL "")
+      set(STRIPPED_HEADERS "${PCL_SOURCE_DIR}/${dependencies}/include")
+      string(REPLACE ";" "/include \\\n\t\t\t\t\t\t\t\t\t\t\t\t ${PCL_SOURCE_DIR}/" 
+             STRIPPED_HEADERS "${STRIPPED_HEADERS}")
+    endif(NOT "${dependencies}" STREQUAL "")
+    set(DOC_SOURCE_DIR "\"${CMAKE_CURRENT_SOURCE_DIR}\"\\")
+    foreach(dep ${dependencies})
+      set(DOC_SOURCE_DIR 
+          "${DOC_SOURCE_DIR}\n\t\t\t\t\t\t\t\t\t\t\t\t \"${PCL_SOURCE_DIR}/${dep}\"\\")
+    endforeach(dep)
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html")
+    set(doxyfile "${CMAKE_CURRENT_BINARY_DIR}/doxyfile")
+    configure_file("${PCL_SOURCE_DIR}/doc/doxygen/doxyfile.in" ${doxyfile})
+    add_custom_target(${doc_subsys} ${DOXYGEN_EXECUTABLE} ${doxyfile})
+    # if(USE_PROJECT_FOLDERS)
+    #   set_target_properties(${doc_subsys} PROPERTIES FOLDER "Documentation")
+    # endif(USE_PROJECT_FOLDERS)
+  endif(DOXYGEN_FOUND)
+endmacro(PCL_ADD_DOC)
