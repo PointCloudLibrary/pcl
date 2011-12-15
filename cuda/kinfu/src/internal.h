@@ -96,7 +96,8 @@ namespace pcl
       */
     void 
     bilateralFilter (const DepthMap& src, DepthMap& dst);
-    /** \brief Computes depth pyramid
+    
+	/** \brief Computes depth pyramid
       * \param[in] src source
       * \param[out] dst destination
       */
@@ -110,13 +111,15 @@ namespace pcl
       */
     void 
     createVMap (const Intr& intr, const DepthMap& depth, MapArr& vmap);
-    /** \brief Computes normal map using cross product
+    
+	/** \brief Computes normal map using cross product
       * \param[in] vmap vertex map
       * \param[out] nmap normal map
       */
     void 
     createNMap (const MapArr& vmap, MapArr& nmap);
-    /** \brief Computes normal map using Eigen/PCA approach
+    
+	/** \brief Computes normal map using Eigen/PCA approach
       * \param[in] vmap vertex map
       * \param[out] nmap normal map
       */
@@ -133,6 +136,13 @@ namespace pcl
       */
     void 
     tranformMaps (const MapArr& vmap_src, const MapArr& nmap_src, const Mat33& Rmat, const float3& tvec, MapArr& vmap_dst, MapArr& nmap_dst);
+
+	/** \brief Performs depth truncation
+      * \param[out] depth depth map to truncation
+      * \param[in] max_distance truncation threshold, values that are higher than the threshold are reset to zero (means not measurement)
+      */
+	void 
+	truncateDepth(DepthMap& depth, unsigned short max_distance);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //   ICP 

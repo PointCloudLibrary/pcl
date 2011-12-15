@@ -115,6 +115,7 @@ struct KinFuApp
     kinfu_.setInitalCameraPose (pose);
     kinfu_.setTrancationDistance (30);    // in mm;
     kinfu_.setIcpCorespFilteringParams (100 /*mm*/, sin (20.f * 3.14159254f / 180.f));
+	//kinfu_.setDepthTruncationForICP(5000 /*mm*/);
 
     /////////////////////////////////////////
     //Init KinfuApp

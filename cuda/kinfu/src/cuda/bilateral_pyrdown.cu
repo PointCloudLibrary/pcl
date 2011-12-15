@@ -120,6 +120,17 @@ namespace pcl
         }
       dst.ptr (y)[x] = sum / count;
     }
+
+	__global__ void
+    truncateDepthKernel(PtrStepSz<ushort> depth, ushort max_distance)
+	{
+		int x = blockIdx.x * blockDim.x + threadIdx.x;
+		int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+		if (x < depth.cols && y < depth.rows)		
+			if(depth.ptr(y)[x] > max_distance)
+				depth.ptr(y)[x] = 0;
+	}
   }
 }
 
@@ -131,7 +142,7 @@ pcl::device::bilateralFilter (const DepthMap& src, DepthMap& dst)
   dim3 grid (divUp (src.cols (), block.x), divUp (src.rows (), block.y));
 
   cudaFuncSetCacheConfig (bilateralKernel, cudaFuncCachePreferL1);
-  bilateralKernel << < grid, block >> > (src, dst, 0.5f / (sigma_space * sigma_space), 0.5f / (sigma_color * sigma_color));
+  bilateralKernel<<<grid, block>>>(src, dst, 0.5f / (sigma_space * sigma_space), 0.5f / (sigma_color * sigma_color));
 
   cudaSafeCall ( cudaGetLastError () );
 };
@@ -145,6 +156,18 @@ pcl::device::pyrDown (const DepthMap& src, DepthMap& dst)
   dim3 block (32, 8);
   dim3 grid (divUp (dst.cols (), block.x), divUp (dst.rows (), block.y));
 
-  pyrDownKernel << < grid, block >> > (src, dst, sigma_color);
+  pyrDownKernel<<<grid, block>>>(src, dst, sigma_color);
   cudaSafeCall ( cudaGetLastError () );
 };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::device::truncateDepth(DepthMap& depth, unsigned short max_distance)
+{
+  dim3 block (32, 8);
+  dim3 grid (divUp (depth.cols (), block.x), divUp (depth.rows (), block.y));
+
+  truncateDepthKernel<<<grid, block>>>(depth, max_distance);
+
+  cudaSafeCall ( cudaGetLastError () );
+}

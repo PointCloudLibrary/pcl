@@ -99,6 +99,13 @@ namespace pcl
         void
         setTrancationDistance (float distance);
 
+		/** \brief Sets truncation threshold for depth image for ICP step only! This helps 
+		  *  to filter measurements that are outside tsdf volume. Pass zero to disable the truncation.
+          * \param[in] max_icp_distance_ Maximal distance in mm, higher values are reset to zero (means no measurement). 
+          */
+        void
+        setDepthTruncationForICP (unsigned short max_icp_distance = 0);
+
         /** \brief Sets ICP filtering parameters.
           * \param[in] distThreshold distance in mm.
           * \param[in] sineOfAngle sine of angle between normals.
@@ -214,6 +221,9 @@ namespace pcl
         int cols_;
         /** \brief Frame counter */
         int global_time_;
+
+		/** \brief Truncation threshold for depth image for ICP step */
+		unsigned short max_icp_distance_;
 
         /** \brief Intrinsic parameters of depth camera. */
         float fx_, fy_, cx_, cy_;

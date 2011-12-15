@@ -69,7 +69,7 @@ device_cast (Matx& matx)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(cols), global_time_(0)
+pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(cols), global_time_(0), max_icp_distance_(0)
 {
   rmats_.reserve (30000);
   tvecs_.reserve (30000);
@@ -128,6 +128,13 @@ pcl::gpu::KinfuTracker::setTrancationDistance (float distance)
   float cz = volume_size_ (2) / VOLUME_Z;
 
   tranc_dist_ = max (distance, 2.1f * max (cx, max (cy, cz)));
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::gpu::KinfuTracker::setDepthTruncationForICP (unsigned short max_icp_distance)
+{
+	max_icp_distance_ = max_icp_distance;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -229,6 +236,9 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
     //ScopeTime time(">>> Bilateral, pyr-down-all, create-maps-all");
     //depth_raw.copyTo(depths_curr[0]);
     device::bilateralFilter (depth_raw, depths_curr_[0]);
+
+	if (max_icp_distance_ > 0)
+		device::truncateDepth(depths_curr_[0], max_icp_distance_);
 
     for (int i = 1; i < LEVELS; ++i)
       device::pyrDown (depths_curr_[i-1], depths_curr_[i]);
@@ -580,6 +590,7 @@ pcl::gpu::KinfuTracker::getNormalsFromVolume (const DeviceArray<PointType>& clou
   device::extractNormals (volume_, device_volume_size, cloud, (device::float8*)normals.ptr ());
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::gpu::KinfuTracker::getTsdfVolume( std::vector<float>& volume) const
 {
