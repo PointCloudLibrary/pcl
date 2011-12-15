@@ -142,6 +142,11 @@ find_package(MPI)
 if(MPI_CXX_FOUND)
   include_directories(${MPI_INCLUDE_PATH})
 endif(MPI_CXX_FOUND)
+#Find Doxygen and html help compiler if any
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+  find_package(HTMLHelp)
+endif(DOXYGEN_FOUND)
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
