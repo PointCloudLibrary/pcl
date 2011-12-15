@@ -188,10 +188,10 @@ namespace pcl
                 }                                
             }
 
-            void generateIndices()
+            void generateIndices(size_t step = 100)
             {
                 indices->clear();
-                for(size_t i = 0; i < cloud->points.size(); i +=100)
+                for(size_t i = 0; i < cloud->points.size(); i += step)
                     indices->push_back(i);                
             }
 

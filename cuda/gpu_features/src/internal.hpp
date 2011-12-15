@@ -142,6 +142,31 @@ namespace pcl
             DeviceArray<PrincipalCurvatures>& output, DeviceArray2D<float>& proj_normals_buf);
 
 
+        //vfh estimation
+        template<typename PointT> void compute3DCentroid(const DeviceArray<PointT>& cloud, float3& centroid);
+        template<typename PointT> void compute3DCentroid(const DeviceArray<PointT>& cloud,  const Indices& indices, float3& centroid);
+
+        template<typename PointT> float3 getMaxDistance(const DeviceArray<PointT>& cloud, const float3& pivot);        
+        template<typename PointT> float3 getMaxDistance(const DeviceArray<PointT>& cloud, const Indices& indices, const float3& pivot);
+
+        struct VFHEstimationImpl
+        {
+            float3 xyz_centroid;
+            float3 normal_centroid;
+            float3 viewpoint;
+
+            Indices indices;
+            PointCloud points;
+            Normals normals;
+
+            bool normalize_distances;
+            bool size_component;
+            bool normalize_bins;
+       
+            void compute(DeviceArray<VFHSignature308>& feature);
+        };
+
+
     }
 }
 

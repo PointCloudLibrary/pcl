@@ -325,3 +325,84 @@ void pcl::gpu::PrincipalCurvaturesEstimation::compute(DeviceArray<PrincipalCurva
 
     device::computePointPrincipalCurvatures(n, indices_, nn_indices_, f, proj_normals_buf);
 }
+
+
+/////////////////////////////////////////////////////////////////////////
+/// VFHEstimation
+
+pcl::gpu::VFHEstimation::VFHEstimation()
+{     
+    vpx_ =  vpy_ =  vpz_ = 0.f;
+
+    //default parameters to compute VFH
+    use_given_normal_ = false;
+    use_given_centroid_ = false;
+    normalize_bins_ = true;
+    normalize_distances_ = false;
+    size_component_ = false;    
+}
+
+void pcl::gpu::VFHEstimation::setViewPoint(float  vpx, float  vpy, float  vpz) { vpx_ = vpx; vpy_ = vpy; vpz_ = vpz; }
+void pcl::gpu::VFHEstimation::getViewPoint(float& vpx, float& vpy, float& vpz) { vpx = vpx_; vpy = vpy_; vpz = vpz_; }      
+
+void pcl::gpu::VFHEstimation::setUseGivenNormal (bool use) { use_given_normal_ = use; }
+void pcl::gpu::VFHEstimation::setNormalToUse (const NormalType& normal)   { normal_to_use_ = normal; }
+void pcl::gpu::VFHEstimation::setUseGivenCentroid (bool use) { use_given_centroid_ = use; }
+void pcl::gpu::VFHEstimation::setCentroidToUse (const PointType& centroid)  { centroid_to_use_ = centroid; }
+
+void pcl::gpu::VFHEstimation::setNormalizeBins (bool normalize)     { normalize_bins_ = normalize; }
+void pcl::gpu::VFHEstimation::setNormalizeDistance (bool normalize) { normalize_distances_ = normalize; }
+void pcl::gpu::VFHEstimation::setFillSizeComponent (bool fill_size) { size_component_ = fill_size; }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+void pcl::gpu::VFHEstimation::compute(DeviceArray<VFHSignature308>& feature)
+{   
+    assert(!surface_.empty() && normals_.size() == surface_.size() && cloud_.empty());    
+
+    Static<sizeof(VFHEstimation:: PointType) == sizeof(device:: PointType)>::check();
+    Static<sizeof(VFHEstimation::NormalType) == sizeof(device::NormalType)>::check();    
+
+    feature.create(1);
+
+    VFHEstimationImpl impl;
+
+    const DeviceArray<device::PointType>& s = (const DeviceArray<device::PointType>&)surface_;
+    const DeviceArray<device::NormalType>& n = (const DeviceArray<device::NormalType>&)normals_;
+    
+    if (use_given_centroid_) 
+    {
+        impl.xyz_centroid.x = centroid_to_use_.x;
+        impl.xyz_centroid.y = centroid_to_use_.y;
+        impl.xyz_centroid.z = centroid_to_use_.z;
+    }
+    else        
+    {
+        compute3DCentroid(s, indices_, impl.xyz_centroid);
+
+    }
+    if (use_given_normal_)
+    {
+        impl.normal_centroid.x = normal_to_use_.x;
+        impl.normal_centroid.y = normal_to_use_.y;
+        impl.normal_centroid.z = normal_to_use_.z;
+    }
+    else
+        compute3DCentroid (n, indices_, impl.normal_centroid);
+
+    impl.viewpoint = make_float3(vpx_, vpy_, vpz_);
+
+
+    impl.indices = indices_;
+    impl.points = s;
+    impl.normals = n;
+
+    impl.normalize_distances = normalize_distances_;
+    impl.size_component = size_component_;
+    impl.normalize_bins = normalize_bins_;
+
+    DeviceArray<device::VFHSignature308>& f = (DeviceArray<device::VFHSignature308>&)feature;
+    impl.compute(f);
+}
+
+
