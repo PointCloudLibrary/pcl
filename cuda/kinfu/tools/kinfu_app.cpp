@@ -120,8 +120,8 @@ struct KinFuApp
     /////////////////////////////////////////
     //Init KinfuApp
 
-    viewer3d_.setName ("View3D from ray tracing");
-    viewer2d_.setName("Kinect Depth stream");
+    viewer3d_.setWindowTitle ("View3D from ray tracing");
+    viewer2d_.setWindowTitle("Kinect Depth stream");
 
     cloud_ptr_ = PointCloud<PointXYZ>::Ptr (new PointCloud<pcl::PointXYZ>);
     cloud_normals_ptr_ = PointCloud<Normal>::Ptr (new PointCloud<pcl::Normal>);
