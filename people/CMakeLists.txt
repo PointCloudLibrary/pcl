@@ -1,6 +1,6 @@
 set(SUBSYS_NAME people)
 set(SUBSYS_DESC "Point cloud people library")
-set(SUBSYS_DEPS common search kdtree)
+set(SUBSYS_DEPS common search kdtree sample_consensus)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
