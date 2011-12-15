@@ -120,7 +120,7 @@ struct KinFuApp
     //Init KinfuApp
 
     viewer3d_.setName ("View3D from ray tracing");
-    //viewer2d_.setName("Kinect RGB stream");
+    viewer2d_.setName("Kinect Depth stream");
 
     cloud_ptr_ = PointCloud<PointXYZ>::Ptr (new PointCloud<pcl::PointXYZ>);
     cloud_normals_ptr_ = PointCloud<Normal>::Ptr (new PointCloud<pcl::Normal>);
@@ -141,7 +141,7 @@ struct KinFuApp
 
     viewer3d_.registerKeyboardCallback (keyboard_callback, (void*)this);
     cloud_viewer_.registerKeyboardCallback (keyboard_callback, (void*)this);
-    //viewer2d_.registerKeyboardCallback(keyboard_callback, (void*)this);
+    viewer2d_.registerKeyboardCallback(keyboard_callback, (void*)this);
 
     if (show_current_frame)
     {
@@ -252,12 +252,13 @@ struct KinFuApp
       setViewerPose (cloud_viewer_, kinfu_.getCameraPose ());
       cloud_viewer_.spinOnce ();
 
+	  viewer2d_.showShortImage (depth.data, depth.cols, depth.rows, 0, 5000, true);
+
 #if ((VTK_MAJOR_VERSION >= 5) && (VTK_MINOR_VERSION > 6))
       if (hasImage_)
-        viewer3d_.spinOnce (3);        // don't know why crash under ubuntu is here.
-#endif
-      //viewer2d_.showRGBImage ((unsigned char*)rgb24.data, rgb24.cols, rgb24.rows);
-      //viewer2d_.spinOnce(3);
+		  viewer3d_.spinOnce (3);        // don't know why crash under ubuntu is here.	  
+      viewer2d_.spinOnce(3);
+#endif      
     }
   }
 
@@ -273,7 +274,7 @@ struct KinFuApp
   KinfuTracker kinfu_;
 
   visualization::ImageViewer viewer3d_;
-  //visualization::ImageViewer viewer2d_;
+  visualization::ImageViewer viewer2d_;
   visualization::PCLVisualizer cloud_viewer_;
   boost::shared_ptr<visualization::PCLVisualizer> frame_cloud_viewer_;
 
