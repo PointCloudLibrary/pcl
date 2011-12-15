@@ -261,15 +261,6 @@ struct KinFuApp
     }
   }
 
-  void
-  resetCloud ()
-  {
-    cloud_ptr_->points.resize (1);
-    cloud_ptr_->points.front () = pcl::PointXYZ (0, 0, 0);
-    cloud_ptr_->width = cloud_ptr_->height = 1;
-    cloud_viewer_.updatePointCloud (cloud_ptr_);
-  }
-
   bool exit_;
   bool scan_;
   bool showNormals_;
@@ -330,7 +321,7 @@ struct KinFuApp
         cout << endl << "Show normals: " << (app->showNormals_ ? "true (GPU only)" : "false") << endl << endl;
         break;
       case (int)'c': case (int)'C':
-        app->resetCloud ();
+        app->cloud_viewer_.removeAllPointClouds ();
         cout << "Cloud viewer is reset" << endl;
         break;
       case (int)'s': case (int)'S':
