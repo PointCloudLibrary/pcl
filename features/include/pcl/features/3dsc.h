@@ -106,17 +106,17 @@ namespace pcl
 
       virtual ~ShapeContext3DEstimation() {}
 
-      /** Set the number of bins along the azimuth to \ref bins.
+      /** Set the number of bins along the azimuth to \a bins.
         * \param[in] bins the number of bins along the azimuth
         */
       inline void 
       setAzimuthBins (size_t bins) { azimuth_bins_ = bins; }
 
-      /** \Return the number of bins along the azimuth */
+      /** \return the number of bins along the azimuth */
       inline size_t 
       getAzimuthBins () { return (azimuth_bins_); }
 
-      /** Set the number of bins along the elevation to \ref bins.
+      /** Set the number of bins along the elevation to \a bins.
         * \param[in] bins the number of bins along the elevation
         */
       inline void 
@@ -126,7 +126,7 @@ namespace pcl
       inline size_t 
       getElevationBins () { return (elevation_bins_); }
 
-      /** Set the number of bins along the radii to \ref bins.
+      /** Set the number of bins along the radii to \a bins.
         * \param[in] bins the number of bins along the radii
         */
       inline void 

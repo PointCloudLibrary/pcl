@@ -51,7 +51,7 @@ namespace pcl
     *    Proceedings of the third Eurographics symposium on Geometry processing
     *    July 2005, Vienna, Austria
     *
-    * \Note These features were meant to be used at keypoints detected by a detector using different smoothing radii
+    * \note These features were meant to be used at keypoints detected by a detector using different smoothing radii
     * (e.g., SmoothedSurfacesKeypoint)
     * \author Alexandru-Eugen Ichim
     */
