@@ -160,8 +160,8 @@ namespace pcl
       }
 
       /** \brief Allocate constructor from point cloud subset
-        * \param[in] width the cloud width
-        * \param[in] height the cloud height
+        * \param[in] width_ the cloud width
+        * \param[in] height_ the cloud height
         */
       inline PointCloud (uint32_t width_, uint32_t height_)
         : points (width_ * height_)
@@ -610,7 +610,7 @@ namespace pcl
       {}
 
       /** \brief Initialize size constructor for \b unorganized point cloud datasets. Sets \ref is_dense to true.
-        * \param[in] _num_points the number of points in the cloud. Sets \ref width to \a _num_points and \height to 1.
+        * \param[in] _num_points the number of points in the cloud. Sets \ref width to \a _num_points and \ref height to 1.
         * \param[in] _dim the number of dimensions that each point entry will have (e.g., 3=3D, 6=6D)
         */
       inline PointCloud (uint32_t _num_points, uint32_t _dim)
