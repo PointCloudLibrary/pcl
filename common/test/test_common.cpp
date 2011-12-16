@@ -181,13 +181,11 @@ TEST (PCL, PointCloud)
   EXPECT_EQ (mat_xyz (0, 0), 0);
   EXPECT_EQ (mat_xyz (cloud.width - 1, 2), 3 * cloud.width - 1);    // = 29
 
-#ifdef NDEBUG
-  Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap(2,4,1);
+  Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, 1);
   EXPECT_EQ (mat_yz.cols (), 2);
-  EXPECT_EQ (mat_yz.rows(), cloud.width);
-  EXPECT_EQ (mat_yz (0,0), 1);
-  EXPECT_EQ (mat_yz (1,cloud.width-1), 3*cloud.width-1);
-#endif
+  EXPECT_EQ (mat_yz.rows (), cloud.width);
+  EXPECT_EQ (mat_yz (0, 0), 1);
+  EXPECT_EQ (mat_yz (cloud.width - 1, 1), 3 * cloud.width - 1);
 
   cloud.clear ();
   EXPECT_EQ (cloud.width, 0);
