@@ -41,13 +41,16 @@
 #define PCL_POINT_CLOUD_H_
 
 #include <cstddef>
-#include "pcl/pcl_macros.h"
+#include <pcl/pcl_macros.h>
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include <std_msgs/Header.h>
 #include <pcl/exceptions.h>
-#include <pcl/console/print.h>
+#include <pcl/cloud_properties.h>
+#include <pcl/point_traits.h>
+#include <pcl/for_each_type.h>
 #include <boost/shared_ptr.hpp>
+#include <boost/mpl/size.hpp>
 
 namespace pcl
 {
@@ -61,11 +64,13 @@ namespace pcl
     };
   } // namespace detail
 
-  typedef std::vector<detail::FieldMapping> MsgFieldMap;
 
   // Forward declarations
   template <typename PointT> class PointCloud;
-
+  typedef std::vector<detail::FieldMapping> MsgFieldMap;
+  template <typename PointT> struct NdCopyEigenPointFunctor;
+  template <typename PointT> struct NdCopyPointEigenFunctor;
+ 
   namespace detail
   {
     template <typename PointT> boost::shared_ptr<pcl::MsgFieldMap>&
@@ -140,14 +145,24 @@ namespace pcl
       inline PointCloud (const PointCloud<PointT> &pc, 
                          const std::vector<size_t> &indices)
       {
-        assert(indices.size () <= pc.size ());
-        this->resize (indices.size ());
-        for(size_t i = 0; i < indices.size (); i++)
-        {
-          this->push_back (pc[indices[i]]);
-        }
+        // Copy the obvious
+        width    = indices.size ();
+        height   = 1;
+        is_dense = pc.is_dense;
+        header = pc.header;
+        sensor_origin_ = pc.sensor_origin_;
+        sensor_orientation_ = pc.sensor_orientation_;
+
+        assert (indices.size () <= pc.size ());
+        points.resize (indices.size ());
+        for (size_t i = 0; i < indices.size (); i++)
+          points[i] = pc.points[indices[i]];
       }
 
+      /** \brief Allocate constructor from point cloud subset
+        * \param[in] width the cloud width
+        * \param[in] height the cloud height
+        */
       inline PointCloud (uint32_t width_, uint32_t height_)
         : points (width_ * height_)
         , width (width_)
@@ -157,6 +172,7 @@ namespace pcl
         , sensor_orientation_ (Eigen::Quaternionf::Identity ())
       {}
 
+      /** \brief Destructor. */
       virtual ~PointCloud () {}
 
       ////////////////////////////////////////////////////////////////////////////////////////
@@ -167,13 +183,6 @@ namespace pcl
       inline PointCloud&
       operator += (const PointCloud& rhs)
       {
-        if (rhs.header.frame_id != header.frame_id)
-        {
-          PCL_ERROR ("PointCloud frame IDs do not match (%s != %s) for += . Cancelling operation...\n",
-                     rhs.header.frame_id.c_str (), header.frame_id.c_str ());
-          return (*this);
-        }
-
         // Make the resultant point cloud take the newest stamp
         if (rhs.header.stamp > header.stamp)
           header.stamp = rhs.header.stamp;
@@ -191,6 +200,17 @@ namespace pcl
           is_dense = false;
         return (*this);
       }
+
+      ////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Add a point cloud to another cloud.
+        * \param[in] rhs the cloud to add to the current cloud
+        * \return the new cloud as a concatenation of the current cloud and the new given cloud
+        */ 
+      inline const PointCloud
+      operator + (const PointCloud& rhs)
+      {
+        return (PointCloud (*this) += rhs);
+      }
       
       ////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
@@ -204,7 +224,7 @@ namespace pcl
         if (this->height > 1)
           return (points.at (v * this->width + u));
         else
-          throw IsNotDenseException ("Can't use 2D indexing with a sparse point cloud");
+          throw IsNotDenseException ("Can't use 2D indexing with a unorganized point cloud");
       }
 
       /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
@@ -218,7 +238,7 @@ namespace pcl
         if (this->height > 1)
           return (points.at (v * this->width + u));
         else
-          throw IsNotDenseException ("Can't use 2D indexing with a sparse point cloud");
+          throw IsNotDenseException ("Can't use 2D indexing with a unorganized point cloud");
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
@@ -258,7 +278,12 @@ namespace pcl
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
         * \anchor getMatrixXfMap
         * \note This method is for advanced users only! Use with care!
-        * \param[in] dim the number of dimensions to consider for each point (will become the number of rows)
+        * 
+        * \attention Since 1.4.0, Eigen matrices are forced to Row Major to increase the efficiency of the algorithms in PCL
+        *   This means that the behavior of getMatrixXfMap changed, and is now correctly mapping 1-1 with a PointCloud structure, 
+        *   that is: number of points in a cloud = rows in a matrix, number of point dimensions = columns in a matrix
+        *
+        * \param[in] dim the number of dimensions to consider for each point
         * \param[in] stride the number of values in each point (will be the number of values that separate two of the columns)
         * \param[in] offset the number of dimensions to skip from the beginning of each point
         *            (stride = offset + dim + x, where x is the number of dimensions to skip from the end of each point)
@@ -268,7 +293,8 @@ namespace pcl
       inline Eigen::MatrixXf
       getMatrixXfMap (int dim, int stride, int offset) const
       {
-        return Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, dim, points.size(), Eigen::OuterStride<>(stride));
+        //return Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, dim, points.size(), Eigen::OuterStride<>(stride));
+        return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
@@ -280,7 +306,7 @@ namespace pcl
       inline Eigen::MatrixXf
       getMatrixXfMap () const
       {
-        return getMatrixXfMap (sizeof (PointT) / sizeof (float),  sizeof (PointT) / sizeof (float), 0);
+        return (getMatrixXfMap (sizeof (PointT) / sizeof (float),  sizeof (PointT) / sizeof (float), 0));
       }
 
       /** \brief The point cloud header. It contains information about the acquisition time. */
@@ -416,7 +442,7 @@ namespace pcl
       }
 
       /** \brief Swap a point cloud with another cloud.
-        * \param rhs point cloud to swap this with
+        * \param[in,out] rhs point cloud to swap this with
         */ 
       inline void 
       swap (PointCloud<PointT> &rhs)
@@ -443,13 +469,15 @@ namespace pcl
         * The changes of the returned cloud are not mirrored back to this one.
         * \return shared pointer to the copy of the cloud
         */
-      inline Ptr makeShared () { return Ptr (new PointCloud<PointT> (*this)); }
+      inline Ptr 
+      makeShared () { return Ptr (new PointCloud<PointT> (*this)); }
 
       /** \brief Copy the cloud to the heap and return a constant smart pointer
         * Note that deep copy is performed, so avoid using this function on non-empty clouds.
         * \return const shared pointer to the copy of the cloud
         */
-      inline ConstPtr makeShared () const { return ConstPtr (new PointCloud<PointT> (*this)); }
+      inline ConstPtr 
+      makeShared () const { return ConstPtr (new PointCloud<PointT> (*this)); }
 
     protected:
       // This is motivated by ROS integration. Users should not need to access mapping_.
@@ -461,6 +489,330 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
   };
 
+  /** \brief PointCloud specialization for Eigen matrices. <b>For advanced users only!</b>
+    *
+    * \attention
+    * As opposed to the generic PointCloud<T> implementation where the point
+    * cloud data is stored in a std::vector<T>, this specialization uses an
+    * Eigen::MatrixXf. This means that this specialization is \b NOT suitable
+    * for other types of data other than floats, and should therefore be used
+    * with extreme caution!
+    *
+    * \note
+    * Similar to PointCloud<T> where each data point represents a new element
+    * in the vector, we are storing each data point on a separate row in our
+    * MatrixXf, in a row-major format. This means that the data is aligned in
+    * memory in a row-major format. Please check that PCL is compiled using 
+    * \b -DEIGEN_DEFAULT_TO_ROW_MAJOR.
+    *
+    * \author Radu B. Rusu
+    */
+  template <>
+  class PointCloud<Eigen::MatrixXf> 
+  {
+    public:
+      /** \brief Default constructor. Sets \ref is_dense to true, \ref width
+        * and \ref height to 0.
+        */
+      PointCloud () : 
+        points (Eigen::MatrixXf (0, 0)), width (0), height (0), is_dense (true)
+      {}
+
+      /** \brief Copy constructor (needed by compilers such as Intel C++)
+        * \param[in] pc the cloud to copy into this
+        */
+      inline PointCloud (PointCloud<Eigen::MatrixXf> &pc)
+      {
+        *this = pc;
+      }
+ 
+      /** \brief Copy conversion constructor (needed by compilers such as Intel C++)
+        * \param[in] pc the cloud<T> to copy into this
+        */
+      template <typename PointT>
+      inline PointCloud (PointCloud<PointT> &pc)
+      {
+        // Copy the obvious
+        width    = pc.width;
+        height   = pc.height;
+        is_dense = pc.is_dense;
+        properties.acquisition_time   = pc.header.stamp;
+        properties.sensor_origin      = pc.sensor_origin_;//.head<3> ();
+        properties.sensor_orientation = pc.sensor_orientation_;
+
+        typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+        // Resize the array
+        points.resize (pc.points.size (), boost::mpl::size<FieldList>::value);
+
+        for (size_t cp = 0; cp < pc.points.size (); ++cp)
+          pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor<PointT> (pc.points[cp], points.row (cp)));
+      }
+ 
+      /** \brief Copy constructor (needed by compilers such as Intel C++)
+        * \param[in] pc the cloud to copy into this
+        */
+      inline PointCloud (const PointCloud<Eigen::MatrixXf> &pc)
+      {
+        *this = pc;
+      }
+
+      /** \brief Copy conversion constructor (needed by compilers such as Intel C++)
+        * \param[in] pc the cloud<T> to copy into this
+        */
+      template <typename PointT>
+      inline PointCloud (const PointCloud<PointT> &pc)
+      {
+        // Copy the obvious
+        width    = pc.width;
+        height   = pc.height;
+        is_dense = pc.is_dense;
+        properties.acquisition_time   = pc.header.stamp;
+        properties.sensor_origin      = pc.sensor_origin_;//.head<3> ();
+        properties.sensor_orientation = pc.sensor_orientation_;
+
+        typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+        // Resize the array
+        points.resize (pc.points.size (), boost::mpl::size<FieldList>::value);
+
+        for (size_t cp = 0; cp < pc.points.size (); ++cp)
+          pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor<PointT> (pc.points[cp], points.row (cp)));
+      }
+
+      /** \brief Copy constructor from point cloud subset
+        * \param[in] pc the cloud to copy into this
+        * \param[in] indices the subset to copy
+        */
+      inline PointCloud (const PointCloud<Eigen::MatrixXf> &pc, 
+                         const std::vector<size_t> &indices)
+      {
+        // Copy the obvious
+        width    = indices.size ();
+        height   = 1;
+        is_dense = pc.is_dense;
+        properties = pc.properties;
+
+        assert ((int)indices.size () <= pc.points.rows ());
+        points.resize (indices.size (), pc.points.cols ());
+        for (size_t i = 0; i < indices.size (); i++)
+          points.row (i) = pc.points.row (indices[i]);
+      }
+
+      /** \brief Initialize size constructor for \b organized point cloud datasets. Sets \ref is_dense to true.
+        * \param[in] _width the number of points in the cloud per row (if organized set to the width of the image, else set to the total number of points)
+        * \param[in] _height the number of points in the cloud per column (if organized set to the height of the image, else set to 1)
+        * \param[in] _dim the number of dimensions that each point entry will have (e.g., 3=3D, 6=6D)
+        */
+      inline PointCloud (uint32_t _width, uint32_t _height, uint32_t _dim)
+        : points (Eigen::MatrixXf (_width * _height, _dim))
+        , width (_width)
+        , height (_height)
+        , is_dense (true)
+      {}
+
+      /** \brief Initialize size constructor for \b unorganized point cloud datasets. Sets \ref is_dense to true.
+        * \param[in] _num_points the number of points in the cloud. Sets \ref width to \a _num_points and \height to 1.
+        * \param[in] _dim the number of dimensions that each point entry will have (e.g., 3=3D, 6=6D)
+        */
+      inline PointCloud (uint32_t _num_points, uint32_t _dim)
+        : points (Eigen::MatrixXf (_num_points, _dim))
+        , width (_num_points)
+        , height (1)
+        , is_dense (true)
+      {}
+
+      /** Destructor. */
+      virtual ~PointCloud () {}
+
+      ////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Add a point cloud to the current cloud.
+        * \param[in] rhs the cloud to add to the current cloud
+        * \return the new cloud as a concatenation of the current cloud and the new given cloud
+        */ 
+      inline PointCloud&
+      operator += (const PointCloud& rhs)
+      {
+        if (rhs.properties.acquisition_time > properties.acquisition_time)
+          properties.acquisition_time = rhs.properties.acquisition_time;
+
+        properties.sensor_origin = Eigen::Vector3f::Zero ();
+        properties.sensor_orientation = Eigen::Quaternionf::Identity ();
+
+        int nr_points = points.rows ();
+        points.resize (nr_points + rhs.points.rows (), points.cols ());
+        for (int i = nr_points; i < points.rows (); ++i)
+          points.row (i) = rhs.points.row (i - nr_points);
+
+        width    = (uint32_t) points.rows ();
+        height   = 1;
+        if (rhs.is_dense && is_dense)
+          is_dense = true;
+        else
+          is_dense = false;
+        return (*this);
+      }
+      
+      ////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
+        * datasets (those that have height != 1).
+        * \param[in] u the u coordinate
+        * \param[in] v the v coordinate
+        */
+      inline Eigen::Map<Eigen::VectorXf>
+      at (int u, int v)
+      {
+        if (height > 1)
+          return (Eigen::VectorXf::Map (&points (v * width + u, 0), points.cols ()));
+        else
+          throw IsNotDenseException ("Can't use 2D indexing with a unorganized point cloud");
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
+        * datasets (those that have height != 1).
+        * \param[in] u the u coordinate
+        * \param[in] v the v coordinate
+        */
+      inline Eigen::Map<Eigen::VectorXf>
+      operator () (int u, int v) 
+      {
+        return (Eigen::VectorXf::Map (&points (v * width + u, 0), points.cols ()));
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Return whether a dataset is organized (e.g., arranged in a structured grid).
+        * \note The height value must be different than 1 for a dataset to be organized.
+        */
+      inline bool
+      isOrganized () const
+      {
+        return (height != 1);
+      }
+      
+      /** \brief A list of optional point cloud properties. See \ref CloudProperties for more information. */
+      pcl::CloudProperties properties;
+
+      /** \brief The point data. */
+      Eigen::MatrixXf points;
+
+      /** \brief The point cloud width (if organized as an image-structure). */
+      uint32_t width;
+      /** \brief The point cloud height (if organized as an image-structure). */
+      uint32_t height;
+
+      /** \brief True if no points are invalid (e.g., have NaN or Inf values). */
+      bool is_dense;
+
+      typedef boost::shared_ptr<PointCloud<Eigen::MatrixXf> > Ptr;
+      typedef boost::shared_ptr<const PointCloud<Eigen::MatrixXf> > ConstPtr;
+
+      /** \brief Swap a point cloud with another cloud.
+        * \param[in,out] rhs point cloud to swap this with
+        */ 
+      inline void 
+      swap (PointCloud<Eigen::MatrixXf> &rhs)
+      {
+        std::swap (points, rhs.points);
+        std::swap (width, rhs.width);
+        std::swap (height, rhs.height);
+        std::swap (is_dense, rhs.is_dense);
+        std::swap (properties, rhs.properties);
+      }
+
+      /** \brief Removes all points in a cloud and sets the width and height to 0. */
+      inline void 
+      clear ()
+      {
+        points.resize (0, 0);
+        width = 0;
+        height = 0;
+      }
+
+      /** \brief Copy the cloud to the heap and return a smart pointer
+        * Note that deep copy is performed, so avoid using this function on non-empty clouds.
+        * The changes of the returned cloud are not mirrored back to this one.
+        * \return shared pointer to the copy of the cloud
+        */
+      inline Ptr 
+      makeShared () { return Ptr (new PointCloud<Eigen::MatrixXf> (*this)); }
+
+      /** \brief Copy the cloud to the heap and return a constant smart pointer
+        * Note that deep copy is performed, so avoid using this function on non-empty clouds.
+        * \return const shared pointer to the copy of the cloud
+        */
+      inline ConstPtr 
+      makeShared () const { return ConstPtr (new PointCloud<Eigen::MatrixXf> (*this)); }
+
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Helper functor structure for copying data between an Eigen::VectorXf and a PointT. */
+  template <typename PointT>
+  struct NdCopyEigenPointFunctor
+  {
+    typedef typename traits::POD<PointT>::type Pod;
+    
+    /** \brief Constructor
+      * \param[in] p1 the input Eigen type
+      * \param[out] p2 the output Point type
+      */
+    NdCopyEigenPointFunctor (const Eigen::VectorXf &p1, PointT &p2)
+      : p1_ (p1),
+        p2_ (reinterpret_cast<Pod&>(p2)),
+        f_idx_ (0) { }
+
+    /** \brief Operator. Data copy happens here. */
+    template<typename Key> inline void 
+    operator() ()
+    {
+      //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
+      typedef typename pcl::traits::datatype<PointT, Key>::type T;
+      uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointT, Key>::value;
+      *reinterpret_cast<T*>(data_ptr) = p1_[f_idx_++];
+    }
+
+    private:
+      const Eigen::VectorXf &p1_;
+      Pod &p2_;
+      int f_idx_;
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+   };
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Helper functor structure for copying data between an Eigen::VectorXf and a PointT. */
+  template <typename PointT>
+  struct NdCopyPointEigenFunctor
+  {
+    typedef typename traits::POD<PointT>::type Pod;
+    
+    /** \brief Constructor
+      * \param[in] p1 the input Point type
+      * \param[out] p2 the output Eigen type
+      */
+     NdCopyPointEigenFunctor (const PointT &p1, Eigen::VectorXf &p2)
+      : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2), f_idx_ (0) { }
+
+    /** \brief Operator. Data copy happens here. */
+    template<typename Key> inline void 
+    operator() ()
+    {
+      //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
+      typedef typename pcl::traits::datatype<PointT, Key>::type T;
+      const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointT, Key>::value;
+      p2_[f_idx_++] = *reinterpret_cast<const T*>(data_ptr);
+    }
+
+    private:
+      const Pod &p1_;
+      Eigen::VectorXf &p2_;
+      int f_idx_;
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+   };
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
   namespace detail
   {
     template <typename PointT> boost::shared_ptr<pcl::MsgFieldMap>&
@@ -473,20 +825,9 @@ namespace pcl
   template <typename PointT> std::ostream&
   operator << (std::ostream& s, const pcl::PointCloud<PointT> &p)
   {
-    s << "header: " << std::endl;
-    s << p.header;
     s << "points[]: " << p.points.size () << std::endl;
     s << "width: " << p.width << std::endl;
     s << "height: " << p.height << std::endl;
-    s << "sensor_origin_: "
-      << p.sensor_origin_[0] << ' '
-      << p.sensor_origin_[1] << ' '
-      << p.sensor_origin_[2] << std::endl;
-    s << "sensor_orientation_: "
-      << p.sensor_orientation_.x() << ' '
-      << p.sensor_orientation_.y() << ' '
-      << p.sensor_orientation_.z() << ' '
-      << p.sensor_orientation_.w() << std::endl;
     s << "is_dense: " << p.is_dense << std::endl;
     return (s);
   }

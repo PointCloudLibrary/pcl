@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,52 +33,56 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: filter.hpp 1800 2011-07-15 11:45:31Z marton $
+ * $Id$
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_FILTER_INDICES_H_
-#define PCL_FILTERS_IMPL_FILTER_INDICES_H_
+#ifndef PCL_CLOUD_PROPERTIES_H_
+#define PCL_CLOUD_PROPERTIES_H_
 
-#include <pcl/pcl_macros.h>
-
-
-template <typename PointT> void
-pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                              std::vector<int> &index)
+namespace pcl
 {
-  // Reserve enough space for the indices
-  index.resize (cloud_in.points.size ());
-  size_t j = 0;
+  /** \brief CloudProperties stores a list of \b optional point cloud properties such as:
+    *
+    *   - acquisition time
+    *   - the origin and orientation of the sensor when the data was acquired
+    *   - optional user parameters
+    *
+    * <b>This part of the API is for advanced users only, and constitutes a transition to the 2.0 API!</b>
+    *
+    * \author Radu B. Rusu
+    */
+  class CloudProperties
+  {
+    public:
 
-  // If the data is dense, we don't need to check for NaN
-  if (cloud_in.is_dense)
-  {
-    for (j = 0; j < cloud_in.points.size (); ++j)
-    {
-      index[j] = j;
-    }
-  }
-  else
-  {
-    for (size_t i = 0; i < cloud_in.points.size (); ++i)
-    {
-      if (!pcl_isfinite (cloud_in.points[i].x) || 
-          !pcl_isfinite (cloud_in.points[i].y) || 
-          !pcl_isfinite (cloud_in.points[i].z))
-        continue;
-      index[j] = i;
-      j++;
-    }
-    if (j != cloud_in.points.size ())
-    {
-      // Resize to the correct size
-      index.resize (j);
-    }
-  }
+      /** \brief Default constructor. Sets:
+        *
+        *   - \ref acquisition_time to 0
+        *   - \ref sensor_origin to {0, 0, 0}
+        *   - \ref sensor_orientation to {1, 0, 0, 0}
+        */
+      CloudProperties () :
+        acquisition_time (0),
+        sensor_origin (Eigen::Vector3f::Zero ()), 
+        sensor_orientation (Eigen::Quaternionf::Identity ())
+      {
+      }
+
+      /** \brief Data acquisition time. */
+      uint64_t acquisition_time;
+
+      /** \brief Sensor acquisition pose (origin/translation in the cloud data coordinate system). */
+      Eigen::Vector3f    sensor_origin;
+
+      /** \brief Sensor acquisition pose (rotation in the cloud data coordinate system). 
+        * \note the data is stored in (w, x, y, z) format.
+        */
+      Eigen::Quaternionf sensor_orientation;
+  };
+
 }
 
-#define PCL_INSTANTIATE_removeNanFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNFromPointCloud<T>(const pcl::PointCloud<T>&, std::vector<int>&);
+#endif  // PCL_CLOUD_PROPERTIES_H_
 
-#endif    // PCL_FILTERS_IMPL_FILTER_INDICES_H_
 

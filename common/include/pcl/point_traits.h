@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,10 +37,9 @@
  *
  */
 
-#ifndef PCL_ROS_POINT_TRAITS_H_
-#define PCL_ROS_POINT_TRAITS_H_
+#ifndef PCL_POINT_TRAITS_H_
+#define PCL_POINT_TRAITS_H_
 
-#include <std_msgs/Header.h>
 #include <sensor_msgs/PointField.h>
 #include <boost/type_traits/remove_all_extents.hpp>
 #include <boost/type_traits/is_same.hpp>
@@ -152,4 +153,4 @@ namespace pcl
   } //namespace traits
 }
 
-#endif  //#ifndef PCL_ROS_POINT_TRAITS_H_
+#endif  //#ifndef PCL_POINT_TRAITS_H_

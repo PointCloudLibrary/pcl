@@ -1238,7 +1238,7 @@ TEST (PCL, USCEstimation)
   uscd.setRadiusBins (nBinsJ);
   uscd.setMinimalRadius (rmin);
   uscd.setPointDensityRadius (ptDensityRad);
-  uscd.setLocalRadius(radius);
+  uscd.setLocalRadius (radius);
   // Compute the features
   pcl::PointCloud<pcl::SHOT>::Ptr uscds (new pcl::PointCloud<pcl::SHOT> ());
   uscd.compute (*uscds);

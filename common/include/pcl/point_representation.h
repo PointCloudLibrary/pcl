@@ -39,9 +39,9 @@
 #ifndef PCL_POINT_REPRESENTATION_H_
 #define PCL_POINT_REPRESENTATION_H_
 
-#include "pcl/point_types.h"
-#include "pcl/win32_macros.h"
-#include "pcl/ros/for_each_type.h"
+#include <pcl/point_types.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/for_each_type.h>
 
 namespace pcl
 {

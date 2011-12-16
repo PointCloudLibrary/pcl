@@ -42,7 +42,6 @@
 
 #include <pcl/exceptions.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/win32_macros.h>
 #include <cstdarg>
 #include <stdio.h>
 

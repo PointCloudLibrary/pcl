@@ -46,7 +46,7 @@
 // PCL includes
 #include <pcl/pcl_base.h>
 #include <pcl/common/transforms.h>
-#include <pcl/win32_macros.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include "pcl/registration/transformation_estimation.h"
 

@@ -4,7 +4,7 @@
 #include <vector>
 #include <ostream>
 #include <boost/shared_ptr.hpp>
-#include <pcl/win32_macros.h>
+#include <pcl/pcl_macros.h>
 
 namespace sensor_msgs
 {

@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <boost/shared_ptr.hpp>
-#include <pcl/win32_macros.h>
+#include <pcl/pcl_macros.h>
 #include <ostream>
 
 namespace std_msgs

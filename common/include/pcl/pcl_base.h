@@ -55,7 +55,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include "pcl/point_cloud.h"
 #include "pcl/PointIndices.h"
-#include "pcl/win32_macros.h"
+#include <pcl/pcl_macros.h>
 
 #include <pcl/console/print.h>
 

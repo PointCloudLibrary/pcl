@@ -36,7 +36,7 @@
  */
 
 #include <pcl/console/time.h>
-#include <pcl/win32_macros.h>
+#include <pcl/pcl_macros.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

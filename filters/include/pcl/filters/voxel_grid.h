@@ -41,7 +41,6 @@
 #include "pcl/filters/filter.h"
 #include <map>
 #include <boost/unordered_map.hpp>
-#include <boost/mpl/size.hpp>
 #include <boost/fusion/sequence/intrinsic/at_key.hpp>
 
 namespace pcl
@@ -69,55 +68,6 @@ namespace pcl
   getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
                const std::string &distance_field_name, float min_distance, float max_distance,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
-
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief Helper functor structure for copying data between an Eigen::VectorXf and a PointT. */
-  template <typename PointT>
-  struct NdCopyEigenPointFunctor
-  {
-    typedef typename traits::POD<PointT>::type Pod;
-    
-    NdCopyEigenPointFunctor (const Eigen::VectorXf &p1, PointT &p2)
-      : p1_ (p1),
-        p2_ (reinterpret_cast<Pod&>(p2)),
-        f_idx_ (0) { }
-
-    template<typename Key> inline void operator() ()
-    {
-      //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
-      typedef typename pcl::traits::datatype<PointT, Key>::type T;
-      uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointT, Key>::value;
-      *reinterpret_cast<T*>(data_ptr) = p1_[f_idx_++];
-    }
-
-    private:
-      const Eigen::VectorXf &p1_;
-      Pod &p2_;
-      int f_idx_;
-  };
-
-  /** \brief Helper functor structure for copying data between an Eigen::VectorXf and a PointT. */
-  template <typename PointT>
-  struct NdCopyPointEigenFunctor
-  {
-    typedef typename traits::POD<PointT>::type Pod;
-    
-    NdCopyPointEigenFunctor (const PointT &p1, Eigen::VectorXf &p2)
-      : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2), f_idx_ (0) { }
-
-    template<typename Key> inline void operator() ()
-    {
-      //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
-      typedef typename pcl::traits::datatype<PointT, Key>::type T;
-      const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointT, Key>::value;
-      p2_[f_idx_++] = *reinterpret_cast<const T*>(data_ptr);
-    }
-
-    private:
-      const Pod &p1_;
-      Eigen::VectorXf &p2_;
-      int f_idx_;
-  };
 
   /** \brief @b VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
     *

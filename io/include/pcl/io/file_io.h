@@ -38,8 +38,8 @@
 #ifndef PCL_IO_FILE_IO_H_
 #define PCL_IO_FILE_IO_H_
 
-#include "pcl/win32_macros.h"
-#include "pcl/common/io.h"
+#include <pcl/pcl_macros.h>
+#include <pcl/common/io.h>
 #include <boost/numeric/conversion/cast.hpp>
 #include <cmath>
 #include <sstream>

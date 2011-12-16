@@ -44,7 +44,7 @@
 #include <cstdio>
 #include <exception>
 #include <string>
-#include <pcl/win32_macros.h>
+#include <pcl/pcl_macros.h>
 
 #define THROW_OPENNI_EXCEPTION(format,...) throwOpenNIException( __PRETTY_FUNCTION__, __FILE__, __LINE__, format , ##__VA_ARGS__ )
 

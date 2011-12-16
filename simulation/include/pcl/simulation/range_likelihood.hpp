@@ -6,7 +6,7 @@
 
 #include <Eigen/StdVector>
 
-#include <pcl/win32_macros.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/range_image/range_image_planar.h>
 #include "pcl/common/transforms.h"
 

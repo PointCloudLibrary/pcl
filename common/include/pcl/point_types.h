@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,18 +39,17 @@
 #ifndef PCL_DATA_TYPES_H_
 #define PCL_DATA_TYPES_H_
 
-#include "pcl/pcl_macros.h"
+#include <pcl/pcl_macros.h>
 #include <Eigen/Core>
 #include <bitset>
 #include <vector>
-#include "pcl/ros/register_point_struct.h"
-#include "pcl/win32_macros.h"
+#include <pcl/ros/register_point_struct.h>
 
 /**
- * \file pcl/point_types.h
- * Defines all the PCL implemented PointT point type structures
- * \ingroup common
- */
+  * \file pcl/point_types.h
+  * Defines all the PCL implemented PointT point type structures
+  * \ingroup common
+  */
 
 /** @{*/
 namespace pcl

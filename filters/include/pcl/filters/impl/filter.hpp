@@ -38,7 +38,7 @@
 #ifndef PCL_FILTERS_IMPL_FILTER_H_
 #define PCL_FILTERS_IMPL_FILTER_H_
 
-#include "pcl/win32_macros.h"
+#include <pcl/pcl_macros.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

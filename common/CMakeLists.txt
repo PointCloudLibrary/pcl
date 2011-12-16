@@ -29,11 +29,13 @@ if(build)
         include/pcl/pcl_base.h
         include/pcl/pcl_macros.h
         include/pcl/point_cloud.h
+        include/pcl/point_traits.h
         include/pcl/point_types_conversion.h
         include/pcl/point_representation.h
         include/pcl/correspondence.h
         include/pcl/point_types.h
-        include/pcl/win32_macros.h
+        include/pcl/cloud_properties.h
+        include/pcl/for_each_type.h
         include/pcl/pcl_tests.h
         )
         
@@ -106,8 +108,6 @@ if(build)
         )
 
     set(ros_incs include/pcl/ros/conversions.h
-        include/pcl/ros/for_each_type.h
-        include/pcl/ros/point_traits.h
         include/pcl/ros/register_point_struct.h
         )
 

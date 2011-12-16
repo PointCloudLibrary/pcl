@@ -113,6 +113,14 @@
 namespace pcl
 {
 
+  template <typename PointT> inline bool
+  isFinite (PointT &pt)
+  {
+    if (!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y) || !pcl_isfinite (pt.z))
+      return (false);
+    return (true);
+  }
+
 #define PCL_ADD_POINT4D \
   EIGEN_ALIGN16 \
   union { \
