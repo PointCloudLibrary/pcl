@@ -1,8 +1,6 @@
 #ifndef POINTCLOUD_DEPTH_NEIGHBOR_SEARCH_HPP
 #define POINTCLOUD_DEPTH_NEIGHBOR_SEARCH_HPP
 
-#include "math.h"
-
 #ifndef PI
   #define PI 3.14159
 #endif

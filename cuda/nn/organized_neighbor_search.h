@@ -41,7 +41,6 @@
 #include <pcl/point_types.h>
 
 #include <algorithm>
-#include <math.h>
 #include <queue>
 #include <vector>
 

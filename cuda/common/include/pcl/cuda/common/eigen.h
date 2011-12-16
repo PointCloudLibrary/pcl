@@ -93,7 +93,6 @@
 #include <pcl/cuda/point_cloud.h>
 #include <pcl/cuda/cutil_math.h>
 
-#include <math.h>
 #include <limits>
 #include <float.h>
 

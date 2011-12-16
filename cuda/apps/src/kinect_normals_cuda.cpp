@@ -40,7 +40,7 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/win32_macros.h>
+#include <pcl/pcl_macros.h>
 
 #include <boost/shared_ptr.hpp>
 
