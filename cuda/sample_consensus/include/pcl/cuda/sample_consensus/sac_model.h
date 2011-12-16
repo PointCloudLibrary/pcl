@@ -45,7 +45,7 @@
 #include "pcl/cuda/point_cloud.h"
 #include <thrust/random/linear_congruential_engine.h>
 
-#include <pcl/win32_macros.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
