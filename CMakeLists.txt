@@ -78,15 +78,19 @@ set(PCL_OUTPUT_LIB_DIR ${PCL_BINARY_DIR}/${LIB_INSTALL_DIR})
 set(PCL_OUTPUT_BIN_DIR ${PCL_BINARY_DIR}/${BIN_INSTALL_DIR})
 make_directory(${PCL_OUTPUT_LIB_DIR})
 make_directory(${PCL_OUTPUT_BIN_DIR})
-set("CMAKE_ARCHIVE_OUTPUT_DIRECTORY" "${PCL_OUTPUT_LIB_DIR}")
-set("CMAKE_RUNTIME_OUTPUT_DIRECTORY" "${PCL_OUTPUT_BIN_DIR}")
-# ---[ Windows requires DLLs (shared libraries) to be installed in the same directory as executables
 if(WIN32)
-  set("CMAKE_LIBRARY_OUTPUT_DIRECTORY" "${PCL_OUTPUT_BIN_DIR}")
+  foreach(config ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${config} CONFIG}
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONFIG} "${PCL_OUTPUT_LIB_DIR}")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG} "${PCL_OUTPUT_BIN_DIR}")
+    # ---[ Windows requires DLLs (shared libraries) to be installed in the same directory as executables
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONFIG} "${PCL_OUTPUT_BIN_DIR}")
+  endforeach(config)
 else(WIN32)
-  set("CMAKE_LIBRARY_OUTPUT_DIRECTORY" "${PCL_OUTPUT_LIB_DIR}")
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PCL_OUTPUT_LIB_DIR}")
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PCL_OUTPUT_BIN_DIR}")
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PCL_OUTPUT_LIB_DIR}")
 endif(WIN32)
-
 
 # Add an "uninstall" target
 configure_file("${PCL_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
