@@ -16,6 +16,6 @@
   \image html http://www.pointclouds.org/assets/images/contents/documentation/kdtree_mug.png
 	
 	\section secKDtreeRequirements Requirements
-	- common
+	- \ref common "common"
 
 */

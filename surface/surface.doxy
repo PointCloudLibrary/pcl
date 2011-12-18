@@ -30,9 +30,9 @@ extracted.
 Please visit the tutorials on http://www.pointclouds.org for more information.
 	
   \section secSurfaceRequirements Requirements
-  - common
-  - search 
-  - kdtree 
-  - octree
+  - \ref common "common"
+  - \ref search "search"
+  - \ref kdtree "kdtree"
+  - \ref octree "octree"
 
 */

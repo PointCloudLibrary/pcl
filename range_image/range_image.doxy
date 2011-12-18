@@ -11,6 +11,6 @@
     \image html http://www.pointclouds.org/documentation/overview/_images/range_image.jpg
 	
 	\section secRangeImageRequirements Requirements
-	- common
+	- \ref common "common"
 
 */

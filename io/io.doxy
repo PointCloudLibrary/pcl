@@ -13,8 +13,8 @@
 	
 	
   \section secIoRequirements Requirements
-  - common
-  - octree
+  - \ref common "common"
+  - \ref octree "octree"
 	- OpenNi for kinect handling
 
 */

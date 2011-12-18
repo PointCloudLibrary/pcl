@@ -39,10 +39,10 @@ will be estimated from the eigenvalues as:
 Please visit http://www.pointclouds.org for more information.
 
   \section secFeaturesRequirements Requirements
-  - common
-  - search 
-  - kdtree 
-  - octree 
-  - range_image
+  - \ref common "common"
+  - \ref search "search"
+  - \ref kdtree "kdtree"
+  - \ref octree "octree"
+  - \ref range_image "range_image"
 
 */

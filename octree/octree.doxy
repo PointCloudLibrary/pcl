@@ -29,6 +29,6 @@ For examples how to use the <b>pcl_octree</b> library, please visit the <a href=
 
 
 	\section secOctreeRequirements Requirements
-	- common
+	- \ref common "common"
 
 */

@@ -23,10 +23,10 @@ considered as outliers and trimmed from the dataset.
 
 	
   \section secFiltersRequirements Requirements
-  - common
-  - sample_consensus 
-  - search 
-  - kdtree 
-  - octree
+  - \ref common "common"
+  - \ref sample_consensus "sample_consensus"
+  - \ref search "search"
+  - \ref kdtree "kdtree"
+  - \ref octree "octree"
 
 */

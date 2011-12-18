@@ -19,9 +19,9 @@ datasets.
 \image html http://www.pointclouds.org/assets/images/contents/documentation/registration_closeup.png
 
   \section secRegistrationRequirements Requirements
-  - common
-  - kdtree 
-  - sample_consensus 
-  - features
+  - \ref common "common"
+  - \ref kdtree "kdtree"
+  - \ref sample_consensus "sample_consensus"
+  - \ref features "features"
 
 */

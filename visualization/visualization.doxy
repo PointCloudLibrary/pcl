@@ -28,10 +28,10 @@
   For implementing your own visualizers, take a look at the tests and examples accompanying the library.
 	
   \section secVisualizationRequirements Requirements
-  - common
+  - \ref common "common"
   - VTK
-  - io 
-  - kdtree 
-  - range_image
+  - \ref io "io"
+  - \ref kdtree "kdtree"
+  - \ref range_image "range_image"
 
 */

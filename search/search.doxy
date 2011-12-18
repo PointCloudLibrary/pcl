@@ -12,8 +12,8 @@
   </ul>
 
   \section secSearchRequirements Requirements
-  - common
-  - kdtree
-  - octree
+  - \ref common "common"
+  - \ref kdtree "kdtree"
+  - \ref octree "octree"
 
 */

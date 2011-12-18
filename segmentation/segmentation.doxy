@@ -8,10 +8,10 @@
     then be processed independently.
 	
   \section secSegmentationRequirements Requirements
-  - common
-  - search 
-  - sample_consensus 
-  - kdtree 
-  - octree
+  - \ref common "common"
+  - \ref search "search"
+  - \ref sample_consensus "sample_consensus"
+  - \ref kdtree "kdtree"
+  - \ref octree "octree"
 
 */
