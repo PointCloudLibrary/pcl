@@ -125,7 +125,7 @@ namespace pcl
         negative_ = negative;
       }
 
-      /** \brief Get the value of the internal #negative_ parameter. If
+      /** \brief Get the value of the internal negative_ parameter. If
         * true, all points \e except the input indices will be returned.
         */
       inline bool
