@@ -80,7 +80,7 @@ make_directory(${PCL_OUTPUT_LIB_DIR})
 make_directory(${PCL_OUTPUT_BIN_DIR})
 if(WIN32)
   foreach(config ${CMAKE_CONFIGURATION_TYPES})
-    string(TOUPPER ${config} CONFIG}
+    string(TOUPPER ${config} CONFIG)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONFIG} "${PCL_OUTPUT_LIB_DIR}")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG} "${PCL_OUTPUT_BIN_DIR}")
     # ---[ Windows requires DLLs (shared libraries) to be installed in the same directory as executables
