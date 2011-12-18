@@ -143,7 +143,7 @@ namespace pcl
         * \param[in] indices the subset to copy
         */
       inline PointCloud (const PointCloud<PointT> &pc, 
-                         const std::vector<size_t> &indices)
+                         const std::vector<int> &indices)
       {
         // Copy the obvious
         width    = indices.size ();
@@ -582,8 +582,8 @@ namespace pcl
         * \param[in] pc the cloud to copy into this
         * \param[in] indices the subset to copy
         */
-      inline PointCloud (const PointCloud<Eigen::MatrixXf> &pc, 
-                         const std::vector<size_t> &indices)
+      inline PointCloud (const PointCloud &pc, 
+                         const std::vector<int> &indices)
       {
         // Copy the obvious
         width    = indices.size ();
@@ -634,7 +634,7 @@ namespace pcl
         if (rhs.properties.acquisition_time > properties.acquisition_time)
           properties.acquisition_time = rhs.properties.acquisition_time;
 
-        properties.sensor_origin = Eigen::Vector3f::Zero ();
+        properties.sensor_origin = Eigen::Vector4f::Zero ();
         properties.sensor_orientation = Eigen::Quaternionf::Identity ();
 
         int nr_points = points.rows ();
@@ -651,6 +651,17 @@ namespace pcl
         return (*this);
       }
       
+      ////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Add a point cloud to another cloud.
+        * \param[in] rhs the cloud to add to the current cloud
+        * \return the new cloud as a concatenation of the current cloud and the new given cloud
+        */ 
+      inline const PointCloud
+      operator + (const PointCloud& rhs)
+      {
+        return (PointCloud (*this) += rhs);
+      }
+
       ////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
         * datasets (those that have height != 1).
