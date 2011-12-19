@@ -90,6 +90,12 @@ namespace pcl
       /** Implementation of abstract derived function */
       virtual void 
       computeFeature (PointCloudOut& output);
+    private:
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 
 }  // namespace end
