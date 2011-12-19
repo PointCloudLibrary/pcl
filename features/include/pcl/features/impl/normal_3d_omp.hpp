@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -46,6 +48,8 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
 {
   float vpx, vpy, vpz;
   getViewPoint (vpx, vpy, vpz);
+
+  output.is_dense = true;
   // Iterating over the entire index vector
 #pragma omp parallel for schedule (dynamic, threads_)
   for (int idx = 0; idx < (int)indices_->size (); ++idx)
@@ -55,7 +59,14 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
     std::vector<int> nn_indices (k_);
     std::vector<float> nn_dists (k_);
 
-    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+        this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+    {
+      output.points[idx].normal[0] = output.points[idx].normal[1] = output.points[idx].normal[2] = output.points[idx].curvature = std::numeric_limits<float>::quiet_NaN ();
+  
+      output.is_dense = false;
+      continue;
+    }
 
     // 16-bytes aligned placeholder for the XYZ centroid of a surface patch
     Eigen::Vector4f xyz_centroid;
@@ -73,6 +84,52 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
 
     flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx, vpy, vpz,
                                 output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2]);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::NormalEstimationOMP<PointInT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+{
+  // Resize the output dataset
+  output.points.resize (indices_->size (), 4);
+
+  float vpx, vpy, vpz;
+  getViewPoint (vpx, vpy, vpz);
+  output.is_dense = true;
+  // Iterating over the entire index vector
+#pragma omp parallel for schedule (dynamic, threads_)
+  for (int idx = 0; idx < (int)indices_->size (); ++idx)
+  {
+    // Allocate enough space to hold the results
+    // \note This resize is irrelevant for a radiusSearch ().
+    std::vector<int> nn_indices (k_);
+    std::vector<float> nn_dists (k_);
+
+    if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+        this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+    {
+      output.points (idx, 0) = output.points (idx, 1) = output.points (idx, 2) = output.points (idx, 3) = std::numeric_limits<float>::quiet_NaN ();
+      output.is_dense = false;
+      continue;
+    }
+
+    // 16-bytes aligned placeholder for the XYZ centroid of a surface patch
+    Eigen::Vector4f xyz_centroid;
+    // Estimate the XYZ centroid
+    compute3DCentroid (*surface_, nn_indices, xyz_centroid);
+
+    // Placeholder for the 3x3 covariance matrix at each surface patch
+    EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
+    // Compute the 3x3 covariance matrix
+    computeCovarianceMatrix (*surface_, nn_indices, xyz_centroid, covariance_matrix);
+
+    // Get the plane normal and surface curvature
+    solvePlaneParameters (covariance_matrix,
+                          output.points (idx, 0), output.points (idx, 1), output.points (idx, 2), output.points (idx, 3));
+
+    flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx, vpy, vpz,
+                                output.points (idx, 0), output.points (idx, 1), output.points (idx, 2));
   }
 }
 

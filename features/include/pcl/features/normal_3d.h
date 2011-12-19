@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -174,12 +176,12 @@ namespace pcl
     }
   }
 
-  /** \brief @b NormalEstimation estimates local surface properties at each 3D point, such as surface normals and
+  /** \brief NormalEstimation estimates local surface properties at each 3D point, such as surface normals and
     * curvatures.
     *
-    * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
+    * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
     * \ref NormalEstimationOMP for a parallel implementation.
-    * \author Radu Bogdan Rusu
+    * \author Radu B. Rusu
     * \ingroup features
     */
   template <typename PointInT, typename PointOutT>
@@ -194,6 +196,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::search_parameter_;
+      using Feature<PointInT, PointOutT>::compute;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
@@ -290,9 +293,9 @@ namespace pcl
         * \note In situations where not enough neighbors are found, the normal and curvature values are set to -1.
         * \param output the resultant point cloud model dataset that contains surface normals and curvatures
         */
-      void computeFeature (PointCloudOut &output);
+      void 
+      computeFeature (PointCloudOut &output);
 
-    private:
       /** \brief Values describing the viewpoint ("pinhole" camera model assumed). For per point viewpoints, inherit
         * from NormalEstimation and provide your own computeFeature (). By default, the viewpoint is set to 0,0,0. */
       float vpx_, vpy_, vpz_;
@@ -302,6 +305,52 @@ namespace pcl
 
       /** \brief 16-bytes aligned placeholder for the XYZ centroid of a surface patch. */
       Eigen::Vector4f xyz_centroid_;
+
+    private:
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+   };
+
+  /** \brief NormalEstimation estimates local surface properties at each 3D point, such as surface normals and
+    * curvatures.
+    *
+    * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
+    * \ref NormalEstimationOMP for a parallel implementation.
+    * \author Radu B. Rusu
+    * \ingroup features
+    */
+  template <typename PointInT>
+  class NormalEstimation<PointInT, Eigen::MatrixXf>: public NormalEstimation<PointInT, pcl::Normal>
+  {
+    public:
+      using NormalEstimation<PointInT, pcl::Normal>::indices_;
+      using NormalEstimation<PointInT, pcl::Normal>::input_;
+      using NormalEstimation<PointInT, pcl::Normal>::surface_;
+      using NormalEstimation<PointInT, pcl::Normal>::k_;
+      using NormalEstimation<PointInT, pcl::Normal>::search_parameter_;
+      using NormalEstimation<PointInT, pcl::Normal>::vpx_;
+      using NormalEstimation<PointInT, pcl::Normal>::vpy_;
+      using NormalEstimation<PointInT, pcl::Normal>::vpz_;
+      using NormalEstimation<PointInT, pcl::Normal>::computePointNormal;
+      using NormalEstimation<PointInT, pcl::Normal>::compute;
+
+    private:
+      /** \brief Estimate normals for all points given in <setInputCloud (), setIndices ()> using the surface in
+        * setSearchSurface () and the spatial locator in setSearchMethod ()
+        * \note In situations where not enough neighbors are found, the normal and curvature values are set to NaN
+        * \param[out] output the resultant point cloud model dataset that contains surface normals and curvatures
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+
+      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      compute (pcl::PointCloud<pcl::Normal> &output) {}
   };
 }
 

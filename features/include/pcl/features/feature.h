@@ -45,11 +45,10 @@
 #include <boost/mpl/size.hpp>
 
 // PCL includes
-#include "pcl/pcl_base.h"
-#include "pcl/common/eigen.h"
-#include "pcl/common/centroid.h"
-
-#include "pcl/search/search.h"
+#include <pcl/pcl_base.h>
+#include <pcl/common/eigen.h>
+#include <pcl/common/centroid.h>
+#include <pcl/search/search.h>
 
 namespace pcl
 {
@@ -88,9 +87,17 @@ namespace pcl
   ////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief @b Feature represents the base feature class. Some generic 3D operations that 
+  /** \brief Feature represents the base feature class. Some generic 3D operations that 
     * are applicable to all features are defined here as static methods.
-    * \author Radu Bogdan Rusu
+    *
+    * \attention 
+    * The convention for a feature descriptor is:
+    *   - if the nearest neighbors for the query point at which the descriptor is to be computed cannot be 
+    *     determined, the descriptor values will be set to NaN (not a number)
+    *   - it is impossible to estimate a feature descriptor for a point that doesn't have finite 3D coordinates. 
+    *     Therefore, any point that has NaN data on x, y, or z, will most likely have its descriptor set to NaN.
+    *
+    * \author Radu B. Rusu
     * \ingroup features
     */
   template <typename PointInT, typename PointOutT>
@@ -127,7 +134,7 @@ namespace pcl
        * is optional, if this is not set, it will only use the data in the
        * input cloud to estimate the features.  This is useful when you only
        * need to compute the features for a downsampled cloud.  
-       * \param cloud a pointer to a PointCloud message
+       * \param[in] cloud a pointer to a PointCloud message
        */
       inline void
       setSearchSurface (const PointCloudInConstPtr &cloud)
@@ -142,7 +149,7 @@ namespace pcl
       getSearchSurface () { return (surface_); }
 
       /** \brief Provide a pointer to the search object.
-        * \param tree a pointer to the spatial search object.
+        * \param[in] tree a pointer to the spatial search object.
         */
       inline void 
       setSearchMethod (const KdTreePtr &tree) { tree_ = tree; }
@@ -156,7 +163,7 @@ namespace pcl
       getSearchParameter () { return (search_parameter_); }
 
       /** \brief Set the number of k nearest neighbors to use for the feature estimation.
-        * \param k the number of k-nearest neighbors
+        * \param[in] k the number of k-nearest neighbors
         */
       inline void 
       setKSearch (int k) { k_ = k; }
@@ -167,7 +174,7 @@ namespace pcl
 
       /** \brief Set the sphere radius that is to be used for determining the nearest neighbors used for the feature
         * estimation.
-        * \param radius the sphere radius used as the maximum distance to consider a point a neighbor
+        * \param[in] radius the sphere radius used as the maximum distance to consider a point a neighbor
         */
       inline void 
       setRadiusSearch (double radius) { search_radius_ = radius; }
@@ -179,18 +186,28 @@ namespace pcl
       /** \brief Base method for feature estimation for all points given in 
         * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () 
         * and the spatial locator in setSearchMethod ()
-        * \param output the resultant point cloud model dataset containing the estimated features
+        * \param[out] output the resultant point cloud model dataset containing the estimated features
         */
       void 
       compute (PointCloudOut &output);
 
+      /** \brief Base method for feature estimation for all points given in 
+        * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () 
+        * and the spatial locator in setSearchMethod ()
+        * \param[out] output the resultant point cloud model dataset containing the estimated features
+        */
+      void 
+      compute (pcl::PointCloud<Eigen::MatrixXf> &output);
+
       /** \brief Search for k-nearest neighbors using the spatial locator from 
         * \a setSearchmethod, and the given surface from \a setSearchSurface.
-        * \param index the index of the query point
-        * \param parameter the search parameter (either k or radius)
-        * \param indices the resultant vector of indices representing the k-nearest neighbors
-        * \param distances the resultant vector of distances representing the distances from the query point to the
+        * \param[in] index the index of the query point
+        * \param[in] parameter the search parameter (either k or radius)
+        * \param[out] indices the resultant vector of indices representing the k-nearest neighbors
+        * \param[out] distances the resultant vector of distances representing the distances from the query point to the
         * k-nearest neighbors
+        *
+        * \return the number of neighbors found. If no neighbors are found or an error occurred, return 0.
         */
       inline int
       searchForNeighbors (size_t index, double parameter, 
@@ -204,12 +221,14 @@ namespace pcl
 
       /** \brief Search for k-nearest neighbors using the spatial locator from 
         * \a setSearchmethod, and the given surface from \a setSearchSurface.
-        * \param cloud the query point cloud
-        * \param index the index of the query point in \a cloud
-        * \param parameter the search parameter (either k or radius)
-        * \param indices the resultant vector of indices representing the k-nearest neighbors
-        * \param distances the resultant vector of distances representing the distances from the query point to the
+        * \param[in] cloud the query point cloud
+        * \param[in] index the index of the query point in \a cloud
+        * \param[in] parameter the search parameter (either k or radius)
+        * \param[out] indices the resultant vector of indices representing the k-nearest neighbors
+        * \param[out] distances the resultant vector of distances representing the distances from the query point to the
         * k-nearest neighbors
+        *
+        * \return the number of neighbors found. If no neighbors are found or an error occurred, return 0.
         */
       inline int
       searchForNeighbors (const PointCloudIn &cloud, size_t index, double parameter, 
@@ -261,10 +280,18 @@ namespace pcl
       bool fake_surface_;
 
     private:
-      /** \brief Abstract feature estimation method. */
+      /** \brief Abstract feature estimation method. 
+        * \param[out] output the resultant features 
+        */
       virtual void 
       computeFeature (PointCloudOut &output) = 0;
       
+      /** \brief Abstract feature estimation method. 
+        * \param[out] output the resultant features 
+        */
+      virtual void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) = 0;
+
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -301,7 +328,7 @@ namespace pcl
         * the XYZ dataset.
         * In case of search surface is set to be different from the input cloud, 
         * normals should correspond to the search surface, not the input cloud!
-        * \param normals the const boost shared pointer to a PointCloud of normals. 
+        * \param[in] normals the const boost shared pointer to a PointCloud of normals. 
         * By convention, L2 norm of each normal should be 1. 
         */
       inline void 
@@ -357,12 +384,11 @@ namespace pcl
         k_ = 1; // Search tree is not always used here.
       }
 
-      /** \brief Provide a pointer to the input dataset that contains the point normals of
+      /** \brief Provide a pointer to the input dataset that contains the point labels of
         * the XYZ dataset.
         * In case of search surface is set to be different from the input cloud,
         * labels should correspond to the search surface, not the input cloud!
-        * \param normals the const boost shared pointer to a PointCloud of normals.
-        * By convention, L2 norm of each normal should be 1.
+        * \param[in] labels the const boost shared pointer to a PointCloud of labels.
         */
       inline void
       setInputLabels (const PointCloudLConstPtr &labels) { labels_ = labels; }

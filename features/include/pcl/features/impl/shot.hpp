@@ -1,38 +1,40 @@
 /*
-  * Software License Agreement (BSD License)
-  *
-  *  Copyright (c) 2009, Willow Garage, Inc.
-  *  All rights reserved.
-  *
-  *  Redistribution and use in source and binary forms, with or without
-  *  modification, are permitted provided that the following conditions
-  *  are met:
-  *
-  *   * Redistributions of source code must retain the above copyright
-  *     notice, this list of conditions and the following disclaimer.
-  *   * Redistributions in binary form must reproduce the above
-  *     copyright notice, this list of conditions and the following
-  *     disclaimer in the documentation and/or other materials provided
-  *     with the distribution.
-  *   * Neither the name of Willow Garage, Inc. nor the names of its
-  *     contributors may be used to endorse or promote products derived
-  *     from this software without specific prior written permission.
-  *
-  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  *  POSSIBILITY OF SUCH DAMAGE.
-  *
-  *
-  */
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ *
+ */
 
 #ifndef PCL_FEATURES_IMPL_SHOT_H_
 #define PCL_FEATURES_IMPL_SHOT_H_
@@ -42,11 +44,11 @@
 #include <utility>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/*!
-  * \brief Check if val1 and val2 are equals.
+/** \brief Check if val1 and val2 are equals.
   *
-  * \param val1 first number to check.
-  * \param val2 second number to check.
+  * \param[in] val1 first number to check.
+  * \param[in] val2 second number to check.
+  * \param[in] zeroDoubleEps epsilon
   * \return true if val1 is equal to val2, false otherwise.
   */
 inline bool
@@ -56,11 +58,11 @@ areEquals (double val1, double val2, double zeroDoubleEps = zeroDoubleEps15)
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/*!
-  * \brief Check if val1 and val2 are equals.
+/** \brief Check if val1 and val2 are equals.
   *
-  * \param val1 first number to check.
-  * \param val2 second number to check.
+  * \param[in] val1 first number to check.
+  * \param[in] val2 second number to check.
+  * \param[in] zeroFloatEps epsilon
   * \return true if val1 is equal to val2, false otherwise.
   */
 inline bool
@@ -78,16 +80,6 @@ template <typename PointNT, typename PointOutT> float
 pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::sXYZ_LUT[4000] = {- 1};
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-/*!
-  * \brief Converts RGB triplets to CIELab space.
-  *
-  * \param R red input component(8 bits)
-  * \param G green input component(8 bits)
-  * \param B blue input component(8 bits)
-  * \param L "L" output component(float)
-  * \param a "a" output component(float)
-  * \param b "b" output component(float)
-  */
 template <typename PointNT, typename PointOutT> void
 pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::RGB2CIELAB (unsigned char R, unsigned char G,
                                                                         unsigned char B, float &L, float &A,
@@ -149,11 +141,59 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::RGB2CIELAB (unsigned
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// Quadrilinear interpolation; used when color and shape descriptions are NOT activated simultaneously
+template <typename PointInT, typename PointNT, typename PointOutT> void
+pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::createBinDistanceShape (
+    int index,
+    const std::vector<int> &indices, 
+    const std::vector<float> &sqr_dists,
+    const pcl::PointCloud<PointInT> &input,
+    const pcl::PointCloud<PointNT> &normals,
+    const pcl::PointCloud<PointInT> &surface,
+    double search_radius,
+    std::vector<double> &bin_distance_shape,
+    std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf)
+{
+  bin_distance_shape.resize (indices.size ());
+
+  if (rf.size () != 3)
+    rf.resize (3);
+
+  Eigen::Vector4f central_point = input.points[index].getVector4fMap ();
+  central_point[3] = 0;
+  if (pcl::getLocalRF (surface, search_radius, central_point, indices, sqr_dists, rf))
+	  return;
+
+  for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
+  {
+    double cosineDesc = normals.points[indices[i_idx]].getNormalVector4fMap ().dot (rf[2]); //feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
+
+    if (cosineDesc > 1.0)
+      cosineDesc = 1.0;
+    if (cosineDesc < - 1.0)
+      cosineDesc = - 1.0;
+
+    bin_distance_shape[i_idx] = ((1.0 + cosineDesc) * nr_shape_bins_) / 2;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointNT, typename PointOutT> void
+pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::normalizeHistogram (
+    Eigen::VectorXf &shot, int desc_length)
+{
+  double acc_norm = 0;
+  for (int j = 0; j < desc_length; j++)
+    acc_norm += shot[j] * shot[j];
+  acc_norm = sqrt (acc_norm);
+  for (int j = 0; j < desc_length; j++)
+    shot[j] /= acc_norm;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel (
     const std::vector<int> &indices,
-    const std::vector<float> &dists,
+    const std::vector<float> &sqr_dists,
     const Eigen::Vector4f &central_point,
     const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf,
     std::vector<double> &binDistance,
@@ -172,7 +212,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
 	delta[3] = 0;
 
     // Compute the Euclidean norm
-   double distance = sqrt (dists[i_idx]);
+   double distance = sqrt (sqr_dists[i_idx]);
 
     if (areEquals (distance, 0.0))
       continue;
@@ -233,7 +273,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
       {
         intWeight += 1 + radiusDistance;
         shot[(desc_index - 2) * (nr_bins+1) + step_index] -= radiusDistance;
-	  }
+      }
     }
     else    //internal sphere
     {
@@ -245,7 +285,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
       {
         intWeight += 1 - radiusDistance;
         shot[(desc_index + 2) * (nr_bins+1) + step_index] += radiusDistance;
-	  }
+      }
     }
 
     //Interpolation on the inclination (adjacent vertical volumes)
@@ -269,7 +309,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
         intWeight += 1 + inclinationDistance;
         assert ((desc_index + 1) * (nr_bins+1) + step_index >= 0 && (desc_index + 1) * (nr_bins+1) + step_index < descLength_);
         shot[(desc_index + 1) * (nr_bins+1) + step_index] -= inclinationDistance;
-	  }
+      }
     }
     else
     {
@@ -281,7 +321,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
         intWeight += 1 - inclinationDistance;
         assert ((desc_index - 1) * (nr_bins+1) + step_index >= 0 && (desc_index - 1) * (nr_bins+1) + step_index < descLength_);
         shot[(desc_index - 1) * (nr_bins+1) + step_index] += inclinationDistance;
-	  }
+      }
     }
 
     if (yInFeatRef != 0.0 || xInFeatRef != 0.0)
@@ -318,16 +358,14 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
 
     assert (volume_index + step_index >= 0 &&  volume_index + step_index < descLength_);
     shot[volume_index + step_index] += intWeight;
-
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// Quadrilinear interpolation; used when color and shape descriptions are both activated
 template <typename PointNT, typename PointOutT> void
 pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleChannel (
   const std::vector<int> &indices, 
-  const std::vector<float> &dists,
+  const std::vector<float> &sqr_dists,
   const Eigen::Vector4f &central_point, 
   const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf,
   std::vector<double> &binDistanceShape,
@@ -347,10 +385,10 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
     Eigen::Vector4f delta = surface_->points[indices[i_idx]].getVector4fMap () - central_point;
-	delta[3] = 0;
+    delta[3] = 0;
 
     // Compute the Euclidean norm
-    double distance = sqrt (dists[i_idx]);
+    double distance = sqrt (sqr_dists[i_idx]);
 
     if (areEquals (distance, 0.0))
       continue;
@@ -540,7 +578,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT, typename PointOutT> void
 pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
-  const int index, const std::vector<int> &indices, const std::vector<float> &dists, Eigen::VectorXf &shot,
+  const int index, const std::vector<int> &indices, const std::vector<float> &sqr_dists, Eigen::VectorXf &shot,
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf)
 {
   if (rf.size () != 3)
@@ -548,12 +586,9 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
 
   // Clear the resultant shot
   shot.setZero ();
-
   std::vector<double> binDistanceShape;
   std::vector<double> binDistanceColor;
-
   int nNeighbors = indices.size ();
-
   //Skip the current feature if the number of its neighbors is not sufficient for its description
   if (nNeighbors < 5)
   {
@@ -564,7 +599,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
   //Compute the local Reference Frame for the current 3D point
   Eigen::Vector4f central_point = input_->points[index].getVector4fMap ();
   central_point[3] = 0;
-  if (pcl::getLocalRF (*surface_, search_radius_, central_point, indices, dists, rf))
+  if (pcl::getLocalRF (*surface_, search_radius_, central_point, indices, sqr_dists, rf))
 	  return;
 
   //If shape description is enabled, compute the bins activated by each neighbor of the current feature in the shape histogram
@@ -628,83 +663,73 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
   //Apply quadrilinear interpolation on the activated bins in the shape and/or color histogram(s)
 
   if (b_describe_shape_ && b_describe_color_)
-    interpolateDoubleChannel (indices, dists, input_->points[index].getVector4fMap (), rf, binDistanceShape, binDistanceColor,
+    interpolateDoubleChannel (indices, sqr_dists, input_->points[index].getVector4fMap (), rf, binDistanceShape, binDistanceColor,
                               nr_shape_bins_, nr_color_bins_,
                               shot);
   else if (b_describe_color_)
-    interpolateSingleChannel (indices, dists, input_->points[index].getVector4fMap (), rf, binDistanceColor, nr_color_bins_, shot);
+    interpolateSingleChannel (indices, sqr_dists, input_->points[index].getVector4fMap (), rf, binDistanceColor, nr_color_bins_, shot);
   else
-    interpolateSingleChannel (indices, dists, input_->points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
+    interpolateSingleChannel (indices, sqr_dists, input_->points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
 
-  //Normalize the final histogram
-  double accNorm = 0;
-  for (int j=0; j< descLength_; j++)
-    accNorm += shot[j]*shot[j];
-
-  accNorm = sqrt (accNorm);
-
-  for (int j=0; j< descLength_; j++)
-    shot[j] /= accNorm;
+  // Normalize the final histogram
+  normalizeHistogram (shot, descLength_);
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
-  const int index, const std::vector<int> &indices, const std::vector<float> &dists, Eigen::VectorXf &shot,
+  const int index, const std::vector<int> &indices, const std::vector<float> &sqr_dists, Eigen::VectorXf &shot,
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf)
 {
-  if (rf.size () != 3)
-    rf.resize (3);
-
-   // Clear the resultant shot
-  shot.setZero ();
-
-  std::vector<double> binDistanceShape;
-
-  int nNeighbors = indices.size ();
-
-  if (nNeighbors < 5)
+  //Skip the current feature if the number of its neighbors is not sufficient for its description
+  if (indices.size () < 5)
   {
     PCL_WARN ("[pcl::%s::computePointSHOT] Warning! Neighborhood has less than 5 vertexes. Aborting description of point with index %d\n", getClassName ().c_str (), index);
     return;
   }
 
-  Eigen::Vector4f central_point = input_->points[index].getVector4fMap ();
-  central_point[3] = 0;
-  if (pcl::getLocalRF (*surface_, search_radius_, central_point, indices, dists, rf))
-	  return;
+   // Clear the resultant shot
+  std::vector<double> binDistanceShape;
+  createBinDistanceShape (index, indices, sqr_dists, *input_, *normals_, *surface_, search_radius_, binDistanceShape, rf);
 
+  // Interpolate
+  shot.setZero ();
+  interpolateSingleChannel (indices, sqr_dists, input_->points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
 
-  binDistanceShape.resize (nNeighbors);
-
-  for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
-  {
-    double cosineDesc = normals_->points[indices[i_idx]].getNormalVector4fMap ().dot (rf[2]); //feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
-
-    if (cosineDesc > 1.0)
-      cosineDesc = 1.0;
-    if (cosineDesc < - 1.0)
-      cosineDesc = - 1.0;
-
-    binDistanceShape[i_idx] = ((1.0 + cosineDesc) * nr_shape_bins_) / 2;
-
-  }
-
-  interpolateSingleChannel (indices, dists, input_->points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
-
-  double accNorm = 0;
-  for (int j=0; j< descLength_; j++)
-    accNorm += shot[j]*shot[j];
-
-  accNorm = sqrt (accNorm);
-
-  for (int j=0; j< descLength_; j++)
-    shot[j] /= accNorm;
-
+  // Normalize the final histogram
+  normalizeHistogram (shot, descLength_);
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointNT> void
+pcl::SHOTEstimation<PointInT, PointNT, Eigen::MatrixXf>::computePointSHOT (
+  const int index, const std::vector<int> &indices, const std::vector<float> &sqr_dists, Eigen::VectorXf &shot,
+  std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf)
+{
+  //Skip the current feature if the number of its neighbors is not sufficient for its description
+  if (indices.size () < 5)
+  {
+    PCL_WARN ("[pcl::%s::computePointSHOT] Warning! Neighborhood has less than 5 vertexes. Aborting description of point with index %d\n", getClassName ().c_str (), index);
+    return;
+  }
+
+   // Clear the resultant shot
+  std::vector<double> binDistanceShape;
+  createBinDistanceShape (index, indices, sqr_dists, *input_, *normals_, *surface_, search_radius_, binDistanceShape, rf);
+
+  // Interpolate
+  shot.setZero ();
+  interpolateSingleChannel (indices, sqr_dists, input_->points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
+
+  // Normalize the final histogram
+  normalizeHistogram (shot, descLength_);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT, typename PointOutT> void
 pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
@@ -741,10 +766,22 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (Poin
   std::vector<int> nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
+  output.is_dense = true;
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
-    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+        this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+    {
+      // Copy into the resultant cloud
+      for (int d = 0; d < shot_.size (); ++d)
+        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
+      for (int d = 0; d < 9; ++d)
+        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
+
+      output.is_dense = false;
+      continue;
+     }
 
     // Compute the SHOT descriptor for the current 3D feature
     computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot_, rf_);
@@ -757,10 +794,67 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (Poin
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointNT> void
+pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+{
+  if (rf_.size () != 3)
+    rf_.resize (3);
+
+  // Compute the current length of the descriptor
+  descLength_ = (b_describe_shape_) ? nr_grid_sector_*(nr_shape_bins_+1) : 0;
+  descLength_ +=   (b_describe_color_) ? nr_grid_sector_*(nr_color_bins_+1) : 0;
+
+  // Useful values
+  sqradius_ = search_radius_*search_radius_;
+  radius3_4_ = (search_radius_*3) / 4;
+  radius1_4_ = search_radius_ / 4;
+  radius1_2_ = search_radius_ / 2;
+
+  shot_.setZero (descLength_);
+  rf_[0].setZero ();
+  rf_[1].setZero ();
+  rf_[2].setZero ();
+
+  output.points.resize (indices_->size (), descLength_ + 9);
+
+  // Allocate enough space to hold the results
+  // \note This resize is irrelevant for a radiusSearch ().
+  std::vector<int> nn_indices (k_);
+  std::vector<float> nn_dists (k_);
+
+  output.is_dense = true;
+  // Iterating over the entire index vector
+  for (size_t idx = 0; idx < indices_->size (); ++idx)
+  {
+    if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+        this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+    {
+      output.points.row (idx).setConstant (std::numeric_limits<float>::quiet_NaN ());
+
+      output.is_dense = false;
+      continue;
+     }
+
+    // Compute the SHOT descriptor for the current 3D feature
+    computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot_, rf_);
+
+    // Copy into the resultant cloud
+    for (int d = 0; d < shot_.size (); ++d)
+      output.points (idx, d) = shot_[d];
+    for (int d = 0; d < 9; ++d)
+      output.points (idx, shot_.size () + d) = rf_[d/3][d%3];
+  }
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
-pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
+pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (pcl::PointCloud<PointOutT> &output)
 {
   if (rf_.size () != 3)
     rf_.resize (3);
@@ -791,10 +885,22 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (PointClou
   std::vector<int> nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
+  output.is_dense = true;
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
-    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+        this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+    {
+      // Copy into the resultant cloud
+      for (int d = 0; d < shot_.size (); ++d)
+        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
+      for (int d = 0; d < 9; ++d)
+        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
+
+      output.is_dense = false;
+      continue;
+     }
 
     // Estimate the SHOT at each patch
     computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot_, rf_);
@@ -804,6 +910,58 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (PointClou
       output.points[idx].descriptor[d] = shot_[d];
     for (int d = 0; d < 9; ++d)
       output.points[idx].rf[d] = rf_[d/3][d%3];
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointNT> void
+pcl::SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+{
+  if (rf_.size () != 3)
+    rf_.resize (3);
+
+  descLength_ = nr_grid_sector_ * (nr_shape_bins_+1);
+
+  sqradius_ = search_radius_ * search_radius_;
+  radius3_4_ = (search_radius_*3) / 4;
+  radius1_4_ = search_radius_ / 4;
+  radius1_2_ = search_radius_ / 2;
+
+  shot_.setZero (descLength_);
+  rf_[0].setZero ();
+  rf_[1].setZero ();
+  rf_[2].setZero ();
+
+  output.points.resize (indices_->size (), descLength_ + 9);
+
+  // Allocate enough space to hold the results
+  // \note This resize is irrelevant for a radiusSearch ().
+  std::vector<int> nn_indices (k_);
+  std::vector<float> nn_dists (k_);
+
+  output.is_dense = true;
+  // Iterating over the entire index vector
+  for (size_t idx = 0; idx < indices_->size (); ++idx)
+  {
+    if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+        this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+    {
+      output.points.row (idx).setConstant (std::numeric_limits<float>::quiet_NaN ());
+
+      output.is_dense = false;
+      continue;
+     }
+
+    // Estimate the SHOT at each patch
+    computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot_, rf_);
+
+    // Copy into the resultant cloud
+    for (int d = 0; d < shot_.size (); ++d)
+      output.points (idx, d) = shot_[d];
+    for (int d = 0; d < 9; ++d)
+      output.points (idx, shot_.size () + d) = rf_[d/3][d%3];
   }
 }
 

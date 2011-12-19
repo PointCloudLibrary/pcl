@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -127,57 +129,6 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   }
 
 }
-
-/*
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT, typename PointOutT> void
-pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
-{
-  int data_size = indices_->size ();
-  // Reset the whole thing
-  hist_f1_.setZero (data_size, nr_bins_f1_);
-  hist_f2_.setZero (data_size, nr_bins_f2_);
-  hist_f3_.setZero (data_size, nr_bins_f3_);
-
-  int nr_bins = nr_bins_f1_ + nr_bins_f2_ + nr_bins_f3_;
-
-  // Iterating over the entire index vector
-#pragma omp parallel for schedule (dynamic, threads_)
-  for (int idx = 0; idx < data_size; ++idx)
-  {
-    // Allocate enough space to hold the results
-    // \note This resize is irrelevant for a radiusSearch ().
-    std::vector<int> nn_indices (k_);
-    std::vector<float> nn_dists (k_);
-
-    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
-
-    // Estimate the FPFH signature at each patch
-    this->computePointSPFHSignature (*surface_, *normals_, (*indices_)[idx], nn_indices,
-                               hist_f1_, hist_f2_, hist_f3_);
-  }
-
-  // Iterating over the entire index vector
-#pragma omp parallel for schedule (dynamic, threads_)
-  for (int idx = 0; idx < data_size; ++idx)
-  {
-    // Allocate enough space to hold the results
-    // \note This resize is irrelevant for a radiusSearch ().
-    std::vector<int> nn_indices (k_);
-    std::vector<float> nn_dists (k_);
-
-    Eigen::VectorXf fpfh_histogram = Eigen::VectorXf::Zero (nr_bins);
-
-    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
-
-    weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram);
-
-    // Copy into the resultant cloud
-    for (int d = 0; d < fpfh_histogram.size (); ++d)
-      output.points[idx].histogram[d] = fpfh_histogram[d];
-  }
-}
-*/
 
 #define PCL_INSTANTIATE_FPFHEstimationOMP(T,NT,OutT) template class PCL_EXPORTS pcl::FPFHEstimationOMP<T,NT,OutT>;
 

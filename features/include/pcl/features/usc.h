@@ -45,140 +45,220 @@
 
 namespace pcl
 {
-  /* namespace features */
-  /* { */
-    /** Class UniqueShapeContext implements the unique shape descriptor
-      * described here
-      * <ul>
-      * <li> F. Tombari, S. Salti, L. Di Stefano, 
-      * “Unique Shape Context for 3D data description”, 
-      * International Workshop on 3D Object Retrieval (3DOR 10) - 
-      * in conjuction with ACM Multimedia 2010
-      * </li>
-      * </ul>
-      * The USC computed feature has the following structure
-      * <ul>
-      * <li> rf float[9] = x_axis | y_axis | normal and represents the local frame </li>
-      * <li> desc std::vector<float> which size is determined by the number of bins
-      * radius_bins_, elevation_bins_ and azimuth_bins_. 
-      * </li>
-      * </ul>
-      * \author Alessandro Franchi, Federico Tombari, Samuele Salti (original code)
-      * \author Nizar Sallem (port to PCL)
-      * \ingroup features
-      */
-    template <typename PointInT, typename PointOutT> 
-    class UniqueShapeContext : public Feature<PointInT, PointOutT>
-    {
-      public:
-         using Feature<PointInT, PointOutT>::feature_name_;
-         using Feature<PointInT, PointOutT>::getClassName;
-         using Feature<PointInT, PointOutT>::indices_;
-         using Feature<PointInT, PointOutT>::search_parameter_;
-         using Feature<PointInT, PointOutT>::search_radius_;
-         using Feature<PointInT, PointOutT>::surface_;
-         using Feature<PointInT, PointOutT>::input_;
-         using Feature<PointInT, PointOutT>::searchForNeighbors;
-         
-         typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-         typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-         
-         /** Constructor
-           */
-         UniqueShapeContext() :
-           radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
-           azimuth_bins_(12), elevation_bins_(11), radius_bins_(15), 
-           min_radius_(0.1), point_density_radius_(0.2)
-         {
-           feature_name_ = "UniqueShapeContext";
-           search_radius_ = 2.5;
-           local_radius_ = 2.5;
-         }
+  /** \brief UniqueShapeContext implements the Unique Shape Descriptor
+    * described here:
+    * 
+    *   - F. Tombari, S. Salti, L. Di Stefano, 
+    *     "Unique Shape Context for 3D data description", 
+    *     International Workshop on 3D Object Retrieval (3DOR 10) - 
+    *     in conjuction with ACM Multimedia 2010
+    *
+    * The USC computed feature has the following structure:
+    *   - rf float[9] = x_axis | y_axis | normal and represents the local frame
+    *     desc std::vector<float> which size is determined by the number of bins
+    *     radius_bins_, elevation_bins_ and azimuth_bins_. 
+    * 
+    * \author Alessandro Franchi, Federico Tombari, Samuele Salti (original code)
+    * \author Nizar Sallem (port to PCL)
+    * \ingroup features
+    */
+  template <typename PointInT, typename PointOutT> 
+  class UniqueShapeContext : public Feature<PointInT, PointOutT>
+  {
+    public:
+       using Feature<PointInT, PointOutT>::feature_name_;
+       using Feature<PointInT, PointOutT>::getClassName;
+       using Feature<PointInT, PointOutT>::indices_;
+       using Feature<PointInT, PointOutT>::search_parameter_;
+       using Feature<PointInT, PointOutT>::search_radius_;
+       using Feature<PointInT, PointOutT>::surface_;
+       using Feature<PointInT, PointOutT>::input_;
+       using Feature<PointInT, PointOutT>::searchForNeighbors;
+       
+       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+       
+       /** \brief Constructor. */
+       UniqueShapeContext () :
+         radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
+         azimuth_bins_(12), elevation_bins_(11), radius_bins_(15), 
+         min_radius_(0.1), point_density_radius_(0.2)
+       {
+         feature_name_ = "UniqueShapeContext";
+         search_radius_ = 2.5;
+         local_radius_ = 2.5;
+       }
 
-        virtual ~UniqueShapeContext() { }
+      virtual ~UniqueShapeContext() { }
 
-        /** set number of bins along the azimth to \param bins */
-        inline void setAzimuthBins(size_t bins) { azimuth_bins_ = bins; }
-        /** \return the number of bins along the azimuth */
-        inline size_t getAzimuthBins(size_t bins) { return (azimuth_bins_); } 
-        /** set number of bins along the elevation to \param bins */
-        inline void setElevationBins(size_t bins) { elevation_bins_ = bins; }
-        /** \return the number of bins along the elevation */
-        inline size_t getElevationBins(size_t bins) { return (elevation_bins_); } 
-        /** set number of bins along the radii to \param bins */
-        inline void setRadiusBins(size_t bins) { radius_bins_ = bins; }
-        /** \return the number of bins along the radii direction */
-        inline size_t getRadiusBins(size_t bins) { return (radius_bins_); } 
-        /** The minimal radius value for the search sphere (rmin) in the original paper 
-          * \param radius the desired minimal radius
-          */
-        inline void setMinimalRadius(float radius) { min_radius_ = radius; }
-        /** \return the minimal sphere radius */
-        inline float getMinimalRadius() { return (min_radius_); }
-        /** This radius is used to compute local point density 
-          * density = number of points within this radius
-          * \param radius Value of the point density search radius
-          */
-        inline void setPointDensityRadius(double radius) { point_density_radius_ = radius; }
-        /** \return point density search radius */
-        inline double getPointDensityRadius() { return (point_density_radius_); }
-        /** The local RF radius value
-          * \param radius the desired local RF radius
-          */
-        inline void setLocalRadius(float radius) { local_radius_ = radius; }
-        /** \return the local RF radius */
-        inline float getLocalRadius() { return (local_radius_); }
-        
-      protected:
-        /** Compute 3D shape context feature descriptor
-          * \param index point index in input_
-          * \param rf reference frame
-          * \param desc descriptor to compute
-          */
-        void
-        computePointDescriptor(size_t index, float rf[9], std::vector<float> &desc);
-        
-        /** initilize computation by allocating all the intervals and the volume look 
-          * up table
-          */
-        virtual bool initCompute() ;
+      /** \brief Set the number of bins along the azimuth
+        * \param[in] bins the number of bins along the azimuth
+        */
+      inline void 
+      setAzimuthBins (size_t bins) { azimuth_bins_ = bins; }
 
-        virtual void
-        computeFeature(PointCloudOut &output);
+      /** \return The number of bins along the azimuth. */
+      inline size_t 
+      getAzimuthBins (size_t bins) { return (azimuth_bins_); } 
 
-      protected:
-        /** values of the radii interval */
-        std::vector<float> radii_interval_;
-        /** theta divisions interval */
-        std::vector<float> theta_divisions_;
-        /** phi divisions interval */
-        std::vector<float> phi_divisions_;
-        /** volumes look up table */
-        std::vector<float> volume_lut_;
-        /** bins along the azimuth dimension */
-        size_t azimuth_bins_;
-        /** bins along the elevation dimension */
-        size_t elevation_bins_;
-        /** bins along the radius dimension */
-        size_t radius_bins_;
-        /** minimal radius value */
-        double min_radius_;
-        /** point density radius */
-        double point_density_radius_;
-        /** descriptor length */
-        size_t descriptor_length_;
-        /** radisu to compute local RF */
-		float local_radius_;
-		
-      private:
-        /** Compute 3D shape context feature local Reference Frame
-          * \param index point index in input_
-          * \param rf reference frame to compute
-          */
-        void
-        computePointRF(size_t index, float rf[9]);
-    };
-  /* }; */
+      /** \brief Set the number of bins along the elevation
+        * \param[in] bins the number of bins along the elevation
+        */
+      inline void 
+      setElevationBins (size_t bins) { elevation_bins_ = bins; }
+
+      /** \return The number of bins along the elevation */
+      inline size_t 
+      getElevationBins (size_t bins) { return (elevation_bins_); } 
+
+      /** \brief Set the number of bins along the radii
+        * \param[in] bins the number of bins along the radii
+        */
+      inline void 
+      setRadiusBins (size_t bins) { radius_bins_ = bins; }
+
+      /** \return The number of bins along the radii direction. */
+      inline size_t 
+      getRadiusBins (size_t bins) { return (radius_bins_); } 
+
+      /** The minimal radius value for the search sphere (rmin) in the original paper 
+        * \param[in] radius the desired minimal radius
+        */
+      inline void 
+      setMinimalRadius (float radius) { min_radius_ = radius; }
+
+      /** \return The minimal sphere radius. */
+      inline float 
+      getMinimalRadius () { return (min_radius_); }
+
+      /** This radius is used to compute local point density 
+        * density = number of points within this radius
+        * \param[in] radius Value of the point density search radius
+        */
+      inline void 
+      setPointDensityRadius (double radius) { point_density_radius_ = radius; }
+      
+      /** \return The point density search radius. */
+      inline double 
+      getPointDensityRadius () { return (point_density_radius_); }
+
+      /** Set the local RF radius value
+        * \param[in] radius the desired local RF radius
+        */
+      inline void 
+      setLocalRadius (float radius) { local_radius_ = radius; }
+
+      /** \return The local RF radius. */
+      inline float 
+      getLocalRadius () { return (local_radius_); }
+      
+    protected:
+      /** Compute 3D shape context feature descriptor
+        * \param[in] index point index in input_
+        * \param[in] rf reference frame
+        * \param[out] desc descriptor to compute
+        */
+      void
+      computePointDescriptor (size_t index, float rf[9], std::vector<float> &desc);
+      
+      /** \brief Initialize computation by allocating all the intervals and the volume lookup table. */
+      virtual bool 
+      initCompute ();
+
+      /** \brief The actual feature computation.
+        * \param[out] output the resultant features
+        */
+      virtual void
+      computeFeature (PointCloudOut &output);
+
+      /** Compute 3D shape context feature local Reference Frame
+        * \param[in] index point index in input_
+        * \param[out] rf reference frame to compute
+        * \return true if the computation of the local Reference Frame was succesful
+        */
+      bool
+      computePointRF (size_t index, float rf[9]);
+
+      /** \brief values of the radii interval. */
+      std::vector<float> radii_interval_;
+
+      /** \brief Theta divisions interval. */
+      std::vector<float> theta_divisions_;
+
+      /** \brief Phi divisions interval. */
+      std::vector<float> phi_divisions_;
+
+      /** \brief Volumes look up table. */
+      std::vector<float> volume_lut_;
+      
+      /** \brief Bins along the azimuth dimension. */
+      size_t azimuth_bins_;
+      
+      /** \brief Bins along the elevation dimension. */
+      size_t elevation_bins_;
+
+      /** \brief Bins along the radius dimension. */
+      size_t radius_bins_;
+      
+      /** \brief Minimal radius value. */
+      double min_radius_;
+      
+      /** \brief Point density radius. */
+      double point_density_radius_;
+
+      /** \brief Descriptor length. */
+      size_t descriptor_length_;
+
+      /** \brief Radius to compute local RF. */
+      float local_radius_;
+   private:
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+  };
+
+  /** \brief UniqueShapeContext implements the Unique Shape Descriptor
+    * described here:
+    * 
+    *   - F. Tombari, S. Salti, L. Di Stefano, 
+    *     "Unique Shape Context for 3D data description", 
+    *     International Workshop on 3D Object Retrieval (3DOR 10) - 
+    *     in conjuction with ACM Multimedia 2010
+    *
+    * The USC computed feature has the following structure:
+    *   - rf float[9] = x_axis | y_axis | normal and represents the local frame 
+    *     desc std::vector<float> which size is determined by the number of bins
+    *     radius_bins_, elevation_bins_ and azimuth_bins_. 
+    * 
+    * \author Alessandro Franchi, Federico Tombari, Samuele Salti (original code)
+    * \author Nizar Sallem (port to PCL)
+    * \ingroup features
+    */
+  template <typename PointInT> 
+  class UniqueShapeContext<PointInT, Eigen::MatrixXf> : public UniqueShapeContext<PointInT, pcl::SHOT>
+  {
+    public:
+       using UniqueShapeContext<PointInT, pcl::SHOT>::indices_;
+       using UniqueShapeContext<PointInT, pcl::SHOT>::descriptor_length_;
+       using UniqueShapeContext<PointInT, pcl::SHOT>::compute;
+       using UniqueShapeContext<PointInT, pcl::SHOT>::computePointRF;
+       using UniqueShapeContext<PointInT, pcl::SHOT>::computePointDescriptor;
+
+    private:
+      /** \brief The actual feature computation.
+        * \param[out] output the resultant features
+        */
+      virtual void
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+
+      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      compute (pcl::PointCloud<pcl::SHOT> &output) {}
+  };
 }
 
 #endif  //#ifndef PCL_USC_H_

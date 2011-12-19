@@ -95,6 +95,12 @@ namespace pcl
 
       /** \brief Float constant = 1.0 / (2.0 * M_PI) */
       float d_pi_;
+
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 }
 

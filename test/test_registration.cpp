@@ -485,7 +485,7 @@ TEST (PCL, PyramidFeatureHistogram)
   pyramid_target->compute ();
 
   float similarity_value3 = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
-  EXPECT_NEAR (similarity_value3, 0.881507, 1e-4);
+  EXPECT_NEAR (similarity_value3, 0.881507, 1e-3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

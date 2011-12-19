@@ -1,60 +1,59 @@
 /*
-  * Software License Agreement (BSD License)
-  *
-  *  Copyright (c) 2009, Willow Garage, Inc.
-  *  All rights reserved.
-  *
-  *  Redistribution and use in source and binary forms, with or without
-  *  modification, are permitted provided that the following conditions
-  *  are met:
-  *
-  *   * Redistributions of source code must retain the above copyright
-  *     notice, this list of conditions and the following disclaimer.
-  *   * Redistributions in binary form must reproduce the above
-  *     copyright notice, this list of conditions and the following
-  *     disclaimer in the documentation and/or other materials provided
-  *     with the distribution.
-  *   * Neither the name of Willow Garage, Inc. nor the names of its
-  *     contributors may be used to endorse or promote products derived
-  *     from this software without specific prior written permission.
-  *
-  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  *  POSSIBILITY OF SUCH DAMAGE.
-  *
-  *
-  */
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id$
+ *
+ */
 
 #ifndef PCL_FEATURES_IMPL_SPIN_IMAGE_H_
 #define PCL_FEATURES_IMPL_SPIN_IMAGE_H_
 
 #include <limits>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/exceptions.h>
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/features/spin_image.h>
 
-#include "pcl/point_cloud.h"
-#include "pcl/point_types.h"
-#include "pcl/exceptions.h"
-#include "pcl/kdtree/kdtree_flann.h"
-#include "pcl/features/spin_image.h"
-
-
-using namespace pcl;
 
 template <typename PointInT, typename PointNT, typename PointOutT>
-const double SpinImageEstimation<PointInT, PointNT, PointOutT>::PI = 4.0 * std::atan2(1.0, 1.0);
-
+const double pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::PI = 4.0 * std::atan2(1.0, 1.0);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
-SpinImageEstimation<PointInT, PointNT, PointOutT>::SpinImageEstimation (
+pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::SpinImageEstimation (
   unsigned int image_width, double support_angle_cos, unsigned int min_pts_neighb):
     is_angular_(false), use_custom_axis_(false), use_custom_axes_cloud_(false), 
     is_radial_(false),
@@ -68,7 +67,7 @@ SpinImageEstimation<PointInT, PointNT, PointOutT>::SpinImageEstimation (
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> Eigen::ArrayXXd 
-SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int index) const
+pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int index) const
 {
   assert (image_width_ > 0);
   assert (support_angle_cos_ <= 1.0 && support_angle_cos_ >= 0.0); // may be permit negative cosine?
@@ -301,11 +300,11 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void 
-SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
+pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 { 
   for (int i_input = 0; i_input < (int)indices_->size (); ++i_input)
   {
-    Eigen::ArrayXXd res = computeSiForPoint (indices_->at(i_input));
+    Eigen::ArrayXXd res = computeSiForPoint (indices_->at (i_input));
 
     // Copy into the resultant cloud
     for (int iRow = 0; iRow < res.rows () ; iRow++)
@@ -313,6 +312,26 @@ SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
       for (int iCol = 0; iCol < res.cols () ; iCol++)
       {
         output.points[i_input].histogram[ iRow*res.cols () + iCol ] = (float)res(iRow, iCol);
+      }
+    }   
+  } 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointNT> void 
+pcl::SpinImageEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+{ 
+  output.points.resize (indices_->size (), 153);
+  for (int i_input = 0; i_input < (int)indices_->size (); ++i_input)
+  {
+    Eigen::ArrayXXd res = computeSiForPoint (indices_->at (i_input));
+
+    // Copy into the resultant cloud
+    for (int iRow = 0; iRow < res.rows () ; iRow++)
+    {
+      for (int iCol = 0; iCol < res.cols () ; iCol++)
+      {
+        output.points (i_input, iRow*res.cols () + iCol) = (float)res(iRow, iCol);
       }
     }   
   } 

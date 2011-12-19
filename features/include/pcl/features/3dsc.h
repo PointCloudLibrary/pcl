@@ -46,23 +46,27 @@
 
 namespace pcl
 {
-  /** Class ShapeContext3DEstimation implements the 3D shape context descriptor as
-    * described here
-    * <ul>
-    * <li> Andrea Frome, Daniel Huber, Ravi Kolluri and Thomas Bülow, Jitendra Malik
-    *      Recognizing Objects in Range Data Using Regional Point Descriptors,
-    *      In proceedings of the 8th European Conference on Computer Vision (ECCV),
-    *      Prague, May 11-14, 2004
-    * </li>
-    * </ul>
+  /** \brief ShapeContext3DEstimation implements the 3D shape context descriptor as
+    * described in:
+    *   - Andrea Frome, Daniel Huber, Ravi Kolluri and Thomas Bülow, Jitendra Malik
+    *     Recognizing Objects in Range Data Using Regional Point Descriptors,
+    *     In proceedings of the 8th European Conference on Computer Vision (ECCV),
+    *     Prague, May 11-14, 2004
+    * 
     * The 3DSC computed feature has the following structure
-    * <ul>
-    * <li> rf float[9] = x_axis | y_axis | normal and represents the local frame </li>
-    * <li> desc std::vector<float> which size is determined by the number of bins
-    * radius_bins_ + elevation_bins_ + azimuth_bins_. If shift is required then the 
-    * computed descriptor will be shift along the azimuthal direction.
-    * </li>
-    * </ul>
+    *   - rf float[9] = x_axis | y_axis | normal and represents the local frame
+    *   - desc std::vector<float> which size is determined by the number of bins 
+    *     radius_bins_ + elevation_bins_ + azimuth_bins_. If shift is required then the 
+    *     computed descriptor will be shift along the azimuthal direction.
+    * 
+    * \attention 
+    * The convention for a 3D shape context descriptor is:
+    *   - if a query point's nearest neighbors cannot be estimated, the feature descriptor will be set to NaN (not a number), and the RF to 0
+    *   - it is impossible to estimate a 3D shape context descriptor for a
+    *     point that doesn't have finite 3D coordinates. Therefore, any point
+    *     that contains NaN data on x, y, or z, will have its boundary feature
+    *     property set to NaN.
+    *
     * \author Alessandro Franchi, Samuele Salti, Federico Tombari (original code)
     * \author Nizar Sallem (port to PCL)
     * \ingroup features
@@ -84,7 +88,7 @@ namespace pcl
        typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
        typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
        
-       /** Constructor. 
+       /** \brief Constructor. 
          * \param[in] random If true the random seed is set to current time, else it is 
          * set to 12345 prior to computing the descriptor (used to select X axis)
          */
@@ -106,7 +110,7 @@ namespace pcl
 
       virtual ~ShapeContext3DEstimation() {}
 
-      /** Set the number of bins along the azimuth to \a bins.
+      /** \brief Set the number of bins along the azimuth to \a bins.
         * \param[in] bins the number of bins along the azimuth
         */
       inline void 
@@ -116,7 +120,7 @@ namespace pcl
       inline size_t 
       getAzimuthBins () { return (azimuth_bins_); }
 
-      /** Set the number of bins along the elevation to \a bins.
+      /** \brief Set the number of bins along the elevation to \a bins.
         * \param[in] bins the number of bins along the elevation
         */
       inline void 
@@ -126,7 +130,7 @@ namespace pcl
       inline size_t 
       getElevationBins () { return (elevation_bins_); }
 
-      /** Set the number of bins along the radii to \a bins.
+      /** \brief Set the number of bins along the radii to \a bins.
         * \param[in] bins the number of bins along the radii
         */
       inline void 
@@ -136,7 +140,7 @@ namespace pcl
       inline size_t 
       getRadiusBins () { return (radius_bins_); } 
 
-      /** The minimal radius value for the search sphere (rmin) in the original paper 
+      /** \brief The minimal radius value for the search sphere (rmin) in the original paper 
         * \param[in] radius the desired minimal radius
         */
       inline void 
@@ -146,7 +150,7 @@ namespace pcl
       inline float 
       getMinimalRadius () { return (min_radius_); }
 
-      /** This radius is used to compute local point density 
+      /** \brief This radius is used to compute local point density 
         * density = number of points within this radius
         * \param[in] radius value of the point density search radius
         */
@@ -158,17 +162,27 @@ namespace pcl
       getPointDensityRadius () { return (point_density_radius_); }
       
     protected:
-      /** Initialize computation by allocating all the intervals and the volume lookup table. */
+      /** \brief Initialize computation by allocating all the intervals and the volume lookup table. */
       bool 
       initCompute ();
 
-      void
+      /** \brief Estimate a descriptor for a given point.
+        * \param[in] index the index of the point to estimate a descriptor for
+        * \param[in] normals a pointer to the set of normals
+        * \param[in] rf the reference frame
+        * \param[out] desc the resultant estimated descriptor
+        * \return true if the descriptor was computed successfully, false if there was an error 
+        * (e.g. the nearest neighbor didn't return any neighbors)
+        */
+      bool
       computePoint (size_t index, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc);
 
+      /** \brief Estimate the actual feature. 
+        * \param[out] output the resultant feature 
+        */
       void
       computeFeature (PointCloudOut &output);
       
-    private:
       /** \brief Values of the radii interval */
       std::vector<float> radii_interval_;
 
@@ -205,7 +219,7 @@ namespace pcl
       /** \brief Boost-based random number generator distribution. */
       boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
 
-       /** Shift computed descriptor "L" times along the azimuthal direction
+      /** \brief Shift computed descriptor "L" times along the azimuthal direction
         * \param[in] block_size the size of each azimuthal block
         * \param[in] desc at input desc == original descriptor and on output it contains 
         * shifted descriptor resized descriptor_length_ * azimuth_bins_
@@ -219,6 +233,62 @@ namespace pcl
       {
         return ((*rng_) ());
       }
+    private:
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+  };
+
+  /** \brief ShapeContext3DEstimation implements the 3D shape context descriptor as
+    * described in:
+    *   - Andrea Frome, Daniel Huber, Ravi Kolluri and Thomas Bülow, Jitendra Malik
+    *     Recognizing Objects in Range Data Using Regional Point Descriptors,
+    *     In proceedings of the 8th European Conference on Computer Vision (ECCV),
+    *     Prague, May 11-14, 2004
+    * 
+    * The 3DSC computed feature has the following structure
+    *   - rf float[9] = x_axis | y_axis | normal and represents the local frame
+    *   - desc std::vector<float> which size is determined by the number of bins 
+    *     radius_bins_ + elevation_bins_ + azimuth_bins_. If shift is required then the 
+    *     computed descriptor will be shift along the azimuthal direction.
+    * 
+    * \attention 
+    * The convention for a 3D shape context descriptor is:
+    *   - if a query point's nearest neighbors cannot be estimated, the feature descriptor will be set to NaN (not a number), and the RF to 0
+    *   - it is impossible to estimate a 3D shape context descriptor for a
+    *     point that doesn't have finite 3D coordinates. Therefore, any point
+    *     that contains NaN data on x, y, or z, will have its boundary feature
+    *     property set to NaN.
+    *
+    * \author Alessandro Franchi, Samuele Salti, Federico Tombari (original code)
+    * \author Nizar Sallem (port to PCL)
+    * \ingroup features
+    */
+  template <typename PointInT, typename PointNT> 
+  class ShapeContext3DEstimation<PointInT, PointNT, Eigen::MatrixXf> : public ShapeContext3DEstimation<PointInT, PointNT, pcl::SHOT>
+  {
+    public:
+       using ShapeContext3DEstimation<PointInT, PointNT, pcl::SHOT>::feature_name_;
+       using ShapeContext3DEstimation<PointInT, PointNT, pcl::SHOT>::indices_;
+       using ShapeContext3DEstimation<PointInT, PointNT, pcl::SHOT>::descriptor_length_;
+       using ShapeContext3DEstimation<PointInT, PointNT, pcl::SHOT>::normals_;
+       using ShapeContext3DEstimation<PointInT, PointNT, pcl::SHOT>::input_;
+       using ShapeContext3DEstimation<PointInT, PointNT, pcl::SHOT>::compute;
+
+    private:
+      /** \brief Estimate the actual feature. 
+        * \param[out] output the resultant feature 
+        */
+      void
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+
+      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      compute (pcl::PointCloud<pcl::SHOT> &output) {}
   };
 }
 

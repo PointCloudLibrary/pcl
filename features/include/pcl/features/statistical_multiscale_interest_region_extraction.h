@@ -45,23 +45,22 @@
 
 namespace pcl
 {
-  /** \brief
-   * Class for extracting interest regions from unstructured point clouds, based on a multi scale
-   * statistical approach.
-   * Please refer to the following publications for more details:
-   *    Ranjith Unnikrishnan and Martial Hebert
-   *    Multi-Scale Interest Regions from Unorganized Point Clouds
-   *    Workshop on Search in 3D (S3D), IEEE Conf. on Computer Vision and Pattern Recognition (CVPR)
-   *    June, 2008
-   *
-   *    Statistical Approaches to Multi-scale Point Cloud Processing
-   *    Ranjith Unnikrishnan
-   *    PhD Thesis
-   *    The Robotics Institute Carnegie Mellon University
-   *    May, 2008
-   *
-   * \author Alexandru-Eugen Ichim
-   */
+  /** \brief Class for extracting interest regions from unstructured point clouds, based on a multi scale
+    * statistical approach.
+    * Please refer to the following publications for more details:
+    *    Ranjith Unnikrishnan and Martial Hebert
+    *    Multi-Scale Interest Regions from Unorganized Point Clouds
+    *    Workshop on Search in 3D (S3D), IEEE Conf. on Computer Vision and Pattern Recognition (CVPR)
+    *    June, 2008
+    *
+    *    Statistical Approaches to Multi-scale Point Cloud Processing
+    *    Ranjith Unnikrishnan
+    *    PhD Thesis
+    *    The Robotics Institute Carnegie Mellon University
+    *    May, 2008
+    *
+    * \author Alexandru-Eugen Ichim
+    */
   template <typename PointT>
   class StatisticalMultiscaleInterestRegionExtraction : public PCLBase<PointT>
   {

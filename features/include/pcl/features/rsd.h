@@ -143,6 +143,12 @@ namespace pcl
 
       /** \brief The maximum radius, above which everything can be considered planar. */
       double plane_radius_;
+
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 }
 

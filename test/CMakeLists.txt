@@ -29,14 +29,19 @@ if(build)
                    LINK_WITH pcl_io pcl_kdtree pcl_surface pcl_features ${OpenCV_LIBS}
                    ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
     endif(QHULL_FOUND)
-
+    
     PCL_ADD_TEST(filters_filters test_filters
                  FILES test_filters.cpp
                  LINK_WITH pcl_filters pcl_io pcl_sample_consensus pcl_kdtree
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
-
+    
     PCL_ADD_TEST(a_feature_test test_feature
                  FILES test_feature.cpp
+                 LINK_WITH pcl_features pcl_kdtree pcl_io
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
+
+    PCL_ADD_TEST(a_feature_test_eigen test_feature_eigen
+                 FILES test_feature_eigen.cpp
                  LINK_WITH pcl_features pcl_kdtree pcl_io
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
 
@@ -44,32 +49,32 @@ if(build)
                  FILES test_sample_consensus.cpp
                  LINK_WITH pcl_io pcl_sample_consensus pcl_kdtree pcl_features
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/sac_plane_test.pcd)
-
+    
     PCL_ADD_TEST(a_transforms_test test_transforms
                  FILES test_transforms.cpp
                  LINK_WITH pcl_io
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
-
+    
     PCL_ADD_TEST(a_segmentation_test test_segmentation
                  FILES test_segmentation.cpp
                  LINK_WITH pcl_io pcl_segmentation
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
-
+    
     PCL_ADD_TEST(a_registration_test test_registration
                  FILES test_registration.cpp
                  LINK_WITH pcl_io pcl_registration pcl_features pcl_search pcl_kdtree
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd)
-
+    
     PCL_ADD_TEST(registration_api test_registration_api
                  FILES test_registration_api.cpp test_registration_api_data.h
                  LINK_WITH pcl_io pcl_registration pcl_features
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd)
-
+    
     PCL_ADD_TEST(a_keypoints_test test_keypoints
                  FILES test_keypoints.cpp
                  LINK_WITH pcl_io pcl_kdtree pcl_filters pcl_keypoints
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/cturtle.pcd)
-
+    
     PCL_ADD_TEST(a_ii_normals_test test_ii_normals
                  FILES test_ii_normals.cpp
                  LINK_WITH pcl_io pcl_features
@@ -79,14 +84,14 @@ if(build)
                #PCL_ADD_TEST(organized_index test_organized_index 
                #  FILES test_organized_index.cpp
                #  LINK_WITH pcl_search pcl_io pcl_filters)
-
+    
                #PCL_ADD_TEST(auto_tuned_search auto_tuned_search
                # FILES test_auto_search.cpp
                # LINK_WITH pcl_search pcl_io pcl_filters)
-
     
-#    PCL_ADD_EXECUTABLE (evaluate_feature ${SUBSYS_NAME} evaluate_feature.cpp)
-#    target_link_libraries (evaluate_feature pcl_io pcl_features pcl_kdtree pcl_filters)
+    
+               #     PCL_ADD_EXECUTABLE (evaluate_feature ${SUBSYS_NAME} evaluate_feature.cpp)
+               #     target_link_libraries (evaluate_feature pcl_io pcl_features pcl_kdtree pcl_filters)
     
     PCL_ADD_EXECUTABLE (sample_feature_test ${SUBSYS_NAME} sample_feature_test.cpp)
     target_link_libraries (sample_feature_test pcl_io pcl_features pcl_search pcl_kdtree pcl_filters)

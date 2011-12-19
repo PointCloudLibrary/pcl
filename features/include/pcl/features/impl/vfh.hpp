@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -67,7 +69,8 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
   //resulting in different normalization factors for point clouds that are just rotated about that axis.
 
   double distance_normalization_factor = 1.0;
-  if ( normalize_distances_ ) {
+  if (normalize_distances_) 
+  {
     Eigen::Vector4f max_pt;
     pcl::getMaxDistance (cloud, indices, centroid_p, max_pt);
     max_pt[3] = 0;
@@ -76,11 +79,10 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
 
   // Factorization constant
   float hist_incr;
-  if (normalize_bins_) {
+  if (normalize_bins_)
     hist_incr = 100.0 / (float)(indices.size () - 1);
-  } else {
+  else
     hist_incr = 1.0;
-  }
 
   float hist_incr_size_component;
   if (size_component_)
@@ -149,7 +151,6 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   int cp = 0;
 
   // If the data is dense, we don't need to check for NaN
-
   if (use_given_normal_)
     normal_centroid = normal_to_use_;
   else

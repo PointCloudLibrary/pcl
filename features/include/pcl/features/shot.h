@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -42,23 +44,19 @@
 
 namespace pcl
 {
-  /** \brief @b SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
+  /** \brief SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
     * a given point cloud dataset containing points and normals.
     *
-    * @note If you use this code in any academic work, please cite:
+    * \note If you use this code in any academic work, please cite:
     *
-    * <ul>
-    * <li> F. Tombari, S. Salti, L. Di Stefano
-    *      Unique Signatures of Histograms for Local Surface Description.
-    *      In Proceedings of the 11th European Conference on Computer Vision (ECCV),
-    *      Heraklion, Greece, September 5-11 2010.
-    * </li>
-    * <li> F. Tombari, S. Salti, L. Di Stefano
-    *      A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
-    *      In Proceedings of the 18th International Conference on Image Processing (ICIP),
-    *      Brussels, Belgium, September 11-14 2011.
-    * </li>
-    * </ul>
+    *   - F. Tombari, S. Salti, L. Di Stefano
+    *     Unique Signatures of Histograms for Local Surface Description.
+    *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
+    *     Heraklion, Greece, September 5-11 2010.
+    *   - F. Tombari, S. Salti, L. Di Stefano
+    *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
+    *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
+    *     Brussels, Belgium, September 11-14 2011.
     *
     * \author Samuele Salti, Federico Tombari
     * \ingroup features
@@ -69,18 +67,21 @@ namespace pcl
     public:
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
+      using Feature<PointInT, PointOutT>::input_;
       using Feature<PointInT, PointOutT>::indices_;
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_parameter_;
       using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::surface_;
+      using Feature<PointInT, PointOutT>::compute;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
 
     protected:
-      /** \brief Empty constructor. */
+      /** \brief Empty constructor. 
+        * \param[in] nr_shape_bins the number of bins in the shape histogram 
+        */
       SHOTEstimationBase (int nr_shape_bins = 10) :
         nr_shape_bins_ (nr_shape_bins),
         rf_ (3),                    // Initialize the placeholder for the point's RF
@@ -93,15 +94,16 @@ namespace pcl
 
     public:
        /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
-        * \param index the index of the point in input_
-        * \param indices the k-neighborhood point indices in surface_
-        * \param nr_bins the number of bins in each histogram
-        * \param shot the resultant SHOT descriptor representing the feature at the query point
-        */
+         * \param[in] index the index of the point in input_
+         * \param[in] indices the k-neighborhood point indices in surface_
+         * \param[in] sqr_dists the k-neighborhood point distances in surface_
+         * \param[out] shot the resultant SHOT descriptor representing the feature at the query point
+         * \param[out] rf the resultant SHOT reference frames 
+         */
       virtual void 
       computePointSHOT (const int index, 
                         const std::vector<int> &indices, 
-                        const std::vector<float> &dists, 
+                        const std::vector<float> &sqr_dists, 
                         Eigen::VectorXf &shot,
                         std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf) = 0;
 
@@ -113,17 +115,54 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains the SHOT feature estimates
         */
       void 
-      computeFeature (PointCloudOut &output);
+      computeFeature (pcl::PointCloud<PointOutT> &output);
 
+      /** \brief Quadrilinear interpolation used when color and shape descriptions are NOT activated simultaneously
+        *
+        * \param[in] indices the neighborhood point indices
+        * \param[in] sqr_dists the neighborhood point distances
+        * \param[in] centralPoint
+        * \param[in] rf the reference frame for the point
+        * \param[out] binDistance the resultant distance shape histogram
+        * \param[in] nr_bins the number of bins in the shape histogram
+        * \param[out] shot the resultant SHOT histogram
+        */
       void 
       interpolateSingleChannel (const std::vector<int> &indices,
-                                const std::vector<float> &dists, 
+                                const std::vector<float> &sqr_dists, 
                                 const Eigen::Vector4f &centralPoint, 
-                                const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf
-,
+                                const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf,
                                 std::vector<double> &binDistance, 
                                 const int nr_bins,
                                 Eigen::VectorXf &shot);
+
+      /** \brief Normalize the SHOT histogram. 
+        * \param[in,out] shot the SHOT histogram
+        * \param[in] desc_length the length of the histogram
+        */
+      void
+      normalizeHistogram (Eigen::VectorXf &shot, int desc_length);
+
+
+      /** \brief Create a binned distance shape histogram
+        * \param[in] index the index of the point in input_
+        * \param[in] indices the k-neighborhood point indices in surface_
+        * \param[in] sqr_dists the k-neighborhood point distances in surface_
+        * \param[in] input the input point cloud
+        * \param[in] normals the input point normals
+        * \param[in] surface the input point surface
+        * \param[in] search_radius the search radius
+        * \param[out] bin_distance_shape the resultant histogram
+        * \param[out] rf the reference frame
+        */
+      void
+      createBinDistanceShape (int index, const std::vector<int> &indices, const std::vector<float> &sqr_dists,
+                              const pcl::PointCloud<PointInT> &input,
+                              const pcl::PointCloud<PointNT> &normals,
+                              const pcl::PointCloud<PointInT> &surface,
+                              double search_radius,
+                              std::vector<double> &bin_distance_shape,
+                              std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf);
 
       /** \brief The number of bins in each shape histogram. */
       const int nr_shape_bins_;
@@ -134,7 +173,7 @@ namespace pcl
       /** \brief Placeholder for a point's RF. */
       std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > rf_;
 
-      /** \brief The squared search radius.*/
+      /** \brief The squared search radius. */
       double sqradius_;
 
       /** \brief 3/4 of the search radius. */
@@ -149,30 +188,91 @@ namespace pcl
       /** \brief Number of azimuthal sectors. */
       const int nr_grid_sector_;
 
-      /** \brief . */
+      /** \brief ... */
       const int maxAngularSectors_;
 
       /** \brief One SHOT length. */
       int descLength_;
+
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 
-  /** \brief @b SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
+  /** \brief SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
     * a given point cloud dataset containing points and normals.
     *
-    * @note If you use this code in any academic work, please cite:
+    * \note If you use this code in any academic work, please cite:
     *
-    * <ul>
-    * <li> F. Tombari, S. Salti, L. Di Stefano
-    *      Unique Signatures of Histograms for Local Surface Description.
-    *      In Proceedings of the 11th European Conference on Computer Vision (ECCV),
-    *      Heraklion, Greece, September 5-11 2010.
-    * </li>
-    * <li> F. Tombari, S. Salti, L. Di Stefano
-    *      A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
-    *      In Proceedings of the 18th International Conference on Image Processing (ICIP),
-    *      Brussels, Belgium, September 11-14 2011.
-    * </li>
-    * </ul>
+    *   - F. Tombari, S. Salti, L. Di Stefano
+    *     Unique Signatures of Histograms for Local Surface Description.
+    *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
+    *     Heraklion, Greece, September 5-11 2010.
+    *   - F. Tombari, S. Salti, L. Di Stefano
+    *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
+    *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
+    *     Brussels, Belgium, September 11-14 2011.
+    *
+    * \author Samuele Salti, Federico Tombari
+    * \ingroup features
+    */
+  template <typename PointInT, typename PointNT> 
+  class SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf> : public SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>
+  {
+    public:
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::input_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::indices_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::k_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::search_parameter_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::search_radius_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::surface_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::rf_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::descLength_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::nr_grid_sector_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::nr_shape_bins_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::sqradius_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::radius3_4_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::radius1_4_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::radius1_2_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::shot_;
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::compute;
+
+
+      /** \brief Empty constructor. 
+        * \param[in] nr_shape_bins the number of bins in the shape histogram 
+        */
+      SHOTEstimationBase (int nr_shape_bins = 10) : SHOTEstimationBase<PointInT, PointNT, pcl::SHOT> (nr_shape_bins) {};
+
+      /** \brief Estimate the Signatures of Histograms of OrienTations (SHOT) descriptors at a set of points given by
+        * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
+        * setSearchMethod ()
+        * \param output the resultant point cloud model dataset that contains the SHOT feature estimates
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+
+      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      compute (pcl::PointCloud<pcl::SHOT> &output) {}
+  };
+
+  /** \brief SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
+    * a given point cloud dataset containing points and normals.
+    *
+    * \note If you use this code in any academic work, please cite:
+    *
+    *   - F. Tombari, S. Salti, L. Di Stefano
+    *     Unique Signatures of Histograms for Local Surface Description.
+    *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
+    *     Heraklion, Greece, September 5-11 2010.
+    *   - F. Tombari, S. Salti, L. Di Stefano
+    *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
+    *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
+    *     Brussels, Belgium, September 11-14 2011.
     *
     * \author Samuele Salti, Federico Tombari
     * \ingroup features
@@ -181,15 +281,15 @@ namespace pcl
   class SHOTEstimation : public SHOTEstimationBase<PointInT, PointNT, PointOutT>
   {
     public:
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::k_;
-      using Feature<PointInT, PointOutT>::search_parameter_;
-      using Feature<PointInT, PointOutT>::search_radius_;
-      using Feature<PointInT, PointOutT>::surface_;
-      using Feature<PointInT, PointOutT>::input_;
-      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::feature_name_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::getClassName;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::indices_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::k_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::search_parameter_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::search_radius_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::surface_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::input_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::normals_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::descLength_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::nr_grid_sector_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::nr_shape_bins_;
@@ -201,47 +301,115 @@ namespace pcl
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::maxAngularSectors_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::shot_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::compute;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
 
-      /** \brief Empty constructor. */
+      /** \brief Empty constructor. 
+        * \param[in] nr_shape_bins the number of bins in the shape histogram 
+        */
       SHOTEstimation (int nr_shape_bins = 10) : SHOTEstimationBase<PointInT, PointNT, PointOutT> (nr_shape_bins)
       {
         feature_name_ = "SHOTEstimation";
       };
 
       /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
-        * \param index the index of the point in input_
-        * \param indices the k-neighborhood point indices in surface_
-        * \param nr_bins the number of bins in each histogram
-        * \param shot the resultant SHOT descriptor representing the feature at the query point
+        * \param[in] index the index of the point in input_
+        * \param[in] indices the k-neighborhood point indices in surface_
+        * \param[in] sqr_dists the k-neighborhood point distances in surface_
+        * \param[out] shot the resultant SHOT descriptor representing the feature at the query point
+        * \param[out] rf the resultant SHOT reference frames 
         */
       void 
       computePointSHOT (const int index, 
                         const std::vector<int> &indices, 
-                        const std::vector<float> &dists, 
+                        const std::vector<float> &sqr_dists, 
                         Eigen::VectorXf &shot,
                         std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf);
-  };
 
-  /** \brief @b SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
+   };
+
+  /** \brief SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
+    * a given point cloud dataset containing points and normals.
+    *
+    * \note If you use this code in any academic work, please cite:
+    *
+    *   - F. Tombari, S. Salti, L. Di Stefano
+    *     Unique Signatures of Histograms for Local Surface Description.
+    *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
+    *     Heraklion, Greece, September 5-11 2010.
+    *   - F. Tombari, S. Salti, L. Di Stefano
+    *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
+    *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
+    *     Brussels, Belgium, September 11-14 2011.
+    *
+    * \author Samuele Salti, Federico Tombari
+    * \ingroup features
+    */
+  template <typename PointInT, typename PointNT> 
+  class SHOTEstimation<PointInT, PointNT, Eigen::MatrixXf> : public SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>
+  {
+    public:
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::feature_name_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::getClassName;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::indices_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::k_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::search_parameter_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::search_radius_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::surface_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::input_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::normals_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::descLength_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::nr_grid_sector_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::nr_shape_bins_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::sqradius_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::radius3_4_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::radius1_4_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::radius1_2_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::rf_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::maxAngularSectors_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::interpolateSingleChannel;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::shot_;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::compute;
+      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::computeFeature;
+
+      /** \brief Empty constructor. 
+        * \param[in] nr_shape_bins the number of bins in the shape histogram 
+        */
+      SHOTEstimation (int nr_shape_bins = 10) : SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf> (nr_shape_bins)
+      {
+        feature_name_ = "SHOTEstimation";
+      };
+
+      /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
+        * \param[in] index the index of the point in input_
+        * \param[in] indices the k-neighborhood point indices in surface_
+        * \param[in] sqr_dists the k-neighborhood point distances in surface_
+        * \param[out] shot the resultant SHOT descriptor representing the feature at the query point
+        * \param[out] rf the resultant SHOT reference frames 
+        */
+      void 
+      computePointSHOT (const int index, 
+                        const std::vector<int> &indices, 
+                        const std::vector<float> &sqr_dists, 
+                        Eigen::VectorXf &shot,
+                        std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf);
+   };
+
+  /** \brief SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
     * containing points and normals.
     *
-    * @note If you use this code in any academic work, please cite:
+    * \note If you use this code in any academic work, please cite:
     *
-    * <ul>
-    * <li> F. Tombari, S. Salti, L. Di Stefano
-    *      Unique Signatures of Histograms for Local Surface Description.
-    *      In Proceedings of the 11th European Conference on Computer Vision (ECCV),
-    *      Heraklion, Greece, September 5-11 2010.
-    * </li>
-    * <li> F. Tombari, S. Salti, L. Di Stefano
-    *      A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
-    *      In Proceedings of the 18th International Conference on Image Processing (ICIP),
-    *      Brussels, Belgium, September 11-14 2011.
-    * </li>
-    * </ul>
+    *   - F. Tombari, S. Salti, L. Di Stefano
+    *     Unique Signatures of Histograms for Local Surface Description.
+    *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
+    *     Heraklion, Greece, September 5-11 2010.
+    *   - F. Tombari, S. Salti, L. Di Stefano
+    *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
+    *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
+    *     Brussels, Belgium, September 11-14 2011.
     *
     * \author Samuele Salti, Federico Tombari
     * \ingroup features
@@ -274,29 +442,35 @@ namespace pcl
       typedef typename Feature<pcl::PointXYZRGBA, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Feature<pcl::PointXYZRGBA, PointOutT>::PointCloudIn PointCloudIn;
 
-      /** \brief Empty constructor. */
-      SHOTEstimation (bool describeShape = true, 
-                      bool describeColor = false, 
+      /** \brief Empty constructor. 
+        * \param[in] describe_shape
+        * \param[in] describe_color
+        * \param[in] nr_shape_bins
+        * \param[in] nr_color_bins
+        */
+      SHOTEstimation (bool describe_shape = true, 
+                      bool describe_color = false, 
                       const int nr_shape_bins = 10, 
                       const int nr_color_bins = 30) 
         : SHOTEstimationBase<pcl::PointXYZRGBA, PointNT, PointOutT> (nr_shape_bins),
-          b_describe_shape_ (describeShape),
-          b_describe_color_ (describeColor),
+          b_describe_shape_ (describe_shape),
+          b_describe_color_ (describe_color),
           nr_color_bins_ (nr_color_bins)
       {
         feature_name_ = "SHOTEstimation";
       };
 
       /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
-        * \param index the index of the point in input_
-        * \param indices the k-neighborhood point indices in surface_
-        * \param nr_bins the number of bins in each histogram
-        * \param shot the resultant SHOT descriptor representing the feature at the query point
+        * \param[in] index the index of the point in input_
+        * \param[in] indices the k-neighborhood point indices in surface_
+        * \param[in] sqr_dists the k-neighborhood point distances in surface_
+        * \param[out] shot the resultant SHOT descriptor representing the feature at the query point
+        * \param[out] rf the resultant SHOT reference frames 
         */
       void 
       computePointSHOT (const int index, 
                         const std::vector<int> &indices, 
-                        const std::vector<float> &dists, 
+                        const std::vector<float> &sqr_dists, 
                         Eigen::VectorXf &shot,
                         std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf);
 
@@ -305,16 +479,25 @@ namespace pcl
       /** \brief Estimate the Signatures of Histograms of OrienTations (SHOT) descriptors at a set of points given by
         * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
         * setSearchMethod ()
-        * \param output the resultant point cloud model dataset that contains the SHOT feature estimates
+        * \param[out] output the resultant point cloud model dataset that contains the SHOT feature estimates
         */
       void 
       computeFeature (PointCloudOut &output);
 
-      /** \brief
-       */
+      /** \brief Quadrilinear interpolation; used when color and shape descriptions are both activated
+        * \param[in] indices the neighborhood point indices
+        * \param[in] sqr_dists the neighborhood point distances
+        * \param[in] centralPoint
+        * \param[in] rf the reference frame for the point
+        * \param[out] binDistanceShape the resultant distance shape histogram
+        * \param[out] binDistanceColor the resultant color shape histogram
+        * \param[in] nr_bins_shape the number of bins in the shape histogram
+        * \param[in] nr_bins_color the number of bins in the color histogram
+        * \param[out] shot the resultant SHOT histogram
+        */
       void 
       interpolateDoubleChannel (const std::vector<int> &indices,
-                                const std::vector<float> &dists, 
+                                const std::vector<float> &sqr_dists, 
                                 const Eigen::Vector4f &centralPoint, 
                                 const std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf,
                                 std::vector<double> &binDistanceShape, 
@@ -323,8 +506,14 @@ namespace pcl
                                 const int nr_bins_color,
                                 Eigen::VectorXf &shot);
 
-      /** \brief
-       */
+      /** \brief Converts RGB triplets to CIELab space.
+        * \param[in] R the red channel 
+        * \param[in] G the green channel 
+        * \param[in] B the blue channel 
+        * \param[out] L the lightness
+        * \param[out] A the first color-opponent dimension
+        * \param[out] B2 the second color-opponent dimension
+        */
       static void 
       RGB2CIELAB (unsigned char R, unsigned char G, unsigned char B, float &L, float &A, float &B2);
 
@@ -340,6 +529,72 @@ namespace pcl
     public:
       static float sRGB_LUT[256];
       static float sXYZ_LUT[4000];
+  };
+
+  /** \brief SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
+    * containing points and normals.
+    *
+    * \note If you use this code in any academic work, please cite:
+    *
+    *   - F. Tombari, S. Salti, L. Di Stefano
+    *     Unique Signatures of Histograms for Local Surface Description.
+    *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
+    *     Heraklion, Greece, September 5-11 2010.
+    *   - F. Tombari, S. Salti, L. Di Stefano
+    *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
+    *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
+    *     Brussels, Belgium, September 11-14 2011.
+    *
+    * \author Samuele Salti, Federico Tombari
+    * \ingroup features
+    */
+  template <typename PointNT> 
+  class SHOTEstimation<pcl::PointXYZRGBA, PointNT, Eigen::MatrixXf> : public SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>
+  {
+    public:
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::feature_name_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::getClassName;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::indices_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::k_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::search_parameter_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::search_radius_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::surface_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::input_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::rf_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::descLength_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::nr_grid_sector_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::nr_shape_bins_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::sqradius_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::radius3_4_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::radius1_4_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::radius1_2_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::maxAngularSectors_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::interpolateSingleChannel;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::shot_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::b_describe_shape_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::b_describe_color_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT>::nr_color_bins_;
+
+      /** \brief Empty constructor. 
+        * \param[in] describe_shape
+        * \param[in] describe_color
+        * \param[in] nr_shape_bins
+        * \param[in] nr_color_bins
+        */
+      SHOTEstimation (bool describe_shape = true, 
+                      bool describe_color = false, 
+                      const int nr_shape_bins = 10, 
+                      const int nr_color_bins = 30) 
+        : SHOTEstimation<pcl::PointXYZRGBA, PointNT, pcl::SHOT> (describe_shape, describe_color, nr_shape_bins, nr_color_bins) {};
+
+   protected:
+      /** \brief Estimate the Signatures of Histograms of OrienTations (SHOT) descriptors at a set of points given by
+        * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
+        * setSearchMethod ()
+        * \param[out] output the resultant point cloud model dataset that contains the SHOT feature estimates
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
   };
 }
 

@@ -129,7 +129,7 @@ namespace pcl
       /** \brief Set the normal estimation method. The current implemented algorithms are:
         * <ul>
         *   <li><b>COVARIANCE_MATRIX</b> - creates 9 integral images to compute the normal for a specific point 
-        *   from the covariance matrix of its local neighborhood.
+        *   from the covariance matrix of its local neighborhood.</li>
         *   <li><b>AVERAGE_3D_GRADIENT</b> - creates 6 integral images to compute smoothed versions of 
         *   horizontal and vertical 3D gradients and computes the normals using the cross-product between these 
         *   two gradients.
@@ -245,6 +245,13 @@ namespace pcl
       /** \brief Internal initialization method for AVERAGE_DEPTH_CHANGE estimation. */
       void
       initAverageDepthChangeMethod ();
+
+    private:
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 }
 

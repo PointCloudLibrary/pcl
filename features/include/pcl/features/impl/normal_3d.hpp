@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -49,21 +51,107 @@ pcl::NormalEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &outpu
   std::vector<int> nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
-  // Iterating over the entire index vector
-  for (size_t idx = 0; idx < indices_->size (); ++idx)
+  output.is_dense = true;
+  // Save a few cycles by not checking every point for NaN/Inf values if the cloud is set to dense
+  if (input_->is_dense)
   {
-    if (!this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists))
+    // Iterating over the entire index vector
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
     {
-      output.points[idx].normal[0] = output.points[idx].normal[1] = output.points[idx].normal[2] = output.points[idx].curvature = std::numeric_limits<float>::quiet_NaN ();
-      continue;
+      if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+      {
+        output.points[idx].normal[0] = output.points[idx].normal[1] = output.points[idx].normal[2] = output.points[idx].curvature = std::numeric_limits<float>::quiet_NaN ();
+
+        output.is_dense = false;
+        continue;
+      }
+
+      computePointNormal (*surface_, nn_indices,
+                          output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2], output.points[idx].curvature);
+
+      flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx_, vpy_, vpz_,
+                                  output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2]);
+
     }
+  }
+  else
+  {
+    // Iterating over the entire index vector
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    {
+      if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+          this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+      {
+        output.points[idx].normal[0] = output.points[idx].normal[1] = output.points[idx].normal[2] = output.points[idx].curvature = std::numeric_limits<float>::quiet_NaN ();
 
-    computePointNormal (*surface_, nn_indices,
-                        output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2], output.points[idx].curvature);
+        output.is_dense = false;
+        continue;
+      }
 
-    flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx_, vpy_, vpz_,
-                                output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2]);
+      computePointNormal (*surface_, nn_indices,
+                          output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2], output.points[idx].curvature);
 
+      flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx_, vpy_, vpz_,
+                                  output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2]);
+
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::NormalEstimation<PointInT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+{
+  // Resize the output dataset
+  output.points.resize (indices_->size (), 4);
+
+  // Allocate enough space to hold the results
+  // \note This resize is irrelevant for a radiusSearch ().
+  std::vector<int> nn_indices (k_);
+  std::vector<float> nn_dists (k_);
+
+  output.is_dense = true;
+  // Save a few cycles by not checking every point for NaN/Inf values if the cloud is set to dense
+  if (input_->is_dense)
+  {
+    // Iterating over the entire index vector
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    {
+      if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+      {
+        output.points (idx, 0) = output.points (idx, 1) = output.points (idx, 2) = output.points (idx, 3) = std::numeric_limits<float>::quiet_NaN ();
+        output.is_dense = false;
+        continue;
+      }
+
+      computePointNormal (*surface_, nn_indices,
+                          output.points (idx, 0), output.points (idx, 1), output.points (idx, 2), output.points (idx, 3));
+
+      flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx_, vpy_, vpz_,
+                                  output.points (idx, 0), output.points (idx, 1), output.points (idx, 2));
+
+    }
+  }
+  else
+  {
+    // Iterating over the entire index vector
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    {
+      if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+          this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+      {
+        output.points (idx, 0) = output.points (idx, 1) = output.points (idx, 2) = output.points (idx, 3) = std::numeric_limits<float>::quiet_NaN ();
+        output.is_dense = false;
+        continue;
+      }
+
+      computePointNormal (*surface_, nn_indices,
+                          output.points (idx, 0), output.points (idx, 1), output.points (idx, 2), output.points (idx, 3));
+
+      flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx_, vpy_, vpz_,
+                                  output.points (idx, 0), output.points (idx, 1), output.points (idx, 2));
+
+    }
   }
 }
 

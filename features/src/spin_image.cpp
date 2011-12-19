@@ -42,4 +42,5 @@
 // Instantiations of specific point types
 
 PCL_INSTANTIATE_PRODUCT(SpinImageEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Histogram<153>)));
+PCL_INSTANTIATE_PRODUCT(SpinImageEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)));
 

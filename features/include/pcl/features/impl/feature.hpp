@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -272,6 +274,42 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
     output.width = input_->width;
     output.height = input_->height;
   }
+  output.is_dense = input_->is_dense;
+
+  // Perform the actual feature computation
+  computeFeature (output);
+
+  deinitCompute ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
+pcl::Feature<PointInT, PointOutT>::compute (pcl::PointCloud<Eigen::MatrixXf> &output)
+{
+  if (!initCompute ())
+  {
+    output.width = output.height = 0;
+    output.points.resize (0, 0);
+    return;
+  }
+
+  // Copy the properties
+  output.properties.acquisition_time = input_->header.stamp;
+  output.properties.sensor_origin = input_->sensor_origin_;
+  output.properties.sensor_orientation = input_->sensor_orientation_;
+  
+  // Check if the output will be computed for all points or only a subset
+  if (indices_->size () != input_->points.size ())
+  {
+    output.width = (int) indices_->size ();
+    output.height = 1;
+  }
+  else
+  {
+    output.width = input_->width;
+    output.height = input_->height;
+  }
+
   output.is_dense = input_->is_dense;
 
   // Perform the actual feature computation

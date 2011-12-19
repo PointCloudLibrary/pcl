@@ -149,6 +149,12 @@ namespace pcl
     private:
       float scale_h_;
       size_t N_, M_, N_prime_, M_prime_;
+
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 }
 

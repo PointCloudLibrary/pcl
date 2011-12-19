@@ -42,4 +42,5 @@
 
 // Instantiations of specific point types
 PCL_INSTANTIATE_PRODUCT(RIFTEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))((pcl::IntensityGradient))((pcl::Histogram<32>)));
+PCL_INSTANTIATE_PRODUCT(RIFTEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))((pcl::IntensityGradient))((Eigen::MatrixXf)));
 

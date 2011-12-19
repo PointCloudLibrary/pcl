@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -138,12 +140,20 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
   std::vector<int> nn_indices (surface_->points.size ());
   std::vector<float> nn_dist_sqr (surface_->points.size ());
  
+  output.is_dense = true;
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
     // Find neighbors within the search radius
     // TODO: do we want to use searchForNeigbors instead?
     int k = tree_->radiusSearch ((*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr);
+    if (k == 0)
+    {
+      for (int bin = 0; bin < nr_intensity_bins_ * nr_distance_bins_; ++bin)
+        output.points[idx].histogram[bin] = std::numeric_limits<float>::quiet_NaN ();
+      output.is_dense = false;
+      continue;
+    }
 
     // Compute the intensity spin image
     computeIntensitySpinImage (*surface_, search_radius_, sigma_, k, nn_indices, nn_dist_sqr, intensity_spin_image);
@@ -155,6 +165,72 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
         output.points[idx].histogram[bin++] = intensity_spin_image (bin_i, bin_j);
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::IntensitySpinEstimation<PointInT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+{
+  // These should be moved into initCompute ()
+  {
+    // Make sure a search radius is set
+    if (search_radius_ == 0.0)
+    {
+      PCL_ERROR ("[pcl::%s::computeFeature] The search radius must be set before computing the feature!\n",
+                 getClassName ().c_str ());
+      output.width = output.height = 0;
+      output.points.resize (0, 0);
+      return;
+    }
+
+    // Make sure the spin image has valid dimensions
+    if (nr_intensity_bins_ <= 0)
+    {
+      PCL_ERROR ("[pcl::%s::computeFeature] The number of intensity bins must be greater than zero!\n",
+                 getClassName ().c_str ());
+      output.width = output.height = 0;
+      output.points.resize (0, 0);
+      return;
+    }
+    if (nr_distance_bins_ <= 0)
+    {
+      PCL_ERROR ("[pcl::%s::computeFeature] The number of distance bins must be greater than zero!\n",
+                 getClassName ().c_str ());
+      output.width = output.height = 0;
+      output.points.resize (0, 0);
+      return;
+    }
+  }
+
+  output.points.resize (indices_->size (), nr_intensity_bins_ * nr_distance_bins_);
+  Eigen::MatrixXf intensity_spin_image (nr_intensity_bins_, nr_distance_bins_);
+  // Allocate enough space to hold the radiusSearch results
+  std::vector<int> nn_indices;
+  std::vector<float> nn_dist_sqr;
+ 
+  output.is_dense = true;
+  // Iterating over the entire index vector
+  for (size_t idx = 0; idx < indices_->size (); ++idx)
+  {
+    // Find neighbors within the search radius
+    int k = tree_->radiusSearch ((*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr);
+    if (k == 0)
+    {
+      output.points.row (idx).setConstant (std::numeric_limits<float>::quiet_NaN ());
+      output.is_dense = false;
+      continue;
+    }
+
+    // Compute the intensity spin image
+    computeIntensitySpinImage (*surface_, search_radius_, sigma_, k, nn_indices, nn_dist_sqr, intensity_spin_image);
+
+    // Copy into the resultant cloud
+    int bin = 0;
+    for (int bin_j = 0; bin_j < intensity_spin_image.cols (); ++bin_j)
+      for (int bin_i = 0; bin_i < intensity_spin_image.rows (); ++bin_i)
+        output.points (idx, bin++) = intensity_spin_image (bin_i, bin_j);
+  }
+}
+
 
 #define PCL_INSTANTIATE_IntensitySpinEstimation(T,NT) template class PCL_EXPORTS pcl::IntensitySpinEstimation<T,NT>;
 

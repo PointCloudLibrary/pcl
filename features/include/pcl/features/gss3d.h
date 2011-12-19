@@ -95,45 +95,45 @@ namespace pcl
         Feature<PointInT, PointOutT>::search_radius_ = 1.0f;
       }
 
-      /** \brief . */
+      /** \brief A. */
       std::vector<PointCloudNPtr> normal_maps_;
 
       typedef boost::multi_array<float, 3> Array3D;
-      /** \brief . */
+      /** \brief A. */
       boost::shared_ptr<Array3D> d_horiz_normal_maps_, d_vert_normal_maps_,
                                  dd_horiz_normal_maps_, dd_vert_normal_maps_,
                                  laplacians_, grams_;
-      /** \brief . */
+      /** \brief A. */
       std::vector<PointCloudInPtr> edges_, corners_;
 
 
     protected:
-      /** \brief . */
+      /** \brief A. */
       void
       computeFeature (PointCloudOut &output);
 
-      /** \brief . */
+      /** \brief A. */
       void
       calculateGeometricScaleSpace ();
 
-      /** \brief . */
+      /** \brief A. */
       void
       computeHorizontalDerivatives ();
 
-      /** \brief . */
+      /** \brief A. */
       void
       computeDerivatives ();
 
 
-      /** \brief . */
+      /** \brief A. */
       void
       extractCorners ();
 
-      /** \brief . */
+      /** \brief A. */
       void
       extractEdges ();
 
-      /** \brief . */
+      /** \brief A. */
       // uses the Bresenham algorithm for rasterizing lines
       float
       computeGeodesicDistance (size_t x0, size_t y0,
@@ -142,10 +142,17 @@ namespace pcl
       /// TODO add a hash map to avoid repeating computations
 
       // paramters
-      /** \brief . */
+      /** \brief A. */
       std::vector<int> scales_;
-      /** \brief . */
+      /** \brief A. */
       int window_size_;
+
+    private:
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 }
 

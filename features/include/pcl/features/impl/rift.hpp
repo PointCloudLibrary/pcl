@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -172,6 +174,85 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     // Copy into the resultant cloud
     for (int bin = 0; bin < rift_descriptor.size (); ++bin)
       output.points[idx].histogram[bin] = rift_descriptor (bin);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename GradientT> void
+pcl::RIFTEstimation<PointInT, GradientT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+{
+  // These should be moved into initCompute ()
+  {
+    // Make sure a search radius is set
+    if (search_radius_ == 0.0)
+    {
+      PCL_ERROR ("[pcl::%s::computeFeature] The search radius must be set before computing the feature!\n",
+                 getClassName ().c_str ());
+      output.width = output.height = 0;
+      output.points.resize (0, 0);
+      return;
+    }
+
+    // Make sure the RIFT descriptor has valid dimensions
+    if (nr_gradient_bins_ <= 0)
+    {
+      PCL_ERROR ("[pcl::%s::computeFeature] The number of gradient bins must be greater than zero!\n",
+                 getClassName ().c_str ());
+      output.width = output.height = 0;
+      output.points.resize (0, 0);
+      return;
+    }
+    if (nr_distance_bins_ <= 0)
+    {
+      PCL_ERROR ("[pcl::%s::computeFeature] The number of distance bins must be greater than zero!\n",
+                 getClassName ().c_str ());
+      output.width = output.height = 0;
+      output.points.resize (0, 0);
+      return;
+    }
+
+    // Check for valid input gradient
+    if (!gradient_)
+    {
+      PCL_ERROR ("[pcl::%s::computeFeature] No input gradient was given!\n", getClassName ().c_str ());
+      output.width = output.height = 0;
+      output.points.resize (0, 0);
+      return;
+    }
+    if (gradient_->points.size () != surface_->points.size ())
+    {
+      PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the gradient!\n", getClassName ().c_str ());
+      output.width = output.height = 0;
+      output.points.resize (0, 0);
+      return;
+    }
+  }
+  
+  output.points.resize (indices_->size (), nr_gradient_bins_ * nr_distance_bins_);
+  Eigen::MatrixXf rift_descriptor (nr_gradient_bins_, nr_distance_bins_);
+  std::vector<int> nn_indices;
+  std::vector<float> nn_dist_sqr;
+ 
+  output.is_dense = true;
+  // Iterating over the entire index vector
+  for (size_t idx = 0; idx < indices_->size (); ++idx)
+  {
+    // Find neighbors within the search radius
+    if (tree_->radiusSearch ((*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr) == 0)
+    {
+      output.points.row (idx).setConstant (std::numeric_limits<float>::quiet_NaN ());
+      output.is_dense = false;
+      continue;
+    }
+
+    // Compute the RIFT descriptor
+    computeRIFT (*surface_, *gradient_, (*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr, rift_descriptor);
+
+    // Copy into the resultant cloud
+    int bin = 0;
+    for (int bin_i = 0; bin_i < rift_descriptor.rows (); ++bin_i)
+      for (int bin_j = 0; bin_j < rift_descriptor.cols (); ++bin_j)
+        output.points (idx, bin++) = rift_descriptor (bin_i, bin_j);
   }
 }
 

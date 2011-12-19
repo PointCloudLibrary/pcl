@@ -157,7 +157,13 @@ namespace pcl
 
       /** \brief Dimension of the descriptors. */
       int descriptor_size_;
-  };
+
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+   };
 }
 
 #endif  //#ifndef PCL_GFPFH_H_

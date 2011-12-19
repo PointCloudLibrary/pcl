@@ -42,3 +42,4 @@
 
 // Instantiations of specific point types
 PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((pcl::SHOT)));
+PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((Eigen::MatrixXf)));

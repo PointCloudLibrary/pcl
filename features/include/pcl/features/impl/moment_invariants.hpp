@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -116,15 +118,92 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computeFeature (PointCloud
   std::vector<int> nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
-  // Iterating over the entire index vector
-  for (size_t idx = 0; idx < indices_->size (); ++idx)
+  output.is_dense = true;
+  // Save a few cycles by not checking every point for NaN/Inf values if the cloud is set to dense
+  if (input_->is_dense)
   {
-    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    // Iterating over the entire index vector
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    {
+      if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+      {
+        output.points[idx].j1 = output.points[idx].j2 = output.points[idx].j3 = std::numeric_limits<float>::quiet_NaN ();
+        output.is_dense = false;
+        continue;
+      }
+     
+      computePointMomentInvariants (*surface_, nn_indices,
+                                    output.points[idx].j1, output.points[idx].j2, output.points[idx].j3);
+    }
+  }
+  else
+  {
+    // Iterating over the entire index vector
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    {
+      if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+          this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+      {
+        output.points[idx].j1 = output.points[idx].j2 = output.points[idx].j3 = std::numeric_limits<float>::quiet_NaN ();
+        output.is_dense = false;
+        continue;
+      }
 
-    computePointMomentInvariants (*surface_, nn_indices,
-                                  output.points[idx].j1, output.points[idx].j2, output.points[idx].j3);
+      computePointMomentInvariants (*surface_, nn_indices,
+                                    output.points[idx].j1, output.points[idx].j2, output.points[idx].j3);
+    }
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::MomentInvariantsEstimation<PointInT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+{
+  // Resize the output dataset
+  output.points.resize (indices_->size (), 3);
+
+  // Allocate enough space to hold the results
+  // \note This resize is irrelevant for a radiusSearch ().
+  std::vector<int> nn_indices (k_);
+  std::vector<float> nn_dists (k_);
+
+  output.is_dense = true;
+  // Save a few cycles by not checking every point for NaN/Inf values if the cloud is set to dense
+  if (input_->is_dense)
+  {
+    // Iterating over the entire index vector
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    {
+      if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+      {
+        output.points (idx, 0) = output.points (idx, 1) = output.points (idx, 2) = std::numeric_limits<float>::quiet_NaN ();
+        output.is_dense = false;
+        continue;
+      }
+
+      computePointMomentInvariants (*surface_, nn_indices,
+                                    output.points (idx, 0), output.points (idx, 1), output.points (idx, 2));
+    }
+  }
+  else
+  {
+    // Iterating over the entire index vector
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    {
+      if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+          this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+      {
+        output.points (idx, 0) = output.points (idx, 1) = output.points (idx, 2) = std::numeric_limits<float>::quiet_NaN ();
+        output.is_dense = false;
+        continue;
+       }
+
+      computePointMomentInvariants (*surface_, nn_indices,
+                                    output.points (idx, 0), output.points (idx, 1), output.points (idx, 2));
+    }
+  }
+}
+
 
 #define PCL_INSTANTIATE_MomentInvariantsEstimation(T,NT) template class PCL_EXPORTS pcl::MomentInvariantsEstimation<T,NT>;
 
