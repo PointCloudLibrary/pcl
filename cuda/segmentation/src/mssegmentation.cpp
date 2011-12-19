@@ -71,8 +71,8 @@ void meanShiftSegmentation(const GpuMat& src, Mat& dst, int sp, int sr, int mins
     // Perform mean shift procedure and obtain region and spatial maps
     GpuMat h_rmap, h_spmap;
     meanShiftProc(src, h_rmap, h_spmap, sp, sr, criteria);
-    Mat rmap = h_rmap;
-    Mat spmap = h_spmap;
+    Mat rmap = (Mat)h_rmap;
+    Mat spmap = (Mat)h_spmap;
 
     Graph<SegmLinkVal> g(nrows * ncols, 4 * (nrows - 1) * (ncols - 1)
                                         + (nrows - 1) + (ncols - 1));
@@ -187,7 +187,7 @@ void meanShiftSegmentation(const GpuMat& src, Mat& dst, int sp, int sr, int mins
     }
 
     // Compute sum of the pixel's colors which are in the same segment
-    Mat h_src = src;
+    Mat h_src = (Mat)src;
     vector<Vec4i> sumcols(nrows * ncols, Vec4i(0, 0, 0, 0));
     for (int y = 0; y < nrows; ++y)
     {
