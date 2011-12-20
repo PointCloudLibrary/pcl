@@ -237,7 +237,6 @@ namespace pcl
       using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::radius1_2_;
       using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::shot_;
 
-
       /** \brief Empty constructor. 
         * \param[in] nr_shape_bins the number of bins in the shape histogram 
         */
@@ -250,6 +249,17 @@ namespace pcl
         */
       void 
       computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+
+      /** \brief Base method for feature estimation for all points given in 
+        * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () 
+        * and the spatial locator in setSearchMethod ()
+        * \param[out] output the resultant point cloud model dataset containing the estimated features
+        */
+      void 
+      compute (pcl::PointCloud<Eigen::MatrixXf> &output) 
+      { 
+        pcl::SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::compute (output); 
+      }
 
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
         * \param[out] output the output point cloud 

@@ -965,6 +965,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::computeFeature (pcl
   }
 }
 
+#define PCL_INSTANTIATE_SHOTEstimationBase(T,NT,OutT) template class PCL_EXPORTS pcl::SHOTEstimationBase<T,NT,OutT>;
 #define PCL_INSTANTIATE_SHOTEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::SHOTEstimation<T,NT,OutT>;
 
 #endif    // PCL_FEATURES_IMPL_SHOT_H_
