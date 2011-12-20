@@ -95,12 +95,16 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
   // Check for valid inputs
   if (min_scale_ == 0 || nr_octaves_ == 0 || nr_scales_per_octave_ == 0)
   {
-    PCL_ERROR ("[pcl::%s::detectKeypoints] : A valid range of scales must be specified by setScales before detecting keypoints!\n", name_.c_str ());
+    PCL_ERROR ("[pcl::%s::detectKeypoints] : ", name_.c_str ());
+    PCL_ERROR ("A valid range of scales must be specified by setScales before detecting keypoints!\n");
     return;
   }
   if (surface_ != input_)
   {
-    PCL_WARN ("[pcl::%s::detectKeypoints] : A search surface has be set by setSearchSurface, but this SIFT keypoint detection algorithm does not support search surfaces other than the input cloud.  The cloud provided in setInputCloud is being used instead.\n", name_.c_str ());
+    PCL_WARN ("[pcl::%s::detectKeypoints] : ", name_.c_str ());
+    PCL_WARN ("A search surface has been set by setSearchSurface, but this SIFT keypoint detection algorithm does ");
+    PCL_WARN ("not support search surfaces other than the input cloud.  ");
+    PCL_WARN ("The cloud provided in setInputCloud is being used instead.\n");
   }
 
   // Check if the output has a "scale" field
@@ -128,7 +132,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
     // Make sure the downsampled cloud still has enough points
     const size_t min_nr_points = 25;
     if (cloud->points.size () < min_nr_points)
-      return;
+      break;
 
     // Update the KdTree with the downsampled points
     tree_->setInputCloud (cloud);
