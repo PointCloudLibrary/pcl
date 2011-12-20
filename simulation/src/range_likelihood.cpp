@@ -387,8 +387,7 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 	    0, -1,  0, 0,
 	    0,  0, -1, 0,
 	    0,  0,  0, 1;
-      Eigen::Matrix4f m =  pose.matrix().cast<float>() * T;
-      pcl::transformPointCloud (*pc, *pc, m);
+      pcl::transformPointCloud (*pc, *pc, T);
 
       Eigen::Matrix4f body_to_cam;
       body_to_cam <<   0, -1,  0, 0,
