@@ -67,7 +67,7 @@ pcl::search::FlannSearch<PointT>::~FlannSearch()
 {
   delete creator_;
   if (input_copied_for_flann_)
-    delete [] input_flann_.data;
+    delete [] input_flann_.ptr();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,7 +98,7 @@ pcl::search::FlannSearch<PointT>::nearestKSearch (const PointT &point, int k, st
   const flann::Matrix<float> m (cdata ,1, point_representation_->getNumberOfDimensions ());
 
   flann::SearchParams p;
-  p["eps"] = eps_;
+  p.eps = eps_;
   indices.resize (k,-1);
   dists.resize (k);
   flann::Matrix<int> i (&indices[0],1,k);
@@ -148,7 +148,7 @@ pcl::search::FlannSearch<PointT>::nearestKSearch (const PointCloud& cloud, const
     const flann::Matrix<float> m (cdata ,cloud.size (), dim_, can_cast ? sizeof(PointT)/sizeof(float) : dim_ );
 
     flann::SearchParams p;
-    p["eps"] = eps_;
+    p.eps = eps_;
     index_->knnSearch (m,k_indices,k_sqr_distances,k, p);
 
     delete [] data;
@@ -167,7 +167,7 @@ pcl::search::FlannSearch<PointT>::nearestKSearch (const PointCloud& cloud, const
     const flann::Matrix<float> m (data ,indices.size (), point_representation_->getNumberOfDimensions ());
 
     flann::SearchParams p;
-    p["eps"] = eps_;
+    p.eps = eps_;
     index_->knnSearch (m,k_indices,k_sqr_distances,k, p);
 
     delete[] data;
@@ -204,8 +204,8 @@ pcl::search::FlannSearch<PointT>::radiusSearch (const PointT& point, double radi
   const flann::Matrix<float> m (cdata ,1, point_representation_->getNumberOfDimensions ());
 
   flann::SearchParams p;
-  p["eps"] = eps_;
-  p["max_neighbors"] = max_nn;
+  p.eps = eps_;
+  p.max_neighbors = max_nn;
   std::vector<std::vector<int> > i (1);
   std::vector<std::vector<float> > d (1);
   int result = index_->radiusSearch (m,i,d,radius*radius, p);
@@ -253,8 +253,8 @@ pcl::search::FlannSearch<PointT>::radiusSearch (
     const flann::Matrix<float> m (cdata ,cloud.size (), dim_, can_cast ? sizeof(PointT)/sizeof(float) : dim_ );
 
     flann::SearchParams p;
-    p["eps"] = eps_;
-    p["max_neighbors"] = max_nn;
+    p.eps = eps_;
+    p.max_neighbors = max_nn;
     index_->radiusSearch (m,k_indices,k_sqr_distances,radius*radius, p);
 
     delete [] data;
@@ -273,8 +273,8 @@ pcl::search::FlannSearch<PointT>::radiusSearch (
     const flann::Matrix<float> m (data, cloud.size (), point_representation_->getNumberOfDimensions ());
 
     flann::SearchParams p;
-    p["eps"] = eps_;
-    p["max_neighbors"] = max_nn;
+    p.eps = eps_;
+    p.max_neighbors = max_nn;
     index_->radiusSearch (m, k_indices, k_sqr_distances, radius * radius, p);
 
     delete[] data;
@@ -299,14 +299,14 @@ pcl::search::FlannSearch<PointT>::convertInputToFlannMatrix ()
   int original_no_of_points = indices_ && !indices_->empty () ? indices_->size () : input_->size ();
 
   if (input_copied_for_flann_)
-    delete input_flann_.data;
+    delete input_flann_.ptr();
   input_copied_for_flann_ = true;
   identity_mapping_ = true;
 
   input_flann_ = flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ());
 
   //cloud_ = (float*)malloc (original_no_of_points * dim_ * sizeof (float));
-  float* cloud_ptr = input_flann_.data;
+  float* cloud_ptr = input_flann_.ptr();
   //index_mapping_.reserve(original_no_of_points);
   //identity_mapping_ = true;
 
