@@ -262,8 +262,6 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   extractEuclideanClustersSmooth (*normals_filtered_cloud, *normals_filtered_cloud, cluster_tolerance_, normals_tree,
                                   clusters, eps_angle_threshold_, min_points_);
 
-  std::vector<Eigen::Vector3f> dominant_normals;
-
   VFHEstimator vfh;
   vfh.setInputCloud (surface_);
   vfh.setInputNormals (normals_);
@@ -301,18 +299,18 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
       Eigen::Vector3f avg_dominant_centroid (avg_centroid[0], avg_centroid[1], avg_centroid[2]);
 
       //append normal and centroid for the clusters
-      dominant_normals.push_back (avg_norm);
+      dominant_normals_.push_back (avg_norm);
       centroids_dominant_orientations_.push_back (avg_dominant_centroid);
     }
 
     //compute modified VFH for all dominant clusters and add them to the list!
-    output.points.resize (dominant_normals.size ());
-    output.width = dominant_normals.size ();
+    output.points.resize (dominant_normals_.size ());
+    output.width = dominant_normals_.size ();
 
-    for (size_t i = 0; i < dominant_normals.size (); ++i)
+    for (size_t i = 0; i < dominant_normals_.size (); ++i)
     {
       //configure VFH computation for CVFH
-      vfh.setNormalToUse (dominant_normals[i]);
+      vfh.setNormalToUse (dominant_normals_[i]);
       vfh.setCentroidToUse (centroids_dominant_orientations_[i]);
       pcl::PointCloud<pcl::VFHSignature308> vfh_signature;
       vfh.compute (vfh_signature);

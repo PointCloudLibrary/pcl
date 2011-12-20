@@ -72,8 +72,6 @@ namespace pcl
       typedef typename pcl::NormalEstimation<PointNormal, PointNormal> NormalEstimator;
       typedef typename pcl::VFHEstimation<PointInT, PointNT, pcl::VFHSignature308> VFHEstimator;
 
-      pcl::PointCloud<pcl::PointXYZINormal>::Ptr clusters_colored_;
-
       /** \brief Empty constructor. */
       CVFHEstimation () :
         vpx_ (0), vpy_ (0), vpz_ (0), 
@@ -143,9 +141,20 @@ namespace pcl
           centroids.push_back (centroids_dominant_orientations_[i]);
       }
 
+      /** \brief Get the normal centroids used to compute different CVFH descriptors
+        * \param[out] centroids vector to hold the normal centroids
+        */
+      inline void
+      getCentroidNormalClusters (std::vector<Eigen::Vector3f> & centroids)
+      {
+        for (size_t i = 0; i < dominant_normals_.size (); ++i)
+          centroids.push_back (dominant_normals_[i]);
+      }
+
       /** \brief Sets max. Euclidean distance between points to be added to the cluster 
         * \param[in] d the maximum Euclidean distance 
         */
+
       inline void
       setClusterTolerance (float d)
       {
@@ -253,6 +262,8 @@ namespace pcl
     protected:
       /** \brief Centroids that were used to compute different CVFH descriptors */
       std::vector<Eigen::Vector3f> centroids_dominant_orientations_;
+      /** \brief Normal centroids that were used to compute different CVFH descriptors */
+      std::vector<Eigen::Vector3f> dominant_normals_;
 
     private:
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
@@ -261,6 +272,7 @@ namespace pcl
       void 
       computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
+
 }
 
 #endif  //#ifndef PCL_FEATURES_VFH_H_
