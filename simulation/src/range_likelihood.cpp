@@ -96,6 +96,9 @@ void RangeLikelihood::compute_likelihoods(float* reference,
   double stop_time;
   if (DO_TIMING){ start_time= getTime();}
 
+  glPushAttrib(GL_ALL_ATTRIB_BITS);
+  //glDisable(GL_LIGHTING);
+  glEnable(GL_COLOR_MATERIAL);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClearDepth(1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -125,6 +128,8 @@ void RangeLikelihood::compute_likelihoods(float* reference,
   
   compute_scores(cols_, rows_, col_width_, row_height_, 
 		 reference, depth_buffer_, scores, depth_field,do_depth_field);
+
+  glPopAttrib();
 
   if (DO_TIMING){
     stop_time = getTime();
@@ -367,7 +372,7 @@ void RangeLikelihood::compute_scores(int cols, int rows,
     }
     
     if (make_global){
-      // Go from OpenGL to Z-up
+      // Go from OpenGL to (Z-up, X-forward, Y-left)
       Eigen::Matrix4f T;
       T <<  0, 0, -1, 0,
 	  -1, 0,  0, 0,
@@ -375,8 +380,27 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 	    0, 0,  0, 1;
       Eigen::Matrix4f m =  pose.matrix().cast<float>() * T;
       pcl::transformPointCloud (*pc, *pc, m);      
-    }
-    
+    } else {
+      // Go from OpenGL to Camera (Z-forward, X-right, Y-down)
+      Eigen::Matrix4f T;
+      T <<  1,  0,  0, 0,
+	    0, -1,  0, 0,
+	    0,  0, -1, 0,
+	    0,  0,  0, 1;
+      Eigen::Matrix4f m =  pose.matrix().cast<float>() * T;
+      pcl::transformPointCloud (*pc, *pc, m);
+
+      Eigen::Matrix4f body_to_cam;
+      body_to_cam <<   0, -1,  0, 0,
+	               0,  0, -1, 0,
+	               1,  0,  0, 0,
+	               0,  0,  0, 1;
+
+      Eigen::Matrix4f camera = body_to_cam * pose.matrix().cast<float>() * body_to_cam.inverse();
+      pc->sensor_origin_ = camera.rightCols(1);
+      Eigen::Quaternion<float> quat (camera.block<3,3>(0,0));
+      pc->sensor_orientation_ = quat;
+    }    
   }
   
   void RangeLikelihood::getRangeImagePlanar(pcl::RangeImagePlanar &rip)
