@@ -129,6 +129,10 @@ namespace pcl
       using NormalEstimationOMP<PointInT, pcl::Normal>::threads_;
       using NormalEstimationOMP<PointInT, pcl::Normal>::compute;
 
+      /** \brief Default constructor.
+        */
+      NormalEstimationOMP () : NormalEstimationOMP<PointInT, pcl::Normal> () {}
+
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
         */
