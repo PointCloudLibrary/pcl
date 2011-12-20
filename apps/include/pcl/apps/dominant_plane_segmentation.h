@@ -107,6 +107,11 @@ namespace pcl
         void
         compute_fast (std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters);
 
+        /* \brief Computes the table plane.
+         */
+        void
+        compute_table_plane();
+
         /* \brief Sets the input point cloud.
          * \param cloud_in The input point cloud.
          */
