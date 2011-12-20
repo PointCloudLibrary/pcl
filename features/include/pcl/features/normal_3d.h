@@ -196,7 +196,6 @@ namespace pcl
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::search_parameter_;
-      using Feature<PointInT, PointOutT>::compute;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 

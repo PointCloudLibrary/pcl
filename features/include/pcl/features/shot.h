@@ -73,7 +73,6 @@ namespace pcl
       using Feature<PointInT, PointOutT>::search_parameter_;
       using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::surface_;
-      using Feature<PointInT, PointOutT>::compute;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
@@ -237,7 +236,6 @@ namespace pcl
       using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::radius1_4_;
       using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::radius1_2_;
       using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::shot_;
-      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::compute;
 
 
       /** \brief Empty constructor. 
@@ -301,8 +299,6 @@ namespace pcl
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::maxAngularSectors_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT>::shot_;
-      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::compute;
-      using SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
 
@@ -371,8 +367,6 @@ namespace pcl
       using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::maxAngularSectors_;
       using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::interpolateSingleChannel;
       using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::shot_;
-      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::compute;
-      using SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::computeFeature;
 
       /** \brief Empty constructor. 
         * \param[in] nr_shape_bins the number of bins in the shape histogram 

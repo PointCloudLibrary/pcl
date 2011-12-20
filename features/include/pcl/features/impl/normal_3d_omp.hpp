@@ -54,7 +54,7 @@ pcl::NormalEstimationOMP<PointInT, Eigen::MatrixXf>::computeFeature (pcl::PointC
   output.points.resize (indices_->size (), 4);
 
   // GCC 4.2.x seems to segfault with "internal compiler error" on MacOS X here
-#if (__GNUC__ > 4) && (__GNUC_MINOR__ > 2) 
+#if defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)) 
 #pragma omp parallel for schedule (dynamic, threads_)
 #endif
   // Iterating over the entire index vector
