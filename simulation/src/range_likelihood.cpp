@@ -391,9 +391,9 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 
       // Go from Camera to body (Z-up, X-forward, Y-left)
       Eigen::Matrix4f cam_to_body;
-      cam_to_body <<  0,  0, 1, 0
-                     -1,  0, 0, 0
-                      0, -1, 0, 0
+      cam_to_body <<  0,  0, 1, 0,
+	             -1,  0, 0, 0,
+	              0, -1, 0, 0,
                       0,  0, 0, 1;
       Eigen::Matrix4f camera = pose.matrix().cast<float>() * cam_to_body;
       pc->sensor_origin_ = camera.rightCols(1);
