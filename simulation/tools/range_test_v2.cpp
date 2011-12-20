@@ -210,7 +210,10 @@ void display() {
     // Save camera relative:
     //range_likelihood_->getPointCloud(pc_out);
     // Save in global frame - applying the camera frame:
-    range_likelihood_->getPointCloud(pc_out,true,camera_->pose());
+    //range_likelihood_->getPointCloud(pc_out,true,camera_->pose());
+
+    // Save in local frame
+    range_likelihood_->getPointCloud(pc_out,false,camera_->pose());
     // TODO: what to do when there are more than one simulated view?
     
     pcl::PCDWriter writer;
