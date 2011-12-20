@@ -375,7 +375,7 @@ void RangeLikelihood::compute_scores(int cols, int rows,
       // Go from OpenGL to (Z-up, X-forward, Y-left)
       Eigen::Matrix4f T;
       T <<  0, 0, -1, 0,
-	  -1, 0,  0, 0,
+	   -1, 0,  0, 0,
 	    0, 1,  0, 0,
 	    0, 0,  0, 1;
       Eigen::Matrix4f m =  pose.matrix().cast<float>() * T;
@@ -389,13 +389,13 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 	    0,  0,  0, 1;
       pcl::transformPointCloud (*pc, *pc, T);
 
-      Eigen::Matrix4f body_to_cam;
-      body_to_cam <<   0, -1,  0, 0,
-	               0,  0, -1, 0,
-	               1,  0,  0, 0,
-	               0,  0,  0, 1;
-
-      Eigen::Matrix4f camera = body_to_cam * pose.matrix().cast<float>() * body_to_cam.inverse();
+      // Go from Camera to body (Z-up, X-forward, Y-left)
+      Eigen::Matrix4f cam_to_body;
+      cam_to_body <<  0,  0, 1, 0
+                     -1,  0, 0, 0
+                      0, -1, 0, 0
+                      0,  0, 0, 1;
+      Eigen::Matrix4f camera = pose.matrix().cast<float>() * cam_to_body;
       pc->sensor_origin_ = camera.rightCols(1);
       Eigen::Quaternion<float> quat (camera.block<3,3>(0,0));
       pc->sensor_orientation_ = quat;
