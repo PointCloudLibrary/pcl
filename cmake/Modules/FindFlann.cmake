@@ -28,7 +28,7 @@ if(WIN32)
 
   find_library(FLANN_LIBRARY_DEBUG 
                NAMES flann_cpp_s-gd flann_cpp-gd flann_cpp_s flann_cpp
-               HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT} $ENV{FLANN_ROOT}"
+               HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
                PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann" 
                      "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9" 
                PATH_SUFFIXES lib)
@@ -40,7 +40,7 @@ else(WIN32)
 
   find_library(FLANN_LIBRARY_DEBUG 
                NAMES flann_cpp-gd flann_cpp
-               HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT} $ENV{FLANN_ROOT}"
+               HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
                PATH_SUFFIXES lib)
 endif(WIN32)
 
