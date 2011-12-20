@@ -53,13 +53,13 @@ namespace pcl
   class NormalEstimationOMP: public NormalEstimation<PointInT, PointOutT>
   {
     public:
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::input_;
-      using Feature<PointInT, PointOutT>::k_;
-      using Feature<PointInT, PointOutT>::search_parameter_;
-      using Feature<PointInT, PointOutT>::surface_;
+      using NormalEstimation<PointInT, PointOutT>::feature_name_;
+      using NormalEstimation<PointInT, PointOutT>::getClassName;
+      using NormalEstimation<PointInT, PointOutT>::indices_;
+      using NormalEstimation<PointInT, PointOutT>::input_;
+      using NormalEstimation<PointInT, PointOutT>::k_;
+      using NormalEstimation<PointInT, PointOutT>::search_parameter_;
+      using NormalEstimation<PointInT, PointOutT>::surface_;
       using NormalEstimation<PointInT, PointOutT>::getViewPoint;
 
       typedef typename NormalEstimation<PointInT, PointOutT>::PointCloudOut PointCloudOut;
