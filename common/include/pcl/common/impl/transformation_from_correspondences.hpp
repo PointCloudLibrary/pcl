@@ -40,15 +40,6 @@
 
 namespace pcl {
 
-TransformationFromCorrespondences::TransformationFromCorrespondences ()
-{
-  reset();
-}
-
-TransformationFromCorrespondences::~TransformationFromCorrespondences ()
-{
-}
-
 inline void
 TransformationFromCorrespondences::reset ()
 {
