@@ -78,12 +78,17 @@ TEST (PCL, SIFTKeypoint)
   sift_detector.setInputCloud (cloud_xyzi);
   sift_detector.compute (keypoints);
 
+  ASSERT_EQ (keypoints.width, keypoints.points.size ());
+  ASSERT_EQ (keypoints.height, 1);
   EXPECT_EQ ((int)keypoints.points.size (), 169);
 
   // Change the values and re-compute
   sift_detector.setScales (0.05, 5, 3);
   sift_detector.setMinimumContrast (0.06);
   sift_detector.compute (keypoints);
+
+  ASSERT_EQ (keypoints.width, keypoints.points.size ());
+  ASSERT_EQ (keypoints.height, 1);
 
   // Compare to previously validated output
   const int correct_nr_keypoints = 5;
