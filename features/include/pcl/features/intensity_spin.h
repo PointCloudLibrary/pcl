@@ -170,7 +170,6 @@ namespace pcl
       using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::nr_intensity_bins_;
       using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::nr_distance_bins_;
       using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::tree_;
-      using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::search_radius_;
       using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::sigma_;
       using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::compute;
 
