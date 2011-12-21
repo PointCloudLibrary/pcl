@@ -73,7 +73,7 @@ const static SampleSizeModel sample_size_pairs[] = {SampleSizeModel (pcl::SACMOD
                                                     SampleSizeModel (pcl::SACMODEL_CYLINDER, 2),
                                                     //SampleSizeModel (pcl::SACMODEL_CONE, 2),
                                                     //SampleSizeModel (pcl::SACMODEL_TORUS, 2),
-                                                    //SampleSizeModel (pcl::PARALLEL_LINE, 2),
+                                                    SampleSizeModel (pcl::SACMODEL_PARALLEL_LINE, 2),
                                                     SampleSizeModel (pcl::SACMODEL_PERPENDICULAR_PLANE, 3),
                                                     //SampleSizeModel (pcl::PARALLEL_LINES, 2),
                                                     SampleSizeModel (pcl::SACMODEL_NORMAL_PLANE, 3),
