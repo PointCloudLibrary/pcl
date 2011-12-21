@@ -81,7 +81,7 @@ namespace pcl
       /** \brief Empty constructor. */
       MovingLeastSquares () : PCLBase<PointInT> (), tree_ (), order_ (2), polynomial_fit_ (true), search_radius_ (0), sqr_gauss_param_ (0) {};
 
-      /** \brief Provide a pointer to an point cloud where normal information should be saved
+      /** \brief Provide a pointer to a point cloud where normal information should be saved
         * \note This is optional, it can be the same as the parameter to the reconstruction method, but no normals are estimated if it is not set.
         * \param[in] cloud the const boost shared pointer to a point cloud with normal
         */
@@ -157,7 +157,7 @@ namespace pcl
       reconstruct (PointCloudIn &output);
 
     protected:
-      /** \brief The input point cloud dataset. */
+      /** \brief The point cloud that will hold the estimated normals, if set. */
       NormalCloudOutPtr normals_;
 
       /** \brief The search method template for indices. */
