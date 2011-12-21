@@ -334,6 +334,8 @@ void RangeLikelihood::compute_scores(int cols, int rows,
     pc->height   = camera_height_;
     pc->is_dense = false;
     pc->points.resize(pc->width*pc->height);
+
+    int points_added = 0;
     
     float camera_fx_reciprocal_ = 1.0f / camera_fx_;
     float camera_fy_reciprocal_ = 1.0f / camera_fy_;
@@ -348,28 +350,34 @@ void RangeLikelihood::compute_scores(int cols, int rows,
       for (int x=0; x<(int)camera_width_; ++x)
       {
 	// Find XYZ from normalized 0->1 mapped disparity
-	int idx = y*camera_width_ + x;
-        float d = depth_buffer_[idx] ;
-        float  z = zf*zn/((zf-zn)*(d - zf/(zf-zn)));
-	
-	// TODO: add mode to ignore points with no return i.e. depth_buffer_ ==1
-	// NB: OpenGL uses a Right Hand system with +X right, +Y up, +Z back out of the screen, 
-	// The Z-buffer is natively -1 (far) to 1 (near)
-	// But in this class we invert this to be 0 (near, 0.7m) and 1 (far, 20m) 
-	// ... so by negating y we get to a right-hand computer vision system
-	// which is also used by PCL and OpenNi
-        pc->points[idx].z = z;
-        pc->points[idx].x = (x-camera_cx_) * z * (-camera_fx_reciprocal_);
-        pc->points[idx].y = (y-camera_cy_) * z * (-camera_fy_reciprocal_);
-//        pc->points[idx].y = -(y-camera_cy_)*z * camera_fy_reciprocal_;
-	
- 	unsigned char* rgba_ptr = (unsigned char*)&pc->points[idx].rgba;
- 	(*rgba_ptr) =  color_buffer_[idx*3+2]; // blue
- 	(*(rgba_ptr+1)) = color_buffer_[idx*3+1]; // green
- 	(*(rgba_ptr+2)) = color_buffer_[idx*3];// red
- 	(*(rgba_ptr+3)) = 0;    	
+	int idx = points_added; // y*camera_width_ + x;
+        float d = depth_buffer_[y*camera_width_ + x] ;
+        if (d < 1.0) { 
+          float z = zf*zn/((zf-zn)*(d - zf/(zf-zn)));
+
+	  // TODO: add mode to ignore points with no return i.e. depth_buffer_ ==1
+	  // NB: OpenGL uses a Right Hand system with +X right, +Y up, +Z back out of the screen, 
+	  // The Z-buffer is natively -1 (far) to 1 (near)
+	  // But in this class we invert this to be 0 (near, 0.7m) and 1 (far, 20m) 
+	  // ... so by negating y we get to a right-hand computer vision system
+	  // which is also used by PCL and OpenNi
+          pc->points[idx].z = z;
+          pc->points[idx].x = (x-camera_cx_) * z * (-camera_fx_reciprocal_);
+          pc->points[idx].y = (y-camera_cy_) * z * (-camera_fy_reciprocal_);
+
+          unsigned char* rgba_ptr = (unsigned char*)&pc->points[idx].rgba;
+          (*rgba_ptr) =  color_buffer_[idx*3+2]; // blue
+          (*(rgba_ptr+1)) = color_buffer_[idx*3+1]; // green
+          (*(rgba_ptr+2)) = color_buffer_[idx*3];// red
+          (*(rgba_ptr+3)) = 0;
+          
+          points_added++;
+        }
       }
     }
+    pc->width    = 1; 
+    pc->height   = points_added;
+    pc->points.resize(points_added);
     
     if (make_global){
       // Go from OpenGL to (Z-up, X-forward, Y-left)
@@ -379,7 +387,7 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 	    0, 1,  0, 0,
 	    0, 0,  0, 1;
       Eigen::Matrix4f m =  pose.matrix().cast<float>() * T;
-      pcl::transformPointCloud (*pc, *pc, m);      
+      pcl::transformPointCloud (*pc, *pc, m);   
     } else {
       // Go from OpenGL to Camera (Z-forward, X-right, Y-down)
       Eigen::Matrix4f T;
