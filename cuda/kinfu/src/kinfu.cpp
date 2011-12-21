@@ -134,7 +134,7 @@ pcl::gpu::KinfuTracker::setTrancationDistance (float distance)
 void
 pcl::gpu::KinfuTracker::setDepthTruncationForICP (unsigned short max_icp_distance)
 {
-	max_icp_distance_ = max_icp_distance;
+  max_icp_distance_ = max_icp_distance;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -592,14 +592,33 @@ pcl::gpu::KinfuTracker::getNormalsFromVolume (const DeviceArray<PointType>& clou
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::getTsdfVolume( std::vector<float>& volume) const
+pcl::gpu::KinfuTracker::getTsdfVolume (std::vector<float>& volume) const
 {
-  volume.resize(volume_.cols() * volume_.rows());
+  volume.resize (volume_.cols() * volume_.rows());
   volume_.download(&volume[0], volume_.cols() * sizeof(int));
 
+#pragma omp parallel for
   for(size_t i = 0; i < volume.size(); ++i)
   {
     float tmp = ((short2*)&volume[i])->x;
     volume[i] = tmp/DIVISOR;
   }
 }
+
+void
+pcl::gpu::KinfuTracker::getTsdfVolumeAndWeighs (std::vector<float>& volume, std::vector<short>& weights) const
+{
+  int volumeSize = volume_.cols() * volume_.rows();
+  volume.resize (volumeSize);
+  weights.resize (volumeSize);
+  volume_.download(&volume[0], volume_.cols() * sizeof(int));
+
+#pragma omp parallel for
+  for(size_t i = 0; i < volume.size(); ++i)
+  {
+    short2 *elem = (short2*)&volume[i];
+    volume[i] = (float)(elem->x)/DIVISOR;
+    weights[i] = (short)(elem->y);
+  }
+}
+

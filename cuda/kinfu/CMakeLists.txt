@@ -3,7 +3,7 @@ if(TRUE)
 set(SUBSYS_NAME gpu_kinfu)
 set(SUBSYS_PATH cuda/gpu_kinfu)
 set(SUBSYS_DESC "Kinnect Fusiion implementation")
-set(SUBSYS_DEPS common gpu_containers gpu_utils gpu_features visualization io)
+set(SUBSYS_DEPS common gpu_containers gpu_utils gpu_features visualization io reconstruction)
 
 #find_package(OpenCV QUIET)
 set(OpenCV_FOUND 0)

@@ -195,7 +195,14 @@ namespace pcl
           * \param[out] volume Array with tsdf values. Volume size is 512x512x512, so for voxel (x,y,z) tsdf value can be retrieved as volume[512*512*z + 512*y + x];
           */
         void
-        getTsdfVolume( std::vector<float>& volume) const;
+        getTsdfVolume (std::vector<float>& volume) const;
+
+        /** \brief Downloads TSDF volume and according voxel weights from GPU memory
+          * \param[out] volume Array with tsdf values. Volume size is 512x512x512, so for voxel (x,y,z) tsdf value can be retrieved as volume[512*512*z + 512*y + x];
+          * \param[out] weights Array with tsdf voxel weights. Same size and access index as for volume. A weight of 0 indicates the voxel was never used.
+          */
+        void
+        getTsdfVolumeAndWeighs (std::vector<float>& volume, std::vector<short>& weights) const;
 
       private:
         

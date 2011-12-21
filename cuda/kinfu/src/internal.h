@@ -320,7 +320,7 @@ namespace pcl
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Cloud extraction 
 
-    /** \brief Perofrm point cloud extraction from tsdf volumer
+    /** \brief Perform point cloud extraction from tsdf volume
       * \param[in] volume tsdf volume 
       * \param[in] volume_size size of the volume
       * \param[out] output buffer large enought to store point cloud

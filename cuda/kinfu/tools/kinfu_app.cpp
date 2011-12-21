@@ -50,6 +50,9 @@
 
 #include "openni_capture.h"
 
+#include <pcl/reconstruction/tsdf_volume.h>
+// #include <pcl/reconstruction/impl/tsdf_volume.hpp>
+
 #ifdef HAVE_OPENCV
     #include "opencv2/opencv.hpp"
     #include "pcl/gpu/utils/timers_opencv.hpp"
@@ -94,6 +97,8 @@ donwloadOrganized (const DeviceArray2D<PointT>& device, pcl::PointCloud<PointT>&
   host.is_dense = false;
 }
 
+#include "../src/internal.h"
+
 struct KinFuApp
 {
   KinFuApp(CaptureOpenNI& source, bool show_current_frame = false) : exit_ (false), scan_ (false), showNormals_ (false), connected26_ (false), use_cpu_for_cloud_extraction_ (false), hasImage_ (false),
@@ -121,12 +126,15 @@ struct KinFuApp
     //Init KinfuApp
 
     viewer3d_.setWindowTitle ("View3D from ray tracing");
-    viewer2d_.setWindowTitle("Kinect Depth stream");
+    viewer2d_.setWindowTitle ("Kinect Depth stream");
 
     cloud_ptr_ = PointCloud<PointXYZ>::Ptr (new PointCloud<pcl::PointXYZ>);
     cloud_normals_ptr_ = PointCloud<Normal>::Ptr (new PointCloud<pcl::Normal>);
+    cloud_combined_ptr_ = PointCloud<PointNormal>::Ptr (new PointCloud<pcl::PointNormal>);
     cloud_ptr_->points.push_back (pcl::PointXYZ (0, 0, 0));
     cloud_ptr_->width = cloud_ptr_->height = 1;
+
+    tsdf_cloud_ptr_ = pcl::PointCloud<pcl::PointXYZI>::Ptr (new pcl::PointCloud<pcl::PointXYZI>);
 
     cloud_viewer_.setBackgroundColor (0, 0, 0);
     cloud_viewer_.addPointCloud<pcl::PointXYZ> (cloud_ptr_);
@@ -187,7 +195,7 @@ struct KinFuApp
       depth_device_.upload (depth.data, depth.step, depth.rows, depth.cols);
 
       {
-        ScopeTimeT time ("total-frame");
+        //ScopeTimeT time ("total-frame");
         hasImage_ = kinfu_ (depth_device_);
         if (hasImage_)
           kinfu_.getImage (view_device_);
@@ -196,6 +204,8 @@ struct KinFuApp
       if (scan_)
       {
         scan_ = false;
+
+        // download point cloud
         {
           ScopeTimeT time ("point cloud extraction");
           cout << "\nGetting cloud..." << endl;
@@ -221,14 +231,44 @@ struct KinFuApp
         cout << "  Cloud size: " << cloud_ptr_->points.size () / 1000 << "K" << endl << endl;
         cloud_viewer_.removeAllPointClouds ();
 
+        // download tsdf volume
+        {
+          ScopeTimeT time ("tsdf volume download");
+          cout << "Downloading TSDF volume from device ... " << flush;
+          kinfu_.getTsdfVolumeAndWeighs (tsdf_volume_.volumeWriteable(), tsdf_volume_.weightsWriteable());
+          tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_.getVolumeSize());
+          cout << "done [" << tsdf_volume_.size() << " voxels]" << endl;
+        }
+        cout << endl;
+        {
+          ScopeTimeT time ("");
+          cout << "Converting volume to TSDF cloud ... " << flush;
+          tsdf_volume_.convertToTsdfCloud (tsdf_cloud_ptr_);
+          cout << "done [" << tsdf_cloud_ptr_->size() << " points]" << endl;
+        }
+        cout << endl;
+
+        // handle and show normals
         if (showNormals_ && !use_cpu_for_cloud_extraction_)
         {
-          cloud_viewer_.addPointCloud<pcl::PointXYZ> (cloud_ptr_, "Cloud");
-          cloud_viewer_.addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(cloud_ptr_, cloud_normals_ptr_, 50, 20);
+          // cloud_viewer_.addPointCloud<pcl::PointXYZ> (cloud_ptr_, "Cloud");
+          // cloud_viewer_.addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(cloud_ptr_, cloud_normals_ptr_, 50, 20);
+
+          std::cout << "Copying X,Y,Z points and normals in one cloud" << std::endl;
+          cout << "clear comb. cloud" << endl;
+          cloud_combined_ptr_->clear ();
+          cout << "copy cloud:" << endl;
+          pcl::copyPointCloud (*cloud_ptr_, *cloud_combined_ptr_);
+          cout << "copy normals:" << endl;
+          pcl::copyPointCloud (*cloud_normals_ptr_, *cloud_combined_ptr_);
+          cout << "show comb. in viewer" << endl;
+          cloud_viewer_.addPointCloud<pcl::PointNormal> (cloud_combined_ptr_, "Cloud");
         }
         else
+        {
           cloud_viewer_.addPointCloud<pcl::PointXYZ> (cloud_ptr_);
-        //printf("exact_size = %d\n", cloud_ptr_->points.size());
+          //printf("exact_size = %d\n", cloud_ptr_->points.size());
+        }
       }
 
       if (hasImage_)
@@ -237,8 +277,10 @@ struct KinFuApp
         view_device_.download (view_host_, cols);
         viewer3d_.showRGBImage ((unsigned char*)&view_host_[0], view_device_.cols (), view_device_.rows ());
 
-        //views_.push_back(cv::Mat());
-        //cv::cvtColor(cv::Mat(480, 640, CV_8UC3, (void*)&view_host_[0]), views_.back(), CV_RGB2GRAY);
+#ifdef HAVE_OPENCV
+        views_.push_back(cv::Mat());
+        cv::cvtColor(cv::Mat(480, 640, CV_8UC3, (void*)&view_host_[0]), views_.back(), CV_RGB2GRAY);
+#endif
 
         if (frame_cloud_viewer_)
         {
@@ -285,6 +327,8 @@ struct KinFuApp
   PointCloud<Normal>::Ptr cloud_normals_ptr_;
   DeviceArray<KinfuTracker::NormalType> cloud_normals_device_;
 
+  PointCloud<PointNormal>::Ptr cloud_combined_ptr_;
+
   KinfuTracker::DepthMap depth_device_;
   KinfuTracker::View view_device_;
   vector<KinfuTracker::RGB> view_host_;
@@ -295,6 +339,8 @@ struct KinFuApp
   PointCloud<PointXYZ>::Ptr frame_cloud_ptr_;
   PointCloud<pcl::Normal>::Ptr frame_normals_ptr_;
 
+  pcl::reconstruction::TSDFVolume<float, short> tsdf_volume_;
+  pcl::PointCloud<pcl::PointXYZI>::Ptr tsdf_cloud_ptr_;
 
 #ifdef HAVE_OPENCV
   vector<cv::Mat> views_;
@@ -303,52 +349,67 @@ struct KinFuApp
   static void
   keyboard_callback (const visualization::KeyboardEvent &e, void *cookie)
   {
-    KinFuApp* app = reinterpret_cast<KinFuApp*>(cookie);
+    KinFuApp* app = reinterpret_cast<KinFuApp*> (cookie);
 
     if (e.keyDown ())
       switch (e.getKeyCode ())
       {
-      case 27:
-        app->exit_ = true;
-        break;
-      case (int)'t': case (int)'T':
-        app->scan_ = true;
-        break;
-      case (int)'m': case (int)'M':
-        app->connected26_ = !app->connected26_;
-        cout << endl << "Cloud extraction mode: " << (app->connected26_ ? "connected26 (CPU only)" : "connected6") << endl << endl;
-        break;
-      case (int)'n': case (int)'N':
-        app->showNormals_ = !app->showNormals_;
-        cout << endl << "Show normals: " << (app->showNormals_ ? "true (GPU only)" : "false") << endl << endl;
-        break;
-      case (int)'c': case (int)'C':
-        app->cloud_viewer_.removeAllPointClouds ();
-        cout << "Cloud viewer is reset" << endl;
-        break;
-      case (int)'s': case (int)'S':
-        cout << "Saving to cloud.pcd...";
-        pcl::io::savePCDFile ("cloud.pcd", *app->cloud_ptr_, false);
-        cout << "Done" << endl;
-        break;
-      case (int)'b': case (int)'B':
-        cout << "Saving to cloud.pcd...";
-        pcl::io::savePCDFile ("cloud.pcd", *app->cloud_ptr_, true);
-        cout << "Done" << endl;
-        break;
-      case (int)'p': case (int)'P':
-        cout << "Saving to cloud.ply...";
-        pcl::io::savePLYFileASCII ("cloud.ply", *app->cloud_ptr_);
-        cout << "Done" << endl;
-        break;
-      default:
-        break;
-      }
-    ;
+        case 27:
+          app->exit_ = true;
+          break;
+        case (int)'t': case (int)'T':
+          app->scan_ = true;
+          cout << "Scan set to true" << endl;
+          break;
+        case (int)'m': case (int)'M':
+          app->connected26_ = !app->connected26_;
+          cout << endl << "Cloud extraction mode: " << (app->connected26_ ? "connected26 (CPU only)" : "connected6") << endl << endl;
+          break;
+        case (int)'n': case (int)'N':
+          app->showNormals_ = !app->showNormals_;
+          cout << endl << "Show normals: " << (app->showNormals_ ? "true (GPU only)" : "false") << endl << endl;
+          break;
+        case (int)'c': case (int)'C':
+          app->cloud_viewer_.removeAllPointClouds ();
+          cout << "Cloud viewer is reset" << endl;
+          break;
+        case (int)'v': case (int)'V':
+          cout << "Saving TSDF volume to tsdf_volume.dat ... " << flush;
+          app->tsdf_volume_.save("tsdf_volume.dat", true);
+          cout << "done [" << app->tsdf_volume_.size() << " voxels]" << endl;
+          cout << "Saving TSDF volume cloud to tsdf_cloud.pcd ... " << flush;
+          pcl::io::savePCDFile<pcl::PointXYZI> ("tsdf_cloud.pcd", *app->tsdf_cloud_ptr_, true);
+          cout << "done [" << app->tsdf_cloud_ptr_->size() << " points]" << endl;
+          break;
+        case (int)'s': case (int)'S':
+          cout << "Saving point cloud to cloud.pcd (ASCII) ... " << flush;
+          if (app->showNormals_)
+            pcl::io::savePCDFile ("cloud.pcd", *app->cloud_combined_ptr_, false);
+          else
+            pcl::io::savePCDFile ("cloud.pcd", *app->cloud_ptr_, false);
+          cout << "done" << endl;
+          break;
+        case (int)'b': case (int)'B':
+          cout << "Saving point cloud to cloud.pcd (binary) ... ";
+          if (app->showNormals_)
+            pcl::io::savePCDFile ("cloud.pcd", *app->cloud_combined_ptr_, true);
+          else
+            pcl::io::savePCDFile ("cloud.pcd", *app->cloud_ptr_, true);
+          cout << "done" << endl;
+          break;
+        case (int)'p': case (int)'P':
+          cout << "Saving point cloud to cloud.ply ... ";
+          pcl::io::savePLYFileASCII ("cloud.ply", *app->cloud_ptr_);
+          cout << "done" << endl;
+          break;
+        default:
+          break;
+      };
   }
 };
 
-int main2 ();
+int
+main2 ();
 
 int
 main ()
@@ -385,13 +446,24 @@ main ()
   }
 
   // saving sequence of 3D views
+  //pcl::io::savePCDFile("cloud.pcd", app.cloud_ptr_, true);
+  //cout << "Saved to cloud.pcd" << endl;
+
 #ifdef HAVE_OPENCV
-  for (size_t t = 0; t < app.views_.size (); ++t)
+  // save initial view
+  cout << "Saving depth map of first view." << endl;
+  cv::imwrite ("./depthmap_1stview.png", app.views_[0]);
+
+  if (false)
   {
-    char buf[4096];
-    sprintf (buf, "c:/%06d.png", (int)t);
-    cv::imwrite (buf, app.views_[t]);
-    printf ("writing: %s\n", buf);
+    cout << "Saving sequence of (" << app.views_.size () << ") views." << endl;
+    for (size_t t = 0; t < app.views_.size (); ++t)
+    {
+      char buf[4096];
+      sprintf (buf, "./%06d.png", (int)t);
+      cv::imwrite (buf, app.views_[t]);
+      printf ("writing: %s\n", buf);
+    }
   }
 #endif
   return 0;
