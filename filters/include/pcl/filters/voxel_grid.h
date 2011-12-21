@@ -54,6 +54,54 @@ namespace pcl
                const std::string &distance_field_name, float min_distance, float max_distance, 
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
 
+  /** \brief Get the relative cell indices of the "upper half" 13 neighbors.
+    * @note Useful in combination with getNeighborCentroidIndices() from \ref VoxelGrid
+    * \ingroup filters
+    */
+  inline Eigen::MatrixXi
+  getHalfNeighborCellIndices ()
+  {
+    Eigen::MatrixXi relative_coordinates(3, 13);
+    int idx = 0;
+
+    // 0 - 8
+    for (int i = -1; i < 2; i++) {
+      for (int j = -1; j < 2; j++) {
+        relative_coordinates(0, idx) = i;
+        relative_coordinates(1, idx) = j;
+        relative_coordinates(2, idx) = -1;
+        idx++;
+      }
+    }
+    // 9 - 11
+    for (int i = -1; i < 2; i++) {
+      relative_coordinates(0, idx) = i;
+      relative_coordinates(1, idx) = -1;
+      relative_coordinates(2, idx) = 0;
+      idx++;
+    }
+    // 12
+    relative_coordinates(0, idx) = -1;
+    relative_coordinates(1, idx) = 0;
+    relative_coordinates(2, idx) = 0;
+
+    return relative_coordinates;
+  }
+
+  /** \brief Get the relative cell indices of all the 26 neighbors.
+    * @note Useful in combination with getNeighborCentroidIndices() from \ref VoxelGrid
+    * \ingroup filters
+    */
+  inline Eigen::MatrixXi
+  getAllNeighborCellIndices ()
+  {
+    Eigen::MatrixXi relative_coordinates = getHalfNeighborCellIndices();
+    Eigen::MatrixXi relative_coordinates_all(3, 26);
+    relative_coordinates_all.block<3, 13> (0, 0) = relative_coordinates;
+    relative_coordinates_all.block<3, 13> (0, 13) = -relative_coordinates;
+    return relative_coordinates_all;
+  }
+
   /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions
     * in a given pointcloud, without considering points outside of a distance threshold from the laser origin
     * \param cloud the point cloud data message
@@ -63,6 +111,7 @@ namespace pcl
     * \param min_pt the resultant minimum bounds
     * \param max_pt the resultant maximum bounds
     * \param limit_negative if set to true, then all points outside of the interval (min_distance;max_distace) are considered
+    * \ingroup filters
     */
   template <typename PointT> void 
   getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
