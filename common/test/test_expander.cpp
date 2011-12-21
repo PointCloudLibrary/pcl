@@ -43,8 +43,8 @@
 using namespace pcl;
 using namespace pcl::test;
 
-PointCloud<PointXYZ> cloud(10, 48);
-const size_t size = 10 * 48;
+PointCloud<PointXYZ> cloud(5, 4);
+const size_t size = 5 * 4;
 const int amount = 2;
 
 // TEST(PointCloudExpander, vertical)
@@ -91,11 +91,12 @@ TEST(PointCloudExpander, duplicateVertical)
   PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
   expander.setInputCloud (cloud_ptr);
   expander.setAmount (amount);
-  expander.setDirection (PointCloudExpander<PointXYZ>::HORIZONTAL);
-  expander.setExpandPolicy (PointCloudExpander<PointXYZ>::MIRROR);
+  expander.setDirection (PointCloudExpander<PointXYZ>::VERTICAL);
+  expander.setExpandPolicy (PointCloudExpander<PointXYZ>::DUPLICATE);
   expander.expandVerticalDuplicate ();
   int w(cloud_ptr->width);
   EXPECT_EQ (cloud_ptr->height, cloud.height +2*amount);
+
   for (int i = 0; i < w; ++i)
   {
     EXPECT_EQ_VECTORS((*cloud_ptr)(i,0).getVector3fMap (), 
@@ -109,7 +110,7 @@ TEST(PointCloudExpander, duplicateVertical)
   }
 }
 
-TEST(PointCloudExpander, mirrorHorizontal)
+TEST(PointCloudExpander, mirrorVertical)
 {
   PointCloudExpander<PointXYZ> expander;
   PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
@@ -119,17 +120,71 @@ TEST(PointCloudExpander, mirrorHorizontal)
   expander.setExpandPolicy (PointCloudExpander<PointXYZ>::MIRROR);
   expander.expandVerticalMirror ();
   int w(cloud_ptr->width);
+  int h(cloud_ptr->height);
   EXPECT_EQ (cloud_ptr->height, cloud.height +2*amount);
+
   for (int i = 0; i < w; ++i)
   {
     EXPECT_EQ_VECTORS((*cloud_ptr)(i,1).getVector3fMap (), 
                       (*cloud_ptr)(i,2).getVector3fMap ());
     EXPECT_EQ_VECTORS((*cloud_ptr)(i,0).getVector3fMap (), 
                       (*cloud_ptr)(i,3).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(i,cloud_ptr->height - 3).getVector3fMap (), 
-                      (*cloud_ptr)(i,cloud_ptr->height - 2).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(i,cloud_ptr->height - 4).getVector3fMap (), 
-                      (*cloud_ptr)(i,cloud_ptr->height - 1).getVector3fMap ());
+    EXPECT_EQ_VECTORS((*cloud_ptr)(i,h - 3).getVector3fMap (), 
+                      (*cloud_ptr)(i,h - 2).getVector3fMap ());
+    EXPECT_EQ_VECTORS((*cloud_ptr)(i,h - 4).getVector3fMap (), 
+                      (*cloud_ptr)(i,h - 1).getVector3fMap ());
+  }
+}
+
+TEST(PointCloudExpander, mirrorHorizontal)
+{
+  PointCloudExpander<PointXYZ> expander;
+  PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
+  expander.setInputCloud (cloud_ptr);
+  expander.setAmount (amount);
+  expander.setDirection (PointCloudExpander<PointXYZ>::HORIZONTAL);
+  expander.setExpandPolicy (PointCloudExpander<PointXYZ>::MIRROR);
+  expander.expandHorizontalMirror ();
+  int w(cloud_ptr->width);
+  int h(cloud_ptr->height);
+  EXPECT_EQ (cloud_ptr->width, cloud.width +2*amount);
+
+  for (int j = 0; j < h; ++j)
+  {
+    EXPECT_EQ_VECTORS((*cloud_ptr)(0,j).getVector3fMap (), 
+                      (*cloud_ptr)(3,j).getVector3fMap ());
+    EXPECT_EQ_VECTORS((*cloud_ptr)(1,j).getVector3fMap (), 
+                      (*cloud_ptr)(2,j).getVector3fMap ());
+    EXPECT_EQ_VECTORS((*cloud_ptr)(w - 3,j).getVector3fMap (), 
+                      (*cloud_ptr)(w - 2,j).getVector3fMap ());
+    EXPECT_EQ_VECTORS((*cloud_ptr)(w - 4,j).getVector3fMap (), 
+                      (*cloud_ptr)(w - 1,j).getVector3fMap ());
+  }
+}
+
+TEST(PointCloudExpander, duplicateHorizontal)
+{
+  PointCloudExpander<PointXYZ> expander;
+  PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
+  expander.setInputCloud (cloud_ptr);
+  expander.setAmount (amount);
+  expander.setDirection (PointCloudExpander<PointXYZ>::HORIZONTAL);
+  expander.setExpandPolicy (PointCloudExpander<PointXYZ>::DUPLICATE);
+  expander.expandHorizontalDuplicate ();
+  int h(cloud_ptr->height);
+  int w(cloud_ptr->width);
+  EXPECT_EQ (cloud_ptr->width, cloud.width +2*amount);
+
+  for (int i = 0; i < h; ++i)
+  {
+    EXPECT_EQ_VECTORS((*cloud_ptr)(0,i).getVector3fMap (), 
+                      (*cloud_ptr)(1,i).getVector3fMap ());
+    EXPECT_EQ_VECTORS((*cloud_ptr)(0,i).getVector3fMap (), 
+                      (*cloud_ptr)(2,i).getVector3fMap ());
+    EXPECT_EQ_VECTORS((*cloud_ptr)(w - 3,i).getVector3fMap (), 
+                      (*cloud_ptr)(w - 1,i).getVector3fMap ());
+    EXPECT_EQ_VECTORS((*cloud_ptr)(w - 3,i).getVector3fMap (), 
+                      (*cloud_ptr)(w - 2,i).getVector3fMap ());
   }
 }
 

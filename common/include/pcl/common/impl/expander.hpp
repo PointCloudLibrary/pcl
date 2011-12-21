@@ -111,19 +111,21 @@ pcl::PointCloudExpander<PointT>::expandVertical(const PointT& val)
 template <typename PointT> void 
 pcl::PointCloudExpander<PointT>::expandHorizontalDuplicate()
 {
-  uint32_t old_height = input_->height;
-  uint32_t old_width = input_->width;
-  uint32_t new_width = old_width + 2*amount_;
+  int old_height = input_->height;
+  int old_width = input_->width;
+  int new_width = old_width + 2*amount_;
   for (int j = 0; j < old_height; ++j)
-  {
     for(int i = 0; i < amount_; ++i)
     {
       iterator start = input_->begin () + (j * new_width);
-      input_->insert (start, *start);
-      start = input_->begin () + (j * new_width) + old_width + i+1;
+      // For some reason the dereferenced iterator from eigen aligned 
+      // vector don't return the actual point!!?
+      // input_->insert (start, *start);
+      input_->insert (start, input_->at (size_t (std::distance (input_->begin (), start))));
+      start = input_->begin () + (j * new_width) + old_width + i;
       input_->insert (start, *start);
     }
-  }
+
   input_->width = old_width + 2*amount_;
   input_->height = old_height;
 }
@@ -145,19 +147,17 @@ pcl::PointCloudExpander<PointT>::expandVerticalDuplicate()
 template <typename PointT> void 
 pcl::PointCloudExpander<PointT>::expandHorizontalMirror()
 {
-  uint32_t old_height = input_->height;
-  uint32_t old_width = input_->width;
-  uint32_t new_width = old_width + 2*amount_;
+  int old_height = input_->height;
+  int old_width = input_->width;
+  int new_width = old_width + 2*amount_;
   for (int j = 0; j < old_height; ++j)
-  {
     for(int i = 0; i < amount_; ++i)
     {
       iterator start = input_->begin () + (j * new_width);
-      input_->insert (start, *start);
-      start = input_->begin () + (j * new_width) + old_width + i+1;
-      input_->insert (start, *start);
+      input_->insert (start, *(start + 2*i));
+      start = input_->begin () + (j * new_width) + old_width + 2*i;
+      input_->insert (start+1, *(start - 2*i));
     }
-  }
   input_->width = old_width + 2*amount_;
   input_->height = old_height;
 }
@@ -171,15 +171,10 @@ pcl::PointCloudExpander<PointT>::expandVerticalMirror()
   iterator up = input_->begin (), low = input_->end ();
   for(int i = 0; i < amount_; ++i)
   {
-    // std::cout << "first " << int (std::distance (input_->begin (),first)) / old_width << std::endl;
-    // std::cout << "last " << int (std::distance (input_->begin (),first + old_width)) / old_width << std::endl;
     input_->insert (input_->begin (), up, up + old_width);
     up+= old_width;
     input_->insert (input_->end (), low - old_width, low);
     low-= old_width;
-    // first = input_->end () - (2 * i * old_width);
-    // std::cout << "first2 " << int (std::distance (input_->begin (),first)) / old_width << std::endl;
-    // input_->insert (input_->end (), first, first + old_width);
   }
   input_->width = old_width;
   input_->height = old_height + 2*amount_;
