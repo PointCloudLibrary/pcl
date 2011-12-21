@@ -331,7 +331,7 @@ template <typename VoxelT, typename WeightT> void
 pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::averageValues ()
 {
   #pragma omp parallel for
-  for (size_t i = 0; i < volume_->size(); ++i)
+  for (int i = 0; i < volume_->size(); ++i)
   {
     WeightT &w = weights_->at(i);
     if (w > 0.0)
