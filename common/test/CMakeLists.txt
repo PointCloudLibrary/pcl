@@ -6,6 +6,7 @@ if(BUILD_TESTS)
     PCL_ADD_TEST(common_common test_common FILES test_common.cpp LINK_WITH pcl_common)
     PCL_ADD_TEST(common_pca test_pca FILES test_pca.cpp LINK_WITH pcl_common)
     link_ros_libs (test_pca)
+		PCL_ADD_TEST(common_expander test_expander FILES test_expander.cpp LINK_WITH pcl_common)
     PCL_ADD_TEST(common_gaussian test_gaussian FILES test_gaussian.cpp LINK_WITH pcl_common)
 endif(BUILD_TESTS)
 
