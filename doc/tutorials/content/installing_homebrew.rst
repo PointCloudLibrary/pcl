@@ -37,7 +37,7 @@ which parts of PCL are installed.
 
    The PCL formula is currently in development. It will be submitted to
    Homebrew shortly. Until then, you can download it 
-   `here <http://dev.pointclouds.org/attachments/469/pcl.rb>`_. To prepare it,
+   `here <http://dev.pointclouds.org/attachments/download/604/pcl.rb>`_. To prepare it,
    follow these steps:
 
 
@@ -53,9 +53,8 @@ To install using the formula, execute the following command::
 
 .. note::
 
-   The current version of PCL (1.2) does not properly support Mac OS X
-   for compiling the visualisation module. You must disable it to
-   install PCL successfully::
+   The current version of PCL (1.3.1) properly supports the visualization
+   module for Mac OS X. However if you do want to disable it, you can run::
 
      $ brew install pcl --novis
 
