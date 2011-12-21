@@ -45,8 +45,12 @@
 template <typename PointInT, typename PointNT, typename PointOutT> inline void
 pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud<PointNT> &normals,
 		 const std::vector<int> &indices, double max_dist,
-		 int nr_subdiv, double plane_radius, PointOutT &radii)
+		 int nr_subdiv, double plane_radius, PointOutT &radii, Eigen::Map<Eigen::MatrixXf> *histogram)
 {
+  // Check if the full histogram has to be saved or not
+  if (histogram)
+    *histogram = Eigen::MatrixXf::Zero (nr_subdiv, nr_subdiv);
+
   // Initialize minimum and maximum angle values in each distance bin
   std::vector<std::vector<double> > min_max_angle_by_dist (nr_subdiv);
   min_max_angle_by_dist[0].resize (2);
@@ -81,6 +85,11 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
 
     // compute bins and increase
     int bin_d = (int) floor (nr_subdiv * dist / max_dist);
+    if (histogram)
+    {
+      int bin_a = (int) floor (nr_subdiv * angle / (M_PI/2));
+      (*histogram)(bin_a, bin_d)++;
+    }
 
     // update min-max values for distance bins
     if (min_max_angle_by_dist[bin_d][0] > angle) min_max_angle_by_dist[bin_d][0] = angle;
@@ -104,8 +113,22 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
       Amaxt_d += p_max * f;
     }
   }
-  radii.r_max = Amint_Amin == 0 ? plane_radius : std::min (Amint_d/Amint_Amin, plane_radius);
-  radii.r_min = Amaxt_Amax == 0 ? plane_radius : std::min (Amaxt_d/Amaxt_Amax, plane_radius);
+  float min_radius = Amint_Amin == 0 ? plane_radius : std::min (Amint_d/Amint_Amin, plane_radius);
+  float max_radius = Amaxt_Amax == 0 ? plane_radius : std::min (Amaxt_d/Amaxt_Amax, plane_radius);
+
+  // Small correction of the systematic error of the estimation (based on analysis with nr_subdiv_ = 5)
+  min_radius *= 1.1;
+  max_radius *= 0.9;
+  if (min_radius < max_radius)
+  {
+    radii.r_min = min_radius;
+    radii.r_max = max_radius;
+  }
+  else
+  {
+    radii.r_max = min_radius;
+    radii.r_min = max_radius;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -126,12 +149,29 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   std::vector<int> nn_indices;
   std::vector<float> nn_sqr_dists;
 
+  // Resize the output normal dataset
+  if (histograms_)
+  {
+    histograms_->points.resize (output.points.size ());
+    histograms_->width    = output.width;
+    histograms_->height   = output.height;
+    histograms_->is_dense = output.is_dense;
+  }
+
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
     // Compute and store r_min and r_max in the output cloud
     this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_sqr_dists);
-    computeRSD (*surface_, *normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output.points[idx]);
+
+    // check if the full histogram has to be saved or not
+    if (histograms_ && nr_subdiv_ == 5)
+    {
+      Eigen::Map<Eigen::MatrixXf> histogram (&(histograms_->points[idx].histogram[0]), nr_subdiv_, nr_subdiv_);
+      computeRSD (*surface_, *normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], &histogram);
+    }
+    else
+      computeRSD (*surface_, *normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output.points[idx]);
   }
 }
 

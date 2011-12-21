@@ -42,20 +42,48 @@
 
 namespace pcl
 {
+  /** \brief Simple rule-based labeling of the local surface type based on the principle curvatures
+    * \param min_radius smallest estimated surface radius
+    * \param max_radius largest estimated surface radius
+    * \param min_radius_plane radius above which a the labeled is "planar"==1
+    * \param max_radius_noise radius below which the label is "noise/corner"==0
+    * \param min_radius_cylinder radius above which the label is "cylinder/rim"==2
+    * \param max_min_radius_diff difference of the principal radii below which label is "sphere"==3 and above "edge"==4
+    * \ingroup features
+    */
+  inline int
+  getSimpleType (float min_radius, float max_radius,
+      double min_radius_plane = 0.100,
+      double max_radius_noise = 0.015,
+      double min_radius_cylinder = 0.175,
+      double max_min_radius_diff = 0.050)
+  {
+    if (min_radius > min_radius_plane)
+      return 1; // plane
+    else if (max_radius > min_radius_cylinder)
+      return 2; // cylinder (rim)
+    else if (min_radius < max_radius_noise)
+      return 0; // noise/corner
+    else if (max_radius - min_radius < max_min_radius_diff)
+      return 3; // sphere/corner
+    else
+      return 4; // edge
+  }
+
   /** \brief Estimate the Radius-based Surface Descriptor (RSD) for a given point based on its spatial neighborhood of 3D points with normals
     * \param surface the dataset containing the XYZ points
     * \param normals the dataset containing the surface normals at each point in the dataset
     * \param indices the neighborhood point indices in the dataset
     * \param max_dist the upper bound for the considered distance interval
     * \param nr_subdiv the number of subdivisions for the considered distance interval
-    * \param plane_radius document me
+    * \param plane_radius maximum radius, above which everything can be considered planar
     * \param radii the output point of a type that should have r_min and r_max fields
     * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT> void
   computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud<PointNT> &normals,
               const std::vector<int> &indices, double max_dist,
-              int nr_subdiv, double plane_radius, PointOutT &radii);
+              int nr_subdiv, double plane_radius, PointOutT &radii, Eigen::Map<Eigen::MatrixXf> *histogram = NULL);
 
   /** \brief @b RSDEstimation estimates the Radius-based Surface Descriptor (minimal and maximal radius of the local surface's curves)
     * for a given point cloud dataset containing points and normals.
@@ -67,6 +95,11 @@ namespace pcl
     *      General 3D Modelling of Novel Objects from a Single View
     *      In Proceedings of the 2010 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)
     *      Taipei, Taiwan, October 18-22, 2010
+    * </li>
+    * <li> Z.C. Marton, D. Pangercic, N. Blodow, Michael Beetz.
+    *      Combined 2D-3D Categorization and Classification for Multimodal Perception Systems.
+    *      In The International Journal of Robotics Research, Sage Publications
+    *      pages 1378--1402, Volume 30, Number 11, September 2011.
     * </li>
     * </ul>
     *
@@ -121,8 +154,19 @@ namespace pcl
       inline void 
       setKSearch (int) 
       {
-        PCL_ERROR ("[pcl::%s::computeFeature] RSD does not work with k nearest neighbor search. Use setRadiusSearch() instead!\n", getClassName ().c_str ()); 
+        PCL_ERROR ("[pcl::%s::setKSearch] RSD does not work with k nearest neighbor search. Use setRadiusSearch() instead!\n", getClassName ().c_str ());
       }
+
+      /** \brief Provide a pointer to a point cloud where the full distance-angle histograms should be saved
+        * \note This is optional, and currently works only with the default number of subdivisions: 5 (thus a histogram of 5*5=25 values)
+        * \param[in] cloud the const boost shared pointer to a point cloud with histogram[25]
+        */
+      inline void
+      setOutputHistograms (pcl::PointCloud<pcl::Histogram<25> >::Ptr cloud) { histograms_ = cloud; }
+
+      /** \brief Returns a pointer to a point cloud where the full distance-angle histograms were saved. */
+      inline pcl::PointCloud<pcl::Histogram<25> >::Ptr
+      getOutputHistograms () { return histograms_; }
 
     protected:
 
@@ -133,6 +177,9 @@ namespace pcl
         */
       void 
       computeFeature (PointCloudOut &output);
+
+      /** \brief The point cloud that will hold the full distance-angle histograms should be saved, if set. */
+      pcl::PointCloud<pcl::Histogram<25> >::Ptr histograms_; // TODO make it work with any nr_subdiv_
 
     private:
       /** \brief The upper bound for the considered distance interval. */
