@@ -56,35 +56,27 @@ TEST (PointCloud, size)
 TEST (PointCloud, sq_brackets_wrapper)
 {
   for (uint32_t i = 0; i < size; ++i)
-  {
-    Eigen::Vector3f direct = cloud.points[i].getVector3fMap ();
-    Eigen::Vector3f wrapped = cloud[i].getVector3fMap ();
-    EXPECT_EQ_VECTORS (direct,wrapped);
-  }
+    EXPECT_EQ_VECTORS (cloud.points[i].getVector3fMap (),
+                       cloud[i].getVector3fMap ());
 }
 
 TEST (PointCloud, at)
 {
   for (uint32_t i = 0; i < size; ++i)
-  {
-    Eigen::Vector3f direct = cloud.points.at (i).getVector3fMap ();
-    Eigen::Vector3f wrapped = cloud.at (i).getVector3fMap ();
-    EXPECT_EQ_VECTORS (direct,wrapped);
-  }
+    EXPECT_EQ_VECTORS (cloud.points.at (i).getVector3fMap (),
+                       cloud.at (i).getVector3fMap ());
 }
 
 TEST (PointCloud, front)
 {
-  Eigen::Vector3f direct = cloud.points.front ().getVector3fMap ();
-  Eigen::Vector3f wrapped = cloud.front ().getVector3fMap ();
-  EXPECT_EQ_VECTORS (direct,wrapped);
+  EXPECT_EQ_VECTORS (cloud.points.front ().getVector3fMap (),
+                     cloud.front ().getVector3fMap ());
 }
 
 TEST (PointCloud, back)
 {
-  Eigen::Vector3f direct = cloud.points.back ().getVector3fMap ();
-  Eigen::Vector3f wrapped = cloud.back ().getVector3fMap ();
-  EXPECT_EQ_VECTORS (direct,wrapped);
+  EXPECT_EQ_VECTORS (cloud.points.back ().getVector3fMap (),
+                     cloud.back ().getVector3fMap ());
 }
 
 TEST (PointCloud, constructor_with_allocation)

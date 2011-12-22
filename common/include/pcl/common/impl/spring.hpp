@@ -117,10 +117,7 @@ pcl::PointCloudSpring<PointT>::expandHorizontalDuplicate()
     for(int i = 0; i < amount_; ++i)
     {
       iterator start = input_->begin () + (j * new_width);
-      // For some reason the dereferenced iterator from eigen aligned 
-      // vector don't return the actual point!!?
-      // input_->insert (start, *start);
-      input_->insert (start, input_->at (size_t (std::distance (input_->begin (), start))));
+      input_->insert (start, *start);
       start = input_->begin () + (j * new_width) + old_width + i;
       input_->insert (start, *start);
     }
