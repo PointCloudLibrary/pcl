@@ -58,11 +58,11 @@ namespace pcl
       void
       computeFeature (PointCloudOut &output);
 
-      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+      /** \brief Make the computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output); inaccessible from outside the class
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeature (Eigen::MatrixXf &output) {}
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 }
 
