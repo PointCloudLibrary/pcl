@@ -37,16 +37,16 @@
  *
  */
 
-#ifndef PCL_POINT_CLOUD_EXPANDER_IMPL_HPP_
-#define PCL_POINT_CLOUD_EXPANDER_IMPL_HPP_
+#ifndef PCL_POINT_CLOUD_SPRING_IMPL_HPP_
+#define PCL_POINT_CLOUD_SPRING_IMPL_HPP_
 
 template <typename PointT> inline bool
-pcl::PointCloudExpander<PointT>::initCompute ()
+pcl::PointCloudSpring<PointT>::initCompute ()
 {
   if ((expand_policy_ != MIRROR) && (expand_policy_ != DUPLICATE))
   {
     PCL_THROW_EXCEPTION (InitFailedException,
-                         "[pcl::PointCloudExpander::initCompute] init failed: " 
+                         "[pcl::PointCloudSpring::initCompute] init failed: " 
                          << "expansion policy is either MIRROR or DUPLICATE");
     return false;
   }
@@ -54,7 +54,7 @@ pcl::PointCloudExpander<PointT>::initCompute ()
   if ((direction_ != HORIZONTAL) && (direction_ != VERTICAL) && (direction_ != BOTH))
   {
     PCL_THROW_EXCEPTION (InitFailedException,
-                         "[pcl::PointCloudExpander::initCompute] init failed: "
+                         "[pcl::PointCloudSpring::initCompute] init failed: "
                          << "border must be a HORIZONTAL, VERTICAL or BOTH");
     return false;
   }
@@ -62,7 +62,7 @@ pcl::PointCloudExpander<PointT>::initCompute ()
   if (amount_ <= 0)
   {
     PCL_THROW_EXCEPTION (InitFailedException,
-                         "[pcl::PointCloudExpander::initCompute] init failed: " 
+                         "[pcl::PointCloudSpring::initCompute] init failed: " 
                          << "expansion amount must be strict positive!");
     return false;
   }
@@ -70,7 +70,7 @@ pcl::PointCloudExpander<PointT>::initCompute ()
   if (expand_policy_ & VERTICAL && !input_->isOrganized ())
   {
     PCL_THROW_EXCEPTION (InitFailedException,
-                         "[pcl::PointCloudExpander::initCompute] init failed: " 
+                         "[pcl::PointCloudSpring::initCompute] init failed: " 
                          << "vertical expansion requires organised point cloud");
     return false;
   }
@@ -79,7 +79,7 @@ pcl::PointCloudExpander<PointT>::initCompute ()
 
 
 template <typename PointT> void 
-pcl::PointCloudExpander<PointT>::expandHorizontal(const PointT& val)
+pcl::PointCloudSpring<PointT>::expandHorizontal(const PointT& val)
 {
   uint32_t old_height = input_->height;
   uint32_t old_width = input_->width;
@@ -97,7 +97,7 @@ pcl::PointCloudExpander<PointT>::expandHorizontal(const PointT& val)
 }
       
 template <typename PointT> void 
-pcl::PointCloudExpander<PointT>::expandVertical(const PointT& val)
+pcl::PointCloudSpring<PointT>::expandVertical(const PointT& val)
 {
   uint32_t old_height = input_->height;
   uint32_t old_width = input_->width;
@@ -109,7 +109,7 @@ pcl::PointCloudExpander<PointT>::expandVertical(const PointT& val)
 }
 
 template <typename PointT> void 
-pcl::PointCloudExpander<PointT>::expandHorizontalDuplicate()
+pcl::PointCloudSpring<PointT>::expandHorizontalDuplicate()
 {
   int old_height = input_->height;
   int old_width = input_->width;
@@ -131,7 +131,7 @@ pcl::PointCloudExpander<PointT>::expandHorizontalDuplicate()
 }
 
 template <typename PointT> void 
-pcl::PointCloudExpander<PointT>::expandVerticalDuplicate()
+pcl::PointCloudSpring<PointT>::expandVerticalDuplicate()
 {
   uint32_t old_height = input_->height;
   uint32_t old_width = input_->width;
@@ -145,7 +145,7 @@ pcl::PointCloudExpander<PointT>::expandVerticalDuplicate()
 }
 
 template <typename PointT> void 
-pcl::PointCloudExpander<PointT>::expandHorizontalMirror()
+pcl::PointCloudSpring<PointT>::expandHorizontalMirror()
 {
   int old_height = input_->height;
   int old_width = input_->width;
@@ -163,7 +163,7 @@ pcl::PointCloudExpander<PointT>::expandHorizontalMirror()
 }
 
 template <typename PointT> void 
-pcl::PointCloudExpander<PointT>::expandVerticalMirror()
+pcl::PointCloudSpring<PointT>::expandVerticalMirror()
 {
   uint32_t old_height = input_->height;
   uint32_t old_width = input_->width;
@@ -178,6 +178,34 @@ pcl::PointCloudExpander<PointT>::expandVerticalMirror()
   }
   input_->width = old_width;
   input_->height = old_height + 2*amount_;
+}
+
+template <typename PointT> inline void 
+pcl::PointCloudSpring<PointT>::deleteRows ()
+{
+  uint32_t old_height = input_->height;
+  uint32_t old_width = input_->width;
+  input_->erase (input_->begin (), input_->begin () + amount_ * old_width);
+  input_->erase (input_->end () - amount_ * old_width, input_->end ());
+  input_->height = old_height - 2*amount_;
+  input_->width = old_width;
+}
+
+template <typename PointT> inline void 
+pcl::PointCloudSpring<PointT>::deleteCols ()
+{
+  uint32_t old_height = input_->height;
+  uint32_t old_width = input_->width;
+  uint32_t new_width = old_width - 2 * amount_;
+  for(uint32_t j = 0; j < old_height; j++)
+  {
+    iterator start = input_->begin () + j * new_width;
+    input_->erase (start, start + amount_);
+    start = input_->begin () + (j+1) * new_width;
+    input_->erase (start, start + amount_);    
+  }
+  input_->height = old_height;
+  input_->width = old_width - 2*amount_;
 }
 
 #endif

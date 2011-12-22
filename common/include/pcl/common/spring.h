@@ -45,16 +45,17 @@
 namespace pcl
 {
 
-  /** Class PointCloudExpander used to expand a point cloud in either 
-    * direction using either mirroring or duplicating edges of the 
-    * input point cloud or filling the new cells to some value.
+  /** Class PointCloudSpring used to expand or shrink a point cloud in  
+    * horizontal and or vertical direction using either mirroring or 
+    * duplicating edges of the input point cloud or filling the new cells 
+    * to some value.
     * This class will modify the input point cloud so that no deep copy 
     * are made.
     *
     * \author Nizar Sallem
     */
   template <typename PointT>
-  class PointCloudExpander
+  class PointCloudSpring
   {
     public:
       typedef typename pcl::PointCloud<PointT> PointCloud;
@@ -67,7 +68,7 @@ namespace pcl
       /// direction of the expansion
       enum DIRECTION { HORIZONTAL = 0, VERTICAL, BOTH };
       /// Default constructor
-      PointCloudExpander () : expand_policy_(-1), direction_(-1) {}
+      PointCloudSpring () : expand_policy_(-1), direction_(-1) {}
       /// \set expansion policy
       inline void
       setExpandPolicy (int policy) { expand_policy_ = policy; }
@@ -105,12 +106,12 @@ namespace pcl
         * If the policy is set to duplicate then the top and bottom rows 
         * and/or the right and left columns will be duplicated.
         */
-      void
+      inline void
       expand ()
       {
         if (!initCompute ())
           PCL_THROW_EXCEPTION (InitFailedException,
-                               "[pcl::PointCloudExpander::initCompute] init failed");
+                               "[pcl::PointCloudSpring::initCompute] init failed");
         if (expand_policy_ == DUPLICATE)
         {
           if ((direction_ == VERTICAL) || (direction_ == BOTH))
@@ -130,12 +131,12 @@ namespace pcl
       /** expand a point cloud in the set direction.
         * \input val the point value to be used to fill.
         */
-      void
+      inline void
       expand (const PointT& val)
       {
         if (!initCompute ())
           PCL_THROW_EXCEPTION (InitFailedException,
-                               "[pcl::PointCloudExpander::initCompute] init failed");
+                               "[pcl::PointCloudSpring::initCompute] init failed");
         if ((direction_ == VERTICAL) || (direction_ == BOTH))
         {
           expandVertical (val);
@@ -144,6 +145,24 @@ namespace pcl
         {
           expandHorizontal (val);
         }
+      }
+
+      /** shrink a point cloud in the set direction.
+        * - If direction is vertical or both then the specified amount of
+        *   top and bottom rows are deleted.
+        * - If direction is horizontal or both then the specified amount
+        *   of left and right columns are deleted.
+        */
+      inline void
+      shrink ()
+      {
+        if (!initCompute ())
+          PCL_THROW_EXCEPTION (InitFailedException,
+                               "[pcl::PointCloudShrinker::initCompute] init failed");
+        if ((direction_ == VERTICAL) || (direction_ == BOTH))
+          deleteRows ();
+        if ((direction_ == HORIZONTAL) || (direction_ == BOTH))
+          deleteCols ();
       }
 
     private:
@@ -181,7 +200,13 @@ namespace pcl
         */
       void 
       expandHorizontalMirror();
-
+      /** delete \a amount_ rows in top and bottom of point cloud */
+      inline void
+      deleteRows ();
+      /** delete \a amount_ columns in top and bottom of point cloud */
+      inline void
+      deleteCols ();
+      
       /// expansion policy
       int expand_policy_;
       /// expansion direction
@@ -193,6 +218,6 @@ namespace pcl
   };
 }
 
-#include <pcl/common/impl/expander.hpp>
+#include <pcl/common/impl/spring.hpp>
 
 #endif
