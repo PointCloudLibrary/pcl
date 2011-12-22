@@ -62,11 +62,11 @@ Now we can start the main loop to keep the visualization alive, until one of the
 .. code-block:: cpp
 
   ...
-  while (!viewer.wasStopped () || range_image_widget.isShown ())
+  while (!viewer.wasStopped ())
   {
-    pcl::visualization::ImageWidgetWX::spinOnce ();  // process GUI events
-    viewer.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    range_image_widget.spinOnce ();
+    viewer.spinOnce ();
+    pcl_sleep (0.01);
   ...
 
 ImageWidgetWX::spinOnce() handles the current events of the RangeImageVisualizer and viewer.spinOnce(100) does the same for the 3D viewer (giving it 100ms time).

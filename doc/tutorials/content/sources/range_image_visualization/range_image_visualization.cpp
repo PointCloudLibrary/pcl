@@ -151,12 +151,11 @@ main (int argc, char** argv)
   //--------------------
   // -----Main loop-----
   //--------------------
-  std::vector<pcl::visualization::Camera> cameras;
-  while (!viewer.wasStopped () /*&& range_image_widget.isShown ()*/)
+  while (!viewer.wasStopped ())
   {
     range_image_widget.spinOnce ();
-    viewer.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    viewer.spinOnce ();
+    pcl_sleep (0.01);
     
     if (live_update)
     {
