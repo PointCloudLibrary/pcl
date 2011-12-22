@@ -70,8 +70,8 @@ namespace pcl
   }
 }
 
-template void pcl::device::initVolume (PtrStepSz<short2> volume);
-template void pcl::device::initVolume (PtrStepSz<ushort2> volume);
+template PCL_EXPORTS void pcl::device::initVolume (PtrStepSz<short2> volume);
+template PCL_EXPORTS void pcl::device::initVolume (PtrStepSz<ushort2> volume);
 
 namespace pcl
 {
@@ -656,14 +656,4 @@ pcl::device::integrateTsdfVolume (const PtrStepSz<ushort>& depth, const Intr& in
   }
 
   cudaSafeCall (cudaDeviceSynchronize ());
-}
-
-
-
-namespace pcl
-{
-    namespace device
-    {
-     
-    }
 }

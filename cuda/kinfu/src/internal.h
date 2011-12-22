@@ -41,6 +41,17 @@
 #include "pcl/gpu/containers/device_array.hpp"
 #include "pcl/gpu/utils/safe_call.hpp"
 
+//don't want to include pcl_macros.h as it produces stupid warnings in cu-files because of boost.
+#if defined WIN32 || defined _WIN32 || defined WINCE || defined __MINGW32__ || __CUDACC__
+    #ifdef PCLAPI_EXPORTS
+        #define PCL_EXPORTS __declspec(dllexport)
+    #else
+        #define PCL_EXPORTS
+    #endif
+#else
+    #define PCL_EXPORTS
+#endif
+
 namespace pcl
 {
   namespace device
@@ -211,7 +222,7 @@ namespace pcl
       *  \param[out]
       */
     template<typename T> 
-    void 
+    void
     initVolume(PtrStepSz<T> array);
 
     //first version
@@ -239,7 +250,7 @@ namespace pcl
       * \param[in] volume tsdf volume to be updated
       * \param[out] depthRawScaled Buffer for scaled depth along ray
       */
-    void 
+    PCL_EXPORTS void 
     integrateTsdfVolume (const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
                          const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<short2> volume, DeviceArray2D<float>& depthRawScaled);
 
@@ -254,7 +265,7 @@ namespace pcl
       * \param[in] volume tsdf volume to be updated
       * \param[out] depthRawScaled buffer for scaled depth along ray
       */
-    void 
+    PCL_EXPORTS void 
     integrateTsdfVolume (const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
                          const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<ushort2> volume, DeviceArray2D<float>& depthRawScaled);
 
@@ -326,7 +337,7 @@ namespace pcl
       * \param[out] output buffer large enought to store point cloud
       * \return number of point stored to passed buffer
       */ 
-    size_t 
+    PCL_EXPORTS size_t 
     extractCloud (const PtrStep<volume_elem_type>& volume, const float3& volume_size, PtrSz<PointType> output);
 
     /** \brief Performs normals computation for given poins using tsdf volume

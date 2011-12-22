@@ -19,7 +19,7 @@ if (TRUE)
 		add_definitions(-DHAVE_OPENCV)	
 		include_directories(${OpenCV_INCLUDE_DIRS})
 	else()
-		remove_definitions(-DHAVE_OPENCV)	
+		remove_definitions(-DHAVE_OPENCV)
 	endif()
 
 	if (build)
@@ -37,6 +37,10 @@ if (TRUE)
 
 		if (UNIX OR APPLE)
 			set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "-Xcompiler;-fPIC;")			
+		endif()
+		
+		if(NOT UNIX OR APPLE)
+		    add_definitions(-DPCLAPI_EXPORTS)
 		endif()
 		
 		if(TRUE)

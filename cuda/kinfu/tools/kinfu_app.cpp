@@ -279,8 +279,8 @@ struct KinFuApp
         viewer3d_.showRGBImage ((unsigned char*)&view_host_[0], view_device_.cols (), view_device_.rows ());
 
 #ifdef HAVE_OPENCV
-        views_.push_back(cv::Mat());
-        cv::cvtColor(cv::Mat(480, 640, CV_8UC3, (void*)&view_host_[0]), views_.back(), CV_RGB2GRAY);
+        //views_.push_back(cv::Mat());
+        //cv::cvtColor(cv::Mat(480, 640, CV_8UC3, (void*)&view_host_[0]), views_.back(), CV_RGB2GRAY);
 #endif
 
         if (frame_cloud_viewer_)
