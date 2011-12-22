@@ -187,9 +187,9 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
 
     // bilinear interpolation
     double beta_bin_size = is_radial_ ? (PI / 2 / image_width_) : bin_size;
-    int beta_bin = round (beta / beta_bin_size) + int(image_width_);
+    int beta_bin = int(std::floor (beta / beta_bin_size)) + int(image_width_);
     assert (0 <= beta_bin && beta_bin < m_matrix.cols ());
-    int alpha_bin = round (alpha / bin_size);
+    int alpha_bin = int(std::floor (alpha / bin_size));
     assert (0 <= alpha_bin && alpha_bin < m_matrix.rows ());
 
     if (alpha_bin == (int)image_width_)  // border points

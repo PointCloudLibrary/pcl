@@ -284,19 +284,6 @@ namespace pcl
 
 
       static const double PI;
-  
-      /** \brief rounds the argument.
-        * 
-        * \param dubl double number not greater than maxint by absolute value
-        * \return rounded value as int
-        */
-      static int 
-      round (double dubl)
-      {
-        assert (fabs (dubl) < (std::numeric_limits<int>::max) ());   // check that this is small enough
-    
-        return int(::floor (dubl) + ((dubl >= 0) ? 0.5 : -0.5));
-      }
 
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
         * \param[out] output the output point cloud 
