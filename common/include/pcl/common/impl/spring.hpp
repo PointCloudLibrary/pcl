@@ -205,7 +205,7 @@ pcl::PointCloudSpring<PointT>::deleteCols ()
     input_->erase (start, start + amount_);    
   }
   input_->height = old_height;
-  input_->width = old_width - 2*amount_;
+  input_->width = new_width;
 }
 
 #endif

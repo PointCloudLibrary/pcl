@@ -83,7 +83,7 @@ if(build)
         include/pcl/common/utils.h
         include/pcl/common/geometry.h
         include/pcl/common/gaussian.h
-				include/pcl/common/expander.h
+        include/pcl/common/spring.h
         )
 
     set(common_incs_impl
@@ -102,7 +102,7 @@ if(build)
         include/pcl/common/impl/transformation_from_correspondences.hpp
         include/pcl/common/impl/vector_average.hpp
         include/pcl/common/impl/gaussian.hpp
-				include/pcl/common/impl/expander.hpp
+        include/pcl/common/impl/spring.hpp
        )
 
     set(impl_incs include/pcl/impl/instantiate.hpp
