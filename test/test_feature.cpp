@@ -1798,8 +1798,8 @@ TEST (PCL, RSDEstimation)
   
   // estimate
   rsd.compute (*rsds);
-  EXPECT_NEAR (rsds->points[0].r_min, 0.0413937, 0.005);
-  EXPECT_NEAR (rsds->points[0].r_max, 0.0775842, 0.005);
+  EXPECT_NEAR (rsds->points[0].r_min, 0.0413937, 0.01);
+  EXPECT_NEAR (rsds->points[0].r_max, 0.0775842, 0.01);
 
   // Check the 2D histogram of the first point
   std::vector<int> k_indices;
