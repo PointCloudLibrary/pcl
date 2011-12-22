@@ -31,19 +31,19 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Bernhard Zeisl, (myname.mysurname@inf.ethz.ch)
+ *  $Id$
  */
 
 #ifndef TSDF_VOLUME_HPP_
 #define TSDF_VOLUME_HPP_
 
-#include <pcl/reconstruction/tsdf_volume.h>
+#include "tsdf_volume.h"
 
 #include <fstream>
 
 
 template <typename VoxelT, typename WeightT> bool
-pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::load (const std::string &filename, bool binary)
+pcl::TSDFVolume<VoxelT, WeightT>::load (const std::string &filename, bool binary)
 {
   pcl::console::print_info ("Loading TSDF volume from "); pcl::console::print_value ("%s ... ", filename.c_str());
   std::cout << std::flush;
@@ -101,7 +101,7 @@ pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::load (const std::string &filen
 
 
 template <typename VoxelT, typename WeightT> bool
-pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::save (const std::string &filename, bool binary) const
+pcl::TSDFVolume<VoxelT, WeightT>::save (const std::string &filename, bool binary) const
 {
   pcl::console::print_info ("Saving TSDF volume to "); pcl::console::print_value ("%s ... ", filename.c_str());
   std::cout << std::flush;
@@ -155,7 +155,7 @@ pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::save (const std::string &filen
 
 
 template <typename VoxelT, typename WeightT> void
-pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud (pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud) const
+pcl::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud (pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud) const
 {
   int sx = header_.resolution(0);
   int sy = header_.resolution(1);
@@ -191,7 +191,7 @@ pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud (pcl::Point
 
 
 template <typename VoxelT, typename WeightT> template <typename PointT> void
-pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::getVoxelCoord (const PointT &point, Eigen::Vector3i &coord) const
+pcl::TSDFVolume<VoxelT, WeightT>::getVoxelCoord (const PointT &point, Eigen::Vector3i &coord) const
 {
   static Eigen::Array3f voxel_size = voxelSize().array();
 
@@ -206,7 +206,7 @@ pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::getVoxelCoord (const PointT &p
 
 /** \brief Retunrs the 3D voxel coordinate and point offset wrt. to the voxel center (in mm) */
 template <typename VoxelT, typename WeightT> template <typename PointT> void
-pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::getVoxelCoordAndOffset (const PointT &point,
+pcl::TSDFVolume<VoxelT, WeightT>::getVoxelCoordAndOffset (const PointT &point,
                                                                           Eigen::Vector3i &coord, Eigen::Vector3f &offset) const
 {
   static Eigen::Array3f voxel_size = voxelSize().array();
@@ -224,7 +224,7 @@ pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::getVoxelCoordAndOffset (const 
 
 
 template <typename VoxelT, typename WeightT> bool
-pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::extractNeighborhood (const Eigen::Vector3i &voxel_coord, int neighborhood_size,
+pcl::TSDFVolume<VoxelT, WeightT>::extractNeighborhood (const Eigen::Vector3i &voxel_coord, int neighborhood_size,
                                                                        VoxelTVec &neighborhood) const
 {
   // point_index is at the center of a cube of scale_ x scale_ x scale_ voxels
@@ -277,7 +277,7 @@ pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::extractNeighborhood (const Eig
 
 
 template <typename VoxelT, typename WeightT> bool
-pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::addNeighborhood (const Eigen::Vector3i &voxel_coord, int neighborhood_size,
+pcl::TSDFVolume<VoxelT, WeightT>::addNeighborhood (const Eigen::Vector3i &voxel_coord, int neighborhood_size,
                                                                    const VoxelTVec &neighborhood, WeightT voxel_weight)
 {
   // point_index is at the center of a cube of scale_ x scale_ x scale_ voxels
@@ -328,10 +328,10 @@ pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::addNeighborhood (const Eigen::
 
 
 template <typename VoxelT, typename WeightT> void
-pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::averageValues ()
+pcl::TSDFVolume<VoxelT, WeightT>::averageValues ()
 {
   #pragma omp parallel for
-  for (int i = 0; i < volume_->size(); ++i)
+  for (size_t i = 0; i < volume_->size(); ++i)
   {
     WeightT &w = weights_->at(i);
     if (w > 0.0)
@@ -344,7 +344,7 @@ pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::averageValues ()
 
 
 /*template <typename VoxelT, typename WeightT> template <typename PointT> void
-pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::createFromCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, const Intr &intr)
+pcl::TSDFVolume<VoxelT, WeightT>::createFromCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, const Intr &intr)
 {
   // get depth map from cloud
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
@@ -410,7 +410,7 @@ pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::createFromCloud (const typenam
 
 
 /*template <typename VoxelT, typename WeightT> void
-pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::scaleDepth (const Eigen::MatrixXf &depth, Eigen::MatrixXf &depth_scaled, const Intr &intr) const
+pcl::TSDFVolume<VoxelT, WeightT>::scaleDepth (const Eigen::MatrixXf &depth, Eigen::MatrixXf &depth_scaled, const Intr &intr) const
 {
   // function ported from KinFu GPU code
   depth_scaled.resizeLike (depth);
@@ -440,7 +440,7 @@ pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::scaleDepth (const Eigen::Matri
 
 
 /*template <typename VoxelT, typename WeightT> void
-pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::integrateVolume (const Eigen::MatrixXf &depth_scaled,
+pcl::TSDFVolume<VoxelT, WeightT>::integrateVolume (const Eigen::MatrixXf &depth_scaled,
                                               float tranc_dist,
                                               const Eigen::Matrix3f &R_inv,
                                               const Eigen::Vector3f &t,

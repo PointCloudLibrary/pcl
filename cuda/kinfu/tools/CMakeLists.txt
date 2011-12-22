@@ -10,20 +10,17 @@ if(OPENNI_FOUND)
 		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 	endif(NOT VTK_FOUND)
 
-	## KINECT FUSION
-	set(the_target kinfu_app)
-	
-	#FILE(GLOB srcs "*.c*")
-	set(srcs kinfu_app.cpp capture.cpp)
 	FILE(GLOB hdrs "*.h*")
-	source_group("Source Files" FILES ${srcs} )
-
-	message (STATUS "sources: " ${srcs})
-	
 	include_directories(${VTK_INCLUDE_DIRS})
 
+	## KINECT FUSION
+	set(the_target kinfu_app)
+	set(srcs kinfu_app.cpp capture.cpp)
+
+	source_group("Source Files" FILES ${srcs} )
+
 	PCL_ADD_EXECUTABLE(${the_target} ${SUBSYS_NAME} ${srcs} ${hdrs})
-	target_link_libraries(${the_target} pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu pcl_reconstruction)  
+	target_link_libraries(${the_target} pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)  
   
 	if(OpenCV_FOUND)
 		target_link_libraries(${the_target} ${OpenCV_LIBS})
@@ -31,7 +28,9 @@ if(OPENNI_FOUND)
 
 	## RECORD TSDFVOLUME
 	set(the_target record_tsdfvolume)
-	PCL_ADD_EXECUTABLE(${the_target} ${SUBSYS_NAME} record_tsdfvolume.cpp capture.cpp)
-	target_link_libraries(${the_target} pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu pcl_reconstruction)  
+	set(srcs record_tsdfvolume.cpp capture.cpp)
+
+	PCL_ADD_EXECUTABLE(${the_target} ${SUBSYS_NAME} ${srcs} ${hdrs})
+	target_link_libraries(${the_target} pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)  
 
 endif(OPENNI_FOUND)

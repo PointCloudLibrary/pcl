@@ -51,8 +51,8 @@
 
 #include "../src/internal.h"
 
-#include <pcl/reconstruction/tsdf_volume.h>
-#include <pcl/reconstruction/impl/tsdf_volume.hpp>
+#include "tsdf_volume.h"
+#include "tsdf_volume.hpp"
 
 using namespace std;
 namespace pc = pcl::console;
@@ -107,7 +107,7 @@ public:
    * param[out] volume volume structure where the data is written to (size needs to be appropriately set beforehand (is checked))
    */
   bool
-  getVolume (pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::Ptr &volume);
+  getVolume (pcl::TSDFVolume<VoxelT, WeightT>::Ptr &volume);
 
   /** \brief Generates and returns a point cloud form the implicit surface in the TSDF volume
    * param[out] cloud point cloud containing the surface
@@ -167,7 +167,7 @@ DeviceVolume::createFromDepth (const pcl::device::PtrStepSz<const unsigned short
 
 
 bool
-DeviceVolume::getVolume (pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::Ptr &volume)
+DeviceVolume::getVolume (pcl::TSDFVolume<VoxelT, WeightT>::Ptr &volume)
 {
   int volume_size = device_volume_.rows() * device_volume_.cols();
 
@@ -442,7 +442,7 @@ main (int argc, char* argv[])
    */
 
   // create volume object
-  pcl::reconstruction::TSDFVolume<VoxelT, WeightT>::Ptr volume (new pcl::reconstruction::TSDFVolume<VoxelT, WeightT>);
+  pcl::TSDFVolume<VoxelT, WeightT>::Ptr volume (new pcl::TSDFVolume<VoxelT, WeightT>);
   Eigen::Vector3i resolution (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z);
   Eigen::Vector3f volume_size = Eigen::Vector3f::Constant (3000);
   volume->resize (resolution, volume_size);

@@ -37,6 +37,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <iostream>
+
 #include "pcl/gpu/kinfu/kinfu.h"
 #include "pcl/gpu/containers/initialization.hpp"
 
@@ -50,8 +51,8 @@
 
 #include "openni_capture.h"
 
-#include <pcl/reconstruction/tsdf_volume.h>
-// #include <pcl/reconstruction/impl/tsdf_volume.hpp>
+#include "tsdf_volume.h"
+#include "tsdf_volume.hpp"
 
 #ifdef HAVE_OPENCV
     #include "opencv2/opencv.hpp"
@@ -339,7 +340,7 @@ struct KinFuApp
   PointCloud<PointXYZ>::Ptr frame_cloud_ptr_;
   PointCloud<pcl::Normal>::Ptr frame_normals_ptr_;
 
-  pcl::reconstruction::TSDFVolume<float, short> tsdf_volume_;
+  pcl::TSDFVolume<float, short> tsdf_volume_;
   pcl::PointCloud<pcl::PointXYZI>::Ptr tsdf_cloud_ptr_;
 
 #ifdef HAVE_OPENCV
