@@ -67,7 +67,7 @@ pcl::PointCloudSpring<PointT>::initCompute ()
     return false;
   }
         
-  if (expand_policy_ & VERTICAL && !input_->isOrganized ())
+  if (!input_->isOrganized () && (expand_policy_ == VERTICAL || expand_policy_ == BOTH))
   {
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::PointCloudSpring::initCompute] init failed: " 
@@ -76,7 +76,6 @@ pcl::PointCloudSpring<PointT>::initCompute ()
   }
   return true;
 }
-
 
 template <typename PointT> void 
 pcl::PointCloudSpring<PointT>::expandHorizontal(const PointT& val)

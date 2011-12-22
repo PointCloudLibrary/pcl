@@ -48,7 +48,7 @@ namespace pcl
   /** Class PointCloudSpring used to expand or shrink a point cloud in  
     * horizontal and or vertical direction using either mirroring or 
     * duplicating edges of the input point cloud or filling the new cells 
-    * to some value.
+    * with some value.
     * This class will modify the input point cloud so that no deep copy 
     * are made.
     *
