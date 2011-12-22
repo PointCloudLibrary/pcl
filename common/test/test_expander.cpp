@@ -93,7 +93,7 @@ TEST(PointCloudExpander, duplicateVertical)
   expander.setAmount (amount);
   expander.setDirection (PointCloudExpander<PointXYZ>::VERTICAL);
   expander.setExpandPolicy (PointCloudExpander<PointXYZ>::DUPLICATE);
-  expander.expandVerticalDuplicate ();
+  expander.expand ();
   int w(cloud_ptr->width);
   EXPECT_EQ (cloud_ptr->height, cloud.height +2*amount);
 
@@ -118,7 +118,7 @@ TEST(PointCloudExpander, mirrorVertical)
   expander.setAmount (amount);
   expander.setDirection (PointCloudExpander<PointXYZ>::VERTICAL);
   expander.setExpandPolicy (PointCloudExpander<PointXYZ>::MIRROR);
-  expander.expandVerticalMirror ();
+  expander.expand ();
   int w(cloud_ptr->width);
   int h(cloud_ptr->height);
   EXPECT_EQ (cloud_ptr->height, cloud.height +2*amount);
@@ -144,7 +144,7 @@ TEST(PointCloudExpander, mirrorHorizontal)
   expander.setAmount (amount);
   expander.setDirection (PointCloudExpander<PointXYZ>::HORIZONTAL);
   expander.setExpandPolicy (PointCloudExpander<PointXYZ>::MIRROR);
-  expander.expandHorizontalMirror ();
+  expander.expand ();
   int w(cloud_ptr->width);
   int h(cloud_ptr->height);
   EXPECT_EQ (cloud_ptr->width, cloud.width +2*amount);
@@ -170,7 +170,7 @@ TEST(PointCloudExpander, duplicateHorizontal)
   expander.setAmount (amount);
   expander.setDirection (PointCloudExpander<PointXYZ>::HORIZONTAL);
   expander.setExpandPolicy (PointCloudExpander<PointXYZ>::DUPLICATE);
-  expander.expandHorizontalDuplicate ();
+  expander.expand ();
   int h(cloud_ptr->height);
   int w(cloud_ptr->width);
   EXPECT_EQ (cloud_ptr->width, cloud.width +2*amount);

@@ -46,10 +46,12 @@ namespace pcl
 {
 
   /** Class PointCloudExpander used to expand a point cloud in either 
-    * direction using one of 2 policies either mirroring or duplicating
-    * edges of the input point cloud.
+    * direction using either mirroring or duplicating edges of the 
+    * input point cloud or filling the new cells to some value.
     * This class will modify the input point cloud so that no deep copy 
     * are made.
+    *
+    * \author Nizar Sallem
     */
   template <typename PointT>
   class PointCloudExpander
@@ -96,33 +98,55 @@ namespace pcl
       initCompute ();
       
     public:
-      /* void  */
-      /* expand () */
-      /* { */
-      /*   if (!initCompute ()) */
-      /*     PCL_THROW_EXCEPTION (InitFailedException, */
-      /*                          "[pcl::PointCloudExpander::initCompute] init failed"); */
-      /*   if ((direction_ == VERTICAL) || (direction_ == BOTH)) */
-      /*     expandVertical (); */
-      /*   if ((direction_ == HORIZONTAL) || (direction_ == BOTH)) */
-      /*     expandHorizontal (); */
-      /* } */
+      /** expand a point cloud in the set direction and policy. 
+        * If the policy is set to mirror then the new created rows and/or 
+        * columns are symmetrical to the top and bottom rows and/or left 
+        * and right columns of the original point cloud.
+        * If the policy is set to duplicate then the top and bottom rows 
+        * and/or the right and left columns will be duplicated.
+        */
+      void
+      expand ()
+      {
+        if (!initCompute ())
+          PCL_THROW_EXCEPTION (InitFailedException,
+                               "[pcl::PointCloudExpander::initCompute] init failed");
+        if (expand_policy_ == DUPLICATE)
+        {
+          if ((direction_ == VERTICAL) || (direction_ == BOTH))
+            expandVerticalDuplicate ();
+          if ((direction_ == HORIZONTAL) || (direction_ == BOTH))
+            expandHorizontalDuplicate ();
+        }
+        else
+        {
+          if ((direction_ == VERTICAL) || (direction_ == BOTH))
+            expandVerticalMirror ();
+          if ((direction_ == HORIZONTAL) || (direction_ == BOTH))
+            expandHorizontalMirror ();
+        }
+      }
 
-      /* void  */
-      /* expand (const PointT& val) */
-      /* { */
-      /*   if (!initCompute ()) */
-      /*     PCL_THROW_EXCEPTION (InitFailedException, */
-      /*                          "[pcl::PointCloudExpander::initCompute] init failed"); */
-      /*   if ((direction_ == VERTICAL) || (direction_ == BOTH)) */
-      /*   { */
-      /*     expandVertical (val); */
-      /*   } */
-      /*   if ((direction_ == HORIZONTAL) || (direction_ == BOTH)) */
-      /*   { */
-      /*     expandHorizontal (val); */
-      /*   } */
-      /* } */
+      /** expand a point cloud in the set direction.
+        * \input val the point value to be used to fill.
+        */
+      void
+      expand (const PointT& val)
+      {
+        if (!initCompute ())
+          PCL_THROW_EXCEPTION (InitFailedException,
+                               "[pcl::PointCloudExpander::initCompute] init failed");
+        if ((direction_ == VERTICAL) || (direction_ == BOTH))
+        {
+          expandVertical (val);
+        }
+        if ((direction_ == HORIZONTAL) || (direction_ == BOTH))
+        {
+          expandHorizontal (val);
+        }
+      }
+
+    private:
       /** expand point cloud vertically inserting \a amount_ rows at the 
         * top and the bottom of a point cloud and filling them with 
         * custom values.
@@ -158,7 +182,6 @@ namespace pcl
       void 
       expandHorizontalMirror();
 
-    private:
       /// expansion policy
       int expand_policy_;
       /// expansion direction
